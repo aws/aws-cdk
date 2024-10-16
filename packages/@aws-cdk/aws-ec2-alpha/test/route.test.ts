@@ -3,7 +3,7 @@ import * as vpc from '../lib/vpc-v2';
 import * as subnet from '../lib/subnet-v2';
 import { CfnEIP, GatewayVpcEndpoint, GatewayVpcEndpointAwsService, SubnetType, VpnConnectionType } from 'aws-cdk-lib/aws-ec2';
 import * as route from '../lib/route';
-import { Annotations, Template } from 'aws-cdk-lib/assertions';
+import { Template } from 'aws-cdk-lib/assertions';
 
 describe('EC2 Routing', () => {
   let stack: cdk.Stack;
@@ -532,6 +532,7 @@ describe('VPCPeeringConnection', () => {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.0.0.0/16'),
       secondaryAddressBlocks: [vpc.IpAddresses.ipv4('10.1.0.0/16', { cidrBlockName: 'TempSecondaryBlock' })],
       region: 'us-east-1',
+      ownerAccountId: '987654321098',
     });
     vpcB = new vpc.VpcV2(stack, 'VpcB', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.2.0.0/16'),
@@ -582,14 +583,14 @@ describe('VPCPeeringConnection', () => {
     });
   });
 
-  test('Warns when peerRoleArn is provided for same account peering', () => {
-    new route.VPCPeeringConnection(stack, 'TestPeeringConnection', {
-      requestorVpc: vpcB,
-      acceptorVpc: vpcC,
-      peerRoleArn: 'arn:aws:iam::123456789012:role/unnecessary-role',
-    });
-
-    Annotations.fromStack(stack).hasWarning('*', 'This is a same account peering, peerRoleArn is not needed and will be ignored [ack: @aws-cdk/aws-ec2-alpha:peerRoleArnIgnored]');
+  test('Throws error when peerRoleArn is provided for same account peering', () => {
+    expect(() => {
+      new route.VPCPeeringConnection(stack, 'TestPeeringConnection', {
+        requestorVpc: vpcB,
+        acceptorVpc: vpcC,
+        peerRoleArn: 'arn:aws:iam::123456789012:role/unnecessary-role',
+      });
+    }).toThrow(/peerRoleArn is not needed for same account peering/);
   });
 
   test('Throws error when peerRoleArn is not provided for cross-account peering', () => {
@@ -606,7 +607,7 @@ describe('VPCPeeringConnection', () => {
       new route.VPCPeeringConnection(stack, 'TestPeering', {
         requestorVpc: vpcA,
         acceptorVpc: vpcC,
-        peerRoleArn: 'arn:aws:iam::123456789012:role/unnecessary-role',
+        peerRoleArn: 'arn:aws:iam::012345678910:role/VpcPeeringRole',
       });
     }).toThrow(/CIDR block should not overlap with each other for establishing a peering connection/);
   });
@@ -621,7 +622,7 @@ describe('VPCPeeringConnection', () => {
       new route.VPCPeeringConnection(stack, 'TestPeering', {
         requestorVpc: vpcA,
         acceptorVpc: vpcD,
-        peerRoleArn: 'arn:aws:iam::123456789012:role/unnecessary-role',
+        peerRoleArn: 'arn:aws:iam::012345678910:role/VpcPeeringRole',
       });
     }).toThrow(/CIDR block should not overlap with each other for establishing a peering connection/);
   });

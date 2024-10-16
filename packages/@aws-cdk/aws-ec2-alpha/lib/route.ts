@@ -465,10 +465,7 @@ export class VPCPeeringConnection extends Resource implements IRouteTarget {
     const isCrossAccount = props.requestorVpc.ownerAccountId !== props.acceptorVpc.ownerAccountId;
 
     if (!isCrossAccount && props.peerRoleArn) {
-      Annotations.of(scope).addWarningV2(
-        '@aws-cdk/aws-ec2-alpha:peerRoleArnIgnored',
-        'This is a same account peering, peerRoleArn is not needed and will be ignored',
-      );
+      throw new Error('peerRoleArn is not needed for same account peering');
     }
 
     if (isCrossAccount && !props.peerRoleArn) {
