@@ -38,7 +38,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "d7d3785243d748927f2a8d6edcecf909f96191df27a815e305aaeba98bcd2c64.zip"
+     "S3Key": "9b3143f6d2fe3103f2f3162c221163ad6a5a0ba2219cc1e5af2e300325588714.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -360,7 +360,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "54deaef2af5b9afbfc9cbcbb9261b1c0d4cce6560831d7ae1959f3da899011c8.zip"
+     "S3Key": "0793b3c94d0be9d628975dbbcd1dc523196de50a41fb1920880248ae3c24259b.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -497,6 +497,14 @@
      ]
     ]
    }
+  },
+  "AuthorizerId": {
+   "Value": {
+    "Ref": "MyHttpApiLambdaAuthorizerB8A0E2A4"
+   }
+  },
+  "AuthorizationType": {
+   "Value": "CUSTOM"
   }
  },
  "Parameters": {
