@@ -25,8 +25,7 @@ export interface CloudWatchLogsTargetParameters {
 
   /**
    * The JSON path expression that references the timestamp in the payload.
-   *
-   * This is the time the event occurred, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC.
+   * This is the time that the event occurred, as a JSON path expression in the payload.
    *
    * @example '$.data.timestamp'
    *
