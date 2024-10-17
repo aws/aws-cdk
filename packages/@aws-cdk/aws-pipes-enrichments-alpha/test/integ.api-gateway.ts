@@ -61,7 +61,7 @@ const fn = new lambda.Function(stack, 'ConnectHandler', {
     return {
       statusCode: 200,
       body: JSON.stringify({
-        message: paramValue + "-enrichment-test"
+        message: paramValue + "-enrichment-test",
       }),
     };
   };
@@ -97,11 +97,11 @@ putMessageOnQueue.next(test.assertions.awsApiCall('SQS', 'receiveMessage',
   {
     QueueUrl: targetQueue.queueUrl,
   })).expect(ExpectedResult.objectLike({
-    Messages: [
-      {
-        Body: uniqueIdentifier + '-enrichment-test',
-      },
-    ],
-  })).waitForAssertions({
-    totalTimeout: cdk.Duration.seconds(30),
-  });
+  Messages: [
+    {
+      Body: uniqueIdentifier + '-enrichment-test',
+    },
+  ],
+})).waitForAssertions({
+  totalTimeout: cdk.Duration.seconds(30),
+});
