@@ -11,6 +11,7 @@ export class ProgressPrinter {
   private deletedObjectsSizeMb: number;
   private interval: number;
   private setInterval?: NodeJS.Timer;
+  private isPaused: boolean;
 
   constructor(totalObjects: number, interval?: number) {
     this.totalObjects = totalObjects;
@@ -20,6 +21,7 @@ export class ProgressPrinter {
     this.deletedObjects = 0;
     this.deletedObjectsSizeMb = 0;
     this.interval = interval ?? 10_000;
+    this.isPaused = false;
   }
 
   public reportScannedObjects(amt: number) {
@@ -39,13 +41,27 @@ export class ProgressPrinter {
   }
 
   public start() {
-    this.setInterval = setInterval(() => this.print(), this.interval);
+    this.setInterval = setInterval(() => {
+      if (!this.isPaused) {
+        this.print();
+      }
+    }, this.interval);
+  }
+
+  public pause() {
+    this.isPaused = true;
+  }
+
+  public resume() {
+    this.isPaused = false;
   }
 
   public stop() {
     clearInterval(this.setInterval);
-    // print one last time
-    this.print();
+    // print one last time if not paused
+    if (!this.isPaused) {
+      this.print();
+    }
   }
 
   private print() {

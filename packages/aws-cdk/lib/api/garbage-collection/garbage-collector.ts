@@ -203,6 +203,8 @@ export class GarbageCollector {
         const { included: isolated, excluded: notIsolated } = partition(batch, asset => !activeAssets.contains(asset.fileName()));
 
         debug(`${isolated.length} isolated assets`);
+        debug(`${notIsolated.length} not isolated assets`);
+        debug(`${batch.length} objects total`);
 
         let deletables: S3Asset[] = isolated;
         let taggables: S3Asset[] = [];
@@ -236,6 +238,7 @@ export class GarbageCollector {
               '',
               'Delete this batch (yes/no/delete-all)?',
             ].join('\n');
+            printer.pause();
             const response = await promptly.prompt(message,
               { trim: true },
             );
@@ -247,6 +250,7 @@ export class GarbageCollector {
               this.skipDeletePrompt = true;
             }
           }
+          printer.resume();
           await this.parallelDelete(s3, bucket, deletables, printer);
         }
 
