@@ -240,6 +240,8 @@ For more information, see [What is VPC peering?](https://docs.aws.amazon.com/vpc
 
 The following show examples of how to create a peering connection between two VPCs for all possible combinations of same-account or cross-account, and same-region or cross-region configurations.
 
+Note: You cannot create a VPC peering connection between VPCs that have matching or overlapping CIDR blocks
+
 **Case 1: Same Account and Same Region Peering Connection**
 
 ```ts
@@ -247,14 +249,10 @@ const stack = new Stack();
 
 const vpcA = new VpcV2(this, 'VpcA', {
   primaryAddressBlock: IpAddresses.ipv4('10.0.0.0/16'),
-  region: 'us-east-1',
-  ownerAccountId: '123456789012',
 });
 
 const vpcB = new VpcV2(this, 'VpcB', {
   primaryAddressBlock: IpAddresses.ipv4('10.1.0.0/16'),
-  region: 'us-east-1',
-  ownerAccountId: '123456789012',
 });
 
 const peeringConnection = vpcA.createPeeringConnection('sameAccountSameRegionPeering', {
@@ -264,23 +262,23 @@ const peeringConnection = vpcA.createPeeringConnection('sameAccountSameRegionPee
 
 **Case 2: Same Account and Cross Region Peering Connection**
 
-The only change from Case 1 is specifying a different region in the VpcV2 class for each VPC. 
+There is no difference from Case 1 when calling `createPeeringConnection`. The only change is that one of the VPCs are created in another stack with a different region.
 
 ```ts
-const stack = new Stack();
+const app = new App();
 
-const vpcA = new VpcV2(this, 'VpcA', {
+const stackA = new Stack(app, 'VpcStackA', { env: { account: '012345678910', region: 'us-east-1' } });
+const stackB = new Stack(app, 'VpcStackB', { env: { account: '012345678910', region: 'us-west-2' } });
+
+const vpcA = new VpcV2(stackA, 'VpcA', {
   primaryAddressBlock: IpAddresses.ipv4('10.0.0.0/16'),
-  region: 'us-east-1',
-  ownerAccountId: '123456789012',
 });
 
-const vpcB = new VpcV2(this, 'VpcB', {
+const vpcB = new VpcV2(stackB, 'VpcB', {
   primaryAddressBlock: IpAddresses.ipv4('10.1.0.0/16'),
-  region: 'us-west-2',
-  ownerAccountId: '123456789012',
 });
 
+// TODO: Lookup vpcB in stackA
 const peeringConnection = vpcA.createPeeringConnection('sameAccountCrossRegionPeering', {
   acceptorVpc: vpcB,
 });
@@ -308,16 +306,12 @@ const stack = new Stack();
 // TODO: Import acceptorVpc into the requestor stack
 const acceptorVpc = new VpcV2(this, 'VpcA', {
   primaryAddressBlock: IpAddresses.ipv4('10.0.0.0/16'),
-  region: 'us-east-1',
-  ownerAccountId: '123456789012',
 });
 
 const acceptorRoleArn = 'arn:aws:iam::123456789012:role/VpcPeeringRole';
 
 const requestorVpc = new VpcV2(this, 'VpcB', {
   primaryAddressBlock: IpAddresses.ipv4('10.1.0.0/16'),
-  region: 'us-west-2',
-  ownerAccountId: '987654321098',
 });
 
 const peeringConnection = requestorVpc.createPeeringConnection('crossAccountCrossRegionPeering', {
