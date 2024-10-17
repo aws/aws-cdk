@@ -33,6 +33,13 @@ export interface OriginBindConfig {
    * @default - nothing is returned
    */
   readonly failoverConfig?: OriginFailoverConfig;
+
+  /**
+   * The Origin ID, if this is an OriginGroup with an explicitly set ID.
+   *
+   * @default - nothing is returned
+   */
+  readonly originGroupId?: string;
 }
 
 /**
