@@ -10,7 +10,9 @@ Managed Policies Statements:
 NONE
 
 Identity Policy Statements:
-NONE<my-precreated-role-name> (cdk-table-with-customized-role/Role)
+NONE
+
+<my-precreated-role-name> (cdk-table-with-customized-role/Role)
 
 AssumeRole Policy:
 [
@@ -48,7 +50,9 @@ Identity Policy Statements:
       "(cdk-table-with-customized-role/Table/Resource.Arn)/index/*"
     ]
   }
-]<AWSServiceRoleForApplicationAutoScaling_DynamoDBTable> (cdk-table-with-customized-role2/Table/ScalingRole)
+]
+
+<AWSServiceRoleForApplicationAutoScaling_DynamoDBTable> (cdk-table-with-customized-role2/Table/ScalingRole)
 
 AssumeRole Policy:
 NONE
@@ -60,7 +64,9 @@ Managed Policies Statements:
 NONE
 
 Identity Policy Statements:
-NONE<my-precreated-role-name> (cdk-table-with-customized-role2/Role)
+NONE
+
+<my-precreated-role-name> (cdk-table-with-customized-role2/Role)
 
 AssumeRole Policy:
 [

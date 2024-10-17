@@ -240,7 +240,7 @@ export class PolicySynthesizer extends Construct {
       '',
       'Identity Policy Statements:',
       this.toJsonString(role.identityPolicyStatements),
-    ].join('\n')).join('');
+    ].join('\n')).join('\n\n');
   }
 
   /**
