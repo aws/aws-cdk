@@ -5,6 +5,7 @@ import * as ecs from '../../../aws-ecs';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
+import { STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY } from '../../../cx-api';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
@@ -368,7 +369,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
     const policyStatements = [
       new iam.PolicyStatement({
         actions: ['ecs:RunTask'],
-        resources: [`${this.getTaskDefinitionFamilyArn()}:*`],
+        resources: [cdk.FeatureFlags.of(this).isEnabled(STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY) ? this.getTaskDefinitionArn() : this.getTaskDefinitionFamilyArn() + ':*'],
       }),
       new iam.PolicyStatement({
         actions: ['ecs:StopTask', 'ecs:DescribeTasks'],
@@ -396,6 +397,19 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
     }
 
     return policyStatements;
+  }
+
+  private getTaskDefinitionArn(): string {
+    const tastDefinitionArn = this.props.taskDefinition.taskDefinitionArn;
+    let needsRevisionWildcard = false;
+    // Check if there is a taskdefinition revision
+    // (arn will end with : followed by digits) included in the arn already
+    if (!cdk.Token.isUnresolved(tastDefinitionArn)) {
+      const revisionAtEndPattern = /:[0-9]+$/;
+      const hasRevision = revisionAtEndPattern.test(tastDefinitionArn);
+      needsRevisionWildcard = !hasRevision;
+    }
+    return tastDefinitionArn + needsRevisionWildcard ? ':*' : '';
   }
 
   /**
