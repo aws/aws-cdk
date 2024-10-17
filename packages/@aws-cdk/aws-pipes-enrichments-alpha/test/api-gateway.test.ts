@@ -1,8 +1,8 @@
 import { DynamicInput, InputTransformation, Pipe } from '@aws-cdk/aws-pipes-alpha';
 import { App, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
-import { TestSource, TestTarget } from './test-classes';
 import { LambdaRestApi, RestApi } from 'aws-cdk-lib/aws-apigateway';
+import { TestSource, TestTarget } from './test-classes';
 import { ApiGatewayEnrichment } from '../lib/api-gateway';
 
 describe('api-destination', () => {
