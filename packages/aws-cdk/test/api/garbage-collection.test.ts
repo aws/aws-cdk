@@ -29,11 +29,11 @@ function mockTheToolkitInfo(stackProps: Partial<AWS.CloudFormation.Stack>) {
 }
 
 function gc(props: {
-  type: 's3' | 'ecr' | 'all',
-  rollbackBufferDays?: number,
-  createdAtBufferDays?: number,
-  action: 'full' | 'print' | 'tag' | 'delete-tagged',
-  maxWaitTime?: number,
+  type: 's3' | 'ecr' | 'all';
+  rollbackBufferDays?: number;
+  createdAtBufferDays?: number;
+  action: 'full' | 'print' | 'tag' | 'delete-tagged';
+  maxWaitTime?: number;
 }): GarbageCollector {
   return new GarbageCollector({
     sdkProvider: sdk,
@@ -214,7 +214,7 @@ describe('Garbage Collection', () => {
     garbageCollector = gc({
       type: 's3',
       rollbackBufferDays: 0,
-      createdAtBufferDays: 5,      
+      createdAtBufferDays: 5,
       action: 'full',
     });
     await garbageCollector.garbageCollect();
@@ -692,13 +692,13 @@ describe('BackgroundStackRefresh', () => {
   });
 
   test('should start after a delay', () => {
-    backgroundRefresh.start();
+    void backgroundRefresh.start();
     expect(setTimeoutSpy).toHaveBeenCalledTimes(1);
     expect(setTimeoutSpy).toHaveBeenLastCalledWith(expect.any(Function), 300000);
   });
 
   test('should refresh stacks and schedule next refresh', async () => {
-    backgroundRefresh.start();
+    void backgroundRefresh.start();
 
     // Run the first timer (which should trigger the first refresh)
     await jest.runOnlyPendingTimersAsync();
@@ -715,7 +715,7 @@ describe('BackgroundStackRefresh', () => {
   });
 
   test('should wait for the next refresh if called within time frame', async () => {
-    backgroundRefresh.start();
+    void backgroundRefresh.start();
 
     // Run the first timer (which triggers the first refresh)
     await jest.runOnlyPendingTimersAsync();
@@ -727,7 +727,7 @@ describe('BackgroundStackRefresh', () => {
   });
 
   test('should wait for the next refresh if refresh lands before the timeout', async () => {
-    backgroundRefresh.start();
+    void backgroundRefresh.start();
 
     // Run the first timer (which triggers the first refresh)
     await jest.runOnlyPendingTimersAsync();
@@ -740,7 +740,7 @@ describe('BackgroundStackRefresh', () => {
   });
 
   test('should reject if the refresh takes too long', async () => {
-    backgroundRefresh.start();
+    void backgroundRefresh.start();
 
     // Run the first timer (which triggers the first refresh)
     await jest.runOnlyPendingTimersAsync();
@@ -748,7 +748,7 @@ describe('BackgroundStackRefresh', () => {
 
     const waitPromise = backgroundRefresh.noOlderThan(0); // 0 seconds
     jest.advanceTimersByTime(120000); // Advance time by 2 minutes
-    
+
     await expect(waitPromise).rejects.toThrow('refreshStacks took too long; the background thread likely threw an error');
   });
 });

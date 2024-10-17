@@ -1,11 +1,11 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { S3 } from 'aws-sdk';
 import * as chalk from 'chalk';
+import * as promptly from 'promptly';
 import { debug, print } from '../../logging';
 import { ISDK, Mode, SdkProvider } from '../aws-auth';
 import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitInfo } from '../toolkit-info';
 import { ProgressPrinter } from './progress-printer';
-import * as promptly from 'promptly';
 import { ActiveAssetCache, BackgroundStackRefresh, refreshStacks } from './stack-refresh';
 
 // Must use a require() otherwise esbuild complains
@@ -229,7 +229,7 @@ export class GarbageCollector {
 
         if (this.permissionToDelete && deletables.length > 0) {
           if (!this.skipDeletePrompt) {
-              const message = [
+            const message = [
               `Found ${deletables.length} objects to delete based off of the following criteria:`,
               `- objects have been isolated for > ${this.props.rollbackBufferDays} days`,
               'Delete this batch (yes/no/delete-all)?',
@@ -379,17 +379,17 @@ export class GarbageCollector {
   private async numObjectsInBucket(s3: S3, bucket: string): Promise<number> {
     let totalCount = 0;
     let continuationToken: string | undefined;
-  
+
     do {
       const response = await s3.listObjectsV2({
         Bucket: bucket,
-        ContinuationToken: continuationToken
+        ContinuationToken: continuationToken,
       }).promise();
-  
+
       totalCount += response.KeyCount ?? 0;
       continuationToken = response.NextContinuationToken;
     } while (continuationToken);
-  
+
     return totalCount;
   }
 
