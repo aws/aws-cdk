@@ -80,6 +80,7 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
         ephemeralStorageGiB: props.ephemeralStorageGiB,
         family: props.family,
         runtimePlatform: props.runtimePlatform,
+        pidMode: props.pidMode,
       });
 
       const containerName = props.containerName ?? 'QueueProcessingContainer';
