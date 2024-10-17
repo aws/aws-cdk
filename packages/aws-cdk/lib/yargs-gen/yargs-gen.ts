@@ -1,7 +1,7 @@
 // This only runs at build time, and is not used after
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { Expression, FreeFunction, Module, Statement, Type, TypeScriptRenderer, code } from '@cdklabs/typewriter';
-import { CliConfig, makeConfig } from '../../../../tools/@aws-cdk/yargs-gen/lib/config';
+import { CliConfig, makeConfig } from './config';
 
 async function main() {
   const scope = new Module('aws-cdk');
@@ -20,7 +20,7 @@ async function main() {
       type: Type.mapOf(Type.STRING),
     }],
   });
-  parseCommandLineArguments.addBody(makeYargs(makeConfig()));
+  parseCommandLineArguments.addBody(makeYargs(await makeConfig()));
 
   const renderer = new TypeScriptRenderer();
   // eslint-disable-next-line no-console
