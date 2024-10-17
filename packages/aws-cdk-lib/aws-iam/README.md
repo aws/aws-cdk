@@ -242,8 +242,8 @@ Guide](https://github.com/aws/aws-cdk/wiki/Security-And-Safety-Dev-Guide)
 
 When `customizeRoles` is used, the `iam-policy-report.txt` report will contain a list
 of IAM roles and associated permissions that would have been created. This report is
-generated so that it attempts to resolve any references and replace with a more user
-friendly value.
+generated in an attempt to resolve and replace any references with a more user-friendly
+value.
 
 The following are some examples of the value that will appear in the report:
 
@@ -293,7 +293,7 @@ The policy report will instead get:
 ```json
 "Resource": [
   "(Path/To/SomeResource.Arn)"
-  "(NoValue)"
+  "(NOVALUE)"
 ]
 ```
 

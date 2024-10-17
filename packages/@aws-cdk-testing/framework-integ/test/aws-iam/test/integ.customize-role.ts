@@ -22,7 +22,7 @@ role.addToPolicy(new PolicyStatement({
   resources: [
     'arn:aws:s3:::abc/xyz/123.txt',
     Fn.ref('AWS::NoValue'),
-    `arn:${Fn.ref('AWS::Partition')}:iam::${Fn.ref('AWS::AccountId')}/role/FakeRole'`,
+    `arn:${Fn.ref('AWS::Partition')}:iam:${Fn.ref('AWS::Region')}:${Fn.ref('AWS::AccountId')}/role/FakeRole'`,
     `${group.groupArn}/*`,
     group.groupArn,
   ],
