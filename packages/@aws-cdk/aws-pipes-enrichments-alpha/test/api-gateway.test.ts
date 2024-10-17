@@ -61,7 +61,7 @@ describe('api-destination', () => {
     const enrichment = new ApiGatewayEnrichment(restApi, {
       stage: 'dev',
       method: 'GET',
-      path: '/test'
+      path: '/test',
     });
 
     new Pipe(stack, 'MyPipe', {
