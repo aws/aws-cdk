@@ -1011,12 +1011,12 @@ If you use a third-party identity provider, you can specify the `email_verified`
 ```typescript
 const userpool = new cognito.UserPool(this, 'Pool');
 
-new UserPoolIdentityProviderGoogle(stack, 'google', {
+new cognito.UserPoolIdentityProviderGoogle(this, 'google', {
   userPool: userpool,
   clientId: 'google-client-id',
   attributeMapping: {
-    email: ProviderAttribute.GOOGLE_EMAIL,
-    emailVerified: ProviderAttribute.GOOGLE_EMAIL_VERIFIED, // you can mapping the `email_verified` attribute.
+    email: cognito.ProviderAttribute.GOOGLE_EMAIL,
+    emailVerified: cognito.ProviderAttribute.GOOGLE_EMAIL_VERIFIED, // you can mapping the `email_verified` attribute.
   },
 });
 ```
