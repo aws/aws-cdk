@@ -6,6 +6,7 @@ import { CfnDeletionPolicy, Lazy, RemovalPolicy, Stack } from '../../core';
 import {
   AttributeType, Billing, Capacity, GlobalSecondaryIndexPropsV2, TableV2,
   LocalSecondaryIndexProps, ProjectionType, StreamViewType, TableClass, TableEncryptionV2,
+  ApproximateCreationDateTimePrecision,
 } from '../lib';
 
 describe('table', () => {
@@ -1336,6 +1337,59 @@ describe('replica tables', () => {
                 'Arn',
               ],
             },
+          },
+        },
+      ],
+    });
+  });
+
+  test('with per-replica kinesis stream with precision creation timestamp', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
+    const kinesisStream1 = new Stream(stack, 'Stream1');
+    const kinesisStream2 = Stream.fromStreamArn(stack, 'Stream2', 'arn:aws:kinesis:us-east-1:123456789012:stream/my-stream');
+
+    // WHEN
+    new TableV2(stack, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      kinesisStream: kinesisStream1,
+      kinesisPrecisionTimestamp: ApproximateCreationDateTimePrecision.MICROSECOND,
+      replicas: [
+        {
+          region: 'us-east-1',
+          kinesisStream: kinesisStream2,
+          kinesisPrecisionTimestamp: ApproximateCreationDateTimePrecision.MILLISECOND,
+        },
+        {
+          region: 'us-east-2',
+        },
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      Replicas: [
+        {
+          Region: 'us-east-1',
+          KinesisStreamSpecification: {
+            StreamArn: 'arn:aws:kinesis:us-east-1:123456789012:stream/my-stream',
+            ApproximateCreationDateTimePrecision: 'MILLISECOND',
+          },
+        },
+        {
+          Region: 'us-east-2',
+          KinesisStreamSpecification: Match.absent(),
+        },
+        {
+          Region: 'us-west-2',
+          KinesisStreamSpecification: {
+            StreamArn: {
+              'Fn::GetAtt': [
+                'Stream16C8F97AF',
+                'Arn',
+              ],
+            },
+            ApproximateCreationDateTimePrecision: 'MICROSECOND',
           },
         },
       ],
