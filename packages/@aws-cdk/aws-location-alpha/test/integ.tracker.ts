@@ -6,6 +6,12 @@ import { PositionFiltering, Tracker } from '../lib/tracker';
 import { GeofenceCollection } from '../lib';
 
 class TestStack extends Stack {
+  public readonly tracker: Tracker;
+  public readonly geofenceCollection1: GeofenceCollection;
+  public readonly geofenceCollection2: GeofenceCollection;
+  public readonly geofenceCollectionForAdd1: GeofenceCollection;
+  public readonly geofenceCollectionForAdd2: GeofenceCollection;
+
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
@@ -27,11 +33,28 @@ class TestStack extends Stack {
     });
 
     tracker.addGeofenceCollections(geofenceCollectionForAdd1, geofenceCollectionForAdd2);
+
+    this.tracker = tracker;
+    this.geofenceCollection1 = geofenceCollection1;
+    this.geofenceCollection2 = geofenceCollection2;
+    this.geofenceCollectionForAdd1 = geofenceCollectionForAdd1;
+    this.geofenceCollectionForAdd2 = geofenceCollectionForAdd2;
   }
 }
 
 const app = new App();
+const stack = new TestStack(app, 'cdk-integ-location-tracker');
 
-new integ.IntegTest(app, 'TrackerTest', {
-  testCases: [new TestStack(app, 'cdk-integ-location-tracker')],
+const test = new integ.IntegTest(app, 'TrackerTest', {
+  testCases: [stack],
 });
+
+test.assertions.awsApiCall('location', 'ListTrackerConsumersCommand', { TrackerName: stack.tracker.trackerName })
+  .expect(integ.ExpectedResult.objectLike({
+    ConsumerArns: [
+      stack.geofenceCollection1.geofenceCollectionArn,
+      stack.geofenceCollection2.geofenceCollectionArn,
+      stack.geofenceCollectionForAdd1.geofenceCollectionArn,
+      stack.geofenceCollectionForAdd2.geofenceCollectionArn,
+    ],
+  }));

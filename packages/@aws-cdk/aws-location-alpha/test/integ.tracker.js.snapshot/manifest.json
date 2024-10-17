@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/437504f2660eaa44637296cc23aea74d2b25a510150094631b5eba0be2d297a9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/64f73a43fedda97f4395b127e8b4c34fd8f36bc9e207b945a89f8361a57e9d85.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -94,6 +94,36 @@
             "data": "TrackerTrackerConsumerGeofenceCollectionForAdd268D815CE"
           }
         ],
+        "/cdk-integ-location-tracker/Exports/Output{\"Fn::GetAtt\":[\"GeofenceCollection1D36FEE6D\",\"Arn\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttGeofenceCollection1D36FEE6DArn9B50BDFC"
+          }
+        ],
+        "/cdk-integ-location-tracker/Exports/Output{\"Fn::GetAtt\":[\"GeofenceCollection2348D6DB5\",\"Arn\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttGeofenceCollection2348D6DB5Arn8B13E123"
+          }
+        ],
+        "/cdk-integ-location-tracker/Exports/Output{\"Fn::GetAtt\":[\"GeofenceCollectionForAdd131D6B4EA\",\"Arn\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttGeofenceCollectionForAdd131D6B4EAArnBFDA7317"
+          }
+        ],
+        "/cdk-integ-location-tracker/Exports/Output{\"Fn::GetAtt\":[\"GeofenceCollectionForAdd21A9CA549\",\"Arn\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttGeofenceCollectionForAdd21A9CA549Arn540CF730"
+          }
+        ],
+        "/cdk-integ-location-tracker/Exports/Output{\"Ref\":\"TrackerAF5FC55F\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefTrackerAF5FC55FD7F6E1CB"
+          }
+        ],
         "/cdk-integ-location-tracker/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -104,24 +134,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "GeofenceCollection6FAC681F": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "GeofenceCollection6FAC681F",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "TrackerConsumer3AEB9150": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TrackerConsumer3AEB9150",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },
@@ -144,7 +156,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/05edf9cf851db3d91ff6f6339d171c89dc9907910575256f36b26a7af27f9874.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -157,9 +169,40 @@
         }
       },
       "dependencies": [
+        "cdk-integ-location-tracker",
         "TrackerTestDefaultTestDeployAssert0E17BB8B.assets"
       ],
       "metadata": {
+        "/TrackerTest/DefaultTest/DeployAssert/AwsApiCalllocationListTrackerConsumersCommanddd31e2f13fe32cd839d96d5ae9059bcf/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCalllocationListTrackerConsumersCommanddd31e2f13fe32cd839d96d5ae9059bcf"
+          }
+        ],
+        "/TrackerTest/DefaultTest/DeployAssert/AwsApiCalllocationListTrackerConsumersCommanddd31e2f13fe32cd839d96d5ae9059bcf/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCalllocationListTrackerConsumersCommanddd31e2f13fe32cd839d96d5ae9059bcf"
+          }
+        ],
+        "/TrackerTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/TrackerTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/TrackerTest/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
         "/TrackerTest/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",

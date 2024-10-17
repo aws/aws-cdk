@@ -132,6 +132,60 @@
    }
   }
  },
+ "Outputs": {
+  "ExportsOutputFnGetAttGeofenceCollection1D36FEE6DArn9B50BDFC": {
+   "Value": {
+    "Fn::GetAtt": [
+     "GeofenceCollection1D36FEE6D",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "cdk-integ-location-tracker:ExportsOutputFnGetAttGeofenceCollection1D36FEE6DArn9B50BDFC"
+   }
+  },
+  "ExportsOutputFnGetAttGeofenceCollection2348D6DB5Arn8B13E123": {
+   "Value": {
+    "Fn::GetAtt": [
+     "GeofenceCollection2348D6DB5",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "cdk-integ-location-tracker:ExportsOutputFnGetAttGeofenceCollection2348D6DB5Arn8B13E123"
+   }
+  },
+  "ExportsOutputFnGetAttGeofenceCollectionForAdd131D6B4EAArnBFDA7317": {
+   "Value": {
+    "Fn::GetAtt": [
+     "GeofenceCollectionForAdd131D6B4EA",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "cdk-integ-location-tracker:ExportsOutputFnGetAttGeofenceCollectionForAdd131D6B4EAArnBFDA7317"
+   }
+  },
+  "ExportsOutputFnGetAttGeofenceCollectionForAdd21A9CA549Arn540CF730": {
+   "Value": {
+    "Fn::GetAtt": [
+     "GeofenceCollectionForAdd21A9CA549",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "cdk-integ-location-tracker:ExportsOutputFnGetAttGeofenceCollectionForAdd21A9CA549Arn540CF730"
+   }
+  },
+  "ExportsOutputRefTrackerAF5FC55FD7F6E1CB": {
+   "Value": {
+    "Ref": "TrackerAF5FC55F"
+   },
+   "Export": {
+    "Name": "cdk-integ-location-tracker:ExportsOutputRefTrackerAF5FC55FD7F6E1CB"
+   }
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
