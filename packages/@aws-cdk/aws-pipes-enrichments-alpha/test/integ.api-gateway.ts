@@ -61,7 +61,7 @@ const fn = new lambda.Function(stack, 'ConnectHandler', {
     return {
       statusCode: 200,
       body: JSON.stringify({
-        message: paramValue + "-enrichment-test",
+        message: paramValue + "-enrichment-test"
       }),
     };
   };
