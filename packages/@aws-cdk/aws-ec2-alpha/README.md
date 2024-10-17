@@ -269,8 +269,8 @@ There is no difference from Case 1 when calling `createPeeringConnection`. The o
 ```ts
 const app = new App();
 
-const stackA = new Stack(app, 'VpcStackA', { env: { account: '012345678910', region: 'us-east-1' } });
-const stackB = new Stack(app, 'VpcStackB', { env: { account: '012345678910', region: 'us-west-2' } });
+const stackA = new Stack(app, 'VpcStackA', { env: { account: '000000000000', region: 'us-east-1' } });
+const stackB = new Stack(app, 'VpcStackB', { env: { account: '111111111111', region: 'us-west-2' } });
 
 const vpcA = new VpcV2(stackA, 'VpcA', {
   primaryAddressBlock: IpAddresses.ipv4('10.0.0.0/16'),
@@ -299,7 +299,7 @@ const acceptorVpc = new VpcV2(this, 'VpcA', {
   primaryAddressBlock: IpAddresses.ipv4('10.0.0.0/16'),
 });
 
-const acceptorRoleArn = acceptorVpc.createAcceptorVpcRole('987654321098') // Requestor account ID
+const acceptorRoleArn = acceptorVpc.createAcceptorVpcRole('000000000000') // Requestor account ID
 ```
 
 After creating an IAM role in the acceptor account, we can initiate the peering connection request from the requestor VPC.
@@ -312,7 +312,7 @@ const acceptorVpc = new VpcV2(this, 'VpcA', {
   primaryAddressBlock: IpAddresses.ipv4('10.0.0.0/16'),
 });
 
-const acceptorRoleArn = 'arn:aws:iam::123456789012:role/VpcPeeringRole';
+const acceptorRoleArn = 'arn:aws:iam::111111111111:role/VpcPeeringRole';
 
 const requestorVpc = new VpcV2(this, 'VpcB', {
   primaryAddressBlock: IpAddresses.ipv4('10.1.0.0/16'),
