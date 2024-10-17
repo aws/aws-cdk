@@ -478,7 +478,7 @@ test('Can use custom service principle name to create servicePrinciple', () => {
 
   // WHEN
   new iam.Role(stack, 'Role', {
-    assumedBy: iam.ServicePrincipal.of('elasticmapreduce.amazonaws.com.cn')
+    assumedBy: iam.ServicePrincipal.of('elasticmapreduce.amazonaws.com.cn'),
   });
 
   // THEN
@@ -502,7 +502,7 @@ test('ServicePrinciple construct by default reset the principle name to the defa
 
   // WHEN
   new iam.Role(stack, 'Role', {
-    assumedBy: new iam.ServicePrincipal('elasticmapreduce.amazonaws.com.cn')
+    assumedBy: new iam.ServicePrincipal('elasticmapreduce.amazonaws.com.cn'),
   });
 
   // THEN
