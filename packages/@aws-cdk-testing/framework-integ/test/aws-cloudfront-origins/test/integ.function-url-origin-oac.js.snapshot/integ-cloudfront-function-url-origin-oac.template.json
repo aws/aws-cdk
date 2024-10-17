@@ -1,0 +1,224 @@
+{
+ "Resources": {
+  "MyFunctionServiceRole3C357FF2": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "MyFunction3BAA72D1": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "\n    exports.handler = async () => ({\n      statusCode: 200,\n      body: 'Hello!!'\n    });\n  "
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "MyFunctionServiceRole3C357FF2",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs20.x"
+   },
+   "DependsOn": [
+    "MyFunctionServiceRole3C357FF2"
+   ]
+  },
+  "MyFunctionFunctionUrlFF6DE78C": {
+   "Type": "AWS::Lambda::Url",
+   "Properties": {
+    "AuthType": "AWS_IAM",
+    "TargetFunctionArn": {
+     "Fn::GetAtt": [
+      "MyFunction3BAA72D1",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "DistributionOrigin1FunctionUrlOriginAccessControl1DA0EA55": {
+   "Type": "AWS::CloudFront::OriginAccessControl",
+   "Properties": {
+    "OriginAccessControlConfig": {
+     "Name": "integcloudfrontfunctionurlornctionUrlOriginAccessControlABD689FE",
+     "OriginAccessControlOriginType": "lambda",
+     "SigningBehavior": "always",
+     "SigningProtocol": "sigv4"
+    }
+   }
+  },
+  "DistributionOrigin1InvokeFromApiForintegcloudfrontfunctionurloriginoacDistributionOrigin112C3D87785748A6F": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunctionUrl",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "MyFunctionFunctionUrlFF6DE78C",
+      "FunctionArn"
+     ]
+    },
+    "Principal": "cloudfront.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":cloudfront::",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":distribution/",
+       {
+        "Ref": "Distribution830FAC52"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "Distribution830FAC52": {
+   "Type": "AWS::CloudFront::Distribution",
+   "Properties": {
+    "DistributionConfig": {
+     "DefaultCacheBehavior": {
+      "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+      "Compress": true,
+      "TargetOriginId": "integcloudfrontfunctionurloriginoacDistributionOrigin112C3D877",
+      "ViewerProtocolPolicy": "allow-all"
+     },
+     "Enabled": true,
+     "HttpVersion": "http2",
+     "IPV6Enabled": true,
+     "Origins": [
+      {
+       "CustomOriginConfig": {
+        "OriginProtocolPolicy": "https-only",
+        "OriginSSLProtocols": [
+         "TLSv1.2"
+        ]
+       },
+       "DomainName": {
+        "Fn::Select": [
+         2,
+         {
+          "Fn::Split": [
+           "/",
+           {
+            "Fn::GetAtt": [
+             "MyFunctionFunctionUrlFF6DE78C",
+             "FunctionUrl"
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       "Id": "integcloudfrontfunctionurloriginoacDistributionOrigin112C3D877",
+       "OriginAccessControlId": {
+        "Fn::GetAtt": [
+         "DistributionOrigin1FunctionUrlOriginAccessControl1DA0EA55",
+         "Id"
+        ]
+       }
+      }
+     ]
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttMyFunctionFunctionUrlFF6DE78CFunctionUrl4035958E": {
+   "Value": {
+    "Fn::GetAtt": [
+     "MyFunctionFunctionUrlFF6DE78C",
+     "FunctionUrl"
+    ]
+   },
+   "Export": {
+    "Name": "integ-cloudfront-function-url-origin-oac:ExportsOutputFnGetAttMyFunctionFunctionUrlFF6DE78CFunctionUrl4035958E"
+   }
+  },
+  "ExportsOutputRefDistribution830FAC524DF81588": {
+   "Value": {
+    "Ref": "Distribution830FAC52"
+   },
+   "Export": {
+    "Name": "integ-cloudfront-function-url-origin-oac:ExportsOutputRefDistribution830FAC524DF81588"
+   }
+  },
+  "ExportsOutputFnGetAttDistribution830FAC52DomainNameBEB09E30": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Distribution830FAC52",
+     "DomainName"
+    ]
+   },
+   "Export": {
+    "Name": "integ-cloudfront-function-url-origin-oac:ExportsOutputFnGetAttDistribution830FAC52DomainNameBEB09E30"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
