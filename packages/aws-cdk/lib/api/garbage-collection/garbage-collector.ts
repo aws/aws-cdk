@@ -232,6 +232,8 @@ export class GarbageCollector {
             const message = [
               `Found ${deletables.length} objects to delete based off of the following criteria:`,
               `- objects have been isolated for > ${this.props.rollbackBufferDays} days`,
+              `- objects were created > ${this.props.createdAtBufferDays} days ago`,
+              '',
               'Delete this batch (yes/no/delete-all)?',
             ].join('\n');
             const response = await promptly.prompt(message,

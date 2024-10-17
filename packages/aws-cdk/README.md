@@ -901,13 +901,39 @@ cdk gc --unstable=gc --type=s3
 This will garbage collect S3 assets from the current bootstrapped environment(s) and immediately delete them. Note that, since the default bootstrap S3 Bucket is versioned, object deletion will be handled by the lifecycle
 policy on the bucket.
 
-If you are concerned about deleting assets too aggressively, you can configure a buffer amount of days to keep
-an unused asset before deletion. In this scenario, instead of deleting unused objects, `cdk gc` will tag
-them with today's date instead. It will also check if any objects have been tagged by previous runs of `cdk gc`
-and delete them if they have been tagged for longer than the buffer days.
+Before we begin to delete your assets, you will be prompted:
 
 ```console
-cdk gc --unstable=gc --type=s3 --rollback-buffer-days=30
+cdk gc --unstable=gc --type=s3
+
+Found X objects to delete based off of the following criteria:
+- objects have been isolated for > 0 days
+- objects were created > 1 days ago
+
+Delete this batch (yes/no/delete-all)?
+```
+
+Since it's quite possible that the bootstrap bucket has many objects, we work in batches of 1000 objects. To skip the
+prompt either reply with `delete-all`, or use the `--skip-delete-prompt=true` option.
+
+```console
+cdk gc --unstable=gc --type=s3 --skip-delete-prompt=true
+```
+
+If you are concerned about deleting assets too aggressively, there are multiple levers you can configure:
+
+- rollback-buffer-days: this is the amount of days an asset has to be marked as isolated before it is elligible for deletion.
+- created-at-buffer-days: this is the amount of days an asset must live before it is elligible for deletion. 
+
+When using `rollback-buffer-days`, instead of deleting unused objects, `cdk gc` will tag them with
+today's date instead. It will also check if any objects have been tagged by previous runs of `cdk gc`
+and delete them if they have been tagged for longer than the buffer days.
+
+When using `created-at-buffer-days`, we simply filter out any assets that have not persisted that number
+of days.
+
+```console
+cdk gc --unstable=gc --type=s3 --rollback-buffer-days=30 --created-at-buffer-days=1
 ```
 
 You can also configure the scope that `cdk gc` performs via the `--action` option. By default, all actions
