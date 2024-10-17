@@ -402,8 +402,9 @@ role.assumeRolePolicy?.addStatements(new iam.PolicyStatement({
 }));
 ```
 
-### Fixing the synthesized service principle for service that does not follow the IAM Pattern
-The pattern for the service principles should be `<service>.amazonaws.com`, but some services still does not follow this pattern. In this case, you can define the ServicePrincipal as following where the provided service principle name will be used as is without any changing.
+### Fixing the synthesized service principle for services that do not follow the IAM Pattern
+
+In some cases, certain AWS services may not use the standard `<service>.amazonaws.com` pattern for their service principals. For these services, you can define the ServicePrincipal as following where the provided service principle name will be used as is without any changing.
 
 ```ts
     const sp = iam.ServicePrincipal.of('elasticmapreduce.amazonaws.com.cn');
