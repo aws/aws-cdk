@@ -40,7 +40,7 @@ const pipeSource = new sources.SqsSource(sourceQueue);
 
 const pipe = new pipes.Pipe(this, 'Pipe', {
   source: pipeSource,
-  target: new SomeTarget(targetQueue)
+  target: new SqsTarget(targetQueue)
 });
 ```
 
@@ -57,7 +57,7 @@ const pipeSource = new sources.SqsSource(sourceQueue, {
 
 const pipe = new pipes.Pipe(this, 'Pipe', {
   source: pipeSource,
-  target: new SomeTarget(targetQueue)
+  target: new SqsTarget(targetQueue)
 });
 ```
 
@@ -75,7 +75,7 @@ const pipeSource = new sources.KinesisSource(sourceStream, {
 
 const pipe = new pipes.Pipe(this, 'Pipe', {
   source: pipeSource,
-  target: new SomeTarget(targetQueue)
+  target: new SqsTarget(targetQueue)
 });
 ```
 
@@ -99,6 +99,6 @@ const pipeSource = new sources.DynamoDBSource(table, {
 
 const pipe = new pipes.Pipe(this, 'Pipe', {
   source: pipeSource,
-  target: new SomeTarget(targetQueue)
+  target: new SqsTarget(targetQueue)
 });
 ```
