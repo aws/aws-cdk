@@ -89,6 +89,7 @@
     "resource-interface-extends-resource:aws-cdk-lib.aws_codedeploy.ILambdaDeploymentConfig",
     "resource-interface-extends-resource:aws-cdk-lib.aws_codedeploy.IServerDeploymentConfig",
     "props-physical-name:aws-cdk-lib.aws_cognito.UserPoolDomainProps",
+    "props-physical-name:aws-cdk-lib.aws_cognito.UserPoolGroupProps",
     "props-physical-name:aws-cdk-lib.aws_cognito.UserPoolIdentityProviderAmazonProps",
     "props-physical-name:aws-cdk-lib.aws_cognito.UserPoolIdentityProviderAppleProps",
     "props-physical-name:aws-cdk-lib.aws_cognito.UserPoolIdentityProviderFacebookProps",
