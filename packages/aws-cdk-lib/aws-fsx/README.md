@@ -1,6 +1,5 @@
 # Amazon FSx Construct Library
 
-
 [Amazon FSx](https://docs.aws.amazon.com/fsx/?id=docs_gateway) provides fully managed third-party file systems with the
 native compatibility and feature sets for workloads such as Microsoft Windows–based storage, high-performance computing,
 machine learning, and electronic design automation.
@@ -51,6 +50,30 @@ const fileSystem = new fsx.LustreFileSystem(this, 'FsxLustreFileSystem', {
   vpcSubnet: vpc.privateSubnets[0],
 });
 ```
+
+### File System Type Version
+
+You can set [the Lustre version for the file system](https://docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/aws-resource-fsx-filesystem.html#cfn-fsx-filesystem-filesystemtypeversion). To do this, use the `fileSystemTypeVersion` property:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const fileSystem = new fsx.LustreFileSystem(this, 'FsxLustreFileSystem', {
+lustreConfiguration: { deploymentType: fsx.LustreDeploymentType.SCRATCH_2 },
+  storageCapacityGiB: 1200,
+  vpc,
+  vpcSubnet: vpc.privateSubnets[0],
+  fileSystemTypeVersion: fsx.FileSystemTypeVersion.V_2_15,
+});
+```
+
+**Note**: The `fileSystemTypeVersion` has a restrictions on the values that can be set based on the `deploymentType`.
+
+- `V_2_10` is supported by the Scratch and `PERSISTENT_1` deployment types.
+- `V_2_12` is supported by all Lustre deployment types.
+- `V_2_15` is supported by all Lustre deployment types and is recommended for all new file systems.
+
+**Note**: The default value of `fileSystemTypeVersion` is `V_2_10` except for `PERSISTENT_2` deployment type where the default value is `V_2_12`.
 
 ### Connecting
 
@@ -196,8 +219,8 @@ const lustreConfiguration = {
 
 When you turn data compression on for an existing file system, only newly written files are compressed.  Existing files are not compressed. For more information, see [Compressing previously written files](https://docs.aws.amazon.com/fsx/latest/LustreGuide/data-compression.html#migrate-compression).
 
-
 ### Backups
+
 You can take daily automatic backups by setting `automaticBackupRetention` to a non-zero day in the `lustreConfiguration`.
 
 Additionally, you can set the backup window by specifying the `dailyAutomaticBackupStartTime`.
@@ -216,6 +239,41 @@ const lustreConfiguration = {
 
 For more information, see [Working with backups
 ](https://docs.aws.amazon.com/fsx/latest/LustreGuide/using-backups-fsx.html).
+
+### Storage Type
+
+By default, FSx for Lustre uses SSD storage. To use HDD storage, specify `storageType`:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const fileSystem = new fsx.LustreFileSystem(this, 'FsxLustreFileSystem', {
+  lustreConfiguration: { deploymentType: fsx.LustreDeploymentType.PERSISTENT_1 },
+  storageCapacityGiB: 1200,
+  vpc,
+  vpcSubnet: vpc.privateSubnets[0],
+  storageType: fsx.StorageType.HDD,
+});
+```
+
+**Note:** The HDD storage type is only supported for `PERSISTENT_1` deployment types.
+
+To improve the performance of frequently accessed files by caching up to 20% of the total storage capacity of the file system, set `driveCacheType` to `READ`:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const fileSystem = new fsx.LustreFileSystem(this, 'FsxLustreFileSystem', {
+  lustreConfiguration: {
+    deploymentType: fsx.LustreDeploymentType.PERSISTENT_1,
+    driveCacheType: fsx.DriveCacheType.READ,
+    },
+  storageCapacityGiB: 1200,
+  vpc,
+  vpcSubnet: vpc.privateSubnets[0],
+  storageType: fsx.StorageType.HDD,
+});
+```
 
 ## FSx for Windows File Server
 

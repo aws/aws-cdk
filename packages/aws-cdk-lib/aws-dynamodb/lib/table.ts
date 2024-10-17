@@ -347,6 +347,7 @@ export interface TableOptions extends SchemaOptions {
   readonly replicationTimeout?: Duration;
 
   /**
+   * [WARNING: Use this flag with caution, misusing this flag may cause deleting existing replicas, refer to the detailed documentation for more information]
    * Indicates whether CloudFormation stack waits for replication to finish.
    * If set to false, the CloudFormation resource will mark the resource as
    * created and replication will be completed asynchronously. This property is
@@ -455,6 +456,13 @@ export interface GlobalSecondaryIndexProps extends SecondaryIndexProps, SchemaOp
    * @default - on-demand throughput is disabled
    */
   readonly maxWriteRequestUnits?: number;
+
+  /**
+   * Whether CloudWatch contributor insights is enabled for the specified global secondary index.
+   *
+   * @default false
+   */
+  readonly contributorInsightsEnabled?: boolean;
 }
 
 /**
@@ -1226,6 +1234,7 @@ export class Table extends TableBase {
     const gsiProjection = this.buildIndexProjection(props);
 
     this.globalSecondaryIndexes.push({
+      contributorInsightsSpecification: props.contributorInsightsEnabled !== undefined ? { enabled: props.contributorInsightsEnabled } : undefined,
       indexName: props.indexName,
       keySchema: gsiKeySchema,
       projection: gsiProjection,
