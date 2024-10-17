@@ -120,6 +120,7 @@ async function parseCommandLineArguments(args: string[]) {
       .option('type', { type: 'string', desc: 'Specify either ecr, s3, or all', default: 'all' })
       .option('rollback-buffer-days', { type: 'number', desc: 'Delete assets that have been marked as isolated for this many days', default: 0 })
       .option('qualifier', { type: 'string', desc: 'String which must be unique for each bootstrap stack. You must configure it on your CDK app if you change this from the default.', default: undefined })
+      .option('skip-delete-prompt', { type: 'boolean', desc: 'Skip manual prompt before deletion', default: false })
       .option('bootstrap-stack-name', { type: 'string', desc: 'The name of the CDK toolkit stack to create', requiresArg: true }),
     )
     .command('deploy [STACKS..]', 'Deploys the stack(s) named STACKS into your AWS account', (yargs: Argv) => yargs

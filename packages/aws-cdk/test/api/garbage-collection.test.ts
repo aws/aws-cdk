@@ -27,6 +27,28 @@ function mockTheToolkitInfo(stackProps: Partial<AWS.CloudFormation.Stack>) {
   (ToolkitInfo as any).lookup = jest.fn().mockResolvedValue(ToolkitInfo.fromStack(mockBootstrapStack(mockSdk, stackProps)));
 }
 
+function gc(props: {
+  type: 's3' | 'ecr' | 'all',
+  bufferDays: number,
+  action: 'full' | 'print' | 'tag' | 'delete-tagged',
+  maxWaitTime?: number,
+}): GarbageCollector {
+  return new GarbageCollector({
+    sdkProvider: sdk,
+    action: props.action,
+    resolvedEnvironment: {
+      account: '123456789012',
+      region: 'us-east-1',
+      name: 'mock',
+    },
+    bootstrapStackName: 'GarbageStack',
+    rollbackBufferDays: props.bufferDays,
+    type: props.type,
+    maxWaitTime: props.maxWaitTime,
+    skipDeletePrompt: true,
+  });
+}
+
 beforeEach(() => {
   sdk = new MockSdkProvider({ realSdk: false });
   // By default, we'll return a non-found toolkit info
@@ -104,17 +126,10 @@ describe('Garbage Collection', () => {
       ],
     });
 
-    garbageCollector = new GarbageCollector({
-      sdkProvider: sdk,
-      action: 'full',
-      resolvedEnvironment: {
-        account: '123456789012',
-        region: 'us-east-1',
-        name: 'mock',
-      },
-      bootstrapStackName: 'GarbageStack',
-      rollbackBufferDays: 0,
+    garbageCollector = gc({
       type: 's3',
+      bufferDays: 0,
+      action: 'full',
     });
     await garbageCollector.garbageCollect();
 
@@ -148,17 +163,10 @@ describe('Garbage Collection', () => {
       ],
     });
 
-    garbageCollector = new GarbageCollector({
-      sdkProvider: sdk,
-      action: 'full',
-      resolvedEnvironment: {
-        account: '123456789012',
-        region: 'us-east-1',
-        name: 'mock',
-      },
-      bootstrapStackName: 'GarbageStack',
-      rollbackBufferDays: 3,
+    garbageCollector = gc({
       type: 's3',
+      bufferDays: 3,
+      action: 'full',
     });
     await garbageCollector.garbageCollect();
 
@@ -183,17 +191,10 @@ describe('Garbage Collection', () => {
       ],
     });
 
-    expect(() => new GarbageCollector({
-      sdkProvider: sdk,
-      action: 'full',
-      resolvedEnvironment: {
-        account: '123456789012',
-        region: 'us-east-1',
-        name: 'mock',
-      },
-      bootstrapStackName: 'GarbageStack',
-      rollbackBufferDays: 3,
+    expect(() => garbageCollector = gc({
       type: 'ecr',
+      bufferDays: 3,
+      action: 'full',
     })).toThrow(/ECR garbage collection is not yet supported/);
   });
 
@@ -207,17 +208,10 @@ describe('Garbage Collection', () => {
       ],
     });
 
-    garbageCollector = new GarbageCollector({
-      sdkProvider: sdk,
-      action: 'print',
-      resolvedEnvironment: {
-        account: '123456789012',
-        region: 'us-east-1',
-        name: 'mock',
-      },
-      bootstrapStackName: 'GarbageStack',
-      rollbackBufferDays: 3,
+    garbageCollector = garbageCollector = gc({
       type: 's3',
+      bufferDays: 3,
+      action: 'print',
     });
     await garbageCollector.garbageCollect();
 
@@ -242,17 +236,10 @@ describe('Garbage Collection', () => {
       ],
     });
 
-    garbageCollector = new GarbageCollector({
-      sdkProvider: sdk,
-      action: 'tag',
-      resolvedEnvironment: {
-        account: '123456789012',
-        region: 'us-east-1',
-        name: 'mock',
-      },
-      bootstrapStackName: 'GarbageStack',
-      rollbackBufferDays: 3,
+    garbageCollector = garbageCollector = gc({
       type: 's3',
+      bufferDays: 3,
+      action: 'tag',
     });
     await garbageCollector.garbageCollect();
 
@@ -277,17 +264,10 @@ describe('Garbage Collection', () => {
       ],
     });
 
-    garbageCollector = new GarbageCollector({
-      sdkProvider: sdk,
-      action: 'delete-tagged',
-      resolvedEnvironment: {
-        account: '123456789012',
-        region: 'us-east-1',
-        name: 'mock',
-      },
-      bootstrapStackName: 'GarbageStack',
-      rollbackBufferDays: 3,
+    garbageCollector = garbageCollector = gc({
       type: 's3',
+      bufferDays: 3,
+      action: 'delete-tagged',
     });
     await garbageCollector.garbageCollect();
 
@@ -327,17 +307,10 @@ describe('Garbage Collection', () => {
       putObjectTagging: mockPutObjectTagging,
     });
 
-    garbageCollector = new GarbageCollector({
-      sdkProvider: sdk,
-      action: 'full',
-      resolvedEnvironment: {
-        account: '123456789012',
-        region: 'us-east-1',
-        name: 'mock',
-      },
-      bootstrapStackName: 'GarbageStack',
-      rollbackBufferDays: 0,
+    garbageCollector = garbageCollector = gc({
       type: 's3',
+      bufferDays: 0,
+      action: 'full',
     });
     await garbageCollector.garbageCollect();
 
@@ -369,17 +342,10 @@ describe('Garbage Collection', () => {
       ],
     });
 
-    garbageCollector = new GarbageCollector({
-      sdkProvider: sdk,
-      action: 'full',
-      resolvedEnvironment: {
-        account: '123456789012',
-        region: 'us-east-1',
-        name: 'mock',
-      },
-      bootstrapStackName: 'GarbageStack',
-      rollbackBufferDays: 3,
+    garbageCollector = garbageCollector = gc({
       type: 's3',
+      bufferDays: 3,
+      action: 'full',
     });
     await garbageCollector.garbageCollect();
 
@@ -410,17 +376,10 @@ describe('Garbage Collection', () => {
       getTemplate: mockGetTemplate,
     });
 
-    garbageCollector = new GarbageCollector({
-      sdkProvider: sdk,
-      action: 'full',
-      resolvedEnvironment: {
-        account: '123456789012',
-        region: 'us-east-1',
-        name: 'mock',
-      },
-      bootstrapStackName: 'GarbageStack',
-      rollbackBufferDays: 0,
+    garbageCollector = garbageCollector = gc({
       type: 's3',
+      bufferDays: 0,
+      action: 'full',
     });
     await garbageCollector.garbageCollect();
 
@@ -475,19 +434,11 @@ describe('Garbage Collection', () => {
       getTemplate: mockGetTemplate,
     });
 
-    garbageCollector = new GarbageCollector({
-      sdkProvider: sdk,
-      action: 'full',
-      resolvedEnvironment: {
-        account: '123456789012',
-        region: 'us-east-1',
-        name: 'mock',
-      },
-      bootstrapStackName: 'GarbageStack',
-      rollbackBufferDays: 3,
+    garbageCollector = garbageCollector = gc({
       type: 's3',
+      bufferDays: 3,
+      action: 'full',
     });
-
     await garbageCollector.garbageCollect();
 
     // list are called as expected
@@ -527,18 +478,11 @@ describe('Garbage Collection', () => {
       getTemplate: mockGetTemplate,
     });
 
-    garbageCollector = new GarbageCollector({
-      sdkProvider: sdk,
-      action: 'full',
-      resolvedEnvironment: {
-        account: '123456789012',
-        region: 'us-east-1',
-        name: 'mock',
-      },
-      bootstrapStackName: 'GarbageStack',
-      rollbackBufferDays: 3,
+    garbageCollector = garbageCollector = gc({
       type: 's3',
-      maxWaitTime: 600, // Wait for only 600ms in tests
+      bufferDays: 3,
+      action: 'full',
+      maxWaitTime: 600, // Wait only 600 ms in tests
     });
 
     await expect(garbageCollector.garbageCollect()).rejects.toThrow(/Stacks still in REVIEW_IN_PROGRESS state after waiting/);
@@ -626,17 +570,10 @@ describe('Garbage Collection with large # of objects', () => {
       ],
     });
 
-    garbageCollector = new GarbageCollector({
-      sdkProvider: sdk,
-      action: 'tag',
-      resolvedEnvironment: {
-        account: '123456789012',
-        region: 'us-east-1',
-        name: 'mock',
-      },
-      bootstrapStackName: 'GarbageStack',
-      rollbackBufferDays: 1,
+    garbageCollector = garbageCollector = gc({
       type: 's3',
+      bufferDays: 1,
+      action: 'tag',
     });
     await garbageCollector.garbageCollect();
 
@@ -659,17 +596,10 @@ describe('Garbage Collection with large # of objects', () => {
       ],
     });
 
-    garbageCollector = new GarbageCollector({
-      sdkProvider: sdk,
-      action: 'delete-tagged',
-      resolvedEnvironment: {
-        account: '123456789012',
-        region: 'us-east-1',
-        name: 'mock',
-      },
-      bootstrapStackName: 'GarbageStack',
-      rollbackBufferDays: 1,
+    garbageCollector = garbageCollector = gc({
       type: 's3',
+      bufferDays: 1,
+      action: 'delete-tagged',
     });
     await garbageCollector.garbageCollect();
 

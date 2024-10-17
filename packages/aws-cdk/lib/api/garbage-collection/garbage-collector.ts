@@ -5,6 +5,7 @@ import { debug, print } from '../../logging';
 import { ISDK, Mode, SdkProvider } from '../aws-auth';
 import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitInfo } from '../toolkit-info';
 import { ProgressPrinter } from './progress-printer';
+import * as promptly from 'promptly';
 import { ActiveAssetCache, BackgroundStackRefresh, refreshStacks } from './stack-refresh';
 
 // Must use a require() otherwise esbuild complains
@@ -81,6 +82,12 @@ interface GarbageCollectorProps {
    */
   readonly rollbackBufferDays: number;
 
+  // /**
+  //  * An asset must have been created this number of days ago before being elligible
+  //  * for deletion.
+  //  */
+  // readonly createdAtBufferDays: number;
+
   /**
    * The environment to deploy this stack in
    *
@@ -109,6 +116,13 @@ interface GarbageCollectorProps {
    * @default 60000
    */
   readonly maxWaitTime?: number;
+
+  /**
+   * Skips the prompt before actual deletion happens
+   *
+   * @default false
+   */
+  readonly skipDeletePrompt?: boolean;
 }
 
 /**
@@ -121,6 +135,7 @@ export class GarbageCollector {
   private permissionToTag: boolean;
   private bootstrapStackName: string;
   private maxWaitTime: number;
+  private skipDeletePrompt: boolean;
 
   public constructor(readonly props: GarbageCollectorProps) {
     this.garbageCollectS3Assets = ['s3', 'all'].includes(props.type);
@@ -131,6 +146,7 @@ export class GarbageCollector {
     this.permissionToDelete = ['delete-tagged', 'full'].includes(props.action);
     this.permissionToTag = ['tag', 'full'].includes(props.action);
     this.maxWaitTime = props.maxWaitTime ?? 60000;
+    this.skipDeletePrompt = props.skipDeletePrompt ?? false;
 
     this.bootstrapStackName = props.bootstrapStackName ?? DEFAULT_TOOLKIT_STACK_NAME;
 
@@ -213,6 +229,23 @@ export class GarbageCollector {
         debug(`${untaggables.length} assets to untag`);
 
         if (this.permissionToDelete && deletables.length > 0) {
+          if (!this.skipDeletePrompt) {
+              const message = [
+              `Found ${deletables.length} objects to delete based off of the following criteria:`,
+              `- objects have been isolated for > ${this.props.rollbackBufferDays} days`,
+              'Delete this batch (yes/no/delete-all)?',
+            ].join('\n');
+            const response = await promptly.prompt(message,
+              { trim: true },
+            );
+
+            // Anything other than yes/y/delete-all is treated as no
+            if (!response || !['yes', 'y', 'delete-all'].includes(response.toLowerCase())) {
+              throw new Error('Deletion aborted by user');
+            } else if (response.toLowerCase() == 'delete-all') {
+              this.skipDeletePrompt = true;
+            }
+          }
           await this.parallelDelete(s3, bucket, deletables, printer);
         }
 
@@ -345,8 +378,20 @@ export class GarbageCollector {
   }
 
   private async numObjectsInBucket(s3: S3, bucket: string): Promise<number> {
-    const response = await s3.listObjectsV2({ Bucket: bucket }).promise();
-    return response.KeyCount ?? 0;
+    let totalCount = 0;
+    let continuationToken: string | undefined;
+  
+    do {
+      const response = await s3.listObjectsV2({
+        Bucket: bucket,
+        ContinuationToken: continuationToken
+      }).promise();
+  
+      totalCount += response.KeyCount ?? 0;
+      continuationToken = response.NextContinuationToken;
+    } while (continuationToken);
+  
+    return totalCount;
   }
 
   /**

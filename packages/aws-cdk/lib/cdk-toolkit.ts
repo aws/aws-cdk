@@ -803,6 +803,7 @@ export class CdkToolkit {
         rollbackBufferDays: options.rollbackBufferDays,
         action: options.action ?? 'full',
         type: options.type ?? 'all',
+        skipDeletePrompt: options.skipDeletePrompt ?? false,
       });
       await gc.garbageCollect();
     };
@@ -1559,6 +1560,13 @@ export interface GarbageCollectionOptions {
    * @default DEFAULT_TOOLKIT_STACK_NAME
    */
   readonly bootstrapStackName?: string;
+
+  /**
+   * Skips the prompt before actual deletion begins
+   *
+   * @default false
+   */
+  readonly skipDeletePrompt?: boolean;
 }
 
 export interface MigrateOptions {
