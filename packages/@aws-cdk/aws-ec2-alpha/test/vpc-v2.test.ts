@@ -56,7 +56,7 @@ describe('Vpc V2 with full control', () => {
             EnableDnsSupport: true,
           },
         },
-        TestVpcSecondaryAddressD76FCD9C: {
+        TestVpcSecondaryAddress72BC831D: {
           Type: 'AWS::EC2::VPCCidrBlock',
           Properties: {
             VpcId: {
@@ -104,7 +104,7 @@ describe('Vpc V2 with full control', () => {
             EnableDnsSupport: true,
           },
         },
-        TestVpcAmazonProvided569F7097: {
+        TestVpcAmazonProvided00BF109D: {
           Type: 'AWS::EC2::VPCCidrBlock',
           Properties: {
             AmazonProvidedIpv6CidrBlock: true, //Amazon Provided IPv6 address
@@ -235,7 +235,7 @@ describe('Vpc V2 with full control', () => {
             EnableDnsSupport: true,
           },
         },
-        TestVpcIPv6Ipam178145A5: {
+        TestVpcIPv6Ipam402F1C75: {
           Type: 'AWS::EC2::VPCCidrBlock',
           Properties: {
             VpcId: {

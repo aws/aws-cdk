@@ -121,6 +121,13 @@ export interface ISubnetV2 extends ISubnet {
 export class SubnetV2 extends Resource implements ISubnetV2 {
 
   /**
+   * Import an existing subnet to the VPC
+   */
+  public static fromSubnetV2Attributes(scope: Construct, id: string, attrs: SubnetV2Attributes) : ISubnetV2 {
+    return new ImportedSubnetV2(scope, id, attrs);
+  }
+
+  /**
    * The Availability Zone the subnet is located in
    */
   public readonly availabilityZone: string;
@@ -276,6 +283,135 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
   }
 }
 
+/**
+ * Properties required to import a subnet
+ */
+export interface SubnetV2Attributes {
+  /**
+   * The Availability Zone this subnet is located in
+   *
+   * @default - No AZ information, cannot use AZ selection features
+   */
+  readonly availabilityZone: string;
+
+  /**
+   * The IPv4 CIDR block associated with the subnet
+   *
+   * @default - No CIDR information, cannot use CIDR filter features
+   */
+  readonly ipv4CidrBlock: string;
+
+  /**
+   * The IPv4 CIDR block associated with the subnet
+   *
+   * @default - No CIDR information, cannot use CIDR filter features
+   */
+  readonly ipv6CidrBlock?: string;
+
+  /**
+   * The ID of the route table for this particular subnet
+   *
+   * @default - No route table information, cannot create VPC endpoints
+   */
+  readonly routeTableId?: string;
+
+  /**
+   * The subnetId for this particular subnet
+   */
+  readonly subnetId: string;
+
+  /**
+   * The type of subnet (public or private) that this subnet represents.
+   */
+  readonly subnetType: SubnetType;
+
+  /**
+   * Name of the given subnet
+   *
+   * @default - no subnet name
+   */
+  readonly subnetName?: string;
+
+}
+
+/**
+ * Properties required to import a subnet
+ */
+export interface ImportedSubnetV2Props extends SubnetV2Attributes {}
+
+/**
+ * Class to define an import for an existing subnet
+ * @resource AWS::EC2::Subnet
+ */
+export class ImportedSubnetV2 extends Resource implements ISubnetV2 {
+
+  /**
+   * The IPv6 CIDR Block assigned to this subnet
+   */
+  public readonly ipv6CidrBlock?: string;
+
+  /**
+   * The type of subnet (eg. public or private) that this subnet represents.
+   */
+  public readonly subnetType?: SubnetType;
+
+  /**
+   * The Availability Zone in which subnet is located
+   */
+  public readonly availabilityZone: string;
+
+  /**
+  * The subnetId for this particular subnet
+  * Refers to the physical ID created
+  */
+  public readonly subnetId: string;
+
+  /**
+   * Dependable that can be depended upon to force internet connectivity established on the VPC
+   */
+  public readonly internetConnectivityEstablished: IDependable = new DependencyGroup();
+
+  /**
+   * The IPv4 CIDR block assigned to this subnet
+   */
+  public readonly ipv4CidrBlock: string;
+
+  /**
+  *  Current route table associated with this subnet
+  */
+  public readonly routeTable: IRouteTable;
+
+  constructor(scope: Construct, id: string, props: ImportedSubnetV2Props) {
+    super(scope, id);
+
+    if (!props.routeTableId) {
+      throw new Error('Route Table ID is required');
+    }
+
+    this.ipv4CidrBlock = props.ipv4CidrBlock;
+    this.availabilityZone = props.availabilityZone;
+    this.subnetType = props.subnetType;
+    this.ipv6CidrBlock = props.ipv6CidrBlock;
+    this.subnetId = props.subnetId;
+    this.routeTable = {
+      routeTableId: props.routeTableId!,
+    };
+  }
+
+  /**
+   * Associate a Network ACL with this subnet
+   * Required here since it is implemented in the ISubnetV2
+   */
+  public associateNetworkAcl(id: string, networkAcl: INetworkAcl) {
+    const scope = networkAcl instanceof Construct ? networkAcl : this;
+    const other = networkAcl instanceof Construct ? this : networkAcl;
+    new SubnetNetworkAclAssociation(scope, id + Names.nodeUniqueId(other.node), {
+      networkAcl,
+      subnet: this,
+    });
+  }
+}
+
 const subnetTypeMap = {
   [SubnetType.PRIVATE_ISOLATED]: (vpc: IVpcV2, subnet: SubnetV2) => vpc.isolatedSubnets.push(subnet),
   [SubnetType.PUBLIC]: (vpc: IVpcV2, subnet: SubnetV2) => vpc.publicSubnets.push(subnet),
@@ -305,8 +441,10 @@ function storeSubnetToVpcByType(vpc: IVpcV2, subnet: SubnetV2, type: SubnetType)
    * Need to set explicit dependency as during stack deletion,
    * the cidr blocks may get deleted first and will fail as the subnets are still using the cidr blocks
    */
-  for (const cidr of vpc.secondaryCidrBlock) {
-    subnet.node.addDependency(cidr);
+  if (vpc.secondaryCidrBlock) {
+    for (const cidr of vpc.secondaryCidrBlock) {
+      subnet.node.addDependency(cidr);
+    }
   }
 }
 
@@ -319,12 +457,14 @@ function storeSubnetToVpcByType(vpc: IVpcV2, subnet: SubnetV2, type: SubnetType)
  * @internal
  */
 function validateSupportIpv6(vpc: IVpcV2) {
-  if (vpc.secondaryCidrBlock.some((secondaryAddress) => secondaryAddress.amazonProvidedIpv6CidrBlock === true ||
+  if (vpc.secondaryCidrBlock) {
+    if (vpc.secondaryCidrBlock.some((secondaryAddress) => secondaryAddress.amazonProvidedIpv6CidrBlock === true ||
   secondaryAddress.ipv6IpamPoolId != undefined)) {
-    return true;
-  } else {
-    throw new Error('To use IPv6, the VPC must enable IPv6 support.');
-  }
+      return true;
+    } else {
+      throw new Error('To use IPv6, the VPC must enable IPv6 support.');
+    }
+  } else {return false;}
 }
 
 /**
@@ -336,20 +476,33 @@ function validateSupportIpv6(vpc: IVpcV2) {
  * @internal
  */
 function checkCidrRanges(vpc: IVpcV2, cidrRange: string) {
-
   const vpcCidrBlock = [vpc.ipv4CidrBlock];
-
-  for (const ipAddress of vpc.secondaryCidrBlock) {
-    if (ipAddress.cidrBlock) {
-      vpcCidrBlock.push(ipAddress.cidrBlock);
-    }
-  }
-  const cidrs = vpcCidrBlock.map(cidr => new CidrBlock(cidr));
-
   const subnetCidrBlock = new CidrBlock(cidrRange);
+  const allCidrs: CidrBlock[] = [];
 
-  return cidrs.some(c => c.containsCidr(subnetCidrBlock));
+  // Secondary IP addresses assoicated using user defined IPv4 range
+  if (vpc.secondaryCidrBlock) {
+    for (const ipAddress of vpc.secondaryCidrBlock) {
+      if (ipAddress.cidrBlock) {
+        vpcCidrBlock.push(ipAddress.cidrBlock);
+      }
+    }
+    const cidrs = vpcCidrBlock.map(cidr => new CidrBlock(cidr));
+    allCidrs.push(...cidrs);
+  }
 
+  // Secondary IP addresses assoicated using IPAM IPv4 range
+  if (vpc.ipv4IpamProvisionedCidrs) {
+    const cidrs = vpc.ipv4IpamProvisionedCidrs.map(cidr => new CidrBlock(cidr));
+    allCidrs.push(...cidrs);
+  }
+
+  // If no IPv4 is assigned as secondary address
+  if (allCidrs.length === 0) {
+    throw new Error('No secondary IP address attached to VPC');
+  }
+
+  return allCidrs.some(c => c.containsCidr(subnetCidrBlock));
 }
 
 /**
