@@ -263,7 +263,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "destinationCidrBlock": "::/0",
                         "destinationIpv6CidrBlock": "::/0",
                         "egressOnlyInternetGatewayId": {
                           "Fn::GetAtt": [
@@ -286,7 +285,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
+                  "fqn": "@aws-cdk/aws-ec2-alpha.Route",
                   "version": "0.0.0"
                 }
               }
@@ -512,35 +511,10 @@
                       "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
                       "version": "0.0.0"
                     }
-                  },
-                  "GWAttachment": {
-                    "id": "GWAttachment",
-                    "path": "aws-cdk-routev2-igw-alpha/TestRoottable/igwRoute/GWAttachment",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
-                      "aws:cdk:cloudformation:props": {
-                        "internetGatewayId": {
-                          "Fn::GetAtt": [
-                            "testIGW8D947AF2",
-                            "InternetGatewayId"
-                          ]
-                        },
-                        "vpcId": {
-                          "Fn::GetAtt": [
-                            "igw127F1970",
-                            "VpcId"
-                          ]
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnVPCGatewayAttachment",
-                      "version": "0.0.0"
-                    }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
+                  "fqn": "@aws-cdk/aws-ec2-alpha.Route",
                   "version": "0.0.0"
                 }
               }
@@ -636,6 +610,31 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.CfnInternetGateway",
+                  "version": "0.0.0"
+                }
+              },
+              "GWAttachment": {
+                "id": "GWAttachment",
+                "path": "aws-cdk-routev2-igw-alpha/testIGW/GWAttachment",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
+                  "aws:cdk:cloudformation:props": {
+                    "internetGatewayId": {
+                      "Fn::GetAtt": [
+                        "testIGW8D947AF2",
+                        "InternetGatewayId"
+                      ]
+                    },
+                    "vpcId": {
+                      "Fn::GetAtt": [
+                        "igw127F1970",
+                        "VpcId"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPCGatewayAttachment",
                   "version": "0.0.0"
                 }
               }
@@ -770,35 +769,10 @@
                       "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
                       "version": "0.0.0"
                     }
-                  },
-                  "GWAttachment": {
-                    "id": "GWAttachment",
-                    "path": "aws-cdk-routev2-virtualprivategw-alpha/TestRoottable/vpgwRoute/GWAttachment",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
-                      "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Fn::GetAtt": [
-                            "vpgw2AB64B6B",
-                            "VpcId"
-                          ]
-                        },
-                        "vpnGatewayId": {
-                          "Fn::GetAtt": [
-                            "testVPGWIGW816C7C4F",
-                            "VPNGatewayId"
-                          ]
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnVPCGatewayAttachment",
-                      "version": "0.0.0"
-                    }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
+                  "fqn": "@aws-cdk/aws-ec2-alpha.Route",
                   "version": "0.0.0"
                 }
               }
@@ -898,10 +872,55 @@
                   "fqn": "aws-cdk-lib.aws_ec2.CfnVPNGateway",
                   "version": "0.0.0"
                 }
+              },
+              "VPCVPNGW": {
+                "id": "VPCVPNGW",
+                "path": "aws-cdk-routev2-virtualprivategw-alpha/testVPGW/VPCVPNGW",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
+                  "aws:cdk:cloudformation:props": {
+                    "vpcId": {
+                      "Fn::GetAtt": [
+                        "vpgw2AB64B6B",
+                        "VpcId"
+                      ]
+                    },
+                    "vpnGatewayId": {
+                      "Fn::GetAtt": [
+                        "testVPGWIGW816C7C4F",
+                        "VPNGatewayId"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPCGatewayAttachment",
+                  "version": "0.0.0"
+                }
+              },
+              "RoutePropagation": {
+                "id": "RoutePropagation",
+                "path": "aws-cdk-routev2-virtualprivategw-alpha/testVPGW/RoutePropagation",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::VPNGatewayRoutePropagation",
+                  "aws:cdk:cloudformation:props": {
+                    "routeTableIds": [],
+                    "vpnGatewayId": {
+                      "Fn::GetAtt": [
+                        "testVPGWIGW816C7C4F",
+                        "VPNGatewayId"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPNGatewayRoutePropagation",
+                  "version": "0.0.0"
+                }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-ec2-alpha.VPNGateway",
+              "fqn": "@aws-cdk/aws-ec2-alpha.VPNGatewayV2",
               "version": "0.0.0"
             }
           },
@@ -1030,35 +1049,10 @@
                       "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
                       "version": "0.0.0"
                     }
-                  },
-                  "GWAttachment": {
-                    "id": "GWAttachment",
-                    "path": "aws-cdk-routev2-publicnatgw-alpha/TestRoottable/natGwRoute/GWAttachment",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
-                      "aws:cdk:cloudformation:props": {
-                        "internetGatewayId": {
-                          "Fn::GetAtt": [
-                            "testNATgwIGW6AC97E9A",
-                            "InternetGatewayId"
-                          ]
-                        },
-                        "vpcId": {
-                          "Fn::GetAtt": [
-                            "natgwpub2FB85986",
-                            "VpcId"
-                          ]
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnVPCGatewayAttachment",
-                      "version": "0.0.0"
-                    }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
+                  "fqn": "@aws-cdk/aws-ec2-alpha.Route",
                   "version": "0.0.0"
                 }
               },
@@ -1094,7 +1088,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
+                  "fqn": "@aws-cdk/aws-ec2-alpha.Route",
                   "version": "0.0.0"
                 }
               }
@@ -1190,6 +1184,31 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.CfnInternetGateway",
+                  "version": "0.0.0"
+                }
+              },
+              "GWAttachment": {
+                "id": "GWAttachment",
+                "path": "aws-cdk-routev2-publicnatgw-alpha/testNATgwIGW/GWAttachment",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
+                  "aws:cdk:cloudformation:props": {
+                    "internetGatewayId": {
+                      "Fn::GetAtt": [
+                        "testNATgwIGW6AC97E9A",
+                        "InternetGatewayId"
+                      ]
+                    },
+                    "vpcId": {
+                      "Fn::GetAtt": [
+                        "natgwpub2FB85986",
+                        "VpcId"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPCGatewayAttachment",
                   "version": "0.0.0"
                 }
               }
@@ -1378,7 +1397,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
+                  "fqn": "@aws-cdk/aws-ec2-alpha.Route",
                   "version": "0.0.0"
                 }
               }
@@ -1944,7 +1963,7 @@
                 "id": "dynamoRoute",
                 "path": "aws-cdk-routev2-dynamodbendpoint-alpha/TestRoottable/dynamoRoute",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
+                  "fqn": "@aws-cdk/aws-ec2-alpha.Route",
                   "version": "0.0.0"
                 }
               }
