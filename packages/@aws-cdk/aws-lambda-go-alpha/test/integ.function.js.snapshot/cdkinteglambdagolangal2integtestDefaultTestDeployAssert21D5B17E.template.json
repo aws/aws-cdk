@@ -19,7 +19,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "cdk-integ-lambda-golang-provided-al2023:ExportsOutputRefgohandlerdockerAE04F1B886D55427"
+         "Fn::ImportValue": "cdk-integ-lambda-golang:ExportsOutputRefgohandlerdockerAE04F1B886D55427"
         },
         "\""
        ]
@@ -27,7 +27,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1729121392640"
+    "salt": "1729121376734"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -37,7 +37,7 @@
    "Properties": {
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
-     "Fn::ImportValue": "cdk-integ-lambda-golang-provided-al2023:ExportsOutputRefgohandlerdockerAE04F1B886D55427"
+     "Fn::ImportValue": "cdk-integ-lambda-golang:ExportsOutputRefgohandlerdockerAE04F1B886D55427"
     },
     "Principal": {
      "Fn::GetAtt": [
@@ -106,7 +106,7 @@
              },
              ":function:",
              {
-              "Fn::ImportValue": "cdk-integ-lambda-golang-provided-al2023:ExportsOutputRefgohandlerdockerAE04F1B886D55427"
+              "Fn::ImportValue": "cdk-integ-lambda-golang:ExportsOutputRefgohandlerdockerAE04F1B886D55427"
              }
             ]
            ]
