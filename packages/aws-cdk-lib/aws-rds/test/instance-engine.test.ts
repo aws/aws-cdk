@@ -296,6 +296,7 @@ describe('instance engine', () => {
       ['10.11.7', rds.MariaDbEngineVersion.VER_10_11_7],
       ['10.11.8', rds.MariaDbEngineVersion.VER_10_11_8],
       ['10.11.9', rds.MariaDbEngineVersion.VER_10_11_9],
+      ['11.4.3', rds.MariaDbEngineVersion.VER_11_4_3],
     ])('is passed correctly for %s', (engineVersion, version) => {
 
       // WHEN
