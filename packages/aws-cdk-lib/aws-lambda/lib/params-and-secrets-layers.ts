@@ -28,6 +28,7 @@ export enum ParamsAndSecretsVersions {
    * Note: This is the latest version
    */
   V1_0_103 = '1.0.103',
+  LATEST = 'LATEST',
 }
 
 /**
