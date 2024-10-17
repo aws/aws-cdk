@@ -494,7 +494,7 @@ export class VPCPeeringConnection extends Resource implements IRouteTarget {
    *
    * @param requestorVpc The VPC of the requestor.
    * @param acceptorVpc The VPC of the acceptor.
-   * @returns True if the IPv4 CIDR block overlaps with existing subnet CIDR blocks, false otherwise.
+   * @returns True if the IPv4 CIDR block overlaps with each other for two VPCs, false otherwise.
    * @internal
    */
   private validateVpcCidrOverlap(requestorVpc: IVpcV2, acceptorVpc: IVpcV2): boolean {

@@ -236,6 +236,8 @@ new Route(this, 'DynamoDBRoute', {
 
 VPC peering connection allows you to connect two VPCs and route traffic between them using private IP addresses. The VpcV2 construct supports creating VPC peering connections through the `VPCPeeringConnection` construct from the `route` module.
 
+Peering Connection cannot be established between two VPCs with overlapping CIDR ranges. Please make sure the two VPC CIDRs do not overlap with each other else it will throw an error.
+
 For more information, see [What is VPC peering?](https://docs.aws.amazon.com/vpc/latest/peering/what-is-vpc-peering.html).
 
 The following show examples of how to create a peering connection between two VPCs for all possible combinations of same-account or cross-account, and same-region or cross-region configurations.
@@ -286,7 +288,9 @@ const peeringConnection = vpcA.createPeeringConnection('sameAccountCrossRegionPe
 
 **Case 3: Cross Account Peering Connection**
 
-For cross-account connections, the acceptor account needs an IAM role that grants the requestor account permission to initiate the connection. Create a restrictive IAM role in the acceptor account to provide the necessary permissions.
+For cross-account connections, the acceptor account needs an IAM role that grants the requestor account permission to initiate the connection. Create a new IAM role in the acceptor account using method `createAcceptorVpcRole` to provide the necessary permissions. 
+
+Once role is created in account, provide role arn for field `peerRoleArn` under method `createPeeringConnection`
 
 ```ts
 const stack = new Stack();
