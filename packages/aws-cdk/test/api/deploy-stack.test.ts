@@ -151,7 +151,7 @@ test('correctly passes CFN parameters when hotswapping', async () => {
   });
 
   // THEN
-  expect(tryHotswapDeployment).toHaveBeenCalledWith(expect.anything(), { A: 'A-value', B: 'B=value' }, expect.anything(), expect.anything(), HotswapMode.FALL_BACK);
+  expect(tryHotswapDeployment).toHaveBeenCalledWith(expect.anything(), { A: 'A-value', B: 'B=value' }, expect.anything(), expect.anything(), HotswapMode.FALL_BACK, expect.anything());
 });
 
 test('correctly passes SSM parameters when hotswapping', async () => {
@@ -181,7 +181,7 @@ test('correctly passes SSM parameters when hotswapping', async () => {
   });
 
   // THEN
-  expect(tryHotswapDeployment).toHaveBeenCalledWith(expect.anything(), { SomeParameter: 'SomeValue' }, expect.anything(), expect.anything(), HotswapMode.FALL_BACK);
+  expect(tryHotswapDeployment).toHaveBeenCalledWith(expect.anything(), { SomeParameter: 'SomeValue' }, expect.anything(), expect.anything(), HotswapMode.FALL_BACK, expect.anything());
 });
 
 test('call CreateStack when method=direct and the stack doesnt exist yet', async () => {

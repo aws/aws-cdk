@@ -12,7 +12,7 @@ import { Bootstrapper, BootstrapEnvironmentOptions } from './api/bootstrap';
 import { CloudAssembly, DefaultSelection, ExtendedStackSelection, StackCollection, StackSelector } from './api/cxapp/cloud-assembly';
 import { CloudExecutable } from './api/cxapp/cloud-executable';
 import { Deployments } from './api/deployments';
-import { HotswapMode } from './api/hotswap/common';
+import { HotswapMode, HotswapPropertyOverrides, EcsHotswapProperties } from './api/hotswap/common';
 import { findCloudWatchLogGroups } from './api/logs/find-cloudwatch-logs';
 import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
 import { createDiffChangeSet, ResourcesToImport } from './api/util/cloudformation';
@@ -236,6 +236,14 @@ export class CdkToolkit {
       warning('⚠️ They should only be used for development - never use them for your production Stacks!\n');
     }
 
+    let hotswapPropertiesFromSettings = this.props.configuration.settings.get(['hotswap']) || {};
+
+    let hotswapPropertyOverrides = new HotswapPropertyOverrides();
+    hotswapPropertyOverrides.ecsHotswapProperties = new EcsHotswapProperties(
+      hotswapPropertiesFromSettings.ecs?.minimumHealthyPercent,
+      hotswapPropertiesFromSettings.ecs?.maximumHealthyPercent,
+    );
+
     const stacks = stackCollection.stackArtifacts;
 
     const stackOutputs: { [key: string]: any } = { };
@@ -346,6 +354,7 @@ export class CdkToolkit {
           ci: options.ci,
           rollback: options.rollback,
           hotswap: options.hotswap,
+          hotswapPropertyOverrides: hotswapPropertyOverrides,
           extraUserAgent: options.extraUserAgent,
           assetParallelism: options.assetParallelism,
           ignoreNoStacks: options.ignoreNoStacks,
