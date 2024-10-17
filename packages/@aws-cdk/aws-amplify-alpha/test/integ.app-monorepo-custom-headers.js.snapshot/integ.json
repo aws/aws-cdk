@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "amplify-app-monorepo-custom-headers-integ/DefaultTest": {
+      "stacks": [
+        "cdk-amplify-monorepo-custom-headers"
+      ],
+      "assertionStack": "amplify-app-monorepo-custom-headers-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "amplifyappmonorepocustomheadersintegDefaultTestDeployAssert582B40C4"
+    }
+  }
+}
