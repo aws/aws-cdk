@@ -560,7 +560,7 @@ export class ServicePrincipal extends PrincipalBase {
    * any change regardless of the region used in the stack if it is Opted in or not.
    *
    * @example
-   * const principalName = iam.ServicePrincipal.of('elasticmapreduce.amazonaws.com.cn');
+   * const principalName = iam.ServicePrincipal.fromStaticServicePrincipleName('elasticmapreduce.amazonaws.com.cn');
    */
   public static fromStaticServicePrincipleName(servicePrincipalName: string): ServicePrincipal {
     class StaticServicePrincipal extends ServicePrincipal {
