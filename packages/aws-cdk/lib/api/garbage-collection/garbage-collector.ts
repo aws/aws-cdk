@@ -82,11 +82,10 @@ interface GarbageCollectorProps {
    */
   readonly rollbackBufferDays: number;
 
-  // /**
-  //  * An asset must have been created this number of days ago before being elligible
-  //  * for deletion.
-  //  */
-  // readonly createdAtBufferDays: number;
+  /**
+   * Refuse deletion of any assets younger than this number of days.
+   */
+  readonly createdAtBufferDays: number;
 
   /**
    * The environment to deploy this stack in
@@ -412,9 +411,10 @@ export class GarbageCollector {
         response.Contents?.forEach((obj) => {
           const key = obj.Key ?? '';
           const size = obj.Size ?? 0;
-          const lastModified = obj.LastModified?.getTime() ?? Date.now();
-          // Store the object if it has a Key and if it has not been modified since the start of garbage collection
-          if (key && lastModified < currentTime) {
+          const lastModified = obj.LastModified ?? new Date(currentTime);
+          // Store the object if it has a Key and
+          // if it has not been modified since today - createdAtBufferDays
+          if (key && lastModified < new Date(currentTime - (this.props.createdAtBufferDays * DAY))) {
             batch.push(new S3Asset(bucket, key, size));
           }
         });

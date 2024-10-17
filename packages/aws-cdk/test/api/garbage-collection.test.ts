@@ -21,6 +21,7 @@ let stderrMock: jest.SpyInstance;
 let sdk: MockSdkProvider;
 
 const ISOLATED_TAG = 'aws-cdk:isolated';
+const DAY = 24 * 60 * 60 * 1000; // Number of milliseconds in a day
 
 function mockTheToolkitInfo(stackProps: Partial<AWS.CloudFormation.Stack>) {
   const mockSdk = new MockSdk();
@@ -29,7 +30,8 @@ function mockTheToolkitInfo(stackProps: Partial<AWS.CloudFormation.Stack>) {
 
 function gc(props: {
   type: 's3' | 'ecr' | 'all',
-  bufferDays: number,
+  rollbackBufferDays?: number,
+  createdAtBufferDays?: number,
   action: 'full' | 'print' | 'tag' | 'delete-tagged',
   maxWaitTime?: number,
 }): GarbageCollector {
@@ -42,7 +44,8 @@ function gc(props: {
       name: 'mock',
     },
     bootstrapStackName: 'GarbageStack',
-    rollbackBufferDays: props.bufferDays,
+    rollbackBufferDays: props.rollbackBufferDays ?? 0,
+    createdAtBufferDays: props.createdAtBufferDays ?? 0,
     type: props.type,
     maxWaitTime: props.maxWaitTime,
     skipDeletePrompt: true,
@@ -80,9 +83,9 @@ describe('Garbage Collection', () => {
     mockListObjectsV2 = jest.fn().mockImplementation(() => {
       return Promise.resolve({
         Contents: [
-          { Key: 'asset1', LastModified: new Date(0) },
-          { Key: 'asset2', LastModified: new Date(0) },
-          { Key: 'asset3', LastModified: new Date(0) },
+          { Key: 'asset1', LastModified: new Date(Date.now() - (2 * DAY)) },
+          { Key: 'asset2', LastModified: new Date(Date.now() - (10 * DAY)) },
+          { Key: 'asset3', LastModified: new Date(Date.now() - (100 * DAY)) },
         ],
         KeyCount: 3,
       });
@@ -128,7 +131,7 @@ describe('Garbage Collection', () => {
 
     garbageCollector = gc({
       type: 's3',
-      bufferDays: 0,
+      rollbackBufferDays: 0,
       action: 'full',
     });
     await garbageCollector.garbageCollect();
@@ -165,7 +168,7 @@ describe('Garbage Collection', () => {
 
     garbageCollector = gc({
       type: 's3',
-      bufferDays: 3,
+      rollbackBufferDays: 3,
       action: 'full',
     });
     await garbageCollector.garbageCollect();
@@ -193,9 +196,39 @@ describe('Garbage Collection', () => {
 
     expect(() => garbageCollector = gc({
       type: 'ecr',
-      bufferDays: 3,
+      rollbackBufferDays: 3,
       action: 'full',
     })).toThrow(/ECR garbage collection is not yet supported/);
+  });
+
+  test('createdAtBufferDays > 0 -- assets to be tagged', async () => {
+    mockTheToolkitInfo({
+      Outputs: [
+        {
+          OutputKey: 'BootstrapVersion',
+          OutputValue: '999',
+        },
+      ],
+    });
+
+    garbageCollector = gc({
+      type: 's3',
+      rollbackBufferDays: 0,
+      createdAtBufferDays: 5,      
+      action: 'full',
+    });
+    await garbageCollector.garbageCollect();
+
+    expect(mockDeleteObjects).toHaveBeenCalledWith({
+      Bucket: 'BUCKET_NAME',
+      Delete: {
+        Objects: [
+          { Key: 'asset2' },
+          { Key: 'asset3' },
+        ],
+        Quiet: true,
+      },
+    });
   });
 
   test('action = print -- does not tag or delete', async () => {
@@ -210,7 +243,7 @@ describe('Garbage Collection', () => {
 
     garbageCollector = garbageCollector = gc({
       type: 's3',
-      bufferDays: 3,
+      rollbackBufferDays: 3,
       action: 'print',
     });
     await garbageCollector.garbageCollect();
@@ -238,7 +271,7 @@ describe('Garbage Collection', () => {
 
     garbageCollector = garbageCollector = gc({
       type: 's3',
-      bufferDays: 3,
+      rollbackBufferDays: 3,
       action: 'tag',
     });
     await garbageCollector.garbageCollect();
@@ -266,7 +299,7 @@ describe('Garbage Collection', () => {
 
     garbageCollector = garbageCollector = gc({
       type: 's3',
-      bufferDays: 3,
+      rollbackBufferDays: 3,
       action: 'delete-tagged',
     });
     await garbageCollector.garbageCollect();
@@ -309,7 +342,7 @@ describe('Garbage Collection', () => {
 
     garbageCollector = garbageCollector = gc({
       type: 's3',
-      bufferDays: 0,
+      rollbackBufferDays: 0,
       action: 'full',
     });
     await garbageCollector.garbageCollect();
@@ -344,7 +377,7 @@ describe('Garbage Collection', () => {
 
     garbageCollector = garbageCollector = gc({
       type: 's3',
-      bufferDays: 3,
+      rollbackBufferDays: 3,
       action: 'full',
     });
     await garbageCollector.garbageCollect();
@@ -378,7 +411,7 @@ describe('Garbage Collection', () => {
 
     garbageCollector = garbageCollector = gc({
       type: 's3',
-      bufferDays: 0,
+      rollbackBufferDays: 0,
       action: 'full',
     });
     await garbageCollector.garbageCollect();
@@ -436,7 +469,7 @@ describe('Garbage Collection', () => {
 
     garbageCollector = garbageCollector = gc({
       type: 's3',
-      bufferDays: 3,
+      rollbackBufferDays: 3,
       action: 'full',
     });
     await garbageCollector.garbageCollect();
@@ -480,7 +513,7 @@ describe('Garbage Collection', () => {
 
     garbageCollector = garbageCollector = gc({
       type: 's3',
-      bufferDays: 3,
+      rollbackBufferDays: 3,
       action: 'full',
       maxWaitTime: 600, // Wait only 600 ms in tests
     });
@@ -572,7 +605,7 @@ describe('Garbage Collection with large # of objects', () => {
 
     garbageCollector = garbageCollector = gc({
       type: 's3',
-      bufferDays: 1,
+      rollbackBufferDays: 1,
       action: 'tag',
     });
     await garbageCollector.garbageCollect();
@@ -598,7 +631,7 @@ describe('Garbage Collection with large # of objects', () => {
 
     garbageCollector = garbageCollector = gc({
       type: 's3',
-      bufferDays: 1,
+      rollbackBufferDays: 1,
       action: 'delete-tagged',
     });
     await garbageCollector.garbageCollect();

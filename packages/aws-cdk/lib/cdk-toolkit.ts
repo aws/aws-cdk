@@ -801,6 +801,7 @@ export class CdkToolkit {
         resolvedEnvironment: environment,
         bootstrapStackName: options.bootstrapStackName,
         rollbackBufferDays: options.rollbackBufferDays,
+        createdAtBufferDays: options.createdAtBufferDays,
         action: options.action ?? 'full',
         type: options.type ?? 'all',
         skipDeletePrompt: options.skipDeletePrompt ?? false,
@@ -1553,6 +1554,11 @@ export interface GarbageCollectionOptions {
    * @default 0
    */
   readonly rollbackBufferDays: number;
+
+  /**
+   * Refuse deletion of any assets younger than this number of days.
+   */
+  readonly createdAtBufferDays: number;
 
   /**
    * The stack name of the bootstrap stack.
