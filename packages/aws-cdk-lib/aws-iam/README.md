@@ -402,6 +402,23 @@ role.assumeRolePolicy?.addStatements(new iam.PolicyStatement({
 }));
 ```
 
+### Fixing the synthesized service principle for service that does not follow the IAM Pattern
+The pattern for the service principles should be `<service>.amazonaws.com`, but some services still does not follow this pattern. In this case, you can define the ServicePrincipal as following where the provided service principle name will be used as is without any changing.
+
+```ts
+    const sp = iam.ServicePrincipal.of('elasticmapreduce.amazonaws.com.cn');
+```
+
+This principle can use as normal in defining any role, for example:
+```ts
+const emrServiceRole = new iam.Role(this, 'EMRServiceRole', {
+    assumedBy: iam.ServicePrincipal.of('elasticmapreduce.amazonaws.com.cn'),
+    managedPolicies: [
+        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonElasticMapReduceRole'),
+    ],
+});
+```
+
 
 ## Parsing JSON Policy Documents
 
