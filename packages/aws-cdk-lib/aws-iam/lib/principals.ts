@@ -562,7 +562,7 @@ export class ServicePrincipal extends PrincipalBase {
    * @example
    * const principalName = iam.ServicePrincipal.of('elasticmapreduce.amazonaws.com.cn');
    */
-  public static of(servicePrincipalName: string): ServicePrincipal {
+  public static fromStaticServicePrincipleName(servicePrincipalName: string): ServicePrincipal {
     class StaticServicePrincipal extends ServicePrincipal {
       constructor(public readonly service: string) {
         super(service);

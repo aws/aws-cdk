@@ -407,13 +407,13 @@ role.assumeRolePolicy?.addStatements(new iam.PolicyStatement({
 In some cases, certain AWS services may not use the standard `<service>.amazonaws.com` pattern for their service principals. For these services, you can define the ServicePrincipal as following where the provided service principle name will be used as is without any changing.
 
 ```ts
-    const sp = iam.ServicePrincipal.of('elasticmapreduce.amazonaws.com.cn');
+    const sp = iam.ServicePrincipal.fromStaticServicePrincipleName('elasticmapreduce.amazonaws.com.cn');
 ```
 
 This principle can use as normal in defining any role, for example:
 ```ts
 const emrServiceRole = new iam.Role(this, 'EMRServiceRole', {
-    assumedBy: iam.ServicePrincipal.of('elasticmapreduce.amazonaws.com.cn'),
+    assumedBy: iam.ServicePrincipal.fromStaticServicePrincipleName('elasticmapreduce.amazonaws.com.cn'),
     managedPolicies: [
         iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonElasticMapReduceRole'),
     ],

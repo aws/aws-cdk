@@ -478,7 +478,7 @@ test('Can use custom service principle name to create servicePrinciple', () => {
 
   // WHEN
   new iam.Role(stack, 'Role', {
-    assumedBy: iam.ServicePrincipal.of('elasticmapreduce.amazonaws.com.cn'),
+    assumedBy: iam.ServicePrincipal.fromStaticServicePrincipleName('elasticmapreduce.amazonaws.com.cn'),
   });
 
   // THEN

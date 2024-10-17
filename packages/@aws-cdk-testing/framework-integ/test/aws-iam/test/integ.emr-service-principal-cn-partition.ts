@@ -25,7 +25,7 @@ class EmrServicePrincipalTestStack extends cdk.Stack {
     }
 
     const emrServiceRole = new iam.Role(this, 'EMRServiceRole', {
-      assumedBy: iam.ServicePrincipal.of('elasticmapreduce.amazonaws.com.cn'),
+      assumedBy: iam.ServicePrincipal.fromStaticServicePrincipleName('elasticmapreduce.amazonaws.com.cn'),
       managedPolicies: [
         iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonElasticMapReduceRole'),
       ],
