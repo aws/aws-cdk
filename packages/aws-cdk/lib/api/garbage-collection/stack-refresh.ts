@@ -50,14 +50,14 @@ async function listStacksNotBeingReviewed(cfn: CloudFormation, maxWaitTime: numb
 }
 
 /**
-   * Fetches all relevant stack templates from CloudFormation. It ignores the following stacks:
-   * - stacks in DELETE_COMPLETE or DELETE_IN_PROGRES stage
-   * - stacks that are using a different bootstrap qualifier
-   *
-   * It fails on the following stacks because we cannot get the template and therefore have an imcomplete
-   * understanding of what assets are being used.
-   * - stacks in REVIEW_IN_PROGRESS stage
-   */
+ * Fetches all relevant stack templates from CloudFormation. It ignores the following stacks:
+ * - stacks in DELETE_COMPLETE or DELETE_IN_PROGRESS stage
+ * - stacks that are using a different bootstrap qualifier
+ *
+ * It fails on the following stacks because we cannot get the template and therefore have an imcomplete
+ * understanding of what assets are being used.
+ * - stacks in REVIEW_IN_PROGRESS stage
+ */
 async function fetchAllStackTemplates(cfn: CloudFormation, maxWaitTime: number, qualifier?: string) {
   const stackNames: string[] = [];
   await paginateSdkCall(async (nextToken) => {
