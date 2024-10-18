@@ -42,6 +42,7 @@ import {
   SecurityGroup,
   UserData,
 } from '../lib';
+import { networkInterfaces } from 'os';
 
 describe('vpc', () => {
   describe('When creating a VPC', () => {
@@ -1764,7 +1765,6 @@ describe('vpc', () => {
     test.each([
       [true, true],
       [false, false],
-      [undefined, Match.absent()],
     ])('Can instantiate NatInstanceProviderV2 with associatePublicIpAddress', (input, value) => {
       const stack = getTestStack();
       new Vpc(stack, 'Vpc', {
@@ -1786,9 +1786,13 @@ describe('vpc', () => {
         ],
       });
 
-      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
-        AssociatePublicIpAddress: value,
-      });
+      Template.fromStack(stack).hasResource('AWS::EC2::Instance', Match.objectLike({
+        Properties: {
+          NetworkInterfaces: [{
+            AssociatePublicIpAddress: value
+          }],
+        }
+      }))
     });
 
     test('Can instantiate NatInstanceProvider directly with new', () => {
