@@ -269,6 +269,23 @@ new ec2.Vpc(this, 'TheVPC', {
 provider.connections.allowFrom(ec2.Peer.ipv4('1.2.3.4/8'), ec2.Port.HTTP);
 ```
 
+### Associate Public IP Address to NAT Instance
+
+You can choose to associate public IP address to a NAT instance V2 by specifying `associatePublicIpAddress`
+like the following:
+
+```ts
+const natGatewayProvider = ec2.NatProvider.instanceV2({
+  instanceType: new ec2.InstanceType('t3.small'),
+  associatePublicIpAddress: true,
+});
+```
+
+In certain scenarios where the public subnet has set `mapPublicIpOnLaunch` to `false`, NAT instances does not
+get public IP addresses assigned which would result in non-working NAT instance as NAT instance requires a public
+IP address to enable outbound internet connectivity. Users can specify `associatePublicIpAddress` to `true` to
+solve this problem.
+
 ### Ip Address Management
 
 The VPC spans a supernet IP range, which contains the non-overlapping IPs of its contained subnets. Possible sources for this IP range are:
