@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "MapTest/DefaultTest": {
+      "stacks": [
+        "cdk-integ-location-map"
+      ],
+      "assertionStack": "MapTest/DefaultTest/DeployAssert",
+      "assertionStackName": "MapTestDefaultTestDeployAssert46CB2F9C"
+    }
+  }
+}
