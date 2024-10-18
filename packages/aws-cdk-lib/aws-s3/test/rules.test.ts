@@ -339,8 +339,7 @@ describe('rules', () => {
 
   describe('required properties for rules', () => {
     test('throw if there is a rule doesn\'t have required properties', () => {
-      const app = new App();
-      const stack = new Stack(app);
+      const stack = new Stack();
       new Bucket(stack, 'MyBucket', {
         lifecycleRules: [
           {
@@ -350,13 +349,12 @@ describe('rules', () => {
         ],
       });
       expect(() => {
-        app.synth();
+        Template.fromStack(stack);
       }).toThrow(/All rules for `lifecycleRules` must have at least one of the following properties: `abortIncompleteMultipartUploadAfter`, `expiration`, `expirationDate`, `expiredObjectDeleteMarker`, `noncurrentVersionExpiration`, `noncurrentVersionsToRetain`, `noncurrentVersionTransitions`, or `transitions`/);
     });
 
     test('throw if there are a valid rule and a rule that doesn\'t have required properties.', () => {
-      const app = new App();
-      const stack = new Stack(app);
+      const stack = new Stack();
       new Bucket(stack, 'MyBucket', {
         lifecycleRules: [
           {
@@ -369,7 +367,7 @@ describe('rules', () => {
         ],
       });
       expect(() => {
-        app.synth();
+        Template.fromStack(stack);
       }).toThrow(/All rules for `lifecycleRules` must have at least one of the following properties: `abortIncompleteMultipartUploadAfter`, `expiration`, `expirationDate`, `expiredObjectDeleteMarker`, `noncurrentVersionExpiration`, `noncurrentVersionsToRetain`, `noncurrentVersionTransitions`, or `transitions`/);
     });
 
