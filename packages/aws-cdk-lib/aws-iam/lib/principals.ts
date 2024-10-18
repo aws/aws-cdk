@@ -556,6 +556,28 @@ export class ServicePrincipal extends PrincipalBase {
   }
 
   /**
+   * Return the service principal using the service principal name as it is passed to the function without
+   * any change regardless of the region used in the stack if it is Opted in or not.
+   *
+   * @example
+   * const principalName = iam.ServicePrincipal.fromStaticServicePrincipleName('elasticmapreduce.amazonaws.com.cn');
+   */
+  public static fromStaticServicePrincipleName(servicePrincipalName: string): ServicePrincipal {
+    class StaticServicePrincipal extends ServicePrincipal {
+      constructor(public readonly service: string) {
+        super(service);
+      }
+
+      public get policyFragment(): PrincipalPolicyFragment {
+        return new PrincipalPolicyFragment({
+          Service: [this.service],
+        }, this.opts.conditions);
+      }
+    }
+    return new StaticServicePrincipal(servicePrincipalName);
+  }
+
+  /**
    * Reference an AWS service, optionally in a given region
    *
    * @param service AWS service (i.e. sqs.amazonaws.com)

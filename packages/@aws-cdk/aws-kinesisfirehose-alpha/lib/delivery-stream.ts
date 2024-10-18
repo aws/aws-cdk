@@ -1,7 +1,6 @@
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as kinesis from 'aws-cdk-lib/aws-kinesis';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as cdk from 'aws-cdk-lib/core';
 import { RegionInfo } from 'aws-cdk-lib/region-info';
@@ -10,6 +9,7 @@ import { IDestination } from './destination';
 import { FirehoseMetrics } from 'aws-cdk-lib/aws-kinesisfirehose/lib/kinesisfirehose-canned-metrics.generated';
 import { CfnDeliveryStream } from 'aws-cdk-lib/aws-kinesisfirehose';
 import { StreamEncryption } from './encryption';
+import { ISource } from './source';
 
 const PUT_RECORD_ACTIONS = [
   'firehose:PutRecord',
@@ -185,11 +185,9 @@ export enum StreamEncryptionType {
  */
 export interface DeliveryStreamProps {
   /**
-   * The destinations that this delivery stream will deliver data to.
-   *
-   * Only a singleton array is supported at this time.
+   * The destination that this delivery stream will deliver data to.
    */
-  readonly destinations: IDestination[];
+  readonly destination: IDestination;
 
   /**
    * A name for the delivery stream.
@@ -203,7 +201,7 @@ export interface DeliveryStreamProps {
    *
    * @default - data must be written to the delivery stream via a direct put.
    */
-  readonly sourceStream?: kinesis.IStream;
+  readonly source?: ISource;
 
   /**
    * The IAM role associated with this delivery stream.
@@ -324,18 +322,14 @@ export class DeliveryStream extends DeliveryStreamBase {
 
     this._role = props.role;
 
-    if (props.destinations.length !== 1) {
-      throw new Error(`Only one destination is allowed per delivery stream, given ${props.destinations.length}`);
-    }
-
-    if (props.encryption?.encryptionKey || props.sourceStream) {
+    if (props.encryption?.encryptionKey || props.source) {
       this._role = this._role ?? new iam.Role(this, 'Service Role', {
         assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
       });
     }
 
     if (
-      props.sourceStream &&
+      props.source &&
         (props.encryption?.type === StreamEncryptionType.AWS_OWNED || props.encryption?.type === StreamEncryptionType.CUSTOMER_MANAGED)
     ) {
       throw new Error('Requested server-side encryption but delivery stream source is a Kinesis data stream. Specify server-side encryption on the data stream instead.');
@@ -359,27 +353,24 @@ export class DeliveryStream extends DeliveryStreamBase {
       encryptionKey?.grantEncryptDecrypt(this._role);
     }
 
-    let sourceStreamConfig = undefined;
     let readStreamGrant = undefined;
-    if (this._role && props.sourceStream) {
-      sourceStreamConfig = {
-        kinesisStreamArn: props.sourceStream.streamArn,
-        roleArn: this._role.roleArn,
-      };
-      readStreamGrant = props.sourceStream.grantRead(this._role);
+    if (this._role && props.source) {
+      readStreamGrant = props.source.grantRead(this._role);
     }
 
-    const destinationConfig = props.destinations[0].bind(this, {});
+    const destinationConfig = props.destination.bind(this, {});
+    const sourceConfig = props.source?._bind(this, this._role?.roleArn);
 
     const resource = new CfnDeliveryStream(this, 'Resource', {
       deliveryStreamEncryptionConfigurationInput: encryptionConfig,
       deliveryStreamName: props.deliveryStreamName,
-      deliveryStreamType: props.sourceStream ? 'KinesisStreamAsSource' : 'DirectPut',
-      kinesisStreamSourceConfiguration: sourceStreamConfig,
+      deliveryStreamType: props.source ? 'KinesisStreamAsSource' : 'DirectPut',
+      ...sourceConfig,
       ...destinationConfig,
     });
 
     destinationConfig.dependables?.forEach(dependable => resource.node.addDependency(dependable));
+
     if (readStreamGrant) {
       resource.node.addDependency(readStreamGrant);
     }
