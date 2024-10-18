@@ -1,5 +1,5 @@
 import { Template } from '../../assertions';
-import { Duration, Stack } from '../../core';
+import { App, Duration, Stack } from '../../core';
 import { Bucket, StorageClass } from '../lib';
 
 describe('rules', () => {
@@ -333,5 +333,164 @@ describe('rules', () => {
         }],
       },
     });
+  });
+
+  describe('required properties for rules', () => {
+    test('throw if there is a rule doesn\'t have required properties', () => {
+      const app = new App();
+      const stack = new Stack(app);
+      new Bucket(stack, 'MyBucket', {
+        lifecycleRules: [
+          {
+            objectSizeLessThan: 300000,
+            objectSizeGreaterThan: 200000,
+          },
+        ],
+      });
+      expect(() => {
+        app.synth();
+      }).toThrow(/All rules for `lifecycleRules` must have at least one of the following properties: `abortIncompleteMultipartUploadAfter`, `expiration`, `expirationDate`, `expiredObjectDeleteMarker`, `noncurrentVersionExpiration`, `noncurrentVersionsToRetain`, `noncurrentVersionTransitions`, or `transitions`/);
+    });
+
+    test('throw if there are a valid rule and a rule that doesn\'t have required properties.', () => {
+      const app = new App();
+      const stack = new Stack(app);
+      new Bucket(stack, 'MyBucket', {
+        lifecycleRules: [
+          {
+            abortIncompleteMultipartUploadAfter: Duration.days(365),
+          },
+          {
+            objectSizeLessThan: 300000,
+            objectSizeGreaterThan: 200000,
+          },
+        ],
+      });
+      expect(() => {
+        app.synth();
+      }).toThrow(/All rules for `lifecycleRules` must have at least one of the following properties: `abortIncompleteMultipartUploadAfter`, `expiration`, `expirationDate`, `expiredObjectDeleteMarker`, `noncurrentVersionExpiration`, `noncurrentVersionsToRetain`, `noncurrentVersionTransitions`, or `transitions`/);
+    });
+
+    test('don\'t throw with abortIncompleteMultipartUploadAfter', () => {
+      const stack = new Stack();
+      new Bucket(stack, 'MyBucket', {
+        lifecycleRules: [
+          {
+            abortIncompleteMultipartUploadAfter: Duration.days(365),
+          },
+        ],
+      });
+      expect(() => {
+        Template.fromStack(stack);
+      }).not.toThrow();
+    });
+
+    test('don\'t throw with expiration', () => {
+      const stack = new Stack();
+      new Bucket(stack, 'MyBucket', {
+        lifecycleRules: [
+          {
+            expiration: Duration.days(365),
+          },
+        ],
+      });
+      expect(() => {
+        Template.fromStack(stack);
+      }).not.toThrow();
+    });
+
+    test('don\'t throw with expirationDate', () => {
+      const stack = new Stack();
+      new Bucket(stack, 'MyBucket', {
+        lifecycleRules: [
+          {
+            expirationDate: new Date('2024-01-01'),
+          },
+        ],
+      });
+      expect(() => {
+        Template.fromStack(stack);
+      }).not.toThrow();
+    });
+
+    test('don\'t throw with expiredObjectDeleteMarker', () => {
+      const stack = new Stack();
+      new Bucket(stack, 'MyBucket', {
+        lifecycleRules: [
+          {
+            expiredObjectDeleteMarker: true,
+          },
+        ],
+      });
+      expect(() => {
+        Template.fromStack(stack);
+      }).not.toThrow();
+    });
+
+    test('don\'t throw with noncurrentVersionExpiration', () => {
+      const stack = new Stack();
+      new Bucket(stack, 'MyBucket', {
+        lifecycleRules: [
+          {
+            noncurrentVersionExpiration: Duration.days(365),
+          },
+        ],
+      });
+      expect(() => {
+        Template.fromStack(stack);
+      }).not.toThrow();
+    });
+
+    test('don\'t throw with noncurrentVersionsToRetain', () => {
+      const stack = new Stack();
+      new Bucket(stack, 'MyBucket', {
+        lifecycleRules: [
+          {
+            noncurrentVersionsToRetain: 10,
+          },
+        ],
+      });
+      expect(() => {
+        Template.fromStack(stack);
+      }).not.toThrow();
+    });
+
+    test('don\'t throw with noncurrentVersionTransitions', () => {
+      const stack = new Stack();
+      new Bucket(stack, 'MyBucket', {
+        lifecycleRules: [
+          {
+            noncurrentVersionTransitions: [
+              {
+                storageClass: StorageClass.GLACIER_INSTANT_RETRIEVAL,
+                transitionAfter: Duration.days(10),
+                noncurrentVersionsToRetain: 1,
+              },
+            ],
+          },
+        ],
+      });
+      expect(() => {
+        Template.fromStack(stack);
+      }).not.toThrow();
+    });
+
+    test('don\'t throw with transitions', () => {
+      const stack = new Stack();
+      new Bucket(stack, 'MyBucket', {
+        lifecycleRules: [
+          {
+            transitions: [{
+              storageClass: StorageClass.GLACIER,
+              transitionAfter: Duration.days(30),
+            }],
+          },
+        ],
+      });
+      expect(() => {
+        Template.fromStack(stack);
+      }).not.toThrow();
+    });
+
   });
 });
