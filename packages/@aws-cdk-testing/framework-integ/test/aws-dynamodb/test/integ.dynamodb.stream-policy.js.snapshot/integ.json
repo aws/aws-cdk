@@ -1,0 +1,12 @@
+{
+  "version": "36.0.24",
+  "testCases": {
+    "resource-policy-integ-test/DefaultTest": {
+      "stacks": [
+        "resource-policy-stack"
+      ],
+      "assertionStack": "resource-policy-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "resourcepolicyintegtestDefaultTestDeployAssert9778837B"
+    }
+  }
+}
