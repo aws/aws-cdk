@@ -863,7 +863,14 @@ const bucket = new s3.Bucket(this, 'MyBucket', {
 ```
 
 To indicate which default minimum object size behavior is applied to the lifecycle configuration, use the
-`transitionDefaultMinimumObjectSize` property. To customize the minimum object size for any transition you
+`transitionDefaultMinimumObjectSize` property.
+
+The default value of the property before September 2024 is `TransitionDefaultMinimumObjectSize.VARIES_BY_STORAGE_CLASS`
+that allows objects smaller than 128 KB to be transitioned only to the S3 Glacier and S3 Glacier Deep Archive storage classes,
+otherwise `TransitionDefaultMinimumObjectSize.ALL_STORAGE_CLASSES_128_K` that prevents objects smaller than 128 KB from being
+transitioned to any storage class.
+
+To customize the minimum object size for any transition you
 can add a filter that specifies a custom `objectSizeGreaterThan` or `objectSizeLessThan` for `lifecycleRules`
 property. Custom filters always take precedence over the default transition behavior.
 
