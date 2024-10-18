@@ -178,7 +178,7 @@ describe('cluster new api', () => {
     });
 
     test.each([
-      ['Mysql', DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_07_0 })],
+      ['MySQL', DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_07_0 })],
       ['PostgreSQL', DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_16_4 })],
     ])('set enableLocalWriteForwarding for aurora %s', (type: string, engine: IClusterEngine) => {
       // GIVEN
