@@ -863,21 +863,9 @@ const bucket = new s3.Bucket(this, 'MyBucket', {
 ```
 
 To indicate which default minimum object size behavior is applied to the lifecycle configuration, use the
-`transitionDefaultMinimumObjectSize` property.
-
-This property can't be specified if all rules for `lifecycleRules` don't have at least one of the following properties:
-
-- `abortIncompleteMultipartUploadAfter`
-- `expiration`
-- `expirationDate`
-- `expiredObjectDeleteMarker`
-- `noncurrentVersionExpiration`
-- `noncurrentVersionsToRetain`
-- `noncurrentVersionTransitions`
-- `transitions`
-
-To customize the minimum object size for any transition you can add a filter that specifies a custom `objectSizeGreaterThan`
-or `objectSizeLessThan` for `lifecycleRules` property. Custom filters always take precedence over the default transition behavior.
+`transitionDefaultMinimumObjectSize` property. To customize the minimum object size for any transition you
+can add a filter that specifies a custom `objectSizeGreaterThan` or `objectSizeLessThan` for `lifecycleRules`
+property. Custom filters always take precedence over the default transition behavior.
 
 ```ts
 new s3.Bucket(this, 'MyBucket', {

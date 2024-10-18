@@ -6,7 +6,18 @@
     "LifecycleConfiguration": {
      "Rules": [
       {
+       "Status": "Enabled",
+       "Transitions": [
+        {
+         "StorageClass": "GLACIER",
+         "TransitionInDays": 30
+        }
+       ]
+      },
+      {
        "ExpirationInDays": 30,
+       "ObjectSizeGreaterThan": 200000,
+       "ObjectSizeLessThan": 300000,
        "Status": "Enabled"
       }
      ],
@@ -22,39 +33,14 @@
     "LifecycleConfiguration": {
      "Rules": [
       {
-       "ExpirationInDays": 30,
-       "Status": "Enabled"
-      }
-     ],
-     "TransitionDefaultMinimumObjectSize": "varies_by_storage_class"
-    }
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AllStorageClasses128KWithCustomSizeRuleCB96F380": {
-   "Type": "AWS::S3::Bucket",
-   "Properties": {
-    "LifecycleConfiguration": {
-     "Rules": [
-      {
-       "ExpirationInDays": 30,
-       "ObjectSizeGreaterThan": 200000,
-       "ObjectSizeLessThan": 300000,
-       "Status": "Enabled"
-      }
-     ],
-     "TransitionDefaultMinimumObjectSize": "all_storage_classes_128K"
-    }
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "VariesByStorageClassWithCustomSizeRule7F7CE7DF": {
-   "Type": "AWS::S3::Bucket",
-   "Properties": {
-    "LifecycleConfiguration": {
-     "Rules": [
+       "Status": "Enabled",
+       "Transitions": [
+        {
+         "StorageClass": "GLACIER",
+         "TransitionInDays": 30
+        }
+       ]
+      },
       {
        "ExpirationInDays": 30,
        "ObjectSizeGreaterThan": 200000,

@@ -4,86 +4,31 @@
     "id": "App",
     "path": "",
     "children": {
-      "s3-lifecycle-transition-size": {
-        "id": "s3-lifecycle-transition-size",
-        "path": "s3-lifecycle-transition-size",
+      "s3-lifecycle-transitions": {
+        "id": "s3-lifecycle-transitions",
+        "path": "s3-lifecycle-transitions",
         "children": {
           "AllStorageClasses128K": {
             "id": "AllStorageClasses128K",
-            "path": "s3-lifecycle-transition-size/AllStorageClasses128K",
+            "path": "s3-lifecycle-transitions/AllStorageClasses128K",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "s3-lifecycle-transition-size/AllStorageClasses128K/Resource",
+                "path": "s3-lifecycle-transitions/AllStorageClasses128K/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                   "aws:cdk:cloudformation:props": {
                     "lifecycleConfiguration": {
                       "rules": [
                         {
-                          "expirationInDays": 30,
-                          "status": "Enabled"
-                        }
-                      ],
-                      "transitionDefaultMinimumObjectSize": "all_storage_classes_128K"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
-            }
-          },
-          "VariesByStorageClass": {
-            "id": "VariesByStorageClass",
-            "path": "s3-lifecycle-transition-size/VariesByStorageClass",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "s3-lifecycle-transition-size/VariesByStorageClass/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
-                  "aws:cdk:cloudformation:props": {
-                    "lifecycleConfiguration": {
-                      "rules": [
-                        {
-                          "expirationInDays": 30,
-                          "status": "Enabled"
-                        }
-                      ],
-                      "transitionDefaultMinimumObjectSize": "varies_by_storage_class"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
-            }
-          },
-          "AllStorageClasses128KWithCustomSizeRule": {
-            "id": "AllStorageClasses128KWithCustomSizeRule",
-            "path": "s3-lifecycle-transition-size/AllStorageClasses128KWithCustomSizeRule",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "s3-lifecycle-transition-size/AllStorageClasses128KWithCustomSizeRule/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
-                  "aws:cdk:cloudformation:props": {
-                    "lifecycleConfiguration": {
-                      "rules": [
+                          "status": "Enabled",
+                          "transitions": [
+                            {
+                              "storageClass": "GLACIER",
+                              "transitionInDays": 30
+                            }
+                          ]
+                        },
                         {
                           "expirationInDays": 30,
                           "status": "Enabled",
@@ -106,18 +51,27 @@
               "version": "10.3.0"
             }
           },
-          "VariesByStorageClassWithCustomSizeRule": {
-            "id": "VariesByStorageClassWithCustomSizeRule",
-            "path": "s3-lifecycle-transition-size/VariesByStorageClassWithCustomSizeRule",
+          "VariesByStorageClass": {
+            "id": "VariesByStorageClass",
+            "path": "s3-lifecycle-transitions/VariesByStorageClass",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "s3-lifecycle-transition-size/VariesByStorageClassWithCustomSizeRule/Resource",
+                "path": "s3-lifecycle-transitions/VariesByStorageClass/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                   "aws:cdk:cloudformation:props": {
                     "lifecycleConfiguration": {
                       "rules": [
+                        {
+                          "status": "Enabled",
+                          "transitions": [
+                            {
+                              "storageClass": "GLACIER",
+                              "transitionInDays": 30
+                            }
+                          ]
+                        },
                         {
                           "expirationInDays": 30,
                           "status": "Enabled",
@@ -142,7 +96,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "s3-lifecycle-transition-size/BootstrapVersion",
+            "path": "s3-lifecycle-transitions/BootstrapVersion",
             "constructInfo": {
               "fqn": "constructs.Construct",
               "version": "10.3.0"
@@ -150,7 +104,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "s3-lifecycle-transition-size/CheckBootstrapVersion",
+            "path": "s3-lifecycle-transitions/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "constructs.Construct",
               "version": "10.3.0"
@@ -162,17 +116,17 @@
           "version": "10.3.0"
         }
       },
-      "cdk-integ-s3-lifecycle-transition-size": {
-        "id": "cdk-integ-s3-lifecycle-transition-size",
-        "path": "cdk-integ-s3-lifecycle-transition-size",
+      "cdk-integ-s3-lifecycle-transitions": {
+        "id": "cdk-integ-s3-lifecycle-transitions",
+        "path": "cdk-integ-s3-lifecycle-transitions",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "cdk-integ-s3-lifecycle-transition-size/DefaultTest",
+            "path": "cdk-integ-s3-lifecycle-transitions/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "cdk-integ-s3-lifecycle-transition-size/DefaultTest/Default",
+                "path": "cdk-integ-s3-lifecycle-transitions/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.3.0"
@@ -180,11 +134,11 @@
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "cdk-integ-s3-lifecycle-transition-size/DefaultTest/DeployAssert",
+                "path": "cdk-integ-s3-lifecycle-transitions/DefaultTest/DeployAssert",
                 "children": {
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
-                    "path": "cdk-integ-s3-lifecycle-transition-size/DefaultTest/DeployAssert/BootstrapVersion",
+                    "path": "cdk-integ-s3-lifecycle-transitions/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.3.0"
@@ -192,7 +146,7 @@
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
-                    "path": "cdk-integ-s3-lifecycle-transition-size/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "path": "cdk-integ-s3-lifecycle-transitions/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.3.0"

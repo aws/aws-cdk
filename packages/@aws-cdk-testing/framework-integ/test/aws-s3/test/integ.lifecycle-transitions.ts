@@ -1,14 +1,22 @@
 import { App, Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { Bucket, TransitionDefaultMinimumObjectSize } from 'aws-cdk-lib/aws-s3';
+import { Bucket, StorageClass, TransitionDefaultMinimumObjectSize } from 'aws-cdk-lib/aws-s3';
 
 const app = new App();
 
-const stack = new Stack(app, 's3-lifecycle-transition-size');
+const stack = new Stack(app, 's3-lifecycle-transitions');
 
 new Bucket(stack, 'AllStorageClasses128K', {
   lifecycleRules: [
     {
+      transitions: [{
+        storageClass: StorageClass.GLACIER,
+        transitionAfter: Duration.days(30),
+      }],
+    },
+    {
+      objectSizeLessThan: 300000,
+      objectSizeGreaterThan: 200000,
       expiration: Duration.days(30),
     },
   ],
@@ -19,27 +27,11 @@ new Bucket(stack, 'AllStorageClasses128K', {
 new Bucket(stack, 'VariesByStorageClass', {
   lifecycleRules: [
     {
-      expiration: Duration.days(30),
+      transitions: [{
+        storageClass: StorageClass.GLACIER,
+        transitionAfter: Duration.days(30),
+      }],
     },
-  ],
-  transitionDefaultMinimumObjectSize: TransitionDefaultMinimumObjectSize.VARIES_BY_STORAGE_CLASS,
-  removalPolicy: RemovalPolicy.DESTROY,
-});
-
-new Bucket(stack, 'AllStorageClasses128KWithCustomSizeRule', {
-  lifecycleRules: [
-    {
-      objectSizeLessThan: 300000,
-      objectSizeGreaterThan: 200000,
-      expiration: Duration.days(30),
-    },
-  ],
-  transitionDefaultMinimumObjectSize: TransitionDefaultMinimumObjectSize.ALL_STORAGE_CLASSES_128_K,
-  removalPolicy: RemovalPolicy.DESTROY,
-});
-
-new Bucket(stack, 'VariesByStorageClassWithCustomSizeRule', {
-  lifecycleRules: [
     {
       objectSizeLessThan: 300000,
       objectSizeGreaterThan: 200000,
@@ -50,6 +42,6 @@ new Bucket(stack, 'VariesByStorageClassWithCustomSizeRule', {
   removalPolicy: RemovalPolicy.DESTROY,
 });
 
-new IntegTest(app, 'cdk-integ-s3-lifecycle-transition-size', {
+new IntegTest(app, 'cdk-integ-s3-lifecycle-transitions', {
   testCases: [stack],
 });

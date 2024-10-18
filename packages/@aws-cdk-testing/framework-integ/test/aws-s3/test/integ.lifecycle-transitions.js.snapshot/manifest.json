@@ -1,29 +1,29 @@
 {
   "version": "38.0.1",
   "artifacts": {
-    "s3-lifecycle-transition-size.assets": {
+    "s3-lifecycle-transitions.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "s3-lifecycle-transition-size.assets.json",
+        "file": "s3-lifecycle-transitions.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "s3-lifecycle-transition-size": {
+    "s3-lifecycle-transitions": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "s3-lifecycle-transition-size.template.json",
+        "templateFile": "s3-lifecycle-transitions.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/831e3bb8282d40003f0e16f3c10c281d6524628d1d122cb2e64c89b1c32a3a3e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1e0d7f45f8d321fd2829de3312567d3deeb6dd4f6c753d1893936754bff6610e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "s3-lifecycle-transition-size.assets"
+          "s3-lifecycle-transitions.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -32,61 +32,49 @@
         }
       },
       "dependencies": [
-        "s3-lifecycle-transition-size.assets"
+        "s3-lifecycle-transitions.assets"
       ],
       "metadata": {
-        "/s3-lifecycle-transition-size/AllStorageClasses128K/Resource": [
+        "/s3-lifecycle-transitions/AllStorageClasses128K/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AllStorageClasses128KB8241761"
           }
         ],
-        "/s3-lifecycle-transition-size/VariesByStorageClass/Resource": [
+        "/s3-lifecycle-transitions/VariesByStorageClass/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VariesByStorageClassCD3C88D5"
           }
         ],
-        "/s3-lifecycle-transition-size/AllStorageClasses128KWithCustomSizeRule/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AllStorageClasses128KWithCustomSizeRuleCB96F380"
-          }
-        ],
-        "/s3-lifecycle-transition-size/VariesByStorageClassWithCustomSizeRule/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VariesByStorageClassWithCustomSizeRule7F7CE7DF"
-          }
-        ],
-        "/s3-lifecycle-transition-size/BootstrapVersion": [
+        "/s3-lifecycle-transitions/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/s3-lifecycle-transition-size/CheckBootstrapVersion": [
+        "/s3-lifecycle-transitions/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "s3-lifecycle-transition-size"
+      "displayName": "s3-lifecycle-transitions"
     },
-    "cdkintegs3lifecycletransitionsizeDefaultTestDeployAssert78D699F6.assets": {
+    "cdkintegs3lifecycletransitionsDefaultTestDeployAssert9A611ED6.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "cdkintegs3lifecycletransitionsizeDefaultTestDeployAssert78D699F6.assets.json",
+        "file": "cdkintegs3lifecycletransitionsDefaultTestDeployAssert9A611ED6.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "cdkintegs3lifecycletransitionsizeDefaultTestDeployAssert78D699F6": {
+    "cdkintegs3lifecycletransitionsDefaultTestDeployAssert9A611ED6": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "cdkintegs3lifecycletransitionsizeDefaultTestDeployAssert78D699F6.template.json",
+        "templateFile": "cdkintegs3lifecycletransitionsDefaultTestDeployAssert9A611ED6.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "notificationArns": [],
@@ -96,7 +84,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "cdkintegs3lifecycletransitionsizeDefaultTestDeployAssert78D699F6.assets"
+          "cdkintegs3lifecycletransitionsDefaultTestDeployAssert9A611ED6.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -105,23 +93,23 @@
         }
       },
       "dependencies": [
-        "cdkintegs3lifecycletransitionsizeDefaultTestDeployAssert78D699F6.assets"
+        "cdkintegs3lifecycletransitionsDefaultTestDeployAssert9A611ED6.assets"
       ],
       "metadata": {
-        "/cdk-integ-s3-lifecycle-transition-size/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/cdk-integ-s3-lifecycle-transitions/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/cdk-integ-s3-lifecycle-transition-size/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/cdk-integ-s3-lifecycle-transitions/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "cdk-integ-s3-lifecycle-transition-size/DefaultTest/DeployAssert"
+      "displayName": "cdk-integ-s3-lifecycle-transitions/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

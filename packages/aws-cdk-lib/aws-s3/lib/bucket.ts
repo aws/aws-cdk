@@ -2269,21 +2269,6 @@ export class Bucket extends BucketBase {
    * @param props Par
    */
   private parseLifecycleConfiguration(): CfnBucket.LifecycleConfigurationProperty | undefined {
-    const isValidTransitionDefaultMinimumObjectSize = this.lifecycleRules.every(
-      (rule: LifecycleRule): boolean =>
-        rule.abortIncompleteMultipartUploadAfter !== undefined ||
-        rule.expiration !== undefined ||
-        rule.expirationDate !== undefined ||
-        rule.expiredObjectDeleteMarker !== undefined ||
-        rule.noncurrentVersionExpiration !== undefined ||
-        rule.noncurrentVersionsToRetain !== undefined ||
-        rule.noncurrentVersionTransitions !== undefined ||
-        rule.transitions !== undefined,
-    );
-    if (this.transitionDefaultMinimumObjectSize && !isValidTransitionDefaultMinimumObjectSize) {
-      throw new Error('TransitionDefaultMinimumObjectSize cannot be specified if all lifecycleRules don\'t have at least one of the following properties: abortIncompleteMultipartUploadAfter, expiration, expirationDate, expiredObjectDeleteMarker, noncurrentVersionExpiration, noncurrentVersionsToRetain, noncurrentVersionTransitions, or transitions');
-    }
-
     if (!this.lifecycleRules || this.lifecycleRules.length === 0) {
       return undefined;
     }
