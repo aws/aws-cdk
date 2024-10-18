@@ -608,7 +608,7 @@
     },
     "ReplaceComputeEnvironment": false,
     "State": "ENABLED",
-    "Type": "managed",
+    "Type": "MANAGED",
     "UpdatePolicy": {}
    }
   },
