@@ -1,6 +1,7 @@
 import { Resource, Stack, IResource, Token, ArnFormat } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import * as iot from 'aws-cdk-lib/aws-iot';
+import { IAccountAuditConfiguration } from './audit-configuration';
 
 /**
  * Represents AWS IoT Scheduled Audit
@@ -232,6 +233,13 @@ export interface ScheduledAuditProps {
   readonly auditChecks: AuditCheck[];
 
   /**
+   * Account audit configuration.
+   *
+   * The audit checks specified in `auditChecks` must be enabled in this configuration.
+   */
+  readonly accountAuditConfiguration: IAccountAuditConfiguration;
+
+  /**
    * The day of the week on which the scheduled audit is run (if the frequency is "WEEKLY" or "BIWEEKLY").
    *
    * @default - required if frequency is "WEEKLY" or "BIWEEKLY", not allowed otherwise
@@ -363,6 +371,8 @@ export class ScheduledAudit extends Resource implements IScheduledAudit {
 
     this.scheduledAuditName = resource.ref;
     this.scheduledAuditArn = resource.attrScheduledAuditArn;
+
+    resource.node.addDependency(props.accountAuditConfiguration);
   }
 }
 

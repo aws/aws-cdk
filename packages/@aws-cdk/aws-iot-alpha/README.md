@@ -172,9 +172,4 @@ const monthlyAudit = new iot.ScheduledAudit(this, 'MonthlyAudit', {
     iot.AuditCheck.CA_CERTIFICATE_KEY_QUALITY_CHECK,
   ],
 });
-
-// Add a dependency because a `ScheduledAudit` needs to be created after the `AccountAuditConfiguration` is set up.
-dailyAudit.node.addDependency(config);
-weeklyAudit.node.addDependency(config);
-monthlyAudit.node.addDependency(config);
 ```

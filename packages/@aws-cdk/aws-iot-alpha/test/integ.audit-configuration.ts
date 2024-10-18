@@ -13,14 +13,16 @@ class TestStack extends cdk.Stack {
       targetTopic,
     });
 
-    const dailyAudit = new iot.ScheduledAudit(this, 'DailyAudit', {
+    new iot.ScheduledAudit(this, 'DailyAudit', {
+      accountAuditConfiguration: config,
       frequency: iot.Frequency.DAILY,
       auditChecks: [
         iot.AuditCheck.AUTHENTICATED_COGNITO_ROLE_OVERLY_PERMISSIVE_CHECK,
       ],
     });
 
-    const weeklyAudit = new iot.ScheduledAudit(this, 'WeeklyAudit', {
+    new iot.ScheduledAudit(this, 'WeeklyAudit', {
+      accountAuditConfiguration: config,
       frequency: iot.Frequency.WEEKLY,
       dayOfWeek: iot.DayOfWeek.SUNDAY,
       auditChecks: [
@@ -28,7 +30,8 @@ class TestStack extends cdk.Stack {
       ],
     });
 
-    const monthlyAudit = new iot.ScheduledAudit(this, 'MonthlyAudit', {
+    new iot.ScheduledAudit(this, 'MonthlyAudit', {
+      accountAuditConfiguration: config,
       frequency: iot.Frequency.MONTHLY,
       dayOfMonth: iot.DayOfMonth.LAST_DAY,
       auditChecks: [
@@ -46,10 +49,6 @@ class TestStack extends cdk.Stack {
         iot.AuditCheck.UNAUTHENTICATED_COGNITO_ROLE_OVERLY_PERMISSIVE_CHECK,
       ],
     });
-
-    dailyAudit.node.addDependency(config);
-    weeklyAudit.node.addDependency(config);
-    monthlyAudit.node.addDependency(config);
   }
 }
 

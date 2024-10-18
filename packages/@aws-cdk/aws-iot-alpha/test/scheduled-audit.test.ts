@@ -2,24 +2,33 @@ import { Template } from 'aws-cdk-lib/assertions';
 import * as cdk from 'aws-cdk-lib';
 import * as iot from '../lib';
 
-test('Default property', () => {
-  const stack = new cdk.Stack();
+let stack: cdk.Stack;
+let config: iot.AccountAuditConfiguration;
 
+beforeEach(() => {
+  stack = new cdk.Stack();
+  config = new iot.AccountAuditConfiguration(stack, 'AccountAuditConfiguration');
+});
+
+test('Default property', () => {
   new iot.ScheduledAudit(stack, 'ScheduledAudit', {
+    accountAuditConfiguration: config,
     frequency: iot.Frequency.DAILY,
     auditChecks: [iot.AuditCheck.AUTHENTICATED_COGNITO_ROLE_OVERLY_PERMISSIVE_CHECK],
   });
 
-  Template.fromStack(stack).hasResourceProperties('AWS::IoT::ScheduledAudit', {
-    Frequency: 'DAILY',
-    TargetCheckNames: ['AUTHENTICATED_COGNITO_ROLE_OVERLY_PERMISSIVE_CHECK'],
+  Template.fromStack(stack).hasResource('AWS::IoT::ScheduledAudit', {
+    DependsOn: ['AccountAuditConfigurationAuditRoleBEFDE978', 'AccountAuditConfigurationA87E7758'],
+    Properties: {
+      Frequency: 'DAILY',
+      TargetCheckNames: ['AUTHENTICATED_COGNITO_ROLE_OVERLY_PERMISSIVE_CHECK'],
+    },
   });
 });
 
 test('full settings', () => {
-  const stack = new cdk.Stack();
-
   new iot.ScheduledAudit(stack, 'ScheduledAudit', {
+    accountAuditConfiguration: config,
     frequency: iot.Frequency.DAILY,
     auditChecks: [iot.AuditCheck.AUTHENTICATED_COGNITO_ROLE_OVERLY_PERMISSIVE_CHECK],
     scheduledAuditName: 'MyScheduledAudit',
@@ -34,10 +43,9 @@ test('full settings', () => {
 
 describe('daily audit', () => {
   test('throw error for specifying day of week', () => {
-    const stack = new cdk.Stack();
-
     expect(() => {
       new iot.ScheduledAudit(stack, 'ScheduledAudit', {
+        accountAuditConfiguration: config,
         frequency: iot.Frequency.DAILY,
         dayOfWeek: iot.DayOfWeek.MONDAY,
         auditChecks: [iot.AuditCheck.AUTHENTICATED_COGNITO_ROLE_OVERLY_PERMISSIVE_CHECK],
@@ -46,10 +54,9 @@ describe('daily audit', () => {
   });
 
   test('throw error for specifying day of month', () => {
-    const stack = new cdk.Stack();
-
     expect(() => {
       new iot.ScheduledAudit(stack, 'ScheduledAudit', {
+        accountAuditConfiguration: config,
         frequency: iot.Frequency.DAILY,
         dayOfMonth: iot.DayOfMonth.of(29),
         auditChecks: [iot.AuditCheck.AUTHENTICATED_COGNITO_ROLE_OVERLY_PERMISSIVE_CHECK],
@@ -60,9 +67,8 @@ describe('daily audit', () => {
 
 describe('weekly audit', () => {
   test('set day of week', () => {
-    const stack = new cdk.Stack();
-
     new iot.ScheduledAudit(stack, 'ScheduledAudit', {
+      accountAuditConfiguration: config,
       frequency: iot.Frequency.WEEKLY,
       dayOfWeek: iot.DayOfWeek.MONDAY,
       auditChecks: [iot.AuditCheck.AUTHENTICATED_COGNITO_ROLE_OVERLY_PERMISSIVE_CHECK],
@@ -76,10 +82,9 @@ describe('weekly audit', () => {
   });
 
   test('throw error for missing day of week', () => {
-    const stack = new cdk.Stack();
-
     expect(() => {
       new iot.ScheduledAudit(stack, 'ScheduledAudit', {
+        accountAuditConfiguration: config,
         frequency: iot.Frequency.WEEKLY,
         auditChecks: [iot.AuditCheck.AUTHENTICATED_COGNITO_ROLE_OVERLY_PERMISSIVE_CHECK],
       });
@@ -87,10 +92,9 @@ describe('weekly audit', () => {
   });
 
   test('throw error for specifying both day of week and day of month', () => {
-    const stack = new cdk.Stack();
-
     expect(() => {
       new iot.ScheduledAudit(stack, 'ScheduledAudit', {
+        accountAuditConfiguration: config,
         frequency: iot.Frequency.WEEKLY,
         dayOfWeek: iot.DayOfWeek.MONDAY,
         dayOfMonth: iot.DayOfMonth.of(29),
@@ -102,9 +106,8 @@ describe('weekly audit', () => {
 
 describe('bi-weekly audit', () => {
   test('set day of week', () => {
-    const stack = new cdk.Stack();
-
     new iot.ScheduledAudit(stack, 'ScheduledAudit', {
+      accountAuditConfiguration: config,
       frequency: iot.Frequency.BI_WEEKLY,
       dayOfWeek: iot.DayOfWeek.MONDAY,
       auditChecks: [iot.AuditCheck.AUTHENTICATED_COGNITO_ROLE_OVERLY_PERMISSIVE_CHECK],
@@ -118,10 +121,9 @@ describe('bi-weekly audit', () => {
   });
 
   test('throw error for missing day of week', () => {
-    const stack = new cdk.Stack();
-
     expect(() => {
       new iot.ScheduledAudit(stack, 'ScheduledAudit', {
+        accountAuditConfiguration: config,
         frequency: iot.Frequency.BI_WEEKLY,
         auditChecks: [iot.AuditCheck.AUTHENTICATED_COGNITO_ROLE_OVERLY_PERMISSIVE_CHECK],
       });
@@ -129,10 +131,9 @@ describe('bi-weekly audit', () => {
   });
 
   test('throw error for specifying both day of week and day of month', () => {
-    const stack = new cdk.Stack();
-
     expect(() => {
       new iot.ScheduledAudit(stack, 'ScheduledAudit', {
+        accountAuditConfiguration: config,
         frequency: iot.Frequency.BI_WEEKLY,
         dayOfWeek: iot.DayOfWeek.MONDAY,
         dayOfMonth: iot.DayOfMonth.of(29),
@@ -144,9 +145,8 @@ describe('bi-weekly audit', () => {
 
 describe('monthly audit', () => {
   test('set day of month', () => {
-    const stack = new cdk.Stack();
-
     new iot.ScheduledAudit(stack, 'ScheduledAudit', {
+      accountAuditConfiguration: config,
       frequency: iot.Frequency.MONTHLY,
       dayOfMonth: iot.DayOfMonth.of(29),
       auditChecks: [iot.AuditCheck.AUTHENTICATED_COGNITO_ROLE_OVERLY_PERMISSIVE_CHECK],
@@ -160,10 +160,9 @@ describe('monthly audit', () => {
   });
 
   test('throw error for missing day of month', () => {
-    const stack = new cdk.Stack();
-
     expect(() => {
       new iot.ScheduledAudit(stack, 'ScheduledAudit', {
+        accountAuditConfiguration: config,
         frequency: iot.Frequency.MONTHLY,
         auditChecks: [iot.AuditCheck.AUTHENTICATED_COGNITO_ROLE_OVERLY_PERMISSIVE_CHECK],
       });
@@ -171,10 +170,9 @@ describe('monthly audit', () => {
   });
 
   test('throw error for specifying both day of week and day of month', () => {
-    const stack = new cdk.Stack();
-
     expect(() => {
       new iot.ScheduledAudit(stack, 'ScheduledAudit', {
+        accountAuditConfiguration: config,
         frequency: iot.Frequency.MONTHLY,
         dayOfWeek: iot.DayOfWeek.MONDAY,
         dayOfMonth: iot.DayOfMonth.of(29),
@@ -185,10 +183,9 @@ describe('monthly audit', () => {
 });
 
 test.each(['', 'a'.repeat(129)])('throw error for invalid length of scheduled audit name %s', (name) => {
-  const stack = new cdk.Stack();
-
   expect(() => {
     new iot.ScheduledAudit(stack, 'ScheduledAudit', {
+      accountAuditConfiguration: config,
       frequency: iot.Frequency.DAILY,
       auditChecks: [iot.AuditCheck.AUTHENTICATED_COGNITO_ROLE_OVERLY_PERMISSIVE_CHECK],
       scheduledAuditName: name,
@@ -197,10 +194,9 @@ test.each(['', 'a'.repeat(129)])('throw error for invalid length of scheduled au
 });
 
 test('throw error for invalid scheduled audit name', () => {
-  const stack = new cdk.Stack();
-
   expect(() => {
     new iot.ScheduledAudit(stack, 'ScheduledAudit', {
+      accountAuditConfiguration: config,
       frequency: iot.Frequency.DAILY,
       auditChecks: [iot.AuditCheck.AUTHENTICATED_COGNITO_ROLE_OVERLY_PERMISSIVE_CHECK],
       scheduledAuditName: '*!()',
@@ -209,8 +205,6 @@ test('throw error for invalid scheduled audit name', () => {
 });
 
 test('import by attributes', () => {
-  const stack = new cdk.Stack();
-
   const name = 'scheduled-audit-name';
   const arn = 'arn:aws:iot:us-east-1:123456789012:scheduledaudit/scheduled-audit-name';
 
@@ -226,8 +220,6 @@ test('import by attributes', () => {
 });
 
 test('import by arn', () => {
-  const stack = new cdk.Stack();
-
   const arn = 'arn:aws:iot:us-east-1:123456789012:scheduledaudit/scheduled-audit-name';
 
   const scheduledAudit = iot.ScheduledAudit.fromScheduledAuditArn(stack, 'AccountAuditConfigurationFromArn', arn);
