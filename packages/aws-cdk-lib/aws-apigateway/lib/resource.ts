@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnResource, CfnResourceProps } from './apigateway.generated';
 import { Cors, CorsOptions } from './cors';
-import { Integration } from './integration';
+import { Integration, PassthroughBehavior } from './integration';
 import { MockIntegration } from './integrations';
 import { Method, MethodOptions, AuthorizationType } from './method';
 import { IRestApi, RestApi } from './restapi';
@@ -295,6 +295,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
       integrationResponses: [
         { statusCode: `${statusCode}`, responseParameters: integrationResponseParams, responseTemplates: renderResponseTemplate() },
       ],
+      passthroughBehavior: PassthroughBehavior.NEVER,
     }), {
       authorizer: {
         authorizerId: '',
