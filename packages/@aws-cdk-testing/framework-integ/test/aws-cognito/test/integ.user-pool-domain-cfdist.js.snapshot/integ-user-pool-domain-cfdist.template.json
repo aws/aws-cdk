@@ -148,7 +148,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "746da84b10e215c552e68b6d2061024e4429f0386f43a35ef5e4d2940655692e.zip"
+     "S3Key": "9e8936ba1db43e0919ba2fc8265d50686eeaca82830c471ff8b7b0672c5970ec.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -184,6 +184,14 @@
     "Fn::GetAtt": [
      "UserPoolDomainCloudFrontDomainNameE213E594",
      "DomainDescription.CloudFrontDistribution"
+    ]
+   }
+  },
+  "CloudFrontEndpoint": {
+   "Value": {
+    "Fn::GetAtt": [
+     "UserPoolDomainD0EA232A",
+     "CloudFrontDistribution"
     ]
    }
   }
