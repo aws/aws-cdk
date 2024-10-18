@@ -1,0 +1,12 @@
+{
+  "version": "36.0.5",
+  "testCases": {
+    "AutoScalingGroupHealthChecks/DefaultTest": {
+      "stacks": [
+        "integ-health-checks"
+      ],
+      "assertionStack": "AutoScalingGroupHealthChecks/DefaultTest/DeployAssert",
+      "assertionStackName": "AutoScalingGroupHealthChecksDefaultTestDeployAssert9AAA1F3B"
+    }
+  }
+}
