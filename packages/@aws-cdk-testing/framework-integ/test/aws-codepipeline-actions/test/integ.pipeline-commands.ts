@@ -26,7 +26,7 @@ const sourceAction = new cpactions.S3SourceAction({
   actionName: 'Source',
   output: sourceOutput,
   bucket,
-  bucketKey: 'assets/nodejs.zip',
+  bucketKey: 'nodejs.zip',
 });
 
 const commandsOutput = new codepipeline.Artifact('CommandsArtifact', ['my-dir/**/*']);
@@ -83,7 +83,7 @@ const integ = new IntegTest(app, 'aws-cdk-codepipeline-commands-test', {
 
 const putObjectCall = integ.assertions.awsApiCall('S3', 'putObject', {
   Bucket: bucket.bucketName,
-  Key: 'assets/nodejs.zip',
+  Key: 'nodejs.zip',
   Body: path.join(__dirname, 'assets', 'nodejs.zip'),
 });
 

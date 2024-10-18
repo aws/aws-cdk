@@ -109,6 +109,14 @@ export class CommandsAction extends Action {
       ],
     }));
 
+    // allow the Role access to the Bucket, if there are any inputs/outputs
+    if ((this.actionProperties.inputs ?? []).length > 0) {
+      options.bucket.grantRead(options.role);
+    }
+    if ((this.actionProperties.outputs ?? []).length > 0) {
+      options.bucket.grantWrite(options.role);
+    }
+
     // `CommandsAction` does not need the `configuration` in the `ActionConfig`.
     return {};
   }
