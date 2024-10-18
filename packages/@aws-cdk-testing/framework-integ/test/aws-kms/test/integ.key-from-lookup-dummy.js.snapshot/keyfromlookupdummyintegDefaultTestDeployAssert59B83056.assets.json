@@ -1,15 +1,15 @@
 {
   "version": "38.0.1",
   "files": {
-    "f3adbf3426efedfef748320d2b748e9fc0d285a04c6368f366c80422cc14e54c": {
+    "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
       "source": {
-        "path": "integ-user-pool-idp-apple.template.json",
+        "path": "keyfromlookupdummyintegDefaultTestDeployAssert59B83056.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "f3adbf3426efedfef748320d2b748e9fc0d285a04c6368f366c80422cc14e54c.json",
+          "objectKey": "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
