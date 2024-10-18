@@ -2289,6 +2289,19 @@ export class Bucket extends BucketBase {
         throw new Error('ExpiredObjectDeleteMarker cannot be specified with expiration, ExpirationDate, or TagFilters.');
       }
 
+      if (
+        rule.abortIncompleteMultipartUploadAfter === undefined &&
+        rule.expiration === undefined &&
+        rule.expirationDate === undefined &&
+        rule.expiredObjectDeleteMarker === undefined &&
+        rule.noncurrentVersionExpiration === undefined &&
+        rule.noncurrentVersionsToRetain === undefined &&
+        rule.noncurrentVersionTransitions === undefined &&
+        rule.transitions === undefined
+      ) {
+        throw new Error('All rules for `lifecycleRules` must have at least one of the following properties: `abortIncompleteMultipartUploadAfter`, `expiration`, `expirationDate`, `expiredObjectDeleteMarker`, `noncurrentVersionExpiration`, `noncurrentVersionsToRetain`, `noncurrentVersionTransitions`, or `transitions`');
+      }
+
       const x: CfnBucket.RuleProperty = {
         // eslint-disable-next-line max-len
         abortIncompleteMultipartUpload: rule.abortIncompleteMultipartUploadAfter !== undefined ? { daysAfterInitiation: rule.abortIncompleteMultipartUploadAfter.toDays() } : undefined,
