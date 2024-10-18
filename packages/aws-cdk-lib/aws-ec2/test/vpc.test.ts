@@ -16,6 +16,7 @@ import {
   InterfaceVpcEndpointService,
   NatProvider,
   NatGatewayProvider,
+  NatInstanceProviderV2,
   NatInstanceProvider,
   NatTrafficDirection,
   NetworkAcl,
@@ -1758,6 +1759,36 @@ describe('vpc', () => {
 
       // THEN
       Template.fromStack(stack).resourceCountIs('AWS::EC2::Instance', 1);
+    });
+
+    test.each([
+      [true, true],
+      [false, false],
+      [undefined, Match.absent()],
+    ])('Can instantiate NatInstanceProviderV2 with associatePublicIpAddress', (input, value) => {
+      const stack = getTestStack();
+      new Vpc(stack, 'Vpc', {
+        natGatewayProvider: NatProvider.instanceV2({
+          instanceType: InstanceType.of(InstanceClass.T4G, InstanceSize.MICRO),
+          associatePublicIpAddress: input,
+        }),
+        subnetConfiguration: [
+          {
+            subnetType: SubnetType.PUBLIC,
+            name: 'Public',
+            // NAT instance does not work when this set to false.
+            mapPublicIpOnLaunch: false,
+          },
+          {
+            subnetType: SubnetType.PRIVATE_WITH_EGRESS,
+            name: 'Private',
+          },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+        AssociatePublicIpAddress: value,
+      });
     });
 
     test('Can instantiate NatInstanceProvider directly with new', () => {
