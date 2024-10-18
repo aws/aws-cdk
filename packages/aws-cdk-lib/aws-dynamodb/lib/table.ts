@@ -532,6 +532,7 @@ export interface TableAttributes {
 }
 
 export abstract class TableBase extends Resource implements ITable, iam.IResourceWithPolicy {
+
   /**
    * @attribute
    */
@@ -561,6 +562,22 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
   protected readonly regionalArns = new Array<string>();
 
   /**
+   * Adds a statement to the resource policy associated with this table.
+   * A resource policy will be automatically created upon the first call to `addToResourcePolicy`.
+   *
+   * Note that this does not work with imported tables
+   *
+   * @param statement The policy statement to add
+   */
+  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+
+    this.resourcePolicy = this.resourcePolicy ?? new iam.PolicyDocument({ statements: [] });
+    this.resourcePolicy?.addStatements(statement);
+
+    return { statementAdded: true, policyDependable: this.resourcePolicy };
+  }
+
+  /**
    * Adds an IAM policy statement associated with this table to an IAM
    * principal's policy.
    *
@@ -571,7 +588,7 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
    * @param actions The set of actions to allow (i.e. "dynamodb:PutItem", "dynamodb:GetItem", ...)
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
-    return iam.Grant.addToPrincipalOrResource({
+    return iam.Grant.addToPrincipal({
       grantee,
       actions,
       resourceArns: [
@@ -582,7 +599,7 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
           produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
         })),
       ],
-      resource: this,
+      scope: this,
     });
   }
   /**
@@ -696,23 +713,6 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
   public grantFullAccess(grantee: iam.IGrantable) {
     const keyActions = perms.KEY_READ_ACTIONS.concat(perms.KEY_WRITE_ACTIONS);
     return this.combinedGrant(grantee, { keyActions, tableActions: ['dynamodb:*'] });
-  }
-
-  /**
-   * Adds a statement to the resource policy associated with this file system.
-   * A resource policy will be automatically created upon the first call to `addToResourcePolicy`.
-   *
-   * Note that this does not work with imported file systems.
-   *
-   * @param statement The policy statement to add
-   */
-  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
-    this.resourcePolicy = this.resourcePolicy ?? new iam.PolicyDocument({ statements: [] });
-    this.resourcePolicy.addStatements(statement);
-    return {
-      statementAdded: true,
-      policyDependable: this,
-    };
   }
 
   /**
@@ -965,11 +965,11 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
           produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
         })),
       ];
-      const ret = iam.Grant.addToPrincipalOrResource({
+      const ret = iam.Grant.addToPrincipal({
         grantee,
         actions: opts.tableActions,
         resourceArns: resources,
-        resource: this,
+        scope: this,
       });
       return ret;
     }
@@ -978,11 +978,11 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
         throw new Error(`DynamoDB Streams must be enabled on the table ${this.node.path}`);
       }
       const resources = [this.tableStreamArn];
-      const ret = iam.Grant.addToPrincipalOrResource({
+      const ret = iam.Grant.addToPrincipal({
         grantee,
         actions: opts.streamActions,
         resourceArns: resources,
-        resource: this,
+        scope: this,
       });
       return ret;
     }
@@ -1157,6 +1157,8 @@ export class Table extends TableBase {
     }
     this.validateProvisioning(props);
 
+    this.resourcePolicy = props.resourcePolicy ?? new iam.PolicyDocument();
+
     this.table = new CfnTable(this, 'Resource', {
       tableName: this.physicalName,
       keySchema: this.keySchema,
@@ -1184,9 +1186,11 @@ export class Table extends TableBase {
       kinesisStreamSpecification: props.kinesisStream ? { streamArn: props.kinesisStream.streamArn } : undefined,
       deletionProtectionEnabled: props.deletionProtection,
       importSourceSpecification: this.renderImportSourceSpecification(props.importSource),
-      resourcePolicy: props.resourcePolicy
-        ? { policyDocument: props.resourcePolicy }
-        : undefined,
+      resourcePolicy: Lazy.any({
+        produce: () => (this.resourcePolicy && this.resourcePolicy.statementCount > 0
+          ? { policyDocument: this.resourcePolicy.toJSON() }
+          : undefined),
+      }),
     });
     this.table.applyRemovalPolicy(props.removalPolicy);
 
@@ -1740,6 +1744,7 @@ export class Table extends TableBase {
       },
     };
   }
+
 }
 
 /**
