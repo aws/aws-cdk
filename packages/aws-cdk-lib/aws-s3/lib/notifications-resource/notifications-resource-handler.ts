@@ -63,13 +63,19 @@ export class NotificationsResourceHandler extends Construct {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
     });
 
-    this.role.addManagedPolicy(
-      iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'),
-    );
     this.role.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['s3:PutBucketNotification'],
       resources: ['*'],
     }));
+
+    if (props.role) {
+      cdk.Annotations.of(this).addWarningV2('@aws-cdk-lib/aws-s3:missingLambdaExecutionRole', 'CDK doesn\'t add service-roles if `notificationsHandlerRole` is provided, Make Sure Imported Role have AWSLambdaBasicExecutionRole added');
+    }
+    if (!props.role) {
+      this.role.addManagedPolicy(
+        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'),
+      );
+    }
 
     const resourceType = 'AWS::Lambda::Function';
     class InLineLambda extends cdk.CfnResource {

@@ -1,9 +1,9 @@
 import { Construct } from 'constructs';
 import { MAX_POLICY_NAME_LEN } from './util';
-import { FeatureFlags, Names, Resource, Token, TokenComparison, Annotations } from '../../../core';
+import { FeatureFlags, Names, Resource, Token, TokenComparison } from '../../../core';
 import { IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME } from '../../../cx-api';
 import { Grant } from '../grant';
-import { IManagedPolicy } from '../managed-policy';
+import { ManagedPolicy } from '../managed-policy';
 import { Policy } from '../policy';
 import { PolicyStatement } from '../policy-statement';
 import { IComparablePrincipal, IPrincipal, ArnPrincipal, AddToPrincipalPolicyResult, PrincipalPolicyFragment } from '../principals';
@@ -74,8 +74,15 @@ export class ImportedRole extends Resource implements IRole, IComparablePrincipa
     }
   }
 
-  public addManagedPolicy(policy: IManagedPolicy): void {
-    Annotations.of(this).addWarningV2('@aws-cdk/aws-iam:importedRoleManagedPolicyNotAdded', `Not adding managed policy: ${policy.managedPolicyArn} to imported role: ${this.roleName}`);
+  public addManagedPolicy(policy: ManagedPolicy): void {
+    try {
+      policy.attachToRole(this);
+    } catch (e) {
+      if (e instanceof Error && e.message === 'policy.attachToRole is not a function') {
+        throw new Error('Can\'t Combine IRole with IManagedPolicy. use ManagedPolicy directly.');
+      }
+      throw new Error(`${e}`);
+    }
   }
 
   public grantPassRole(identity: IPrincipal): Grant {
