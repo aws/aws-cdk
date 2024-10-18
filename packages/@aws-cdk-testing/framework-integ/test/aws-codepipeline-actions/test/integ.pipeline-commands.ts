@@ -5,6 +5,7 @@ import { Duration } from 'aws-cdk-lib';
 import { IntegTest, ExpectedResult, Match } from '@aws-cdk/integ-tests-alpha';
 import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
 import { Key } from 'aws-cdk-lib/aws-kms';
+import * as path from 'path';
 
 const app = new cdk.App();
 
@@ -25,7 +26,7 @@ const sourceAction = new cpactions.S3SourceAction({
   actionName: 'Source',
   output: sourceOutput,
   bucket,
-  bucketKey: 'test.zip',
+  bucketKey: 'assets/nodejs.zip',
 });
 
 const commandsOutput = new codepipeline.Artifact('CommandsArtifact', ['my-dir/**/*']);
@@ -48,6 +49,14 @@ const deployBucket = new s3.Bucket(stack, 'DeployBucket', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   autoDeleteObjects: true,
 });
+const deployAction = new cpactions.S3DeployAction({
+  actionName: 'DeployAction',
+  extract: true,
+  input: commandsOutput,
+  bucket: deployBucket,
+  objectKey: commandsAction.variable('MY_OUTPUT'),
+  encryptionKey: key,
+});
 
 const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
   artifactBucket: bucket,
@@ -62,16 +71,7 @@ const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
     },
     {
       stageName: 'Deploy',
-      actions: [
-        new cpactions.S3DeployAction({
-          actionName: 'DeployAction',
-          extract: true,
-          input: commandsOutput,
-          bucket: deployBucket,
-          objectKey: commandsAction.variable('MY_OUTPUT'),
-          encryptionKey: key,
-        }),
-      ],
+      actions: [deployAction],
     },
   ],
 });
@@ -83,7 +83,14 @@ const integ = new IntegTest(app, 'aws-cdk-codepipeline-commands-test', {
 
 const putObjectCall = integ.assertions.awsApiCall('S3', 'putObject', {
   Bucket: bucket.bucketName,
-  Key: 'test.zip',
+  Key: 'assets/nodejs.zip',
+  Body: path.join(__dirname, 'assets', 'nodejs.zip'),
+});
+
+putObjectCall.provider.addToRolePolicy({
+  Effect: 'Allow',
+  Action: ['kms:GenerateDataKey'],
+  Resource: ['*'],
 });
 
 const getObjectCall = integ.assertions.awsApiCall('S3', 'getObject', {
