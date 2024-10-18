@@ -228,6 +228,28 @@ cluster.addNodegroupCapacity('custom-node-group', {
 });
 ```
 
+To use a custom AMI for the node group, you can set `amiType` to `CUSTOM`.
+A launch template must be provided.
+
+```ts
+declare const cluster: eks.Cluster;
+
+const launchTemplate = new ec2.CfnLaunchTemplate(this, 'LaunchTemplate', {
+  launchTemplateData: {
+    imageId: 'ami-0abcdef1234567890',
+  },
+});
+
+cluster.addNodegroupCapacity('custom-node-group', {
+  instanceTypes: [new ec2.InstanceType('m5.large')],
+  amiType: eks.NodegroupAmiType.CUSTOM,
+  launchTemplateSpec: {
+    id: launchTemplate.ref,
+    version: launchTemplate.attrLatestVersionNumber,
+  },
+});
+```
+
 To define the maximum number of instances which can be simultaneously replaced in a node group during a version update you can set `maxUnavailable` or `maxUnavailablePercentage` options.
 
 > For more details visit [Updating a managed node group](https://docs.aws.amazon.com/eks/latest/userguide/update-managed-node-group.html)
