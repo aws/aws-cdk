@@ -187,7 +187,7 @@ describe('cluster new api', () => {
 
       // WHEN
       new DatabaseCluster(stack, type, {
-        engine: engine,
+        engine,
         vpc,
         enableLocalWriteForwarding: true,
         writer: ClusterInstance.serverlessV2('writer'),
