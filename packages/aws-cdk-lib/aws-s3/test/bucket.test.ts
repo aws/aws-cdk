@@ -3852,5 +3852,29 @@ describe('bucket', () => {
       },
     });
   });
+
+  test.each([
+    [s3.TransitionDefaultMinimumObjectSize.ALL_STORAGE_CLASSES_128_K, 'all_storage_classes_128K'],
+    [s3.TransitionDefaultMinimumObjectSize.VARIES_BY_STORAGE_CLASS, 'varies_by_storage_class'],
+  ])('transitionDefaultMinimumObjectSize %s can be specified', (key, value) => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'MyBucket', {
+      transitionDefaultMinimumObjectSize: key,
+      lifecycleRules: [
+        {
+          expiration: cdk.Duration.days(365),
+        },
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      LifecycleConfiguration: {
+        TransitionDefaultMinimumObjectSize: value,
+        Rules: [{
+          ExpirationInDays: 365,
+        }],
+      },
+    });
+  });
 });
 
