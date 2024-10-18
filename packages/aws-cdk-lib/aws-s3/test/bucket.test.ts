@@ -215,9 +215,27 @@ describe('bucket', () => {
     }).toThrow(/Bucket name must only contain lowercase characters and the symbols, period \(\.\) and dash \(-\)/);
   });
 
+  test('validateBucketName allows uppercase characters when allowLegacyBucketNaming=true', () => {
+    expect(() => {
+      s3.Bucket.validateBucketName('Test_Bucket_Name', true);
+    }).not.toThrow();
+  });
+
+  test('validateBucketName does not allow uppercase characters when allowLegacyBucketNaming=false', () => {
+    expect(() => {
+      s3.Bucket.validateBucketName('Test_Bucket_Name', false);
+    }).toThrow(/Bucket name must only contain lowercase characters and the symbols, period \(\.\) and dash \(-\)/);
+  });
+
   test('validateBucketName does not allow underscore by default', () => {
     expect(() => {
       s3.Bucket.validateBucketName('test_bucket_name');
+    }).toThrow(/Bucket name must only contain lowercase characters and the symbols, period \(\.\) and dash \(-\)/);
+  });
+
+  test('validateBucketName does not allow uppercase characters by default', () => {
+    expect(() => {
+      s3.Bucket.validateBucketName('TestBucketName');
     }).toThrow(/Bucket name must only contain lowercase characters and the symbols, period \(\.\) and dash \(-\)/);
   });
 
@@ -3877,4 +3895,3 @@ describe('bucket', () => {
     });
   });
 });
-
