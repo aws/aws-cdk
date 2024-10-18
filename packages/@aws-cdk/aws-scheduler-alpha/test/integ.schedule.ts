@@ -42,7 +42,10 @@ const target = new SomeLambdaTarget(func, role);
 const namedGroup = new scheduler.Group(stack, 'NamedGroup', {
   groupName: 'TestGroup',
 });
+namedGroup.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
+
 const unnamedGroup = new scheduler.Group(stack, 'UnnamedGroup', {});
+unnamedGroup.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
 
 new scheduler.Schedule(stack, 'DefaultSchedule', {
   schedule: expression,
@@ -65,16 +68,6 @@ new scheduler.Schedule(stack, 'DisabledSchedule', {
   schedule: expression,
   target: target,
   enabled: false,
-});
-
-new scheduler.Schedule(stack, 'TargetOverrideSchedule', {
-  schedule: expression,
-  target: target,
-  targetOverrides: {
-    input: scheduler.ScheduleTargetInput.fromText('Changed Text'),
-    maxEventAge: cdk.Duration.seconds(360),
-    retryAttempts: 5,
-  },
 });
 
 new cloudwatch.Alarm(stack, 'AllSchedulerErrorsAlarm', {
