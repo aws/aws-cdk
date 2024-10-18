@@ -1,5 +1,5 @@
 {
-  "version": "36.0.24",
+  "version": "38.0.1",
   "artifacts": {
     "EnableLocalWriteForwardingClusterStack.assets": {
       "type": "cdk:asset-manifest",
@@ -16,9 +16,10 @@
         "templateFile": "EnableLocalWriteForwardingClusterStack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/94dba9d0100458f81b67c0096ade9a061f8abba8c7e0a7edee6c484a5f15304c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/da3d793672a3694b89d65ddb67cceda5a164d94127c21488abff49f99c682f0a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -250,6 +251,54 @@
             "data": "DatabaseClusterreaderInstance17277480B"
           }
         ],
+        "/EnableLocalWriteForwardingClusterStack/DatabaseClusterPostgresql": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "Cluster DatabaseClusterPostgresql only has serverless readers and no reader is in promotion tier 0-1.Serverless readers in promotion tiers >= 2 will NOT scale with the writer, which can lead to availability issues if a failover event occurs. It is recommended that at least one reader has `scaleWithWriter` set to true [ack: @aws-cdk/aws-rds:noFailoverServerlessReaders]"
+          }
+        ],
+        "/EnableLocalWriteForwardingClusterStack/DatabaseClusterPostgresql/Subnets/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseClusterPostgresqlSubnetsE0173DAA"
+          }
+        ],
+        "/EnableLocalWriteForwardingClusterStack/DatabaseClusterPostgresql/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseClusterPostgresqlSecurityGroupEF4103D2"
+          }
+        ],
+        "/EnableLocalWriteForwardingClusterStack/DatabaseClusterPostgresql/Secret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseClusterPostgresqlSecretD2D9C157"
+          }
+        ],
+        "/EnableLocalWriteForwardingClusterStack/DatabaseClusterPostgresql/Secret/Attachment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseClusterPostgresqlSecretAttachment09D32DC9"
+          }
+        ],
+        "/EnableLocalWriteForwardingClusterStack/DatabaseClusterPostgresql/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseClusterPostgresql0775776E"
+          }
+        ],
+        "/EnableLocalWriteForwardingClusterStack/DatabaseClusterPostgresql/writerInstance/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseClusterPostgresqlwriterInstanceB16652DD"
+          }
+        ],
+        "/EnableLocalWriteForwardingClusterStack/DatabaseClusterPostgresql/readerInstance1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseClusterPostgresqlreaderInstance10798C6B0"
+          }
+        ],
         "/EnableLocalWriteForwardingClusterStack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -280,6 +329,7 @@
         "templateFile": "EnableLocalWriteForwardingClusterStackIntegDefaultTestDeployAssertFA53AD26.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
