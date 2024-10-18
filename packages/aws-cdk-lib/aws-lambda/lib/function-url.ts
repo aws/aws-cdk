@@ -144,6 +144,13 @@ export interface IFunctionUrl extends IResource {
   readonly functionArn: string;
 
   /**
+   * The authType of the function URL, used for access control
+   *
+   * @attribute AuthType
+   */
+  readonly authType: FunctionUrlAuthType;
+
+  /**
    * Grant the given identity permissions to invoke this Lambda Function URL
    */
   grantInvokeUrl(identity: iam.IGrantable): iam.Grant;

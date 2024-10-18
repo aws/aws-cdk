@@ -63,6 +63,11 @@ export enum AccessLevel {
 export interface S3OriginAccessControlProps extends OriginAccessControlBaseProps { }
 
 /**
+ * Properties for creating a Lambda Function URL Origin Access Control resource.
+ */
+export interface FunctionUrlOriginAccessControlProps extends OriginAccessControlBaseProps { }
+
+/**
  * Origin types supported by Origin Access Control.
  */
 export enum OriginAccessControlOriginType {
@@ -200,6 +205,46 @@ export class S3OriginAccessControl extends OriginAccessControlBase {
         signingBehavior: props.signing?.behavior ?? SigningBehavior.ALWAYS,
         signingProtocol: props.signing?.protocol ?? SigningProtocol.SIGV4,
         originAccessControlOriginType: OriginAccessControlOriginType.S3,
+      },
+    });
+
+    this.originAccessControlId = resource.attrId;
+  }
+}
+
+/**
+ * An Origin Access Control for Lambda Function URLs.
+ * @resource AWS::CloudFront::OriginAccessControl
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudfront-originaccesscontrol.html
+ */
+export class FunctionUrlOriginAccessControl extends OriginAccessControlBase {
+  /**
+   * Imports a Lambda Function URL origin access control from its id.
+   */
+  public static fromOriginAccessControlId(scope: Construct, id: string, originAccessControlId: string): IOriginAccessControl {
+    class Import extends Resource implements IOriginAccessControl {
+      public readonly originAccessControlId = originAccessControlId;
+      public readonly originAccessControlOriginType = OriginAccessControlOriginType.LAMBDA;
+    }
+    return new Import(scope, id);
+  }
+
+  /**
+   * The unique identifier of this Origin Access Control.
+   * @attribute
+   */
+  public readonly originAccessControlId: string;
+
+  constructor(scope: Construct, id: string, props: FunctionUrlOriginAccessControlProps = {}) {
+    super(scope, id);
+
+    const resource = new CfnOriginAccessControl(this, 'Resource', {
+      originAccessControlConfig: {
+        description: props.description,
+        name: props.originAccessControlName ?? Names.uniqueResourceName(this, { maxLength: 64 }),
+        signingBehavior: props.signing?.behavior ?? SigningBehavior.ALWAYS,
+        signingProtocol: props.signing?.protocol ?? SigningProtocol.SIGV4,
+        originAccessControlOriginType: OriginAccessControlOriginType.LAMBDA, // Lambda specific OAC
       },
     });
 
