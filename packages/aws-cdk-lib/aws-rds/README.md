@@ -83,7 +83,8 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
 
 For more information about dual-stack mode, see [Working with a DB cluster in a VPC](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_VPC.WorkingWithRDSInstanceinaVPC.html).
 
-If you want to issue read/write transactions directly on an Aurora Replica, you can use [local write forwarding](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-mysql-write-forwarding.html).
+If you want to issue read/write transactions directly on an Aurora Replica, you can use local write forwarding on [Aurora MySQL](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-mysql-write-forwarding.html)
+and [Aurora PostgreSQL](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-postgresql-write-forwarding.html).
 Local write forwarding allows read replicas to accept write transactions and forward them to the writer DB instance to be committed.
 
 To enable local write forwarding, set the `enableLocalWriteForwarding` property to `true`:
