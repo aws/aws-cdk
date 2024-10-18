@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "38.0.1",
   "artifacts": {
     "aws-cdk-lambda-destinations.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,12 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-cdk-lambda-destinations.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/134cdb177f120f2d45c5ef542eac0a89a0e979fb57b1893f241d7821caea2ea8.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f6af94a316a807e9641ee916f5fe85dac300b60d78dbae56f9038cd1478e3a77.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -111,6 +113,42 @@
             "data": "EventBusLambdaEventInvokeConfig52CF8B9B"
           }
         ],
+        "/aws-cdk-lambda-destinations/OnSuccessBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OnSuccessBucket7BDFCF14"
+          }
+        ],
+        "/aws-cdk-lambda-destinations/OnFailureBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OnFailureBucketC16738A3"
+          }
+        ],
+        "/aws-cdk-lambda-destinations/S3/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "S3ServiceRole9AEB7DE9"
+          }
+        ],
+        "/aws-cdk-lambda-destinations/S3/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "S3ServiceRoleDefaultPolicyF2AA3BE6"
+          }
+        ],
+        "/aws-cdk-lambda-destinations/S3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "S3486F821D"
+          }
+        ],
+        "/aws-cdk-lambda-destinations/S3/EventInvokeConfig/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "S3EventInvokeConfig001D7832"
+          }
+        ],
         "/aws-cdk-lambda-destinations/MySpecialAlias/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -163,10 +201,12 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "DestinationsDefaultTestDeployAssertCC49E667.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c58b95f554c4073a8ac664cd7ded7a73f9aea0f0f11e5d223401d1ec313b8a6b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f127bb1fa4ffc20ca83992ef626b6fa6e8669c58ffbcc02aefdb9a6e05aa5c8d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -205,6 +245,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/Destinations/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/Destinations/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage3913742af0f68967ecd340999fcff4d0/Default/Default": [
