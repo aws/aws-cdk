@@ -1,102 +1,85 @@
 {
  "Resources": {
-  "eigwC0F094EF": {
+  "requestorVpcFFA7DDD4": {
    "Type": "AWS::EC2::VPC",
    "Properties": {
-    "CidrBlock": "10.0.0.0/16",
+    "CidrBlock": "10.1.0.0/16",
     "EnableDnsHostnames": true,
     "EnableDnsSupport": true,
     "InstanceTenancy": "default"
    }
   },
-  "eigwAmazonIpv69E78211F": {
+  "requestorVpcTempBlock78E0B4F4": {
    "Type": "AWS::EC2::VPCCidrBlock",
    "Properties": {
-    "AmazonProvidedIpv6CidrBlock": true,
+    "CidrBlock": "10.3.0.0/16",
     "VpcId": {
      "Fn::GetAtt": [
-      "eigwC0F094EF",
+      "requestorVpcFFA7DDD4",
       "VpcId"
      ]
     }
    }
   },
-  "TestRoottableRouteTableFA28AA38": {
+  "VpcB98A08B07": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.2.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default"
+   }
+  },
+  "VpcBacceptorAccountCrossRegionPeeringVPCPeeringConnection8510BFF3": {
+   "Type": "AWS::EC2::VPCPeeringConnection",
+   "Properties": {
+    "PeerOwnerId": "12345678",
+    "PeerRegion": "us-east-1",
+    "PeerVpcId": {
+     "Fn::GetAtt": [
+      "requestorVpcFFA7DDD4",
+      "VpcId"
+     ]
+    },
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VpcB98A08B07",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "RouteTableE1378006": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
     "VpcId": {
      "Fn::GetAtt": [
-      "eigwC0F094EF",
+      "VpcB98A08B07",
       "VpcId"
      ]
     }
    }
   },
-  "TestRoottableeigwRouteF867084E": {
+  "RouteTablevpcPeeringRoute2C93DAB3": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "DestinationIpv6CidrBlock": "::/0",
-    "EgressOnlyInternetGatewayId": {
+    "DestinationCidrBlock": "10.0.0.0/16",
+    "RouteTableId": {
      "Fn::GetAtt": [
-      "testEOIGWEIGW54CCAD37",
+      "RouteTableE1378006",
+      "RouteTableId"
+     ]
+    },
+    "VpcPeeringConnectionId": {
+     "Fn::GetAtt": [
+      "VpcBacceptorAccountCrossRegionPeeringVPCPeeringConnection8510BFF3",
       "Id"
      ]
-    },
-    "RouteTableId": {
-     "Fn::GetAtt": [
-      "TestRoottableRouteTableFA28AA38",
-      "RouteTableId"
-     ]
     }
    },
    "DependsOn": [
-    "testEOIGWEIGW54CCAD37"
+    "VpcBacceptorAccountCrossRegionPeeringVPCPeeringConnection8510BFF3"
    ]
-  },
-  "eigwSubnetCC28B9F9": {
-   "Type": "AWS::EC2::Subnet",
-   "Properties": {
-    "AssignIpv6AddressOnCreation": false,
-    "AvailabilityZone": "us-east-1a",
-    "CidrBlock": "10.0.0.0/24",
-    "VpcId": {
-     "Fn::GetAtt": [
-      "eigwC0F094EF",
-      "VpcId"
-     ]
-    }
-   },
-   "DependsOn": [
-    "eigwAmazonIpv69E78211F"
-   ]
-  },
-  "eigwSubnetRouteTableAssociation887F4A97": {
-   "Type": "AWS::EC2::SubnetRouteTableAssociation",
-   "Properties": {
-    "RouteTableId": {
-     "Fn::GetAtt": [
-      "TestRoottableRouteTableFA28AA38",
-      "RouteTableId"
-     ]
-    },
-    "SubnetId": {
-     "Ref": "eigwSubnetCC28B9F9"
-    }
-   },
-   "DependsOn": [
-    "eigwAmazonIpv69E78211F"
-   ]
-  },
-  "testEOIGWEIGW54CCAD37": {
-   "Type": "AWS::EC2::EgressOnlyInternetGateway",
-   "Properties": {
-    "VpcId": {
-     "Fn::GetAtt": [
-      "eigwC0F094EF",
-      "VpcId"
-     ]
-    }
-   }
   }
  },
  "Parameters": {

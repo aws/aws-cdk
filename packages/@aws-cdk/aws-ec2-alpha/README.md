@@ -229,7 +229,148 @@ new Route(this, 'DynamoDBRoute', {
   destination: '0.0.0.0/0',
   target: { endpoint: dynamoEndpoint },
 });
+
 ```
+
+## VPC Peering Connection
+
+VPC peering connection allows you to connect two VPCs and route traffic between them using private IP addresses. The VpcV2 construct supports creating VPC peering connections through the `VPCPeeringConnection` construct from the `route` module.
+
+Peering Connection cannot be established between two VPCs with overlapping CIDR ranges. Please make sure the two VPC CIDRs do not overlap with each other else it will throw an error.
+
+For more information, see [What is VPC peering?](https://docs.aws.amazon.com/vpc/latest/peering/what-is-vpc-peering.html).
+
+The following show examples of how to create a peering connection between two VPCs for all possible combinations of same-account or cross-account, and same-region or cross-region configurations.
+
+Note: You cannot create a VPC peering connection between VPCs that have matching or overlapping CIDR blocks
+
+**Case 1: Same Account and Same Region Peering Connection**
+
+```ts
+const stack = new Stack();
+
+const vpcA = new VpcV2(this, 'VpcA', {
+  primaryAddressBlock: IpAddresses.ipv4('10.0.0.0/16'),
+});
+
+const vpcB = new VpcV2(this, 'VpcB', {
+  primaryAddressBlock: IpAddresses.ipv4('10.1.0.0/16'),
+});
+
+const peeringConnection = vpcA.createPeeringConnection('sameAccountSameRegionPeering', {
+  acceptorVpc: vpcB,
+});
+```
+
+**Case 2: Same Account and Cross Region Peering Connection**
+
+There is no difference from Case 1 when calling `createPeeringConnection`. The only change is that one of the VPCs are created in another stack with a different region.
+
+```ts
+const app = new App();
+
+const stackA = new Stack(app, 'VpcStackA', { env: { account: '000000000000', region: 'us-east-1' } });
+const stackB = new Stack(app, 'VpcStackB', { env: { account: '111111111111', region: 'us-west-2' } });
+
+const vpcA = new VpcV2(stackA, 'VpcA', {
+  primaryAddressBlock: IpAddresses.ipv4('10.0.0.0/16'),
+});
+
+const vpcB = new VpcV2(stackB, 'VpcB', {
+  primaryAddressBlock: IpAddresses.ipv4('10.1.0.0/16'),
+});
+
+// TODO: Lookup vpcB in stackA
+const peeringConnection = vpcA.createPeeringConnection('sameAccountCrossRegionPeering', {
+  acceptorVpc: vpcB,
+});
+```
+
+**Case 3: Cross Account Peering Connection**
+
+For cross-account connections, the acceptor account needs an IAM role that grants the requestor account permission to initiate the connection. Create a new IAM role in the acceptor account using method `createAcceptorVpcRole` to provide the necessary permissions. 
+
+Once role is created in account, provide role arn for field `peerRoleArn` under method `createPeeringConnection`
+
+```ts
+const stack = new Stack();
+
+const acceptorVpc = new VpcV2(this, 'VpcA', {
+  primaryAddressBlock: IpAddresses.ipv4('10.0.0.0/16'),
+});
+
+const acceptorRoleArn = acceptorVpc.createAcceptorVpcRole('000000000000') // Requestor account ID
+```
+
+After creating an IAM role in the acceptor account, we can initiate the peering connection request from the requestor VPC.
+
+```ts
+const stack = new Stack();
+
+// TODO: Import acceptorVpc into the requestor stack
+const acceptorVpc = new VpcV2(this, 'VpcA', {
+  primaryAddressBlock: IpAddresses.ipv4('10.0.0.0/16'),
+});
+
+const acceptorRoleArn = 'arn:aws:iam::111111111111:role/VpcPeeringRole';
+
+const requestorVpc = new VpcV2(this, 'VpcB', {
+  primaryAddressBlock: IpAddresses.ipv4('10.1.0.0/16'),
+});
+
+const peeringConnection = requestorVpc.createPeeringConnection('crossAccountCrossRegionPeering', {
+  acceptorVpc: acceptorVpc,
+  peerRoleArn: acceptorRoleArn,
+});
+```
+
+### Route Table Configuration
+
+After establishing the VPC peering connection, routes must be added to the respective route tables in the VPCs to enable traffic flow. If a route is added to the requestor stack, information will be able to flow from the requestor VPC to the acceptor VPC, but not in the reverse direction. For bi-directional communication, routes need to be added in both VPCs from their respective stacks.
+
+For more information, see [Update your route tables for a VPC peering connection](https://docs.aws.amazon.com/vpc/latest/peering/vpc-peering-routing.html).
+
+```ts
+const stack = new Stack();
+
+const acceptorVpc = new VpcV2(this, 'VpcA', {
+  primaryAddressBlock: IpAddresses.ipv4('10.0.0.0/16'),
+});
+
+const requestorVpc = new VpcV2(this, 'VpcB', {
+  primaryAddressBlock: IpAddresses.ipv4('10.1.0.0/16'),
+});
+
+const peeringConnection = requestorVpc.createPeeringConnection('peeringConnection', {
+  acceptorVpc: acceptorVpc,
+});
+
+const routeTable = new RouteTable(this, 'RouteTable', {
+  vpc: requestorVpc,
+});
+
+routeTable.addRoute('vpcPeeringRoute', '10.0.0.0/16', { gateway: peeringConnection });
+```
+
+This can also be done using AWS CLI. For more information, see [create-route](https://docs.aws.amazon.com/cli/latest/reference/ec2/create-route.html).
+
+```bash
+# Add a route to the requestor VPC route table
+aws ec2 create-route --route-table-id rtb-requestor --destination-cidr-block 10.0.0.0/16 --vpc-peering-connection-id pcx-xxxxxxxx
+
+# For bi-directional add a route in the acceptor vpc account as well
+aws ec2 create-route --route-table-id rtb-acceptor --destination-cidr-block 10.1.0.0/16 --vpc-peering-connection-id pcx-xxxxxxxx
+```
+
+### Deleting the Peering Connection
+
+To delete a VPC peering connection, use the following command:
+
+```bash
+aws ec2 delete-vpc-peering-connection --vpc-peering-connection-id pcx-xxxxxxxx
+```
+
+For more information, see [Delete a VPC peering connection](https://docs.aws.amazon.com/vpc/latest/peering/create-vpc-peering-connection.html#delete-vpc-peering-connection).
 
 ## Adding Egress-Only Internet Gateway to VPC
 
