@@ -1,9 +1,9 @@
 import { CfnVPC, CfnVPCCidrBlock, DefaultInstanceTenancy, ISubnet } from 'aws-cdk-lib/aws-ec2';
-import { Arn, CfnResource, Lazy, Names, Resource, Stack } from 'aws-cdk-lib/core';
+import { Arn, CfnResource, Lazy, Names, Resource } from 'aws-cdk-lib/core';
 import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { IpamOptions, IIpamPool } from './ipam';
 import { IVpcV2, VpcV2Base } from './vpc-v2-base';
-import { ISubnetV2, ImportedSubnetV2, SubnetV2Attributes } from './subnet-v2';;
+import { ISubnetV2, ImportedSubnetV2, SubnetV2Attributes } from './subnet-v2';
 
 /**
  * Additional props needed for secondary Address
@@ -197,16 +197,18 @@ export interface VpcV2Props {
 export interface VpcV2Attributes {
 
   /**
-   * The region in which the VPC is located
-   * @default - No region information
-   */
-  readonly region?: string;
-
-  /**
    * The VPC ID
    * Refers to physical Id of the resource
    */
   readonly vpcId: string;
+
+  /**
+   * Arn of the VPC
+   * will be used to set value for account and region
+   * which then later can be used for establishing VPC peering connection
+   * @default - constructed with stack account and region value
+   */
+  readonly vpcArn?: string;
 
   /**
    * Primary VPC CIDR Block of the imported VPC
@@ -335,6 +337,16 @@ export class VpcV2 extends VpcV2Base {
   public readonly ipv4IpamProvisionedCidrs?: string[];
 
   /**
+  * Region for this VPC
+  */
+  public readonly region?: string;
+
+  /**
+  * Identifier of the owner for this VPC
+  */
+  public readonly ownerAccountId?: string;
+
+  /**
    * For validation to define IPv6 subnets, set to true in case of
    * Amazon Provided IPv6 cidr range
    * if true, IPv6 addresses can be attached to the subnets.
@@ -379,6 +391,8 @@ export class VpcV2 extends VpcV2Base {
       resource: 'vpc',
       resourceName: this.vpcId,
     }, this.stack);
+    this.region = this.stack.region;
+    this.ownerAccountId = this.stack.account;
 
     if (props.secondaryAddressBlocks) {
       const secondaryAddressBlocks: IIpAddresses[] = props.secondaryAddressBlocks;
@@ -536,6 +550,8 @@ class ImportedVpcV2 extends VpcV2Base {
   public readonly isolatedSubnets: ISubnetV2[] = [];
   public readonly internetConnectivityEstablished: IDependable = new DependencyGroup();
   public readonly ipv4CidrBlock: string;
+  public readonly region?: string;
+  public readonly ownerAccountId?: string;
 
   /*
   * Reference to all secondary blocks attached
@@ -552,15 +568,18 @@ class ImportedVpcV2 extends VpcV2Base {
   public readonly ipv4IpamProvisionedCidrs: string[] = [];
 
   constructor(scope: Construct, id: string, props: VpcV2Attributes) {
-    super(scope, id, {
-      region: props. region,
-    });
+    super(scope, id);
     this.vpcId = props.vpcId,
-    this.vpcArn = Arn.format({
+    this.vpcArn = props.vpcArn ?? Arn.format({
       service: 'ec2',
       resource: 'vpc',
       resourceName: this.vpcId,
-    }, Stack.of(this));
+    }, this.stack);
+    // Populate region and account fields that can be used to set up peering connection
+    // sample vpc Arn - arn:aws:ec2:us-west-2:123456789012:vpc/vpc-0123456789abcdef0
+    this.region = this.vpcArn.split(':')[3];
+    this.ownerAccountId = this.vpcArn.split(':')[4];
+    // Refers to actual VPC Resource attribute in non-imported VPC
     this.vpcCidrBlock = props.vpcCidrBlock;
     // Required for subnet range related checks
     this.ipv4CidrBlock = props.vpcCidrBlock;

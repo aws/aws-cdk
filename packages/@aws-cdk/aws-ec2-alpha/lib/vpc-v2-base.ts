@@ -98,6 +98,20 @@ export interface IVpcV2 extends IVpc {
   readonly ipv4CidrBlock: string;
 
   /**
+   * Optional to override inferred region
+   *
+   * @default - current stack's environment region
+   */
+  readonly region?: string;
+
+  /**
+   * The ID of the AWS account that owns the VPC
+   *
+   * @default - the account id of the parent stack
+   */
+  readonly ownerAccountId?: string;
+
+  /**
    * IPv4 CIDR provisioned under pool
    * Required to check for overlapping CIDRs after provisioning
    * is complete under IPAM pool
