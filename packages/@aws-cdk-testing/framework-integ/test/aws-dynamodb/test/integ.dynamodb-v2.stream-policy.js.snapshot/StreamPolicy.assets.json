@@ -1,0 +1,20 @@
+{
+  "version": "36.0.24",
+  "files": {
+    "28f74426ddb29fcab92b8acd3613be9c5a7d6fe50a083823efb7c58d45c8e2a5": {
+      "source": {
+        "path": "StreamPolicy.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-eu-west-1": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1",
+          "objectKey": "28f74426ddb29fcab92b8acd3613be9c5a7d6fe50a083823efb7c58d45c8e2a5.json",
+          "region": "eu-west-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-eu-west-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
