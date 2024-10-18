@@ -30,7 +30,10 @@ describe('AWS::StepFunctions::Tasks::HttpInvoke', () => {
   beforeEach(() => {
     stack = new cdk.Stack();
     connection = new events.Connection(stack, 'Connection', {
-      authorization: events.Authorization.basic('username', cdk.SecretValue.unsafePlainText('password')),
+      authorization: events.Authorization.basic(
+        'username',
+        cdk.SecretValue.unsafePlainText('password'),
+      ),
       connectionName: 'testConnection',
     });
   });
@@ -44,11 +47,12 @@ describe('AWS::StepFunctions::Tasks::HttpInvoke', () => {
     });
 
     expectTaskWithParameters(task, {
-      ApiEndpoint: 'https://api.example.com/path/to/resource',
-      Authentication: {
+      'ApiEndpoint.$':
+        "States.Format('{}/{}', 'https://api.example.com', 'path/to/resource')",
+      'Authentication': {
         ConnectionArn: stack.resolve(connection.connectionArn),
       },
-      Method: 'POST',
+      'Method': 'POST',
     });
   });
 
@@ -68,22 +72,22 @@ describe('AWS::StepFunctions::Tasks::HttpInvoke', () => {
     });
 
     expectTaskWithParameters(task, {
-      ApiEndpoint: 'https://api.example.com/path/to/resource',
-      Authentication: {
+      'ApiEndpoint.$': "States.Format('{}/{}', 'https://api.example.com', 'path/to/resource')",
+      'Authentication': {
         ConnectionArn: stack.resolve(connection.connectionArn),
       },
-      Method: 'POST',
-      Headers: {
+      'Method': 'POST',
+      'Headers': {
         'custom-header': 'custom-value',
         'Content-Type': 'application/x-www-form-urlencoded',
       },
-      Transform: {
+      'Transform': {
         RequestBodyEncoding: 'URL_ENCODED',
         RequestEncodingOptions: {
           ArrayFormat: lib.URLEncodingFormat.BRACKETS,
         },
       },
-      QueryParameters: {
+      'QueryParameters': {
         foo: 'bar',
       },
     });
@@ -99,15 +103,15 @@ describe('AWS::StepFunctions::Tasks::HttpInvoke', () => {
     });
 
     expectTaskWithParameters(task, {
-      ApiEndpoint: 'https://api.example.com/path/to/resource',
-      Authentication: {
+      'ApiEndpoint.$': "States.Format('{}/{}', 'https://api.example.com', 'path/to/resource')",
+      'Authentication': {
         ConnectionArn: stack.resolve(connection.connectionArn),
       },
-      Method: 'POST',
-      Headers: {
+      'Method': 'POST',
+      'Headers': {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
-      Transform: {
+      'Transform': {
         RequestBodyEncoding: 'URL_ENCODED',
       },
     });
@@ -123,11 +127,30 @@ describe('AWS::StepFunctions::Tasks::HttpInvoke', () => {
     });
 
     expectTaskWithParameters(task, {
-      ApiEndpoint: 'https://api.example.com/path/to/resource',
-      Authentication: {
+      'ApiEndpoint.$': "States.Format('{}/{}', 'https://api.example.com', 'path/to/resource')",
+      'Authentication': {
         ConnectionArn: stack.resolve(connection.connectionArn),
       },
-      Method: 'POST',
+      'Method': 'POST',
+    });
+  });
+
+  test('invoke with formatted apiEndpoint', () => {
+    const task = new lib.HttpInvoke(stack, 'Task', {
+      apiRoot: 'https://api.example.com',
+      apiEndpoint: sfn.TaskInput.fromText(
+        sfn.JsonPath.format('resource/{}/details', sfn.JsonPath.stringAt('$.resourceId')),
+      ),
+      connection,
+      method: sfn.TaskInput.fromText('POST'),
+    });
+    expectTaskWithParameters(task, {
+      'ApiEndpoint.$':
+        "States.Format('{}/{}', 'https://api.example.com', States.Format('resource/{}/details', $.resourceId))",
+      'Authentication': {
+        ConnectionArn: stack.resolve(connection.connectionArn),
+      },
+      'Method': 'POST',
     });
   });
 });
