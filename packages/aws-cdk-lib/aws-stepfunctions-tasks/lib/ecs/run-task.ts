@@ -400,16 +400,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
   }
 
   private getTaskDefinitionArn(): string {
-    const tastDefinitionArn = this.props.taskDefinition.taskDefinitionArn;
-    let needsRevisionWildcard = false;
-    // Check if there is a taskdefinition revision
-    // (arn will end with : followed by digits) included in the arn already
-    if (!cdk.Token.isUnresolved(tastDefinitionArn)) {
-      const revisionAtEndPattern = /:[0-9]+$/;
-      const hasRevision = revisionAtEndPattern.test(tastDefinitionArn);
-      needsRevisionWildcard = !hasRevision;
-    }
-    return tastDefinitionArn + needsRevisionWildcard ? ':*' : '';
+    return this.props.taskDefinition.taskDefinitionArn;
   }
 
   /**
