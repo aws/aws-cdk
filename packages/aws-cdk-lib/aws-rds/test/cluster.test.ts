@@ -16,6 +16,7 @@ import {
   AuroraEngineVersion, AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, CfnDBCluster, Credentials, DatabaseCluster,
   DatabaseClusterEngine, DatabaseClusterFromSnapshot, ParameterGroup, PerformanceInsightRetention, SubnetGroup, DatabaseSecret,
   DatabaseInstanceEngine, SqlServerEngineVersion, SnapshotCredentials, InstanceUpdateBehaviour, NetworkType, ClusterInstance, CaCertificate,
+  IClusterEngine,
 } from '../lib';
 
 describe('cluster new api', () => {
@@ -176,45 +177,26 @@ describe('cluster new api', () => {
       });
     });
 
-    describe('enableLocalWriteForwarding', () => {
-      test('set enableLocalWriteForwarding for aurora mysql', () => {
-        // GIVEN
-        const stack = testStack();
-        const vpc = new ec2.Vpc(stack, 'VPC');
+    test.each([
+      ['Mysql', DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_07_0 })],
+      ['PostgreSQL', DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_16_4 })],
+    ])('set enableLocalWriteForwarding for aurora %s', (type: string, engine: IClusterEngine) => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
 
-        // WHEN
-        new DatabaseCluster(stack, 'Database', {
-          engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_07_0 }),
-          vpc,
-          enableLocalWriteForwarding: true,
-          writer: ClusterInstance.serverlessV2('writer'),
-        });
-
-        // THEN
-        const template = Template.fromStack(stack);
-        template.hasResourceProperties('AWS::RDS::DBCluster', {
-          EnableLocalWriteForwarding: true,
-        });
+      // WHEN
+      new DatabaseCluster(stack, type, {
+        engine: engine,
+        vpc,
+        enableLocalWriteForwarding: true,
+        writer: ClusterInstance.serverlessV2('writer'),
       });
 
-      test('set enableLocalWriteForwarding for aurora postgresql', () => {
-        // GIVEN
-        const stack = testStack();
-        const vpc = new ec2.Vpc(stack, 'VPC');
-
-        // WHEN
-        new DatabaseCluster(stack, 'Database', {
-          engine: DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_16_4 }),
-          vpc,
-          enableLocalWriteForwarding: true,
-          writer: ClusterInstance.serverlessV2('writer'),
-        });
-
-        // THEN
-        const template = Template.fromStack(stack);
-        template.hasResourceProperties('AWS::RDS::DBCluster', {
-          EnableLocalWriteForwarding: true,
-        });
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::RDS::DBCluster', {
+        EnableLocalWriteForwarding: true,
       });
     });
 
