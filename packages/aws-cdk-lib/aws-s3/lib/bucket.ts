@@ -1553,7 +1553,8 @@ export interface BucketProps {
    * `objectSizeGreaterThan` or `objectSizeLessThan` for `lifecycleRules` property. Custom filters always
    * take precedence over the default transition behavior.
    *
-   * @default TransitionDefaultMinimumObjectSize.ALL_STORAGE_CLASSES_128_K
+   * @default - TransitionDefaultMinimumObjectSize.VARIES_BY_STORAGE_CLASS before September 2024,
+   * otherwise TransitionDefaultMinimumObjectSize.ALL_STORAGE_CLASSES_128_K.
    */
   readonly transitionDefaultMinimumObjectSize?: TransitionDefaultMinimumObjectSize;
 

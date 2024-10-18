@@ -872,6 +872,14 @@ new s3.Bucket(this, 'MyBucket', {
   transitionDefaultMinimumObjectSize: s3.TransitionDefaultMinimumObjectSize.VARIES_BY_STORAGE_CLASS,
   lifecycleRules: [
     {
+      transitions: [{
+        storageClass: StorageClass.GLACIER,
+        transitionAfter: Duration.days(30),
+      }],
+    },
+    {
+      objectSizeLessThan: 300000,
+      objectSizeGreaterThan: 200000,
       expiration: Duration.days(30),
     },
   ],
