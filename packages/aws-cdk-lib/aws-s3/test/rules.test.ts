@@ -320,6 +320,7 @@ describe('rules', () => {
       lifecycleRules: [{
         objectSizeLessThan: 0,
         objectSizeGreaterThan: 0,
+        expiration: Duration.days(30),
       }],
     });
 
@@ -329,6 +330,7 @@ describe('rules', () => {
         Rules: [{
           ObjectSizeLessThan: 0,
           ObjectSizeGreaterThan: 0,
+          ExpirationInDays: 30,
           Status: 'Enabled',
         }],
       },
