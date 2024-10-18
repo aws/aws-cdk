@@ -37,8 +37,6 @@ new VpcV2(this, 'Vpc', {
 
 `VpcV2` does not automatically create subnets or allocate IP addresses, which is different from the `Vpc` construct.
 
-Importing existing VPC in an account into CDK as a `VpcV2` is not yet supported.
-
 ## SubnetV2
 
 `SubnetV2` is a re-write of the [`ec2.Subnet`](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_ec2.Subnet.html) construct.
@@ -61,8 +59,6 @@ new SubnetV2(this, 'subnetA', {
   subnetType: SubnetType.PRIVATE_ISOLATED,
 })
 ```
-
-Same as `VpcV2`, importing existing subnets is not yet supported.
 
 ## IP Addresses Management
 
