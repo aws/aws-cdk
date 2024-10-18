@@ -60,7 +60,7 @@ describe('IPAM Test', () => {
     });
 
     new vpc.VpcV2(stack, 'TestVPC', {
-      primaryAddressBlock: vpc.IpAddresses.ipv4('10.2.0.0/16'),
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
       secondaryAddressBlocks: [vpc.IpAddresses.ipv4Ipam({
         ipamPool: pool,
         netmaskLength: 20,

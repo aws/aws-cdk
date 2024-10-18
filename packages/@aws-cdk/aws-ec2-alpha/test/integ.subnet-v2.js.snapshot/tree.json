@@ -32,20 +32,30 @@
               "SecondaryTest": {
                 "id": "SecondaryTest",
                 "path": "aws-cdk-vpcv2-alpha-new/SubnetTest/SecondaryTest",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
-                  "aws:cdk:cloudformation:props": {
-                    "amazonProvidedIpv6CidrBlock": true,
-                    "vpcId": {
-                      "Fn::GetAtt": [
-                        "SubnetTest3296A161",
-                        "VpcId"
-                      ]
+                "children": {
+                  "SecondaryTest": {
+                    "id": "SecondaryTest",
+                    "path": "aws-cdk-vpcv2-alpha-new/SubnetTest/SecondaryTest/SecondaryTest",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
+                      "aws:cdk:cloudformation:props": {
+                        "amazonProvidedIpv6CidrBlock": true,
+                        "vpcId": {
+                          "Fn::GetAtt": [
+                            "SubnetTest3296A161",
+                            "VpcId"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnVPCCidrBlock",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPCCidrBlock",
+                  "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
               }
