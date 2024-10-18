@@ -92,6 +92,7 @@ describe('UserPoolIdentityProvider', () => {
         attributeMapping: {
           familyName: ProviderAttribute.APPLE_LAST_NAME,
           givenName: ProviderAttribute.APPLE_FIRST_NAME,
+          emailVerified: ProviderAttribute.APPLE_EMAIL_VERIFIED,
           custom: {
             customAttr1: ProviderAttribute.APPLE_EMAIL,
             customAttr2: ProviderAttribute.other('sub'),
