@@ -24,14 +24,19 @@
                           "status": "Enabled",
                           "transitions": [
                             {
-                              "storageClass": "GLACIER",
+                              "storageClass": "DEEP_ARCHIVE",
                               "transitionInDays": 30
                             }
                           ]
                         },
                         {
-                          "expirationInDays": 30,
                           "status": "Enabled",
+                          "transitions": [
+                            {
+                              "storageClass": "ONEZONE_IA",
+                              "transitionInDays": 30
+                            }
+                          ],
                           "objectSizeLessThan": 300000,
                           "objectSizeGreaterThan": 200000
                         }
@@ -67,14 +72,19 @@
                           "status": "Enabled",
                           "transitions": [
                             {
-                              "storageClass": "GLACIER",
+                              "storageClass": "DEEP_ARCHIVE",
                               "transitionInDays": 30
                             }
                           ]
                         },
                         {
-                          "expirationInDays": 30,
                           "status": "Enabled",
+                          "transitions": [
+                            {
+                              "storageClass": "ONEZONE_IA",
+                              "transitionInDays": 30
+                            }
+                          ],
                           "objectSizeLessThan": 300000,
                           "objectSizeGreaterThan": 200000
                         }

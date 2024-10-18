@@ -873,14 +873,17 @@ new s3.Bucket(this, 'MyBucket', {
   lifecycleRules: [
     {
       transitions: [{
-        storageClass: StorageClass.GLACIER,
+        storageClass: s3.StorageClass.DEEP_ARCHIVE,
         transitionAfter: Duration.days(30),
       }],
     },
     {
       objectSizeLessThan: 300000,
       objectSizeGreaterThan: 200000,
-      expiration: Duration.days(30),
+      transitions: [{
+        storageClass: s3.StorageClass.ONE_ZONE_INFREQUENT_ACCESS,
+        transitionAfter: Duration.days(30),
+      }],
     },
   ],
 });

@@ -10,14 +10,17 @@ new Bucket(stack, 'AllStorageClasses128K', {
   lifecycleRules: [
     {
       transitions: [{
-        storageClass: StorageClass.GLACIER,
+        storageClass: StorageClass.DEEP_ARCHIVE,
         transitionAfter: Duration.days(30),
       }],
     },
     {
       objectSizeLessThan: 300000,
       objectSizeGreaterThan: 200000,
-      expiration: Duration.days(30),
+      transitions: [{
+        storageClass: StorageClass.ONE_ZONE_INFREQUENT_ACCESS,
+        transitionAfter: Duration.days(30),
+      }],
     },
   ],
   transitionDefaultMinimumObjectSize: TransitionDefaultMinimumObjectSize.ALL_STORAGE_CLASSES_128_K,
@@ -28,14 +31,17 @@ new Bucket(stack, 'VariesByStorageClass', {
   lifecycleRules: [
     {
       transitions: [{
-        storageClass: StorageClass.GLACIER,
+        storageClass: StorageClass.DEEP_ARCHIVE,
         transitionAfter: Duration.days(30),
       }],
     },
     {
       objectSizeLessThan: 300000,
       objectSizeGreaterThan: 200000,
-      expiration: Duration.days(30),
+      transitions: [{
+        storageClass: StorageClass.ONE_ZONE_INFREQUENT_ACCESS,
+        transitionAfter: Duration.days(30),
+      }],
     },
   ],
   transitionDefaultMinimumObjectSize: TransitionDefaultMinimumObjectSize.VARIES_BY_STORAGE_CLASS,

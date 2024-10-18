@@ -1,7 +1,7 @@
 {
   "version": "38.0.1",
   "files": {
-    "1e0d7f45f8d321fd2829de3312567d3deeb6dd4f6c753d1893936754bff6610e": {
+    "ddad2eaffb71d50ee55436f9aff0d51b46f314389ef9056ee42d2c2cf1e0ca83": {
       "source": {
         "path": "s3-lifecycle-transitions.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "1e0d7f45f8d321fd2829de3312567d3deeb6dd4f6c753d1893936754bff6610e.json",
+          "objectKey": "ddad2eaffb71d50ee55436f9aff0d51b46f314389ef9056ee42d2c2cf1e0ca83.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

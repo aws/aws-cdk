@@ -9,16 +9,21 @@
        "Status": "Enabled",
        "Transitions": [
         {
-         "StorageClass": "GLACIER",
+         "StorageClass": "DEEP_ARCHIVE",
          "TransitionInDays": 30
         }
        ]
       },
       {
-       "ExpirationInDays": 30,
        "ObjectSizeGreaterThan": 200000,
        "ObjectSizeLessThan": 300000,
-       "Status": "Enabled"
+       "Status": "Enabled",
+       "Transitions": [
+        {
+         "StorageClass": "ONEZONE_IA",
+         "TransitionInDays": 30
+        }
+       ]
       }
      ],
      "TransitionDefaultMinimumObjectSize": "all_storage_classes_128K"
@@ -36,16 +41,21 @@
        "Status": "Enabled",
        "Transitions": [
         {
-         "StorageClass": "GLACIER",
+         "StorageClass": "DEEP_ARCHIVE",
          "TransitionInDays": 30
         }
        ]
       },
       {
-       "ExpirationInDays": 30,
        "ObjectSizeGreaterThan": 200000,
        "ObjectSizeLessThan": 300000,
-       "Status": "Enabled"
+       "Status": "Enabled",
+       "Transitions": [
+        {
+         "StorageClass": "ONEZONE_IA",
+         "TransitionInDays": 30
+        }
+       ]
       }
      ],
      "TransitionDefaultMinimumObjectSize": "varies_by_storage_class"
