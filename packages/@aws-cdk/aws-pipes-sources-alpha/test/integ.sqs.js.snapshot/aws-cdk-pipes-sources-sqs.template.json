@@ -101,7 +101,8 @@
      ]
     },
     "TargetParameters": {
-     "InputTemplate": "<$.body>"
+     "InputTemplate": "<$.body>",
+     "SqsQueueParameters": {}
     }
    }
   }

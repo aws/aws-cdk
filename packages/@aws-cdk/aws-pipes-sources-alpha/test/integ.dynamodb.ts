@@ -1,4 +1,6 @@
-import { ITarget, Pipe, TargetConfig } from '@aws-cdk/aws-pipes-alpha';
+import { Pipe } from '@aws-cdk/aws-pipes-alpha';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { SqsTarget } from '@aws-cdk/aws-pipes-targets-alpha';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as ddb from 'aws-cdk-lib/aws-dynamodb';
@@ -17,25 +19,6 @@ const table = new ddb.TableV2(stack, 'MyTable', {
 const dlqQueue = new cdk.aws_sqs.Queue(stack, 'DlqQueue');
 const targetQueue = new cdk.aws_sqs.Queue(stack, 'TargetQueue');
 
-class TestTarget implements ITarget {
-  targetArn: string;
-
-  constructor(private readonly queue: cdk.aws_sqs.Queue) {
-    this.queue = queue;
-    this.targetArn = queue.queueArn;
-  }
-
-  bind(_pipe: Pipe): TargetConfig {
-    return {
-      targetParameters: {},
-    };
-  }
-
-  grantPush(pipeRole: cdk.aws_iam.IRole): void {
-    this.queue.grantSendMessages(pipeRole);
-  }
-}
-
 const sourceUnderTest = new DynamoDBSource(table, {
   batchSize: 1,
   deadLetterTarget: dlqQueue,
@@ -49,7 +32,7 @@ const sourceUnderTest = new DynamoDBSource(table, {
 
 new Pipe(stack, 'Pipe', {
   source: sourceUnderTest,
-  target: new TestTarget(targetQueue),
+  target: new SqsTarget(targetQueue),
 });
 
 const test = new IntegTest(app, 'integtest-pipe-source-dynamodb', {
