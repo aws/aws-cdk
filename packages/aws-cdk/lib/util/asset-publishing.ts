@@ -25,6 +25,11 @@ export interface PublishAssetsOptions {
    * @default true To remain backward compatible.
    */
   readonly parallel?: boolean;
+
+  /**
+   * Whether cdk-assets is allowed to do cross account publishing.
+   */
+  readonly allowCrossAccount: boolean;
 }
 
 /**
@@ -34,7 +39,7 @@ export async function publishAssets(
   manifest: cdk_assets.AssetManifest,
   sdk: SdkProvider,
   targetEnv: cxapi.Environment,
-  options: PublishAssetsOptions = {},
+  options: PublishAssetsOptions,
 ) {
   // This shouldn't really happen (it's a programming error), but we don't have
   // the types here to guide us. Do an runtime validation to be super super sure.
@@ -56,7 +61,7 @@ export async function publishAssets(
     publishAssets: true,
     quiet: options.quiet,
   });
-  await publisher.publish();
+  await publisher.publish({ allowCrossAccount: options.allowCrossAccount });
   if (publisher.hasFailures) {
     throw new Error('Failed to publish one or more assets. See the error messages above for more information.');
   }
@@ -166,12 +171,18 @@ export class PublishingAws implements cdk_assets.IAws {
       region: options.region ?? this.targetEnv.region, // Default: same region as the stack
     };
 
-    const cacheKey = JSON.stringify({
+    const cacheKeyMap: any = {
       env, // region, name, account
       assumeRuleArn: options.assumeRoleArn,
       assumeRoleExternalId: options.assumeRoleExternalId,
       quiet: options.quiet,
-    });
+    };
+
+    if (options.assumeRoleAdditionalOptions) {
+      cacheKeyMap.assumeRoleAdditionalOptions = options.assumeRoleAdditionalOptions;
+    }
+
+    const cacheKey = JSON.stringify(cacheKeyMap);
 
     const maybeSdk = this.sdkCache.get(cacheKey);
     if (maybeSdk) {
@@ -181,6 +192,7 @@ export class PublishingAws implements cdk_assets.IAws {
     const sdk = (await this.aws.forEnvironment(env, Mode.ForWriting, {
       assumeRoleArn: options.assumeRoleArn,
       assumeRoleExternalId: options.assumeRoleExternalId,
+      assumeRoleAdditionalOptions: options.assumeRoleAdditionalOptions,
     }, options.quiet)).sdk;
     this.sdkCache.set(cacheKey, sdk);
 

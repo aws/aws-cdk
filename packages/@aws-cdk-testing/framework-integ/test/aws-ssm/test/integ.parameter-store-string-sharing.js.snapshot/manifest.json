@@ -1,0 +1,271 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "integ-ssmps-sharing-producing.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-ssmps-sharing-producing.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integ-ssmps-sharing-producing": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://12345678/us-east-1",
+      "properties": {
+        "templateFile": "integ-ssmps-sharing-producing.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-us-east-1/aa41721ed29bc9f51115827aee8e887c385c2d09b5bf38af62291d579b1d57b4.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-ssmps-sharing-producing.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-lookup-role-12345678-us-east-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integ-ssmps-sharing-producing.assets"
+      ],
+      "metadata": {
+        "/integ-ssmps-sharing-producing/String/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "String0BA8456E"
+          }
+        ],
+        "/integ-ssmps-sharing-producing/ParamShare": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ParamShare"
+          }
+        ],
+        "/integ-ssmps-sharing-producing/ResourceShareArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ResourceShareArn"
+          }
+        ],
+        "/integ-ssmps-sharing-producing/ParameterArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ParameterArn"
+          }
+        ],
+        "/integ-ssmps-sharing-producing/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-ssmps-sharing-producing/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-ssmps-sharing-producing"
+    },
+    "integ-ssmps-sharing-accepting.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-ssmps-sharing-accepting.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integ-ssmps-sharing-accepting": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://234567890123/us-east-1",
+      "properties": {
+        "templateFile": "integ-ssmps-sharing-accepting.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-deploy-role-234567890123-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-cfn-exec-role-234567890123-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-234567890123-us-east-1/e0d698f6fe89185fdbbf6c741faea535f819c3eff3f2b2cbf3249c366e8ee11c.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-ssmps-sharing-accepting.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-lookup-role-234567890123-us-east-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integ-ssmps-sharing-producing",
+        "integ-ssmps-sharing-accepting.assets"
+      ],
+      "metadata": {
+        "/integ-ssmps-sharing-accepting/GetResourceShareInvitations/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GetResourceShareInvitations"
+          }
+        ],
+        "/integ-ssmps-sharing-accepting/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/integ-ssmps-sharing-accepting/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/integ-ssmps-sharing-accepting/resourceShareInvitationArnOutput": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "resourceShareInvitationArnOutput"
+          }
+        ],
+        "/integ-ssmps-sharing-accepting/AcceptResourceShareInvitation/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AcceptResourceShareInvitation"
+          }
+        ],
+        "/integ-ssmps-sharing-accepting/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-ssmps-sharing-accepting/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-ssmps-sharing-accepting"
+    },
+    "integ-ssmps-sharing-consuming.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-ssmps-sharing-consuming.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integ-ssmps-sharing-consuming": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://234567890123/us-east-1",
+      "properties": {
+        "templateFile": "integ-ssmps-sharing-consuming.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-deploy-role-234567890123-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-cfn-exec-role-234567890123-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-234567890123-us-east-1/1b7aa89e67d6991fb0e7d5f88d3fdb614a729104c92491a5b8c8d824b76bd5de.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-ssmps-sharing-consuming.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-lookup-role-234567890123-us-east-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integ-ssmps-sharing-accepting",
+        "integ-ssmps-sharing-consuming.assets"
+      ],
+      "metadata": {
+        "/integ-ssmps-sharing-consuming/RemoteParam.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RemoteParamParameter"
+          }
+        ],
+        "/integ-ssmps-sharing-consuming/RemoteParameterValueOutput": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RemoteParameterValueOutput"
+          }
+        ],
+        "/integ-ssmps-sharing-consuming/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-ssmps-sharing-consuming/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-ssmps-sharing-consuming"
+    },
+    "SSMParameterStoreSharingTestDefaultTestDeployAssert51CBB447.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "SSMParameterStoreSharingTestDefaultTestDeployAssert51CBB447.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "SSMParameterStoreSharingTestDefaultTestDeployAssert51CBB447": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "SSMParameterStoreSharingTestDefaultTestDeployAssert51CBB447.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "SSMParameterStoreSharingTestDefaultTestDeployAssert51CBB447.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "SSMParameterStoreSharingTestDefaultTestDeployAssert51CBB447.assets"
+      ],
+      "metadata": {
+        "/SSMParameterStoreSharingTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/SSMParameterStoreSharingTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "SSMParameterStoreSharingTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

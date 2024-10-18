@@ -93,6 +93,14 @@ new apigwv2.HttpApi(this, 'HttpProxyApi', {
 });
 ```
 
+The `routeSelectionExpression` option allows configuring the HTTP API to accept only `${request.method} ${request.path}`. Setting it to `true` automatically applies this value.
+
+```ts
+new apigwv2.HttpApi(this, 'HttpProxyApi', {
+  routeSelectionExpression: true,
+});
+```
+
 ### Cross Origin Resource Sharing (CORS)
 
 [Cross-origin resource sharing (CORS)](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) is a browser security

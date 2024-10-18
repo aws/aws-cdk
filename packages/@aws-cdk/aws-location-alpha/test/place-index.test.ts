@@ -1,7 +1,8 @@
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Stack } from 'aws-cdk-lib';
-import { DataSource, IntendedUse, PlaceIndex } from '../lib/place-index';
+import { IntendedUse, PlaceIndex } from '../lib/place-index';
+import { DataSource } from '../lib';
 
 let stack: Stack;
 beforeEach(() => {

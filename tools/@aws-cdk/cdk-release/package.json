@@ -48,7 +48,7 @@
     "detect-newline": "^3.1.0",
     "fs-extra": "^9.1.0",
     "git-raw-commits": "^2.0.11",
-    "semver": "^7.6.2",
+    "semver": "^7.6.3",
     "stringify-package": "^1.0.1"
   },
   "keywords": [
