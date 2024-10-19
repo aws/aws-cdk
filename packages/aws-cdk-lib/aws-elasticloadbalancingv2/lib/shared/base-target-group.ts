@@ -56,6 +56,15 @@ export interface BaseTargetGroupProps {
    * @default - Determined automatically.
    */
   readonly targetType?: TargetType;
+
+
+  /**
+   * Indicates whether cross zone load balancing is enabled.
+   *
+   * @default - use load balancer configuration
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-targetgroup-targetgroupattribute.html
+   */
+  readonly crossZoneEnabled?: boolean;
 }
 
 /**
@@ -237,6 +246,10 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
 
     if (baseProps.deregistrationDelay !== undefined) {
       this.setAttribute('deregistration_delay.timeout_seconds', baseProps.deregistrationDelay.toSeconds().toString());
+    }
+
+    if (baseProps.crossZoneEnabled !== undefined) {
+      this.setAttribute('load_balancing.cross_zone.enabled', baseProps.crossZoneEnabled === true ? 'true' : 'false');
     }
 
     this.healthCheck = baseProps.healthCheck || {};

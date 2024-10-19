@@ -805,4 +805,29 @@ describe('tests', () => {
     });
   });
 
+  // test cases for crossZoneEnabled
+  describe('crossZoneEnabled', () => {
+    test.each([true, false])('crossZoneEnabled can be %s', (crossZoneEnabled) => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+      // WHEN
+      new elbv2.ApplicationTargetGroup(stack, 'LB', { crossZoneEnabled, vpc });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+        TargetGroupAttributes: [
+          {
+            Key: 'load_balancing.cross_zone.enabled',
+            Value: `${crossZoneEnabled}`,
+          },
+          {
+            Key: 'stickiness.enabled',
+            Value: 'false',
+          },
+        ],
+      });
+    });
+  });
 });
