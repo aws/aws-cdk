@@ -57,7 +57,6 @@ export interface BaseTargetGroupProps {
    */
   readonly targetType?: TargetType;
 
-
   /**
    * Indicates whether cross zone load balancing is enabled.
    *
