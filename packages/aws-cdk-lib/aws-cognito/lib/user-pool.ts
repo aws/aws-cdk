@@ -391,7 +391,7 @@ export enum Mfa {
 export interface MfaSecondFactor {
   /**
    * The MFA token is sent to the user via SMS to their verified phone numbers
-   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-mfa-sms-text-message.html
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-mfa-sms-email-message.html
    * @default true
    */
   readonly sms: boolean;
@@ -402,6 +402,17 @@ export interface MfaSecondFactor {
    * @default false
    */
   readonly otp: boolean;
+
+  /**
+   * The MFA token is sent to the user via EMAIL
+   *
+   * To enable email-based MFA, set `email` propety to the Amazon SES email-sending configuration
+   * and set `advancedSecurityMode` to `AdvancedSecurity.ENFORCED` or `AdvancedSecurity.AUDIT`
+   *
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-mfa-sms-email-message.html
+   * @default false
+   */
+  readonly email?: boolean;
 }
 
 /**
@@ -671,8 +682,8 @@ export interface UserPoolProps {
   /**
    * Configure the MFA types that users can use in this user pool. Ignored if `mfa` is set to `OFF`.
    *
-   * @default - { sms: true, otp: false }, if `mfa` is set to `OPTIONAL` or `REQUIRED`.
-   * { sms: false, otp: false }, otherwise
+   * @default - { sms: true, otp: false, email: false }, if `mfa` is set to `OPTIONAL` or `REQUIRED`.
+   * { sms: false, otp: false, email:false }, otherwise
    */
   readonly mfaSecondFactor?: MfaSecondFactor;
 
@@ -1237,6 +1248,16 @@ export class UserPool extends UserPoolBase {
       }
       if (props.mfaSecondFactor!.otp) {
         enabledMfas.push('SOFTWARE_TOKEN_MFA');
+      } if (props.mfaSecondFactor!.email) {
+
+        if (props.email === undefined) {
+          throw new Error('To enable email-based MFA, set `email` propety to the Amazon SES email-sending configuration.');
+        }
+
+        if (props.advancedSecurityMode === AdvancedSecurityMode.OFF) {
+          throw new Error('To enable email-based MFA, set `advancedSecurityMode` to `AdvancedSecurity.ENFORCED` or `AdvancedSecurity.AUDIT`.');
+        }
+        enabledMfas.push('EMAIL_OTP');
       }
       return enabledMfas;
     }
