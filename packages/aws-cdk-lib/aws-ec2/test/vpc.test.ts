@@ -39,10 +39,8 @@ import {
   InstanceClass,
   InstanceSize,
   KeyPair,
-  SecurityGroup,
   UserData,
 } from '../lib';
-import { networkInterfaces } from 'os';
 
 describe('vpc', () => {
   describe('When creating a VPC', () => {
