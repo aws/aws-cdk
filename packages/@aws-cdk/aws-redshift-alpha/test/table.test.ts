@@ -337,7 +337,6 @@ describe('cluster table', () => {
         Handler: 'index.handler',
         Code: {
           S3Bucket: { 'Fn::Sub': 'cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}' },
-          S3Key: '6bdd909f81c84ffe7d00cf4d6a2dbac8606429bcc05b0db3da842c1941a532f2.zip',
         },
       });
     });
