@@ -151,7 +151,9 @@ export interface TableProps extends DatabaseOptions {
   readonly tableComment?: string;
 
   /**
-   * Handler timeout duration
+   * Handler timeout duration.
+   *
+   * Valid values are between 1 second and 15 minutes.
    *
    * @default - 1 minute
    */
