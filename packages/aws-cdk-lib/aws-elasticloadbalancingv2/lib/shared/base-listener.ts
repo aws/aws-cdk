@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { IListenerAction } from './listener-action';
-import { mapTagMapToCxschema } from './util';
+import { Attributes, mapTagMapToCxschema, renderAttributes } from './util';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { Annotations, ContextProvider, IResource, Lazy, Resource, Token } from '../../../core';
 import * as cxapi from '../../../cx-api';
@@ -99,7 +99,7 @@ export abstract class BaseListener extends Resource implements IListener {
         loadBalancerType: options.loadBalancerType,
       } as cxschema.LoadBalancerListenerContextQuery,
       dummyValue: {
-        // eslint-disable-next-line @aws-cdk/no-literal-partition
+        // eslint-disable-next-line @cdklabs/no-literal-partition
         listenerArn: `arn:aws:elasticloadbalancing:us-west-2:123456789012:listener/${options.loadBalancerType}/my-load-balancer/50dc6c495c0c9188/f2f7dc8efc522ab2`,
         listenerPort: 80,
         securityGroupIds: ['sg-123456789012'],
@@ -113,6 +113,11 @@ export abstract class BaseListener extends Resource implements IListener {
    */
   public readonly listenerArn: string;
 
+  /**
+   * Attributes set on this listener
+   */
+  private readonly attributes: Attributes = {};
+
   private defaultAction?: IListenerAction;
 
   constructor(scope: Construct, id: string, additionalProps: any) {
@@ -121,10 +126,27 @@ export abstract class BaseListener extends Resource implements IListener {
     const resource = new CfnListener(this, 'Resource', {
       ...additionalProps,
       defaultActions: Lazy.any({ produce: () => this.defaultAction?.renderActions() ?? [] }),
+      listenerAttributes: Lazy.any({ produce: () => renderAttributes(this.attributes) }, { omitEmptyArray: true } ),
     });
 
     this.listenerArn = resource.ref;
     this.node.addValidation({ validate: () => this.validateListener() });
+  }
+
+  /**
+   * Set a non-standard attribute on the listener
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listener-listenerattribute.html
+   */
+  public setAttribute(key: string, value: string | undefined) {
+    this.attributes[key] = value;
+  }
+
+  /**
+   * Remove an attribute from the listener
+   */
+  public removeAttribute(key: string) {
+    this.setAttribute(key, undefined);
   }
 
   /**
