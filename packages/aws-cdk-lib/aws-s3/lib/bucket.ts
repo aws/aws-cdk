@@ -1911,15 +1911,15 @@ export class Bucket extends BucketBase {
     }
     if (!allowedEdgeCharsetRegEx.test(bucketName.charAt(0))) {
       errors.push(allowLegacyBucketNaming
-        ? 'Bucket name must start and end with an uppercase, lowercase character or number'
-        : 'Bucket name must start and end with a lowercase character or number'
+        ? 'Bucket name must start with an uppercase, lowercase character or number'
+        : 'Bucket name must start with a lowercase character or number'
         + ' (offset: 0)',
       );
     }
     if (!allowedEdgeCharsetRegEx.test(bucketName.charAt(bucketName.length - 1))) {
       errors.push(allowLegacyBucketNaming
-        ? 'Bucket name must start and end with an uppercase, lowercase character or number'
-        : 'Bucket name must start and end with a lowercase character or number'
+        ? 'Bucket name must end with an uppercase, lowercase character or number'
+        : 'Bucket name must end with a lowercase character or number'
         + ` (offset: ${bucketName.length - 1})`,
       );
     }

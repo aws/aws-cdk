@@ -193,8 +193,8 @@ describe('bucket', () => {
       `Invalid S3 bucket name (value: ${bucket})`,
       'Bucket name must be at least 3 and no more than 63 characters',
       'Bucket name must only contain lowercase characters and the symbols, period (.) and dash (-) (offset: 5)',
-      'Bucket name must start and end with a lowercase character or number (offset: 0)',
-      `Bucket name must start and end with a lowercase character or number (offset: ${bucket.length - 1})`,
+      'Bucket name must start with a lowercase character or number (offset: 0)',
+      `Bucket name must end with a lowercase character or number (offset: ${bucket.length - 1})`,
       'Bucket name must not have dash next to period, or period next to dash, or consecutive periods (offset: 7)',
     ].join(EOL);
 
