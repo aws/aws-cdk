@@ -149,6 +149,7 @@ declare const config: iot.AccountAuditConfiguration;
 
 // Daily audit
 const dailyAudit = new iot.ScheduledAudit(this, 'DailyAudit', {
+  accountAuditConfiguration: config,
   frequency: iot.Frequency.DAILY,
   auditChecks: [
     iot.AuditCheck.AUTHENTICATED_COGNITO_ROLE_OVERLY_PERMISSIVE_CHECK,
@@ -157,6 +158,7 @@ const dailyAudit = new iot.ScheduledAudit(this, 'DailyAudit', {
 
 // Weekly audit
 const weeklyAudit = new iot.ScheduledAudit(this, 'WeeklyAudit', {
+  accountAuditConfiguration: config,
   frequency: iot.Frequency.WEEKLY,
   dayOfWeek: iot.DayOfWeek.SUNDAY,
   auditChecks: [
@@ -166,6 +168,7 @@ const weeklyAudit = new iot.ScheduledAudit(this, 'WeeklyAudit', {
 
 // Monthly audit
 const monthlyAudit = new iot.ScheduledAudit(this, 'MonthlyAudit', {
+  accountAuditConfiguration: config,
   frequency: iot.Frequency.MONTHLY,
   dayOfMonth: iot.DayOfMonth.of(1),
   auditChecks: [
