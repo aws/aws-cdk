@@ -1,0 +1,397 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "record-weight-from-cfnparameter": {
+        "id": "record-weight-from-cfnparameter",
+        "path": "record-weight-from-cfnparameter",
+        "children": {
+          "HostedZone": {
+            "id": "HostedZone",
+            "path": "record-weight-from-cfnparameter/HostedZone",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "record-weight-from-cfnparameter/HostedZone/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::HostedZone",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "cdk.dev."
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnHostedZone",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.PublicHostedZone",
+              "version": "0.0.0"
+            }
+          },
+          "RecordWeight0": {
+            "id": "RecordWeight0",
+            "path": "record-weight-from-cfnparameter/RecordWeight0",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "RecordWeight1": {
+            "id": "RecordWeight1",
+            "path": "record-weight-from-cfnparameter/RecordWeight1",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "RecordWeight2": {
+            "id": "RecordWeight2",
+            "path": "record-weight-from-cfnparameter/RecordWeight2",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "RecordWeight3": {
+            "id": "RecordWeight3",
+            "path": "record-weight-from-cfnparameter/RecordWeight3",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "WeightedRecord0": {
+            "id": "WeightedRecord0",
+            "path": "record-weight-from-cfnparameter/WeightedRecord0",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "record-weight-from-cfnparameter/WeightedRecord0/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                  "aws:cdk:cloudformation:props": {
+                    "hostedZoneId": {
+                      "Ref": "HostedZoneDB99F866"
+                    },
+                    "name": "www.cdk.dev.",
+                    "resourceRecords": [
+                      "1.2.3.4"
+                    ],
+                    "setIdentifier": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "WEIGHT_",
+                          {
+                            "Ref": "RecordWeight0"
+                          },
+                          "_ID_recordweightedRecord080EC42DE"
+                        ]
+                      ]
+                    },
+                    "ttl": "10",
+                    "type": "A",
+                    "weight": {
+                      "Ref": "RecordWeight0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.ARecord",
+              "version": "0.0.0"
+            }
+          },
+          "WeightedRecord1": {
+            "id": "WeightedRecord1",
+            "path": "record-weight-from-cfnparameter/WeightedRecord1",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "record-weight-from-cfnparameter/WeightedRecord1/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                  "aws:cdk:cloudformation:props": {
+                    "hostedZoneId": {
+                      "Ref": "HostedZoneDB99F866"
+                    },
+                    "name": "www.cdk.dev.",
+                    "resourceRecords": [
+                      "2.3.4.5"
+                    ],
+                    "setIdentifier": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "WEIGHT_",
+                          {
+                            "Ref": "RecordWeight1"
+                          },
+                          "_ID_recordweightedRecord118B8FA43"
+                        ]
+                      ]
+                    },
+                    "ttl": "10",
+                    "type": "A",
+                    "weight": {
+                      "Ref": "RecordWeight1"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.ARecord",
+              "version": "0.0.0"
+            }
+          },
+          "WeightedRecord2": {
+            "id": "WeightedRecord2",
+            "path": "record-weight-from-cfnparameter/WeightedRecord2",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "record-weight-from-cfnparameter/WeightedRecord2/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                  "aws:cdk:cloudformation:props": {
+                    "hostedZoneId": {
+                      "Ref": "HostedZoneDB99F866"
+                    },
+                    "name": "www.cdk.dev.",
+                    "resourceRecords": [
+                      "3.4.5.6"
+                    ],
+                    "setIdentifier": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "WEIGHT_",
+                          {
+                            "Ref": "RecordWeight2"
+                          },
+                          "_ID_recordweightedRecord29D395B6F"
+                        ]
+                      ]
+                    },
+                    "ttl": "10",
+                    "type": "A",
+                    "weight": {
+                      "Ref": "RecordWeight2"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.ARecord",
+              "version": "0.0.0"
+            }
+          },
+          "WeightedRecord3": {
+            "id": "WeightedRecord3",
+            "path": "record-weight-from-cfnparameter/WeightedRecord3",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "record-weight-from-cfnparameter/WeightedRecord3/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                  "aws:cdk:cloudformation:props": {
+                    "hostedZoneId": {
+                      "Ref": "HostedZoneDB99F866"
+                    },
+                    "name": "www.cdk.dev.",
+                    "resourceRecords": [
+                      "4.5.6.7"
+                    ],
+                    "setIdentifier": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "WEIGHT_",
+                          {
+                            "Ref": "RecordWeight3"
+                          },
+                          "_ID_recordweightedRecord38AAB01D6"
+                        ]
+                      ]
+                    },
+                    "ttl": "10",
+                    "type": "A",
+                    "weight": {
+                      "Ref": "RecordWeight3"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.ARecord",
+              "version": "0.0.0"
+            }
+          },
+          "CDKMetadata": {
+            "id": "CDKMetadata",
+            "path": "record-weight-from-cfnparameter/CDKMetadata",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "record-weight-from-cfnparameter/CDKMetadata/Default",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "0.0.0"
+                }
+              },
+              "Condition": {
+                "id": "Condition",
+                "path": "record-weight-from-cfnparameter/CDKMetadata/Condition",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnCondition",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "record-weight-from-cfnparameter/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "record-weight-from-cfnparameter/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Route53RecordWeightFromCfnParameterInteg": {
+        "id": "Route53RecordWeightFromCfnParameterInteg",
+        "path": "Route53RecordWeightFromCfnParameterInteg",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "Route53RecordWeightFromCfnParameterInteg/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "Route53RecordWeightFromCfnParameterInteg/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "Route53RecordWeightFromCfnParameterInteg/DefaultTest/DeployAssert",
+                "children": {
+                  "CDKMetadata": {
+                    "id": "CDKMetadata",
+                    "path": "Route53RecordWeightFromCfnParameterInteg/DefaultTest/DeployAssert/CDKMetadata",
+                    "children": {
+                      "Default": {
+                        "id": "Default",
+                        "path": "Route53RecordWeightFromCfnParameterInteg/DefaultTest/DeployAssert/CDKMetadata/Default",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Condition": {
+                        "id": "Condition",
+                        "path": "Route53RecordWeightFromCfnParameterInteg/DefaultTest/DeployAssert/CDKMetadata/Condition",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnCondition",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "Route53RecordWeightFromCfnParameterInteg/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "Route53RecordWeightFromCfnParameterInteg/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

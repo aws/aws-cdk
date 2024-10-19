@@ -1,0 +1,19 @@
+{
+  "version": "38.0.1",
+  "files": {
+    "3af2cf653e741676340b5160ba8e02dc8c5fc5dfa4ac558c521eda8474bf7deb": {
+      "source": {
+        "path": "Route53RecordWeightFromCfnParameterIntegDefaultTestDeployAssertB313B703.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "3af2cf653e741676340b5160ba8e02dc8c5fc5dfa4ac558c521eda8474bf7deb.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
