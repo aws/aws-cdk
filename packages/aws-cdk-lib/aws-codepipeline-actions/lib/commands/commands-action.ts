@@ -85,12 +85,12 @@ export class CommandsAction extends Action {
     return this.variableExpression(variableName);
   }
 
-  protected bound(scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  protected bound(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
     const logGroupArn = cdk.Stack.of(scope).formatArn({
       service: 'logs',
       resource: 'log-group',
-      resourceName: `/aws/codepipeline/${_stage.pipeline.pipelineName}:*`,
+      resourceName: `/aws/codepipeline/${stage.pipeline.pipelineName}:*`,
       arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
     });
 
