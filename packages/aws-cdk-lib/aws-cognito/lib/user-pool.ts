@@ -5,7 +5,7 @@ import { StandardAttributeNames } from './private/attr-names';
 import { ICustomAttribute, StandardAttribute, StandardAttributes } from './user-pool-attr';
 import { UserPoolClient, UserPoolClientOptions } from './user-pool-client';
 import { UserPoolDomain, UserPoolDomainOptions } from './user-pool-domain';
-import { UserPoolEmail } from './user-pool-email';
+import { UserPoolEmail, UserPoolEmailConfig } from './user-pool-email';
 import { IUserPoolIdentityProvider } from './user-pool-idp';
 import { UserPoolResourceServer, UserPoolResourceServerOptions } from './user-pool-resource-server';
 import { Grant, IGrantable, IRole, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
@@ -931,6 +931,7 @@ export class UserPool extends UserPoolBase {
   public readonly userPoolProviderUrl: string;
 
   private triggers: CfnUserPool.LambdaConfigProperty = {};
+  private emailConfiguration: UserPoolEmailConfig | undefined;
 
   constructor(scope: Construct, id: string, props: UserPoolProps = {}) {
     super(scope, id);
@@ -1000,6 +1001,7 @@ export class UserPool extends UserPoolBase {
       from: encodePuny(props.emailSettings?.from),
       replyToEmailAddress: encodePuny(props.emailSettings?.replyTo),
     });
+    this.emailConfiguration = emailConfiguration;
 
     const userPool = new CfnUserPool(this, 'Resource', {
       userPoolName: props.userPoolName,
@@ -1250,7 +1252,7 @@ export class UserPool extends UserPoolBase {
         enabledMfas.push('SOFTWARE_TOKEN_MFA');
       } if (props.mfaSecondFactor!.email) {
 
-        if (props.email === undefined) {
+        if (props.email === undefined || this.emailConfiguration?.emailSendingAccount !== 'DEVELOPER') {
           throw new Error('To enable email-based MFA, set `email` propety to the Amazon SES email-sending configuration.');
         }
 

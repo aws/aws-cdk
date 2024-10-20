@@ -2252,11 +2252,26 @@ describe('email MFA test', () => {
     });
   });
 
-  test('throws when email MFA is enabled with not SES.', () => {
+  test('throws when email MFA is enabled with no email settings.', () => {
     const stack = new Stack();
 
     expect(() => new UserPool(stack, 'Pool1', {
       mfa: Mfa.REQUIRED,
+      mfaSecondFactor: {
+        sms: true,
+        otp: false,
+        email: true,
+      },
+      advancedSecurityMode: AdvancedSecurityMode.ENFORCED,
+    })).toThrow('To enable email-based MFA, set `email` propety to the Amazon SES email-sending configuration.');
+  });
+
+  test('throws when email MFA is enabled with not SES email settings.', () => {
+    const stack = new Stack();
+
+    expect(() => new UserPool(stack, 'Pool1', {
+      mfa: Mfa.REQUIRED,
+      email: UserPoolEmail.withCognito(),
       mfaSecondFactor: {
         sms: true,
         otp: false,
