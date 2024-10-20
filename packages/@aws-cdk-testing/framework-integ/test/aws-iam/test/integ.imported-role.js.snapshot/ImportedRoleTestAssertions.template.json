@@ -34,7 +34,7 @@
      "PolicyNames.2",
      "PolicyNames.3"
     ],
-    "salt": "1724524953155"
+    "salt": "1729444223897"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -73,15 +73,6 @@
          "Resource": [
           "*"
          ]
-        },
-        {
-         "Action": [
-          "iam:ListAttachedRolePolicies"
-         ],
-         "Effect": "Allow",
-         "Resource": [
-          "*"
-         ]
         }
        ]
       }
@@ -105,7 +96,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "3cef2cdbb46b3821e641ffb8b9af9731af5f7e4a9e857ab633dbcd9023de724d.zip"
+     "S3Key": "332b43dd64df92147f3af7fe53689eb20106f7158d60d220b0b10b126035713b.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -116,43 +107,6 @@
      ]
     }
    }
-  },
-  "AwsApiCallIAMlistAttachedRolePolicies7b6e565f3b40bc5c7faa65c17a68f5be": {
-   "Type": "Custom::DeployAssert@SdkCallIAMlistAttachedRolePolicies",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
-      "Arn"
-     ]
-    },
-    "service": "IAM",
-    "api": "listAttachedRolePolicies",
-    "expected": "{\"$StringLike\":\"^MyCustomManagedPolicy[0-9]$\"}",
-    "actualPath": "AttachedPolicies.1.PolicyName",
-    "parameters": {
-     "RoleName": {
-      "Fn::Join": [
-       "",
-       [
-        "\"",
-        {
-         "Fn::ImportValue": "integ-iam-imported-role-3:ExportsOutputRefroleToBeImportedCAC1213CDE38D2C6"
-        },
-        "\""
-       ]
-      ]
-     }
-    },
-    "flattenResponse": "true",
-    "outputPaths": [
-     "AttachedPolicies.0.PolicyName",
-     "AttachedPolicies.1.PolicyName"
-    ],
-    "salt": "1724524953156"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
@@ -160,14 +114,6 @@
    "Value": {
     "Fn::GetAtt": [
      "AwsApiCallIAMlistRolePoliciese15a421383f9698f4159fca8713990e6",
-     "assertion"
-    ]
-   }
-  },
-  "AssertionResultsAwsApiCallIAMlistAttachedRolePolicies7b6e565f3b40bc5c7faa65c17a68f5be": {
-   "Value": {
-    "Fn::GetAtt": [
-     "AwsApiCallIAMlistAttachedRolePolicies7b6e565f3b40bc5c7faa65c17a68f5be",
      "assertion"
     ]
    }

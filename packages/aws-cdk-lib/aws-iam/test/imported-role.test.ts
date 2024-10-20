@@ -1,4 +1,4 @@
-import { Template } from '../../assertions';
+import { Template, Annotations } from '../../assertions';
 import * as cdk from '../../core';
 import { ManagedPolicy, PolicyStatement, Role } from '../lib';
 import { ImmutableRole } from '../lib/private/immutable-role';
@@ -72,7 +72,7 @@ test('check mutable role is getting edited with addManagedPolicy()', () => {
   });
 });
 
-test('throw Error when IRole and IManagedPolicy is used with', () => {
+test('throw warning when IRole and IManagedPolicy is used with', () => {
   // GIVEN
   const app = new cdk.App();
   const stack1 = new cdk.Stack(app, 'MyStackId', { env: { account: '123456789012' } });
@@ -80,8 +80,10 @@ test('throw Error when IRole and IManagedPolicy is used with', () => {
   const importedPolicy = ManagedPolicy.fromManagedPolicyArn(stack1, 'PolicyAttachmentSample', policyArn);
   const existingRole = Role.fromRoleArn(stack1, 'ImportedRole', 'arn:aws:iam::123456789012:role/ExistingRoleName', { mutable: true });
 
+  // WHEN
+  existingRole.addManagedPolicy(importedPolicy);
+  const warning = Annotations.fromStack(stack1).findWarning('*', 'Can\'t Combine IRole with IManagedPolicy. use ManagedPolicy directly. [ack: @aws-cdk/aws-iam:IRoleCantBeUsedWithIManagedPolicy]');
+
   // THEN
-  expect(() =>
-    existingRole.addManagedPolicy(importedPolicy),
-  ).toThrow("Can\'t Combine IRole with IManagedPolicy. use ManagedPolicy directly.");
+  expect(warning).toBeDefined();
 });

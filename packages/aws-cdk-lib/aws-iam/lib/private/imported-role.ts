@@ -1,9 +1,9 @@
 import { Construct } from 'constructs';
 import { MAX_POLICY_NAME_LEN } from './util';
-import { FeatureFlags, Names, Resource, Token, TokenComparison } from '../../../core';
+import { FeatureFlags, Names, Resource, Token, TokenComparison, Annotations } from '../../../core';
 import { IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME } from '../../../cx-api';
 import { Grant } from '../grant';
-import { ManagedPolicy } from '../managed-policy';
+import { IManagedPolicy, ManagedPolicy } from '../managed-policy';
 import { Policy } from '../policy';
 import { PolicyStatement } from '../policy-statement';
 import { IComparablePrincipal, IPrincipal, ArnPrincipal, AddToPrincipalPolicyResult, PrincipalPolicyFragment } from '../principals';
@@ -74,14 +74,20 @@ export class ImportedRole extends Resource implements IRole, IComparablePrincipa
     }
   }
 
-  public addManagedPolicy(policy: ManagedPolicy): void {
-    try {
+  public addManagedPolicy(policy: IManagedPolicy): void {
+    // Using "Type Predicate" to confirm x is ManagedPolicy, which allows to avoid
+    // using try ... catch and throw error.
+    const isManagedPolicy = (x: IManagedPolicy): x is ManagedPolicy => {
+      return (x as any).attachToRole !== undefined;
+    };
+
+    if (isManagedPolicy(policy)) {
       policy.attachToRole(this);
-    } catch (e) {
-      if (e instanceof Error && e.message === 'policy.attachToRole is not a function') {
-        throw new Error('Can\'t Combine IRole with IManagedPolicy. use ManagedPolicy directly.');
-      }
-      throw new Error(`${e}`);
+    } else {
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-iam:IRoleCantBeUsedWithIManagedPolicy',
+        'Can\'t combine IRole with IManagedPolicy. Use ManagedPolicy directly.',
+      );
     }
   }
 
