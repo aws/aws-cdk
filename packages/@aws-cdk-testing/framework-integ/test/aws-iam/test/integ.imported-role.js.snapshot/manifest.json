@@ -205,7 +205,7 @@
         "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/29b6baac6aab90ee3c6e09c476bc264cbda98d5f8067c7f692a6bbd6df208609.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fbf6b3701386b2634544cdcc1fa7efadd121f75a305a4caa857886f7f44d3e94.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -221,6 +221,7 @@
         "integ-iam-imported-role-role-stack",
         "integ-iam-imported-role-1",
         "integ-iam-imported-role-2",
+        "integ-iam-imported-role-3",
         "ImportedRoleTestAssertions.assets"
       ],
       "metadata": {
@@ -254,6 +255,18 @@
             "data": "LatestNodeRuntimeMap"
           }
         ],
+        "/ImportedRoleTestAssertions/AwsApiCallIAMlistAttachedRolePolicies7b6e565f3b40bc5c7faa65c17a68f5be/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallIAMlistAttachedRolePolicies7b6e565f3b40bc5c7faa65c17a68f5be"
+          }
+        ],
+        "/ImportedRoleTestAssertions/AwsApiCallIAMlistAttachedRolePolicies7b6e565f3b40bc5c7faa65c17a68f5be/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallIAMlistAttachedRolePolicies7b6e565f3b40bc5c7faa65c17a68f5be"
+          }
+        ],
         "/ImportedRoleTestAssertions/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -268,6 +281,79 @@
         ]
       },
       "displayName": "ImportedRoleTestAssertions"
+    },
+    "integ-iam-imported-role-3.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-iam-imported-role-3.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integ-iam-imported-role-3": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-iam-imported-role-3.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "notificationArns": [],
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a87c2442ed8bd0a5fec2b4bbbae0b7076c8864e2e138bc509872101b42d4dfd3.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-iam-imported-role-3.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integ-iam-imported-role-3.assets"
+      ],
+      "metadata": {
+        "/integ-iam-imported-role-3/roleToBeImported/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "roleToBeImportedCAC1213C"
+          }
+        ],
+        "/integ-iam-imported-role-3/ManagedPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ManagedPolicy7BAB786E"
+          }
+        ],
+        "/integ-iam-imported-role-3/ManagedPolicy1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ManagedPolicy135BDEF37"
+          }
+        ],
+        "/integ-iam-imported-role-3/Exports/Output{\"Ref\":\"roleToBeImportedCAC1213C\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefroleToBeImportedCAC1213CDE38D2C6"
+          }
+        ],
+        "/integ-iam-imported-role-3/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-iam-imported-role-3/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-iam-imported-role-3"
     },
     "Tree": {
       "type": "cdk:tree",
