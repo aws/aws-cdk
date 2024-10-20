@@ -41,7 +41,7 @@ used as a destination. More supported destinations are covered [below](#destinat
 ```ts
 const bucket = new s3.Bucket(this, 'Bucket');
 new firehose.DeliveryStream(this, 'Delivery Stream', {
-  destinations: [new destinations.S3Bucket(bucket)],
+  destination: new destinations.S3Bucket(bucket),
 });
 ```
 
@@ -54,8 +54,7 @@ The above example defines the following resources:
 
 ## Sources
 
-There are two main methods of sourcing input data: Kinesis Data Streams and via a "direct
-put".
+A Kinesis Data Firehose delivery stream can accept data from three main sources: Kinesis Data Streams, Managed Streaming for Apache Kafka (MSK), or via a "direct put" (API calls).
 
 See: [Sending Data to a Delivery Stream](https://docs.aws.amazon.com/firehose/latest/dev/basic-write.html)
 in the *Kinesis Data Firehose Developer Guide*.
@@ -63,15 +62,16 @@ in the *Kinesis Data Firehose Developer Guide*.
 ### Kinesis Data Stream
 
 A delivery stream can read directly from a Kinesis data stream as a consumer of the data
-stream. Configure this behaviour by providing a data stream in the `sourceStream`
-property when constructing a delivery stream:
+stream. Configure this behaviour by passing in a data stream in the `source`
+property via the `KinesisStreamSource` class when constructing a delivery stream:
 
 ```ts
 declare const destination: firehose.IDestination;
 const sourceStream = new kinesis.Stream(this, 'Source Stream');
+
 new firehose.DeliveryStream(this, 'Delivery Stream', {
-  sourceStream: sourceStream,
-  destinations: [destination],
+  source: new firehose.KinesisStreamSource(sourceStream),
+  destination: destination,
 });
 ```
 
@@ -108,7 +108,7 @@ declare const bucket: s3.Bucket;
 const s3Destination = new destinations.S3Bucket(bucket);
 
 new firehose.DeliveryStream(this, 'Delivery Stream', {
-  destinations: [s3Destination],
+  destination: s3Destination,
 });
 ```
 
@@ -153,19 +153,19 @@ declare const destination: firehose.IDestination;
 
 // SSE with an AWS-owned key
 new firehose.DeliveryStream(this, 'Delivery Stream AWS Owned', {
-  encryption: firehose.StreamEncryption.AWS_OWNED,
-  destinations: [destination],
+  encryption: firehose.StreamEncryption.awsOwnedKey(),
+  destination: destination,
 });
 // SSE with an customer-managed key that is created automatically by the CDK
 new firehose.DeliveryStream(this, 'Delivery Stream Implicit Customer Managed', {
-  encryption: firehose.StreamEncryption.CUSTOMER_MANAGED,
-  destinations: [destination],
+  encryption: firehose.StreamEncryption.customerManagedKey(),
+  destination: destination,
 });
 // SSE with an customer-managed key that is explicitly specified
 declare const key: kms.Key;
 new firehose.DeliveryStream(this, 'Delivery Stream Explicit Customer Managed', {
-  encryptionKey: key,
-  destinations: [destination],
+  encryption: firehose.StreamEncryption.customerManagedKey(key),
+  destination: destination,
 });
 ```
 
@@ -183,8 +183,8 @@ Kinesis Data Firehose will send logs to CloudWatch when data transformation or d
 delivery fails. The CDK will enable logging by default and create a CloudWatch LogGroup
 and LogStream for your Delivery Stream.
 
-When you create a destination, you can specify a log group. In this log group, The CDK
-will create log streams where log events will be sent:
+When creating a destination, you can provide an `ILoggingConfig`, which can either be an `EnableLogging` or `DisableLogging` instance.
+If you use `EnableLogging`, you can specify a log group where the CDK will create log streams to capture and store log events. For example:
 
 ```ts
 import * as logs from 'aws-cdk-lib/aws-logs';
@@ -192,11 +192,11 @@ import * as logs from 'aws-cdk-lib/aws-logs';
 const logGroup = new logs.LogGroup(this, 'Log Group');
 declare const bucket: s3.Bucket;
 const destination = new destinations.S3Bucket(bucket, {
-  logGroup: logGroup,
+  loggingConfig: new destinations.EnableLogging(logGroup),
 });
 
 new firehose.DeliveryStream(this, 'Delivery Stream', {
-  destinations: [destination],
+  destination: destination,
 });
 ```
 
@@ -205,10 +205,10 @@ Logging can also be disabled:
 ```ts
 declare const bucket: s3.Bucket;
 const destination = new destinations.S3Bucket(bucket, {
-  logging: false,
+  loggingConfig: new destinations.DisableLogging(),
 });
 new firehose.DeliveryStream(this, 'Delivery Stream', {
-  destinations: [destination],
+  destination: destination,
 });
 ```
 
@@ -271,7 +271,7 @@ const s3Destination = new destinations.S3Bucket(bucket, {
   compression: destinations.Compression.SNAPPY,
 });
 new firehose.DeliveryStream(this, 'Delivery Stream', {
-  destinations: [s3Destination],
+  destination: s3Destination,
 });
 ```
 
@@ -292,7 +292,7 @@ const destination = new destinations.S3Bucket(bucket, {
   bufferingSize: Size.mebibytes(8),
 });
 new firehose.DeliveryStream(this, 'Delivery Stream', {
-  destinations: [destination],
+  destination: destination,
 });
 ```
 
@@ -309,7 +309,7 @@ const destination = new destinations.S3Bucket(bucket, {
   bufferingInterval: Duration.seconds(0),
 });
 new firehose.DeliveryStream(this, 'ZeroBufferDeliveryStream', {
-  destinations: [destination],
+  destination: destination,
 });
 ```
 
@@ -332,7 +332,7 @@ const destination = new destinations.S3Bucket(bucket, {
   encryptionKey: key,
 });
 new firehose.DeliveryStream(this, 'Delivery Stream', {
-  destinations: [destination],
+  destination: destination,
 });
 ```
 
@@ -350,35 +350,32 @@ backed up to S3.
 // Enable backup of all source records (to an S3 bucket created by CDK).
 declare const bucket: s3.Bucket;
 new firehose.DeliveryStream(this, 'Delivery Stream Backup All', {
-  destinations: [
+  destination:
     new destinations.S3Bucket(bucket, {
       s3Backup: {
         mode: destinations.BackupMode.ALL,
       },
     }),
-  ],
 });
 // Explicitly provide an S3 bucket to which all source records will be backed up.
 declare const backupBucket: s3.Bucket;
 new firehose.DeliveryStream(this, 'Delivery Stream Backup All Explicit Bucket', {
-  destinations: [
+  destination: 
     new destinations.S3Bucket(bucket, {
       s3Backup: {
         bucket: backupBucket,
       },
     }),
-  ],
 });
 // Explicitly provide an S3 prefix under which all source records will be backed up.
 new firehose.DeliveryStream(this, 'Delivery Stream Backup All Explicit Prefix', {
-  destinations: [
+  destination:
     new destinations.S3Bucket(bucket, {
       s3Backup: {
         mode: destinations.BackupMode.ALL,
         dataOutputPrefix: 'mybackup',
       },
     }),
-  ],
 });
 ```
 
@@ -431,7 +428,7 @@ const s3Destination = new destinations.S3Bucket(bucket, {
   processor: lambdaProcessor,
 });
 new firehose.DeliveryStream(this, 'Delivery Stream', {
-  destinations: [s3Destination],
+  destination: s3Destination,
 });
 ```
 
@@ -447,7 +444,7 @@ necessary permissions for Kinesis Data Firehose to access the resources referenc
 delivery stream. One service role is created for the delivery stream that allows Kinesis
 Data Firehose to read from a Kinesis data stream (if one is configured as the delivery
 stream source) and for server-side encryption. Note that if the DeliveryStream is created 
-without specifying `sourceStream` or `encryptionKey`, this role is not created as it is not needed.
+without specifying a `source` or `encryptionKey`, this role is not created as it is not needed.
 
 Another service role is created for each destination, which gives Kinesis Data Firehose write 
 access to the destination resource, as well as the ability to invoke data transformers and 
@@ -473,7 +470,7 @@ const destinationRole = new iam.Role(this, 'Destination Role', {
 declare const bucket: s3.Bucket;
 const destination = new destinations.S3Bucket(bucket, { role: destinationRole });
 new firehose.DeliveryStream(this, 'Delivery Stream', {
-  destinations: [destination],
+  destination: destination,
   role: deliveryStreamRole,
 });
 ```

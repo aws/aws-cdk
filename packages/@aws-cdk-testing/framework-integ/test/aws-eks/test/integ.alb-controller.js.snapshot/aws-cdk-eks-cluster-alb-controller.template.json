@@ -402,9 +402,9 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c475180f5b1bbabac165414da13a9b843b111cd3b6d5fae9c954c006640c4064.zip"
+     "S3Key": "bfbdea4d45250c8162c204fe0687cb775e24d61c895ad89e4ca6e9a7fc90b0f0.zip"
     },
-    "Description": "/opt/kubectl/kubectl 1.24; /opt/helm/helm 3.9",
+    "Description": "/opt/kubectl/kubectl 1.30; /opt/helm/helm 3.15",
     "LicenseInfo": "Apache-2.0"
    }
   },
@@ -723,7 +723,7 @@
      ]
     },
     "Config": {
-     "version": "1.24",
+     "version": "1.30",
      "roleArn": {
       "Fn::GetAtt": [
        "ClusterRoleFA261979",
@@ -1056,7 +1056,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/747185c746dc5024d2fb306a5bac8b540a2b2df23f759acd03d937485f668bee.json"
+       "/145d58b98a5b34082c5a1777750ddb41b3c147f11e211fe4023f589f48ba1656.json"
       ]
      ]
     }
@@ -1106,7 +1106,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/5dfda7d74d3645d32a63b8314e4d246102cc310ed29108b51f5b89a2f6dcdf40.json"
+       "/b28ec0444060b976c34d01a01376cc0bf6ac2e0fe559a5d6b42fe8f763233dc0.json"
       ]
      ]
     }
@@ -1257,6 +1257,7 @@
         "elasticloadbalancing:DescribeTargetGroupAttributes",
         "elasticloadbalancing:DescribeTargetGroups",
         "elasticloadbalancing:DescribeTargetHealth",
+        "elasticloadbalancing:DescribeTrustStores",
         "elasticloadbalancing:ModifyListener",
         "elasticloadbalancing:ModifyRule",
         "elasticloadbalancing:RemoveListenerCertificates",
@@ -1621,7 +1622,7 @@
     },
     "Release": "aws-load-balancer-controller",
     "Chart": "aws-load-balancer-controller",
-    "Version": "1.6.2",
+    "Version": "1.8.2",
     "Wait": true,
     "Timeout": "900s",
     "Values": {
@@ -1640,7 +1641,7 @@
        {
         "Ref": "Vpc8378EB38"
        },
-       "\",\"image\":{\"repository\":\"602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon/aws-load-balancer-controller\",\"tag\":\"v2.6.2\"}}"
+       "\",\"image\":{\"repository\":\"602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon/aws-load-balancer-controller\",\"tag\":\"v2.8.2\"}}"
       ]
      ]
     },
@@ -1996,7 +1997,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "15197a5512179542fe2cff74af89bb047793c9c4e0b4395f114641a81cd52ae5.zip"
+     "S3Key": "46fb886516825167db3571f1ed91110fc6163ce20ee26fdb097c2c983f25fcd6.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-cluster-alb-controller/IngressPinger/Provider)",
     "Environment": {
