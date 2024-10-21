@@ -176,7 +176,7 @@ export class GarbageCollector {
       qualifier,
       maxWaitTime: this.maxWaitTime,
     });
-    void backgroundStackRefresh.start();
+    backgroundStackRefresh.start();
 
     const bucket = await this.bootstrapBucketName(sdk, this.bootstrapStackName);
     const numObjects = await this.numObjectsInBucket(s3, bucket);
