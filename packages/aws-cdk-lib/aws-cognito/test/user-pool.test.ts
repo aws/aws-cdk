@@ -2263,7 +2263,7 @@ describe('email MFA test', () => {
         email: true,
       },
       advancedSecurityMode: AdvancedSecurityMode.ENFORCED,
-    })).toThrow('To enable email-based MFA, set `email` propety to the Amazon SES email-sending configuration.');
+    })).toThrow('To enable email-based MFA, set `email` property to the Amazon SES email-sending configuration.');
   });
 
   test('throws when email MFA is enabled with not SES email settings.', () => {
@@ -2278,7 +2278,7 @@ describe('email MFA test', () => {
         email: true,
       },
       advancedSecurityMode: AdvancedSecurityMode.ENFORCED,
-    })).toThrow('To enable email-based MFA, set `email` propety to the Amazon SES email-sending configuration.');
+    })).toThrow('To enable email-based MFA, set `email` property to the Amazon SES email-sending configuration.');
   });
 
   test('set Email MFA', () => {
