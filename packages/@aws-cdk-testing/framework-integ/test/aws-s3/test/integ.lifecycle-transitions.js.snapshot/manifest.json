@@ -1,28 +1,29 @@
 {
-  "version": "36.0.0",
+  "version": "38.0.1",
   "artifacts": {
-    "Stack.assets": {
+    "s3-lifecycle-transitions.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "Stack.assets.json",
+        "file": "s3-lifecycle-transitions.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "Stack": {
+    "s3-lifecycle-transitions": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "Stack.template.json",
+        "templateFile": "s3-lifecycle-transitions.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4c3d1a4b2e322a4753eb4eaf49c45451cc6a8bd2662a6d2c740c369f3e55d10f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ddad2eaffb71d50ee55436f9aff0d51b46f314389ef9056ee42d2c2cf1e0ca83.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "Stack.assets"
+          "s3-lifecycle-transitions.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,70 +32,59 @@
         }
       },
       "dependencies": [
-        "Stack.assets"
+        "s3-lifecycle-transitions.assets"
       ],
       "metadata": {
-        "/Stack/DLQ/Resource": [
+        "/s3-lifecycle-transitions/AllStorageClasses128K/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DLQ581697C4"
+            "data": "AllStorageClasses128KB8241761"
           }
         ],
-        "/Stack/Bus/Resource": [
+        "/s3-lifecycle-transitions/VariesByStorageClass/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "BusEA82B648"
+            "data": "VariesByStorageClassCD3C88D5"
           }
         ],
-        "/Stack/Bus/cdk-Statement1/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BuscdkStatement1D7D87B9D"
-          }
-        ],
-        "/Stack/Bus/cdk-Statement2/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BuscdkStatement2341A5B58"
-          }
-        ],
-        "/Stack/BootstrapVersion": [
+        "/s3-lifecycle-transitions/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/Stack/CheckBootstrapVersion": [
+        "/s3-lifecycle-transitions/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "Stack"
+      "displayName": "s3-lifecycle-transitions"
     },
-    "IntegTestEventBusStackDefaultTestDeployAssertE6DF8EA9.assets": {
+    "cdkintegs3lifecycletransitionsDefaultTestDeployAssert9A611ED6.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "IntegTestEventBusStackDefaultTestDeployAssertE6DF8EA9.assets.json",
+        "file": "cdkintegs3lifecycletransitionsDefaultTestDeployAssert9A611ED6.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "IntegTestEventBusStackDefaultTestDeployAssertE6DF8EA9": {
+    "cdkintegs3lifecycletransitionsDefaultTestDeployAssert9A611ED6": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "IntegTestEventBusStackDefaultTestDeployAssertE6DF8EA9.template.json",
+        "templateFile": "cdkintegs3lifecycletransitionsDefaultTestDeployAssert9A611ED6.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "IntegTestEventBusStackDefaultTestDeployAssertE6DF8EA9.assets"
+          "cdkintegs3lifecycletransitionsDefaultTestDeployAssert9A611ED6.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -103,23 +93,23 @@
         }
       },
       "dependencies": [
-        "IntegTestEventBusStackDefaultTestDeployAssertE6DF8EA9.assets"
+        "cdkintegs3lifecycletransitionsDefaultTestDeployAssert9A611ED6.assets"
       ],
       "metadata": {
-        "/IntegTest-EventBusStack/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/cdk-integ-s3-lifecycle-transitions/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/IntegTest-EventBusStack/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/cdk-integ-s3-lifecycle-transitions/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "IntegTest-EventBusStack/DefaultTest/DeployAssert"
+      "displayName": "cdk-integ-s3-lifecycle-transitions/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
