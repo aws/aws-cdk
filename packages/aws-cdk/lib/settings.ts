@@ -292,7 +292,7 @@ export class Settings {
       assetParallelism: argv['asset-parallelism'],
       assetPrebuild: argv['asset-prebuild'],
       ignoreNoStacks: argv['ignore-no-stacks'],
-      unstable: argv['unstable'],
+      unstable: argv.unstable,
     });
   }
 
@@ -308,7 +308,6 @@ export class Settings {
     const context: any = {};
 
     for (const assignment of ((argv as any).context || [])) {
-      console.log((argv as any).context, assignment);
       const parts = assignment.split(/=(.*)/, 2);
       if (parts.length === 2) {
         debug('CLI argument context: %s=%s', parts[0], parts[1]);
