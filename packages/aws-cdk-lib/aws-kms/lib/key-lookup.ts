@@ -8,7 +8,7 @@ export interface KeyLookupOptions {
    * Must be in the format `alias/<AliasName>`.
    */
   readonly aliasName: string;
-  
+
   /**
    * Whether to return a dummy key if the key was not found.
    *
@@ -22,7 +22,7 @@ export interface KeyLookupOptions {
    * @default false
    */
   readonly returnDummyKeyOnMissing?: boolean;
-  
+
   /**
    * Adds an additional discriminator to the `cdk.context.json` cache key.
    *
