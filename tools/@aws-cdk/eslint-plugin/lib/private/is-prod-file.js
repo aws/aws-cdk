@@ -1,0 +1,15 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.isProdFile = void 0;
+const path = require("path");
+/**
+ * We don't care about project test files (in a /test/ directory, excluding our fixtures)
+ */
+function isProdFile(filename) {
+    const isInTestFolder = new RegExp(/\/test\//).test(filename);
+    const isTestingPackage = new RegExp(/@aws-cdk-testing/).test(filename);
+    const isInOurTestFolder = path.resolve(filename).startsWith(path.resolve(__dirname, '..', '..', 'test'));
+    return (!isInTestFolder && !isTestingPackage) || isInOurTestFolder;
+}
+exports.isProdFile = isProdFile;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaXMtcHJvZC1maWxlLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiaXMtcHJvZC1maWxlLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7OztBQUFBLDZCQUE2QjtBQUU3Qjs7R0FFRztBQUNILFNBQWdCLFVBQVUsQ0FBQyxRQUFnQjtJQUN6QyxNQUFNLGNBQWMsR0FBRyxJQUFJLE1BQU0sQ0FBQyxVQUFVLENBQUMsQ0FBQyxJQUFJLENBQUMsUUFBUSxDQUFDLENBQUM7SUFDN0QsTUFBTSxnQkFBZ0IsR0FBRyxJQUFJLE1BQU0sQ0FBQyxrQkFBa0IsQ0FBQyxDQUFDLElBQUksQ0FBQyxRQUFRLENBQUMsQ0FBQztJQUV2RSxNQUFNLGlCQUFpQixHQUFHLElBQUksQ0FBQyxPQUFPLENBQUMsUUFBUSxDQUFDLENBQUMsVUFBVSxDQUFDLElBQUksQ0FBQyxPQUFPLENBQUMsU0FBUyxFQUFFLElBQUksRUFBRSxJQUFJLEVBQUUsTUFBTSxDQUFDLENBQUMsQ0FBQztJQUV6RyxPQUFPLENBQUMsQ0FBQyxjQUFjLElBQUksQ0FBQyxnQkFBZ0IsQ0FBQyxJQUFJLGlCQUFpQixDQUFDO0FBQ3JFLENBQUM7QUFQRCxnQ0FPQyIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCAqIGFzIHBhdGggZnJvbSAncGF0aCc7XG5cbi8qKlxuICogV2UgZG9uJ3QgY2FyZSBhYm91dCBwcm9qZWN0IHRlc3QgZmlsZXMgKGluIGEgL3Rlc3QvIGRpcmVjdG9yeSwgZXhjbHVkaW5nIG91ciBmaXh0dXJlcylcbiAqL1xuZXhwb3J0IGZ1bmN0aW9uIGlzUHJvZEZpbGUoZmlsZW5hbWU6IHN0cmluZykge1xuICBjb25zdCBpc0luVGVzdEZvbGRlciA9IG5ldyBSZWdFeHAoL1xcL3Rlc3RcXC8vKS50ZXN0KGZpbGVuYW1lKTtcbiAgY29uc3QgaXNUZXN0aW5nUGFja2FnZSA9IG5ldyBSZWdFeHAoL0Bhd3MtY2RrLXRlc3RpbmcvKS50ZXN0KGZpbGVuYW1lKTtcblxuICBjb25zdCBpc0luT3VyVGVzdEZvbGRlciA9IHBhdGgucmVzb2x2ZShmaWxlbmFtZSkuc3RhcnRzV2l0aChwYXRoLnJlc29sdmUoX19kaXJuYW1lLCAnLi4nLCAnLi4nLCAndGVzdCcpKTtcblxuICByZXR1cm4gKCFpc0luVGVzdEZvbGRlciAmJiAhaXNUZXN0aW5nUGFja2FnZSkgfHwgaXNJbk91clRlc3RGb2xkZXI7XG59XG4iXX0=

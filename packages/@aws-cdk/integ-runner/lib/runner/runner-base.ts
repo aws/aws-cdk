@@ -1,4 +1,4 @@
-/* eslint-disable @aws-cdk/no-literal-partition */
+/* eslint-disable @cdklabs/no-literal-partition */
 import * as path from 'path';
 import { CdkCliWrapper, ICdk } from '@aws-cdk/cdk-cli-wrapper';
 import { TestCase, DefaultCdkOptions } from '@aws-cdk/cloud-assembly-schema';
@@ -429,5 +429,6 @@ export const DEFAULT_SYNTH_OPTIONS = {
     CDK_INTEG_HOSTED_ZONE_NAME: 'example.com',
     CDK_INTEG_DOMAIN_NAME: '*.example.com',
     CDK_INTEG_CERT_ARN: 'arn:aws:acm:test-region:12345678:certificate/86468209-a272-595d-b831-0efb6421265z',
+    CDK_INTEG_SUBNET_ID: 'subnet-0dff1a399d8f6f92c',
   },
 };

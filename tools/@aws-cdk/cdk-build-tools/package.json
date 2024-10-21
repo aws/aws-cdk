@@ -44,7 +44,7 @@
   },
   "main": "lib/index.js",
   "dependencies": {
-    "@aws-cdk/eslint-plugin": "0.0.0",
+    "@cdklabs/eslint-plugin": "^1.0.0",
     "@aws-cdk/yarn-cling": "0.0.0",
     "@aws-cdk/node-bundle": "0.0.0",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
@@ -68,6 +68,7 @@
     "nyc": "^15.1.0",
     "semver": "^7.6.3",
     "ts-jest": "^29.2.5",
+    "p-limit": "^3.1.0",
     "typescript": "~5.4.5",
     "yargs": "^16.2.0"
   },
