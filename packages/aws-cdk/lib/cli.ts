@@ -119,7 +119,7 @@ async function parseCommandLineArguments(args: string[]) {
       .option('action', { type: 'string', desc: 'The action (or sub-action) you want to perform. Valid entires are "print", "tag", "delete-tagged", "full".', default: 'full' })
       .option('type', { type: 'string', desc: 'Specify either ecr, s3, or all', default: 'all' })
       .option('rollback-buffer-days', { type: 'number', desc: 'Delete assets that have been marked as isolated for this many days', default: 0 })
-      .option('created-at-buffer-days', { type: 'number', desc: 'Skip deletion of any assets that are younger than this many days', default: 1 })
+      .option('created-buffer-days', { type: 'number', desc: 'Never delete assets younger than this (in days)', default: 1 })
       .option('qualifier', { type: 'string', desc: 'String which must be unique for each bootstrap stack. You must configure it on your CDK app if you change this from the default.', default: undefined })
       .option('skip-delete-prompt', { type: 'boolean', desc: 'Skip manual prompt before deletion', default: false })
       .option('bootstrap-stack-name', { type: 'string', desc: 'The name of the CDK toolkit stack to create', requiresArg: true }),
