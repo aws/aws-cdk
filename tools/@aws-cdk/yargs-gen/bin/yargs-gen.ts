@@ -1,30 +1,72 @@
-import { Expression, FreeFunction, Module, Statement, TypeScriptRenderer, code } from '@cdklabs/typewriter';
+import * as fs from 'fs';
+import { Expression, FreeFunction, Module, SelectiveModuleImport, Statement, Type, TypeScriptRenderer, code } from '@cdklabs/typewriter';
 import { CliConfig, makeConfig } from '../lib/config';
 
 async function main() {
   const scope = new Module('aws-cdk');
+
+  scope.addImport(new SelectiveModuleImport(scope, 'yargs', ['Argv']));
+  //scope.addImport(new SelectiveModuleImport(scope, '../lib/api/util/cloudformation/stack-activity-monitor', ['StackActivityProgress']));
+  //scope.addImport(new SelectiveModuleImport(scope, '../lib/diff', ['RequireApproval']));
+
+  scope.addInitialization(code.comment(
+    'https://github.com/yargs/yargs/issues/1929',
+    'https://github.com/evanw/esbuild/issues/1492',
+    'eslint-disable-next-line @typescript-eslint/no-require-imports',
+  ));
+  scope.addInitialization(code.stmt.constVar(code.expr.ident('yargs'), code.expr.directCode("require('yargs')")));
+
   const parseCommandLineArguments = new FreeFunction(scope, {
     name: 'parseCommandLineArguments',
+    export: true,
+    returnType: Type.ANY,
+    parameters: [
+      { name: 'args', type: Type.arrayOf(Type.STRING) },
+      { name: 'browserDefault', type: Type.STRING, optional: true },
+      { name: 'availableInitLanguages', type: Type.arrayOf(Type.STRING) },
+      { name: 'migrateSupportedLanguages', type: Type.arrayOf(Type.STRING) },
+      { name: 'version', type: Type.STRING },
+      { name: 'yargsNegativeAlias', type: Type.ANY },
+    ],
   });
-  parseCommandLineArguments.addBody(makeYargs(makeConfig()));
+  parseCommandLineArguments.addBody(makeYargs(await makeConfig()/*, scope*/));
 
   const renderer = new TypeScriptRenderer();
   // eslint-disable-next-line no-console
   console.log(renderer.render(scope));
+  const eslintBlock = `
+/* eslint-disable comma-spacing */
+/* eslint-disable @typescript-eslint/comma-dangle */
+/* eslint-disable quote-props */
+/* eslint-disable quotes */`;
+
+  fs.writeFileSync('./lib/parse-command-line-arguments.ts', `${eslintBlock}\n`);
+  fs.appendFileSync('./lib/parse-command-line-arguments.ts', renderer.render(scope));
 }
 
 interface MiddlewareExpression {
-  callbacks: Expression;
+  callback: Expression;
   applyBeforeValidation?: Expression;
 }
 
-function makeYargs(config: CliConfig): Statement {
-  const preamble = `yargs
-  .env('CDK')
-  .usage('Usage: cdk -a <cdk-app> COMMAND')
-  `;
+// Use the following configuration for array arguments:
+//
+//     { type: 'array', default: [], nargs: 1, requiresArg: true }
+//
+// The default behavior of yargs is to eat all strings following an array argument:
+//
+//   ./prog --arg one two positional  => will parse to { arg: ['one', 'two', 'positional'], _: [] } (so no positional arguments)
+//   ./prog --arg one two -- positional  => does not help, for reasons that I can't understand. Still gets parsed incorrectly.
+//
+// By using the config above, every --arg will only consume one argument, so you can do the following:
+//
+//   ./prog --arg one --arg two position  =>  will parse to  { arg: ['one', 'two'], _: ['positional'] }.
+function makeYargs(config: CliConfig/*, scope: ScopeImpl*/): Statement {
+  //const yargs = new ThingSymbol('yargs', scope);
+  //let yargsExpr = new SymbolReference(yargs).callMethod('env', code.expr.lit('CDK'));
+  let yargsExpr: Expression = code.expr.ident('yargs');
+  yargsExpr = yargsExpr.callMethod('usage', code.expr.lit('Usage: cdk -a <cdk-app> COMMAND'));
 
-  let yargsExpr = code.expr.directCode(preamble);
   for (const command of Object.keys(config.commands)) {
     const commandFacts = config.commands[command];
     const commandArg = commandFacts.arg
@@ -48,34 +90,55 @@ function makeYargs(config: CliConfig): Statement {
             // middleware is a separate function call, so we can't store it with the regular option arguments, as those will all be treated as parameters:
             // .option('R', { type: 'boolean', hidden: true }).middleware(yargsNegativeAlias('R', 'rollback'), true)
             middleware = {
-              callbacks: code.expr.lit(optionFacts.middleware!.callbacks.toString()),
+              callback: code.expr.builtInFn(optionFacts.middleware!.callback, code.expr.lit(optionFacts.middleware!.args)),
               applyBeforeValidation: code.expr.lit(optionFacts.middleware!.applyBeforeValidation),
             };
             break;
-
           default:
-            optionArgs[optionProp] = code.expr.lit((optionFacts as any)[optionProp]);
+            if ((optionFacts as any)[optionProp].dynamicType === 'parameter') {
+              optionArgs[optionProp] = code.expr.ident((optionFacts as any)[optionProp].dynamicValue);
+            } else {
+              optionArgs[optionProp] = code.expr.lit((optionFacts as any)[optionProp]);
+            }
         }
       }
 
       optionsExpr = optionsExpr.callMethod('option', code.expr.lit(`${option}`), code.expr.object(optionArgs));
       if (middleware) {
-        optionsExpr = optionsExpr.callMethod('middleware', middleware.callbacks, middleware.applyBeforeValidation ?? code.expr.UNDEFINED);
+        optionsExpr = optionsExpr.callMethod('middleware', middleware.callback, middleware.applyBeforeValidation ?? code.expr.UNDEFINED);
         middleware = undefined;
       }
     }
 
-    // tail-recursive?
     yargsExpr = commandFacts.options
       ? yargsExpr.callMethod('command', code.expr.directCode(`['${command}${commandArg}'${aliases}]`), code.expr.lit(commandFacts.description), optionsExpr)
       : yargsExpr.callMethod('command', code.expr.directCode(`['${command}${commandArg}'${aliases}]`), code.expr.lit(commandFacts.description));
   }
 
-  return code.stmt.ret(yargsExpr);
+  return code.stmt.ret(makeEpilogue(yargsExpr));
+}
+
+function makeEpilogue(prefix: Expression) {
+  let completeThing = prefix.callMethod('version', code.expr.ident('version'));
+  completeThing = completeThing.callMethod('demandCommand', code.expr.lit(1), code.expr.lit("''")); // just print help
+  completeThing = completeThing.callMethod('recommendCommands');
+  completeThing = completeThing.callMethod('help');
+  completeThing = completeThing.callMethod('alias', code.expr.lit('h'), code.expr.lit('help'));
+  completeThing = completeThing.callMethod('epilogue', code.expr.lit([
+    'If your app has a single stack, there is no need to specify the stack name',
+    'If one of cdk.json or ~/.cdk.json exists, options specified there will be used as defaults. Settings in cdk.json take precedence.',
+  ].join('\n\n')));
+
+  completeThing = completeThing.callMethod('parse', code.expr.ident('args'));
+
+  return completeThing;
 }
 
 main().then(() => {
+  // eslint-disable-next-line no-console
+  console.log('waoh 1');
 
-}).catch(() => {
-
+}).catch((e) => {
+  // eslint-disable-next-line no-console
+  console.error(e);
 });

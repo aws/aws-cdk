@@ -5,7 +5,6 @@ interface YargsCommand {
   description: string;
   options?: { [optionName: string]: YargsOption };
   aliases?: string[];
-  //args?: { [argName: string]: YargsArg };
   arg?: YargsArg;
 }
 
@@ -53,7 +52,8 @@ interface YargsOption {
 }
 
 export interface Middleware {
-  callbacks: MiddlewareFunction | ReadonlyArray<MiddlewareFunction>;
+  callback: string;
+  args: string[];
   applyBeforeValidation?: boolean;
 }
 
@@ -61,20 +61,7 @@ export interface CliConfig {
   commands: { [commandName: string]: YargsCommand };
 }
 
-// copied from yargs
-type MiddlewareFunction = (args: any) => void;
-// end copied from yargs
-
-function yargsNegativeAlias<T extends { [x in S | L]: boolean | undefined }, S extends string, L extends string>(shortName: S, longName: L) {
-  return (argv: T) => {
-    if (shortName in argv && argv[shortName]) {
-      (argv as any)[longName] = false;
-    }
-    return argv;
-  };
-}
-
-export function makeConfig(): CliConfig {
+export async function makeConfig(): Promise<CliConfig> {
   const config: CliConfig = {
     commands: {
       deploy: {
@@ -112,7 +99,8 @@ export function makeConfig(): CliConfig {
             hidden: true,
             // Hack to get '-R' as an alias for '--no-rollback', suggested by: https://github.com/yargs/yargs/issues/1729
             middleware: {
-              callbacks: yargsNegativeAlias('R', 'rollback'),
+              callback: 'yargsNegativeAlias',
+              args: ['R', 'rollback'],
               applyBeforeValidation: true,
             },
           },
@@ -252,7 +240,8 @@ export function makeConfig(): CliConfig {
             type: 'boolean',
             hidden: true,
             middleware: {
-              callbacks: yargsNegativeAlias('R', 'rollback'),
+              callback: 'yargsNegativeAlias',
+              args: ['R', 'rollback'],
               applyBeforeValidation: true,
             },
           },
@@ -336,7 +325,7 @@ export function makeConfig(): CliConfig {
           variadic: false,
         },
         options: {
-          'language': { type: 'string', alias: 'l', desc: 'The language to be used for the new project (default can be configured in ~/.cdk.json)' /*, choices: initTemplateLanguages*/ }, // TODO: preamble, this initTemplateLanguages variable needs to go as a statement there.
+          'language': { type: 'string', alias: 'l', desc: 'The language to be used for the new project (default can be configured in ~/.cdk.json)', choices: DynamicValue.fromParameter('availableInitLanguages') } as any, // TODO: preamble, this initTemplateLanguages variable needs to go as a statement there.
           'list': { type: 'boolean', desc: 'List the available templates' },
           'generate-only': { type: 'boolean', default: false, desc: 'If true, only generates project files, without executing additional operations such as setting up a git repo, installing dependencies or compiling the project' },
         },
@@ -345,7 +334,7 @@ export function makeConfig(): CliConfig {
         description: false as any,
         options: {
           'stack-name': { type: 'string', alias: 'n', desc: 'The name assigned to the stack created in the new project. The name of the app will be based off this name as well.', requiresArg: true },
-          'language': { type: 'string', default: 'typescript', alias: 'l', desc: 'The language to be used for the new project'/*, choices: MIGRATE_SUPPORTED_LANGUAGES*/ }, // TODO: preamble
+          'language': { type: 'string', default: 'typescript', alias: 'l', desc: 'The language to be used for the new project', choices: DynamicValue.fromParameter('migrateSupportedLanguages') as any },
           'account': { type: 'string', desc: 'The account to retrieve the CloudFormation stack template from' },
           'region': { type: 'string', desc: 'The region to retrieve the CloudFormation stack template from' },
           'from-path': { type: 'string', desc: 'The path to the CloudFormation template to migrate. Use this for locally stored templates' },
@@ -385,7 +374,7 @@ export function makeConfig(): CliConfig {
             alias: 'b',
             desc: 'the command to use to open the browser, using %u as a placeholder for the path of the file to open',
             type: 'string',
-            //default: process.platform in defaultBrowserCommand ? defaultBrowserCommand[process.platform] : 'xdg-open %u', // TODO: preamble
+            default: DynamicValue.fromParameter('browserDefault'),
           },
         },
       },
@@ -396,4 +385,18 @@ export function makeConfig(): CliConfig {
   };
 
   return config;
+}
+
+export interface DynamicResult {
+  dynamicType: 'parameter';
+  dynamicValue: string;
+}
+
+export class DynamicValue {
+  public static fromParameter(parameterName: string): DynamicResult {
+    return {
+      dynamicType: 'parameter',
+      dynamicValue: parameterName,
+    };
+  }
 }
