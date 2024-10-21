@@ -16,7 +16,6 @@ import {
   InterfaceVpcEndpointService,
   NatProvider,
   NatGatewayProvider,
-  NatInstanceProviderV2,
   NatInstanceProvider,
   NatTrafficDirection,
   NetworkAcl,
@@ -1787,10 +1786,10 @@ describe('vpc', () => {
       Template.fromStack(stack).hasResource('AWS::EC2::Instance', Match.objectLike({
         Properties: {
           NetworkInterfaces: [{
-            AssociatePublicIpAddress: value
+            AssociatePublicIpAddress: value,
           }],
-        }
-      }))
+        },
+      }));
     });
 
     test('Can instantiate NatInstanceProvider directly with new', () => {
