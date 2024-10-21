@@ -15,7 +15,10 @@ export class LambdaFunctionProcessor implements IDataProcessor {
     this.props = props;
   }
 
-  public bind(_scope: Construct, options: DataProcessorBindOptions): DataProcessorConfig {
+  /**
+   * @internal
+   */
+  public _bind(_scope: Construct, options: DataProcessorBindOptions): DataProcessorConfig {
     this.lambdaFunction.grantInvoke(options.role);
 
     return {

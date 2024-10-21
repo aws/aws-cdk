@@ -115,7 +115,7 @@ function renderDataProcessor(
   scope: Construct,
   role: iam.IRole,
 ): CfnDeliveryStream.ProcessorProperty {
-  const processorConfig = processor.bind(scope, { role });
+  const processorConfig = processor._bind(scope, { role });
   const parameters = [{ parameterName: 'RoleArn', parameterValue: role.roleArn }];
   parameters.push(processorConfig.processorIdentifier);
   if (processor.props.bufferInterval) {
