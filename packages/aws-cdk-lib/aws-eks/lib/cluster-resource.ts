@@ -27,6 +27,7 @@ export interface ClusterResourceProps {
   readonly tags?: { [key: string]: string };
   readonly logging?: { [key: string]: [ { [key: string]: any } ] };
   readonly accessconfig?: CfnCluster.AccessConfigProperty;
+  readonly bootstrapSelfManagedAddons?: boolean;
 }
 
 /**
@@ -90,6 +91,7 @@ export class ClusterResource extends Construct {
           tags: props.tags,
           logging: props.logging,
           accessConfig: props.accessconfig,
+          bootstrapSelfManagedAddons: props.bootstrapSelfManagedAddons,
         },
         AssumeRoleArn: this.adminRole.roleArn,
 

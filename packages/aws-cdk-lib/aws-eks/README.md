@@ -1840,10 +1840,15 @@ const loadBalancerAddress = cluster.getServiceLoadBalancerAddress('my-service');
 
 ## Add-ons
 
-[Add-ons](https://docs.aws.amazon.com/eks/latest/userguide/eks-add-ons.html) is a software that provides supporting operational capabilities to Kubernetes applications. The EKS module supports adding add-ons to your cluster using the `eks.Addon` class.
+[Add-ons](https://docs.aws.amazon.com/eks/latest/userguide/eks-add-ons.html) is a software that provides supporting operational capabilities to Kubernetes applications. The EKS module supports adding default networking add-ons to your cluster using `bootstrapSelfManagedAddons` prop and additional add-ons using the `eks.Addon` class.
 
 ```ts
-declare const cluster: eks.Cluster;
+const cluster = new eks.Cluster(this, 'Cluster', {
+  // ...
+  // If you set this value to False when creating a cluster, the default networking add-ons will not be installed.
+  // The default networking addons include vpc-cni, coredns, and kube-proxy.
+  bootstrapSelfManagedAddons: true,
+});
 
 new eks.Addon(this, 'Addon', {
   cluster,
