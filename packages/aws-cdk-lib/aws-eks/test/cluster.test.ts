@@ -54,17 +54,17 @@ describe('cluster', () => {
     });
   });
 
-  test('can specify bootstrap self managed add-ons', () => {
+  test.each([true, false])('can specify bootstrap self managed add-ons', (bootstrapSelfManagedAddons) => {
     const { stack } = testFixture();
 
     new eks.Cluster(stack, 'Cluster', {
       version: CLUSTER_VERSION,
-      bootstrapSelfManagedAddons: true,
+      bootstrapSelfManagedAddons,
     });
 
     Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
       Config: {
-        bootstrapSelfManagedAddons: true,
+        bootstrapSelfManagedAddons,
       },
     });
   });
