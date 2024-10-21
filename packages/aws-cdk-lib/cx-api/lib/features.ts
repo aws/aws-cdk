@@ -1249,7 +1249,6 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
   },
-
 };
 
 const CURRENT_MV = 'v2';
