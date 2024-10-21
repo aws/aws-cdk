@@ -1,0 +1,20 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "IntegTest/DefaultTest": {
+      "stacks": [
+        "integ-customize-roles-restapi"
+      ],
+      "cdkCommandOptions": {
+        "deploy": {
+          "enabled": false
+        },
+        "destroy": {
+          "enabled": false
+        }
+      },
+      "assertionStack": "IntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "IntegTestDefaultTestDeployAssertE3E7D2A4"
+    }
+  }
+}
