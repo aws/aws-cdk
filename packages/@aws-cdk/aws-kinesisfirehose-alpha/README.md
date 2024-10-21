@@ -54,8 +54,7 @@ The above example defines the following resources:
 
 ## Sources
 
-There are two main methods of sourcing input data: Kinesis Data Streams and via a "direct
-put".
+A Kinesis Data Firehose delivery stream can accept data from three main sources: Kinesis Data Streams, Managed Streaming for Apache Kafka (MSK), or via a "direct put" (API calls).
 
 See: [Sending Data to a Delivery Stream](https://docs.aws.amazon.com/firehose/latest/dev/basic-write.html)
 in the *Kinesis Data Firehose Developer Guide*.
@@ -63,14 +62,15 @@ in the *Kinesis Data Firehose Developer Guide*.
 ### Kinesis Data Stream
 
 A delivery stream can read directly from a Kinesis data stream as a consumer of the data
-stream. Configure this behaviour by providing a data stream in the `sourceStream`
-property when constructing a delivery stream:
+stream. Configure this behaviour by passing in a data stream in the `source`
+property via the `KinesisStreamSource` class when constructing a delivery stream:
 
 ```ts
 declare const destination: firehose.IDestination;
 const sourceStream = new kinesis.Stream(this, 'Source Stream');
+
 new firehose.DeliveryStream(this, 'Delivery Stream', {
-  sourceStream: sourceStream,
+  source: new firehose.KinesisStreamSource(sourceStream),
   destination: destination,
 });
 ```
@@ -444,7 +444,7 @@ necessary permissions for Kinesis Data Firehose to access the resources referenc
 delivery stream. One service role is created for the delivery stream that allows Kinesis
 Data Firehose to read from a Kinesis data stream (if one is configured as the delivery
 stream source) and for server-side encryption. Note that if the DeliveryStream is created 
-without specifying `sourceStream` or `encryptionKey`, this role is not created as it is not needed.
+without specifying a `source` or `encryptionKey`, this role is not created as it is not needed.
 
 Another service role is created for each destination, which gives Kinesis Data Firehose write 
 access to the destination resource, as well as the ability to invoke data transformers and 

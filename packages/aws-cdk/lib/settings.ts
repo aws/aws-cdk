@@ -233,7 +233,6 @@ export class Context {
  * A single bag of settings
  */
 export class Settings {
-
   /**
    * Parse Settings out of CLI arguments.
    *
@@ -293,6 +292,7 @@ export class Settings {
       assetParallelism: argv['asset-parallelism'],
       assetPrebuild: argv['asset-prebuild'],
       ignoreNoStacks: argv['ignore-no-stacks'],
+      unstable: argv.unstable,
     });
   }
 

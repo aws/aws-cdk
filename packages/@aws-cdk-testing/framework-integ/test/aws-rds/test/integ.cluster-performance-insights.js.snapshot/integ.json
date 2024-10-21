@@ -1,0 +1,12 @@
+{
+  "version": "36.0.24",
+  "testCases": {
+    "integ-cluster-performance-insights/DefaultTest": {
+      "stacks": [
+        "aws-cdk-rds-integ-cluster-performance-insights"
+      ],
+      "assertionStack": "integ-cluster-performance-insights/DefaultTest/DeployAssert",
+      "assertionStackName": "integclusterperformanceinsightsDefaultTestDeployAssert60BCBDC0"
+    }
+  }
+}

@@ -456,6 +456,13 @@ export interface GlobalSecondaryIndexProps extends SecondaryIndexProps, SchemaOp
    * @default - on-demand throughput is disabled
    */
   readonly maxWriteRequestUnits?: number;
+
+  /**
+   * Whether CloudWatch contributor insights is enabled for the specified global secondary index.
+   *
+   * @default false
+   */
+  readonly contributorInsightsEnabled?: boolean;
 }
 
 /**
@@ -1227,6 +1234,7 @@ export class Table extends TableBase {
     const gsiProjection = this.buildIndexProjection(props);
 
     this.globalSecondaryIndexes.push({
+      contributorInsightsSpecification: props.contributorInsightsEnabled !== undefined ? { enabled: props.contributorInsightsEnabled } : undefined,
       indexName: props.indexName,
       keySchema: gsiKeySchema,
       projection: gsiProjection,

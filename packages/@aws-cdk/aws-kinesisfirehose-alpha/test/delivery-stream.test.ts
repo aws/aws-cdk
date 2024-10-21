@@ -10,6 +10,7 @@ import * as cdk from 'aws-cdk-lib';
 import { Construct, Node } from 'constructs';
 import * as firehose from '../lib';
 import { StreamEncryption } from '../lib';
+import * as source from '../lib/source';
 
 describe('delivery stream', () => {
   let stack: cdk.Stack;
@@ -134,7 +135,7 @@ describe('delivery stream', () => {
 
     new firehose.DeliveryStream(stack, 'Delivery Stream', {
       destination: mockS3Destination,
-      sourceStream: sourceStream,
+      source: new source.KinesisStreamSource(sourceStream),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
@@ -180,7 +181,7 @@ describe('delivery stream', () => {
 
     new firehose.DeliveryStream(stack, 'Delivery Stream', {
       destination: mockS3Destination,
-      sourceStream: sourceStream,
+      source: new source.KinesisStreamSource(sourceStream),
       role: deliveryStreamRole,
     });
 
@@ -318,17 +319,17 @@ describe('delivery stream', () => {
     expect(() => new firehose.DeliveryStream(stack, 'Delivery Stream 1', {
       destination: mockS3Destination,
       encryption: firehose.StreamEncryption.awsOwnedKey(),
-      sourceStream,
+      source: new source.KinesisStreamSource(sourceStream),
     })).toThrowError('Requested server-side encryption but delivery stream source is a Kinesis data stream. Specify server-side encryption on the data stream instead.');
     expect(() => new firehose.DeliveryStream(stack, 'Delivery Stream 2', {
       destination: mockS3Destination,
       encryption: firehose.StreamEncryption.customerManagedKey(),
-      sourceStream,
+      source: new source.KinesisStreamSource(sourceStream),
     })).toThrowError('Requested server-side encryption but delivery stream source is a Kinesis data stream. Specify server-side encryption on the data stream instead.');
     expect(() => new firehose.DeliveryStream(stack, 'Delivery Stream 3', {
       destination: mockS3Destination,
       encryption: StreamEncryption.customerManagedKey(new kms.Key(stack, 'Key')),
-      sourceStream,
+      source: new source.KinesisStreamSource(sourceStream),
     })).toThrowError('Requested server-side encryption but delivery stream source is a Kinesis data stream. Specify server-side encryption on the data stream instead.');
   });
 

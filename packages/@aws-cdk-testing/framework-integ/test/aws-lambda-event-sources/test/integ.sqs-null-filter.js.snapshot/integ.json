@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "FilterCriteriaNull/DefaultTest": {
+      "stacks": [
+        "lambda-event-source-filter-criteria-null"
+      ],
+      "assertionStack": "FilterCriteriaNull/DefaultTest/DeployAssert",
+      "assertionStackName": "FilterCriteriaNullDefaultTestDeployAssert51179964"
+    }
+  }
+}
