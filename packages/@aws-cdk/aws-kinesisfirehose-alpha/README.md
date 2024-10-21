@@ -16,7 +16,7 @@
 
 <!--END STABILITY BANNER-->
 
-[Amazon Data Firehose](https://docs.aws.amazon.com/firehose/latest/dev/what-is-this-service.html)
+[Amazon Data Firehose](https://docs.aws.amazon.com/firehose/latest/dev/what-is-this-service.html), [formerly known as Amazon Kinesis Data Firehose](https://aws.amazon.com/about-aws/whats-new/2024/02/amazon-data-firehose-formerly-kinesis-data-firehose/),
 is a service for fully-managed delivery of real-time streaming data to storage services
 such as Amazon S3, Amazon Redshift, Amazon Elasticsearch, Splunk, or any custom HTTP
 endpoint or third-party services such as Datadog, Dynatrace, LogicMonitor, MongoDB, New
@@ -36,7 +36,7 @@ project. It allows you to define Amazon Data Firehose delivery streams.
 ## Defining a Delivery Stream
 
 In order to define a Delivery Stream, you must specify a destination. An S3 bucket can be
-used as a destination. More supported destinations are covered [below](#destinations).
+used as a destination. Currently the CDK supports only S3 as a destination which is covered [below](#destinations).
 
 ```ts
 const bucket = new s3.Bucket(this, 'Bucket');
@@ -152,18 +152,18 @@ in the *KMS Developer Guide*.
 declare const destination: firehose.IDestination;
 
 // SSE with an AWS-owned key
-new firehose.DeliveryStream(this, 'Delivery Stream AWS Owned', {
+new firehose.DeliveryStream(this, 'Delivery Stream with AWS Owned Key', {
   encryption: firehose.StreamEncryption.awsOwnedKey(),
   destination: destination,
 });
 // SSE with an customer-managed key that is created automatically by the CDK
-new firehose.DeliveryStream(this, 'Delivery Stream Implicit Customer Managed', {
+new firehose.DeliveryStream(this, 'Delivery Stream with Customer Managed Key', {
   encryption: firehose.StreamEncryption.customerManagedKey(),
   destination: destination,
 });
 // SSE with an customer-managed key that is explicitly specified
 declare const key: kms.Key;
-new firehose.DeliveryStream(this, 'Delivery Stream Explicit Customer Managed', {
+new firehose.DeliveryStream(this, 'Delivery Stream with Customer Managed and Provided Key', {
   encryption: firehose.StreamEncryption.customerManagedKey(key),
   destination: destination,
 });
@@ -184,7 +184,8 @@ delivery fails. The CDK will enable logging by default and create a CloudWatch L
 and LogStream for your Delivery Stream.
 
 When creating a destination, you can provide an `ILoggingConfig`, which can either be an `EnableLogging` or `DisableLogging` instance.
-If you use `EnableLogging`, you can specify a log group where the CDK will create log streams to capture and store log events. For example:
+If you use `EnableLogging`, the CDK will create a CloudWatch LogGroup and LogStream with all CloudFormation default settings for you, or you can optionally 
+specify your own log group to be used for capturing and storing log events. For example:
 
 ```ts
 import * as logs from 'aws-cdk-lib/aws-logs';
