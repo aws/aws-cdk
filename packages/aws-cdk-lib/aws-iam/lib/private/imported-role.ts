@@ -78,7 +78,7 @@ export class ImportedRole extends Resource implements IRole, IComparablePrincipa
     // Using "Type Predicate" to confirm x is ManagedPolicy, which allows to avoid
     // using try ... catch and throw error.
     const isManagedPolicy = (x: IManagedPolicy): x is ManagedPolicy => {
-      return (x as any).attachToRole !== undefined;
+      return (x as ManagedPolicy).attachToRole !== undefined;
     };
 
     if (isManagedPolicy(policy)) {

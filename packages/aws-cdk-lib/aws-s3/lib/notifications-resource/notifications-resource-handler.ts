@@ -68,14 +68,18 @@ export class NotificationsResourceHandler extends Construct {
       resources: ['*'],
     }));
 
-    if (props.role) {
-      cdk.Annotations.of(this).addWarningV2('@aws-cdk-lib/aws-s3:missingLambdaExecutionRole', 'CDK doesn\'t add service-roles if `notificationsHandlerRole` is provided, Make Sure Imported Role have AWSLambdaBasicExecutionRole added');
+    const isIRole = (obj: any): obj is iam.Role => {
+      return ! (obj as iam.Role).addToPolicy !== undefined;
+    };
+
+    if (isIRole(this.role)) {
+      cdk.Annotations.of(this).addWarningV2('@aws-cdk-lib/aws-s3:missingLambdaExecutionRole',
+        'CDK doesn\'t add service-roles if `notificationsHandlerRole` is provided is `IRole`, Make Sure Imported Role have AWSLambdaBasicExecutionRole added');
     }
-    if (!props.role) {
-      this.role.addManagedPolicy(
-        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'),
-      );
-    }
+
+    this.role.addManagedPolicy(
+      iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'),
+    );
 
     const resourceType = 'AWS::Lambda::Function';
     class InLineLambda extends cdk.CfnResource {
