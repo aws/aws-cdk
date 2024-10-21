@@ -1844,7 +1844,7 @@ const loadBalancerAddress = cluster.getServiceLoadBalancerAddress('my-service');
 
 ```ts
 const cluster = new eks.Cluster(this, 'Cluster', {
-  // ...
+  version: eks.KubernetesVersion.V1_31,
   // If you set this value to False when creating a cluster, the default networking add-ons will not be installed.
   // The default networking addons include vpc-cni, coredns, and kube-proxy.
   bootstrapSelfManagedAddons: true,
