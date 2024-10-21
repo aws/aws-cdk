@@ -162,7 +162,6 @@ export class GarbageCollector {
     // SDKs
     const sdk = (await this.props.sdkProvider.forEnvironment(this.props.resolvedEnvironment, Mode.ForWriting)).sdk;
     const cfn = sdk.cloudFormation();
-    const s3 = sdk.s3();
 
     const qualifier = await this.bootstrapQualifier(sdk, this.bootstrapStackName);
     const activeAssets = new ActiveAssetCache();
@@ -178,6 +177,19 @@ export class GarbageCollector {
     });
     backgroundStackRefresh.start();
 
+    try {
+      if (this.garbageCollectS3Assets) {
+        await this.garbageCollectS3(sdk, activeAssets, backgroundStackRefresh);
+      }
+    } catch (err: any) {
+      throw new Error(err);
+    } finally {
+      backgroundStackRefresh.stop();
+    }
+  }
+
+  public async garbageCollectS3(sdk: ISDK, activeAssets: ActiveAssetCache, backgroundStackRefresh: BackgroundStackRefresh) {
+    const s3 = sdk.s3();
     const bucket = await this.bootstrapBucketName(sdk, this.bootstrapStackName);
     const numObjects = await this.numObjectsInBucket(s3, bucket);
     const printer = new ProgressPrinter(numObjects, 1000);
@@ -267,7 +279,6 @@ export class GarbageCollector {
     } catch (err: any) {
       throw new Error(err);
     } finally {
-      backgroundStackRefresh.stop();
       printer.stop();
     }
   }
