@@ -2041,6 +2041,22 @@ const instance = new ec2.Instance(this, 'Instance', {
 > NOTE: You must use an instance type and operating system that support Nitro Enclaves.
 > For more information, see [Requirements](https://docs.aws.amazon.com/enclaves/latest/user/nitro-enclave.html#nitro-enclave-reqs).
 
+### Enabling Termination Protection
+
+You can enable [Termination Protection](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Using_ChangingDisableAPITermination.html) for
+your EC2 instances by setting the `disableApiTermination` property to `true`. Termination Protection controls whether the instance can be terminated using the AWS Management Console, AWS Command Line Interface (AWS CLI), or API.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const instance = new ec2.Instance(this, 'Instance', {
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE),
+  machineImage: new ec2.AmazonLinuxImage(),
+  vpc: vpc,
+  disableApiTermination: true,
+});
+```
+
 ### Enabling Instance Hibernation
 
 You can enable [Instance Hibernation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Hibernate.html) for
