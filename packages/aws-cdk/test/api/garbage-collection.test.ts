@@ -45,10 +45,10 @@ function gc(props: {
     },
     bootstrapStackName: 'GarbageStack',
     rollbackBufferDays: props.rollbackBufferDays ?? 0,
-    createdAtBufferDays: props.createdAtBufferDays ?? 0,
+    createdBufferDays: props.createdAtBufferDays ?? 0,
     type: props.type,
     maxWaitTime: props.maxWaitTime,
-    skipDeletePrompt: true,
+    confirm: false,
   });
 }
 

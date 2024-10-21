@@ -492,8 +492,8 @@ export class TestFixture extends ShellHelper {
     const args = [
       'gc',
       '--unstable=gc', // TODO: remove when stabilizing
-      '--skip-delete-prompt=true',
-      '--created-at-buffer-days=0', // Otherwise all assets created during integ tests are too young
+      '--confirm=false',
+      '--created-buffer-days=0', // Otherwise all assets created during integ tests are too young
     ];
     if (options.rollbackBufferDays) {
       args.push('--rollback-buffer-days', String(options.rollbackBufferDays));

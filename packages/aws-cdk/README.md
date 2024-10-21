@@ -914,26 +914,26 @@ Delete this batch (yes/no/delete-all)?
 ```
 
 Since it's quite possible that the bootstrap bucket has many objects, we work in batches of 1000 objects. To skip the
-prompt either reply with `delete-all`, or use the `--skip-delete-prompt=true` option.
+prompt either reply with `delete-all`, or use the `--confirm=false` option.
 
 ```console
-cdk gc --unstable=gc --type=s3 --skip-delete-prompt=true
+cdk gc --unstable=gc --type=s3 --confirm=false
 ```
 
 If you are concerned about deleting assets too aggressively, there are multiple levers you can configure:
 
 - rollback-buffer-days: this is the amount of days an asset has to be marked as isolated before it is elligible for deletion.
-- created-at-buffer-days: this is the amount of days an asset must live before it is elligible for deletion. 
+- created-buffer-days: this is the amount of days an asset must live before it is elligible for deletion. 
 
 When using `rollback-buffer-days`, instead of deleting unused objects, `cdk gc` will tag them with
 today's date instead. It will also check if any objects have been tagged by previous runs of `cdk gc`
 and delete them if they have been tagged for longer than the buffer days.
 
-When using `created-at-buffer-days`, we simply filter out any assets that have not persisted that number
+When using `created-buffer-days`, we simply filter out any assets that have not persisted that number
 of days.
 
 ```console
-cdk gc --unstable=gc --type=s3 --rollback-buffer-days=30 --created-at-buffer-days=1
+cdk gc --unstable=gc --type=s3 --rollback-buffer-days=30 --created-buffer-days=1
 ```
 
 You can also configure the scope that `cdk gc` performs via the `--action` option. By default, all actions

@@ -801,10 +801,10 @@ export class CdkToolkit {
         resolvedEnvironment: environment,
         bootstrapStackName: options.bootstrapStackName,
         rollbackBufferDays: options.rollbackBufferDays,
-        createdAtBufferDays: options.createdAtBufferDays,
+        createdBufferDays: options.createdBufferDays,
         action: options.action ?? 'full',
         type: options.type ?? 'all',
-        skipDeletePrompt: options.skipDeletePrompt ?? false,
+        confirm: options.confirm ?? true,
       });
       await gc.garbageCollect();
     };
@@ -1558,7 +1558,7 @@ export interface GarbageCollectionOptions {
   /**
    * Refuse deletion of any assets younger than this number of days.
    */
-  readonly createdAtBufferDays: number;
+  readonly createdBufferDays: number;
 
   /**
    * The stack name of the bootstrap stack.
@@ -1572,7 +1572,7 @@ export interface GarbageCollectionOptions {
    *
    * @default false
    */
-  readonly skipDeletePrompt?: boolean;
+  readonly confirm?: boolean;
 }
 
 export interface MigrateOptions {

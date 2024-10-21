@@ -85,7 +85,7 @@ interface GarbageCollectorProps {
   /**
    * Refuse deletion of any assets younger than this number of days.
    */
-  readonly createdAtBufferDays: number;
+  readonly createdBufferDays: number;
 
   /**
    * The environment to deploy this stack in
@@ -121,7 +121,7 @@ interface GarbageCollectorProps {
    *
    * @default false
    */
-  readonly skipDeletePrompt?: boolean;
+  readonly confirm?: boolean;
 }
 
 /**
@@ -134,7 +134,7 @@ export class GarbageCollector {
   private permissionToTag: boolean;
   private bootstrapStackName: string;
   private maxWaitTime: number;
-  private skipDeletePrompt: boolean;
+  private confirm: boolean;
 
   public constructor(readonly props: GarbageCollectorProps) {
     this.garbageCollectS3Assets = ['s3', 'all'].includes(props.type);
@@ -145,7 +145,7 @@ export class GarbageCollector {
     this.permissionToDelete = ['delete-tagged', 'full'].includes(props.action);
     this.permissionToTag = ['tag', 'full'].includes(props.action);
     this.maxWaitTime = props.maxWaitTime ?? 60000;
-    this.skipDeletePrompt = props.skipDeletePrompt ?? false;
+    this.confirm = props.confirm ?? true;
 
     this.bootstrapStackName = props.bootstrapStackName ?? DEFAULT_TOOLKIT_STACK_NAME;
 
@@ -230,11 +230,11 @@ export class GarbageCollector {
         debug(`${untaggables.length} assets to untag`);
 
         if (this.permissionToDelete && deletables.length > 0) {
-          if (!this.skipDeletePrompt) {
+          if (this.confirm) {
             const message = [
               `Found ${deletables.length} objects to delete based off of the following criteria:`,
               `- objects have been isolated for > ${this.props.rollbackBufferDays} days`,
-              `- objects were created > ${this.props.createdAtBufferDays} days ago`,
+              `- objects were created > ${this.props.createdBufferDays} days ago`,
               '',
               'Delete this batch (yes/no/delete-all)?',
             ].join('\n');
@@ -247,7 +247,7 @@ export class GarbageCollector {
             if (!response || !['yes', 'y', 'delete-all'].includes(response.toLowerCase())) {
               throw new Error('Deletion aborted by user');
             } else if (response.toLowerCase() == 'delete-all') {
-              this.skipDeletePrompt = true;
+              this.confirm = true;
             }
           }
           printer.resume();
@@ -419,8 +419,8 @@ export class GarbageCollector {
           const size = obj.Size ?? 0;
           const lastModified = obj.LastModified ?? new Date(currentTime);
           // Store the object if it has a Key and
-          // if it has not been modified since today - createdAtBufferDays
-          if (key && lastModified < new Date(currentTime - (this.props.createdAtBufferDays * DAY))) {
+          // if it has not been modified since today - createdBufferDays
+          if (key && lastModified < new Date(currentTime - (this.props.createdBufferDays * DAY))) {
             batch.push(new S3Asset(bucket, key, size));
           }
         });
