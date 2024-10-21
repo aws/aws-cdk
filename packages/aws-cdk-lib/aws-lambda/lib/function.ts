@@ -108,7 +108,7 @@ export enum ApplicationLogLevel {
  * This field takes in 2 values either Text or JSON. By setting this value to Text,
  * will result in the current structure of logs format, whereas, by setting this value to JSON,
  * Lambda will print the logs as Structured JSON Logs, with the corresponding timestamp and log level
- * of each event. Selecting ‘JSON’ format will only allow customer’s to have different log level
+ * of each event. Selecting ‘JSON’ format will only allow customers to have different log level
  * Application log level and the System log level.
  */
 export enum LogFormat {
@@ -126,7 +126,7 @@ export enum LogFormat {
  * This field takes in 2 values either Text or JSON. By setting this value to Text,
  * will result in the current structure of logs format, whereas, by setting this value to JSON,
  * Lambda will print the logs as Structured JSON Logs, with the corresponding timestamp and log level
- * of each event. Selecting ‘JSON’ format will only allow customer’s to have different log level
+ * of each event. Selecting ‘JSON’ format will only allow customers to have different log level
  * Application log level and the System log level.
  */
 export enum LoggingFormat {
@@ -562,7 +562,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
 
   /**
   * Sets the Recursive Loop Protection for Lambda Function.
-  * It lets Lambda detect and terminate unintended recusrive loops.
+  * It lets Lambda detect and terminate unintended recursive loops.
   *
   * @default RecursiveLoop.Terminate
   */
@@ -1207,7 +1207,7 @@ export class Function extends FunctionBase {
   }
 
   /**
-   * Get Logging Config propety for the function.
+   * Get Logging Config property for the function.
    * This method returns the function LoggingConfig Property if the property is set on the
    * function and undefined if not.
    */
@@ -1405,7 +1405,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
   }
 
   /**
-   * Configured lambda insights on the function if specified. This is acheived by adding an imported layer which is added to the
+   * Configured lambda insights on the function if specified. This is achieved by adding an imported layer which is added to the
    * list of lambda layers on synthesis.
    *
    * https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights-extension-versions.html
