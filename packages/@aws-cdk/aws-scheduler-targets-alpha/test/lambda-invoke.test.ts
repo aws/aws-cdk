@@ -3,7 +3,6 @@ import { App, Duration, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { AccountRootPrincipal, Role } from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { Function as LambdaFunc } from 'aws-cdk-lib/aws-lambda';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import { LambdaInvoke } from '../lib/lambda-invoke';
 
@@ -322,7 +321,7 @@ describe('schedule target', () => {
 
   test('using imported lambda function should not throw', () => {
     const lambdaFuncArn = 'arn:aws:lambda:us-east-1:234567890123:function/somefunc';
-    const importedFunc = LambdaFunc.fromFunctionAttributes(
+    const importedFunc = lambda.Function.fromFunctionAttributes(
       stack,
       'ImportedLambdaFunction',
       {
