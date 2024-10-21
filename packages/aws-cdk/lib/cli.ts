@@ -86,6 +86,7 @@ async function parseCommandLineArguments(args: string[]) {
     .option('notices', { type: 'boolean', desc: 'Show relevant notices' })
     .option('no-color', { type: 'boolean', desc: 'Removes colors and other style from console output', default: false })
     .option('ci', { type: 'boolean', desc: 'Force CI detection. If CI=true then logs will be sent to stdout instead of stderr', default: process.env.CI !== undefined })
+    .option('unstable', { type: 'array', desc: 'Opt in to specific unstable features. Can be specified multiple times.', default: [] })
     .command(['list [STACKS..]', 'ls [STACKS..]'], 'Lists all stacks in the app', (yargs: Argv) => yargs
       .option('long', { type: 'boolean', default: false, alias: 'l', desc: 'Display environment information for each stack' })
       .option('show-dependencies', { type: 'boolean', default: false, alias: 'd', desc: 'Display stack dependency information for each stack' }),
@@ -115,13 +116,11 @@ async function parseCommandLineArguments(args: string[]) {
       .option('previous-parameters', { type: 'boolean', default: true, desc: 'Use previous values for existing parameters (you must specify all parameters on every deployment if this is disabled)' }),
     )
     .command('gc [ENVIRONMENTS..]', 'Garbage collect assets', (yargs: Argv) => yargs
-      .option('unstable', { type: 'array', desc: 'Opt in to specific unstable features. Can be specified multiple times.', default: [] })
       .option('action', { type: 'string', desc: 'The action (or sub-action) you want to perform. Valid entires are "print", "tag", "delete-tagged", "full".', default: 'full' })
       .option('type', { type: 'string', desc: 'Specify either ecr, s3, or all', default: 'all' })
       .option('rollback-buffer-days', { type: 'number', desc: 'Delete assets that have been marked as isolated for this many days', default: 0 })
       .option('created-buffer-days', { type: 'number', desc: 'Never delete assets younger than this (in days)', default: 1 })
-      .option('qualifier', { type: 'string', desc: 'String which must be unique for each bootstrap stack. You must configure it on your CDK app if you change this from the default.', default: undefined })
-      .option('confirm', { alias: 'c', type: 'boolean', desc: 'Confirm via manual prompt before deletion', default: true })
+      .option('confirm', { type: 'boolean', desc: 'Confirm via manual prompt before deletion', default: true })
       .option('bootstrap-stack-name', { type: 'string', desc: 'The name of the CDK toolkit stack, if different from the default "CDKToolkit"', requiresArg: true }),
     )
     .command('deploy [STACKS..]', 'Deploys the stack(s) named STACKS into your AWS account', (yargs: Argv) => yargs
@@ -689,7 +688,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         });
 
       case 'gc':
-        if (!args.unstable.includes('gc')) {
+        if (!configuration.settings.get(['unstable']).includes('gc')) {
           throw new Error('Unstable feature use: \'gc\' is unstable. It must be opted in via \'--unstable\', e.g. \'cdk gc --unstable=gc\'');
         }
         return cli.garbageCollect(args.ENVIRONMENTS, {
