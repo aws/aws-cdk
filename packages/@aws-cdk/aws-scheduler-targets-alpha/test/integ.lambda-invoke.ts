@@ -92,6 +92,12 @@ new scheduler.Schedule(scheduleStack, 'ScheduleWithSameStackLambda', {
   }),
 });
 
+// 3rd case testing reusing target lambda and static date
+new scheduler.Schedule(scheduleStack, 'ScheduleWithStaticDate', {
+  schedule: scheduler.ScheduleExpression.at(new Date('2000-01-01T00:00:00Z')),
+  target: new LambdaInvoke(sameStackFunc, { retryAttempts: 0 }),
+});
+
 const integ = new IntegTest(app, 'integtest-lambda-invoke', {
   testCases: [scheduleStack],
   stackUpdateWorkflow: false, // this would cause the schedule to trigger with the old code
@@ -108,11 +114,11 @@ listTagsOnImportedLambda.expect(ExpectedResult.objectLike({
   },
 })).waitForAssertions({
   totalTimeout: cdk.Duration.minutes(10),
-  interval: cdk.Duration.seconds(5),
+  interval: cdk.Duration.seconds(10),
 });
 
 const listTagsOnSameStackLambda = integ.assertions.awsApiCall('Lambda', 'listTags', {
-  Resource: funcToBeImportedStaticArn,
+  Resource: sameStackFuncStaticArn,
 });
 
 // Verifies that expected tag is created for the lambda function
@@ -122,5 +128,5 @@ listTagsOnSameStackLambda.expect(ExpectedResult.objectLike({
   },
 })).waitForAssertions({
   totalTimeout: cdk.Duration.minutes(10),
-  interval: cdk.Duration.seconds(5),
+  interval: cdk.Duration.seconds(10),
 });
