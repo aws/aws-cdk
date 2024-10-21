@@ -117,9 +117,9 @@ interface GarbageCollectorProps {
   readonly maxWaitTime?: number;
 
   /**
-   * Skips the prompt before actual deletion happens
+   * Confirm with the user before actual deletion happens
    *
-   * @default false
+   * @default true
    */
   readonly confirm?: boolean;
 }
@@ -247,7 +247,7 @@ export class GarbageCollector {
             if (!response || !['yes', 'y', 'delete-all'].includes(response.toLowerCase())) {
               throw new Error('Deletion aborted by user');
             } else if (response.toLowerCase() == 'delete-all') {
-              this.confirm = true;
+              this.confirm = false;
             }
           }
           printer.resume();
