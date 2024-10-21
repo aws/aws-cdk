@@ -107,6 +107,13 @@ export const ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM = '@aws-cdk/aws-ecs:removeDefau
 export const LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT = '@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault';
 export const S3_KEEP_NOTIFICATION_IN_IMPORTED_BUCKET = '@aws-cdk/aws-s3:keepNotificationInImportedBucket';
 export const USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK = '@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask';
+export const REDUCE_EC2_FARGATE_CLOUDWATCH_PERMISSIONS = '@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions';
+export const EC2_SUM_TIMEOUT_ENABLED = '@aws-cdk/aws-ec2:ec2SumTImeoutEnabled';
+export const APPSYNC_GRAPHQLAPI_SCOPE_LAMBDA_FUNCTION_PERMISSION = '@aws-cdk/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission';
+export const USE_CORRECT_VALUE_FOR_INSTANCE_RESOURCE_ID_PROPERTY = '@aws-cdk/aws-rds:setCorrectValueForDatabaseInstanceReadReplicaInstanceResourceId';
+export const CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS = '@aws-cdk/core:cfnIncludeRejectComplexResourceUpdateCreatePolicyIntrinsics';
+export const LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES = '@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages';
+export const STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY = '@aws-cdk/aws-stepfunctions-tasks:fixRunEcsTaskPolicy';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -521,7 +528,7 @@ export const FLAGS: Record<string, FlagInfo> = {
   [ENABLE_PARTITION_LITERALS]: {
     type: FlagType.BugFix,
     summary: 'Make ARNs concrete if AWS partition is known',
-    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    // eslint-disable-next-line @cdklabs/no-literal-partition
     detailsMd: `
       Enable this feature flag to get partition names as string literals in Stacks with known regions defined in
       their environment, such as "aws" or "aws-cn".  Previously the CloudFormation intrinsic function
@@ -930,9 +937,9 @@ export const FLAGS: Record<string, FlagInfo> = {
     type: FlagType.BugFix,
     summary: 'When enabled, will always use the arn for identifiers for CfnSourceApiAssociation in the GraphqlApi construct rather than id.',
     detailsMd: `
-      When this feature flag is enabled, we use the IGraphqlApi ARN rather than ID when creating or updating CfnSourceApiAssociation in 
+      When this feature flag is enabled, we use the IGraphqlApi ARN rather than ID when creating or updating CfnSourceApiAssociation in
       the GraphqlApi construct. Using the ARN allows the association to support an association with a source api or merged api in another account.
-      Note that for existing source api associations created with this flag disabled, enabling the flag will lead to a resource replacement. 
+      Note that for existing source api associations created with this flag disabled, enabling the flag will lead to a resource replacement.
     `,
     introducedIn: { v2: '2.97.0' },
     recommendedValue: true,
@@ -951,7 +958,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       is replicated with the new \`snapshotCredentials\` property, but the original
       \`credentials\` secret can still be created resulting in an extra database
       secret.
-      
+
       Set this flag to prevent rendering deprecated \`credentials\` and creating an
       extra database secret when only using \`snapshotCredentials\` to create an RDS
       database cluster from a snapshot.
@@ -965,7 +972,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     type: FlagType.BugFix,
     summary: 'When enabled, the CodeCommit source action is using the default branch name \'main\'.',
     detailsMd: `
-      When setting up a CodeCommit source action for the source stage of a pipeline, please note that the 
+      When setting up a CodeCommit source action for the source stage of a pipeline, please note that the
       default branch is \'master\'.
       However, with the activation of this feature flag, the default branch is updated to \'main\'.
     `,
@@ -981,7 +988,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       When this feature flag is enabled, a logical ID of \`LambdaPermission\` for a
       \`LambdaAction\` will include an alarm ID. Therefore multiple alarms for the same Lambda
       can be created with \`LambdaAction\`.
-      
+
       If the flag is set to false then it can only make one alarm for the Lambda with
       \`LambdaAction\`.
     `,
@@ -1117,14 +1124,115 @@ export const FLAGS: Record<string, FlagInfo> = {
     Currently, 'inputPath' and 'outputPath' from the TaskStateBase Props is being used under BedrockInvokeModelProps to define S3URI under 'input' and 'output' fields
     of State Machine Task definition.
 
-    When this feature flag is enabled, specify newly introduced props 's3InputUri' and 
-    's3OutputUri' to populate S3 uri under input and output fields in state machine task definition for Bedrock invoke model.  
+    When this feature flag is enabled, specify newly introduced props 's3InputUri' and
+    's3OutputUri' to populate S3 uri under input and output fields in state machine task definition for Bedrock invoke model.
 
     `,
     introducedIn: { v2: '2.156.0' },
     defaults: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to use input and output path fields for s3 URI',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [REDUCE_EC2_FARGATE_CLOUDWATCH_PERMISSIONS]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, we will only grant the necessary permissions when users specify cloudwatch log group through logConfiguration',
+    detailsMd: `
+    Currently, we automatically add a number of cloudwatch permissions to the task role when no cloudwatch log group is
+    specified as logConfiguration and it will grant 'Resources': ['*'] to the task role.
+
+    When this feature flag is enabled, we will only grant the necessary permissions when users specify cloudwatch log group.
+    `,
+    introducedIn: { v2: '2.159.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to continue grant permissions to log group when no log group is specified',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [EC2_SUM_TIMEOUT_ENABLED]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, initOptions.timeout and resourceSignalTimeout values will be summed together.',
+    detailsMd: `
+      Currently is both initOptions.timeout and resourceSignalTimeout are both specified in the options for creating an EC2 Instance,
+      only the value from 'resourceSignalTimeout' will be used.
+
+      When this feature flag is enabled, if both initOptions.timeout and resourceSignalTimeout are specified, the values will to be summed together.
+      `,
+    recommendedValue: true,
+    introducedIn: { v2: '2.160.0' },
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [APPSYNC_GRAPHQLAPI_SCOPE_LAMBDA_FUNCTION_PERMISSION]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, a Lambda authorizer Permission created when using GraphqlApi will be properly scoped with a SourceArn.',
+    detailsMd: `
+        Currently, when using a Lambda authorizer with an AppSync GraphQL API, the AWS CDK automatically generates the necessary AWS::Lambda::Permission
+        to allow the AppSync API to invoke the Lambda authorizer. This permission is overly permissive because it lacks a SourceArn, meaning
+        it allows invocations from any source.
+
+        When this feature flag is enabled, the AWS::Lambda::Permission will be properly scoped with the SourceArn corresponding to the
+        specific AppSync GraphQL API.
+        `,
+    recommendedValue: true,
+    introducedIn: { v2: '2.161.0' },
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [USE_CORRECT_VALUE_FOR_INSTANCE_RESOURCE_ID_PROPERTY]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, the value of property `instanceResourceId` in construct `DatabaseInstanceReadReplica` will be set to the correct value which is `DbiResourceId` instead of currently `DbInstanceArn`',
+    detailsMd: `
+      Currently, the value of the property 'instanceResourceId' in construct 'DatabaseInstanceReadReplica' is not correct, and set to 'DbInstanceArn' which is not correct when it is used to create the IAM Policy in the grantConnect method.
+
+      When this feature flag is enabled, the value of that property will be as expected set to 'DbiResourceId' attribute, and that will fix the grantConnect method.
+    `,
+    introducedIn: { v2: '2.161.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to use `DbInstanceArn` as value for property `instanceResourceId`',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, CFN templates added with `cfn-include` will error if the template contains Resource Update or Create policies with CFN Intrinsics that include non-primitive values.',
+    detailsMd: `
+    Without enabling this feature flag, \`cfn-include\` will silently drop resource update or create policies that contain CFN Intrinsics if they include non-primitive values.
+
+    Enabling this feature flag will make \`cfn-include\` throw on these templates, unless you specify the logical ID of the resource in the 'unhydratedResources' property.
+    `,
+    recommendedValue: true,
+    introducedIn: { v2: '2.161.0' },
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, both `@aws-sdk` and `@smithy` packages will be excluded from the Lambda Node.js 18.x runtime to prevent version mismatches in bundled applications.',
+    detailsMd: `
+      Currently, when bundling Lambda functions with the non-latest runtime that supports AWS SDK JavaScript (v3), only the '@aws-sdk/*' packages are excluded by default.
+      However, this can cause version mismatches between the '@aws-sdk/*' and '@smithy/*' packages, as they are tightly coupled dependencies in AWS SDK v3.
+
+      When this feature flag is enabled, both '@aws-sdk/*' and '@smithy/*' packages will be excluded during the bundling process. This ensures that no mismatches
+      occur between these tightly coupled dependencies when using the AWS SDK v3 in Lambda functions.
+    `,
+    introducedIn: { v2: '2.161.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, the resource of IAM Run Ecs policy generated by SFN EcsRunTask will reference the definition, instead of constructing ARN.',
+    detailsMd: `
+      Currently, in the IAM Run Ecs policy generated by SFN EcsRunTask(), CDK will construct the ARN with wildcard attached at the end.
+      The revision number at the end will be replaced with a wildcard which it shouldn't.
+
+      When this feature flag is enabled, if the task definition is created in the stack, the 'Resource' section will 'Ref' the taskDefinition.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
   },
 };
 

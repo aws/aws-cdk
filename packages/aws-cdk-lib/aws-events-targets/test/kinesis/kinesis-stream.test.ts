@@ -1,7 +1,8 @@
 import { Template } from '../../../assertions';
 import * as events from '../../../aws-events';
 import * as kinesis from '../../../aws-kinesis';
-import { Stack } from '../../../core';
+import * as sqs from '../../../aws-sqs';
+import { Duration, Stack } from '../../../core';
 import * as targets from '../../lib';
 
 describe('KinesisStream event target', () => {
@@ -94,6 +95,35 @@ describe('KinesisStream event target', () => {
               Arn: streamArn,
               Id: 'Target0',
               Input: '"fooBar"',
+            },
+          ],
+        });
+      });
+    });
+
+    describe('with dead letter queuse settings', () => {
+      test('specifying retry policy and dead letter queue', () => {
+        const queue = new sqs.Queue(stack, 'Queue');
+
+        rule.addTarget(new targets.KinesisStream(stream, {
+          retryAttempts: 2,
+          maxEventAge: Duration.hours(2),
+          deadLetterQueue: queue,
+        }));
+
+        Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+          Targets: [
+            {
+              Arn: streamArn,
+              Id: 'Target0',
+              RoleArn: { 'Fn::GetAtt': ['MyStreamEventsRole5B6CC6AF', 'Arn'] },
+              DeadLetterConfig: {
+                Arn: stack.resolve(queue.queueArn),
+              },
+              RetryPolicy: {
+                MaximumEventAgeInSeconds: 7200,
+                MaximumRetryAttempts: 2,
+              },
             },
           ],
         });
