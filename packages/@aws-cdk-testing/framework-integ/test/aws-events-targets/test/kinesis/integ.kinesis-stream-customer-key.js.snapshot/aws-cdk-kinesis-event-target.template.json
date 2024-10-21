@@ -1,21 +1,54 @@
 {
  "Resources": {
+  "MyStreamKey76F3300E": {
+   "Type": "AWS::KMS::Key",
+   "Properties": {
+    "Description": "Created by aws-cdk-kinesis-event-target/MyStream",
+    "KeyPolicy": {
+     "Statement": [
+      {
+       "Action": "kms:*",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "MyStream5C050E93": {
    "Type": "AWS::Kinesis::Stream",
    "Properties": {
     "RetentionPeriodHours": 24,
     "ShardCount": 1,
     "StreamEncryption": {
-     "Fn::If": [
-      "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
-      {
-       "Ref": "AWS::NoValue"
-      },
-      {
-       "EncryptionType": "KMS",
-       "KeyId": "alias/aws/kinesis"
-      }
-     ]
+     "EncryptionType": "KMS",
+     "KeyId": {
+      "Fn::GetAtt": [
+       "MyStreamKey76F3300E",
+       "Arn"
+      ]
+     }
     }
    },
    "UpdateReplacePolicy": "Retain",
@@ -56,6 +89,20 @@
          "Arn"
         ]
        }
+      },
+      {
+       "Action": [
+        "kms:Encrypt",
+        "kms:GenerateDataKey*",
+        "kms:ReEncrypt*"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "MyStreamKey76F3300E",
+         "Arn"
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -67,11 +114,6 @@
      }
     ]
    }
-  },
-  "Queue4A7E3555": {
-   "Type": "AWS::SQS::Queue",
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
   },
   "EveryMinute2BBCEA8F": {
    "Type": "AWS::Events::Rule",
@@ -86,21 +128,9 @@
         "Arn"
        ]
       },
-      "DeadLetterConfig": {
-       "Arn": {
-        "Fn::GetAtt": [
-         "Queue4A7E3555",
-         "Arn"
-        ]
-       }
-      },
       "Id": "Target0",
       "KinesisParameters": {
        "PartitionKeyPath": "$.id"
-      },
-      "RetryPolicy": {
-       "MaximumEventAgeInSeconds": 7200,
-       "MaximumRetryAttempts": 2
       },
       "RoleArn": {
        "Fn::GetAtt": [
@@ -111,28 +141,6 @@
      }
     ]
    }
-  }
- },
- "Conditions": {
-  "AwsCdkKinesisEncryptedStreamsUnsupportedRegions": {
-   "Fn::Or": [
-    {
-     "Fn::Equals": [
-      {
-       "Ref": "AWS::Region"
-      },
-      "cn-north-1"
-     ]
-    },
-    {
-     "Fn::Equals": [
-      {
-       "Ref": "AWS::Region"
-      },
-      "cn-northwest-1"
-     ]
-    }
-   ]
   }
  },
  "Parameters": {

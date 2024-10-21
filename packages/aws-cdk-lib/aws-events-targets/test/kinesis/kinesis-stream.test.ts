@@ -5,6 +5,57 @@ import * as sqs from '../../../aws-sqs';
 import { Duration, Stack } from '../../../core';
 import * as targets from '../../lib';
 
+describe('KinesisStream event target with customer managed key', () => {
+  let stack: Stack;
+  let stream: kinesis.Stream;
+  let streamArn: any;
+  let streamKeyArn: any;
+
+  beforeEach(() => {
+    stack = new Stack();
+    stream = new kinesis.Stream(stack, 'MyStream', {
+      encryption: kinesis.StreamEncryption.KMS,
+    });
+    streamArn = { 'Fn::GetAtt': ['MyStream5C050E93', 'Arn'] };
+    streamKeyArn = { 'Fn::GetAtt': ['MyStreamKey76F3300E', 'Arn'] };
+  });
+  describe('when added to an event rule as a target', () => {
+    let rule: events.Rule;
+
+    beforeEach(() => {
+      rule = new events.Rule(stack, 'rule', {
+        schedule: events.Schedule.expression('rate(1 minute)'),
+      });
+    });
+
+    describe('with default settings', () => {
+      beforeEach(() => {
+        rule.addTarget(new targets.KinesisStream(stream));
+      });
+
+      test("creates a policy that has PutRecord, PutRecords and ListShards permissions on the stream's ARN", () => {
+        Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+          PolicyDocument: {
+            Statement: [
+              {
+                Action: ['kinesis:ListShards', 'kinesis:PutRecord', 'kinesis:PutRecords'],
+                Effect: 'Allow',
+                Resource: streamArn,
+              },
+              {
+                Action: ['kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'],
+                Effect: 'Allow',
+                Resource: streamKeyArn,
+              },
+            ],
+            Version: '2012-10-17',
+          },
+        });
+      });
+    });
+  });
+});
+
 describe('KinesisStream event target', () => {
   let stack: Stack;
   let stream: kinesis.Stream;
@@ -42,12 +93,12 @@ describe('KinesisStream event target', () => {
         });
       });
 
-      test("creates a policy that has PutRecord and PutRecords permissions on the stream's ARN", () => {
+      test("creates a policy that has PutRecord, PutRecords and ListShards permissions on the stream's ARN", () => {
         Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
           PolicyDocument: {
             Statement: [
               {
-                Action: ['kinesis:PutRecord', 'kinesis:PutRecords'],
+                Action: ['kinesis:ListShards', 'kinesis:PutRecord', 'kinesis:PutRecords'],
                 Effect: 'Allow',
                 Resource: streamArn,
               },
