@@ -1,5 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { S3 } from 'aws-sdk';
+import { ECR, S3 } from 'aws-sdk';
 import * as chalk from 'chalk';
 import * as promptly from 'promptly';
 import { debug, print } from '../../logging';
@@ -148,11 +148,6 @@ export class GarbageCollector {
     this.confirm = props.confirm ?? true;
 
     this.bootstrapStackName = props.bootstrapStackName ?? DEFAULT_TOOLKIT_STACK_NAME;
-
-    // TODO: ECR garbage collection
-    if (this.garbageCollectEcrAssets) {
-      throw new Error('ECR garbage collection is not yet supported');
-    }
   }
 
   /**
@@ -181,6 +176,10 @@ export class GarbageCollector {
       if (this.garbageCollectS3Assets) {
         await this.garbageCollectS3(sdk, activeAssets, backgroundStackRefresh);
       }
+
+      if (this.garbageCollectEcrAssets) {
+        await this.garbageCollectEcr(sdk, activeAssets, backgroundStackRefresh);
+      }
     } catch (err: any) {
       throw new Error(err);
     } finally {
@@ -188,6 +187,21 @@ export class GarbageCollector {
     }
   }
 
+  /**
+   * Perform garbage collection on ECR assets
+   */
+  public async garbageCollectEcr(sdk: ISDK, _activeAssets: ActiveAssetCache, _backgroundStackRefresh: BackgroundStackRefresh) {
+    const ecr = sdk.ecr();
+    const repo = await this.bootstrapRepositoryName(sdk, this.bootstrapStackName);
+    const numImages = await this.numImagesInRepo(ecr, repo);
+    // const printer = new ProgressPrinter(numImages, 1000);
+
+    debug(`Found bootstrap repo ${repo} ${numImages}`);
+  }
+
+  /**
+   * Perform garbage collection on S3 assets
+   */
   public async garbageCollectS3(sdk: ISDK, activeAssets: ActiveAssetCache, backgroundStackRefresh: BackgroundStackRefresh) {
     const s3 = sdk.s3();
     const bucket = await this.bootstrapBucketName(sdk, this.bootstrapStackName);
@@ -388,6 +402,11 @@ export class GarbageCollector {
     return info.bucketName;
   }
 
+  private async bootstrapRepositoryName(sdk: ISDK, bootstrapStackName: string): Promise<string> {
+    const info = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
+    return info.repositoryName;
+  }
+
   private async bootstrapQualifier(sdk: ISDK, bootstrapStackName: string): Promise<string | undefined> {
     const info = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
     return info.bootstrapStack.parameters.Qualifier;
@@ -406,6 +425,23 @@ export class GarbageCollector {
       totalCount += response.KeyCount ?? 0;
       continuationToken = response.NextContinuationToken;
     } while (continuationToken);
+
+    return totalCount;
+  }
+
+  private async numImagesInRepo(ecr: ECR, repo: string): Promise<number> {
+    let totalCount = 0;
+    let nextToken: string | undefined;
+
+    do {
+      const response = await ecr.listImages({
+        repositoryName: repo,
+        nextToken: nextToken,
+      }).promise();
+
+      totalCount += response.imageIds?.length ?? 0;
+      nextToken = response.nextToken;
+    } while (nextToken);
 
     return totalCount;
   }
