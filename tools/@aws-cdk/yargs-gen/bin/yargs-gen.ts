@@ -135,9 +135,6 @@ function makeEpilogue(prefix: Expression) {
 }
 
 main().then(() => {
-  // eslint-disable-next-line no-console
-  console.log('waoh 1');
-
 }).catch((e) => {
   // eslint-disable-next-line no-console
   console.error(e);
