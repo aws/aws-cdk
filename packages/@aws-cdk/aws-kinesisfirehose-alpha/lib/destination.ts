@@ -34,8 +34,6 @@ export interface IDestination {
    * Binds this destination to the Kinesis Data Firehose delivery stream.
    *
    * Implementers should use this method to bind resources to the stack and initialize values using the provided stream.
-   *
-   * @internal
    */
-  _bind(scope: Construct, options: DestinationBindOptions): DestinationConfig;
+  bind(scope: Construct, options: DestinationBindOptions): DestinationConfig;
 }

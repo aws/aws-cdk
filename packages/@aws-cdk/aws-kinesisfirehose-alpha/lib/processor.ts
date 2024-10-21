@@ -91,8 +91,6 @@ export interface IDataProcessor {
    *
    * Implementers should use this method to grant processor invocation permissions to the provided stream and return the
    * necessary configuration to register as a processor.
-   *
-   * @internal
    */
-  _bind(scope: Construct, options: DataProcessorBindOptions): DataProcessorConfig;
+  bind(scope: Construct, options: DataProcessorBindOptions): DataProcessorConfig;
 }

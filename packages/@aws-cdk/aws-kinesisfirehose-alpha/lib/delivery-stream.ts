@@ -358,7 +358,7 @@ export class DeliveryStream extends DeliveryStreamBase {
       readStreamGrant = props.source.grantRead(this._role);
     }
 
-    const destinationConfig = props.destination._bind(this, {});
+    const destinationConfig = props.destination.bind(this, {});
     const sourceConfig = props.source?._bind(this, this._role?.roleArn);
 
     const resource = new CfnDeliveryStream(this, 'Resource', {

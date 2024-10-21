@@ -27,7 +27,7 @@ describe('delivery stream', () => {
       assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
     });
     mockS3Destination = {
-      _bind(scope: Construct, _options: firehose.DestinationBindOptions): firehose.DestinationConfig {
+      bind(scope: Construct, _options: firehose.DestinationBindOptions): firehose.DestinationConfig {
         dependable = new class extends Construct {
           constructor(depScope: Construct, id: string) {
             super(depScope, id);

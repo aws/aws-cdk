@@ -19,7 +19,7 @@ const role = new iam.Role(stack, 'Role', {
 });
 
 const mockS3Destination: firehose.IDestination = {
-  _bind(_scope: constructs.Construct, _options: firehose.DestinationBindOptions): firehose.DestinationConfig {
+  bind(_scope: constructs.Construct, _options: firehose.DestinationBindOptions): firehose.DestinationConfig {
     const bucketGrant = bucket.grantReadWrite(role);
     return {
       extendedS3DestinationConfiguration: {
