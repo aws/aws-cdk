@@ -16,6 +16,30 @@ const ISOLATED_TAG = 'aws-cdk:isolated';
 const P_LIMIT = 50;
 const DAY = 24 * 60 * 60 * 1000; // Number of milliseconds in a day
 
+export class ImageAsset {
+  public constructor(public readonly digest: string, public readonly size: number, public readonly tags: string[]) {}
+
+  private getTag(tagPrefix: string) {
+    return this.tags.find(t => t.startsWith(tagPrefix));
+  }
+
+  private hasTag(tagPrefix: string) {
+    return this.tags.some(t => t.startsWith(tagPrefix));
+  }
+
+  public hasIsolatedTag() {
+    return this.hasTag(ISOLATED_TAG);
+  }
+
+  public isolatedTagBefore(date: Date) {
+    const tagValue = this.getTag(ISOLATED_TAG);
+    if (!tagValue || tagValue == '') {
+      return false;
+    }
+    return new Date(tagValue) < date;
+  }
+}
+
 export class S3Asset {
   private cached_tags: S3.TagSet | undefined = undefined;
 
@@ -190,13 +214,59 @@ export class GarbageCollector {
   /**
    * Perform garbage collection on ECR assets
    */
-  public async garbageCollectEcr(sdk: ISDK, _activeAssets: ActiveAssetCache, _backgroundStackRefresh: BackgroundStackRefresh) {
+  public async garbageCollectEcr(sdk: ISDK, activeAssets: ActiveAssetCache, backgroundStackRefresh: BackgroundStackRefresh) {
     const ecr = sdk.ecr();
     const repo = await this.bootstrapRepositoryName(sdk, this.bootstrapStackName);
     const numImages = await this.numImagesInRepo(ecr, repo);
-    // const printer = new ProgressPrinter(numImages, 1000);
+    const printer = new ProgressPrinter(numImages, 1000);
 
     debug(`Found bootstrap repo ${repo} ${numImages}`);
+
+    try {
+      // const batches = 1;
+      const batchSize = 1000;
+      const currentTime = Date.now();
+      const graceDays = this.props.rollbackBufferDays;
+
+      debug(`Parsing through ${numImages} images in batches`);
+
+      for await (const batch of this.readRepoInBatches(ecr, repo, batchSize, currentTime)) {
+        await backgroundStackRefresh.noOlderThan(600_000); // 10 mins
+        printer.start();
+
+        const { included: isolated, excluded: notIsolated } = partition(batch, asset => !asset.tags.some(t => activeAssets.contains(t)));
+
+        console.log(isolated, notIsolated);
+
+        debug(`${isolated.length} isolated images`);
+        debug(`${notIsolated.length} not isolated images`);
+        debug(`${batch.length} images total`);
+
+        let deletables: ImageAsset[] = isolated;
+        let taggables: ImageAsset[] = [];
+        let untaggables: ImageAsset[] = [];
+
+        if (graceDays > 0) {
+          debug('Filtering out images that are not old enough to delete');
+
+          // We delete images that are not referenced in ActiveAssets and have the Isolated Tag with a date
+          // earlier than the current time - grace period.
+          deletables = isolated.filter(img => img.isolatedTagBefore(new Date(currentTime - (graceDays * DAY))));
+
+          // We tag images that are not referenced in ActiveAssets and do not have the Isolated Tag.
+          taggables = isolated.filter(img => !img.hasIsolatedTag());
+
+          // We untag images that are referenced in ActiveAssets and currently have the Isolated Tag.
+          untaggables = notIsolated.filter(img => img.hasIsolatedTag());
+        }
+
+        console.log(deletables, taggables, untaggables);
+      }
+    } catch (err: any) {
+      throw new Error(err);
+    } finally {
+      printer.stop();
+    }
   }
 
   /**
@@ -211,7 +281,6 @@ export class GarbageCollector {
     debug(`Found bootstrap bucket ${bucket}`);
 
     try {
-      const batches = 1;
       const batchSize = 1000;
       const currentTime = Date.now();
       const graceDays = this.props.rollbackBufferDays;
@@ -223,7 +292,6 @@ export class GarbageCollector {
       // where gc is run for the first time on a long-standing bucket where ~100% of objects are isolated.
       for await (const batch of this.readBucketInBatches(s3, bucket, batchSize, currentTime)) {
         await backgroundStackRefresh.noOlderThan(600_000); // 10 mins
-        print(chalk.green(`Processing batch ${batches} of ${Math.floor(numObjects / batchSize) + 1}`));
         printer.start();
 
         const { included: isolated, excluded: notIsolated } = partition(batch, asset => !activeAssets.contains(asset.fileName()));
@@ -446,6 +514,49 @@ export class GarbageCollector {
     return totalCount;
   }
 
+  private async *readRepoInBatches(ecr: ECR, repo: string, batchSize: number = 1000, currentTime: number): AsyncGenerator<ImageAsset[]> {
+    let continuationToken: string | undefined;
+
+    do {
+      const batch: ImageAsset[] = [];
+
+      while (batch.length < batchSize) {
+        const response = await ecr.listImages({
+          repositoryName: repo,
+        }).promise();
+
+        // map unique image digest to (possibly multiple) tags
+        const images = imageMap(response.imageIds ?? []);
+        const imageIds = Object.keys(images).map(key => ({
+          imageDigest: key,
+        }));
+
+        const imagesInfo = await ecr.describeImages({
+          imageIds,
+          repositoryName: repo,
+        }).promise();
+        
+        for (const image of imagesInfo.imageDetails ?? []) {
+          const lastModified = image.imagePushedAt ?? new Date(currentTime);
+          // Store the image if it was pushed earlier than today - createdBufferDays
+          if (image.imageDigest && lastModified < new Date(currentTime - (this.props.createdBufferDays * DAY))) {
+            batch.push(new ImageAsset(image.imageDigest, image.imageSizeInBytes ?? 0, image.imageTags ?? []));
+          }
+
+          console.log(image.imageDigest, image.imagePushedAt);
+        }
+
+        continuationToken = response.nextToken;
+
+        if (!continuationToken) break; // No more images to fetch
+      }
+
+      if (batch.length > 0) {
+        yield batch;
+      }
+    } while (continuationToken);
+  }
+
   /**
    * Generator function that reads objects from the S3 Bucket in batches.
    */
@@ -499,4 +610,16 @@ function partition<A>(xs: Iterable<A>, pred: (x: A) => boolean): { included: A[]
   }
 
   return result;
+}
+
+function imageMap(imageIds: ECR.ImageIdentifierList) {
+  const images: Record<string, string[]> = {};
+  for (const image of imageIds ?? []) {
+    if (!image.imageDigest || !image.imageTag) { continue; }
+    if (!images[image.imageDigest]) {
+      images[image.imageDigest] = [];
+    }
+    images[image.imageDigest].push(image.imageTag);
+  }
+  return images;
 }
