@@ -1,5 +1,5 @@
 {
-  "version": "36.0.5",
+  "version": "38.0.1",
   "artifacts": {
     "aws-cdk-firehose-delivery-stream.assets": {
       "type": "cdk:asset-manifest",
@@ -16,9 +16,10 @@
         "templateFile": "aws-cdk-firehose-delivery-stream.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/83678c48c2f99ce2d9c500abb384ceccdafe33a57acdec025491de0b6686802f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9723351cbc204f46c6baefba8fbe818d26f34052c747f1169b7b2034192ff5af.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -82,12 +83,6 @@
             "data": "awscdkawskinesisfirehoseCidrBlocks"
           }
         ],
-        "/aws-cdk-firehose-delivery-stream/Delivery Stream No Source Or Encryption Key/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DeliveryStreamNoSourceOrEncryptionKey0E4AAB82"
-          }
-        ],
         "/aws-cdk-firehose-delivery-stream/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -99,9 +94,67 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "DeliveryStreamNoSourceOrEncryptionKey0E4AAB82": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeliveryStreamNoSourceOrEncryptionKey0E4AAB82",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "aws-cdk-firehose-delivery-stream"
+    },
+    "DeliveryStreamWithCustomerManagedKeyDefaultTestDeployAssert32278252.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "DeliveryStreamWithCustomerManagedKeyDefaultTestDeployAssert32278252.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "DeliveryStreamWithCustomerManagedKeyDefaultTestDeployAssert32278252": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "DeliveryStreamWithCustomerManagedKeyDefaultTestDeployAssert32278252.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "notificationArns": [],
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "DeliveryStreamWithCustomerManagedKeyDefaultTestDeployAssert32278252.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "DeliveryStreamWithCustomerManagedKeyDefaultTestDeployAssert32278252.assets"
+      ],
+      "metadata": {
+        "/DeliveryStreamWithCustomerManagedKey/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/DeliveryStreamWithCustomerManagedKey/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "DeliveryStreamWithCustomerManagedKey/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

@@ -3,6 +3,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kinesis from 'aws-cdk-lib/aws-kinesis';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
+import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as constructs from 'constructs';
 import * as firehose from '../lib';
 import * as source from '../lib/source';
@@ -37,10 +38,13 @@ const sourceStream = new kinesis.Stream(stack, 'Source Stream');
 new firehose.DeliveryStream(stack, 'Delivery Stream', {
   destination: mockS3Destination,
   source: new source.KinesisStreamSource(sourceStream),
+  encryption: firehose.StreamEncryption.unencrypted(),
 });
 
 new firehose.DeliveryStream(stack, 'Delivery Stream No Source Or Encryption Key', {
   destination: mockS3Destination,
 });
 
-app.synth();
+new integ.IntegTest(app, 'DeliveryStreamWithSourceStream', {
+  testCases: [stack],
+});

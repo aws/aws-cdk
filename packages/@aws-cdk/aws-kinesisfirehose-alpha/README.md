@@ -135,7 +135,7 @@ before being written to the service's internal storage layer and decrypted after
 received from the internal storage layer. The service manages keys and cryptographic
 operations so that sources and destinations do not need to, as the data is encrypted and
 decrypted at the boundaries of the service (i.e., before the data is delivered to a
-destination). By default, delivery streams do not have SSE enabled.
+destination). By default, delivery streams have SSE enabled with an AWS-owned key.
 
 The Key Management Service keys (KMS keys) used for SSE can either be AWS-owned or
 customer-managed. AWS-owned KMS keys are created, owned and managed by AWS for use in
@@ -171,6 +171,24 @@ new firehose.DeliveryStream(this, 'Delivery Stream Explicit Customer Managed', {
 
 See: [Data Protection](https://docs.aws.amazon.com/firehose/latest/dev/encryption.html)
 in the *Kinesis Data Firehose Developer Guide*.
+
+### Restriction for Kinesis Data Stream as Source
+
+When using a Kinesis Data Stream as the source for a Delivery Stream, server-side encryption (SSE) must be explicitly disabled on the Delivery Stream. This is because the encryption should be specified on the source Kinesis Data Stream instead.
+
+```ts
+declare const kinesisStream: kinesis.Stream;
+declare const destination: firehose.IDestination;
+
+// SSE must be explicitly disabled when using a Kinesis Data Stream as source
+new firehose.DeliveryStream(this, 'Delivery Stream with Kinesis Source', {
+  source: new firehose.KinesisStreamSource(kinesisStream),
+  encryption: firehose.StreamEncryption.unencrypted(),
+  destination: destination,
+});
+```
+
+It's recommended to specify SSE on the source Kinesis Data Stream if encryption is required.
 
 ## Monitoring
 

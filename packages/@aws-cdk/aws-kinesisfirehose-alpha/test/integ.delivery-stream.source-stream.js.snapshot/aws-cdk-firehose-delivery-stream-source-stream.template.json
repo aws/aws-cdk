@@ -189,6 +189,9 @@
   "DeliveryStreamNoSourceOrEncryptionKey0E4AAB82": {
    "Type": "AWS::KinesisFirehose::DeliveryStream",
    "Properties": {
+    "DeliveryStreamEncryptionConfigurationInput": {
+     "KeyType": "AWS_OWNED_CMK"
+    },
     "DeliveryStreamType": "DirectPut",
     "ExtendedS3DestinationConfiguration": {
      "BucketARN": {

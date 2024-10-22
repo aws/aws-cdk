@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "DeliveryStreamWithDefaultEncryption/DefaultTest": {
+      "stacks": [
+        "aws-cdk-firehose-delivery-stream"
+      ],
+      "assertionStack": "DeliveryStreamWithDefaultEncryption/DefaultTest/DeployAssert",
+      "assertionStackName": "DeliveryStreamWithDefaultEncryptionDefaultTestDeployAssert8B5B0167"
+    }
+  }
+}

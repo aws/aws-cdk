@@ -355,6 +355,9 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::KinesisFirehose::DeliveryStream",
                   "aws:cdk:cloudformation:props": {
+                    "deliveryStreamEncryptionConfigurationInput": {
+                      "keyType": "AWS_OWNED_CMK"
+                    },
                     "deliveryStreamType": "DirectPut",
                     "extendedS3DestinationConfiguration": {
                       "bucketArn": {
