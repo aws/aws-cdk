@@ -1,65 +1,9 @@
+import { CliConfig } from '@aws-cdk/yargs-gen';
+import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
+import { RequireApproval } from './diff';
+
 /* eslint-disable quote-props */
 // called by a build tool to generate parse-command-line-arguments.ts
-
-interface YargsCommand {
-  description: string;
-  options?: { [optionName: string]: YargsOption };
-  aliases?: string[];
-  arg?: YargsArg;
-}
-
-// might need to expand
-interface YargsArg {
-  name: string;
-  variadic: boolean;
-}
-
-enum RequireApproval {
-  Never = 'never',
-
-  AnyChange = 'any-change',
-
-  Broadening = 'broadening',
-}
-
-/**
- * Supported display modes for stack deployment activity
- */
-enum StackActivityProgress {
-  /**
-   * Displays a progress bar with only the events for the resource currently being deployed
-   */
-  BAR = 'bar',
-
-  /**
-   * Displays complete history with all CloudFormation stack events
-   */
-  EVENTS = 'events',
-}
-
-interface YargsOption {
-  type: 'string' | 'array' | 'number' | 'boolean' | 'count';
-  desc?: string;
-  default?: any;
-  deprecated?: boolean | string;
-  choices?: ReadonlyArray<string | number | true | undefined>;
-  alias?: string;
-  conflicts?: string | readonly string[] | { [key: string]: string | readonly string[] };
-  nargs?: number;
-  requiresArg?: boolean;
-  hidden?: boolean;
-  middleware?: Middleware;
-}
-
-export interface Middleware {
-  callback: string;
-  args: string[];
-  applyBeforeValidation?: boolean;
-}
-
-export interface CliConfig {
-  commands: { [commandName: string]: YargsCommand };
-}
 
 export async function makeConfig(): Promise<CliConfig> {
   const config: CliConfig = {

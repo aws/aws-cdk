@@ -8,9 +8,6 @@
     "url": "https://github.com/aws/aws-cdk.git",
     "directory": "tools/@aws-cdk/yargs-gen"
   },
-  "bin": {
-    "yargs-gen": "bin/yargs-gen"
-  },
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "scripts": {

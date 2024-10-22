@@ -1,14 +1,10 @@
-import * as fs from 'fs';
 import { Expression, FreeFunction, Module, SelectiveModuleImport, Statement, Type, TypeScriptRenderer, code } from '@cdklabs/typewriter';
-import { CliConfig, makeConfig } from '../lib/config';
+import { CliConfig } from './yargs-types';
 
-async function main() {
+export async function renderYargs(config: CliConfig): Promise<string> {
   const scope = new Module('aws-cdk');
 
   scope.addImport(new SelectiveModuleImport(scope, 'yargs', ['Argv']));
-  //scope.addImport(new SelectiveModuleImport(scope, '../lib/api/util/cloudformation/stack-activity-monitor', ['StackActivityProgress']));
-  //scope.addImport(new SelectiveModuleImport(scope, '../lib/diff', ['RequireApproval']));
-
   scope.addInitialization(code.comment(
     'https://github.com/yargs/yargs/issues/1929',
     'https://github.com/evanw/esbuild/issues/1492',
@@ -29,17 +25,9 @@ async function main() {
       { name: 'yargsNegativeAlias', type: Type.ANY },
     ],
   });
-  parseCommandLineArguments.addBody(makeYargs(await makeConfig()/*, scope*/));
+  parseCommandLineArguments.addBody(makeYargs(config/*, scope*/));
 
-  const renderer = new TypeScriptRenderer();
-  const eslintBlock = `
-/* eslint-disable comma-spacing */
-/* eslint-disable @typescript-eslint/comma-dangle */
-/* eslint-disable quote-props */
-/* eslint-disable quotes */`;
-
-  fs.writeFileSync('./lib/parse-command-line-arguments.ts', `${eslintBlock}\n`);
-  fs.appendFileSync('./lib/parse-command-line-arguments.ts', renderer.render(scope));
+  return new TypeScriptRenderer().render(scope);
 }
 
 interface MiddlewareExpression {
@@ -131,9 +119,3 @@ function makeEpilogue(prefix: Expression) {
 
   return completeThing;
 }
-
-main().then(() => {
-}).catch((e) => {
-  // eslint-disable-next-line no-console
-  console.error(e);
-});
