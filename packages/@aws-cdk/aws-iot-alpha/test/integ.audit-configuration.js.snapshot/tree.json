@@ -243,6 +243,100 @@
               "version": "0.0.0"
             }
           },
+          "DailyAudit": {
+            "id": "DailyAudit",
+            "path": "IotAuditConfigurationTestStack/DailyAudit",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "IotAuditConfigurationTestStack/DailyAudit/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IoT::ScheduledAudit",
+                  "aws:cdk:cloudformation:props": {
+                    "frequency": "DAILY",
+                    "targetCheckNames": [
+                      "AUTHENTICATED_COGNITO_ROLE_OVERLY_PERMISSIVE_CHECK"
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iot-alpha.ScheduledAudit",
+              "version": "0.0.0"
+            }
+          },
+          "WeeklyAudit": {
+            "id": "WeeklyAudit",
+            "path": "IotAuditConfigurationTestStack/WeeklyAudit",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "IotAuditConfigurationTestStack/WeeklyAudit/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IoT::ScheduledAudit",
+                  "aws:cdk:cloudformation:props": {
+                    "dayOfWeek": "SUN",
+                    "frequency": "WEEKLY",
+                    "targetCheckNames": [
+                      "CA_CERTIFICATE_EXPIRING_CHECK"
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iot-alpha.ScheduledAudit",
+              "version": "0.0.0"
+            }
+          },
+          "MonthlyAudit": {
+            "id": "MonthlyAudit",
+            "path": "IotAuditConfigurationTestStack/MonthlyAudit",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "IotAuditConfigurationTestStack/MonthlyAudit/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IoT::ScheduledAudit",
+                  "aws:cdk:cloudformation:props": {
+                    "dayOfMonth": "LAST",
+                    "frequency": "MONTHLY",
+                    "targetCheckNames": [
+                      "CA_CERTIFICATE_KEY_QUALITY_CHECK",
+                      "CONFLICTING_CLIENT_IDS_CHECK",
+                      "DEVICE_CERTIFICATE_EXPIRING_CHECK",
+                      "DEVICE_CERTIFICATE_KEY_QUALITY_CHECK",
+                      "DEVICE_CERTIFICATE_SHARED_CHECK",
+                      "IOT_POLICY_OVERLY_PERMISSIVE_CHECK",
+                      "IOT_ROLE_ALIAS_ALLOWS_ACCESS_TO_UNUSED_SERVICES_CHECK",
+                      "IOT_ROLE_ALIAS_OVERLY_PERMISSIVE_CHECK",
+                      "LOGGING_DISABLED_CHECK",
+                      "REVOKED_CA_CERTIFICATE_STILL_ACTIVE_CHECK",
+                      "REVOKED_DEVICE_CERTIFICATE_STILL_ACTIVE_CHECK",
+                      "UNAUTHENTICATED_COGNITO_ROLE_OVERLY_PERMISSIVE_CHECK"
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iot-alpha.ScheduledAudit",
+              "version": "0.0.0"
+            }
+          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "IotAuditConfigurationTestStack/BootstrapVersion",
