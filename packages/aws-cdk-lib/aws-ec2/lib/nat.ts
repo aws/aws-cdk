@@ -191,7 +191,7 @@ export interface NatInstanceProps {
   /**
    * Whether to associate a public IP address to the primary network interface attached to this instance.
    *
-   * @default false
+   * @default undefined - No public IP address associated
    */
   readonly associatePublicIpAddress?: boolean;
 
