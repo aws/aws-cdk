@@ -3,7 +3,7 @@ import { StackActivityProgress } from './api/util/cloudformation/stack-activity-
 import { RequireApproval } from './diff';
 
 /* eslint-disable quote-props */
-// called by a build tool to generate parse-command-line-arguments.ts
+// called by yargs-gen to generate parse-command-line-arguments.ts
 
 export async function makeConfig(): Promise<CliConfig> {
   const config: CliConfig = {

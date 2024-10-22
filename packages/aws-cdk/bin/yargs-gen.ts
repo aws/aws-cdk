@@ -4,6 +4,7 @@ import { renderYargs } from '@aws-cdk/yargs-gen';
 import { makeConfig } from '../lib/config';
 
 async function main() {
+  // TODO: once the typewriter changes are in, we can remove this block of eslint
   const eslintBlock = `
 /* eslint-disable comma-spacing */
 /* eslint-disable @typescript-eslint/comma-dangle */

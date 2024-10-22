@@ -48,8 +48,6 @@ interface MiddlewareExpression {
 //
 //   ./prog --arg one --arg two position  =>  will parse to  { arg: ['one', 'two'], _: ['positional'] }.
 function makeYargs(config: CliConfig/*, scope: ScopeImpl*/): Statement {
-  //const yargs = new ThingSymbol('yargs', scope);
-  //let yargsExpr = new SymbolReference(yargs).callMethod('env', code.expr.lit('CDK'));
   let yargsExpr: Expression = code.expr.ident('yargs');
   yargsExpr = yargsExpr.callMethod('usage', code.expr.lit('Usage: cdk -a <cdk-app> COMMAND'));
 
