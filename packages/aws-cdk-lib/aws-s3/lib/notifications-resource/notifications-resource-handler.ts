@@ -68,15 +68,6 @@ export class NotificationsResourceHandler extends Construct {
       resources: ['*'],
     }));
 
-    const isIRole = (obj: any): obj is iam.Role => {
-      return ! (obj as iam.Role).addToPolicy !== undefined;
-    };
-
-    if (isIRole(this.role)) {
-      cdk.Annotations.of(this).addWarningV2('@aws-cdk-lib/aws-s3:missingLambdaExecutionRole',
-        'CDK doesn\'t add service-roles if `notificationsHandlerRole` is provided is `IRole`, Make Sure Imported Role have AWSLambdaBasicExecutionRole added');
-    }
-
     this.role.addManagedPolicy(
       iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'),
     );

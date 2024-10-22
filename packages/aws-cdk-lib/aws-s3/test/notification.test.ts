@@ -118,13 +118,8 @@ describe('notification', () => {
     });
 
     // THEN - Following is warning throwen as a part of fix in : https://github.com/aws/aws-cdk/pull/31212
-    const warningMessage = 'Can\'t combine IRole with IManagedPolicy. Use ManagedPolicy directly. [ack: @aws-cdk/aws-iam:IRoleCantBeUsedWithIManagedPolicy]';
-    const warningFromStack = Annotations.fromStack(stack).findWarning('*', warningMessage);
+    const warningFromStack = Annotations.fromStack(stack).findWarning('*', {});
     expect(warningFromStack[0]?.entry?.data).toEqual(undefined);
-
-    const warningMessageFromRole = 'CDK doesn\'t add service-roles if `notificationsHandlerRole` is provided is `IRole`, Make Sure Imported Role have AWSLambdaBasicExecutionRole added. [ack: @aws-cdk-lib/aws-s3:missingLambdaExecutionRole]';
-    const warningFromRole = Annotations.fromStack(stack).findWarning('*', warningMessageFromRole );
-    expect(warningFromRole[0]?.entry?.data).toEqual(undefined);
   });
 
   test('service-role permission are not added if `IRole` is provided', () => {
@@ -167,13 +162,9 @@ describe('notification', () => {
     });
 
     // THEN - Following is warning throwen as a part of fix in : https://github.com/aws/aws-cdk/pull/31212
-    const warningMessage = 'Can\'t combine IRole with IManagedPolicy. Use ManagedPolicy directly. [ack: @aws-cdk/aws-iam:IRoleCantBeUsedWithIManagedPolicy]';
-    const warningFromStack = Annotations.fromStack(stack).findWarning('*', warningMessage);
+    const warningMessage = { 'Fn::Join': ['', ["Can't combine imported IManagedPolicy: arn:", { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole to imported role IRole: DevsNotAllowedToTouch. Use ManagedPolicy directly. [ack: @aws-cdk/aws-iam:IRoleCantBeUsedWithIManagedPolicy]']] };
+    const warningFromStack = Annotations.fromStack(stack).findWarning('*', {});
     expect(warningFromStack[0].entry.data).toEqual(warningMessage);
-
-    const warningMessageFromRole = 'CDK doesn\'t add service-roles if `notificationsHandlerRole` is provided is `IRole`, Make Sure Imported Role have AWSLambdaBasicExecutionRole added [ack: @aws-cdk-lib/aws-s3:missingLambdaExecutionRole]';
-    const warningFromRole = Annotations.fromStack(stack).findWarning('*', warningMessageFromRole );
-    expect(warningFromRole[0].entry.data).toEqual(warningMessageFromRole);
   });
 
   test('If `Role` is provided, PutBucketNotification, GetBucketNotification will be added along with `service-role/AWSLambdaBasicExecutionRole`', () => {
@@ -248,13 +239,8 @@ describe('notification', () => {
     });
 
     // THEN - Following is warning throwen as a part of fix in : https://github.com/aws/aws-cdk/pull/31212
-    const warningMessage = 'Can\'t combine IRole with IManagedPolicy. Use ManagedPolicy directly. [ack: @aws-cdk/aws-iam:IRoleCantBeUsedWithIManagedPolicy]';
-    const warningFromStack = Annotations.fromStack(stack).findWarning('*', warningMessage);
+    const warningFromStack = Annotations.fromStack(stack).findWarning('*', {});
     expect(warningFromStack[0]?.entry?.data).toEqual(undefined);
-
-    const warningMessageFromRole = 'CDK doesn\'t add service-roles if `notificationsHandlerRole` is provided is `IRole`, Make Sure Imported Role have AWSLambdaBasicExecutionRole added. [ack: @aws-cdk-lib/aws-s3:missingLambdaExecutionRole]';
-    const warningFromRole = Annotations.fromStack(stack).findWarning('*', warningMessageFromRole );
-    expect(warningFromRole[0]?.entry?.data).toEqual(undefined);
   });
 
   test('can specify prefix and suffix filter rules', () => {

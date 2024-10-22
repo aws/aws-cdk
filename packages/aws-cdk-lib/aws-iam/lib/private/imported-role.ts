@@ -86,7 +86,7 @@ export class ImportedRole extends Resource implements IRole, IComparablePrincipa
     } else {
       Annotations.of(this).addWarningV2(
         '@aws-cdk/aws-iam:IRoleCantBeUsedWithIManagedPolicy',
-        'Can\'t combine IRole with IManagedPolicy. Use ManagedPolicy directly.',
+        `Can\'t combine imported IManagedPolicy: ${policy.managedPolicyArn} to imported role IRole: ${this.roleName}. Use ManagedPolicy directly.`,
       );
     }
   }
