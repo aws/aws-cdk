@@ -897,7 +897,7 @@ The most basic usage looks like this:
 cdk gc --unstable=gc
 ```
 
-To specify one type of asset, use the `type` option:
+To specify one type of asset, use the `type` option (options are `all`, `s3`, `ecr`):
 
 ```console
 cdk gc --unstable=gc --type=s3
