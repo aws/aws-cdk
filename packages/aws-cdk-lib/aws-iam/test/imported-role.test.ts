@@ -82,8 +82,9 @@ test('throw warning when IRole and IManagedPolicy is used with', () => {
 
   // WHEN
   existingRole.addManagedPolicy(importedPolicy);
-  const warning = Annotations.fromStack(stack1).findWarning('*', 'Can\'t Combine IRole with IManagedPolicy. use ManagedPolicy directly. [ack: @aws-cdk/aws-iam:IRoleCantBeUsedWithIManagedPolicy]');
 
   // THEN
-  expect(warning).toBeDefined();
+  const warningMessage = `Can't combine imported IManagedPolicy: ${importedPolicy.managedPolicyArn} to imported role IRole: ${existingRole.roleName}. Use ManagedPolicy directly. [ack: @aws-cdk/aws-iam:IRoleCantBeUsedWithIManagedPolicy]`;
+  const warningFromStack = Annotations.fromStack(stack1).findWarning('*', warningMessage);
+  expect(warningFromStack[0].entry.data).toEqual(warningMessage);
 });
