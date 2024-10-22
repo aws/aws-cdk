@@ -812,7 +812,7 @@ export class Deployments {
     const { manifest, stackEnv } = await this.prepareAndValidateAssets(asset, options);
     await publishAssets(manifest, this.sdkProvider, stackEnv, {
       ...options.publishOptions,
-      allowCrossAccount: await this.allowCrossAccountAssetPublishingForEnv(stackEnv),
+      allowCrossAccount: await this.allowCrossAccountAssetPublishingForEnv(options.stack),
     });
   }
 
@@ -852,15 +852,15 @@ export class Deployments {
     // No need to validate anymore, we already did that during build
     const publisher = this.cachedPublisher(assetManifest, stackEnv, options.stackName);
     // eslint-disable-next-line no-console
-    await publisher.publishEntry(asset, { allowCrossAccount: await this.allowCrossAccountAssetPublishingForEnv(stackEnv) });
+    await publisher.publishEntry(asset, { allowCrossAccount: await this.allowCrossAccountAssetPublishingForEnv(options.stack) });
     if (publisher.hasFailures) {
       throw new Error(`Failed to publish asset ${asset.id}`);
     }
   }
 
-  private async allowCrossAccountAssetPublishingForEnv(env: cxapi.Environment): Promise<boolean> {
+  private async allowCrossAccountAssetPublishingForEnv(stack: cxapi.CloudFormationStackArtifact): Promise<boolean> {
     if (this._allowCrossAccountAssetPublishing === undefined) {
-      const sdk = (await this.cachedSdkForEnvironment(env, Mode.ForReading)).sdk;
+      const { stackSdk: sdk } = await this.prepareSdkFor(stack, undefined, Mode.ForReading);
       this._allowCrossAccountAssetPublishing = await determineAllowCrossAccountAssetPublishing(sdk, this.props.toolkitStackName);
     }
     return this._allowCrossAccountAssetPublishing;
