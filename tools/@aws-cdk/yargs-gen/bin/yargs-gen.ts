@@ -32,8 +32,6 @@ async function main() {
   parseCommandLineArguments.addBody(makeYargs(await makeConfig()/*, scope*/));
 
   const renderer = new TypeScriptRenderer();
-  // eslint-disable-next-line no-console
-  console.log(renderer.render(scope));
   const eslintBlock = `
 /* eslint-disable comma-spacing */
 /* eslint-disable @typescript-eslint/comma-dangle */
