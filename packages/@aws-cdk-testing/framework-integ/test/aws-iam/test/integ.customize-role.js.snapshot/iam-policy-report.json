@@ -1,0 +1,33 @@
+{
+  "roles": [
+    {
+      "roleConstructPath": "integ-customize-role/TestRole",
+      "roleName": "my-precreated-role",
+      "missing": false,
+      "assumeRolePolicy": [
+        {
+          "Action": "sts:AssumeRole",
+          "Effect": "Allow",
+          "Principal": {
+            "Service": "sqs.amazonaws.com"
+          }
+        }
+      ],
+      "managedPolicyArns": [],
+      "managedPolicyStatements": [],
+      "identityPolicyStatements": [
+        {
+          "Action": "sqs:SendMessage",
+          "Effect": "Allow",
+          "Resource": [
+            "arn:aws:s3:::abc/xyz/123.txt",
+            "(NOVALUE)",
+            "arn:(PARTITION):iam:(REGION):(ACCOUNT)/role/FakeRole'",
+            "(integ-customize-role/MyGroup/Resource.Arn)/*",
+            "(integ-customize-role/MyGroup/Resource.Arn)"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "integ-iam-customize-role/DefaultTest": {
+      "stacks": [
+        "integ-customize-role"
+      ],
+      "assertionStack": "integ-iam-customize-role/DefaultTest/DeployAssert",
+      "assertionStackName": "integiamcustomizeroleDefaultTestDeployAssert811D838D"
+    }
+  }
+}
