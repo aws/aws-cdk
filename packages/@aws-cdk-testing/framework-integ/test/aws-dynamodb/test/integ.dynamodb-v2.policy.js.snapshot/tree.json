@@ -33,9 +33,6 @@
                     ],
                     "replicas": [
                       {
-                        "region": "eu-west-2"
-                      },
-                      {
                         "region": "eu-west-1",
                         "resourcePolicy": {
                           "policyDocument": {
@@ -64,10 +61,7 @@
                           }
                         }
                       }
-                    ],
-                    "streamSpecification": {
-                      "streamViewType": "NEW_AND_OLD_IMAGES"
-                    }
+                    ]
                   }
                 },
                 "constructInfo": {

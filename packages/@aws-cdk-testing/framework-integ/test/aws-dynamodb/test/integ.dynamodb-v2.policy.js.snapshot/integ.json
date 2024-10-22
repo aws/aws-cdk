@@ -1,5 +1,5 @@
 {
-  "version": "36.0.24",
+  "version": "36.0.0",
   "testCases": {
     "table-v2-resource-policy-integ-test/DefaultTest": {
       "stacks": [
