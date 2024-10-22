@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "nat-instance-v2-with-public-ip-integ-test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-vpc-nat-instances-v2-with-public-ip"
+      ],
+      "assertionStack": "nat-instance-v2-with-public-ip-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "natinstancev2withpublicipintegtestDefaultTestDeployAssertB63E4D9C"
+    }
+  }
+}
