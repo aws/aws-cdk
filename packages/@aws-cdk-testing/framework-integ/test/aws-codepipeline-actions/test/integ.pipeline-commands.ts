@@ -11,15 +11,14 @@ const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-commands');
 
-const key = new Key(stack, 'EnvVarEncryptKey', {
-  description: 'sample key',
+const sourceBucketKey = new Key(stack, 'SourceBucketKey', {
+  description: 'SourceBucketKey',
 });
-
-const bucket = new s3.Bucket(stack, 'PipelineBucket', {
+const bucket = new s3.Bucket(stack, 'SourceBucket', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   autoDeleteObjects: true,
   versioned: true,
-  encryptionKey: key,
+  encryptionKey: sourceBucketKey,
 });
 const sourceOutput = new codepipeline.Artifact('SourceArtifact');
 const sourceAction = new cpactions.S3SourceAction({
@@ -55,11 +54,19 @@ const deployAction = new cpactions.S3DeployAction({
   input: commandsOutput,
   bucket: deployBucket,
   objectKey: commandsAction.variable('MY_OUTPUT'),
-  encryptionKey: key,
 });
 
+const pipelineBucketKey = new Key(stack, 'PipelineBucketKey', {
+  description: 'PipelineBucketKey',
+});
+const pipelineBucket = new s3.Bucket(stack, 'PipelineBucket', {
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+  autoDeleteObjects: true,
+  versioned: true,
+  encryptionKey: pipelineBucketKey,
+});
 const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
-  artifactBucket: bucket,
+  artifactBucket: pipelineBucket,
   stages: [
     {
       stageName: 'Source',
