@@ -26,7 +26,7 @@ export interface RecordingConfigurationProps {
    *
    * `recordingReconnectWindow` must be between 0 and 300 seconds
    *
-   * @default Duration.seconds(0)
+   * @default - 0 seconds (means disabled)
    */
   readonly recordingReconnectWindow?: Duration;
 
@@ -296,7 +296,7 @@ export class RecordingConfiguration extends Resource implements IRecordingConfig
     }
 
     if (recordingConfigurationName.length > 128) {
-      throw new Error(`\`recordingConfigurationName\` must be less than or equal to 128 characters, got: ${recordingConfigurationName.length}.`);
+      throw new Error(`\`recordingConfigurationName\` must be less than or equal to 128 characters, got: ${recordingConfigurationName.length} characters.`);
     }
   };
 
@@ -312,7 +312,7 @@ export class RecordingConfiguration extends Resource implements IRecordingConfig
     }
 
     if (recordingReconnectWindow.toSeconds() > 300) {
-      throw new Error(`\`recordingReconnectWindow\` must be between 0 and 300 seconds, got ${recordingReconnectWindow.toMilliseconds()} milliseconds.`);
+      throw new Error(`\`recordingReconnectWindow\` must be between 0 and 300 seconds, got ${recordingReconnectWindow.toSeconds()} seconds.`);
     }
   };
 
@@ -320,26 +320,44 @@ export class RecordingConfiguration extends Resource implements IRecordingConfig
     if (this.props.renditionSelection === RenditionSelection.CUSTOM && !this.props.renditions) {
       throw new Error('`renditions` must be provided when \`renditionSelection\` is `RenditionSelection.CUSTOM`.');
     }
+
+    if (this.props.renditionSelection !== RenditionSelection.CUSTOM && this.props.renditions) {
+      throw new Error(`\`renditions\` can only be set when \`renditionSelection\` is \`RenditionSelection.CUSTOM\`, got ${this.props.renditionSelection}.`);
+    }
   };
 
   private validateThumbnailSettings(): undefined {
     const thumbnailRecordingMode = this.props.thumbnailRecordingMode;
+    const thumbnailResolution = this.props.thumbnailResolution;
+    const thumbnailStorage = this.props.thumbnailStorage;
     const thumbnailTargetInterval = this.props.thumbnailTargetInterval;
 
-    if (Token.isUnresolved(thumbnailTargetInterval) || thumbnailRecordingMode !== ThumbnailRecordingMode.INTERVAL) {
+    if (Token.isUnresolved(thumbnailTargetInterval)) {
       return;
     }
 
-    if (thumbnailTargetInterval === undefined) {
-      throw new Error('`thumbnailTargetInterval` must be provided when `thumbnailRecordingMode` is `ThumbnailRecordingMode.INTERVAL`.');
+    if (thumbnailRecordingMode === ThumbnailRecordingMode.INTERVAL && thumbnailTargetInterval !== undefined) {
+      if (thumbnailTargetInterval.toMilliseconds() < Duration.seconds(1).toMilliseconds()) {
+        throw new Error(`\`thumbnailTargetInterval\` must be between 1 and 60 seconds, got ${thumbnailTargetInterval.toMilliseconds()} milliseconds.`);
+      }
+
+      if (thumbnailTargetInterval.toSeconds() > 60) {
+        throw new Error(`\`thumbnailTargetInterval\` must be between 1 and 60 seconds, got ${thumbnailTargetInterval.toSeconds()} seconds.`);
+      }
     }
 
-    if (thumbnailTargetInterval.toMilliseconds() < Duration.seconds(1).toMilliseconds()) {
-      throw new Error(`\`thumbnailTargetInterval\` must be between 1 and 60 seconds, got ${thumbnailTargetInterval.toMilliseconds()} milliseconds.`);
-    }
+    if (thumbnailRecordingMode !== ThumbnailRecordingMode.INTERVAL) {
+      if (thumbnailResolution) {
+        throw new Error('`thumbnailResolution` can only be set when `thumbnailRecordingMode` is `ThumbnailRecordingMode.INTERVAL`.');
+      }
 
-    if (thumbnailTargetInterval.toSeconds() > 60) {
-      throw new Error(`\`thumbnailTargetInterval\` must be between 1 and 60 seconds, got ${thumbnailTargetInterval.toMilliseconds()} milliseconds.`);
+      if (thumbnailStorage !== undefined) {
+        throw new Error('`thumbnailStorage` can only be set when `thumbnailRecordingMode` is `ThumbnailRecordingMode.INTERVAL`.');
+      }
+
+      if (thumbnailTargetInterval !== undefined) {
+        throw new Error('`thumbnailTargetInterval` can only be set when `thumbnailRecordingMode` is `ThumbnailRecordingMode.INTERVAL`.');
+      }
     }
   };
 }
