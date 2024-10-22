@@ -16,6 +16,11 @@ let mockGetObjectTagging: (params: AWS.S3.Types.GetObjectTaggingRequest) => AWS.
 let mockDeleteObjects: (params: AWS.S3.Types.DeleteObjectsRequest) => AWS.S3.Types.DeleteObjectsOutput;
 let mockDeleteObjectTagging: (params: AWS.S3.Types.DeleteObjectTaggingRequest) => AWS.S3.Types.DeleteObjectTaggingOutput;
 let mockPutObjectTagging: (params: AWS.S3.Types.PutObjectTaggingRequest) => AWS.S3.Types.PutObjectTaggingOutput;
+let mockBatchDeleteImage: (params: AWS.ECR.Types.BatchDeleteImageRequest) => AWS.ECR.Types.BatchDeleteImageResponse;
+let mockBatchGetImage: (params: AWS.ECR.Types.BatchGetImageRequest) => AWS.ECR.Types.BatchGetImageResponse;
+let mockPutImage: (params: AWS.ECR.Types.PutImageRequest) => AWS.ECR.Types.PutImageResponse;
+let mockListImages: (params: AWS.ECR.Types.ListImagesRequest) => AWS.ECR.Types.ListImagesResponse;
+let mockDescribeImages: (params: AWS.ECR.Types.DescribeImagesRequest) => AWS.ECR.Types.DescribeImagesResponse;
 
 let stderrMock: jest.SpyInstance;
 let sdk: MockSdkProvider;
@@ -127,7 +132,7 @@ function setupS3GarbageCollectionMocks(mockSdk: MockSdkProvider) {
 
 function setupEcrGarbageCollectionMocks(mockSdk: MockSdkProvider) {
   const mocks = setupCFNGarbageCollectionMocks(mockSdk);
-  const mockBatchGetImage = jest.fn().mockImplementation(() => {
+  mockBatchGetImage = jest.fn().mockImplementation(() => {
     return Promise.resolve({
       images: [
         { imageId: { imageDigest: 'digest1', }, imageManifest: {}},
@@ -136,7 +141,7 @@ function setupEcrGarbageCollectionMocks(mockSdk: MockSdkProvider) {
       ]
     });
   });
-  const mockDescribeImages = jest.fn().mockImplementation(() => {
+  mockDescribeImages = jest.fn().mockImplementation(() => {
     return Promise.resolve({
       imageDetails: [
         { imageDigest: 'digest3', imageTags: ['klmno'], imagePushedAt: Date.now() - (2 * DAY), imageSizeInBytes: 100 },
@@ -145,9 +150,9 @@ function setupEcrGarbageCollectionMocks(mockSdk: MockSdkProvider) {
       ],
     });
   });
-  const mockBatchDeleteImage = jest.fn();
-  const mockPutImage = jest.fn();
-  const mockListImages = jest.fn().mockImplementation(() => {
+  mockBatchDeleteImage = jest.fn();
+  mockPutImage = jest.fn();
+  mockListImages = jest.fn().mockImplementation(() => {
     return Promise.resolve({
       imageIds: [
         { imageDigest: 'digest1', imageTag: 'abcde' }, // inuse
@@ -509,6 +514,125 @@ describe('ECR Garbage Collection', () => {
         // digest3 is too young to be deleted
         { imageDigest: 'digest2' },
       ],
+    });
+  });
+
+  test('action = print -- does not tag or delete', async () => {
+    mockTheToolkitInfo({
+      Outputs: [
+        {
+          OutputKey: 'BootstrapVersion',
+          OutputValue: '999',
+        },
+      ],
+    });
+
+    garbageCollector = garbageCollector = gc({
+      type: 'ecr',
+      rollbackBufferDays: 3,
+      action: 'print',
+    });
+    await garbageCollector.garbageCollect();
+
+    expect(mocks.mockListStacks).toHaveBeenCalledTimes(1);
+
+    // dont put tags
+    expect(mocks.mockPutImage).toHaveBeenCalledTimes(0);
+
+    // no deleting
+    expect(mocks.mockBatchDeleteImage).toHaveBeenCalledTimes(0);
+  });
+
+  test('action = tag -- does not delete', async () => {
+    mockTheToolkitInfo({
+      Outputs: [
+        {
+          OutputKey: 'BootstrapVersion',
+          OutputValue: '999',
+        },
+      ],
+    });
+
+    garbageCollector = garbageCollector = gc({
+      type: 'ecr',
+      rollbackBufferDays: 3,
+      action: 'tag',
+    });
+    await garbageCollector.garbageCollect();
+
+    expect(mocks.mockListStacks).toHaveBeenCalledTimes(1);
+
+    // tags objects
+    expect(mocks.mockPutImage).toHaveBeenCalledTimes(2);
+
+    // no deleting
+    expect(mocks.mockBatchDeleteImage).toHaveBeenCalledTimes(0);
+  });
+
+  test('action = delete-tagged -- does not tag', async () => {
+    mockTheToolkitInfo({
+      Outputs: [
+        {
+          OutputKey: 'BootstrapVersion',
+          OutputValue: '999',
+        },
+      ],
+    });
+
+    garbageCollector = garbageCollector = gc({
+      type: 'ecr',
+      rollbackBufferDays: 3,
+      action: 'delete-tagged',
+    });
+    await garbageCollector.garbageCollect();
+
+    expect(mocks.mockListStacks).toHaveBeenCalledTimes(1);
+
+    // dont put tags
+    expect(mocks.mockPutImage).toHaveBeenCalledTimes(0);
+  });
+
+  test('ignore images that are modified after gc start', async () => {
+    mockTheToolkitInfo({
+      Outputs: [
+        {
+          OutputKey: 'BootstrapVersion',
+          OutputValue: '999',
+        },
+      ],
+    });
+
+    const mockDescribeImagesFuture = jest.fn().mockImplementation(() => {
+      return Promise.resolve({
+        imageDetails: [
+          { imageDigest: 'digest3', imageTags: ['klmno'], imagePushedAt: Date.now() - (2 * DAY), imageSizeInBytes: 100 },
+          { imageDigest: 'digest2', imageTags: ['fghij'], imagePushedAt: Number(new Date().setFullYear(new Date().getFullYear() + 1).toString()), imageSizeInBytes: 300_000_000 },
+          { imageDigest: 'digest1', imageTags: ['abcde'], imagePushedAt: Date.now() - (100 * DAY), imageSizeInBytes: 1_000_000_000 },
+        ],
+      });
+    });
+
+    sdk.stubEcr({
+      batchGetImage: mockBatchGetImage,
+      describeImages: mockDescribeImagesFuture,
+      batchDeleteImage: mockBatchDeleteImage,
+      putImage: mockPutImage,
+      listImages: mockListImages,
+    });
+
+    garbageCollector = garbageCollector = gc({
+      type: 'ecr',
+      rollbackBufferDays: 0,
+      action: 'full',
+    });
+    await garbageCollector.garbageCollect();
+
+    // assets are to be deleted
+    expect(mocks.mockBatchDeleteImage).toHaveBeenCalledWith({
+      repositoryName: 'REPO_NAME',
+      imageIds: [
+        { imageDigest: 'digest3' },
+      ]
     });
   });
 });
