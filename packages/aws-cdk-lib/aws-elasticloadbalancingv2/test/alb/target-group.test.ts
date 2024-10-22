@@ -829,5 +829,24 @@ describe('tests', () => {
         ],
       });
     });
+
+    test('load_balancing.cross_zone.enabled is not set when crossZoneEnabled is not specified', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+      // WHEN
+      new elbv2.ApplicationTargetGroup(stack, 'LB', { vpc });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+        TargetGroupAttributes: [
+          {
+            Key: 'stickiness.enabled',
+            Value: 'false',
+          },
+        ],
+      });
+    });
   });
 });

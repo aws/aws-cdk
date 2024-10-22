@@ -1,4 +1,4 @@
-import { Template } from '../../../assertions';
+import { Match, Template } from '../../../assertions';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
 import * as cdk from '../../../core';
@@ -758,6 +758,23 @@ describe('tests', () => {
             Value: `${crossZoneEnabled}`,
           },
         ],
+      });
+    });
+
+    test('load_balancing.cross_zone.enabled is not set when crossZoneEnabled is not specified', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+      // WHEN
+      new elbv2.NetworkTargetGroup(stack, 'LB', {
+        vpc,
+        port: 80,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+        TargetGroupAttributes: Match.absent(),
       });
     });
   });
