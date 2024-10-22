@@ -103,17 +103,17 @@ function makeYargs(config: CliConfig/*, scope: ScopeImpl*/): Statement {
 }
 
 function makeEpilogue(prefix: Expression) {
-  let completeThing = prefix.callMethod('version', code.expr.ident('version'));
-  completeThing = completeThing.callMethod('demandCommand', code.expr.lit(1), code.expr.lit("''")); // just print help
-  completeThing = completeThing.callMethod('recommendCommands');
-  completeThing = completeThing.callMethod('help');
-  completeThing = completeThing.callMethod('alias', code.expr.lit('h'), code.expr.lit('help'));
-  completeThing = completeThing.callMethod('epilogue', code.expr.lit([
+  let completeDefinition = prefix.callMethod('version', code.expr.ident('version'));
+  completeDefinition = completeDefinition.callMethod('demandCommand', code.expr.lit(1), code.expr.lit("''")); // just print help
+  completeDefinition = completeDefinition.callMethod('recommendCommands');
+  completeDefinition = completeDefinition.callMethod('help');
+  completeDefinition = completeDefinition.callMethod('alias', code.expr.lit('h'), code.expr.lit('help'));
+  completeDefinition = completeDefinition.callMethod('epilogue', code.expr.lit([
     'If your app has a single stack, there is no need to specify the stack name',
     'If one of cdk.json or ~/.cdk.json exists, options specified there will be used as defaults. Settings in cdk.json take precedence.',
   ].join('\n\n')));
 
-  completeThing = completeThing.callMethod('parse', code.expr.ident('args'));
+  completeDefinition = completeDefinition.callMethod('parse', code.expr.ident('args'));
 
-  return completeThing;
+  return completeDefinition;
 }
