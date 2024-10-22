@@ -23,7 +23,7 @@ const LAMBDA_TAGGING_PERMISSION = new iam.PolicyStatement(
  */
 const app = new cdk.App();
 /**
- * 1st stack creates a lambda which will be imported ot 2nd stack to test using imported lambda
+ * 1st stack creates a lambda which will be imported to 2nd stack to test using imported lambda
  */
 const lambdaStack = new cdk.Stack(app, 'aws-cdk-schedule-lambda');
 
