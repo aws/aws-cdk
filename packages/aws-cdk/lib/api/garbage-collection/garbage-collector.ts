@@ -44,7 +44,6 @@ export class ImageAsset {
 
   public isolatedTagBefore(date: Date) {
     const tagValue = this.getIsolatedTag()?.split('-')[2];
-    console.log(tagValue);
     if (!tagValue || tagValue == '') {
       return false;
     }
@@ -638,8 +637,6 @@ export class GarbageCollector {
           if (image.imageDigest && lastModified < new Date(currentTime - (this.props.createdBufferDays * DAY))) {
             batch.push(new ImageAsset(image.imageDigest, image.imageSizeInBytes ?? 0, image.imageTags ?? [], image.manifest ?? ''));
           }
-
-          console.log(image.imageDigest, image.imagePushedAt);
         }
 
         continuationToken = response.nextToken;
