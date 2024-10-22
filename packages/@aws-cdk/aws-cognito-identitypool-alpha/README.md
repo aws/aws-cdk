@@ -74,7 +74,8 @@ unauthenticated (guest) roles applied to the identity pool:
 new IdentityPool(this, 'myIdentityPool');
 ```
 
-By default, both the authenticated and unauthenticated roles will have no permissions attached. Grant permissions 
+By default, both the authenticated and unauthenticated roles will have no permissions attached. When granting permissions,
+you should ensure that you are granting the least privileged permissions required for your use case. Grant permissions 
 to roles using the public `authenticatedRole` and `unauthenticatedRole` properties: 
 
 ```ts
@@ -88,11 +89,11 @@ table.grantReadWriteData(identityPool.authenticatedRole);
 // Grant permissions to unauthenticated guest users
 table.grantReadData(identityPool.unauthenticatedRole);
 
-//Or add policy statements straight to the role
+// Or add policy statements straight to the role
 identityPool.authenticatedRole.addToPrincipalPolicy(new iam.PolicyStatement({
   effect: iam.Effect.ALLOW,
-  actions: ['dynamodb:*'],
-  resources: ['*'],
+  actions: ['dynamodb:UpdateItem'],
+  resources: [table.tableArn],
 }));
 ```
 
@@ -253,7 +254,8 @@ new IdentityPool(this, 'myidentitypool', {
 
 In addition to setting default roles for authenticated and unauthenticated users, identity pools can also be used to  
 define rules to choose the role for each user based on claims in the user's ID token by using Role Mapping. When using  
-role mapping, it's important to be aware of some of the permissions the role will need. An in depth  
+role mapping, it's important to be aware of some of the permissions the role will need, and that the least privileged
+roles necessary are given for your specific use case. An in depth  
 review of roles and role mapping can be found [here](https://docs.aws.amazon.com/cognito/latest/developerguide/role-based-access-control.html).
 
 Using a [token-based approach](https://docs.aws.amazon.com/cognito/latest/developerguide/role-based-access-control.html#using-tokens-to-assign-roles-to-users) to role mapping will allow mapped roles to be passed through the `cognito:roles` or  
