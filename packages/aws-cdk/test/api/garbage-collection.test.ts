@@ -20,7 +20,7 @@ let mockPutObjectTagging: (params: AWS.S3.Types.PutObjectTaggingRequest) => AWS.
 let stderrMock: jest.SpyInstance;
 let sdk: MockSdkProvider;
 
-const ISOLATED_TAG = 'aws-cdk:isolated';
+const ISOLATED_TAG = 'aws-cdk.isolated';
 const DAY = 24 * 60 * 60 * 1000; // Number of milliseconds in a day
 
 function mockTheToolkitInfo(stackProps: Partial<AWS.CloudFormation.Stack>) {
@@ -52,6 +52,57 @@ function gc(props: {
   });
 }
 
+function setupS3GarbageCollectionMocks(mockSdk: MockSdkProvider) {
+  mockListStacks = jest.fn().mockResolvedValue({
+    StackSummaries: [
+      { StackName: 'Stack1', StackStatus: 'CREATE_COMPLETE' },
+      { StackName: 'Stack2', StackStatus: 'UPDATE_COMPLETE' },
+    ],
+  });
+  mockGetTemplateSummary = jest.fn().mockReturnValue({
+    Parameters: [{
+      ParameterKey: 'BootstrapVersion',
+      DefaultValue: '/cdk-bootstrap/abcde/version',
+    }],
+  });
+  mockGetTemplate = jest.fn().mockReturnValue({
+    TemplateBody: 'abcde',
+  });
+  mockListObjectsV2 = jest.fn().mockImplementation(() => {
+    return Promise.resolve({
+      Contents: [
+        { Key: 'asset1', LastModified: new Date(Date.now() - (2 * DAY)) },
+        { Key: 'asset2', LastModified: new Date(Date.now() - (10 * DAY)) },
+        { Key: 'asset3', LastModified: new Date(Date.now() - (100 * DAY)) },
+      ],
+      KeyCount: 3,
+    });
+  });
+  mockGetObjectTagging = jest.fn().mockImplementation((params) => {
+    return Promise.resolve({
+      TagSet: params.Key === 'asset2' ? [{ Key: ISOLATED_TAG, Value: new Date().toISOString() }] : [],
+    });
+  });
+  mockPutObjectTagging = jest.fn();
+  mockDeleteObjects = jest.fn();
+  mockDeleteObjectTagging = jest.fn();
+  mockDescribeStacks = jest.fn();
+
+  mockSdk.stubCloudFormation({
+    listStacks: mockListStacks,
+    getTemplateSummary: mockGetTemplateSummary,
+    getTemplate: mockGetTemplate,
+    describeStacks: mockDescribeStacks,
+  });
+  mockSdk.stubS3({
+    listObjectsV2: mockListObjectsV2,
+    getObjectTagging: mockGetObjectTagging,
+    deleteObjects: mockDeleteObjects,
+    deleteObjectTagging: mockDeleteObjectTagging,
+    putObjectTagging: mockPutObjectTagging,
+  });
+}
+
 beforeEach(() => {
   sdk = new MockSdkProvider({ realSdk: false });
   // By default, we'll return a non-found toolkit info
@@ -63,56 +114,9 @@ afterEach(() => {
   stderrMock.mockRestore();
 });
 
-describe('Garbage Collection', () => {
+describe('S3 Garbage Collection', () => {
   beforeEach(() => {
-    mockListStacks = jest.fn().mockResolvedValue({
-      StackSummaries: [
-        { StackName: 'Stack1', StackStatus: 'CREATE_COMPLETE' },
-        { StackName: 'Stack2', StackStatus: 'UPDATE_COMPLETE' },
-      ],
-    });
-    mockGetTemplateSummary = jest.fn().mockReturnValue({
-      Parameters: [{
-        ParameterKey: 'BootstrapVersion',
-        DefaultValue: '/cdk-bootstrap/abcde/version',
-      }],
-    });
-    mockGetTemplate = jest.fn().mockReturnValue({
-      TemplateBody: 'abcde',
-    });
-    mockListObjectsV2 = jest.fn().mockImplementation(() => {
-      return Promise.resolve({
-        Contents: [
-          { Key: 'asset1', LastModified: new Date(Date.now() - (2 * DAY)) },
-          { Key: 'asset2', LastModified: new Date(Date.now() - (10 * DAY)) },
-          { Key: 'asset3', LastModified: new Date(Date.now() - (100 * DAY)) },
-        ],
-        KeyCount: 3,
-      });
-    });
-    mockGetObjectTagging = jest.fn().mockImplementation((params) => {
-      return Promise.resolve({
-        TagSet: params.Key === 'asset2' ? [{ Key: ISOLATED_TAG, Value: new Date().toISOString() }] : [],
-      });
-    });
-    mockPutObjectTagging = jest.fn();
-    mockDeleteObjects = jest.fn();
-    mockDeleteObjectTagging = jest.fn();
-    mockDescribeStacks = jest.fn();
-
-    sdk.stubCloudFormation({
-      listStacks: mockListStacks,
-      getTemplateSummary: mockGetTemplateSummary,
-      getTemplate: mockGetTemplate,
-      describeStacks: mockDescribeStacks,
-    });
-    sdk.stubS3({
-      listObjectsV2: mockListObjectsV2,
-      getObjectTagging: mockGetObjectTagging,
-      deleteObjects: mockDeleteObjects,
-      deleteObjectTagging: mockDeleteObjectTagging,
-      putObjectTagging: mockPutObjectTagging,
-    });
+    setupS3GarbageCollectionMocks(sdk);
   });
 
   afterEach(() => {
@@ -182,23 +186,6 @@ describe('Garbage Collection', () => {
 
     // no deleting
     expect(mockDeleteObjects).toHaveBeenCalledTimes(0);
-  });
-
-  test('type = ecr -- throws error', async () => {
-    mockTheToolkitInfo({
-      Outputs: [
-        {
-          OutputKey: 'BootstrapVersion',
-          OutputValue: '999',
-        },
-      ],
-    });
-
-    expect(() => garbageCollector = gc({
-      type: 'ecr',
-      rollbackBufferDays: 3,
-      action: 'full',
-    })).toThrow(/ECR garbage collection is not yet supported/);
   });
 
   test('createdAtBufferDays > 0 -- assets to be tagged', async () => {
@@ -359,6 +346,12 @@ describe('Garbage Collection', () => {
         Quiet: true,
       },
     });
+  });
+});
+
+describe('CloudFormation API calls', () => {
+  beforeEach(() => {
+    setupS3GarbageCollectionMocks(sdk);
   });
 
   test('bootstrap filters out other bootstrap versions', async () => {
