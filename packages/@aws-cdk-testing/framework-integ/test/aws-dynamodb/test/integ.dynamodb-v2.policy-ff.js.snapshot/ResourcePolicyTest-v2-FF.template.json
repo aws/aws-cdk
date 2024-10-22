@@ -18,6 +18,9 @@
     ],
     "Replicas": [
      {
+      "Region": "eu-west-2"
+     },
+     {
       "Region": "eu-west-1",
       "ResourcePolicy": {
        "PolicyDocument": {
@@ -46,7 +49,10 @@
        }
       }
      }
-    ]
+    ],
+    "StreamSpecification": {
+     "StreamViewType": "NEW_AND_OLD_IMAGES"
+    }
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

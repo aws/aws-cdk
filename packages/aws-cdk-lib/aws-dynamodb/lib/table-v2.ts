@@ -671,8 +671,8 @@ export class TableV2 extends TableBaseV2 {
     * @see https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/cx-api/FEATURE_FLAGS.md
     */
     const resourcePolicy = FeatureFlags.of(this).isEnabled(cxapi.DYNAMODB_TABLEV2_RESOURCE_POLICY_PER_REPLICA)
-      ? (this.region ? this.tableOptions.resourcePolicy : props.resourcePolicy)
-      : (props.region === this.region ? this.tableOptions.resourcePolicy : props.resourcePolicy) || undefined;
+      ? (props.region === this.region ? this.tableOptions.resourcePolicy : props.resourcePolicy) || undefined
+      : props.resourcePolicy ?? this.tableOptions.resourcePolicy;
 
     return {
       region: props.region,
