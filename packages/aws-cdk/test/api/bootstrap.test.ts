@@ -24,6 +24,9 @@ const env = {
 const templateBody = toYAML(deserializeStructure(serializeStructure(legacyBootstrapTemplate({}), true)));
 const changeSetName = 'cdk-deploy-change-set';
 
+jest.mock('../../lib/api/util/checks', () => ({
+  determineAllowCrossAccountAssetPublishing: jest.fn().mockResolvedValue(true),
+}));
 let sdk: MockSdkProvider;
 let changeSetTemplate: any | undefined;
 let bootstrapper: Bootstrapper;

@@ -130,7 +130,7 @@
     "@smithy/util-retry": "3.0.7",
     "@smithy/util-stream": "3.1.9",
     "@smithy/util-waiter": "3.1.6",
-    "camelcase": "^6",
+    "camelcase": "^6.3.0",
     "cdk-assets": "3.0.0-rc.32",
     "cdk-from-cfn": "^0.162.0",
     "chalk": "^4",

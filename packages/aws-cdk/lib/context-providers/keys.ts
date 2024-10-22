@@ -38,6 +38,12 @@ export class KeyContextProviderPlugin implements ContextProviderPlugin {
       nextMarker = response.NextMarker;
     } while (nextMarker);
 
+    const suppressError = 'ignoreErrorOnMissingContext' in args && args.ignoreErrorOnMissingContext as boolean;
+    const hasDummyKeyId = 'dummyValue' in args && typeof args.dummyValue === 'object' && args.dummyValue !== null && 'keyId' in args.dummyValue;
+    if (suppressError && hasDummyKeyId) {
+      const keyId = (args.dummyValue as { keyId: string }).keyId;
+      return { TargetKeyId: keyId };
+    }
     throw new Error(`Could not find any key with alias named ${args.aliasName}`);
   }
 

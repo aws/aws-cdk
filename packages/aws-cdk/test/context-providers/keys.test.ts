@@ -124,11 +124,37 @@ test('throw exception - no key found', async () => {
   });
 
   // WHEN
-  await expect(
-    provider.getValue({
-      account: '123456789012',
-      region: 'us-east-1',
-      aliasName: 'alias/foo',
-    }),
-  ).rejects.toThrow(/Could not find any key with alias named/);
+  await expect(provider.getValue({
+    account: '1234',
+    region: 'us-east-1',
+    aliasName: 'alias/foo',
+  })).rejects.toThrow(/Could not find any key with alias named/);
+});
+
+test('don\'t throw exception - no key found but ignoreErrorOnMissingContext is true', async () => {
+  // GIVEN
+  const provider = new KeyContextProviderPlugin(mockSDK);
+
+  AWS.mock('KMS', 'listAliases', (params: aws.KMS.ListAliasesRequest, cb: AwsCallback<aws.KMS.ListAliasesResponse>) => {
+    expect(params.KeyId).toBeUndefined();
+    return cb(null, {
+    });
+  });
+
+  // WHEN
+  const args = {
+    account: '1234',
+    region: 'us-east-1',
+    aliasName: 'alias/foo',
+    dummyValue: {
+      keyId: '1234abcd-12ab-34cd-56ef-1234567890ab',
+    },
+    ignoreErrorOnMissingContext: true,
+  };
+  const result = await provider.getValue(args);
+
+  // THEN
+  expect(result).toEqual({
+    keyId: '1234abcd-12ab-34cd-56ef-1234567890ab',
+  });
 });

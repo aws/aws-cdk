@@ -36,6 +36,11 @@ export interface PublishAssetsOptions {
    * @default true To remain backward compatible.
    */
   readonly parallel?: boolean;
+
+  /**
+   * Whether cdk-assets is allowed to do cross account publishing.
+   */
+  readonly allowCrossAccount: boolean;
 }
 
 /**
@@ -45,7 +50,7 @@ export async function publishAssets(
   manifest: AssetManifest,
   sdk: SdkProvider,
   targetEnv: Environment,
-  options: PublishAssetsOptions = {},
+  options: PublishAssetsOptions,
 ) {
   // This shouldn't really happen (it's a programming error), but we don't have
   // the types here to guide us. Do an runtime validation to be super super sure.
@@ -67,7 +72,7 @@ export async function publishAssets(
     publishAssets: true,
     quiet: options.quiet,
   });
-  await publisher.publish();
+  await publisher.publish({ allowCrossAccount: options.allowCrossAccount });
   if (publisher.hasFailures) {
     throw new Error('Failed to publish one or more assets. See the error messages above for more information.');
   }
