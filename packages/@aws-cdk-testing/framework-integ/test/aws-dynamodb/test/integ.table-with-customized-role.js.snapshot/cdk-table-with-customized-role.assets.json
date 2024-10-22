@@ -1,15 +1,15 @@
 {
   "version": "38.0.1",
   "files": {
-    "c093a5b4a568daafc27fab102fea007eaf70c883b8e02171441d44e702e0cebc": {
+    "70267cb4d71000f9402304c37f8f7f27be51a2639cc15153bf93abab53fc60cd": {
       "source": {
-        "path": "IotAuditConfigurationTestStack.template.json",
+        "path": "cdk-table-with-customized-role.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "c093a5b4a568daafc27fab102fea007eaf70c883b8e02171441d44e702e0cebc.json",
+          "objectKey": "70267cb4d71000f9402304c37f8f7f27be51a2639cc15153bf93abab53fc60cd.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
