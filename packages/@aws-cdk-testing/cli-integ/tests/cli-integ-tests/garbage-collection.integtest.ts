@@ -1,4 +1,4 @@
-import { BatchGetImageCommand, DescribeImagesCommand, ListImagesCommand } from '@aws-sdk/client-ecr';
+import { BatchGetImageCommand, ListImagesCommand, PutImageCommand } from '@aws-sdk/client-ecr';
 import { GetObjectTaggingCommand, ListObjectsV2Command, PutObjectTaggingCommand } from '@aws-sdk/client-s3';
 import { integTest, randomString, withoutBootstrap } from '../../lib';
 
@@ -276,7 +276,6 @@ integTest(
     });
     fixture.log('Garbage collection complete!');
 
-    // assert that the bootstrap repository is empty
     await fixture.aws.ecr.send(new ListImagesCommand({ repositoryName: repoName }))
       .then((result) => {
         expect(result.imageIds).toHaveLength(2); // the second tag comes in as a second 'id'
@@ -314,7 +313,7 @@ integTest(
       Key: key,
       Tagging: {
         TagSet: [{
-          Key: 'aws-cdk:isolated',
+          Key: 'aws-cdk.isolated',
           Value: '12345',
         }, {
           Key: 'bogus',
@@ -361,6 +360,11 @@ integTest(
     fixture.log('Setup complete!');
 
     // Artificially add tagging to the asset in the bootstrap bucket
+    const imageIds = await fixture.aws.ecr.send(new ListImagesCommand({ repositoryName: repoName }));
+    const digest = imageIds.imageIds![0].imageDigest;
+    const imageManifests = await fixture.aws.ecr.send(new BatchGetImageCommand({ repositoryName: repoName, imageIds: [{ imageDigest: digest }] }));
+    const manifest = imageManifests.images![0].imageManifest;
+    await fixture.aws.ecr.send(new PutImageCommand({ repositoryName: repoName, imageManifest: manifest, imageDigest: digest, imageTag: 'aws-cdk.isolated-12345' }));
 
     await fixture.cdkGarbageCollect({
       rollbackBufferDays: 100, // this will ensure that we do not delete assets immediately (and just tag them)
@@ -369,12 +373,11 @@ integTest(
     });
     fixture.log('Garbage collection complete!');
 
-    // assert that the bootstrap repository is empty
-    const imageIds = await fixture.aws.ecr.send(new ListImagesCommand({ repositoryName: repoName }));
-    const digest = imageIds.imageIds![0].imageDigest;
-    const imageManifests = await fixture.aws.ecr.send(new BatchGetImageCommand({ repositoryName: repoName, imageIds: [{ imageDigest: digest }]));
-    const manifest = imageManifests.images![0].imageManifest;
-  
+    await fixture.aws.ecr.send(new ListImagesCommand({ repositoryName: repoName }))
+      .then((result) => {
+        expect(result.imageIds).toHaveLength(1); // the second tag has been removed
+      });
+
     await fixture.cdkDestroy('docker-in-use', {
       options: [
         '--context', `@aws-cdk/core:bootstrapQualifier=${fixture.qualifier}`,
