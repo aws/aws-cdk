@@ -1,10 +1,11 @@
+import { BatchGetImageCommand, DescribeImagesCommand, ListImagesCommand } from '@aws-sdk/client-ecr';
 import { GetObjectTaggingCommand, ListObjectsV2Command, PutObjectTaggingCommand } from '@aws-sdk/client-s3';
 import { integTest, randomString, withoutBootstrap } from '../../lib';
 
 jest.setTimeout(2 * 60 * 60_000); // Includes the time to acquire locks, worst-case single-threaded runtime
 
 integTest(
-  'Garbage Collection deletes unused assets',
+  'Garbage Collection deletes unused s3 objects',
   withoutBootstrap(async (fixture) => {
     const toolkitStackName = fixture.bootstrapStackName;
     const bootstrapBucketName = `aws-cdk-garbage-collect-integ-test-bckt-${randomString()}`;
@@ -50,7 +51,50 @@ integTest(
 );
 
 integTest(
-  'Garbage Collection keeps in use assets',
+  'Garbage Collection deletes unused ecr images',
+  withoutBootstrap(async (fixture) => {
+    const toolkitStackName = fixture.bootstrapStackName;
+
+    await fixture.cdkBootstrapModern({
+      toolkitStackName,
+    });
+
+    const repoName = await fixture.bootstrapRepoName();
+
+    await fixture.cdkDeploy('docker-in-use', {
+      options: [
+        '--context', `@aws-cdk/core:bootstrapQualifier=${fixture.qualifier}`,
+        '--toolkit-stack-name', toolkitStackName,
+        '--force',
+      ],
+    });
+    fixture.log('Setup complete!');
+
+    await fixture.cdkDestroy('docker-in-use', {
+      options: [
+        '--context', `@aws-cdk/core:bootstrapQualifier=${fixture.qualifier}`,
+        '--toolkit-stack-name', toolkitStackName,
+        '--force',
+      ],
+    });
+
+    await fixture.cdkGarbageCollect({
+      rollbackBufferDays: 0,
+      type: 'ecr',
+      bootstrapStackName: toolkitStackName,
+    });
+    fixture.log('Garbage collection complete!');
+
+    // assert that the bootstrap repository is empty
+    await fixture.aws.ecr.send(new ListImagesCommand({ repositoryName: repoName }))
+      .then((result) => {
+        expect(result.imageIds).toEqual([]);
+      });
+  }),
+);
+
+integTest(
+  'Garbage Collection keeps in use s3 objects',
   withoutBootstrap(async (fixture) => {
     const toolkitStackName = fixture.bootstrapStackName;
     const bootstrapBucketName = `aws-cdk-garbage-collect-integ-test-bckt-${randomString()}`;
@@ -97,7 +141,50 @@ integTest(
 );
 
 integTest(
-  'Garbage Collection tags unused assets',
+  'Garbage Collection keeps in use ecr images',
+  withoutBootstrap(async (fixture) => {
+    const toolkitStackName = fixture.bootstrapStackName;
+
+    await fixture.cdkBootstrapModern({
+      toolkitStackName,
+    });
+
+    const repoName = await fixture.bootstrapRepoName();
+
+    await fixture.cdkDeploy('docker-in-use', {
+      options: [
+        '--context', `@aws-cdk/core:bootstrapQualifier=${fixture.qualifier}`,
+        '--toolkit-stack-name', toolkitStackName,
+        '--force',
+      ],
+    });
+    fixture.log('Setup complete!');
+
+    await fixture.cdkGarbageCollect({
+      rollbackBufferDays: 0,
+      type: 'ecr',
+      bootstrapStackName: toolkitStackName,
+    });
+    fixture.log('Garbage collection complete!');
+
+    // assert that the bootstrap repository is empty
+    await fixture.aws.ecr.send(new ListImagesCommand({ repositoryName: repoName }))
+      .then((result) => {
+        expect(result.imageIds).toHaveLength(1);
+      });
+
+    await fixture.cdkDestroy('docker-in-use', {
+      options: [
+        '--context', `@aws-cdk/core:bootstrapQualifier=${fixture.qualifier}`,
+        '--toolkit-stack-name', toolkitStackName,
+        '--force',
+      ],
+    });
+  }),
+);
+
+integTest(
+  'Garbage Collection tags unused s3 objects',
   withoutBootstrap(async (fixture) => {
     const toolkitStackName = fixture.bootstrapStackName;
     const bootstrapBucketName = `aws-cdk-garbage-collect-integ-test-bckt-${randomString()}`;
@@ -142,11 +229,63 @@ integTest(
         const tags = await fixture.aws.s3.send(new GetObjectTaggingCommand({ Bucket: bootstrapBucketName, Key: key }));
         expect(tags.TagSet).toHaveLength(1);
       });
+
+    await fixture.cdkDestroy('lambda', {
+      options: [
+        '--context', `bootstrapBucket=${bootstrapBucketName}`,
+        '--context', `@aws-cdk/core:bootstrapQualifier=${fixture.qualifier}`,
+        '--toolkit-stack-name', toolkitStackName,
+        '--force',
+      ],
+    });
   }),
 );
 
 integTest(
-  'Garbage Collection untags in-use assets',
+  'Garbage Collection tags unused ecr images',
+  withoutBootstrap(async (fixture) => {
+    const toolkitStackName = fixture.bootstrapStackName;
+
+    await fixture.cdkBootstrapModern({
+      toolkitStackName,
+    });
+
+    const repoName = await fixture.bootstrapRepoName();
+
+    await fixture.cdkDeploy('docker-in-use', {
+      options: [
+        '--context', `@aws-cdk/core:bootstrapQualifier=${fixture.qualifier}`,
+        '--toolkit-stack-name', toolkitStackName,
+        '--force',
+      ],
+    });
+    fixture.log('Setup complete!');
+
+    await fixture.cdkDestroy('docker-in-use', {
+      options: [
+        '--context', `@aws-cdk/core:bootstrapQualifier=${fixture.qualifier}`,
+        '--toolkit-stack-name', toolkitStackName,
+        '--force',
+      ],
+    });
+
+    await fixture.cdkGarbageCollect({
+      rollbackBufferDays: 100, // this will ensure that we do not delete assets immediately (and just tag them)
+      type: 'ecr',
+      bootstrapStackName: toolkitStackName,
+    });
+    fixture.log('Garbage collection complete!');
+
+    // assert that the bootstrap repository is empty
+    await fixture.aws.ecr.send(new ListImagesCommand({ repositoryName: repoName }))
+      .then((result) => {
+        expect(result.imageIds).toHaveLength(2); // the second tag comes in as a second 'id'
+      });
+  }),
+);
+
+integTest(
+  'Garbage Collection untags in-use s3 objects',
   withoutBootstrap(async (fixture) => {
     const toolkitStackName = fixture.bootstrapStackName;
     const bootstrapBucketName = `aws-cdk-garbage-collect-integ-test-bckt-${randomString()}`;
@@ -198,5 +337,50 @@ integTest(
       Key: 'bogus',
       Value: 'val',
     }]);
+  }),
+);
+
+integTest(
+  'Garbage Collection untags in-use ecr images',
+  withoutBootstrap(async (fixture) => {
+    const toolkitStackName = fixture.bootstrapStackName;
+
+    await fixture.cdkBootstrapModern({
+      toolkitStackName,
+    });
+
+    const repoName = await fixture.bootstrapRepoName();
+
+    await fixture.cdkDeploy('docker-in-use', {
+      options: [
+        '--context', `@aws-cdk/core:bootstrapQualifier=${fixture.qualifier}`,
+        '--toolkit-stack-name', toolkitStackName,
+        '--force',
+      ],
+    });
+    fixture.log('Setup complete!');
+
+    // Artificially add tagging to the asset in the bootstrap bucket
+
+    await fixture.cdkGarbageCollect({
+      rollbackBufferDays: 100, // this will ensure that we do not delete assets immediately (and just tag them)
+      type: 'ecr',
+      bootstrapStackName: toolkitStackName,
+    });
+    fixture.log('Garbage collection complete!');
+
+    // assert that the bootstrap repository is empty
+    const imageIds = await fixture.aws.ecr.send(new ListImagesCommand({ repositoryName: repoName }));
+    const digest = imageIds.imageIds![0].imageDigest;
+    const imageManifests = await fixture.aws.ecr.send(new BatchGetImageCommand({ repositoryName: repoName, imageIds: [{ imageDigest: digest }]));
+    const manifest = imageManifests.images![0].imageManifest;
+  
+    await fixture.cdkDestroy('docker-in-use', {
+      options: [
+        '--context', `@aws-cdk/core:bootstrapQualifier=${fixture.qualifier}`,
+        '--toolkit-stack-name', toolkitStackName,
+        '--force',
+      ],
+    });
   }),
 );

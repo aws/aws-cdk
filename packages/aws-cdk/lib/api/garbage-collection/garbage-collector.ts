@@ -379,27 +379,27 @@ export class GarbageCollector {
     }
   }
 
-    /**
+  /**
    * Untag assets that were previously tagged, but now currently referenced.
    * Since this is treated as an implementation detail, we do not print the results in the printer.
    */
-    private async parallelUntagEcr(ecr: ECR, repo: string, untaggables: ImageAsset[]) {
-      const limit = pLimit(P_LIMIT);
-  
-      for (const img of untaggables) {
-        const tag = img.getIsolatedTag();
-        await limit(() =>
-          ecr.batchDeleteImage({
-            repositoryName: repo,
-            imageIds: [{
-              imageTag: tag,
-            }]
-          }).promise(),
-        );
-      }
-  
-      debug(`Untagged ${untaggables.length} assets`);
+  private async parallelUntagEcr(ecr: ECR, repo: string, untaggables: ImageAsset[]) {
+    const limit = pLimit(P_LIMIT);
+
+    for (const img of untaggables) {
+      const tag = img.getIsolatedTag();
+      await limit(() =>
+        ecr.batchDeleteImage({
+          repositoryName: repo,
+          imageIds: [{
+            imageTag: tag,
+          }],
+        }).promise(),
+      );
     }
+
+    debug(`Untagged ${untaggables.length} assets`);
+  }
 
   /**
    * Untag assets that were previously tagged, but now currently referenced.
@@ -604,8 +604,14 @@ export class GarbageCollector {
           repositoryName: repo,
         }).promise();
 
+        // No images in the repository
+        if (!response.imageIds || response.imageIds.length === 0) {
+          continue;
+        }
+
         // map unique image digest to (possibly multiple) tags
         const images = imageMap(response.imageIds ?? []);
+
         const imageIds = Object.keys(images).map(key => ({
           imageDigest: key,
         }));
@@ -622,15 +628,15 @@ export class GarbageCollector {
 
         const combinedImageInfo = describeImageInfo.imageDetails?.map(imageDetail => {
           const matchingImage = getImageInfo.images?.find(
-            img => img.imageId?.imageDigest === imageDetail.imageDigest
+            img => img.imageId?.imageDigest === imageDetail.imageDigest,
           );
-      
+
           return {
             ...imageDetail,
             manifest: matchingImage?.imageManifest,
           };
         });
-        
+
         for (const image of combinedImageInfo ?? []) {
           const lastModified = image.imagePushedAt ?? new Date(currentTime);
           // Store the image if it was pushed earlier than today - createdBufferDays

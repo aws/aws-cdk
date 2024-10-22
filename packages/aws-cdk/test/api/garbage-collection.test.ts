@@ -87,7 +87,7 @@ function setupCFNGarbageCollectionMocks(mockSdk: MockSdkProvider) {
     mockGetTemplateSummary,
     mockGetTemplate,
     mockDescribeStacks,
-  }
+  };
 }
 
 function setupS3GarbageCollectionMocks(mockSdk: MockSdkProvider) {
@@ -127,7 +127,7 @@ function setupS3GarbageCollectionMocks(mockSdk: MockSdkProvider) {
     mockDeleteObjects,
     mockDeleteObjectTagging,
     mockPutObjectTagging,
-  }
+  };
 }
 
 function setupEcrGarbageCollectionMocks(mockSdk: MockSdkProvider) {
@@ -135,10 +135,10 @@ function setupEcrGarbageCollectionMocks(mockSdk: MockSdkProvider) {
   mockBatchGetImage = jest.fn().mockImplementation(() => {
     return Promise.resolve({
       images: [
-        { imageId: { imageDigest: 'digest1', }, imageManifest: {}},
-        { imageId: { imageDigest: 'digest2', }, imageManifest: {}},
-        { imageId: { imageDigest: 'digest3', }, imageManifest: {}},
-      ]
+        { imageId: { imageDigest: 'digest1' }, imageManifest: {} },
+        { imageId: { imageDigest: 'digest2' }, imageManifest: {} },
+        { imageId: { imageDigest: 'digest3' }, imageManifest: {} },
+      ],
     });
   });
   mockDescribeImages = jest.fn().mockImplementation(() => {
@@ -176,7 +176,7 @@ function setupEcrGarbageCollectionMocks(mockSdk: MockSdkProvider) {
     mockBatchDeleteImage,
     mockPutImage,
     mockListImages,
-  }
+  };
 }
 
 beforeEach(() => {
@@ -632,7 +632,7 @@ describe('ECR Garbage Collection', () => {
       repositoryName: 'REPO_NAME',
       imageIds: [
         { imageDigest: 'digest3' },
-      ]
+      ],
     });
   });
 });
