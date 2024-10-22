@@ -1231,7 +1231,7 @@ export const FLAGS: Record<string, FlagInfo> = {
 
       When this feature flag is enabled, if the task definition is created in the stack, the 'Resource' section will 'Ref' the taskDefinition.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.163.0' },
     recommendedValue: true,
   },
 };
