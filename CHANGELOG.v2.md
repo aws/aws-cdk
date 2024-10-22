@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.163.1](https://github.com/aws/aws-cdk/compare/v2.163.0...v2.163.1) (2024-10-22)
+
+
+### Bug Fixes
+
+* 'Need to perform AWS calls for account' when doing cross-account deployments ([#31846](https://github.com/aws/aws-cdk/issues/31846)) ([5aa63d1](https://github.com/aws/aws-cdk/commit/5aa63d136294a42df2f65a3705655eb3c108fc2c)), closes [#31845](https://github.com/aws/aws-cdk/issues/31845)
+
 ## [2.163.0](https://github.com/aws/aws-cdk/compare/v2.162.1...v2.163.0) (2024-10-21)
 
 
