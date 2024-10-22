@@ -1251,14 +1251,7 @@ export class UserPool extends UserPoolBase {
       if (props.mfaSecondFactor!.otp) {
         enabledMfas.push('SOFTWARE_TOKEN_MFA');
       } if (props.mfaSecondFactor!.email) {
-
-        if (props.email === undefined || this.emailConfiguration?.emailSendingAccount !== 'DEVELOPER') {
-          throw new Error('To enable email-based MFA, set `email` property to the Amazon SES email-sending configuration.');
-        }
-
-        if (props.advancedSecurityMode === AdvancedSecurityMode.OFF) {
-          throw new Error('To enable email-based MFA, set `advancedSecurityMode` to `AdvancedSecurity.ENFORCED` or `AdvancedSecurity.AUDIT`.');
-        }
+        this.validateEmailMfa(props);
         enabledMfas.push('EMAIL_OTP');
       }
       return enabledMfas;
@@ -1386,6 +1379,16 @@ export class UserPool extends UserPoolBase {
     return {
       attributesRequireVerificationBeforeUpdate,
     };
+  }
+
+  private validateEmailMfa(props: UserPoolProps) {
+    if (props.email === undefined || this.emailConfiguration?.emailSendingAccount !== 'DEVELOPER') {
+      throw new Error('To enable email-based MFA, set `email` property to the Amazon SES email-sending configuration.');
+    }
+
+    if (props.advancedSecurityMode === AdvancedSecurityMode.OFF) {
+      throw new Error('To enable email-based MFA, set `advancedSecurityMode` to `AdvancedSecurity.ENFORCED` or `AdvancedSecurity.AUDIT`.');
+    }
   }
 }
 
