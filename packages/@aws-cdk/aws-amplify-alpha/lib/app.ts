@@ -264,7 +264,7 @@ export class App extends Resource implements IApp, iam.IGrantable {
       name: props.appName || this.node.id,
       oauthToken: sourceCodeProviderOptions?.oauthToken?.unsafeUnwrap(), // Safe usage
       repository: sourceCodeProviderOptions?.repository,
-      customHeaders: props.customResponseHeaders ? renderCustomResponseHeaders(props.customResponseHeaders) : undefined,
+      customHeaders: props.customResponseHeaders ? renderCustomResponseHeaders(props.customResponseHeaders) : '',
       platform: props.platform || Platform.WEB,
     });
 
