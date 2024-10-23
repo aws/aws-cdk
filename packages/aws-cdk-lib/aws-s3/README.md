@@ -225,8 +225,8 @@ To import an existing bucket into your CDK application, use the `Bucket.fromBuck
 factory method. This method accepts `BucketAttributes` which describes the properties of an already
 existing bucket:
 
-Note that this method allows importing buckets with legacy names containing underscores (`_`), which was
-permitted for buckets created before March 1, 2018. For buckets created after this date, underscores
+Note that this method allows importing buckets with legacy names containing uppercase letters (`A-Z`) or underscores (`_`), which were
+permitted for buckets created before March 1, 2018. For buckets created after this date, uppercase letters and underscores
 are not allowed in the bucket name.
 
 ```ts
