@@ -5,6 +5,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
 import * as constructs from 'constructs';
 import * as firehose from '../lib';
+import * as source from '../lib/source';
 
 const app = new cdk.App();
 
@@ -34,12 +35,12 @@ const mockS3Destination: firehose.IDestination = {
 const sourceStream = new kinesis.Stream(stack, 'Source Stream');
 
 new firehose.DeliveryStream(stack, 'Delivery Stream', {
-  destinations: [mockS3Destination],
-  sourceStream,
+  destination: mockS3Destination,
+  source: new source.KinesisStreamSource(sourceStream),
 });
 
 new firehose.DeliveryStream(stack, 'Delivery Stream No Source Or Encryption Key', {
-  destinations: [mockS3Destination],
+  destination: mockS3Destination,
 });
 
 app.synth();

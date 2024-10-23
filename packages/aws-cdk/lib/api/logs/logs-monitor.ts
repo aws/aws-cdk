@@ -147,6 +147,8 @@ export class CloudWatchLogEventMonitor {
         promises.push(this.readEventsFromLogGroup(settings, group));
       }
     }
+    // Limited set of log groups
+    // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
     return Promise.all(promises);
   }
 

@@ -99,6 +99,52 @@ export class HotswappableChangeCandidate {
 type Exclude = { [key: string]: Exclude | true }
 
 /**
+ * Represents configuration property overrides for hotswap deployments
+ */
+export class HotswapPropertyOverrides {
+  // Each supported resource type will have its own properties. Currently this is ECS
+  ecsHotswapProperties?: EcsHotswapProperties;
+
+  public constructor (ecsHotswapProperties?: EcsHotswapProperties) {
+    this.ecsHotswapProperties = ecsHotswapProperties;
+  }
+}
+
+/**
+ * Represents configuration properties for ECS hotswap deployments
+ */
+export class EcsHotswapProperties {
+  // The lower limit on the number of your service's tasks that must remain in the RUNNING state during a deployment, as a percentage of the desiredCount
+  readonly minimumHealthyPercent?: number;
+  // The upper limit on the number of your service's tasks that are allowed in the RUNNING or PENDING state during a deployment, as a percentage of the desiredCount
+  readonly maximumHealthyPercent?: number;
+
+  public constructor (minimumHealthyPercent?: number, maximumHealthyPercent?: number) {
+    if (minimumHealthyPercent !== undefined && minimumHealthyPercent < 0 ) {
+      throw new Error('hotswap-ecs-minimum-healthy-percent can\'t be a negative number');
+    }
+    if (maximumHealthyPercent !== undefined && maximumHealthyPercent < 0 ) {
+      throw new Error('hotswap-ecs-maximum-healthy-percent can\'t be a negative number');
+    }
+    // In order to preserve the current behaviour, when minimumHealthyPercent is not defined, it will be set to the currently default value of 0
+    if (minimumHealthyPercent == undefined) {
+      this.minimumHealthyPercent = 0;
+    } else {
+      this.minimumHealthyPercent = minimumHealthyPercent;
+    }
+    this.maximumHealthyPercent = maximumHealthyPercent;
+  }
+
+  /**
+   * Check if any hotswap properties are defined
+   * @returns true if all properties are undefined, false otherwise
+  */
+  public isEmpty(): boolean {
+    return this.minimumHealthyPercent === 0 && this.maximumHealthyPercent === undefined;
+  }
+}
+
+/**
  * This function transforms all keys (recursively) in the provided `val` object.
  *
  * @param val The object whose keys need to be transformed.

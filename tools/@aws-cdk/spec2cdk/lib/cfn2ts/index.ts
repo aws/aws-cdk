@@ -1,6 +1,7 @@
 import { loadAwsServiceSpec } from '@aws-cdk/aws-service-spec';
 import { Service } from '@aws-cdk/service-spec-types';
 import * as fs from 'fs-extra';
+import * as pLimit from 'p-limit';
 import * as pkglint from './pkglint';
 import { CodeGeneratorOptions, GenerateAllOptions, ModuleMap } from './types';
 import { generate as generateModules } from '../generate';
@@ -162,11 +163,13 @@ export async function generateAll(
     },
   );
 
-  await Promise.all(Object.keys(moduleMap).map(async (moduleName) => {
+  const limit = pLimit(20);
+  // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
+  await Promise.all(Object.keys(moduleMap).map((moduleName) => limit(async () => {
     // Add generated resources and files to module in map
     moduleMap[moduleName].resources = generated.modules[moduleName].map((m) => m.resources).reduce(mergeObjects, {});
     moduleMap[moduleName].files = generated.modules[moduleName].flatMap((m) => m.outputFiles);
-  }));
+  })));
 
   return moduleMap;
 }

@@ -15,7 +15,7 @@ module.exports = {
   plugins: [
     '@typescript-eslint',
     'import',
-    '@aws-cdk',
+    '@cdklabs',
     'jest',
   ],
   parser: '@typescript-eslint/parser',
@@ -41,10 +41,12 @@ module.exports = {
   },
   ignorePatterns: ['*.js', '*.d.ts', 'node_modules/', '*.generated.ts'],
   rules: {
-    '@aws-cdk/no-core-construct': ['error'],
-    '@aws-cdk/invalid-cfn-imports': ['error'],
-    '@aws-cdk/no-literal-partition': ['error'],
-    '@aws-cdk/no-invalid-path': [ 'error' ],
+    '@cdklabs/no-core-construct': ['error'],
+    '@cdklabs/invalid-cfn-imports': ['error'],
+    '@cdklabs/no-literal-partition': ['error'],
+    '@cdklabs/no-invalid-path': [ 'error' ],
+    '@cdklabs/promiseall-no-unbounded-parallelism': [ 'error' ],
+
     // Require use of the `import { foo } from 'bar';` form instead of `import foo = require('bar');`
     '@typescript-eslint/no-require-imports': ['error'],
     '@typescript-eslint/indent': ['error', 2],

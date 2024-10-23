@@ -44,6 +44,8 @@ function writeZipFile(directory: string, outputFile: string): Promise<void> {
     // Append files serially to ensure file order
     for (const file of files) {
       const fullPath = path.resolve(directory, file);
+      // Exactly 2 promises
+      // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
       const [data, stat] = await Promise.all([fs.readFile(fullPath), fs.stat(fullPath)]);
       archive.append(data, {
         name: file,

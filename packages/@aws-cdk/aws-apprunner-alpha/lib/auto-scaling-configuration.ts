@@ -133,15 +133,15 @@ export class AutoScalingConfiguration extends cdk.Resource implements IAutoScali
   }
 
   /**
-    * The ARN of the Auto Scaling Configuration.
-    * @attribute
-    */
+   * The ARN of the Auto Scaling Configuration.
+   * @attribute
+   */
   readonly autoScalingConfigurationArn: string;
 
   /**
-    * The name of the Auto Scaling Configuration.
-    * @attribute
-    */
+   * The name of the Auto Scaling Configuration.
+   * @attribute
+   */
   readonly autoScalingConfigurationName: string;
 
   /**

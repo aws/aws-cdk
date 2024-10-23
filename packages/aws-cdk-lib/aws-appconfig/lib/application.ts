@@ -1,4 +1,4 @@
-/* eslint-disable @aws-cdk/no-literal-partition */
+/* eslint-disable @cdklabs/no-literal-partition */
 import { Construct } from 'constructs';
 import { CfnApplication } from './appconfig.generated';
 import { HostedConfiguration, HostedConfigurationOptions, SourcedConfiguration, SourcedConfigurationOptions } from './configuration';

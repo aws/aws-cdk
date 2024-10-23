@@ -38,7 +38,8 @@ def handle_managed(request_type, notification_configuration):
 def handle_unmanaged(bucket, stack_id, request_type, notification_configuration, old):
   def get_id(n):
     n['Id'] = ''
-    strToHash=json.dumps(n, sort_keys=True).replace('"Name": "prefix"', '"Name": "Prefix"').replace('"Name": "suffix"', '"Name": "Suffix"')
+    sorted_notifications = sort_filter_rules(n)
+    strToHash=json.dumps(sorted_notifications, sort_keys=True).replace('"Name": "prefix"', '"Name": "Prefix"').replace('"Name": "suffix"', '"Name": "Suffix"')
     return f"{stack_id}-{hash(strToHash)}"
   def with_id(n):
     n['Id'] = get_id(n)
@@ -103,3 +104,20 @@ def submit_response(event: dict, context, response_status: str, error_message: s
     print("Status code: " + response.reason)
   except Exception as e:
       print("send(..) failed executing request.urlopen(..): " + str(e))
+
+def sort_filter_rules(json_obj):
+  # Check if the input is a dictionary
+  if not isinstance(json_obj, dict):
+      return json_obj
+  # Recursively sort the filter rules for nested dictionaries
+  for key, value in json_obj.items():
+      if isinstance(value, dict):
+          json_obj[key] = sort_filter_rules(value)
+      elif isinstance(value, list):
+          json_obj[key] = [sort_filter_rules(item) for item in value]
+  # Sort the FilterRules list if it exists
+  if "Filter" in json_obj and "Key" in json_obj["Filter"] and "FilterRules" in json_obj["Filter"]["Key"]:
+      filter_rules = json_obj["Filter"]["Key"]["FilterRules"]
+      sorted_filter_rules = sorted(filter_rules, key=lambda x: x["Name"])
+      json_obj["Filter"]["Key"]["FilterRules"] = sorted_filter_rules
+  return json_obj

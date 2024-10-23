@@ -160,10 +160,10 @@ export interface IntegrationTestsDiscoveryOptions {
   readonly exclude?: boolean;
 
   /**
-    * List of tests to include (or exclude if `exclude=true`)
-    *
-    * @default - all matched files
-    */
+   * List of tests to include (or exclude if `exclude=true`)
+   *
+   * @default - all matched files
+   */
   readonly tests?: string[];
 
   /**

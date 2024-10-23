@@ -313,6 +313,118 @@ test('esbuild bundling source map default', () => {
   });
 });
 
+test.each([
+  [Runtime.NODEJS_18_X, 'node18'],
+  [Runtime.NODEJS_20_X, 'node20'],
+]) ('esbuild bundling without aws-sdk v3 and smithy with feature flag enabled using Node 18+', (runtime, target) => {
+  const cdkApp = new App({
+    context: {
+      '@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages': true,
+    },
+  });
+  const cdkStack = new Stack(cdkApp, 'MyTestStack');
+  Bundling.bundle(cdkStack, {
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: runtime,
+    architecture: Architecture.X86_64,
+  });
+
+  // Correctly bundles with esbuild
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        `esbuild --bundle "/asset-input/lib/handler.ts" --target=${target} --platform=node --outfile="/asset-output/index.js" --external:@aws-sdk/* --external:@smithy/*`,
+      ],
+    }),
+  });
+});
+
+test('esbuild bundling with bundleAwsSdk true with feature flag enabled using Node 18+', () => {
+  const cdkApp = new App({
+    context: {
+      '@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages': true,
+    },
+  });
+  const cdkStack = new Stack(cdkApp, 'MyTestStack');
+  Bundling.bundle(cdkStack, {
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    bundleAwsSDK: true,
+    runtime: Runtime.NODEJS_18_X,
+    architecture: Architecture.X86_64,
+  });
+
+  // Correctly bundles with esbuild
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        `esbuild --bundle "/asset-input/lib/handler.ts" --target=${STANDARD_TARGET} --platform=node --outfile="/asset-output/index.js"`,
+      ],
+    }),
+  });
+});
+
+test('esbuild bundling with feature flag enabled using Node Latest', () => {
+  const cdkApp = new App({
+    context: {
+      '@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages': true,
+    },
+  });
+  const cdkStack = new Stack(cdkApp, 'MyTestStack');
+  Bundling.bundle(cdkStack, {
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: Runtime.NODEJS_LATEST,
+    architecture: Architecture.X86_64,
+  });
+
+  // Correctly bundles with esbuild
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        `esbuild --bundle "/asset-input/lib/handler.ts" --target=${STANDARD_TARGET} --platform=node --outfile="/asset-output/index.js"`,
+      ],
+    }),
+  });
+});
+
+test('esbuild bundling with feature flag enabled using Node 16', () => {
+  const cdkApp = new App({
+    context: {
+      '@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages': true,
+    },
+  });
+  const cdkStack = new Stack(cdkApp, 'MyTestStack');
+  Bundling.bundle(cdkStack, {
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: Runtime.NODEJS_16_X,
+    architecture: Architecture.X86_64,
+  });
+
+  // Correctly bundles with esbuild
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        'esbuild --bundle "/asset-input/lib/handler.ts" --target=node16 --platform=node --outfile="/asset-output/index.js" --external:aws-sdk',
+      ],
+    }),
+  });
+});
+
 test('esbuild bundling without aws-sdk v3 when use greater than or equal Runtime.NODEJS_18_X', () => {
   Bundling.bundle(stack, {
     entry,

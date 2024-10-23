@@ -3,10 +3,12 @@ import { DescribeChangeSetOutput } from '@aws-cdk/cloudformation-diff';
 import { SSMPARAM_NO_INVALIDATE } from '@aws-cdk/cx-api';
 import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
+import { AssetManifest, FileManifestEntry } from 'cdk-assets';
 import { StackStatus } from './cloudformation/stack-status';
-import { makeBodyParameterAndUpload, TemplateBodyParameter } from './template-body-parameter';
+import { makeBodyParameter, TemplateBodyParameter } from './template-body-parameter';
 import { debug } from '../../logging';
 import { deserializeStructure } from '../../serialize';
+import { AssetManifestBuilder } from '../../util/asset-manifest-builder';
 import { SdkProvider } from '../aws-auth';
 import { Deployments } from '../deployments';
 
@@ -338,14 +340,40 @@ export async function createDiffChangeSet(options: PrepareChangeSetOptions): Pro
   return uploadBodyParameterAndCreateChangeSet(options);
 }
 
+/**
+ * Returns all file entries from an AssetManifestArtifact that look like templates.
+ *
+ * This is used in the `uploadBodyParameterAndCreateChangeSet` function to find
+ * all template asset files to build and publish.
+ *
+ * Returns a tuple of [AssetManifest, FileManifestEntry[]]
+ */
+function templatesFromAssetManifestArtifact(artifact: cxapi.AssetManifestArtifact): [AssetManifest, FileManifestEntry[]] {
+  const assets: (FileManifestEntry)[] = [];
+  const fileName = artifact.file;
+  const assetManifest = AssetManifest.fromFile(fileName);
+
+  assetManifest.entries.forEach(entry => {
+    if (entry.type === 'file') {
+      const source = (entry as FileManifestEntry).source;
+      if (source.path && (source.path.endsWith('.template.json'))) {
+        assets.push(entry as FileManifestEntry);
+      }
+    }
+  });
+  return [assetManifest, assets];
+}
+
 async function uploadBodyParameterAndCreateChangeSet(options: PrepareChangeSetOptions): Promise<DescribeChangeSetOutput | undefined> {
   try {
+    await uploadStackTemplateAssets(options.stack, options.deployments);
     const preparedSdk = (await options.deployments.prepareSdkWithDeployRole(options.stack));
-    const bodyParameter = await makeBodyParameterAndUpload(
+
+    const bodyParameter = await makeBodyParameter(
       options.stack,
       preparedSdk.resolvedEnvironment,
+      new AssetManifestBuilder(),
       preparedSdk.envResources,
-      options.sdkProvider,
       preparedSdk.stackSdk,
     );
     const cfn = preparedSdk.stackSdk.cloudFormation();
@@ -371,6 +399,33 @@ async function uploadBodyParameterAndCreateChangeSet(options: PrepareChangeSetOp
     options.stream.write('Could not create a change set, will base the diff on template differences (run again with -v to see the reason)\n');
 
     return undefined;
+  }
+}
+
+/**
+ * Uploads the assets that look like templates for this CloudFormation stack
+ *
+ * This is necessary for any CloudFormation call that needs the template, it may need
+ * to be uploaded to an S3 bucket first. We have to follow the instructions in the
+ * asset manifest, because technically that is the only place that knows about
+ * bucket and assumed roles and such.
+ */
+export async function uploadStackTemplateAssets(stack: cxapi.CloudFormationStackArtifact, deployments: Deployments) {
+  for (const artifact of stack.dependencies) {
+    // Skip artifact if it is not an Asset Manifest Artifact
+    if (!cxapi.AssetManifestArtifact.isAssetManifestArtifact(artifact)) {
+      continue;
+    }
+
+    const [assetManifest, file_entries] = templatesFromAssetManifestArtifact(artifact);
+    for (const entry of file_entries) {
+      await deployments.buildSingleAsset(artifact, assetManifest, entry, {
+        stack,
+      });
+      await deployments.publishSingleAsset(assetManifest, entry, {
+        stack,
+      });
+    }
   }
 }
 

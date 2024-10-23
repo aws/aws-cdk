@@ -458,6 +458,7 @@
       "Value": "test-efs-integ/FileSystem/AccessPoint"
      }
     ],
+    "ClientToken": "client-token",
     "FileSystemId": {
      "Ref": "FileSystem8A8E25C0"
     },

@@ -179,6 +179,7 @@
                       "given_name": "given_name",
                       "family_name": "family_name",
                       "email": "email",
+                      "email_verified": "email_verified",
                       "gender": "gender",
                       "names": "names"
                     },

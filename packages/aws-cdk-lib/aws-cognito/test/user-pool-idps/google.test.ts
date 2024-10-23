@@ -80,6 +80,7 @@ describe('UserPoolIdentityProvider', () => {
         attributeMapping: {
           givenName: ProviderAttribute.GOOGLE_NAME,
           address: ProviderAttribute.other('google-address'),
+          emailVerified: ProviderAttribute.GOOGLE_EMAIL_VERIFIED,
           custom: {
             customAttr1: ProviderAttribute.GOOGLE_EMAIL,
             customAttr2: ProviderAttribute.other('google-custom-attr'),

@@ -1,0 +1,47 @@
+{
+  "Conditions": {
+    "AutoReplaceHosts": {
+      "Fn::Equals": [
+        2,
+        2
+      ]
+    },
+    "SetMinInstancesInServiceToZero": {
+      "Fn::Equals": [
+        2,
+        2
+      ]
+    }
+  },
+  "Resources": {
+    "ASG": {
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "Properties": {
+        "MaxSize": 10,
+        "MinSize": 1
+      },
+      "UpdatePolicy": {
+        "AutoScalingRollingUpdate": {
+          "Fn::If": [
+            "AutoReplaceHosts",
+            {
+              "MinInstancesInService": {
+                "Fn::If": [
+                  "SetMinInstancesInServiceToZero",
+                  0,
+                  1
+                ]
+              },
+              "MaxBatchSize": 2,
+              "PauseTime": "PT5M",
+              "WaitOnResourceSignals": "true"
+            },
+            {
+              "Ref": "AWS::NoValue"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

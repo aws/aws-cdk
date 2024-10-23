@@ -1,0 +1,37 @@
+{
+  "Parameters": {
+    "MinInstances": {
+      "Type": "Number",
+      "Default": 1
+    },
+    "MaxBatchSize": {
+      "Type": "Number",
+      "Default": 1
+    },
+    "PauseTime": {
+      "Type": "String",
+      "Default": "PT5M"
+    },
+    "WaitOnResourceSignals": {
+      "Type": "Boolean",
+      "Default": true
+    }
+  },
+  "Resources": {
+    "ASG": {
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "Properties": {
+        "MinSize": "1",
+        "MaxSize": "10"
+      },
+      "UpdatePolicy": {
+        "AutoScalingRollingUpdate": {
+          "MinInstancesInService": { "Ref": "MinInstances" },
+          "MaxBatchSize": { "Ref": "MaxBatchSize" },
+          "PauseTime": { "Ref": "PauseTime" },
+          "WaitOnResourceSignals": { "Ref": "WaitOnResourceSignals" }
+        }
+      }
+    }
+  }
+}

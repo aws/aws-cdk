@@ -73,10 +73,10 @@ export interface ScheduledTaskBaseProps {
   readonly securityGroups?: ISecurityGroup[];
 
   /**
-    * Specifies whether to propagate the tags from the task definition to the task. If no value is specified, the tags are not propagated.
-    *
-    * @default - Tags will not be propagated
-    */
+   * Specifies whether to propagate the tags from the task definition to the task. If no value is specified, the tags are not propagated.
+   *
+   * @default - Tags will not be propagated
+   */
   readonly propagateTags?: PropagatedTagSource;
 
   /**
@@ -168,10 +168,10 @@ export abstract class ScheduledTaskBase extends Construct {
   private readonly _securityGroups?: ISecurityGroup[];
 
   /**
-    * Specifies whether to propagate the tags from the task definition to the task. If no value is specified, the tags are not propagated.
-    *
-    * @default - Tags will not be propagated
-    */
+   * Specifies whether to propagate the tags from the task definition to the task. If no value is specified, the tags are not propagated.
+   *
+   * @default - Tags will not be propagated
+   */
   public readonly propagateTags?: PropagatedTagSource;
 
   /**

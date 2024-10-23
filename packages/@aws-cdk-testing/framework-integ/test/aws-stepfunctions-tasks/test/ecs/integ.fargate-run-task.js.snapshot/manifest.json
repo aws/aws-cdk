@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "36.0.5",
   "artifacts": {
     "aws-sfn-tasks-ecs-fargate-run-task.assets": {
       "type": "cdk:asset-manifest",

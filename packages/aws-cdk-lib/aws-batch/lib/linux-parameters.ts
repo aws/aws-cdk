@@ -32,18 +32,18 @@ export interface LinuxParametersProps {
   readonly maxSwap?: cdk.Size;
 
   /**
-    * This allows you to tune a container's memory swappiness behavior. This parameter
-    * maps to the --memory-swappiness option to docker run. The swappiness relates
-    * to the kernel's tendency to swap memory. A value of 0 will cause swapping to
-    * not happen unless absolutely necessary. A value of 100 will cause pages to
-    * be swapped very aggressively.
-    *
-    * This parameter is only supported when you are using the EC2 launch type.
-    * Accepted values are whole numbers between 0 and 100. If a value is not
-    * specified for maxSwap then this parameter is ignored.
-    *
-    * @default 60
-    */
+   * This allows you to tune a container's memory swappiness behavior. This parameter
+   * maps to the --memory-swappiness option to docker run. The swappiness relates
+   * to the kernel's tendency to swap memory. A value of 0 will cause swapping to
+   * not happen unless absolutely necessary. A value of 100 will cause pages to
+   * be swapped very aggressively.
+   *
+   * This parameter is only supported when you are using the EC2 launch type.
+   * Accepted values are whole numbers between 0 and 100. If a value is not
+   * specified for maxSwap then this parameter is ignored.
+   *
+   * @default 60
+   */
   readonly swappiness?: number;
 }
 

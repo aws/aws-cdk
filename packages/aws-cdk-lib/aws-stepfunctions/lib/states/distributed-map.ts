@@ -170,6 +170,10 @@ export class DistributedMap extends MapBase implements INextable {
       errors.push(...this.itemBatcher.validateItemBatcher());
     }
 
+    if (this.itemReader) {
+      errors.push(...this.itemReader.validateItemReader());
+    }
+
     if (this.label) {
       if (this.label.length > 40) {
         errors.push('label must be 40 characters or less');

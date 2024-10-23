@@ -10,18 +10,18 @@ const bucket = new s3.Bucket(this, 'MyFirstBucket');
 
 `Bucket` constructs expose the following deploy-time attributes:
 
-- `bucketArn` - the ARN of the bucket (i.e. `arn:aws:s3:::bucket_name`)
-- `bucketName` - the name of the bucket (i.e. `bucket_name`)
+- `bucketArn` - the ARN of the bucket (i.e. `arn:aws:s3:::amzn-s3-demo-bucket`)
+- `bucketName` - the name of the bucket (i.e. `amzn-s3-demo-bucket`)
 - `bucketWebsiteUrl` - the Website URL of the bucket (i.e.
-  `http://bucket_name.s3-website-us-west-1.amazonaws.com`)
-- `bucketDomainName` - the URL of the bucket (i.e. `bucket_name.s3.amazonaws.com`)
+  `http://amzn-s3-demo-bucket.s3-website-us-west-1.amazonaws.com`)
+- `bucketDomainName` - the URL of the bucket (i.e. `amzn-s3-demo-bucket.s3.amazonaws.com`)
 - `bucketDualStackDomainName` - the dual-stack URL of the bucket (i.e.
-  `bucket_name.s3.dualstack.eu-west-1.amazonaws.com`)
+  `amzn-s3-demo-bucket.s3.dualstack.eu-west-1.amazonaws.com`)
 - `bucketRegionalDomainName` - the regional URL of the bucket (i.e.
-  `bucket_name.s3.eu-west-1.amazonaws.com`)
+  `amzn-s3-demo-bucket.s3.eu-west-1.amazonaws.com`)
 - `arnForObjects(pattern)` - the ARN of an object or objects within the bucket (i.e.
-  `arn:aws:s3:::bucket_name/exampleobject.png` or
-  `arn:aws:s3:::bucket_name/Development/*`)
+  `arn:aws:s3:::amzn-s3-demo-bucket/exampleobject.png` or
+  `arn:aws:s3:::amzn-s3-demo-bucket/Development/*`)
 - `urlForObject(key)` - the HTTP URL of an object within the bucket (i.e.
   `https://s3.cn-north-1.amazonaws.com.cn/china-bucket/mykey`)
 - `virtualHostedUrlForObject(key)` - the virtual-hosted style HTTP URL of an object
@@ -103,7 +103,7 @@ If you try to add a policy statement to an existing bucket, this method will
 not do anything:
 
 ```ts
-const bucket = s3.Bucket.fromBucketName(this, 'existingBucket', 'bucket-name');
+const bucket = s3.Bucket.fromBucketName(this, 'existingBucket', 'amzn-s3-demo-bucket');
 
 // No policy statement will be added to the resource
 const result = bucket.addToResourcePolicy(
@@ -225,14 +225,14 @@ To import an existing bucket into your CDK application, use the `Bucket.fromBuck
 factory method. This method accepts `BucketAttributes` which describes the properties of an already
 existing bucket:
 
-Note that this method allows importing buckets with legacy names containing underscores (`_`), which was
-permitted for buckets created before March 1, 2018. For buckets created after this date, underscores
+Note that this method allows importing buckets with legacy names containing uppercase letters (`A-Z`) or underscores (`_`), which were
+permitted for buckets created before March 1, 2018. For buckets created after this date, uppercase letters and underscores
 are not allowed in the bucket name.
 
 ```ts
 declare const myLambda: lambda.Function;
 const bucket = s3.Bucket.fromBucketAttributes(this, 'ImportedBucket', {
-  bucketArn: 'arn:aws:s3:::my-bucket',
+  bucketArn: 'arn:aws:s3:::amzn-s3-demo-bucket',
 });
 
 // now you can just call methods on the bucket
@@ -246,8 +246,8 @@ Alternatively, short-hand factories are available as `Bucket.fromBucketName` and
 name or ARN respectively:
 
 ```ts
-const byName = s3.Bucket.fromBucketName(this, 'BucketByName', 'my-bucket');
-const byArn = s3.Bucket.fromBucketArn(this, 'BucketByArn', 'arn:aws:s3:::my-bucket');
+const byName = s3.Bucket.fromBucketName(this, 'BucketByName', 'amzn-s3-demo-bucket');
+const byArn = s3.Bucket.fromBucketArn(this, 'BucketByArn', 'arn:aws:s3:::amzn-s3-demo-bucket');
 ```
 
 The bucket's region defaults to the current stack's region, but can also be explicitly set in cases where one of the bucket's
@@ -255,10 +255,10 @@ regional properties needs to contain the correct values.
 
 ```ts
 const myCrossRegionBucket = s3.Bucket.fromBucketAttributes(this, 'CrossRegionImport', {
-  bucketArn: 'arn:aws:s3:::my-bucket',
+  bucketArn: 'arn:aws:s3:::amzn-s3-demo-bucket',
   region: 'us-east-1',
 });
-// myCrossRegionBucket.bucketRegionalDomainName === 'my-bucket.s3.us-east-1.amazonaws.com'
+// myCrossRegionBucket.bucketRegionalDomainName === 'amzn-s3-demo-bucket.s3.us-east-1.amazonaws.com'
 ```
 
 ## Bucket Notifications
@@ -302,7 +302,7 @@ Adding notifications on existing buckets:
 ```ts
 declare const topic: sns.Topic;
 const bucket = s3.Bucket.fromBucketAttributes(this, 'ImportedBucket', {
-  bucketArn: 'arn:aws:s3:::my-bucket',
+  bucketArn: 'arn:aws:s3:::amzn-s3-demo-bucket',
 });
 bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.SnsDestination(topic));
 ```
@@ -500,7 +500,7 @@ policy resource using the L1 Construct. Although the mixing of L1 and L2 Constru
 recommended, there are no mechanisms in place to prevent users from doing this at the moment.
 
 ```ts
-const bucketName = "my-favorite-bucket-name";
+const bucketName = "amzn-s3-demo-bucket";
 const accessLogsBucket = new s3.Bucket(this, 'AccessLogsBucket', {
   objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
   bucketName,
@@ -566,7 +566,7 @@ Alternatively, users can use the L2 Bucket Policy Construct
 `BucketPolicy.fromCfnBucketPolicy` to wrap around `CfnBucketPolicy` Construct. This will allow the subsequent bucket policy generated by `serverAccessLogsBucket` usage to append to the existing bucket policy instead of overwriting.
 
 ```ts
-const bucketName = "my-favorite-bucket-name";
+const bucketName = "amzn-s3-demo-bucket";
 const accessLogsBucket = new s3.Bucket(this, 'AccessLogsBucket', {
   objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
   bucketName,
@@ -645,7 +645,7 @@ However, if you use an imported bucket (i.e `Bucket.fromXXX()`), you'll have to 
       "Effect": "Allow",
       "Principal": { "Service": "s3.amazonaws.com" },
       "Action": "s3:PutObject",
-      "Resource": ["arn:aws:s3:::destinationBucket/*"]
+      "Resource": ["arn:aws:s3:::amzn-s3-demo-destination-bucket/*"]
     }
   ]
 }
@@ -857,6 +857,40 @@ const bucket = new s3.Bucket(this, 'MyBucket', {
           transitionDate: new Date(),
         },
       ],
+    },
+  ],
+});
+```
+
+To indicate which default minimum object size behavior is applied to the lifecycle configuration, use the
+`transitionDefaultMinimumObjectSize` property.
+
+The default value of the property before September 2024 is `TransitionDefaultMinimumObjectSize.VARIES_BY_STORAGE_CLASS`
+that allows objects smaller than 128 KB to be transitioned only to the S3 Glacier and S3 Glacier Deep Archive storage classes,
+otherwise `TransitionDefaultMinimumObjectSize.ALL_STORAGE_CLASSES_128_K` that prevents objects smaller than 128 KB from being
+transitioned to any storage class.
+
+To customize the minimum object size for any transition you
+can add a filter that specifies a custom `objectSizeGreaterThan` or `objectSizeLessThan` for `lifecycleRules`
+property. Custom filters always take precedence over the default transition behavior.
+
+```ts
+new s3.Bucket(this, 'MyBucket', {
+  transitionDefaultMinimumObjectSize: s3.TransitionDefaultMinimumObjectSize.VARIES_BY_STORAGE_CLASS,
+  lifecycleRules: [
+    {
+      transitions: [{
+        storageClass: s3.StorageClass.DEEP_ARCHIVE,
+        transitionAfter: Duration.days(30),
+      }],
+    },
+    {
+      objectSizeLessThan: 300000,
+      objectSizeGreaterThan: 200000,
+      transitions: [{
+        storageClass: s3.StorageClass.ONE_ZONE_INFREQUENT_ACCESS,
+        transitionAfter: Duration.days(30),
+      }],
     },
   ],
 });

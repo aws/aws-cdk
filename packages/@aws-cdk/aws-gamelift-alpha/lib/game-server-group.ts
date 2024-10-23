@@ -319,10 +319,10 @@ export interface GameServerGroupProps {
   readonly deleteOption?: DeleteOption;
 
   /**
-    * Indicates how GameLift FleetIQ balances the use of Spot Instances and On-Demand Instances in the game server group.
-    *
-    * @default SPOT_PREFERRED
-    */
+   * Indicates how GameLift FleetIQ balances the use of Spot Instances and On-Demand Instances in the game server group.
+   *
+   * @default SPOT_PREFERRED
+   */
   readonly balancingStrategy?: BalancingStrategy;
 }
 

@@ -23,10 +23,10 @@ export class WebSocketApiKeySelectionExpression {
   public static readonly HEADER_X_API_KEY = new WebSocketApiKeySelectionExpression('$request.header.x-api-key');
 
   /**
-    * The API will extract the key value from the `usageIdentifierKey` attribute in the `context` map,
-    * returned by the Lambda Authorizer.
-    * See https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-lambda-authorizer-output.html
-    */
+   * The API will extract the key value from the `usageIdentifierKey` attribute in the `context` map,
+   * returned by the Lambda Authorizer.
+   * See https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-lambda-authorizer-output.html
+   */
   public static readonly AUTHORIZER_USAGE_IDENTIFIER_KEY = new WebSocketApiKeySelectionExpression('$context.authorizer.usageIdentifierKey');
 
   /**

@@ -7,11 +7,13 @@ import * as autoscaling from '../../aws-autoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
+import { PolicyStatement, ServicePrincipal } from '../../aws-iam';
 import * as kms from '../../aws-kms';
+import { IKey } from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cloudmap from '../../aws-servicediscovery';
-import { Duration, IResource, Resource, Stack, Aspects, ArnFormat, IAspect, Token, Names } from '../../core';
+import { Aws, Duration, IResource, Resource, Stack, Aspects, ArnFormat, IAspect, Token, Names } from '../../core';
 
 const CLUSTER_SYMBOL = Symbol.for('@aws-cdk/aws-ecs/lib/cluster.Cluster');
 
@@ -76,6 +78,13 @@ export interface ClusterProps {
    * @default - no configuration will be provided.
    */
   readonly executeCommandConfiguration?: ExecuteCommandConfiguration;
+
+  /**
+   * Encryption configuration for ECS Managed storage
+   *
+   * @default - no encryption will be applied.
+   */
+  readonly managedStorageConfiguration?: ManagedStorageConfiguration;
 }
 
 /**
@@ -98,7 +107,7 @@ export enum MachineImageType {
 export class Cluster extends Resource implements ICluster {
 
   /**
-    * Return whether the given object is a Cluster
+   * Return whether the given object is a Cluster
    */
   public static isCluster(x: any) : x is Cluster {
     return x !== null && typeof(x) === 'object' && CLUSTER_SYMBOL in x;
@@ -197,6 +206,12 @@ export class Cluster extends Resource implements ICluster {
   private _executeCommandConfiguration?: ExecuteCommandConfiguration;
 
   /**
+   * The configuration for ECS managed Storage
+   * @private
+   */
+  private _managedStorageConfiguration?: ManagedStorageConfiguration;
+
+  /**
    * CfnCluster instance
    */
   private _cfnCluster: CfnCluster;
@@ -213,10 +228,13 @@ export class Cluster extends Resource implements ICluster {
      * clusterSettings needs to be undefined if containerInsights is not explicitly set in order to allow any
      * containerInsights settings on the account to apply.  See:
      * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-cluster-clustersettings.html#cfn-ecs-cluster-clustersettings-value
-    */
+     */
     let clusterSettings = undefined;
     if (props.containerInsights !== undefined) {
-      clusterSettings = [{ name: 'containerInsights', value: props.containerInsights ? ContainerInsights.ENABLED : ContainerInsights.DISABLED }];
+      clusterSettings = [{
+        name: 'containerInsights',
+        value: props.containerInsights ? ContainerInsights.ENABLED : ContainerInsights.DISABLED,
+      }];
     }
 
     this._capacityProviderNames = props.capacityProviders ?? [];
@@ -232,10 +250,12 @@ export class Cluster extends Resource implements ICluster {
       this._executeCommandConfiguration = props.executeCommandConfiguration;
     }
 
+    this._managedStorageConfiguration = props.managedStorageConfiguration;
+
     this._cfnCluster = new CfnCluster(this, 'Resource', {
       clusterName: this.physicalName,
       clusterSettings,
-      configuration: this._executeCommandConfiguration && this.renderExecuteCommandConfiguration(),
+      configuration: this.renderClusterConfiguration(),
     });
 
     this.clusterArn = this.getResourceArnAttribute(this._cfnCluster.attrArn, {
@@ -255,12 +275,50 @@ export class Cluster extends Resource implements ICluster {
       ? this.addCapacity('DefaultAutoScalingGroup', props.capacity)
       : undefined;
 
+    this.updateKeyPolicyForEphemeralStorageConfiguration(props.clusterName);
+
     // Only create cluster capacity provider associations if there are any EC2
     // capacity providers. Ordinarily we'd just add the construct to the tree
     // since it's harmless, but we'd prefer not to add unexpected new
     // resources to the stack which could surprise users working with
     // brown-field CDK apps and stacks.
     Aspects.of(this).add(new MaybeCreateCapacityProviderAssociations(this, id));
+  }
+
+  /**
+   * Applies policy to the target key for encryption.
+   *
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-create-storage-key.html
+   */
+  private updateKeyPolicyForEphemeralStorageConfiguration(clusterName?: string) {
+    const key = this._managedStorageConfiguration?.fargateEphemeralStorageKmsKey;
+    if (!key) return;
+    const clusterConditions = {
+      StringEquals: {
+        'kms:EncryptionContext:aws:ecs:clusterAccount': [Aws.ACCOUNT_ID],
+        ...(clusterName && { 'kms:EncryptionContext:aws:ecs:clusterName': [clusterName] }),
+      },
+    };
+
+    key.addToResourcePolicy(new PolicyStatement({
+      sid: 'Allow generate data key access for Fargate tasks.',
+      principals: [new ServicePrincipal('fargate.amazonaws.com')],
+      resources: ['*'],
+      actions: ['kms:GenerateDataKeyWithoutPlaintext'],
+      conditions: clusterConditions,
+    }));
+    key.addToResourcePolicy(new PolicyStatement({
+      sid: 'Allow grant creation permission for Fargate tasks.',
+      principals: [new ServicePrincipal('fargate.amazonaws.com')],
+      resources: ['*'],
+      actions: ['kms:CreateGrant'],
+      conditions: {
+        ...clusterConditions,
+        'ForAllValues:StringEquals': {
+          'kms:GrantOperations': ['Decrypt'],
+        },
+      },
+    }));
   }
 
   /**
@@ -310,12 +368,16 @@ export class Cluster extends Resource implements ICluster {
     this._defaultCapacityProviderStrategy = defaultCapacityProviderStrategy;
   }
 
-  private renderExecuteCommandConfiguration(): CfnCluster.ClusterConfigurationProperty {
+  private renderClusterConfiguration(): CfnCluster.ClusterConfigurationProperty | undefined {
+    if (!this._executeCommandConfiguration && !this._managedStorageConfiguration) return undefined;
     return {
-      executeCommandConfiguration: {
-        kmsKeyId: this._executeCommandConfiguration?.kmsKey?.keyArn,
-        logConfiguration: this._executeCommandConfiguration?.logConfiguration && this.renderExecuteCommandLogConfiguration(),
-        logging: this._executeCommandConfiguration?.logging,
+      executeCommandConfiguration: this._executeCommandConfiguration && {
+        kmsKeyId: this._executeCommandConfiguration.kmsKey?.keyArn,
+        logConfiguration: this._executeCommandConfiguration.logConfiguration && this.renderExecuteCommandLogConfiguration(),
+        logging: this._executeCommandConfiguration.logging,
+      },
+      managedStorageConfiguration: this._managedStorageConfiguration && {
+        fargateEphemeralStorageKmsKeyId: this._managedStorageConfiguration.fargateEphemeralStorageKmsKey?.keyId,
       },
     };
   }
@@ -452,7 +514,7 @@ export class Cluster extends Resource implements ICluster {
       ...options,
       machineImageType: provider.machineImageType,
       // Don't enable the instance-draining lifecycle hook if managed termination protection or managed draining is enabled
-      taskDrainTime: (provider.enableManagedTerminationProtection || provider.enableManagedDraining)? Duration.seconds(0) : options.taskDrainTime,
+      taskDrainTime: (provider.enableManagedTerminationProtection || provider.enableManagedDraining) ? Duration.seconds(0) : options.taskDrainTime,
       canContainersAccessInstanceRole: options.canContainersAccessInstanceRole ?? provider.canContainersAccessInstanceRole,
     });
 
@@ -602,12 +664,12 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
-  * Grants an ECS Task Protection API permission to the specified grantee.
-  * This method provides a streamlined way to assign the 'ecs:UpdateTaskProtection'
-  * permission, enabling the grantee to manage task protection in the ECS cluster.
-  *
-  * @param grantee The entity (e.g., IAM role or user) to grant the permissions to.
-  */
+   * Grants an ECS Task Protection API permission to the specified grantee.
+   * This method provides a streamlined way to assign the 'ecs:UpdateTaskProtection'
+   * permission, enabling the grantee to manage task protection in the ECS cluster.
+   *
+   * @param grantee The entity (e.g., IAM role or user) to grant the permissions to.
+   */
   public grantTaskProtection(grantee: iam.IGrantable): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee,
@@ -1068,7 +1130,7 @@ export interface CapacityProviderStrategy {
   /**
    * The weight value designates the relative percentage of the total number of tasks launched that should use the
    * specified
-capacity provider. The weight value is taken into consideration after the base value, if defined, is satisfied.
+   capacity provider. The weight value is taken into consideration after the base value, if defined, is satisfied.
    *
    * @default - 0
    */
@@ -1252,6 +1314,22 @@ export interface AsgCapacityProviderProps extends AddAutoScalingGroupCapacityOpt
    * @default 300
    */
   readonly instanceWarmupPeriod?: number;
+}
+
+/**
+ * Kms Keys for encryption ECS managed storage
+ */
+export interface ManagedStorageConfiguration {
+
+  /**
+   * KMS Key used to encrypt ECS Fargate ephemeral Storage.
+   * The configured KMS Key's policy will be modified to allow ECS to use the Key to encrypt the ephemeral Storage for this cluster.
+   *
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-storage-encryption.html
+   *
+   * @default No encryption will be applied
+   */
+  readonly fargateEphemeralStorageKmsKey?: IKey;
 }
 
 /**

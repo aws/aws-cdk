@@ -5,7 +5,7 @@ import * as uuid from 'uuid';
 import { ISDK, SdkProvider } from './aws-auth';
 import { EnvironmentResources } from './environment-resources';
 import { CfnEvaluationException } from './evaluate-cloudformation-template';
-import { HotswapMode, ICON } from './hotswap/common';
+import { HotswapMode, HotswapPropertyOverrides, ICON } from './hotswap/common';
 import { tryHotswapDeployment } from './hotswap-deployments';
 import { addMetadataAssetsToManifest } from '../assets';
 import { Tag } from '../cdk-toolkit';
@@ -17,6 +17,7 @@ import {
 import { StackActivityMonitor, StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
 import { TemplateBodyParameter, makeBodyParameter } from './util/template-body-parameter';
 import { AssetManifestBuilder } from '../util/asset-manifest-builder';
+import { determineAllowCrossAccountAssetPublishing } from './util/checks';
 import { publishAssets } from '../util/asset-publishing';
 
 export interface DeployStackResult {
@@ -173,6 +174,11 @@ export interface DeployStackOptions {
   readonly hotswap?: HotswapMode;
 
   /**
+   * Extra properties that configure hotswap behavior
+   */
+  readonly hotswapPropertyOverrides?: HotswapPropertyOverrides;
+
+  /**
    * The extra string to append to the User-Agent header when performing AWS SDK calls.
    *
    * @default - nothing extra is appended to the User-Agent header
@@ -263,6 +269,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     : templateParams.supplyAll(finalParameterValues);
 
   const hotswapMode = options.hotswap ?? HotswapMode.FULL_DEPLOYMENT;
+  const hotswapPropertyOverrides = options.hotswapPropertyOverrides ?? new HotswapPropertyOverrides();
 
   if (await canSkipDeploy(options, cloudFormationStack, stackParams.hasChanges(cloudFormationStack.parameters))) {
     debug(`${deployName}: skipping deployment (use --force to override)`);
@@ -287,15 +294,22 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     options.envResources,
     options.sdk,
     options.overrideTemplate);
+  let bootstrapStackName: string | undefined;
+  try {
+    bootstrapStackName = (await options.envResources.lookupToolkit()).stackName;
+  } catch (e) {
+    debug(`Could not determine the bootstrap stack name: ${e}`);
+  }
   await publishAssets(legacyAssets.toManifest(stackArtifact.assembly.directory), options.sdkProvider, stackEnv, {
     parallel: options.assetParallelism,
+    allowCrossAccount: await determineAllowCrossAccountAssetPublishing(options.sdk, bootstrapStackName),
   });
 
   if (hotswapMode !== HotswapMode.FULL_DEPLOYMENT) {
     // attempt to short-circuit the deployment if possible
     try {
       const hotswapDeploymentResult = await tryHotswapDeployment(
-        options.sdkProvider, stackParams.values, cloudFormationStack, stackArtifact, hotswapMode,
+        options.sdkProvider, stackParams.values, cloudFormationStack, stackArtifact, hotswapMode, hotswapPropertyOverrides,
       );
       if (hotswapDeploymentResult) {
         return hotswapDeploymentResult;

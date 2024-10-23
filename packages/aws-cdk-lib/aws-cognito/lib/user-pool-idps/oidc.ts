@@ -72,17 +72,17 @@ export interface OidcEndpoints {
   readonly authorization: string;
 
   /**
-    * Token endpoint
-    */
+   * Token endpoint
+   */
   readonly token: string;
 
   /**
-    * UserInfo endpoint
-    */
+   * UserInfo endpoint
+   */
   readonly userInfo: string;
 
   /**
-    * Jwks_uri endpoint
+   * Jwks_uri endpoint
    */
   readonly jwksUri: string;
 }

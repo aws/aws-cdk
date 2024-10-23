@@ -25,6 +25,21 @@ class MyNestedStack extends cfn.NestedStack {
   }
 }
 
+class DoublyNestedStack extends cfn.NestedStack {
+  constructor(scope, id) {
+    super(scope, id);
+
+    new MyNestedStack(this, 'Nestor');
+  }
+}
+
+class StackWithDoublyNestedStack extends Stack {
+  constructor(scope, id) {
+    super(scope, id);
+    new DoublyNestedStack(this, 'DoubleDouble');
+  }
+}
+
 class StackWithNestedStackUsingParameters extends Stack {
   constructor(scope, id) {
     super(scope, id);
@@ -47,3 +62,4 @@ class MyNestedStackUsingParameters extends cfn.NestedStack {
 
 exports.StackWithNestedStack = StackWithNestedStack;
 exports.StackWithNestedStackUsingParameters = StackWithNestedStackUsingParameters;
+exports.StackWithDoublyNestedStack = StackWithDoublyNestedStack;

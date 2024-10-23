@@ -375,6 +375,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly DEADLINE_CLOUD_SCHEDULING = new InterfaceVpcEndpointAwsService('deadline.scheduling');
   public static readonly DEVOPS_GURU = new InterfaceVpcEndpointAwsService('devops-guru');
   public static readonly DIRECTORY_SERVICE = new InterfaceVpcEndpointAwsService('ds');
+  public static readonly DYNAMODB = new InterfaceVpcEndpointAwsService('dynamodb');
   public static readonly EBS_DIRECT = new InterfaceVpcEndpointAwsService('ebs');
   public static readonly EC2 = new InterfaceVpcEndpointAwsService('ec2');
   public static readonly EC2_MESSAGES = new InterfaceVpcEndpointAwsService('ec2messages');
@@ -449,6 +450,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly IOT_SITEWISE_DATA = new InterfaceVpcEndpointAwsService('iotsitewise.data');
   public static readonly IOT_TWINMAKER_API = new InterfaceVpcEndpointAwsService('iottwinmaker.api');
   public static readonly IOT_TWINMAKER_DATA = new InterfaceVpcEndpointAwsService('iottwinmaker.data');
+  public static readonly KAFKA = new InterfaceVpcEndpointAwsService('kafka');
+  public static readonly KAFKA_FIPS = new InterfaceVpcEndpointAwsService('kafka-fips');
   public static readonly KENDRA = new InterfaceVpcEndpointAwsService('kendra');
   public static readonly KENDRA_RANKING = new InterfaceVpcEndpointAwsService('kendra-ranking', 'aws.api');
   public static readonly KEYSPACES = new InterfaceVpcEndpointAwsService('cassandra', '', 9142);
@@ -548,6 +551,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly S3_OUTPOSTS = new InterfaceVpcEndpointAwsService('s3-outposts');
   public static readonly S3_MULTI_REGION_ACCESS_POINTS = new InterfaceVpcEndpointAwsService('s3-global.accesspoint', 'com.amazonaws', undefined, { global: true });
   public static readonly SAGEMAKER_API = new InterfaceVpcEndpointAwsService('sagemaker.api');
+  public static readonly SAGEMAKER_EXPERIMENTS = new InterfaceVpcEndpointAwsService('experiments', 'aws.sagemaker');
   public static readonly SAGEMAKER_FEATURESTORE_RUNTIME = new InterfaceVpcEndpointAwsService('sagemaker.featurestore-runtime');
   public static readonly SAGEMAKER_GEOSPATIAL = new InterfaceVpcEndpointAwsService('sagemaker-geospatial');
   public static readonly SAGEMAKER_METRICS = new InterfaceVpcEndpointAwsService('sagemaker.metrics');

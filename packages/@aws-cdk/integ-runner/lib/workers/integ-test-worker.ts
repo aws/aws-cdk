@@ -155,6 +155,8 @@ export async function runIntegrationTestsInParallel(
   }
 
   const workers = accountWorkers.map((worker) => runTest(worker));
+  // Workers are their own concurrency limits
+  // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
   await Promise.all(workers);
   return results;
 }

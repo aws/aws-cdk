@@ -249,7 +249,7 @@ describe('customizeRoles', () => {
     // THEN
     expect(() => {
       role.applyRemovalPolicy(RemovalPolicy.DESTROY);
-    }).toThrow(/Cannot apply RemovalPolicy/);
+    }).not.toThrow(/Cannot apply RemovalPolicy/);
     expect(() => {
       new CfnResource(stack, 'MyResource2', {
         type: 'AWS::Custom',

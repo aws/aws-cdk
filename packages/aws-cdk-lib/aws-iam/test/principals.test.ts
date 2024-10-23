@@ -471,3 +471,51 @@ test('Can enable session tags with conditions (order of calls is irrelevant)', (
     },
   }, 2);
 });
+
+test('Can use custom service principle name to create servicePrinciple', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new iam.Role(stack, 'Role', {
+    assumedBy: iam.ServicePrincipal.fromStaticServicePrincipleName('elasticmapreduce.amazonaws.com.cn'),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+    AssumeRolePolicyDocument: {
+      Statement: [
+        {
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+          Principal: { Service: 'elasticmapreduce.amazonaws.com.cn' },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});
+
+test('ServicePrinciple construct by default reset the principle name to the default format', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new iam.Role(stack, 'Role', {
+    assumedBy: new iam.ServicePrincipal('elasticmapreduce.amazonaws.com.cn'),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+    AssumeRolePolicyDocument: {
+      Statement: [
+        {
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+          Principal: { Service: 'elasticmapreduce.amazonaws.com' },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});

@@ -1,24 +1,24 @@
 # Amazon Cognito Identity Pool Construct Library
-
-> **Identity Pools are in a separate module while the API is being stabilized. Once we stabilize the module, they will**
-**be included into the stable [aws-cognito](../aws-cognito) library. Please provide feedback on this experience by**
-**creating an [issue here](https://github.com/aws/aws-cdk/issues/new/choose)**
-
 <!--BEGIN STABILITY BANNER-->
 
 ---
 
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
+![cdk-constructs: Developer Preview](https://img.shields.io/badge/cdk--constructs-developer--preview-informational.svg?style=for-the-badge)
 
-> The APIs of higher level constructs in this module are experimental and under active development.
-> They are subject to non-backward compatible changes or removal in any future version. These are
-> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
-> announced in the release notes. This means that while you may use them, you may need to update
-> your source code when upgrading to a newer version of this package.
+> The APIs of higher level constructs in this module are in **developer preview** before they
+> become stable. We will only make breaking changes to address unforeseen API issues. Therefore,
+> these APIs are not subject to [Semantic Versioning](https://semver.org/), and breaking changes
+> will be announced in release notes. This means that while you may use them, you may need to
+> update your source code when upgrading to a newer version of this package.
 
 ---
 
 <!--END STABILITY BANNER-->
+
+
+> **Identity Pools are in a separate module while the API is being stabilized. Once we stabilize the module, they will**
+**be included into the stable [aws-cognito](../aws-cognito) library. Please provide feedback on this experience by**
+**creating an [issue here](https://github.com/aws/aws-cdk/issues/new/choose)**
 
 [Amazon Cognito Identity Pools](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-identity.html) enable you to grant your users access to other AWS services.
 
@@ -74,7 +74,8 @@ unauthenticated (guest) roles applied to the identity pool:
 new IdentityPool(this, 'myIdentityPool');
 ```
 
-By default, both the authenticated and unauthenticated roles will have no permissions attached. Grant permissions 
+By default, both the authenticated and unauthenticated roles will have no permissions attached. When granting permissions,
+you should ensure that you are granting the least privileged permissions required for your use case. Grant permissions 
 to roles using the public `authenticatedRole` and `unauthenticatedRole` properties: 
 
 ```ts
@@ -88,11 +89,11 @@ table.grantReadWriteData(identityPool.authenticatedRole);
 // Grant permissions to unauthenticated guest users
 table.grantReadData(identityPool.unauthenticatedRole);
 
-//Or add policy statements straight to the role
+// Or add policy statements straight to the role
 identityPool.authenticatedRole.addToPrincipalPolicy(new iam.PolicyStatement({
   effect: iam.Effect.ALLOW,
-  actions: ['dynamodb:*'],
-  resources: ['*'],
+  actions: ['dynamodb:UpdateItem'],
+  resources: [table.tableArn],
 }));
 ```
 
@@ -253,7 +254,8 @@ new IdentityPool(this, 'myidentitypool', {
 
 In addition to setting default roles for authenticated and unauthenticated users, identity pools can also be used to  
 define rules to choose the role for each user based on claims in the user's ID token by using Role Mapping. When using  
-role mapping, it's important to be aware of some of the permissions the role will need. An in depth  
+role mapping, it's important to be aware of some of the permissions the role will need, and that the least privileged
+roles necessary are given for your specific use case. An in depth  
 review of roles and role mapping can be found [here](https://docs.aws.amazon.com/cognito/latest/developerguide/role-based-access-control.html).
 
 Using a [token-based approach](https://docs.aws.amazon.com/cognito/latest/developerguide/role-based-access-control.html#using-tokens-to-assign-roles-to-users) to role mapping will allow mapped roles to be passed through the `cognito:roles` or  

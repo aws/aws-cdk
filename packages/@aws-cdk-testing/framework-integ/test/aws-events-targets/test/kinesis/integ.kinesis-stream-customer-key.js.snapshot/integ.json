@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "KinesisKms/DefaultTest": {
+      "stacks": [
+        "aws-cdk-kinesis-event-target"
+      ],
+      "assertionStack": "KinesisKms/DefaultTest/DeployAssert",
+      "assertionStackName": "KinesisKmsDefaultTestDeployAssertF9D5974E"
+    }
+  }
+}

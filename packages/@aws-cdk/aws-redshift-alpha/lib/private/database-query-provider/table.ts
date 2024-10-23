@@ -210,6 +210,8 @@ async function updateTable(
     alterationStatements.push(`COMMENT ON TABLE ${tableName} IS ${newComment ? `'${newComment}'` : 'NULL'}`);
   }
 
+  // Limited by human input
+  // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
   await Promise.all(alterationStatements.map(statement => executeStatement(statement, tableAndClusterProps)));
 
   if (isTableV2) {

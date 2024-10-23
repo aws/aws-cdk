@@ -306,3 +306,50 @@ import software.amazon.awscdk.aws_apigatewayv2_authorizers.*;
 // If you want to import a specific construct
 import software.amazon.awscdk.aws_apigatewayv2_authorizers.WebSocketIamAuthorizer;
 ```
+
+## Export HTTP Authorizer Id
+You can retrieve the authorizer's id once it has been bound to a route to export the value.
+
+`HttpAuthorizer.fromHttpAuthorizerAttributes`
+
+```ts
+import { HttpLambdaAuthorizer, HttpLambdaResponseType } from 'aws-cdk-lib/aws-apigatewayv2-authorizers';
+import { HttpUrlIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
+import { CfnOutput } from 'aws-cdk-lib';
+
+// This function handles your auth logic
+declare const authHandler: lambda.Function;
+
+const authorizer = new HttpLambdaAuthorizer('BooksAuthorizer', authHandler, {
+  responseTypes: [HttpLambdaResponseType.SIMPLE], // Define if returns simple and/or iam response
+});
+
+const api = new apigwv2.HttpApi(this, 'HttpApi');
+
+api.addRoutes({
+  integration: new HttpUrlIntegration('BooksIntegration', 'https://get-books-proxy.example.com'),
+  path: '/books',
+  authorizer,
+});
+
+// You can only access authorizerId after it's been bound to a route
+// In this example we expect use CfnOutput
+new CfnOutput(this, 'authorizerId', { value: authorizer.authorizerId });
+new CfnOutput(this, 'authorizerType', { value: authorizer.authorizationType });
+```
+
+## Import an existing HTTP Authorizer
+If you want to import av existing HTTP Authorizer you simply provide the authorizer id and authorizer type used when the authorizer was created.
+
+```ts
+import { HttpAuthorizer } from 'aws-cdk-lib/aws-apigatewayv2';
+import { Fn } from 'aws-cdk-lib'
+
+const authorizerId = Fn.importValue('authorizerId');
+const authorizerType = Fn.importValue('authorizerType');
+
+const authorizer = HttpAuthorizer.fromHttpAuthorizerAttributes(this, 'HttpAuthorizer', {
+    authorizerId,
+    authorizerType
+});
+```

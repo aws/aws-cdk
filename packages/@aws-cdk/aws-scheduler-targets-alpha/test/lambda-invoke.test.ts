@@ -319,42 +319,38 @@ describe('schedule target', () => {
     });
   });
 
-  test('throws when lambda function is imported from different account', () => {
-    const importedFunc = lambda.Function.fromFunctionArn(stack, 'ImportedFunction', 'arn:aws:lambda:us-east-1:234567890123:function/somefunc');
+  test('using imported lambda function should not throw', () => {
+    const lambdaFuncArn = 'arn:aws:lambda:us-east-1:234567890123:function/somefunc';
+    const importedFunc = lambda.Function.fromFunctionAttributes(
+      stack,
+      'ImportedLambdaFunction',
+      {
+        functionArn: lambdaFuncArn,
+        skipPermissions: true,
+      },
+    );
 
     const lambdaTarget = new LambdaInvoke(importedFunc, {});
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: lambdaTarget,
-      })).toThrow(/Both the schedule and the function must be in the same account/);
-  });
-
-  test('throws when lambda function is imported from different region', () => {
-    const importedFunc = lambda.Function.fromFunctionArn(stack, 'ImportedFunction', 'arn:aws:lambda:us-west-2:123456789012:function/somefunc');
-
-    const lambdaTarget = new LambdaInvoke(importedFunc, {});
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: lambdaTarget,
-      })).toThrow(/Both the schedule and the function must be in the same region/);
-  });
-
-  test('throws when IAM role is imported from different account', () => {
-    const importedRole = Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::234567890123:role/someRole');
-
-    const lambdaTarget = new LambdaInvoke(func, {
-      role: importedRole,
+    new Schedule(stack, 'MyScheduleDummy', {
+      schedule: expr,
+      target: lambdaTarget,
     });
 
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: lambdaTarget,
-      })).toThrow(/Both the target and the execution role must be in the same account/);
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'lambda:InvokeFunction',
+            Effect: 'Allow',
+            Resource: [
+              lambdaFuncArn,
+              `${lambdaFuncArn}:*`,
+            ],
+          },
+        ],
+      },
+      Roles: [{ Ref: 'SchedulerRoleForTargetfdfcef0FF637F7' }],
+    });
   });
 
   test('adds permissions to DLQ', () => {

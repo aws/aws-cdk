@@ -210,6 +210,8 @@ The following tools need to be installed on your system prior to installing the 
 - [Python >= 3.8.0, < 4.0](https://www.python.org/downloads/release/python-380/)
 - [Docker >= 19.03](https://docs.docker.com/get-docker/)
   - the Docker daemon must also be running
+- [git-lfs](https://docs.github.com/en/repositories/working-with-files/managing-large-files/installing-git-large-file-storage)
+  - Without this, you'll get the message that the clone succeeded but the checkout failed when you initially clone the repo.
 
 First fork the repository https://github.com/aws/aws-cdk/fork, and then run the following commands to clone the repository locally.
 
@@ -953,6 +955,24 @@ grantAwesomePowerBeta1()
 
 When we decide it's time to graduate the API, the latest preview version will
 be deprecated and the final version - `grantAwesomePower` will be added.
+
+### Adding new experimental CLI features
+
+In order to move fast when developing new CLI features, we may decide to release 
+functionality as "experimental" or "incremental." In this scenario we can utilize
+explicit opt-in via an `--unstable` flag.
+
+Explicit opt-ins would look something like this:
+
+```bash
+cdk new-command --unstable='new-command'
+
+cdk bootstrap --unstable='new-funky-bootstrap'
+```
+
+And can be simply added as an additional flag on the CLI command that is being worked on.
+When the time comes to stabilize the command, we remove the requirement that such a flag
+is set.
 
 ## Documentation
 

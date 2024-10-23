@@ -8,11 +8,11 @@ import { IQueue } from 'aws-cdk-lib/aws-sqs';
  */
 export interface SqsSourceParameters {
   /**
-    * The maximum number of records to include in each batch.
-    *
-    * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipesourcesqsqueueparameters.html#cfn-pipes-pipe-pipesourcesqsqueueparameters-batchsize
-    * @default 10
-    */
+   * The maximum number of records to include in each batch.
+   *
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipesourcesqsqueueparameters.html#cfn-pipes-pipe-pipesourcesqsqueueparameters-batchsize
+   * @default 10
+   */
   readonly batchSize?: number;
 
   /**

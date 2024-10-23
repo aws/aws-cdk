@@ -140,7 +140,8 @@
                   "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolIdentityProvider",
                   "aws:cdk:cloudformation:props": {
                     "attributeMapping": {
-                      "phone_number": "phone_number"
+                      "phone_number": "phone_number",
+                      "email_verified": "email_verified"
                     },
                     "providerDetails": {
                       "client_id": "client-id",

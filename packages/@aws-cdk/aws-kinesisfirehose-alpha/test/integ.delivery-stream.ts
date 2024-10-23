@@ -36,12 +36,12 @@ const key = new kms.Key(stack, 'Key', {
 });
 
 new firehose.DeliveryStream(stack, 'Delivery Stream', {
-  destinations: [mockS3Destination],
+  destination: mockS3Destination,
   encryption: firehose.StreamEncryption.customerManagedKey(key),
 });
 
 new firehose.DeliveryStream(stack, 'Delivery Stream No Source Or Encryption Key', {
-  destinations: [mockS3Destination],
+  destination: mockS3Destination,
 });
 
 app.synth();

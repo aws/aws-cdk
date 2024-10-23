@@ -105,10 +105,6 @@ export class ExternalService extends BaseService implements IExternalService {
       throw new Error ('Cloud map options are not supported for External service');
     }
 
-    if (props.enableExecuteCommand !== undefined) {
-      throw new Error ('Enable Execute Command options are not supported for External service');
-    }
-
     if (props.capacityProviderStrategies !== undefined) {
       throw new Error ('Capacity Providers are not supported for External service');
     }

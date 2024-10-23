@@ -31,10 +31,10 @@ export abstract class BuildSpec {
   }
 
   /**
-    * Use the contents of a local file as the build spec string
-    *
-    * Use this if you have a local .yml or .json file that you want to use as the buildspec
-    */
+   * Use the contents of a local file as the build spec string
+   *
+   * Use this if you have a local .yml or .json file that you want to use as the buildspec
+   */
   public static fromAsset(path: string): BuildSpec {
     return new AssetBuildSpec(path);
   }

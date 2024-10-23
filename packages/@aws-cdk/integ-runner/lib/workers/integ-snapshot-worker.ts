@@ -20,6 +20,8 @@ export async function runSnapshotTests(
     onTimeout: printLaggards,
   });
 
+  // The worker pool is already limited
+  // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
   const failedTests: IntegTestWorkerConfig[][] = await Promise.all(
     tests.map((test) => pool.exec('snapshotTestWorker', [test.info /* Dehydrate class -> data */, options], {
       on: (x) => {

@@ -1,0 +1,162 @@
+{
+ "Resources": {
+  "EMRServiceRole2CF24E74": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "elasticmapreduce.amazonaws.com.cn"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AmazonElasticMapReduceRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "EMRJobFlowRole209C81EE": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ec2.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AmazonElasticMapReduceforEC2Role"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "EMRJobFlowProfile": {
+   "Type": "AWS::IAM::InstanceProfile",
+   "Properties": {
+    "InstanceProfileName": "EMRJobFlowProfile_",
+    "Roles": [
+     {
+      "Ref": "EMRJobFlowRole209C81EE"
+     }
+    ]
+   }
+  },
+  "SSHKey": {
+   "Type": "AWS::EC2::KeyPair",
+   "Properties": {
+    "KeyName": "TestingSSHKey"
+   }
+  },
+  "EMRCluster": {
+   "Type": "AWS::EMR::Cluster",
+   "Properties": {
+    "Applications": [
+     {
+      "Name": "Spark"
+     }
+    ],
+    "Instances": {
+     "CoreInstanceGroup": {
+      "InstanceCount": 1,
+      "InstanceType": "m5.xlarge"
+     },
+     "Ec2KeyName": {
+      "Ref": "SSHKey"
+     },
+     "Ec2SubnetId": "subnet-0dff1a399d8f6f92c",
+     "HadoopVersion": "Amazon",
+     "KeepJobFlowAliveWhenNoSteps": false,
+     "MasterInstanceGroup": {
+      "InstanceCount": 1,
+      "InstanceType": "m5.xlarge"
+     },
+     "TerminationProtected": false
+    },
+    "JobFlowRole": {
+     "Ref": "EMRJobFlowProfile"
+    },
+    "Name": "My first cluster",
+    "ReleaseLabel": "emr-6.4.0",
+    "ServiceRole": {
+     "Ref": "EMRServiceRole2CF24E74"
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefEMRCluster36C637E3": {
+   "Value": {
+    "Ref": "EMRCluster"
+   },
+   "Export": {
+    "Name": "EmrServicePrincipalTestingStack:ExportsOutputRefEMRCluster36C637E3"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
