@@ -557,6 +557,9 @@
   "DeliveryStreamF6D5572D": {
    "Type": "AWS::KinesisFirehose::DeliveryStream",
    "Properties": {
+    "DeliveryStreamEncryptionConfigurationInput": {
+     "KeyType": "AWS_OWNED_CMK"
+    },
     "DeliveryStreamType": "DirectPut",
     "ExtendedS3DestinationConfiguration": {
      "BucketARN": {
@@ -788,6 +791,9 @@
   "ZeroBufferingDeliveryStream7C2555C9": {
    "Type": "AWS::KinesisFirehose::DeliveryStream",
    "Properties": {
+    "DeliveryStreamEncryptionConfigurationInput": {
+     "KeyType": "AWS_OWNED_CMK"
+    },
     "DeliveryStreamType": "DirectPut",
     "ExtendedS3DestinationConfiguration": {
      "BucketARN": {
