@@ -12,6 +12,7 @@ import { Bootstrapper, BootstrapEnvironmentOptions } from './api/bootstrap';
 import { CloudAssembly, DefaultSelection, ExtendedStackSelection, StackCollection, StackSelector } from './api/cxapp/cloud-assembly';
 import { CloudExecutable } from './api/cxapp/cloud-executable';
 import { Deployments } from './api/deployments';
+import { GarbageCollector } from './api/garbage-collection/garbage-collector';
 import { HotswapMode, HotswapPropertyOverrides, EcsHotswapProperties } from './api/hotswap/common';
 import { findCloudWatchLogGroups } from './api/logs/find-cloudwatch-logs';
 import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
@@ -775,6 +776,50 @@ export class CdkToolkit {
     // If there is an '--app' argument and an environment looks like a glob, we
     // select the environments from the app. Otherwise, use what the user said.
 
+    const environments = await this.defineEnvironments(userEnvironmentSpecs);
+
+    const limit = pLimit(20);
+
+    // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
+    await Promise.all(environments.map((environment) => limit(async () => {
+      success(' ⏳  Bootstrapping environment %s...', chalk.blue(environment.name));
+      try {
+        const result = await bootstrapper.bootstrapEnvironment(environment, this.props.sdkProvider, options);
+        const message = result.noOp
+          ? ' ✅  Environment %s bootstrapped (no changes).'
+          : ' ✅  Environment %s bootstrapped.';
+        success(message, chalk.blue(environment.name));
+      } catch (e) {
+        error(' ❌  Environment %s failed bootstrapping: %s', chalk.blue(environment.name), e);
+        throw e;
+      }
+    })));
+  }
+
+  /**
+   * Garbage collects assets from a CDK app's environment
+   * @param options Options for Garbage Collection
+   */
+  public async garbageCollect(userEnvironmentSpecs: string[], options: GarbageCollectionOptions) {
+    const environments = await this.defineEnvironments(userEnvironmentSpecs);
+
+    for (const environment of environments) {
+      success(' ⏳  Garbage Collecting environment %s...', chalk.blue(environment.name));
+      const gc = new GarbageCollector({
+        sdkProvider: this.props.sdkProvider,
+        resolvedEnvironment: environment,
+        bootstrapStackName: options.bootstrapStackName,
+        rollbackBufferDays: options.rollbackBufferDays,
+        createdBufferDays: options.createdBufferDays,
+        action: options.action ?? 'full',
+        type: options.type ?? 'all',
+        confirm: options.confirm ?? true,
+      });
+      await gc.garbageCollect();
+    };
+  }
+
+  private async defineEnvironments(userEnvironmentSpecs: string[]): Promise<cxapi.Environment[]> {
     // By default, glob for everything
     const environmentSpecs = userEnvironmentSpecs.length > 0 ? [...userEnvironmentSpecs] : ['**'];
 
@@ -799,22 +844,7 @@ export class CdkToolkit {
       environments.push(...await globEnvironmentsFromStacks(await this.selectStacksForList([]), globSpecs, this.props.sdkProvider));
     }
 
-    const limit = pLimit(20);
-
-    // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
-    await Promise.all(environments.map((environment) => limit(async () => {
-      success(' ⏳  Bootstrapping environment %s...', chalk.blue(environment.name));
-      try {
-        const result = await bootstrapper.bootstrapEnvironment(environment, this.props.sdkProvider, options);
-        const message = result.noOp
-          ? ' ✅  Environment %s bootstrapped (no changes).'
-          : ' ✅  Environment %s bootstrapped.';
-        success(message, chalk.blue(environment.name));
-      } catch (e) {
-        error(' ❌  Environment %s failed bootstrapping: %s', chalk.blue(environment.name), e);
-        throw e;
-      }
-    })));
+    return environments;
   }
 
   /**
@@ -1507,6 +1537,51 @@ export interface DestroyOptions {
    * @default false
    */
   readonly ci?: boolean;
+}
+
+/**
+ * Options for the garbage collection
+ */
+export interface GarbageCollectionOptions {
+  /**
+   * The action to perform.
+   *
+   * @default 'full'
+   */
+  readonly action: 'print' | 'tag' | 'delete-tagged' | 'full';
+
+  /**
+   * The type of the assets to be garbage collected.
+   *
+   * @default 'all'
+   */
+  readonly type: 's3' | 'ecr' | 'all';
+
+  /**
+   * Elapsed time between an asset being marked as isolated and actually deleted.
+   *
+   * @default 0
+   */
+  readonly rollbackBufferDays: number;
+
+  /**
+   * Refuse deletion of any assets younger than this number of days.
+   */
+  readonly createdBufferDays: number;
+
+  /**
+   * The stack name of the bootstrap stack.
+   *
+   * @default DEFAULT_TOOLKIT_STACK_NAME
+   */
+  readonly bootstrapStackName?: string;
+
+  /**
+   * Skips the prompt before actual deletion begins
+   *
+   * @default false
+   */
+  readonly confirm?: boolean;
 }
 
 export interface MigrateOptions {

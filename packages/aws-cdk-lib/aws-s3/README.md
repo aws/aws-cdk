@@ -225,8 +225,8 @@ To import an existing bucket into your CDK application, use the `Bucket.fromBuck
 factory method. This method accepts `BucketAttributes` which describes the properties of an already
 existing bucket:
 
-Note that this method allows importing buckets with legacy names containing underscores (`_`), which was
-permitted for buckets created before March 1, 2018. For buckets created after this date, underscores
+Note that this method allows importing buckets with legacy names containing uppercase letters (`A-Z`) or underscores (`_`), which were
+permitted for buckets created before March 1, 2018. For buckets created after this date, uppercase letters and underscores
 are not allowed in the bucket name.
 
 ```ts
@@ -857,6 +857,40 @@ const bucket = new s3.Bucket(this, 'MyBucket', {
           transitionDate: new Date(),
         },
       ],
+    },
+  ],
+});
+```
+
+To indicate which default minimum object size behavior is applied to the lifecycle configuration, use the
+`transitionDefaultMinimumObjectSize` property.
+
+The default value of the property before September 2024 is `TransitionDefaultMinimumObjectSize.VARIES_BY_STORAGE_CLASS`
+that allows objects smaller than 128 KB to be transitioned only to the S3 Glacier and S3 Glacier Deep Archive storage classes,
+otherwise `TransitionDefaultMinimumObjectSize.ALL_STORAGE_CLASSES_128_K` that prevents objects smaller than 128 KB from being
+transitioned to any storage class.
+
+To customize the minimum object size for any transition you
+can add a filter that specifies a custom `objectSizeGreaterThan` or `objectSizeLessThan` for `lifecycleRules`
+property. Custom filters always take precedence over the default transition behavior.
+
+```ts
+new s3.Bucket(this, 'MyBucket', {
+  transitionDefaultMinimumObjectSize: s3.TransitionDefaultMinimumObjectSize.VARIES_BY_STORAGE_CLASS,
+  lifecycleRules: [
+    {
+      transitions: [{
+        storageClass: s3.StorageClass.DEEP_ARCHIVE,
+        transitionAfter: Duration.days(30),
+      }],
+    },
+    {
+      objectSizeLessThan: 300000,
+      objectSizeGreaterThan: 200000,
+      transitions: [{
+        storageClass: s3.StorageClass.ONE_ZONE_INFREQUENT_ACCESS,
+        transitionAfter: Duration.days(30),
+      }],
     },
   ],
 });

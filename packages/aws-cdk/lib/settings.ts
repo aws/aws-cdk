@@ -233,7 +233,6 @@ export class Context {
  * A single bag of settings
  */
 export class Settings {
-
   /**
    * Parse Settings out of CLI arguments.
    *
@@ -299,6 +298,7 @@ export class Settings {
           maximumEcsHealthyPercent: argv.maximumEcsHealthyPercent,
         },
       },
+      unstable: argv.unstable,
     });
   }
 
