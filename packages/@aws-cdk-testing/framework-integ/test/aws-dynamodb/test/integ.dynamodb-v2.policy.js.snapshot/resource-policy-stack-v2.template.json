@@ -18,7 +18,9 @@
     ],
     "Replicas": [
      {
-      "Region": "eu-west-1",
+      "Region": {
+       "Ref": "AWS::Region"
+      },
       "ResourcePolicy": {
        "PolicyDocument": {
         "Statement": [
@@ -30,7 +32,11 @@
             "Fn::Join": [
              "",
              [
-              "arn:aws:iam::",
+              "arn:",
+              {
+               "Ref": "AWS::Partition"
+              },
+              ":iam::",
               {
                "Ref": "AWS::AccountId"
               },
@@ -44,6 +50,33 @@
         ],
         "Version": "2012-10-17"
        }
+      }
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "TableTestV22DC2AC9BC": {
+   "Type": "AWS::DynamoDB::GlobalTable",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "id",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+     }
+    ],
+    "Replicas": [
+     {
+      "Region": {
+       "Ref": "AWS::Region"
       }
      }
     ]

@@ -431,11 +431,11 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
     if (options.tableActions) {
       const resourceArns = [this.tableArn];
       this.hasIndex && resourceArns.push(`${this.tableArn}/index/*`);
-      return Grant.addToPrincipalOrResource({
+      return Grant.addToPrincipal({
         grantee,
         actions: options.tableActions,
         resourceArns,
-        resource: this,
+        scope: this,
       });
     }
 
@@ -472,12 +472,12 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    * @param statement The policy statement to add
    */
   public addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult {
-
     this.resourcePolicy = this.resourcePolicy ?? new PolicyDocument({ statements: [] });
     this.resourcePolicy.addStatements(statement);
     return {
       statementAdded: true,
-      policyDependable: this,
+      policyDependable: this.resourcePolicy,
     };
   }
+
 }
