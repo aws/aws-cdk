@@ -5,8 +5,6 @@ import { App, Stack, StackProps } from 'aws-cdk-lib';
 import { ApproximateCreationDateTimePrecision, AttributeType, TableV2 } from 'aws-cdk-lib/aws-dynamodb';
 import { Construct } from 'constructs';
 
-
-
 class TestStack extends Stack {
   public constructor(scope: Construct, id: string, props: StackProps) {
     super(scope, id, props);
@@ -20,9 +18,9 @@ class TestStack extends Stack {
       kinesisPrecisionTimestamp: ApproximateCreationDateTimePrecision.MILLISECOND,
       replicas: [
         {
-            region: 'eu-west-2',
-        }
-      ]
+          region: 'eu-west-2',
+        },
+      ],
     });
   }
 }
