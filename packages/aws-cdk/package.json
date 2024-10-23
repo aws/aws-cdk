@@ -131,7 +131,7 @@
     "@smithy/util-waiter": "3.1.6",
     "archiver": "^5.3.2",
     "camelcase": "^6.3.0",
-    "cdk-assets": "file:/Users/otaviom/projects/cdk-assets/dist/js/cdk-assets-0.0.0.tgz",
+    "cdk-assets": "^3.0.0-rc.48",
     "cdk-from-cfn": "^0.162.0",
     "chalk": "^4",
     "chokidar": "^3.6.0",
