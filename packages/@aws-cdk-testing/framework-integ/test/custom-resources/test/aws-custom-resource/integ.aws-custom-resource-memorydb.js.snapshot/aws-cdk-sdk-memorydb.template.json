@@ -1,29 +1,6 @@
 {
  "Resources": {
-  "myTableA48C5C70": {
-   "Type": "AWS::DynamoDB::Table",
-   "Properties": {
-    "AttributeDefinitions": [
-     {
-      "AttributeName": "id",
-      "AttributeType": "S"
-     }
-    ],
-    "KeySchema": [
-     {
-      "AttributeName": "id",
-      "KeyType": "HASH"
-     }
-    ],
-    "ProvisionedThroughput": {
-     "ReadCapacityUnits": 5,
-     "WriteCapacityUnits": 5
-    }
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "myCRE89CE839": {
+  "myMemoryDbCustomResourceB5F95C30": {
    "Type": "Custom::AWS",
    "Properties": {
     "ServiceToken": {
@@ -32,52 +9,30 @@
       "Arn"
      ]
     },
-    "Create": {
-     "Fn::Join": [
-      "",
-      [
-       "{\"service\":\"DynamoDB\",\"action\":\"PutItem\",\"parameters\":{\"Item\":{\"id\":{\"S\":\"test-value\"}},\"TableName\":\"",
-       {
-        "Ref": "myTableA48C5C70"
-       },
-       "\"},\"physicalResourceId\":{\"id\":\"myCRphysicalResourceID\"},\"logApiResponseData\":true}"
-      ]
-     ]
-    },
-    "Update": {
-     "Fn::Join": [
-      "",
-      [
-       "{\"service\":\"DynamoDB\",\"action\":\"PutItem\",\"parameters\":{\"Item\":{\"id\":{\"S\":\"test-value\"}},\"TableName\":\"",
-       {
-        "Ref": "myTableA48C5C70"
-       },
-       "\"},\"physicalResourceId\":{\"id\":\"myCRphysicalResourceID\"},\"logApiResponseData\":true}"
-      ]
-     ]
-    },
+    "Create": "{\"service\":\"@aws-sdk/client-memorydb\",\"action\":\"DescribeClusters\",\"physicalResourceId\":{\"id\":\"myMemoryDbCRphysicalResourceID\"},\"logApiResponseData\":true}",
+    "Update": "{\"service\":\"@aws-sdk/client-memorydb\",\"action\":\"DescribeClusters\",\"physicalResourceId\":{\"id\":\"myMemoryDbCRphysicalResourceID\"},\"logApiResponseData\":true}",
     "InstallLatestAwsSdk": true
    },
    "DependsOn": [
-    "myCRCustomResourcePolicy05AD5A90"
+    "myMemoryDbCustomResourceCustomResourcePolicy5F52A060"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "myCRCustomResourcePolicy05AD5A90": {
+  "myMemoryDbCustomResourceCustomResourcePolicy5F52A060": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
      "Statement": [
       {
-       "Action": "dynamodb:PutItem",
+       "Action": "memorydb:DescribeClusters",
        "Effect": "Allow",
        "Resource": "*"
       }
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "myCRCustomResourcePolicy05AD5A90",
+    "PolicyName": "myMemoryDbCustomResourceCustomResourcePolicy5F52A060",
     "Roles": [
      {
       "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"

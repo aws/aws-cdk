@@ -11,9 +11,6 @@
   "acm": {
     "iamPrefix": "acm"
   },
-  "alexa-for-business": {
-    "iamPrefix": "a4b"
-  },
   "amp": {
     "iamPrefix": "aps"
   },
@@ -62,6 +59,9 @@
   "application-insights": {
     "iamPrefix": "applicationinsights"
   },
+  "application-signals": {
+    "iamPrefix": "application-signals"
+  },
   "applicationcostprofiler": {
     "iamPrefix": "application-cost-profiler"
   },
@@ -74,8 +74,14 @@
   "appsync": {
     "iamPrefix": "appsync"
   },
+  "apptest": {
+    "iamPrefix": "apptest"
+  },
   "arc-zonal-shift": {
     "iamPrefix": "arc-zonal-shift"
+  },
+  "artifact": {
+    "iamPrefix": "artifact"
   },
   "athena": {
     "iamPrefix": "athena"
@@ -97,9 +103,6 @@
   },
   "backup": {
     "iamPrefix": "backup"
-  },
-  "backupstorage": {
-    "iamPrefix": "backup-storage"
   },
   "batch": {
     "iamPrefix": "batch"
@@ -127,6 +130,9 @@
   },
   "budgets": {
     "iamPrefix": "budgets"
+  },
+  "chatbot": {
+    "iamPrefix": "chatbot"
   },
   "chime-sdk-identity": {
     "iamPrefix": "chime"
@@ -207,6 +213,9 @@
   "codecommit": {
     "iamPrefix": "codecommit"
   },
+  "codeconnections": {
+    "iamPrefix": "codeconnections"
+  },
   "codedeploy": {
     "iamPrefix": "codedeploy"
   },
@@ -227,9 +236,6 @@
   },
   "codestar-notifications": {
     "iamPrefix": "codestar-notifications"
-  },
-  "codestar": {
-    "iamPrefix": "codestar"
   },
   "cognito-identity-provider": {
     "iamPrefix": "cognito-idp"
@@ -267,6 +273,9 @@
   "connectparticipant": {
     "iamPrefix": "execute-api"
   },
+  "controlcatalog": {
+    "iamPrefix": "controlcatalog"
+  },
   "controltower": {
     "iamPrefix": "controltower"
   },
@@ -303,6 +312,9 @@
   "dax": {
     "iamPrefix": "dax"
   },
+  "deadline": {
+    "iamPrefix": "deadline"
+  },
   "detective": {
     "iamPrefix": "detective"
   },
@@ -314,6 +326,9 @@
   },
   "direct-connect": {
     "iamPrefix": "directconnect"
+  },
+  "directory-service-data": {
+    "iamPrefix": "ds-data"
   },
   "directory-service": {
     "iamPrefix": "ds"
@@ -468,9 +483,6 @@
   "healthlake": {
     "iamPrefix": "healthlake"
   },
-  "honeycode": {
-    "iamPrefix": "honeycode"
-  },
   "iam": {
     "iamPrefix": "iam"
   },
@@ -509,9 +521,6 @@
   },
   "iot-jobs-data-plane": {
     "iamPrefix": "iot-jobs-data"
-  },
-  "iot-roborunner": {
-    "iamPrefix": "iotroborunner"
   },
   "iot-wireless": {
     "iamPrefix": "iotwireless"
@@ -648,6 +657,9 @@
   "macie2": {
     "iamPrefix": "macie2"
   },
+  "mailmanager": {
+    "iamPrefix": "ses"
+  },
   "managedblockchain-query": {
     "iamPrefix": "managedblockchain-query"
   },
@@ -670,6 +682,9 @@
     "iamPrefix": "aws-marketplace"
   },
   "marketplace-metering": {
+    "iamPrefix": "aws-marketplace"
+  },
+  "marketplace-reporting": {
     "iamPrefix": "aws-marketplace"
   },
   "mediaconnect": {
@@ -722,9 +737,6 @@
   },
   "migrationhubstrategy": {
     "iamPrefix": "migrationhub-strategy"
-  },
-  "mobile": {
-    "iamPrefix": "AWSMobileHubService"
   },
   "mq": {
     "iamPrefix": "mq"
@@ -795,6 +807,12 @@
   "pca-connector-ad": {
     "iamPrefix": "pca-connector-ad"
   },
+  "pca-connector-scep": {
+    "iamPrefix": "pca-connector-scep"
+  },
+  "pcs": {
+    "iamPrefix": "pcs"
+  },
   "personalize-events": {
     "iamPrefix": "personalize"
   },
@@ -833,6 +851,9 @@
   },
   "proton": {
     "iamPrefix": "proton"
+  },
+  "qapps": {
+    "iamPrefix": "qapps"
   },
   "qbusiness": {
     "iamPrefix": "qbusiness"
@@ -914,6 +935,9 @@
   },
   "route53-recovery-readiness": {
     "iamPrefix": "route53-recovery-readiness"
+  },
+  "route53profiles": {
+    "iamPrefix": "route53profiles"
   },
   "route53resolver": {
     "iamPrefix": "route53resolver"
@@ -1014,6 +1038,9 @@
   "sns": {
     "iamPrefix": "sns"
   },
+  "socialmessaging": {
+    "iamPrefix": "social-messaging"
+  },
   "sqs": {
     "iamPrefix": "sqs"
   },
@@ -1022,6 +1049,9 @@
   },
   "ssm-incidents": {
     "iamPrefix": "ssm-incidents"
+  },
+  "ssm-quicksetup": {
+    "iamPrefix": "ssm-quicksetup"
   },
   "ssm-sap": {
     "iamPrefix": "ssm-sap"
@@ -1063,8 +1093,14 @@
   "synthetics": {
     "iamPrefix": "synthetics"
   },
+  "taxsettings": {
+    "iamPrefix": "tax"
+  },
   "textract": {
     "iamPrefix": "textract"
+  },
+  "timestream-influxdb": {
+    "iamPrefix": "timestream-influxdb"
   },
   "timestream-query": {
     "iamPrefix": "timestream"
@@ -1116,9 +1152,6 @@
   },
   "workdocs": {
     "iamPrefix": "workdocs"
-  },
-  "worklink": {
-    "iamPrefix": "worklink"
   },
   "workmail": {
     "iamPrefix": "workmail"
