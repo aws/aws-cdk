@@ -149,6 +149,10 @@
       "TableClass": "STANDARD_INFREQUENT_ACCESS",
       "Tags": [
        {
+        "Key": "primaryTableTagKey",
+        "Value": "USE2Replica"
+       },
+       {
         "Key": "USE2ReplicaTagKey",
         "Value": "USE2ReplicaTagValue"
        }
@@ -184,6 +188,10 @@
       "Region": "us-west-2",
       "TableClass": "STANDARD",
       "Tags": [
+       {
+        "Key": "primaryTableTagKey",
+        "Value": "primaryTableTagValue"
+       },
        {
         "Key": "USW2ReplicaTagKey",
         "Value": "USW2ReplicaTagValue"

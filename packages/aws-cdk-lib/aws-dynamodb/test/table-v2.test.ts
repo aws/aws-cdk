@@ -2,7 +2,7 @@ import { Match, Template } from '../../assertions';
 import { ArnPrincipal, PolicyDocument, PolicyStatement } from '../../aws-iam';
 import { Stream } from '../../aws-kinesis';
 import { Key } from '../../aws-kms';
-import { CfnDeletionPolicy, Lazy, RemovalPolicy, Stack } from '../../core';
+import { CfnDeletionPolicy, Lazy, RemovalPolicy, Stack, Tags } from '../../core';
 import {
   AttributeType, Billing, Capacity, GlobalSecondaryIndexPropsV2, TableV2,
   LocalSecondaryIndexProps, ProjectionType, StreamViewType, TableClass, TableEncryptionV2,
@@ -777,7 +777,10 @@ describe('table', () => {
             KMSMasterKeyId: 'arn:aws:kms:us-east-1:123456789012:key/g24efbna-az9b-42ro-m3bp-cq249l94fca6',
           },
           TableClass: 'STANDARD_INFREQUENT_ACCESS',
-          Tags: [{ Key: 'USE1Key', Value: 'USE1Value' }],
+          Tags: [
+            { Key: 'USW2Key', Value: 'USW2Value' },
+            { Key: 'USE1Key', Value: 'USE1Value' },
+          ],
         },
         {
           ContributorInsightsSpecification: {
@@ -813,7 +816,10 @@ describe('table', () => {
             KMSMasterKeyId: 'arn:aws:kms:us-east-2:123456789012:key/g24efbna-az9b-42ro-m3bp-cq249l94fca6',
           },
           TableClass: 'STANDARD',
-          Tags: [{ Key: 'USE2Key', Value: 'USE2Value' }],
+          Tags: [
+            { Key: 'USW2Key', Value: 'USW2Value' },
+            { Key: 'USE2Key', Value: 'USE2Value' },
+          ],
         },
         {
           ContributorInsightsSpecification: {
@@ -1285,6 +1291,67 @@ describe('replica tables', () => {
         {
           Region: 'us-west-1',
           Tags: [{ Key: 'tagKey', Value: 'tagValue' }],
+        },
+        {
+          Region: 'us-east-1',
+        },
+      ],
+    });
+  });
+
+  test('with TagAspect', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-east-1' } });
+
+    // WHEN
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      replicas: [{
+        region: 'us-west-1',
+      }],
+    });
+
+    Tags.of(table).add('tagKey', 'tagValue');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      Replicas: [
+        {
+          Region: 'us-west-1',
+          Tags: [{ Key: 'tagKey', Value: 'tagValue' }],
+        },
+        {
+          Region: 'us-east-1',
+        },
+      ],
+    });
+  });
+
+  test('replica tags override global table tags', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-east-1' } });
+
+    // WHEN
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      replicas: [{
+        region: 'us-west-1',
+        tags: [{ key: 'tableTagProperty', value: 'replicaTagPropertyValue' }],
+      }],
+      tags: [{ key: 'tableTagProperty', value: 'globalTagPropertyValue' }],
+    });
+
+    Tags.of(table).add('tagAspect', 'tagAspectValue');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      Replicas: [
+        {
+          Region: 'us-west-1',
+          Tags: [
+            { Key: 'tableTagProperty', Value: 'replicaTagPropertyValue' },
+            { Key: 'tagAspect', Value: 'tagAspectValue' },
+          ],
         },
         {
           Region: 'us-east-1',
