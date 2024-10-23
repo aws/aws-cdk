@@ -12,7 +12,8 @@ import { ActiveAssetCache, BackgroundStackRefresh, refreshStacks } from './stack
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const pLimit: typeof import('p-limit') = require('p-limit');
 
-const ISOLATED_TAG = 'aws-cdk.isolated';
+export const S3_ISOLATED_TAG = 'aws-cdk:isolated';
+export const ECR_ISOLATED_TAG = 'aws-cdk.isolated'; // ':' is not valid in ECR tags
 const P_LIMIT = 50;
 const DAY = 24 * 60 * 60 * 1000; // Number of milliseconds in a day
 
@@ -38,11 +39,11 @@ export class ImageAsset {
   }
 
   public hasIsolatedTag() {
-    return this.hasTag(ISOLATED_TAG);
+    return this.hasTag(ECR_ISOLATED_TAG);
   }
 
   public getIsolatedTag() {
-    return this.getTag(ISOLATED_TAG);
+    return this.getTag(ECR_ISOLATED_TAG);
   }
 
   public isolatedTagBefore(date: Date) {
@@ -92,11 +93,11 @@ export class ObjectAsset {
   }
 
   public hasIsolatedTag() {
-    return this.hasTag(ISOLATED_TAG);
+    return this.hasTag(S3_ISOLATED_TAG);
   }
 
   public isolatedTagBefore(date: Date) {
-    const tagValue = this.getTag(ISOLATED_TAG);
+    const tagValue = this.getTag(S3_ISOLATED_TAG);
     if (!tagValue || tagValue == '') {
       return false;
     }
@@ -417,7 +418,7 @@ export class GarbageCollector {
 
     for (const obj of untaggables) {
       const tags = await obj.allTags(s3);
-      const updatedTags = tags.filter(tag => tag.Key !== ISOLATED_TAG);
+      const updatedTags = tags.filter(tag => tag.Key !== S3_ISOLATED_TAG);
       await limit(() =>
         s3.deleteObjectTagging({
           Bucket: bucket,
@@ -451,7 +452,7 @@ export class GarbageCollector {
         const date = Date.now();
         let imageTag;
         try {
-          imageTag = `${ISOLATED_TAG}-${i}-${String(date)}`;
+          imageTag = `${ECR_ISOLATED_TAG}-${i}-${String(date)}`;
           ecr.putImage({
             repositoryName: repo,
             imageDigest: img.digest,
@@ -486,7 +487,7 @@ export class GarbageCollector {
           Tagging: {
             TagSet: [
               {
-                Key: ISOLATED_TAG,
+                Key: S3_ISOLATED_TAG,
                 Value: String(date),
               },
             ],

@@ -2,7 +2,7 @@
 
 const mockGarbageCollect = jest.fn();
 
-import { GarbageCollector, ToolkitInfo } from '../../lib/api';
+import { GarbageCollector, ToolkitInfo, ECR_ISOLATED_TAG, S3_ISOLATED_TAG } from '../../lib/api';
 import { ActiveAssetCache, BackgroundStackRefresh, BackgroundStackRefreshProps } from '../../lib/api/garbage-collection/stack-refresh';
 import { mockBootstrapStack, MockSdk, MockSdkProvider } from '../util/mock-sdk';
 
@@ -25,7 +25,6 @@ let mockDescribeImages: (params: AWS.ECR.Types.DescribeImagesRequest) => AWS.ECR
 let stderrMock: jest.SpyInstance;
 let sdk: MockSdkProvider;
 
-const ISOLATED_TAG = 'aws-cdk.isolated';
 const DAY = 24 * 60 * 60 * 1000; // Number of milliseconds in a day
 
 function mockTheToolkitInfo(stackProps: Partial<AWS.CloudFormation.Stack>) {
@@ -105,7 +104,7 @@ function setupS3GarbageCollectionMocks(mockSdk: MockSdkProvider) {
   });
   mockGetObjectTagging = jest.fn().mockImplementation((params) => {
     return Promise.resolve({
-      TagSet: params.Key === 'asset2' ? [{ Key: ISOLATED_TAG, Value: new Date().toISOString() }] : [],
+      TagSet: params.Key === 'asset2' ? [{ Key: S3_ISOLATED_TAG, Value: new Date().toISOString() }] : [],
     });
   });
   mockPutObjectTagging = jest.fn();
@@ -661,13 +660,13 @@ describe('ECR Garbage Collection', () => {
       repositoryName: 'REPO_NAME',
       imageDigest: 'digest3',
       imageManifest: expect.any(Object),
-      imageTag: expect.stringContaining(`${ISOLATED_TAG}-0-`),
+      imageTag: expect.stringContaining(`${ECR_ISOLATED_TAG}-0-`),
     });
     expect(mocks.mockPutImage).toHaveBeenCalledWith({
       repositoryName: 'REPO_NAME',
       imageDigest: 'digest2',
       imageManifest: expect.any(Object),
-      imageTag: expect.stringContaining(`${ISOLATED_TAG}-1-`),
+      imageTag: expect.stringContaining(`${ECR_ISOLATED_TAG}-1-`),
     });
   });
 });
@@ -883,7 +882,7 @@ describe('Garbage Collection with large # of objects', () => {
     // of the 2000 in use assets, 1000 are tagged.
     mockGetObjectTaggingLarge = jest.fn().mockImplementation((params) => {
       return Promise.resolve({
-        TagSet: Number(params.Key[params.Key.length - 5]) % 2 === 0 ? [{ Key: ISOLATED_TAG, Value: new Date(2000, 1, 1).toISOString() }] : [],
+        TagSet: Number(params.Key[params.Key.length - 5]) % 2 === 0 ? [{ Key: S3_ISOLATED_TAG, Value: new Date(2000, 1, 1).toISOString() }] : [],
       });
     });
     mockPutObjectTagging = jest.fn();
