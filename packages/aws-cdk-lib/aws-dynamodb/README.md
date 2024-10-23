@@ -479,6 +479,8 @@ https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.html
 
 A `kinesisStream` can be configured as a `TableV2` property. Replica tables will not inherit the `kinesisStream` configured for the primary table and should added on a per-replica basis.
 
+ou can optionally configure the `kinesisPrecisionTimestamp` parameter to specify the precision level of the approximate creation date and time. The allowed values are `MICROSECOND` and `MILLISECOND`. If this parameter is not specified, the default precision is set to `MICROSECOND`.
+
 ```ts
 import * as cdk from 'aws-cdk-lib';
 import * as kinesis from 'aws-cdk-lib/aws-kinesis';
@@ -492,6 +494,7 @@ const stream2 = kinesis.Stream.fromStreamArn(stack, 'Stream2', 'arn:aws:kinesis:
 const globalTable = new dynamodb.TableV2(this, 'GlobalTable', {
   partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
   kinesisStream: stream1, // for table in us-west-2
+  kinesisPrecisionTimestamp: dynamodb.ApproximateCreationDateTimePrecision.MILLISECOND,
   replicas: [
     { region: 'us-east-1' }, // no kinesis data stream will be set for this replica
     {
