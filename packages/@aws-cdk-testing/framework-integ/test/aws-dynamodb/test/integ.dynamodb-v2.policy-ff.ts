@@ -6,7 +6,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new App({
   postCliContext: {
-    '@aws-cdk/aws-dynamodb:resourcePolicyPerReplica': false,
+    '@aws-cdk/aws-dynamodb:resourcePolicyPerReplica': true,
   },
 });
 
@@ -32,12 +32,15 @@ class TestStack extends Stack {
       },
       removalPolicy: RemovalPolicy.DESTROY,
       resourcePolicy: docu,
+      replicas: [{
+        region: 'eu-west-2',
+      }],
     });
 
   }
 }
 
-const stack = new TestStack(app, 'ResourcePolicyTest-v2', { env: { region: 'eu-west-1' } });
+const stack = new TestStack(app, 'ResourcePolicyTest-v2-FF', { env: { region: 'eu-west-1' } });
 
 new IntegTest(app, 'table-v2-resource-policy-integ-test', {
   testCases: [stack],
