@@ -2,6 +2,9 @@ import { BatchGetImageCommand, ListImagesCommand, PutImageCommand } from '@aws-s
 import { GetObjectTaggingCommand, ListObjectsV2Command, PutObjectTaggingCommand } from '@aws-sdk/client-s3';
 import { integTest, randomString, withoutBootstrap } from '../../lib';
 
+const S3_ISOLATED_TAG = 'aws-cdk:isolated';
+const ECR_ISOLATED_TAG = 'aws-cdk.isolated';
+
 jest.setTimeout(2 * 60 * 60_000); // Includes the time to acquire locks, worst-case single-threaded runtime
 
 integTest(
@@ -313,7 +316,7 @@ integTest(
       Key: key,
       Tagging: {
         TagSet: [{
-          Key: 'aws-cdk.isolated',
+          Key: S3_ISOLATED_TAG,
           Value: '12345',
         }, {
           Key: 'bogus',
@@ -364,7 +367,7 @@ integTest(
     const digest = imageIds.imageIds![0].imageDigest;
     const imageManifests = await fixture.aws.ecr.send(new BatchGetImageCommand({ repositoryName: repoName, imageIds: [{ imageDigest: digest }] }));
     const manifest = imageManifests.images![0].imageManifest;
-    await fixture.aws.ecr.send(new PutImageCommand({ repositoryName: repoName, imageManifest: manifest, imageDigest: digest, imageTag: 'aws-cdk.isolated-12345' }));
+    await fixture.aws.ecr.send(new PutImageCommand({ repositoryName: repoName, imageManifest: manifest, imageDigest: digest, imageTag: `${ECR_ISOLATED_TAG}-12345` }));
 
     await fixture.cdkGarbageCollect({
       rollbackBufferDays: 100, // this will ensure that we do not delete assets immediately (and just tag them)

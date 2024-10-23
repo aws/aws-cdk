@@ -448,12 +448,12 @@ export class GarbageCollector {
 
     for (let i = 0; i < taggables.length; i++) {
       const img = taggables[i];
-      await limit(() => {
+      const tagEcr = async () => {
         const date = Date.now();
         let imageTag;
         try {
           imageTag = `${ECR_ISOLATED_TAG}-${i}-${String(date)}`;
-          ecr.putImage({
+          await ecr.putImage({
             repositoryName: repo,
             imageDigest: img.digest,
             imageManifest: img.manifest,
@@ -465,7 +465,8 @@ export class GarbageCollector {
           // and the isolated asset will be tagged next time.
           debug(`Warning: unable to tag image ${JSON.stringify(img.tags)} with ${imageTag} due to the following error: ${error}`);
         }
-      });
+      };
+      await limit(() => tagEcr());
     }
 
     printer.reportTaggedAsset(taggables);
