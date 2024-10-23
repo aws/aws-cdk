@@ -42,5 +42,3 @@ junit.xml
 
 lib/**/*.wasm
 db.json.gz
-
-lib/parse-command-line-arguments.ts
