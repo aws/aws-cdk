@@ -10,7 +10,7 @@ export class ProgressPrinter {
   private deletedObjects: number;
   private deletedObjectsSizeMb: number;
   private interval: number;
-  private setInterval?: NodeJS.Timer;
+  private setInterval?: ReturnType<typeof setTimeout>;
   private isPaused: boolean;
 
   constructor(totalObjects: number, interval?: number) {

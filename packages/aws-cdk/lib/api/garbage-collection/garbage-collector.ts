@@ -1,12 +1,13 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { S3 } from 'aws-sdk';
+import { Tag } from '@aws-sdk/client-s3';
 import * as chalk from 'chalk';
 import * as promptly from 'promptly';
 import { debug, print } from '../../logging';
-import { ISDK, Mode, SdkProvider } from '../aws-auth';
+import { SDK, SdkProvider, IS3Client } from '../aws-auth';
 import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitInfo } from '../toolkit-info';
 import { ProgressPrinter } from './progress-printer';
 import { ActiveAssetCache, BackgroundStackRefresh, refreshStacks } from './stack-refresh';
+import { Mode } from '../plugin';
 
 // Must use a require() otherwise esbuild complains
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -17,7 +18,7 @@ const P_LIMIT = 50;
 const DAY = 24 * 60 * 60 * 1000; // Number of milliseconds in a day
 
 export class S3Asset {
-  private cached_tags: S3.TagSet | undefined = undefined;
+  private cached_tags: Tag[] | undefined = undefined;
 
   public constructor(private readonly bucket: string, public readonly key: string, public readonly size: number) {}
 
@@ -25,12 +26,12 @@ export class S3Asset {
     return this.key.split('.')[0];
   }
 
-  public async allTags(s3: S3) {
+  public async allTags(s3: IS3Client) {
     if (this.cached_tags) {
       return this.cached_tags;
     }
 
-    const response = await s3.getObjectTagging({ Bucket: this.bucket, Key: this.key }).promise();
+    const response = await s3.getObjectTagging({ Bucket: this.bucket, Key: this.key });
     this.cached_tags = response.TagSet;
     return this.cached_tags;
   }
@@ -39,14 +40,14 @@ export class S3Asset {
     if (!this.cached_tags) {
       throw new Error('Cannot call getTag before allTags');
     }
-    return this.cached_tags.find(t => t.Key === tag)?.Value;
+    return this.cached_tags.find((t: any) => t.Key === tag)?.Value;
   }
 
   private hasTag(tag: string) {
     if (!this.cached_tags) {
       throw new Error('Cannot call hasTag before allTags');
     }
-    return this.cached_tags.some(t => t.Key === tag);
+    return this.cached_tags.some((t: any) => t.Key === tag);
   }
 
   public hasIsolatedTag() {
@@ -272,7 +273,7 @@ export class GarbageCollector {
     }
   }
 
-  private async parallelReadAllTags(s3: S3, objects: S3Asset[]) {
+  private async parallelReadAllTags(s3: IS3Client, objects: S3Asset[]) {
     const limit = pLimit(P_LIMIT);
 
     for (const obj of objects) {
@@ -284,18 +285,18 @@ export class GarbageCollector {
    * Untag assets that were previously tagged, but now currently referenced.
    * Since this is treated as an implementation detail, we do not print the results in the printer.
    */
-  private async parallelUntag(s3: S3, bucket: string, untaggables: S3Asset[]) {
+  private async parallelUntag(s3: IS3Client, bucket: string, untaggables: S3Asset[]) {
     const limit = pLimit(P_LIMIT);
 
     for (const obj of untaggables) {
-      const tags = await obj.allTags(s3);
-      const updatedTags = tags.filter(tag => tag.Key !== ISOLATED_TAG);
+      const tags = await obj.allTags(s3) ?? [];
+      const updatedTags = tags.filter((tag: Tag) => tag.Key !== ISOLATED_TAG);
       await limit(() =>
         s3.deleteObjectTagging({
           Bucket: bucket,
           Key: obj.key,
 
-        }).promise(),
+        }),
       );
       await limit(() =>
         s3.putObjectTagging({
@@ -304,7 +305,7 @@ export class GarbageCollector {
           Tagging: {
             TagSet: updatedTags,
           },
-        }).promise(),
+        }),
       );
     }
 
@@ -315,7 +316,7 @@ export class GarbageCollector {
    * Tag objects in parallel using p-limit. The putObjectTagging API does not
    * support batch tagging so we must handle the parallelism client-side.
    */
-  private async parallelTag(s3: S3, bucket: string, taggables: S3Asset[], date: number, printer: ProgressPrinter) {
+  private async parallelTag(s3: IS3Client, bucket: string, taggables: S3Asset[], date: number, printer: ProgressPrinter) {
     const limit = pLimit(P_LIMIT);
 
     for (const obj of taggables) {
@@ -331,7 +332,7 @@ export class GarbageCollector {
               },
             ],
           },
-        }).promise(),
+        }),
       );
     }
 
@@ -342,9 +343,9 @@ export class GarbageCollector {
   /**
    * Delete objects in parallel. The deleteObjects API supports batches of 1000.
    */
-  private async parallelDelete(s3: S3, bucket: string, deletables: S3Asset[], printer: ProgressPrinter) {
+  private async parallelDelete(s3: IS3Client, bucket: string, deletables: S3Asset[], printer: ProgressPrinter) {
     const batchSize = 1000;
-    const objectsToDelete: S3.ObjectIdentifierList = deletables.map(asset => ({
+    const objectsToDelete = deletables.map(asset => ({
       Key: asset.key,
     }));
 
@@ -361,7 +362,7 @@ export class GarbageCollector {
             Objects: batch,
             Quiet: true,
           },
-        }).promise();
+        });
 
         const deletedCount = batch.length;
         debug(`Deleted ${deletedCount} assets`);
@@ -372,17 +373,17 @@ export class GarbageCollector {
     }
   }
 
-  private async bootstrapBucketName(sdk: ISDK, bootstrapStackName: string): Promise<string> {
+  private async bootstrapBucketName(sdk: SDK, bootstrapStackName: string): Promise<string> {
     const info = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
     return info.bucketName;
   }
 
-  private async bootstrapQualifier(sdk: ISDK, bootstrapStackName: string): Promise<string | undefined> {
+  private async bootstrapQualifier(sdk: SDK, bootstrapStackName: string): Promise<string | undefined> {
     const info = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
     return info.bootstrapStack.parameters.Qualifier;
   }
 
-  private async numObjectsInBucket(s3: S3, bucket: string): Promise<number> {
+  private async numObjectsInBucket(s3: IS3Client, bucket: string): Promise<number> {
     let totalCount = 0;
     let continuationToken: string | undefined;
 
@@ -390,7 +391,7 @@ export class GarbageCollector {
       const response = await s3.listObjectsV2({
         Bucket: bucket,
         ContinuationToken: continuationToken,
-      }).promise();
+      });
 
       totalCount += response.KeyCount ?? 0;
       continuationToken = response.NextContinuationToken;
@@ -402,7 +403,7 @@ export class GarbageCollector {
   /**
    * Generator function that reads objects from the S3 Bucket in batches.
    */
-  private async *readBucketInBatches(s3: S3, bucket: string, batchSize: number = 1000, currentTime: number): AsyncGenerator<S3Asset[]> {
+  private async *readBucketInBatches(s3: IS3Client, bucket: string, batchSize: number = 1000, currentTime: number): AsyncGenerator<S3Asset[]> {
     let continuationToken: string | undefined;
 
     do {
@@ -412,9 +413,9 @@ export class GarbageCollector {
         const response = await s3.listObjectsV2({
           Bucket: bucket,
           ContinuationToken: continuationToken,
-        }).promise();
+        });
 
-        response.Contents?.forEach((obj) => {
+        response.Contents?.forEach((obj: any) => {
           const key = obj.Key ?? '';
           const size = obj.Size ?? 0;
           const lastModified = obj.LastModified ?? new Date(currentTime);
