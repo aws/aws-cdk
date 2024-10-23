@@ -19,7 +19,7 @@ import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as secretsmanager from '../../aws-secretsmanager';
-import { Annotations, ArnFormat, Duration, FeatureFlags, Lazy, RemovalPolicy, Resource, Stack, Token } from '../../core';
+import { Annotations, ArnFormat, Duration, FeatureFlags, Lazy, RemovalPolicy, Resource, Stack, Token, TokenComparison } from '../../core';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -389,13 +389,36 @@ interface DatabaseClusterBaseProps {
   /**
    * Whether read replicas can forward write operations to the writer DB instance in the DB cluster.
    *
-   * This setting can only be enabled for Aurora MySQL 3.04 and higher clusters.
+   * This setting can only be enabled for Aurora MySQL 3.04 or higher, and for Aurora PostgreSQL 16.4
+   * or higher (for version 16), 15.8 or higher (for version 15), and 14.13 or higher (for version 14).
    *
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-mysql-write-forwarding.html
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-postgresql-write-forwarding.html
    *
    * @default false
    */
   readonly enableLocalWriteForwarding?: boolean;
+
+  /**
+   * Whether to enable Performance Insights for the DB cluster.
+   *
+   * @default - false, unless `performanceInsightRetention` or `performanceInsightEncryptionKey` is set.
+   */
+  readonly enablePerformanceInsights?: boolean;
+
+  /**
+   * The amount of time, in days, to retain Performance Insights data.
+   *
+   * @default 7
+   */
+  readonly performanceInsightRetention?: PerformanceInsightRetention;
+
+  /**
+   * The AWS KMS key for encryption of Performance Insights data.
+   *
+   * @default - default master key
+   */
+  readonly performanceInsightEncryptionKey?: kms.IKey;
 }
 
 /**
@@ -597,6 +620,21 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
    */
   public readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
 
+  /**
+   * Whether Performance Insights is enabled at cluster level.
+   */
+  public readonly performanceInsightsEnabled: boolean;
+
+  /**
+   * The amount of time, in days, to retain Performance Insights data.
+   */
+  public readonly performanceInsightRetention?: PerformanceInsightRetention;
+
+  /**
+   * The AWS KMS key for encryption of Performance Insights data.
+   */
+  public readonly performanceInsightEncryptionKey?: kms.IKey;
+
   protected readonly serverlessV2MinCapacity: number;
   protected readonly serverlessV2MaxCapacity: number;
 
@@ -701,10 +739,17 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       });
     }
 
-    // enableLocalWriteForwarding cannot be configured, including false, on Aurora clusters other than MySQL.
-    if (props.enableLocalWriteForwarding !== undefined && !['aurora', 'aurora-mysql'].includes(props.engine.engineType)) {
-      throw new Error(`\'enableLocalWriteForwarding\' is only supported for Aurora Mysql cluster engine type, got: ${props.engine.engineType}`);
+    const enablePerformanceInsights = props.enablePerformanceInsights
+      || props.performanceInsightRetention !== undefined || props.performanceInsightEncryptionKey !== undefined;
+    if (enablePerformanceInsights && props.enablePerformanceInsights === false) {
+      throw new Error('`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set');
     }
+
+    this.performanceInsightsEnabled = enablePerformanceInsights;
+    this.performanceInsightRetention = enablePerformanceInsights
+      ? (props.performanceInsightRetention || PerformanceInsightRetention.DEFAULT)
+      : undefined;
+    this.performanceInsightEncryptionKey = props.performanceInsightEncryptionKey;
 
     this.newCfnProps = {
       // Basic
@@ -747,6 +792,9 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       copyTagsToSnapshot: props.copyTagsToSnapshot ?? true,
       domain: this.domainId,
       domainIamRoleName: this.domainRole?.roleName,
+      performanceInsightsEnabled: this.performanceInsightsEnabled || props.enablePerformanceInsights, // fall back to undefined if not set
+      performanceInsightsKmsKeyId: this.performanceInsightEncryptionKey?.keyArn,
+      performanceInsightsRetentionPeriod: this.performanceInsightRetention,
     };
   }
 
@@ -813,6 +861,13 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
     if (writer.type === InstanceType.SERVERLESS_V2) {
       this.hasServerlessInstance = true;
     }
+    validatePerformanceInsightsSettings(this, {
+      nodeId: writer.node.id,
+      performanceInsightsEnabled: writer.performanceInsightsEnabled,
+      performanceInsightRetention: writer.performanceInsightRetention,
+      performanceInsightEncryptionKey: writer.performanceInsightEncryptionKey,
+    });
+
     if (readers.length > 0) {
       const sortedReaders = readers.sort((a, b) => a.tier - b.tier);
       const highestTierReaders: IAuroraClusterInstance[] = [];
@@ -841,7 +896,14 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
         if (reader.tier <= 1) {
           noFailoverTierInstances = false;
         }
+        validatePerformanceInsightsSettings(this, {
+          nodeId: reader.node.id,
+          performanceInsightsEnabled: reader.performanceInsightsEnabled,
+          performanceInsightRetention: reader.performanceInsightRetention,
+          performanceInsightEncryptionKey: reader.performanceInsightEncryptionKey,
+        });
       }
+
       const hasOnlyServerlessReaders = hasServerlessReader && !hasProvisionedReader;
       if (hasOnlyServerlessReaders) {
         if (noFailoverTierInstances) {
@@ -1398,6 +1460,17 @@ function legacyCreateInstances(cluster: DatabaseClusterNew, props: DatabaseClust
   if (enablePerformanceInsights && instanceProps.enablePerformanceInsights === false) {
     throw new Error('`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set');
   }
+  const performanceInsightRetention = enablePerformanceInsights
+    ? (instanceProps.performanceInsightRetention || PerformanceInsightRetention.DEFAULT)
+    : undefined;
+  validatePerformanceInsightsSettings(
+    cluster,
+    {
+      performanceInsightsEnabled: enablePerformanceInsights,
+      performanceInsightRetention,
+      performanceInsightEncryptionKey: instanceProps.performanceInsightEncryptionKey,
+    },
+  );
 
   const instanceType = instanceProps.instanceType ?? ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM);
 
@@ -1434,9 +1507,7 @@ function legacyCreateInstances(cluster: DatabaseClusterNew, props: DatabaseClust
         (instanceProps.vpcSubnets && instanceProps.vpcSubnets.subnetType === ec2.SubnetType.PUBLIC),
       enablePerformanceInsights: enablePerformanceInsights || instanceProps.enablePerformanceInsights, // fall back to undefined if not set
       performanceInsightsKmsKeyId: instanceProps.performanceInsightEncryptionKey?.keyArn,
-      performanceInsightsRetentionPeriod: enablePerformanceInsights
-        ? (instanceProps.performanceInsightRetention || PerformanceInsightRetention.DEFAULT)
-        : undefined,
+      performanceInsightsRetentionPeriod: performanceInsightRetention,
       // This is already set on the Cluster. Unclear to me whether it should be repeated or not. Better yes.
       dbSubnetGroupName: subnetGroup.subnetGroupName,
       dbParameterGroupName: instanceParameterGroupConfig?.parameterGroupName,
@@ -1478,4 +1549,54 @@ function legacyCreateInstances(cluster: DatabaseClusterNew, props: DatabaseClust
  */
 function databaseInstanceType(instanceType: ec2.InstanceType) {
   return 'db.' + instanceType.toString();
+}
+
+/**
+ * Validate Performance Insights settings
+ */
+function validatePerformanceInsightsSettings(
+  cluster: DatabaseClusterNew,
+  instance: {
+    nodeId?: string;
+    performanceInsightsEnabled?: boolean;
+    performanceInsightRetention?: PerformanceInsightRetention;
+    performanceInsightEncryptionKey?: kms.IKey;
+  },
+): void {
+  const target = instance.nodeId ? `instance \'${instance.nodeId}\'` : '`instanceProps`';
+
+  // If Performance Insights is enabled on the cluster, the one for each instance will be enabled as well.
+  if (cluster.performanceInsightsEnabled && instance.performanceInsightsEnabled === false) {
+    Annotations.of(cluster).addWarningV2(
+      '@aws-cdk/aws-rds:instancePerformanceInsightsOverridden',
+      `Performance Insights is enabled on cluster '${cluster.node.id}' at cluster level, but disabled for ${target}. `+
+      'However, Performance Insights for this instance will also be automatically enabled if enabled at cluster level.',
+    );
+  }
+
+  // If `performanceInsightRetention` is enabled on the cluster, the same parameter for each instance must be
+  // undefined or the same as the value at cluster level.
+  if (
+    cluster.performanceInsightRetention &&
+    instance.performanceInsightRetention &&
+    instance.performanceInsightRetention !== cluster.performanceInsightRetention
+  ) {
+    throw new Error(`\`performanceInsightRetention\` for each instance must be the same as the one at cluster level, got ${target}: ${instance.performanceInsightRetention}, cluster: ${cluster.performanceInsightRetention}`);
+  }
+
+  // If `performanceInsightEncryptionKey` is enabled on the cluster, the same parameter for each instance must be
+  // undefined or the same as the value at cluster level.
+  if (cluster.performanceInsightEncryptionKey && instance.performanceInsightEncryptionKey) {
+    const clusterKeyArn = cluster.performanceInsightEncryptionKey.keyArn;
+    const instanceKeyArn = instance.performanceInsightEncryptionKey.keyArn;
+    const compared = Token.compareStrings(clusterKeyArn, instanceKeyArn);
+
+    if (compared === TokenComparison.DIFFERENT) {
+      throw new Error(`\`performanceInsightEncryptionKey\` for each instance must be the same as the one at cluster level, got ${target}: '${instance.performanceInsightEncryptionKey.keyArn}', cluster: '${cluster.performanceInsightEncryptionKey.keyArn}'`);
+    }
+    // Even if both of cluster and instance keys are unresolved, check if they are the same token.
+    if (compared === TokenComparison.BOTH_UNRESOLVED && clusterKeyArn !== instanceKeyArn) {
+      throw new Error('`performanceInsightEncryptionKey` for each instance must be the same as the one at cluster level');
+    }
+  }
 }
