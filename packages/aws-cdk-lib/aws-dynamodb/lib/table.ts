@@ -209,6 +209,23 @@ export interface ImportSourceSpecification {
 }
 
 /**
+ * The precision associated with the DynamoDB write timestamps that will be replicated to Kinesis.
+ * The default setting for record timestamp precision is microseconds. You can change this setting at any time.
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-table-kinesisstreamspecification.html#aws-properties-dynamodb-table-kinesisstreamspecification-properties
+ */
+export enum ApproximateCreationDateTimePrecision {
+  /**
+   * Millisecond precision
+   */
+  MILLISECOND = 'MILLISECOND',
+
+  /**
+   * Microsecond precision
+   */
+  MICROSECOND = 'MICROSECOND',
+}
+
+/**
  * Properties of a DynamoDB Table
  *
  * Use `TableProps` for all table properties
@@ -415,6 +432,13 @@ export interface TableProps extends TableOptions {
    * @default - no Kinesis Data Stream
    */
   readonly kinesisStream?: kinesis.IStream;
+
+  /**
+   * Kinesis Data Stream approximate creation timestamp prescision
+   *
+   * @default ApproximateCreationDateTimePrecision.MICROSECOND
+   */
+  readonly kinesisPrecisionTimestamp?: ApproximateCreationDateTimePrecision;
 }
 
 /**
@@ -1157,6 +1181,13 @@ export class Table extends TableBase {
     }
     this.validateProvisioning(props);
 
+    const kinesisStreamSpecification = props.kinesisStream
+      ? {
+        streamArn: props.kinesisStream.streamArn,
+        ...(props.kinesisPrecisionTimestamp && { approximateCreationDateTimePrecision: props.kinesisPrecisionTimestamp }),
+      }
+      : undefined;
+
     this.table = new CfnTable(this, 'Resource', {
       tableName: this.physicalName,
       keySchema: this.keySchema,
@@ -1181,7 +1212,7 @@ export class Table extends TableBase {
       tableClass: props.tableClass,
       timeToLiveSpecification: props.timeToLiveAttribute ? { attributeName: props.timeToLiveAttribute, enabled: true } : undefined,
       contributorInsightsSpecification: props.contributorInsightsEnabled !== undefined ? { enabled: props.contributorInsightsEnabled } : undefined,
-      kinesisStreamSpecification: props.kinesisStream ? { streamArn: props.kinesisStream.streamArn } : undefined,
+      kinesisStreamSpecification: kinesisStreamSpecification,
       deletionProtectionEnabled: props.deletionProtection,
       importSourceSpecification: this.renderImportSourceSpecification(props.importSource),
       resourcePolicy: props.resourcePolicy
