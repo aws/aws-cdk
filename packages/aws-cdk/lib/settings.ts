@@ -292,6 +292,12 @@ export class Settings {
       assetParallelism: argv['asset-parallelism'],
       assetPrebuild: argv['asset-prebuild'],
       ignoreNoStacks: argv['ignore-no-stacks'],
+      hotswap: {
+        ecs: {
+          minimumEcsHealthyPercent: argv.minimumEcsHealthyPercent,
+          maximumEcsHealthyPercent: argv.maximumEcsHealthyPercent,
+        },
+      },
       unstable: argv.unstable,
     });
   }

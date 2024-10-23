@@ -97,17 +97,17 @@ export interface EcsBlueGreenDeploymentConfig {
   readonly deploymentApprovalWaitTime?: cdk.Duration;
 
   /**
-    * Specify how long CodeDeploy waits before it terminates the original 'blue' ECS task set when a blue-green deployment is complete.
-    *
-    * During this wait time, CodeDeploy will continue to monitor any CloudWatch alarms specified for the deployment group,
-    * and the deployment group can be configured to automatically roll back if those alarms fire.  Once CodeDeploy begins to
-    * terminate the 'blue' ECS task set, the deployment can no longer be rolled back, manually or automatically.
-    *
-    * By default, the deployment will immediately terminate the 'blue' ECS task set after production traffic is successfully
-    * routed to the 'green' ECS task set.
-    *
-    * @default 0
-    */
+   * Specify how long CodeDeploy waits before it terminates the original 'blue' ECS task set when a blue-green deployment is complete.
+   *
+   * During this wait time, CodeDeploy will continue to monitor any CloudWatch alarms specified for the deployment group,
+   * and the deployment group can be configured to automatically roll back if those alarms fire.  Once CodeDeploy begins to
+   * terminate the 'blue' ECS task set, the deployment can no longer be rolled back, manually or automatically.
+   *
+   * By default, the deployment will immediately terminate the 'blue' ECS task set after production traffic is successfully
+   * routed to the 'green' ECS task set.
+   *
+   * @default 0
+   */
   readonly terminationWaitTime?: cdk.Duration;
 }
 
