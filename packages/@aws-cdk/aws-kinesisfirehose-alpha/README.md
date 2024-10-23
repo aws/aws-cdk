@@ -183,7 +183,7 @@ your delivery streams via logs and metrics.
 
 Amazon Data Firehose will send logs to CloudWatch when data transformation or data
 delivery fails. The CDK will enable logging by default and create a CloudWatch LogGroup
-and LogStream for your Delivery Stream.
+and LogStream with default settings for your Delivery Stream.
 
 When creating a destination, you can provide an `ILoggingConfig`, which can either be an `EnableLogging` or `DisableLogging` instance.
 If you use `EnableLogging`, the CDK will create a CloudWatch LogGroup and LogStream with all CloudFormation default settings for you, or you can optionally 
