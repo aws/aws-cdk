@@ -897,6 +897,8 @@ The most basic usage looks like this:
 cdk gc --unstable=gc
 ```
 
+This will garbage collect all unused assets in all environments of the existing CDK App.
+
 To specify one type of asset, use the `type` option (options are `all`, `s3`, `ecr`):
 
 ```console
