@@ -10,8 +10,9 @@ import { ISDK } from './aws-auth/sdk';
 import { CredentialsOptions, SdkForEnvironment, SdkProvider } from './aws-auth/sdk-provider';
 import { deployStack, DeployStackResult, destroyStack, DeploymentMethod } from './deploy-stack';
 import { EnvironmentResources, EnvironmentResourcesRegistry } from './environment-resources';
-import { HotswapMode } from './hotswap/common';
+import { HotswapMode, HotswapPropertyOverrides } from './hotswap/common';
 import { loadCurrentTemplateWithNestedStacks, loadCurrentTemplate, RootTemplateWithNestedStacks } from './nested-stack-helpers';
+import { determineAllowCrossAccountAssetPublishing } from './util/checks';
 import { CloudFormationStack, Template, ResourcesToImport, ResourceIdentifierSummaries, stabilizeStack, uploadStackTemplateAssets } from './util/cloudformation';
 import { StackActivityMonitor, StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
 import { StackEventPoller } from './util/cloudformation/stack-event-poller';
@@ -180,6 +181,11 @@ export interface DeployStackOptions {
    * @default - `HotswapMode.FULL_DEPLOYMENT` for regular deployments, `HotswapMode.HOTSWAP_ONLY` for 'watch' deployments
    */
   readonly hotswap?: HotswapMode;
+
+  /**
+  * Properties that configure hotswap behavior
+  */
+  readonly hotswapPropertyOverrides?: HotswapPropertyOverrides;
 
   /**
    * The extra string to append to the User-Agent header when performing AWS SDK calls.
@@ -384,6 +390,7 @@ export class Deployments {
   private readonly publisherCache = new Map<AssetManifest, cdk_assets.AssetPublishing>();
   private readonly environmentResources: EnvironmentResourcesRegistry;
 
+  private _allowCrossAccountAssetPublishing: boolean | undefined;
   constructor(private readonly props: DeploymentsProps) {
     this.sdkProvider = props.sdkProvider;
     this.environmentResources = new EnvironmentResourcesRegistry(props.toolkitStackName);
@@ -496,6 +503,7 @@ export class Deployments {
       ci: options.ci,
       rollback: options.rollback,
       hotswap: options.hotswap,
+      hotswapPropertyOverrides: options.hotswapPropertyOverrides,
       extraUserAgent: options.extraUserAgent,
       resourcesToImport: options.resourcesToImport,
       overrideTemplate: options.overrideTemplate,
@@ -709,23 +717,23 @@ export class Deployments {
   }
 
   /**
-    * Try to use the bootstrap lookupRole. There are two scenarios that are handled here
-    *  1. The lookup role may not exist (it was added in bootstrap stack version 7)
-    *  2. The lookup role may not have the correct permissions (ReadOnlyAccess was added in
-    *      bootstrap stack version 8)
-    *
-    * In the case of 1 (lookup role doesn't exist) `forEnvironment` will either:
-    *   1. Return the default credentials if the default credentials are for the stack account
-    *   2. Throw an error if the default credentials are not for the stack account.
-    *
-    * If we successfully assume the lookup role we then proceed to 2 and check whether the bootstrap
-    * stack version is valid. If it is not we throw an error which should be handled in the calling
-    * function (and fallback to use a different role, etc)
-    *
-    * If we do not successfully assume the lookup role, but do get back the default credentials
-    * then return those and note that we are returning the default credentials. The calling
-    * function can then decide to use them or fallback to another role.
-    */
+   * Try to use the bootstrap lookupRole. There are two scenarios that are handled here
+   *  1. The lookup role may not exist (it was added in bootstrap stack version 7)
+   *  2. The lookup role may not have the correct permissions (ReadOnlyAccess was added in
+   *      bootstrap stack version 8)
+   *
+   * In the case of 1 (lookup role doesn't exist) `forEnvironment` will either:
+   *   1. Return the default credentials if the default credentials are for the stack account
+   *   2. Throw an error if the default credentials are not for the stack account.
+   *
+   * If we successfully assume the lookup role we then proceed to 2 and check whether the bootstrap
+   * stack version is valid. If it is not we throw an error which should be handled in the calling
+   * function (and fallback to use a different role, etc)
+   *
+   * If we do not successfully assume the lookup role, but do get back the default credentials
+   * then return those and note that we are returning the default credentials. The calling
+   * function can then decide to use them or fallback to another role.
+   */
   public async prepareSdkWithLookupRoleFor(
     stack: cxapi.CloudFormationStackArtifact,
   ): Promise<PreparedSdkWithLookupRoleForEnvironment> {
@@ -808,7 +816,10 @@ export class Deployments {
    */
   public async publishAssets(asset: cxapi.AssetManifestArtifact, options: PublishStackAssetsOptions) {
     const { manifest, stackEnv } = await this.prepareAndValidateAssets(asset, options);
-    await publishAssets(manifest, this.sdkProvider, stackEnv, options.publishOptions);
+    await publishAssets(manifest, this.sdkProvider, stackEnv, {
+      ...options.publishOptions,
+      allowCrossAccount: await this.allowCrossAccountAssetPublishingForEnv(options.stack),
+    });
   }
 
   /**
@@ -846,10 +857,19 @@ export class Deployments {
 
     // No need to validate anymore, we already did that during build
     const publisher = this.cachedPublisher(assetManifest, stackEnv, options.stackName);
-    await publisher.publishEntry(asset);
+    // eslint-disable-next-line no-console
+    await publisher.publishEntry(asset, { allowCrossAccount: await this.allowCrossAccountAssetPublishingForEnv(options.stack) });
     if (publisher.hasFailures) {
       throw new Error(`Failed to publish asset ${asset.id}`);
     }
+  }
+
+  private async allowCrossAccountAssetPublishingForEnv(stack: cxapi.CloudFormationStackArtifact): Promise<boolean> {
+    if (this._allowCrossAccountAssetPublishing === undefined) {
+      const { stackSdk: sdk } = await this.prepareSdkFor(stack, undefined, Mode.ForReading);
+      this._allowCrossAccountAssetPublishing = await determineAllowCrossAccountAssetPublishing(sdk, this.props.toolkitStackName);
+    }
+    return this._allowCrossAccountAssetPublishing;
   }
 
   /**
