@@ -115,25 +115,25 @@ export interface PipeProps {
   readonly logDestinations?: ILogDestination[];
 
   /**
-    * The level of logging detail to include.
-    *
-    * This applies to all log destinations for the pipe.
-    *
-    * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-logs.html
-    * @default - LogLevel.ERROR
-    */
+   * The level of logging detail to include.
+   *
+   * This applies to all log destinations for the pipe.
+   *
+   * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-logs.html
+   * @default - LogLevel.ERROR
+   */
   readonly logLevel?: LogLevel;
 
   /**
-    * Whether the execution data (specifically, the `payload` , `awsRequest` , and `awsResponse` fields) is included in the log messages for this pipe.
-    *
-    * This applies to all log destinations for the pipe.
-    *
-    * For more information, see [Including execution data in logs](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-logs.html#eb-pipes-logs-execution-data) and the [message schema](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-logs-schema.html) in the *Amazon EventBridge User Guide* .
-    *
-    * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipelogconfiguration.html#cfn-pipes-pipe-pipelogconfiguration-includeexecutiondata
-    * @default - none
-    */
+   * Whether the execution data (specifically, the `payload` , `awsRequest` , and `awsResponse` fields) is included in the log messages for this pipe.
+   *
+   * This applies to all log destinations for the pipe.
+   *
+   * For more information, see [Including execution data in logs](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-logs.html#eb-pipes-logs-execution-data) and the [message schema](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-logs-schema.html) in the *Amazon EventBridge User Guide* .
+   *
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipelogconfiguration.html#cfn-pipes-pipe-pipelogconfiguration-includeexecutiondata
+   * @default - none
+   */
   readonly logIncludeExecutionData?: IncludeExecutionData[];
 
   /**

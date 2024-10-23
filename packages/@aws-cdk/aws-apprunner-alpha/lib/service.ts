@@ -435,8 +435,8 @@ export abstract class Source {
   }
 
   /**
-    * Called when the Job is initialized to allow this object to bind.
-    */
+   * Called when the Job is initialized to allow this object to bind.
+   */
   public abstract bind(scope: Construct): SourceConfig;
 }
 

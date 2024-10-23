@@ -68,7 +68,7 @@ export interface SharedOptions {
   readonly lookups?: boolean;
 
   /**
-    * Ignores synthesis errors, which will likely produce an invalid output
+   * Ignores synthesis errors, which will likely produce an invalid output
    *
    * @default false
    */

@@ -711,23 +711,23 @@ export class Deployments {
   }
 
   /**
-    * Try to use the bootstrap lookupRole. There are two scenarios that are handled here
-    *  1. The lookup role may not exist (it was added in bootstrap stack version 7)
-    *  2. The lookup role may not have the correct permissions (ReadOnlyAccess was added in
-    *      bootstrap stack version 8)
-    *
-    * In the case of 1 (lookup role doesn't exist) `forEnvironment` will either:
-    *   1. Return the default credentials if the default credentials are for the stack account
-    *   2. Throw an error if the default credentials are not for the stack account.
-    *
-    * If we successfully assume the lookup role we then proceed to 2 and check whether the bootstrap
-    * stack version is valid. If it is not we throw an error which should be handled in the calling
-    * function (and fallback to use a different role, etc)
-    *
-    * If we do not successfully assume the lookup role, but do get back the default credentials
-    * then return those and note that we are returning the default credentials. The calling
-    * function can then decide to use them or fallback to another role.
-    */
+   * Try to use the bootstrap lookupRole. There are two scenarios that are handled here
+   *  1. The lookup role may not exist (it was added in bootstrap stack version 7)
+   *  2. The lookup role may not have the correct permissions (ReadOnlyAccess was added in
+   *      bootstrap stack version 8)
+   *
+   * In the case of 1 (lookup role doesn't exist) `forEnvironment` will either:
+   *   1. Return the default credentials if the default credentials are for the stack account
+   *   2. Throw an error if the default credentials are not for the stack account.
+   *
+   * If we successfully assume the lookup role we then proceed to 2 and check whether the bootstrap
+   * stack version is valid. If it is not we throw an error which should be handled in the calling
+   * function (and fallback to use a different role, etc)
+   *
+   * If we do not successfully assume the lookup role, but do get back the default credentials
+   * then return those and note that we are returning the default credentials. The calling
+   * function can then decide to use them or fallback to another role.
+   */
   public async prepareSdkWithLookupRoleFor(
     stack: cxapi.CloudFormationStackArtifact,
   ): Promise<PreparedSdkWithLookupRoleForEnvironment> {

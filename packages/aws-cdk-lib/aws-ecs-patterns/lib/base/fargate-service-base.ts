@@ -36,40 +36,40 @@ export interface FargateServiceBaseProps {
   readonly cpu?: number;
 
   /**
-    * The amount (in MiB) of memory used by the task.
-    *
-    * This field is required and you must use one of the following values, which determines your range of valid values
-    * for the cpu parameter:
-    *
-    * 512 (0.5 GB), 1024 (1 GB), 2048 (2 GB) - Available cpu values: 256 (.25 vCPU)
-    *
-    * 1024 (1 GB), 2048 (2 GB), 3072 (3 GB), 4096 (4 GB) - Available cpu values: 512 (.5 vCPU)
-    *
-    * 2048 (2 GB), 3072 (3 GB), 4096 (4 GB), 5120 (5 GB), 6144 (6 GB), 7168 (7 GB), 8192 (8 GB) - Available cpu values: 1024 (1 vCPU)
-    *
-    * Between 4096 (4 GB) and 16384 (16 GB) in increments of 1024 (1 GB) - Available cpu values: 2048 (2 vCPU)
-    *
-    * Between 8192 (8 GB) and 30720 (30 GB) in increments of 1024 (1 GB) - Available cpu values: 4096 (4 vCPU)
-    *
-    * Between 16384 (16 GB) and 61440 (60 GB) in increments of 4096 (4 GB) - Available cpu values: 8192 (8 vCPU)
-    *
-    * Between 32768 (32 GB) and 122880 (120 GB) in increments of 8192 (8 GB) - Available cpu values: 16384 (16 vCPU)
-    *
-    * This default is set in the underlying FargateTaskDefinition construct.
-    *
-    * @default 512
-    */
+   * The amount (in MiB) of memory used by the task.
+   *
+   * This field is required and you must use one of the following values, which determines your range of valid values
+   * for the cpu parameter:
+   *
+   * 512 (0.5 GB), 1024 (1 GB), 2048 (2 GB) - Available cpu values: 256 (.25 vCPU)
+   *
+   * 1024 (1 GB), 2048 (2 GB), 3072 (3 GB), 4096 (4 GB) - Available cpu values: 512 (.5 vCPU)
+   *
+   * 2048 (2 GB), 3072 (3 GB), 4096 (4 GB), 5120 (5 GB), 6144 (6 GB), 7168 (7 GB), 8192 (8 GB) - Available cpu values: 1024 (1 vCPU)
+   *
+   * Between 4096 (4 GB) and 16384 (16 GB) in increments of 1024 (1 GB) - Available cpu values: 2048 (2 vCPU)
+   *
+   * Between 8192 (8 GB) and 30720 (30 GB) in increments of 1024 (1 GB) - Available cpu values: 4096 (4 vCPU)
+   *
+   * Between 16384 (16 GB) and 61440 (60 GB) in increments of 4096 (4 GB) - Available cpu values: 8192 (8 vCPU)
+   *
+   * Between 32768 (32 GB) and 122880 (120 GB) in increments of 8192 (8 GB) - Available cpu values: 16384 (16 vCPU)
+   *
+   * This default is set in the underlying FargateTaskDefinition construct.
+   *
+   * @default 512
+   */
   readonly memoryLimitMiB?: number;
 
   /**
-    * The amount (in GiB) of ephemeral storage to be allocated to the task.
-    *
-    * The minimum supported value is `21` GiB and the maximum supported value is `200` GiB.
-    *
-    * Only supported in Fargate platform version 1.4.0 or later.
-    *
-    * @default Undefined, in which case, the task will receive 20GiB ephemeral storage.
-    */
+   * The amount (in GiB) of ephemeral storage to be allocated to the task.
+   *
+   * The minimum supported value is `21` GiB and the maximum supported value is `200` GiB.
+   *
+   * Only supported in Fargate platform version 1.4.0 or later.
+   *
+   * @default Undefined, in which case, the task will receive 20GiB ephemeral storage.
+   */
   readonly ephemeralStorageGiB?: number;
 
   /**
