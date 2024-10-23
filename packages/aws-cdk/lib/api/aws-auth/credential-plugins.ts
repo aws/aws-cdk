@@ -67,6 +67,13 @@ export class CredentialPlugins {
         ? await (providerOrCreds as any).resolvePromise()
         : providerOrCreds;
 
+      // Another layer of backwards compatibility: in SDK v2, the credentials object
+      // is both a container and a provider. So we need to force the refresh using getPromise.
+      // In SDK v3, these two responsibilities are separate, and the getPromise doesn't exist.
+      if ((credentials as any).getPromise) {
+        await (credentials as any).getPromise();
+      }
+
       return { credentials, pluginName: source.name };
     }
     return undefined;
