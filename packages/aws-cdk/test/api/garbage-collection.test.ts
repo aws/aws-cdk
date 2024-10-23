@@ -1,31 +1,34 @@
 /* eslint-disable import/order */
 
-const mockGarbageCollect = jest.fn();
-
+import {
+  CloudFormationClient, GetTemplateCommand,
+  GetTemplateSummaryCommand,
+  ListStacksCommand,
+  Stack,
+} from '@aws-sdk/client-cloudformation';
 import { GarbageCollector, ToolkitInfo } from '../../lib/api';
-import { ActiveAssetCache, BackgroundStackRefresh, BackgroundStackRefreshProps } from '../../lib/api/garbage-collection/stack-refresh';
 import { mockBootstrapStack, MockSdk, MockSdkProvider } from '../util/mock-sdk';
+import { mockClient } from 'aws-sdk-client-mock';
+import {
+  DeleteObjectTaggingCommand,
+  DeleteObjectsCommand,
+  GetObjectTaggingCommand,
+  ListObjectsV2Command,
+  PutObjectTaggingCommand,
+  S3Client,
+} from '@aws-sdk/client-s3';
+import { ActiveAssetCache, BackgroundStackRefresh, BackgroundStackRefreshProps } from '../../lib/api/garbage-collection/stack-refresh';
 
 let garbageCollector: GarbageCollector;
-let mockListStacks: (params: AWS.CloudFormation.Types.ListStacksInput) => AWS.CloudFormation.Types.ListStacksOutput;
-let mockDescribeStacks: (params: AWS.CloudFormation.Types.DescribeStacksInput) => AWS.CloudFormation.Types.DescribeStacksOutput;
-let mockGetTemplateSummary: (params: AWS.CloudFormation.Types.GetTemplateSummaryInput) => AWS.CloudFormation.Types.GetTemplateSummaryOutput;
-let mockGetTemplate: (params: AWS.CloudFormation.Types.GetTemplateInput) => AWS.CloudFormation.Types.GetTemplateOutput;
-let mockListObjectsV2: (params: AWS.S3.Types.ListObjectsV2Request) => AWS.S3.Types.ListObjectsV2Output;
-let mockGetObjectTagging: (params: AWS.S3.Types.GetObjectTaggingRequest) => AWS.S3.Types.GetObjectTaggingOutput;
-let mockDeleteObjects: (params: AWS.S3.Types.DeleteObjectsRequest) => AWS.S3.Types.DeleteObjectsOutput;
-let mockDeleteObjectTagging: (params: AWS.S3.Types.DeleteObjectTaggingRequest) => AWS.S3.Types.DeleteObjectTaggingOutput;
-let mockPutObjectTagging: (params: AWS.S3.Types.PutObjectTaggingRequest) => AWS.S3.Types.PutObjectTaggingOutput;
 
 let stderrMock: jest.SpyInstance;
-let sdk: MockSdkProvider;
+let sdk: MockSdkProvider = new MockSdkProvider();
 
 const ISOLATED_TAG = 'aws-cdk:isolated';
 const DAY = 24 * 60 * 60 * 1000; // Number of milliseconds in a day
 
-function mockTheToolkitInfo(stackProps: Partial<AWS.CloudFormation.Stack>) {
-  const mockSdk = new MockSdk();
-  (ToolkitInfo as any).lookup = jest.fn().mockResolvedValue(ToolkitInfo.fromStack(mockBootstrapStack(mockSdk, stackProps)));
+function mockTheToolkitInfo(stackProps: Partial<Stack>) {
+  (ToolkitInfo as any).lookup = jest.fn().mockResolvedValue(ToolkitInfo.fromStack(mockBootstrapStack(stackProps)));
 }
 
 function gc(props: {
@@ -53,10 +56,12 @@ function gc(props: {
 }
 
 beforeEach(() => {
-  sdk = new MockSdkProvider({ realSdk: false });
+  // sdk = new MockSdkProvider({ realSdk: false });
   // By default, we'll return a non-found toolkit info
   (ToolkitInfo as any).lookup = jest.fn().mockResolvedValue(ToolkitInfo.bootstrapStackNotFoundInfo('GarbageStack'));
-  stderrMock = jest.spyOn(process.stderr, 'write').mockImplementation(() => { return true; });
+  stderrMock = jest.spyOn(process.stderr, 'write').mockImplementation(() => {
+    return true;
+  });
 });
 
 afterEach(() => {
@@ -64,61 +69,6 @@ afterEach(() => {
 });
 
 describe('Garbage Collection', () => {
-  beforeEach(() => {
-    mockListStacks = jest.fn().mockResolvedValue({
-      StackSummaries: [
-        { StackName: 'Stack1', StackStatus: 'CREATE_COMPLETE' },
-        { StackName: 'Stack2', StackStatus: 'UPDATE_COMPLETE' },
-      ],
-    });
-    mockGetTemplateSummary = jest.fn().mockReturnValue({
-      Parameters: [{
-        ParameterKey: 'BootstrapVersion',
-        DefaultValue: '/cdk-bootstrap/abcde/version',
-      }],
-    });
-    mockGetTemplate = jest.fn().mockReturnValue({
-      TemplateBody: 'abcde',
-    });
-    mockListObjectsV2 = jest.fn().mockImplementation(() => {
-      return Promise.resolve({
-        Contents: [
-          { Key: 'asset1', LastModified: new Date(Date.now() - (2 * DAY)) },
-          { Key: 'asset2', LastModified: new Date(Date.now() - (10 * DAY)) },
-          { Key: 'asset3', LastModified: new Date(Date.now() - (100 * DAY)) },
-        ],
-        KeyCount: 3,
-      });
-    });
-    mockGetObjectTagging = jest.fn().mockImplementation((params) => {
-      return Promise.resolve({
-        TagSet: params.Key === 'asset2' ? [{ Key: ISOLATED_TAG, Value: new Date().toISOString() }] : [],
-      });
-    });
-    mockPutObjectTagging = jest.fn();
-    mockDeleteObjects = jest.fn();
-    mockDeleteObjectTagging = jest.fn();
-    mockDescribeStacks = jest.fn();
-
-    sdk.stubCloudFormation({
-      listStacks: mockListStacks,
-      getTemplateSummary: mockGetTemplateSummary,
-      getTemplate: mockGetTemplate,
-      describeStacks: mockDescribeStacks,
-    });
-    sdk.stubS3({
-      listObjectsV2: mockListObjectsV2,
-      getObjectTagging: mockGetObjectTagging,
-      deleteObjects: mockDeleteObjects,
-      deleteObjectTagging: mockDeleteObjectTagging,
-      putObjectTagging: mockPutObjectTagging,
-    });
-  });
-
-  afterEach(() => {
-    mockGarbageCollect.mockClear();
-  });
-
   test('rollbackBufferDays = 0 -- assets to be deleted', async () => {
     mockTheToolkitInfo({
       Outputs: [
@@ -129,6 +79,9 @@ describe('Garbage Collection', () => {
       ],
     });
 
+    const s3Client = mockS3Client();
+    const cfnClient = mockCfnClient();
+
     garbageCollector = gc({
       type: 's3',
       rollbackBufferDays: 0,
@@ -136,14 +89,15 @@ describe('Garbage Collection', () => {
     });
     await garbageCollector.garbageCollect();
 
-    expect(mockListStacks).toHaveBeenCalledTimes(1);
-    expect(mockListObjectsV2).toHaveBeenCalledTimes(2);
+    expect(cfnClient).toHaveReceivedCommandTimes(ListStacksCommand, 1);
+    expect(s3Client).toHaveReceivedCommandTimes(ListObjectsV2Command, 2);
+
     // no tagging
-    expect(mockGetObjectTagging).toHaveBeenCalledTimes(0);
-    expect(mockPutObjectTagging).toHaveBeenCalledTimes(0);
+    expect(s3Client).toHaveReceivedCommandTimes(GetObjectTaggingCommand, 0);
+    expect(s3Client).toHaveReceivedCommandTimes(PutObjectTaggingCommand, 0);
 
     // assets are to be deleted
-    expect(mockDeleteObjects).toHaveBeenCalledWith({
+    expect(s3Client).toHaveReceivedCommandWith(DeleteObjectsCommand, {
       Bucket: 'BUCKET_NAME',
       Delete: {
         Objects: [
@@ -166,6 +120,9 @@ describe('Garbage Collection', () => {
       ],
     });
 
+    const s3Client = mockS3Client();
+    const cfnClient = mockCfnClient();
+
     garbageCollector = gc({
       type: 's3',
       rollbackBufferDays: 3,
@@ -173,15 +130,15 @@ describe('Garbage Collection', () => {
     });
     await garbageCollector.garbageCollect();
 
-    expect(mockListStacks).toHaveBeenCalledTimes(1);
-    expect(mockListObjectsV2).toHaveBeenCalledTimes(2);
+    expect(cfnClient).toHaveReceivedCommandTimes(ListStacksCommand, 1);
+    expect(s3Client).toHaveReceivedCommandTimes(ListObjectsV2Command, 2);
 
     // assets tagged
-    expect(mockGetObjectTagging).toHaveBeenCalledTimes(3);
-    expect(mockPutObjectTagging).toHaveBeenCalledTimes(2); // one asset already has the tag
+    expect(s3Client).toHaveReceivedCommandTimes(GetObjectTaggingCommand, 3);
+    expect(s3Client).toHaveReceivedCommandTimes(PutObjectTaggingCommand, 2);
 
     // no deleting
-    expect(mockDeleteObjects).toHaveBeenCalledTimes(0);
+    expect(s3Client).toHaveReceivedCommandTimes(DeleteObjectsCommand, 0);
   });
 
   test('type = ecr -- throws error', async () => {
@@ -211,6 +168,8 @@ describe('Garbage Collection', () => {
       ],
     });
 
+    const s3Client = mockS3Client();
+
     garbageCollector = gc({
       type: 's3',
       rollbackBufferDays: 0,
@@ -219,7 +178,7 @@ describe('Garbage Collection', () => {
     });
     await garbageCollector.garbageCollect();
 
-    expect(mockDeleteObjects).toHaveBeenCalledWith({
+    expect(s3Client).toHaveReceivedCommandWith(DeleteObjectsCommand, {
       Bucket: 'BUCKET_NAME',
       Delete: {
         Objects: [
@@ -241,6 +200,9 @@ describe('Garbage Collection', () => {
       ],
     });
 
+    const s3Client = mockS3Client();
+    const cfnClient = mockCfnClient();
+
     garbageCollector = garbageCollector = gc({
       type: 's3',
       rollbackBufferDays: 3,
@@ -248,15 +210,15 @@ describe('Garbage Collection', () => {
     });
     await garbageCollector.garbageCollect();
 
-    expect(mockListStacks).toHaveBeenCalledTimes(1);
-    expect(mockListObjectsV2).toHaveBeenCalledTimes(2);
+    expect(cfnClient).toHaveReceivedCommandTimes(ListStacksCommand, 1);
+    expect(s3Client).toHaveReceivedCommandTimes(ListObjectsV2Command, 2);
 
     // get tags, but dont put tags
-    expect(mockGetObjectTagging).toHaveBeenCalledTimes(3);
-    expect(mockPutObjectTagging).toHaveBeenCalledTimes(0);
+    expect(s3Client).toHaveReceivedCommandTimes(GetObjectTaggingCommand, 3);
+    expect(s3Client).toHaveReceivedCommandTimes(PutObjectTaggingCommand, 0);
 
     // no deleting
-    expect(mockDeleteObjects).toHaveBeenCalledTimes(0);
+    expect(s3Client).toHaveReceivedCommandTimes(DeleteObjectsCommand, 0);
   });
 
   test('action = tag -- does not delete', async () => {
@@ -269,6 +231,9 @@ describe('Garbage Collection', () => {
       ],
     });
 
+    const s3Client = mockS3Client();
+    const cfnClient = mockCfnClient();
+
     garbageCollector = garbageCollector = gc({
       type: 's3',
       rollbackBufferDays: 3,
@@ -276,15 +241,15 @@ describe('Garbage Collection', () => {
     });
     await garbageCollector.garbageCollect();
 
-    expect(mockListStacks).toHaveBeenCalledTimes(1);
-    expect(mockListObjectsV2).toHaveBeenCalledTimes(2);
+    expect(cfnClient).toHaveReceivedCommandTimes(ListStacksCommand, 1);
+    expect(s3Client).toHaveReceivedCommandTimes(ListObjectsV2Command, 2);
 
     // tags objects
-    expect(mockGetObjectTagging).toHaveBeenCalledTimes(3);
-    expect(mockPutObjectTagging).toHaveBeenCalledTimes(2); // one object already has the tag
+    expect(s3Client).toHaveReceivedCommandTimes(GetObjectTaggingCommand, 3);
+    expect(s3Client).toHaveReceivedCommandTimes(PutObjectTaggingCommand, 2); // one object already has the tag
 
     // no deleting
-    expect(mockDeleteObjects).toHaveBeenCalledTimes(0);
+    expect(s3Client).toHaveReceivedCommandTimes(DeleteObjectsCommand, 0);
   });
 
   test('action = delete-tagged -- does not tag', async () => {
@@ -297,6 +262,9 @@ describe('Garbage Collection', () => {
       ],
     });
 
+    const s3Client = mockS3Client();
+    const cfnClient = mockCfnClient();
+
     garbageCollector = garbageCollector = gc({
       type: 's3',
       rollbackBufferDays: 3,
@@ -304,12 +272,12 @@ describe('Garbage Collection', () => {
     });
     await garbageCollector.garbageCollect();
 
-    expect(mockListStacks).toHaveBeenCalledTimes(1);
-    expect(mockListObjectsV2).toHaveBeenCalledTimes(2);
+    expect(cfnClient).toHaveReceivedCommandTimes(ListStacksCommand, 1);
+    expect(s3Client).toHaveReceivedCommandTimes(ListObjectsV2Command, 2);
 
     // get tags, but dont put tags
-    expect(mockGetObjectTagging).toHaveBeenCalledTimes(3);
-    expect(mockPutObjectTagging).toHaveBeenCalledTimes(0);
+    expect(s3Client).toHaveReceivedCommandTimes(GetObjectTaggingCommand, 3);
+    expect(s3Client).toHaveReceivedCommandTimes(PutObjectTaggingCommand, 0);
   });
 
   test('ignore objects that are modified after gc start', async () => {
@@ -322,22 +290,15 @@ describe('Garbage Collection', () => {
       ],
     });
 
-    const mockListObjectsV2Future = jest.fn().mockImplementation(() => {
-      return Promise.resolve({
-        Contents: [
-          { Key: 'asset1', LastModified: new Date(0) },
-          { Key: 'asset2', LastModified: new Date(0) },
-          { Key: 'asset3', LastModified: new Date(new Date().setFullYear(new Date().getFullYear() + 1)) }, // future date ignored everywhere
-        ],
-        KeyCount: 3,
-      });
-    });
+    const s3Client = mockS3Client();
 
-    sdk.stubS3({
-      listObjectsV2: mockListObjectsV2Future,
-      getObjectTagging: mockGetObjectTagging,
-      deleteObjects: mockDeleteObjects,
-      putObjectTagging: mockPutObjectTagging,
+    s3Client.on(ListObjectsV2Command).resolves({
+      Contents: [
+        { Key: 'asset1', LastModified: new Date(0) },
+        { Key: 'asset2', LastModified: new Date(0) },
+        { Key: 'asset3', LastModified: new Date(new Date().setFullYear(new Date().getFullYear() + 1)) }, // future date ignored everywhere
+      ],
+      KeyCount: 3,
     });
 
     garbageCollector = garbageCollector = gc({
@@ -348,7 +309,7 @@ describe('Garbage Collection', () => {
     await garbageCollector.garbageCollect();
 
     // assets are to be deleted
-    expect(mockDeleteObjects).toHaveBeenCalledWith({
+    expect(s3Client).toHaveReceivedCommandWith(DeleteObjectsCommand, {
       Bucket: 'BUCKET_NAME',
       Delete: {
         Objects: [
@@ -375,6 +336,8 @@ describe('Garbage Collection', () => {
       ],
     });
 
+    const cfnClient = mockCfnClient();
+
     garbageCollector = garbageCollector = gc({
       type: 's3',
       rollbackBufferDays: 3,
@@ -382,8 +345,8 @@ describe('Garbage Collection', () => {
     });
     await garbageCollector.garbageCollect();
 
-    expect(mockGetTemplateSummary).toHaveBeenCalledTimes(2);
-    expect(mockGetTemplate).toHaveBeenCalledTimes(0);
+    expect(cfnClient).toHaveReceivedCommandTimes(GetTemplateSummaryCommand, 2);
+    expect(cfnClient).toHaveReceivedCommandTimes(GetTemplateCommand, 0);
   });
 
   test('parameter hashes are included', async () => {
@@ -396,17 +359,14 @@ describe('Garbage Collection', () => {
       ],
     });
 
-    const mockGetTemplateSummaryAssets = jest.fn().mockReturnValue({
+    const s3Client = mockS3Client();
+    const cfnClient = mockCfnClient();
+
+    cfnClient.on(GetTemplateSummaryCommand).resolves({
       Parameters: [{
         ParameterKey: 'AssetParametersasset1',
         DefaultValue: 'asset1',
       }],
-    });
-
-    sdk.stubCloudFormation({
-      listStacks: mockListStacks,
-      getTemplateSummary: mockGetTemplateSummaryAssets,
-      getTemplate: mockGetTemplate,
     });
 
     garbageCollector = garbageCollector = gc({
@@ -416,14 +376,15 @@ describe('Garbage Collection', () => {
     });
     await garbageCollector.garbageCollect();
 
-    expect(mockListStacks).toHaveBeenCalledTimes(1);
-    expect(mockListObjectsV2).toHaveBeenCalledTimes(2);
+    expect(cfnClient).toHaveReceivedCommandTimes(ListStacksCommand, 1);
+    expect(s3Client).toHaveReceivedCommandTimes(ListObjectsV2Command, 2);
+
     // no tagging
-    expect(mockGetObjectTagging).toHaveBeenCalledTimes(0);
-    expect(mockPutObjectTagging).toHaveBeenCalledTimes(0);
+    expect(s3Client).toHaveReceivedCommandTimes(GetObjectTaggingCommand, 0);
+    expect(s3Client).toHaveReceivedCommandTimes(PutObjectTaggingCommand, 0);
 
     // assets are to be deleted
-    expect(mockDeleteObjects).toHaveBeenCalledWith({
+    expect(s3Client).toHaveReceivedCommandWith(DeleteObjectsCommand, {
       Bucket: 'BUCKET_NAME',
       Delete: {
         Objects: [
@@ -446,26 +407,24 @@ describe('Garbage Collection', () => {
       ],
     });
 
+    const s3Client = mockS3Client();
+    const cfnClient = mockCfnClient();
+
     // Mock the listStacks call
-    const mockListStacksStatus = jest.fn()
-      .mockResolvedValueOnce({
+    cfnClient
+      .on(ListStacksCommand)
+      .resolvesOnce({
         StackSummaries: [
-          { StackName: 'Stack1', StackStatus: 'REVIEW_IN_PROGRESS' },
-          { StackName: 'Stack2', StackStatus: 'UPDATE_COMPLETE' },
+          { StackName: 'Stack1', StackStatus: 'REVIEW_IN_PROGRESS', CreationTime: new Date() },
+          { StackName: 'Stack2', StackStatus: 'UPDATE_COMPLETE', CreationTime: new Date() },
         ],
       })
-      .mockResolvedValueOnce({
+      .resolvesOnce({
         StackSummaries: [
-          { StackName: 'Stack1', StackStatus: 'UPDATE_COMPLETE' },
-          { StackName: 'Stack2', StackStatus: 'UPDATE_COMPLETE' },
+          { StackName: 'Stack1', StackStatus: 'UPDATE_COMPLETE', CreationTime: new Date() },
+          { StackName: 'Stack2', StackStatus: 'UPDATE_COMPLETE', CreationTime: new Date() },
         ],
       });
-
-    sdk.stubCloudFormation({
-      listStacks: mockListStacksStatus,
-      getTemplateSummary: mockGetTemplateSummary,
-      getTemplate: mockGetTemplate,
-    });
 
     garbageCollector = garbageCollector = gc({
       type: 's3',
@@ -475,15 +434,15 @@ describe('Garbage Collection', () => {
     await garbageCollector.garbageCollect();
 
     // list are called as expected
-    expect(mockListStacksStatus).toHaveBeenCalledTimes(2);
+    expect(cfnClient).toHaveReceivedCommandTimes(ListStacksCommand, 2);
 
     // everything else runs as expected:
     // assets tagged
-    expect(mockGetObjectTagging).toHaveBeenCalledTimes(3);
-    expect(mockPutObjectTagging).toHaveBeenCalledTimes(2); // one object already has the tag
+    expect(s3Client).toHaveReceivedCommandTimes(GetObjectTaggingCommand, 3);
+    expect(s3Client).toHaveReceivedCommandTimes(PutObjectTaggingCommand, 2); // one object already has the tag
 
     // no deleting
-    expect(mockDeleteObjects).toHaveBeenCalledTimes(0);
+    expect(s3Client).toHaveReceivedCommandTimes(DeleteObjectsCommand, 0);
   }, 60000);
 
   test('fails when stackStatus stuck in REVIEW_IN_PROGRESS', async () => {
@@ -496,19 +455,14 @@ describe('Garbage Collection', () => {
       ],
     });
 
-    // Mock the listStacks call
-    const mockListStacksStatus = jest.fn()
-      .mockResolvedValue({
-        StackSummaries: [
-          { StackName: 'Stack1', StackStatus: 'REVIEW_IN_PROGRESS' },
-          { StackName: 'Stack2', StackStatus: 'UPDATE_COMPLETE' },
-        ],
-      });
+    const cfnClient = mockCfnClient();
 
-    sdk.stubCloudFormation({
-      listStacks: mockListStacksStatus,
-      getTemplateSummary: mockGetTemplateSummary,
-      getTemplate: mockGetTemplate,
+    // Mock the listStacks call
+    cfnClient.on(ListStacksCommand).resolves({
+      StackSummaries: [
+        { StackName: 'Stack1', StackStatus: 'REVIEW_IN_PROGRESS', CreationTime: new Date() },
+        { StackName: 'Stack2', StackStatus: 'UPDATE_COMPLETE', CreationTime: new Date() },
+      ],
     });
 
     garbageCollector = garbageCollector = gc({
@@ -520,78 +474,52 @@ describe('Garbage Collection', () => {
 
     await expect(garbageCollector.garbageCollect()).rejects.toThrow(/Stacks still in REVIEW_IN_PROGRESS state after waiting/);
   }, 60000);
-});
 
-let mockListObjectsV2Large: (params: AWS.S3.Types.ListObjectsV2Request) => AWS.S3.Types.ListObjectsV2Output;
-let mockGetObjectTaggingLarge: (params: AWS.S3.Types.GetObjectTaggingRequest) => AWS.S3.Types.GetObjectTaggingOutput;
-describe('Garbage Collection with large # of objects', () => {
-  const keyCount = 10000;
-
-  beforeEach(() => {
-    mockListStacks = jest.fn().mockResolvedValue({
+  function mockCfnClient() {
+    const cfnClient = mockClient(CloudFormationClient);
+    cfnClient.on(ListStacksCommand).resolves({
       StackSummaries: [
-        { StackName: 'Stack1', StackStatus: 'CREATE_COMPLETE' },
+        { StackName: 'Stack1', StackStatus: 'CREATE_COMPLETE', CreationTime: new Date() },
+        { StackName: 'Stack2', StackStatus: 'UPDATE_COMPLETE', CreationTime: new Date() },
       ],
     });
-    mockGetTemplateSummary = jest.fn().mockReturnValue({
+
+    cfnClient.on(GetTemplateSummaryCommand).resolves({
       Parameters: [{
         ParameterKey: 'BootstrapVersion',
         DefaultValue: '/cdk-bootstrap/abcde/version',
       }],
     });
-    // add every 5th asset hash to the mock template body: 8000 assets are isolated
-    const mockTemplateBody = [];
-    for (let i = 0; i < keyCount; i+=5) {
-      mockTemplateBody.push(`asset${i}hash`);
-    }
-    mockGetTemplate = jest.fn().mockReturnValue({
-      TemplateBody: mockTemplateBody.join('-'),
+
+    cfnClient.on(GetTemplateCommand).resolves({
+      TemplateBody: 'abcde',
     });
 
-    const contents: { Key: string; LastModified: Date }[] = [];
-    for (let i = 0; i < keyCount; i++) {
-      contents.push({
-        Key: `asset${i}hash`,
-        LastModified: new Date(0),
-      });
-    }
-    mockListObjectsV2Large = jest.fn().mockImplementation(() => {
-      return Promise.resolve({
-        Contents: contents,
-        KeyCount: keyCount,
-      });
+    return cfnClient;
+  }
+
+  function mockS3Client() {
+    const s3Client = mockClient(S3Client);
+
+    s3Client.on(ListObjectsV2Command).resolves({
+      Contents: [
+        { Key: 'asset1', LastModified: new Date(Date.now() - (2 * DAY)) },
+        { Key: 'asset2', LastModified: new Date(Date.now() - (10 * DAY)) },
+        { Key: 'asset3', LastModified: new Date(Date.now() - (100 * DAY)) },
+      ],
+      KeyCount: 3,
     });
 
-    // every other object has the isolated tag: of the 8000 isolated assets, 4000 already are tagged.
-    // of the 2000 in use assets, 1000 are tagged.
-    mockGetObjectTaggingLarge = jest.fn().mockImplementation((params) => {
-      return Promise.resolve({
-        TagSet: Number(params.Key[params.Key.length - 5]) % 2 === 0 ? [{ Key: ISOLATED_TAG, Value: new Date(2000, 1, 1).toISOString() }] : [],
-      });
-    });
-    mockPutObjectTagging = jest.fn();
-    mockDeleteObjects = jest.fn();
-    mockDeleteObjectTagging = jest.fn();
-    mockDescribeStacks = jest.fn();
+    s3Client.on(GetObjectTaggingCommand).callsFake((params) => ({
+      TagSet: params.Key === 'asset2' ? [{ Key: ISOLATED_TAG, Value: new Date().toISOString() }] : [],
+    }));
 
-    sdk.stubCloudFormation({
-      listStacks: mockListStacks,
-      getTemplateSummary: mockGetTemplateSummary,
-      getTemplate: mockGetTemplate,
-      describeStacks: mockDescribeStacks,
-    });
-    sdk.stubS3({
-      listObjectsV2: mockListObjectsV2Large,
-      getObjectTagging: mockGetObjectTaggingLarge,
-      deleteObjects: mockDeleteObjects,
-      deleteObjectTagging: mockDeleteObjectTagging,
-      putObjectTagging: mockPutObjectTagging,
-    });
-  });
+    return s3Client;
+  }
+});
 
-  afterEach(() => {
-    mockGarbageCollect.mockClear();
-  });
+describe('Garbage Collection with large # of objects', () => {
+  const keyCount = 10000;
 
   test('tag only', async () => {
     mockTheToolkitInfo({
@@ -603,6 +531,9 @@ describe('Garbage Collection with large # of objects', () => {
       ],
     });
 
+    const s3Client = mockS3Client();
+    const cfnClient = mockCfnClient();
+
     garbageCollector = garbageCollector = gc({
       type: 's3',
       rollbackBufferDays: 1,
@@ -610,13 +541,13 @@ describe('Garbage Collection with large # of objects', () => {
     });
     await garbageCollector.garbageCollect();
 
-    expect(mockListStacks).toHaveBeenCalledTimes(1);
-    expect(mockListObjectsV2Large).toHaveBeenCalledTimes(2);
+    expect(cfnClient).toHaveReceivedCommandTimes(ListStacksCommand, 1);
+    expect(s3Client).toHaveReceivedCommandTimes(ListObjectsV2Command, 2);
 
     // tagging is performed
-    expect(mockGetObjectTaggingLarge).toHaveBeenCalledTimes(keyCount);
-    expect(mockDeleteObjectTagging).toHaveBeenCalledTimes(1000); // 1000 in use assets are erroneously tagged
-    expect(mockPutObjectTagging).toHaveBeenCalledTimes(5000); // 8000-4000 assets need to be tagged, + 1000 (since untag also calls this)
+    expect(s3Client).toHaveReceivedCommandTimes(GetObjectTaggingCommand, keyCount);
+    expect(s3Client).toHaveReceivedCommandTimes(DeleteObjectTaggingCommand, 1000); // 1000 in use assets are erroneously tagged
+    expect(s3Client).toHaveReceivedCommandTimes(PutObjectTaggingCommand, 5000); // 8000-4000 assets need to be tagged, + 1000 (since untag also calls this)
   });
 
   test('delete-tagged only', async () => {
@@ -629,6 +560,9 @@ describe('Garbage Collection with large # of objects', () => {
       ],
     });
 
+    const s3Client = mockS3Client();
+    const cfnClient = mockCfnClient();
+
     garbageCollector = garbageCollector = gc({
       type: 's3',
       rollbackBufferDays: 1,
@@ -636,13 +570,66 @@ describe('Garbage Collection with large # of objects', () => {
     });
     await garbageCollector.garbageCollect();
 
-    expect(mockListStacks).toHaveBeenCalledTimes(1);
-    expect(mockListObjectsV2Large).toHaveBeenCalledTimes(2);
+    expect(cfnClient).toHaveReceivedCommandTimes(ListStacksCommand, 1);
+    expect(s3Client).toHaveReceivedCommandTimes(ListObjectsV2Command, 2);
 
     // delete previously tagged objects
-    expect(mockGetObjectTaggingLarge).toHaveBeenCalledTimes(keyCount);
-    expect(mockDeleteObjects).toHaveBeenCalledTimes(4); // 4000 isolated assets are already tagged, deleted in batches of 1000
+    expect(s3Client).toHaveReceivedCommandTimes(GetObjectTaggingCommand, keyCount);
+    expect(s3Client).toHaveReceivedCommandTimes(DeleteObjectsCommand, 4); // 4000 isolated assets are already tagged, deleted in batches of 1000
   });
+
+  function mockCfnClient() {
+    const cfnClient = mockClient(CloudFormationClient);
+
+    cfnClient.on(ListStacksCommand).resolves({
+      StackSummaries: [
+        { StackName: 'Stack1', StackStatus: 'CREATE_COMPLETE', CreationTime: new Date() },
+      ],
+    });
+
+    cfnClient.on(GetTemplateSummaryCommand).resolves({
+      Parameters: [{
+        ParameterKey: 'BootstrapVersion',
+        DefaultValue: '/cdk-bootstrap/abcde/version',
+      }],
+    });
+
+    // add every 5th asset hash to the mock template body: 8000 assets are isolated
+    const mockTemplateBody = [];
+    for (let i = 0; i < keyCount; i+=5) {
+      mockTemplateBody.push(`asset${i}hash`);
+    }
+    cfnClient.on(GetTemplateCommand).resolves({
+      TemplateBody: mockTemplateBody.join('-'),
+    });
+
+    return cfnClient;
+  }
+
+  function mockS3Client() {
+    const s3Client = mockClient(S3Client);
+
+    const contents: { Key: string; LastModified: Date }[] = [];
+    for (let i = 0; i < keyCount; i++) {
+      contents.push({
+        Key: `asset${i}hash`,
+        LastModified: new Date(0),
+      });
+    }
+
+    s3Client.on(ListObjectsV2Command).resolves({
+      Contents: contents,
+      KeyCount: keyCount,
+    });
+
+    // every other object has the isolated tag: of the 8000 isolated assets, 4000 already are tagged.
+    // of the 2000 in use assets, 1000 are tagged.
+    s3Client.on(GetObjectTaggingCommand).callsFake((params) => ({
+      TagSet: Number(params.Key[params.Key.length - 5]) % 2 === 0 ? [{ Key: ISOLATED_TAG, Value: new Date(2000, 1, 1).toISOString() }] : [],
+    }));
+
+    return s3Client;
+  }
 });
 
 describe('BackgroundStackRefresh', () => {
@@ -654,37 +641,40 @@ describe('BackgroundStackRefresh', () => {
     jest.useFakeTimers();
     setTimeoutSpy = jest.spyOn(global, 'setTimeout');
 
-    mockListStacks = jest.fn().mockResolvedValue({
-      StackSummaries: [
-        { StackName: 'Stack1', StackStatus: 'CREATE_COMPLETE' },
-        { StackName: 'Stack2', StackStatus: 'UPDATE_COMPLETE' },
-      ],
-    });
-    mockGetTemplateSummary = jest.fn().mockReturnValue({
-      Parameters: [{
-        ParameterKey: 'BootstrapVersion',
-        DefaultValue: '/cdk-bootstrap/abcde/version',
-      }],
-    });
-    mockGetTemplate = jest.fn().mockReturnValue({
-      TemplateBody: 'abcde',
-    });
-
-    sdk.stubCloudFormation({
-      listStacks: mockListStacks,
-      getTemplateSummary: mockGetTemplateSummary,
-      getTemplate: mockGetTemplate,
-      describeStacks: jest.fn(),
-    });
+    const foo = new MockSdk();
 
     refreshProps = {
-      cfn: sdk.mockSdk.cloudFormation(),
+      cfn: foo.cloudFormation(),
       activeAssets: new ActiveAssetCache(),
       maxWaitTime: 60000, // 1 minute
     };
 
     backgroundRefresh = new BackgroundStackRefresh(refreshProps);
   });
+
+  function mockCfnClient() {
+    const cfnClient = mockClient(CloudFormationClient);
+
+    cfnClient.on(ListStacksCommand).resolves({
+      StackSummaries: [
+        { StackName: 'Stack1', StackStatus: 'CREATE_COMPLETE', CreationTime: new Date() },
+        { StackName: 'Stack2', StackStatus: 'UPDATE_COMPLETE', CreationTime: new Date() },
+      ],
+    });
+
+    cfnClient.on(GetTemplateSummaryCommand).resolves({
+      Parameters: [{
+        ParameterKey: 'BootstrapVersion',
+        DefaultValue: '/cdk-bootstrap/abcde/version',
+      }],
+    });
+
+    cfnClient.on(GetTemplateCommand).resolves({
+      TemplateBody: 'abcde',
+    });
+
+    return cfnClient;
+  }
 
   afterEach(() => {
     jest.clearAllTimers();
@@ -698,19 +688,22 @@ describe('BackgroundStackRefresh', () => {
   });
 
   test('should refresh stacks and schedule next refresh', async () => {
+    const cfnClient = mockCfnClient();
+
     void backgroundRefresh.start();
 
     // Run the first timer (which should trigger the first refresh)
     await jest.runOnlyPendingTimersAsync();
 
-    expect(mockListStacks).toHaveBeenCalledTimes(1);
+    expect(cfnClient).toHaveReceivedCommandTimes(ListStacksCommand, 1);
+
     expect(setTimeoutSpy).toHaveBeenCalledTimes(2); // Once for start, once for next refresh
     expect(setTimeoutSpy).toHaveBeenLastCalledWith(expect.any(Function), 300000);
 
     // Run the first timer (which triggers the first refresh)
     await jest.runOnlyPendingTimersAsync();
 
-    expect(mockListStacks).toHaveBeenCalledTimes(2);
+    expect(cfnClient).toHaveReceivedCommandTimes(ListStacksCommand, 2);
     expect(setTimeoutSpy).toHaveBeenCalledTimes(3); // Two refreshes plus one more scheduled
   });
 

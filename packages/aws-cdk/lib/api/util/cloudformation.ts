@@ -1,5 +1,5 @@
-import { SSMPARAM_NO_INVALIDATE } from '@aws-cdk/cx-api';
 import * as cxapi from '@aws-cdk/cx-api';
+import { SSMPARAM_NO_INVALIDATE } from '@aws-cdk/cx-api';
 import {
   ChangeSetStatus,
   type DescribeChangeSetCommandOutput,
@@ -459,7 +459,7 @@ export async function uploadStackTemplateAssets(stack: cxapi.CloudFormationStack
   }
 }
 
-async function createChangeSet(options: CreateChangeSetOptions): Promise<DescribeChangeSetOutput> {
+async function createChangeSet(options: CreateChangeSetOptions): Promise<DescribeChangeSetCommandOutput> {
   await cleanupOldChangeset(options.changeSetName, options.stack.stackName, options.cfn);
 
   debug(`Attempting to create ChangeSet with name ${options.changeSetName} for stack ${options.stack.stackName}`);

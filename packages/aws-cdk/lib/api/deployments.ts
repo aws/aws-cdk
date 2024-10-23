@@ -5,27 +5,26 @@ import { AssetManifest, IManifestEntry } from 'cdk-assets';
 import * as chalk from 'chalk';
 import type { SDK } from './aws-auth/sdk';
 import type { CredentialsOptions, SdkForEnvironment, SdkProvider } from './aws-auth/sdk-provider';
-import { deployStack, type DeployStackResult, destroyStack, type DeploymentMethod } from './deploy-stack';
+import { type DeploymentMethod, deployStack, type DeployStackResult, destroyStack } from './deploy-stack';
 import { type EnvironmentResources, EnvironmentResourcesRegistry } from './environment-resources';
 import { HotswapMode } from './hotswap/common';
 import {
-  loadCurrentTemplateWithNestedStacks,
   loadCurrentTemplate,
+  loadCurrentTemplateWithNestedStacks,
   type RootTemplateWithNestedStacks,
 } from './nested-stack-helpers';
 import { Mode } from './plugin';
 import type { Tag } from '../cdk-toolkit';
-import { debug, warning, error } from '../logging';
+import { debug, error, warning } from '../logging';
+import { determineAllowCrossAccountAssetPublishing } from './util/checks';
 import {
   CloudFormationStack,
-  type Template,
-  type ResourcesToImport,
   type ResourceIdentifierSummaries,
+  ResourcesToImport,
   stabilizeStack,
+  Template,
+  uploadStackTemplateAssets,
 } from './util/cloudformation';
-import { loadCurrentTemplateWithNestedStacks, loadCurrentTemplate, RootTemplateWithNestedStacks } from './nested-stack-helpers';
-import { determineAllowCrossAccountAssetPublishing } from './util/checks';
-import { CloudFormationStack, Template, ResourcesToImport, ResourceIdentifierSummaries, stabilizeStack, uploadStackTemplateAssets } from './util/cloudformation';
 import { StackActivityMonitor, StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
 import { StackEventPoller } from './util/cloudformation/stack-event-poller';
 import { RollbackChoice } from './util/cloudformation/stack-status';
@@ -34,11 +33,11 @@ import { makeBodyParameter } from './util/template-body-parameter';
 import { AssetManifestBuilder } from '../util/asset-manifest-builder';
 import {
   buildAssets,
-  publishAssets,
   type BuildAssetsOptions,
+  EVENT_TO_LOGGER,
+  publishAssets,
   type PublishAssetsOptions,
   PublishingAws,
-  EVENT_TO_LOGGER,
 } from '../util/asset-publishing';
 
 const BOOTSTRAP_STACK_VERSION_FOR_ROLLBACK = 23;
@@ -467,7 +466,7 @@ export class Deployments {
       });
     }
 
-    const response = await cfn.getTemplateSummary(cfnParam).promise();
+    const response = await cfn.getTemplateSummary(cfnParam);
     if (!response.ResourceIdentifierSummaries) {
       debug('GetTemplateSummary API call did not return "ResourceIdentifierSummaries"');
     }

@@ -301,7 +301,6 @@ export class CdkToolkit {
         {
           stack: assetNode.parentStack,
           roleArn: options.roleArn,
-          toolkitStackName: options.toolkitStackName,
           stackName: assetNode.parentStack.stackName,
         },
       );

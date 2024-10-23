@@ -129,7 +129,7 @@ export class StackActivityMonitor {
   /**
    * Current tick timer
    */
-  private tickTimer?: NodeJS.Timer;
+  private tickTimer?: ReturnType<typeof setTimeout>;
 
   /**
    * Set to the activity of reading the current events

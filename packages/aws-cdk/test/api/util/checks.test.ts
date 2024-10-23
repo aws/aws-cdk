@@ -1,49 +1,50 @@
-import * as AWS from 'aws-sdk';
-import * as AWSMock from 'aws-sdk-mock';
-import { ISDK } from '../../../lib/api/aws-auth';
+import {
+  DescribeStackResourcesCommand,
+  DescribeStacksCommand,
+  ResourceStatus,
+  StackStatus,
+} from '@aws-sdk/client-cloudformation';
 import { determineAllowCrossAccountAssetPublishing, getBootstrapStackInfo } from '../../../lib/api/util/checks';
+import { mockCloudFormationClient, MockSdk } from '../../util/mock-sdk';
 
 describe('determineAllowCrossAccountAssetPublishing', () => {
-  let mockSDK: ISDK;
-
-  beforeEach(() => {
-    mockSDK = {
-      cloudFormation: () => new AWS.CloudFormation(),
-    } as ISDK;
-  });
-
-  afterEach(() => {
-    AWSMock.restore();
-  });
-
   it('should return true when hasStagingBucket is false', async () => {
-    AWSMock.mock('CloudFormation', 'describeStacks', (_params: any, callback: Function) => {
-      callback(null, {
-        Stacks: [{
-          Outputs: [{ OutputKey: 'BootstrapVersion', OutputValue: '1' }],
-        }],
-      });
+    const mockSDK = new MockSdk();
+    mockCloudFormationClient.on(DescribeStacksCommand).resolves({
+      Stacks: [{
+        StackName: 'foo',
+        CreationTime: new Date(),
+        StackStatus: StackStatus.CREATE_COMPLETE,
+        Outputs: [{ OutputKey: 'BootstrapVersion', OutputValue: '1' }],
+      }],
     });
 
-    AWSMock.mock('CloudFormation', 'describeStackResources', (_params: any, callback: Function) => {
-      callback(null, { StackResources: [] });
-    });
+    mockCloudFormationClient.on(DescribeStackResourcesCommand).resolves({ StackResources: [] });
 
     const result = await determineAllowCrossAccountAssetPublishing(mockSDK);
     expect(result).toBe(true);
   });
 
   it('should return true when bootstrap version is >= 21', async () => {
-    AWSMock.mock('CloudFormation', 'describeStacks', (_params: any, callback: Function) => {
-      callback(null, {
-        Stacks: [{
-          Outputs: [{ OutputKey: 'BootstrapVersion', OutputValue: '21' }],
-        }],
-      });
+    const mockSDK = new MockSdk();
+
+    mockCloudFormationClient.on(DescribeStacksCommand).resolves({
+      Stacks: [{
+        StackName: 'foo',
+        CreationTime: new Date(),
+        StackStatus: StackStatus.CREATE_COMPLETE,
+        Outputs: [{ OutputKey: 'BootstrapVersion', OutputValue: '21' }],
+      }],
     });
 
-    AWSMock.mock('CloudFormation', 'describeStackResources', (_params: any, callback: Function) => {
-      callback(null, { StackResources: [{ ResourceType: 'AWS::S3::Bucket', PhysicalResourceId: 'some-bucket' }] });
+    mockCloudFormationClient.on(DescribeStackResourcesCommand).resolves({
+      StackResources: [{
+        LogicalResourceId: 'foo',
+        Timestamp: new Date(),
+        ResourceStatus: ResourceStatus.CREATE_COMPLETE,
+        ResourceType: 'AWS::S3::Bucket',
+        PhysicalResourceId: 'some-bucket',
+      }],
     });
 
     const result = await determineAllowCrossAccountAssetPublishing(mockSDK);
@@ -51,16 +52,24 @@ describe('determineAllowCrossAccountAssetPublishing', () => {
   });
 
   it('should return false for other scenarios', async () => {
-    AWSMock.mock('CloudFormation', 'describeStacks', (_params: any, callback: Function) => {
-      callback(null, {
-        Stacks: [{
-          Outputs: [{ OutputKey: 'BootstrapVersion', OutputValue: '20' }],
-        }],
-      });
+    const mockSDK = new MockSdk();
+    mockCloudFormationClient.on(DescribeStacksCommand).resolves({
+      Stacks: [{
+        StackName: 'foo',
+        CreationTime: new Date(),
+        StackStatus: StackStatus.CREATE_COMPLETE,
+        Outputs: [{ OutputKey: 'BootstrapVersion', OutputValue: '20' }],
+      }],
     });
 
-    AWSMock.mock('CloudFormation', 'describeStackResources', (_params: any, callback: Function) => {
-      callback(null, { StackResources: [{ ResourceType: 'AWS::S3::Bucket', PhysicalResourceId: 'some-bucket' }] });
+    mockCloudFormationClient.on(DescribeStackResourcesCommand).resolves({
+      StackResources: [{
+        LogicalResourceId: 'foo',
+        Timestamp: new Date(),
+        ResourceStatus: ResourceStatus.CREATE_COMPLETE,
+        ResourceType: 'AWS::S3::Bucket',
+        PhysicalResourceId: 'some-bucket',
+      }],
     });
 
     const result = await determineAllowCrossAccountAssetPublishing(mockSDK);
@@ -69,29 +78,26 @@ describe('determineAllowCrossAccountAssetPublishing', () => {
 });
 
 describe('getBootstrapStackInfo', () => {
-  let mockSDK: ISDK;
-
-  beforeEach(() => {
-    mockSDK = {
-      cloudFormation: () => new AWS.CloudFormation(),
-    } as ISDK;
-  });
-
-  afterEach(() => {
-    AWSMock.restore();
-  });
-
   it('should return correct BootstrapStackInfo', async () => {
-    AWSMock.mock('CloudFormation', 'describeStacks', (_params: any, callback: Function) => {
-      callback(null, {
-        Stacks: [{
-          Outputs: [{ OutputKey: 'BootstrapVersion', OutputValue: '21' }],
-        }],
-      });
+    const mockSDK = new MockSdk();
+
+    mockCloudFormationClient.on(DescribeStacksCommand).resolves({
+      Stacks: [{
+        StackName: 'foo',
+        CreationTime: new Date(),
+        StackStatus: StackStatus.CREATE_COMPLETE,
+        Outputs: [{ OutputKey: 'BootstrapVersion', OutputValue: '21' }],
+      }],
     });
 
-    AWSMock.mock('CloudFormation', 'describeStackResources', (_params: any, callback: Function) => {
-      callback(null, { StackResources: [{ ResourceType: 'AWS::S3::Bucket', PhysicalResourceId: 'some-bucket' }] });
+    mockCloudFormationClient.on(DescribeStackResourcesCommand).resolves({
+      StackResources: [{
+        LogicalResourceId: 'foo',
+        Timestamp: new Date(),
+        ResourceStatus: ResourceStatus.CREATE_COMPLETE,
+        ResourceType: 'AWS::S3::Bucket',
+        PhysicalResourceId: 'some-bucket',
+      }],
     });
 
     const result = await getBootstrapStackInfo(mockSDK, 'CDKToolkit');
@@ -102,20 +108,25 @@ describe('getBootstrapStackInfo', () => {
   });
 
   it('should throw error when stack is not found', async () => {
-    AWSMock.mock('CloudFormation', 'describeStacks', (_params: any, callback: Function) => {
-      callback(null, { Stacks: [] });
+    const mockSDK = new MockSdk();
+
+    mockCloudFormationClient.on(DescribeStacksCommand).resolves({
+      Stacks: [],
     });
 
     await expect(getBootstrapStackInfo(mockSDK, 'CDKToolkit')).rejects.toThrow('Toolkit stack CDKToolkit not found');
   });
 
   it('should throw error when BootstrapVersion output is missing', async () => {
-    AWSMock.mock('CloudFormation', 'describeStacks', (_params: any, callback: Function) => {
-      callback(null, {
-        Stacks: [{
-          Outputs: [],
-        }],
-      });
+    const mockSDK = new MockSdk();
+
+    mockCloudFormationClient.on(DescribeStacksCommand).resolves({
+      Stacks: [{
+        StackName: 'foo',
+        CreationTime: new Date(),
+        StackStatus: StackStatus.CREATE_COMPLETE,
+        Outputs: [],
+      }],
     });
 
     await expect(getBootstrapStackInfo(mockSDK, 'CDKToolkit')).rejects.toThrow('Unable to find BootstrapVersion output in the toolkit stack CDKToolkit');

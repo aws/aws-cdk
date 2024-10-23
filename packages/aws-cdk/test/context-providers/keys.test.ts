@@ -1,6 +1,6 @@
 import { ListAliasesCommand } from '@aws-sdk/client-kms';
 import { KeyContextProviderPlugin } from '../../lib/context-providers/keys';
-import { MockSdkProvider, mockKMSClient, restoreSdkMocksToDefault } from '../util/mock-sdk';
+import { mockKMSClient, MockSdkProvider, restoreSdkMocksToDefault } from '../util/mock-sdk';
 
 let provider: KeyContextProviderPlugin;
 
@@ -125,25 +125,21 @@ test('throw exception - no key found', async () => {
 
   // WHEN
   await expect(provider.getValue({
-    account: '1234',
+    account: '123456789012',
     region: 'us-east-1',
     aliasName: 'alias/foo',
   })).rejects.toThrow(/Could not find any key with alias named/);
 });
 
 test('don\'t throw exception - no key found but ignoreErrorOnMissingContext is true', async () => {
-  // GIVEN
-  const provider = new KeyContextProviderPlugin(mockSDK);
-
-  AWS.mock('KMS', 'listAliases', (params: aws.KMS.ListAliasesRequest, cb: AwsCallback<aws.KMS.ListAliasesResponse>) => {
+  mockKMSClient.on(ListAliasesCommand).callsFake((params) => {
     expect(params.KeyId).toBeUndefined();
-    return cb(null, {
-    });
+    return {};
   });
 
   // WHEN
   const args = {
-    account: '1234',
+    account: '123456789012',
     region: 'us-east-1',
     aliasName: 'alias/foo',
     dummyValue: {

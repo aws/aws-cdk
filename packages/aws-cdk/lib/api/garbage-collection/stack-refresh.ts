@@ -1,6 +1,6 @@
-import { CloudFormation } from 'aws-sdk';
-import { sleep } from '../../../test/util';
+import { ParameterDeclaration } from '@aws-sdk/client-cloudformation';
 import { debug } from '../../logging';
+import { ICloudFormationClient } from '../aws-auth';
 
 export class ActiveAssetCache {
   private readonly stacks: Set<string> = new Set();
@@ -33,12 +33,12 @@ async function paginateSdkCall(cb: (nextToken?: string) => Promise<string | unde
 /** We cannot operate on REVIEW_IN_PROGRESS stacks because we do not know what the template looks like in this case
  * If we encounter this status, we will wait up to the maxWaitTime before erroring out
  */
-async function listStacksNotBeingReviewed(cfn: CloudFormation, maxWaitTime: number, nextToken: string | undefined) {
+async function listStacksNotBeingReviewed(cfn: ICloudFormationClient, maxWaitTime: number, nextToken: string | undefined) {
   let sleepMs = 500;
   const deadline = Date.now() + maxWaitTime;
 
   while (Date.now() <= deadline) {
-    let stacks = await cfn.listStacks({ NextToken: nextToken }).promise();
+    let stacks = await cfn.listStacks({ NextToken: nextToken });
     if (!stacks.StackSummaries?.some(s => s.StackStatus == 'REVIEW_IN_PROGRESS')) {
       return stacks;
     }
@@ -58,7 +58,7 @@ async function listStacksNotBeingReviewed(cfn: CloudFormation, maxWaitTime: numb
  * understanding of what assets are being used.
  * - stacks in REVIEW_IN_PROGRESS stage
  */
-async function fetchAllStackTemplates(cfn: CloudFormation, maxWaitTime: number, qualifier?: string) {
+async function fetchAllStackTemplates(cfn: ICloudFormationClient, maxWaitTime: number, qualifier?: string) {
   const stackNames: string[] = [];
   await paginateSdkCall(async (nextToken) => {
     const stacks = await listStacksNotBeingReviewed(cfn, maxWaitTime, nextToken);
@@ -67,8 +67,8 @@ async function fetchAllStackTemplates(cfn: CloudFormation, maxWaitTime: number, 
     const ignoredStatues = ['CREATE_FAILED', 'DELETE_COMPLETE', 'DELETE_IN_PROGRESS', 'DELETE_FAILED'];
     stackNames.push(
       ...(stacks.StackSummaries ?? [])
-        .filter(s => !ignoredStatues.includes(s.StackStatus))
-        .map(s => s.StackId ?? s.StackName),
+        .filter((s: any) => !ignoredStatues.includes(s.StackStatus))
+        .map((s: any) => s.StackId ?? s.StackName),
     );
 
     return stacks.NextToken;
@@ -81,7 +81,7 @@ async function fetchAllStackTemplates(cfn: CloudFormation, maxWaitTime: number, 
     let summary;
     summary = await cfn.getTemplateSummary({
       StackName: stack,
-    }).promise();
+    });
 
     if (bootstrapFilter(summary.Parameters, qualifier)) {
       // This stack is definitely bootstrapped to a different qualifier so we can safely ignore it
@@ -89,7 +89,7 @@ async function fetchAllStackTemplates(cfn: CloudFormation, maxWaitTime: number, 
     } else {
       const template = await cfn.getTemplate({
         StackName: stack,
-      }).promise();
+      });
 
       templates.push((template.TemplateBody ?? '') + JSON.stringify(summary?.Parameters));
     }
@@ -109,7 +109,7 @@ async function fetchAllStackTemplates(cfn: CloudFormation, maxWaitTime: number, 
  * This is intentionally done in a way where we ONLY filter out stacks that are meant for a different qualifier
  * because we are okay with false positives.
  */
-function bootstrapFilter(parameters?: CloudFormation.ParameterDeclarations, qualifier?: string) {
+function bootstrapFilter(parameters?: ParameterDeclaration[], qualifier?: string) {
   const bootstrapVersion = parameters?.find((p) => p.ParameterKey === 'BootstrapVersion');
   const splitBootstrapVersion = bootstrapVersion?.DefaultValue?.split('/');
   // We find the qualifier in a specific part of the bootstrap version parameter
@@ -119,7 +119,7 @@ function bootstrapFilter(parameters?: CloudFormation.ParameterDeclarations, qual
           splitBootstrapVersion[2] != qualifier);
 }
 
-export async function refreshStacks(cfn: CloudFormation, activeAssets: ActiveAssetCache, maxWaitTime: number, qualifier?: string) {
+export async function refreshStacks(cfn: ICloudFormationClient, activeAssets: ActiveAssetCache, maxWaitTime: number, qualifier?: string) {
   try {
     const stacks = await fetchAllStackTemplates(cfn, maxWaitTime, qualifier);
     for (const stack of stacks) {
@@ -137,7 +137,7 @@ export interface BackgroundStackRefreshProps {
   /**
    * The CFN SDK handler
    */
-  readonly cfn: CloudFormation;
+  readonly cfn: ICloudFormationClient;
 
   /**
    * Active Asset storage
@@ -217,4 +217,8 @@ export class BackgroundStackRefresh {
   public stop() {
     clearTimeout(this.timeout);
   }
+}
+
+function sleep(ms: number) {
+  return new Promise((ok) => setTimeout(ok, ms));
 }

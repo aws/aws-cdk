@@ -308,7 +308,6 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     options.resolvedEnvironment,
     legacyAssets,
     options.envResources,
-    options.sdk,
     options.overrideTemplate,
   );
   let bootstrapStackName: string | undefined;
