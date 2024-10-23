@@ -1322,6 +1322,7 @@ describe('replica tables', () => {
         },
         {
           Region: 'us-east-1',
+          Tags: [{ Key: 'tagKey', Value: 'tagValue' }],
         },
       ],
     });
@@ -1355,6 +1356,10 @@ describe('replica tables', () => {
         },
         {
           Region: 'us-east-1',
+          Tags: [
+            { Key: 'tableTagProperty', Value: 'globalTagPropertyValue' },
+            { Key: 'tagAspect', Value: 'tagAspectValue' },
+          ],
         },
       ],
     });
