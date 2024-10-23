@@ -16,7 +16,19 @@ import { ITableV2, TableBaseV2 } from './table-v2-base';
 import { PolicyDocument } from '../../aws-iam';
 import { IStream } from '../../aws-kinesis';
 import { IKey, Key } from '../../aws-kms';
-import { ArnFormat, CfnTag, Lazy, PhysicalName, RemovalPolicy, Stack, TagManager, TagType, Token } from '../../core';
+import {
+  ArnFormat,
+  CfnTag,
+  FeatureFlags,
+  Lazy,
+  PhysicalName,
+  RemovalPolicy,
+  Stack,
+  TagManager,
+  TagType,
+  Token,
+} from '../../core';
+import * as cxapi from '../../cx-api';
 
 const HASH_KEY_TYPE = 'HASH';
 const RANGE_KEY_TYPE = 'RANGE';
@@ -671,7 +683,16 @@ export class TableV2 extends TableBaseV2 {
   private configureReplicaTable(props: ReplicaTableProps): CfnGlobalTable.ReplicaSpecificationProperty {
     const pointInTimeRecovery = props.pointInTimeRecovery ?? this.tableOptions.pointInTimeRecovery;
     const contributorInsights = props.contributorInsights ?? this.tableOptions.contributorInsights;
-    const resourcePolicy = props.resourcePolicy ?? this.tableOptions.resourcePolicy;
+
+    /*
+    * Feature flag set as the following may be a breaking change.
+    * @see https://github.com/aws/aws-cdk/pull/31097
+    * @see https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/cx-api/FEATURE_FLAGS.md
+    */
+    const resourcePolicy = FeatureFlags.of(this).isEnabled(cxapi.DYNAMODB_TABLEV2_RESOURCE_POLICY_PER_REPLICA)
+      ? (props.region === this.region ? this.tableOptions.resourcePolicy : props.resourcePolicy) || undefined
+      : props.resourcePolicy ?? this.tableOptions.resourcePolicy;
+
     const propTags: Record<string, string> = (props.tags ?? []).reduce((p, item) =>
       ({ ...p, [item.key]: item.value }), {},
     );

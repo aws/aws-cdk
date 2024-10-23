@@ -1,104 +1,74 @@
 {
   "version": "38.0.1",
   "artifacts": {
-    "aws-cdk-kinesis-event-target-dlq.assets": {
+    "ResourcePolicyTest-v2-FF.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-cdk-kinesis-event-target-dlq.assets.json",
+        "file": "ResourcePolicyTest-v2-FF.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-cdk-kinesis-event-target-dlq": {
+    "ResourcePolicyTest-v2-FF": {
       "type": "aws:cloudformation:stack",
-      "environment": "aws://unknown-account/unknown-region",
+      "environment": "aws://unknown-account/eu-west-1",
       "properties": {
-        "templateFile": "aws-cdk-kinesis-event-target-dlq.template.json",
+        "templateFile": "ResourcePolicyTest-v2-FF.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "notificationArns": [],
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4aade69c48604b052f7b859d3429c09e78b3f44bf5da100091f2b8164a2d80e5.json",
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-eu-west-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-eu-west-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1/0aaa25e74c3bd8b4c72922081490518294b93ff15f40df38ae16908cbe6d69c5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-cdk-kinesis-event-target-dlq.assets"
+          "ResourcePolicyTest-v2-FF.assets"
         ],
         "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-eu-west-1",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }
       },
       "dependencies": [
-        "aws-cdk-kinesis-event-target-dlq.assets"
+        "ResourcePolicyTest-v2-FF.assets"
       ],
       "metadata": {
-        "/aws-cdk-kinesis-event-target-dlq/MyStream/Resource": [
+        "/ResourcePolicyTest-v2-FF/TableTestV2-1/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyStream5C050E93"
+            "data": "TableTestV215EEA02B7"
           }
         ],
-        "/aws-cdk-kinesis-event-target-dlq/MyStream/EventsRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyStreamEventsRole5B6CC6AF"
-          }
-        ],
-        "/aws-cdk-kinesis-event-target-dlq/MyStream/EventsRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyStreamEventsRoleDefaultPolicy2089B49E"
-          }
-        ],
-        "/aws-cdk-kinesis-event-target-dlq/AwsCdkKinesisEncryptedStreamsUnsupportedRegions": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsCdkKinesisEncryptedStreamsUnsupportedRegions"
-          }
-        ],
-        "/aws-cdk-kinesis-event-target-dlq/Queue/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Queue4A7E3555"
-          }
-        ],
-        "/aws-cdk-kinesis-event-target-dlq/EveryMinute/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EveryMinute2BBCEA8F"
-          }
-        ],
-        "/aws-cdk-kinesis-event-target-dlq/BootstrapVersion": [
+        "/ResourcePolicyTest-v2-FF/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-kinesis-event-target-dlq/CheckBootstrapVersion": [
+        "/ResourcePolicyTest-v2-FF/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-cdk-kinesis-event-target-dlq"
+      "displayName": "ResourcePolicyTest-v2-FF"
     },
-    "KinesisDlqDefaultTestDeployAssertE4CFAC29.assets": {
+    "tablev2resourcepolicyintegtestDefaultTestDeployAssertBE3353C7.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "KinesisDlqDefaultTestDeployAssertE4CFAC29.assets.json",
+        "file": "tablev2resourcepolicyintegtestDefaultTestDeployAssertBE3353C7.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "KinesisDlqDefaultTestDeployAssertE4CFAC29": {
+    "tablev2resourcepolicyintegtestDefaultTestDeployAssertBE3353C7": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "KinesisDlqDefaultTestDeployAssertE4CFAC29.template.json",
+        "templateFile": "tablev2resourcepolicyintegtestDefaultTestDeployAssertBE3353C7.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "notificationArns": [],
@@ -108,7 +78,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "KinesisDlqDefaultTestDeployAssertE4CFAC29.assets"
+          "tablev2resourcepolicyintegtestDefaultTestDeployAssertBE3353C7.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -117,23 +87,23 @@
         }
       },
       "dependencies": [
-        "KinesisDlqDefaultTestDeployAssertE4CFAC29.assets"
+        "tablev2resourcepolicyintegtestDefaultTestDeployAssertBE3353C7.assets"
       ],
       "metadata": {
-        "/KinesisDlq/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/table-v2-resource-policy-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/KinesisDlq/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/table-v2-resource-policy-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "KinesisDlq/DefaultTest/DeployAssert"
+      "displayName": "table-v2-resource-policy-integ-test/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
