@@ -142,11 +142,6 @@ export class Stage extends Construct {
   public readonly parentStage?: Stage;
 
   /**
-   * The cached assembly if it was already built
-   */
-  private assembly?: cxapi.CloudAssembly;
-
-  /**
    * Validation plugins to run during synthesis. If any plugin reports any violation,
    * synthesis will be interrupted and the report displayed to the user.
    *
@@ -210,14 +205,10 @@ export class Stage extends Construct {
    * calls will return the same assembly.
    */
   public synth(options: StageSynthesisOptions = { }): cxapi.CloudAssembly {
-    if (!this.assembly || options.force) {
-      this.assembly = synthesize(this, {
-        skipValidation: options.skipValidation,
-        validateOnSynthesis: options.validateOnSynthesis,
-      });
-    }
-
-    return this.assembly;
+    return synthesize(this, {
+      skipValidation: options.skipValidation,
+      validateOnSynthesis: options.validateOnSynthesis,
+    });
   }
 
   private createBuilder(outdir?: string) {
