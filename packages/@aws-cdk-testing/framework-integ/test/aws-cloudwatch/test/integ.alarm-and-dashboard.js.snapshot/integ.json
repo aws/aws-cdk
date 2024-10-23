@@ -1,5 +1,5 @@
 {
-  "version": "30.0.0",
+  "version": "36.0.24",
   "testCases": {
     "cdk-cloudwatch-alarms-integ-test/DefaultTest": {
       "stacks": [
