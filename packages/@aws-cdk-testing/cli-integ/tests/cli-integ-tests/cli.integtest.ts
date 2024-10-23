@@ -352,6 +352,13 @@ integTest(
   }),
 );
 
+integTest('doubly nested stack',
+  withDefaultFixture(async (fixture) => {
+    await fixture.cdkDeploy('with-doubly-nested-stack', {
+      captureStderr: false,
+    });
+  }));
+
 integTest(
   'nested stack with parameters',
   withDefaultFixture(async (fixture) => {
@@ -1035,18 +1042,18 @@ integTest(
 integTest(
   'cdk diff with large changeset does not fail',
   withDefaultFixture(async (fixture) => {
-    // GIVEN - small initial stack with only ane IAM role
+    // GIVEN - small initial stack with only one IAM role
     await fixture.cdkDeploy('iam-roles', {
       modEnv: {
         NUMBER_OF_ROLES: '1',
       },
     });
 
-    // WHEN - adding 200 roles to the same stack to create a large diff
+    // WHEN - adding an additional role with a ton of metadata to create a large diff
     const diff = await fixture.cdk(['diff', fixture.fullStackName('iam-roles')], {
       verbose: true,
       modEnv: {
-        NUMBER_OF_ROLES: '200',
+        NUMBER_OF_ROLES: '2',
       },
     });
 
@@ -1055,6 +1062,40 @@ integTest(
     expect(diff).toContain('success: Published');
   }),
 );
+
+integTest('cdk diff with large changeset and custom toolkit stack name and qualifier does not fail', withoutBootstrap(async (fixture) => {
+  // Bootstrapping with custom toolkit stack name and qualifier
+  const qualifier = 'abc1111';
+  const toolkitStackName = 'custom-stack2';
+  await fixture.cdkBootstrapModern({
+    verbose: true,
+    toolkitStackName: toolkitStackName,
+    qualifier: qualifier,
+  });
+
+  // Deploying small initial stack with only one IAM role
+  await fixture.cdkDeploy('iam-roles', {
+    modEnv: {
+      NUMBER_OF_ROLES: '1',
+    },
+    options: [
+      '--toolkit-stack-name', toolkitStackName,
+      '--context', `@aws-cdk/core:bootstrapQualifier=${qualifier}`,
+    ],
+  });
+
+  // WHEN - adding a role with a ton of metadata to create a large diff
+  const diff = await fixture.cdk(['diff', '--toolkit-stack-name', toolkitStackName, '--context', `@aws-cdk/core:bootstrapQualifier=${qualifier}`, fixture.fullStackName('iam-roles')], {
+    verbose: true,
+    modEnv: {
+      NUMBER_OF_ROLES: '2',
+    },
+  });
+
+  // Assert that the CLI assumes the file publishing role:
+  expect(diff).toMatch(/Assuming role .*file-publishing-role/);
+  expect(diff).toContain('success: Published');
+}));
 
 integTest(
   'cdk diff --security-only successfully outputs sso-permission-set-without-managed-policy information',
@@ -2260,6 +2301,58 @@ integTest('hotswap deployment supports AppSync APIs with many functions',
   }),
 );
 
+integTest('hotswap ECS deployment respects properties override', withDefaultFixture(async (fixture) => {
+  // Update the CDK context with the new ECS properties
+  let ecsMinimumHealthyPercent = 100;
+  let ecsMaximumHealthyPercent = 200;
+  let cdkJson = JSON.parse(await fs.readFile(path.join(fixture.integTestDir, 'cdk.json'), 'utf8'));
+  cdkJson = {
+    ...cdkJson,
+    hotswap: {
+      ecs: {
+        minimumHealthyPercent: ecsMinimumHealthyPercent,
+        maximumHealthyPercent: ecsMaximumHealthyPercent,
+      },
+    },
+  };
+
+  await fs.writeFile(path.join(fixture.integTestDir, 'cdk.json'), JSON.stringify(cdkJson));
+
+  // GIVEN
+  const stackArn = await fixture.cdkDeploy('ecs-hotswap', {
+    captureStderr: false,
+  });
+
+  // WHEN
+  await fixture.cdkDeploy('ecs-hotswap', {
+    options: [
+      '--hotswap',
+    ],
+    modEnv: {
+      DYNAMIC_ECS_PROPERTY_VALUE: 'new value',
+    },
+  });
+
+  const describeStacksResponse = await fixture.aws.cloudFormation.send(
+    new DescribeStacksCommand({
+      StackName: stackArn,
+    }),
+  );
+
+  const clusterName = describeStacksResponse.Stacks?.[0].Outputs?.find(output => output.OutputKey == 'ClusterName')?.OutputValue!;
+  const serviceName = describeStacksResponse.Stacks?.[0].Outputs?.find(output => output.OutputKey == 'ServiceName')?.OutputValue!;
+
+  // THEN
+  const describeServicesResponse = await fixture.aws.ecs.send(
+    new DescribeServicesCommand({
+      cluster: clusterName,
+      services: [serviceName],
+    }),
+  );
+  expect(describeServicesResponse.services?.[0].deploymentConfiguration?.minimumHealthyPercent).toEqual(ecsMinimumHealthyPercent);
+  expect(describeServicesResponse.services?.[0].deploymentConfiguration?.maximumPercent).toEqual(ecsMaximumHealthyPercent);
+}));
+
 async function listChildren(parent: string, pred: (x: string) => Promise<boolean>) {
   const ret = new Array<string>();
   for (const child of await fs.readdir(parent, { encoding: 'utf-8' })) {
@@ -2363,7 +2456,7 @@ integTest(
   }),
 );
 
-integTest('cdk bootstrap notice is displayed correctly', withDefaultFixture(async (fixture) => {
+integTest('cdk notices are displayed correctly', withDefaultFixture(async (fixture) => {
 
   const cache = {
     expiration: 4125963264000, // year 2100 so we never overwrite the cache
