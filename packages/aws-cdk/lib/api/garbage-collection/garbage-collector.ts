@@ -18,6 +18,9 @@ const DAY = 24 * 60 * 60 * 1000; // Number of milliseconds in a day
 
 export type GcAsset = ImageAsset | ObjectAsset;
 
+/**
+ * An image asset that lives in the bootstrapped ECR Repository
+ */
 export class ImageAsset {
   public constructor(
     public readonly digest: string,
@@ -43,7 +46,8 @@ export class ImageAsset {
   }
 
   public isolatedTagBefore(date: Date) {
-    const tagValue = this.getIsolatedTag()?.split('-')[2];
+    // isolatedTag will look like "aws-cdk.isolated-X-YYYYY"
+    const tagValue = this.getIsolatedTag()?.split('-')[3];
     if (!tagValue || tagValue == '') {
       return false;
     }
@@ -51,6 +55,9 @@ export class ImageAsset {
   }
 }
 
+/**
+ * An object asset that lives in the bootstrapped S3 Bucket
+ */
 export class ObjectAsset {
   private cached_tags: S3.TagSet | undefined = undefined;
 
@@ -279,7 +286,7 @@ export class GarbageCollector {
         }
 
         if (this.permissionToTag && taggables.length > 0) {
-          await this.parallelTagEcr(ecr, repo, taggables, currentTime, printer);
+          await this.parallelTagEcr(ecr, repo, taggables, printer);
         }
 
         if (this.permissionToTag && untaggables.length > 0) {
@@ -435,18 +442,29 @@ export class GarbageCollector {
   /**
    * Tag images in parallel using p-limit
    */
-  private async parallelTagEcr(ecr: ECR, repo: string, taggables: ImageAsset[], date: number, printer: ProgressPrinter) {
+  private async parallelTagEcr(ecr: ECR, repo: string, taggables: ImageAsset[], printer: ProgressPrinter) {
     const limit = pLimit(P_LIMIT);
 
-    for (const img of taggables) {
-      await limit(() =>
-        ecr.putImage({
-          repositoryName: repo,
-          imageDigest: img.digest,
-          imageManifest: img.manifest,
-          imageTag: `${ISOLATED_TAG}-${String(date)}`,
-        }).promise(),
-      );
+    for (let i = 0; i < taggables.length; i++) {
+      const img = taggables[i];
+      await limit(() => {
+        const date = Date.now();
+        let imageTag;
+        try {
+          imageTag = `${ISOLATED_TAG}-${i}-${String(date)}`;
+          ecr.putImage({
+            repositoryName: repo,
+            imageDigest: img.digest,
+            imageManifest: img.manifest,
+            imageTag,
+          }).promise();
+        } catch (error) {
+          // This is a false negative -- an isolated asset is untagged
+          // likely due to an imageTag collision. We can safely ignore,
+          // and the isolated asset will be tagged next time.
+          debug(`Warning: unable to tag image ${JSON.stringify(img.tags)} with ${imageTag} due to the following error: ${error}`);
+        }
+      });
     }
 
     printer.reportTaggedAsset(taggables);

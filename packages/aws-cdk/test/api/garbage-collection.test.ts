@@ -635,6 +635,41 @@ describe('ECR Garbage Collection', () => {
       ],
     });
   });
+
+  test('tags are unique', async () => {
+    mockTheToolkitInfo({
+      Outputs: [
+        {
+          OutputKey: 'BootstrapVersion',
+          OutputValue: '999',
+        },
+      ],
+    });
+
+    garbageCollector = garbageCollector = gc({
+      type: 'ecr',
+      rollbackBufferDays: 3,
+      action: 'tag',
+    });
+    await garbageCollector.garbageCollect();
+
+    expect(mocks.mockListStacks).toHaveBeenCalledTimes(1);
+
+    // tags objects
+    expect(mocks.mockPutImage).toHaveBeenCalledTimes(2);
+    expect(mocks.mockPutImage).toHaveBeenCalledWith({
+      repositoryName: 'REPO_NAME',
+      imageDigest: 'digest3',
+      imageManifest: expect.any(Object),
+      imageTag: expect.stringContaining(`${ISOLATED_TAG}-0-`),
+    });
+    expect(mocks.mockPutImage).toHaveBeenCalledWith({
+      repositoryName: 'REPO_NAME',
+      imageDigest: 'digest2',
+      imageManifest: expect.any(Object),
+      imageTag: expect.stringContaining(`${ISOLATED_TAG}-1-`),
+    });
+  });
 });
 
 describe('CloudFormation API calls', () => {
