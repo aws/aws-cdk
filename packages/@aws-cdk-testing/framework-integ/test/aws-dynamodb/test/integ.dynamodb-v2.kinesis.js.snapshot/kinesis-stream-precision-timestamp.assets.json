@@ -1,0 +1,20 @@
+{
+  "version": "38.0.1",
+  "files": {
+    "36d1d4e27cb0002240940701b024a4f9ecc146a5f51b30cb8b4813ac33a1f260": {
+      "source": {
+        "path": "kinesis-stream-precision-timestamp.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-eu-west-1": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1",
+          "objectKey": "36d1d4e27cb0002240940701b024a4f9ecc146a5f51b30cb8b4813ac33a1f260.json",
+          "region": "eu-west-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-eu-west-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
