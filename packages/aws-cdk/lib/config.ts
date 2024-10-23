@@ -3,10 +3,13 @@ import { StackActivityProgress } from './api/util/cloudformation/stack-activity-
 import { RequireApproval } from './diff';
 
 /* eslint-disable quote-props */
-// called by yargs-gen to generate parse-command-line-arguments.ts
 
+/**
+ * Source of truth for all CDK CLI commands. `yargs-gen` translates this into the `yargs` definition
+ * in `lib/parse-command-line-arguments.ts`.
+ */
 export async function makeConfig(): Promise<CliConfig> {
-  const config: CliConfig = {
+  return {
     commands: {
       deploy: {
         description: 'Deploys the stack(s) named STACKS into your AWS account',
@@ -327,16 +330,24 @@ export async function makeConfig(): Promise<CliConfig> {
       },
     },
   };
-
-  return config;
 }
 
+/**
+ * The result of a DynamicValue call
+ */
 export interface DynamicResult {
   dynamicType: 'parameter';
   dynamicValue: string;
 }
 
+/**
+ * Informs the code library, `@aws-cdk/yargs-gen`, that
+ * this value references an entity not defined in this configuration file.
+ */
 export class DynamicValue {
+  /**
+   * Instructs `yargs-gen` to retrieve this value from the parameter with passed name.
+   */
   public static fromParameter(parameterName: string): DynamicResult {
     return {
       dynamicType: 'parameter',
