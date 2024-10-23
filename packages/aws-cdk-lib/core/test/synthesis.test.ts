@@ -6,6 +6,7 @@ import { Construct } from 'constructs';
 import * as cxschema from '../../cloud-assembly-schema';
 import * as cxapi from '../../cx-api';
 import * as cdk from '../lib';
+import { Template } from '../../assertions';
 import { synthesize } from '../lib/private/synthesis';
 
 function createModernApp() {
@@ -362,6 +363,26 @@ describe('synthesis', () => {
 
   });
 
+  test('can call synth multiple times without caching assembly', () => {
+    const app = new cdk.App();
+
+    const stages = [
+      {
+        stage: 'PROD',
+      },
+      {
+        stage: 'BETA',
+      },
+    ];
+
+    stages.forEach(({ stage }) => {
+      const stack = new cdk.Stack(app, `${stage}-Stack`, {});
+      // Assert that `Unable to find artifact with id` error is not thrown
+      expect(() => {
+        Template.fromStack(stack);
+      }).not.toThrow();
+    });
+  });
 });
 
 function list(outdir: string) {
