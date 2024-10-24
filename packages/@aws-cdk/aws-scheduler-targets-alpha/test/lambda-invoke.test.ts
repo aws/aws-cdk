@@ -286,6 +286,68 @@ describe('schedule target', () => {
     });
   });
 
+  test('creates IAM role and IAM policy for lambda alias', () => {
+    const lambdaVersion = new lambda.Version(stack, 'MyLambdaVersion', {
+      lambda: func,
+    });
+    const lambdaAlias = new lambda.Alias(stack, 'MyLambdaAlias', {
+      version: lambdaVersion,
+      aliasName: 'SomeAliasName',
+    });
+
+    const lambdaTarget = new LambdaInvoke(lambdaAlias, {});
+
+    new Schedule(stack, 'MyScheduleDummy', {
+      schedule: expr,
+      target: lambdaTarget,
+    });
+
+    Template.fromStack(stack).resourceCountIs('AWS::Lambda::Permission', 0);
+
+    Template.fromStack(stack).hasResource('AWS::Scheduler::Schedule', {
+      Properties: {
+        Target: {
+          Arn: {
+            Ref: 'MyLambdaAliasD26C43B4',
+          },
+          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget1441a743A31888', 'Arn'] },
+          RetryPolicy: {},
+        },
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'lambda:InvokeFunction',
+            Effect: 'Allow',
+            Resource: {
+              Ref: 'MyLambdaAliasD26C43B4',
+            },
+          },
+        ],
+      },
+      Roles: [{ Ref: 'SchedulerRoleForTarget1441a743A31888' }],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Effect: 'Allow',
+            Condition: { StringEquals: { 'aws:SourceAccount': '123456789012' } },
+            Principal: {
+              Service: 'scheduler.amazonaws.com',
+            },
+            Action: 'sts:AssumeRole',
+          },
+        ],
+      },
+    });
+  });
+
   test('creates IAM policy for imported role for lambda function in the same account', () => {
     const importedRole = Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/someRole');
 
