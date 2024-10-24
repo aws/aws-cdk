@@ -373,6 +373,34 @@ To import an existing VPC, use the `VpcV2.fromVpcV2Attributes()` method. You'll 
 
 If you wish to add a new subnet to imported VPC, new subnet's IP range(IPv4) will be validated against provided secondary and primary address block to confirm that it is within the the range of VPC.
 
+Here's an example of importing a VPC with only the required parameters
+
+``` ts
+
+const stack = new Stack();
+
+const importedVpc = VpcV2.fromVpcV2Attributes(stack, 'ImportedVpc', {
+      vpcId: 'mockVpcID',
+      vpcCidrBlock: '10.0.0.0/16',
+});
+
+```
+
+In case of cross account or cross region VPC, its recommended to provide VPC arn so that the region and accountId values for the VPC can be fetched from given arn value. If a VPC arn is not provided, arn will be populated using region and account configured in the stack.
+
+``` ts
+
+const stack = new Stack();
+
+//Importing a cross acount or cross region VPC
+const importedVpc = VpcV2.fromVpcV2Attributes(stack, 'ImportedVpc', {
+      vpcId: 'mockVpcID',
+      vpcCidrBlock: '10.0.0.0/16',
+      vpcArn: 'arn:aws:ec2:us-west-2:123456789012:vpc/vpc-0123abcd4567efgh8',
+});
+
+```
+
 Here's an example of how to import a VPC with multiple CIDR blocks, IPv6 support, and different subnet types:
 
 In this example, we're importing a VPC with:
@@ -410,15 +438,15 @@ const importedVpc = VpcV2.fromVpcV2Attributes(this, 'ImportedVPC', {
       amazonProvidedIpv6CidrBlock: true,
     }
   ],
-  isolatedSubnets: [{
+  subnets: [{
     subnetName: 'IsolatedSubnet2',
     subnetId: 'subnet-03cd773c0fe08ed26',
     subnetType: SubnetType.PRIVATE_ISOLATED,
     availabilityZone: 'us-west-2a',
     ipv4CidrBlock: '10.2.0.0/24',
     routeTableId: 'rtb-0871c310f98da2cbb',
-  }],
-  publicSubnets: [{
+  },
+  {
     subnetId: 'subnet-0fa477e01db27d820',
     subnetType: SubnetType.PUBLIC,
     availabilityZone: 'us-west-2b',

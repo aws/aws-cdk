@@ -102,14 +102,14 @@ export interface IVpcV2 extends IVpc {
    *
    * @default - current stack's environment region
    */
-  readonly region?: string;
+  readonly region: string;
 
   /**
    * The ID of the AWS account that owns the VPC
    *
    * @default - the account id of the parent stack
    */
-  readonly ownerAccountId?: string;
+  readonly ownerAccountId: string;
 
   /**
    * IPv4 CIDR provisioned under pool
@@ -219,6 +219,16 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
    * For more information, see the {@link https://docs.aws.amazon.com/vpc/latest/userguide/vpc-cidr-blocks.html#vpc-sizing-ipv4}.
    */
   public abstract readonly ipv4CidrBlock: string;
+
+  /**
+  * Region for this VPC
+  */
+  public abstract readonly region: string;
+
+  /**
+  * Identifier of the owner for this VPC
+  */
+  public abstract readonly ownerAccountId: string;
 
   /**
   * If this is set to true, don't error out on trying to select subnets

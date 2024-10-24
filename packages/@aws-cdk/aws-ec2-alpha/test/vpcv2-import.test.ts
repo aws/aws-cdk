@@ -1,6 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import { VpcV2 } from '../lib/vpc-v2';
-import { IpCidr, SubnetV2, VpcV2Base } from '../lib/';
+import { IpCidr, NatGateway, SubnetV2, VpcV2Base } from '../lib/';
 import { Template } from 'aws-cdk-lib/assertions';
 import { InterfaceVpcEndpointAwsService, SubnetType } from 'aws-cdk-lib/aws-ec2';
 
@@ -36,7 +36,7 @@ describe('Vpc V2 with full control', () => {
     const vpc = VpcV2.fromVpcV2Attributes(stack, 'ImportedVpc', {
       vpcId: 'XXXXXXXXX',
       vpcCidrBlock: '10.1.0.0/16',
-      publicSubnets: [{
+      subnets: [{
         subnetId: 'subnet-isolated1',
         availabilityZone: 'us-east-1a',
         ipv4CidrBlock: '10.0.4.0/24',
@@ -60,7 +60,7 @@ describe('Vpc V2 with full control', () => {
           amazonProvidedIpv6CidrBlock: true,
         },
       ],
-      isolatedSubnets: [{
+      subnets: [{
         subnetId: 'subnet-isolated1',
         subnetName: 'mockisolatedsubnet',
         availabilityZone: 'us-east-1a',
@@ -197,5 +197,21 @@ describe('Vpc V2 with full control', () => {
     });
     expect(vpc.ownerAccountId).toBe('123456789012');
     expect(vpc.region).toBe('us-west-2');
+  });
+  test('Successfully import subnet using fromSubnetV2Attributes', () => {
+    const importedSubnet = SubnetV2.fromSubnetV2Attributes(stack, 'ImportedSubnet', {
+      availabilityZone: 'us-west-2a',
+      ipv4CidrBlock: '10.0.1.0/28',
+      subnetId: 'mockSubnetId',
+      subnetType: SubnetType.PRIVATE_ISOLATED,
+      routeTableId: 'mockRouteTableId',
+    });
+    new NatGateway(stack, 'NatGateway', {
+      subnet: importedSubnet,
+      allocationId: 'mockAllocationId',
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::NatGateway', {
+      SubnetId: 'mockSubnetId',
+    });
   });
 });
