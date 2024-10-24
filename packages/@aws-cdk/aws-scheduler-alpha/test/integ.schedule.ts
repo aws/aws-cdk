@@ -100,6 +100,7 @@ const integ = new IntegTest(app, 'integtest-schedule', {
 
 integ.assertions.awsApiCall('SQS', 'receiveMessage', {
   QueueUrl: queue.queueUrl,
+  MaxNumberOfMessages: 10,
 }).expect(ExpectedResult.objectLike({
   Messages: Match.arrayWith([{ Body: `valueA-${stack.region}` }, { Body: `valueB-${stack.region}` }]),
 })).waitForAssertions({
