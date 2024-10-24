@@ -3,7 +3,114 @@ import { Argv } from "yargs";
 
 // @ts-ignore TS6133
 function parseCommandLineArguments(args: Array<string>, browserDefault?: string, availableInitLanguages: Array<string>, migrateSupportedLanguages: Array<string>, version: string, yargsNegativeAlias: any): any {
-  return yargs.usage("Usage: cdk -a <cdk-app> COMMAND").command(['list [STACKS..]', 'ls  [STACKS..]'], "Lists all stacks in the app", (yargs: Argv) => yargs.option("long", {
+  return yargs.usage("Usage: cdk -a <cdk-app> COMMAND").option("app", {
+    "type": "string",
+    "alias": "a",
+    "desc": "REQUIRED WHEN RUNNING APP: command-line for executing your app or a cloud assembly directory (e.g. \"node bin/my-app.js\"). Can also be specified in cdk.json or ~/.cdk.json",
+    "requiresArg": true
+  }).option("build", {
+    "type": "string",
+    "desc": "Command-line for a pre-synth build"
+  }).option("context", {
+    "type": "array",
+    "alias": "c",
+    "desc": "Add contextual string parameter (KEY=VALUE)",
+    "nargs": 1,
+    "requiresArg": true
+  }).option("plugin", {
+    "type": "array",
+    "alias": "p",
+    "desc": "Name or path of a node package that extend the CDK features. Can be specified multiple times",
+    "nargs": 1
+  }).option("trace", {
+    "type": "boolean",
+    "desc": "Print trace for stack warnings"
+  }).option("strict", {
+    "type": "boolean",
+    "desc": "Do not construct stacks with warnings"
+  }).option("lookups", {
+    "type": "boolean",
+    "desc": "Perform context lookups (synthesis fails if this is disabled and context lookups need to be performed)",
+    "default": true
+  }).option("ignore-errors", {
+    "type": "boolean",
+    "default": false,
+    "desc": "Ignores synthesis errors, which will likely produce an invalid output"
+  }).option("json", {
+    "type": "boolean",
+    "alias": "j",
+    "desc": "Use JSON output instead of YAML when templates are printed to STDOUT",
+    "default": false
+  }).option("verbose", {
+    "type": "boolean",
+    "alias": "v",
+    "desc": "Show debug logs (specify multiple times to increase verbosity)",
+    "default": false,
+    "count": true
+  }).option("debug", {
+    "type": "boolean",
+    "desc": "Enable emission of additional debugging information, such as creation stack traces of tokens",
+    "default": false
+  }).option("profile", {
+    "type": "string",
+    "desc": "Use the indicated AWS profile as the default environment",
+    "requiresArg": true
+  }).option("proxy", {
+    "type": "string",
+    "desc": "Use the indicated proxy. Will read from HTTPS_PROXY environment variable if not specified",
+    "requiresArg": true
+  }).option("ca-bundle-path", {
+    "type": "string",
+    "desc": "Path to CA certificate to use when validating HTTPS requests. Will read from AWS_CA_BUNDLE environment variable if not specified",
+    "requiresArg": true
+  }).option("ec2creds", {
+    "type": "boolean",
+    "alias": "i",
+    "default": undefined,
+    "desc": "Force trying to fetch EC2 instance credentials. Default: guess EC2 instance status"
+  }).option("version-reporting", {
+    "type": "boolean",
+    "desc": "Include the \"AWS::CDK::Metadata\" resource in synthesized templates (enabled by default)",
+    "default": undefined
+  }).option("path-metadata", {
+    "type": "boolean",
+    "desc": "Include \"aws:cdk:path\" CloudFormation metadata for each resource (enabled by default)",
+    "default": undefined
+  }).option("asset-metadata", {
+    "type": "boolean",
+    "desc": "Include \"aws:asset:*\" CloudFormation metadata for resources that uses assets (enabled by default)",
+    "default": undefined
+  }).option("role-arn", {
+    "type": "string",
+    "alias": "r",
+    "desc": "ARN of Role to use when invoking CloudFormation",
+    "default": undefined,
+    "requiresArg": true
+  }).option("staging", {
+    "type": "boolean",
+    "desc": "Copy assets to the output directory (use --no-staging to disable the copy of assets which allows local debugging via the SAM CLI to reference the original source files)",
+    "default": true
+  }).option("output", {
+    "type": "string",
+    "alias": "o",
+    "desc": "Emits the synthesized cloud assembly into a directory (default: cdk.out)",
+    "requiresArg": true
+  }).option("notices", {
+    "type": "boolean",
+    "desc": "Show relevant notices"
+  }).option("no-color", {
+    "type": "boolean",
+    "desc": "Removes colors and other style from console output",
+    "default": false
+  }).option("ci", {
+    "type": "boolean",
+    "desc": "Force CI detection. If CI=true then logs will be sent to stdout instead of stderr",
+    "default": process.env.CI !== undefined
+  }).option("unstable", {
+    "type": "array",
+    "desc": "Opt in to specific unstable features. Can be specified multiple times.",
+    "default": []
+  }).command(['list [STACKS..]', 'ls  [STACKS..]'], "Lists all stacks in the app", (yargs: Argv) => yargs.option("long", {
     "type": "boolean",
     "default": false,
     "alias": "l",

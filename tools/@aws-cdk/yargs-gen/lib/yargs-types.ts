@@ -49,3 +49,33 @@ export interface CliConfig {
   commands: { [commandName: string]: YargsCommand };
 }
 
+/**
+ * The result of a DynamicValue call
+ */
+export interface DynamicResult {
+  dynamicType: 'parameter' | 'function';
+  dynamicValue: string | (() => any);
+}
+
+/**
+ * Informs the code library, `@aws-cdk/yargs-gen`, that
+ * this value references an entity not defined in this configuration file.
+ */
+export class DynamicValue {
+  /**
+   * Instructs `yargs-gen` to retrieve this value from the parameter with passed name.
+   */
+  public static fromParameter(parameterName: string): DynamicResult {
+    return {
+      dynamicType: 'parameter',
+      dynamicValue: parameterName,
+    };
+  }
+
+  public static fromInline(f: () => any): DynamicResult {
+    return {
+      dynamicType: 'function',
+      dynamicValue: f,
+    };
+  }
+}

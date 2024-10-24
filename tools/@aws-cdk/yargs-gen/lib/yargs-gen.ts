@@ -1,4 +1,5 @@
 import { Expression, FreeFunction, Module, SelectiveModuleImport, Statement, Type, TypeScriptRenderer, code } from '@cdklabs/typewriter';
+import { NULL } from '@cdklabs/typewriter/lib/expressions/builder';
 import { CliConfig, YargsOption } from './yargs-types';
 
 export async function renderYargs(config: CliConfig): Promise<string> {
@@ -54,11 +55,10 @@ interface MiddlewareExpression {
 //   ./prog --arg one --arg two position  =>  will parse to  { arg: ['one', 'two'], _: ['positional'] }.
 function makeYargs(config: CliConfig/*, scope: ScopeImpl*/): Statement {
   let yargsExpr: Expression = code.expr.ident('yargs');
-  yargsExpr = yargsExpr.callMethod('usage', code.expr.lit('Usage: cdk -a <cdk-app> COMMAND'));
+  yargsExpr = yargsExpr.callMethod('usage', lit('Usage: cdk -a <cdk-app> COMMAND'));
 
-  //for (const option of Object.keys(config.globalOptions)) {
-
-  //}
+  // we must compute global options first, as they are not part of an argument to a command call
+  yargsExpr = makeOptions(yargsExpr, config.globalOptions);
 
   for (const command of Object.keys(config.commands)) {
     const commandFacts = config.commands[command];
@@ -71,44 +71,11 @@ function makeYargs(config: CliConfig/*, scope: ScopeImpl*/): Statement {
 
     // must compute options before we compute the full command, because in yargs, the options are an argument to the command call.
     let optionsExpr: Expression = code.expr.directCode('(yargs: Argv) => yargs');
-
-    /*
-    for (const option of Object.keys(commandFacts.options ?? {})) {
-      // each option can define at most one middleware call; if we need more, handle a list of these instead
-      let middleware: MiddlewareExpression | undefined = undefined;
-      const optionFacts = commandFacts.options![option];
-      const optionArgs: { [key: string]: Expression } = {};
-      for (const optionProp of Object.keys(optionFacts)) {
-        switch (optionProp) {
-          case 'middleware':
-            // middleware is a separate function call, so we can't store it with the regular option arguments, as those will all be treated as parameters:
-            // .option('R', { type: 'boolean', hidden: true }).middleware(yargsNegativeAlias('R', 'rollback'), true)
-            middleware = {
-              callback: code.expr.builtInFn(optionFacts.middleware!.callback, code.expr.lit(optionFacts.middleware!.args)),
-              applyBeforeValidation: code.expr.lit(optionFacts.middleware!.applyBeforeValidation),
-            };
-            break;
-          default:
-            if ( (optionFacts as any)[optionProp] && (optionFacts as any)[optionProp].dynamicType === 'parameter') {
-              optionArgs[optionProp] = code.expr.ident((optionFacts as any)[optionProp].dynamicValue);
-            } else {
-              optionArgs[optionProp] = code.expr.lit((optionFacts as any)[optionProp]);
-            }
-        }
-      }
-
-      optionsExpr = optionsExpr.callMethod('option', code.expr.lit(`${option}`), code.expr.object(optionArgs));
-      if (middleware) {
-        optionsExpr = optionsExpr.callMethod('middleware', middleware.callback, middleware.applyBeforeValidation ?? code.expr.UNDEFINED);
-        middleware = undefined;
-      }
-    }
-    */
     optionsExpr = makeOptions(optionsExpr, commandFacts.options ?? {});
 
     yargsExpr = commandFacts.options
-      ? yargsExpr.callMethod('command', code.expr.directCode(`['${command}${commandArg}'${aliases}]`), code.expr.lit(commandFacts.description), optionsExpr)
-      : yargsExpr.callMethod('command', code.expr.directCode(`['${command}${commandArg}'${aliases}]`), code.expr.lit(commandFacts.description));
+      ? yargsExpr.callMethod('command', code.expr.directCode(`['${command}${commandArg}'${aliases}]`), lit(commandFacts.description), optionsExpr)
+      : yargsExpr.callMethod('command', code.expr.directCode(`['${command}${commandArg}'${aliases}]`), lit(commandFacts.description));
   }
 
   return code.stmt.ret(makeEpilogue(yargsExpr));
@@ -122,25 +89,30 @@ function makeOptions(prefix: Expression, options: { [optionName: string]: YargsO
     const optionProps = options[option];
     const optionArgs: { [key: string]: Expression } = {};
     for (const optionProp of Object.keys(optionProps)) {
-      switch (optionProp) {
-        case 'middleware':
-          // middleware is a separate function call, so we can't store it with the regular option arguments, as those will all be treated as parameters:
-          // .option('R', { type: 'boolean', hidden: true }).middleware(yargsNegativeAlias('R', 'rollback'), true)
-          middleware = {
-            callback: code.expr.builtInFn(optionProps.middleware!.callback, code.expr.lit(optionProps.middleware!.args)),
-            applyBeforeValidation: code.expr.lit(optionProps.middleware!.applyBeforeValidation),
-          };
-          break;
-        default:
-          if ((optionProps as any)[optionProp] && (optionProps as any)[optionProp].dynamicType === 'parameter') {
-            optionArgs[optionProp] = code.expr.ident((optionProps as any)[optionProp].dynamicValue);
-          } else {
-            optionArgs[optionProp] = code.expr.lit((optionProps as any)[optionProp]);
-          }
+      if (optionProp === 'middleware') {
+        // middleware is a separate function call, so we can't store it with the regular option arguments, as those will all be treated as parameters:
+        // .option('R', { type: 'boolean', hidden: true }).middleware(yargsNegativeAlias('R', 'rollback'), true)
+        middleware = {
+          callback: code.expr.builtInFn(optionProps.middleware!.callback, lit(optionProps.middleware!.args)),
+          applyBeforeValidation: lit(optionProps.middleware!.applyBeforeValidation),
+        };
+        break;
+      } else {
+        const optionValue = (optionProps as any)[optionProp];
+        if (optionValue && optionValue.dynamicType === 'parameter') {
+          optionArgs[optionProp] = code.expr.ident(optionValue.dynamicValue);
+        } else if (optionValue && optionValue.dynamicType === 'function') {
+          const inlineFunction: string = optionValue.dynamicValue.toString();
+          const NUMBER_OF_SPACES_BETWEEN_ARROW_AND_CODE = 3;
+          // this only works with arrow functions, like () =>
+          optionArgs[optionProp] = code.expr.directCode(inlineFunction.substring(inlineFunction.indexOf('=>') + NUMBER_OF_SPACES_BETWEEN_ARROW_AND_CODE));
+        } else {
+          optionArgs[optionProp] = lit(optionValue);
+        }
       }
     }
 
-    optionsExpr = optionsExpr.callMethod('option', code.expr.lit(`${option}`), code.expr.object(optionArgs));
+    optionsExpr = optionsExpr.callMethod('option', lit(option), code.expr.object(optionArgs));
     if (middleware) {
       optionsExpr = optionsExpr.callMethod('middleware', middleware.callback, middleware.applyBeforeValidation ?? code.expr.UNDEFINED);
       middleware = undefined;
@@ -152,11 +124,11 @@ function makeOptions(prefix: Expression, options: { [optionName: string]: YargsO
 
 function makeEpilogue(prefix: Expression) {
   let completeDefinition = prefix.callMethod('version', code.expr.ident('version'));
-  completeDefinition = completeDefinition.callMethod('demandCommand', code.expr.lit(1), code.expr.lit("''")); // just print help
+  completeDefinition = completeDefinition.callMethod('demandCommand', lit(1), lit("''")); // just print help
   completeDefinition = completeDefinition.callMethod('recommendCommands');
   completeDefinition = completeDefinition.callMethod('help');
-  completeDefinition = completeDefinition.callMethod('alias', code.expr.lit('h'), code.expr.lit('help'));
-  completeDefinition = completeDefinition.callMethod('epilogue', code.expr.lit([
+  completeDefinition = completeDefinition.callMethod('alias', lit('h'), lit('help'));
+  completeDefinition = completeDefinition.callMethod('epilogue', lit([
     'If your app has a single stack, there is no need to specify the stack name',
     'If one of cdk.json or ~/.cdk.json exists, options specified there will be used as defaults. Settings in cdk.json take precedence.',
   ].join('\n\n')));
@@ -164,4 +136,15 @@ function makeEpilogue(prefix: Expression) {
   completeDefinition = completeDefinition.callMethod('parse', code.expr.ident('args'));
 
   return completeDefinition;
+}
+
+function lit(value: any): Expression {
+  switch (value) {
+    case undefined:
+      return code.expr.UNDEFINED;
+    case NULL:
+      return code.expr.NULL;
+    default:
+      return code.expr.lit(value);
+  }
 }
