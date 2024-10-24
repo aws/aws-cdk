@@ -68,7 +68,7 @@ export async function getBootstrapStackInfo(sdk: ISDK, stackName: string): Promi
     // unfortunately the deploy role doesn't have permissions call DescribeStackResources.
     const bucketName = stack.Outputs?.find(output => output.OutputKey === 'BucketName')?.OutputValue;
     // At least one letter
-    const hasStagingBucket = !!(bucketName && bucketName.match(/[a-z]/) && bucketName.match(/^[a-z0-9-]+$/));
+    const hasStagingBucket = !!(bucketName && bucketName.match(/[a-z]/) && bucketName.match(/^[a-z0-9.-]+$/));
 
     return {
       hasStagingBucket,
