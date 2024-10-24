@@ -74,7 +74,7 @@
     "@aws-cdk/cloud-assembly-schema": "^38.0.1",
     "@aws-cdk/cloudformation-diff": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "cdk-assets": "^2.155.15",
+    "cdk-assets": "^2.155.17",
     "@aws-cdk/aws-service-spec": "^0.1.29",
     "@aws-cdk/cdk-cli-wrapper": "0.0.0",
     "aws-cdk": "0.0.0",

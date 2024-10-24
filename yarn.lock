@@ -79,7 +79,7 @@
     jsonschema "^1.4.1"
     semver "^7.6.3"
 
-"@aws-cdk/cx-api@^2.162.1":
+"@aws-cdk/cx-api@^2.163.1":
   version "2.163.1"
   resolved "https://registry.npmjs.org/@aws-cdk/cx-api/-/cx-api-2.163.1.tgz#ef55da9f471c963d877b23d3201ca4560d656b2e"
   integrity sha512-0bVL/pX0UcliCdXVcgtLVL3W5EHAp4RgW7JN3prz1dIOmLZzZ30DW0qWSc0D0EVE3rVG6RVgfIiuFBFK6WFZ+w==
@@ -6646,13 +6646,13 @@ case@1.6.3, case@^1.6.3:
   resolved "https://registry.npmjs.org/case/-/case-1.6.3.tgz#0a4386e3e9825351ca2e6216c60467ff5f1ea1c9"
   integrity sha512-mzDSXIPaFwVDvZAHqZ9VlbyF4yyXRuX6IvB06WvPYkqJVO24kX1PPhv9bfpKNFZyxYFmmgo03HUiD8iklmJYRQ==
 
-cdk-assets@^2.155.15:
-  version "2.155.15"
-  resolved "https://registry.npmjs.org/cdk-assets/-/cdk-assets-2.155.15.tgz#e9480cc610d95c940dd785dfc50bcca32786e0ee"
-  integrity sha512-L8I+YEkh1V4jljJ6gMkiDuW7+G8SkA6sF8l5dQMw3WBNeD6RUPZ2gV8gDAse+PNZ59Xu8lXElAnwzJeZQKpHqg==
+cdk-assets@^2.155.17:
+  version "2.155.17"
+  resolved "https://registry.npmjs.org/cdk-assets/-/cdk-assets-2.155.17.tgz#d6c285d0279aec8226b45577a151e6dd32a12fa5"
+  integrity sha512-+hJlYYlsPHhPCeMC/V3pMyrjz5K8p9SQdC50qMg6a8/w/3w0WY1ZixyKGtpJfFB11C3Ubb04l2miieaAH00CIA==
   dependencies:
     "@aws-cdk/cloud-assembly-schema" "^38.0.1"
-    "@aws-cdk/cx-api" "^2.162.1"
+    "@aws-cdk/cx-api" "^2.163.1"
     archiver "^5.3.2"
     aws-sdk "^2.1691.0"
     glob "^7.2.3"
