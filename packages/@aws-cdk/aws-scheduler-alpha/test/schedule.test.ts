@@ -4,8 +4,7 @@ import { Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { IScheduleTarget, Schedule, ScheduleTargetConfig, TimeWindow } from '../lib';
-import { ScheduleExpression } from '../lib/schedule-expression';
+import { IScheduleTarget, Schedule, ScheduleTargetConfig, TimeWindow, ScheduleExpression } from '../lib';
 
 class SomeLambdaTarget implements IScheduleTarget {
   public constructor(private readonly fn: lambda.IFunction, private readonly role: iam.IRole) {
@@ -119,7 +118,7 @@ describe('Schedule', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['kms:Decrypt', 'kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'],
+            Action: 'kms:Decrypt',
             Effect: 'Allow',
             Resource: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
           },
