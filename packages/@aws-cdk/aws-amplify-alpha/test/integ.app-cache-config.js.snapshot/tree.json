@@ -67,6 +67,7 @@
                     "cacheConfig": {
                       "type": "AMPLIFY_MANAGED_NO_COOKIES"
                     },
+                    "customHeaders": "",
                     "iamServiceRole": {
                       "Fn::GetAtt": [
                         "AppRole1AF9B530",
@@ -110,13 +111,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
+                  "fqn": "@aws-cdk/aws-amplify-alpha.Branch",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "@aws-cdk/aws-amplify-alpha.App",
               "version": "0.0.0"
             }
           },

@@ -46,6 +46,7 @@ test('create an app connected to a GitHub repository', () => {
     BasicAuthConfig: {
       EnableBasicAuth: false,
     },
+    CustomHeaders: '',
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {

@@ -26,6 +26,7 @@
     "CacheConfig": {
      "Type": "AMPLIFY_MANAGED_NO_COOKIES"
     },
+    "CustomHeaders": "",
     "IAMServiceRole": {
      "Fn::GetAtt": [
       "AppRole1AF9B530",
