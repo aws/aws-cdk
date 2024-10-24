@@ -83,6 +83,12 @@ export class FoundationModelIdentifier {
   /** Base model "ai21.jamba-instruct-v1:0". */
   public static readonly AI21_J2_JAMBA_INSTRUCT_V1_0 = new FoundationModelIdentifier('ai21.jamba-instruct-v1:0');
 
+  /** Base model "ai21.jamba-1-5-large-v1:0". */
+  public static readonly AI21_JAMBA_1_5_LARGE_V_1_0 = new FoundationModelIdentifier('ai21.jamba-1-5-large-v1:0');
+
+  /** Base model "ai21.jamba-1-5-mini-v1:0". */
+  public static readonly AI21_JAMBA_1_5_MINI_V_1_0 = new FoundationModelIdentifier('ai21.jamba-1-5-mini-v1:0');
+
   /**
    * Base model "anthropic.claude-v1".
    * @deprecated use latest version of the model
@@ -118,6 +124,9 @@ export class FoundationModelIdentifier {
 
   /** Base model "anthropic.claude-3-5-sonnet-20240620-v1:0" */
   public static readonly ANTHROPIC_CLAUDE_3_5_SONNET_20240620_V1_0 = new FoundationModelIdentifier('anthropic.claude-3-5-sonnet-20240620-v1:0');
+
+  /** Base model "anthropic.claude-3-5-sonnet-20241022-v2:0" */
+  public static readonly ANTHROPIC_CLAUDE_3_5_SONNET_20241022_V2_0 = new FoundationModelIdentifier('anthropic.claude-3-5-sonnet-20241022-v2:0');
 
   /** Base model "anthropic.claude-3-haiku-20240307-v1:0". */
   public static readonly ANTHROPIC_CLAUDE_3_HAIKU_20240307_V1_0 = new FoundationModelIdentifier('anthropic.claude-3-haiku-20240307-v1:0');
@@ -205,6 +214,18 @@ export class FoundationModelIdentifier {
 
   /** Base model "meta.llama3-1-405b-instruct-v1:0". */
   public static readonly META_LLAMA_3_1_405_INSTRUCT_V1 = new FoundationModelIdentifier('meta.llama3-1-405b-instruct-v1:0');
+
+  /** Base model "meta.llama3-2-1b-instruct-v1:0". */
+  public static readonly META_LLAMA_3_2_1B_INSTRUCT_V1 = new FoundationModelIdentifier('meta.llama3-2-1b-instruct-v1:0');
+
+  /** Base model "meta.llama3-2-3b-instruct-v1:0". */
+  public static readonly META_LLAMA_3_2_3B_INSTRUCT_V1 = new FoundationModelIdentifier('meta.llama3-2-3b-instruct-v1:0');
+
+  /** Base model "meta.llama3-2-11b-instruct-v1:0". */
+  public static readonly META_LLAMA_3_2_11B_INSTRUCT_V1 = new FoundationModelIdentifier('meta.llama3-2-11b-instruct-v1:0');
+
+  /** Base model "meta.llama3-2-90b-instruct-v1:0". */
+  public static readonly META_LLAMA_3_2_90B_INSTRUCT_V1 = new FoundationModelIdentifier('meta.llama3-2-90b-instruct-v1:0');
 
   /** Base model "mistral.mistral-7b-instruct-v0:2". */
   public static readonly MISTRAL_MISTRAL_7B_INSTRUCT_V0_2 = new FoundationModelIdentifier('mistral.mistral-7b-instruct-v0:2');

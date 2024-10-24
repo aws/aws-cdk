@@ -425,3 +425,72 @@ _cdk.json_
   }
 }
 ```
+
+* `@aws-cdk/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission`
+
+Currently, when using a Lambda authorizer with an AppSync GraphQL API, the AWS CDK automatically generates the necessary AWS::Lambda::Permission to allow the AppSync API to invoke the Lambda authorizer. This permission is overly permissive because it lacks a SourceArn, meaning it allows invocations from any source.
+
+When this feature flag is enabled, the AWS::Lambda::Permission will be properly scoped with the SourceArn corresponding to the specific AppSync GraphQL API.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-ec2:appSyncGraphQLAPIScopeLambdaPermission": true
+  }
+}
+```
+
+* `@aws-cdk/aws-rds:setCorrectValueForDatabaseInstanceReadReplicaInstanceResourceId`
+
+When enabled, the value of property `instanceResourceId` in construct `DatabaseInstanceReadReplica` will be set to the correct value which is `DbiResourceId` instead of currently `DbInstanceArn`* (fix)
+
+When this feature flag is enabled, the value of that property will be as expected set to `DbiResourceId` attribute, and that will fix the grantConnect method.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-rds:setCorrectValueForDatabaseInstanceReadReplicaInstanceResourceId": true
+  }
+}
+```
+
+* `@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages`
+
+Currently, when bundling Lambda functions with the non-latest runtime that supports AWS SDK JavaScript (v3), only the `@aws-sdk/*` packages are excluded by default.
+However, this can cause version mismatches between the `@aws-sdk/*` and `@smithy/*` packages, as they are tightly coupled dependencies in AWS SDK v3.
+
+When this feature flag is enabled, both `@aws-sdk/*` and `@smithy/*` packages will be excluded during the bundling process. This ensures that no mismatches
+occur between these tightly coupled dependencies when using the AWS SDK v3 in Lambda functions.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages": true
+  }
+}
+```
+
+* `@aws-cdk/aws-dynamodb:resourcePolicyPerReplica`
+
+If this flag is not set, the default behavior for \`TableV2\` is to use a different \`resourcePolicy\` for each replica. 
+
+If this flag is set to false, the behavior is that each replica shares the same \`resourcePolicy\` as the source table.
+This will prevent you from creating a new table which has an additional replica and a resource policy.
+
+This is a feature flag as the old behavior was technically incorrect but users may have come to depend on it.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-dynamodb:resourcePolicyPerReplica": false,
+  },
+}
+```

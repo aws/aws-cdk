@@ -12,7 +12,8 @@ import { Bootstrapper, BootstrapEnvironmentOptions } from './api/bootstrap';
 import { CloudAssembly, DefaultSelection, ExtendedStackSelection, StackCollection, StackSelector } from './api/cxapp/cloud-assembly';
 import { CloudExecutable } from './api/cxapp/cloud-executable';
 import { Deployments } from './api/deployments';
-import { HotswapMode } from './api/hotswap/common';
+import { GarbageCollector } from './api/garbage-collection/garbage-collector';
+import { HotswapMode, HotswapPropertyOverrides, EcsHotswapProperties } from './api/hotswap/common';
 import { findCloudWatchLogGroups } from './api/logs/find-cloudwatch-logs';
 import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
 import { createDiffChangeSet, ResourcesToImport } from './api/util/cloudformation';
@@ -30,6 +31,10 @@ import { Concurrency, WorkGraph } from './util/work-graph';
 import { WorkGraphBuilder } from './util/work-graph-builder';
 import { AssetBuildNode, AssetPublishNode, StackNode } from './util/work-graph-types';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob } from '../lib/api/cxapp/environments';
+
+// Must use a require() otherwise esbuild complains about calling a namespace
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const pLimit: typeof import('p-limit') = require('p-limit');
 
 export interface CdkToolkitProps {
 
@@ -138,15 +143,11 @@ export class CdkToolkit {
 
       const template = deserializeStructure(await fs.readFile(options.templatePath, { encoding: 'UTF-8' }));
       diffs = options.securityOnly
-        ? numberFromBool(printSecurityDiff(template, stacks.firstStack, RequireApproval.Broadening, undefined))
-        : printStackDiff(template, stacks.firstStack, strict, contextLines, quiet, undefined, false, stream);
+        ? numberFromBool(printSecurityDiff(template, stacks.firstStack, RequireApproval.Broadening, quiet))
+        : printStackDiff(template, stacks.firstStack, strict, contextLines, quiet, undefined, undefined, false, stream);
     } else {
       // Compare N stacks against deployed templates
       for (const stack of stacks.stackArtifacts) {
-        if (!quiet) {
-          stream.write(format('Stack %s\n', chalk.bold(stack.displayName)));
-        }
-
         const templateWithNestedStacks = await this.props.deployments.readCurrentTemplateWithNestedStacks(
           stack, options.compareAgainstProcessedTemplate,
         );
@@ -170,7 +171,9 @@ export class CdkToolkit {
             });
           } catch (e: any) {
             debug(e.message);
-            stream.write('Checking if the stack exists before creating the changeset has failed, will base the diff on template differences (run again with -v to see the reason)\n');
+            if (!quiet) {
+              stream.write(`Checking if the stack ${stack.stackName} exists before creating the changeset has failed, will base the diff on template differences (run again with -v to see the reason)\n`);
+            }
             stackExists = false;
           }
 
@@ -190,14 +193,12 @@ export class CdkToolkit {
           }
         }
 
-        if (resourcesToImport) {
-          stream.write('Parameters and rules created during migration do not affect resource configuration.\n');
-        }
-
         const stackCount =
         options.securityOnly
-          ? (numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening, changeSet)))
-          : (printStackDiff(currentTemplate, stack, strict, contextLines, quiet, changeSet, !!resourcesToImport, stream, nestedStacks));
+          ? (numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening, quiet, stack.displayName, changeSet)))
+          : (printStackDiff(
+            currentTemplate, stack, strict, contextLines, quiet, stack.displayName, changeSet, !!resourcesToImport, stream, nestedStacks,
+          ));
 
         diffs += stackCount;
       }
@@ -236,6 +237,14 @@ export class CdkToolkit {
       warning('⚠️ They should only be used for development - never use them for your production Stacks!\n');
     }
 
+    let hotswapPropertiesFromSettings = this.props.configuration.settings.get(['hotswap']) || {};
+
+    let hotswapPropertyOverrides = new HotswapPropertyOverrides();
+    hotswapPropertyOverrides.ecsHotswapProperties = new EcsHotswapProperties(
+      hotswapPropertiesFromSettings.ecs?.minimumHealthyPercent,
+      hotswapPropertiesFromSettings.ecs?.maximumHealthyPercent,
+    );
+
     const stacks = stackCollection.stackArtifacts;
 
     const stackOutputs: { [key: string]: any } = { };
@@ -245,7 +254,6 @@ export class CdkToolkit {
       await this.props.deployments.buildSingleAsset(assetNode.assetManifestArtifact, assetNode.assetManifest, assetNode.asset, {
         stack: assetNode.parentStack,
         roleArn: options.roleArn,
-        toolkitStackName: options.toolkitStackName,
         stackName: assetNode.parentStack.stackName,
       });
     };
@@ -254,7 +262,6 @@ export class CdkToolkit {
       await this.props.deployments.publishSingleAsset(assetNode.assetManifest, assetNode.asset, {
         stack: assetNode.parentStack,
         roleArn: options.roleArn,
-        toolkitStackName: options.toolkitStackName,
         stackName: assetNode.parentStack.stackName,
       });
     };
@@ -348,6 +355,7 @@ export class CdkToolkit {
           ci: options.ci,
           rollback: options.rollback,
           hotswap: options.hotswap,
+          hotswapPropertyOverrides: hotswapPropertyOverrides,
           extraUserAgent: options.extraUserAgent,
           assetParallelism: options.assetParallelism,
           ignoreNoStacks: options.ignoreNoStacks,
@@ -375,9 +383,14 @@ export class CdkToolkit {
         print('Stack ARN:');
 
         data(result.stackArn);
-      } catch (e) {
-        error('\n ❌  %s failed: %s', chalk.bold(stack.displayName), e);
-        throw e;
+      } catch (e: any) {
+        // It has to be exactly this string because an integration test tests for
+        // "bold(stackname) failed: ResourceNotReady: <error>"
+        throw new Error([
+          `❌  ${chalk.bold(stack.stackName)} failed:`,
+          ...e.code ? [`${e.code}:`] : [],
+          e.message,
+        ].join(' '));
       } finally {
         if (options.cloudWatchLogMonitor) {
           const foundLogGroupsResult = await findCloudWatchLogGroups(this.props.sdkProvider, stack);
@@ -405,32 +418,71 @@ export class CdkToolkit {
       warning('⚠️ The --concurrency flag only supports --progress "events". Switching to "events".');
     }
 
-    try {
-      const stacksAndTheirAssetManifests = stacks.flatMap(stack => [
-        stack,
-        ...stack.dependencies.filter(cxapi.AssetManifestArtifact.isAssetManifestArtifact),
-      ]);
-      const workGraph = new WorkGraphBuilder(prebuildAssets).build(stacksAndTheirAssetManifests);
+    const stacksAndTheirAssetManifests = stacks.flatMap(stack => [
+      stack,
+      ...stack.dependencies.filter(cxapi.AssetManifestArtifact.isAssetManifestArtifact),
+    ]);
+    const workGraph = new WorkGraphBuilder(prebuildAssets).build(stacksAndTheirAssetManifests);
 
-      // Unless we are running with '--force', skip already published assets
-      if (!options.force) {
-        await this.removePublishedAssets(workGraph, options);
+    // Unless we are running with '--force', skip already published assets
+    if (!options.force) {
+      await this.removePublishedAssets(workGraph, options);
+    }
+
+    const graphConcurrency: Concurrency = {
+      'stack': concurrency,
+      'asset-build': 1, // This will be CPU-bound/memory bound, mostly matters for Docker builds
+      'asset-publish': (options.assetParallelism ?? true) ? 8 : 1, // This will be I/O-bound, 8 in parallel seems reasonable
+    };
+
+    await workGraph.doParallel(graphConcurrency, {
+      deployStack,
+      buildAsset,
+      publishAsset,
+    });
+  }
+
+  /**
+   * Roll back the given stack or stacks.
+   */
+  public async rollback(options: RollbackOptions) {
+    const startSynthTime = new Date().getTime();
+    const stackCollection = await this.selectStacksForDeploy(options.selector, true);
+    const elapsedSynthTime = new Date().getTime() - startSynthTime;
+    print('\n✨  Synthesis time: %ss\n', formatTime(elapsedSynthTime));
+
+    if (stackCollection.stackCount === 0) {
+      // eslint-disable-next-line no-console
+      console.error('No stacks selected');
+      return;
+    }
+
+    let anyRollbackable = false;
+
+    for (const stack of stackCollection.stackArtifacts) {
+      print('Rolling back %s', chalk.bold(stack.displayName));
+      const startRollbackTime = new Date().getTime();
+      try {
+        const result = await this.props.deployments.rollbackStack({
+          stack,
+          roleArn: options.roleArn,
+          toolkitStackName: options.toolkitStackName,
+          force: options.force,
+          validateBootstrapStackVersion: options.validateBootstrapStackVersion,
+          orphanLogicalIds: options.orphanLogicalIds,
+        });
+        if (!result.notInRollbackableState) {
+          anyRollbackable = true;
+        }
+        const elapsedRollbackTime = new Date().getTime() - startRollbackTime;
+        print('\n✨  Rollback time: %ss\n', formatTime(elapsedRollbackTime));
+      } catch (e: any) {
+        error('\n ❌  %s failed: %s', chalk.bold(stack.displayName), e.message);
+        throw new Error('Rollback failed (use --force to orphan failing resources)');
       }
-
-      const graphConcurrency: Concurrency = {
-        'stack': concurrency,
-        'asset-build': 1, // This will be CPU-bound/memory bound, mostly matters for Docker builds
-        'asset-publish': (options.assetParallelism ?? true) ? 8 : 1, // This will be I/O-bound, 8 in parallel seems reasonable
-      };
-
-      await workGraph.doParallel(graphConcurrency, {
-        deployStack,
-        buildAsset,
-        publishAsset,
-      });
-    } catch (e) {
-      error('\n ❌ Deployment failed: %s', e);
-      throw e;
+    }
+    if (!anyRollbackable) {
+      throw new Error('No stacks were in a state that could be rolled back');
     }
   }
 
@@ -724,6 +776,50 @@ export class CdkToolkit {
     // If there is an '--app' argument and an environment looks like a glob, we
     // select the environments from the app. Otherwise, use what the user said.
 
+    const environments = await this.defineEnvironments(userEnvironmentSpecs);
+
+    const limit = pLimit(20);
+
+    // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
+    await Promise.all(environments.map((environment) => limit(async () => {
+      success(' ⏳  Bootstrapping environment %s...', chalk.blue(environment.name));
+      try {
+        const result = await bootstrapper.bootstrapEnvironment(environment, this.props.sdkProvider, options);
+        const message = result.noOp
+          ? ' ✅  Environment %s bootstrapped (no changes).'
+          : ' ✅  Environment %s bootstrapped.';
+        success(message, chalk.blue(environment.name));
+      } catch (e) {
+        error(' ❌  Environment %s failed bootstrapping: %s', chalk.blue(environment.name), e);
+        throw e;
+      }
+    })));
+  }
+
+  /**
+   * Garbage collects assets from a CDK app's environment
+   * @param options Options for Garbage Collection
+   */
+  public async garbageCollect(userEnvironmentSpecs: string[], options: GarbageCollectionOptions) {
+    const environments = await this.defineEnvironments(userEnvironmentSpecs);
+
+    for (const environment of environments) {
+      success(' ⏳  Garbage Collecting environment %s...', chalk.blue(environment.name));
+      const gc = new GarbageCollector({
+        sdkProvider: this.props.sdkProvider,
+        resolvedEnvironment: environment,
+        bootstrapStackName: options.bootstrapStackName,
+        rollbackBufferDays: options.rollbackBufferDays,
+        createdBufferDays: options.createdBufferDays,
+        action: options.action ?? 'full',
+        type: options.type ?? 'all',
+        confirm: options.confirm ?? true,
+      });
+      await gc.garbageCollect();
+    };
+  }
+
+  private async defineEnvironments(userEnvironmentSpecs: string[]): Promise<cxapi.Environment[]> {
     // By default, glob for everything
     const environmentSpecs = userEnvironmentSpecs.length > 0 ? [...userEnvironmentSpecs] : ['**'];
 
@@ -748,19 +844,7 @@ export class CdkToolkit {
       environments.push(...await globEnvironmentsFromStacks(await this.selectStacksForList([]), globSpecs, this.props.sdkProvider));
     }
 
-    await Promise.all(environments.map(async (environment) => {
-      success(' ⏳  Bootstrapping environment %s...', chalk.blue(environment.name));
-      try {
-        const result = await bootstrapper.bootstrapEnvironment(environment, this.props.sdkProvider, options);
-        const message = result.noOp
-          ? ' ✅  Environment %s bootstrapped (no changes).'
-          : ' ✅  Environment %s bootstrapped.';
-        success(message, chalk.blue(environment.name));
-      } catch (e) {
-        error(' ❌  Environment %s failed bootstrapping: %s', chalk.blue(environment.name), e);
-        throw e;
-      }
-    }));
+    return environments;
   }
 
   /**
@@ -982,7 +1066,6 @@ export class CdkToolkit {
     await graph.removeUnnecessaryAssets(assetNode => this.props.deployments.isSingleAssetPublished(assetNode.assetManifest, assetNode.asset, {
       stack: assetNode.parentStack,
       roleArn: options.roleArn,
-      toolkitStackName: options.toolkitStackName,
       stackName: assetNode.parentStack.stackName,
     }));
   }
@@ -1058,6 +1141,13 @@ export interface DiffOptions {
    * Stack names to diff
    */
   stackNames: string[];
+
+  /**
+   * Name of the toolkit stack, if not the default name
+   *
+   * @default 'CDKToolkit'
+   */
+  readonly toolkitStackName?: string;
 
   /**
    * Only select the given stack
@@ -1349,6 +1439,48 @@ export interface DeployOptions extends CfnDeployOptions, WatchOptions {
   readonly ignoreNoStacks?: boolean;
 }
 
+export interface RollbackOptions {
+  /**
+   * Criteria for selecting stacks to deploy
+   */
+  readonly selector: StackSelector;
+
+  /**
+   * Name of the toolkit stack to use/deploy
+   *
+   * @default CDKToolkit
+   */
+  readonly toolkitStackName?: string;
+
+  /**
+   * Role to pass to CloudFormation for deployment
+   *
+   * @default - Default stack role
+   */
+  readonly roleArn?: string;
+
+  /**
+   * Whether to force the rollback or not
+   *
+   * @default false
+   */
+  readonly force?: boolean;
+
+  /**
+   * Logical IDs of resources to orphan
+   *
+   * @default - No orphaning
+   */
+  readonly orphanLogicalIds?: string[];
+
+  /**
+   * Whether to validate the version of the bootstrap stack permissions
+   *
+   * @default true
+   */
+  readonly validateBootstrapStackVersion?: boolean;
+}
+
 export interface ImportOptions extends CfnDeployOptions {
   /**
    * Build a physical resource mapping and write it to the given file, without performing the actual import operation
@@ -1405,6 +1537,51 @@ export interface DestroyOptions {
    * @default false
    */
   readonly ci?: boolean;
+}
+
+/**
+ * Options for the garbage collection
+ */
+export interface GarbageCollectionOptions {
+  /**
+   * The action to perform.
+   *
+   * @default 'full'
+   */
+  readonly action: 'print' | 'tag' | 'delete-tagged' | 'full';
+
+  /**
+   * The type of the assets to be garbage collected.
+   *
+   * @default 'all'
+   */
+  readonly type: 's3' | 'ecr' | 'all';
+
+  /**
+   * Elapsed time between an asset being marked as isolated and actually deleted.
+   *
+   * @default 0
+   */
+  readonly rollbackBufferDays: number;
+
+  /**
+   * Refuse deletion of any assets younger than this number of days.
+   */
+  readonly createdBufferDays: number;
+
+  /**
+   * The stack name of the bootstrap stack.
+   *
+   * @default DEFAULT_TOOLKIT_STACK_NAME
+   */
+  readonly bootstrapStackName?: string;
+
+  /**
+   * Skips the prompt before actual deletion begins
+   *
+   * @default false
+   */
+  readonly confirm?: boolean;
 }
 
 export interface MigrateOptions {

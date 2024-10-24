@@ -13,7 +13,7 @@ import { shell, ShellOptions, ShellHelper, rimraf } from './shell';
 import { AwsContext, withAws } from './with-aws';
 import { withTimeout } from './with-timeout';
 
-export const DEFAULT_TEST_TIMEOUT_S = 10 * 60;
+export const DEFAULT_TEST_TIMEOUT_S = 20 * 60;
 export const EXTENDED_TEST_TIMEOUT_S = 30 * 60;
 
 /**
@@ -24,7 +24,8 @@ export const EXTENDED_TEST_TIMEOUT_S = 30 * 60;
  * For backwards compatibility with existing tests (so we don't have to change
  * too much) the inner block is expected to take a `TestFixture` object.
  */
-export function withCdkApp(
+export function withSpecificCdkApp(
+  appName: string,
   block: (context: TestFixture) => Promise<void>,
 ): (context: TestContext & AwsContext & DisableBootstrapContext) => Promise<void> {
   return async (context: TestContext & AwsContext & DisableBootstrapContext) => {
@@ -36,7 +37,7 @@ export function withCdkApp(
     context.output.write(` Test directory: ${integTestDir}\n`);
     context.output.write(` Region:         ${context.aws.region}\n`);
 
-    await cloneDirectory(path.join(RESOURCES_DIR, 'cdk-apps', 'app'), integTestDir, context.output);
+    await cloneDirectory(path.join(RESOURCES_DIR, 'cdk-apps', appName), integTestDir, context.output);
     const fixture = new TestFixture(
       integTestDir,
       stackNamePrefix,
@@ -85,6 +86,16 @@ export function withCdkApp(
       }
     }
   };
+}
+
+/**
+ * Like `withSpecificCdkApp`, but uses the default integration testing app with a million stacks in it
+ */
+export function withCdkApp(
+  block: (context: TestFixture) => Promise<void>,
+): (context: TestContext & AwsContext & DisableBootstrapContext) => Promise<void> {
+  // 'app' is the name of the default integration app in the `cdk-apps` directory
+  return withSpecificCdkApp('app', block);
 }
 
 export function withCdkMigrateApp<A extends TestContext>(language: string, block: (context: TestFixture) => Promise<void>) {
@@ -188,6 +199,10 @@ export function withDefaultFixture(block: (context: TestFixture) => Promise<void
   return withAws(withTimeout(DEFAULT_TEST_TIMEOUT_S, withCdkApp(block)));
 }
 
+export function withSpecificFixture(appName: string, block: (context: TestFixture) => Promise<void>) {
+  return withAws(withTimeout(DEFAULT_TEST_TIMEOUT_S, withSpecificCdkApp(appName, block)));
+}
+
 export function withExtendedTimeoutFixture(block: (context: TestFixture) => Promise<void>) {
   return withAws(withTimeout(EXTENDED_TEST_TIMEOUT_S, withCdkApp(block)));
 }
@@ -258,6 +273,11 @@ interface CommonCdkBootstrapCommandOptions {
    * @default - none
    */
   readonly tags?: string;
+
+  /**
+   * @default - the default CDK qualifier
+   */
+  readonly qualifier?: string;
 }
 
 export interface CdkLegacyBootstrapCommandOptions extends CommonCdkBootstrapCommandOptions {
@@ -309,6 +329,30 @@ export interface CdkModernBootstrapCommandOptions extends CommonCdkBootstrapComm
    * @default undefined
    */
   readonly usePreviousParameters?: boolean;
+}
+
+export interface CdkGarbageCollectionCommandOptions {
+  /**
+   * The amount of days an asset should stay isolated before deletion, to
+   * guard against some pipeline rollback scenarios
+   *
+   * @default 0
+   */
+  readonly rollbackBufferDays?: number;
+
+  /**
+   * The type of asset that is getting garbage collected.
+   *
+   * @default 'all'
+   */
+  readonly type?: 'ecr' | 's3' | 'all';
+
+  /**
+   * The name of the bootstrap stack
+   *
+   * @default 'CdkToolkit'
+   */
+  readonly bootstrapStackName?: string;
 }
 
 export class TestFixture extends ShellHelper {
@@ -408,7 +452,7 @@ export class TestFixture extends ShellHelper {
     if (options.bootstrapBucketName) {
       args.push('--bootstrap-bucket-name', options.bootstrapBucketName);
     }
-    args.push('--qualifier', this.qualifier);
+    args.push('--qualifier', options.qualifier ?? this.qualifier);
     if (options.cfnExecutionPolicy) {
       args.push('--cloudformation-execution-policies', options.cfnExecutionPolicy);
     }
@@ -442,6 +486,26 @@ export class TestFixture extends ShellHelper {
         CDK_NEW_BOOTSTRAP: '1',
       },
     });
+  }
+
+  public async cdkGarbageCollect(options: CdkGarbageCollectionCommandOptions): Promise<string> {
+    const args = [
+      'gc',
+      '--unstable=gc', // TODO: remove when stabilizing
+      '--confirm=false',
+      '--created-buffer-days=0', // Otherwise all assets created during integ tests are too young
+    ];
+    if (options.rollbackBufferDays) {
+      args.push('--rollback-buffer-days', String(options.rollbackBufferDays));
+    }
+    if (options.type) {
+      args.push('--type', options.type);
+    }
+    if (options.bootstrapStackName) {
+      args.push('--bootstrapStackName', options.bootstrapStackName);
+    }
+
+    return this.cdk(args);
   }
 
   public async cdkMigrate(language: string, stackName: string, inputPath?: string, options?: CdkCliOptions) {
@@ -514,12 +578,16 @@ export class TestFixture extends ShellHelper {
 
     // Bootstrap stacks have buckets that need to be cleaned
     const bucketNames = stacksToDelete.map(stack => outputFromStack('BucketName', stack)).filter(defined);
+    // Parallelism will be reasonable
+    // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
     await Promise.all(bucketNames.map(b => this.aws.emptyBucket(b)));
     // The bootstrap bucket has a removal policy of RETAIN by default, so add it to the buckets to be cleaned up.
     this.bucketsToDelete.push(...bucketNames);
 
     // Bootstrap stacks have ECR repositories with images which should be deleted
     const imageRepositoryNames = stacksToDelete.map(stack => outputFromStack('ImageRepositoryName', stack)).filter(defined);
+    // Parallelism will be reasonable
+    // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
     await Promise.all(imageRepositoryNames.map(r => this.aws.deleteImageRepository(r)));
 
     await this.aws.deleteStacks(
@@ -610,6 +678,7 @@ async function ensureBootstrapped(fixture: TestFixture) {
       CDK_NEW_BOOTSTRAP: '1',
     },
   });
+
   ALREADY_BOOTSTRAPPED_IN_THIS_RUN.add(envSpecifier);
 }
 
