@@ -33,6 +33,7 @@ const queue = new sqs.Queue(stack, 'ScheduleTargetQueue');
 const role = new iam.Role(stack, 'Role', {
   assumedBy: new iam.ServicePrincipal('scheduler.amazonaws.com'),
 });
+queue.grantSendMessages(role);
 
 new scheduler.Schedule(stack, 'ScheduleToSendMessageToQueue', {
   schedule: scheduler.ScheduleExpression.rate(cdk.Duration.minutes(1)),
