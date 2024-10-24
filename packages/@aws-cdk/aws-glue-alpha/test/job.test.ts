@@ -448,6 +448,18 @@ describe('Job', () => {
           })).toThrow('FLEX ExecutionClass is only available for WorkerType G_1X or G_2X');
         });
 
+        test('with job run queuing enabled should throw', () => {
+          expect(() => new glue.Job(stack, 'Job', {
+            executable: glue.JobExecutable.pythonEtl({
+              glueVersion: glue.GlueVersion.V4_0,
+              pythonVersion: glue.PythonVersion.THREE,
+              script,
+            }),
+            executionClass: glue.ExecutionClass.FLEX,
+            jobRunQueuingEnabled: true,
+          })).toThrow('FLEX ExecutionClass is only available if job run queuing is disabled');
+        });
+
         test('with G_4X as worker type that is neither G_1X nor G_2X should throw', () => {
           expect(() => new glue.Job(stack, 'Job', {
             executable: glue.JobExecutable.pythonEtl({
@@ -792,6 +804,21 @@ describe('Job', () => {
             ],
           },
           SecurityConfiguration: 'SecurityConfigurationName',
+        });
+      });
+    });
+
+    describe('enabling job run queuing', () => {
+      beforeEach(() => {
+        job = new glue.Job(stack, 'Job', {
+          ...defaultProps,
+          jobRunQueuingEnabled: true,
+        });
+      });
+
+      test('should set JobRunQueuingEnabled', () => {
+        Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+          JobRunQueuingEnabled: true,
         });
       });
     });
@@ -1174,6 +1201,20 @@ describe('Job', () => {
           }),
           workerCount: 10,
         })).toThrow('Both workerType and workerCount must be set');
+      });
+    });
+
+    describe('validation for jobRunQueuingEnabled and maxRetries', () => {
+      test('jobRunQueuingEnabled with maxRetries > 0 should throw', () => {
+        expect(() => new glue.Job(stack, 'Job', {
+          executable: glue.JobExecutable.pythonEtl({
+            glueVersion: glue.GlueVersion.V4_0,
+            pythonVersion: glue.PythonVersion.THREE,
+            script,
+          }),
+          jobRunQueuingEnabled: true,
+          maxRetries: 2,
+        })).toThrow('Maximum retries was set to 2, must be set to 0 with job run queuing enabled');
       });
     });
   });
