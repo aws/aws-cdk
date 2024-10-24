@@ -5,17 +5,16 @@ import { CliConfig, YargsOption } from './yargs-types';
 export async function renderYargs(config: CliConfig): Promise<string> {
   const scope = new Module('aws-cdk');
 
+  scope.documentation.push( '-------------------------------------------------------------------------------------------');
+  scope.documentation.push('GENERATED FROM packages/aws-cdk/lib/config.ts.');
+  scope.documentation.push('Do not edit by hand; all changes will be overwritten at build time from the config file.');
+  scope.documentation.push('-------------------------------------------------------------------------------------------');
+
   scope.addImport(new SelectiveModuleImport(scope, 'yargs', ['Argv']));
 
-  scope.addInitialization(
-    code.comment('-------------------------------------------------------------------------------------------'),
-    code.comment('GENERATED FROM packages/aws-cdk/lib/config.ts.'),
-    code.comment('Do not edit by hand; all changes will be overwritten at build time from the config file.'),
-    code.comment('-------------------------------------------------------------------------------------------'),
-  );
-  //  'https://github.com/yargs/yargs/issues/1929',
-  //  'https://github.com/evanw/esbuild/issues/1492',
-  //  'eslint-disable-next-line @typescript-eslint/no-require-imports',
+  // 'https://github.com/yargs/yargs/issues/1929',
+  // 'https://github.com/evanw/esbuild/issues/1492',
+  scope.addInitialization(code.comment('eslint-disable-next-line @typescript-eslint/no-require-imports'));
   scope.addInitialization(code.stmt.constVar(code.expr.ident('yargs'), code.expr.directCode("require('yargs')")));
 
   const parseCommandLineArguments = new FreeFunction(scope, {

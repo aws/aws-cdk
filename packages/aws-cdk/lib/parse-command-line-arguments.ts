@@ -1,3 +1,7 @@
+// -------------------------------------------------------------------------------------------
+// GENERATED FROM packages/aws-cdk/lib/config.ts.
+// Do not edit by hand; all changes will be overwritten at build time from the config file.
+// -------------------------------------------------------------------------------------------
 /* eslint-disable prettier/prettier,max-len */
 import { Argv } from "yargs";
 
@@ -568,8 +572,5 @@ function parseCommandLineArguments(args: Array<string>, browserDefault?: string,
     "type": "string",
     "default": browserDefault
   })).command(['doctor'], "Check your set-up for potential problems").version(version).demandCommand(1, "''").recommendCommands().help().alias("h", "help").epilogue("If your app has a single stack, there is no need to specify the stack name\n\nIf one of cdk.json or ~/.cdk.json exists, options specified there will be used as defaults. Settings in cdk.json take precedence.").parse(args);
-}// -------------------------------------------------------------------------------------------
-// GENERATED FROM packages/aws-cdk/lib/config.ts.
-// Do not edit by hand; all changes will be overwritten at build time from the config file.
-// -------------------------------------------------------------------------------------------
+}// eslint-disable-next-line @typescript-eslint/no-require-imports
 const yargs = require('yargs');
