@@ -70,6 +70,15 @@ describe('determineAllowCrossAccountAssetPublishing', () => {
     expect(result).toBe(true);
   });
 
+  it('should return true if looking up the bootstrap stack fails', async () => {
+    AWSMock.mock('CloudFormation', 'describeStacks', (_params: any, callback: Function) => {
+      callback(new Error('Could not read bootstrap stack'));
+    });
+
+    const result = await determineAllowCrossAccountAssetPublishing(mockSDK);
+    expect(result).toBe(true);
+  });
+
   it('should return false for other scenarios', async () => {
     AWSMock.mock('CloudFormation', 'describeStacks', (_params: any, callback: Function) => {
       callback(null, {
