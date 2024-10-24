@@ -1,0 +1,95 @@
+{
+ "Resources": {
+  "TableTestV215EEA02B7": {
+   "Type": "AWS::DynamoDB::GlobalTable",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "id",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+     }
+    ],
+    "Replicas": [
+     {
+      "Region": "eu-west-2"
+     },
+     {
+      "Region": "eu-west-1",
+      "ResourcePolicy": {
+       "PolicyDocument": {
+        "Statement": [
+         {
+          "Action": "dynamodb:*",
+          "Effect": "Allow",
+          "Principal": {
+           "AWS": {
+            "Fn::Join": [
+             "",
+             [
+              "arn:aws:iam::",
+              {
+               "Ref": "AWS::AccountId"
+              },
+              ":root"
+             ]
+            ]
+           }
+          },
+          "Resource": "*"
+         }
+        ],
+        "Version": "2012-10-17"
+       }
+      }
+     }
+    ],
+    "StreamSpecification": {
+     "StreamViewType": "NEW_AND_OLD_IMAGES"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
