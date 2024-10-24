@@ -243,13 +243,13 @@ export interface TableOptions extends SchemaOptions {
    */
   readonly maxReadRequestUnits?: number;
   /**
-     * The write request units for the table. Careful if you add Global Secondary Indexes, as
-     * those will share the table's maximum on-demand throughput.
-     *
-     * Can only be provided if billingMode is PAY_PER_REQUEST.
-     *
-     * @default - on-demand throughput is disabled
-     */
+   * The write request units for the table. Careful if you add Global Secondary Indexes, as
+   * those will share the table's maximum on-demand throughput.
+   *
+   * Can only be provided if billingMode is PAY_PER_REQUEST.
+   *
+   * @default - on-demand throughput is disabled
+   */
   readonly maxWriteRequestUnits?: number;
 
   /**
@@ -456,6 +456,13 @@ export interface GlobalSecondaryIndexProps extends SecondaryIndexProps, SchemaOp
    * @default - on-demand throughput is disabled
    */
   readonly maxWriteRequestUnits?: number;
+
+  /**
+   * Whether CloudWatch contributor insights is enabled for the specified global secondary index.
+   *
+   * @default false
+   */
+  readonly contributorInsightsEnabled?: boolean;
 }
 
 /**
@@ -1227,6 +1234,7 @@ export class Table extends TableBase {
     const gsiProjection = this.buildIndexProjection(props);
 
     this.globalSecondaryIndexes.push({
+      contributorInsightsSpecification: props.contributorInsightsEnabled !== undefined ? { enabled: props.contributorInsightsEnabled } : undefined,
       indexName: props.indexName,
       keySchema: gsiKeySchema,
       projection: gsiProjection,
