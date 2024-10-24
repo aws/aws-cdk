@@ -15,7 +15,7 @@ import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
-import { ArnFormat, IResource, Lazy, Resource, Stack, Token, Duration, Names, FeatureFlags } from '../../core';
+import { ArnFormat, IResource, Lazy, Resource, Stack, Token, Duration, Names, FeatureFlags, Annotations } from '../../core';
 import { CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 } from '../../cx-api';
 
 /**
@@ -232,32 +232,32 @@ export interface DistributionProps {
   readonly errorResponses?: ErrorResponse[];
 
   /**
-    * The minimum version of the SSL protocol that you want CloudFront to use for HTTPS connections.
-    *
-    * CloudFront serves your objects only to browsers or devices that support at
-    * least the SSL version that you specify.
-    *
-    * @default - SecurityPolicyProtocol.TLS_V1_2_2021 if the '@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021' feature flag is set; otherwise, SecurityPolicyProtocol.TLS_V1_2_2019.
-    */
+   * The minimum version of the SSL protocol that you want CloudFront to use for HTTPS connections.
+   *
+   * CloudFront serves your objects only to browsers or devices that support at
+   * least the SSL version that you specify.
+   *
+   * @default - SecurityPolicyProtocol.TLS_V1_2_2021 if the '@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021' feature flag is set; otherwise, SecurityPolicyProtocol.TLS_V1_2_2019.
+   */
   readonly minimumProtocolVersion?: SecurityPolicyProtocol;
 
   /**
-    * The SSL method CloudFront will use for your distribution.
-    *
-    * Server Name Indication (SNI) - is an extension to the TLS computer networking protocol by which a client indicates
-    * which hostname it is attempting to connect to at the start of the handshaking process. This allows a server to present
-    * multiple certificates on the same IP address and TCP port number and hence allows multiple secure (HTTPS) websites
-    * (or any other service over TLS) to be served by the same IP address without requiring all those sites to use the same certificate.
-    *
-    * CloudFront can use SNI to host multiple distributions on the same IP - which a large majority of clients will support.
-    *
-    * If your clients cannot support SNI however - CloudFront can use dedicated IPs for your distribution - but there is a prorated monthly charge for
-    * using this feature. By default, we use SNI - but you can optionally enable dedicated IPs (VIP).
-    *
-    * See the CloudFront SSL for more details about pricing : https://aws.amazon.com/cloudfront/custom-ssl-domains/
-    *
-    * @default SSLMethod.SNI
-    */
+   * The SSL method CloudFront will use for your distribution.
+   *
+   * Server Name Indication (SNI) - is an extension to the TLS computer networking protocol by which a client indicates
+   * which hostname it is attempting to connect to at the start of the handshaking process. This allows a server to present
+   * multiple certificates on the same IP address and TCP port number and hence allows multiple secure (HTTPS) websites
+   * (or any other service over TLS) to be served by the same IP address without requiring all those sites to use the same certificate.
+   *
+   * CloudFront can use SNI to host multiple distributions on the same IP - which a large majority of clients will support.
+   *
+   * If your clients cannot support SNI however - CloudFront can use dedicated IPs for your distribution - but there is a prorated monthly charge for
+   * using this feature. By default, we use SNI - but you can optionally enable dedicated IPs (VIP).
+   *
+   * See the CloudFront SSL for more details about pricing : https://aws.amazon.com/cloudfront/custom-ssl-domains/
+   *
+   * @default SSLMethod.SNI
+   */
   readonly sslSupportMethod?: SSLMethod;
 
   /**
@@ -320,6 +320,10 @@ export class Distribution extends Resource implements IDistribution {
       const certificateRegion = Stack.of(this).splitArn(props.certificate.certificateArn, ArnFormat.SLASH_RESOURCE_NAME).region;
       if (!Token.isUnresolved(certificateRegion) && certificateRegion !== 'us-east-1') {
         throw new Error(`Distribution certificates must be in the us-east-1 region and the certificate you provided is in ${certificateRegion}.`);
+      }
+
+      if ((props.domainNames ?? []).length === 0) {
+        Annotations.of(this).addWarningV2('@aws-cdk/aws-cloudfront:emptyDomainNames', 'No domain names are specified. You will need to specify it after running associate-alias CLI command manually. See the "Moving an alternate domain name to a different distribution" section of module\'s README for more info.');
       }
     }
 
@@ -607,21 +611,22 @@ export class Distribution extends Resource implements IDistribution {
       const originIndex = this.boundOrigins.length + 1;
       const scope = new Construct(this, `Origin${originIndex}`);
       const generatedId = Names.uniqueId(scope).slice(-ORIGIN_ID_MAX_LENGTH);
-      const originBindConfig = origin.bind(scope, { originId: generatedId });
+      const distributionId = this.distributionId;
+      const originBindConfig = origin.bind(scope, { originId: generatedId, distributionId: Lazy.string({ produce: () => this.distributionId }) });
       const originId = originBindConfig.originProperty?.id ?? generatedId;
       const duplicateId = this.boundOrigins.find(boundOrigin => boundOrigin.originProperty?.id === originBindConfig.originProperty?.id);
       if (duplicateId) {
         throw new Error(`Origin with id ${duplicateId.originProperty?.id} already exists. OriginIds must be unique within a distribution`);
       }
       if (!originBindConfig.failoverConfig) {
-        this.boundOrigins.push({ origin, originId, ...originBindConfig });
+        this.boundOrigins.push({ origin, originId, distributionId, ...originBindConfig });
       } else {
         if (isFailoverOrigin) {
           throw new Error('An Origin cannot use an Origin with its own failover configuration as its fallback origin!');
         }
         const groupIndex = this.originGroups.length + 1;
         const originGroupId = Names.uniqueId(new Construct(this, `OriginGroup${groupIndex}`)).slice(-ORIGIN_ID_MAX_LENGTH);
-        this.boundOrigins.push({ origin, originId, originGroupId, ...originBindConfig });
+        this.boundOrigins.push({ origin, originId, distributionId, originGroupId, ...originBindConfig });
 
         const failoverOriginId = this.addOrigin(originBindConfig.failoverConfig.failoverOrigin, true);
         this.addOriginGroup(originGroupId, originBindConfig.failoverConfig.statusCodes, originId, failoverOriginId);

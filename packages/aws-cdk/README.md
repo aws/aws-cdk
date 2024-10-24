@@ -19,11 +19,13 @@ The AWS CDK Toolkit provides the `cdk` command-line interface that can be used t
 | [`cdk synth`](#cdk-synthesize)        | Synthesize a CDK app to CloudFormation template(s)                                 |
 | [`cdk diff`](#cdk-diff)               | Diff stacks against current state                                                  |
 | [`cdk deploy`](#cdk-deploy)           | Deploy a stack into an AWS account                                                 |
+| [`cdk rollback`](#cdk-rollback)       | Roll back a failed deployment                                                      |
 | [`cdk import`](#cdk-import)           | Import existing AWS resources into a CDK stack                                     |
 | [`cdk migrate`](#cdk-migrate)         | Migrate AWS resources, CloudFormation stacks, and CloudFormation templates to CDK  |
 | [`cdk watch`](#cdk-watch)             | Watches a CDK app for deployable and hotswappable changes                          |
 | [`cdk destroy`](#cdk-destroy)         | Deletes a stack from an AWS account                                                |
 | [`cdk bootstrap`](#cdk-bootstrap)     | Deploy a toolkit stack to support deploying large stacks & artifacts               |
+| [`cdk gc`](#cdk-gc)                   | Garbage collect assets associated with the bootstrapped stack                      |
 | [`cdk doctor`](#cdk-doctor)           | Inspect the environment and produce information useful for troubleshooting         |
 | [`cdk acknowledge`](#cdk-acknowledge) | Acknowledge (and hide) a notice by issue number                                    |
 | [`cdk notices`](#cdk-notices)         | List all relevant notices for the application                                      |
@@ -201,6 +203,10 @@ To disable the rollback feature, specify `--no-rollback` (`-R` for short):
 $ cdk deploy --no-rollback
 $ cdk deploy -R
 ```
+
+If a deployment fails you can update your code and immediately retry the
+deployment from the point of failure. If you would like to explicitly roll back a failed, paused deployment,
+use `cdk rollback`.
 
 NOTE: you cannot use `--no-rollback` for any updates that would cause a resource replacement, only for updates
 and creations of new resources.
@@ -395,7 +401,7 @@ development, your prod app may not have any resources or the resources are comme
 out. In this scenario, you will receive an error message stating that the app has no
 stacks.
 
-To bypass this error messages, you can pass the `--ignore-no-stacks` flag to the 
+To bypass this error messages, you can pass the `--ignore-no-stacks` flag to the
 `deploy` command:
 
 ```console
@@ -445,6 +451,19 @@ Hotswapping is currently supported for the following changes
 - VTL mapping template changes for AppSync Resolvers and Functions.
 - Schema changes for AppSync GraphQL Apis.
 
+You can optionally configure the behavior of your hotswap deployments in `cdk.json`. Currently you can only configure ECS hotswap behavior:
+
+```json
+{
+"hotswap": {
+    "ecs": {
+      "minimumHealthyPercent": 100,
+      "maximumHealthyPercent": 250
+    }
+  }
+}
+```
+
 **⚠ Note #1**: This command deliberately introduces drift in CloudFormation stacks in order to speed up deployments.
 For this reason, only use it for development purposes.
 **Never use this flag for your production deployments**!
@@ -465,6 +484,24 @@ and might have breaking changes in the future.
 - `Fn::Sub`
 
 > *: `Fn::GetAtt` is only partially supported. Refer to [this implementation](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk/lib/api/evaluate-cloudformation-template.ts#L477-L492) for supported resources and attributes.
+
+### `cdk rollback`
+
+If a deployment performed using `cdk deploy --no-rollback` fails, your
+deployment will be left in a failed, paused state. From this state you can
+update your code and try the deployment again, or roll the deployment back to
+the last stable state.
+
+To roll the deployment back, use `cdk rollback`. This will initiate a rollback
+to the last stable state of your stack.
+
+Some resources may fail to roll back. If they do, you can try again by calling
+`cdk rollback --orphan <LogicalId>` (can be specified multiple times). Or, run
+`cdk rollback --force` to have the CDK CLI automatically orphan all failing
+resources.
+
+(`cdk rollback` requires version 23 of the bootstrap stack, since it depends on
+new permissions necessary to call the appropriate CloudFormation APIs)
 
 ### `cdk watch`
 
@@ -596,9 +633,9 @@ This feature currently has the following limitations:
 
 ### `cdk migrate`
 
-⚠️**CAUTION**⚠️: CDK Migrate is currently experimental and may have breaking changes in the future. 
+⚠️**CAUTION**⚠️: CDK Migrate is currently experimental and may have breaking changes in the future.
 
-CDK Migrate generates a CDK app from deployed AWS resources using `--from-scan`, deployed AWS CloudFormation stacks using `--from-stack`, and local AWS CloudFormation templates using `--from-path`. 
+CDK Migrate generates a CDK app from deployed AWS resources using `--from-scan`, deployed AWS CloudFormation stacks using `--from-stack`, and local AWS CloudFormation templates using `--from-path`.
 
 To learn more about the CDK Migrate feature, see [Migrate to AWS CDK](https://docs.aws.amazon.com/cdk/v2/guide/migrate.html). For more information on `cdk migrate` command options, see [cdk migrate command reference](https://docs.aws.amazon.com/cdk/v2/guide/ref-cli-cdk-migrate.html).
 
@@ -630,7 +667,7 @@ Account and Region information are retrieved from default CDK CLI sources. Use `
 $ cdk migrate --language typescript --from-scan --stack-name "myCloudFormationStack"
 ```
 
-Since CDK Migrate relies on the IaC generator service, any limitations of IaC generator will apply to CDK Migrate. For general limitations, see [Considerations](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/generate-IaC.html#generate-template-considerations). 
+Since CDK Migrate relies on the IaC generator service, any limitations of IaC generator will apply to CDK Migrate. For general limitations, see [Considerations](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/generate-IaC.html#generate-template-considerations).
 
 IaC generator limitations with discovering resource and property values will also apply here. As a result, CDK Migrate will only migrate resources supported by IaC generator. Some of your resources may not be supported and some property values may not be accessible. For more information, see [Iac generator and write-only properties](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/generate-IaC-write-only-properties.html) and [Supported resource types](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/generate-IaC-supported-resources.html).
 
@@ -647,8 +684,8 @@ $ # template.json is a valid cloudformation template in the local directory
 $ cdk migrate --stack-name MyAwesomeApplication --language typescript --from-path MyTemplate.json
 ```
 
-This command generates a new directory named `MyAwesomeApplication` within your current working directory, and  
-then initializes a new CDK application within that directory. The CDK app contains a `MyAwesomeApplication` stack with resources configured to match those in your local CloudFormation template. 
+This command generates a new directory named `MyAwesomeApplication` within your current working directory, and
+then initializes a new CDK application within that directory. The CDK app contains a `MyAwesomeApplication` stack with resources configured to match those in your local CloudFormation template.
 
 This results in a CDK application with the following structure, where the lib directory contains a stack definition
 with the same resource configuration as the provided template.json.
@@ -678,13 +715,13 @@ This will generate a Python CDK app which will synthesize the same configuration
 
 ##### Generate a TypeScript CDK app from deployed AWS resources that are not associated with a stack
 
-If you have resources in your account that were provisioned outside AWS IaC tools and would like to manage them with the CDK, you can use the `--from-scan` option to generate the application. 
+If you have resources in your account that were provisioned outside AWS IaC tools and would like to manage them with the CDK, you can use the `--from-scan` option to generate the application.
 
 In this example, we use the `--filter` option to specify which resources to migrate.  You can filter resources to limit the number of resources migrated to only those specified by the `--filter` option, including any resources they depend on, or resources that depend on them (for example A filter which specifies a single Lambda Function, will find that specific table and any alarms that may monitor it). The `--filter` argument offers both AND as well as OR filtering.
 
 OR filtering can be specified by passing multiple `--filter` options, and AND filtering can be specified by passing a single `--filter` option with multiple comma separated key/value pairs as seen below (see below for examples). It is recommended to use the `--filter` option to limit the number of resources returned as some resource types provide sample resources by default in all accounts which can add to the resource limits.
 
-`--from-scan` takes 3 potential arguments: `--new`, `most-recent`, and undefined. If `--new` is passed, CDK Migrate will initiate a new scan of the account and use that new scan to discover resources. If `--most-recent` is passed, CDK Migrate will use the most recent scan of the account to discover resources. If neither `--new` nor `--most-recent` are passed, CDK Migrate will take the most recent scan of the account to discover resources, unless there is no recent scan, in which case it will initiate a new scan. 
+`--from-scan` takes 3 potential arguments: `--new`, `most-recent`, and undefined. If `--new` is passed, CDK Migrate will initiate a new scan of the account and use that new scan to discover resources. If `--most-recent` is passed, CDK Migrate will use the most recent scan of the account to discover resources. If neither `--new` nor `--most-recent` are passed, CDK Migrate will take the most recent scan of the account to discover resources, unless there is no recent scan, in which case it will initiate a new scan.
 
 ```console
 # Filtering options
@@ -717,14 +754,14 @@ $ cdk migrate --stack-name MyAwesomeApplication --language typescript --from-sca
 - CDK Migrate will only generate L1 constructs and does not currently support any higher level abstractions.
 
 - CDK Migrate successfully generating an application does *not* guarantee the application is immediately deployable.
-It simply generates a CDK application which will synthesize a template that has identical resource configurations 
-to the provided template. 
+It simply generates a CDK application which will synthesize a template that has identical resource configurations
+to the provided template.
 
-  - CDK Migrate does not interact with the CloudFormation service to verify the template 
-provided can deploy on its own. Although by default any CDK app generated using the `--from-scan` option exclude 
-CloudFormation managed resources, CDK Migrate will not verify prior to deployment that any resources scanned, or in the provided 
+  - CDK Migrate does not interact with the CloudFormation service to verify the template
+provided can deploy on its own. Although by default any CDK app generated using the `--from-scan` option exclude
+CloudFormation managed resources, CDK Migrate will not verify prior to deployment that any resources scanned, or in the provided
 template are already managed in other CloudFormation templates, nor will it verify that the resources in the provided
-template are available in the desired regions, which may impact ADC or Opt-In regions. 
+template are available in the desired regions, which may impact ADC or Opt-In regions.
 
   - If the provided template has parameters without default values, those will need to be provided
 before deploying the generated application.
@@ -741,13 +778,13 @@ In practice this is how CDK Migrate generated applications will operate in the f
 
 ##### **The provided template is already deployed to CloudFormation in the account/region**
 
-If the provided template came directly from a deployed CloudFormation stack, and that stack has not experienced any drift, 
+If the provided template came directly from a deployed CloudFormation stack, and that stack has not experienced any drift,
 then the generated application will be immediately deployable, and will not cause any changes to the deployed resources.
 Drift might occur if a resource in your template was modified outside of CloudFormation, namely via the AWS Console or AWS CLI.
 
 ##### **The provided template is not deployed to CloudFormation in the account/region, and there *is not* overlap with existing resources in the account/region**
 
-If the provided template represents a set of resources that have no overlap with resources already deployed in the account/region, 
+If the provided template represents a set of resources that have no overlap with resources already deployed in the account/region,
 then the generated application will be immediately deployable. This could be because the stack has never been deployed, or
 the application was generated from a stack deployed in another account/region.
 
@@ -757,7 +794,7 @@ In practice this means for any resource in the provided template, for example,
     "S3Bucket": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
-        "BucketName": "MyBucket",
+        "BucketName": "amzn-s3-demo-bucket",
         "AccessControl": "PublicRead",
       },
       "DeletionPolicy": "Retain"
@@ -765,15 +802,15 @@ In practice this means for any resource in the provided template, for example,
 ```
 
 There must not exist a resource of that type with the same identifier in the desired region. In this example that identfier 
-would be "MyBucket"
+would be "amzn-s3-demo-bucket"
 
 ##### **The provided template is not deployed to CloudFormation in the account/region, and there *is* overlap with existing resources in the account/region**
 
-If the provided template represents a set of resources that overlap with resources already deployed in the account/region, 
-then the generated application will not be immediately deployable. If those overlapped resources are already managed by 
+If the provided template represents a set of resources that overlap with resources already deployed in the account/region,
+then the generated application will not be immediately deployable. If those overlapped resources are already managed by
 another CloudFormation stack in that account/region, then those resources will need to be manually removed from the provided
 template. Otherwise, if the overlapped resources are not managed by another CloudFormation stack, then first remove those
-resources from your CDK Application Stack, deploy the cdk application successfully, then re-add them and run `cdk import` 
+resources from your CDK Application Stack, deploy the cdk application successfully, then re-add them and run `cdk import`
 to import them into your deployed stack.
 
 ### `cdk destroy`
@@ -853,6 +890,78 @@ In order to remove that permissions boundary you have to specify the
 cdk bootstrap --no-previous-parameters
 ```
 
+### `cdk gc`
+
+CDK Garbage Collection.
+
+> [!CAUTION]
+> CDK Garbage Collection is under development and therefore must be opted in via the `--unstable` flag: `cdk gc --unstable=gc`.
+>
+> [!WARNING]
+> `cdk gc` currently only supports garbage collecting S3 Assets. You must specify `cdk gc --unstable=gc --type=s3` as ECR asset garbage collection has not yet been implemented.
+
+`cdk gc` garbage collects unused S3 assets from your bootstrap bucket via the following mechanism: 
+
+- for each object in the bootstrap S3 Bucket, check to see if it is referenced in any existing CloudFormation templates
+- if not, it is treated as unused and gc will either tag it or delete it, depending on your configuration.
+
+The most basic usage looks like this:
+
+```console
+cdk gc --unstable=gc --type=s3
+```
+
+This will garbage collect S3 assets from the current bootstrapped environment(s) and immediately delete them. Note that, since the default bootstrap S3 Bucket is versioned, object deletion will be handled by the lifecycle
+policy on the bucket.
+
+Before we begin to delete your assets, you will be prompted:
+
+```console
+cdk gc --unstable=gc --type=s3
+
+Found X objects to delete based off of the following criteria:
+- objects have been isolated for > 0 days
+- objects were created > 1 days ago
+
+Delete this batch (yes/no/delete-all)?
+```
+
+Since it's quite possible that the bootstrap bucket has many objects, we work in batches of 1000 objects. To skip the
+prompt either reply with `delete-all`, or use the `--confirm=false` option.
+
+```console
+cdk gc --unstable=gc --type=s3 --confirm=false
+```
+
+If you are concerned about deleting assets too aggressively, there are multiple levers you can configure:
+
+- rollback-buffer-days: this is the amount of days an asset has to be marked as isolated before it is elligible for deletion.
+- created-buffer-days: this is the amount of days an asset must live before it is elligible for deletion. 
+
+When using `rollback-buffer-days`, instead of deleting unused objects, `cdk gc` will tag them with
+today's date instead. It will also check if any objects have been tagged by previous runs of `cdk gc`
+and delete them if they have been tagged for longer than the buffer days.
+
+When using `created-buffer-days`, we simply filter out any assets that have not persisted that number
+of days.
+
+```console
+cdk gc --unstable=gc --type=s3 --rollback-buffer-days=30 --created-buffer-days=1
+```
+
+You can also configure the scope that `cdk gc` performs via the `--action` option. By default, all actions
+are performed, but you can specify `print`, `tag`, or `delete-tagged`.
+
+- `print` performs no changes to your AWS account, but finds and prints the number of unused assets.
+- `tag` tags any newly unused assets, but does not delete any unused assets.
+- `delete-tagged` deletes assets that have been tagged for longer than the buffer days, but does not tag newly unused assets.
+
+```console
+cdk gc --unstable=gc --type=s3 --action=delete-tagged --rollback-buffer-days=30
+```
+
+This will delete assets that have been unused for >30 days, but will not tag additional assets.
+
 ### `cdk doctor`
 
 Inspect the current command-line environment and configurations, and collect information that can be useful for
@@ -879,33 +988,39 @@ $ cdk deploy
 
 NOTICES
 
-16603   Toggling off auto_delete_objects for Bucket empties the bucket
+22090   cli: cdk init produces EACCES: permission denied and does not fill the directory
 
-        Overview: If a stack is deployed with an S3 bucket with
-                  auto_delete_objects=True, and then re-deployed with
-                  auto_delete_objects=False, all the objects in the bucket
-                  will be deleted.
+        Overview: The CLI is unable to initialize new apps if CDK is
+                  installed globally in a directory owned by root
 
-        Affected versions: <1.126.0.
+        Affected versions: cli: 2.42.0.
 
-        More information at: https://github.com/aws/aws-cdk/issues/16603
+        More information at: https://github.com/aws/aws-cdk/issues/22090
 
 
-17061   Error when building EKS cluster with monocdk import
+27547   Incorrect action in policy of Bucket `grantRead` method
 
-        Overview: When using monocdk/aws-eks to build a stack containing
-                  an EKS cluster, error is thrown about missing
-                  lambda-layer-node-proxy-agent/layer/package.json.
+        Overview: Using the `grantRead` method on `aws-cdk-lib/aws-s3.Bucket`
+                  results in an invalid action attached to the resource policy
+                  which can cause unexpected failures when interacting
+                  with the bucket.
 
-        Affected versions: >=1.126.0 <=1.130.0.
+        Affected versions: aws-cdk-lib.aws_s3.Bucket: 2.101.0.
 
-        More information at: https://github.com/aws/aws-cdk/issues/17061
+        More information at: https://github.com/aws/aws-cdk/issues/27547
 
 
-If you don’t want to see an notice anymore, use "cdk acknowledge ID". For example, "cdk acknowledge 16603".
+If you don’t want to see a notice anymore, use "cdk acknowledge ID". For example, "cdk acknowledge 16603".
 ```
 
-You can suppress warnings in a variety of ways:
+There are several types of notices you may encounter, differentiated by the affected component:
+
+- **cli**: notifies you about issues related to your CLI version.
+- **framework**: notifies you about issues related to your version of core constructs (e.g `Stack`).
+- **aws-cdk-lib.{module}.{construct}**: notifies you about issue related to your version of a specific construct (e.g `aws-cdk-lib.aws_s3.Bucket`)
+- **bootstrap**: notifies you about issues related to your version of the bootstrap stack. Note that these types of notices are only shown during the `cdk deploy` command.
+
+You can suppress notices in a variety of ways:
 
 - per individual execution:
 
@@ -963,6 +1078,31 @@ NOTICES
 If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge 16603".
 ```
 
+List the unacknowledged notices:
+
+```console
+$ cdk notices --unacknowledged
+
+NOTICES         (What's this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)
+
+29483	(cli): Upgrading to v2.132.0 or v2.132.1 breaks cdk diff functionality
+
+	Overview: cdk diff functionality used to rely on assuming lookup-role.
+	          With a recent change present in v2.132.0 and v2.132.1, it is
+	          now trying to assume deploy-role with the lookup-role. This
+	          leads to an authorization error if permissions were not
+	          defined to assume deploy-role.
+
+	Affected versions: cli: >=2.132.0 <=2.132.1
+
+	More information at: https://github.com/aws/aws-cdk/issues/29483
+
+
+If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge 29483".
+
+There are 1 unacknowledged notice(s).
+```
+
 ### Bundling
 
 By default asset bundling is skipped for `cdk list` and `cdk destroy`. For `cdk deploy`, `cdk diff`
@@ -1003,17 +1143,17 @@ Some of the interesting keys that can be used in the JSON configuration files:
 
 ```json5
 {
-    "app": "node bin/main.js",        // Command to start the CDK app      (--app='node bin/main.js')
-    "build": "mvn package",           // Specify pre-synth build           (--build='mvn package')
-    "context": {                      // Context entries                   (--context=key=value)
+    "app": "node bin/main.js",                  // Command to start the CDK app      (--app='node bin/main.js')
+    "build": "mvn package",                     // Specify pre-synth build           (--build='mvn package')
+    "context": {                                // Context entries                   (--context=key=value)
         "key": "value"
     },
-    "toolkitStackName": "foo",        // Customize 'bootstrap' stack name  (--toolkit-stack-name=foo)
+    "toolkitStackName": "foo",                  // Customize 'bootstrap' stack name  (--toolkit-stack-name=foo)
     "toolkitBucket": {
-        "bucketName": "fooBucket",    // Customize 'bootstrap' bucket name (--toolkit-bucket-name=fooBucket)
-        "kmsKeyId": "fooKMSKey"       // Customize 'bootstrap' KMS key id  (--bootstrap-kms-key-id=fooKMSKey)
+        "bucketName": "amzn-s3-demo-bucket",    // Customize 'bootstrap' bucket name (--toolkit-bucket-name=amzn-s3-demo-bucket)
+        "kmsKeyId": "fooKMSKey"                 // Customize 'bootstrap' KMS key id  (--bootstrap-kms-key-id=fooKMSKey)
     },
-    "versionReporting": false,        // Opt-out of version reporting      (--no-version-reporting)
+    "versionReporting": false,                  // Opt-out of version reporting      (--no-version-reporting)
 }
 ```
 

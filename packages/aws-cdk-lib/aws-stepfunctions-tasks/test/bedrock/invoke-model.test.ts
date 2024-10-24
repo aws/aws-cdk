@@ -2,6 +2,7 @@ import { Template, Match } from '../../../assertions';
 import * as bedrock from '../../../aws-bedrock';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
+import * as cxapi from '../../../cx-api';
 import { Guardrail } from '../../lib/bedrock/guardrail';
 import { BedrockInvokeModel } from '../../lib/bedrock/invoke-model';
 
@@ -204,8 +205,151 @@ describe('Invoke Model', () => {
     });
   });
 
-  test('invoke model allows input and output json path', () => {
-    const stack = new cdk.Stack();
+  test('invoke model allows input and output as s3 Uri with feature flag set to true', () => {
+    const app = new cdk.App({ context: { [cxapi.USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK]: true } });
+    const stack = new cdk.Stack(app);
+    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
+
+    const task = new BedrockInvokeModel(stack, 'Invoke', {
+      model,
+      input: { s3InputUri: sfn.JsonPath.stringAt('$.prompt') },
+      output: { s3OutputUri: sfn.JsonPath.stringAt('$.prompt') },
+    });
+
+    new sfn.StateMachine(stack, 'StateMachine', {
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::bedrock:invokeModel',
+          ],
+        ],
+      },
+      End: true,
+      Parameters: {
+        ModelId: 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123',
+        Input: {
+          //Expected key modified from S3Uri to S3Uri.$ as per the State Machine context key field transformation
+          //Reference: https://docs.aws.amazon.com/step-functions/latest/dg/input-output-example.html
+          'S3Uri.$': '$.prompt',
+        },
+        Output: {
+          'S3Uri.$': '$.prompt',
+        },
+      },
+    });
+  });
+
+  test('invoke model renderes input and output path correctly with feature flag set to true', () => {
+    const app = new cdk.App({ context: { [cxapi.USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK]: true } });
+    const stack = new cdk.Stack(app);
+    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
+
+    const task = new BedrockInvokeModel(stack, 'Invoke', {
+      model,
+      input: { s3InputUri: sfn.JsonPath.stringAt('$.prompt') },
+      output: { s3OutputUri: sfn.JsonPath.stringAt('$.prompt') },
+      inputPath: sfn.JsonPath.stringAt('$.names'),
+      outputPath: sfn.JsonPath.stringAt('$.names'),
+    });
+
+    new sfn.StateMachine(stack, 'StateMachine', {
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::bedrock:invokeModel',
+          ],
+        ],
+      },
+      End: true,
+      InputPath: '$.names',
+      OutputPath: '$.names',
+      Parameters: {
+        ModelId: 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123',
+        Input: {
+          //Expected key modified from S3Uri to S3Uri.$ as per the State Machine context key field transformation
+          //Reference: https://docs.aws.amazon.com/step-functions/latest/dg/input-output-example.html
+          'S3Uri.$': '$.prompt',
+        },
+        Output: {
+          'S3Uri.$': '$.prompt',
+        },
+      },
+    });
+  });
+
+  //Should not throw an error for input path and body if feature flag is set to true
+  test('validation for input and body correctly with feature flag set to true', () => {
+    const app = new cdk.App({ context: { [cxapi.USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK]: true } });
+    const stack = new cdk.Stack(app);
+    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
+
+    const task = new BedrockInvokeModel(stack, 'Invoke', {
+      model,
+      body: sfn.TaskInput.fromObject(
+        {
+          prompt: 'Hello world',
+        },
+      ),
+      inputPath: sfn.JsonPath.stringAt('$.names'),
+      outputPath: sfn.JsonPath.stringAt('$.names'),
+    });
+
+    new sfn.StateMachine(stack, 'StateMachine', {
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::bedrock:invokeModel',
+          ],
+        ],
+      },
+      End: true,
+      InputPath: '$.names',
+      OutputPath: '$.names',
+      Parameters: {
+        ModelId: 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123',
+        Body: {
+          prompt: 'Hello world',
+        },
+      },
+    });
+  });
+
+  test('invoke model renders input and output JSON Path as s3 URI with feature flag set to false', () => {
+    const app = new cdk.App({ context: { [cxapi.USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK]: false } });
+    const stack = new cdk.Stack(app);
     const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
 
     const task = new BedrockInvokeModel(stack, 'Invoke', {
@@ -248,6 +392,50 @@ describe('Invoke Model', () => {
         },
       },
     });
+  });
+
+  test('throws error S3 input Uri is specified as an empty string', () => {
+    const app = new cdk.App({ context: { [cxapi.USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK]: true } });
+    const stack = new cdk.Stack(app);
+    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
+
+    expect(() => {
+      new BedrockInvokeModel(stack, 'Invoke', {
+        model,
+        input: {
+          s3InputUri: '',
+        },
+        output: {
+          s3OutputUri: '',
+        },
+      });
+    }).toThrow('S3 Uri cannot be an empty string');
+  });
+
+  test('cannot specify both s3 uri and s3 bucket', () => {
+    const app = new cdk.App({ context: { [cxapi.USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK]: true } });
+    const stack = new cdk.Stack(app);
+    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
+
+    expect(() => {
+      new BedrockInvokeModel(stack, 'Invoke', {
+        model,
+        input: {
+          s3Location: {
+            bucketName: 'test-bucket',
+            objectKey: 'input-key',
+          },
+          s3InputUri: sfn.JsonPath.stringAt('$.prompt'),
+        },
+        output: {
+          s3Location: {
+            bucketName: 'test-bucket',
+            objectKey: 'output-key',
+          },
+          s3OutputUri: sfn.JsonPath.stringAt('$.prompt'),
+        },
+      });
+    }).toThrow('Either specify S3 Uri or S3 location, but not both.');
   });
 
   test('S3 permissions are created in generated policy when input and output locations are specified', () => {
@@ -322,16 +510,17 @@ describe('Invoke Model', () => {
     });
   });
 
-  test('S3 permissions are created in generated policy when input and output path are specified', () => {
+  test('S3 permissions are created in generated policy when input/output s3uri is specified', () => {
     // GIVEN
-    const stack = new cdk.Stack();
+    const app = new cdk.App({ context: { [cxapi.USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK]: true } });
+    const stack = new cdk.Stack(app);
     const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
 
     // WHEN
     const task = new BedrockInvokeModel(stack, 'Invoke', {
       model,
-      inputPath: sfn.JsonPath.stringAt('$.prompt'),
-      outputPath: sfn.JsonPath.stringAt('$.prompt'),
+      input: { s3InputUri: 's3://input-bucket/input-key' },
+      output: { s3OutputUri: 's3://input-bucket/output-key' },
     });
 
     new sfn.StateMachine(stack, 'StateMachine', {
