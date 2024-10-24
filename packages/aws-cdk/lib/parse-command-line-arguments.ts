@@ -1,10 +1,56 @@
-
-/* eslint-disable @typescript-eslint/comma-dangle, comma-spacing, max-len, quotes, quote-props*/
+/* eslint-disable prettier/prettier,max-len */
 import { Argv } from "yargs";
 
 // @ts-ignore TS6133
 function parseCommandLineArguments(args: Array<string>, browserDefault?: string, availableInitLanguages: Array<string>, migrateSupportedLanguages: Array<string>, version: string, yargsNegativeAlias: any): any {
-  return yargs.usage("Usage: cdk -a <cdk-app> COMMAND").command(['deploy [STACKS..]'], "Deploys the stack(s) named STACKS into your AWS account", (yargs: Argv) => yargs.option("all", {
+  return yargs.usage("Usage: cdk -a <cdk-app> COMMAND").command(['list [STACKS..]', 'ls  [STACKS..]'], "Lists all stacks in the app", (yargs: Argv) => yargs.option("long", {
+    "type": "boolean",
+    "default": false,
+    "alias": "l",
+    "desc": "Display environment information for each stack"
+  }).option("show-dependencies", {
+    "type": "boolean",
+    "default": false,
+    "alias": "d",
+    "desc": "Display stack dependency information for each stack"
+  })).command(['synthesize [STACKS..]', 'synth  [STACKS..]'], "Synthesizes and prints the CloudFormation template for this stack", (yargs: Argv) => yargs.option("exclusively", {
+    "type": "boolean",
+    "alias": "e",
+    "desc": "Only synthesize requested stacks, don't include dependencies"
+  }).option("validation", {
+    "type": "boolean",
+    "desc": "After synthesis, validate stacks with the \"validateOnSynth\" attribute set (can also be controlled with CDK_VALIDATION)",
+    "default": true
+  }).option("quiet", {
+    "type": "boolean",
+    "alias": "q",
+    "desc": "Do not output CloudFormation Template to stdout",
+    "default": false
+  })).command(['gc [ENVIRONMENTS..]'], "Garbage collect assets", (yargs: Argv) => yargs.option("action", {
+    "type": "string",
+    "desc": "The action (or sub-action) you want to perform. Valid entires are \"print\", \"tag\", \"delete-tagged\", \"full\".",
+    "default": "full"
+  }).option("type", {
+    "type": "string",
+    "desc": "Specify either ecr, s3, or all",
+    "default": "all"
+  }).option("rollback-buffer-days", {
+    "type": "number",
+    "desc": "Delete assets that have been marked as isolated for this many days",
+    "default": 0
+  }).option("created-buffer-days", {
+    "type": "number",
+    "desc": "Never delete assets younger than this (in days)",
+    "default": 1
+  }).option("confirm", {
+    "type": "boolean",
+    "desc": "Confirm via manual prompt before deletion",
+    "default": true
+  }).option("bootstrap-stack-name", {
+    "type": "string",
+    "desc": "The name of the CDK toolkit stack, if different from the default \"CDKToolkit\"",
+    "requiresArg": true
+  })).command(['deploy [STACKS..]'], "Deploys the stack(s) named STACKS into your AWS account", (yargs: Argv) => yargs.option("all", {
     "type": "boolean",
     "desc": "Deploy all available stacks",
     "default": false
@@ -326,7 +372,8 @@ function parseCommandLineArguments(args: Array<string>, browserDefault?: string,
     "type": "string",
     "default": browserDefault
   })).command(['doctor'], "Check your set-up for potential problems").version(version).demandCommand(1, "''").recommendCommands().help().alias("h", "help").epilogue("If your app has a single stack, there is no need to specify the stack name\n\nIf one of cdk.json or ~/.cdk.json exists, options specified there will be used as defaults. Settings in cdk.json take precedence.").parse(args);
-}// https://github.com/yargs/yargs/issues/1929
-// https://github.com/evanw/esbuild/issues/1492
-// eslint-disable-next-line @typescript-eslint/no-require-imports
+}// -------------------------------------------------------------------------------------------
+// GENERATED FROM packages/aws-cdk/lib/config.ts.
+// Do not edit by hand; all changes will be overwritten at build time from the config file.
+// -------------------------------------------------------------------------------------------
 const yargs = require('yargs');

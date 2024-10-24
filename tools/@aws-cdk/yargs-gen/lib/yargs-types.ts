@@ -23,17 +23,18 @@ interface YargsArg {
   variadic: boolean;
 }
 
-interface YargsOption {
+export interface YargsOption {
   type: 'string' | 'array' | 'number' | 'boolean' | 'count';
   desc?: string;
   default?: any;
   deprecated?: boolean | string;
   choices?: ReadonlyArray<string | number | true | undefined>;
-  alias?: string;
+  alias?: string | string[];
   conflicts?: string | readonly string[] | { [key: string]: string | readonly string[] };
   nargs?: number;
   requiresArg?: boolean;
   hidden?: boolean;
+  count?: boolean;
   middleware?: Middleware;
 }
 
@@ -44,6 +45,7 @@ export interface Middleware {
 }
 
 export interface CliConfig {
+  globalOptions: { [optionName: string]: YargsOption };
   commands: { [commandName: string]: YargsCommand };
 }
 

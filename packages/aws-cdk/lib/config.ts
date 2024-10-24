@@ -10,7 +10,101 @@ import { RequireApproval } from './diff';
  */
 export async function makeConfig(): Promise<CliConfig> {
   return {
+    globalOptions: {
+      'app': { type: 'string', alias: 'a', desc: 'REQUIRED WHEN RUNNING APP: command-line for executing your app or a cloud assembly directory (e.g. "node bin/my-app.js"). Can also be specified in cdk.json or ~/.cdk.json', requiresArg: true },
+      'build': { type: 'string', desc: 'Command-line for a pre-synth build' },
+      'context': { type: 'array', alias: 'c', desc: 'Add contextual string parameter (KEY=VALUE)', nargs: 1, requiresArg: true },
+      'plugin': { type: 'array', alias: 'p', desc: 'Name or path of a node package that extend the CDK features. Can be specified multiple times', nargs: 1 },
+      'trace': { type: 'boolean', desc: 'Print trace for stack warnings' },
+      'strict': { type: 'boolean', desc: 'Do not construct stacks with warnings' },
+      'lookups': { type: 'boolean', desc: 'Perform context lookups (synthesis fails if this is disabled and context lookups need to be performed)', default: true },
+      'ignore-errors': { type: 'boolean', default: false, desc: 'Ignores synthesis errors, which will likely produce an invalid output' },
+      'json': { type: 'boolean', alias: 'j', desc: 'Use JSON output instead of YAML when templates are printed to STDOUT', default: false },
+      'verbose': { type: 'boolean', alias: 'v', desc: 'Show debug logs (specify multiple times to increase verbosity)', default: false, count: true },
+      'debug': { type: 'boolean', desc: 'Enable emission of additional debugging information, such as creation stack traces of tokens', default: false },
+      'profile': { type: 'string', desc: 'Use the indicated AWS profile as the default environment', requiresArg: true },
+      'proxy': { type: 'string', desc: 'Use the indicated proxy. Will read from HTTPS_PROXY environment variable if not specified', requiresArg: true },
+      'ca-bundle-path': { type: 'string', desc: 'Path to CA certificate to use when validating HTTPS requests. Will read from AWS_CA_BUNDLE environment variable if not specified', requiresArg: true },
+      'ec2creds': { type: 'boolean', alias: 'i', default: undefined, desc: 'Force trying to fetch EC2 instance credentials. Default: guess EC2 instance status' },
+      'version-reporting': { type: 'boolean', desc: 'Include the "AWS::CDK::Metadata" resource in synthesized templates (enabled by default)', default: undefined },
+      'path-metadata': { type: 'boolean', desc: 'Include "aws:cdk:path" CloudFormation metadata for each resource (enabled by default)', default: undefined },
+      'asset-metadata': { type: 'boolean', desc: 'Include "aws:asset:*" CloudFormation metadata for resources that uses assets (enabled by default)', default: undefined },
+      'role-arn': { type: 'string', alias: 'r', desc: 'ARN of Role to use when invoking CloudFormation', default: undefined, requiresArg: true },
+      'staging': { type: 'boolean', desc: 'Copy assets to the output directory (use --no-staging to disable the copy of assets which allows local debugging via the SAM CLI to reference the original source files)', default: true },
+      'output': { type: 'string', alias: 'o', desc: 'Emits the synthesized cloud assembly into a directory (default: cdk.out)', requiresArg: true },
+      'notices': { type: 'boolean', desc: 'Show relevant notices' },
+      'no-color': { type: 'boolean', desc: 'Removes colors and other style from console output', default: false },
+      'ci': { type: 'boolean', desc: 'Force CI detection. If CI=true then logs will be sent to stdout instead of stderr', default: process.env.CI !== undefined },
+      'unstable': { type: 'array', desc: 'Opt in to specific unstable features. Can be specified multiple times.', default: [] },
+    },
     commands: {
+      'list': {
+        arg: {
+          name: 'STACKS',
+          variadic: true,
+        },
+        aliases: ['ls'],
+        description: 'Lists all stacks in the app',
+        options: {
+          'long': { type: 'boolean', default: false, alias: 'l', desc: 'Display environment information for each stack' },
+          'show-dependencies': { type: 'boolean', default: false, alias: 'd', desc: 'Display stack dependency information for each stack' },
+        },
+      },
+      'synthesize': {
+        arg: {
+          name: 'STACKS',
+          variadic: true,
+        },
+        aliases: ['synth'],
+        description: 'Synthesizes and prints the CloudFormation template for this stack',
+        options: {
+          'exclusively': { type: 'boolean', alias: 'e', desc: 'Only synthesize requested stacks, don\'t include dependencies' },
+          'validation': { type: 'boolean', desc: 'After synthesis, validate stacks with the "validateOnSynth" attribute set (can also be controlled with CDK_VALIDATION)', default: true },
+          'quiet': { type: 'boolean', alias: 'q', desc: 'Do not output CloudFormation Template to stdout', default: false },
+        },
+      },
+      bootstrap: {
+        arg: {
+          name: 'ENVIRONMENTS',
+          variadic: true,
+        },
+        description: 'Deploys the CDK toolkit stack into an AWS environment',
+        options: {
+          'bootstrap-bucket-name': { type: 'string', alias: ['b', 'toolkit-bucket-name'], desc: 'The name of the CDK toolkit bucket; bucket will be created and must not exist', default: undefined },
+          'bootstrap-kms-key-id': { type: 'string', desc: 'AWS KMS master key ID used for the SSE-KMS encryption', default: undefined, conflicts: 'bootstrap-customer-key' },
+          'example-permissions-boundary': { type: 'boolean', alias: 'epb', desc: 'Use the example permissions boundary.', default: undefined, conflicts: 'custom-permissions-boundary' },
+          'custom-permissions-boundary': { type: 'string', alias: 'cpb', desc: 'Use the permissions boundary specified by name.', default: undefined, conflicts: 'example-permissions-boundary' },
+          'bootstrap-customer-key': { type: 'boolean', desc: 'Create a Customer Master Key (CMK) for the bootstrap bucket (you will be charged but can customize permissions, modern bootstrapping only)', default: undefined, conflicts: 'bootstrap-kms-key-id' },
+          'qualifier': { type: 'string', desc: 'String which must be unique for each bootstrap stack. You must configure it on your CDK app if you change this from the default.', default: undefined },
+          'public-access-block-configuration': { type: 'boolean', desc: 'Block public access configuration on CDK toolkit bucket (enabled by default) ', default: undefined },
+          'tags': { type: 'array', alias: 't', desc: 'Tags to add for the stack (KEY=VALUE)', nargs: 1, requiresArg: true, default: [] },
+          'execute': { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true },
+          'trust': { type: 'array', desc: 'The AWS account IDs that should be trusted to perform deployments into this environment (may be repeated, modern bootstrapping only)', default: [], nargs: 1, requiresArg: true },
+          'trust-for-lookup': { type: 'array', desc: 'The AWS account IDs that should be trusted to look up values in this environment (may be repeated, modern bootstrapping only)', default: [], nargs: 1, requiresArg: true },
+          'cloudformation-execution-policies': { type: 'array', desc: 'The Managed Policy ARNs that should be attached to the role performing deployments into this environment (may be repeated, modern bootstrapping only)', default: [], nargs: 1, requiresArg: true },
+          'force': { alias: 'f', type: 'boolean', desc: 'Always bootstrap even if it would downgrade template version', default: false },
+          'termination-protection': { type: 'boolean', default: undefined, desc: 'Toggle CloudFormation termination protection on the bootstrap stacks' },
+          'show-template': { type: 'boolean', desc: 'Instead of actual bootstrapping, print the current CLI\'s bootstrapping template to stdout for customization', default: false },
+          'toolkit-stack-name': { type: 'string', desc: 'The name of the CDK toolkit stack to create', requiresArg: true },
+          'template': { type: 'string', requiresArg: true, desc: 'Use the template from the given file instead of the built-in one (use --show-template to obtain an example)' },
+          'previous-parameters': { type: 'boolean', default: true, desc: 'Use previous values for existing parameters (you must specify all parameters on every deployment if this is disabled)' },
+        },
+      },
+      gc: {
+        description: 'Garbage collect assets',
+        arg: {
+          name: 'ENVIRONMENTS',
+          variadic: true,
+        },
+        options: {
+          'action': { type: 'string', desc: 'The action (or sub-action) you want to perform. Valid entires are "print", "tag", "delete-tagged", "full".', default: 'full' },
+          'type': { type: 'string', desc: 'Specify either ecr, s3, or all', default: 'all' },
+          'rollback-buffer-days': { type: 'number', desc: 'Delete assets that have been marked as isolated for this many days', default: 0 },
+          'created-buffer-days': { type: 'number', desc: 'Never delete assets younger than this (in days)', default: 1 },
+          'confirm': { type: 'boolean', desc: 'Confirm via manual prompt before deletion', default: true },
+          'bootstrap-stack-name': { type: 'string', desc: 'The name of the CDK toolkit stack, if different from the default "CDKToolkit"', requiresArg: true },
+        },
+      },
       deploy: {
         description: 'Deploys the stack(s) named STACKS into your AWS account',
         options: {

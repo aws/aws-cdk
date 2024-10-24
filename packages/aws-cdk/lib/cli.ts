@@ -372,6 +372,19 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           ci: args.ci,
         });
 
+      case 'gc':
+        if (!configuration.settings.get(['unstable']).includes('gc')) {
+          throw new Error('Unstable feature use: \'gc\' is unstable. It must be opted in via \'--unstable\', e.g. \'cdk gc --unstable=gc\'');
+        }
+        return cli.garbageCollect(args.ENVIRONMENTS, {
+          action: args.action,
+          type: args.type,
+          rollbackBufferDays: args['rollback-buffer-days'],
+          createdBufferDays: args['created-buffer-days'],
+          bootstrapStackName: args.bootstrapStackName,
+          confirm: args.confirm,
+        });
+
       case 'synthesize':
       case 'synth':
         const quiet = configuration.settings.get(['quiet']) ?? args.quiet;

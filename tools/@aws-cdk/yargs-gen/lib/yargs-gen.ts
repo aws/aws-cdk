@@ -1,5 +1,5 @@
 import { Expression, FreeFunction, Module, SelectiveModuleImport, Statement, Type, TypeScriptRenderer, code } from '@cdklabs/typewriter';
-import { CliConfig } from './yargs-types';
+import { CliConfig, YargsOption } from './yargs-types';
 
 export async function renderYargs(config: CliConfig): Promise<string> {
   const scope = new Module('aws-cdk');
@@ -56,6 +56,10 @@ function makeYargs(config: CliConfig/*, scope: ScopeImpl*/): Statement {
   let yargsExpr: Expression = code.expr.ident('yargs');
   yargsExpr = yargsExpr.callMethod('usage', code.expr.lit('Usage: cdk -a <cdk-app> COMMAND'));
 
+  //for (const option of Object.keys(config.globalOptions)) {
+
+  //}
+
   for (const command of Object.keys(config.commands)) {
     const commandFacts = config.commands[command];
     const commandArg = commandFacts.arg
@@ -68,6 +72,7 @@ function makeYargs(config: CliConfig/*, scope: ScopeImpl*/): Statement {
     // must compute options before we compute the full command, because in yargs, the options are an argument to the command call.
     let optionsExpr: Expression = code.expr.directCode('(yargs: Argv) => yargs');
 
+    /*
     for (const option of Object.keys(commandFacts.options ?? {})) {
       // each option can define at most one middleware call; if we need more, handle a list of these instead
       let middleware: MiddlewareExpression | undefined = undefined;
@@ -84,7 +89,7 @@ function makeYargs(config: CliConfig/*, scope: ScopeImpl*/): Statement {
             };
             break;
           default:
-            if ((optionFacts as any)[optionProp].dynamicType === 'parameter') {
+            if ( (optionFacts as any)[optionProp] && (optionFacts as any)[optionProp].dynamicType === 'parameter') {
               optionArgs[optionProp] = code.expr.ident((optionFacts as any)[optionProp].dynamicValue);
             } else {
               optionArgs[optionProp] = code.expr.lit((optionFacts as any)[optionProp]);
@@ -98,6 +103,8 @@ function makeYargs(config: CliConfig/*, scope: ScopeImpl*/): Statement {
         middleware = undefined;
       }
     }
+    */
+    optionsExpr = makeOptions(optionsExpr, commandFacts.options ?? {});
 
     yargsExpr = commandFacts.options
       ? yargsExpr.callMethod('command', code.expr.directCode(`['${command}${commandArg}'${aliases}]`), code.expr.lit(commandFacts.description), optionsExpr)
@@ -105,6 +112,42 @@ function makeYargs(config: CliConfig/*, scope: ScopeImpl*/): Statement {
   }
 
   return code.stmt.ret(makeEpilogue(yargsExpr));
+}
+
+function makeOptions(prefix: Expression, options: { [optionName: string]: YargsOption }) {
+  let optionsExpr = prefix;
+  for (const option of Object.keys(options)) {
+    // each option can define at most one middleware call; if we need more, handle a list of these instead
+    let middleware: MiddlewareExpression | undefined = undefined;
+    const optionProps = options[option];
+    const optionArgs: { [key: string]: Expression } = {};
+    for (const optionProp of Object.keys(optionProps)) {
+      switch (optionProp) {
+        case 'middleware':
+          // middleware is a separate function call, so we can't store it with the regular option arguments, as those will all be treated as parameters:
+          // .option('R', { type: 'boolean', hidden: true }).middleware(yargsNegativeAlias('R', 'rollback'), true)
+          middleware = {
+            callback: code.expr.builtInFn(optionProps.middleware!.callback, code.expr.lit(optionProps.middleware!.args)),
+            applyBeforeValidation: code.expr.lit(optionProps.middleware!.applyBeforeValidation),
+          };
+          break;
+        default:
+          if ((optionProps as any)[optionProp] && (optionProps as any)[optionProp].dynamicType === 'parameter') {
+            optionArgs[optionProp] = code.expr.ident((optionProps as any)[optionProp].dynamicValue);
+          } else {
+            optionArgs[optionProp] = code.expr.lit((optionProps as any)[optionProp]);
+          }
+      }
+    }
+
+    optionsExpr = optionsExpr.callMethod('option', code.expr.lit(`${option}`), code.expr.object(optionArgs));
+    if (middleware) {
+      optionsExpr = optionsExpr.callMethod('middleware', middleware.callback, middleware.applyBeforeValidation ?? code.expr.UNDEFINED);
+      middleware = undefined;
+    }
+  }
+
+  return optionsExpr;
 }
 
 function makeEpilogue(prefix: Expression) {
