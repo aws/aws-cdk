@@ -25,10 +25,6 @@ describe('determineAllowCrossAccountAssetPublishing', () => {
       });
     });
 
-    AWSMock.mock('CloudFormation', 'describeStackResources', (_params: any, callback: Function) => {
-      callback(null, { StackResources: [] });
-    });
-
     const result = await determineAllowCrossAccountAssetPublishing(mockSDK);
     expect(result).toBe(true);
   });
@@ -37,13 +33,12 @@ describe('determineAllowCrossAccountAssetPublishing', () => {
     AWSMock.mock('CloudFormation', 'describeStacks', (_params: any, callback: Function) => {
       callback(null, {
         Stacks: [{
-          Outputs: [{ OutputKey: 'BootstrapVersion', OutputValue: '21' }],
+          Outputs: [
+            { OutputKey: 'BootstrapVersion', OutputValue: '21' },
+            { OutputKey: 'BucketName', OutputValue: 'some-bucket' },
+          ],
         }],
       });
-    });
-
-    AWSMock.mock('CloudFormation', 'describeStackResources', (_params: any, callback: Function) => {
-      callback(null, { StackResources: [{ ResourceType: 'AWS::S3::Bucket', PhysicalResourceId: 'some-bucket' }] });
     });
 
     const result = await determineAllowCrossAccountAssetPublishing(mockSDK);
@@ -63,13 +58,12 @@ describe('determineAllowCrossAccountAssetPublishing', () => {
     AWSMock.mock('CloudFormation', 'describeStacks', (_params: any, callback: Function) => {
       callback(null, {
         Stacks: [{
-          Outputs: [{ OutputKey: 'BootstrapVersion', OutputValue: '20' }],
+          Outputs: [
+            { OutputKey: 'BootstrapVersion', OutputValue: '20' },
+            { OutputKey: 'BucketName', OutputValue: 'some-bucket' },
+          ],
         }],
       });
-    });
-
-    AWSMock.mock('CloudFormation', 'describeStackResources', (_params: any, callback: Function) => {
-      callback(null, { StackResources: [{ ResourceType: 'AWS::S3::Bucket', PhysicalResourceId: 'some-bucket' }] });
     });
 
     const result = await determineAllowCrossAccountAssetPublishing(mockSDK);
@@ -94,13 +88,12 @@ describe('getBootstrapStackInfo', () => {
     AWSMock.mock('CloudFormation', 'describeStacks', (_params: any, callback: Function) => {
       callback(null, {
         Stacks: [{
-          Outputs: [{ OutputKey: 'BootstrapVersion', OutputValue: '21' }],
+          Outputs: [
+            { OutputKey: 'BootstrapVersion', OutputValue: '21' },
+            { OutputKey: 'BucketName', OutputValue: 'some-bucket' },
+          ],
         }],
       });
-    });
-
-    AWSMock.mock('CloudFormation', 'describeStackResources', (_params: any, callback: Function) => {
-      callback(null, { StackResources: [{ ResourceType: 'AWS::S3::Bucket', PhysicalResourceId: 'some-bucket' }] });
     });
 
     const result = await getBootstrapStackInfo(mockSDK, 'CDKToolkit');
