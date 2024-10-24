@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "36.0.5",
   "testCases": {
     "aws-stepfunctions-tasks-emr-containers-start-job-run-integ/DefaultTest": {
       "stacks": [

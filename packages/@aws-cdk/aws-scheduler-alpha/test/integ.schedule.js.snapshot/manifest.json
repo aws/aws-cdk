@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "38.0.1",
   "artifacts": {
     "aws-cdk-scheduler-schedule.assets": {
       "type": "cdk:asset-manifest",
@@ -16,9 +16,10 @@
         "templateFile": "aws-cdk-scheduler-schedule.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e85511e5051d124b858b12d793cf362aeaa393047d83195843b1ab4d1bcac9ee.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5a43a269a52dd0de66d069f65579eb66b8834ff191e42c05d09a9a5cdfb5a252.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -94,12 +95,6 @@
             "data": "DisabledScheduleA1DF7F0F"
           }
         ],
-        "/aws-cdk-scheduler-schedule/TargetOverrideSchedule/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TargetOverrideScheduleFF8CB184"
-          }
-        ],
         "/aws-cdk-scheduler-schedule/AllSchedulerErrorsAlarm/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -130,6 +125,12 @@
             "data": "ScheduleWithTimeFrameC1C8BDCC"
           }
         ],
+        "/aws-cdk-scheduler-schedule/UseDescription/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UseDescription170B07AB"
+          }
+        ],
         "/aws-cdk-scheduler-schedule/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -140,6 +141,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "TargetOverrideScheduleFF8CB184": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TargetOverrideScheduleFF8CB184",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
@@ -160,6 +170,7 @@
         "templateFile": "integtestscheduleDefaultTestDeployAssert24CB3896.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",

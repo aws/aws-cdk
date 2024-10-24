@@ -8,6 +8,28 @@
         "id": "Stack",
         "path": "Stack",
         "children": {
+          "DLQ": {
+            "id": "DLQ",
+            "path": "Stack/DLQ",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "Stack/DLQ/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
           "Bus": {
             "id": "Bus",
             "path": "Stack/Bus",
@@ -18,6 +40,14 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Events::EventBus",
                   "aws:cdk:cloudformation:props": {
+                    "deadLetterConfig": {
+                      "arn": {
+                        "Fn::GetAtt": [
+                          "DLQ581697C4",
+                          "Arn"
+                        ]
+                      }
+                    },
                     "description": "myEventBus",
                     "name": "StackBusAA0A1E4B"
                   }
