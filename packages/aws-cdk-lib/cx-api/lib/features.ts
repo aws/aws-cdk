@@ -1161,7 +1161,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       This will prevent you from creating a new table which has an additional replica and a resource policy.
 
       This is a feature flag as the old behavior was technically incorrect but users may have come to depend on it.`,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.164.0' },
     recommendedValue: true,
   },
 
