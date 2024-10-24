@@ -100,5 +100,3 @@ customOacLambdaUrlHttpCall.assertions.httpApiCall(customOacFnUrl.url).expect(Exp
   status: 403,
   body: 'Forbidden',
 }));
-
-app.synth();
