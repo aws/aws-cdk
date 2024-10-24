@@ -174,7 +174,18 @@ export class SDK implements ISDK {
   }
 
   public s3(): AWS.S3 {
-    return this.wrapServiceErrorHandling(new AWS.S3(this.config));
+    return this.wrapServiceErrorHandling(new AWS.S3({
+      // In FIPS enabled environments, the MD5 algorithm is not available for use in crypto module.
+      // However by default the S3 client is using an MD5 checksum for content integrity checking.
+      // While this usage is technically allowed in FIPS (MD5 is only prohibited for cryptographic use),
+      // in practice it is just easier to use an allowed checksum mechanism.
+      // We are disabling the S3 content checksums, and are re-enabling the regular SigV4 body signing.
+      // SigV4 uses SHA256 for their content checksum. This configuration matches the default behavior
+      // of the AWS SDKv3 and is a safe choice for all users.
+      s3DisableBodySigning: false,
+      computeChecksums: false,
+      ...this.config,
+    }));
   }
 
   public route53(): AWS.Route53 {
