@@ -24,7 +24,7 @@ describe('schedule target', () => {
   });
 
   test('creates IAM role and IAM policy for lambda target in the same account', () => {
-    const lambdaTarget = new LambdaInvoke(func, {});
+    const lambdaTarget = new LambdaInvoke(func);
 
     new Schedule(stack, 'MyScheduleDummy', {
       schedule: expr,
@@ -89,7 +89,7 @@ describe('schedule target', () => {
     const lambdaVersion = new lambda.Version(stack, 'MyLambdaVersion', {
       lambda: func,
     });
-    const lambdaTarget = new LambdaInvoke(lambdaVersion, {});
+    const lambdaTarget = new LambdaInvoke(lambdaVersion);
 
     new Schedule(stack, 'MyScheduleDummy', {
       schedule: expr,
@@ -250,7 +250,7 @@ describe('schedule target', () => {
   test('creates IAM policy for imported lambda function in the same account', () => {
     const importedFunc = lambda.Function.fromFunctionArn(stack, 'ImportedFunction', 'arn:aws:lambda:us-east-1:123456789012:function/somefunc');
 
-    const lambdaTarget = new LambdaInvoke(importedFunc, {});
+    const lambdaTarget = new LambdaInvoke(importedFunc);
 
     new Schedule(stack, 'MyScheduleDummy', {
       schedule: expr,
@@ -295,7 +295,7 @@ describe('schedule target', () => {
       aliasName: 'SomeAliasName',
     });
 
-    const lambdaTarget = new LambdaInvoke(lambdaAlias, {});
+    const lambdaTarget = new LambdaInvoke(lambdaAlias);
 
     new Schedule(stack, 'MyScheduleDummy', {
       schedule: expr,
@@ -449,7 +449,7 @@ describe('schedule target', () => {
       },
     );
 
-    const lambdaTarget = new LambdaInvoke(importedFunc, {});
+    const lambdaTarget = new LambdaInvoke(importedFunc);
     new Schedule(stack, 'MyScheduleDummy', {
       schedule: expr,
       target: lambdaTarget,
