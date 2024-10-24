@@ -60,15 +60,16 @@ export async function getBootstrapStackInfo(sdk: ISDK, stackName: string): Promi
       throw new Error(`Invalid BootstrapVersion value: ${versionOutput.OutputValue}`);
     }
 
-    // try to get bucketname from the logical resource id
-    let bucketName: string | undefined;
-    const resourcesResponse = await cfn.describeStackResources({ StackName: stackName }).promise();
-    const bucketResource = resourcesResponse.StackResources?.find(resource =>
-      resource.ResourceType === 'AWS::S3::Bucket',
-    );
-    bucketName = bucketResource?.PhysicalResourceId;
-
-    let hasStagingBucket = !!bucketName;
+    // try to get bucketname from the logical resource id. If there is no
+    // bucketname, or the value doesn't look like an S3 bucket name, we assume
+    // the bucket doesn't exist (this is for the case where a template customizer did
+    // not dare to remove the Output, but put a dummy value there like '' or '-' or '***').
+    //
+    // We would have preferred to look at the stack resources here, but
+    // unfortunately the deploy role doesn't have permissions call DescribeStackResources.
+    const bucketName = stack.Outputs?.find(output => output.OutputKey === 'BucketName')?.OutputValue;
+    // Must begin and end with letter or number.
+    const hasStagingBucket = !!(bucketName && bucketName.match(/^[a-z0-9]/) && bucketName.match(/[a-z0-9]$/));
 
     return {
       hasStagingBucket,
