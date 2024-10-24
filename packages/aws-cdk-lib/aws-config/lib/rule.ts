@@ -1319,9 +1319,9 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly EKS_CLUSTER_OLDEST_SUPPORTED_VERSION = 'EKS_CLUSTER_OLDEST_SUPPORTED_VERSION';
   /**
-    * Checks if an Amazon Elastic Kubernetes Service (EKS) cluster is running a supported Kubernetes version.
-    * @see https://docs.aws.amazon.com/config/latest/developerguide/eks-cluster-supported-version.html
-    */
+   * Checks if an Amazon Elastic Kubernetes Service (EKS) cluster is running a supported Kubernetes version.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/eks-cluster-supported-version.html
+   */
   public static readonly EKS_CLUSTER_SUPPORTED_VERSION = 'EKS_CLUSTER_SUPPORTED_VERSION';
   /**
    * Checks whether Amazon Elastic Kubernetes Service (Amazon EKS) endpoint is not publicly accessible.

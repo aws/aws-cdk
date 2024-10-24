@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "table-v2-resource-policy-integ-test/DefaultTest": {
+      "stacks": [
+        "ResourcePolicyTest-v2-FF"
+      ],
+      "assertionStack": "table-v2-resource-policy-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "tablev2resourcepolicyintegtestDefaultTestDeployAssertBE3353C7"
+    }
+  }
+}

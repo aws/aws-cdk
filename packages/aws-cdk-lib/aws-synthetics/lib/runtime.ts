@@ -349,9 +349,9 @@ export class Runtime {
   public static readonly SYNTHETICS_PYTHON_SELENIUM_4_0 = new Runtime('syn-python-selenium-4.0', RuntimeFamily.PYTHON);
 
   /**
-    * @param name The name of the runtime version
-    * @param family The Lambda runtime family
-    */
+   * @param name The name of the runtime version
+   * @param family The Lambda runtime family
+   */
   public constructor(public readonly name: string, public readonly family: RuntimeFamily) {
   }
 }

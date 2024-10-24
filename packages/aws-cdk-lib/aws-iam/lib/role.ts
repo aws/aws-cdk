@@ -300,7 +300,7 @@ export class Role extends Resource implements IRole {
   }
 
   /**
-    * Return whether the given object is a Role
+   * Return whether the given object is a Role
    */
   public static isRole(x: any) : x is Role {
     return x !== null && typeof(x) === 'object' && IAM_ROLE_SYMBOL in x;

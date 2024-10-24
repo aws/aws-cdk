@@ -60,7 +60,7 @@ jobs:
             :arrow_right: **PR build request submitted to `test-main-pipeline`** :arrow_left:
 
             A maintainer must now check the pipeline and add the `pr-linter/cli-integ-tested` label once the pipeline succeeds.
-          comment_tag: request-cli-integ-test
+          comment-tag: request-cli-integ-test
           mode: recreate
           # Post as our automation user
-          GITHUB_TOKEN: ${{ secrets.PROJEN_GITHUB_TOKEN }}
+          github-token: ${{ secrets.PROJEN_GITHUB_TOKEN }}

@@ -9,10 +9,10 @@ import { PhysicalName } from '../../core';
 export abstract class Endpoint {
 
   /**
-    * Configure a Kinesis Stream Endpoint for Realtime Log Config
-    *
-    * @default - a role will be created and used across your endpoints
-    */
+   * Configure a Kinesis Stream Endpoint for Realtime Log Config
+   *
+   * @default - a role will be created and used across your endpoints
+   */
   public static fromKinesisStream(stream: kinesis.IStream, role?: iam.IRole): Endpoint {
     return new (class extends Endpoint {
       public _renderEndpoint(scope: Construct) {

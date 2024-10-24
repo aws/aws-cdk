@@ -1,0 +1,33 @@
+<my-precreated-role> (integ-customize-role/TestRole)
+
+AssumeRole Policy:
+[
+  {
+    "Action": "sts:AssumeRole",
+    "Effect": "Allow",
+    "Principal": {
+      "Service": "sqs.amazonaws.com"
+    }
+  }
+]
+
+Managed Policy ARNs:
+NONE
+
+Managed Policies Statements:
+NONE
+
+Identity Policy Statements:
+[
+  {
+    "Action": "sqs:SendMessage",
+    "Effect": "Allow",
+    "Resource": [
+      "arn:aws:s3:::abc/xyz/123.txt",
+      "(NOVALUE)",
+      "arn:(PARTITION):iam:(REGION):(ACCOUNT)/role/FakeRole'",
+      "(integ-customize-role/MyGroup/Resource.Arn)/*",
+      "(integ-customize-role/MyGroup/Resource.Arn)"
+    ]
+  }
+]
