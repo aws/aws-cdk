@@ -11,7 +11,7 @@ export class LambdaInvoke extends ScheduleTargetBase implements IScheduleTarget 
 
   constructor(
     func: lambda.IFunction,
-    props: ScheduleTargetBaseProps,
+    props: ScheduleTargetBaseProps = {},
   ) {
     super(props, func.functionArn);
     this.func = func;
