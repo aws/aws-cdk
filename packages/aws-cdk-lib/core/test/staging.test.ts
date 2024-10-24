@@ -3,7 +3,7 @@ import * as path from 'path';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as fs from 'fs-extra';
 import * as sinon from 'sinon';
-import { FileAssetPackaging } from '../../cloud-assembly-schema';
+import { FileAssetPackaging, Manifest, FileAsset, AssetManifest } from '../../cloud-assembly-schema';
 import * as cxapi from '../../cx-api';
 import { App, AssetHashType, AssetStaging, DockerImage, BundlingOptions, BundlingOutput, FileSystem, Stack, Stage, BundlingFileAccess } from '../lib';
 
@@ -1516,6 +1516,105 @@ describe('staging with docker cp', () => {
       expect.stringContaining('volume rm assetInput'),
       expect.stringContaining('volume rm assetOutput'),
     ]));
+  });
+});
+
+describe('staging with existing asset hash', () => {
+  let tempDir: string;
+  let app: App;
+  let stack: Stack;
+  let sourcePath: string;
+  let manifestFilePath: string;
+  let calculatedAssetHash: string;
+
+  beforeEach(() => {
+    // Create a temporary directory
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-test-'));
+
+    // Create an App and Stack with the outdir set to the temporary directory
+    app = new App({ outdir: tempDir });
+    stack = new Stack(app, 'TestStack');
+
+    // Create a temporary source directory
+    sourcePath = path.join(tempDir, 'source');
+    fs.mkdirSync(sourcePath);
+  });
+
+  afterEach(() => {
+    // Clean up the temporary directory and source path
+    fs.removeSync(tempDir);
+  });
+
+  test('should skip bundling when asset hash already exists', () => {
+    let bundlingCalled = false;
+
+    // First, create an AssetStaging instance to calculate the asset hash
+    const stagingInitial = new AssetStaging(stack, 'AssetInitial', {
+      sourcePath,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        command: ['echo', 'Hello World'],
+        local: {
+          tryBundle(outputDir: string): boolean {
+            // Simulate bundling by writing a file to the output directory
+            fs.writeFileSync(path.join(outputDir, 'initial-dummy.txt'), 'dummy content');
+            return true;
+          },
+        },
+      },
+    });
+
+    calculatedAssetHash = stagingInitial.assetHash;
+
+    // Now, create the manifest content with the calculated asset hash
+    const fileAsset: FileAsset = {
+      source: {
+        path: stagingInitial.absoluteStagedPath, // Use the staged path from initial staging
+        packaging: FileAssetPackaging.ZIP_DIRECTORY,
+      },
+      destinations: {},
+    };
+    const assetManifest: AssetManifest = {
+      version: '0.0.0',
+      files: {
+        [calculatedAssetHash]: fileAsset,
+      },
+    };
+
+    // Write the manifest file to the expected location
+    const manifestFileName = `${app.synth().artifacts[0].id}.assets.json`;
+    manifestFilePath = path.join(tempDir, manifestFileName);
+    fs.writeJsonSync(manifestFilePath, assetManifest);
+
+    // WHEN
+    const staging = new AssetStaging(stack, 'Asset', {
+      sourcePath,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        command: ['echo', 'Hello World'],
+        local: {
+          tryBundle(outputDir: string): boolean {
+            bundlingCalled = true;
+            // Simulate bundling by writing a file to the output directory
+            fs.writeFileSync(path.join(outputDir, 'dummy.txt'), 'dummy content');
+            return true;
+          },
+        },
+      },
+    });
+
+    // THEN
+    expect(staging.assetHash).toEqual(calculatedAssetHash);
+
+    // Bundling should be skipped, so bundlingCalled should be false
+    expect(bundlingCalled).toEqual(false);
+
+    // Check that absoluteStagedPath is the same as initial staging's path
+    expect(staging.absoluteStagedPath).toEqual(stagingInitial.absoluteStagedPath);
+
+    // Packaging should be ZIP_DIRECTORY
+    expect(staging.packaging).toEqual(FileAssetPackaging.ZIP_DIRECTORY);
+    expect(staging.isArchive).toEqual(true);
   });
 });
 
