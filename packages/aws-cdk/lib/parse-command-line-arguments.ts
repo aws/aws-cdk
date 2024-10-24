@@ -133,6 +133,95 @@ function parseCommandLineArguments(args: Array<string>, browserDefault?: string,
     "alias": "q",
     "desc": "Do not output CloudFormation Template to stdout",
     "default": false
+  })).command(['bootstrap [ENVIRONMENTS..]'], "Deploys the CDK toolkit stack into an AWS environment", (yargs: Argv) => yargs.option("bootstrap-bucket-name", {
+    "type": "string",
+    "alias": ["b","toolkit-bucket-name"],
+    "desc": "The name of the CDK toolkit bucket; bucket will be created and must not exist",
+    "default": undefined
+  }).option("bootstrap-kms-key-id", {
+    "type": "string",
+    "desc": "AWS KMS master key ID used for the SSE-KMS encryption",
+    "default": undefined,
+    "conflicts": "bootstrap-customer-key"
+  }).option("example-permissions-boundary", {
+    "type": "boolean",
+    "alias": "epb",
+    "desc": "Use the example permissions boundary.",
+    "default": undefined,
+    "conflicts": "custom-permissions-boundary"
+  }).option("custom-permissions-boundary", {
+    "type": "string",
+    "alias": "cpb",
+    "desc": "Use the permissions boundary specified by name.",
+    "default": undefined,
+    "conflicts": "example-permissions-boundary"
+  }).option("bootstrap-customer-key", {
+    "type": "boolean",
+    "desc": "Create a Customer Master Key (CMK) for the bootstrap bucket (you will be charged but can customize permissions, modern bootstrapping only)",
+    "default": undefined,
+    "conflicts": "bootstrap-kms-key-id"
+  }).option("qualifier", {
+    "type": "string",
+    "desc": "String which must be unique for each bootstrap stack. You must configure it on your CDK app if you change this from the default.",
+    "default": undefined
+  }).option("public-access-block-configuration", {
+    "type": "boolean",
+    "desc": "Block public access configuration on CDK toolkit bucket (enabled by default) ",
+    "default": undefined
+  }).option("tags", {
+    "type": "array",
+    "alias": "t",
+    "desc": "Tags to add for the stack (KEY=VALUE)",
+    "nargs": 1,
+    "requiresArg": true,
+    "default": []
+  }).option("execute", {
+    "type": "boolean",
+    "desc": "Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)",
+    "default": true
+  }).option("trust", {
+    "type": "array",
+    "desc": "The AWS account IDs that should be trusted to perform deployments into this environment (may be repeated, modern bootstrapping only)",
+    "default": [],
+    "nargs": 1,
+    "requiresArg": true
+  }).option("trust-for-lookup", {
+    "type": "array",
+    "desc": "The AWS account IDs that should be trusted to look up values in this environment (may be repeated, modern bootstrapping only)",
+    "default": [],
+    "nargs": 1,
+    "requiresArg": true
+  }).option("cloudformation-execution-policies", {
+    "type": "array",
+    "desc": "The Managed Policy ARNs that should be attached to the role performing deployments into this environment (may be repeated, modern bootstrapping only)",
+    "default": [],
+    "nargs": 1,
+    "requiresArg": true
+  }).option("force", {
+    "alias": "f",
+    "type": "boolean",
+    "desc": "Always bootstrap even if it would downgrade template version",
+    "default": false
+  }).option("termination-protection", {
+    "type": "boolean",
+    "default": undefined,
+    "desc": "Toggle CloudFormation termination protection on the bootstrap stacks"
+  }).option("show-template", {
+    "type": "boolean",
+    "desc": "Instead of actual bootstrapping, print the current CLI's bootstrapping template to stdout for customization",
+    "default": false
+  }).option("toolkit-stack-name", {
+    "type": "string",
+    "desc": "The name of the CDK toolkit stack to create",
+    "requiresArg": true
+  }).option("template", {
+    "type": "string",
+    "requiresArg": true,
+    "desc": "Use the template from the given file instead of the built-in one (use --show-template to obtain an example)"
+  }).option("previous-parameters", {
+    "type": "boolean",
+    "default": true,
+    "desc": "Use previous values for existing parameters (you must specify all parameters on every deployment if this is disabled)"
   })).command(['gc [ENVIRONMENTS..]'], "Garbage collect assets", (yargs: Argv) => yargs.option("action", {
     "type": "string",
     "desc": "The action (or sub-action) you want to perform. Valid entires are \"print\", \"tag\", \"delete-tagged\", \"full\".",
