@@ -124,7 +124,62 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
    * Import an existing subnet to the VPC
    */
   public static fromSubnetV2Attributes(scope: Construct, id: string, attrs: SubnetV2Attributes) : ISubnetV2 {
-    return new ImportedSubnetV2(scope, id, attrs);
+    /**
+    * Class to define an import for an existing subnet
+    * @resource AWS::EC2::Subnet
+    */
+    class ImportedSubnetV2 extends Resource implements ISubnetV2 {
+
+      /**
+      * The IPv6 CIDR Block assigned to this subnet
+      */
+      public readonly ipv6CidrBlock?: string = attrs.ipv6CidrBlock;
+
+      /**
+      * The type of subnet (eg. public or private) that this subnet represents.
+      */
+      public readonly subnetType?: SubnetType = attrs.subnetType;
+
+      /**
+      * The Availability Zone in which subnet is located
+      */
+      public readonly availabilityZone: string = attrs.availabilityZone;
+
+      /**
+      * The subnetId for this particular subnet
+      * Refers to the physical ID created
+      */
+      public readonly subnetId: string = attrs.subnetId;
+
+      /**
+      * Dependable that can be depended upon to force internet connectivity established on the VPC
+      */
+      public readonly internetConnectivityEstablished: IDependable = new DependencyGroup();
+
+      /**
+      * The IPv4 CIDR block assigned to this subnet
+      */
+      public readonly ipv4CidrBlock: string = attrs.ipv4CidrBlock;
+
+      /**
+      *  Current route table associated with this subnet
+      */
+      public readonly routeTable: IRouteTable = { routeTableId: attrs.routeTableId! }
+
+      /**
+      * Associate a Network ACL with this subnet
+      * Required here since it is implemented in the ISubnetV2
+      */
+      public associateNetworkAcl(aclId: string, networkAcl: INetworkAcl) {
+        const aclScope = networkAcl instanceof Construct ? networkAcl : this;
+        const other = networkAcl instanceof Construct ? this : networkAcl;
+        new SubnetNetworkAclAssociation(aclScope, aclId + Names.nodeUniqueId(other.node), {
+          networkAcl,
+          subnet: this,
+        });
+      }
+    }
+    return new ImportedSubnetV2(scope, id);
   }
 
   /**
@@ -332,84 +387,6 @@ export interface SubnetV2Attributes {
    */
   readonly subnetName?: string;
 
-}
-
-/**
- * Properties required to import a subnet
- */
-export interface ImportedSubnetV2Props extends SubnetV2Attributes {}
-
-/**
- * Class to define an import for an existing subnet
- * @resource AWS::EC2::Subnet
- */
-export class ImportedSubnetV2 extends Resource implements ISubnetV2 {
-
-  /**
-   * The IPv6 CIDR Block assigned to this subnet
-   */
-  public readonly ipv6CidrBlock?: string;
-
-  /**
-   * The type of subnet (eg. public or private) that this subnet represents.
-   */
-  public readonly subnetType?: SubnetType;
-
-  /**
-   * The Availability Zone in which subnet is located
-   */
-  public readonly availabilityZone: string;
-
-  /**
-  * The subnetId for this particular subnet
-  * Refers to the physical ID created
-  */
-  public readonly subnetId: string;
-
-  /**
-   * Dependable that can be depended upon to force internet connectivity established on the VPC
-   */
-  public readonly internetConnectivityEstablished: IDependable = new DependencyGroup();
-
-  /**
-   * The IPv4 CIDR block assigned to this subnet
-   */
-  public readonly ipv4CidrBlock: string;
-
-  /**
-  *  Current route table associated with this subnet
-  */
-  public readonly routeTable: IRouteTable;
-
-  constructor(scope: Construct, id: string, props: ImportedSubnetV2Props) {
-    super(scope, id);
-
-    if (!props.routeTableId) {
-      throw new Error('Route Table ID is required');
-    }
-
-    this.ipv4CidrBlock = props.ipv4CidrBlock;
-    this.availabilityZone = props.availabilityZone;
-    this.subnetType = props.subnetType;
-    this.ipv6CidrBlock = props.ipv6CidrBlock;
-    this.subnetId = props.subnetId;
-    this.routeTable = {
-      routeTableId: props.routeTableId!,
-    };
-  }
-
-  /**
-   * Associate a Network ACL with this subnet
-   * Required here since it is implemented in the ISubnetV2
-   */
-  public associateNetworkAcl(id: string, networkAcl: INetworkAcl) {
-    const scope = networkAcl instanceof Construct ? networkAcl : this;
-    const other = networkAcl instanceof Construct ? this : networkAcl;
-    new SubnetNetworkAclAssociation(scope, id + Names.nodeUniqueId(other.node), {
-      networkAcl,
-      subnet: this,
-    });
-  }
 }
 
 const subnetTypeMap = {

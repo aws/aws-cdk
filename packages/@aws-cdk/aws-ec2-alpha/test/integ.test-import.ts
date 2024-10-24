@@ -32,15 +32,14 @@ const imported_new_vpc = VpcV2.VpcV2.fromVpcV2Attributes(stack, 'ImportedNewVPC'
   }, {
     amazonProvidedIpv6CidrBlock: true,
   }],
-  isolatedSubnets: [{
+  subnets: [{
     subnetName: 'IsolatedSubnet2',
     subnetId: 'subnet-03cd773c0fe08ed26', //Subnet Id
     subnetType: SubnetType.PRIVATE_ISOLATED,
     availabilityZone: 'us-west-2a',
     ipv4CidrBlock: '10.2.0.0/24',
     routeTableId: 'rtb-0871c310f98da2cbb', //RouteTable id
-  }],
-  publicSubnets: [{
+  }, {
     subnetId: 'subnet-0fa477e01db27d820',
     subnetType: SubnetType.PUBLIC,
     availabilityZone: 'us-west-2b',
