@@ -1,0 +1,13 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "VpcpcCrossAccountInteg/DefaultTest": {
+      "stacks": [
+        "acceptor-stack",
+        "requestor-stack"
+      ],
+      "assertionStack": "VpcpcCrossAccountInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "VpcpcCrossAccountIntegDefaultTestDeployAssertB5B8DCA8"
+    }
+  }
+}
