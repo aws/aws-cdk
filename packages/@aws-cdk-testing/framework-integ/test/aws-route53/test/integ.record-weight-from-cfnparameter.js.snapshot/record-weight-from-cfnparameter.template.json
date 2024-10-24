@@ -9,7 +9,7 @@
     "aws:cdk:path": "record-weight-from-cfnparameter/HostedZone/Resource"
    }
   },
-  "WeightedRecord0183C6356": {
+  "RecordWeightedFromCfnParameter0FB5DFC65": {
    "Type": "AWS::Route53::RecordSet",
    "Properties": {
     "HostedZoneId": {
@@ -27,7 +27,7 @@
        {
         "Ref": "RecordWeight0"
        },
-       "_ID_recordweightedRecord080EC42DE"
+       "_ID_recordweigParameter04970FE98"
       ]
      ]
     },
@@ -38,10 +38,10 @@
     }
    },
    "Metadata": {
-    "aws:cdk:path": "record-weight-from-cfnparameter/WeightedRecord0/Resource"
+    "aws:cdk:path": "record-weight-from-cfnparameter/RecordWeightedFromCfnParameter0/Resource"
    }
   },
-  "WeightedRecord1901777B1": {
+  "RecordWeightedFromCfnParameter11D8E5896": {
    "Type": "AWS::Route53::RecordSet",
    "Properties": {
     "HostedZoneId": {
@@ -59,7 +59,7 @@
        {
         "Ref": "RecordWeight1"
        },
-       "_ID_recordweightedRecord118B8FA43"
+       "_ID_recordweigParameter1EB51A657"
       ]
      ]
     },
@@ -70,10 +70,10 @@
     }
    },
    "Metadata": {
-    "aws:cdk:path": "record-weight-from-cfnparameter/WeightedRecord1/Resource"
+    "aws:cdk:path": "record-weight-from-cfnparameter/RecordWeightedFromCfnParameter1/Resource"
    }
   },
-  "WeightedRecord2D4D415A2": {
+  "RecordWeightedFromCfnParameter2B12A1DFB": {
    "Type": "AWS::Route53::RecordSet",
    "Properties": {
     "HostedZoneId": {
@@ -91,7 +91,7 @@
        {
         "Ref": "RecordWeight2"
        },
-       "_ID_recordweightedRecord29D395B6F"
+       "_ID_recordweigParameter208409FED"
       ]
      ]
     },
@@ -102,10 +102,10 @@
     }
    },
    "Metadata": {
-    "aws:cdk:path": "record-weight-from-cfnparameter/WeightedRecord2/Resource"
+    "aws:cdk:path": "record-weight-from-cfnparameter/RecordWeightedFromCfnParameter2/Resource"
    }
   },
-  "WeightedRecord328406D0A": {
+  "RecordWeightedFromCfnParameter3D5E67423": {
    "Type": "AWS::Route53::RecordSet",
    "Properties": {
     "HostedZoneId": {
@@ -123,7 +123,7 @@
        {
         "Ref": "RecordWeight3"
        },
-       "_ID_recordweightedRecord38AAB01D6"
+       "_ID_recordweigParameter3841525F4"
       ]
      ]
     },
@@ -134,13 +134,13 @@
     }
    },
    "Metadata": {
-    "aws:cdk:path": "record-weight-from-cfnparameter/WeightedRecord3/Resource"
+    "aws:cdk:path": "record-weight-from-cfnparameter/RecordWeightedFromCfnParameter3/Resource"
    }
   },
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/02OvQ7CMBCDn4U9OUIRYkZdGKt2Y0FpckjXn5yUXGCo+u60ZGGy/VmWbMCAOdhP0s6PeqIelk6sG9WGnpGz4OUMS5P7idydk6B/cEBVv8JfurXoOPqdFtehrHtqbLQzCsZSJc7R/cY1B09CHFYV2CMM6fiuDJyu25khEemYg9CM0Bb9AmpStzOnAAAA"
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/02Luw7CMBAEvyW9fZggJFqUhjJKOhrk2Id0efgk+0yKKP+Oghuq3ZnVGjBgKrsm7fykZxpg68W6Sdk1vSJnwesFtjYPM7kHJ0H/5ICqeYc/unfoOPrDltaj7Ae1NtoFBWOZEufofueGgychDrsK7BHGdPrUBs43MNWYiHTMQWhB6Ep+AaNZotCnAAAA"
    },
    "Metadata": {
     "aws:cdk:path": "record-weight-from-cfnparameter/CDKMetadata/Default"

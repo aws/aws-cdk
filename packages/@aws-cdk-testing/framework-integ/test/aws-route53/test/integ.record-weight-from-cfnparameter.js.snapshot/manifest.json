@@ -19,7 +19,7 @@
         "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f31b955cf926ccd8b253b95178911440228fdb6c8c302c2129929764634e16da.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/24621e779b3b62c4e28e85db4bf2bbaa80f572df06130a9963c0eafeeb2b5a92.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -65,28 +65,28 @@
             "data": "RecordWeight3"
           }
         ],
-        "/record-weight-from-cfnparameter/WeightedRecord0/Resource": [
+        "/record-weight-from-cfnparameter/RecordWeightedFromCfnParameter0/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "WeightedRecord0183C6356"
+            "data": "RecordWeightedFromCfnParameter0FB5DFC65"
           }
         ],
-        "/record-weight-from-cfnparameter/WeightedRecord1/Resource": [
+        "/record-weight-from-cfnparameter/RecordWeightedFromCfnParameter1/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "WeightedRecord1901777B1"
+            "data": "RecordWeightedFromCfnParameter11D8E5896"
           }
         ],
-        "/record-weight-from-cfnparameter/WeightedRecord2/Resource": [
+        "/record-weight-from-cfnparameter/RecordWeightedFromCfnParameter2/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "WeightedRecord2D4D415A2"
+            "data": "RecordWeightedFromCfnParameter2B12A1DFB"
           }
         ],
-        "/record-weight-from-cfnparameter/WeightedRecord3/Resource": [
+        "/record-weight-from-cfnparameter/RecordWeightedFromCfnParameter3/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "WeightedRecord328406D0A"
+            "data": "RecordWeightedFromCfnParameter3D5E67423"
           }
         ],
         "/record-weight-from-cfnparameter/CDKMetadata/Default": [
@@ -134,7 +134,7 @@
         "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3af2cf653e741676340b5160ba8e02dc8c5fc5dfa4ac558c521eda8474bf7deb.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dd422c7ef7456abdbbf2e9b18c750ce262025988c67dc32d98218d53614783aa.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

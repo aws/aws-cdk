@@ -24,7 +24,7 @@ class TestStack extends Stack {
       { target: '3.4.5.6', weight: new CfnParameter(this, 'RecordWeight2', weightParameterProps) },
       { target: '4.5.6.7', weight: new CfnParameter(this, 'RecordWeight3', weightParameterProps) },
     ].forEach((data, index) => {
-      new route53.ARecord(this, `WeightedRecord${index}`, {
+      new route53.ARecord(this, `RecordWeightedFromCfnParameter${index}`, {
         zone: hostedZone,
         recordName: 'www',
         weight: data.weight.valueAsNumber,

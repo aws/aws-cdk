@@ -1,7 +1,7 @@
 {
   "version": "38.0.1",
   "files": {
-    "3af2cf653e741676340b5160ba8e02dc8c5fc5dfa4ac558c521eda8474bf7deb": {
+    "dd422c7ef7456abdbbf2e9b18c750ce262025988c67dc32d98218d53614783aa": {
       "source": {
         "path": "Route53RecordWeightFromCfnParameterIntegDefaultTestDeployAssertB313B703.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "3af2cf653e741676340b5160ba8e02dc8c5fc5dfa4ac558c521eda8474bf7deb.json",
+          "objectKey": "dd422c7ef7456abdbbf2e9b18c750ce262025988c67dc32d98218d53614783aa.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

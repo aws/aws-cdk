@@ -64,13 +64,13 @@
               "version": "0.0.0"
             }
           },
-          "WeightedRecord0": {
-            "id": "WeightedRecord0",
-            "path": "record-weight-from-cfnparameter/WeightedRecord0",
+          "RecordWeightedFromCfnParameter0": {
+            "id": "RecordWeightedFromCfnParameter0",
+            "path": "record-weight-from-cfnparameter/RecordWeightedFromCfnParameter0",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "record-weight-from-cfnparameter/WeightedRecord0/Resource",
+                "path": "record-weight-from-cfnparameter/RecordWeightedFromCfnParameter0/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
                   "aws:cdk:cloudformation:props": {
@@ -89,7 +89,7 @@
                           {
                             "Ref": "RecordWeight0"
                           },
-                          "_ID_recordweightedRecord080EC42DE"
+                          "_ID_recordweigParameter04970FE98"
                         ]
                       ]
                     },
@@ -111,13 +111,13 @@
               "version": "0.0.0"
             }
           },
-          "WeightedRecord1": {
-            "id": "WeightedRecord1",
-            "path": "record-weight-from-cfnparameter/WeightedRecord1",
+          "RecordWeightedFromCfnParameter1": {
+            "id": "RecordWeightedFromCfnParameter1",
+            "path": "record-weight-from-cfnparameter/RecordWeightedFromCfnParameter1",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "record-weight-from-cfnparameter/WeightedRecord1/Resource",
+                "path": "record-weight-from-cfnparameter/RecordWeightedFromCfnParameter1/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
                   "aws:cdk:cloudformation:props": {
@@ -136,7 +136,7 @@
                           {
                             "Ref": "RecordWeight1"
                           },
-                          "_ID_recordweightedRecord118B8FA43"
+                          "_ID_recordweigParameter1EB51A657"
                         ]
                       ]
                     },
@@ -158,13 +158,13 @@
               "version": "0.0.0"
             }
           },
-          "WeightedRecord2": {
-            "id": "WeightedRecord2",
-            "path": "record-weight-from-cfnparameter/WeightedRecord2",
+          "RecordWeightedFromCfnParameter2": {
+            "id": "RecordWeightedFromCfnParameter2",
+            "path": "record-weight-from-cfnparameter/RecordWeightedFromCfnParameter2",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "record-weight-from-cfnparameter/WeightedRecord2/Resource",
+                "path": "record-weight-from-cfnparameter/RecordWeightedFromCfnParameter2/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
                   "aws:cdk:cloudformation:props": {
@@ -183,7 +183,7 @@
                           {
                             "Ref": "RecordWeight2"
                           },
-                          "_ID_recordweightedRecord29D395B6F"
+                          "_ID_recordweigParameter208409FED"
                         ]
                       ]
                     },
@@ -205,13 +205,13 @@
               "version": "0.0.0"
             }
           },
-          "WeightedRecord3": {
-            "id": "WeightedRecord3",
-            "path": "record-weight-from-cfnparameter/WeightedRecord3",
+          "RecordWeightedFromCfnParameter3": {
+            "id": "RecordWeightedFromCfnParameter3",
+            "path": "record-weight-from-cfnparameter/RecordWeightedFromCfnParameter3",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "record-weight-from-cfnparameter/WeightedRecord3/Resource",
+                "path": "record-weight-from-cfnparameter/RecordWeightedFromCfnParameter3/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
                   "aws:cdk:cloudformation:props": {
@@ -230,7 +230,7 @@
                           {
                             "Ref": "RecordWeight3"
                           },
-                          "_ID_recordweightedRecord38AAB01D6"
+                          "_ID_recordweigParameter3841525F4"
                         ]
                       ]
                     },

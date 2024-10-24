@@ -3,7 +3,7 @@
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/zPQM9AzUEwsL9ZNTsnWzclM0qsOLklMztZxTssLSi3OLy1KTgWxnfPzUjJLMvPzanXy8lNS9bKK9cuMDPQMzYG6s4ozM3WLSvNKMnNT9YIgNADUHT34WAAAAA=="
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/yXGuw2AIBAA0Fno4Tyt7NkAJ0DA5ECPhI8Wxt2NsXoPAQGFvapyPqmdVriXZl2SemMTau7Fhe86s6dGmR/J2QeIdTgnhHEGFLESqdK50RHA/L4dFigbWAAAAA=="
    },
    "Metadata": {
     "aws:cdk:path": "Route53RecordWeightFromCfnParameterInteg/DefaultTest/DeployAssert/CDKMetadata/Default"
