@@ -17,8 +17,9 @@ jobs:
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
           message: |
-            Comments on closed issues and PRs are hard for our team to see. 
-            If you need help, please open a new issue that references this one.
+            We appreciate you taking the time to provide feedback. However, GitHub does not send notifications for new comments on closed issues or pull requests. This makes it easy for our team to miss important updates in these closed discussions.
+
+            If you have an ongoing question or need further assistance, please open a new issue and reference the original one. That will ensure we receive a notification and can better track and address your concerns.
   lock:
     permissions:
       pull-requests: write
