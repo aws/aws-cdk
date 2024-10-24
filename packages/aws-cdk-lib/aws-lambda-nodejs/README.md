@@ -108,7 +108,7 @@ With the `@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion` disabled, the runt
 
 ## Lock file
 
-The `NodejsFunction` requires a dependencies lock file (`yarn.lock`, `pnpm-lock.yaml` or
+The `NodejsFunction` requires a dependencies lock file (`yarn.lock`, `pnpm-lock.yaml`, `bun.lockb` or
 `package-lock.json`). When bundling in a Docker container, the path containing this lock file is
 used as the source (`/asset-input`) for the volume mounted in the container.
 
@@ -201,8 +201,8 @@ new nodejs.NodejsFunction(this, 'my-handler', {
 
 The modules listed in `nodeModules` must be present in the `package.json`'s dependencies or
 installed. The same version will be used for installation. The lock file (`yarn.lock`,
-`pnpm-lock.yaml` or `package-lock.json`) will be used along with the right installer (`yarn`,
-`pnpm` or `npm`).
+`pnpm-lock.yaml`, `bun.lockb` or `package-lock.json`) will be used along with the right installer (`yarn`,
+`pnpm`, `bun` or `npm`).
 
 When working with `nodeModules` using native dependencies, you might want to force bundling in a
 Docker container even if `esbuild` is available in your environment. This can be done by setting
@@ -342,7 +342,7 @@ new nodejs.NodejsFunction(this, 'my-handler', {
 ```
 
 This image should have `esbuild` installed **globally**. If you plan to use `nodeModules` it
-should also have `npm`, `yarn` or `pnpm` depending on the lock file you're using.
+should also have `npm`, `yarn`, `bun` or `pnpm` depending on the lock file you're using.
 
 Use the [default image provided by `aws-cdk-lib/aws-lambda-nodejs`](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-lambda-nodejs/lib/Dockerfile)
 as a source of inspiration.
