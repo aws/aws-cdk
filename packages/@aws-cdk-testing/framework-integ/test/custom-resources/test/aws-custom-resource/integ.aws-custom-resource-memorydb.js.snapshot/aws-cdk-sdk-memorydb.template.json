@@ -1,42 +1,46 @@
 {
  "Resources": {
-  "AthenaResultBucketDF85B968": {
-   "Type": "AWS::S3::Bucket",
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
-  },
-  "AthenaExecRole1895AF29": {
-   "Type": "AWS::IAM::Role",
+  "myMemoryDbCustomResourceB5F95C30": {
+   "Type": "Custom::AWS",
    "Properties": {
-    "AssumeRolePolicyDocument": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+      "Arn"
+     ]
+    },
+    "Create": "{\"service\":\"@aws-sdk/client-memorydb\",\"action\":\"DescribeClusters\",\"physicalResourceId\":{\"id\":\"myMemoryDbCRphysicalResourceID\"},\"logApiResponseData\":true}",
+    "Update": "{\"service\":\"@aws-sdk/client-memorydb\",\"action\":\"DescribeClusters\",\"physicalResourceId\":{\"id\":\"myMemoryDbCRphysicalResourceID\"},\"logApiResponseData\":true}",
+    "InstallLatestAwsSdk": true
+   },
+   "DependsOn": [
+    "myMemoryDbCustomResourceCustomResourcePolicy5F52A060"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "myMemoryDbCustomResourceCustomResourcePolicy5F52A060": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
      "Statement": [
       {
-       "Action": "sts:AssumeRole",
+       "Action": "memorydb:DescribeClusters",
        "Effect": "Allow",
-       "Principal": {
-        "Service": "athena.amazonaws.com"
-       }
+       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"
     },
-    "ManagedPolicyArns": [
+    "PolicyName": "myMemoryDbCustomResourceCustomResourcePolicy5F52A060",
+    "Roles": [
      {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/AmazonAthenaFullAccess"
-       ]
-      ]
+      "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
      }
     ]
    }
   },
-  "CustomResourceRoleAB1EF463": {
+  "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -64,95 +68,8 @@
        ]
       ]
      }
-    ],
-    "Policies": [
-     {
-      "PolicyDocument": {
-       "Statement": [
-        {
-         "Action": "iam:PassRole",
-         "Effect": "Allow",
-         "Resource": {
-          "Fn::GetAtt": [
-           "AthenaExecRole1895AF29",
-           "Arn"
-          ]
-         }
-        }
-       ],
-       "Version": "2012-10-17"
-      },
-      "PolicyName": "PassRolePolicy"
-     },
-     {
-      "PolicyDocument": {
-       "Statement": [
-        {
-         "Action": [
-          "athena:CreateWorkGroup",
-          "athena:DeleteWorkGroup"
-         ],
-         "Effect": "Allow",
-         "Resource": "*"
-        }
-       ],
-       "Version": "2012-10-17"
-      },
-      "PolicyName": "AthenaWorkGroupPolicy"
-     },
-     {
-      "PolicyDocument": {
-       "Statement": [
-        {
-         "Action": [
-          "athena:CreateNotebook",
-          "athena:DeleteNotebook",
-          "athena:UpdateNotebookMetadata"
-         ],
-         "Effect": "Allow",
-         "Resource": "*"
-        }
-       ],
-       "Version": "2012-10-17"
-      },
-      "PolicyName": "AthenaNotebookPolicy"
-     }
     ]
    }
-  },
-  "AthenaWorkGroupA2C2329E": {
-   "Type": "Custom::AthenaWorkGroup",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
-      "Arn"
-     ]
-    },
-    "Create": {
-     "Fn::Join": [
-      "",
-      [
-       "{\"service\":\"Athena\",\"action\":\"createWorkGroup\",\"physicalResourceId\":{\"id\":\"TestWG\"},\"parameters\":{\"Name\":\"TestWG\",\"Configuration\":{\"ExecutionRole\":\"",
-       {
-        "Fn::GetAtt": [
-         "AthenaExecRole1895AF29",
-         "Arn"
-        ]
-       },
-       "\",\"ResultConfiguration\":{\"OutputLocation\":\"s3://",
-       {
-        "Ref": "AthenaResultBucketDF85B968"
-       },
-       "\"},\"EngineVersion\":{\"SelectedEngineVersion\":\"PySpark engine version 3\"}}},\"logApiResponseData\":true}"
-      ]
-     ]
-    },
-    "Delete": "{\"service\":\"Athena\",\"action\":\"deleteWorkGroup\",\"parameters\":{\"WorkGroup\":\"TestWG\"},\"logApiResponseData\":true}",
-    "InstallLatestAwsSdk": true
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
   },
   "AWS679f53fac002430cb0da5b7982bd22872D164C4C": {
    "Type": "AWS::Lambda::Function",
@@ -164,10 +81,10 @@
      "S3Key": "2359c08010c7366fb09aaafebc3e74155a1ccccb96b6469afc6797cebb51e513.zip"
     },
     "Handler": "index.handler",
-    "MemorySize": 512,
+    "MemorySize": 1024,
     "Role": {
      "Fn::GetAtt": [
-      "CustomResourceRoleAB1EF463",
+      "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
       "Arn"
      ]
     },
@@ -180,31 +97,11 @@
       "value"
      ]
     },
-    "Timeout": 180
+    "Timeout": 120
    },
    "DependsOn": [
-    "CustomResourceRoleAB1EF463"
+    "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
    ]
-  },
-  "AthenaNotebook878CD9ED": {
-   "Type": "Custom::AthenaNotebook",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
-      "Arn"
-     ]
-    },
-    "Create": "{\"service\":\"Athena\",\"action\":\"createNotebook\",\"physicalResourceId\":{\"responsePath\":\"NotebookId\"},\"parameters\":{\"WorkGroup\":\"TestWG\",\"Name\":\"MyNotebook1\"},\"logApiResponseData\":true}",
-    "Update": "{\"service\":\"Athena\",\"action\":\"updateNotebookMetadata\",\"parameters\":{\"Name\":\"MyNotebook1\",\"NotebookId\":\"PHYSICAL:RESOURCEID:\"},\"logApiResponseData\":true}",
-    "Delete": "{\"service\":\"Athena\",\"action\":\"deleteNotebook\",\"parameters\":{\"NotebookId\":\"PHYSICAL:RESOURCEID:\"},\"logApiResponseData\":true}",
-    "InstallLatestAwsSdk": true
-   },
-   "DependsOn": [
-    "AthenaWorkGroupA2C2329E"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
   }
  },
  "Mappings": {

@@ -36,15 +36,10 @@ export class AWSCustomResourceDynamoDb extends cdk.Stack {
         service: 'DynamoDB',
         action: 'PutItem',
         parameters: {
-          service: 'DynamoDB',
-          action: 'PutItem',
-          parameters: {
-            Item: {
-              id: { S: 'test-value' },
-            },
-            TableName: myTable.tableName,
+          Item: {
+            id: { S: 'test-value' },
           },
-          physicalResourceId: cr.PhysicalResourceId.of('myCRphysicalResourceID'),
+          TableName: myTable.tableName,
         },
       },
     });

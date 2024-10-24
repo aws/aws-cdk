@@ -1,0 +1,13 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "AwsCustomResourceMemoryDbTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-sdk-memorydb"
+      ],
+      "diffAssets": true,
+      "assertionStack": "AwsCustomResourceMemoryDbTest/DefaultTest/DeployAssert",
+      "assertionStackName": "AwsCustomResourceMemoryDbTestDefaultTestDeployAssert79243C16"
+    }
+  }
+}
