@@ -18,13 +18,19 @@ export async function determineAllowCrossAccountAssetPublishing(sdk: ISDK, custo
       return true;
     }
 
-    // other scenarios are highly irregular and potentially dangerous so we prevent it by
-    // instructing cdk-assets to detect foreign bucket ownership and reject.
+    // If there is a staging bucket AND the bootstrap version is old, then we want to protect
+    // against accidental cross-account publishing.
     return false;
   } catch (e) {
+    // You would think we would need to fail closed here, but the reality is
+    // that we get here if we couldn't find the bootstrap stack: that is
+    // completely valid, and many large organizations may have their own method
+    // of creating bootstrap resources. If they do, there's nothing for us to validate,
+    // but we can't use that as a reason to disallow cross-account publishing. We'll just
+    // have to trust they did their due diligence. So we fail open.
     debug(`Error determining cross account asset publishing: ${e}`);
-    debug('Defaulting to disallowing cross account asset publishing');
-    return false;
+    debug('Defaulting to allowing cross account asset publishing');
+    return true;
   }
 }
 
