@@ -62,7 +62,8 @@ export async function getBootstrapStackInfo(sdk: ISDK, stackName: string): Promi
 
     // try to get bucketname from the logical resource id. If there is no
     // bucketname, or the value doesn't look like an S3 bucket name, we assume
-    // the bucket doesn't exist.
+    // the bucket doesn't exist (this is for the case where a template customizer did
+    // not dare to remove the Output, but put a dummy value there like '' or '-' or '***').
     //
     // We would have preferred to look at the stack resources here, but
     // unfortunately the deploy role doesn't have permissions call DescribeStackResources.
