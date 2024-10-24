@@ -245,8 +245,6 @@ describe('schedule target', () => {
       target: lambdaTarget,
     });
 
-    const t = Template.fromStack(stack);
-
     Template.fromStack(stack).resourceCountIs('AWS::Lambda::Permission', 0);
 
     Template.fromStack(stack).hasResource('AWS::Scheduler::Schedule', {
