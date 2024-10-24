@@ -144,10 +144,10 @@ export interface TableProps extends DatabaseOptions {
   readonly removalPolicy?: cdk.RemovalPolicy;
 
   /**
-     * A comment to attach to the table.
-     *
-     * @default - no comment
-     */
+   * A comment to attach to the table.
+   *
+   * @default - no comment
+   */
   readonly tableComment?: string;
 
   /**
