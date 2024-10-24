@@ -1,4 +1,4 @@
-name: Lock Closed Issues and PRs with message
+name: Close issue message and lock closed PRs with message
 
 on:
   pull_request_target:
@@ -17,8 +17,8 @@ jobs:
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
           message: |
-            Comments on closed issues and PRs are hard for our team to see. 
-            If you need help, please open a new issue that references this one.
+            We appreciate you taking the time to provide feedback. However, It's hard for our team to track important updates in these closed discussions.
+            If you have an ongoing question or need further assistance, please open a new issue and reference the original one. That will ensure we receive a notification and can better track and address your concerns.
   lock:
     permissions:
       pull-requests: write
@@ -27,14 +27,10 @@ jobs:
     needs: auto_comment # only run after comment is complete
     steps:
       - name: Lock closed issue or PR
+        if: github.event_name == 'pull_request'
         run: |
-          if [ "${{ github.event_name }}" == "issues" ]; then
-            ISSUE_NUMBER=${{ github.event.issue.number }}
-            ISSUE_URL=https://api.github.com/repos/${{ github.repository }}/issues/${ISSUE_NUMBER}/lock
-          else
-            ISSUE_NUMBER=${{ github.event.pull_request.number }}
-            ISSUE_URL=https://api.github.com/repos/${{ github.repository }}/issues/${ISSUE_NUMBER}/lock
-          fi
+          ISSUE_NUMBER=${{ github.event.pull_request.number }}
+          ISSUE_URL=https://api.github.com/repos/${{ github.repository }}/issues/${ISSUE_NUMBER}/lock
 
           curl -s -X PUT -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
           -H "Accept: application/vnd.github.v3+json" \
