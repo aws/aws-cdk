@@ -29,6 +29,22 @@ describe('determineAllowCrossAccountAssetPublishing', () => {
     expect(result).toBe(true);
   });
 
+  it.each(['', '-', '*', '---'])('should return true when the bucket output does not look like a real bucket', async (notABucketName) => {
+    AWSMock.mock('CloudFormation', 'describeStacks', (_params: any, callback: Function) => {
+      callback(null, {
+        Stacks: [{
+          Outputs: [
+            { OutputKey: 'BootstrapVersion', OutputValue: '1' },
+            { OutputKey: 'BucketName', OutputValue: notABucketName },
+          ],
+        }],
+      });
+    });
+
+    const result = await determineAllowCrossAccountAssetPublishing(mockSDK);
+    expect(result).toBe(true);
+  });
+
   it('should return true when bootstrap version is >= 21', async () => {
     AWSMock.mock('CloudFormation', 'describeStacks', (_params: any, callback: Function) => {
       callback(null, {
