@@ -660,13 +660,13 @@ describe('ECR Garbage Collection', () => {
       repositoryName: 'REPO_NAME',
       imageDigest: 'digest3',
       imageManifest: expect.any(Object),
-      imageTag: expect.stringContaining(`${ECR_ISOLATED_TAG}-0-`),
+      imageTag: expect.stringContaining(`0-${ECR_ISOLATED_TAG}`),
     });
     expect(mocks.mockPutImage).toHaveBeenCalledWith({
       repositoryName: 'REPO_NAME',
       imageDigest: 'digest2',
       imageManifest: expect.any(Object),
-      imageTag: expect.stringContaining(`${ECR_ISOLATED_TAG}-1-`),
+      imageTag: expect.stringContaining(`1-${ECR_ISOLATED_TAG}`),
     });
   });
 });

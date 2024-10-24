@@ -30,12 +30,12 @@ export class ImageAsset {
     public readonly manifest: string,
   ) {}
 
-  private getTag(tagPrefix: string) {
-    return this.tags.find(t => t.startsWith(tagPrefix));
+  private getTag(tag: string) {
+    return this.tags.find(t => t.includes(tag));
   }
 
-  private hasTag(tagPrefix: string) {
-    return this.tags.some(t => t.startsWith(tagPrefix));
+  private hasTag(tag: string) {
+    return this.tags.some(t => t.includes(tag));
   }
 
   public hasIsolatedTag() {
@@ -47,12 +47,21 @@ export class ImageAsset {
   }
 
   public isolatedTagBefore(date: Date) {
-    // isolatedTag will look like "aws-cdk.isolated-X-YYYYY"
-    const tagValue = this.getIsolatedTag()?.split('-')[3];
-    if (!tagValue || tagValue == '') {
+    const dateIsolated = this.dateIsolated();
+    if (!dateIsolated || dateIsolated == '') {
       return false;
     }
-    return new Date(tagValue) < date;
+    return new Date(dateIsolated) < date;
+  }
+
+  public buildImageTag(inc: number) {
+    // isolatedTag will look like "X-aws-cdk.isolated-YYYYY"
+    return `${inc}-${ECR_ISOLATED_TAG}-${String(Date.now())}`;
+  }
+
+  public dateIsolated() {
+    // isolatedTag will look like "X-aws-cdk.isolated-YYYYY"
+    return this.getIsolatedTag()?.split('-')[3];
   }
 }
 
@@ -449,21 +458,18 @@ export class GarbageCollector {
     for (let i = 0; i < taggables.length; i++) {
       const img = taggables[i];
       const tagEcr = async () => {
-        const date = Date.now();
-        let imageTag;
         try {
-          imageTag = `${ECR_ISOLATED_TAG}-${i}-${String(date)}`;
           await ecr.putImage({
             repositoryName: repo,
             imageDigest: img.digest,
             imageManifest: img.manifest,
-            imageTag,
+            imageTag: img.buildImageTag(i),
           }).promise();
         } catch (error) {
           // This is a false negative -- an isolated asset is untagged
           // likely due to an imageTag collision. We can safely ignore,
           // and the isolated asset will be tagged next time.
-          debug(`Warning: unable to tag image ${JSON.stringify(img.tags)} with ${imageTag} due to the following error: ${error}`);
+          debug(`Warning: unable to tag image ${JSON.stringify(img.tags)} with ${img.buildImageTag(i)} due to the following error: ${error}`);
         }
       };
       await limit(() => tagEcr());

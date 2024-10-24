@@ -367,7 +367,7 @@ integTest(
     const digest = imageIds.imageIds![0].imageDigest;
     const imageManifests = await fixture.aws.ecr.send(new BatchGetImageCommand({ repositoryName: repoName, imageIds: [{ imageDigest: digest }] }));
     const manifest = imageManifests.images![0].imageManifest;
-    await fixture.aws.ecr.send(new PutImageCommand({ repositoryName: repoName, imageManifest: manifest, imageDigest: digest, imageTag: `${ECR_ISOLATED_TAG}-12345` }));
+    await fixture.aws.ecr.send(new PutImageCommand({ repositoryName: repoName, imageManifest: manifest, imageDigest: digest, imageTag: `0-${ECR_ISOLATED_TAG}-12345` }));
 
     await fixture.cdkGarbageCollect({
       rollbackBufferDays: 100, // this will ensure that we do not delete assets immediately (and just tag them)
