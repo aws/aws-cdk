@@ -600,6 +600,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly TRANSLATE = new InterfaceVpcEndpointAwsService('translate');
   public static readonly TRUSTED_ADVISOR = new InterfaceVpcEndpointAwsService('trustedadvisor');
   public static readonly WELL_ARCHITECTED_TOOL = new InterfaceVpcEndpointAwsService('wellarchitected');
+  public static readonly WORKMAIL = new InterfaceVpcEndpointAwsService('workmail');
   public static readonly WORKSPACES = new InterfaceVpcEndpointAwsService('workspaces');
   public static readonly WORKSPACES_THIN_CLIENT = new InterfaceVpcEndpointAwsService('thinclient.api');
   public static readonly XRAY = new InterfaceVpcEndpointAwsService('xray');
