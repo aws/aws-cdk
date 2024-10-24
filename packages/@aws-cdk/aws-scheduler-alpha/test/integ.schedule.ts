@@ -59,25 +59,25 @@ unnamedGroup.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
 
 const randomTargetThatWontGetInvoked = new SomeSqsTarget(queue, role);
 new scheduler.Schedule(stack, 'ScheduleToTestWithNamedGroup', {
-  schedule: scheduler.ScheduleExpression.at(new Date('2000-01-01T00:00:00Z')),
+  schedule: scheduler.ScheduleExpression.at(new Date('2060-04-15T06:30:00.000Z')),
   target: randomTargetThatWontGetInvoked,
   group: namedGroup,
 });
 
 new scheduler.Schedule(stack, 'ScheduleToTestWithUnnamedGroup', {
-  schedule: scheduler.ScheduleExpression.at(new Date('2000-01-01T00:00:00Z')),
+  schedule: scheduler.ScheduleExpression.at(new Date('2060-04-15T06:30:00.000Z')),
   target: randomTargetThatWontGetInvoked,
   group: unnamedGroup,
 });
 
 new scheduler.Schedule(stack, 'TestDisabledSchedule', {
-  schedule: scheduler.ScheduleExpression.at(new Date('2000-01-01T00:00:00Z')),
+  schedule: scheduler.ScheduleExpression.at(new Date('2060-04-15T06:30:00.000Z')),
   target: randomTargetThatWontGetInvoked,
   enabled: false,
 });
 
 new scheduler.Schedule(stack, 'UseFlexibleTimeWindow', {
-  schedule: scheduler.ScheduleExpression.at(new Date('2000-01-01T00:00:00Z')),
+  schedule: scheduler.ScheduleExpression.at(new Date('2060-04-15T06:30:00.000Z')),
   target: randomTargetThatWontGetInvoked,
   timeWindow: scheduler.TimeWindow.flexible(cdk.Duration.minutes(10)),
 });
