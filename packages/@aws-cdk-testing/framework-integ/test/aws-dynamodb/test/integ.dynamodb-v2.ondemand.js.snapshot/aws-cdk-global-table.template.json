@@ -124,7 +124,13 @@
        "MaxReadRequestUnits": 222
       },
       "Region": "eu-west-1",
-      "TableClass": "STANDARD_INFREQUENT_ACCESS"
+      "TableClass": "STANDARD_INFREQUENT_ACCESS",
+      "Tags": [
+       {
+        "Key": "primaryTableTagKey",
+        "Value": "primaryTableTagValue"
+       }
+      ]
      },
      {
       "ContributorInsightsSpecification": {

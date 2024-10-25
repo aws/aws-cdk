@@ -188,6 +188,10 @@
                         },
                         "tags": [
                           {
+                            "key": "primaryTableTagKey",
+                            "value": "USE2Replica"
+                          },
+                          {
                             "key": "USE2ReplicaTagKey",
                             "value": "USE2ReplicaTagValue"
                           }
@@ -223,6 +227,10 @@
                           "readCapacityUnits": 10
                         },
                         "tags": [
+                          {
+                            "key": "primaryTableTagKey",
+                            "value": "primaryTableTagValue"
+                          },
                           {
                             "key": "USW2ReplicaTagKey",
                             "value": "USW2ReplicaTagValue"

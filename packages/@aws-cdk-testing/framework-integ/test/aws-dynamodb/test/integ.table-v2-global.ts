@@ -52,7 +52,13 @@ class TestStack extends Stack {
               contributorInsights: false,
             },
           },
-          tags: [{ key: 'USE2ReplicaTagKey', value: 'USE2ReplicaTagValue' }],
+          tags: [{
+            key: 'USE2ReplicaTagKey',
+            value: 'USE2ReplicaTagValue',
+          }, {
+            key: 'primaryTableTagKey',
+            value: 'USE2Replica',
+          }],
         },
         {
           region: 'us-west-2',

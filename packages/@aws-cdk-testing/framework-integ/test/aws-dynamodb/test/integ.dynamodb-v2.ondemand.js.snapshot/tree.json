@@ -161,6 +161,12 @@
                         "pointInTimeRecoverySpecification": {
                           "pointInTimeRecoveryEnabled": true
                         },
+                        "tags": [
+                          {
+                            "key": "primaryTableTagKey",
+                            "value": "primaryTableTagValue"
+                          }
+                        ],
                         "readOnDemandThroughputSettings": {
                           "maxReadRequestUnits": 222
                         }
@@ -231,7 +237,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_dynamodb.TableBaseV2",
+              "fqn": "aws-cdk-lib.aws_dynamodb.TableV2",
               "version": "0.0.0"
             }
           },
