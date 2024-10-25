@@ -4,6 +4,7 @@ import { PermissionsBoundary } from './permissions-boundary';
 import { synthesize } from './private/synthesis';
 import { IPolicyValidationPluginBeta1 } from './validation';
 import * as cxapi from '../../cx-api';
+import { Annotations } from './annotations';
 
 const STAGE_SYMBOL = Symbol.for('@aws-cdk/core.Stage');
 
@@ -147,6 +148,11 @@ export class Stage extends Construct {
   private assembly?: cxapi.CloudAssembly;
 
   /**
+   * The cached set of construct paths. Empty if assembly was not yet built.
+   */
+  private constructPathsCache: Set<string>;
+
+  /**
    * Validation plugins to run during synthesis. If any plugin reports any violation,
    * synthesis will be interrupted and the report displayed to the user.
    *
@@ -163,6 +169,7 @@ export class Stage extends Construct {
 
     Object.defineProperty(this, STAGE_SYMBOL, { value: true });
 
+    this.constructPathsCache = new Set<string>();
     this.parentStage = Stage.of(this);
 
     this.region = props.env?.region ?? this.parentStage?.region;
@@ -210,11 +217,46 @@ export class Stage extends Construct {
    * calls will return the same assembly.
    */
   public synth(options: StageSynthesisOptions = { }): cxapi.CloudAssembly {
-    if (!this.assembly || options.force) {
+
+    const newConstructPaths = new Set<string>();
+    recurseAndlistAllConstructPaths(this);
+
+    // Lists all construct paths
+    function recurseAndlistAllConstructPaths(construct: IConstruct) {
+      newConstructPaths.add(construct.node.path);
+      for (const child of construct.node.children) {
+        if (!Stage.isStage(child)) {
+          recurseAndlistAllConstructPaths(child);
+        }
+      }
+    }
+
+    // If the assembly cache is uninitiazed, run synthesize.
+    if (this.constructPathsCache.size == 0 || !this.assembly || options.force) {
+      this.constructPathsCache = newConstructPaths;
       this.assembly = synthesize(this, {
         skipValidation: options.skipValidation,
         validateOnSynthesis: options.validateOnSynthesis,
       });
+    }
+
+    // If the construct paths set has changed
+    if (!constructPathSetsAreEqual(this.constructPathsCache, newConstructPaths)) {
+      if (options.warnInsteadOfError) {
+        Annotations.of(this).addWarningV2('@aws-cdk/core:synth-warning', 'Construct paths have been modified since the last synth call.');
+      } else {
+        throw new Error('Synth was called since the last call.');
+      }
+    }
+
+    function constructPathSetsAreEqual(set1: Set<string>, set2: Set<string>): boolean {
+      if (set1.size !== set2.size) return false;
+      for (const id of set1) {
+        if (!set2.has(id)) {
+          return false;
+        }
+      }
+      return true;
     }
 
     return this.assembly;
@@ -259,4 +301,11 @@ export interface StageSynthesisOptions {
    * @default false
    */
   readonly force?: boolean;
+
+  /**
+   * Whether or not to throw a warning instead of an error if the construct tree has
+   * been mutated since the last synth.
+   * @default false
+   */
+  readonly warnInsteadOfError?: boolean;
 }
