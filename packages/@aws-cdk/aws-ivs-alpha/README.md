@@ -115,3 +115,104 @@ const myChannel = new ivs.Channel(this, 'Channel', {
   authorized: true, // default value is false
 });
 ```
+
+## Recording Configurations
+
+An Amazon IVS Recording Configuration stores settings that specify how a channel's live streams should be recorded. You can configure video quality, thumbnail generation, and where recordings are stored in Amazon S3.
+
+For more information about IVS recording, see [IVS Auto-Record to Amazon S3 | Low-Latency Streaming](https://docs.aws.amazon.com/ivs/latest/LowLatencyUserGuide/record-to-s3.html).
+
+You can create a recording configuration:
+
+```ts
+// Create an S3 bucket for storing recordings
+const recordingBucket = new s3.Bucket(this, 'RecordingBucket');
+
+// Create a basic recording configuration
+const recordingConfiguration= new ivs.RecordingConfiguration(this, 'RecordingConfiguration', {
+  bucket: recordingBucket,
+});
+```
+
+### Video Quality Settings
+
+When you stream content to an Amazon IVS channel, auto-record-to-s3 uses the source video to generate multiple renditions.
+
+If the recording configuration’s `renditionSelection` value is `ALL`, all renditions are selected for recording.
+If `renditionSelection` is `CUSTOM`, the user must select one or more of the following options: `LOWEST_RESOLUTION`, `SD`, `HD`, and `FULL_HD`.
+
+For more information, see [Discovering the Renditions of a Recording](https://docs.aws.amazon.com/ivs/latest/LowLatencyUserGuide/record-to-s3.html#r2s3-recording-renditions).
+
+```ts
+declare const recordingBucket: s3.Bucket;
+
+const recordingConfiguration= new ivs.RecordingConfiguration(this, 'RecordingConfiguration', {
+  bucket: recordingBucket,
+  // rendition settings
+  renditionSelection: ivs.RenditionSelection.CUSTOM,
+  renditions: [
+    ivs.Resolution.FULL_HD,
+    ivs.Resolution.HD,
+    ivs.Resolution.SD,
+  ],
+});
+```
+
+### Thumbnail Generation
+
+A recording configuration allows you to enable or disable the recording of thumbnails
+for a live session and modify the interval at which thumbnails are generated for the live session.
+
+For more information, see [Thumbnails](https://docs.aws.amazon.com/ivs/latest/LowLatencyUserGuide/record-to-s3.html#r2s3-thumbnails).
+
+```ts
+declare const recordingBucket: s3.Bucket;
+
+const recordingConfiguration= new ivs.RecordingConfiguration(this, 'RecordingConfiguration', {
+  bucket: recordingBucket,
+  // thumnail settings
+  thumbnailRecordingMode: ivs.ThumbnailRecordingMode.INTERVAL,
+  thumbnailTargetInterval: Duration.seconds(30),
+  thumbnailResolution: ivs.Resolution.HD,
+  thumbnailStorage: [
+    ivs.ThumbnailStorage.SEQUENTIAL,
+    ivs.ThumbnailStorage.LATEST,
+  ],
+});
+```
+
+### Merge Fragmented Streams
+
+A recording configuration allows you to specify a window of time (in seconds) during which, if your stream is interrupted and a new stream is started,
+Amazon IVS tries to record to the same S3 prefix as the previous stream.
+
+In other words, if a broadcast disconnects and then reconnects within the specified interval, the multiple streams are considered a single broadcast and merged together.
+
+For more information, see [Merge Fragmented Streams](https://docs.aws.amazon.com/ivs/latest/LowLatencyUserGuide/record-to-s3.html).
+
+```ts
+declare const recordingBucket: s3.Bucket;
+
+const recordingConfiguration= new ivs.RecordingConfiguration(this, 'RecordingConfiguration', {
+  bucket: recordingBucket,
+
+  // set recording reconnect window
+  recordingReconnectWindow: Duration.seconds(60),
+});
+```
+
+### Attaching Recording Configuration to a Channel
+
+To enable recording for a channel, specify the recording configuration when creating the channel:
+
+```ts
+declare const recordingBucket: s3.Bucket;
+
+const recordingConfiguration= new ivs.RecordingConfiguration(this, 'RecordingConfiguration', {
+  bucket: recordingBucket,
+});
+
+const channel = new ivs.Channel(this, 'Channel', {
+  recordingConfiguration: recordingConfig,
+});
+```

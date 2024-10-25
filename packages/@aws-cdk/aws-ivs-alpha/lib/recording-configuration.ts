@@ -132,12 +132,12 @@ export enum Resolution {
  */
 export enum ThumbnailRecordingMode {
   /**
-   * Use DISABLED to disable the generation of thumbnails for recorded video.
+   * Use INTERVAL to enable the generation of thumbnails for recorded video at a time interval controlled by the TargetIntervalSeconds property.
    */
   INTERVAL = 'INTERVAL',
 
   /**
-   * Use INTERVAL to enable the generation of thumbnails for recorded video at a time interval controlled by the TargetIntervalSeconds property.
+   * Use DISABLED to disable the generation of thumbnails for recorded video.
    */
   DISABLED = 'DISABLED',
 }
@@ -272,7 +272,10 @@ export class RecordingConfiguration extends Resource implements IRecordingConfig
   };
 
   private _renderThumbnailConfiguration(): CfnRecordingConfiguration.ThumbnailConfigurationProperty | undefined {
-    if (!this.props.thumbnailRecordingMode && !this.props.thumbnailResolution && !this.props.thumbnailStorage && !this.props.thumbnailTargetInterval) {
+    if (!this.props.thumbnailRecordingMode
+      && !this.props.thumbnailResolution
+      && !this.props.thumbnailStorage
+      && !this.props.thumbnailTargetInterval) {
       return;
     }
 
