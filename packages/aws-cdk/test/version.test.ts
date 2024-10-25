@@ -16,6 +16,10 @@ function tmpfile(): string {
   return `/tmp/version-${Math.floor(Math.random() * 10000)}`;
 }
 
+beforeEach(() => {
+  process.chdir('/tmp'); // Need a chdir because in the workspace 'npm view' will take a long time
+});
+
 afterEach(done => {
   sinon.restore();
   done();

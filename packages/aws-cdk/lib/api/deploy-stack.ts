@@ -51,14 +51,13 @@ export interface DeployStackOptions {
   /**
    * SDK provider (seeded with default credentials)
    *
-   * Will exclusively be used to assume publishing credentials (which must
-   * start out from current credentials regardless of whether we've assumed an
-   * action role to touch the stack or not).
+   * Will be used to:
    *
-   * Used for the following purposes:
-   *
-   * - Publish legacy assets.
-   * - Upload large CloudFormation templates to the staging bucket.
+   * - Publish assets, either legacy assets or large CFN templates
+   *   that aren't themselves assets from a manifest. (Needs an SDK
+   *   Provider because the file publishing role is declared as part
+   *   of the asset).
+   * - Hotswap
    */
   readonly sdkProvider: SdkProvider;
 

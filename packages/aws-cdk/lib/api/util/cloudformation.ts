@@ -9,7 +9,7 @@ import { makeBodyParameter, TemplateBodyParameter } from './template-body-parame
 import { debug } from '../../logging';
 import { deserializeStructure } from '../../serialize';
 import { AssetManifestBuilder } from '../../util/asset-manifest-builder';
-import { SdkProvider } from '../aws-auth';
+import { Mode, SdkProvider } from '../aws-auth';
 import { Deployments } from '../deployments';
 
 export type Template = {
@@ -367,19 +367,19 @@ function templatesFromAssetManifestArtifact(artifact: cxapi.AssetManifestArtifac
 async function uploadBodyParameterAndCreateChangeSet(options: PrepareChangeSetOptions): Promise<DescribeChangeSetOutput | undefined> {
   try {
     await uploadStackTemplateAssets(options.stack, options.deployments);
-    const preparedSdk = (await options.deployments.prepareSdkWithDeployRole(options.stack));
+    const env = await options.deployments.envs.accessStackForStackOperations(options.stack, Mode.ForWriting);
 
     const bodyParameter = await makeBodyParameter(
       options.stack,
-      preparedSdk.resolvedEnvironment,
+      env.resolvedEnvironment,
       new AssetManifestBuilder(),
-      preparedSdk.envResources,
-      preparedSdk.stackSdk,
+      env.resources,
+      env.sdk,
     );
-    const cfn = preparedSdk.stackSdk.cloudFormation();
+    const cfn = env.sdk.cloudFormation();
     const exists = (await CloudFormationStack.lookup(cfn, options.stack.stackName, false)).exists;
 
-    const executionRoleArn = preparedSdk.cloudFormationRoleArn;
+    const executionRoleArn = await env.replacePlaceholders(options.stack.cloudFormationExecutionRoleArn);
     options.stream.write('Hold on while we create a read-only change set to get a diff with accurate replacement information (use --no-change-set to use a less accurate but faster template-only diff)\n');
 
     return await createChangeSet({
