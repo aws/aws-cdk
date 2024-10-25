@@ -242,9 +242,9 @@ export interface CdkCliOptions extends ShellOptions {
  * Prepare a target dir byreplicating a source directory
  */
 export async function cloneDirectory(source: string, target: string, output?: NodeJS.WritableStream) {
-  await shell(['rm', '-rf', target], { output });
-  await shell(['mkdir', '-p', target], { output });
-  await shell(['cp', '-R', source + '/*', target], { output });
+  await shell(['rm', '-rf', target], { outputs: output ? [output] : [] });
+  await shell(['mkdir', '-p', target], { outputs: output ? [output] : [] });
+  await shell(['cp', '-R', source + '/*', target], { outputs: output ? [output] : [] });
 }
 
 interface CommonCdkBootstrapCommandOptions {
@@ -329,6 +329,30 @@ export interface CdkModernBootstrapCommandOptions extends CommonCdkBootstrapComm
    * @default undefined
    */
   readonly usePreviousParameters?: boolean;
+}
+
+export interface CdkGarbageCollectionCommandOptions {
+  /**
+   * The amount of days an asset should stay isolated before deletion, to
+   * guard against some pipeline rollback scenarios
+   *
+   * @default 0
+   */
+  readonly rollbackBufferDays?: number;
+
+  /**
+   * The type of asset that is getting garbage collected.
+   *
+   * @default 'all'
+   */
+  readonly type?: 'ecr' | 's3' | 'all';
+
+  /**
+   * The name of the bootstrap stack
+   *
+   * @default 'CdkToolkit'
+   */
+  readonly bootstrapStackName?: string;
 }
 
 export class TestFixture extends ShellHelper {
@@ -462,6 +486,26 @@ export class TestFixture extends ShellHelper {
         CDK_NEW_BOOTSTRAP: '1',
       },
     });
+  }
+
+  public async cdkGarbageCollect(options: CdkGarbageCollectionCommandOptions): Promise<string> {
+    const args = [
+      'gc',
+      '--unstable=gc', // TODO: remove when stabilizing
+      '--confirm=false',
+      '--created-buffer-days=0', // Otherwise all assets created during integ tests are too young
+    ];
+    if (options.rollbackBufferDays) {
+      args.push('--rollback-buffer-days', String(options.rollbackBufferDays));
+    }
+    if (options.type) {
+      args.push('--type', options.type);
+    }
+    if (options.bootstrapStackName) {
+      args.push('--bootstrapStackName', options.bootstrapStackName);
+    }
+
+    return this.cdk(args);
   }
 
   public async cdkMigrate(language: string, stackName: string, inputPath?: string, options?: CdkCliOptions) {
@@ -634,6 +678,7 @@ async function ensureBootstrapped(fixture: TestFixture) {
       CDK_NEW_BOOTSTRAP: '1',
     },
   });
+
   ALREADY_BOOTSTRAPPED_IN_THIS_RUN.add(envSpecifier);
 }
 
