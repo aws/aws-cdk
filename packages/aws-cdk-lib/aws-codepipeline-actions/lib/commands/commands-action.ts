@@ -47,6 +47,8 @@ export interface CommandsActionProps extends codepipeline.CommonAwsActionProps {
    * Shell commands for the Commands action to run.
    *
    * All formats are supported except multi-line formats.
+   *
+   * The length of the commands array must be between 1 and 50.
    */
   readonly commands: string[];
 }
@@ -67,6 +69,15 @@ export class CommandsAction extends Action {
       commands: props.commands,
       outputVariables: props.outputVariables,
     });
+
+    if (props.commands.length < 1 || props.commands.length > 50) {
+      throw new Error(`The length of the commands array must be between 1 and 50, got: ${props.commands.length}`);
+    }
+
+    if (props.outputVariables !== undefined && (props.outputVariables.length < 1 || props.outputVariables.length > 15)) {
+      throw new Error(`The length of the outputVariables array must be between 1 and 15, got: ${props.outputVariables.length}`);
+    }
+
     this.outputVariables = props.outputVariables || [];
   }
 
