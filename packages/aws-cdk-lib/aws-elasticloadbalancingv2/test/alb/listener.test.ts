@@ -4,6 +4,7 @@ import { Match, Template } from '../../../assertions';
 import * as acm from '../../../aws-certificatemanager';
 import { Metric } from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
+import * as s3 from '../../../aws-s3';
 import * as cdk from '../../../core';
 import { SecretValue } from '../../../core';
 import * as elbv2 from '../../lib';
@@ -1933,6 +1934,164 @@ describe('tests', () => {
     });
 
   });
+
+  describe('Mutual Authentication', () => {
+    test('Mutual Authentication settings with all properties when mutualAuthenticationMode is verify', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+      const bucket = new s3.Bucket(stack, 'Bucket');
+
+      const trustStore = new elbv2.TrustStore(stack, 'TrustStore', {
+        bucket,
+        key: 'dummy.pem',
+      });
+
+      // WHEN
+      lb.addListener('Listener', {
+        protocol: elbv2.ApplicationProtocol.HTTPS,
+        certificates: [importedCertificate(stack)],
+        mutualAuthentication: {
+          ignoreClientCertificateExpiry: true,
+          mutualAuthenticationMode: elbv2.MutualAuthenticationMode.VERIFY,
+          trustStore,
+        },
+        defaultAction: elbv2.ListenerAction.fixedResponse(200,
+          { contentType: 'text/plain', messageBody: 'Success mTLS' }),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
+        MutualAuthentication: {
+          IgnoreClientCertificateExpiry: true,
+          Mode: 'verify',
+          TrustStoreArn: stack.resolve(trustStore.trustStoreArn),
+        },
+      });
+    });
+
+    test.each([elbv2.MutualAuthenticationMode.OFF, elbv2.MutualAuthenticationMode.PASS_THROUGH])('Mutual Authentication settings with all properties when mutualAuthenticationMode is %s', (mutualAuthenticationMode) => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+
+      // WHEN
+      lb.addListener('Listener', {
+        protocol: elbv2.ApplicationProtocol.HTTPS,
+        certificates: [importedCertificate(stack)],
+        mutualAuthentication: {
+          mutualAuthenticationMode,
+        },
+        defaultAction: elbv2.ListenerAction.fixedResponse(200,
+          { contentType: 'text/plain', messageBody: 'Success mTLS' }),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
+        MutualAuthentication: {
+          Mode: mutualAuthenticationMode,
+        },
+      });
+    });
+
+    test('Mutual Authentication settings without all properties', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+
+      // WHEN
+      lb.addListener('Listener', {
+        protocol: elbv2.ApplicationProtocol.HTTPS,
+        certificates: [importedCertificate(stack)],
+        mutualAuthentication: {
+        },
+        defaultAction: elbv2.ListenerAction.fixedResponse(200,
+          { contentType: 'text/plain', messageBody: 'Success mTLS' }),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
+        MutualAuthentication: {
+          IgnoreClientCertificateExpiry: Match.absent(),
+          Mode: Match.absent(),
+          TrustStoreArn: Match.absent(),
+        },
+      });
+    });
+
+    test('Throw an error when mode is verify without TrustStore', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+
+      // WHEN
+      expect(() => {
+        lb.addListener('Listener', {
+          protocol: elbv2.ApplicationProtocol.HTTPS,
+          certificates: [importedCertificate(stack)],
+          mutualAuthentication: {
+            ignoreClientCertificateExpiry: true,
+            mutualAuthenticationMode: elbv2.MutualAuthenticationMode.VERIFY,
+          },
+          defaultAction: elbv2.ListenerAction.fixedResponse(200,
+            { contentType: 'text/plain', messageBody: 'Success mTLS' }),
+        });
+      }).toThrow('You must set \'trustStore\' when \'mode\' is \'verify\'');
+    });
+
+    test.each([elbv2.MutualAuthenticationMode.OFF, elbv2.MutualAuthenticationMode.PASS_THROUGH])('Throw an error when mode is %s with trustStore', (mutualAuthenticationMode) => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+      const bucket = new s3.Bucket(stack, 'Bucket');
+
+      const trustStore = new elbv2.TrustStore(stack, 'TrustStore', {
+        bucket,
+        key: 'dummy.pem',
+      });
+
+      // WHEN
+      expect(() => {
+        lb.addListener('Listener', {
+          protocol: elbv2.ApplicationProtocol.HTTPS,
+          certificates: [importedCertificate(stack)],
+          mutualAuthentication: {
+            mutualAuthenticationMode,
+            trustStore,
+          },
+          defaultAction: elbv2.ListenerAction.fixedResponse(200,
+            { contentType: 'text/plain', messageBody: 'Success mTLS' }),
+        });
+      }).toThrow('You cannot set \'trustStore\' when \'mode\' is \'off\' or \'passthrough\'');
+    });
+
+    test.each([elbv2.MutualAuthenticationMode.OFF, elbv2.MutualAuthenticationMode.PASS_THROUGH])('Throw an error when mode is %s with ignoreClientCertificateExpiry', (mutualAuthenticationMode) => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+
+      // WHEN
+      expect(() => {
+        lb.addListener('Listener', {
+          protocol: elbv2.ApplicationProtocol.HTTPS,
+          certificates: [importedCertificate(stack)],
+          mutualAuthentication: {
+            mutualAuthenticationMode,
+            ignoreClientCertificateExpiry: true,
+          },
+          defaultAction: elbv2.ListenerAction.fixedResponse(200,
+            { contentType: 'text/plain', messageBody: 'Success mTLS' }),
+        });
+      }).toThrow('You cannot set \'ignoreClientCertificateExpiry\' when \'mode\' is \'off\' or \'passthrough\'');
+    });
+  });
+
 });
 
 class ResourceWithLBDependency extends cdk.CfnResource {

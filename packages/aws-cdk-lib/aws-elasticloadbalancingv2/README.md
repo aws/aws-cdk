@@ -193,6 +193,8 @@ If you do not provide any options for this method, it redirects HTTP port 80 to 
 By default all ingress traffic will be allowed on the source port. If you want to be more selective with your
 ingress rules then set `open: false` and use the listener's `connections` object to selectively grant access to the listener.
 
+**Note**: The `path` parameter must start with a `/`.
+
 ### Application Load Balancer attributes
 
 You can modify attributes of Application Load Balancers:
@@ -265,6 +267,46 @@ const bucket = new s3.Bucket(this, 'ALBAccessLogsBucket',{
 const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', { vpc });
 lb.logAccessLogs(bucket);
 
+```
+
+### Setting up Connection Log Bucket on Application Load Balancer
+
+Like access log bucket, the only server-side encryption option that's supported is Amazon S3-managed keys (SSE-S3). For more information
+Documentation: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-connection-logging.html
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const bucket = new s3.Bucket(this, 'ALBConnectionLogsBucket',{
+  encryption: s3.BucketEncryption.S3_MANAGED,
+});
+
+const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', { vpc });
+lb.logConnectionLogs(bucket);
+```
+
+### Dualstack Application Load Balancer
+
+You can create a dualstack Network Load Balancer using the `ipAddressType` property:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
+  vpc,
+  ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+});
+```
+
+By setting `DUAL_STACK_WITHOUT_PUBLIC_IPV4`, you can provision load balancers without public IPv4s
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
+  vpc,
+  ipAddressType: elbv2.IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4,
+});
 ```
 
 ## Defining a Network Load Balancer
@@ -361,6 +403,40 @@ const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
   // Indicates how traffic is distributed among the load balancer Availability Zones.
   clientRoutingPolicy: elbv2.ClientRoutingPolicy.AVAILABILITY_ZONE_AFFINITY,
 });
+```
+
+### Network Load Balancer Listener attributes
+
+You can modify attributes of Network Load Balancer Listener:
+
+```ts
+declare const lb: elbv2.NetworkLoadBalancer;
+declare const group: elbv2.NetworkTargetGroup;
+
+const listener = lb.addListener('Listener', {
+  port: 80,
+  defaultAction: elbv2.NetworkListenerAction.forward([group]),
+
+  // The tcp idle timeout value. The valid range is 60-6000 seconds. The default is 350 seconds.
+  tcpIdleTimeout: Duration.seconds(100),
+});
+```
+
+### Network Load Balancer and EC2 IConnectable interface
+Network Load Balancer implements EC2 `IConnectable` and exposes `connections` property. EC2 Connections allows manage the allowed network connections for constructs with Security Groups. This class makes it easy to allow network connections to and from security groups, and between security groups individually. One thing to keep in mind is that network load balancers do not have security groups, and no automatic security group configuration is done for you. You will have to configure the security groups of the target yourself to allow traffic by clients and/or load balancer instances, depending on your target types.
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const sg1: ec2.ISecurityGroup;
+declare const sg2: ec2.ISecurityGroup;
+
+const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
+  vpc,
+  internetFacing: true,
+  securityGroups: [sg1],
+});
+lb.addSecurityGroup(sg2);
+lb.connections.allowFromAnyIpv4(ec2.Port.tcp(80));
 ```
 
 ## Targets and Target Groups
@@ -537,7 +613,7 @@ const nlb = new elbv2.NetworkLoadBalancer(this, 'Nlb', {
 const listener = nlb.addListener('listener', { port: 80 });
 
 listener.addTargets('Targets', {
-  targets: [new targets.AlbTarget(svc.loadBalancer, 80)],
+  targets: [new targets.AlbListenerTarget(svc.listener)],
   port: 80,
 });
 
@@ -798,3 +874,56 @@ then you will need to enable the `removeRuleSuffixFromLogicalId: true` property 
 
 `ListenerRule`s have a unique `priority` for a given `Listener`.
 Because the `priority` must be unique, CloudFormation will always fail when creating a new `ListenerRule` to replace the existing one, unless you change the `priority` as well as the logicalId.
+
+## Configuring Mutual authentication with TLS in Application Load Balancer
+
+You can configure Mutual authentication with TLS (mTLS) for Application Load Balancer.
+
+To set mTLS, you must create an instance of `TrustStore` and set it to `ApplicationListener`.
+
+For more information, see [Mutual authentication with TLS in Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/mutual-authentication.html)
+
+```ts
+import * as acm from 'aws-cdk-lib/aws-certificatemanager';
+
+declare const certificate: acm.Certificate;
+declare const lb: elbv2.ApplicationLoadBalancer;
+declare const bucket: s3.Bucket;
+
+const trustStore = new elbv2.TrustStore(this, 'Store', {
+  bucket,
+  key: 'rootCA_cert.pem',
+});
+
+lb.addListener('Listener', {
+  port: 443,
+  protocol: elbv2.ApplicationProtocol.HTTPS,
+  certificates: [certificate],
+  // mTLS settings
+  mutualAuthentication: {
+    ignoreClientCertificateExpiry: false,
+    mutualAuthenticationMode: elbv2.MutualAuthenticationMode.VERIFY,
+    trustStore,
+  },
+  defaultAction: elbv2.ListenerAction.fixedResponse(200,
+    { contentType: 'text/plain', messageBody: 'Success mTLS' }),
+});
+```
+
+Optionally, you can create a certificate revocation list for a trust store by creating an instance of `TrustStoreRevocation`.
+
+```ts
+declare const trustStore: elbv2.TrustStore;
+declare const bucket: s3.Bucket;
+
+new elbv2.TrustStoreRevocation(this, 'Revocation', {
+  trustStore,
+  revocationContents: [
+    {
+      revocationType: elbv2.RevocationType.CRL,
+      bucket,
+      key: 'crl.pem',
+    },
+  ],
+});
+```

@@ -554,7 +554,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
     // WHEN
     const taskDef = new ecs.FargateTaskDefinition(stack1, 'TaskDef', {
       cpu: 1024,
-      memoryLimitMiB: 2048,
+      memoryLimitMiB: 1024,
     });
     const container = taskDef.addContainer('Container', {
       image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
@@ -1641,6 +1641,57 @@ describe('NetworkLoadBalancedFargateService', () => {
     });
   });
 
+  test('setting listenerCertificate create ELB listener with port 443, TLS protocal and certificate, Target group with port 443 and TLS protocol', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const certificate = Certificate.fromCertificateArn(stack, 'Cert', 'helloworld');
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
+      listenerCertificate: certificate,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
+      Port: 443,
+      Protocol: 'TLS',
+      Certificates: [{
+        CertificateArn: 'helloworld',
+      }],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      Port: 443,
+      Protocol: 'TLS',
+    });
+  });
+
+  test('not setting listenerCertificate create ELB listener with port 80 and TCP protocal, Target group with port 80 and TCP protocol', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
+      Port: 80,
+      Protocol: 'TCP',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      Port: 80,
+      Protocol: 'TCP',
+    });
+  });
+
   test('setting NLB deployment controller', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -1816,7 +1867,7 @@ describe('NetworkLoadBalancedFargateService', () => {
     });
     const taskDef = new ecs.FargateTaskDefinition(stack2, 'TaskDef', {
       cpu: 1024,
-      memoryLimitMiB: 2048,
+      memoryLimitMiB: 1024,
     });
     const container = taskDef.addContainer('myContainer', {
       image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),

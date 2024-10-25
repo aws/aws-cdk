@@ -19,7 +19,7 @@ import { print, warning } from './logging';
  *
  * @param oldTemplate the old/current state of the stack.
  * @param newTemplate the new/target state of the stack.
- * @param strict      do not filter out AWS::CDK::Metadata
+ * @param strict      do not filter out AWS::CDK::Metadata or Rules
  * @param context     lines of context to use in arbitrary JSON diff
  * @param quiet       silences \'There were no differences\' messages
  *
@@ -31,12 +31,21 @@ export function printStackDiff(
   strict: boolean,
   context: number,
   quiet: boolean,
+  stackName?: string,
   changeSet?: DescribeChangeSetOutput,
   isImport?: boolean,
   stream: FormatStream = process.stderr,
   nestedStackTemplates?: { [nestedStackLogicalId: string]: NestedStackTemplates }): number {
-
   let diff = fullDiff(oldTemplate, newTemplate.template, changeSet, isImport);
+
+  // must output the stack name if there are differences, even if quiet
+  if (stackName && (!quiet || !diff.isEmpty)) {
+    stream.write(format('Stack %s\n', chalk.bold(stackName)));
+  }
+
+  if (!quiet && isImport) {
+    stream.write('Parameters and rules created during migration do not affect resource configuration.\n');
+  }
 
   // detect and filter out mangled characters from the diff
   let filteredChangesCount = 0;
@@ -50,13 +59,9 @@ export function printStackDiff(
   }
 
   // filter out 'AWS::CDK::Metadata' resources from the template
-  if (diff.resources && !strict) {
-    diff.resources = diff.resources.filter(change => {
-      if (!change) { return true; }
-      if (change.newResourceType === 'AWS::CDK::Metadata') { return false; }
-      if (change.oldResourceType === 'AWS::CDK::Metadata') { return false; }
-      return true;
-    });
+  // filter out 'CheckBootstrapVersion' rules from the template
+  if (!strict) {
+    obscureDiff(diff);
   }
 
   let stackDiffCount = 0;
@@ -78,9 +83,6 @@ export function printStackDiff(
       break;
     }
     const nestedStack = nestedStackTemplates[nestedStackLogicalId];
-    if (!quiet) {
-      stream.write(format('Stack %s\n', chalk.bold(nestedStack.physicalName ?? nestedStackLogicalId)));
-    }
 
     (newTemplate as any)._template = nestedStack.generatedTemplate;
     stackDiffCount += printStackDiff(
@@ -89,6 +91,7 @@ export function printStackDiff(
       strict,
       context,
       quiet,
+      nestedStack.physicalName ?? nestedStackLogicalId,
       undefined,
       isImport,
       stream,
@@ -116,9 +119,17 @@ export function printSecurityDiff(
   oldTemplate: any,
   newTemplate: cxapi.CloudFormationStackArtifact,
   requireApproval: RequireApproval,
+  quiet?: boolean,
+  stackName?: string,
   changeSet?: DescribeChangeSetOutput,
+  stream: FormatStream = process.stderr,
 ): boolean {
   const diff = fullDiff(oldTemplate, newTemplate.template, changeSet);
+
+  // must output the stack name if there are differences, even if quiet
+  if (!quiet || !diff.isEmpty) {
+    stream.write(format('Stack %s\n', chalk.bold(stackName)));
+  }
 
   if (difRequiresApproval(diff, requireApproval)) {
     // eslint-disable-next-line max-len
@@ -164,4 +175,31 @@ function logicalIdMapFromTemplate(template: any) {
     }
   }
   return ret;
+}
+
+/**
+ * Remove any template elements that we don't want to show users.
+ * This is currently:
+ * - AWS::CDK::Metadata resource
+ * - CheckBootstrapVersion Rule
+ */
+function obscureDiff(diff: TemplateDiff) {
+  if (diff.unknown) {
+    // see https://github.com/aws/aws-cdk/issues/17942
+    diff.unknown = diff.unknown.filter(change => {
+      if (!change) { return true; }
+      if (change.newValue?.CheckBootstrapVersion) { return false; }
+      if (change.oldValue?.CheckBootstrapVersion) { return false; }
+      return true;
+    });
+  }
+
+  if (diff.resources) {
+    diff.resources = diff.resources.filter(change => {
+      if (!change) { return true; }
+      if (change.newResourceType === 'AWS::CDK::Metadata') { return false; }
+      if (change.oldResourceType === 'AWS::CDK::Metadata') { return false; }
+      return true;
+    });
+  }
 }

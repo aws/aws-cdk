@@ -252,7 +252,7 @@
                           "aws:cdk:cloudformation:props": {
                             "content": {
                               "s3Bucket": "cdk-hnb659fds-assets-12345678-test-region",
-                              "s3Key": "3322b7049fb0ed2b7cbb644a2ada8d1116ff80c32dca89e6ada846b5de26f961.zip"
+                              "s3Key": "f24ba5e516d9d80b64bc7b0f406eedd12c36b20e7461f3e7719b7ffbdad72410.zip"
                             },
                             "description": "/opt/awscli/aws"
                           }
@@ -858,7 +858,7 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "s3Bucket": "cdk-hnb659fds-assets-12345678-test-region",
-                      "s3Key": "0158f40002a8c211635388a87874fd4dcc3d68f525fe08a0fe0f014069ae539c.zip"
+                      "s3Key": "c6358465bf49dfae556bb430bf9c81fa578c221b82c308e3707901b1dd654762.zip"
                     },
                     "environment": {
                       "variables": {
@@ -877,7 +877,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "python3.9",
+                    "runtime": "python3.11",
                     "timeout": 900
                   }
                 },
@@ -896,13 +896,13 @@
             "id": "TestProduct",
             "path": "integ-servicecatalog-product/TestProduct",
             "children": {
-              "Template15af34b9c632": {
-                "id": "Template15af34b9c632",
-                "path": "integ-servicecatalog-product/TestProduct/Template15af34b9c632",
+              "Template8da2639f455b": {
+                "id": "Template8da2639f455b",
+                "path": "integ-servicecatalog-product/TestProduct/Template8da2639f455b",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "integ-servicecatalog-product/TestProduct/Template15af34b9c632/Stage",
+                    "path": "integ-servicecatalog-product/TestProduct/Template8da2639f455b/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -910,7 +910,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "integ-servicecatalog-product/TestProduct/Template15af34b9c632/AssetBucket",
+                    "path": "integ-servicecatalog-product/TestProduct/Template8da2639f455b/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
@@ -922,13 +922,13 @@
                   "version": "0.0.0"
                 }
               },
-              "Template352ac991d470": {
-                "id": "Template352ac991d470",
-                "path": "integ-servicecatalog-product/TestProduct/Template352ac991d470",
+              "Templatebf6a94bc96e6": {
+                "id": "Templatebf6a94bc96e6",
+                "path": "integ-servicecatalog-product/TestProduct/Templatebf6a94bc96e6",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "integ-servicecatalog-product/TestProduct/Template352ac991d470/Stage",
+                    "path": "integ-servicecatalog-product/TestProduct/Templatebf6a94bc96e6/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -936,7 +936,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "integ-servicecatalog-product/TestProduct/Template352ac991d470/AssetBucket",
+                    "path": "integ-servicecatalog-product/TestProduct/Templatebf6a94bc96e6/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
@@ -1070,7 +1070,7 @@
                 "path": "integ-product/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -1116,7 +1116,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },
