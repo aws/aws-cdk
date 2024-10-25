@@ -70,11 +70,6 @@ new scheduler.Schedule(stack, 'DisabledSchedule', {
 new scheduler.Schedule(stack, 'TargetOverrideSchedule', {
   schedule: expression,
   target: target,
-  targetOverrides: {
-    input: scheduler.ScheduleTargetInput.fromText('Changed Text'),
-    maxEventAge: cdk.Duration.seconds(360),
-    retryAttempts: 5,
-  },
 });
 
 new cloudwatch.Alarm(stack, 'AllSchedulerErrorsAlarm', {
