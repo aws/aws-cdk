@@ -242,9 +242,9 @@ export interface CdkCliOptions extends ShellOptions {
  * Prepare a target dir byreplicating a source directory
  */
 export async function cloneDirectory(source: string, target: string, output?: NodeJS.WritableStream) {
-  await shell(['rm', '-rf', target], { output });
-  await shell(['mkdir', '-p', target], { output });
-  await shell(['cp', '-R', source + '/*', target], { output });
+  await shell(['rm', '-rf', target], { outputs: output ? [output] : [] });
+  await shell(['mkdir', '-p', target], { outputs: output ? [output] : [] });
+  await shell(['cp', '-R', source + '/*', target], { outputs: output ? [output] : [] });
 }
 
 interface CommonCdkBootstrapCommandOptions {
