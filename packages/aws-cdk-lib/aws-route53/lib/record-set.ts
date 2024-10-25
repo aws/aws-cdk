@@ -296,7 +296,7 @@ export class RecordSet extends Resource implements IRecordSet {
   constructor(scope: Construct, id: string, props: RecordSetProps) {
     super(scope, id);
 
-    if (props.weight && (props.weight < 0 || props.weight > 255)) {
+    if (props.weight && !Token.isUnresolved(props.weight) && (props.weight < 0 || props.weight > 255)) {
       throw new Error(`weight must be between 0 and 255 inclusive, got: ${props.weight}`);
     }
     if (props.setIdentifier && (props.setIdentifier.length < 1 || props.setIdentifier.length > 128)) {

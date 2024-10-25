@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "Route53RecordWeightFromCfnParameterInteg/DefaultTest": {
+      "stacks": [
+        "record-weight-from-cfnparameter"
+      ],
+      "assertionStack": "Route53RecordWeightFromCfnParameterInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "Route53RecordWeightFromCfnParameterIntegDefaultTestDeployAssertB313B703"
+    }
+  }
+}

@@ -1,0 +1,475 @@
+{
+ "Resources": {
+  "HostedZoneDB99F866": {
+   "Type": "AWS::Route53::HostedZone",
+   "Properties": {
+    "Name": "cdk.dev."
+   },
+   "Metadata": {
+    "aws:cdk:path": "record-weight-from-cfnparameter/HostedZone/Resource"
+   }
+  },
+  "RecordWeightedFromCfnParameter0FB5DFC65": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "www.cdk.dev.",
+    "ResourceRecords": [
+     "1.2.3.4"
+    ],
+    "SetIdentifier": {
+     "Fn::Join": [
+      "",
+      [
+       "WEIGHT_",
+       {
+        "Ref": "RecordWeight0"
+       },
+       "_ID_recordweigParameter04970FE98"
+      ]
+     ]
+    },
+    "TTL": "10",
+    "Type": "A",
+    "Weight": {
+     "Ref": "RecordWeight0"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "record-weight-from-cfnparameter/RecordWeightedFromCfnParameter0/Resource"
+   }
+  },
+  "RecordWeightedFromCfnParameter11D8E5896": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "www.cdk.dev.",
+    "ResourceRecords": [
+     "2.3.4.5"
+    ],
+    "SetIdentifier": {
+     "Fn::Join": [
+      "",
+      [
+       "WEIGHT_",
+       {
+        "Ref": "RecordWeight1"
+       },
+       "_ID_recordweigParameter1EB51A657"
+      ]
+     ]
+    },
+    "TTL": "10",
+    "Type": "A",
+    "Weight": {
+     "Ref": "RecordWeight1"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "record-weight-from-cfnparameter/RecordWeightedFromCfnParameter1/Resource"
+   }
+  },
+  "RecordWeightedFromCfnParameter2B12A1DFB": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "www.cdk.dev.",
+    "ResourceRecords": [
+     "3.4.5.6"
+    ],
+    "SetIdentifier": {
+     "Fn::Join": [
+      "",
+      [
+       "WEIGHT_",
+       {
+        "Ref": "RecordWeight2"
+       },
+       "_ID_recordweigParameter208409FED"
+      ]
+     ]
+    },
+    "TTL": "10",
+    "Type": "A",
+    "Weight": {
+     "Ref": "RecordWeight2"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "record-weight-from-cfnparameter/RecordWeightedFromCfnParameter2/Resource"
+   }
+  },
+  "RecordWeightedFromCfnParameter3D5E67423": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "www.cdk.dev.",
+    "ResourceRecords": [
+     "4.5.6.7"
+    ],
+    "SetIdentifier": {
+     "Fn::Join": [
+      "",
+      [
+       "WEIGHT_",
+       {
+        "Ref": "RecordWeight3"
+       },
+       "_ID_recordweigParameter3841525F4"
+      ]
+     ]
+    },
+    "TTL": "10",
+    "Type": "A",
+    "Weight": {
+     "Ref": "RecordWeight3"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "record-weight-from-cfnparameter/RecordWeightedFromCfnParameter3/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/02Luw7CMBAEvyW9fZggJFqUhjJKOhrk2Id0efgk+0yKKP+Oghuq3ZnVGjBgKrsm7fykZxpg68W6Sdk1vSJnwesFtjYPM7kHJ0H/5ICqeYc/unfoOPrDltaj7Ae1NtoFBWOZEufofueGgychDrsK7BHGdPrUBs43MNWYiHTMQWhB6Ep+AaNZotCnAAAA"
+   },
+   "Metadata": {
+    "aws:cdk:path": "record-weight-from-cfnparameter/CDKMetadata/Default"
+   },
+   "Condition": "CDKMetadataAvailable"
+  }
+ },
+ "Parameters": {
+  "RecordWeight0": {
+   "Type": "Number",
+   "Default": 0,
+   "MaxValue": 255,
+   "MinValue": 0
+  },
+  "RecordWeight1": {
+   "Type": "Number",
+   "Default": 0,
+   "MaxValue": 255,
+   "MinValue": 0
+  },
+  "RecordWeight2": {
+   "Type": "Number",
+   "Default": 0,
+   "MaxValue": 255,
+   "MinValue": 0
+  },
+  "RecordWeight3": {
+   "Type": "Number",
+   "Default": 0,
+   "MaxValue": 255,
+   "MinValue": 0
+  },
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Conditions": {
+  "CDKMetadataAvailable": {
+   "Fn::Or": [
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "af-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-3"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-south-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-3"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-4"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ca-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ca-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-northwest-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-central-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-south-2"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-3"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "il-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "me-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "me-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "sa-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-west-1"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Equals": [
+      {
+       "Ref": "AWS::Region"
+      },
+      "us-west-2"
+     ]
+    }
+   ]
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
