@@ -213,6 +213,6 @@ const recordingConfiguration= new ivs.RecordingConfiguration(this, 'RecordingCon
 });
 
 const channel = new ivs.Channel(this, 'Channel', {
-  recordingConfiguration: recordingConfig,
+  recordingConfiguration: recordingConfiguration,
 });
 ```
