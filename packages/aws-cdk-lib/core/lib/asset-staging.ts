@@ -11,6 +11,7 @@ import { AssetBundlingVolumeCopy, AssetBundlingBindMount } from './private/asset
 import { Cache } from './private/cache';
 import { Stack } from './stack';
 import { Stage } from './stage';
+import * as assets from '../../cloud-assembly-schema';
 import * as cxapi from '../../cx-api';
 
 const ARCHIVE_EXTENSIONS = ['.tar.gz', '.zip', '.jar', '.tar', '.tgz'];
@@ -328,6 +329,15 @@ export class AssetStaging extends Construct {
       ? this.calculateHash(this.hashType, bundling)
       : undefined;
 
+    if (undefined !== assetHash && this.assetHashAlreadyExists()) {
+      return {
+        assetHash: assetHash,
+        stagedPath: this.sourcePath,
+        packaging: FileAssetPackaging.ZIP_DIRECTORY,
+        isArchive: true,
+      };
+    }
+
     const bundleDir = this.determineBundleDir(this.assetOutdir, assetHash);
     this.bundle(bundling, bundleDir);
 
@@ -361,6 +371,40 @@ export class AssetStaging extends Construct {
       packaging: bundledAsset.packaging,
       isArchive: bundlingOutputType !== BundlingOutput.SINGLE_FILE,
     };
+  }
+
+  private assetHashAlreadyExists(): boolean {
+    let stack = Stack.of(this);
+
+    while (undefined !== stack) {
+      if (!fs.existsSync(this.getAssetsManifestFilename(stack))) {
+        if (undefined !== stack.nestedStackParent) {
+          stack = stack.nestedStackParent;
+        }
+
+        // We are the root stack and there is no asset manifest.
+        // So we cannot do a lookup and will just bundle then...
+        return false;
+      }
+    }
+
+    const manifest = assets.Manifest.loadAssetManifest(this.getAssetsManifestFilename(stack));
+    for (const key of Object.keys(manifest.files ?? {})) {
+      if (key === this.assetHash) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private getAssetsManifestFilename(stack: Stack): string {
+    return path.join(
+      process.cwd(),
+      Stage.of(stack)!.outdir,
+      path.sep,
+      stack.templateFile.replace('.template.json', '.assets.json'),
+    );
   }
 
   /**
