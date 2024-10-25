@@ -1257,3 +1257,38 @@ pipeline.addStage({
 
 See [the AWS documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-StepFunctions.html)
 for information on Action structure reference.
+
+## Compute
+
+### AWS Commands
+
+To run shell commands without CodeBuild actions in a CodePipeline, use the `CommandsAction`. The action is executed
+in a CodeBuild project implicitly hidden inside.
+
+If you want to filter the files to be included in the output artifact, you can specify the second arg as `artifactFiles`
+property in the `Artifact`.
+
+You can also specify the `outputVariables` property in the `CommandsAction` to emit variables that can be used in
+subsequent actions. The variables are defined by the commands that are executed or the variables that are exported
+in CodeBuild services as default.
+
+```ts
+const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
+const sourceArtifact = new codepipeline.Artifact('SourceArtifact');
+const outputArtifact = new codepipeline.Artifact('OutputArtifact', ['my-dir/**/*']);
+
+const commandsAction = new codepipeline_actions.CommandsAction({
+  actionName: 'Commands',
+  commands: [
+    'echo "some commands"',
+    'export MY_OUTPUT=my-key',
+  ],
+  input: sourceArtifact,
+  output: outputArtifact,
+  outputVariables: ['MY_OUTPUT', 'CODEBUILD_BUILD_ID'], // CODEBUILD_BUILD_ID is a default variable emitted by CodeBuild
+});
+pipeline.addStage({
+  stageName: 'Commands',
+  actions: [commandsAction],
+});
+```
