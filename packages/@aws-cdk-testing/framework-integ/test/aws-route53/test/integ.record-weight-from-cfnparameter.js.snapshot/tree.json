@@ -252,32 +252,6 @@
               "version": "0.0.0"
             }
           },
-          "CDKMetadata": {
-            "id": "CDKMetadata",
-            "path": "record-weight-from-cfnparameter/CDKMetadata",
-            "children": {
-              "Default": {
-                "id": "Default",
-                "path": "record-weight-from-cfnparameter/CDKMetadata/Default",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnResource",
-                  "version": "0.0.0"
-                }
-              },
-              "Condition": {
-                "id": "Condition",
-                "path": "record-weight-from-cfnparameter/CDKMetadata/Condition",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnCondition",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
-            }
-          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "record-weight-from-cfnparameter/BootstrapVersion",
@@ -320,32 +294,6 @@
                 "id": "DeployAssert",
                 "path": "Route53RecordWeightFromCfnParameterInteg/DefaultTest/DeployAssert",
                 "children": {
-                  "CDKMetadata": {
-                    "id": "CDKMetadata",
-                    "path": "Route53RecordWeightFromCfnParameterInteg/DefaultTest/DeployAssert/CDKMetadata",
-                    "children": {
-                      "Default": {
-                        "id": "Default",
-                        "path": "Route53RecordWeightFromCfnParameterInteg/DefaultTest/DeployAssert/CDKMetadata/Default",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "Condition": {
-                        "id": "Condition",
-                        "path": "Route53RecordWeightFromCfnParameterInteg/DefaultTest/DeployAssert/CDKMetadata/Condition",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnCondition",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
-                    }
-                  },
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
                     "path": "Route53RecordWeightFromCfnParameterInteg/DefaultTest/DeployAssert/BootstrapVersion",
