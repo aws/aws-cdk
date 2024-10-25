@@ -1,9 +1,9 @@
 import {
-  WebSocketRouteIntegration,
   WebSocketIntegrationType,
   WebSocketRouteIntegrationBindOptions,
   WebSocketRouteIntegrationConfig,
   ContentHandling,
+  WebSocketRouteIntegration,
 } from '../../../aws-apigatewayv2';
 import { ServicePrincipal } from '../../../aws-iam';
 import { IFunction } from '../../../aws-lambda';
@@ -34,7 +34,6 @@ export interface WebSocketLambdaIntegrationProps {
  * Lambda WebSocket Integration
  */
 export class WebSocketLambdaIntegration extends WebSocketRouteIntegration {
-
   private readonly _id: string;
 
   /**

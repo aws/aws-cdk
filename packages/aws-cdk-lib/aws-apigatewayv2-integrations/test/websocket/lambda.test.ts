@@ -1,5 +1,5 @@
 import { Template } from '../../../assertions';
-import { ContentHandling, WebSocketApi } from '../../../aws-apigatewayv2';
+import { ContentHandling, WebSocketApi, WebSocketIntegrationResponseKey } from '../../../aws-apigatewayv2';
 import { Code, Function } from '../../../aws-lambda';
 import * as lambda from '../../../aws-lambda';
 import { Duration, Stack } from '../../../core';
@@ -65,6 +65,7 @@ describe('LambdaWebSocketIntegration', () => {
             contentHandling: ContentHandling.CONVERT_TO_TEXT,
           },
         ),
+        returnResponse: true,
       },
     });
 
