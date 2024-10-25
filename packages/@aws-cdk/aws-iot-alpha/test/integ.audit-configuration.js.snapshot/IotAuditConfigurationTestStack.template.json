@@ -145,6 +145,61 @@
      ]
     }
    }
+  },
+  "DailyAudit1160906D": {
+   "Type": "AWS::IoT::ScheduledAudit",
+   "Properties": {
+    "Frequency": "DAILY",
+    "TargetCheckNames": [
+     "AUTHENTICATED_COGNITO_ROLE_OVERLY_PERMISSIVE_CHECK"
+    ]
+   },
+   "DependsOn": [
+    "AuditConfigurationAuditRole0FFA1461",
+    "AuditConfigurationNotificationRole9774BAD4",
+    "AuditConfiguration8C793652"
+   ]
+  },
+  "WeeklyAudit5489D5FF": {
+   "Type": "AWS::IoT::ScheduledAudit",
+   "Properties": {
+    "DayOfWeek": "SUN",
+    "Frequency": "WEEKLY",
+    "TargetCheckNames": [
+     "CA_CERTIFICATE_EXPIRING_CHECK"
+    ]
+   },
+   "DependsOn": [
+    "AuditConfigurationAuditRole0FFA1461",
+    "AuditConfigurationNotificationRole9774BAD4",
+    "AuditConfiguration8C793652"
+   ]
+  },
+  "MonthlyAudit11A7B28C": {
+   "Type": "AWS::IoT::ScheduledAudit",
+   "Properties": {
+    "DayOfMonth": "LAST",
+    "Frequency": "MONTHLY",
+    "TargetCheckNames": [
+     "CA_CERTIFICATE_KEY_QUALITY_CHECK",
+     "CONFLICTING_CLIENT_IDS_CHECK",
+     "DEVICE_CERTIFICATE_EXPIRING_CHECK",
+     "DEVICE_CERTIFICATE_KEY_QUALITY_CHECK",
+     "DEVICE_CERTIFICATE_SHARED_CHECK",
+     "IOT_POLICY_OVERLY_PERMISSIVE_CHECK",
+     "IOT_ROLE_ALIAS_ALLOWS_ACCESS_TO_UNUSED_SERVICES_CHECK",
+     "IOT_ROLE_ALIAS_OVERLY_PERMISSIVE_CHECK",
+     "LOGGING_DISABLED_CHECK",
+     "REVOKED_CA_CERTIFICATE_STILL_ACTIVE_CHECK",
+     "REVOKED_DEVICE_CERTIFICATE_STILL_ACTIVE_CHECK",
+     "UNAUTHENTICATED_COGNITO_ROLE_OVERLY_PERMISSIVE_CHECK"
+    ]
+   },
+   "DependsOn": [
+    "AuditConfigurationAuditRole0FFA1461",
+    "AuditConfigurationNotificationRole9774BAD4",
+    "AuditConfiguration8C793652"
+   ]
   }
  },
  "Parameters": {
