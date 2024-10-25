@@ -15,6 +15,8 @@ intake and aggregation.
     - [Write Permissions](#write-permissions)
     - [Custom Permissions](#custom-permissions)
   - [Metrics](#metrics)
+  - [Resource Policy](#resource-policy)
+
 
 ## Streams
 
@@ -185,4 +187,48 @@ stream.metricGetRecordsSuccess();
 
 // using pre-defined and overriding the statistic
 stream.metricGetRecordsSuccess({ statistic: 'Maximum' });
+```
+
+### Resource Policy
+
+You can create a resource policy for a data stream.
+For more information, see [Controlling access to Amazon Kinesis Data Streams resources using IAM](https://docs.aws.amazon.com/streams/latest/dev/controlling-access.html).
+
+A resource policy is automatically created when `addToResourcePolicy` is called, if one doesn't already exist.
+
+Using `addToResourcePolicy` is the simplest way to
+add policies, but a `ResourcePolicy` can also be created manually.
+
+```ts
+const stream = new kinesis.Stream(this, 'MyStream');
+
+// add resource policy
+stream.addToResourcePolicy(new iam.PolicyStatement({
+  resources: [stream.streamArn],
+  actions: ['kinesis:GetRecords'],
+  principals: [new iam.AnyPrincipal()],
+}));
+```
+
+A policy document can also be passed on `ResourcePolicy` construction
+
+```ts
+const stream = new kinesis.Stream(this, 'MyStream');
+
+const policyDocument = new iam.PolicyDocument({
+  assignSids: true,
+  statements: [
+    new iam.PolicyStatement({
+      actions: ['kinesis:GetRecords'],
+      resources: [stream.streamArn],
+      principals: [new iam.AnyPrincipal()],
+    }),
+  ],
+});
+
+// create resource policy
+new kinesis.ResourcePolicy(this, 'ResourcePolicy', {
+  stream,
+  policyDocument,
+});
 ```
