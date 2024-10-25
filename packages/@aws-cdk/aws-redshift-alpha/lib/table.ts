@@ -149,6 +149,15 @@ export interface TableProps extends DatabaseOptions {
    * @default - no comment
    */
   readonly tableComment?: string;
+
+  /**
+   * Handler timeout duration.
+   *
+   * Valid values are between 1 second and 15 minutes.
+   *
+   * @default - 1 minute
+   */
+  readonly timeout?: cdk.Duration;
 }
 
 /**
