@@ -73,12 +73,7 @@
     "PolicyDocument": {
      "Statement": [
       {
-       "Action": [
-        "kms:Decrypt",
-        "kms:Encrypt",
-        "kms:GenerateDataKey*",
-        "kms:ReEncrypt*"
-       ],
+       "Action": "kms:Decrypt",
        "Effect": "Allow",
        "Resource": {
         "Fn::GetAtt": [

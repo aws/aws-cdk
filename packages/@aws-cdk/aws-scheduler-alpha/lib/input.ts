@@ -18,7 +18,7 @@ export abstract class ScheduleTargetInput {
    * @param text Text to use as the input for the target
    */
   public static fromText(text: string): ScheduleTargetInput {
-    return new FieldAwareEventInput(text);
+    return new FieldAwareEventInput(text, false);
   }
 
   /**
@@ -28,7 +28,7 @@ export abstract class ScheduleTargetInput {
    * @param obj object to use to convert to JSON to use as input for the target
    */
   public static fromObject(obj: any): ScheduleTargetInput {
-    return new FieldAwareEventInput(obj);
+    return new FieldAwareEventInput(obj, true);
   }
 
   protected constructor() {
@@ -41,7 +41,7 @@ export abstract class ScheduleTargetInput {
 }
 
 class FieldAwareEventInput extends ScheduleTargetInput {
-  constructor(private readonly input: any) {
+  constructor(private readonly input: any, private readonly toJsonString: boolean) {
     super();
   }
 
@@ -57,10 +57,11 @@ class FieldAwareEventInput extends ScheduleTargetInput {
     }
 
     const stack = Stack.of(schedule);
-    return stack.toJsonString(Tokenization.resolve(this.input, {
+    const inputString = Tokenization.resolve(this.input, {
       scope: schedule,
       resolver: new Replacer(),
-    }));
+    });
+    return this.toJsonString ? stack.toJsonString(inputString) : inputString;
   }
 }
 
