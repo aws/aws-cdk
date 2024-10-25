@@ -279,7 +279,7 @@ export class Schedule extends Resource implements ISchedule {
 
     this.key = props.key;
     if (this.key) {
-      this.key.grantDecrypt(targetConfig.role);
+      this.key.grantEncryptDecrypt(targetConfig.role);
     }
 
     this.retryPolicy = targetConfig.retryPolicy;
