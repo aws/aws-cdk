@@ -63,13 +63,14 @@ export class NotificationsResourceHandler extends Construct {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
     });
 
-    this.role.addManagedPolicy(
-      iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'),
-    );
     this.role.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['s3:PutBucketNotification'],
       resources: ['*'],
     }));
+
+    this.role.addManagedPolicy(
+      iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'),
+    );
 
     const resourceType = 'AWS::Lambda::Function';
     class InLineLambda extends cdk.CfnResource {
