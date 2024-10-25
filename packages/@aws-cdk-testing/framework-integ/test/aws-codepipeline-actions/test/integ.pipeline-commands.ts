@@ -91,6 +91,7 @@ const putObjectCall = integ.assertions.awsApiCall('S3', 'putObject', {
   Bucket: bucket.bucketName,
   Key: 'nodejs.zip',
   Body: path.join(__dirname, 'assets', 'nodejs.zip'),
+  ContentType: 'application/zip',
 });
 
 putObjectCall.provider.addToRolePolicy({
