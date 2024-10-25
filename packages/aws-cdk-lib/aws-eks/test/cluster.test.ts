@@ -54,6 +54,21 @@ describe('cluster', () => {
     });
   });
 
+  test.each([true, false])('can specify bootstrap self managed add-ons', (bootstrapSelfManagedAddons) => {
+    const { stack } = testFixture();
+
+    new eks.Cluster(stack, 'Cluster', {
+      version: CLUSTER_VERSION,
+      bootstrapSelfManagedAddons,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
+      Config: {
+        bootstrapSelfManagedAddons,
+      },
+    });
+  });
+
   test('can specify security group to cluster resource handler', () => {
     const { stack, vpc } = testFixture();
     const securityGroup = new ec2.SecurityGroup(stack, 'ProxyInstanceSG', {
