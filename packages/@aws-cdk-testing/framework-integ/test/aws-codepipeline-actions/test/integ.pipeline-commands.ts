@@ -62,7 +62,6 @@ const pipelineBucketKey = new Key(stack, 'PipelineBucketKey', {
 const pipelineBucket = new s3.Bucket(stack, 'PipelineBucket', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   autoDeleteObjects: true,
-  versioned: true,
   encryptionKey: pipelineBucketKey,
 });
 const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
