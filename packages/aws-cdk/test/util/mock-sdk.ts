@@ -308,6 +308,7 @@ export function mockBootstrapStack(sdk: ISDK | undefined, stack?: Partial<AWS.Cl
     Outputs: [
       { OutputKey: 'BucketName', OutputValue: 'BUCKET_NAME' },
       { OutputKey: 'BucketDomainName', OutputValue: 'BUCKET_ENDPOINT' },
+      { OutputKey: 'ImageRepositoryName', OutputValue: 'REPO_NAME' },
       { OutputKey: 'BootstrapVersion', OutputValue: '1' },
       ...stack?.Outputs ?? [],
     ],
