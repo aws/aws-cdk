@@ -353,7 +353,7 @@ describe('proxy', () => {
   test('new Proxy with a single Secret can use grantConnect() without a dbUser passed', () => {
     // GIVEN
     const cluster = new rds.DatabaseCluster(stack, 'Database', {
-      engine: rds.DatabaseClusterEngine.AURORA,
+      engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
       instanceProps: { vpc },
     });
 
@@ -409,7 +409,7 @@ describe('proxy', () => {
   test('new Proxy with multiple Secrets cannot use grantConnect() without a dbUser passed', () => {
     // GIVEN
     const cluster = new rds.DatabaseCluster(stack, 'Database', {
-      engine: rds.DatabaseClusterEngine.AURORA,
+      engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
       instanceProps: { vpc },
     });
 
@@ -436,7 +436,7 @@ describe('proxy', () => {
   test('new Proxy with kms encrypted Secrets has permissions to kms:Decrypt that secret using its key', () => {
     // GIVEN
     const cluster = new rds.DatabaseCluster(stack, 'Database', {
-      engine: rds.DatabaseClusterEngine.AURORA,
+      engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
       instanceProps: { vpc },
     });
 
@@ -481,7 +481,7 @@ describe('proxy', () => {
   test('DBProxyTargetGroup should have dependency on the proxy targets', () => {
     // GIVEN
     const cluster = new rds.DatabaseCluster(stack, 'cluster', {
-      engine: rds.DatabaseClusterEngine.AURORA,
+      engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
       instanceProps: {
         vpc,
       },
@@ -513,7 +513,7 @@ describe('proxy', () => {
   test('Correct dependencies are created when multiple DatabaseProxy are created with addProxy', () => {
     // GIVEN
     const cluster = new rds.DatabaseCluster(stack, 'cluster', {
-      engine: rds.DatabaseClusterEngine.AURORA,
+      engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
       instanceProps: {
         vpc,
       },
@@ -561,7 +561,7 @@ describe('proxy', () => {
   test('DBProxyTargetGroup should have dependency on the proxy targets when using cluster with writer and readers properties', () => {
     // GIVEN
     const cluster = new rds.DatabaseCluster(stack, 'cluster', {
-      engine: rds.DatabaseClusterEngine.AURORA,
+      engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
       vpc,
       writer: rds.ClusterInstance.provisioned('writer'),
       readers: [rds.ClusterInstance.provisioned('reader')],
@@ -593,7 +593,7 @@ describe('proxy', () => {
   test('Correct dependencies are created when multiple DatabaseProxy are created with addProxy for cluster with writer and readers properties', () => {
     // GIVEN
     const cluster = new rds.DatabaseCluster(stack, 'cluster', {
-      engine: rds.DatabaseClusterEngine.AURORA,
+      engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
       vpc,
       writer: rds.ClusterInstance.provisioned('writer'),
       readers: [rds.ClusterInstance.provisioned('reader')],

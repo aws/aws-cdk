@@ -1,7 +1,7 @@
 {
-  "version": "21.0.0",
+  "version": "38.0.1",
   "files": {
-    "b5ff1147ce210b6a8be6120310d71e1a1bcb6c64b802b268e0b994bb80eb9ced": {
+    "dbd5d6a0f3582d84865769f5d7617584fba74273fd78e719bc712c7b49f4a8e6": {
       "source": {
         "path": "aws-cdk-rds-cluster-dual-integ.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "b5ff1147ce210b6a8be6120310d71e1a1bcb6c64b802b268e0b994bb80eb9ced.json",
+          "objectKey": "dbd5d6a0f3582d84865769f5d7617584fba74273fd78e719bc712c7b49f4a8e6.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
