@@ -219,6 +219,7 @@ enum WebhookFilterTypes {
   HEAD_REF = 'HEAD_REF',
   ACTOR_ACCOUNT_ID = 'ACTOR_ACCOUNT_ID',
   BASE_REF = 'BASE_REF',
+  REPOSITORY_NAME = 'REPOSITORY_NAME',
 }
 
 /**
@@ -421,6 +422,30 @@ export class FilterGroup {
     return this.addFilePathFilter(pattern, false);
   }
 
+  /**
+   * Create a new FilterGroup with an added condition:
+   * the push that is the source of the event affect only a repository name that matches the given pattern.
+   * Note that you can only use this method if this Group contains only the `WORKFLOW_JOB_QUEUED` event action,
+   * only for GitHub sources and only for organization webhook.
+   *
+   * @param pattern a regular expression
+   */
+  public andRepositoryNameIs(pattern: string): FilterGroup {
+    return this.addRepositoryNameFilter(pattern, true);
+  }
+
+  /**
+   * Create a new FilterGroup with an added condition:
+   * the push that is the source of the event must not affect a repository name that matches the given pattern.
+   * Note that you can only use this method if this Group contains only the `WORKFLOW_JOB_QUEUED` event action,
+   * only for GitHub sources and only for organization webhook.
+   *
+   * @param pattern a regular expression
+   */
+  public andRepositoryNameIsNot(pattern: string): FilterGroup {
+    return this.addRepositoryNameFilter(pattern, false);
+  }
+
   /** @internal */
   public get _actions(): EventAction[] {
     return set2Array(this.actions);
@@ -473,6 +498,10 @@ export class FilterGroup {
 
   private addFilePathFilter(pattern: string, include: boolean): FilterGroup {
     return this.addFilter(WebhookFilterTypes.FILE_PATH, pattern, include);
+  }
+
+  private addRepositoryNameFilter(pattern: string, include: boolean): FilterGroup {
+    return this.addFilter(WebhookFilterTypes.REPOSITORY_NAME, pattern, include);
   }
 
   private addFilter(type: WebhookFilterTypes, pattern: string, include: boolean) {
@@ -718,7 +747,7 @@ abstract class CommonGithubSource extends ThirdPartyGitSource {
  */
 export interface GitHubSourceProps extends CommonGithubSourceProps {
   /**
-   * The GitHub account/user that owns the repo.
+   * The GitHub Organization/user that owns the repo.
    *
    * @example 'awslabs'
    */
@@ -728,8 +757,9 @@ export interface GitHubSourceProps extends CommonGithubSourceProps {
    * The name of the repo (without the username).
    *
    * @example 'aws-cdk'
+   * @default undefined will create an organization webhook
    */
-  readonly repo: string;
+  readonly repo?: string;
 }
 
 /**
@@ -737,11 +767,14 @@ export interface GitHubSourceProps extends CommonGithubSourceProps {
  */
 class GitHubSource extends CommonGithubSource {
   public readonly type = GITHUB_SOURCE_TYPE;
-  private readonly httpsCloneUrl: string;
-
+  private readonly sourceLocation: string;
+  private readonly organization?: string;
+  protected readonly webhookFilters: FilterGroup[];
   constructor(props: GitHubSourceProps) {
     super(props);
-    this.httpsCloneUrl = `https://github.com/${props.owner}/${props.repo}.git`;
+    this.organization = props.repo === undefined ? props.owner : undefined;
+    this.webhookFilters = props.webhookFilters ?? (this.organization ? [FilterGroup.inEventOf(EventAction.WORKFLOW_JOB_QUEUED)] : []);
+    this.sourceLocation = this.organization ? 'CODEBUILD_DEFAULT_WEBHOOK_SOURCE_LOCATION' : `https://github.com/${props.owner}/${props.repo}.git`;
   }
 
   public bind(_scope: Construct, project: IProject): SourceConfig {
@@ -749,10 +782,16 @@ class GitHubSource extends CommonGithubSource {
     return {
       sourceProperty: {
         ...superConfig.sourceProperty,
-        location: this.httpsCloneUrl,
+        location: this.sourceLocation,
       },
       sourceVersion: superConfig.sourceVersion,
-      buildTriggers: superConfig.buildTriggers,
+      buildTriggers: this.organization
+        ? {
+          ...superConfig.buildTriggers,
+          scopeConfiguration: {
+            name: this.organization,
+          },
+        } : superConfig.buildTriggers,
     };
   }
 }
