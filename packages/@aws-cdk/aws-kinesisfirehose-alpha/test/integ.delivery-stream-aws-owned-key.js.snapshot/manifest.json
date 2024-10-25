@@ -19,7 +19,7 @@
         "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fd1471487c46b309f73bad46b43d8085d6fdc89fff0ee13bfdd162f6366e2818.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c9b1aa8eb3006deac2b4c9a37930ff988ce11eb811c4f37196f30f680dd0b085.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -65,24 +65,6 @@
             "data": "awscdkawskinesisfirehoseCidrBlocks"
           }
         ],
-        "/aws-cdk-firehose-delivery-stream/rule/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ruleF2C1DCDC"
-          }
-        ],
-        "/aws-cdk-firehose-delivery-stream/firehose/EventsRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "firehoseEventsRole71BC7157"
-          }
-        ],
-        "/aws-cdk-firehose-delivery-stream/firehose/EventsRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "firehoseEventsRoleDefaultPolicy90598A65"
-          }
-        ],
         "/aws-cdk-firehose-delivery-stream/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -98,19 +80,19 @@
       },
       "displayName": "aws-cdk-firehose-delivery-stream"
     },
-    "integtestsDefaultTestDeployAssert44C8D370.assets": {
+    "DeliveryStreamWithDefaultEncryptionDefaultTestDeployAssert8B5B0167.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "integtestsDefaultTestDeployAssert44C8D370.assets.json",
+        "file": "DeliveryStreamWithDefaultEncryptionDefaultTestDeployAssert8B5B0167.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "integtestsDefaultTestDeployAssert44C8D370": {
+    "DeliveryStreamWithDefaultEncryptionDefaultTestDeployAssert8B5B0167": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "integtestsDefaultTestDeployAssert44C8D370.template.json",
+        "templateFile": "DeliveryStreamWithDefaultEncryptionDefaultTestDeployAssert8B5B0167.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "notificationArns": [],
@@ -120,7 +102,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "integtestsDefaultTestDeployAssert44C8D370.assets"
+          "DeliveryStreamWithDefaultEncryptionDefaultTestDeployAssert8B5B0167.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -129,23 +111,23 @@
         }
       },
       "dependencies": [
-        "integtestsDefaultTestDeployAssert44C8D370.assets"
+        "DeliveryStreamWithDefaultEncryptionDefaultTestDeployAssert8B5B0167.assets"
       ],
       "metadata": {
-        "/integ-tests/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/DeliveryStreamWithDefaultEncryption/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/integ-tests/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/DeliveryStreamWithDefaultEncryption/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "integ-tests/DefaultTest/DeployAssert"
+      "displayName": "DeliveryStreamWithDefaultEncryption/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

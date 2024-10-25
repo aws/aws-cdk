@@ -51,7 +51,10 @@ describe('delivery stream', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
-      DeliveryStreamEncryptionConfigurationInput: Match.absent(),
+      DeliveryStreamEncryptionConfigurationInput: {
+        KeyARN: Match.absent(),
+        KeyType: 'AWS_OWNED_CMK',
+      },
       DeliveryStreamName: Match.absent(),
       DeliveryStreamType: 'DirectPut',
       KinesisStreamSourceConfiguration: Match.absent(),
@@ -135,6 +138,7 @@ describe('delivery stream', () => {
 
     new firehose.DeliveryStream(stack, 'Delivery Stream', {
       destination: mockS3Destination,
+      encryption: StreamEncryption.unencrypted(),
       source: new source.KinesisStreamSource(sourceStream),
     });
 
@@ -182,6 +186,7 @@ describe('delivery stream', () => {
     new firehose.DeliveryStream(stack, 'Delivery Stream', {
       destination: mockS3Destination,
       source: new source.KinesisStreamSource(sourceStream),
+      encryption: StreamEncryption.unencrypted(),
       role: deliveryStreamRole,
     });
 
@@ -298,6 +303,23 @@ describe('delivery stream', () => {
     });
   });
 
+  test('not setting encryption defaults to AWS-owned key and does not create key and creates configuration', () => {
+    new firehose.DeliveryStream(stack, 'Delivery Stream', {
+      destination: mockS3Destination,
+      role: deliveryStreamRole,
+    });
+
+    Template.fromStack(stack).resourceCountIs('AWS::KMS::Key', 0);
+    Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
+    Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
+      DeliveryStreamType: 'DirectPut',
+      DeliveryStreamEncryptionConfigurationInput: {
+        KeyARN: Match.absent(),
+        KeyType: 'AWS_OWNED_CMK',
+      },
+    });
+  });
+
   test('requesting no encryption creates no configuration', () => {
     new firehose.DeliveryStream(stack, 'Delivery Stream', {
       destination: mockS3Destination,
@@ -329,6 +351,10 @@ describe('delivery stream', () => {
     expect(() => new firehose.DeliveryStream(stack, 'Delivery Stream 3', {
       destination: mockS3Destination,
       encryption: StreamEncryption.customerManagedKey(new kms.Key(stack, 'Key')),
+      source: new source.KinesisStreamSource(sourceStream),
+    })).toThrowError('Requested server-side encryption but delivery stream source is a Kinesis data stream. Specify server-side encryption on the data stream instead.');
+    expect(() => new firehose.DeliveryStream(stack, 'Delivery Stream 4', {
+      destination: mockS3Destination,
       source: new source.KinesisStreamSource(sourceStream),
     })).toThrowError('Requested server-side encryption but delivery stream source is a Kinesis data stream. Specify server-side encryption on the data stream instead.');
   });

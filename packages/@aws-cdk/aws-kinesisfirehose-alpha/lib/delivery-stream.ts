@@ -215,7 +215,10 @@ export interface DeliveryStreamProps {
   /**
    * Indicates the type of customer master key (CMK) to use for server-side encryption, if any.
    *
-   * @default StreamEncryption.unencrypted()
+   * If the source is a Kinesis Data Stream, encryption must be set to `StreamEncryption.unencrypted()`.
+   * To enable server-side encryption when using a Kinesis Data Stream as the source, apply the encryption settings directly on the data stream itself.
+   *
+   * @default StreamEncryption.awsOwnedKey()
    */
   readonly encryption?: StreamEncryption;
 }
@@ -328,17 +331,20 @@ export class DeliveryStream extends DeliveryStreamBase {
       });
     }
 
-    if (
-      props.source &&
-        (props.encryption?.type === StreamEncryptionType.AWS_OWNED || props.encryption?.type === StreamEncryptionType.CUSTOMER_MANAGED)
-    ) {
-      throw new Error('Requested server-side encryption but delivery stream source is a Kinesis data stream. Specify server-side encryption on the data stream instead.');
-    }
-    const encryptionKey = props.encryption?.encryptionKey ?? (props.encryption?.type === StreamEncryptionType.CUSTOMER_MANAGED ? new kms.Key(this, 'Key') : undefined);
-    const encryptionConfig = (encryptionKey || (props.encryption?.type === StreamEncryptionType.AWS_OWNED)) ? {
+    const encryption = props.encryption ?? StreamEncryption.awsOwnedKey();
+    const encryptionKey = encryption.encryptionKey ?? (encryption.type === StreamEncryptionType.CUSTOMER_MANAGED ? new kms.Key(this, 'Key') : undefined);
+    const encryptionConfig = (encryptionKey || (encryption?.type === StreamEncryptionType.AWS_OWNED)) ? {
       keyArn: encryptionKey?.keyArn,
       keyType: encryptionKey ? 'CUSTOMER_MANAGED_CMK' : 'AWS_OWNED_CMK',
     } : undefined;
+
+    if (
+      props.source &&
+        (encryption.type === StreamEncryptionType.AWS_OWNED || encryption.type === StreamEncryptionType.CUSTOMER_MANAGED)
+    ) {
+      throw new Error('Requested server-side encryption but delivery stream source is a Kinesis data stream. Specify server-side encryption on the data stream instead.');
+    }
+
     /*
      * In order for the service role to have access to the encryption key before the delivery stream is created, the
      * CfnDeliveryStream below should have a dependency on the grant returned by the function call below:

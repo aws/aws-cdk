@@ -189,29 +189,6 @@
    "DependsOn": [
     "RoleDefaultPolicy5FFB7DAB"
    ]
-  },
-  "DeliveryStreamNoSourceOrEncryptionKey0E4AAB82": {
-   "Type": "AWS::KinesisFirehose::DeliveryStream",
-   "Properties": {
-    "DeliveryStreamType": "DirectPut",
-    "ExtendedS3DestinationConfiguration": {
-     "BucketARN": {
-      "Fn::GetAtt": [
-       "Bucket83908E77",
-       "Arn"
-      ]
-     },
-     "RoleARN": {
-      "Fn::GetAtt": [
-       "Role1ABCC5F0",
-       "Arn"
-      ]
-     }
-    }
-   },
-   "DependsOn": [
-    "RoleDefaultPolicy5FFB7DAB"
-   ]
   }
  },
  "Mappings": {

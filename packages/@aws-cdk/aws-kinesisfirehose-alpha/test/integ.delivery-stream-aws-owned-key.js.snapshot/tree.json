@@ -144,167 +144,18 @@
               "version": "0.0.0"
             }
           },
-          "Key": {
-            "id": "Key",
-            "path": "aws-cdk-firehose-delivery-stream/Key",
+          "Delivery Stream No Source Or Encryption Key": {
+            "id": "Delivery Stream No Source Or Encryption Key",
+            "path": "aws-cdk-firehose-delivery-stream/Delivery Stream No Source Or Encryption Key",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-firehose-delivery-stream/Key/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::KMS::Key",
-                  "aws:cdk:cloudformation:props": {
-                    "keyPolicy": {
-                      "Statement": [
-                        {
-                          "Action": "kms:*",
-                          "Effect": "Allow",
-                          "Principal": {
-                            "AWS": {
-                              "Fn::Join": [
-                                "",
-                                [
-                                  "arn:",
-                                  {
-                                    "Ref": "AWS::Partition"
-                                  },
-                                  ":iam::",
-                                  {
-                                    "Ref": "AWS::AccountId"
-                                  },
-                                  ":root"
-                                ]
-                              ]
-                            }
-                          },
-                          "Resource": "*"
-                        }
-                      ],
-                      "Version": "2012-10-17"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_kms.CfnKey",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_kms.Key",
-              "version": "0.0.0"
-            }
-          },
-          "Delivery Stream": {
-            "id": "Delivery Stream",
-            "path": "aws-cdk-firehose-delivery-stream/Delivery Stream",
-            "children": {
-              "Service Role": {
-                "id": "Service Role",
-                "path": "aws-cdk-firehose-delivery-stream/Delivery Stream/Service Role",
-                "children": {
-                  "ImportService Role": {
-                    "id": "ImportService Role",
-                    "path": "aws-cdk-firehose-delivery-stream/Delivery Stream/Service Role/ImportService Role",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-cdk-firehose-delivery-stream/Delivery Stream/Service Role/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                      "aws:cdk:cloudformation:props": {
-                        "assumeRolePolicyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "sts:AssumeRole",
-                              "Effect": "Allow",
-                              "Principal": {
-                                "Service": "firehose.amazonaws.com"
-                              }
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "DefaultPolicy": {
-                    "id": "DefaultPolicy",
-                    "path": "aws-cdk-firehose-delivery-stream/Delivery Stream/Service Role/DefaultPolicy",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "aws-cdk-firehose-delivery-stream/Delivery Stream/Service Role/DefaultPolicy/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                          "aws:cdk:cloudformation:props": {
-                            "policyDocument": {
-                              "Statement": [
-                                {
-                                  "Action": [
-                                    "kms:Decrypt",
-                                    "kms:Encrypt",
-                                    "kms:GenerateDataKey*",
-                                    "kms:ReEncrypt*"
-                                  ],
-                                  "Effect": "Allow",
-                                  "Resource": {
-                                    "Fn::GetAtt": [
-                                      "Key961B73FD",
-                                      "Arn"
-                                    ]
-                                  }
-                                }
-                              ],
-                              "Version": "2012-10-17"
-                            },
-                            "policyName": "DeliveryStreamServiceRoleDefaultPolicyB87D9ACF",
-                            "roles": [
-                              {
-                                "Ref": "DeliveryStreamServiceRole964EEBCC"
-                              }
-                            ]
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
-                }
-              },
-              "Resource": {
-                "id": "Resource",
-                "path": "aws-cdk-firehose-delivery-stream/Delivery Stream/Resource",
+                "path": "aws-cdk-firehose-delivery-stream/Delivery Stream No Source Or Encryption Key/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::KinesisFirehose::DeliveryStream",
                   "aws:cdk:cloudformation:props": {
                     "deliveryStreamEncryptionConfigurationInput": {
-                      "keyArn": {
-                        "Fn::GetAtt": [
-                          "Key961B73FD",
-                          "Arn"
-                        ]
-                      },
-                      "keyType": "CUSTOMER_MANAGED_CMK"
+                      "keyType": "AWS_OWNED_CMK"
                     },
                     "deliveryStreamType": "DirectPut",
                     "extendedS3DestinationConfiguration": {
@@ -364,17 +215,17 @@
           "version": "0.0.0"
         }
       },
-      "DeliveryStreamWithCustomerManagedKey": {
-        "id": "DeliveryStreamWithCustomerManagedKey",
-        "path": "DeliveryStreamWithCustomerManagedKey",
+      "DeliveryStreamWithDefaultEncryption": {
+        "id": "DeliveryStreamWithDefaultEncryption",
+        "path": "DeliveryStreamWithDefaultEncryption",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "DeliveryStreamWithCustomerManagedKey/DefaultTest",
+            "path": "DeliveryStreamWithDefaultEncryption/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "DeliveryStreamWithCustomerManagedKey/DefaultTest/Default",
+                "path": "DeliveryStreamWithDefaultEncryption/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.3.0"
@@ -382,11 +233,11 @@
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "DeliveryStreamWithCustomerManagedKey/DefaultTest/DeployAssert",
+                "path": "DeliveryStreamWithDefaultEncryption/DefaultTest/DeployAssert",
                 "children": {
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
-                    "path": "DeliveryStreamWithCustomerManagedKey/DefaultTest/DeployAssert/BootstrapVersion",
+                    "path": "DeliveryStreamWithDefaultEncryption/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
@@ -394,7 +245,7 @@
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
-                    "path": "DeliveryStreamWithCustomerManagedKey/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "path": "DeliveryStreamWithDefaultEncryption/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"
