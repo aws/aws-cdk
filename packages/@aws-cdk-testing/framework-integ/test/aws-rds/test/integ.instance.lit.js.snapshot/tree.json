@@ -1224,9 +1224,9 @@
                   "version": "0.0.0"
                 }
               },
-              "LogGroup${Token[TOKEN.187]}trace": {
-                "id": "LogGroup${Token[TOKEN.187]}trace",
-                "path": "aws-cdk-rds-instance/Instance/LogGroup${Token[TOKEN.187]}trace",
+              "LogGroup${Token[TOKEN.1029]}trace": {
+                "id": "LogGroup${Token[TOKEN.1029]}trace",
+                "path": "aws-cdk-rds-instance/Instance/LogGroup${Token[TOKEN.1029]}trace",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
@@ -1250,9 +1250,9 @@
                   "version": "0.0.0"
                 }
               },
-              "LogGroup${Token[TOKEN.187]}audit": {
-                "id": "LogGroup${Token[TOKEN.187]}audit",
-                "path": "aws-cdk-rds-instance/Instance/LogGroup${Token[TOKEN.187]}audit",
+              "LogGroup${Token[TOKEN.1029]}audit": {
+                "id": "LogGroup${Token[TOKEN.1029]}audit",
+                "path": "aws-cdk-rds-instance/Instance/LogGroup${Token[TOKEN.1029]}audit",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
@@ -1276,9 +1276,9 @@
                   "version": "0.0.0"
                 }
               },
-              "LogGroup${Token[TOKEN.187]}alert": {
-                "id": "LogGroup${Token[TOKEN.187]}alert",
-                "path": "aws-cdk-rds-instance/Instance/LogGroup${Token[TOKEN.187]}alert",
+              "LogGroup${Token[TOKEN.1029]}alert": {
+                "id": "LogGroup${Token[TOKEN.1029]}alert",
+                "path": "aws-cdk-rds-instance/Instance/LogGroup${Token[TOKEN.1029]}alert",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
@@ -1302,9 +1302,9 @@
                   "version": "0.0.0"
                 }
               },
-              "LogGroup${Token[TOKEN.187]}listener": {
-                "id": "LogGroup${Token[TOKEN.187]}listener",
-                "path": "aws-cdk-rds-instance/Instance/LogGroup${Token[TOKEN.187]}listener",
+              "LogGroup${Token[TOKEN.1029]}listener": {
+                "id": "LogGroup${Token[TOKEN.1029]}listener",
+                "path": "aws-cdk-rds-instance/Instance/LogGroup${Token[TOKEN.1029]}listener",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"

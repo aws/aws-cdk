@@ -136,7 +136,11 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
       timeout: Duration.minutes(15),
       description: 'onEvent handler for EKS kubectl resource provider',
       memorySize,
-      environment: cluster.kubectlEnvironment,
+      environment: {
+        // required and recommended for boto3
+        AWS_STS_REGIONAL_ENDPOINTS: 'regional',
+        ...cluster.kubectlEnvironment,
+      },
       role: cluster.kubectlLambdaRole ? cluster.kubectlLambdaRole : undefined,
 
       // defined only when using private access

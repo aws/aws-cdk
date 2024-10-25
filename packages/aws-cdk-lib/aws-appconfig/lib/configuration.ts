@@ -512,7 +512,7 @@ export interface SourcedConfigurationProps extends ConfigurationProps {
   /**
    * The IAM role to retrieve the configuration.
    *
-   * @default - A role is generated.
+   * @default - Auto generated if location type is not ConfigurationSourceType.CODE_PIPELINE otherwise no role specified.
    */
   readonly retrievalRole?: iam.IRole;
 }
@@ -564,16 +564,7 @@ export class SourcedConfiguration extends ConfigurationBase {
     this.locationUri = this.location.locationUri;
     this.versionNumber = props.versionNumber;
     this.sourceKey = this.location.key;
-    this.retrievalRole = props.retrievalRole || this.location.type != ConfigurationSourceType.CODE_PIPELINE
-      ? new iam.Role(this, 'Role', {
-        roleName: PhysicalName.GENERATE_IF_NEEDED,
-        assumedBy: new iam.ServicePrincipal('appconfig.amazonaws.com'),
-        inlinePolicies: {
-          ['AllowAppConfigReadFromSourcePolicy']: this.getPolicyForRole(),
-        },
-      })
-      : undefined;
-
+    this.retrievalRole = props.retrievalRole ?? this.getRetrievalRole();
     this._cfnConfigurationProfile = new CfnConfigurationProfile(this, 'Resource', {
       applicationId: this.applicationId,
       locationUri: this.locationUri,
@@ -594,6 +585,22 @@ export class SourcedConfiguration extends ConfigurationBase {
 
     this.addExistingEnvironmentsToApplication();
     this.deployConfigToEnvironments();
+  }
+
+  private getRetrievalRole(): iam.Role | undefined {
+    // Check if the configuration source is not from CodePipeline
+    if (this.location.type != ConfigurationSourceType.CODE_PIPELINE) {
+      return new iam.Role(this, 'Role', {
+        roleName: PhysicalName.GENERATE_IF_NEEDED,
+        assumedBy: new iam.ServicePrincipal('appconfig.amazonaws.com'),
+        inlinePolicies: {
+          ['AllowAppConfigReadFromSourcePolicy']: this.getPolicyForRole(),
+        },
+      });
+    } else {
+      // No role is needed if the configuration source is from CodePipeline
+      return undefined;
+    }
   }
 
   private getPolicyForRole(): iam.PolicyDocument {

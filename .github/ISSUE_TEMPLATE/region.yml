@@ -1,7 +1,7 @@
 name: New Region
-description: Register a new region.
+description: Register a new region. Internal CDK team use only.
 title: "Register new region: [region]"
-labels: ["@aws-cdk/region-info", "feature-request", "p1", "effort/medium"]
+labels: ["@aws-cdk/region-info", "feature-request", needs-triage, "effort/medium"]
 body:
   - type: input
     id: ROUTE_53_BUCKET_WEBSITE_ZONE_IDS

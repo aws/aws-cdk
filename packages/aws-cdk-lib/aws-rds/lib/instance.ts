@@ -1333,6 +1333,13 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
   public readonly instanceIdentifier: string;
   public readonly dbInstanceEndpointAddress: string;
   public readonly dbInstanceEndpointPort: string;
+
+  /**
+   * The AWS Region-unique, immutable identifier for the DB instance.
+   * This identifier is found in AWS CloudTrail log entries whenever the AWS KMS key for the DB instance is accessed.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#aws-resource-rds-dbinstance-return-values
+   */
   public readonly instanceResourceId?: string;
   public readonly instanceEndpoint: Endpoint;
   public readonly engine?: IInstanceEngine = undefined;
@@ -1366,7 +1373,9 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
     this.instanceIdentifier = instance.ref;
     this.dbInstanceEndpointAddress = instance.attrEndpointAddress;
     this.dbInstanceEndpointPort = instance.attrEndpointPort;
-    this.instanceResourceId = instance.attrDbInstanceArn;
+
+    this.instanceResourceId = FeatureFlags.of(this).isEnabled(cxapi.USE_CORRECT_VALUE_FOR_INSTANCE_RESOURCE_ID_PROPERTY) ?
+      instance.attrDbiResourceId : instance.attrDbInstanceArn;
 
     // create a number token that represents the port of the instance
     const portAttribute = Token.asNumber(instance.attrEndpointPort);

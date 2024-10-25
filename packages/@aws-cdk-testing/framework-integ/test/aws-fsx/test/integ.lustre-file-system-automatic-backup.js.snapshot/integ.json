@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "FsxLustreAutomaticBackup/DefaultTest": {
+      "stacks": [
+        "AwsCdkFsxLustreAutomaticBackup"
+      ],
+      "assertionStack": "FsxLustreAutomaticBackup/DefaultTest/DeployAssert",
+      "assertionStackName": "FsxLustreAutomaticBackupDefaultTestDeployAssertBED7F3F4"
+    }
+  }
+}

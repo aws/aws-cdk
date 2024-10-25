@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "integtest-pipe-target-lambda/DefaultTest": {
+      "stacks": [
+        "aws-cdk-pipes-lambda-target"
+      ],
+      "assertionStack": "integtest-pipe-target-lambda/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestpipetargetlambdaDefaultTestDeployAssert48C58B78"
+    }
+  }
+}

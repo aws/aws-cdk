@@ -537,6 +537,8 @@ export abstract class BucketBase extends Resource implements IBucket {
 
   protected notificationsHandlerRole?: iam.IRole;
 
+  protected notificationsSkipDestinationValidation?: boolean;
+
   protected objectOwnership?: ObjectOwnership;
 
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
@@ -890,6 +892,7 @@ export abstract class BucketBase extends Resource implements IBucket {
       this.notifications = new BucketNotifications(this, 'Notifications', {
         bucket: this,
         handlerRole: this.notificationsHandlerRole,
+        skipDestinationValidation: this.notificationsSkipDestinationValidation ?? false,
       });
     }
     cb(this.notifications);
@@ -1400,6 +1403,24 @@ export abstract class TargetObjectKeyFormat {
   public abstract _render(): CfnBucket.LoggingConfigurationProperty['targetObjectKeyFormat'];
 }
 
+/**
+ * The transition default minimum object size for lifecycle
+ */
+export enum TransitionDefaultMinimumObjectSize {
+  /**
+   * Objects smaller than 128 KB will not transition to any storage class by default.
+   */
+  ALL_STORAGE_CLASSES_128_K = 'all_storage_classes_128K',
+
+  /**
+   * Objects smaller than 128 KB will transition to Glacier Flexible Retrieval or Glacier
+   * Deep Archive storage classes.
+   *
+   * By default, all other storage classes will prevent transitions smaller than 128 KB.
+   */
+  VARIES_BY_STORAGE_CLASS = 'varies_by_storage_class',
+}
+
 export interface BucketProps {
   /**
    * The kind of server-side encryption to apply to this bucket.
@@ -1526,6 +1547,18 @@ export interface BucketProps {
   readonly lifecycleRules?: LifecycleRule[];
 
   /**
+   * Indicates which default minimum object size behavior is applied to the lifecycle configuration.
+   *
+   * To customize the minimum object size for any transition you can add a filter that specifies a custom
+   * `objectSizeGreaterThan` or `objectSizeLessThan` for `lifecycleRules` property. Custom filters always
+   * take precedence over the default transition behavior.
+   *
+   * @default - TransitionDefaultMinimumObjectSize.VARIES_BY_STORAGE_CLASS before September 2024,
+   * otherwise TransitionDefaultMinimumObjectSize.ALL_STORAGE_CLASSES_128_K.
+   */
+  readonly transitionDefaultMinimumObjectSize?: TransitionDefaultMinimumObjectSize;
+
+  /**
    * The name of the index document (e.g. "index.html") for the website. Enables static website
    * hosting for this bucket.
    *
@@ -1633,7 +1666,8 @@ export interface BucketProps {
    *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/about-object-ownership.html
    *
-   * @default - No ObjectOwnership configuration, uploading account will own the object.
+   * @default - No ObjectOwnership configuration. By default, Amazon S3 sets Object Ownership to `Bucket owner enforced`.
+   * This means ACLs are disabled and the bucket owner will own every object.
    *
    */
   readonly objectOwnership?: ObjectOwnership;
@@ -1651,6 +1685,13 @@ export interface BucketProps {
    * @default - a new role will be created.
    */
   readonly notificationsHandlerRole?: iam.IRole;
+
+  /**
+   * Skips notification validation of Amazon SQS, Amazon SNS, and Lambda destinations.
+   *
+   * @default false
+   */
+  readonly notificationsSkipDestinationValidation?: boolean;
 
   /**
    * Inteligent Tiering Configurations
@@ -1733,7 +1774,7 @@ export class Bucket extends BucketBase {
     if (!bucketName) {
       throw new Error('Bucket name is required');
     }
-    Bucket.validateBucketName(bucketName);
+    Bucket.validateBucketName(bucketName, true);
 
     const oldEndpoint = `s3-website-${region}.${urlSuffix}`;
     const newEndpoint = `s3-website.${region}.${urlSuffix}`;
@@ -1840,8 +1881,9 @@ export class Bucket extends BucketBase {
    * Thrown an exception if the given bucket name is not valid.
    *
    * @param physicalName name of the bucket.
+   * @param allowLegacyBucketNaming allow legacy bucket naming style, default is false.
    */
-  public static validateBucketName(physicalName: string): void {
+  public static validateBucketName(physicalName: string, allowLegacyBucketNaming: boolean = false): void {
     const bucketName = physicalName;
     if (!bucketName || Token.isUnresolved(bucketName)) {
       // the name is a late-bound value, not a defined string,
@@ -1855,23 +1897,37 @@ export class Bucket extends BucketBase {
     if (bucketName.length < 3 || bucketName.length > 63) {
       errors.push('Bucket name must be at least 3 and no more than 63 characters');
     }
-    const charsetMatch = bucketName.match(/[^a-z0-9.-]/);
-    if (charsetMatch) {
-      errors.push('Bucket name must only contain lowercase characters and the symbols, period (.) and dash (-) '
-        + `(offset: ${charsetMatch.index})`);
+
+    const illegalCharsetRegEx = allowLegacyBucketNaming ? /[^A-Za-z0-9._-]/ : /[^a-z0-9.-]/;
+    const allowedEdgeCharsetRegEx = allowLegacyBucketNaming ? /[A-Za-z0-9]/ : /[a-z0-9]/;
+
+    const illegalCharMatch = bucketName.match(illegalCharsetRegEx);
+    if (illegalCharMatch) {
+      errors.push(allowLegacyBucketNaming
+        ? 'Bucket name must only contain uppercase or lowercase characters and the symbols, period (.), underscore (_), and dash (-)'
+        : 'Bucket name must only contain lowercase characters and the symbols, period (.) and dash (-)'
+        + ` (offset: ${illegalCharMatch.index})`,
+      );
     }
-    if (!/[a-z0-9]/.test(bucketName.charAt(0))) {
-      errors.push('Bucket name must start and end with a lowercase character or number '
-        + '(offset: 0)');
+    if (!allowedEdgeCharsetRegEx.test(bucketName.charAt(0))) {
+      errors.push(allowLegacyBucketNaming
+        ? 'Bucket name must start with an uppercase, lowercase character or number'
+        : 'Bucket name must start with a lowercase character or number'
+        + ' (offset: 0)',
+      );
     }
-    if (!/[a-z0-9]/.test(bucketName.charAt(bucketName.length - 1))) {
-      errors.push('Bucket name must start and end with a lowercase character or number '
-        + `(offset: ${bucketName.length - 1})`);
+    if (!allowedEdgeCharsetRegEx.test(bucketName.charAt(bucketName.length - 1))) {
+      errors.push(allowLegacyBucketNaming
+        ? 'Bucket name must end with an uppercase, lowercase character or number'
+        : 'Bucket name must end with a lowercase character or number'
+        + ` (offset: ${bucketName.length - 1})`,
+      );
     }
+
     const consecSymbolMatch = bucketName.match(/\.-|-\.|\.\./);
     if (consecSymbolMatch) {
-      errors.push('Bucket name must not have dash next to period, or period next to dash, or consecutive periods '
-        + `(offset: ${consecSymbolMatch.index})`);
+      errors.push('Bucket name must not have dash next to period, or period next to dash, or consecutive periods'
+        + ` (offset: ${consecSymbolMatch.index})`);
     }
     if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(bucketName)) {
       errors.push('Bucket name must not resemble an IP address');
@@ -1897,6 +1953,7 @@ export class Bucket extends BucketBase {
   protected disallowPublicAccess?: boolean;
   private accessControl?: BucketAccessControl;
   private readonly lifecycleRules: LifecycleRule[] = [];
+  private readonly transitionDefaultMinimumObjectSize?: TransitionDefaultMinimumObjectSize;
   private readonly eventBridgeEnabled?: boolean;
   private readonly metrics: BucketMetrics[] = [];
   private readonly cors: CorsRule[] = [];
@@ -1909,6 +1966,7 @@ export class Bucket extends BucketBase {
     });
 
     this.notificationsHandlerRole = props.notificationsHandlerRole;
+    this.notificationsSkipDestinationValidation = props.notificationsSkipDestinationValidation;
 
     const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
 
@@ -1920,6 +1978,7 @@ export class Bucket extends BucketBase {
     const objectLockConfiguration = this.parseObjectLockConfig(props);
 
     this.objectOwnership = props.objectOwnership;
+    this.transitionDefaultMinimumObjectSize = props.transitionDefaultMinimumObjectSize;
     const resource = new CfnBucket(this, 'Resource', {
       bucketName: this.physicalName,
       bucketEncryption,
@@ -2001,7 +2060,7 @@ export class Bucket extends BucketBase {
 
     if (props.publicReadAccess) {
       if (props.blockPublicAccess === undefined) {
-        throw new Error('Cannot use \'publicReadAccess\' property on a bucket without allowing bucket-level public access through \'blockPublicAceess\' property.');
+        throw new Error('Cannot use \'publicReadAccess\' property on a bucket without allowing bucket-level public access through \'blockPublicAccess\' property.');
       }
 
       this.grantPublicAccess();
@@ -2230,7 +2289,10 @@ export class Bucket extends BucketBase {
 
     const self = this;
 
-    return { rules: this.lifecycleRules.map(parseLifecycleRule) };
+    return {
+      rules: this.lifecycleRules.map(parseLifecycleRule),
+      transitionDefaultMinimumObjectSize: this.transitionDefaultMinimumObjectSize,
+    };
 
     function parseLifecycleRule(rule: LifecycleRule): CfnBucket.RuleProperty {
       const enabled = rule.enabled ?? true;
@@ -2238,6 +2300,19 @@ export class Bucket extends BucketBase {
       && (rule.expiration || rule.expirationDate || self.parseTagFilters(rule.tagFilters))) {
         // ExpiredObjectDeleteMarker cannot be specified with ExpirationInDays, ExpirationDate, or TagFilters.
         throw new Error('ExpiredObjectDeleteMarker cannot be specified with expiration, ExpirationDate, or TagFilters.');
+      }
+
+      if (
+        rule.abortIncompleteMultipartUploadAfter === undefined &&
+        rule.expiration === undefined &&
+        rule.expirationDate === undefined &&
+        rule.expiredObjectDeleteMarker === undefined &&
+        rule.noncurrentVersionExpiration === undefined &&
+        rule.noncurrentVersionsToRetain === undefined &&
+        rule.noncurrentVersionTransitions === undefined &&
+        rule.transitions === undefined
+      ) {
+        throw new Error('All rules for `lifecycleRules` must have at least one of the following properties: `abortIncompleteMultipartUploadAfter`, `expiration`, `expirationDate`, `expiredObjectDeleteMarker`, `noncurrentVersionExpiration`, `noncurrentVersionsToRetain`, `noncurrentVersionTransitions`, or `transitions`');
       }
 
       const x: CfnBucket.RuleProperty = {

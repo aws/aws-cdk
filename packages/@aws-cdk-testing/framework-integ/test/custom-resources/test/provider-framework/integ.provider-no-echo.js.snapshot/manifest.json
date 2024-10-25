@@ -1,0 +1,204 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "integ-provider-no-echo.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-provider-no-echo.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integ-provider-no-echo": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-provider-no-echo.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cdc86ad33549ca75eef7f661cc371d5f0c1b3ade94aa1ce7623d50c2297c5bcf.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-provider-no-echo.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integ-provider-no-echo.assets"
+      ],
+      "metadata": {
+        "/integ-provider-no-echo/my-handler/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myhandlerServiceRole284F0B3E"
+          }
+        ],
+        "/integ-provider-no-echo/my-handler/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myhandler42A6C3AB"
+          }
+        ],
+        "/integ-provider-no-echo/my-provider/framework-onEvent/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myproviderframeworkonEventServiceRole793AEC4D"
+          }
+        ],
+        "/integ-provider-no-echo/my-provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myproviderframeworkonEventServiceRoleDefaultPolicy5C6BFF87"
+          }
+        ],
+        "/integ-provider-no-echo/my-provider/framework-onEvent/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myproviderframeworkonEvent97E4361B"
+          }
+        ],
+        "/integ-provider-no-echo/my-provider/framework-onEvent/LogRetention/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myproviderframeworkonEventLogRetentionA3431778"
+          }
+        ],
+        "/integ-provider-no-echo/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/integ-provider-no-echo/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+          }
+        ],
+        "/integ-provider-no-echo/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB"
+          }
+        ],
+        "/integ-provider-no-echo/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A"
+          }
+        ],
+        "/integ-provider-no-echo/my-cr/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "mycr"
+          }
+        ],
+        "/integ-provider-no-echo/Exports/Output{\"Fn::GetAtt\":[\"myproviderframeworkonEventLogRetentionA3431778\",\"LogGroupName\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttmyproviderframeworkonEventLogRetentionA3431778LogGroupNameE0A0B461"
+          }
+        ],
+        "/integ-provider-no-echo/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-provider-no-echo/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-provider-no-echo"
+    },
+    "IntegProviderFrameworkNoEchoTestDefaultTestDeployAssert1DF2B4A0.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "IntegProviderFrameworkNoEchoTestDefaultTestDeployAssert1DF2B4A0.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "IntegProviderFrameworkNoEchoTestDefaultTestDeployAssert1DF2B4A0": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "IntegProviderFrameworkNoEchoTestDefaultTestDeployAssert1DF2B4A0.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0b64e8746879b28d96a16a223b19d5d34bbd7944459cf046f713c13eac1c96e5.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "IntegProviderFrameworkNoEchoTestDefaultTestDeployAssert1DF2B4A0.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integ-provider-no-echo",
+        "IntegProviderFrameworkNoEchoTestDefaultTestDeployAssert1DF2B4A0.assets"
+      ],
+      "metadata": {
+        "/IntegProviderFrameworkNoEchoTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEventsdbdc36d436682909b09e2058599e58d5/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCloudWatchLogsfilterLogEventsdbdc36d436682909b09e2058599e58d5"
+          }
+        ],
+        "/IntegProviderFrameworkNoEchoTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEventsdbdc36d436682909b09e2058599e58d5/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallCloudWatchLogsfilterLogEventsdbdc36d436682909b09e2058599e58d5"
+          }
+        ],
+        "/IntegProviderFrameworkNoEchoTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/IntegProviderFrameworkNoEchoTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/IntegProviderFrameworkNoEchoTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/IntegProviderFrameworkNoEchoTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "IntegProviderFrameworkNoEchoTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

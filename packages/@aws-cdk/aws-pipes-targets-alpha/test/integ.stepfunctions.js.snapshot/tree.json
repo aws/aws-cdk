@@ -472,6 +472,14 @@
                       "version": "10.3.0"
                     }
                   },
+                  "LatestNodeRuntimeMap": {
+                    "id": "LatestNodeRuntimeMap",
+                    "path": "integtest-pipe-target-sfn/DefaultTest/DeployAssert/LatestNodeRuntimeMap",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnMapping",
+                      "version": "0.0.0"
+                    }
+                  },
                   "AwsApiCallSSMgetParametere0a98b11fdce90ebc623abceb1840d50": {
                     "id": "AwsApiCallSSMgetParametere0a98b11fdce90ebc623abceb1840d50",
                     "path": "integtest-pipe-target-sfn/DefaultTest/DeployAssert/AwsApiCallSSMgetParametere0a98b11fdce90ebc623abceb1840d50",
