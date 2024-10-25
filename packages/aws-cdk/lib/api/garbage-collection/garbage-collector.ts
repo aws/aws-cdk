@@ -1,3 +1,4 @@
+import * as crypto from 'node:crypto';
 import * as cxapi from '@aws-cdk/cx-api';
 import { S3 } from 'aws-sdk';
 import * as chalk from 'chalk';
@@ -162,7 +163,19 @@ export class GarbageCollector {
     // SDKs
     const sdk = (await this.props.sdkProvider.forEnvironment(this.props.resolvedEnvironment, Mode.ForWriting)).sdk;
     const cfn = sdk.cloudFormation();
-    const s3 = sdk.s3();
+
+    // Some S3 APIs in SDKv2 have a bug that always requires them to use a MD5 checksum.
+    // These APIs are not going to be supported in a FIPS environment.
+    // We fail with a nice error message.
+    // Once we switch this code to SDKv3, this can be made work again by adding
+    // `ChecksumAlgorithm: 'SHA256'` to the affected APIs.
+    // Currently known to affect only DeleteObjects (note the plural)
+    if (crypto.getFips() === 1) {
+      throw new Error('Garbage Collection is currently not supported in FIPS environments');
+    }
+    const s3 = sdk.s3({
+      needsMd5Checksums: true,
+    });
 
     const qualifier = await this.bootstrapQualifier(sdk, this.bootstrapStackName);
     const activeAssets = new ActiveAssetCache();
