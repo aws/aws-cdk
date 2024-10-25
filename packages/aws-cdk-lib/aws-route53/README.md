@@ -225,6 +225,8 @@ allowed to issue certificates for a domain to Amazon only.
 
 ### Health Checks
 
+See the [Route 53 Health Checks documentation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-healthcheck-healthcheckconfig.html#cfn-route53-healthcheck-healthcheckconfig-type) for possible types of health checks.
+
 Route 53 has the ability to monitor the health of your application and only return records for healthy endpoints.
 This is done using a `HealthCheck` construct.
 
@@ -256,8 +258,6 @@ new route53.ARecord(this, 'ARecord2', {
   weight: 0,
 });
 ```
-
-See the [Route 53 Health Checks documentation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-healthcheck-healthcheckconfig.html#cfn-route53-healthcheck-healthcheckconfig-type) for possible types of health checks.
 
 ### Replacing existing record sets (dangerous!)
 
