@@ -4,6 +4,7 @@ import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { IpamOptions, IIpamPool } from './ipam';
 import { IVpcV2, VpcV2Base } from './vpc-v2-base';
 import { ISubnetV2, SubnetV2, SubnetV2Attributes } from './subnet-v2';
+import { region_info } from 'aws-cdk-lib';
 
 /**
  * Additional props needed for secondary Address
@@ -203,13 +204,24 @@ export interface VpcV2Attributes {
   readonly vpcId: string;
 
   /**
-   * Arn of the VPC, required in case of cross acount or cross region VPC
-   * as given arn value will be used to set fields account and region for imported VPC,
+   * Region in which imported VPC is hosted
+   * required in case of cross region VPC
+   * as given value will be used to set field region for imported VPC,
    * which then later can be used for establishing VPC peering connection.
    *
-   * @default - constructed with stack account and region value
+   * @default - constructed with stack region value
    */
-  readonly vpcArn?: string;
+  readonly region?: string;
+
+  /**
+   * The ID of the AWS account that owns the imported VPC
+   * required in case of cross account VPC
+   * as given value will be used to set field account for imported VPC,
+   * which then later can be used for establishing VPC peering connection.
+   *
+   * @default - constructed with stack account value
+   */
+  readonly ownerAccountId?: string;
 
   /**
    * Primary VPC CIDR Block of the imported VPC
@@ -267,6 +279,7 @@ export class VpcV2 extends VpcV2Base {
       public readonly ipv4CidrBlock: string;
       public readonly region: string;
       public readonly ownerAccountId: string;
+      private readonly _partition?: string;
 
       /*
       * Reference to all secondary blocks attached
@@ -285,11 +298,18 @@ export class VpcV2 extends VpcV2Base {
       constructor(construct: Construct, constructId: string, props: VpcV2Attributes) {
         super(construct, constructId);
         this.vpcId = props.vpcId,
-        this.vpcArn = props.vpcArn ?? Arn.format({
+        this.region = props.region ?? this.stack.region,
+        this.ownerAccountId = props.ownerAccountId ?? this.stack.account,
+        this._partition = region_info.RegionInfo.get(this.region).partition,
+        this.vpcArn = Arn.format({
           service: 'ec2',
           resource: 'vpc',
           resourceName: this.vpcId,
+          region: this.region,
+          account: this.ownerAccountId,
+          partition: this._partition,
         }, this.stack);
+
         // Populate region and account fields that can be used to set up peering connection
         // sample vpc Arn - arn:aws:ec2:us-west-2:123456789012:vpc/vpc-0123456789abcdef0
         this.region = this.vpcArn.split(':')[3];

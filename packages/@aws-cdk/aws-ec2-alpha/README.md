@@ -386,7 +386,9 @@ const importedVpc = VpcV2.fromVpcV2Attributes(stack, 'ImportedVpc', {
 
 ```
 
-In case of cross account or cross region VPC, its recommended to provide VPC arn so that the region and accountId values for the VPC can be fetched from given arn value. If a VPC arn is not provided, arn will be populated using region and account configured in the stack.
+In case of cross account or cross region VPC, its recommended to provide region and ownerAccountId so that these values for the VPC can be used to populate correct arn value for the VPC. If a VPC region and account ID is not provided, then region and account configured in the stack will be used. Furthermore, these fields will be referenced later while setting up VPC peering connection, so its necessary to set these fields to a correct value.
+
+Below is an example of importing a cross region and cross acount VPC, VPC arn for this case would be 'arn:aws:ec2:us-west-2:123456789012:vpc/mockVpcID'
 
 ``` ts
 
@@ -396,7 +398,8 @@ const stack = new Stack();
 const importedVpc = VpcV2.fromVpcV2Attributes(stack, 'ImportedVpc', {
       vpcId: 'mockVpcID',
       vpcCidrBlock: '10.0.0.0/16',
-      vpcArn: 'arn:aws:ec2:us-west-2:123456789012:vpc/vpc-0123abcd4567efgh8',
+      ownerAccountId: '123456789012',
+      region: 'us-west-2',
 });
 
 ```

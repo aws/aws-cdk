@@ -186,17 +186,17 @@ describe('Vpc V2 with full control', () => {
       Ipv6CidrBlock: '2600:1f24:6c:4000::/64',
     });
   });
-  test('Fetch correct account id and region ', () => {
+  test('Populate correct arn using account id and region ', () => {
     const vpc = VpcV2.fromVpcV2Attributes(stack, 'ImportedVpc', {
       vpcId: 'mockVpcID',
       vpcCidrBlock: '10.0.0.0/16',
       secondaryCidrBlocks: [{
         amazonProvidedIpv6CidrBlock: true,
       }],
-      vpcArn: 'arn:aws:ec2:us-west-2:123456789012:vpc/mockVpcID',
+      ownerAccountId: '123456789012',
+      region: 'us-west-2',
     });
-    expect(vpc.ownerAccountId).toBe('123456789012');
-    expect(vpc.region).toBe('us-west-2');
+    expect(vpc.vpcArn).toBe('arn:aws:ec2:us-west-2:123456789012:vpc/mockVpcID');
   });
   test('Successfully import subnet using fromSubnetV2Attributes', () => {
     const importedSubnet = SubnetV2.fromSubnetV2Attributes(stack, 'ImportedSubnet', {
