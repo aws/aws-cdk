@@ -1,4 +1,5 @@
 import { Expression, FreeFunction, Module, SelectiveModuleImport, Statement, Type, TypeScriptRenderer, code } from '@cdklabs/typewriter';
+import { EsLintRules } from '@cdklabs/typewriter/lib/eslint-rules';
 import { NULL } from '@cdklabs/typewriter/lib/expressions/builder';
 import { CliConfig, YargsOption } from './yargs-types';
 
@@ -30,9 +31,17 @@ export async function renderYargs(config: CliConfig): Promise<string> {
       { name: 'yargsNegativeAlias', type: Type.ANY },
     ],
   });
-  parseCommandLineArguments.addBody(makeYargs(config/*, scope*/));
+  parseCommandLineArguments.addBody(makeYargs(config));
 
-  return new TypeScriptRenderer().render(scope);
+  return new TypeScriptRenderer({
+    disabledEsLintRules: [
+      EsLintRules.COMMA_DANGLE,
+      EsLintRules.COMMA_SPACING,
+      EsLintRules.MAX_LEN,
+      EsLintRules.QUOTES,
+      EsLintRules.QUOTE_PROPS,
+    ],
+  }).render(scope);
 }
 
 interface MiddlewareExpression {
@@ -52,7 +61,7 @@ interface MiddlewareExpression {
 // By using the config above, every --arg will only consume one argument, so you can do the following:
 //
 //   ./prog --arg one --arg two position  =>  will parse to  { arg: ['one', 'two'], _: ['positional'] }.
-function makeYargs(config: CliConfig/*, scope: ScopeImpl*/): Statement {
+function makeYargs(config: CliConfig): Statement {
   let yargsExpr: Expression = code.expr.ident('yargs');
   yargsExpr = yargsExpr.callMethod('usage', lit('Usage: cdk -a <cdk-app> COMMAND'));
 

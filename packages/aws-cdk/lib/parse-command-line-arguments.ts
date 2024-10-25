@@ -2,11 +2,11 @@
 // GENERATED FROM packages/aws-cdk/lib/config.ts.
 // Do not edit by hand; all changes will be overwritten at build time from the config file.
 // -------------------------------------------------------------------------------------------
-/* eslint-disable prettier/prettier,max-len */
+/* eslint-disable @typescript-eslint/comma-dangle, comma-spacing, max-len, quotes, quote-props */
 import { Argv } from "yargs";
 
 // @ts-ignore TS6133
-function parseCommandLineArguments(args: Array<string>, browserDefault?: string, availableInitLanguages: Array<string>, migrateSupportedLanguages: Array<string>, version: string, yargsNegativeAlias: any): any {
+export function parseCommandLineArguments(args: Array<string>, browserDefault?: string, availableInitLanguages: Array<string>, migrateSupportedLanguages: Array<string>, version: string, yargsNegativeAlias: any): any {
   return yargs.usage("Usage: cdk -a <cdk-app> COMMAND").option("app", {
     "type": "string",
     "alias": "a",

@@ -28,7 +28,7 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "@cdklabs/typewriter": "^0.0.3",
+    "@cdklabs/typewriter": "^0.0.4",
     "yargs": "^16.2.0"
   },
   "devDependencies": {

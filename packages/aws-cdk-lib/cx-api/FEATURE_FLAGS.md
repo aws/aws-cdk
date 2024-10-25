@@ -1526,11 +1526,7 @@ This is a feature flag as the old behavior was technically incorrect but users m
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-<<<<<<< HEAD
-| V2NEXT | `false` | `true` |
-=======
 | 2.164.0 | `false` | `true` |
->>>>>>> a1eef1dbabec261cac5e69d761cc9c839de629f6
 
 
 <!-- END details -->
