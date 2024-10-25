@@ -96,6 +96,7 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
   private isCognitoDomain: boolean;
 
   private cloudFrontCustomResource?: AwsCustomResource;
+  private readonly resource: CfnUserPoolDomain;
 
   constructor(scope: Construct, id: string, props: UserPoolDomainProps) {
     super(scope, id);
@@ -114,17 +115,28 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
     this.isCognitoDomain = !!props.cognitoDomain;
 
     const domainName = props.cognitoDomain?.domainPrefix || props.customDomain?.domainName!;
-    const resource = new CfnUserPoolDomain(this, 'Resource', {
+    this.resource = new CfnUserPoolDomain(this, 'Resource', {
       userPoolId: props.userPool.userPoolId,
       domain: domainName,
       customDomainConfig: props.customDomain ? { certificateArn: props.customDomain.certificate.certificateArn } : undefined,
     });
 
-    this.domainName = resource.ref;
+    this.domainName = this.resource.ref;
   }
 
   /**
    * The domain name of the CloudFront distribution associated with the user pool domain.
+   */
+  public get cloudFrontEndpoint(): string {
+    return this.resource.getAtt('CloudFrontDistribution').toString();
+  }
+
+  /**
+   * The domain name of the CloudFront distribution associated with the user pool domain.
+   *
+   * This method creates a custom resource internally to get the CloudFront domain name.
+   *
+   * @deprecated use `cloudFrontEndpoint` method instead.
    */
   public get cloudFrontDomainName(): string {
     if (!this.cloudFrontCustomResource) {
