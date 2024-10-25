@@ -1,20 +1,28 @@
+import { randomUUID } from 'crypto';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as cdk_assets from 'cdk-assets';
 import { AssetManifest, IManifestEntry } from 'cdk-assets';
+import * as chalk from 'chalk';
+import { Tag } from '../cdk-toolkit';
+import { debug, warning, error } from '../logging';
 import { Mode } from './aws-auth/credentials';
 import { ISDK } from './aws-auth/sdk';
 import { CredentialsOptions, SdkForEnvironment, SdkProvider } from './aws-auth/sdk-provider';
 import { deployStack, DeployStackResult, destroyStack, DeploymentMethod } from './deploy-stack';
 import { EnvironmentResources, EnvironmentResourcesRegistry } from './environment-resources';
-import { HotswapMode } from './hotswap/common';
+import { HotswapMode, HotswapPropertyOverrides } from './hotswap/common';
 import { loadCurrentTemplateWithNestedStacks, loadCurrentTemplate, RootTemplateWithNestedStacks } from './nested-stack-helpers';
-import { CloudFormationStack, Template, ResourcesToImport, ResourceIdentifierSummaries } from './util/cloudformation';
-import { StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
+import { determineAllowCrossAccountAssetPublishing } from './util/checks';
+import { CloudFormationStack, Template, ResourcesToImport, ResourceIdentifierSummaries, stabilizeStack, uploadStackTemplateAssets } from './util/cloudformation';
+import { StackActivityMonitor, StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
+import { StackEventPoller } from './util/cloudformation/stack-event-poller';
+import { RollbackChoice } from './util/cloudformation/stack-status';
 import { replaceEnvPlaceholders } from './util/placeholders';
-import { makeBodyParameterAndUpload } from './util/template-body-parameter';
-import { Tag } from '../cdk-toolkit';
-import { debug, warning, error } from '../logging';
+import { makeBodyParameter } from './util/template-body-parameter';
+import { AssetManifestBuilder } from '../util/asset-manifest-builder';
 import { buildAssets, publishAssets, BuildAssetsOptions, PublishAssetsOptions, PublishingAws, EVENT_TO_LOGGER } from '../util/asset-publishing';
+
+const BOOTSTRAP_STACK_VERSION_FOR_ROLLBACK = 23;
 
 /**
  * SDK obtained by assuming the lookup role
@@ -175,6 +183,11 @@ export interface DeployStackOptions {
   readonly hotswap?: HotswapMode;
 
   /**
+  * Properties that configure hotswap behavior
+  */
+  readonly hotswapPropertyOverrides?: HotswapPropertyOverrides;
+
+  /**
    * The extra string to append to the User-Agent header when performing AWS SDK calls.
    *
    * @default - nothing extra is appended to the User-Agent header
@@ -208,18 +221,82 @@ export interface DeployStackOptions {
   ignoreNoStacks?: boolean;
 }
 
+export interface RollbackStackOptions {
+  /**
+   * Stack to roll back
+   */
+  readonly stack: cxapi.CloudFormationStackArtifact;
+
+  /**
+   * Execution role for the deployment (pass through to CloudFormation)
+   *
+   * @default - Current role
+   */
+  readonly roleArn?: string;
+
+  /**
+   * Don't show stack deployment events, just wait
+   *
+   * @default false
+   */
+  readonly quiet?: boolean;
+
+  /**
+   * Whether we are on a CI system
+   *
+   * @default false
+   */
+  readonly ci?: boolean;
+
+  /**
+   * Name of the toolkit stack, if not the default name
+   *
+   * @default 'CDKToolkit'
+   */
+  readonly toolkitStackName?: string;
+
+  /**
+   * Whether to force a rollback or not
+   *
+   * Forcing a rollback will orphan all undeletable resources.
+   *
+   * @default false
+   */
+  readonly force?: boolean;
+
+  /**
+   * Orphan the resources with the given logical IDs
+   *
+   * @default - No orphaning
+   */
+  readonly orphanLogicalIds?: string[];
+
+  /**
+   * Display mode for stack deployment progress.
+   *
+   * @default - StackActivityProgress.Bar - stack events will be displayed for
+   *   the resource currently being deployed.
+   */
+  readonly progress?: StackActivityProgress;
+
+  /**
+   * Whether to validate the version of the bootstrap stack permissions
+   *
+   * @default true
+   */
+  readonly validateBootstrapStackVersion?: boolean;
+}
+
+export interface RollbackStackResult {
+  readonly notInRollbackableState?: boolean;
+  readonly success?: boolean;
+}
+
 interface AssetOptions {
   /**
    * Stack with assets to build.
    */
   readonly stack: cxapi.CloudFormationStackArtifact;
-
-  /**
-   * Name of the toolkit stack, if not the default name.
-   *
-   * @default 'CDKToolkit'
-   */
-  readonly toolkitStackName?: string;
 
   /**
    * Execution role for the building.
@@ -313,6 +390,7 @@ export class Deployments {
   private readonly publisherCache = new Map<AssetManifest, cdk_assets.AssetPublishing>();
   private readonly environmentResources: EnvironmentResourcesRegistry;
 
+  private _allowCrossAccountAssetPublishing: boolean | undefined;
   constructor(private readonly props: DeploymentsProps) {
     this.sdkProvider = props.sdkProvider;
     this.environmentResources = new EnvironmentResourcesRegistry(props.toolkitStackName);
@@ -348,13 +426,28 @@ export class Deployments {
     const { stackSdk, resolvedEnvironment, envResources } = await this.prepareSdkFor(stackArtifact, undefined, Mode.ForReading);
     const cfn = stackSdk.cloudFormation();
 
+    await uploadStackTemplateAssets(stackArtifact, this);
+
     // Upload the template, if necessary, before passing it to CFN
-    const cfnParam = await makeBodyParameterAndUpload(
+    const builder = new AssetManifestBuilder();
+    const cfnParam = await makeBodyParameter(
       stackArtifact,
       resolvedEnvironment,
+      builder,
       envResources,
-      this.sdkProvider,
       stackSdk);
+
+    // If the `makeBodyParameter` before this added assets, make sure to publish them before
+    // calling the API.
+    const addedAssets = builder.toManifest(stackArtifact.assembly.directory);
+    for (const entry of addedAssets.entries) {
+      await this.buildSingleAsset('no-version-validation', addedAssets, entry, {
+        stack: stackArtifact,
+      });
+      await this.publishSingleAsset(addedAssets, entry, {
+        stack: stackArtifact,
+      });
+    }
 
     const response = await cfn.getTemplateSummary(cfnParam).promise();
     if (!response.ResourceIdentifierSummaries) {
@@ -410,11 +503,131 @@ export class Deployments {
       ci: options.ci,
       rollback: options.rollback,
       hotswap: options.hotswap,
+      hotswapPropertyOverrides: options.hotswapPropertyOverrides,
       extraUserAgent: options.extraUserAgent,
       resourcesToImport: options.resourcesToImport,
       overrideTemplate: options.overrideTemplate,
       assetParallelism: options.assetParallelism,
     });
+  }
+
+  public async rollbackStack(options: RollbackStackOptions): Promise<RollbackStackResult> {
+    let resourcesToSkip: string[] = options.orphanLogicalIds ?? [];
+    if (options.force && resourcesToSkip.length > 0) {
+      throw new Error('Cannot combine --force with --orphan');
+    }
+
+    const {
+      stackSdk,
+      resolvedEnvironment: _,
+      cloudFormationRoleArn,
+      envResources,
+    } = await this.prepareSdkFor(options.stack, options.roleArn, Mode.ForWriting);
+
+    if (options.validateBootstrapStackVersion ?? true) {
+      // Do a verification of the bootstrap stack version
+      await this.validateBootstrapStackVersion(
+        options.stack.stackName,
+        BOOTSTRAP_STACK_VERSION_FOR_ROLLBACK,
+        options.stack.bootstrapStackVersionSsmParameter,
+        envResources);
+    }
+
+    const cfn = stackSdk.cloudFormation();
+    const deployName = options.stack.stackName;
+
+    // We loop in case of `--force` and the stack ends up in `CONTINUE_UPDATE_ROLLBACK`.
+    let maxLoops = 10;
+    while (maxLoops--) {
+      let cloudFormationStack = await CloudFormationStack.lookup(cfn, deployName);
+
+      switch (cloudFormationStack.stackStatus.rollbackChoice) {
+        case RollbackChoice.NONE:
+          warning(`Stack ${deployName} does not need a rollback: ${cloudFormationStack.stackStatus}`);
+          return { notInRollbackableState: true };
+
+        case RollbackChoice.START_ROLLBACK:
+          debug(`Initiating rollback of stack ${deployName}`);
+          await cfn.rollbackStack({
+            StackName: deployName,
+            RoleARN: cloudFormationRoleArn,
+            ClientRequestToken: randomUUID(),
+            // Enabling this is just the better overall default, the only reason it isn't the upstream default is backwards compatibility
+            RetainExceptOnCreate: true,
+          }).promise();
+          break;
+
+        case RollbackChoice.CONTINUE_UPDATE_ROLLBACK:
+          if (options.force) {
+            // Find the failed resources from the deployment and automatically skip them
+            // (Using deployment log because we definitely have `DescribeStackEvents` permissions, and we might not have
+            // `DescribeStackResources` permissions).
+            const poller = new StackEventPoller(cfn, {
+              stackName: deployName,
+              stackStatuses: ['ROLLBACK_IN_PROGRESS', 'UPDATE_ROLLBACK_IN_PROGRESS'],
+            });
+            await poller.poll();
+            resourcesToSkip = poller.resourceErrors
+              .filter(r => !r.isStackEvent && r.parentStackLogicalIds.length === 0)
+              .map(r => r.event.LogicalResourceId ?? '');
+          }
+
+          const skipDescription = resourcesToSkip.length > 0
+            ? ` (orphaning: ${resourcesToSkip.join(', ')})`
+            : '';
+          warning(`Continuing rollback of stack ${deployName}${skipDescription}`);
+          await cfn.continueUpdateRollback({
+            StackName: deployName,
+            ClientRequestToken: randomUUID(),
+            RoleARN: cloudFormationRoleArn,
+            ResourcesToSkip: resourcesToSkip,
+          }).promise();
+          break;
+
+        case RollbackChoice.ROLLBACK_FAILED:
+          warning(`Stack ${deployName} failed creation and rollback. This state cannot be rolled back. You can recreate this stack by running 'cdk deploy'.`);
+          return { notInRollbackableState: true };
+
+        default:
+          throw new Error(`Unexpected rollback choice: ${cloudFormationStack.stackStatus.rollbackChoice}`);
+      }
+
+      const monitor = options.quiet ? undefined : StackActivityMonitor.withDefaultPrinter(cfn, deployName, options.stack, {
+        ci: options.ci,
+      }).start();
+
+      let stackErrorMessage: string | undefined = undefined;
+      let finalStackState = cloudFormationStack;
+      try {
+        const successStack = await stabilizeStack(cfn, deployName);
+
+        // This shouldn't really happen, but catch it anyway. You never know.
+        if (!successStack) { throw new Error('Stack deploy failed (the stack disappeared while we were rolling it back)'); }
+        finalStackState = successStack;
+
+        const errors = monitor?.errors?.join(', ');
+        if (errors) {
+          stackErrorMessage = errors;
+        }
+      } catch (e: any) {
+        stackErrorMessage = suffixWithErrors(e.message, monitor?.errors);
+      } finally {
+        await monitor?.stop();
+      }
+
+      if (finalStackState.stackStatus.isRollbackSuccess || !stackErrorMessage) {
+        return { success: true };
+      }
+
+      // Either we need to ignore some resources to continue the rollback, or something went wrong
+      if (finalStackState.stackStatus.rollbackChoice === RollbackChoice.CONTINUE_UPDATE_ROLLBACK && options.force) {
+        // Do another loop-de-loop
+        continue;
+      }
+
+      throw new Error(`${stackErrorMessage} (fix problem and retry, or orphan these resources using --orphan or --force)`);;
+    }
+    throw new Error('Rollback did not finish after a large number of iterations; stopping because it looks like we\'re not making progress anymore. You can retry if rollback was progressing as expected.');
   }
 
   public async destroyStack(options: DestroyStackOptions): Promise<void> {
@@ -492,6 +705,7 @@ export class Deployments {
     const stackSdk = await this.cachedSdkForEnvironment(resolvedEnvironment, mode, {
       assumeRoleArn: arns.assumeRoleArn,
       assumeRoleExternalId: stack.assumeRoleExternalId,
+      assumeRoleAdditionalOptions: stack.assumeRoleAdditionalOptions,
     });
 
     return {
@@ -503,23 +717,23 @@ export class Deployments {
   }
 
   /**
-    * Try to use the bootstrap lookupRole. There are two scenarios that are handled here
-    *  1. The lookup role may not exist (it was added in bootstrap stack version 7)
-    *  2. The lookup role may not have the correct permissions (ReadOnlyAccess was added in
-    *      bootstrap stack version 8)
-    *
-    * In the case of 1 (lookup role doesn't exist) `forEnvironment` will either:
-    *   1. Return the default credentials if the default credentials are for the stack account
-    *   2. Throw an error if the default credentials are not for the stack account.
-    *
-    * If we successfully assume the lookup role we then proceed to 2 and check whether the bootstrap
-    * stack version is valid. If it is not we throw an error which should be handled in the calling
-    * function (and fallback to use a different role, etc)
-    *
-    * If we do not successfully assume the lookup role, but do get back the default credentials
-    * then return those and note that we are returning the default credentials. The calling
-    * function can then decide to use them or fallback to another role.
-    */
+   * Try to use the bootstrap lookupRole. There are two scenarios that are handled here
+   *  1. The lookup role may not exist (it was added in bootstrap stack version 7)
+   *  2. The lookup role may not have the correct permissions (ReadOnlyAccess was added in
+   *      bootstrap stack version 8)
+   *
+   * In the case of 1 (lookup role doesn't exist) `forEnvironment` will either:
+   *   1. Return the default credentials if the default credentials are for the stack account
+   *   2. Throw an error if the default credentials are not for the stack account.
+   *
+   * If we successfully assume the lookup role we then proceed to 2 and check whether the bootstrap
+   * stack version is valid. If it is not we throw an error which should be handled in the calling
+   * function (and fallback to use a different role, etc)
+   *
+   * If we do not successfully assume the lookup role, but do get back the default credentials
+   * then return those and note that we are returning the default credentials. The calling
+   * function can then decide to use them or fallback to another role.
+   */
   public async prepareSdkWithLookupRoleFor(
     stack: cxapi.CloudFormationStackArtifact,
   ): Promise<PreparedSdkWithLookupRoleForEnvironment> {
@@ -538,6 +752,7 @@ export class Deployments {
       const stackSdk = await this.cachedSdkForEnvironment(resolvedEnvironment, Mode.ForReading, {
         assumeRoleArn: arns.lookupRoleArn,
         assumeRoleExternalId: stack.lookupRole?.assumeRoleExternalId,
+        assumeRoleAdditionalOptions: stack.lookupRole?.assumeRoleAdditionalOptions,
       });
 
       const envResources = this.environmentResources.for(resolvedEnvironment, stackSdk.sdk);
@@ -601,21 +816,30 @@ export class Deployments {
    */
   public async publishAssets(asset: cxapi.AssetManifestArtifact, options: PublishStackAssetsOptions) {
     const { manifest, stackEnv } = await this.prepareAndValidateAssets(asset, options);
-    await publishAssets(manifest, this.sdkProvider, stackEnv, options.publishOptions);
+    await publishAssets(manifest, this.sdkProvider, stackEnv, {
+      ...options.publishOptions,
+      allowCrossAccount: await this.allowCrossAccountAssetPublishingForEnv(options.stack),
+    });
   }
 
   /**
    * Build a single asset from an asset manifest
+   *
+   * If an assert manifest artifact is given, the bootstrap stack version
+   * will be validated according to the constraints in that manifest artifact.
+   * If that is not necessary, `'no-version-validation'` can be passed.
    */
   // eslint-disable-next-line max-len
-  public async buildSingleAsset(assetArtifact: cxapi.AssetManifestArtifact, assetManifest: AssetManifest, asset: IManifestEntry, options: BuildStackAssetsOptions) {
+  public async buildSingleAsset(assetArtifact: cxapi.AssetManifestArtifact | 'no-version-validation', assetManifest: AssetManifest, asset: IManifestEntry, options: BuildStackAssetsOptions) {
     const { resolvedEnvironment, envResources } = await this.prepareSdkFor(options.stack, options.roleArn, Mode.ForWriting);
 
-    await this.validateBootstrapStackVersion(
-      options.stack.stackName,
-      assetArtifact.requiresBootstrapStackVersion,
-      assetArtifact.bootstrapStackVersionSsmParameter,
-      envResources);
+    if (assetArtifact !== 'no-version-validation') {
+      await this.validateBootstrapStackVersion(
+        options.stack.stackName,
+        assetArtifact.requiresBootstrapStackVersion,
+        assetArtifact.bootstrapStackVersionSsmParameter,
+        envResources);
+    }
 
     const publisher = this.cachedPublisher(assetManifest, resolvedEnvironment, options.stackName);
     await publisher.buildEntry(asset);
@@ -633,10 +857,19 @@ export class Deployments {
 
     // No need to validate anymore, we already did that during build
     const publisher = this.cachedPublisher(assetManifest, stackEnv, options.stackName);
-    await publisher.publishEntry(asset);
+    // eslint-disable-next-line no-console
+    await publisher.publishEntry(asset, { allowCrossAccount: await this.allowCrossAccountAssetPublishingForEnv(options.stack) });
     if (publisher.hasFailures) {
       throw new Error(`Failed to publish asset ${asset.id}`);
     }
+  }
+
+  private async allowCrossAccountAssetPublishingForEnv(stack: cxapi.CloudFormationStackArtifact): Promise<boolean> {
+    if (this._allowCrossAccountAssetPublishing === undefined) {
+      const { stackSdk: sdk } = await this.prepareSdkFor(stack, undefined, Mode.ForReading);
+      this._allowCrossAccountAssetPublishing = await determineAllowCrossAccountAssetPublishing(sdk, this.props.toolkitStackName);
+    }
+    return this._allowCrossAccountAssetPublishing;
   }
 
   /**
@@ -671,13 +904,19 @@ export class Deployments {
     mode: Mode,
     options?: CredentialsOptions,
   ) {
-    const cacheKey = [
+    const cacheKeyElements = [
       environment.account,
       environment.region,
       `${mode}`,
       options?.assumeRoleArn ?? '',
       options?.assumeRoleExternalId ?? '',
-    ].join(':');
+    ];
+
+    if (options?.assumeRoleAdditionalOptions) {
+      cacheKeyElements.push(JSON.stringify(options.assumeRoleAdditionalOptions));
+    }
+
+    const cacheKey = cacheKeyElements.join(':');
     const existing = this.sdkCache.get(cacheKey);
     if (existing) {
       return existing;
@@ -692,7 +931,7 @@ export class Deployments {
     if (existing) {
       return existing;
     }
-    const prefix = stackName ? `${stackName}: ` : '';
+    const prefix = stackName ? `${chalk.bold(stackName)}: ` : '';
     const publisher = new cdk_assets.AssetPublishing(assetManifest, {
       aws: new PublishingAws(this.sdkProvider, env),
       progressListener: new ParallelSafeAssetProgress(prefix, this.props.quiet ?? false),
@@ -711,7 +950,7 @@ class ParallelSafeAssetProgress implements cdk_assets.IPublishProgressListener {
 
   public onPublishEvent(type: cdk_assets.EventType, event: cdk_assets.IPublishProgress): void {
     const handler = this.quiet && type !== 'fail' ? debug : EVENT_TO_LOGGER[type];
-    handler(`${this.prefix} ${type}: ${event.message}`);
+    handler(`${this.prefix}${type}: ${event.message}`);
   }
 }
 
@@ -719,4 +958,10 @@ class ParallelSafeAssetProgress implements cdk_assets.IPublishProgressListener {
  * @deprecated Use 'Deployments' instead
  */
 export class CloudFormationDeployments extends Deployments {
+}
+
+function suffixWithErrors(msg: string, errors?: string[]) {
+  return errors && errors.length > 0
+    ? `${msg}: ${errors.join(', ')}`
+    : msg;
 }

@@ -15,8 +15,9 @@ import { UserData } from './user-data';
 import { BlockDevice } from './volume';
 import { IVpc, Subnet, SubnetSelection } from './vpc';
 import * as iam from '../../aws-iam';
-import { Annotations, Aspects, Duration, Fn, IResource, Lazy, Resource, Stack, Tags, Token } from '../../core';
+import { Annotations, Aspects, Duration, FeatureFlags, Fn, IResource, Lazy, Resource, Stack, Tags, Token } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
+import * as cxapi from '../../cx-api';
 
 /**
  * Name tag constant
@@ -177,7 +178,7 @@ export interface InstanceProps {
    * UserData, which will cause CloudFormation to replace it if the UserData
    * changes.
    *
-   * @default - true iff `initOptions` is specified, false otherwise.
+   * @default - true if `initOptions` is specified, false otherwise.
    */
   readonly userDataCausesReplacement?: boolean;
 
@@ -318,6 +319,19 @@ export interface InstanceProps {
    * @default false
    */
   readonly ebsOptimized?: boolean;
+
+  /**
+   * If true, the instance will not be able to be terminated using the Amazon EC2 console, CLI, or API.
+   *
+   * To change this attribute after launch, use [ModifyInstanceAttribute](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_ModifyInstanceAttribute.html).
+   * Alternatively, if you set InstanceInitiatedShutdownBehavior to terminate, you can terminate the instance
+   * by running the shutdown command from the instance.
+   *
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-instance.html#cfn-ec2-instance-disableapitermination
+   *
+   * @default false
+   */
+  readonly disableApiTermination?: boolean;
 
   /**
    * Indicates whether an instance stops or terminates when you initiate shutdown from the instance
@@ -561,6 +575,7 @@ export class Instance extends Resource implements IInstance {
       monitoring: props.detailedMonitoring,
       creditSpecification: props.creditSpecification ? { cpuCredits: props.creditSpecification } : undefined,
       ebsOptimized: props.ebsOptimized,
+      disableApiTermination: props.disableApiTermination,
       instanceInitiatedShutdownBehavior: props.instanceInitiatedShutdownBehavior,
       placementGroupName: props.placementGroup?.placementGroupName,
       enclaveOptions: props.enclaveEnabled !== undefined ? { enabled: props.enclaveEnabled } : undefined,
@@ -589,11 +604,22 @@ export class Instance extends Resource implements IInstance {
     this.instancePublicDnsName = this.instance.attrPublicDnsName;
     this.instancePublicIp = this.instance.attrPublicIp;
 
-    if (props.init) {
-      this.applyCloudFormationInit(props.init, props.initOptions);
-    }
+    // When feature flag is true, if both the resourceSignalTimeout and initOptions.timeout are set,
+    // the timeout is summed together. This logic is done in applyCloudFormationInit.
+    // This is because applyUpdatePolicies overwrites the timeout when both timeout fields are specified.
+    if (FeatureFlags.of(this).isEnabled(cxapi.EC2_SUM_TIMEOUT_ENABLED)) {
+      this.applyUpdatePolicies(props);
 
-    this.applyUpdatePolicies(props);
+      if (props.init) {
+        this.applyCloudFormationInit(props.init, props.initOptions);
+      }
+    } else {
+      if (props.init) {
+        this.applyCloudFormationInit(props.init, props.initOptions);
+      }
+
+      this.applyUpdatePolicies(props);
+    }
 
     // Trigger replacement (via new logical ID) on user data change, if specified or cfn-init is being used.
     //
@@ -702,6 +728,7 @@ export class Instance extends Resource implements IInstance {
       this.instance.cfnOptions.creationPolicy = {
         ...this.instance.cfnOptions.creationPolicy,
         resourceSignal: {
+          ...this.instance.cfnOptions.creationPolicy?.resourceSignal,
           timeout: props.resourceSignalTimeout && props.resourceSignalTimeout.toIsoString(),
         },
       };
