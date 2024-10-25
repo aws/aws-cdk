@@ -110,13 +110,6 @@ interface GarbageCollectorProps {
   readonly bootstrapStackName?: string;
 
   /**
-   * Max wait time for retries in milliseconds (for testing purposes).
-   *
-   * @default 60000
-   */
-  readonly maxWaitTime?: number;
-
-  /**
    * Confirm with the user before actual deletion happens
    *
    * @default true
@@ -133,7 +126,6 @@ export class GarbageCollector {
   private permissionToDelete: boolean;
   private permissionToTag: boolean;
   private bootstrapStackName: string;
-  private maxWaitTime: number;
   private confirm: boolean;
 
   public constructor(readonly props: GarbageCollectorProps) {
@@ -144,7 +136,6 @@ export class GarbageCollector {
 
     this.permissionToDelete = ['delete-tagged', 'full'].includes(props.action);
     this.permissionToTag = ['tag', 'full'].includes(props.action);
-    this.maxWaitTime = props.maxWaitTime ?? 60000;
     this.confirm = props.confirm ?? true;
 
     this.bootstrapStackName = props.bootstrapStackName ?? DEFAULT_TOOLKIT_STACK_NAME;
@@ -168,13 +159,12 @@ export class GarbageCollector {
     const activeAssets = new ActiveAssetCache();
 
     // Grab stack templates first
-    await refreshStacks(cfn, activeAssets, this.maxWaitTime, qualifier);
+    await refreshStacks(cfn, activeAssets, qualifier);
     // Start the background refresh
     const backgroundStackRefresh = new BackgroundStackRefresh({
       cfn,
       activeAssets,
       qualifier,
-      maxWaitTime: this.maxWaitTime,
     });
     backgroundStackRefresh.start();
 
