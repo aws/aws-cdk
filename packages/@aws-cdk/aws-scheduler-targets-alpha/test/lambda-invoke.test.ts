@@ -39,7 +39,7 @@ describe('schedule target', () => {
           Arn: {
             'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'],
           },
-          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget1441a743A31888', 'Arn'] },
+          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget9afb73C641D024', 'Arn'] },
           RetryPolicy: {},
         },
       },
@@ -194,7 +194,7 @@ describe('schedule target', () => {
   });
 
   test('reuses IAM role and IAM policy for two schedules from the same account', () => {
-    const lambdaTarget = new LambdaInvoke(func, { });
+    const lambdaTarget = new LambdaInvoke(func, {});
 
     new Schedule(stack, 'MyScheduleDummy1', {
       schedule: expr,
