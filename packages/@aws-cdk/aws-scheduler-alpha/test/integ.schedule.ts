@@ -103,7 +103,10 @@ integ.assertions.awsApiCall('SQS', 'receiveMessage', {
   QueueUrl: queue.queueUrl,
   MaxNumberOfMessages: 10,
 }).expect(ExpectedResult.objectLike({
-  Messages: Match.arrayWith([{ Body: `valueA-${stack.region}` }, { Body: `valueB-${stack.region}` }]),
+  Messages: Match.arrayWith([
+    Match.objectLike({ Body: `valueA-${stack.region}` }),
+    Match.objectLike({ Body: `valueB-${stack.region}` }),
+  ]),
 })).waitForAssertions({
   totalTimeout: cdk.Duration.minutes(5),
   interval: cdk.Duration.seconds(20),

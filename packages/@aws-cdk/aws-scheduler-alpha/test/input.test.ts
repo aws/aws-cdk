@@ -43,7 +43,7 @@ describe('schedule target input', () => {
     Template.fromStack(stack).hasResource('AWS::Scheduler::Schedule', {
       Properties: {
         Target: {
-          Input: '"test"',
+          Input: 'test',
         },
       },
     });
@@ -52,13 +52,14 @@ describe('schedule target input', () => {
   test('create an input from text with a ref inside', () => {
     new Schedule(stack, 'MyScheduleDummy', {
       schedule: expr,
-      target: new SomeLambdaTarget(func, ScheduleTargetInput.fromText(stack.account)),
+      target: new SomeLambdaTarget(func, ScheduleTargetInput.fromText(`a-${stack.account}`)),
     });
+
     Template.fromStack(stack).hasResource('AWS::Scheduler::Schedule', {
       Properties: {
         Target: {
           Input: {
-            'Fn::Join': ['', ['"', { Ref: 'AWS::AccountId' }, '"']],
+            'Fn::Join': ['', ['a-', { Ref: 'AWS::AccountId' }]],
           },
         },
       },
@@ -115,7 +116,7 @@ describe('schedule target input', () => {
     Template.fromStack(stack).hasResource('AWS::Scheduler::Schedule', {
       Properties: {
         Target: {
-          Input: '"Test=<aws.scheduler.schedule-arn>"',
+          Input: 'Test=<aws.scheduler.schedule-arn>',
         },
       },
     });
