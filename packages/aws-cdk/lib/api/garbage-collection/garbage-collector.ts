@@ -1,3 +1,4 @@
+import * as crypto from 'node:crypto';
 import * as cxapi from '@aws-cdk/cx-api';
 import { ECR, S3 } from 'aws-sdk';
 import * as chalk from 'chalk';
@@ -162,13 +163,6 @@ interface GarbageCollectorProps {
   readonly bootstrapStackName?: string;
 
   /**
-   * Max wait time for retries in milliseconds (for testing purposes).
-   *
-   * @default 60000
-   */
-  readonly maxWaitTime?: number;
-
-  /**
    * Confirm with the user before actual deletion happens
    *
    * @default true
@@ -185,7 +179,6 @@ export class GarbageCollector {
   private permissionToDelete: boolean;
   private permissionToTag: boolean;
   private bootstrapStackName: string;
-  private maxWaitTime: number;
   private confirm: boolean;
 
   public constructor(readonly props: GarbageCollectorProps) {
@@ -196,7 +189,6 @@ export class GarbageCollector {
 
     this.permissionToDelete = ['delete-tagged', 'full'].includes(props.action);
     this.permissionToTag = ['tag', 'full'].includes(props.action);
-    this.maxWaitTime = props.maxWaitTime ?? 60000;
     this.confirm = props.confirm ?? true;
 
     this.bootstrapStackName = props.bootstrapStackName ?? DEFAULT_TOOLKIT_STACK_NAME;
@@ -210,17 +202,29 @@ export class GarbageCollector {
     const sdk = (await this.props.sdkProvider.forEnvironment(this.props.resolvedEnvironment, Mode.ForWriting)).sdk;
     const cfn = sdk.cloudFormation();
 
+    // Some S3 APIs in SDKv2 have a bug that always requires them to use a MD5 checksum.
+    // These APIs are not going to be supported in a FIPS environment.
+    // We fail with a nice error message.
+    // Once we switch this code to SDKv3, this can be made work again by adding
+    // `ChecksumAlgorithm: 'SHA256'` to the affected APIs.
+    // Currently known to affect only DeleteObjects (note the plural)
+    if (crypto.getFips() === 1) {
+      throw new Error('Garbage Collection is currently not supported in FIPS environments');
+    }
+    const s3 = sdk.s3({
+      needsMd5Checksums: true,
+    });
+
     const qualifier = await this.bootstrapQualifier(sdk, this.bootstrapStackName);
     const activeAssets = new ActiveAssetCache();
 
     // Grab stack templates first
-    await refreshStacks(cfn, activeAssets, this.maxWaitTime, qualifier);
+    await refreshStacks(cfn, activeAssets, qualifier);
     // Start the background refresh
     const backgroundStackRefresh = new BackgroundStackRefresh({
       cfn,
       activeAssets,
       qualifier,
-      maxWaitTime: this.maxWaitTime,
     });
     backgroundStackRefresh.start();
 
