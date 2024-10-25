@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.165.0](https://github.com/aws/aws-cdk/compare/v2.164.0...v2.165.0) (2024-10-25)
+
+
+### Bug Fixes
+
+* enable node-fips compatible body checksums for S3 ([#31883](https://github.com/aws/aws-cdk/issues/31883)) ([6ce0b82](https://github.com/aws/aws-cdk/commit/6ce0b82e05171b89776cc050a6b3d1b626752397))
+
 ## [2.164.0](https://github.com/aws/aws-cdk/compare/v2.163.1...v2.164.0) (2024-10-24)
 
 
