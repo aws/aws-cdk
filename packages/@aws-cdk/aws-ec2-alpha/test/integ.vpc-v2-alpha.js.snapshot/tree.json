@@ -32,60 +32,90 @@
               "SecondaryAddress2": {
                 "id": "SecondaryAddress2",
                 "path": "aws-cdk-vpcv2-alpha/VPC-integ-test-1/SecondaryAddress2",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
-                  "aws:cdk:cloudformation:props": {
-                    "cidrBlock": "10.2.0.0/16",
-                    "vpcId": {
-                      "Fn::GetAtt": [
-                        "VPCintegtest1EBA1CB75",
-                        "VpcId"
-                      ]
+                "children": {
+                  "SecondaryAddress2": {
+                    "id": "SecondaryAddress2",
+                    "path": "aws-cdk-vpcv2-alpha/VPC-integ-test-1/SecondaryAddress2/SecondaryAddress2",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
+                      "aws:cdk:cloudformation:props": {
+                        "cidrBlock": "10.2.0.0/16",
+                        "vpcId": {
+                          "Fn::GetAtt": [
+                            "VPCintegtest1EBA1CB75",
+                            "VpcId"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnVPCCidrBlock",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPCCidrBlock",
+                  "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
               },
               "AmazonProvided": {
                 "id": "AmazonProvided",
                 "path": "aws-cdk-vpcv2-alpha/VPC-integ-test-1/AmazonProvided",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
-                  "aws:cdk:cloudformation:props": {
-                    "amazonProvidedIpv6CidrBlock": true,
-                    "vpcId": {
-                      "Fn::GetAtt": [
-                        "VPCintegtest1EBA1CB75",
-                        "VpcId"
-                      ]
+                "children": {
+                  "AmazonProvided": {
+                    "id": "AmazonProvided",
+                    "path": "aws-cdk-vpcv2-alpha/VPC-integ-test-1/AmazonProvided/AmazonProvided",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
+                      "aws:cdk:cloudformation:props": {
+                        "amazonProvidedIpv6CidrBlock": true,
+                        "vpcId": {
+                          "Fn::GetAtt": [
+                            "VPCintegtest1EBA1CB75",
+                            "VpcId"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnVPCCidrBlock",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPCCidrBlock",
+                  "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
               },
               "SecondaryAddress3": {
                 "id": "SecondaryAddress3",
                 "path": "aws-cdk-vpcv2-alpha/VPC-integ-test-1/SecondaryAddress3",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
-                  "aws:cdk:cloudformation:props": {
-                    "cidrBlock": "10.3.0.0/16",
-                    "vpcId": {
-                      "Fn::GetAtt": [
-                        "VPCintegtest1EBA1CB75",
-                        "VpcId"
-                      ]
+                "children": {
+                  "SecondaryAddress3": {
+                    "id": "SecondaryAddress3",
+                    "path": "aws-cdk-vpcv2-alpha/VPC-integ-test-1/SecondaryAddress3/SecondaryAddress3",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
+                      "aws:cdk:cloudformation:props": {
+                        "cidrBlock": "10.3.0.0/16",
+                        "vpcId": {
+                          "Fn::GetAtt": [
+                            "VPCintegtest1EBA1CB75",
+                            "VpcId"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnVPCCidrBlock",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPCCidrBlock",
+                  "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
               },

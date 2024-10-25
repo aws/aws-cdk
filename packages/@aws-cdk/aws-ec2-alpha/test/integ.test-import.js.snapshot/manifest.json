@@ -1,159 +1,186 @@
 {
   "version": "38.0.1",
   "artifacts": {
-    "aws-cdk-vpcv2-alpha-new.assets": {
+    "vpcv2-import-integ-test.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-cdk-vpcv2-alpha-new.assets.json",
+        "file": "vpcv2-import-integ-test.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-cdk-vpcv2-alpha-new": {
+    "vpcv2-import-integ-test": {
       "type": "aws:cloudformation:stack",
-      "environment": "aws://unknown-account/unknown-region",
+      "environment": "aws://unknown-account/us-west-2",
       "properties": {
-        "templateFile": "aws-cdk-vpcv2-alpha-new.template.json",
+        "templateFile": "vpcv2-import-integ-test.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "notificationArns": [],
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a88dc0ea3e4c5ea7d17016d0f0fb2cdac863bc0d2a1ed9aecfb42840baf64e13.json",
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-west-2",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-west-2",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/10cbe304a3bd42e3465787e1f8f7f9ab051a9af6b83f2eeb56422e7e3c6e60b1.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-cdk-vpcv2-alpha-new.assets"
+          "vpcv2-import-integ-test.assets"
         ],
         "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-west-2",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }
       },
       "dependencies": [
-        "aws-cdk-vpcv2-alpha-new.assets"
+        "vpcv2-import-integ-test.assets"
       ],
       "metadata": {
-        "/aws-cdk-vpcv2-alpha-new/SubnetTest/Resource": [
+        "/vpcv2-import-integ-test/ImportedNewVPC/InternetGateway/IGW": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SubnetTest3296A161"
+            "data": "ImportedNewVPCInternetGatewayIGWA7EB1B6C"
           }
         ],
-        "/aws-cdk-vpcv2-alpha-new/SubnetTest/SecondaryTest/SecondaryTest": [
+        "/vpcv2-import-integ-test/ImportedNewVPC/InternetGateway/GWAttachment": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SubnetTestSecondaryTest2AB12223"
+            "data": "ImportedNewVPCInternetGatewayGWAttachment5928F3D0"
           }
         ],
-        "/aws-cdk-vpcv2-alpha-new/testSubnet1/Subnet": [
+        "/vpcv2-import-integ-test/ImportedNewVPC/ImportedPublicSubnet-DefaultRoute/Route": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testSubnet1Subnet72087287"
+            "data": "ImportedNewVPCImportedPublicSubnetDefaultRoute56DCABA4"
           }
         ],
-        "/aws-cdk-vpcv2-alpha-new/testSubnet1/RouteTable/RouteTable": [
+        "/vpcv2-import-integ-test/ImportedNewVPC/AddnewImportedSubnet-DefaultRoute/Route": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testSubnet1RouteTableB5FDDF81"
+            "data": "ImportedNewVPCAddnewImportedSubnetDefaultRoute40344A0C"
           }
         ],
-        "/aws-cdk-vpcv2-alpha-new/testSubnet1/RouteTableAssociation": [
+        "/vpcv2-import-integ-test/ImportedNewVPC/AddnewImportedSubnet2-DefaultRoute/Route": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testSubnet1RouteTableAssociation1DA9E185"
+            "data": "ImportedNewVPCAddnewImportedSubnet2DefaultRouteE8630009"
           }
         ],
-        "/aws-cdk-vpcv2-alpha-new/Instance/InstanceSecurityGroup/Resource": [
+        "/vpcv2-import-integ-test/ImportedNewVPC/NATGateway/EIP": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "InstanceInstanceSecurityGroupF0E2D5BE"
+            "data": "ImportedNewVPCNATGatewayEIP36F5A670"
           }
         ],
-        "/aws-cdk-vpcv2-alpha-new/Instance/InstanceRole/Resource": [
+        "/vpcv2-import-integ-test/ImportedNewVPC/NATGateway/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "InstanceInstanceRoleE9785DE5"
+            "data": "ImportedNewVPCNATGatewayE0ECDDFA"
           }
         ],
-        "/aws-cdk-vpcv2-alpha-new/Instance/InstanceProfile": [
+        "/vpcv2-import-integ-test/ImportedNewVPC/EgressOnlyGW/EIGW": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "InstanceInstanceProfileAB5AEF02"
+            "data": "ImportedNewVPCEgressOnlyGWEIGWF9D837A6"
           }
         ],
-        "/aws-cdk-vpcv2-alpha-new/Instance/Resource": [
+        "/vpcv2-import-integ-test/AddnewImportedSubnet/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "InstanceC1063A87"
+            "data": "AddnewImportedSubnet53655C69",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: MAY_REPLACE"
+            ]
           }
         ],
-        "/aws-cdk-vpcv2-alpha-new/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+        "/vpcv2-import-integ-test/AddnewImportedSubnet/RouteTable/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+            "data": "AddnewImportedSubnetRouteTable73C1E1B7"
           }
         ],
-        "/aws-cdk-vpcv2-alpha-new/testIGW/IGW": [
+        "/vpcv2-import-integ-test/AddnewImportedSubnet/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testIGW8D947AF2"
+            "data": "AddnewImportedSubnetRouteTableAssociationE5634175"
           }
         ],
-        "/aws-cdk-vpcv2-alpha-new/testIGW/GWAttachment": [
+        "/vpcv2-import-integ-test/AddnewImportedSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testIGWGWAttachment682A6782"
+            "data": "AddnewImportedSubnet2SubnetD9533DC5",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: MAY_REPLACE"
+            ]
           }
         ],
-        "/aws-cdk-vpcv2-alpha-new/TestRoutetable/RouteTable": [
+        "/vpcv2-import-integ-test/AddnewImportedSubnet2/RouteTable/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TestRoutetableRouteTable7B7B907D"
+            "data": "AddnewImportedSubnet2RouteTable2F07FB4F"
           }
         ],
-        "/aws-cdk-vpcv2-alpha-new/TestRoutetable/eigwRoute/Route": [
+        "/vpcv2-import-integ-test/AddnewImportedSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TestRoutetableeigwRouteCDE8BBAF"
+            "data": "AddnewImportedSubnet2RouteTableAssociationA2C6CDF7"
           }
         ],
-        "/aws-cdk-vpcv2-alpha-new/testSubnet2/Subnet": [
+        "/vpcv2-import-integ-test/ImportedIPAMVPC/EgressOnlyGW/EIGW": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testSubnet2Subnet4681911A"
+            "data": "ImportedIPAMVPCEgressOnlyGWEIGW52C5892F"
           }
         ],
-        "/aws-cdk-vpcv2-alpha-new/testSubnet2/RouteTableAssociation": [
+        "/vpcv2-import-integ-test/AddnewSubnettoImportedIpam/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testSubnet2RouteTableAssociation40DCE4CD"
+            "data": "AddnewSubnettoImportedIpamSubnet0F5C302A"
           }
         ],
-        "/aws-cdk-vpcv2-alpha-new/BootstrapVersion": [
+        "/vpcv2-import-integ-test/AddnewSubnettoImportedIpam/RouteTable/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AddnewSubnettoImportedIpamRouteTable1AE0FBA3"
+          }
+        ],
+        "/vpcv2-import-integ-test/AddnewSubnettoImportedIpam/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AddnewSubnettoImportedIpamRouteTableAssociation20268806"
+          }
+        ],
+        "/vpcv2-import-integ-test/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-vpcv2-alpha-new/CheckBootstrapVersion": [
+        "/vpcv2-import-integ-test/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ],
-        "SubnetTestSecondaryTestBDE45F82": [
+        "ImportedNewVPCAddnewImportedSubnetDefaultIPv6Route98D952A0": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SubnetTestSecondaryTestBDE45F82",
+            "data": "ImportedNewVPCAddnewImportedSubnetDefaultIPv6Route98D952A0",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ImportedNewVPCAddnewImportedSubnet2DefaultIPv6Route1EBC364B": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ImportedNewVPCAddnewImportedSubnet2DefaultIPv6Route1EBC364B",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
           }
         ]
       },
-      "displayName": "aws-cdk-vpcv2-alpha-new"
+      "displayName": "vpcv2-import-integ-test"
     },
     "integtestmodelDefaultTestDeployAssertCF40BD53.assets": {
       "type": "cdk:asset-manifest",
