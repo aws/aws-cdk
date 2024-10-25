@@ -211,9 +211,6 @@ export class GarbageCollector {
     if (crypto.getFips() === 1) {
       throw new Error('Garbage Collection is currently not supported in FIPS environments');
     }
-    const s3 = sdk.s3({
-      needsMd5Checksums: true,
-    });
 
     const qualifier = await this.bootstrapQualifier(sdk, this.bootstrapStackName);
     const activeAssets = new ActiveAssetCache();
@@ -320,7 +317,9 @@ export class GarbageCollector {
    * Perform garbage collection on S3 assets
    */
   public async garbageCollectS3(sdk: ISDK, activeAssets: ActiveAssetCache, backgroundStackRefresh: BackgroundStackRefresh) {
-    const s3 = sdk.s3();
+    const s3 = sdk.s3({
+      needsMd5Checksums: true,
+    });
     const bucket = await this.bootstrapBucketName(sdk, this.bootstrapStackName);
     const numObjects = await this.numObjectsInBucket(s3, bucket);
     const printer = new ProgressPrinter(numObjects, 1000);
