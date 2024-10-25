@@ -1662,7 +1662,7 @@ integTest(
         const targetName = template.replace(/.js$/, '');
         await shell([process.execPath, template, '>', targetName], {
           cwd: cxAsmDir,
-          output: fixture.output,
+          outputs: [fixture.output],
           modEnv: {
             TEST_ACCOUNT: await fixture.aws.account(),
             TEST_REGION: fixture.aws.region,
