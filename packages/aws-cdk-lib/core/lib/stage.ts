@@ -1,10 +1,10 @@
 import { IConstruct, Construct, Node } from 'constructs';
+import { Annotations } from './annotations';
 import { Environment } from './environment';
 import { PermissionsBoundary } from './permissions-boundary';
 import { synthesize } from './private/synthesis';
 import { IPolicyValidationPluginBeta1 } from './validation';
 import * as cxapi from '../../cx-api';
-import { Annotations } from './annotations';
 
 const STAGE_SYMBOL = Symbol.for('@aws-cdk/core.Stage');
 
