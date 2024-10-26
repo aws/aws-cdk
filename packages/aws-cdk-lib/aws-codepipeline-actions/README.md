@@ -1343,7 +1343,7 @@ const commandsAction = new codepipeline_actions.CommandsAction({
   ],
   input: sourceArtifact,
   output: outputArtifact,
-  outputVariables: ['MY_OUTPUT', 'CODEBUILD_BUILD_ID'], // CODEBUILD_BUILD_ID is a variable emitted by CodeBuild
+  outputVariables: ['MY_OUTPUT', 'CODEBUILD_BUILD_ID'], // CODEBUILD_BUILD_ID is a variable defined by CodeBuild
 });
 
 // Deploy action
