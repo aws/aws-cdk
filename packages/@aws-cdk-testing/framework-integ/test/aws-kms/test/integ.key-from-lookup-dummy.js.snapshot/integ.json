@@ -1,0 +1,13 @@
+{
+  "enableLookups": true,
+  "version": "38.0.1",
+  "testCases": {
+    "key-from-lookup-dummy-integ/DefaultTest": {
+      "stacks": [
+        "key-from-lookup-dummy"
+      ],
+      "assertionStack": "key-from-lookup-dummy-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "keyfromlookupdummyintegDefaultTestDeployAssert59B83056"
+    }
+  }
+}
