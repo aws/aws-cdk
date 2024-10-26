@@ -5,6 +5,7 @@ import { CloudFormationStack } from '../../lib/api/util/cloudformation';
 export interface MockToolkitInfoProps {
   readonly bucketName?: string;
   readonly bucketUrl?: string;
+  readonly repositoryName?: string;
   readonly version?: number;
   readonly bootstrapStack?: CloudFormationStack;
 }
@@ -26,6 +27,7 @@ export class MockToolkitInfo extends ToolkitInfo {
   public readonly found = true;
   public readonly bucketUrl: string;
   public readonly bucketName: string;
+  public readonly repositoryName: string;
   public readonly version: number;
   public readonly variant: string;
   public readonly stackName = 'MockBootstrapStack';
@@ -37,6 +39,7 @@ export class MockToolkitInfo extends ToolkitInfo {
 
     this.bucketName = props.bucketName ?? 'MockToolkitBucketName';
     this.bucketUrl = props.bucketUrl ?? `https://${this.bucketName}.s3.amazonaws.com/`;
+    this.repositoryName = props.repositoryName ?? 'MockToolkitRepositoryName';
     this.version = props.version ?? 1;
     this.variant = DEFAULT_BOOTSTRAP_VARIANT;
     this._bootstrapStack = props.bootstrapStack;
