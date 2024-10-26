@@ -273,6 +273,7 @@ describe('Commands Action', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyName: 'PipelineCommandsCodePipelineActionRoleDefaultPolicy4B986788',
         PolicyDocument: {
+          // Write policy is not granted
           Statement: Match.not(
             Match.arrayWith([
               {
@@ -475,6 +476,7 @@ describe('Commands Action', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyName: 'PipelineCommandsCodePipelineActionRoleDefaultPolicy4B986788',
         PolicyDocument: {
+          // Encrypt policy is not granted
           Statement: Match.not(
             Match.arrayWith([
               {
