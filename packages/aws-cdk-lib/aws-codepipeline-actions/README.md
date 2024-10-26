@@ -1347,7 +1347,7 @@ const commandsAction = new codepipeline_actions.CommandsAction({
 });
 
 // Deploy action
-const deployAction = new cpactions.S3DeployAction({
+const deployAction = new codepipeline_actions.S3DeployAction({
   actionName: 'DeployAction',
   extract: true,
   input: outputArtifact,
