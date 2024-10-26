@@ -49,18 +49,33 @@ describe('schedule target input', () => {
     });
   });
 
-  test('create an input from text with a ref inside', () => {
+  test('create an input from text concatenated from literal string with a token', () => {
     new Schedule(stack, 'MyScheduleDummy', {
       schedule: expr,
-      target: new SomeLambdaTarget(func, ScheduleTargetInput.fromText(`a-${stack.account}`)),
+      target: new SomeLambdaTarget(func, ScheduleTargetInput.fromText(`ac-${stack.account}`)),
     });
 
     Template.fromStack(stack).hasResource('AWS::Scheduler::Schedule', {
       Properties: {
         Target: {
           Input: {
-            'Fn::Join': ['', ['a-', { Ref: 'AWS::AccountId' }]],
+            'Fn::Join': ['', ['ac-', { Ref: 'AWS::AccountId' }]],
           },
+        },
+      },
+    });
+  });
+
+  test('create an input from text with a ref inside', () => {
+    new Schedule(stack, 'MyScheduleDummy', {
+      schedule: expr,
+      target: new SomeLambdaTarget(func, ScheduleTargetInput.fromText(stack.account)),
+    });
+
+    Template.fromStack(stack).hasResource('AWS::Scheduler::Schedule', {
+      Properties: {
+        Target: {
+          Input: { Ref: 'AWS::AccountId' },
         },
       },
     });
