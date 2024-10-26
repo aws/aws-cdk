@@ -2,7 +2,7 @@
 
 const mockGarbageCollect = jest.fn();
 
-import { GarbageCollector, ToolkitInfo } from '../../lib/api';
+import { GarbageCollector, ToolkitInfo, ECR_ISOLATED_TAG, S3_ISOLATED_TAG } from '../../lib/api';
 import { ActiveAssetCache, BackgroundStackRefresh, BackgroundStackRefreshProps } from '../../lib/api/garbage-collection/stack-refresh';
 import { mockBootstrapStack, MockSdk, MockSdkProvider } from '../util/mock-sdk';
 
@@ -16,11 +16,15 @@ let mockGetObjectTagging: (params: AWS.S3.Types.GetObjectTaggingRequest) => AWS.
 let mockDeleteObjects: (params: AWS.S3.Types.DeleteObjectsRequest) => AWS.S3.Types.DeleteObjectsOutput;
 let mockDeleteObjectTagging: (params: AWS.S3.Types.DeleteObjectTaggingRequest) => AWS.S3.Types.DeleteObjectTaggingOutput;
 let mockPutObjectTagging: (params: AWS.S3.Types.PutObjectTaggingRequest) => AWS.S3.Types.PutObjectTaggingOutput;
+let mockBatchDeleteImage: (params: AWS.ECR.Types.BatchDeleteImageRequest) => AWS.ECR.Types.BatchDeleteImageResponse;
+let mockBatchGetImage: (params: AWS.ECR.Types.BatchGetImageRequest) => AWS.ECR.Types.BatchGetImageResponse;
+let mockPutImage: (params: AWS.ECR.Types.PutImageRequest) => AWS.ECR.Types.PutImageResponse;
+let mockListImages: (params: AWS.ECR.Types.ListImagesRequest) => AWS.ECR.Types.ListImagesResponse;
+let mockDescribeImages: (params: AWS.ECR.Types.DescribeImagesRequest) => AWS.ECR.Types.DescribeImagesResponse;
 
 let stderrMock: jest.SpyInstance;
 let sdk: MockSdkProvider;
 
-const ISOLATED_TAG = 'aws-cdk:isolated';
 const DAY = 24 * 60 * 60 * 1000; // Number of milliseconds in a day
 
 function mockTheToolkitInfo(stackProps: Partial<AWS.CloudFormation.Stack>) {
@@ -50,6 +54,128 @@ function gc(props: {
   });
 }
 
+function setupCFNGarbageCollectionMocks(mockSdk: MockSdkProvider) {
+  mockListStacks = jest.fn().mockResolvedValue({
+    StackSummaries: [
+      { StackName: 'Stack1', StackStatus: 'CREATE_COMPLETE' },
+      { StackName: 'Stack2', StackStatus: 'UPDATE_COMPLETE' },
+    ],
+  });
+  mockGetTemplateSummary = jest.fn().mockReturnValue({
+    Parameters: [{
+      ParameterKey: 'BootstrapVersion',
+      DefaultValue: '/cdk-bootstrap/abcde/version',
+    }],
+  });
+  mockGetTemplate = jest.fn().mockReturnValue({
+    TemplateBody: 'abcde',
+  });
+  mockDescribeStacks = jest.fn();
+
+  mockSdk.stubCloudFormation({
+    listStacks: mockListStacks,
+    getTemplateSummary: mockGetTemplateSummary,
+    getTemplate: mockGetTemplate,
+    describeStacks: mockDescribeStacks,
+  });
+
+  return {
+    mockListStacks,
+    mockGetTemplateSummary,
+    mockGetTemplate,
+    mockDescribeStacks,
+  };
+}
+
+function setupS3GarbageCollectionMocks(mockSdk: MockSdkProvider) {
+  const mocks = setupCFNGarbageCollectionMocks(mockSdk);
+
+  mockListObjectsV2 = jest.fn().mockImplementation(() => {
+    return Promise.resolve({
+      Contents: [
+        { Key: 'asset1', LastModified: new Date(Date.now() - (2 * DAY)) },
+        { Key: 'asset2', LastModified: new Date(Date.now() - (10 * DAY)) },
+        { Key: 'asset3', LastModified: new Date(Date.now() - (100 * DAY)) },
+      ],
+      KeyCount: 3,
+    });
+  });
+  mockGetObjectTagging = jest.fn().mockImplementation((params) => {
+    return Promise.resolve({
+      TagSet: params.Key === 'asset2' ? [{ Key: S3_ISOLATED_TAG, Value: new Date().toISOString() }] : [],
+    });
+  });
+  mockPutObjectTagging = jest.fn();
+  mockDeleteObjects = jest.fn();
+  mockDeleteObjectTagging = jest.fn();
+
+  mockSdk.stubS3({
+    listObjectsV2: mockListObjectsV2,
+    getObjectTagging: mockGetObjectTagging,
+    deleteObjects: mockDeleteObjects,
+    deleteObjectTagging: mockDeleteObjectTagging,
+    putObjectTagging: mockPutObjectTagging,
+  });
+
+  return {
+    ...mocks,
+    mockListObjectsV2,
+    mockGetObjectTagging,
+    mockDeleteObjects,
+    mockDeleteObjectTagging,
+    mockPutObjectTagging,
+  };
+}
+
+function setupEcrGarbageCollectionMocks(mockSdk: MockSdkProvider) {
+  const mocks = setupCFNGarbageCollectionMocks(mockSdk);
+  mockBatchGetImage = jest.fn().mockImplementation(() => {
+    return Promise.resolve({
+      images: [
+        { imageId: { imageDigest: 'digest1' }, imageManifest: {} },
+        { imageId: { imageDigest: 'digest2' }, imageManifest: {} },
+        { imageId: { imageDigest: 'digest3' }, imageManifest: {} },
+      ],
+    });
+  });
+  mockDescribeImages = jest.fn().mockImplementation(() => {
+    return Promise.resolve({
+      imageDetails: [
+        { imageDigest: 'digest3', imageTags: ['klmno'], imagePushedAt: Date.now() - (2 * DAY), imageSizeInBytes: 100 },
+        { imageDigest: 'digest2', imageTags: ['fghij'], imagePushedAt: Date.now() - (10 * DAY), imageSizeInBytes: 300_000_000 },
+        { imageDigest: 'digest1', imageTags: ['abcde'], imagePushedAt: Date.now() - (100 * DAY), imageSizeInBytes: 1_000_000_000 },
+      ],
+    });
+  });
+  mockBatchDeleteImage = jest.fn();
+  mockPutImage = jest.fn();
+  mockListImages = jest.fn().mockImplementation(() => {
+    return Promise.resolve({
+      imageIds: [
+        { imageDigest: 'digest1', imageTag: 'abcde' }, // inuse
+        { imageDigest: 'digest2', imageTag: 'fghij' },
+        { imageDigest: 'digest3', imageTag: 'klmno' },
+      ],
+    });
+  });
+
+  mockSdk.stubEcr({
+    batchGetImage: mockBatchGetImage,
+    describeImages: mockDescribeImages,
+    batchDeleteImage: mockBatchDeleteImage,
+    putImage: mockPutImage,
+    listImages: mockListImages,
+  });
+
+  return {
+    ...mocks,
+    mockDescribeImages,
+    mockBatchDeleteImage,
+    mockPutImage,
+    mockListImages,
+  };
+}
+
 beforeEach(() => {
   sdk = new MockSdkProvider({ realSdk: false });
   // By default, we'll return a non-found toolkit info
@@ -61,56 +187,10 @@ afterEach(() => {
   stderrMock.mockRestore();
 });
 
-describe('Garbage Collection', () => {
+describe('S3 Garbage Collection', () => {
+  let mocks: any;
   beforeEach(() => {
-    mockListStacks = jest.fn().mockResolvedValue({
-      StackSummaries: [
-        { StackName: 'Stack1', StackStatus: 'CREATE_COMPLETE' },
-        { StackName: 'Stack2', StackStatus: 'UPDATE_COMPLETE' },
-      ],
-    });
-    mockGetTemplateSummary = jest.fn().mockReturnValue({
-      Parameters: [{
-        ParameterKey: 'BootstrapVersion',
-        DefaultValue: '/cdk-bootstrap/abcde/version',
-      }],
-    });
-    mockGetTemplate = jest.fn().mockReturnValue({
-      TemplateBody: 'abcde',
-    });
-    mockListObjectsV2 = jest.fn().mockImplementation(() => {
-      return Promise.resolve({
-        Contents: [
-          { Key: 'asset1', LastModified: new Date(Date.now() - (2 * DAY)) },
-          { Key: 'asset2', LastModified: new Date(Date.now() - (10 * DAY)) },
-          { Key: 'asset3', LastModified: new Date(Date.now() - (100 * DAY)) },
-        ],
-        KeyCount: 3,
-      });
-    });
-    mockGetObjectTagging = jest.fn().mockImplementation((params) => {
-      return Promise.resolve({
-        TagSet: params.Key === 'asset2' ? [{ Key: ISOLATED_TAG, Value: new Date().toISOString() }] : [],
-      });
-    });
-    mockPutObjectTagging = jest.fn();
-    mockDeleteObjects = jest.fn();
-    mockDeleteObjectTagging = jest.fn();
-    mockDescribeStacks = jest.fn();
-
-    sdk.stubCloudFormation({
-      listStacks: mockListStacks,
-      getTemplateSummary: mockGetTemplateSummary,
-      getTemplate: mockGetTemplate,
-      describeStacks: mockDescribeStacks,
-    });
-    sdk.stubS3({
-      listObjectsV2: mockListObjectsV2,
-      getObjectTagging: mockGetObjectTagging,
-      deleteObjects: mockDeleteObjects,
-      deleteObjectTagging: mockDeleteObjectTagging,
-      putObjectTagging: mockPutObjectTagging,
-    });
+    mocks = setupS3GarbageCollectionMocks(sdk);
   });
 
   afterEach(() => {
@@ -134,14 +214,14 @@ describe('Garbage Collection', () => {
     });
     await garbageCollector.garbageCollect();
 
-    expect(mockListStacks).toHaveBeenCalledTimes(1);
-    expect(mockListObjectsV2).toHaveBeenCalledTimes(2);
+    expect(mocks.mockListStacks).toHaveBeenCalledTimes(1);
+    expect(mocks.mockListObjectsV2).toHaveBeenCalledTimes(2);
     // no tagging
-    expect(mockGetObjectTagging).toHaveBeenCalledTimes(0);
-    expect(mockPutObjectTagging).toHaveBeenCalledTimes(0);
+    expect(mocks.mockGetObjectTagging).toHaveBeenCalledTimes(0);
+    expect(mocks.mockPutObjectTagging).toHaveBeenCalledTimes(0);
 
     // assets are to be deleted
-    expect(mockDeleteObjects).toHaveBeenCalledWith({
+    expect(mocks.mockDeleteObjects).toHaveBeenCalledWith({
       Bucket: 'BUCKET_NAME',
       Delete: {
         Objects: [
@@ -171,35 +251,18 @@ describe('Garbage Collection', () => {
     });
     await garbageCollector.garbageCollect();
 
-    expect(mockListStacks).toHaveBeenCalledTimes(1);
-    expect(mockListObjectsV2).toHaveBeenCalledTimes(2);
+    expect(mocks.mockListStacks).toHaveBeenCalledTimes(1);
+    expect(mocks.mockListObjectsV2).toHaveBeenCalledTimes(2);
 
     // assets tagged
-    expect(mockGetObjectTagging).toHaveBeenCalledTimes(3);
-    expect(mockPutObjectTagging).toHaveBeenCalledTimes(2); // one asset already has the tag
+    expect(mocks.mockGetObjectTagging).toHaveBeenCalledTimes(3);
+    expect(mocks.mockPutObjectTagging).toHaveBeenCalledTimes(2); // one asset already has the tag
 
     // no deleting
-    expect(mockDeleteObjects).toHaveBeenCalledTimes(0);
+    expect(mocks.mockDeleteObjects).toHaveBeenCalledTimes(0);
   });
 
-  test('type = ecr -- throws error', async () => {
-    mockTheToolkitInfo({
-      Outputs: [
-        {
-          OutputKey: 'BootstrapVersion',
-          OutputValue: '999',
-        },
-      ],
-    });
-
-    expect(() => garbageCollector = gc({
-      type: 'ecr',
-      rollbackBufferDays: 3,
-      action: 'full',
-    })).toThrow(/ECR garbage collection is not yet supported/);
-  });
-
-  test('createdAtBufferDays > 0 -- assets to be tagged', async () => {
+  test('createdAtBufferDays > 0', async () => {
     mockTheToolkitInfo({
       Outputs: [
         {
@@ -217,10 +280,11 @@ describe('Garbage Collection', () => {
     });
     await garbageCollector.garbageCollect();
 
-    expect(mockDeleteObjects).toHaveBeenCalledWith({
+    expect(mocks.mockDeleteObjects).toHaveBeenCalledWith({
       Bucket: 'BUCKET_NAME',
       Delete: {
         Objects: [
+          // asset1 not deleted because it is too young
           { Key: 'asset2' },
           { Key: 'asset3' },
         ],
@@ -246,15 +310,15 @@ describe('Garbage Collection', () => {
     });
     await garbageCollector.garbageCollect();
 
-    expect(mockListStacks).toHaveBeenCalledTimes(1);
-    expect(mockListObjectsV2).toHaveBeenCalledTimes(2);
+    expect(mocks.mockListStacks).toHaveBeenCalledTimes(1);
+    expect(mocks.mockListObjectsV2).toHaveBeenCalledTimes(2);
 
     // get tags, but dont put tags
-    expect(mockGetObjectTagging).toHaveBeenCalledTimes(3);
-    expect(mockPutObjectTagging).toHaveBeenCalledTimes(0);
+    expect(mocks.mockGetObjectTagging).toHaveBeenCalledTimes(3);
+    expect(mocks.mockPutObjectTagging).toHaveBeenCalledTimes(0);
 
     // no deleting
-    expect(mockDeleteObjects).toHaveBeenCalledTimes(0);
+    expect(mocks.mockDeleteObjects).toHaveBeenCalledTimes(0);
   });
 
   test('action = tag -- does not delete', async () => {
@@ -274,15 +338,15 @@ describe('Garbage Collection', () => {
     });
     await garbageCollector.garbageCollect();
 
-    expect(mockListStacks).toHaveBeenCalledTimes(1);
-    expect(mockListObjectsV2).toHaveBeenCalledTimes(2);
+    expect(mocks.mockListStacks).toHaveBeenCalledTimes(1);
+    expect(mocks.mockListObjectsV2).toHaveBeenCalledTimes(2);
 
     // tags objects
-    expect(mockGetObjectTagging).toHaveBeenCalledTimes(3);
-    expect(mockPutObjectTagging).toHaveBeenCalledTimes(2); // one object already has the tag
+    expect(mocks.mockGetObjectTagging).toHaveBeenCalledTimes(3);
+    expect(mocks.mockPutObjectTagging).toHaveBeenCalledTimes(2); // one object already has the tag
 
     // no deleting
-    expect(mockDeleteObjects).toHaveBeenCalledTimes(0);
+    expect(mocks.mockDeleteObjects).toHaveBeenCalledTimes(0);
   });
 
   test('action = delete-tagged -- does not tag', async () => {
@@ -302,12 +366,12 @@ describe('Garbage Collection', () => {
     });
     await garbageCollector.garbageCollect();
 
-    expect(mockListStacks).toHaveBeenCalledTimes(1);
-    expect(mockListObjectsV2).toHaveBeenCalledTimes(2);
+    expect(mocks.mockListStacks).toHaveBeenCalledTimes(1);
+    expect(mocks.mockListObjectsV2).toHaveBeenCalledTimes(2);
 
     // get tags, but dont put tags
-    expect(mockGetObjectTagging).toHaveBeenCalledTimes(3);
-    expect(mockPutObjectTagging).toHaveBeenCalledTimes(0);
+    expect(mocks.mockGetObjectTagging).toHaveBeenCalledTimes(3);
+    expect(mocks.mockPutObjectTagging).toHaveBeenCalledTimes(0);
   });
 
   test('ignore objects that are modified after gc start', async () => {
@@ -346,7 +410,7 @@ describe('Garbage Collection', () => {
     await garbageCollector.garbageCollect();
 
     // assets are to be deleted
-    expect(mockDeleteObjects).toHaveBeenCalledWith({
+    expect(mocks.mockDeleteObjects).toHaveBeenCalledWith({
       Bucket: 'BUCKET_NAME',
       Delete: {
         Objects: [
@@ -357,6 +421,258 @@ describe('Garbage Collection', () => {
         Quiet: true,
       },
     });
+  });
+});
+
+describe('ECR Garbage Collection', () => {
+  let mocks: any;
+  beforeEach(() => {
+    mocks = setupEcrGarbageCollectionMocks(sdk);
+  });
+
+  test('rollbackBufferDays = 0 -- assets to be deleted', async () => {
+    mockTheToolkitInfo({
+      Outputs: [
+        {
+          OutputKey: 'BootstrapVersion',
+          OutputValue: '999',
+        },
+      ],
+    });
+
+    garbageCollector = gc({
+      type: 'ecr',
+      rollbackBufferDays: 0,
+      action: 'full',
+    });
+    await garbageCollector.garbageCollect();
+
+    expect(mocks.mockDescribeImages).toHaveBeenCalledTimes(1);
+    expect(mocks.mockListImages).toHaveBeenCalledTimes(2);
+
+    // no tagging
+    expect(mocks.mockPutImage).toHaveBeenCalledTimes(0);
+
+    // assets are to be deleted
+    expect(mocks.mockBatchDeleteImage).toHaveBeenCalledWith({
+      repositoryName: 'REPO_NAME',
+      imageIds: [
+        { imageDigest: 'digest3' },
+        { imageDigest: 'digest2' },
+      ],
+    });
+  });
+
+  test('rollbackBufferDays > 0 -- assets to be tagged', async () => {
+    mockTheToolkitInfo({
+      Outputs: [
+        {
+          OutputKey: 'BootstrapVersion',
+          OutputValue: '999',
+        },
+      ],
+    });
+
+    garbageCollector = gc({
+      type: 'ecr',
+      rollbackBufferDays: 3,
+      action: 'full',
+    });
+    await garbageCollector.garbageCollect();
+
+    // assets tagged
+    expect(mocks.mockPutImage).toHaveBeenCalledTimes(2);
+
+    // no deleting
+    expect(mocks.mockBatchDeleteImage).toHaveBeenCalledTimes(0);
+  });
+
+  test('createdAtBufferDays > 0', async () => {
+    mockTheToolkitInfo({
+      Outputs: [
+        {
+          OutputKey: 'BootstrapVersion',
+          OutputValue: '999',
+        },
+      ],
+    });
+
+    garbageCollector = gc({
+      type: 'ecr',
+      rollbackBufferDays: 0,
+      createdAtBufferDays: 5,
+      action: 'full',
+    });
+    await garbageCollector.garbageCollect();
+
+    expect(mocks.mockBatchDeleteImage).toHaveBeenCalledWith({
+      repositoryName: 'REPO_NAME',
+      imageIds: [
+        // digest3 is too young to be deleted
+        { imageDigest: 'digest2' },
+      ],
+    });
+  });
+
+  test('action = print -- does not tag or delete', async () => {
+    mockTheToolkitInfo({
+      Outputs: [
+        {
+          OutputKey: 'BootstrapVersion',
+          OutputValue: '999',
+        },
+      ],
+    });
+
+    garbageCollector = garbageCollector = gc({
+      type: 'ecr',
+      rollbackBufferDays: 3,
+      action: 'print',
+    });
+    await garbageCollector.garbageCollect();
+
+    expect(mocks.mockListStacks).toHaveBeenCalledTimes(1);
+
+    // dont put tags
+    expect(mocks.mockPutImage).toHaveBeenCalledTimes(0);
+
+    // no deleting
+    expect(mocks.mockBatchDeleteImage).toHaveBeenCalledTimes(0);
+  });
+
+  test('action = tag -- does not delete', async () => {
+    mockTheToolkitInfo({
+      Outputs: [
+        {
+          OutputKey: 'BootstrapVersion',
+          OutputValue: '999',
+        },
+      ],
+    });
+
+    garbageCollector = garbageCollector = gc({
+      type: 'ecr',
+      rollbackBufferDays: 3,
+      action: 'tag',
+    });
+    await garbageCollector.garbageCollect();
+
+    expect(mocks.mockListStacks).toHaveBeenCalledTimes(1);
+
+    // tags objects
+    expect(mocks.mockPutImage).toHaveBeenCalledTimes(2);
+
+    // no deleting
+    expect(mocks.mockBatchDeleteImage).toHaveBeenCalledTimes(0);
+  });
+
+  test('action = delete-tagged -- does not tag', async () => {
+    mockTheToolkitInfo({
+      Outputs: [
+        {
+          OutputKey: 'BootstrapVersion',
+          OutputValue: '999',
+        },
+      ],
+    });
+
+    garbageCollector = garbageCollector = gc({
+      type: 'ecr',
+      rollbackBufferDays: 3,
+      action: 'delete-tagged',
+    });
+    await garbageCollector.garbageCollect();
+
+    expect(mocks.mockListStacks).toHaveBeenCalledTimes(1);
+
+    // dont put tags
+    expect(mocks.mockPutImage).toHaveBeenCalledTimes(0);
+  });
+
+  test('ignore images that are modified after gc start', async () => {
+    mockTheToolkitInfo({
+      Outputs: [
+        {
+          OutputKey: 'BootstrapVersion',
+          OutputValue: '999',
+        },
+      ],
+    });
+
+    const mockDescribeImagesFuture = jest.fn().mockImplementation(() => {
+      return Promise.resolve({
+        imageDetails: [
+          { imageDigest: 'digest3', imageTags: ['klmno'], imagePushedAt: Date.now() - (2 * DAY), imageSizeInBytes: 100 },
+          { imageDigest: 'digest2', imageTags: ['fghij'], imagePushedAt: Number(new Date().setFullYear(new Date().getFullYear() + 1).toString()), imageSizeInBytes: 300_000_000 },
+          { imageDigest: 'digest1', imageTags: ['abcde'], imagePushedAt: Date.now() - (100 * DAY), imageSizeInBytes: 1_000_000_000 },
+        ],
+      });
+    });
+
+    sdk.stubEcr({
+      batchGetImage: mockBatchGetImage,
+      describeImages: mockDescribeImagesFuture,
+      batchDeleteImage: mockBatchDeleteImage,
+      putImage: mockPutImage,
+      listImages: mockListImages,
+    });
+
+    garbageCollector = garbageCollector = gc({
+      type: 'ecr',
+      rollbackBufferDays: 0,
+      action: 'full',
+    });
+    await garbageCollector.garbageCollect();
+
+    // assets are to be deleted
+    expect(mocks.mockBatchDeleteImage).toHaveBeenCalledWith({
+      repositoryName: 'REPO_NAME',
+      imageIds: [
+        { imageDigest: 'digest3' },
+      ],
+    });
+  });
+
+  test('tags are unique', async () => {
+    mockTheToolkitInfo({
+      Outputs: [
+        {
+          OutputKey: 'BootstrapVersion',
+          OutputValue: '999',
+        },
+      ],
+    });
+
+    garbageCollector = garbageCollector = gc({
+      type: 'ecr',
+      rollbackBufferDays: 3,
+      action: 'tag',
+    });
+    await garbageCollector.garbageCollect();
+
+    expect(mocks.mockListStacks).toHaveBeenCalledTimes(1);
+
+    // tags objects
+    expect(mocks.mockPutImage).toHaveBeenCalledTimes(2);
+    expect(mocks.mockPutImage).toHaveBeenCalledWith({
+      repositoryName: 'REPO_NAME',
+      imageDigest: 'digest3',
+      imageManifest: expect.any(Object),
+      imageTag: expect.stringContaining(`0-${ECR_ISOLATED_TAG}`),
+    });
+    expect(mocks.mockPutImage).toHaveBeenCalledWith({
+      repositoryName: 'REPO_NAME',
+      imageDigest: 'digest2',
+      imageManifest: expect.any(Object),
+      imageTag: expect.stringContaining(`1-${ECR_ISOLATED_TAG}`),
+    });
+  });
+});
+
+describe('CloudFormation API calls', () => {
+  let mocks: any;
+  beforeEach(() => {
+    mocks = setupS3GarbageCollectionMocks(sdk);
   });
 
   test('bootstrap filters out other bootstrap versions', async () => {
@@ -380,8 +696,8 @@ describe('Garbage Collection', () => {
     });
     await garbageCollector.garbageCollect();
 
-    expect(mockGetTemplateSummary).toHaveBeenCalledTimes(2);
-    expect(mockGetTemplate).toHaveBeenCalledTimes(0);
+    expect(mocks.mockGetTemplateSummary).toHaveBeenCalledTimes(2);
+    expect(mocks.mockGetTemplate).toHaveBeenCalledTimes(0);
   });
 
   test('parameter hashes are included', async () => {
@@ -414,7 +730,7 @@ describe('Garbage Collection', () => {
     });
     await garbageCollector.garbageCollect();
 
-    expect(mockListStacks).toHaveBeenCalledTimes(1);
+    expect(mocks.mockListStacks).toHaveBeenCalledTimes(1);
     expect(mockListObjectsV2).toHaveBeenCalledTimes(2);
     // no tagging
     expect(mockGetObjectTagging).toHaveBeenCalledTimes(0);
@@ -479,7 +795,7 @@ describe('Garbage Collection with large # of objects', () => {
     // of the 2000 in use assets, 1000 are tagged.
     mockGetObjectTaggingLarge = jest.fn().mockImplementation((params) => {
       return Promise.resolve({
-        TagSet: Number(params.Key[params.Key.length - 5]) % 2 === 0 ? [{ Key: ISOLATED_TAG, Value: new Date(2000, 1, 1).toISOString() }] : [],
+        TagSet: Number(params.Key[params.Key.length - 5]) % 2 === 0 ? [{ Key: S3_ISOLATED_TAG, Value: new Date(2000, 1, 1).toISOString() }] : [],
       });
     });
     mockPutObjectTagging = jest.fn();
