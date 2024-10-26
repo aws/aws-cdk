@@ -1,7 +1,7 @@
 import { App, Duration, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
-import { RecordingConfiguration, RenditionSelection, Resolution, ThumbnailRecordingMode, ThumbnailStorage } from '../lib';
+import { IRecordingConfiguration, RecordingConfiguration, RenditionSelection, Resolution, ThumbnailRecordingMode, ThumbnailStorage } from '../lib';
 
 describe('IVS Recording Configuration', () => {
   let app: App;
@@ -237,6 +237,48 @@ describe('IVS Recording Configuration', () => {
           TargetIntervalSeconds: 30,
         },
       });
+    });
+  });
+
+  describe('fromRecordingConfigurationId method test', () => {
+    let importRecordingConfiguration: IRecordingConfiguration;
+
+    beforeEach(() => {
+      app = new App();
+      stack = new Stack(app, 'TestStack');
+      importRecordingConfiguration = RecordingConfiguration.fromRecordingConfigurationId(stack, 'ImportedRecordingConfiguration', 'my-record-configuration');
+    });
+
+    test('should correctly set recordingConfigurationId', () => {
+      expect(importRecordingConfiguration.recordingConfigurationId).toEqual('my-record-configuration');
+    });
+
+    test('should correctly format recordingConfigurationArn', () => {
+      expect(importRecordingConfiguration.recordingConfigurationArn).toEqual(
+        Stack.of(stack).formatArn({
+          service: 'ivs',
+          resource: 'recording-configuration',
+          resourceName: 'my-record-configuration',
+        }),
+      );
+    });
+  });
+
+  describe('fromArn method test', () => {
+    let importRecordingConfiguration: IRecordingConfiguration;
+
+    beforeEach(() => {
+      app = new App();
+      stack = new Stack(app, 'TestStack');
+      importRecordingConfiguration = RecordingConfiguration.fromArn(stack, 'ImportedRecordingConfiguration', 'arn:aws:ivs:us-east-1:012345678912:recording-configuration/my-record-configuration');
+    });
+
+    test('should correctly set recordingConfigurationId', () => {
+      expect(importRecordingConfiguration.recordingConfigurationId).toEqual('my-record-configuration');
+    });
+
+    test('should correctly format recordingConfigurationArn', () => {
+      expect(importRecordingConfiguration.recordingConfigurationArn).toEqual('arn:aws:ivs:us-east-1:012345678912:recording-configuration/my-record-configuration');
     });
   });
 
