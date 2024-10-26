@@ -1305,8 +1305,8 @@ const pipeline = new codepipeline.Pipeline(this, 'Pipeline', {
 });
 ```
 
-If you want to filter the files to be included in the output artifact, you can specify the second arg as `artifactFiles`
-property in the `Artifact`.
+If you want to filter the files to be included in the output artifact, you can specify their paths as the second
+argument to `Artifact`.
 
 ```ts
 declare const sourceArtifact: codepipeline.Artifact;
