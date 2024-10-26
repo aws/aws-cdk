@@ -517,7 +517,6 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly PIPES_FIPS = new InterfaceVpcEndpointAwsService('pipes-fips');
   public static readonly PRICE_LIST = new InterfaceVpcEndpointAwsService('pricing.api');
   public static readonly POLLY = new InterfaceVpcEndpointAwsService('polly');
-  public static readonly PRICING_API = new InterfaceVpcEndpointAwsService('pricing.api');
   public static readonly PRIVATE_5G = new InterfaceVpcEndpointAwsService('private-networks');
   public static readonly PRIVATE_CERTIFICATE_AUTHORITY = new InterfaceVpcEndpointAwsService('acm-pca');
   public static readonly PRIVATE_CERTIFICATE_AUTHORITY_CONNECTOR_AD = new InterfaceVpcEndpointAwsService('pca-connector-ad');
