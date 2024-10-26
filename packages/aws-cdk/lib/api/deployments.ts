@@ -10,9 +10,10 @@ import { ISDK } from './aws-auth/sdk';
 import { CredentialsOptions, SdkForEnvironment, SdkProvider } from './aws-auth/sdk-provider';
 import { deployStack, DeployStackResult, destroyStack, DeploymentMethod } from './deploy-stack';
 import { EnvironmentResources, EnvironmentResourcesRegistry } from './environment-resources';
-import { HotswapMode } from './hotswap/common';
+import { HotswapMode, HotswapPropertyOverrides } from './hotswap/common';
 import { loadCurrentTemplateWithNestedStacks, loadCurrentTemplate, RootTemplateWithNestedStacks } from './nested-stack-helpers';
-import { CloudFormationStack, Template, ResourcesToImport, ResourceIdentifierSummaries, stabilizeStack } from './util/cloudformation';
+import { determineAllowCrossAccountAssetPublishing } from './util/checks';
+import { CloudFormationStack, Template, ResourcesToImport, ResourceIdentifierSummaries, stabilizeStack, uploadStackTemplateAssets } from './util/cloudformation';
 import { StackActivityMonitor, StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
 import { StackEventPoller } from './util/cloudformation/stack-event-poller';
 import { RollbackChoice } from './util/cloudformation/stack-status';
@@ -182,6 +183,11 @@ export interface DeployStackOptions {
   readonly hotswap?: HotswapMode;
 
   /**
+  * Properties that configure hotswap behavior
+  */
+  readonly hotswapPropertyOverrides?: HotswapPropertyOverrides;
+
+  /**
    * The extra string to append to the User-Agent header when performing AWS SDK calls.
    *
    * @default - nothing extra is appended to the User-Agent header
@@ -293,13 +299,6 @@ interface AssetOptions {
   readonly stack: cxapi.CloudFormationStackArtifact;
 
   /**
-   * Name of the toolkit stack, if not the default name.
-   *
-   * @default 'CDKToolkit'
-   */
-  readonly toolkitStackName?: string;
-
-  /**
    * Execution role for the building.
    *
    * @default - Current role
@@ -391,6 +390,7 @@ export class Deployments {
   private readonly publisherCache = new Map<AssetManifest, cdk_assets.AssetPublishing>();
   private readonly environmentResources: EnvironmentResourcesRegistry;
 
+  private _allowCrossAccountAssetPublishing: boolean | undefined;
   constructor(private readonly props: DeploymentsProps) {
     this.sdkProvider = props.sdkProvider;
     this.environmentResources = new EnvironmentResourcesRegistry(props.toolkitStackName);
@@ -426,13 +426,28 @@ export class Deployments {
     const { stackSdk, resolvedEnvironment, envResources } = await this.prepareSdkFor(stackArtifact, undefined, Mode.ForReading);
     const cfn = stackSdk.cloudFormation();
 
+    await uploadStackTemplateAssets(stackArtifact, this);
+
     // Upload the template, if necessary, before passing it to CFN
+    const builder = new AssetManifestBuilder();
     const cfnParam = await makeBodyParameter(
       stackArtifact,
       resolvedEnvironment,
-      new AssetManifestBuilder(),
+      builder,
       envResources,
       stackSdk);
+
+    // If the `makeBodyParameter` before this added assets, make sure to publish them before
+    // calling the API.
+    const addedAssets = builder.toManifest(stackArtifact.assembly.directory);
+    for (const entry of addedAssets.entries) {
+      await this.buildSingleAsset('no-version-validation', addedAssets, entry, {
+        stack: stackArtifact,
+      });
+      await this.publishSingleAsset(addedAssets, entry, {
+        stack: stackArtifact,
+      });
+    }
 
     const response = await cfn.getTemplateSummary(cfnParam).promise();
     if (!response.ResourceIdentifierSummaries) {
@@ -488,6 +503,7 @@ export class Deployments {
       ci: options.ci,
       rollback: options.rollback,
       hotswap: options.hotswap,
+      hotswapPropertyOverrides: options.hotswapPropertyOverrides,
       extraUserAgent: options.extraUserAgent,
       resourcesToImport: options.resourcesToImport,
       overrideTemplate: options.overrideTemplate,
@@ -701,23 +717,23 @@ export class Deployments {
   }
 
   /**
-    * Try to use the bootstrap lookupRole. There are two scenarios that are handled here
-    *  1. The lookup role may not exist (it was added in bootstrap stack version 7)
-    *  2. The lookup role may not have the correct permissions (ReadOnlyAccess was added in
-    *      bootstrap stack version 8)
-    *
-    * In the case of 1 (lookup role doesn't exist) `forEnvironment` will either:
-    *   1. Return the default credentials if the default credentials are for the stack account
-    *   2. Throw an error if the default credentials are not for the stack account.
-    *
-    * If we successfully assume the lookup role we then proceed to 2 and check whether the bootstrap
-    * stack version is valid. If it is not we throw an error which should be handled in the calling
-    * function (and fallback to use a different role, etc)
-    *
-    * If we do not successfully assume the lookup role, but do get back the default credentials
-    * then return those and note that we are returning the default credentials. The calling
-    * function can then decide to use them or fallback to another role.
-    */
+   * Try to use the bootstrap lookupRole. There are two scenarios that are handled here
+   *  1. The lookup role may not exist (it was added in bootstrap stack version 7)
+   *  2. The lookup role may not have the correct permissions (ReadOnlyAccess was added in
+   *      bootstrap stack version 8)
+   *
+   * In the case of 1 (lookup role doesn't exist) `forEnvironment` will either:
+   *   1. Return the default credentials if the default credentials are for the stack account
+   *   2. Throw an error if the default credentials are not for the stack account.
+   *
+   * If we successfully assume the lookup role we then proceed to 2 and check whether the bootstrap
+   * stack version is valid. If it is not we throw an error which should be handled in the calling
+   * function (and fallback to use a different role, etc)
+   *
+   * If we do not successfully assume the lookup role, but do get back the default credentials
+   * then return those and note that we are returning the default credentials. The calling
+   * function can then decide to use them or fallback to another role.
+   */
   public async prepareSdkWithLookupRoleFor(
     stack: cxapi.CloudFormationStackArtifact,
   ): Promise<PreparedSdkWithLookupRoleForEnvironment> {
@@ -800,21 +816,30 @@ export class Deployments {
    */
   public async publishAssets(asset: cxapi.AssetManifestArtifact, options: PublishStackAssetsOptions) {
     const { manifest, stackEnv } = await this.prepareAndValidateAssets(asset, options);
-    await publishAssets(manifest, this.sdkProvider, stackEnv, options.publishOptions);
+    await publishAssets(manifest, this.sdkProvider, stackEnv, {
+      ...options.publishOptions,
+      allowCrossAccount: await this.allowCrossAccountAssetPublishingForEnv(options.stack),
+    });
   }
 
   /**
    * Build a single asset from an asset manifest
+   *
+   * If an assert manifest artifact is given, the bootstrap stack version
+   * will be validated according to the constraints in that manifest artifact.
+   * If that is not necessary, `'no-version-validation'` can be passed.
    */
   // eslint-disable-next-line max-len
-  public async buildSingleAsset(assetArtifact: cxapi.AssetManifestArtifact, assetManifest: AssetManifest, asset: IManifestEntry, options: BuildStackAssetsOptions) {
+  public async buildSingleAsset(assetArtifact: cxapi.AssetManifestArtifact | 'no-version-validation', assetManifest: AssetManifest, asset: IManifestEntry, options: BuildStackAssetsOptions) {
     const { resolvedEnvironment, envResources } = await this.prepareSdkFor(options.stack, options.roleArn, Mode.ForWriting);
 
-    await this.validateBootstrapStackVersion(
-      options.stack.stackName,
-      assetArtifact.requiresBootstrapStackVersion,
-      assetArtifact.bootstrapStackVersionSsmParameter,
-      envResources);
+    if (assetArtifact !== 'no-version-validation') {
+      await this.validateBootstrapStackVersion(
+        options.stack.stackName,
+        assetArtifact.requiresBootstrapStackVersion,
+        assetArtifact.bootstrapStackVersionSsmParameter,
+        envResources);
+    }
 
     const publisher = this.cachedPublisher(assetManifest, resolvedEnvironment, options.stackName);
     await publisher.buildEntry(asset);
@@ -832,10 +857,19 @@ export class Deployments {
 
     // No need to validate anymore, we already did that during build
     const publisher = this.cachedPublisher(assetManifest, stackEnv, options.stackName);
-    await publisher.publishEntry(asset);
+    // eslint-disable-next-line no-console
+    await publisher.publishEntry(asset, { allowCrossAccount: await this.allowCrossAccountAssetPublishingForEnv(options.stack) });
     if (publisher.hasFailures) {
       throw new Error(`Failed to publish asset ${asset.id}`);
     }
+  }
+
+  private async allowCrossAccountAssetPublishingForEnv(stack: cxapi.CloudFormationStackArtifact): Promise<boolean> {
+    if (this._allowCrossAccountAssetPublishing === undefined) {
+      const { stackSdk: sdk } = await this.prepareSdkFor(stack, undefined, Mode.ForReading);
+      this._allowCrossAccountAssetPublishing = await determineAllowCrossAccountAssetPublishing(sdk, this.props.toolkitStackName);
+    }
+    return this._allowCrossAccountAssetPublishing;
   }
 
   /**
