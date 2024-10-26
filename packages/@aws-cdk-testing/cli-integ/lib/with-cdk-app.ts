@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+import * as assert from 'assert';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
@@ -242,9 +243,9 @@ export interface CdkCliOptions extends ShellOptions {
  * Prepare a target dir byreplicating a source directory
  */
 export async function cloneDirectory(source: string, target: string, output?: NodeJS.WritableStream) {
-  await shell(['rm', '-rf', target], { output });
-  await shell(['mkdir', '-p', target], { output });
-  await shell(['cp', '-R', source + '/*', target], { output });
+  await shell(['rm', '-rf', target], { outputs: output ? [output] : [] });
+  await shell(['mkdir', '-p', target], { outputs: output ? [output] : [] });
+  await shell(['cp', '-R', source + '/*', target], { outputs: output ? [output] : [] });
 }
 
 interface CommonCdkBootstrapCommandOptions {
@@ -544,6 +545,17 @@ export class TestFixture extends ShellHelper {
     return JSON.parse(fs.readFileSync(templatePath, { encoding: 'utf-8' }).toString());
   }
 
+  public async bootstrapRepoName(): Promise<string> {
+    await ensureBootstrapped(this);
+
+    const response = await this.aws.cloudFormation.send(new DescribeStacksCommand({}));
+
+    const stack = (response.Stacks ?? [])
+      .filter((s) => s.StackName && s.StackName == this.bootstrapStackName);
+    assert(stack.length == 1);
+    return outputFromStack('ImageRepositoryName', stack[0]) ?? '';
+  }
+
   public get bootstrapStackName() {
     return this.fullStackName('bootstrap-stack');
   }
@@ -569,7 +581,7 @@ export class TestFixture extends ShellHelper {
   }
 
   /**
-   * Cleanup leftover stacks and buckets
+   * Cleanup leftover stacks and bootstrapped resources
    */
   public async dispose(success: boolean) {
     const stacksToDelete = await this.deleteableStacks(this.stackNamePrefix);
