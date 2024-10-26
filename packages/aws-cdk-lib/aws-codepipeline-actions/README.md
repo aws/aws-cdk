@@ -1269,7 +1269,7 @@ to specify commands without first creating a CodeBuild project.
 
 ```ts
 // Source action
-const bucket = new s3.Bucket(stack, 'SourceBucket', {
+const bucket = new s3.Bucket(this, 'SourceBucket', {
   versioned: true,
 });
 const sourceArtifact = new codepipeline.Artifact('SourceArtifact');
@@ -1291,7 +1291,7 @@ const commandsAction = new codepipeline_actions.CommandsAction({
   output: outputArtifact,
 });
 
-const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+const pipeline = new codepipeline.Pipeline(this, 'Pipeline', {
   stages: [
     {
       stageName: 'Source',
@@ -1351,7 +1351,7 @@ const deployAction = new cpactions.S3DeployAction({
   actionName: 'DeployAction',
   extract: true,
   input: outputArtifact,
-  bucket: new s3.Bucket(stack, 'DeployBucket'),
+  bucket: new s3.Bucket(this, 'DeployBucket'),
   objectKey: commandsAction.variable('MY_OUTPUT'), // the variable emitted by the Commands action
 });
 ```
