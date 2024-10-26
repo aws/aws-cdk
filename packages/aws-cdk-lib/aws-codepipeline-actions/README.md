@@ -1260,36 +1260,99 @@ for information on Action structure reference.
 
 ## Compute
 
-### AWS Commands
+### Commands
 
-To run shell commands without CodeBuild actions in a CodePipeline, use the `CommandsAction`. The action is executed
-in a CodeBuild project implicitly hidden inside.
-
-If you want to filter the files to be included in the output artifact, you can specify the second arg as `artifactFiles`
-property in the `Artifact`.
-
-You can also specify the `outputVariables` property in the `CommandsAction` to emit variables that can be used in
-subsequent actions. The variables are defined by the commands that are executed or the variables that are exported
-in CodeBuild services as default.
+The Commands action allows you to run shell commands in a virtual compute instance. When you run the action, commands
+specified in the action configuration are run in a separate container. All artifacts that are specified as input
+artifacts to a CodeBuild action are available inside of the container running the commands. This action allows you
+to specify commands without first creating a CodeBuild project.
 
 ```ts
-const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
+// Source action
+const bucket = new s3.Bucket(stack, 'SourceBucket', {
+  versioned: true,
+});
 const sourceArtifact = new codepipeline.Artifact('SourceArtifact');
-const outputArtifact = new codepipeline.Artifact('OutputArtifact', ['my-dir/**/*']);
+const sourceAction = new codepipeline_actions.S3SourceAction({
+  actionName: 'Source',
+  output: sourceArtifact,
+  bucket,
+  bucketKey: 'my.zip',
+});
 
+// Commands action
+const outputArtifact = new codepipeline.Artifact('OutputArtifact');
 const commandsAction = new codepipeline_actions.CommandsAction({
   actionName: 'Commands',
   commands: [
     'echo "some commands"',
+  ],
+  input: sourceArtifact,
+  output: outputArtifact,
+});
+
+const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+  stages: [
+    {
+      stageName: 'Source',
+      actions: [sourceAction],
+    },
+    {
+      stageName: 'Commands',
+      actions: [commandsAction],
+    },
+  ],
+});
+```
+
+If you want to filter the files to be included in the output artifact, you can specify the second arg as `artifactFiles`
+property in the `Artifact`.
+
+```ts
+declare const sourceArtifact: codepipeline.Artifact;
+
+// filter files to be included in the output artifact
+const outputArtifact = new codepipeline.Artifact('OutputArtifact', ['my-dir/**/*']);
+const commandsAction = new codepipeline_actions.CommandsAction({
+  actionName: 'Commands',
+  commands: [
+    'mkdir -p my-dir',
+    'echo "HelloWorld" > my-dir/file.txt',
+  ],
+  input: sourceArtifact,
+  output: outputArtifact,
+});
+```
+
+You can also specify the `outputVariables` property in the `CommandsAction` to emit environment variables that can be used
+in subsequent actions. The variables are those defined in your shell commands or exported as defaults by the CodeBuild service.
+For a reference of CodeBuild environment variables, see
+[Environment variables in build environments](https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-env-vars.html)
+in the CodeBuild User Guide.
+
+To use the output variables in a subsequent action, you can use the `variable` method on the action:
+
+```ts
+declare const sourceArtifact: codepipeline.Artifact;
+declare const outputArtifact: codepipeline.Artifact;
+
+const commandsAction = new codepipeline_actions.CommandsAction({
+  actionName: 'Commands',
+  commands: [
     'export MY_OUTPUT=my-key',
   ],
   input: sourceArtifact,
   output: outputArtifact,
-  outputVariables: ['MY_OUTPUT', 'CODEBUILD_BUILD_ID'], // CODEBUILD_BUILD_ID is a default variable emitted by CodeBuild
+  outputVariables: ['MY_OUTPUT', 'CODEBUILD_BUILD_ID'], // CODEBUILD_BUILD_ID is a variable emitted by CodeBuild
 });
-pipeline.addStage({
-  stageName: 'Commands',
-  actions: [commandsAction],
+
+// Deploy action
+const deployAction = new cpactions.S3DeployAction({
+  actionName: 'DeployAction',
+  extract: true,
+  input: outputArtifact,
+  bucket: new s3.Bucket(stack, 'DeployBucket'),
+  objectKey: commandsAction.variable('MY_OUTPUT'), // the variable emitted by the Commands action
 });
 ```
 
