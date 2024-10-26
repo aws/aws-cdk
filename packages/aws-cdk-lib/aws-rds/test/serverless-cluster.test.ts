@@ -250,7 +250,7 @@ describe('serverless cluster', () => {
 
     // WHEN
     const cluster = new ServerlessCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       credentials: {
         username: 'admin',
       },
@@ -891,7 +891,7 @@ describe('serverless cluster', () => {
 
     // WHEN
     new ServerlessCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_POSTGRESQL,
       parameterGroup: ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql11'),
     });
 

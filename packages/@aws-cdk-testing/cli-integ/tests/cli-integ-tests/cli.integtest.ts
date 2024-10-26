@@ -32,6 +32,7 @@ import {
   withCDKMigrateFixture,
   withExtendedTimeoutFixture,
   randomString,
+  withSpecificFixture,
   withoutBootstrap,
 } from '../../lib';
 
@@ -350,6 +351,13 @@ integTest(
     expect(arns.split('\n').length).toEqual(2);
   }),
 );
+
+integTest('doubly nested stack',
+  withDefaultFixture(async (fixture) => {
+    await fixture.cdkDeploy('with-doubly-nested-stack', {
+      captureStderr: false,
+    });
+  }));
 
 integTest(
   'nested stack with parameters',
@@ -1032,6 +1040,64 @@ integTest(
 );
 
 integTest(
+  'cdk diff with large changeset does not fail',
+  withDefaultFixture(async (fixture) => {
+    // GIVEN - small initial stack with only one IAM role
+    await fixture.cdkDeploy('iam-roles', {
+      modEnv: {
+        NUMBER_OF_ROLES: '1',
+      },
+    });
+
+    // WHEN - adding an additional role with a ton of metadata to create a large diff
+    const diff = await fixture.cdk(['diff', fixture.fullStackName('iam-roles')], {
+      verbose: true,
+      modEnv: {
+        NUMBER_OF_ROLES: '2',
+      },
+    });
+
+    // Assert that the CLI assumes the file publishing role:
+    expect(diff).toMatch(/Assuming role .*file-publishing-role/);
+    expect(diff).toContain('success: Published');
+  }),
+);
+
+integTest('cdk diff with large changeset and custom toolkit stack name and qualifier does not fail', withoutBootstrap(async (fixture) => {
+  // Bootstrapping with custom toolkit stack name and qualifier
+  const qualifier = 'abc1111';
+  const toolkitStackName = 'custom-stack2';
+  await fixture.cdkBootstrapModern({
+    verbose: true,
+    toolkitStackName: toolkitStackName,
+    qualifier: qualifier,
+  });
+
+  // Deploying small initial stack with only one IAM role
+  await fixture.cdkDeploy('iam-roles', {
+    modEnv: {
+      NUMBER_OF_ROLES: '1',
+    },
+    options: [
+      '--toolkit-stack-name', toolkitStackName,
+      '--context', `@aws-cdk/core:bootstrapQualifier=${qualifier}`,
+    ],
+  });
+
+  // WHEN - adding a role with a ton of metadata to create a large diff
+  const diff = await fixture.cdk(['diff', '--toolkit-stack-name', toolkitStackName, '--context', `@aws-cdk/core:bootstrapQualifier=${qualifier}`, fixture.fullStackName('iam-roles')], {
+    verbose: true,
+    modEnv: {
+      NUMBER_OF_ROLES: '2',
+    },
+  });
+
+  // Assert that the CLI assumes the file publishing role:
+  expect(diff).toMatch(/Assuming role .*file-publishing-role/);
+  expect(diff).toContain('success: Published');
+}));
+
+integTest(
   'cdk diff --security-only successfully outputs sso-permission-set-without-managed-policy information',
   withDefaultFixture(async (fixture) => {
     const diff = await fixture.cdk([
@@ -1596,7 +1662,7 @@ integTest(
         const targetName = template.replace(/.js$/, '');
         await shell([process.execPath, template, '>', targetName], {
           cwd: cxAsmDir,
-          output: fixture.output,
+          outputs: [fixture.output],
           modEnv: {
             TEST_ACCOUNT: await fixture.aws.account(),
             TEST_REGION: fixture.aws.region,
@@ -2235,6 +2301,58 @@ integTest('hotswap deployment supports AppSync APIs with many functions',
   }),
 );
 
+integTest('hotswap ECS deployment respects properties override', withDefaultFixture(async (fixture) => {
+  // Update the CDK context with the new ECS properties
+  let ecsMinimumHealthyPercent = 100;
+  let ecsMaximumHealthyPercent = 200;
+  let cdkJson = JSON.parse(await fs.readFile(path.join(fixture.integTestDir, 'cdk.json'), 'utf8'));
+  cdkJson = {
+    ...cdkJson,
+    hotswap: {
+      ecs: {
+        minimumHealthyPercent: ecsMinimumHealthyPercent,
+        maximumHealthyPercent: ecsMaximumHealthyPercent,
+      },
+    },
+  };
+
+  await fs.writeFile(path.join(fixture.integTestDir, 'cdk.json'), JSON.stringify(cdkJson));
+
+  // GIVEN
+  const stackArn = await fixture.cdkDeploy('ecs-hotswap', {
+    captureStderr: false,
+  });
+
+  // WHEN
+  await fixture.cdkDeploy('ecs-hotswap', {
+    options: [
+      '--hotswap',
+    ],
+    modEnv: {
+      DYNAMIC_ECS_PROPERTY_VALUE: 'new value',
+    },
+  });
+
+  const describeStacksResponse = await fixture.aws.cloudFormation.send(
+    new DescribeStacksCommand({
+      StackName: stackArn,
+    }),
+  );
+
+  const clusterName = describeStacksResponse.Stacks?.[0].Outputs?.find(output => output.OutputKey == 'ClusterName')?.OutputValue!;
+  const serviceName = describeStacksResponse.Stacks?.[0].Outputs?.find(output => output.OutputKey == 'ServiceName')?.OutputValue!;
+
+  // THEN
+  const describeServicesResponse = await fixture.aws.ecs.send(
+    new DescribeServicesCommand({
+      cluster: clusterName,
+      services: [serviceName],
+    }),
+  );
+  expect(describeServicesResponse.services?.[0].deploymentConfiguration?.minimumHealthyPercent).toEqual(ecsMinimumHealthyPercent);
+  expect(describeServicesResponse.services?.[0].deploymentConfiguration?.maximumPercent).toEqual(ecsMaximumHealthyPercent);
+}));
+
 async function listChildren(parent: string, pred: (x: string) => Promise<boolean>) {
   const ret = new Array<string>();
   for (const child of await fs.readdir(parent, { encoding: 'utf-8' })) {
@@ -2259,3 +2377,119 @@ integTest(
     expect(noticesUnacknowledged).toEqual(noticesUnacknowledgedAlias);
   }),
 );
+
+integTest(
+  'test cdk rollback',
+  withSpecificFixture('rollback-test-app', async (fixture) => {
+    let phase = '1';
+
+    // Should succeed
+    await fixture.cdkDeploy('test-rollback', {
+      options: ['--no-rollback'],
+      modEnv: { PHASE: phase },
+      verbose: false,
+    });
+    try {
+      phase = '2a';
+
+      // Should fail
+      const deployOutput = await fixture.cdkDeploy('test-rollback', {
+        options: ['--no-rollback'],
+        modEnv: { PHASE: phase },
+        verbose: false,
+        allowErrExit: true,
+      });
+      expect(deployOutput).toContain('UPDATE_FAILED');
+
+      // Rollback
+      await fixture.cdk(['rollback'], {
+        modEnv: { PHASE: phase },
+        verbose: false,
+      });
+    } finally {
+      await fixture.cdkDestroy('test-rollback');
+    }
+  }),
+);
+
+integTest(
+  'test cdk rollback --force',
+  withSpecificFixture('rollback-test-app', async (fixture) => {
+    let phase = '1';
+
+    // Should succeed
+    await fixture.cdkDeploy('test-rollback', {
+      options: ['--no-rollback'],
+      modEnv: { PHASE: phase },
+      verbose: false,
+    });
+    try {
+      phase = '2b'; // Fail update and also fail rollback
+
+      // Should fail
+      const deployOutput = await fixture.cdkDeploy('test-rollback', {
+        options: ['--no-rollback'],
+        modEnv: { PHASE: phase },
+        verbose: false,
+        allowErrExit: true,
+      });
+
+      expect(deployOutput).toContain('UPDATE_FAILED');
+
+      // Should still fail
+      const rollbackOutput = await fixture.cdk(['rollback'], {
+        modEnv: { PHASE: phase },
+        verbose: false,
+        allowErrExit: true,
+      });
+
+      expect(rollbackOutput).toContain('Failing rollback');
+
+      // Rollback and force cleanup
+      await fixture.cdk(['rollback', '--force'], {
+        modEnv: { PHASE: phase },
+        verbose: false,
+      });
+    } finally {
+      await fixture.cdkDestroy('test-rollback');
+    }
+  }),
+);
+
+integTest('cdk notices are displayed correctly', withDefaultFixture(async (fixture) => {
+
+  const cache = {
+    expiration: 4125963264000, // year 2100 so we never overwrite the cache
+    notices: [
+      {
+        title: 'Bootstrap 1999 Notice',
+        issueNumber: 4444,
+        overview: 'Overview for Bootstrap 1999 Notice. AffectedEnvironments:<{resolve:ENVIRONMENTS}>',
+        components: [
+          {
+            name: 'bootstrap',
+            version: '<1999', // so we include all possible environments
+          },
+        ],
+        schemaVersion: '1',
+      },
+    ],
+  };
+
+  const cdkCacheDir = path.join(fixture.integTestDir, 'cache');
+  await fs.mkdir(cdkCacheDir);
+  await fs.writeFile(path.join(cdkCacheDir, 'notices.json'), JSON.stringify(cache));
+
+  const output = await fixture.cdkDeploy('notices', {
+    verbose: false,
+    modEnv: {
+      CDK_HOME: fixture.integTestDir,
+    },
+  });
+
+  expect(output).toContain('Overview for Bootstrap 1999 Notice');
+
+  // assert dynamic environments are resolved
+  expect(output).toContain(`AffectedEnvironments:<aws://${await fixture.aws.account()}/${fixture.aws.region}>`);
+
+}));

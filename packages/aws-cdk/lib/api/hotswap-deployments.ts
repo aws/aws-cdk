@@ -7,7 +7,7 @@ import { EvaluateCloudFormationTemplate } from './evaluate-cloudformation-templa
 import { print } from '../logging';
 import { isHotswappableAppSyncChange } from './hotswap/appsync-mapping-templates';
 import { isHotswappableCodeBuildProjectChange } from './hotswap/code-build-projects';
-import { ICON, ChangeHotswapResult, HotswapMode, HotswappableChange, NonHotswappableChange, HotswappableChangeCandidate, ClassifiedResourceChanges, reportNonHotswappableChange, reportNonHotswappableResource } from './hotswap/common';
+import { ICON, ChangeHotswapResult, HotswapMode, HotswappableChange, NonHotswappableChange, HotswappableChangeCandidate, HotswapPropertyOverrides, ClassifiedResourceChanges, reportNonHotswappableChange, reportNonHotswappableResource } from './hotswap/common';
 import { isHotswappableEcsServiceChange } from './hotswap/ecs-services';
 import { isHotswappableLambdaFunctionChange } from './hotswap/lambda-functions';
 import { skipChangeForS3DeployCustomResourcePolicy, isHotswappableS3BucketDeploymentChange } from './hotswap/s3-bucket-deployments';
@@ -15,8 +15,15 @@ import { isHotswappableStateMachineChange } from './hotswap/stepfunctions-state-
 import { NestedStackTemplates, loadCurrentTemplateWithNestedStacks } from './nested-stack-helpers';
 import { CloudFormationStack } from './util/cloudformation';
 
+// Must use a require() otherwise esbuild complains about calling a namespace
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const pLimit: typeof import('p-limit') = require('p-limit');
+
 type HotswapDetector = (
-  logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate
+  logicalId: string,
+  change: HotswappableChangeCandidate,
+  evaluateCfnTemplate: EvaluateCloudFormationTemplate,
+  hotswapPropertyOverrides: HotswapPropertyOverrides,
 ) => Promise<ChangeHotswapResult>;
 
 const RESOURCE_DETECTORS: { [key: string]: HotswapDetector } = {
@@ -58,7 +65,7 @@ const RESOURCE_DETECTORS: { [key: string]: HotswapDetector } = {
 export async function tryHotswapDeployment(
   sdkProvider: SdkProvider, assetParams: { [key: string]: string },
   cloudFormationStack: CloudFormationStack, stackArtifact: cxapi.CloudFormationStackArtifact,
-  hotswapMode: HotswapMode,
+  hotswapMode: HotswapMode, hotswapPropertyOverrides: HotswapPropertyOverrides,
 ): Promise<DeployStackResult | undefined> {
   // resolve the environment, so we can substitute things like AWS::Region in CFN expressions
   const resolvedEnv = await sdkProvider.resolveEnvironment(stackArtifact.environment);
@@ -82,7 +89,7 @@ export async function tryHotswapDeployment(
 
   const stackChanges = cfn_diff.fullDiff(currentTemplate.deployedRootTemplate, stackArtifact.template);
   const { hotswappableChanges, nonHotswappableChanges } = await classifyResourceChanges(
-    stackChanges, evaluateCfnTemplate, sdk, currentTemplate.nestedStacks,
+    stackChanges, evaluateCfnTemplate, sdk, currentTemplate.nestedStacks, hotswapPropertyOverrides,
   );
 
   logNonHotswappableChanges(nonHotswappableChanges, hotswapMode);
@@ -109,6 +116,7 @@ async function classifyResourceChanges(
   evaluateCfnTemplate: EvaluateCloudFormationTemplate,
   sdk: ISDK,
   nestedStackNames: { [nestedStackName: string]: NestedStackTemplates },
+  hotswapPropertyOverrides: HotswapPropertyOverrides,
 ): Promise<ClassifiedResourceChanges> {
   const resourceDifferences = getStackResourceDifferences(stackChanges);
 
@@ -127,7 +135,14 @@ async function classifyResourceChanges(
   // gather the results of the detector functions
   for (const [logicalId, change] of Object.entries(resourceDifferences)) {
     if (change.newValue?.Type === 'AWS::CloudFormation::Stack' && change.oldValue?.Type === 'AWS::CloudFormation::Stack') {
-      const nestedHotswappableResources = await findNestedHotswappableChanges(logicalId, change, nestedStackNames, evaluateCfnTemplate, sdk);
+      const nestedHotswappableResources = await findNestedHotswappableChanges(
+        logicalId,
+        change,
+        nestedStackNames,
+        evaluateCfnTemplate,
+        sdk,
+        hotswapPropertyOverrides,
+      );
       hotswappableResources.push(...nestedHotswappableResources.hotswappableChanges);
       nonHotswappableResources.push(...nestedHotswappableResources.nonHotswappableChanges);
 
@@ -147,7 +162,7 @@ async function classifyResourceChanges(
     const resourceType: string = hotswappableChangeCandidate.newValue.Type;
     if (resourceType in RESOURCE_DETECTORS) {
       // run detector functions lazily to prevent unhandled promise rejections
-      promises.push(() => RESOURCE_DETECTORS[resourceType](logicalId, hotswappableChangeCandidate, evaluateCfnTemplate));
+      promises.push(() => RESOURCE_DETECTORS[resourceType](logicalId, hotswappableChangeCandidate, evaluateCfnTemplate, hotswapPropertyOverrides));
     } else {
       reportNonHotswappableChange(nonHotswappableResources, hotswappableChangeCandidate, undefined, 'This resource type is not supported for hotswap deployments');
     }
@@ -156,6 +171,8 @@ async function classifyResourceChanges(
   // resolve all detector results
   const changesDetectionResults: Array<ChangeHotswapResult> = [];
   for (const detectorResultPromises of promises) {
+    // Constant set of promises per resource
+    // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
     const hotswapDetectionResults = await Promise.all(await detectorResultPromises());
     changesDetectionResults.push(hotswapDetectionResults);
   }
@@ -227,6 +244,7 @@ async function findNestedHotswappableChanges(
   nestedStackTemplates: { [nestedStackName: string]: NestedStackTemplates },
   evaluateCfnTemplate: EvaluateCloudFormationTemplate,
   sdk: ISDK,
+  hotswapPropertyOverrides: HotswapPropertyOverrides,
 ): Promise<ClassifiedResourceChanges> {
   const nestedStack = nestedStackTemplates[logicalId];
   if (!nestedStack.physicalName) {
@@ -250,7 +268,12 @@ async function findNestedHotswappableChanges(
     nestedStackTemplates[logicalId].deployedTemplate, nestedStackTemplates[logicalId].generatedTemplate,
   );
 
-  return classifyResourceChanges(nestedDiff, evaluateNestedCfnTemplate, sdk, nestedStackTemplates[logicalId].nestedStackTemplates);
+  return classifyResourceChanges(
+    nestedDiff,
+    evaluateNestedCfnTemplate,
+    sdk,
+    nestedStackTemplates[logicalId].nestedStackTemplates,
+    hotswapPropertyOverrides);
 }
 
 /** Returns 'true' if a pair of changes is for the same resource. */
@@ -329,9 +352,11 @@ async function applyAllHotswappableChanges(sdk: ISDK, hotswappableChanges: Hotsw
   if (hotswappableChanges.length > 0) {
     print(`\n${ICON} hotswapping resources:`);
   }
-  return Promise.all(hotswappableChanges.map(hotswapOperation => {
+  const limit = pLimit(10);
+  // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
+  return Promise.all(hotswappableChanges.map(hotswapOperation => limit(() => {
     return applyHotswappableChange(sdk, hotswapOperation);
-  }));
+  })));
 }
 
 async function applyHotswappableChange(sdk: ISDK, hotswapOperation: HotswappableChange): Promise<void> {

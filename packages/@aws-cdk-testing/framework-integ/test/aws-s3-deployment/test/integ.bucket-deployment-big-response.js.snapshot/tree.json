@@ -215,7 +215,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "3322b7049fb0ed2b7cbb644a2ada8d1116ff80c32dca89e6ada846b5de26f961.zip"
+                          "s3Key": "f24ba5e516d9d80b64bc7b0f406eedd12c36b20e7461f3e7719b7ffbdad72410.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -1998,7 +1998,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "BootstrapVersion": {
@@ -2036,7 +2036,7 @@
                 "path": "integ-test-bucket-deployments/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -2056,7 +2056,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject6a3d5f37b0006bfef2ceb557be92af83/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -2128,7 +2128,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "LatestNodeRuntimeMap": {
@@ -2152,7 +2152,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject425e9b97eb49a3538fe79384e9958548/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -2206,7 +2206,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject00cb0ca4623057f8b812a34465870f7e/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -2260,7 +2260,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject5ce447e051ecb69f3d807f4394b5b46c/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -2314,7 +2314,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject8fbdfb3ab3a4709bba9b8ee0a0860bad/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -2368,7 +2368,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject165bb563bd44d396beed1fe93a53bf91/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -2422,7 +2422,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjecte85f88d6c0d27672799bde5799928630/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -2476,7 +2476,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectc2c988a4b26c10ed6b496d0b59c9c3e3/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -2530,7 +2530,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectfab0cd33f825dd802cc9566094a07640/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -2584,7 +2584,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectf623bea8843ae0c2c3dab6846999d83f/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -2638,7 +2638,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject42adc036c88af67f2be90f074b51502f/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -2692,7 +2692,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject4f107fe8b41fa77377ffb3777ba9366e/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -2746,7 +2746,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectc16bf111fbffed1fe8b98fa9b90e7ba3/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -2800,7 +2800,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectfde82f764b77352599218ace408376af/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -2854,7 +2854,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectd589ac20f4fbabd547db198ef005093d/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -2908,7 +2908,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject1cb8066ea50423e08d71948c9288136b/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -2962,7 +2962,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectf75115ac22e308b12653034f82a365a1/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -3016,7 +3016,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject42e54704a8195966f57edaa19075d065/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -3070,7 +3070,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectf6c8aeb1b544fa2b3a3b4eae7a204548/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -3124,7 +3124,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject14f64c9a786da7cd3a92af4962993375/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -3178,7 +3178,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectbe155bb34b914a0e0946bacb4d39cb70/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -3232,7 +3232,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject1b8c3a29d08f6e7e00cb32bcfe66e51b/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -3286,7 +3286,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject44538a10982fb955fe82894ea0aad525/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -3340,7 +3340,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjecte23e5faf7dcfdc4c32d328969bbfd138/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -3394,7 +3394,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject90fdb07b28f6731fdf7143a2279047e8/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -3448,7 +3448,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectafb7f8046ceb8a393f0c98321424fed6/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -3502,7 +3502,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject20f6d03497f071656729121ad70585e6/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -3556,7 +3556,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectdb7679e1e1f42b7223212bf1e9751c35/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -3610,7 +3610,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectdcaa3aca9c5034b8dc305f59fbfb9c96/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -3664,7 +3664,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectfa41d5a4a3a6391d0fdea7b8c0ea125d/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -3718,7 +3718,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject2acf8df2873f0193990ca37709d1ccb7/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -3772,7 +3772,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject171e0774b61223367b3845f943820220/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -3826,7 +3826,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject1dd45f0c7c3c3aab390ca9ec50e6257e/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -3880,7 +3880,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject56ed3fe5313d8ed4f4987671afbe2671/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -3934,7 +3934,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject564950231086338c3be77dc3b0c7ea80/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -3988,7 +3988,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject81348f47a054eb2ae709dfba7fd225f6/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -4042,7 +4042,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject48cbe15d6ce7edc21f95f2af2b8af868/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -4096,7 +4096,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject19681224410d52b7f08b179de9aa9407/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -4150,7 +4150,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject453bcd989937931086613deda948d2fb/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -4204,7 +4204,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectbc4220034fde35aa40955a730d95cf06/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -4258,7 +4258,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject3cad1680cdc1237ea85b1ac72b342605/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -4312,7 +4312,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject4b19aae9dfab36f3533354f5d174894b/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -4366,7 +4366,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject6962a2038a29ee048ef81298fd430024/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -4420,7 +4420,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectf135ba74ce87f205af3a4bc840fee481/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -4474,7 +4474,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject14323974399cf7a40be3e5edcc2e4c86/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -4528,7 +4528,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjecte46fe02df915633605532a55738c6ac9/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -4582,7 +4582,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject22f6a1c5aa9beb50d7ba0d606a880fc8/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -4636,7 +4636,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjecte252c57deee82f88e98a1bfed707a7f3/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -4690,7 +4690,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject2ec61809a1ff58bef0e500f83d0b1134/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -4744,7 +4744,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectb5e5bc7ae7c350f8c13ba17e3213054b/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -4798,7 +4798,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStackseee0561cd3ca3cfdab32c1c7b9ebf09c/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -4878,7 +4878,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },

@@ -1,14 +1,14 @@
 /* eslint-disable no-console */
 
 /* eslint-disable import/no-extraneous-dependencies */
-import { Lambda, InvocationResponse } from '@aws-sdk/client-lambda';
-import { NodeHttpHandler } from '@aws-sdk/node-http-handler';
+import { Lambda, InvocationResponse, InvocationType } from '@aws-sdk/client-lambda';
+import { NodeHttpHandler } from '@smithy/node-http-handler';
 
 export type DecodedInvocationResponse = Omit<InvocationResponse, 'Payload'> & {
   Payload?: string
 }
 
-export type InvokeFunction = (functionName: string, invocationType: string, timeout: number) => Promise<DecodedInvocationResponse>;
+export type InvokeFunction = (functionName: string, invocationType: InvocationType, timeout: number) => Promise<DecodedInvocationResponse>;
 
 const decodePayload = (payload?: Uint8Array): string | undefined => {
   if (!payload) {
