@@ -66,6 +66,8 @@ export interface ScheduleTargetBaseProps {
  * Base class for Schedule Targets
  */
 export abstract class ScheduleTargetBase {
+  private role?: iam.IRole;
+
   constructor(
     private readonly baseProps: ScheduleTargetBaseProps,
     protected readonly targetArn: string,
@@ -75,9 +77,9 @@ export abstract class ScheduleTargetBase {
   protected abstract addTargetActionToRole(schedule: ISchedule, role: iam.IRole): void;
 
   protected bindBaseTargetConfig(_schedule: ISchedule): ScheduleTargetConfig {
-    const role: iam.IRole = this.baseProps.role ?? this.createOrGetScheduleTargetRole(_schedule, this.targetArn);
+    this.role = this.baseProps.role ?? this.createOrGetScheduleTargetRole(_schedule, this.targetArn);
 
-    this.addTargetActionToRole(_schedule, role);
+    this.addTargetActionToRole(_schedule, this.role);
 
     if (this.baseProps.deadLetterQueue) {
       this.addToDeadLetterQueueResourcePolicy(_schedule, this.baseProps.deadLetterQueue);
@@ -85,7 +87,7 @@ export abstract class ScheduleTargetBase {
 
     return {
       arn: this.targetArn,
-      role: role,
+      role: this.role,
       deadLetterConfig: this.baseProps.deadLetterQueue ? {
         arn: this.baseProps.deadLetterQueue.queueArn,
       } : undefined,
