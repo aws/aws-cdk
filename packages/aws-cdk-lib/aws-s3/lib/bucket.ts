@@ -1554,6 +1554,8 @@ export interface Filter {
    * @default - applies to all objects
    */
   readonly tags?: Tag[];
+}
+
 /**
  * The transition default minimum object size for lifecycle
  */

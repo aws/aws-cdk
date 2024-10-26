@@ -4782,7 +4782,6 @@ describe('bucket', () => {
       });
     });
   });
-});
 
   test.each([
     [s3.TransitionDefaultMinimumObjectSize.ALL_STORAGE_CLASSES_128_K, 'all_storage_classes_128K'],
