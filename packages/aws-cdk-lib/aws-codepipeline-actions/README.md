@@ -1292,3 +1292,6 @@ pipeline.addStage({
   actions: [commandsAction],
 });
 ```
+
+See [the AWS documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-Commands.html)
+for more details about using Commands action in CodePipeline.
