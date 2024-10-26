@@ -1,10 +1,13 @@
 import * as AWS from 'aws-sdk';
-import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate, lowerCaseFirstCharacter, reportNonHotswappableChange, transformObjectKeys } from './common';
+import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate, HotswapPropertyOverrides, lowerCaseFirstCharacter, reportNonHotswappableChange, transformObjectKeys } from './common';
 import { ISDK } from '../aws-auth';
 import { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
 
 export async function isHotswappableEcsServiceChange(
-  logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
+  logicalId: string,
+  change: HotswappableChangeCandidate,
+  evaluateCfnTemplate: EvaluateCloudFormationTemplate,
+  hotswapPropertyOverrides: HotswapPropertyOverrides,
 ): Promise<ChangeHotswapResult> {
   // the only resource change we can evaluate here is an ECS TaskDefinition
   if (change.newValue.Type !== 'AWS::ECS::TaskDefinition') {
@@ -83,6 +86,10 @@ export async function isHotswappableEcsServiceChange(
         const registerTaskDefResponse = await sdk.ecs().registerTaskDefinition(lowercasedTaskDef).promise();
         const taskDefRevArn = registerTaskDefResponse.taskDefinition?.taskDefinitionArn;
 
+        let ecsHotswapProperties = hotswapPropertyOverrides.ecsHotswapProperties;
+        let minimumHealthyPercent = ecsHotswapProperties?.minimumHealthyPercent;
+        let maximumHealthyPercent = ecsHotswapProperties?.maximumHealthyPercent;
+
         // Step 2 - update the services using that TaskDefinition to point to the new TaskDefinition Revision
         const servicePerClusterUpdates: { [cluster: string]: Array<{ promise: Promise<any>; ecsService: EcsService }> } = {};
         for (const ecsService of ecsServicesReferencingTaskDef) {
@@ -105,18 +112,19 @@ export async function isHotswappableEcsServiceChange(
               cluster: clusterName,
               forceNewDeployment: true,
               deploymentConfiguration: {
-                minimumHealthyPercent: 0,
+                minimumHealthyPercent: minimumHealthyPercent !== undefined ? minimumHealthyPercent : 0,
+                maximumPercent: maximumHealthyPercent !== undefined ? maximumHealthyPercent : undefined,
               },
             }).promise(),
             ecsService: ecsService,
           });
         }
         // Limited set of updates per cluster
-        // eslint-disable-next-line @aws-cdk/promiseall-no-unbounded-parallelism
+        // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
         await Promise.all(Object.values(servicePerClusterUpdates)
           .map(clusterUpdates => {
             // Limited set of updates per cluster
-            // eslint-disable-next-line @aws-cdk/promiseall-no-unbounded-parallelism
+            // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
             return Promise.all(clusterUpdates.map(serviceUpdate => serviceUpdate.promise));
           }),
         );
@@ -168,7 +176,7 @@ export async function isHotswappableEcsServiceChange(
         // create a custom Waiter that uses the deploymentCompleted configuration added above
         const deploymentWaiter = new (AWS as any).ResourceWaiter(sdk.ecs(), 'deploymentCompleted');
         // wait for all of the waiters to finish
-        // eslint-disable-next-line @aws-cdk/promiseall-no-unbounded-parallelism
+        // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
         await Promise.all(Object.entries(servicePerClusterUpdates).map(([clusterName, serviceUpdates]) => {
           return deploymentWaiter.wait({
             cluster: clusterName,
