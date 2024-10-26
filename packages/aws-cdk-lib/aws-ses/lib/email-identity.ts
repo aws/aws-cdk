@@ -187,19 +187,19 @@ export interface DkimIdentityConfig {
   readonly domainSigningPrivateKey?: string;
 
   /**
-    * A string that's used to identify a public key in the DNS configuration for
-    * a domain
-    *
-    * @default - use Easy DKIM
-    */
+   * A string that's used to identify a public key in the DNS configuration for
+   * a domain
+   *
+   * @default - use Easy DKIM
+   */
   readonly domainSigningSelector?: string;
 
   /**
-    * The key length of the future DKIM key pair to be generated. This can be changed
-    * at most once per day.
-    *
-    * @default EasyDkimSigningKeyLength.RSA_2048_BIT
-    */
+   * The key length of the future DKIM key pair to be generated. This can be changed
+   * at most once per day.
+   *
+   * @default EasyDkimSigningKeyLength.RSA_2048_BIT
+   */
   readonly nextSigningKeyLength?: EasyDkimSigningKeyLength;
 }
 
