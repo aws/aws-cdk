@@ -406,11 +406,15 @@ export class RecordSet extends Resource implements IRecordSet {
     }
 
     if (this.weight !== undefined) {
-      const idPrefix = `WEIGHT_${Token.isUnresolved(this.weight)
-        ? Token.asString(this.weight)
-        : this.weight
-      }_ID_`;
-      return this.createIdentifier(idPrefix);
+      if (Token.isUnresolved(this.weight)) {
+        const replacement = 'XXX'; // XXX simply because 255 is the highest value for a record weight
+        const idPrefix = `WEIGHT_${replacement}_ID_`;
+        const idTemplate = this.createIdentifier(idPrefix);
+        return idTemplate.replace(replacement, Token.asString(this.weight));
+      } else {
+        const idPrefix = `WEIGHT_${this.weight}_ID_`;
+        return this.createIdentifier(idPrefix);
+      }
     }
 
     if (this.region) {
