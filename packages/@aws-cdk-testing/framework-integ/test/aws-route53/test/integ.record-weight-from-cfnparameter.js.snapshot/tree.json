@@ -22,46 +22,46 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_route53.CfnHostedZone",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_route53.PublicHostedZone",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
             }
           },
           "RecordWeight0": {
             "id": "RecordWeight0",
             "path": "record-weight-from-cfnparameter/RecordWeight0",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnParameter",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
             }
           },
           "RecordWeight1": {
             "id": "RecordWeight1",
             "path": "record-weight-from-cfnparameter/RecordWeight1",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnParameter",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
             }
           },
           "RecordWeight2": {
             "id": "RecordWeight2",
             "path": "record-weight-from-cfnparameter/RecordWeight2",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnParameter",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
             }
           },
           "RecordWeight3": {
             "id": "RecordWeight3",
             "path": "record-weight-from-cfnparameter/RecordWeight3",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnParameter",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
             }
           },
           "RecordWithParamWeight0": {
@@ -89,7 +89,7 @@
                           {
                             "Ref": "RecordWeight0"
                           },
-                          "_ID_recordweightParamWeight059BCC4E1"
+                          "_ID_recordweightfromcfnpaecordWithParamWeight059BCC4E1"
                         ]
                       ]
                     },
@@ -101,14 +101,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
             }
           },
           "RecordWithParamWeight1": {
@@ -136,7 +136,7 @@
                           {
                             "Ref": "RecordWeight1"
                           },
-                          "_ID_recordweightParamWeight1304B1475"
+                          "_ID_recordweightfromcfnpaecordWithParamWeight1304B1475"
                         ]
                       ]
                     },
@@ -148,14 +148,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
             }
           },
           "RecordWithParamWeight2": {
@@ -183,7 +183,7 @@
                           {
                             "Ref": "RecordWeight2"
                           },
-                          "_ID_recordweightParamWeight25B9D18F1"
+                          "_ID_recordweightfromcfnpaecordWithParamWeight25B9D18F1"
                         ]
                       ]
                     },
@@ -195,14 +195,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
             }
           },
           "RecordWithParamWeight3": {
@@ -230,7 +230,7 @@
                           {
                             "Ref": "RecordWeight3"
                           },
-                          "_ID_recordweightParamWeight37DA83B23"
+                          "_ID_recordweightfromcfnpaecordWithParamWeight37DA83B23"
                         ]
                       ]
                     },
@@ -242,36 +242,36 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "record-weight-from-cfnparameter/BootstrapVersion",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnParameter",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
             }
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
             "path": "record-weight-from-cfnparameter/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnRule",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
             }
           }
         },
         "constructInfo": {
-          "fqn": "aws-cdk-lib.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
         }
       },
       "Route53RecordWeightFromCfnParameterInteg": {
@@ -287,7 +287,7 @@
                 "path": "Route53RecordWeightFromCfnParameterInteg/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -298,22 +298,22 @@
                     "id": "BootstrapVersion",
                     "path": "Route53RecordWeightFromCfnParameterInteg/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnParameter",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
                     "path": "Route53RecordWeightFromCfnParameterInteg/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnRule",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Stack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               }
             },
@@ -333,13 +333,13 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },
     "constructInfo": {
-      "fqn": "aws-cdk-lib.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.4.2"
     }
   }
 }

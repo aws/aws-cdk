@@ -19,7 +19,7 @@
         "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/301b5b33e5e387daebea8b387f5d80fd6b29eadc0ea88a23bee6b15a7b159ee9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9603704f36aac4a47218ab44a07a0ea096d4ef0e4c35203a39f72aef7b709c33.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -99,42 +99,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "RecordWeightedFromParameter04394A234": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "RecordWeightedFromParameter04394A234",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "RecordWeightedFromParameter18B61ED39": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "RecordWeightedFromParameter18B61ED39",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "RecordWeightedFromParameter29583BE12": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "RecordWeightedFromParameter29583BE12",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "RecordWeightedFromParameter3511F1BB5": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "RecordWeightedFromParameter3511F1BB5",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },
