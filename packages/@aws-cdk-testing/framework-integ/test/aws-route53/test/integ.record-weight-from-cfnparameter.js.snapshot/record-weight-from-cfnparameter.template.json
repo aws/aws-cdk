@@ -6,7 +6,7 @@
     "Name": "cdk.dev."
    }
   },
-  "RecordWeightedFromCfnParameter0FB5DFC65": {
+  "RecordWithParamWeight01950FDF7": {
    "Type": "AWS::Route53::RecordSet",
    "Properties": {
     "HostedZoneId": {
@@ -24,7 +24,7 @@
        {
         "Ref": "RecordWeight0"
        },
-       "_ID_recordweigParameter04970FE98"
+       "_ID_recordweightParamWeight059BCC4E1"
       ]
      ]
     },
@@ -35,7 +35,7 @@
     }
    }
   },
-  "RecordWeightedFromCfnParameter11D8E5896": {
+  "RecordWithParamWeight182FF0BDE": {
    "Type": "AWS::Route53::RecordSet",
    "Properties": {
     "HostedZoneId": {
@@ -53,7 +53,7 @@
        {
         "Ref": "RecordWeight1"
        },
-       "_ID_recordweigParameter1EB51A657"
+       "_ID_recordweightParamWeight1304B1475"
       ]
      ]
     },
@@ -64,7 +64,7 @@
     }
    }
   },
-  "RecordWeightedFromCfnParameter2B12A1DFB": {
+  "RecordWithParamWeight2C5120D0E": {
    "Type": "AWS::Route53::RecordSet",
    "Properties": {
     "HostedZoneId": {
@@ -82,7 +82,7 @@
        {
         "Ref": "RecordWeight2"
        },
-       "_ID_recordweigParameter208409FED"
+       "_ID_recordweightParamWeight25B9D18F1"
       ]
      ]
     },
@@ -93,7 +93,7 @@
     }
    }
   },
-  "RecordWeightedFromCfnParameter3D5E67423": {
+  "RecordWithParamWeight37D431545": {
    "Type": "AWS::Route53::RecordSet",
    "Properties": {
     "HostedZoneId": {
@@ -111,7 +111,7 @@
        {
         "Ref": "RecordWeight3"
        },
-       "_ID_recordweigParameter3841525F4"
+       "_ID_recordweightParamWeight37DA83B23"
       ]
      ]
     },

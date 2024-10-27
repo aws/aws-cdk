@@ -406,7 +406,10 @@ export class RecordSet extends Resource implements IRecordSet {
     }
 
     if (this.weight !== undefined) {
-      const idPrefix = `WEIGHT_${this.weight}_ID_`;
+      const idPrefix = `WEIGHT_${Token.isUnresolved(this.weight)
+        ? Token.asString(this.weight)
+        : this.weight
+      }_ID_`;
       return this.createIdentifier(idPrefix);
     }
 

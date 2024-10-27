@@ -19,7 +19,7 @@
         "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a45fab474cff7ba97e8d31e7eb404ad1526a3bac8e68dbc1951fcc7c99fe2a53.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/301b5b33e5e387daebea8b387f5d80fd6b29eadc0ea88a23bee6b15a7b159ee9.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -65,28 +65,28 @@
             "data": "RecordWeight3"
           }
         ],
-        "/record-weight-from-cfnparameter/RecordWeightedFromCfnParameter0/Resource": [
+        "/record-weight-from-cfnparameter/RecordWithParamWeight0/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "RecordWeightedFromCfnParameter0FB5DFC65"
+            "data": "RecordWithParamWeight01950FDF7"
           }
         ],
-        "/record-weight-from-cfnparameter/RecordWeightedFromCfnParameter1/Resource": [
+        "/record-weight-from-cfnparameter/RecordWithParamWeight1/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "RecordWeightedFromCfnParameter11D8E5896"
+            "data": "RecordWithParamWeight182FF0BDE"
           }
         ],
-        "/record-weight-from-cfnparameter/RecordWeightedFromCfnParameter2/Resource": [
+        "/record-weight-from-cfnparameter/RecordWithParamWeight2/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "RecordWeightedFromCfnParameter2B12A1DFB"
+            "data": "RecordWithParamWeight2C5120D0E"
           }
         ],
-        "/record-weight-from-cfnparameter/RecordWeightedFromCfnParameter3/Resource": [
+        "/record-weight-from-cfnparameter/RecordWithParamWeight3/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "RecordWeightedFromCfnParameter3D5E67423"
+            "data": "RecordWithParamWeight37D431545"
           }
         ],
         "/record-weight-from-cfnparameter/BootstrapVersion": [
@@ -99,6 +99,42 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "RecordWeightedFromParameter04394A234": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RecordWeightedFromParameter04394A234",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "RecordWeightedFromParameter18B61ED39": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RecordWeightedFromParameter18B61ED39",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "RecordWeightedFromParameter29583BE12": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RecordWeightedFromParameter29583BE12",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "RecordWeightedFromParameter3511F1BB5": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RecordWeightedFromParameter3511F1BB5",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
