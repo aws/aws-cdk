@@ -108,6 +108,7 @@ export const LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT = '@aws-cdk/custom-reso
 export const S3_KEEP_NOTIFICATION_IN_IMPORTED_BUCKET = '@aws-cdk/aws-s3:keepNotificationInImportedBucket';
 export const USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK = '@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask';
 export const REDUCE_EC2_FARGATE_CLOUDWATCH_PERMISSIONS = '@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions';
+export const DYNAMODB_TABLEV2_RESOURCE_POLICY_PER_REPLICA = '@aws-cdk/aws-dynamodb:resourcePolicyPerReplica';
 export const EC2_SUM_TIMEOUT_ENABLED = '@aws-cdk/aws-ec2:ec2SumTImeoutEnabled';
 export const APPSYNC_GRAPHQLAPI_SCOPE_LAMBDA_FUNCTION_PERMISSION = '@aws-cdk/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission';
 export const USE_CORRECT_VALUE_FOR_INSTANCE_RESOURCE_ID_PROPERTY = '@aws-cdk/aws-rds:setCorrectValueForDatabaseInstanceReadReplicaInstanceResourceId';
@@ -1150,6 +1151,21 @@ export const FLAGS: Record<string, FlagInfo> = {
   },
 
   //////////////////////////////////////////////////////////////////////
+  [DYNAMODB_TABLEV2_RESOURCE_POLICY_PER_REPLICA]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled will allow you to specify a resource policy per replica, and not copy the source table policy to all replicas',
+    detailsMd: `
+      If this flag is not set, the default behavior for \`TableV2\` is to use a different \`resourcePolicy\` for each replica. 
+      
+      If this flag is set to false, the behavior is that each replica shares the same \`resourcePolicy\` as the source table.
+      This will prevent you from creating a new table which has an additional replica and a resource policy.
+
+      This is a feature flag as the old behavior was technically incorrect but users may have come to depend on it.`,
+    introducedIn: { v2: '2.164.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
   [EC2_SUM_TIMEOUT_ENABLED]: {
     type: FlagType.BugFix,
     summary: 'When enabled, initOptions.timeout and resourceSignalTimeout values will be summed together.',
@@ -1231,7 +1247,7 @@ export const FLAGS: Record<string, FlagInfo> = {
 
       When this feature flag is enabled, if the task definition is created in the stack, the 'Resource' section will 'Ref' the taskDefinition.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.163.0' },
     recommendedValue: true,
   },
 };

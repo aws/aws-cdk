@@ -306,6 +306,9 @@ configure an MFA token and use it for sign in. It also allows for the users to u
 [time-based one time password
 (TOTP)](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-mfa-totp.html).
 
+If you want to enable email-based MFA, set `email` propety to the Amazon SES email-sending configuration and set `advancedSecurityMode` to `AdvancedSecurity.ENFORCED` or `AdvancedSecurity.AUDIT`.
+For more information, see [Email MFA](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-advanced-security-email-mfa.html).
+
 ```ts
 new cognito.UserPool(this, 'myuserpool', {
   // ...
@@ -313,6 +316,7 @@ new cognito.UserPool(this, 'myuserpool', {
   mfaSecondFactor: {
     sms: true,
     otp: true,
+    email: false, // email-based MFA
   },
 });
 ```

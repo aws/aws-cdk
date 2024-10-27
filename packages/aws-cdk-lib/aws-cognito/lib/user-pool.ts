@@ -5,7 +5,7 @@ import { StandardAttributeNames } from './private/attr-names';
 import { ICustomAttribute, StandardAttribute, StandardAttributes } from './user-pool-attr';
 import { UserPoolClient, UserPoolClientOptions } from './user-pool-client';
 import { UserPoolDomain, UserPoolDomainOptions } from './user-pool-domain';
-import { UserPoolEmail } from './user-pool-email';
+import { UserPoolEmail, UserPoolEmailConfig } from './user-pool-email';
 import { UserPoolGroup, UserPoolGroupOptions } from './user-pool-group';
 import { IUserPoolIdentityProvider } from './user-pool-idp';
 import { UserPoolResourceServer, UserPoolResourceServerOptions } from './user-pool-resource-server';
@@ -392,7 +392,7 @@ export enum Mfa {
 export interface MfaSecondFactor {
   /**
    * The MFA token is sent to the user via SMS to their verified phone numbers
-   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-mfa-sms-text-message.html
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-mfa-sms-email-message.html
    * @default true
    */
   readonly sms: boolean;
@@ -403,6 +403,17 @@ export interface MfaSecondFactor {
    * @default false
    */
   readonly otp: boolean;
+
+  /**
+   * The MFA token is sent to the user via EMAIL
+   *
+   * To enable email-based MFA, set `email` property to the Amazon SES email-sending configuration
+   * and set `advancedSecurityMode` to `AdvancedSecurity.ENFORCED` or `AdvancedSecurity.AUDIT`
+   *
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-mfa-sms-email-message.html
+   * @default false
+   */
+  readonly email?: boolean;
 }
 
 /**
@@ -672,8 +683,8 @@ export interface UserPoolProps {
   /**
    * Configure the MFA types that users can use in this user pool. Ignored if `mfa` is set to `OFF`.
    *
-   * @default - { sms: true, otp: false }, if `mfa` is set to `OPTIONAL` or `REQUIRED`.
-   * { sms: false, otp: false }, otherwise
+   * @default - { sms: true, otp: false, email: false }, if `mfa` is set to `OPTIONAL` or `REQUIRED`.
+   * { sms: false, otp: false, email:false }, otherwise
    */
   readonly mfaSecondFactor?: MfaSecondFactor;
 
@@ -934,6 +945,7 @@ export class UserPool extends UserPoolBase {
   public readonly userPoolProviderUrl: string;
 
   private triggers: CfnUserPool.LambdaConfigProperty = {};
+  private emailConfiguration: UserPoolEmailConfig | undefined;
 
   constructor(scope: Construct, id: string, props: UserPoolProps = {}) {
     super(scope, id);
@@ -1003,6 +1015,7 @@ export class UserPool extends UserPoolBase {
       from: encodePuny(props.emailSettings?.from),
       replyToEmailAddress: encodePuny(props.emailSettings?.replyTo),
     });
+    this.emailConfiguration = emailConfiguration;
 
     const userPool = new CfnUserPool(this, 'Resource', {
       userPoolName: props.userPoolName,
@@ -1251,6 +1264,9 @@ export class UserPool extends UserPoolBase {
       }
       if (props.mfaSecondFactor!.otp) {
         enabledMfas.push('SOFTWARE_TOKEN_MFA');
+      } if (props.mfaSecondFactor!.email) {
+        this.validateEmailMfa(props);
+        enabledMfas.push('EMAIL_OTP');
       }
       return enabledMfas;
     }
@@ -1377,6 +1393,16 @@ export class UserPool extends UserPoolBase {
     return {
       attributesRequireVerificationBeforeUpdate,
     };
+  }
+
+  private validateEmailMfa(props: UserPoolProps) {
+    if (props.email === undefined || this.emailConfiguration?.emailSendingAccount !== 'DEVELOPER') {
+      throw new Error('To enable email-based MFA, set `email` property to the Amazon SES email-sending configuration.');
+    }
+
+    if (props.advancedSecurityMode === AdvancedSecurityMode.OFF) {
+      throw new Error('To enable email-based MFA, set `advancedSecurityMode` to `AdvancedSecurity.ENFORCED` or `AdvancedSecurity.AUDIT`.');
+    }
   }
 }
 
