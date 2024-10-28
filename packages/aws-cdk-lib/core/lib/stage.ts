@@ -221,6 +221,16 @@ export class Stage extends Construct {
     const newConstructPaths = new Set<string>();
     recurseAndlistAllConstructPaths(this);
 
+    // If the assembly cache is uninitiazed, run synthesize and re-run list all construvt paths
+    if (this.constructPathsCache.size == 0 || !this.assembly || options.force) {
+      this.assembly = synthesize(this, {
+        skipValidation: options.skipValidation,
+        validateOnSynthesis: options.validateOnSynthesis,
+      });
+      recurseAndlistAllConstructPaths(this);
+      this.constructPathsCache = newConstructPaths;
+    }
+
     // Lists all construct paths
     function recurseAndlistAllConstructPaths(construct: IConstruct) {
       newConstructPaths.add(construct.node.path);
@@ -229,15 +239,6 @@ export class Stage extends Construct {
           recurseAndlistAllConstructPaths(child);
         }
       }
-    }
-
-    // If the assembly cache is uninitiazed, run synthesize.
-    if (this.constructPathsCache.size == 0 || !this.assembly || options.force) {
-      this.constructPathsCache = newConstructPaths;
-      this.assembly = synthesize(this, {
-        skipValidation: options.skipValidation,
-        validateOnSynthesis: options.validateOnSynthesis,
-      });
     }
 
     // If the construct paths set has changed
@@ -258,6 +259,9 @@ export class Stage extends Construct {
       }
       return true;
     }
+
+    // Reset construct paths
+    this.constructPathsCache = newConstructPaths;
 
     return this.assembly;
   }
