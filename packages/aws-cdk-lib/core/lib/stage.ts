@@ -311,5 +311,5 @@ export interface StageSynthesisOptions {
    * been mutated since the last synth.
    * @default false
    */
-  readonly warnInsteadOfError?: boolean;
+  readonly errorOnDuplicateSynth?: boolean;
 }
