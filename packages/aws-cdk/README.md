@@ -975,6 +975,18 @@ Here is a diagram that shows the algorithm of garbage collection:
 
 ![Diagram of Garbage Collection algorithm](/packages/aws-cdk/images/garbage-collection.png)
 
+#### Theoretical Race Condition with `REVIEW_IN_PROGRESS` stacks
+
+When gathering stack templates, we are currently ignoring `REVIEW_IN_PROGRESS` stacks as no stack template
+is available during the time the stack is in that state. However, stacks in `REVIEW_IN_PROGRESS` have already
+passed through the asset uploading step, where it either uploads new assets or ensures that the asset exists.
+Therefore it is possible that an isolated asset is about to be referenced again, and garbage collection has
+no way of knowing which assets are in that situation. This situation can result in a failed deployment where
+the mitigation is to redeploy, as the asset upload step will be able to reupload the missing asset.
+
+In practice, this race condition is only for a specific edge case and unlikely to happen but please open an
+issue if you think that this has happened to your stack.
+
 ### `cdk doctor`
 
 Inspect the current command-line environment and configurations, and collect information that can be useful for
