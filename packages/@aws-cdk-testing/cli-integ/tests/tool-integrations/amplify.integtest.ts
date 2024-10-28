@@ -6,9 +6,9 @@ const TIMEOUT = 1800_000;
 
 integTest('amplify integration', withTemporaryDirectory(withPackages(async (context) => {
   const shell = ShellHelper.fromContext(context);
-  // await context.packages.makeCliAvailable();
 
   await shell.shell(['npm', 'create', '-y', 'amplify@latest']);
+  await shell.shell(['npx', 'ampx', 'configure', 'telemetry', 'disable']);
 
   // This will create 'package.json' implicating a certain version of the CDK
   await updateCdkDependency(context, context.packages.requestedCliVersion(), context.packages.requestedFrameworkVersion());
