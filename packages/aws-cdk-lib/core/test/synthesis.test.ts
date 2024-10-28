@@ -363,7 +363,7 @@ describe('synthesis', () => {
 
   });
 
-  test('can call synth multiple times without caching assembly', () => {
+  test('calling synth multiple times errors if construct tree is mutated', () => {
     const app = new cdk.App();
 
     const stages = [
@@ -375,13 +375,17 @@ describe('synthesis', () => {
       },
     ];
 
-    stages.forEach(({ stage }) => {
-      const stack = new cdk.Stack(app, `${stage}-Stack`, {});
-      // Assert that `Unable to find artifact with id` error is not thrown
-      expect(() => {
-        Template.fromStack(stack);
-      }).not.toThrow();
-    });
+    // THEN - no error the first time synth is called
+    let stack = new cdk.Stack(app, `${stages[0].stage}-Stack`, {});
+    expect(() => {
+      Template.fromStack(stack);
+    }).not.toThrow();
+
+    // THEN - error is thrown since synth was called with mutated stack name
+    stack = new cdk.Stack(app, `${stages[1].stage}-Stack`, {});
+    expect(() => {
+      Template.fromStack(stack);
+    }).toThrow('Synth was called since the last call');
   });
 });
 
