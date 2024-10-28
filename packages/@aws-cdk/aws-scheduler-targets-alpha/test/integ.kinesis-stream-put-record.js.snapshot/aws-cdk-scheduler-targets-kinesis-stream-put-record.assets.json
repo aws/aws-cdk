@@ -1,7 +1,7 @@
 {
-  "version": "36.0.0",
+  "version": "38.0.1",
   "files": {
-    "2a83aa04648ff3fdcc9b804c17f0c74be43b7b3bcc2c5808084493b30e9b79dc": {
+    "f61b1a59682f107e9b1a39f795b983ae1421dcd94c38e0af2c3a287ac798f89d": {
       "source": {
         "path": "aws-cdk-scheduler-targets-kinesis-stream-put-record.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "2a83aa04648ff3fdcc9b804c17f0c74be43b7b3bcc2c5808084493b30e9b79dc.json",
+          "objectKey": "f61b1a59682f107e9b1a39f795b983ae1421dcd94c38e0af2c3a287ac798f89d.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

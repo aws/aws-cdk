@@ -19,7 +19,7 @@
         "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/120e8efcf6497c449cd1cfe2c1389dd074776ea258243692ef6963d5f6f78ced.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e09f098882dec39d3e75258fc491404b1e9c041126e7ea1a7f3d9336561752b5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -65,16 +65,16 @@
             "data": "Schedule83A77FD1"
           }
         ],
-        "/AwsSchedulerTargetsSnsPublish/SchedulerRoleForTarget-1441a7/Resource": [
+        "/AwsSchedulerTargetsSnsPublish/SchedulerRoleForTarget-0f6b2b/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SchedulerRoleForTarget1441a743A31888"
+            "data": "SchedulerRoleForTarget0f6b2b82B558C1"
           }
         ],
-        "/AwsSchedulerTargetsSnsPublish/SchedulerRoleForTarget-1441a7/DefaultPolicy/Resource": [
+        "/AwsSchedulerTargetsSnsPublish/SchedulerRoleForTarget-0f6b2b/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SchedulerRoleForTarget1441a7DefaultPolicy885B6BFD"
+            "data": "SchedulerRoleForTarget0f6b2bDefaultPolicy6F5310D7"
           }
         ],
         "/AwsSchedulerTargetsSnsPublish/Exports/Output{\"Ref\":\"Queue4A7E3555\"}": [
@@ -116,7 +116,7 @@
         "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9040995cd8ef36adaa850cbeeb350121c572954a13a4c3152c8ee1efaaf24558.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a10add7a5bb481c8724811e1219ff5f19d73ec2d14c64c9f5198c90eda2ba97b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

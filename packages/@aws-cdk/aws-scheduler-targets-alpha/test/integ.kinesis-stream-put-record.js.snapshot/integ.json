@@ -1,9 +1,13 @@
 {
-  "version": "36.0.0",
+  "version": "38.0.1",
   "testCases": {
     "integrationtest-kinesis-stream-put-record/DefaultTest": {
       "stacks": [
         "aws-cdk-scheduler-targets-kinesis-stream-put-record"
+      ],
+      "allowDestroy": [
+        "AWS::IAM::Role",
+        "AWS::IAM::Policy"
       ],
       "stackUpdateWorkflow": false,
       "assertionStack": "integrationtest-kinesis-stream-put-record/DefaultTest/DeployAssert",

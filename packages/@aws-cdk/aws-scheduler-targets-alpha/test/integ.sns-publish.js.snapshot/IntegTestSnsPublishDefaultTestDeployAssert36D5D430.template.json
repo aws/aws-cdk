@@ -11,7 +11,7 @@
     },
     "service": "SQS",
     "api": "receiveMessage",
-    "expected": "{\"$ObjectLike\":{\"Messages\":[{\"Body\":\"Hello, Scheduler!\"}]}}",
+    "expected": "{\"$ObjectLike\":{\"Messages\":[{\"Body\":\"\\\"Hello, Scheduler!\\\"\"}]}}",
     "stateMachineArn": {
      "Ref": "AwsApiCallSQSreceiveMessagee9fedf457448604e2f358e994af9316dWaitFor2F8D13CB"
     },
@@ -30,7 +30,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1729879015114"
+    "salt": "1730142256812"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -218,7 +218,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "e77649078c9dea5bbb707b7fe68014cfa5d919a38d31b467f6a205b51ea63a83.zip"
+     "S3Key": "d1a40db4788714a346364a87b7de0ff15b732e7367f085acf14f4a680c57c418.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -287,7 +287,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "e77649078c9dea5bbb707b7fe68014cfa5d919a38d31b467f6a205b51ea63a83.zip"
+     "S3Key": "d1a40db4788714a346364a87b7de0ff15b732e7367f085acf14f4a680c57c418.zip"
     },
     "Timeout": 120,
     "Handler": "index.isComplete",
@@ -337,7 +337,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "e77649078c9dea5bbb707b7fe68014cfa5d919a38d31b467f6a205b51ea63a83.zip"
+     "S3Key": "d1a40db4788714a346364a87b7de0ff15b732e7367f085acf14f4a680c57c418.zip"
     },
     "Timeout": 120,
     "Handler": "index.onTimeout",

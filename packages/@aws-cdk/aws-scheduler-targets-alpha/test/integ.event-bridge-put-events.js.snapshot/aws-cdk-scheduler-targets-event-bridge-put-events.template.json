@@ -197,7 +197,7 @@
      },
      "RoleArn": {
       "Fn::GetAtt": [
-       "SchedulerRoleForTarget1441a743A31888",
+       "SchedulerRoleForTarget6ff5322488E9B3",
        "Arn"
       ]
      }
@@ -207,7 +207,7 @@
     "Rule4C995B7F"
    ]
   },
-  "SchedulerRoleForTarget1441a743A31888": {
+  "SchedulerRoleForTarget6ff5322488E9B3": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -231,7 +231,7 @@
     }
    }
   },
-  "SchedulerRoleForTarget1441a7DefaultPolicy885B6BFD": {
+  "SchedulerRoleForTarget6ff532DefaultPolicy3F7032D5": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -249,10 +249,10 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "SchedulerRoleForTarget1441a7DefaultPolicy885B6BFD",
+    "PolicyName": "SchedulerRoleForTarget6ff532DefaultPolicy3F7032D5",
     "Roles": [
      {
-      "Ref": "SchedulerRoleForTarget1441a743A31888"
+      "Ref": "SchedulerRoleForTarget6ff5322488E9B3"
      }
     ]
    }
