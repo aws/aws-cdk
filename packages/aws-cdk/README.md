@@ -971,6 +971,10 @@ cdk gc --unstable=gc --action=delete-tagged --rollback-buffer-days=30
 
 This will delete assets that have been unused for >30 days, but will not tag additional assets.
 
+Here is a diagram that shows the algorithm of garbage collection:
+
+![Diagram of Garbage Collection algorithm](/packages/aws-cdk/images/garbage-collection.png)
+
 ### `cdk doctor`
 
 Inspect the current command-line environment and configurations, and collect information that can be useful for
