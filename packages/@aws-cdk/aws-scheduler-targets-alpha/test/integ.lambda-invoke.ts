@@ -62,7 +62,7 @@ const importedLambdaTagValue = 'importedLambdaTagValue';
 new scheduler.Schedule(scheduleStack, 'ScheduleWithImportedLambda', {
   schedule: scheduler.ScheduleExpression.rate(cdk.Duration.minutes(1)),
   target: new LambdaInvoke(importedFunc, {
-    input: scheduler.ScheduleTargetInput.fromText(importedLambdaTagValue),
+    input: scheduler.ScheduleTargetInput.fromObject(importedLambdaTagValue),
   }),
 });
 
@@ -88,7 +88,7 @@ const sameStackLambdaTagValue = 'sameStackLambdaTagValue';
 new scheduler.Schedule(scheduleStack, 'ScheduleWithSameStackLambda', {
   schedule: scheduler.ScheduleExpression.rate(cdk.Duration.minutes(1)),
   target: new LambdaInvoke(sameStackFunc, {
-    input: scheduler.ScheduleTargetInput.fromText(sameStackLambdaTagValue),
+    input: scheduler.ScheduleTargetInput.fromObject(sameStackLambdaTagValue),
   }),
 });
 
