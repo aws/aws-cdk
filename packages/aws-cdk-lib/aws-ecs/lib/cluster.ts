@@ -107,7 +107,7 @@ export enum MachineImageType {
 export class Cluster extends Resource implements ICluster {
 
   /**
-    * Return whether the given object is a Cluster
+   * Return whether the given object is a Cluster
    */
   public static isCluster(x: any) : x is Cluster {
     return x !== null && typeof(x) === 'object' && CLUSTER_SYMBOL in x;

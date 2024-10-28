@@ -38,8 +38,8 @@ const message = integ.assertions.awsApiCall('SQS', 'receiveMessage', {
 // Verifies that expected message is received from the queue
 message.assertAtPath(
   'Messages.0.Body',
-  ExpectedResult.stringLikeRegexp(payload),
+  ExpectedResult.exact(payload),
 ).waitForAssertions({
   totalTimeout: cdk.Duration.minutes(3),
-  interval: cdk.Duration.seconds(5),
+  interval: cdk.Duration.seconds(10),
 });

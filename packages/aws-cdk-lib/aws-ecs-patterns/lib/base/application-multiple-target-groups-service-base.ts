@@ -382,7 +382,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
   public readonly loadBalancer: ApplicationLoadBalancer;
 
   /**
-    * The default listener for the service (first added listener).
+   * The default listener for the service (first added listener).
    * @deprecated - Use `listeners` instead.
    */
   public readonly listener: ApplicationListener;
@@ -394,8 +394,8 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
 
   protected logDriver?: LogDriver;
   /**
-    * The listeners of the service.
-    */
+   * The listeners of the service.
+   */
   public readonly listeners = new Array<ApplicationListener>();
   /**
   * The target groups of the service.

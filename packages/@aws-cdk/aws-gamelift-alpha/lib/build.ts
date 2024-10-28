@@ -122,10 +122,10 @@ export interface BuildProps {
   readonly buildName?: string;
 
   /**
-    * Version of this build
-    *
-    * @default No version
-    */
+   * Version of this build
+   *
+   * @default No version
+   */
   readonly buildVersion?: string;
 
   /**

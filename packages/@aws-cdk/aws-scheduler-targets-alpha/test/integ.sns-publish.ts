@@ -41,7 +41,7 @@ const receiveMessage = integ.assertions.awsApiCall('SQS', 'receiveMessage', {
 receiveMessage.expect(ExpectedResult.objectLike({
   Messages: [
     {
-      Body: `"${message}"`,
+      Body: message,
     },
   ],
 })).waitForAssertions({

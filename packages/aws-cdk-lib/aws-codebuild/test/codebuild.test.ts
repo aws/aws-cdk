@@ -149,7 +149,7 @@ describe('default properties', () => {
             'Environment': {
               'Type': 'LINUX_CONTAINER',
               'PrivilegedMode': false,
-              'Image': 'aws/codebuild/standard:1.0',
+              'Image': 'aws/codebuild/standard:7.0',
               'ImagePullCredentialsType': 'CODEBUILD',
               'ComputeType': 'BUILD_GENERAL1_SMALL',
             },
@@ -315,7 +315,7 @@ describe('default properties', () => {
             },
             'Environment': {
               'ComputeType': 'BUILD_GENERAL1_SMALL',
-              'Image': 'aws/codebuild/standard:1.0',
+              'Image': 'aws/codebuild/standard:7.0',
               'ImagePullCredentialsType': 'CODEBUILD',
               'PrivilegedMode': false,
               'Type': 'LINUX_CONTAINER',
@@ -1351,7 +1351,7 @@ describe('artifacts', () => {
         'Environment': {
           'Type': 'LINUX_CONTAINER',
           'PrivilegedMode': false,
-          'Image': 'aws/codebuild/standard:1.0',
+          'Image': 'aws/codebuild/standard:7.0',
           'ImagePullCredentialsType': 'CODEBUILD',
           'ComputeType': 'BUILD_GENERAL1_SMALL',
         },
@@ -1588,7 +1588,7 @@ test('environment variables can be overridden at the project level', () => {
         },
       ],
       'PrivilegedMode': false,
-      'Image': 'aws/codebuild/standard:1.0',
+      'Image': 'aws/codebuild/standard:7.0',
       'ImagePullCredentialsType': 'CODEBUILD',
       'ComputeType': 'BUILD_GENERAL1_SMALL',
     },

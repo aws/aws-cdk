@@ -606,6 +606,19 @@ class DockerStack extends cdk.Stack {
   }
 }
 
+class DockerInUseStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    // Use the docker file in a lambda otherwise it will not be referenced in the template
+    const fn = new lambda.Function(this, 'my-function', {
+      code: lambda.Code.fromAssetImage(path.join(__dirname, 'docker')),
+      runtime: lambda.Runtime.FROM_IMAGE,
+      handler: lambda.Handler.FROM_IMAGE,
+    });
+  }
+}
+
 class DockerStackWithCustomFile extends cdk.Stack {
   constructor(parent, id, props) {
     super(parent, id, props);
@@ -814,6 +827,7 @@ switch (stackSet) {
     new EcsHotswapStack(app, `${stackPrefix}-ecs-hotswap`);
     new AppSyncHotswapStack(app, `${stackPrefix}-appsync-hotswap`);
     new DockerStack(app, `${stackPrefix}-docker`);
+    new DockerInUseStack(app, `${stackPrefix}-docker-in-use`);
     new DockerStackWithCustomFile(app, `${stackPrefix}-docker-with-custom-file`);
 
     new NotificationArnPropStack(app, `${stackPrefix}-notification-arn-prop`, {

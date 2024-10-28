@@ -321,6 +321,19 @@ export interface InstanceProps {
   readonly ebsOptimized?: boolean;
 
   /**
+   * If true, the instance will not be able to be terminated using the Amazon EC2 console, CLI, or API.
+   *
+   * To change this attribute after launch, use [ModifyInstanceAttribute](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_ModifyInstanceAttribute.html).
+   * Alternatively, if you set InstanceInitiatedShutdownBehavior to terminate, you can terminate the instance
+   * by running the shutdown command from the instance.
+   *
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-instance.html#cfn-ec2-instance-disableapitermination
+   *
+   * @default false
+   */
+  readonly disableApiTermination?: boolean;
+
+  /**
    * Indicates whether an instance stops or terminates when you initiate shutdown from the instance
    * (using the operating system command for system shutdown).
    *
@@ -562,6 +575,7 @@ export class Instance extends Resource implements IInstance {
       monitoring: props.detailedMonitoring,
       creditSpecification: props.creditSpecification ? { cpuCredits: props.creditSpecification } : undefined,
       ebsOptimized: props.ebsOptimized,
+      disableApiTermination: props.disableApiTermination,
       instanceInitiatedShutdownBehavior: props.instanceInitiatedShutdownBehavior,
       placementGroupName: props.placementGroup?.placementGroupName,
       enclaveOptions: props.enclaveEnabled !== undefined ? { enabled: props.enclaveEnabled } : undefined,

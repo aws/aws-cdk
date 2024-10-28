@@ -8,17 +8,17 @@ import * as logs from 'aws-cdk-lib/aws-logs';
  */
 export interface ILoggingConfig {
   /**
-     * If true, log errors when data transformation or data delivery fails.
-     *
-     * `true` when using `EnableLogging`, `false` when using `DisableLogging`.
-     */
+   * If true, log errors when data transformation or data delivery fails.
+   *
+   * `true` when using `EnableLogging`, `false` when using `DisableLogging`.
+   */
   readonly logging: boolean;
 
   /**
-     * The CloudWatch log group where log streams will be created to hold error logs.
-     *
-     * @default - if `logging` is set to `true`, a log group will be created for you.
-     */
+   * The CloudWatch log group where log streams will be created to hold error logs.
+   *
+   * @default - if `logging` is set to `true`, a log group will be created for you.
+   */
   readonly logGroup?: logs.ILogGroup;
 }
 

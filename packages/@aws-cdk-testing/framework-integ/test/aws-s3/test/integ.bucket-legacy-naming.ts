@@ -7,12 +7,12 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-s3-legacy-name-integ');
 
-const legacyBucketFromName = s3.Bucket.fromBucketName(stack, 'LegacyBucketFromName', 'my_legacy_bucket1');
+const legacyBucketFromName = s3.Bucket.fromBucketName(stack, 'LegacyBucketFromName', 'My_legacy_bucket1');
 
-const legacyBucketFromArn = s3.Bucket.fromBucketArn(stack, 'LegacyBucketFromArn', 'arn:aws:s3:::my_legacy_bucket2');
+const legacyBucketFromArn = s3.Bucket.fromBucketArn(stack, 'LegacyBucketFromArn', 'arn:aws:s3:::My_legacy_bucket2');
 
 const legacyBucketFromAttributes = s3.Bucket.fromBucketAttributes(stack, 'LegacyBucketFromAttributes', {
-  bucketName: 'my_legacy_bucket3',
+  bucketName: 'My_legacy_bucket3',
 });
 
 const role = new iam.Role(stack, 'LegacyBucketRole', {
@@ -37,4 +37,3 @@ new IntegTest(app, 'aws-cdk-s3-integ-test', {
 // In the synthesized template, verify:
 // 1. The bucket names imported using different methods (Bucket.fromBucketName, Bucket.fromBucketArn, Bucket.fromBucketAttributes) are not modified and contain underscores.
 // 2. The policy attached to the role includes the correct bucket ARNs with underscores for all three imported buckets.
-

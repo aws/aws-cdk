@@ -136,7 +136,7 @@ class BarStack extends cdk.Stack {
 const app = new cdk.App();
 
 const fooStack = new FooStack(app, 'FooStack', { env: { region: 'us-west-2' } });
-const barStack = new BarStack(app, 'BarStack', { 
+const barStack = new BarStack(app, 'BarStack', {
   replicaTable: fooStack.globalTable.replica('us-east-1'),
   env: { region: 'us-east-1' },
 });
@@ -527,6 +527,21 @@ const table = new dynamodb.TableV2(this, 'Table', {
 });
 ```
 
+When you use `Table`, you can enable contributor insights for a table or specific global secondary index by setting `contributorInsightsEnabled` to `true`.
+
+```ts
+const table = new dynamodb.Table(this, 'Table', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  contributorInsightsEnabled: true, // for a table
+});
+
+table.addGlobalSecondaryIndex({
+  contributorInsightsEnabled: true, // for a specific global secondary index
+  indexName: 'gsi',
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+});
+```
+
 Further reading:
 https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/contributorinsights_HowItWorks.html
 
@@ -615,7 +630,7 @@ https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.Tabl
 
 ## Tags
 
-You can add tags to a `TableV2` in several ways. By adding the tags to the construct itself it will apply the tags to the 
+You can add tags to a `TableV2` in several ways. By adding the tags to the construct itself it will apply the tags to the
 primary table.
 ```ts
 const table = new dynamodb.TableV2(this, 'Table', {
