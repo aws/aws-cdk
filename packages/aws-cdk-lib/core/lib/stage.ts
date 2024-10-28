@@ -217,8 +217,7 @@ export class Stage extends Construct {
    */
   public synth(options: StageSynthesisOptions = { }): cxapi.CloudAssembly {
 
-    const newConstructPaths = new Set<string>();
-    recurseAndlistAllConstructPaths(this);
+    let newConstructPaths = this.listAllConstructPaths(this);
 
     // If the assembly cache is uninitiazed, run synthesize and reset construct paths cache
     if (this.constructPathsCache.size == 0 || !this.assembly || options.force) {
@@ -226,22 +225,12 @@ export class Stage extends Construct {
         skipValidation: options.skipValidation,
         validateOnSynthesis: options.validateOnSynthesis,
       });
-      recurseAndlistAllConstructPaths(this);
+      newConstructPaths = this.listAllConstructPaths(this);
       this.constructPathsCache = newConstructPaths;
     }
 
-    // Lists all construct paths
-    function recurseAndlistAllConstructPaths(construct: IConstruct) {
-      newConstructPaths.add(construct.node.path);
-      for (const child of construct.node.children) {
-        if (!Stage.isStage(child)) {
-          recurseAndlistAllConstructPaths(child);
-        }
-      }
-    }
-
     // If the construct paths set has changed
-    if (!constructPathSetsAreEqual(this.constructPathsCache, newConstructPaths)) {
+    if (!this.constructPathSetsAreEqual(this.constructPathsCache, newConstructPaths)) {
       const errorMessage = 'The construct tree has been modified after synthesis. Only the results of the first synth() call are written to disk, and modifications done after it are ignored. Avoid construct tree mutations after synth() has been called.';
       if (options.errorOnDuplicateSynth ?? true) {
         throw new Error(errorMessage);
@@ -250,20 +239,36 @@ export class Stage extends Construct {
       }
     }
 
-    function constructPathSetsAreEqual(set1: Set<string>, set2: Set<string>): boolean {
-      if (set1.size !== set2.size) return false;
-      for (const id of set1) {
-        if (!set2.has(id)) {
-          return false;
-        }
-      }
-      return true;
-    }
-
     // Reset construct paths cache
     this.constructPathsCache = newConstructPaths;
 
     return this.assembly;
+  }
+
+  // Function that lists all construct paths and returns them as a set
+  private listAllConstructPaths(construct: IConstruct): Set<string> {
+    const paths = new Set<string>();
+    function recurse(construct: IConstruct) {
+      paths.add(construct.node.path);
+      for (const child of construct.node.children) {
+        if (!Stage.isStage(child)) {
+          recurse(child);
+        }
+      }
+    }
+    recurse(construct);
+    return paths;
+  }
+
+  // Checks if sets of construct paths are equal
+  private constructPathSetsAreEqual(set1: Set<string>, set2: Set<string>): boolean {
+    if (set1.size !== set2.size) return false;
+    for (const id of set1) {
+      if (!set2.has(id)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   private createBuilder(outdir?: string) {
