@@ -27,6 +27,7 @@ new UserPoolIdentityProviderOidc(stack, 'cdk', {
   scopes: ['openid', 'phone'],
   attributeMapping: {
     phoneNumber: ProviderAttribute.other('phone_number'),
+    emailVerified: ProviderAttribute.other('email_verified'),
   },
 });
 

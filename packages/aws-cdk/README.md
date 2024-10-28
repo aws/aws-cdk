@@ -25,6 +25,7 @@ The AWS CDK Toolkit provides the `cdk` command-line interface that can be used t
 | [`cdk watch`](#cdk-watch)             | Watches a CDK app for deployable and hotswappable changes                          |
 | [`cdk destroy`](#cdk-destroy)         | Deletes a stack from an AWS account                                                |
 | [`cdk bootstrap`](#cdk-bootstrap)     | Deploy a toolkit stack to support deploying large stacks & artifacts               |
+| [`cdk gc`](#cdk-gc)                   | Garbage collect assets associated with the bootstrapped stack                      |
 | [`cdk doctor`](#cdk-doctor)           | Inspect the environment and produce information useful for troubleshooting         |
 | [`cdk acknowledge`](#cdk-acknowledge) | Acknowledge (and hide) a notice by issue number                                    |
 | [`cdk notices`](#cdk-notices)         | List all relevant notices for the application                                      |
@@ -34,8 +35,6 @@ The AWS CDK Toolkit provides the `cdk` command-line interface that can be used t
 - [SSO Support](#sso-support)
 - [Configuration](#configuration)
   - [Running in CI](#running-in-ci)
-- [Stability](#stability)
-- [Changing the default TypeScript transpiler](#Changing-the-default-TypeScript-transpiler)
 
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
@@ -452,6 +451,19 @@ Hotswapping is currently supported for the following changes
 - VTL mapping template changes for AppSync Resolvers and Functions.
 - Schema changes for AppSync GraphQL Apis.
 
+You can optionally configure the behavior of your hotswap deployments in `cdk.json`. Currently you can only configure ECS hotswap behavior:
+
+```json
+{
+"hotswap": {
+    "ecs": {
+      "minimumHealthyPercent": 100,
+      "maximumHealthyPercent": 250
+    }
+  }
+}
+```
+
 **⚠ Note #1**: This command deliberately introduces drift in CloudFormation stacks in order to speed up deployments.
 For this reason, only use it for development purposes.
 **Never use this flag for your production deployments**!
@@ -782,15 +794,15 @@ In practice this means for any resource in the provided template, for example,
     "S3Bucket": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
-        "BucketName": "MyBucket",
+        "BucketName": "amzn-s3-demo-bucket",
         "AccessControl": "PublicRead",
       },
       "DeletionPolicy": "Retain"
     }
 ```
 
-There must not exist a resource of that type with the same identifier in the desired region. In this example that identfier
-would be "MyBucket"
+There must not exist a resource of that type with the same identifier in the desired region. In this example that identfier 
+would be "amzn-s3-demo-bucket"
 
 ##### **The provided template is not deployed to CloudFormation in the account/region, and there *is* overlap with existing resources in the account/region**
 
@@ -877,6 +889,87 @@ In order to remove that permissions boundary you have to specify the
 ```console
 cdk bootstrap --no-previous-parameters
 ```
+
+### `cdk gc`
+
+CDK Garbage Collection.
+
+> [!CAUTION]
+> CDK Garbage Collection is under development and therefore must be opted in via the `--unstable` flag: `cdk gc --unstable=gc`.
+
+`cdk gc` garbage collects unused assets from your bootstrap bucket via the following mechanism: 
+
+- for each object in the bootstrap S3 Bucket, check to see if it is referenced in any existing CloudFormation templates
+- if not, it is treated as unused and gc will either tag it or delete it, depending on your configuration.
+
+The high-level mechanism works identically for unused assets in bootstrapped ECR Repositories.
+
+The most basic usage looks like this:
+
+```console
+cdk gc --unstable=gc
+```
+
+This will garbage collect all unused assets in all environments of the existing CDK App.
+
+To specify one type of asset, use the `type` option (options are `all`, `s3`, `ecr`):
+
+```console
+cdk gc --unstable=gc --type=s3
+```
+
+Otherwise `cdk gc` defaults to collecting assets in both the bootstrapped S3 Bucket and ECR Repository.
+
+`cdk gc` will garbage collect S3 and ECR assets from the current bootstrapped environment(s) and immediately delete them. Note that, since the default bootstrap S3 Bucket is versioned, object deletion will be handled by the lifecycle
+policy on the bucket.
+
+Before we begin to delete your assets, you will be prompted:
+
+```console
+cdk gc --unstable=gc
+
+Found X objects to delete based off of the following criteria:
+- objects have been isolated for > 0 days
+- objects were created > 1 days ago
+
+Delete this batch (yes/no/delete-all)?
+```
+
+Since it's quite possible that the bootstrap bucket has many objects, we work in batches of 1000 objects or 100 images. 
+To skip the prompt either reply with `delete-all`, or use the `--confirm=false` option.
+
+```console
+cdk gc --unstable=gc --confirm=false
+```
+
+If you are concerned about deleting assets too aggressively, there are multiple levers you can configure:
+
+- rollback-buffer-days: this is the amount of days an asset has to be marked as isolated before it is elligible for deletion.
+- created-buffer-days: this is the amount of days an asset must live before it is elligible for deletion. 
+
+When using `rollback-buffer-days`, instead of deleting unused objects, `cdk gc` will tag them with
+today's date instead. It will also check if any objects have been tagged by previous runs of `cdk gc`
+and delete them if they have been tagged for longer than the buffer days.
+
+When using `created-buffer-days`, we simply filter out any assets that have not persisted that number
+of days.
+
+```console
+cdk gc --unstable=gc --rollback-buffer-days=30 --created-buffer-days=1
+```
+
+You can also configure the scope that `cdk gc` performs via the `--action` option. By default, all actions
+are performed, but you can specify `print`, `tag`, or `delete-tagged`.
+
+- `print` performs no changes to your AWS account, but finds and prints the number of unused assets.
+- `tag` tags any newly unused assets, but does not delete any unused assets.
+- `delete-tagged` deletes assets that have been tagged for longer than the buffer days, but does not tag newly unused assets.
+
+```console
+cdk gc --unstable=gc --action=delete-tagged --rollback-buffer-days=30
+```
+
+This will delete assets that have been unused for >30 days, but will not tag additional assets.
 
 ### `cdk doctor`
 
@@ -1059,17 +1152,17 @@ Some of the interesting keys that can be used in the JSON configuration files:
 
 ```json5
 {
-    "app": "node bin/main.js",        // Command to start the CDK app      (--app='node bin/main.js')
-    "build": "mvn package",           // Specify pre-synth build           (--build='mvn package')
-    "context": {                      // Context entries                   (--context=key=value)
+    "app": "node bin/main.js",                  // Command to start the CDK app      (--app='node bin/main.js')
+    "build": "mvn package",                     // Specify pre-synth build           (--build='mvn package')
+    "context": {                                // Context entries                   (--context=key=value)
         "key": "value"
     },
-    "toolkitStackName": "foo",        // Customize 'bootstrap' stack name  (--toolkit-stack-name=foo)
+    "toolkitStackName": "foo",                  // Customize 'bootstrap' stack name  (--toolkit-stack-name=foo)
     "toolkitBucket": {
-        "bucketName": "fooBucket",    // Customize 'bootstrap' bucket name (--toolkit-bucket-name=fooBucket)
-        "kmsKeyId": "fooKMSKey"       // Customize 'bootstrap' KMS key id  (--bootstrap-kms-key-id=fooKMSKey)
+        "bucketName": "amzn-s3-demo-bucket",    // Customize 'bootstrap' bucket name (--toolkit-bucket-name=amzn-s3-demo-bucket)
+        "kmsKeyId": "fooKMSKey"                 // Customize 'bootstrap' KMS key id  (--bootstrap-kms-key-id=fooKMSKey)
     },
-    "versionReporting": false,        // Opt-out of version reporting      (--no-version-reporting)
+    "versionReporting": false,                  // Opt-out of version reporting      (--no-version-reporting)
 }
 ```
 
@@ -1091,20 +1184,6 @@ The following environment variables affect aws-cdk:
 The CLI will attempt to detect whether it is being run in CI by looking for the presence of an
 environment variable `CI=true`. This can be forced by passing the `--ci` flag. By default the CLI
 sends most of its logs to `stderr`, but when `ci=true` it will send the logs to `stdout` instead.
-
-### Stability
-
-Sometimes the CDK team will release experimental or incremental features. In these scenarios we will
-require explicit opt-in from users via the `--unstable` flag. For example, if we are working on a new
-bootstrap feature and decide to release it incrementally, we will "hide" its functionality.
-Opting in would look something like this:
-
-```bash
-cdk bootstrap --unstable='new-funky-bootstrap'
-```
-
-When the feature is stabilized, explicit opt-in is no longer necessary but the feature will continue
-to work with the `--unstable` flag set.
 
 ### Changing the default TypeScript transpiler
 
