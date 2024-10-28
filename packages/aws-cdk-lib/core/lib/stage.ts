@@ -244,9 +244,9 @@ export class Stage extends Construct {
     // If the construct paths set has changed
     if (!constructPathSetsAreEqual(this.constructPathsCache, newConstructPaths)) {
       if (options.warnInsteadOfError) {
-        Annotations.of(this).addWarningV2('@aws-cdk/core:synth-warning', 'Construct paths have been modified since the last synth call.');
+        Annotations.of(this).addWarningV2('@aws-cdk/core:synth-warning', 'The construct tree was modified since the last synth call. Re-synthesizing with modifications can lead to inconsistent states. For reliable results, avoid construct mutations between synth calls.');
       } else {
-        throw new Error('Synth was called since the last call.');
+        throw new Error('The construct tree was modified after the initial synthesis (synth) call. Avoid modifying the construct tree between synth calls as this can cause unexpected behavior.');
       }
     }
 
@@ -260,7 +260,7 @@ export class Stage extends Construct {
       return true;
     }
 
-    // Reset construct paths
+    // Reset construct paths cache
     this.constructPathsCache = newConstructPaths;
 
     return this.assembly;
