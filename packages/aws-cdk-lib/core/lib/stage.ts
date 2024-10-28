@@ -221,7 +221,7 @@ export class Stage extends Construct {
     const newConstructPaths = new Set<string>();
     recurseAndlistAllConstructPaths(this);
 
-    // If the assembly cache is uninitiazed, run synthesize and re-run list all construvt paths
+    // If the assembly cache is uninitiazed, run synthesize and reset construct paths cache
     if (this.constructPathsCache.size == 0 || !this.assembly || options.force) {
       this.assembly = synthesize(this, {
         skipValidation: options.skipValidation,
