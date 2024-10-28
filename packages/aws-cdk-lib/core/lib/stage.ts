@@ -1,5 +1,4 @@
 import { IConstruct, Construct, Node } from 'constructs';
-import { Annotations } from './annotations';
 import { Environment } from './environment';
 import { PermissionsBoundary } from './permissions-boundary';
 import { synthesize } from './private/synthesis';
@@ -243,10 +242,11 @@ export class Stage extends Construct {
 
     // If the construct paths set has changed
     if (!constructPathSetsAreEqual(this.constructPathsCache, newConstructPaths)) {
-      if (options.errorOnDuplicateSynth) {
-        throw new Error('The construct tree was modified after the initial synthesis (synth) call. Avoid modifying the construct tree between synth calls as this can cause unexpected behavior.');
+      const errorMessage = 'The construct tree has been modified after synthesis. Only the results of the first synth() call are written to disk, and modifications done after it are ignored. Avoid construct tree mutations after synth() has been called.';
+      if (options.errorOnDuplicateSynth ?? true) {
+        throw new Error(errorMessage);
       } else {
-        Annotations.of(this).addWarningV2('@aws-cdk/core:synth-warning', 'The construct tree was modified since the last synth call. Re-synthesizing with modifications can lead to inconsistent states. For reliable results, avoid construct mutations between synth calls.');
+        console.error(errorMessage);
       }
     }
 
