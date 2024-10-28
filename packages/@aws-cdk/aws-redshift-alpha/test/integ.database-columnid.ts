@@ -50,6 +50,7 @@ new redshift.Table(stack, 'Table', {
     { id: 'col2', name: 'col2', dataType: 'float' },
     { name: 'col3', dataType: 'float' },
   ],
+  timeout: cdk.Duration.minutes(5),
 });
 
 new integ.IntegTest(app, 'redshift-cluster-database-integ', {
