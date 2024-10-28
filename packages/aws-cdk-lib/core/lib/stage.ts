@@ -243,10 +243,10 @@ export class Stage extends Construct {
 
     // If the construct paths set has changed
     if (!constructPathSetsAreEqual(this.constructPathsCache, newConstructPaths)) {
-      if (options.warnInsteadOfError) {
-        Annotations.of(this).addWarningV2('@aws-cdk/core:synth-warning', 'The construct tree was modified since the last synth call. Re-synthesizing with modifications can lead to inconsistent states. For reliable results, avoid construct mutations between synth calls.');
-      } else {
+      if (options.errorOnDuplicateSynth) {
         throw new Error('The construct tree was modified after the initial synthesis (synth) call. Avoid modifying the construct tree between synth calls as this can cause unexpected behavior.');
+      } else {
+        Annotations.of(this).addWarningV2('@aws-cdk/core:synth-warning', 'The construct tree was modified since the last synth call. Re-synthesizing with modifications can lead to inconsistent states. For reliable results, avoid construct mutations between synth calls.');
       }
     }
 
@@ -309,7 +309,7 @@ export interface StageSynthesisOptions {
   /**
    * Whether or not to throw a warning instead of an error if the construct tree has
    * been mutated since the last synth.
-   * @default false
+   * @default true
    */
   readonly errorOnDuplicateSynth?: boolean;
 }
