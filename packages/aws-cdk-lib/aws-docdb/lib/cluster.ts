@@ -118,31 +118,31 @@ export interface DatabaseClusterProps {
   readonly caCertificate?: CaCertificate;
 
   /**
-    * What subnets to run the DocumentDB instances in.
-    *
-    * Must be at least 2 subnets in two different AZs.
-    */
+   * What subnets to run the DocumentDB instances in.
+   *
+   * Must be at least 2 subnets in two different AZs.
+   */
   readonly vpc: ec2.IVpc;
 
   /**
-    * Where to place the instances within the VPC
-    *
-    * @default private subnets
-    */
+   * Where to place the instances within the VPC
+   *
+   * @default private subnets
+   */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
-    * Security group.
-    *
-    * @default a new security group is created.
-    */
+   * Security group.
+   *
+   * @default a new security group is created.
+   */
   readonly securityGroup?: ec2.ISecurityGroup;
 
   /**
-    * The DB parameter group to associate with the instance.
-    *
-    * @default no parameter group
-    */
+   * The DB parameter group to associate with the instance.
+   *
+   * @default no parameter group
+   */
   readonly parameterGroup?: IClusterParameterGroup;
 
   /**
@@ -211,11 +211,11 @@ export interface DatabaseClusterProps {
   readonly cloudWatchLogsRetention?: logs.RetentionDays;
 
   /**
-    * The IAM role for the Lambda function associated with the custom resource
-    * that sets the retention policy.
-    *
-    * @default - a new role is created.
-    */
+   * The IAM role for the Lambda function associated with the custom resource
+   * that sets the retention policy.
+   *
+   * @default - a new role is created.
+   */
   readonly cloudWatchLogsRetentionRole?: IRole;
 
   /**
