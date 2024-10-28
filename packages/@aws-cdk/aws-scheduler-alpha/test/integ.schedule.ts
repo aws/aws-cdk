@@ -15,7 +15,7 @@ class SomeLambdaTarget implements scheduler.IScheduleTarget {
     return {
       arn: this.fn.functionArn,
       role: this.role,
-      input: scheduler.ScheduleTargetInput.fromText('Input Text'),
+      input: scheduler.ScheduleTargetInput.fromObject('Input Text'),
       retryPolicy: {
         maximumEventAgeInSeconds: 180,
         maximumRetryAttempts: 3,
