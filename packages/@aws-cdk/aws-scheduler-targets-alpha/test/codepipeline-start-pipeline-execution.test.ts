@@ -28,6 +28,7 @@ describe('codepipeline start execution', () => {
     ],
   };
   const expr = ScheduleExpression.at(new Date(Date.UTC(1991, 2, 24, 0, 0, 0)));
+  const roleId = 'SchedulerRoleForTarget1b3000F5862F75';
 
   beforeEach(() => {
     app = new App({ context: { '@aws-cdk/aws-iam:minimizePolicies': true } });
@@ -48,7 +49,7 @@ describe('codepipeline start execution', () => {
       Properties: {
         Target: {
           Arn: pipelineArn,
-          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget1441a743A31888', 'Arn'] },
+          RoleArn: { 'Fn::GetAtt': [roleId, 'Arn'] },
           RetryPolicy: {},
         },
       },
@@ -64,7 +65,7 @@ describe('codepipeline start execution', () => {
           },
         ],
       },
-      Roles: [{ Ref: 'SchedulerRoleForTarget1441a743A31888' }],
+      Roles: [{ Ref: roleId }],
     });
 
     template.hasResourceProperties('AWS::IAM::Role', {
@@ -123,7 +124,7 @@ describe('codepipeline start execution', () => {
     });
   });
 
-  test('reuses IAM role and IAM policy for two schedules from the same account', () => {
+  test('reuses IAM role and IAM policy for two schedules with the same target from the same account', () => {
     const codepipelineTarget = new CodePipelineStartPipelineExecution(codepipeline, {});
 
     new Schedule(stack, 'MyScheduleDummy1', {
@@ -164,7 +165,7 @@ describe('codepipeline start execution', () => {
           },
         ],
       },
-      Roles: [{ Ref: 'SchedulerRoleForTarget1441a743A31888' }],
+      Roles: [{ Ref: roleId }],
     }, 1);
   });
 
@@ -431,7 +432,7 @@ describe('codepipeline start execution', () => {
       Properties: {
         Target: {
           Arn: pipelineArn,
-          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget1441a743A31888', 'Arn'] },
+          RoleArn: { 'Fn::GetAtt': [roleId, 'Arn'] },
           RetryPolicy: {
             MaximumEventAgeInSeconds: 10800,
             MaximumRetryAttempts: 5,

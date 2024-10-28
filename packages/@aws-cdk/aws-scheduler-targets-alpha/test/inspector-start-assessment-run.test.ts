@@ -11,6 +11,7 @@ describe('schedule target', () => {
   let stack: Stack;
   let template: CfnAssessmentTemplate;
   const expr = ScheduleExpression.at(new Date(Date.UTC(1969, 10, 20, 0, 0, 0)));
+  const roleId = 'SchedulerRoleForTarget78b2d848BF7444';
 
   beforeEach(() => {
     app = new App({ context: { '@aws-cdk/aws-iam:minimizePolicies': true } });
@@ -37,7 +38,7 @@ describe('schedule target', () => {
           Arn: {
             'Fn::GetAtt': ['MyTemplate', 'Arn'],
           },
-          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget1441a743A31888', 'Arn'] },
+          RoleArn: { 'Fn::GetAtt': [roleId, 'Arn'] },
           RetryPolicy: {},
         },
       },
@@ -53,7 +54,7 @@ describe('schedule target', () => {
           },
         ],
       },
-      Roles: [{ Ref: 'SchedulerRoleForTarget1441a743A31888' }],
+      Roles: [{ Ref: roleId }],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
@@ -113,7 +114,7 @@ describe('schedule target', () => {
     });
   });
 
-  test('reuses IAM role and IAM policy for two schedules from the same account', () => {
+  test('reuses IAM role and IAM policy for two schedules with the same target from the same account', () => {
     const inspectorTarget = new InspectorStartAssessmentRun(template);
 
     new Schedule(stack, 'MyScheduleDummy1', {
@@ -152,7 +153,7 @@ describe('schedule target', () => {
           },
         ],
       },
-      Roles: [{ Ref: 'SchedulerRoleForTarget1441a743A31888' }],
+      Roles: [{ Ref: roleId }],
     }, 1);
   });
 
@@ -183,7 +184,7 @@ describe('schedule target', () => {
           Arn: {
             'Fn::ImportValue': 'Stack2:ExportsOutputFnGetAttAnotherTemplateArn9F673A62',
           },
-          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget1441a743A31888', 'Arn'] },
+          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTargetea46910831E154', 'Arn'] },
           RetryPolicy: {},
         },
       },
@@ -199,7 +200,7 @@ describe('schedule target', () => {
           },
         ],
       },
-      Roles: [{ Ref: 'SchedulerRoleForTarget1441a743A31888' }],
+      Roles: [{ Ref: 'SchedulerRoleForTargetea46910831E154' }],
     });
   });
 
@@ -461,7 +462,7 @@ describe('schedule target', () => {
           Arn: {
             'Fn::GetAtt': ['MyTemplate', 'Arn'],
           },
-          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget1441a743A31888', 'Arn'] },
+          RoleArn: { 'Fn::GetAtt': [roleId, 'Arn'] },
           RetryPolicy: {
             MaximumEventAgeInSeconds: 10800,
             MaximumRetryAttempts: 5,

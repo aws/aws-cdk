@@ -11,6 +11,7 @@ describe('sns topic schedule target', () => {
   let stack: Stack;
   let topic: sns.ITopic;
   const scheduleExpression = scheduler.ScheduleExpression.at(new Date(Date.UTC(1969, 10, 20, 0, 0, 0)));
+  const roleId = 'SchedulerRoleForTarget0f6b2b82B558C1';
 
   beforeEach(() => {
     app = new App({ context: { '@aws-cdk/aws-iam:minimizePolicies': true } });
@@ -36,7 +37,7 @@ describe('sns topic schedule target', () => {
           },
           RoleArn: {
             'Fn::GetAtt': [
-              'SchedulerRoleForTarget1441a743A31888', 'Arn',
+              roleId, 'Arn',
             ],
           },
           RetryPolicy: {},
@@ -57,7 +58,7 @@ describe('sns topic schedule target', () => {
         ],
       },
       Roles: [{
-        Ref: 'SchedulerRoleForTarget1441a743A31888',
+        Ref: roleId,
       }],
     });
 
@@ -185,7 +186,7 @@ describe('sns topic schedule target', () => {
         ],
       },
       Roles: [{
-        Ref: 'SchedulerRoleForTarget1441a743A31888',
+        Ref: roleId,
       }],
     });
   });
@@ -459,7 +460,7 @@ describe('sns topic schedule target', () => {
             Ref: 'TopicBFC7AF6E',
           },
           RoleArn: {
-            'Fn::GetAtt': ['SchedulerRoleForTarget1441a743A31888', 'Arn'],
+            'Fn::GetAtt': [roleId, 'Arn'],
           },
           RetryPolicy: {
             MaximumEventAgeInSeconds: 3600 * 3,

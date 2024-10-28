@@ -123,7 +123,7 @@ describe('schedule target', () => {
     });
   });
 
-  test('reuses IAM role and IAM policy for two schedules from the same account', () => {
+  test('reuses IAM role and IAM policy for two schedules with the same target from the same account', () => {
     const pipelineTarget = new SageMakerStartPipelineExecution(pipeline, {
       pipelineParameterList,
     });

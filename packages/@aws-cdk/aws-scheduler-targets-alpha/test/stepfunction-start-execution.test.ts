@@ -11,6 +11,7 @@ describe('stepfunction start execution', () => {
   let stack: Stack;
   let stepFunction: sfn.StateMachine;
   const expr = ScheduleExpression.at(new Date(Date.UTC(1991, 2, 24, 0, 0, 0)));
+  const roleId = 'SchedulerRoleForTargetc174eeEF9C09F9';
 
   beforeEach(() => {
     app = new App({ context: { '@aws-cdk/aws-iam:minimizePolicies': true } });
@@ -35,7 +36,7 @@ describe('stepfunction start execution', () => {
           Arn: {
             Ref: 'MyStateMachine6C968CA5',
           },
-          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget1441a743A31888', 'Arn'] },
+          RoleArn: { 'Fn::GetAtt': [roleId, 'Arn'] },
           RetryPolicy: {},
         },
       },
@@ -51,7 +52,7 @@ describe('stepfunction start execution', () => {
           },
         ],
       },
-      Roles: [{ Ref: 'SchedulerRoleForTarget1441a743A31888' }],
+      Roles: [{ Ref: roleId }],
     });
 
     template.hasResourceProperties('AWS::IAM::Role', {
@@ -112,7 +113,7 @@ describe('stepfunction start execution', () => {
     });
   });
 
-  test('reuses IAM role and IAM policy for two schedules from the same account', () => {
+  test('reuses IAM role and IAM policy for two schedules with the same target from the same account', () => {
     const stepFunctionTarget = new StepFunctionsStartExecution(stepFunction, {});
 
     new Schedule(stack, 'MyScheduleDummy1', {
@@ -153,7 +154,7 @@ describe('stepfunction start execution', () => {
           },
         ],
       },
-      Roles: [{ Ref: 'SchedulerRoleForTarget1441a743A31888' }],
+      Roles: [{ Ref: roleId }],
     }, 1);
   });
 
@@ -424,7 +425,7 @@ describe('stepfunction start execution', () => {
           Arn: {
             Ref: 'MyStateMachine6C968CA5',
           },
-          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget1441a743A31888', 'Arn'] },
+          RoleArn: { 'Fn::GetAtt': [roleId, 'Arn'] },
           RetryPolicy: {
             MaximumEventAgeInSeconds: 10800,
             MaximumRetryAttempts: 5,

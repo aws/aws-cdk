@@ -126,6 +126,11 @@ export abstract class ScheduleTargetBase {
       },
     });
     if (existingRole) {
+      existingRole.assumeRolePolicy?.addStatements(new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        principals: [principal],
+        actions: ['sts:AssumeRole'],
+      }));
       return existingRole;
     }
     const role = new iam.Role(stack, id, {

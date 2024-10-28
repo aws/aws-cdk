@@ -14,6 +14,7 @@ describe('codebuild start build', () => {
   const codebuildArnRef = { 'Fn::GetAtt': ['ProjectC78D97AD', 'Arn'] };
   const codebuildAction = 'codebuild:StartBuild';
   const expr = ScheduleExpression.at(new Date(Date.UTC(1991, 2, 24, 0, 0, 0)));
+  const roleId = 'SchedulerRoleForTarget27bd47517CF0F8';
 
   beforeEach(() => {
     app = new App({ context: { '@aws-cdk/aws-iam:minimizePolicies': true } });
@@ -36,7 +37,7 @@ describe('codebuild start build', () => {
       Properties: {
         Target: {
           Arn: codebuildArnRef,
-          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget1441a743A31888', 'Arn'] },
+          RoleArn: { 'Fn::GetAtt': [roleId, 'Arn'] },
           RetryPolicy: {},
         },
       },
@@ -52,7 +53,7 @@ describe('codebuild start build', () => {
           },
         ],
       },
-      Roles: [{ Ref: 'SchedulerRoleForTarget1441a743A31888' }],
+      Roles: [{ Ref: roleId }],
     });
 
     template.hasResourceProperties('AWS::IAM::Role', {
@@ -113,7 +114,7 @@ describe('codebuild start build', () => {
     });
   });
 
-  test('reuses IAM role and IAM policy for two schedules from the same account', () => {
+  test('reuses IAM role and IAM policy for two schedules with the same target from the same account', () => {
     const codeBuildTarget = new CodeBuildStartBuild(codebuildProject, {});
 
     new Schedule(stack, 'MyScheduleDummy1', {
@@ -154,7 +155,7 @@ describe('codebuild start build', () => {
           },
         ],
       },
-      Roles: [{ Ref: 'SchedulerRoleForTarget1441a743A31888' }],
+      Roles: [{ Ref: roleId }],
     }, 1);
   });
 
@@ -411,7 +412,7 @@ describe('codebuild start build', () => {
       Properties: {
         Target: {
           Arn: codebuildArnRef,
-          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget1441a743A31888', 'Arn'] },
+          RoleArn: { 'Fn::GetAtt': [roleId, 'Arn'] },
           RetryPolicy: {
             MaximumEventAgeInSeconds: 10800,
             MaximumRetryAttempts: 5,

@@ -12,6 +12,7 @@ describe('eventBridge put events', () => {
   let eventBus: events.EventBus;
   let eventBusEventEntry: EventBridgePutEventsEntry;
   const expr = ScheduleExpression.at(new Date(Date.UTC(1991, 2, 24, 0, 0, 0)));
+  const roleId = 'SchedulerRoleForTarget1e6d0e3BE2318C';
 
   beforeEach(() => {
     app = new App({ context: { '@aws-cdk/aws-iam:minimizePolicies': true } });
@@ -48,7 +49,7 @@ describe('eventBridge put events', () => {
             Source: 'service',
           },
           Input: JSON.stringify({ foo: 'bar' }),
-          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget1441a743A31888', 'Arn'] },
+          RoleArn: { 'Fn::GetAtt': [roleId, 'Arn'] },
           RetryPolicy: {},
         },
       },
@@ -69,7 +70,7 @@ describe('eventBridge put events', () => {
           },
         ],
       },
-      Roles: [{ Ref: 'SchedulerRoleForTarget1441a743A31888' }],
+      Roles: [{ Ref: roleId }],
     });
 
     template.hasResourceProperties('AWS::IAM::Role', {
@@ -144,7 +145,7 @@ describe('eventBridge put events', () => {
     });
   });
 
-  test('reuses IAM role and IAM policy for two schedules from the same account', () => {
+  test('reuses IAM role and IAM policy for two schedules with the same target from the same account', () => {
     const eventBusTarget = new EventBridgePutEvents(eventBusEventEntry, {});
 
     new Schedule(stack, 'MyScheduleDummy1', {
@@ -190,7 +191,7 @@ describe('eventBridge put events', () => {
           },
         ],
       },
-      Roles: [{ Ref: 'SchedulerRoleForTarget1441a743A31888' }],
+      Roles: [{ Ref: roleId }],
     }, 1);
   });
 
@@ -513,7 +514,7 @@ describe('eventBridge put events', () => {
             Source: 'service',
           },
           Input: JSON.stringify({ foo: 'bar' }),
-          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget1441a743A31888', 'Arn'] },
+          RoleArn: { 'Fn::GetAtt': [roleId, 'Arn'] },
           RetryPolicy: {
             MaximumEventAgeInSeconds: 10800,
             MaximumRetryAttempts: 5,

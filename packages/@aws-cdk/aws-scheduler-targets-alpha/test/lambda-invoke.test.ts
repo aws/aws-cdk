@@ -39,7 +39,7 @@ describe('schedule target', () => {
           Arn: {
             'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'],
           },
-          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget9afb73C641D024', 'Arn'] },
+          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget637b5173FB8068', 'Arn'] },
           RetryPolicy: {},
         },
       },
@@ -65,7 +65,7 @@ describe('schedule target', () => {
           },
         ],
       },
-      Roles: [{ Ref: 'SchedulerRoleForTarget1441a743A31888' }],
+      Roles: [{ Ref: 'SchedulerRoleForTarget637b5173FB8068' }],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
@@ -104,7 +104,7 @@ describe('schedule target', () => {
           Arn: {
             Ref: 'MyLambdaVersion2EF97E33',
           },
-          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget1441a743A31888', 'Arn'] },
+          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTargetd8a041965BDCA6', 'Arn'] },
           RetryPolicy: {},
         },
       },
@@ -122,7 +122,7 @@ describe('schedule target', () => {
           },
         ],
       },
-      Roles: [{ Ref: 'SchedulerRoleForTarget1441a743A31888' }],
+      Roles: [{ Ref: 'SchedulerRoleForTargetd8a041965BDCA6' }],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
@@ -193,7 +193,7 @@ describe('schedule target', () => {
     });
   });
 
-  test('reuses IAM role and IAM policy for two schedules from the same account', () => {
+  test('reuses IAM role and IAM policy for two schedules with the same target from the same account', () => {
     const lambdaTarget = new LambdaInvoke(func, {});
 
     new Schedule(stack, 'MyScheduleDummy1', {
@@ -243,7 +243,7 @@ describe('schedule target', () => {
           },
         ],
       },
-      Roles: [{ Ref: 'SchedulerRoleForTarget1441a743A31888' }],
+      Roles: [{ Ref: 'SchedulerRoleForTarget637b5173FB8068' }],
     }, 1);
   });
 
@@ -310,7 +310,7 @@ describe('schedule target', () => {
           Arn: {
             Ref: 'MyLambdaAliasD26C43B4',
           },
-          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget1441a743A31888', 'Arn'] },
+          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget447112D2459CC7', 'Arn'] },
           RetryPolicy: {},
         },
       },
@@ -328,7 +328,7 @@ describe('schedule target', () => {
           },
         ],
       },
-      Roles: [{ Ref: 'SchedulerRoleForTarget1441a743A31888' }],
+      Roles: [{ Ref: 'SchedulerRoleForTarget447112D2459CC7' }],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
@@ -582,7 +582,7 @@ describe('schedule target', () => {
           Arn: {
             'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'],
           },
-          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget1441a743A31888', 'Arn'] },
+          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget637b5173FB8068', 'Arn'] },
           RetryPolicy: {
             MaximumEventAgeInSeconds: 10800,
             MaximumRetryAttempts: 5,

@@ -10,6 +10,7 @@ describe('schedule target', () => {
   let stack: Stack;
   let queue: sqs.IQueue;
   const expr = ScheduleExpression.at(new Date(Date.UTC(1969, 10, 20, 0, 0, 0)));
+  const roleId = 'SchedulerRoleForTarget9afb73C641D024';
 
   beforeEach(() => {
     app = new App({ context: { '@aws-cdk/aws-iam:minimizePolicies': true } });
@@ -31,7 +32,7 @@ describe('schedule target', () => {
           Arn: {
             'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
           },
-          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget1441a743A31888', 'Arn'] },
+          RoleArn: { 'Fn::GetAtt': [roleId, 'Arn'] },
           RetryPolicy: {},
         },
       },
@@ -49,7 +50,7 @@ describe('schedule target', () => {
           },
         ],
       },
-      Roles: [{ Ref: 'SchedulerRoleForTarget1441a743A31888' }],
+      Roles: [{ Ref: roleId }],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
@@ -111,8 +112,8 @@ describe('schedule target', () => {
     });
   });
 
-  test('reuses IAM role and IAM policy for two schedules from the same account', () => {
-    const queueTarget = new SqsSendMessage(queue, { });
+  test('reuses IAM role and IAM policy for two schedules with the same target from the same account', () => {
+    const queueTarget = new SqsSendMessage(queue, {});
 
     new Schedule(stack, 'MyScheduleDummy1', {
       schedule: expr,
@@ -152,7 +153,7 @@ describe('schedule target', () => {
           },
         ],
       },
-      Roles: [{ Ref: 'SchedulerRoleForTarget1441a743A31888' }],
+      Roles: [{ Ref: roleId }],
     }, 1);
   });
 
@@ -413,7 +414,7 @@ describe('schedule target', () => {
           Arn: {
             'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
           },
-          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget1441a743A31888', 'Arn'] },
+          RoleArn: { 'Fn::GetAtt': [roleId, 'Arn'] },
           RetryPolicy: {
             MaximumEventAgeInSeconds: 10800,
             MaximumRetryAttempts: 5,
@@ -479,7 +480,7 @@ describe('schedule target', () => {
           Arn: {
             'Fn::GetAtt': ['FifoQueueE5FF7273', 'Arn'],
           },
-          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget1441a743A31888', 'Arn'] },
+          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget16f04eDD008E9F', 'Arn'] },
           RetryPolicy: {},
           SqsParameters: {
             MessageGroupId: 'messageGroupId',
