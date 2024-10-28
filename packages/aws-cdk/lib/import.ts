@@ -153,6 +153,10 @@ export class ResourceImporter {
         resourcesToImport,
       });
 
+      if (result.type !== 'did-deploy-stack') {
+        throw new Error(`Unexpected deployStack result. This should not happen: ${JSON.stringify(result)}`);
+      }
+
       const message = result.noOp
         ? ' ✅  %s (no changes)'
         : ' ✅  %s';

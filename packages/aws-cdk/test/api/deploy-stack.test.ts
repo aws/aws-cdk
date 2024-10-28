@@ -129,7 +129,7 @@ test("calls tryHotswapDeployment() if 'hotswap' is `HotswapMode.HOTSWAP_ONLY`", 
   });
 
   // THEN
-  expect(deployStackResult.noOp).toEqual(true);
+  expect(deployStackResult.type === 'did-deploy-stack' && deployStackResult.noOp).toEqual(true);
   expect(tryHotswapDeployment).toHaveBeenCalled();
   // check that the extra User-Agent is honored
   expect(sdk.appendCustomUserAgent).toHaveBeenCalledWith('extra-user-agent');
@@ -275,7 +275,7 @@ test('do deploy executable change set with 0 changes', async () => {
   });
 
   // THEN
-  expect(ret.noOp).toBeFalsy();
+  expect(ret.type === 'did-deploy-stack' && ret.noOp).toBeFalsy();
   expect(cfnMocks.executeChangeSet).toHaveBeenCalled();
 });
 
@@ -625,7 +625,7 @@ test('deployStack reports no change if describeChangeSet returns specific error'
   });
 
   // THEN
-  expect(deployResult.noOp).toEqual(true);
+  expect(deployResult.type === 'did-deploy-stack' && deployResult.noOp).toEqual(true);
 });
 
 test('deploy not skipped if template did not change but one tag removed', async () => {

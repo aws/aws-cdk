@@ -63,7 +63,7 @@ import * as fs from 'fs-extra';
 import { instanceMockFrom, MockCloudExecutable, TestStackArtifact } from './util';
 import { MockSdkProvider } from './util/mock-sdk';
 import { Bootstrapper } from '../lib/api/bootstrap';
-import { DeployStackResult } from '../lib/api/deploy-stack';
+import { RegularDeployStackResult } from '../lib/api/deploy-stack';
 import { Deployments, DeployStackOptions, DestroyStackOptions, RollbackStackOptions, RollbackStackResult } from '../lib/api/deployments';
 import { HotswapMode } from '../lib/api/hotswap/common';
 import { Template } from '../lib/api/util/cloudformation';
@@ -436,6 +436,7 @@ describe('deploy', () => {
       // GIVEN
       const mockCfnDeployments = instanceMockFrom(Deployments);
       mockCfnDeployments.deployStack.mockReturnValue(Promise.resolve({
+        type: 'did-deploy-stack',
         noOp: false,
         outputs: {},
         stackArn: 'stackArn',
@@ -1402,7 +1403,7 @@ class FakeCloudFormation extends Deployments {
     this.expectedNotificationArns = expectedNotificationArns ?? [];
   }
 
-  public deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
+  public deployStack(options: DeployStackOptions): Promise<RegularDeployStackResult> {
     expect([
       MockStack.MOCK_STACK_A.stackName,
       MockStack.MOCK_STACK_B.stackName,
@@ -1420,6 +1421,7 @@ class FakeCloudFormation extends Deployments {
 
     expect(options.notificationArns).toEqual(this.expectedNotificationArns);
     return Promise.resolve({
+      type: 'did-deploy-stack',
       stackArn: `arn:aws:cloudformation:::stack/${options.stack.stackName}/MockedOut`,
       noOp: false,
       outputs: { StackName: options.stack.stackName },
