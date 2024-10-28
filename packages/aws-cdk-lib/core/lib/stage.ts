@@ -235,6 +235,7 @@ export class Stage extends Construct {
       if (options.errorOnDuplicateSynth ?? true) {
         throw new Error(errorMessage);
       } else {
+        // eslint-disable-next-line no-console
         console.error(errorMessage);
       }
     }
