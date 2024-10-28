@@ -165,7 +165,7 @@
                           "Arn"
                         ]
                       },
-                      "input": "\"Hello, Scheduler!\"",
+                      "input": "Hello, Scheduler!",
                       "retryPolicy": {
                         "maximumEventAgeInSeconds": 86400,
                         "maximumRetryAttempts": 185
@@ -499,6 +499,14 @@
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.3.0"
+                    }
+                  },
+                  "LatestNodeRuntimeMap": {
+                    "id": "LatestNodeRuntimeMap",
+                    "path": "IntegTestSnsPublish/DefaultTest/DeployAssert/LatestNodeRuntimeMap",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnMapping",
+                      "version": "0.0.0"
                     }
                   },
                   "SingletonFunction76b3e830a873425f8453eddd85c86925": {

@@ -142,15 +142,6 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "TargetOverrideScheduleFF8CB184": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TargetOverrideScheduleFF8CB184",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "aws-cdk-scheduler-schedule"
