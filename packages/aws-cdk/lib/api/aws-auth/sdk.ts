@@ -1,3 +1,4 @@
+import * as crypto from 'crypto';
 import * as AWS from 'aws-sdk';
 import type { ConfigurationOptions } from 'aws-sdk/lib/config-base';
 import { debug, trace } from './_env';
@@ -188,7 +189,11 @@ export class SDK implements ISDK {
   }: S3ClientOptions = {}): AWS.S3 {
     const config = { ...this.config };
 
-    if (!apiRequiresMd5Checksum) {
+    if (crypto.getFips() && apiRequiresMd5Checksum) {
+      throw new Error('This operation requires MD5 for integrity purposes; unfortunately, it therefore not available');
+    }
+
+    if (crypto.getFips()) {
       // In FIPS enabled environments, the MD5 algorithm is not available for use in crypto module.
       // However by default the S3 client is using an MD5 checksum for content integrity checking.
       // While this usage is technically allowed in FIPS (MD5 is only prohibited for cryptographic use),
