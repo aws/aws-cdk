@@ -385,7 +385,7 @@ describe('synthesis', () => {
     stack = new cdk.Stack(app, `${stages[1].stage}-Stack`, {});
     expect(() => {
       Template.fromStack(stack);
-    }).toThrow('The construct tree has been modified after synthesis.');
+    }).toThrow('Synthesis has been called multiple times and the construct tree was modified after the first synthesis');
   });
 });
 
