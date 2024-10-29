@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.164.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.164.0-alpha.0...v2.164.1-alpha.0) (2024-10-25)
+
+## [2.164.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.163.1-alpha.0...v2.164.0-alpha.0) (2024-10-24)
+
+
+### Features
+
+* **iot:** scheduled audit ([#31776](https://github.com/aws/aws-cdk/issues/31776)) ([366b492](https://github.com/aws/aws-cdk/commit/366b4927c50168113dd4057f6255ab6c76278135)), closes [#31779](https://github.com/aws/aws-cdk/issues/31779)
+
+
+### Bug Fixes
+
+* **ec2:** allow NAT instance to associate public IP ([#31812](https://github.com/aws/aws-cdk/issues/31812)) ([e96b4ce](https://github.com/aws/aws-cdk/commit/e96b4ce4ae64076e4c2e688c649c69fb15a624d6)), closes [#31711](https://github.com/aws/aws-cdk/issues/31711)
+* **scheduler-targets-alpha:** imported lambda function as schedule target throws synth error ([#31837](https://github.com/aws/aws-cdk/issues/31837)) ([d1d179f](https://github.com/aws/aws-cdk/commit/d1d179f617f83bbb3bf44d3cc629be8eed0d4e2b)), closes [#29284](https://github.com/aws/aws-cdk/issues/29284)
+
 ## [2.163.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.163.0-alpha.0...v2.163.1-alpha.0) (2024-10-22)
 
 ## [2.163.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.162.1-alpha.0...v2.163.0-alpha.0) (2024-10-21)
