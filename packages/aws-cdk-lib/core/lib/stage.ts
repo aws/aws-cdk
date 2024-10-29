@@ -249,9 +249,9 @@ export class Stage extends Construct {
   // Function that lists all construct paths and returns them as a set
   private listAllConstructPaths(construct: IConstruct): Set<string> {
     const paths = new Set<string>();
-    function recurse(construct: IConstruct) {
-      paths.add(construct.node.path);
-      for (const child of construct.node.children) {
+    function recurse(root: IConstruct) {
+      paths.add(root.node.path);
+      for (const child of root.node.children) {
         if (!Stage.isStage(child)) {
           recurse(child);
         }
