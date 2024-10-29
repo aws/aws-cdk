@@ -29,7 +29,6 @@ new scheduler.Schedule(stack, 'Schedule', {
 const integ = new IntegTest(app, 'integ-sqs-send-message', {
   testCases: [stack],
   stackUpdateWorkflow: false, // this would cause the schedule to trigger with the old code
-  allowDestroy: ['AWS::IAM::Role', 'AWS::IAM::Policy']
 });
 
 const message = integ.assertions.awsApiCall('SQS', 'receiveMessage', {
