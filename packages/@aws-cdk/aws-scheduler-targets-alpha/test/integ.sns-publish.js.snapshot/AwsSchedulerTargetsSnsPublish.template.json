@@ -75,7 +75,7 @@
      "Arn": {
       "Ref": "TopicBFC7AF6E"
      },
-     "Input": "\"Hello, Scheduler!\"",
+     "Input": "Hello, Scheduler!",
      "RetryPolicy": {
       "MaximumEventAgeInSeconds": 86400,
       "MaximumRetryAttempts": 185
