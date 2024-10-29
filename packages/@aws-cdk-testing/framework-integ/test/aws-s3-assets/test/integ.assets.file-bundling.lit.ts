@@ -26,6 +26,17 @@ class TestStack extends Stack {
 
     const user = new iam.User(this, 'MyUser');
     asset.grantRead(user);
+
+    new assets.Asset(this, 'BundledAssetWithoutExtension', {
+      path: path.join(__dirname, 'markdown-asset'),
+      bundling: {
+        image: DockerImage.fromBuild(path.join(__dirname, 'alpine-markdown')),
+        outputType: BundlingOutput.SINGLE_FILE,
+        command: [
+          'sh', '-c', 'echo 123 > /asset-output/main',
+        ],
+      },
+    });
   }
 }
 
