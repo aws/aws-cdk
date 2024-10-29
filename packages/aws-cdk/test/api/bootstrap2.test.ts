@@ -53,6 +53,10 @@ describe('Bootstrapping v2', () => {
       createPolicy: mockCreatePolicyIamCode,
       getPolicy: mockGetPolicyIamCode,
     });
+    mockDeployStack.mockResolvedValue({
+      type: 'did-deploy-stack',
+      noOp: false,
+    });
   });
 
   afterEach(() => {
@@ -341,6 +345,7 @@ describe('Bootstrapping v2', () => {
     let template: any;
     mockDeployStack.mockImplementation((args: DeployStackOptions) => {
       template = args.stack.template;
+      return Promise.resolve({ type: 'did-deploy-stack' });
     });
 
     await bootstrapper.bootstrapEnvironment(env, sdk, {

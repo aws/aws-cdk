@@ -1047,6 +1047,14 @@ describe('--strict', () => {
   beforeEach(() => {
     const oldTemplate = {};
 
+    cloudFormation = instanceMockFrom(Deployments);
+    cloudFormation.readCurrentTemplateWithNestedStacks.mockImplementation((_stackArtifact: CloudFormationStackArtifact) => {
+      return Promise.resolve({
+        deployedRootTemplate: {},
+        nestedStacks: {},
+      });
+    });
+
     cloudExecutable = new MockCloudExecutable({
       stacks: [{
         stackName: 'A',
