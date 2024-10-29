@@ -231,7 +231,7 @@ export class Stage extends Construct {
 
     // If the construct paths set has changed
     if (!this.constructPathSetsAreEqual(this.constructPathsCache, newConstructPaths)) {
-      const errorMessage = 'The construct tree has been modified after synthesis. Only the results of the first synth() call are written to disk, and modifications done after it are ignored. Avoid construct tree mutations after synth() has been called.';
+      const errorMessage = 'The construct tree has been modified after synthesis. Only the results of the first synth() call are used, and modifications done after it are ignored. Avoid construct tree mutations after synth() has been called.';
       if (options.errorOnDuplicateSynth ?? true) {
         throw new Error(errorMessage);
       } else {
