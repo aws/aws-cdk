@@ -5,10 +5,6 @@
       "stacks": [
         "aws-cdk-schedule"
       ],
-      "allowDestroy": [
-        "AWS::IAM::Role",
-        "AWS::IAM::Policy"
-      ],
       "stackUpdateWorkflow": false,
       "assertionStack": "integ-sqs-send-message/DefaultTest/DeployAssert",
       "assertionStackName": "integsqssendmessageDefaultTestDeployAssert883D0D33"

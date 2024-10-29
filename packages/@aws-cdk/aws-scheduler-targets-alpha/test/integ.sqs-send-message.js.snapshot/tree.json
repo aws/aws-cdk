@@ -62,7 +62,7 @@
                           "Arn"
                         ]
                       },
-                      "input": "\"test\"",
+                      "input": "test",
                       "retryPolicy": {
                         "maximumEventAgeInSeconds": 86400,
                         "maximumRetryAttempts": 185
@@ -80,7 +80,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-scheduler-alpha.Schedule",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },

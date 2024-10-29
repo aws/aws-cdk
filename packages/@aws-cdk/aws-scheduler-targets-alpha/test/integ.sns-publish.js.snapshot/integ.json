@@ -5,11 +5,7 @@
       "stacks": [
         "AwsSchedulerTargetsSnsPublish"
       ],
-      "allowDestroy": [
-        "AWS::IAM::Role",
-        "AWS::IAM::Policy"
-      ],
-      "stackUpdateWorkflow": true,
+      "stackUpdateWorkflow": false,
       "assertionStack": "IntegTestSnsPublish/DefaultTest/DeployAssert",
       "assertionStackName": "IntegTestSnsPublishDefaultTestDeployAssert36D5D430"
     }
