@@ -29,7 +29,7 @@ At a code level, import `@aws-cdk/spec2cdk/lib/cfn2ts` for a drop-in replacement
 ## Temporary Schemas
 
 You can import additional, temporary CloudFormation Registry Schemas to test new functionality that is not yet published in `@aws-cdk/aws-service-spec`.
-To do this, drop the schema file into `temporary-schemas/us-east-1`. After you add the schema file, run spec2cdk with the specified module and short name.
+To do this, drop the schema file into `temporary-schemas/us-east-1` ([e.g](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resource-type-schemas.html)). After you add the schema file, run spec2cdk with the specified module and short name.
 As an example, if you were updating [AWS::KMS::Key](https://github.com/aws-cloudformation/aws-cloudformation-resource-providers-kms), you must run:
 `bin/spec2cdk --service AWS::KMS`.
 
