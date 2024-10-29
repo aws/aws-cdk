@@ -6,7 +6,7 @@ import * as fs from 'fs-extra';
 import { BOOTSTRAP_VERSION_OUTPUT, BootstrapEnvironmentOptions, BOOTSTRAP_VERSION_RESOURCE, BOOTSTRAP_VARIANT_PARAMETER, DEFAULT_BOOTSTRAP_VARIANT } from './bootstrap-props';
 import * as logging from '../../logging';
 import { Mode, SdkProvider, ISDK } from '../aws-auth';
-import { deployStack, RegularDeployStackResult } from '../deploy-stack';
+import { deployStack, SuccessfulDeployStackResult } from '../deploy-stack';
 import { NoBootstrapStackEnvironmentResources } from '../environment-resources';
 import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitInfo } from '../toolkit-info';
 
@@ -63,7 +63,7 @@ export class BootstrapStack {
     template: any,
     parameters: Record<string, string | undefined>,
     options: Omit<BootstrapEnvironmentOptions, 'parameters'>,
-  ): Promise<RegularDeployStackResult> {
+  ): Promise<SuccessfulDeployStackResult> {
     if (this.currentToolkitInfo.found && !options.force) {
       // Safety checks
       const abortResponse = {
@@ -71,7 +71,7 @@ export class BootstrapStack {
         noOp: true,
         outputs: {},
         stackArn: this.currentToolkitInfo.bootstrapStack.stackId,
-      } satisfies RegularDeployStackResult;
+      } satisfies SuccessfulDeployStackResult;
 
       // Validate that the bootstrap stack we're trying to replace is from the same variant as the one we're trying to deploy
       const currentVariant = this.currentToolkitInfo.variant;
@@ -127,7 +127,7 @@ export class BootstrapStack {
     });
 
     if (ret.type !== 'did-deploy-stack') {
-      throw new Error(`Unexpected deployStack result. This should not happen: ${JSON.stringify(ret)}`);
+      throw new Error(`Unexpected deployStack result. This should not happen: ${JSON.stringify(ret)}. If you are seeing this error, please report it at https://github.com/aws/aws-cdk/issues/new/choose`);
     }
 
     return ret;

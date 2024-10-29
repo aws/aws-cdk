@@ -154,7 +154,7 @@ export class ResourceImporter {
       });
 
       if (result.type !== 'did-deploy-stack') {
-        throw new Error(`Unexpected deployStack result. This should not happen: ${JSON.stringify(result)}`);
+        throw new Error(`Unexpected deployStack result. This should not happen: ${JSON.stringify(result)}. If you are seeing this error, please report it at https://github.com/aws/aws-cdk/issues/new/choose.`);
       }
 
       const message = result.noOp

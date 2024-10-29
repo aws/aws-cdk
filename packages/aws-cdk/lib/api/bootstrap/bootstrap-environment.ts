@@ -8,7 +8,7 @@ import { warning } from '../../logging';
 import { loadStructuredFile, serializeStructure } from '../../serialize';
 import { rootDir } from '../../util/directories';
 import { ISDK, Mode, SdkProvider } from '../aws-auth';
-import { RegularDeployStackResult } from '../deploy-stack';
+import { SuccessfulDeployStackResult } from '../deploy-stack';
 
 /* eslint-disable max-len */
 
@@ -21,7 +21,7 @@ export class Bootstrapper {
   constructor(private readonly source: BootstrapSource) {
   }
 
-  public bootstrapEnvironment(environment: cxapi.Environment, sdkProvider: SdkProvider, options: BootstrapEnvironmentOptions = {}): Promise<RegularDeployStackResult> {
+  public bootstrapEnvironment(environment: cxapi.Environment, sdkProvider: SdkProvider, options: BootstrapEnvironmentOptions = {}): Promise<SuccessfulDeployStackResult> {
     switch (this.source.source) {
       case 'legacy':
         return this.legacyBootstrap(environment, sdkProvider, options);
@@ -41,7 +41,7 @@ export class Bootstrapper {
    * Deploy legacy bootstrap stack
    *
    */
-  private async legacyBootstrap(environment: cxapi.Environment, sdkProvider: SdkProvider, options: BootstrapEnvironmentOptions = {}): Promise<RegularDeployStackResult> {
+  private async legacyBootstrap(environment: cxapi.Environment, sdkProvider: SdkProvider, options: BootstrapEnvironmentOptions = {}): Promise<SuccessfulDeployStackResult> {
     const params = options.parameters ?? {};
 
     if (params.trustedAccounts?.length) {
@@ -71,7 +71,7 @@ export class Bootstrapper {
   private async modernBootstrap(
     environment: cxapi.Environment,
     sdkProvider: SdkProvider,
-    options: BootstrapEnvironmentOptions = {}): Promise<RegularDeployStackResult> {
+    options: BootstrapEnvironmentOptions = {}): Promise<SuccessfulDeployStackResult> {
 
     const params = options.parameters ?? {};
 
@@ -291,7 +291,7 @@ export class Bootstrapper {
   private async customBootstrap(
     environment: cxapi.Environment,
     sdkProvider: SdkProvider,
-    options: BootstrapEnvironmentOptions = {}): Promise<RegularDeployStackResult> {
+    options: BootstrapEnvironmentOptions = {}): Promise<SuccessfulDeployStackResult> {
 
     // Look at the template, decide whether it's most likely a legacy or modern bootstrap
     // template, and use the right bootstrapper for that.

@@ -6,7 +6,7 @@ import * as chokidar from 'chokidar';
 import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
 import * as uuid from 'uuid';
-import { DeploymentMethod, RegularDeployStackResult } from './api';
+import { DeploymentMethod, SuccessfulDeployStackResult } from './api';
 import { SdkProvider } from './api/aws-auth';
 import { Bootstrapper, BootstrapEnvironmentOptions } from './api/bootstrap';
 import { CloudAssembly, DefaultSelection, ExtendedStackSelection, StackCollection, StackSelector } from './api/cxapp/cloud-assembly';
@@ -324,10 +324,15 @@ export class CdkToolkit {
 
       let elapsedDeployTime = 0;
       try {
-        let deployResult: RegularDeployStackResult | undefined;
+        let deployResult: SuccessfulDeployStackResult | undefined;
 
         let rollback = options.rollback;
+        let iteration = 0;
         while (!deployResult) {
+          if (++iteration > 2) {
+            throw new Error('This loop should have stabilized in 2 iterations, but didn\'t. If you are seeing this error, please report it at https://github.com/aws/aws-cdk/issues/new/choose');
+          }
+
           const r = await this.props.deployments.deployStack({
             stack,
             deployName: stack.stackName,
@@ -401,6 +406,9 @@ export class CdkToolkit {
               rollback = true;
               break;
             }
+
+            default:
+              throw new Error(`Unexpected result type from deployStack: ${JSON.stringify(r)}. If you are seeing this error, please report it at https://github.com/aws/aws-cdk/issues/new/choose`);
           }
         }
 

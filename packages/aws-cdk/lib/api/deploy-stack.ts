@@ -21,19 +21,28 @@ import { determineAllowCrossAccountAssetPublishing } from './util/checks';
 import { publishAssets } from '../util/asset-publishing';
 
 export type DeployStackResult =
-  // Regular result
-  | RegularDeployStackResult
-  // The stack is currently in a failpaused state, and needs to be rolled back before the deployment
-  | { type: 'failpaused-need-rollback-first'; reason: 'not-norollback' | 'replacement' }
-  // The upcoming change has a replacement, which requires deploying without --no-rollback.
-  | { type: 'replacement-requires-norollback' }
+  | SuccessfulDeployStackResult
+  | NeedRollbackFirstDeployStackResult
+  | ReplacementRequiresNoRollbackStackResult
   ;
 
-export interface RegularDeployStackResult {
+/** Successfully deployed a stack */
+export interface SuccessfulDeployStackResult {
   readonly type: 'did-deploy-stack';
   readonly noOp: boolean;
   readonly outputs: { [name: string]: string };
   readonly stackArn: string;
+}
+
+/** The stack is currently in a failpaused state, and needs to be rolled back before the deployment */
+export interface NeedRollbackFirstDeployStackResult {
+  readonly type: 'failpaused-need-rollback-first';
+  readonly reason: 'not-norollback' | 'replacement';
+}
+
+/** The upcoming change has a replacement, which requires deploying without --no-rollback */
+export interface ReplacementRequiresNoRollbackStackResult {
+  readonly type: 'replacement-requires-norollback';
 }
 
 export interface DeployStackOptions {
@@ -464,7 +473,7 @@ class FullCloudFormationDeployment {
     return waitForChangeSet(this.cfn, this.stackName, changeSetName, { fetchAll: willExecute });
   }
 
-  private async executeChangeSet(changeSet: CloudFormation.DescribeChangeSetOutput): Promise<RegularDeployStackResult> {
+  private async executeChangeSet(changeSet: CloudFormation.DescribeChangeSetOutput): Promise<SuccessfulDeployStackResult> {
     debug('Initiating execution of changeset %s on stack %s', changeSet.ChangeSetId, this.stackName);
 
     await this.cfn.executeChangeSet({
@@ -503,7 +512,7 @@ class FullCloudFormationDeployment {
     }
   }
 
-  private async directDeployment(): Promise<RegularDeployStackResult> {
+  private async directDeployment(): Promise<SuccessfulDeployStackResult> {
     print('%s: %s stack...', chalk.bold(this.stackName), this.update ? 'updating' : 'creating');
 
     const startTime = new Date();
@@ -543,7 +552,7 @@ class FullCloudFormationDeployment {
     }
   }
 
-  private async monitorDeployment(startTime: Date, expectedChanges: number | undefined): Promise<RegularDeployStackResult> {
+  private async monitorDeployment(startTime: Date, expectedChanges: number | undefined): Promise<SuccessfulDeployStackResult> {
     const monitor = this.options.quiet ? undefined : StackActivityMonitor.withDefaultPrinter(this.cfn, this.stackName, this.stackArtifact, {
       resourcesTotal: expectedChanges,
       progress: this.options.progress,

@@ -126,7 +126,7 @@ export function printSecurityDiff(
 ): boolean {
   const diff = fullDiff(oldTemplate, newTemplate.template, changeSet);
 
-  if (difRequiresApproval(diff, requireApproval)) {
+  if (diffRequiresApproval(diff, requireApproval)) {
     stream.write(format('Stack %s\n', chalk.bold(stackName)));
 
     // eslint-disable-next-line max-len
@@ -145,7 +145,7 @@ export function printSecurityDiff(
  * TODO: Filter the security impact determination based off of an enum that allows
  * us to pick minimum "severities" to alert on.
  */
-function difRequiresApproval(diff: TemplateDiff, requireApproval: RequireApproval) {
+function diffRequiresApproval(diff: TemplateDiff, requireApproval: RequireApproval) {
   switch (requireApproval) {
     case RequireApproval.Never: return false;
     case RequireApproval.AnyChange: return diff.permissionsAnyChanges;
