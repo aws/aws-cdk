@@ -9,7 +9,7 @@
     "InstanceTenancy": "default"
    }
   },
-  "SubnetTestSecondaryTestBDE45F82": {
+  "SubnetTestSecondaryTest2AB12223": {
    "Type": "AWS::EC2::VPCCidrBlock",
    "Properties": {
     "AmazonProvidedIpv6CidrBlock": true,
@@ -35,7 +35,7 @@
     }
    },
    "DependsOn": [
-    "SubnetTestSecondaryTestBDE45F82"
+    "SubnetTestSecondaryTest2AB12223"
    ]
   },
   "testSubnet1RouteTableB5FDDF81": {
@@ -49,7 +49,7 @@
     }
    },
    "DependsOn": [
-    "SubnetTestSecondaryTestBDE45F82"
+    "SubnetTestSecondaryTest2AB12223"
    ]
   },
   "testSubnet1RouteTableAssociation1DA9E185": {
@@ -66,7 +66,7 @@
     }
    },
    "DependsOn": [
-    "SubnetTestSecondaryTestBDE45F82"
+    "SubnetTestSecondaryTest2AB12223"
    ]
   },
   "InstanceInstanceSecurityGroupF0E2D5BE": {
@@ -230,7 +230,7 @@
     }
    },
    "DependsOn": [
-    "SubnetTestSecondaryTestBDE45F82"
+    "SubnetTestSecondaryTest2AB12223"
    ]
   },
   "testSubnet2RouteTableAssociation40DCE4CD": {
@@ -247,7 +247,7 @@
     }
    },
    "DependsOn": [
-    "SubnetTestSecondaryTestBDE45F82"
+    "SubnetTestSecondaryTest2AB12223"
    ]
   }
  },
