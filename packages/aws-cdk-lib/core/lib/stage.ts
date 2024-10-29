@@ -232,7 +232,7 @@ export class Stage extends Construct {
     // If the construct paths set has changed
     if (!this.constructPathSetsAreEqual(this.constructPathsCache, newConstructPaths)) {
       const errorMessage = 'Synthesis has been called multiple times and the construct tree was modified after the first synthesis.';
-      if ((options.errorOnDuplicateSynth ?? true) && !options.force) {
+      if (options.errorOnDuplicateSynth ?? true) {
         throw new Error(errorMessage + ' This is not allowed. Remove multple synth() calls and do not modify the construct tree after the first synth().');
       } else {
         // eslint-disable-next-line no-console
