@@ -31,7 +31,8 @@ new schedule.Schedule(stack, 'Schedule', {
 
 const integ = new IntegTest(app, 'IntegTestSnsPublish', {
   testCases: [stack],
-  stackUpdateWorkflow: false,
+  stackUpdateWorkflow: true,
+  allowDestroy: ['AWS::IAM::Role', 'AWS::IAM::Policy']
 });
 
 const receiveMessage = integ.assertions.awsApiCall('SQS', 'receiveMessage', {

@@ -11,7 +11,7 @@
     },
     "service": "SQS",
     "api": "receiveMessage",
-    "expected": "{\"$ObjectLike\":{\"Messages\":[{\"Body\":\"\\\"Hello, Scheduler!\\\"\"}]}}",
+    "expected": "{\"$ObjectLike\":{\"Messages\":[{\"Body\":\"Hello, Scheduler!\"}]}}",
     "stateMachineArn": {
      "Ref": "AwsApiCallSQSreceiveMessagee9fedf457448604e2f358e994af9316dWaitFor2F8D13CB"
     },
@@ -30,7 +30,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1730142256812"
+    "salt": "1730227862859"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

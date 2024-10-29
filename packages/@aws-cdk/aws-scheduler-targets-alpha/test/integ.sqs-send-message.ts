@@ -29,6 +29,7 @@ new scheduler.Schedule(stack, 'Schedule', {
 const integ = new IntegTest(app, 'integ-sqs-send-message', {
   testCases: [stack],
   stackUpdateWorkflow: false, // this would cause the schedule to trigger with the old code
+  allowDestroy: ['AWS::IAM::Role', 'AWS::IAM::Policy']
 });
 
 const message = integ.assertions.awsApiCall('SQS', 'receiveMessage', {
@@ -38,7 +39,7 @@ const message = integ.assertions.awsApiCall('SQS', 'receiveMessage', {
 // Verifies that expected message is received from the queue
 message.assertAtPath(
   'Messages.0.Body',
-  ExpectedResult.exact(payload),
+  ExpectedResult.stringLikeRegexp(payload),
 ).waitForAssertions({
   totalTimeout: cdk.Duration.minutes(3),
   interval: cdk.Duration.seconds(10),

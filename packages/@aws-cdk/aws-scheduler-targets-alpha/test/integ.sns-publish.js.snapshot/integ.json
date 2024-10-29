@@ -9,7 +9,7 @@
         "AWS::IAM::Role",
         "AWS::IAM::Policy"
       ],
-      "stackUpdateWorkflow": false,
+      "stackUpdateWorkflow": true,
       "assertionStack": "IntegTestSnsPublish/DefaultTest/DeployAssert",
       "assertionStackName": "IntegTestSnsPublishDefaultTestDeployAssert36D5D430"
     }
