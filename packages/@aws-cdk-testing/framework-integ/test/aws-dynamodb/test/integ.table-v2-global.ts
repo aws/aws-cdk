@@ -1,5 +1,5 @@
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { App, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
+import { App, RemovalPolicy, Stack, StackProps, Tags } from 'aws-cdk-lib';
 import { AttributeType, Billing, Capacity, TableV2, TableClass, TableEncryptionV2 } from 'aws-cdk-lib/aws-dynamodb';
 import { Stream } from 'aws-cdk-lib/aws-kinesis';
 import { Construct } from 'constructs';
@@ -10,7 +10,7 @@ class TestStack extends Stack {
 
     const stream = new Stream(this, 'Stream');
 
-    new TableV2(this, 'GlobalTable', {
+    const globalTable = new TableV2(this, 'GlobalTable', {
       tableName: 'my-global-table',
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       sortKey: { name: 'sk', type: AttributeType.NUMBER },
@@ -52,13 +52,7 @@ class TestStack extends Stack {
               contributorInsights: false,
             },
           },
-          tags: [{
-            key: 'USE2ReplicaTagKey',
-            value: 'USE2ReplicaTagValue',
-          }, {
-            key: 'primaryTableTagKey',
-            value: 'USE2Replica',
-          }],
+          tags: [{ key: 'USE2ReplicaTagKey', value: 'USE2ReplicaTagValue' }],
         },
         {
           region: 'us-west-2',
@@ -74,6 +68,8 @@ class TestStack extends Stack {
       ],
       tags: [{ key: 'primaryTableTagKey', value: 'primaryTableTagValue' }],
     });
+
+    Tags.of(globalTable).add('tagAspectKey', 'tagAspectValue');
   }
 }
 

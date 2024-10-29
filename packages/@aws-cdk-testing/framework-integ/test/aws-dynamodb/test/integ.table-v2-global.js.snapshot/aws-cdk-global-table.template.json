@@ -149,8 +149,8 @@
       "TableClass": "STANDARD_INFREQUENT_ACCESS",
       "Tags": [
        {
-        "Key": "primaryTableTagKey",
-        "Value": "USE2Replica"
+        "Key": "tagAspectKey",
+        "Value": "tagAspectValue"
        },
        {
         "Key": "USE2ReplicaTagKey",
@@ -189,8 +189,8 @@
       "TableClass": "STANDARD",
       "Tags": [
        {
-        "Key": "primaryTableTagKey",
-        "Value": "primaryTableTagValue"
+        "Key": "tagAspectKey",
+        "Value": "tagAspectValue"
        },
        {
         "Key": "USW2ReplicaTagKey",
@@ -239,6 +239,10 @@
       "Region": "us-east-1",
       "TableClass": "STANDARD_INFREQUENT_ACCESS",
       "Tags": [
+       {
+        "Key": "tagAspectKey",
+        "Value": "tagAspectValue"
+       },
        {
         "Key": "primaryTableTagKey",
         "Value": "primaryTableTagValue"

@@ -160,7 +160,7 @@ export interface TableOptionsV2 {
   readonly kinesisStream?: IStream;
 
   /**
-   * Tags to be applied to the table or replica table
+   * Tags to be applied to the primary table (default replica table).
    *
    * @default - no tags
    */
@@ -533,7 +533,7 @@ export class TableV2 extends TableBaseV2 {
     this.partitionKey = props.partitionKey;
     this.hasSortKey = props.sortKey !== undefined;
     this.region = this.stack.region;
-    this.tags = new TagManager(TagType.STANDARD, CfnGlobalTable.CFN_RESOURCE_TYPE_NAME, props.tags);
+    this.tags = new TagManager(TagType.STANDARD, CfnGlobalTable.CFN_RESOURCE_TYPE_NAME);
 
     this.encryption = props.encryption;
     this.encryptionKey = this.encryption?.tableKey;

@@ -777,10 +777,7 @@ describe('table', () => {
             KMSMasterKeyId: 'arn:aws:kms:us-east-1:123456789012:key/g24efbna-az9b-42ro-m3bp-cq249l94fca6',
           },
           TableClass: 'STANDARD_INFREQUENT_ACCESS',
-          Tags: [
-            { Key: 'USW2Key', Value: 'USW2Value' },
-            { Key: 'USE1Key', Value: 'USE1Value' },
-          ],
+          Tags: [{ Key: 'USE1Key', Value: 'USE1Value' }],
         },
         {
           ContributorInsightsSpecification: {
@@ -816,10 +813,7 @@ describe('table', () => {
             KMSMasterKeyId: 'arn:aws:kms:us-east-2:123456789012:key/g24efbna-az9b-42ro-m3bp-cq249l94fca6',
           },
           TableClass: 'STANDARD',
-          Tags: [
-            { Key: 'USW2Key', Value: 'USW2Value' },
-            { Key: 'USE2Key', Value: 'USE2Value' },
-          ],
+          Tags: [{ Key: 'USE2Key', Value: 'USE2Value' }],
         },
         {
           ContributorInsightsSpecification: {
@@ -1328,7 +1322,7 @@ describe('replica tables', () => {
     });
   });
 
-  test('replica tags override global table tags', () => {
+  test('replica tags override tag aspect tags', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-east-1' } });
 
@@ -1337,12 +1331,14 @@ describe('replica tables', () => {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       replicas: [{
         region: 'us-west-1',
-        tags: [{ key: 'tableTagProperty', value: 'replicaTagPropertyValue' }],
+        tags: [{ key: 'tableTagProperty', value: 'replicaW1TagPropertyValue' }],
+      }, {
+        region: 'us-west-2',
       }],
-      tags: [{ key: 'tableTagProperty', value: 'globalTagPropertyValue' }],
+      tags: [{ key: 'tableTagProperty', value: 'defaultReplicaTagPropertyValue' }],
     });
 
-    Tags.of(table).add('tagAspect', 'tagAspectValue');
+    Tags.of(table).add('tableTagProperty', 'tagAspectValue');
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
@@ -1350,15 +1346,19 @@ describe('replica tables', () => {
         {
           Region: 'us-west-1',
           Tags: [
-            { Key: 'tableTagProperty', Value: 'replicaTagPropertyValue' },
-            { Key: 'tagAspect', Value: 'tagAspectValue' },
+            { Key: 'tableTagProperty', Value: 'replicaW1TagPropertyValue' },
+          ],
+        },
+        {
+          Region: 'us-west-2',
+          Tags: [
+            { Key: 'tableTagProperty', Value: 'tagAspectValue' },
           ],
         },
         {
           Region: 'us-east-1',
           Tags: [
-            { Key: 'tableTagProperty', Value: 'globalTagPropertyValue' },
-            { Key: 'tagAspect', Value: 'tagAspectValue' },
+            { Key: 'tableTagProperty', Value: 'defaultReplicaTagPropertyValue' },
           ],
         },
       ],

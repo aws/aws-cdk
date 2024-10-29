@@ -188,8 +188,8 @@
                         },
                         "tags": [
                           {
-                            "key": "primaryTableTagKey",
-                            "value": "USE2Replica"
+                            "key": "tagAspectKey",
+                            "value": "tagAspectValue"
                           },
                           {
                             "key": "USE2ReplicaTagKey",
@@ -228,8 +228,8 @@
                         },
                         "tags": [
                           {
-                            "key": "primaryTableTagKey",
-                            "value": "primaryTableTagValue"
+                            "key": "tagAspectKey",
+                            "value": "tagAspectValue"
                           },
                           {
                             "key": "USW2ReplicaTagKey",
@@ -278,6 +278,10 @@
                           "readCapacityUnits": 10
                         },
                         "tags": [
+                          {
+                            "key": "tagAspectKey",
+                            "value": "tagAspectValue"
+                          },
                           {
                             "key": "primaryTableTagKey",
                             "value": "primaryTableTagValue"
@@ -355,7 +359,7 @@
                 "path": "aws-cdk-global-table-integ/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -401,7 +405,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },
