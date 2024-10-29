@@ -15,6 +15,11 @@ export interface IPackageSource {
   initializeDotnetPackages(targetDir: string): Promise<void>;
 
   /**
+   * CLI version
+   */
+  requestedCliVersion(): string;
+
+  /**
    * Framework version if it's different than the CLI version
    *
    * Not all tests will respect this.
