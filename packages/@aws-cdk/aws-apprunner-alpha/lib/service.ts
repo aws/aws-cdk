@@ -735,6 +735,8 @@ export interface ServiceProps {
   /**
    * Specifies whether your App Runner service is publicly accessible.
    *
+   * If you use `VpcIngressConnection`, you must set this property to `false`.
+   *
    * @default true
    */
   readonly isPubliclyAccessible?: boolean;
