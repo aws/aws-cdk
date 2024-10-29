@@ -1785,7 +1785,7 @@ describe('SpecRestApi', () => {
     });
   });
 
-  test('add appropriate permissions by grantInvoke', () => {
+  test('add appropriate permissions by grantInvokeToVpcEndpoint', () => {
     // GIVEN
     const stack = new Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1796,7 +1796,7 @@ describe('SpecRestApi', () => {
       endpointTypes: [apigw.EndpointType.PRIVATE],
     });
     api.root.addMethod('GET');
-    api.grantInvoke(vpcEndpoint);
+    api.grantInvokeToVpcEndpoint(vpcEndpoint);
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {

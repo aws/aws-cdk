@@ -469,7 +469,7 @@ export abstract class RestApiBase extends Resource implements IRestApi {
    *
    * @param vpcEndpoint the interface VPC endpoint to grant access to
    */
-  public grantInvoke(vpcEndpoint: ec2.IVpcEndpoint): void {
+  public grantInvokeToVpcEndpoint(vpcEndpoint: ec2.IVpcEndpoint): void {
     this.addToResourcePolicy(new iam.PolicyStatement({
       principals: [new iam.AnyPrincipal()],
       actions: ['execute-api:Invoke'],

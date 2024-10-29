@@ -54,7 +54,7 @@ class TestStack extends cdk.Stack {
         ],
       },
     );
-    this.api.grantInvoke(vpcEndpoint);
+    this.api.grantInvokeToVpcEndpoint(vpcEndpoint);
 
     this.testFunction = new lambda.Function(this, 'TestFunction', {
       runtime: lambda.Runtime.NODEJS_20_X,
