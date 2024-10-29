@@ -119,7 +119,7 @@ describe('Schedule', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['kms:Decrypt', 'kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'],
+            Action: 'kms:Decrypt',
             Effect: 'Allow',
             Resource: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
           },
