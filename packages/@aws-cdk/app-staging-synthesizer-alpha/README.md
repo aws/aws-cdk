@@ -336,7 +336,7 @@ class CustomStagingStack extends Stack implements IStagingResources {
 
   public addFile(asset: FileAssetSource): FileStagingLocation {
     return {
-      bucketName: 'myBucket',
+      bucketName: 'amzn-s3-demo-bucket',
       assumeRoleArn: 'myArn',
       dependencyStack: this,
     };
