@@ -324,10 +324,10 @@ export class CdkToolkit {
 
       let elapsedDeployTime = 0;
       try {
-        let result: RegularDeployStackResult | undefined;
+        let deployResult: RegularDeployStackResult | undefined;
 
         let rollback = options.rollback;
-        while (!result) {
+        while (!deployResult) {
           const r = await this.props.deployments.deployStack({
             stack,
             deployName: stack.stackName,
@@ -354,7 +354,7 @@ export class CdkToolkit {
 
           switch (r.type) {
             case 'did-deploy-stack':
-              result = r;
+              deployResult = r;
               break;
 
             case 'failpaused-need-rollback-first': {
@@ -404,7 +404,7 @@ export class CdkToolkit {
           }
         }
 
-        const message = result.noOp
+        const message = deployResult.noOp
           ? ' ✅  %s (no changes)'
           : ' ✅  %s';
 
@@ -412,20 +412,20 @@ export class CdkToolkit {
         elapsedDeployTime = new Date().getTime() - startDeployTime;
         print('\n✨  Deployment time: %ss\n', formatTime(elapsedDeployTime));
 
-        if (Object.keys(result.outputs).length > 0) {
+        if (Object.keys(deployResult.outputs).length > 0) {
           print('Outputs:');
 
-          stackOutputs[stack.stackName] = result.outputs;
+          stackOutputs[stack.stackName] = deployResult.outputs;
         }
 
-        for (const name of Object.keys(result.outputs).sort()) {
-          const value = result.outputs[name];
+        for (const name of Object.keys(deployResult.outputs).sort()) {
+          const value = deployResult.outputs[name];
           print('%s.%s = %s', chalk.cyan(stack.id), chalk.cyan(name), chalk.underline(chalk.cyan(value)));
         }
 
         print('Stack ARN:');
 
-        data(result.stackArn);
+        data(deployResult.stackArn);
       } catch (e: any) {
         // It has to be exactly this string because an integration test tests for
         // "bold(stackname) failed: ResourceNotReady: <error>"
@@ -1795,7 +1795,7 @@ async function askUserConfirmation(
       throw new Error(`${motivation}, but concurrency is greater than 1 so we are unable to get a confirmation from the user`);
     }
 
-    const confirmed = await promptly.confirm(`${question} (y/n)?`);
+    const confirmed = await promptly.confirm(`${chalk.cyan(question)} (y/n)?`);
     if (!confirmed) { throw new Error('Aborted by user'); }
   });
 }

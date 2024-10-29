@@ -119,19 +119,16 @@ export function printSecurityDiff(
   oldTemplate: any,
   newTemplate: cxapi.CloudFormationStackArtifact,
   requireApproval: RequireApproval,
-  quiet?: boolean,
+  _quiet?: boolean,
   stackName?: string,
   changeSet?: DescribeChangeSetOutput,
   stream: FormatStream = process.stderr,
 ): boolean {
   const diff = fullDiff(oldTemplate, newTemplate.template, changeSet);
 
-  // must output the stack name if there are differences, even if quiet
-  if (!quiet || !diff.isEmpty) {
-    stream.write(format('Stack %s\n', chalk.bold(stackName)));
-  }
-
   if (difRequiresApproval(diff, requireApproval)) {
+    stream.write(format('Stack %s\n', chalk.bold(stackName)));
+
     // eslint-disable-next-line max-len
     warning(`This deployment will make potentially sensitive changes according to your current security approval level (--require-approval ${requireApproval}).`);
     warning('Please confirm you intend to make the following modifications:\n');

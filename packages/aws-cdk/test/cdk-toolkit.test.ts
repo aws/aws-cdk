@@ -63,7 +63,7 @@ import * as fs from 'fs-extra';
 import { instanceMockFrom, MockCloudExecutable, TestStackArtifact } from './util';
 import { MockSdkProvider } from './util/mock-sdk';
 import { Bootstrapper } from '../lib/api/bootstrap';
-import { RegularDeployStackResult } from '../lib/api/deploy-stack';
+import { DeployStackResult, RegularDeployStackResult } from '../lib/api/deploy-stack';
 import { Deployments, DeployStackOptions, DestroyStackOptions, RollbackStackOptions, RollbackStackResult } from '../lib/api/deployments';
 import { HotswapMode } from '../lib/api/hotswap/common';
 import { Template } from '../lib/api/util/cloudformation';
@@ -1251,6 +1251,59 @@ describe('synth', () => {
     });
 
     expect(mockedRollback).toHaveBeenCalled();
+  });
+
+  type StackResultType = DeployStackResult['type'];
+
+  test.each([
+    'failpaused-need-rollback-first',
+    'replacement-requires-norollback',
+  ] satisfies Array<StackResultType>)('no-rollback deployment that cant proceed will be called with rollback on retry: %p', async (deployResult) => {
+    cloudExecutable = new MockCloudExecutable({
+      stacks: [
+        MockStack.MOCK_STACK_C,
+      ],
+    });
+
+    const deployments = new Deployments({ sdkProvider: new MockSdkProvider() });
+
+    // Rollback might be called -- just don't do nothing.
+    const mockRollbackStack = jest.spyOn(deployments, 'rollbackStack').mockResolvedValue({});
+
+    const mockedDeployStack = jest
+      .spyOn(deployments, 'deployStack')
+      .mockResolvedValueOnce({
+        type: deployResult,
+        reason: 'replacement',
+      }).mockResolvedValueOnce({
+        type: 'did-deploy-stack',
+        noOp: false,
+        outputs: {},
+        stackArn: 'stack:arn',
+      });
+
+    const toolkit = new CdkToolkit({
+      cloudExecutable,
+      configuration: cloudExecutable.configuration,
+      sdkProvider: cloudExecutable.sdkProvider,
+      deployments,
+    });
+
+    await toolkit.deploy({
+      selector: { patterns: [] },
+      hotswap: HotswapMode.FULL_DEPLOYMENT,
+      rollback: false,
+      requireApproval: RequireApproval.Never,
+      // Assume the user entered Y
+      force: true,
+    });
+
+    if (deployResult === 'failpaused-need-rollback-first') {
+      expect(mockRollbackStack).toHaveBeenCalled();
+    }
+
+    expect(mockedDeployStack).toHaveBeenNthCalledWith(1, expect.objectContaining({ rollback: false }));
+    expect(mockedDeployStack).toHaveBeenNthCalledWith(2, expect.objectContaining({ rollback: true }));
   });
 });
 

@@ -916,7 +916,29 @@ describe('disable rollback', () => {
       DisableRollback: true,
     }));
   });
+});
 
+test.each([
+  ['UPDATE_FAILED', 'failpaused-need-rollback-first'],
+  ['CREATE_COMPLETE', 'replacement-requires-norollback'],
+])('no-rollback and replacement is disadvised: %p -> %p', async (stackStatus, expectedType) => {
+  // GIVEN
+  givenTemplateIs(FAKE_STACK.template);
+  givenStackExists({
+    NotificationARNs: ['arn:aws:sns:bermuda-triangle-1337:123456789012:TestTopic'],
+    StackStatus: stackStatus,
+  });
+  givenChangeSetContainsReplacement();
+
+  // WHEN
+  const result = await deployStack({
+    ...standardDeployStackArguments(),
+    stack: FAKE_STACK,
+    rollback: false,
+  });
+
+  // THEN
+  expect(result.type).toEqual(expectedType);
 });
 
 /**
@@ -953,5 +975,36 @@ function givenTemplateIs(template: any) {
   cfnMocks.getTemplate!.mockReset();
   cfnMocks.getTemplate!.mockReturnValue({
     TemplateBody: JSON.stringify(template),
+  });
+}
+
+function givenChangeSetContainsReplacement() {
+  cfnMocks.describeChangeSet?.mockReturnValue({
+    Status: 'CREATE_COMPLETE',
+    Changes: [
+      {
+        Type: 'Resource',
+        ResourceChange: {
+          PolicyAction: 'ReplaceAndDelete',
+          Action: 'Modify',
+          LogicalResourceId: 'Queue4A7E3555',
+          PhysicalResourceId: 'https://sqs.eu-west-1.amazonaws.com/111111111111/Queue4A7E3555-P9C8nK3uv8v6.fifo',
+          ResourceType: 'AWS::SQS::Queue',
+          Replacement: 'True',
+          Scope: ['Properties'],
+          Details: [
+            {
+              Target: {
+                Attribute: 'Properties',
+                Name: 'FifoQueue',
+                RequiresRecreation: 'Always',
+              },
+              Evaluation: 'Static',
+              ChangeSource: 'DirectModification',
+            },
+          ],
+        },
+      },
+    ],
   });
 }
