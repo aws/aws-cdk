@@ -351,7 +351,7 @@ describe('readCurrentTemplate', () => {
 
     // THEN
     expect(flatten(stderrMock.mock.calls)).toEqual(expect.arrayContaining([
-      expect.stringMatching(/Lookup role.*was not assumed/),
+      expect.stringMatching(/Lookup role.*was not assumed. Proceeding with default credentials./),
     ]));
     expect(mockCloudExecutable.sdkProvider.sdk.ssm).not.toHaveBeenCalled();
     expect(mockForEnvironment.mock.calls[0][2]).toEqual({

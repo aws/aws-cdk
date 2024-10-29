@@ -3,6 +3,7 @@ import * as path from 'path';
 import { setTimeout as _setTimeout } from 'timers';
 import { promisify } from 'util';
 import * as fs from 'fs-extra';
+import * as os from 'os';
 import * as sinon from 'sinon';
 import * as logging from '../lib/logging';
 import * as npm from '../lib/util/npm';
@@ -17,7 +18,7 @@ function tmpfile(): string {
 }
 
 beforeEach(() => {
-  process.chdir('/tmp'); // Need a chdir because in the workspace 'npm view' will take a long time
+  process.chdir(os.tmpdir()); // Need a chdir because in the workspace 'npm view' will take a long time
 });
 
 afterEach(done => {

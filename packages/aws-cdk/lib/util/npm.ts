@@ -6,9 +6,7 @@ import { debug } from '../../lib/logging';
 const exec = promisify(_exec);
 
 export async function getLatestVersionFromNpm(): Promise<string> {
-  const { stdout, stderr } = await exec('npm view aws-cdk version', {
-    timeout: 5000,
-  });
+  const { stdout, stderr } = await exec('npm view aws-cdk version');
   if (stderr && stderr.trim().length > 0) {
     debug(`The 'npm view' command generated an error stream with content [${stderr.trim()}]`);
   }

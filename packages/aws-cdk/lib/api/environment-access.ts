@@ -18,7 +18,7 @@ export class EnvironmentAccess {
   private readonly sdkCache = new Map<string, SdkForEnvironment>();
   private readonly environmentResources: EnvironmentResourcesRegistry;
 
-  constructor(private readonly sdkProvider: SdkProvider, toolkitStackName: string | undefined) {
+  constructor(private readonly sdkProvider: SdkProvider, toolkitStackName: string) {
     this.environmentResources = new EnvironmentResourcesRegistry(toolkitStackName);
   }
 
@@ -32,24 +32,28 @@ export class EnvironmentAccess {
   /**
    * Get an SDK to access the given stack's environment for stack operations
    *
-   * Will use a plugin if available, use the default AWS credentials if not.
-   * The `mode` parameter is only used for querying plugins.
+   * Will ask plugins for readonly credentials if available, use the default
+   * AWS credentials if not.
    *
    * Will assume the deploy role if configured on the stack. Check the default `deploy-role`
    * policies to see what you can do with this role.
    */
-  public async accessStackForStackOperations(stack: cxapi.CloudFormationStackArtifact, mode: Mode): Promise<TargetEnvironment> {
-    if (!stack.environment) {
-      throw new Error(`The stack ${stack.displayName} does not have an environment`);
-    }
+  public async accessStackForReadOnlyStackOperations(stack: cxapi.CloudFormationStackArtifact): Promise<TargetEnvironment> {
+    return this.accessStackForStackOperations(stack, Mode.ForReading);
+  }
 
-    return this.prepareSdk({
-      environment: stack.environment,
-      mode,
-      assumeRoleArn: stack.assumeRoleArn,
-      assumeRoleExternalId: stack.assumeRoleExternalId,
-      assumeRoleAdditionalOptions: stack.assumeRoleAdditionalOptions,
-    });
+  /**
+   * Get an SDK to access the given stack's environment for stack operations
+   *
+   * Will ask plugins for mutating credentials if available, use the default AWS
+   * credentials if not.  The `mode` parameter is only used for querying
+   * plugins.
+   *
+   * Will assume the deploy role if configured on the stack. Check the default `deploy-role`
+   * policies to see what you can do with this role.
+   */
+  public async accessStackForMutableStackOperations(stack: cxapi.CloudFormationStackArtifact): Promise<TargetEnvironment> {
+    return this.accessStackForStackOperations(stack, Mode.ForWriting);
   }
 
   /**
@@ -117,7 +121,7 @@ export class EnvironmentAccess {
    * the least privileged role, so don't try to use it for anything the `deploy-role`
    * wouldn't be able to do. Also you cannot rely on being able to read encrypted anything.
    */
-  public async accessStackForReading(stack: cxapi.CloudFormationStackArtifact): Promise<TargetEnvironment> {
+  public async accessStackForLookupBestEffort(stack: cxapi.CloudFormationStackArtifact): Promise<TargetEnvironment> {
     if (!stack.environment) {
       throw new Error(`The stack ${stack.displayName} does not have an environment`);
     }
@@ -128,6 +132,29 @@ export class EnvironmentAccess {
       warning(`${e.message}`);
     }
     return this.accessStackForStackOperations(stack, Mode.ForReading);
+  }
+
+  /**
+   * Get an SDK to access the given stack's environment for stack operations
+   *
+   * Will use a plugin if available, use the default AWS credentials if not.
+   * The `mode` parameter is only used for querying plugins.
+   *
+   * Will assume the deploy role if configured on the stack. Check the default `deploy-role`
+   * policies to see what you can do with this role.
+   */
+  private async accessStackForStackOperations(stack: cxapi.CloudFormationStackArtifact, mode: Mode): Promise<TargetEnvironment> {
+    if (!stack.environment) {
+      throw new Error(`The stack ${stack.displayName} does not have an environment`);
+    }
+
+    return this.prepareSdk({
+      environment: stack.environment,
+      mode,
+      assumeRoleArn: stack.assumeRoleArn,
+      assumeRoleExternalId: stack.assumeRoleExternalId,
+      assumeRoleAdditionalOptions: stack.assumeRoleAdditionalOptions,
+    });
   }
 
   /**

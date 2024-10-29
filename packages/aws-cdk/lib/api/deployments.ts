@@ -5,13 +5,13 @@ import { AssetManifest, IManifestEntry } from 'cdk-assets';
 import * as chalk from 'chalk';
 import { Tag } from '../cdk-toolkit';
 import { debug, warning } from '../logging';
-import { Mode } from './aws-auth/credentials';
 import { SdkProvider } from './aws-auth/sdk-provider';
 import { deployStack, DeployStackResult, destroyStack, DeploymentMethod } from './deploy-stack';
 import { EnvironmentAccess } from './environment-access';
 import { EnvironmentResources } from './environment-resources';
 import { HotswapMode, HotswapPropertyOverrides } from './hotswap/common';
 import { loadCurrentTemplateWithNestedStacks, loadCurrentTemplate, RootTemplateWithNestedStacks } from './nested-stack-helpers';
+import { DEFAULT_TOOLKIT_STACK_NAME } from './toolkit-info';
 import { determineAllowCrossAccountAssetPublishing } from './util/checks';
 import { CloudFormationStack, Template, ResourcesToImport, ResourceIdentifierSummaries, stabilizeStack, uploadStackTemplateAssets } from './util/cloudformation';
 import { StackActivityMonitor, StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
@@ -354,7 +354,7 @@ export class Deployments {
   constructor(private readonly props: DeploymentsProps) {
     this.assetSdkProvider = props.sdkProvider;
     this.deployStackSdkProvider = props.sdkProvider;
-    this.envs = new EnvironmentAccess(props.sdkProvider, props.toolkitStackName);
+    this.envs = new EnvironmentAccess(props.sdkProvider, props.toolkitStackName ?? DEFAULT_TOOLKIT_STACK_NAME);
   }
 
   /**
@@ -368,13 +368,13 @@ export class Deployments {
     rootStackArtifact: cxapi.CloudFormationStackArtifact,
     retrieveProcessedTemplate: boolean = false,
   ): Promise<RootTemplateWithNestedStacks> {
-    const env = await this.envs.accessStackForReading(rootStackArtifact);
+    const env = await this.envs.accessStackForLookupBestEffort(rootStackArtifact);
     return loadCurrentTemplateWithNestedStacks(rootStackArtifact, env.sdk, retrieveProcessedTemplate);
   }
 
   public async readCurrentTemplate(stackArtifact: cxapi.CloudFormationStackArtifact): Promise<Template> {
     debug(`Reading existing template for stack ${stackArtifact.displayName}.`);
-    const env = await this.envs.accessStackForReading(stackArtifact);
+    const env = await this.envs.accessStackForLookupBestEffort(stackArtifact);
     return loadCurrentTemplate(stackArtifact, env.sdk);
   }
 
@@ -384,7 +384,7 @@ export class Deployments {
     debug(`Retrieving template summary for stack ${stackArtifact.displayName}.`);
     // Currently, needs to use `deploy-role` since it may need to read templates in the staging
     // bucket which have been encrypted with a KMS key (and lookup-role may not read encrypted things)
-    const env = await this.envs.accessStackForStackOperations(stackArtifact, Mode.ForReading);
+    const env = await this.envs.accessStackForReadOnlyStackOperations(stackArtifact);
     const cfn = env.sdk.cloudFormation();
 
     await uploadStackTemplateAssets(stackArtifact, this);
@@ -430,7 +430,7 @@ export class Deployments {
       };
     }
 
-    const env = await this.envs.accessStackForStackOperations(options.stack, Mode.ForWriting);
+    const env = await this.envs.accessStackForMutableStackOperations(options.stack);
 
     // Do a verification of the bootstrap stack version
     await this.validateBootstrapStackVersion(
@@ -475,7 +475,7 @@ export class Deployments {
       throw new Error('Cannot combine --force with --orphan');
     }
 
-    const env = await this.envs.accessStackForStackOperations(options.stack, Mode.ForWriting);
+    const env = await this.envs.accessStackForMutableStackOperations(options.stack);
 
     if (options.validateBootstrapStackVersion ?? true) {
       // Do a verification of the bootstrap stack version
@@ -586,7 +586,7 @@ export class Deployments {
   }
 
   public async destroyStack(options: DestroyStackOptions): Promise<void> {
-    const env = await this.envs.accessStackForStackOperations(options.stack, Mode.ForWriting);
+    const env = await this.envs.accessStackForMutableStackOperations(options.stack);
     const executionRoleArn = await env.replacePlaceholders(options.roleArn ?? options.stack.cloudFormationExecutionRoleArn);
 
     return destroyStack({
@@ -602,16 +602,16 @@ export class Deployments {
   public async stackExists(options: StackExistsOptions): Promise<boolean> {
     let env;
     if (options.tryLookupRole) {
-      env = await this.envs.accessStackForReading(options.stack);
+      env = await this.envs.accessStackForLookupBestEffort(options.stack);
     } else {
-      env = await this.envs.accessStackForStackOperations(options.stack, Mode.ForReading);
+      env = await this.envs.accessStackForReadOnlyStackOperations(options.stack);
     }
     const stack = await CloudFormationStack.lookup(env.sdk.cloudFormation(), options.deployName ?? options.stack.stackName);
     return stack.exists;
   }
 
   private async prepareAndValidateAssets(asset: cxapi.AssetManifestArtifact, options: AssetOptions) {
-    const env = await this.envs.accessStackForStackOperations(options.stack, Mode.ForWriting);
+    const env = await this.envs.accessStackForMutableStackOperations(options.stack);
 
     await this.validateBootstrapStackVersion(
       options.stack.stackName,
@@ -657,7 +657,7 @@ export class Deployments {
   // eslint-disable-next-line max-len
   public async buildSingleAsset(assetArtifact: cxapi.AssetManifestArtifact | 'no-version-validation', assetManifest: AssetManifest, asset: IManifestEntry, options: BuildStackAssetsOptions) {
     if (assetArtifact !== 'no-version-validation') {
-      const env = await this.envs.accessStackForStackOperations(options.stack, Mode.ForReading);
+      const env = await this.envs.accessStackForReadOnlyStackOperations(options.stack);
       await this.validateBootstrapStackVersion(
         options.stack.stackName,
         assetArtifact.requiresBootstrapStackVersion,
@@ -692,7 +692,7 @@ export class Deployments {
 
   private async allowCrossAccountAssetPublishingForEnv(stack: cxapi.CloudFormationStackArtifact): Promise<boolean> {
     if (this._allowCrossAccountAssetPublishing === undefined) {
-      const env = await this.envs.accessStackForStackOperations(stack, Mode.ForReading);
+      const env = await this.envs.accessStackForReadOnlyStackOperations(stack);
       this._allowCrossAccountAssetPublishing = await determineAllowCrossAccountAssetPublishing(env.sdk, this.props.toolkitStackName);
     }
     return this._allowCrossAccountAssetPublishing;
