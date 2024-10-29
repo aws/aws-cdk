@@ -231,11 +231,12 @@ export class Stage extends Construct {
 
     // If the construct paths set has changed
     if (!this.constructPathSetsAreEqual(this.constructPathsCache, newConstructPaths)) {
+      const errorMessage = 'Synthesis has been called multiple times and the construct tree was modified after the first synthesis.';
       if ((options.errorOnDuplicateSynth ?? true) && !options.force) {
-        throw new Error('Synthesis has been called multiple times and the construct tree was modified after the first synthesis. This is not allowed: if you intended to do this, then call synthesis with the --force flag set to true.');
+        throw new Error(errorMessage + 'This is not allowed: if you intended to do this, then call synth() with `errorOnDuplicateSynth` set to `false`.');
       } else {
         // eslint-disable-next-line no-console
-        console.error('Synthesis has been called mulitple times and the construct tree was modified after the first synthesis. Only the results of the first synth() call are used, and modifications done after it are ignored. Avoid construct tree mutations after synth() has been called unless this is intentional.');
+        console.error(errorMessage + 'Only the results of the first synth() call are used, and modifications done after it are ignored. Avoid construct tree mutations after synth() has been called unless this is intentional.');
       }
     }
 
