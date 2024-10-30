@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/cdk-release",
   "private": true,
-  "version": "0.0.0",
+  "version": "2.164.1-alpha.0",
   "description": "A tool for performing release-related tasks like version bumps, Changelog generation, etc.",
   "repository": {
     "type": "git",
@@ -28,8 +28,8 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/pkglint": "0.0.0",
+    "@aws-cdk/cdk-build-tools": "2.164.1-alpha.0",
+    "@aws-cdk/pkglint": "2.164.1-alpha.0",
     "@types/changelog-parser": "^2.8.4",
     "@types/fs-extra": "^9.0.13",
     "@types/jest": "^29.5.14",

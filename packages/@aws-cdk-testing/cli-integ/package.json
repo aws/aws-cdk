@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk-testing/cli-integ",
   "description": "Integration tests for the AWS CDK CLI",
-  "version": "0.0.0",
+  "version": "2.164.1",
   "bin": {
     "run-suite": "bin/run-suite",
     "download-and-run-old-tests": "bin/download-and-run-old-tests",
@@ -29,13 +29,13 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/cdk-build-tools": "2.164.1-alpha.0",
     "@types/semver": "^7.5.8",
     "@types/yargs": "^15.0.19",
     "@types/fs-extra": "^9.0.13",
     "@types/glob": "^7.2.0",
     "@types/npm": "^7.19.3",
-    "@aws-cdk/pkglint": "0.0.0"
+    "@aws-cdk/pkglint": "2.164.1-alpha.0"
   },
   "dependencies": {
     "@octokit/rest": "^18.12.0",

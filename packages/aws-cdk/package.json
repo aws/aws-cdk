@@ -1,7 +1,7 @@
 {
   "name": "aws-cdk",
   "description": "CDK Toolkit, the command line tool for CDK apps",
-  "version": "0.0.0",
+  "version": "2.164.1",
   "bin": {
     "cdk": "bin/cdk"
   },
@@ -64,8 +64,8 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/pkglint": "0.0.0",
+    "@aws-cdk/cdk-build-tools": "2.164.1-alpha.0",
+    "@aws-cdk/pkglint": "2.164.1-alpha.0",
     "@octokit/rest": "^18.12.0",
     "@types/archiver": "^5.3.4",
     "@types/fs-extra": "^9.0.13",
@@ -80,7 +80,7 @@
     "@types/uuid": "^8.3.4",
     "@types/wrap-ansi": "^3.0.0",
     "@types/yargs": "^15.0.19",
-    "aws-cdk-lib": "0.0.0",
+    "aws-cdk-lib": "2.164.1",
     "aws-sdk-mock": "5.6.0",
     "axios": "^1.7.7",
     "constructs": "^10.0.0",
@@ -97,9 +97,9 @@
   },
   "dependencies": {
     "@aws-cdk/cloud-assembly-schema": "^38.0.1",
-    "@aws-cdk/cloudformation-diff": "0.0.0",
-    "@aws-cdk/cx-api": "0.0.0",
-    "@aws-cdk/region-info": "0.0.0",
+    "@aws-cdk/cloudformation-diff": "2.164.1",
+    "@aws-cdk/cx-api": "2.164.1",
+    "@aws-cdk/region-info": "2.164.1",
     "@jsii/check-node": "1.104.0",
     "archiver": "^5.3.2",
     "aws-sdk": "^2.1691.0",
