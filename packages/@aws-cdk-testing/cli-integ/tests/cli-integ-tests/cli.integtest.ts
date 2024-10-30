@@ -1329,33 +1329,29 @@ integTest('deploy stack with Lambda Asset to Object Lock-enabled asset bucket', 
     qualifier: qualifier,
   });
 
-  try {
-    const bucketName = `cdk-${qualifier}-assets-${await fixture.aws.account()}-${fixture.aws.region}`;
-    await fixture.aws.s3.send(new PutObjectLockConfigurationCommand({
-      Bucket: bucketName,
-      ObjectLockConfiguration: {
-        ObjectLockEnabled: 'Enabled',
-        Rule: {
-          DefaultRetention: {
-            Days: 1,
-            Mode: 'GOVERNANCE',
-          },
+  const bucketName = `cdk-${qualifier}-assets-${await fixture.aws.account()}-${fixture.aws.region}`;
+  await fixture.aws.s3.send(new PutObjectLockConfigurationCommand({
+    Bucket: bucketName,
+    ObjectLockConfiguration: {
+      ObjectLockEnabled: 'Enabled',
+      Rule: {
+        DefaultRetention: {
+          Days: 1,
+          Mode: 'GOVERNANCE',
         },
       },
-    }));
+    },
+  }));
 
-    // Deploy a stack that definitely contains a file asset
-    await fixture.cdkDeploy('lambda', {
-      options: [
-        '--toolkit-stack-name', toolkitStackName,
-        '--context', `@aws-cdk/core:bootstrapQualifier=${qualifier}`,
-      ],
-    });
+  // Deploy a stack that definitely contains a file asset
+  await fixture.cdkDeploy('lambda', {
+    options: [
+      '--toolkit-stack-name', toolkitStackName,
+      '--context', `@aws-cdk/core:bootstrapQualifier=${qualifier}`,
+    ],
+  });
 
-    // THEN - should not fail
-  } finally {
-    // Clean up stack and bootstrap stack
-  }
+  // THEN - should not fail
 }));
 
 integTest(
