@@ -21,6 +21,9 @@
  * }
  * ```
  */
+
+// This construct purely happens at type checking time. There is no run-time impact.
+// Hence, we never even have to construct values of this type.
 declare const __brand: unique symbol;
 
 export type Brand<B> = { [__brand]: B };
@@ -30,7 +33,9 @@ export type Branded<T, B> = T & Brand<B>;
  * Marks a value as being branded a certain way.
  *
  * You should in general avoid calling this, and use validation or
- * asserting functions instead.
+ * asserting functions instead. However, this can be useful to produce
+ * values which are branded by construction (really just an elaborate
+ * way to write 'as').
  */
 export function createBranded<A extends Branded<any, any>>(value: TypeUnderlyingBrand<A>): A {
   return value as A;
