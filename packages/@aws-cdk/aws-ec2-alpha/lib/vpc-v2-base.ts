@@ -231,6 +231,13 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
   public abstract readonly ownerAccountId: string;
 
   /**
+   * IPv4 CIDR provisioned under pool
+   * Required to check for overlapping CIDRs after provisioning
+   * is complete under IPAM pool
+   */
+  public abstract readonly ipv4IpamProvisionedCidrs?: string[];
+
+  /**
   * If this is set to true, don't error out on trying to select subnets
   */
   protected incompleteSubnetDefinition: boolean = false;
