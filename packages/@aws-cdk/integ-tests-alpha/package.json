@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/integ-tests-alpha",
   "description": "CDK Integration Testing Constructs",
-  "version": "2.164.1-alpha.0",
+  "version": "0.0.0",
   "private": false,
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -66,10 +66,10 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/cdk-build-tools": "2.164.1-alpha.0",
-    "@aws-cdk/integ-runner": "2.164.1-alpha.0",
-    "@aws-cdk/pkglint": "2.164.1-alpha.0",
-    "@aws-cdk/aws-custom-resource-sdk-adapter": "2.164.1-alpha.0",
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/integ-runner": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@aws-cdk/aws-custom-resource-sdk-adapter": "0.0.0",
     "@aws-sdk/client-ec2": "3.632.0",
     "@aws-sdk/client-s3": "3.632.0",
     "@aws-sdk/client-sfn": "3.632.0",
@@ -81,14 +81,14 @@
     "jest": "^29.7.0",
     "nock": "^13.5.5",
     "sinon": "^9.2.4",
-    "aws-cdk-lib": "2.164.1",
+    "aws-cdk-lib": "0.0.0",
     "node-fetch": "^2.7.0",
     "@types/node-fetch": "^2.6.11",
     "constructs": "^10.0.0"
   },
   "dependencies": {},
   "peerDependencies": {
-    "aws-cdk-lib": "^2.164.1",
+    "aws-cdk-lib": "^0.0.0",
     "constructs": "^10.0.0"
   },
   "repository": {

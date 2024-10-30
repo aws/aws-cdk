@@ -40,7 +40,7 @@
   },
   "main": "lib/index.js",
   "license": "Apache-2.0",
-  "version": "2.164.1-alpha.0",
+  "version": "0.0.0",
   "jest": {
     "testMatch": [
       "<rootDir>/src/**/__tests__/**/*.ts?(x)",

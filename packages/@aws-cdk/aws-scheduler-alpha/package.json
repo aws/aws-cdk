@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-scheduler-alpha",
-  "version": "2.164.1-alpha.0",
+  "version": "0.0.0",
   "description": "The CDK Construct Library for Amazon Scheduler",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -81,17 +81,17 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/cdk-build-tools": "2.164.1-alpha.0",
-    "@aws-cdk/integ-runner": "2.164.1-alpha.0",
-    "@aws-cdk/pkglint": "2.164.1-alpha.0",
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/integ-runner": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^29.5.14",
-    "aws-cdk-lib": "2.164.1",
+    "aws-cdk-lib": "0.0.0",
     "constructs": "^10.0.0",
-    "@aws-cdk/integ-tests-alpha": "2.164.1-alpha.0"
+    "@aws-cdk/integ-tests-alpha": "0.0.0"
   },
   "dependencies": {},
   "peerDependencies": {
-    "aws-cdk-lib": "^2.164.1",
+    "aws-cdk-lib": "^0.0.0",
     "constructs": "^10.0.0"
   },
   "engines": {

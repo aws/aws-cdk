@@ -2,7 +2,7 @@
   "name": "@aws-cdk/custom-resource-handlers",
   "description": "CDK Custom Resources",
   "private": true,
-  "version": "2.164.1-alpha.0",
+  "version": "0.0.0",
   "scripts": {
     "build": "tsc -b && node scripts/generate.js",
     "integ": "integ-runner --language javascript",
@@ -25,9 +25,9 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/cdk-build-tools": "2.164.1-alpha.0",
-    "@aws-cdk/pkglint": "2.164.1-alpha.0",
-    "@aws-cdk/aws-custom-resource-sdk-adapter": "2.164.1-alpha.0",
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@aws-cdk/aws-custom-resource-sdk-adapter": "0.0.0",
     "@aws-sdk/client-ecs": "3.632.0",
     "@aws-sdk/client-ssm": "3.632.0",
     "@aws-sdk/client-kinesis": "3.632.0",

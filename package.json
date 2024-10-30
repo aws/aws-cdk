@@ -1,6 +1,6 @@
 {
   "name": "aws-cdk",
-  "version": "2.164.1",
+  "version": "0.0.0",
   "private": true,
   "pkglint": {
     "include": "dependencies/node-version"
