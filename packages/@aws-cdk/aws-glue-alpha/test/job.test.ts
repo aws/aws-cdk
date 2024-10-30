@@ -808,18 +808,13 @@ describe('Job', () => {
       });
     });
 
-    describe('enabling job run queuing', () => {
-      beforeEach(() => {
-        job = new glue.Job(stack, 'Job', {
-          ...defaultProps,
-          jobRunQueuingEnabled: true,
-        });
+    test('enabling job run queuing', () => {
+      job = new glue.Job(stack, 'Job', {
+        ...defaultProps,
+        jobRunQueuingEnabled: true,
       });
-
-      test('should set JobRunQueuingEnabled', () => {
-        Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
-          JobRunQueuingEnabled: true,
-        });
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        JobRunQueuingEnabled: true,
       });
     });
 
@@ -1204,18 +1199,16 @@ describe('Job', () => {
       });
     });
 
-    describe('validation for jobRunQueuingEnabled and maxRetries', () => {
-      test('jobRunQueuingEnabled with maxRetries > 0 should throw', () => {
-        expect(() => new glue.Job(stack, 'Job', {
-          executable: glue.JobExecutable.pythonEtl({
-            glueVersion: glue.GlueVersion.V4_0,
-            pythonVersion: glue.PythonVersion.THREE,
-            script,
-          }),
-          jobRunQueuingEnabled: true,
-          maxRetries: 2,
-        })).toThrow('Maximum retries was set to 2, must be set to 0 with job run queuing enabled');
-      });
+    test('validation for jobRunQueuingEnabled and maxRetries', () => {
+      expect(() => new glue.Job(stack, 'Job', {
+        executable: glue.JobExecutable.pythonEtl({
+          glueVersion: glue.GlueVersion.V4_0,
+          pythonVersion: glue.PythonVersion.THREE,
+          script,
+        }),
+        jobRunQueuingEnabled: true,
+        maxRetries: 2,
+      })).toThrow('Maximum retries was set to 2, must be set to 0 with job run queuing enabled');
     });
   });
 });

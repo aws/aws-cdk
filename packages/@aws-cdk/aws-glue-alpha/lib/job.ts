@@ -756,7 +756,7 @@ export class Job extends JobBase {
       throw new Error('Both workerType and workerCount must be set');
     }
 
-    if (props.jobRunQueuingEnabled === true && props.maxRetries !== undefined && props.maxRetries > 0) {
+    if (props.jobRunQueuingEnabled === true && props.maxRetries !== undefined && !cdk.Token.isUnresolved(props.maxRetries) && props.maxRetries > 0) {
       throw new Error(`Maximum retries was set to ${props.maxRetries}, must be set to 0 with job run queuing enabled`);
     }
 
