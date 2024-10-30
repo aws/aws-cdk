@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import { promises as fs, existsSync } from 'fs';
 import * as os from 'os';
 import * as path from 'path';
@@ -17,6 +18,7 @@ import {
   PutRolePolicyCommand,
 } from '@aws-sdk/client-iam';
 import { InvokeCommand } from '@aws-sdk/client-lambda';
+import { PutObjectLockConfigurationCommand } from '@aws-sdk/client-s3';
 import { CreateTopicCommand, DeleteTopicCommand } from '@aws-sdk/client-sns';
 import { AssumeRoleCommand, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
 import {
@@ -1317,6 +1319,45 @@ integTest(
     expect(JSON.stringify(output.Payload?.transformToString())).toContain('dear asset');
   }),
 );
+
+integTest('deploy stack with Lambda Asset to Object Lock-enabled asset bucket', withoutBootstrap(async (fixture) => {
+  // Bootstrapping with custom toolkit stack name and qualifier
+  const qualifier = fixture.qualifier;
+  const toolkitStackName = fixture.bootstrapStackName;
+  await fixture.cdkBootstrapModern({
+    verbose: true,
+    toolkitStackName: toolkitStackName,
+    qualifier: qualifier,
+  });
+
+  try {
+    const bucketName = `cdk-${qualifier}-assets-${await fixture.aws.account()}-${fixture.aws.region}`;
+    await fixture.aws.s3.send(new PutObjectLockConfigurationCommand({
+      Bucket: bucketName,
+      ObjectLockConfiguration: {
+        ObjectLockEnabled: 'Enabled',
+        Rule: {
+          DefaultRetention: {
+            Days: 1,
+            Mode: 'GOVERNANCE',
+          },
+        },
+      },
+    }));
+
+    // Deploy a stack that definitely contains a file asset
+    await fixture.cdkDeploy('lambda', {
+      options: [
+        '--toolkit-stack-name', toolkitStackName,
+        '--context', `@aws-cdk/core:bootstrapQualifier=${qualifier}`,
+      ],
+    });
+
+    // THEN - should not fail
+  } finally {
+    // Clean up stack and bootstrap stack
+  }
+}));
 
 integTest(
   'cdk ls',

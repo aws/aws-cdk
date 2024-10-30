@@ -190,7 +190,8 @@ export class SDK implements ISDK {
     const config = { ...this.config };
 
     if (crypto.getFips() && apiRequiresMd5Checksum) {
-      throw new Error('This operation requires MD5 for integrity purposes; unfortunately, it therefore not available');
+      // This should disappear for SDKv3; in SDKv3, we can always force the client to use SHA256 checksums
+      throw new Error('This operation requires MD5 for integrity purposes; unfortunately, it therefore not available in a FIPS environment.');
     }
 
     if (crypto.getFips()) {
@@ -199,8 +200,15 @@ export class SDK implements ISDK {
       // While this usage is technically allowed in FIPS (MD5 is only prohibited for cryptographic use),
       // in practice it is just easier to use an allowed checksum mechanism.
       // We are disabling the S3 content checksums, and are re-enabling the regular SigV4 body signing.
-      // SigV4 uses SHA256 for their content checksum. This configuration matches the default behavior
-      // of the AWS SDKv3 and is a safe choice for all users, except in the above APIs.
+      // SigV4 uses SHA256 for their content checksum.
+      //
+      // As far as we know, this configuration will work for most APIs except:
+      // - DeleteObjects (note the plural)
+      // - PutObject to a bucket with Object Lock enabled.
+      //
+      // These APIs refuse to work without a content checksum at the S3 level (a SigV4 checksum is not
+      // good enough). There is no way to get those to work with SHA256 in the SDKv2, but this limitation
+      // will be alleviated once we migrate to SDKv3.
       config.s3DisableBodySigning = false;
       config.computeChecksums = false;
     }
