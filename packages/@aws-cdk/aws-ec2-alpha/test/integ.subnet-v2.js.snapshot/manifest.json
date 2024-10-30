@@ -1,5 +1,5 @@
 {
-  "version": "36.0.5",
+  "version": "38.0.1",
   "artifacts": {
     "aws-cdk-vpcv2-alpha-new.assets": {
       "type": "cdk:asset-manifest",
@@ -16,9 +16,10 @@
         "templateFile": "aws-cdk-vpcv2-alpha-new.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3d3ee41ce855ed1f43bd76cb02f20825b0d6ea6965e4974823890801f598e628.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a88dc0ea3e4c5ea7d17016d0f0fb2cdac863bc0d2a1ed9aecfb42840baf64e13.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -40,10 +41,10 @@
             "data": "SubnetTest3296A161"
           }
         ],
-        "/aws-cdk-vpcv2-alpha-new/SubnetTest/SecondaryTest": [
+        "/aws-cdk-vpcv2-alpha-new/SubnetTest/SecondaryTest/SecondaryTest": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SubnetTestSecondaryTestBDE45F82"
+            "data": "SubnetTestSecondaryTest2AB12223"
           }
         ],
         "/aws-cdk-vpcv2-alpha-new/testSubnet1/Subnet": [
@@ -67,10 +68,7 @@
         "/aws-cdk-vpcv2-alpha-new/Instance/InstanceSecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "InstanceInstanceSecurityGroupF0E2D5BE",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "InstanceInstanceSecurityGroupF0E2D5BE"
           }
         ],
         "/aws-cdk-vpcv2-alpha-new/Instance/InstanceRole/Resource": [
@@ -88,10 +86,7 @@
         "/aws-cdk-vpcv2-alpha-new/Instance/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "InstanceC1063A87",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "InstanceC1063A87"
           }
         ],
         "/aws-cdk-vpcv2-alpha-new/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
@@ -148,100 +143,10 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "Ipam50346F82": [
+        "SubnetTestSecondaryTestBDE45F82": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Ipam50346F82",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "IpamPublicPool050D6AA6C": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "IpamPublicPool050D6AA6C",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "IpamPublicPool0PublicPool0CidrAC7F711E": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "IpamPublicPool0PublicPool0CidrAC7F711E",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "VPCTestFB735C86": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCTestFB735C86",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "VPCTestIpv6IpamCidrD5C271DD": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCTestIpv6IpamCidrD5C271DD",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "VPCTestVpnGateway51EEED38": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCTestVpnGateway51EEED38",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "VPCTestVPCVPNGW0A869280": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCTestVPCVPNGW0A869280",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "VPCTestRoutePropagationFEA3011A": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCTestRoutePropagationFEA3011A",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "testsbubnetSubnet77337845": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "testsbubnetSubnet77337845",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "testsbubnetRouteTableF40F025B": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "testsbubnetRouteTableF40F025B",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "testsbubnetRouteTableAssociationD6D083FA": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "testsbubnetRouteTableAssociationD6D083FA",
+            "data": "SubnetTestSecondaryTestBDE45F82",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
@@ -265,6 +170,7 @@
         "templateFile": "integtestmodelDefaultTestDeployAssertCF40BD53.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
