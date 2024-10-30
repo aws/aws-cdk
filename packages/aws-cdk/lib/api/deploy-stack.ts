@@ -70,7 +70,11 @@ export interface DeployStackOptions {
   /**
    * Role to pass to CloudFormation to execute the change set
    *
-   * @default - Role specified on stack, otherwise current
+   * To obtain a `StringWithoutPlaceholders`, run a regular
+   * string though `TargetEnvironment.replacePlaceholders`.
+   *
+   * @default - No execution role; CloudFormation either uses the role currently associated with
+   * the stack, or otherwise uses current AWS credentials.
    */
   readonly roleArn?: StringWithoutPlaceholders;
 
