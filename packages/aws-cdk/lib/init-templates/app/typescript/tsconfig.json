@@ -1,8 +1,11 @@
 {
   "compilerOptions": {
-    "target": "ES2023",
+    "target": "ES2022",
     "module": "commonjs",
-    "lib": ["dom"],
+    "lib": [
+      "ES2023",
+      "dom"
+    ],
     "declaration": true,
     "strict": true,
     "noUnusedLocals": false,
