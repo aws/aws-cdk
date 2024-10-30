@@ -10,7 +10,14 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-pipes-targets-api-gw');
 const sourceQueue = new cdk.aws_sqs.Queue(stack, 'SourceQueue');
 
-// SQS (pipe source) --> API Gateway REST API (pipe target) --> Lambda function
+/*
+ * This integration test sends a message to an SQS queue which invokes
+ * the REST API. There is a Lambda function on the backend of the REST API.
+ * We check that the Lambda function was invoked, proving that the message
+ * made it through the pipe.
+ *
+ * SQS (pipe source) --> API Gateway REST API (pipe target) --> Lambda function
+ */
 
 const fn = new lambda.Function(stack, 'ConnectHandler', {
   runtime: lambda.Runtime.NODEJS_LATEST,

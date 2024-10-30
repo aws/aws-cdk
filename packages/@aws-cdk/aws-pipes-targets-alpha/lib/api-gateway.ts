@@ -61,7 +61,7 @@ export interface ApiGatewayTargetParameters {
 }
 
 /**
- * A EventBridge Pipes target that sends messages to an EventBridge API destination.
+ * An EventBridge Pipes target that sends messages to an EventBridge API destination.
  */
 export class ApiGatewayTarget implements ITarget {
   private restApi: IRestApi;
