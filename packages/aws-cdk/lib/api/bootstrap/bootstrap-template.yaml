@@ -207,11 +207,11 @@ Resources:
         Status: Enabled
       LifecycleConfiguration:
         Rules:
-          # Exising objects will never be overwritten but Security Hub wants this rule to exist
+          # Objects will only be noncurrent if they are deleted via garbage collection.
           - Id: CleanupOldVersions
             Status: Enabled
             NoncurrentVersionExpiration:
-              NoncurrentDays: 365
+              NoncurrentDays: 30
     UpdateReplacePolicy: Retain
     DeletionPolicy: Retain
   StagingBucketPolicy:
