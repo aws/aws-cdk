@@ -22,7 +22,7 @@ export interface ResourcePolicyProps {
 }
 
 /**
- * The policy for a data stream or registered consumer
+ * The policy for a data stream or registered consumer.
  *
  * Policies define the operations that are allowed on this resource.
  *
