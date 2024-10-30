@@ -339,7 +339,8 @@ abstract class StreamBase extends Resource implements IStream {
   public abstract readonly encryptionKey?: kms.IKey;
 
   /**
-   * Controls automatic creation of policy objects.
+   * Indicates if a stream resource policy should automatically be created upon
+   * the first call to `addToResourcePolicy`.
    *
    * Set by subclasses.
    */
