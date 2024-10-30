@@ -45,41 +45,40 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.aws_cognito.CfnUserPool",
+                  "version": "0.0.0"
                 }
               },
-              "another-group": {
-                "id": "another-group",
-                "path": "user-pool-group-stack/UserPool/another-group",
+              "AnotherUserPoolGroup": {
+                "id": "AnotherUserPoolGroup",
+                "path": "user-pool-group-stack/UserPool/AnotherUserPoolGroup",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "user-pool-group-stack/UserPool/another-group/Resource",
+                    "path": "user-pool-group-stack/UserPool/AnotherUserPoolGroup/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolGroup",
                       "aws:cdk:cloudformation:props": {
-                        "precedence": 1,
                         "userPoolId": {
                           "Ref": "UserPool6BA7E5F2"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_cognito.CfnUserPoolGroup",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.aws_cognito.UserPoolGroup",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "fqn": "aws-cdk-lib.aws_cognito.UserPool",
+              "version": "0.0.0"
             }
           },
           "Role": {
@@ -90,8 +89,8 @@
                 "id": "ImportRole",
                 "path": "user-pool-group-stack/Role/ImportRole",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
                 }
               },
               "Resource": {
@@ -115,14 +114,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "0.0.0"
             }
           },
           "UserPoolGroup": {
@@ -137,7 +136,7 @@
                   "aws:cdk:cloudformation:props": {
                     "description": "My user pool group",
                     "groupName": "test-group",
-                    "precedence": 0,
+                    "precedence": 1,
                     "roleArn": {
                       "Fn::GetAtt": [
                         "Role1ABCC5F0",
@@ -150,36 +149,78 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.aws_cognito.CfnUserPoolGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_cognito.UserPoolGroup",
+              "version": "0.0.0"
+            }
+          },
+          "Exports": {
+            "id": "Exports",
+            "path": "user-pool-group-stack/Exports",
+            "children": {
+              "Output{\"Ref\":\"UserPoolGroup3C2AB4D4\"}": {
+                "id": "Output{\"Ref\":\"UserPoolGroup3C2AB4D4\"}",
+                "path": "user-pool-group-stack/Exports/Output{\"Ref\":\"UserPoolGroup3C2AB4D4\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Ref\":\"UserPool6BA7E5F2\"}": {
+                "id": "Output{\"Ref\":\"UserPool6BA7E5F2\"}",
+                "path": "user-pool-group-stack/Exports/Output{\"Ref\":\"UserPool6BA7E5F2\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Fn::GetAtt\":[\"Role1ABCC5F0\",\"Arn\"]}": {
+                "id": "Output{\"Fn::GetAtt\":[\"Role1ABCC5F0\",\"Arn\"]}",
+                "path": "user-pool-group-stack/Exports/Output{\"Fn::GetAtt\":[\"Role1ABCC5F0\",\"Arn\"]}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Ref\":\"UserPoolAnotherUserPoolGroup48A7E43E\"}": {
+                "id": "Output{\"Ref\":\"UserPoolAnotherUserPoolGroup48A7E43E\"}",
+                "path": "user-pool-group-stack/Exports/Output{\"Ref\":\"UserPoolAnotherUserPoolGroup48A7E43E\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "user-pool-group-stack/BootstrapVersion",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
             }
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
             "path": "user-pool-group-stack/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
         }
       },
       "integ-user-pool-group": {
@@ -195,33 +236,129 @@
                 "path": "integ-user-pool-group/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
                 "path": "integ-user-pool-group/DefaultTest/DeployAssert",
                 "children": {
+                  "AwsApiCallcognito-identity-providerListGroupsCommand7b784883c670437100e141402729effb": {
+                    "id": "AwsApiCallcognito-identity-providerListGroupsCommand7b784883c670437100e141402729effb",
+                    "path": "integ-user-pool-group/DefaultTest/DeployAssert/AwsApiCallcognito-identity-providerListGroupsCommand7b784883c670437100e141402729effb",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "integ-user-pool-group/DefaultTest/DeployAssert/AwsApiCallcognito-identity-providerListGroupsCommand7b784883c670437100e141402729effb/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "integ-user-pool-group/DefaultTest/DeployAssert/AwsApiCallcognito-identity-providerListGroupsCommand7b784883c670437100e141402729effb/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "integ-user-pool-group/DefaultTest/DeployAssert/AwsApiCallcognito-identity-providerListGroupsCommand7b784883c670437100e141402729effb/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "integ-user-pool-group/DefaultTest/DeployAssert/AwsApiCallcognito-identity-providerListGroupsCommand7b784883c670437100e141402729effb/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "integ-user-pool-group/DefaultTest/DeployAssert/AwsApiCallcognito-identity-providerListGroupsCommand7b784883c670437100e141402729effb/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "SingletonFunction1488541a7b23466481b69b4408076b81": {
+                    "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "path": "integ-user-pool-group/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "integ-user-pool-group/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "integ-user-pool-group/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "integ-user-pool-group/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "LatestNodeRuntimeMap": {
+                    "id": "LatestNodeRuntimeMap",
+                    "path": "integ-user-pool-group/DefaultTest/DeployAssert/LatestNodeRuntimeMap",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnMapping",
+                      "version": "0.0.0"
+                    }
+                  },
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
                     "path": "integ-user-pool-group/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
                     }
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
                     "path": "integ-user-pool-group/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
                 }
               }
             },
@@ -241,13 +378,13 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.3.0"
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
     }
   }
 }

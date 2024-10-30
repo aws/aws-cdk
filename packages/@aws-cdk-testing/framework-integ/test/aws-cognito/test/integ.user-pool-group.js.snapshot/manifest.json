@@ -1,5 +1,5 @@
 {
-  "version": "36.0.5",
+  "version": "38.0.1",
   "artifacts": {
     "user-pool-group-stack.assets": {
       "type": "cdk:asset-manifest",
@@ -16,9 +16,10 @@
         "templateFile": "user-pool-group-stack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e4818d062171ff6331b3b3006fb0ab0841f2234a861d18a4d86936c3122bc981.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ba57d0488ef3ba5ed8a6d84cdbcf895ad364c65fd77653936f6f754b3483b5c3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -40,10 +41,10 @@
             "data": "UserPool6BA7E5F2"
           }
         ],
-        "/user-pool-group-stack/UserPool/another-group/Resource": [
+        "/user-pool-group-stack/UserPool/AnotherUserPoolGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "UserPoolanothergroup728681C4"
+            "data": "UserPoolAnotherUserPoolGroup48A7E43E"
           }
         ],
         "/user-pool-group-stack/Role/Resource": [
@@ -56,6 +57,30 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "UserPoolGroup3C2AB4D4"
+          }
+        ],
+        "/user-pool-group-stack/Exports/Output{\"Ref\":\"UserPoolGroup3C2AB4D4\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefUserPoolGroup3C2AB4D400D6486E"
+          }
+        ],
+        "/user-pool-group-stack/Exports/Output{\"Ref\":\"UserPool6BA7E5F2\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefUserPool6BA7E5F296FD7236"
+          }
+        ],
+        "/user-pool-group-stack/Exports/Output{\"Fn::GetAtt\":[\"Role1ABCC5F0\",\"Arn\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttRole1ABCC5F0ArnB4C0B73E"
+          }
+        ],
+        "/user-pool-group-stack/Exports/Output{\"Ref\":\"UserPoolAnotherUserPoolGroup48A7E43E\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefUserPoolAnotherUserPoolGroup48A7E43E18C4A4C8"
           }
         ],
         "/user-pool-group-stack/BootstrapVersion": [
@@ -88,9 +113,10 @@
         "templateFile": "integuserpoolgroupDefaultTestDeployAssertED51AC37.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d4e302e930a4dbdf019ce641335548f733001526c73ebef4e9073dad5736f67e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -103,9 +129,40 @@
         }
       },
       "dependencies": [
+        "user-pool-group-stack",
         "integuserpoolgroupDefaultTestDeployAssertED51AC37.assets"
       ],
       "metadata": {
+        "/integ-user-pool-group/DefaultTest/DeployAssert/AwsApiCallcognito-identity-providerListGroupsCommand7b784883c670437100e141402729effb/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallcognitoidentityproviderListGroupsCommand7b784883c670437100e141402729effb"
+          }
+        ],
+        "/integ-user-pool-group/DefaultTest/DeployAssert/AwsApiCallcognito-identity-providerListGroupsCommand7b784883c670437100e141402729effb/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallcognitoidentityproviderListGroupsCommand7b784883c670437100e141402729effb"
+          }
+        ],
+        "/integ-user-pool-group/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/integ-user-pool-group/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/integ-user-pool-group/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
         "/integ-user-pool-group/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
