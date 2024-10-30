@@ -1,10 +1,11 @@
 import { promises as fs } from 'fs';
 import * as path from 'path';
-import { integTest, withTemporaryDirectory, ShellHelper, withPackages, TemporaryDirectoryContext, withAws } from '../../lib';
+import { withToolContext } from './with-tool-context';
+import { integTest, ShellHelper, TemporaryDirectoryContext } from '../../lib';
 
 const TIMEOUT = 1800_000;
 
-integTest('amplify integration', withAws(withTemporaryDirectory(withPackages(async (context) => {
+integTest('amplify integration', withToolContext(async (context) => {
   const shell = ShellHelper.fromContext(context);
 
   await shell.shell(['npm', 'create', '-y', 'amplify@latest']);
@@ -31,7 +32,7 @@ integTest('amplify integration', withAws(withTemporaryDirectory(withPackages(asy
       },
     });
   }
-}))), TIMEOUT);
+}), TIMEOUT);
 
 async function updateCdkDependency(context: TemporaryDirectoryContext, cliVersion: string, libVersion: string) {
   const filename = path.join(context.integTestDir, 'package.json');
