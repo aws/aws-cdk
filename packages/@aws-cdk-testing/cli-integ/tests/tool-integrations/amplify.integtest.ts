@@ -1,10 +1,10 @@
 import { promises as fs } from 'fs';
 import * as path from 'path';
-import { integTest, withTemporaryDirectory, ShellHelper, withPackages, TemporaryDirectoryContext } from '../../lib';
+import { integTest, withTemporaryDirectory, ShellHelper, withPackages, TemporaryDirectoryContext, withAws } from '../../lib';
 
 const TIMEOUT = 1800_000;
 
-integTest('amplify integration', withTemporaryDirectory(withPackages(async (context) => {
+integTest('amplify integration', withAws(withTemporaryDirectory(withPackages(async (context) => {
   const shell = ShellHelper.fromContext(context);
 
   await shell.shell(['npm', 'create', '-y', 'amplify@latest']);
@@ -14,9 +14,24 @@ integTest('amplify integration', withTemporaryDirectory(withPackages(async (cont
   await updateCdkDependency(context, context.packages.requestedCliVersion(), context.packages.requestedFrameworkVersion());
   await shell.shell(['npm', 'install']);
 
-  await shell.shell(['npx', 'ampx', 'sandbox', '--once']);
-  await shell.shell(['npx', 'ampx', 'sandbox', 'delete', '--yes']);
-})), TIMEOUT);
+  await shell.shell(['npx', 'ampx', 'sandbox', '--once'], {
+    modEnv: {
+      AWS_REGION: context.aws.region,
+    },
+  });
+  try {
+
+    // Future code goes here, putting the try/finally here already so it doesn't
+    // get forgotten.
+
+  } finally {
+    await shell.shell(['npx', 'ampx', 'sandbox', 'delete', '--yes'], {
+      modEnv: {
+        AWS_REGION: context.aws.region,
+      },
+    });
+  }
+}))), TIMEOUT);
 
 async function updateCdkDependency(context: TemporaryDirectoryContext, cliVersion: string, libVersion: string) {
   const filename = path.join(context.integTestDir, 'package.json');
