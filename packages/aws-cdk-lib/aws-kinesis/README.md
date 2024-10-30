@@ -196,13 +196,12 @@ For more information, see [Controlling access to Amazon Kinesis Data Streams res
 
 A resource policy is automatically created when `addToResourcePolicy` is called, if one doesn't already exist.
 
-Using `addToResourcePolicy` is the simplest way to
-add policies, but a `ResourcePolicy` can also be created manually.
+Using `addToResourcePolicy` is the simplest way to add a resource policy:
 
 ```ts
 const stream = new kinesis.Stream(this, 'MyStream');
 
-// add resource policy
+// create a resource policy via addToResourcePolicy method
 stream.addToResourcePolicy(new iam.PolicyStatement({
   resources: [stream.streamArn],
   actions: ['kinesis:GetRecords'],
@@ -210,11 +209,14 @@ stream.addToResourcePolicy(new iam.PolicyStatement({
 }));
 ```
 
-A policy document can also be passed on `ResourcePolicy` construction
+You can create a resource manually by using `ResourcePolicy`.
+Also, you can set a custom policy document to `ResourcePolicy`.
+If not, a blank policy document will be set.
 
 ```ts
 const stream = new kinesis.Stream(this, 'MyStream');
 
+// create a custom policy document
 const policyDocument = new iam.PolicyDocument({
   assignSids: true,
   statements: [
@@ -226,7 +228,7 @@ const policyDocument = new iam.PolicyDocument({
   ],
 });
 
-// create resource policy
+// create a resource policy manually
 new kinesis.ResourcePolicy(this, 'ResourcePolicy', {
   stream,
   policyDocument,
