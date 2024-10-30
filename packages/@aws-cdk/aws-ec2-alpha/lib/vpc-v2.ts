@@ -293,7 +293,7 @@ export class VpcV2 extends VpcV2Base {
       public readonly vpcCidrBlock: string;
 
       // Required to do CIDR range test on imported VPCs to create new subnets
-      public readonly ipv4IpamProvisionedCidrs?: string[] = [];
+      public readonly ipv4IpamProvisionedCidrs: string[] = [];
 
       constructor(construct: Construct, constructId: string, props: VpcV2Attributes) {
         super(construct, constructId);
