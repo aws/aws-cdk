@@ -74,43 +74,6 @@
    }
   }
  },
- "Outputs": {
-  "ExportsOutputRefUserPoolGroup3C2AB4D400D6486E": {
-   "Value": {
-    "Ref": "UserPoolGroup3C2AB4D4"
-   },
-   "Export": {
-    "Name": "user-pool-group-stack:ExportsOutputRefUserPoolGroup3C2AB4D400D6486E"
-   }
-  },
-  "ExportsOutputRefUserPool6BA7E5F296FD7236": {
-   "Value": {
-    "Ref": "UserPool6BA7E5F2"
-   },
-   "Export": {
-    "Name": "user-pool-group-stack:ExportsOutputRefUserPool6BA7E5F296FD7236"
-   }
-  },
-  "ExportsOutputFnGetAttRole1ABCC5F0ArnB4C0B73E": {
-   "Value": {
-    "Fn::GetAtt": [
-     "Role1ABCC5F0",
-     "Arn"
-    ]
-   },
-   "Export": {
-    "Name": "user-pool-group-stack:ExportsOutputFnGetAttRole1ABCC5F0ArnB4C0B73E"
-   }
-  },
-  "ExportsOutputRefUserPoolAnotherUserPoolGroup48A7E43E18C4A4C8": {
-   "Value": {
-    "Ref": "UserPoolAnotherUserPoolGroup48A7E43E"
-   },
-   "Export": {
-    "Name": "user-pool-group-stack:ExportsOutputRefUserPoolAnotherUserPoolGroup48A7E43E18C4A4C8"
-   }
-  }
- },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
