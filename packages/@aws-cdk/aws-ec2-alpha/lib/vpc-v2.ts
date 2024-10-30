@@ -336,7 +336,7 @@ export class VpcV2 extends VpcV2Base {
         if (props.secondaryCidrBlocks) {
           for (const cidrBlock of props.secondaryCidrBlocks) {
             if (cidrBlock.ipv4IpamProvisionedCidrs) {
-              this.ipv4IpamProvisionedCidrs?.push(...cidrBlock.ipv4IpamProvisionedCidrs);
+              this.ipv4IpamProvisionedCidrs.push(...cidrBlock.ipv4IpamProvisionedCidrs);
             }
           }
         }
