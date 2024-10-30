@@ -733,6 +733,15 @@ export interface ServiceProps {
   readonly vpcConnector?: IVpcConnector;
 
   /**
+   * Specifies whether your App Runner service is publicly accessible.
+   *
+   * If you use `VpcIngressConnection`, you must set this property to `false`.
+   *
+   * @default true
+   */
+  readonly isPubliclyAccessible?: boolean;
+
+  /**
    * Settings for the health check that AWS App Runner performs to monitor the health of a service.
    *
    * You can specify it by static methods `HealthCheck.http` or `HealthCheck.tcp`.
@@ -1310,6 +1319,7 @@ export class Service extends cdk.Resource implements iam.IGrantable {
           egressType: this.props.vpcConnector ? 'VPC' : 'DEFAULT',
           vpcConnectorArn: this.props.vpcConnector?.vpcConnectorArn,
         },
+        ingressConfiguration: props.isPubliclyAccessible !== undefined ? { isPubliclyAccessible: props.isPubliclyAccessible } : undefined,
         ipAddressType: this.props.ipAddressType,
       },
       healthCheckConfiguration: this.props.healthCheck ?
