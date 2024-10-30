@@ -26,19 +26,19 @@ export interface SageMakerTargetParameters {
 }
 
 /**
- * A EventBridge Pipes target that sends messages to an SageMaker.
+ * An EventBridge Pipes target that sends messages to a SageMaker pipeline.
  */
 export class SageMakerTarget implements ITarget {
   private pipeline: IPipeline;
-  private sagemakerParameters?: SageMakerTargetParameters;
+  private sageMakerParameters?: SageMakerTargetParameters;
   private pipelineParameters?: Record<string, string>;
   public readonly targetArn: string;
 
   constructor(pipeline: IPipeline, parameters?: SageMakerTargetParameters) {
     this.pipeline = pipeline;
     this.targetArn = pipeline.pipelineArn;
-    this.sagemakerParameters = parameters;
-    this.pipelineParameters = this.sagemakerParameters?.pipelineParameters;
+    this.sageMakerParameters = parameters;
+    this.pipelineParameters = this.sageMakerParameters?.pipelineParameters;
   }
 
   grantPush(grantee: IRole): void {
@@ -46,13 +46,13 @@ export class SageMakerTarget implements ITarget {
   }
 
   bind(pipe: IPipe): TargetConfig {
-    if (!this.sagemakerParameters) {
+    if (!this.sageMakerParameters) {
       return { targetParameters: {} };
     }
 
     return {
       targetParameters: {
-        inputTemplate: this.sagemakerParameters.inputTransformation?.bind(pipe).inputTemplate,
+        inputTemplate: this.sageMakerParameters.inputTransformation?.bind(pipe).inputTemplate,
         sageMakerPipelineParameters: {
           pipelineParameterList: this.pipelineParameters ?
             Object.entries(this.pipelineParameters).map(([key, value]) => ({
