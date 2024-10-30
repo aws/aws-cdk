@@ -191,7 +191,7 @@ export class SDK implements ISDK {
 
     if (crypto.getFips() && apiRequiresMd5Checksum) {
       // This should disappear for SDKv3; in SDKv3, we can always force the client to use SHA256 checksums
-      throw new Error('This operation requires MD5 for integrity purposes; unfortunately, it therefore not available in a FIPS environment.');
+      throw new Error('This operation requires MD5 for integrity purposes; unfortunately, it therefore is not available in FIPS enabled environments.');
     }
 
     if (crypto.getFips()) {
