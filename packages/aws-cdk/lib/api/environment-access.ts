@@ -3,7 +3,7 @@ import { ISDK, Mode } from './aws-auth';
 import { warning } from '../logging';
 import { CredentialsOptions, SdkForEnvironment, SdkProvider } from './aws-auth/sdk-provider';
 import { EnvironmentResources, EnvironmentResourcesRegistry } from './environment-resources';
-import { replaceEnvPlaceholders } from './util/placeholders';
+import { replaceEnvPlaceholders, StringWithoutPlaceholders } from './util/placeholders';
 
 /**
  * Access particular AWS resources, based on information from the CX manifest
@@ -260,7 +260,7 @@ export interface TargetEnvironment {
   /**
    * Replace environment placeholders according to the current environment
    */
-  replacePlaceholders<A extends string | undefined>(x: A): Promise<A>;
+  replacePlaceholders(x: string | undefined): Promise<StringWithoutPlaceholders | undefined>;
 }
 
 interface PrepareSdkRoleOptions {

@@ -9,7 +9,7 @@ import { makeBodyParameter, TemplateBodyParameter } from './template-body-parame
 import { debug } from '../../logging';
 import { deserializeStructure } from '../../serialize';
 import { AssetManifestBuilder } from '../../util/asset-manifest-builder';
-import { Mode, SdkProvider } from '../aws-auth';
+import { SdkProvider } from '../aws-auth';
 import { Deployments } from '../deployments';
 
 export type Template = {
@@ -367,7 +367,7 @@ function templatesFromAssetManifestArtifact(artifact: cxapi.AssetManifestArtifac
 async function uploadBodyParameterAndCreateChangeSet(options: PrepareChangeSetOptions): Promise<DescribeChangeSetOutput | undefined> {
   try {
     await uploadStackTemplateAssets(options.stack, options.deployments);
-    const env = await options.deployments.envs.accessStackForStackOperations(options.stack, Mode.ForWriting);
+    const env = await options.deployments.envs.accessStackForMutableStackOperations(options.stack);
 
     const bodyParameter = await makeBodyParameter(
       options.stack,

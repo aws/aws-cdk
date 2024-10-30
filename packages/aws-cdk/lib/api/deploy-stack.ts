@@ -19,6 +19,7 @@ import { TemplateBodyParameter, makeBodyParameter } from './util/template-body-p
 import { AssetManifestBuilder } from '../util/asset-manifest-builder';
 import { determineAllowCrossAccountAssetPublishing } from './util/checks';
 import { publishAssets } from '../util/asset-publishing';
+import { StringWithoutPlaceholders } from './util/placeholders';
 
 export interface DeployStackResult {
   readonly noOp: boolean;
@@ -71,7 +72,7 @@ export interface DeployStackOptions {
    *
    * @default - Role specified on stack, otherwise current
    */
-  readonly roleArn?: string;
+  readonly roleArn?: StringWithoutPlaceholders;
 
   /**
    * Notification ARNs to pass to CloudFormation to notify when the change set has completed
