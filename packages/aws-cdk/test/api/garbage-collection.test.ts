@@ -633,6 +633,40 @@ describe('ECR Garbage Collection', () => {
     });
   });
 
+  test('succeeds when no images are present', async () => {
+    mockTheToolkitInfo({
+      Outputs: [
+        {
+          OutputKey: 'BootstrapVersion',
+          OutputValue: '999',
+        },
+      ],
+    });
+
+    const mockListImagesNone = jest.fn().mockImplementation(() => {
+      return Promise.resolve({
+        images: [],
+      });
+    });
+
+    sdk.stubEcr({
+      batchGetImage: mockBatchGetImage,
+      describeImages: mockDescribeImages,
+      batchDeleteImage: mockBatchDeleteImage,
+      putImage: mockPutImage,
+      listImages: mockListImagesNone,
+    });
+
+    garbageCollector = garbageCollector = gc({
+      type: 'ecr',
+      rollbackBufferDays: 0,
+      action: 'full',
+    });
+
+    // succeeds without hanging
+    await garbageCollector.garbageCollect();
+  });
+
   test('tags are unique', async () => {
     mockTheToolkitInfo({
       Outputs: [

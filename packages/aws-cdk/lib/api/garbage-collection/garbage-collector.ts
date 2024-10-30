@@ -635,7 +635,7 @@ export class GarbageCollector {
 
         // No images in the repository
         if (!response.imageIds || response.imageIds.length === 0) {
-          continue;
+          break;
         }
 
         // map unique image digest to (possibly multiple) tags
