@@ -68,7 +68,6 @@ const pipe = new pipes.Pipe(this, 'Pipe', {
 });
 ```
 
-
 ### Amazon API Gateway Rest API
 
 A REST API can be used as a target for a pipe. 
