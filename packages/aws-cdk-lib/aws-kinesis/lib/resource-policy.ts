@@ -15,6 +15,7 @@ export interface ResourcePolicyProps {
 
   /**
    * IAM policy document to apply to a data stream.
+   *
    * @default - empty policy document
    */
   readonly policyDocument?: PolicyDocument;
