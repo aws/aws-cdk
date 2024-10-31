@@ -379,9 +379,7 @@ export class SdkProvider {
         },
       })();
 
-      return new SDK(credentials, region, this.requestHandler, {
-        assumeRoleCredentialsSourceDescription: fmtObtainedCredentials(mainCredentials),
-      });
+      return new SDK(credentials, region, this.requestHandler);
     } catch (err: any) {
       if (err.name === 'ExpiredToken') {
         throw err;

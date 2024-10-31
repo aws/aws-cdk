@@ -518,7 +518,6 @@ export class SDK {
     private readonly _credentials: AwsCredentialIdentity,
     region: string,
     requestHandler: NodeHttpHandlerOptions,
-    private readonly sdkOptions: SdkOptions = {},
   ) {
     this.config = {
       region,
@@ -665,7 +664,7 @@ export class SDK {
   }
 
   public codeBuild(): ICodeBuildClient {
-    const client = this.wrapServiceErrorHandling(new CodeBuildClient(this.config));
+    const client = new CodeBuildClient(this.config);
     return {
       updateProject: (input: UpdateProjectCommandInput): Promise<UpdateProjectCommandOutput> =>
         client.send(new UpdateProjectCommand(input)),
@@ -673,7 +672,7 @@ export class SDK {
   }
 
   public ec2(): IEC2Client {
-    const client = this.wrapServiceErrorHandling(new EC2Client(this.config));
+    const client = new EC2Client(this.config);
     return {
       describeAvailabilityZones: (
         input: DescribeAvailabilityZonesCommandInput,
@@ -701,7 +700,7 @@ export class SDK {
   }
 
   public ecr(): IECRClient {
-    const client = this.wrapServiceErrorHandling(new ECRClient(this.config));
+    const client = new ECRClient(this.config);
     return {
       createRepository: (input: CreateRepositoryCommandInput): Promise<CreateRepositoryCommandOutput> =>
         client.send(new CreateRepositoryCommand(input)),
@@ -719,7 +718,7 @@ export class SDK {
   }
 
   public ecs(): IECSClient {
-    const client = this.wrapServiceErrorHandling(new ECSClient(this.config));
+    const client = new ECSClient(this.config);
     return {
       listClusters: (input: ListClustersCommandInput): Promise<ListClustersCommandOutput> =>
         client.send(new ListClustersCommand(input)),
@@ -744,7 +743,7 @@ export class SDK {
   }
 
   public elbv2(): IElasticLoadBalancingV2Client {
-    const client = this.wrapServiceErrorHandling(new ElasticLoadBalancingV2Client(this.config));
+    const client = new ElasticLoadBalancingV2Client(this.config);
     return {
       describeListeners: (input: DescribeListenersCommandInput): Promise<DescribeListenersCommandOutput> =>
         client.send(new DescribeListenersCommand(input)),
@@ -773,7 +772,7 @@ export class SDK {
   }
 
   public iam(): IIAMClient {
-    const client = this.wrapServiceErrorHandling(new IAMClient(this.config));
+    const client = new IAMClient(this.config);
     return {
       createPolicy: (input: CreatePolicyCommandInput): Promise<CreatePolicyCommandOutput> =>
         client.send(new CreatePolicyCommand(input)),
@@ -784,7 +783,7 @@ export class SDK {
   }
 
   public kms(): IKMSClient {
-    const client = this.wrapServiceErrorHandling(new KMSClient(this.config));
+    const client = new KMSClient(this.config);
     return {
       describeKey: (input: DescribeKeyCommandInput): Promise<DescribeKeyCommandOutput> =>
         client.send(new DescribeKeyCommand(input)),
@@ -794,7 +793,7 @@ export class SDK {
   }
 
   public lambda(): ILambdaClient {
-    const client = this.wrapServiceErrorHandling(new LambdaClient(this.config));
+    const client = new LambdaClient(this.config);
     return {
       invokeCommand: (input: InvokeCommandInput): Promise<InvokeCommandOutput> => client.send(new InvokeCommand(input)),
       publishVersion: (input: PublishVersionCommandInput): Promise<PublishVersionCommandOutput> =>
@@ -826,7 +825,7 @@ export class SDK {
   }
 
   public route53(): IRoute53Client {
-    const client = this.wrapServiceErrorHandling(new Route53Client(this.config));
+    const client = new Route53Client(this.config);
     return {
       getHostedZone: (input: GetHostedZoneCommandInput): Promise<GetHostedZoneCommandOutput> =>
         client.send(new GetHostedZoneCommand(input)),
@@ -838,7 +837,7 @@ export class SDK {
   }
 
   public s3(): IS3Client {
-    const client = this.wrapServiceErrorHandling(new S3Client(this.config));
+    const client = new S3Client(this.config);
     return {
       deleteObjects: (input: DeleteObjectsCommandInput): Promise<DeleteObjectsCommandOutput> =>
         client.send(new DeleteObjectsCommand(input)),
@@ -872,7 +871,7 @@ export class SDK {
   }
 
   public secretsManager(): ISecretsManagerClient {
-    const client = this.wrapServiceErrorHandling(new SecretsManagerClient(this.config));
+    const client = new SecretsManagerClient(this.config);
     return {
       getSecretValue: (input: GetSecretValueCommandInput): Promise<GetSecretValueCommandOutput> =>
         client.send(new GetSecretValueCommand(input)),
@@ -880,7 +879,7 @@ export class SDK {
   }
 
   public ssm(): ISSMClient {
-    const client = this.wrapServiceErrorHandling(new SSMClient(this.config));
+    const client = new SSMClient(this.config);
     return {
       getParameter: (input: GetParameterCommandInput): Promise<GetParameterCommandOutput> =>
         client.send(new GetParameterCommand(input)),
@@ -888,7 +887,7 @@ export class SDK {
   }
 
   public stepFunctions(): IStepFunctionsClient {
-    const client = this.wrapServiceErrorHandling(new SFNClient(this.config));
+    const client = new SFNClient(this.config);
     return {
       updateStateMachine: (input: UpdateStateMachineCommandInput): Promise<UpdateStateMachineCommandOutput> =>
         client.send(new UpdateStateMachineCommand(input)),
@@ -943,131 +942,6 @@ export class SDK {
     await client.send(new GetCallerIdentityCommand({}));
     this._credentialsValidated = true;
   }
-
-  /**
-   * Return a wrapping object for the underlying service object
-   *
-   * Responds to failures in the underlying service calls, in two different
-   * ways:
-   *
-   * - When errors are encountered, log the failing call and the error that
-   *   it triggered (at debug level). This is necessary because the lack of
-   *   stack traces in NodeJS otherwise makes it very hard to suss out where
-   *   a certain AWS error occurred.
-   * - The JS SDK has a funny business of wrapping any credential-based error
-   *   in a super-generic (and in our case wrong) exception. If we then use a
-   *   'ChainableTemporaryCredentials' and the target role doesn't exist,
-   *   the error message that shows up by default is super misleading
-   *   (https://github.com/aws/aws-sdk-js/issues/3272). We can fix this because
-   *   the exception contains the "inner exception", so we unwrap and throw
-   *   the correct error ("cannot assume role").
-   *
-   * The wrapping business below is slightly more complicated than you'd think
-   * because we must hook into the `promise()` method of the object that's being
-   * returned from the methods of the object that we wrap, so there's two
-   * levels of wrapping going on, and also some exceptions to the wrapping magic.
-   */
-  private wrapServiceErrorHandling<A extends object>(serviceObject: A): A {
-    const classObject = serviceObject.constructor.prototype;
-    const self = this;
-
-    return new Proxy(serviceObject, {
-      get(obj: A, prop: string) {
-        const real = (obj as any)[prop];
-        // Things we don't want to intercept:
-        // - Anything that's not a function.
-        // - 'constructor', s3.upload() will use this to do some magic and we need the underlying constructor.
-        // - Any method that's not on the service class (do not intercept 'makeRequest' and other helpers).
-        if (prop === 'constructor' || !classObject.hasOwnProperty(prop) || !isFunction(real)) {
-          return real;
-        }
-
-        // NOTE: This must be a function() and not an () => {
-        // because I need 'this' to be dynamically bound and not statically bound.
-        // If your linter complains don't listen to it!
-        return function (this: any) {
-          // Call the underlying function. If it returns an object with a promise()
-          // method on it, wrap that 'promise' method.
-          const args = [].slice.call(arguments, 0);
-          const response = real.apply(this, args);
-
-          // Don't intercept unless the return value is an object with a '.promise()' method.
-          if (typeof response !== 'object' || !response) {
-            return response;
-          }
-          if (!('promise' in response)) {
-            return response;
-          }
-
-          // Return an object with the promise method replaced with a wrapper which will
-          // do additional things to errors.
-          return Object.assign(Object.create(response), {
-            promise() {
-              return response.catch((e: Error & { code?: string }) => {
-                e = self.makeDetailedException(e);
-                debug(`Call failed: ${prop}(${JSON.stringify(args[0])}) => ${e.message} (code=${e.name})`);
-                return Promise.reject(e); // Re-'throw' the new error
-              });
-            },
-          });
-        };
-      },
-    });
-  }
-
-  /**
-   * Extract a more detailed error out of a generic error if we can
-   *
-   * If this is an error about Assuming Roles, add in the context showing the
-   * chain of credentials we used to try to assume the role.
-   */
-  private makeDetailedException(e: Error): Error {
-    // This is the super-generic "something's wrong" error that the JS SDK wraps other errors in.
-    // https://github.com/aws/aws-sdk-js/blob/f0ac2e53457c7512883d0677013eacaad6cd8a19/lib/event_listeners.js#L84
-    if (typeof e.message === 'string' && e.message.startsWith('Missing credentials in config')) {
-      const original = (e as any).originalError;
-      if (original) {
-        // When the SDK does a 'util.copy', they lose the Error-ness of the inner error
-        // (they copy the Error's properties into a plain object) so make it an Error object again.
-        e = Object.assign(new Error(), original);
-      }
-    }
-
-    // At this point, the error might still be a generic "ChainableTemporaryCredentials failed"
-    // error which wraps the REAL error (AssumeRole failed). We're going to replace the error
-    // message with one that's more likely to help users, and tell them the most probable
-    // fix (bootstrapping). The underlying service call failure will be appended below.
-    if (e.message === 'Could not load credentials from ChainableTemporaryCredentials') {
-      e.message = [
-        'Could not assume role in target account',
-        ...(this.sdkOptions.assumeRoleCredentialsSourceDescription
-          ? [`using ${this.sdkOptions.assumeRoleCredentialsSourceDescription}`]
-          : []),
-        "(did you bootstrap the environment with the right '--trust's?)",
-      ].join(' ');
-    }
-
-    // Replace the message on this error with a concatenation of all inner error messages.
-    // Must more clear what's going on that way.
-    e.message = allChainedExceptionMessages(e);
-    return e;
-  }
 }
 
 const CURRENT_ACCOUNT_KEY = Symbol('current_account_key');
-
-function isFunction(x: any): x is (...args: any[]) => any {
-  return x && {}.toString.call(x) === '[object Function]';
-}
-
-/**
- * Return the concatenated message of all exceptions in the AWS exception chain
- */
-function allChainedExceptionMessages(e: Error | undefined) {
-  const ret = new Array<string>();
-  while (e) {
-    ret.push(e.message);
-    e = (e as any).originalError;
-  }
-  return ret.join(': ');
-}
