@@ -36,6 +36,12 @@ import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const pLimit: typeof import('p-limit') = require('p-limit');
 
+let TESTING = false;
+
+export function markTesting() {
+  TESTING = true;
+}
+
 export interface CdkToolkitProps {
 
   /**
@@ -1794,7 +1800,7 @@ async function askUserConfirmation(
 ) {
   await withCorkedLogging(async () => {
     // only talk to user if STDIN is a terminal (otherwise, fail)
-    if (!process.stdin.isTTY) {
+    if (!TESTING && !process.stdin.isTTY) {
       throw new Error(`${motivation}, but terminal (TTY) is not attached so we are unable to get a confirmation from the user`);
     }
 
