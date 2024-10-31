@@ -2,7 +2,7 @@ import { Tag } from '../../cdk-toolkit';
 import { StringWithoutPlaceholders } from '../util/placeholders';
 
 export const BUCKET_NAME_OUTPUT = 'BucketName';
-export const REPOSITORY_NAME_OUTPUT = 'RepositoryName';
+export const REPOSITORY_NAME_OUTPUT = 'ImageRepositoryName';
 export const BUCKET_DOMAIN_NAME_OUTPUT = 'BucketDomainName';
 export const BOOTSTRAP_VERSION_OUTPUT = 'BootstrapVersion';
 export const BOOTSTRAP_VERSION_RESOURCE = 'CdkBootstrapVersion';
