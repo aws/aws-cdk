@@ -64,7 +64,7 @@
     "InstanceTenancy": "default"
    }
   },
-  "VPCintegtest1ipv4IpamCidr8105B4E4": {
+  "VPCintegtest1ipv4IpamCidr451A5376": {
    "Type": "AWS::EC2::VPCCidrBlock",
    "Properties": {
     "Ipv4IpamPoolId": {
@@ -82,7 +82,7 @@
     }
    }
   },
-  "VPCintegtest1Ipv6IpamCidrEF56F8F7": {
+  "VPCintegtest1Ipv6IpamCidr2E5BBFED": {
    "Type": "AWS::EC2::VPCCidrBlock",
    "Properties": {
     "Ipv6IpamPoolId": {
@@ -117,8 +117,8 @@
     }
    },
    "DependsOn": [
-    "VPCintegtest1ipv4IpamCidr8105B4E4",
-    "VPCintegtest1Ipv6IpamCidrEF56F8F7"
+    "VPCintegtest1ipv4IpamCidr451A5376",
+    "VPCintegtest1Ipv6IpamCidr2E5BBFED"
    ]
   },
   "testsbubnetRouteTableD0136BEA": {
@@ -132,8 +132,8 @@
     }
    },
    "DependsOn": [
-    "VPCintegtest1ipv4IpamCidr8105B4E4",
-    "VPCintegtest1Ipv6IpamCidrEF56F8F7"
+    "VPCintegtest1ipv4IpamCidr451A5376",
+    "VPCintegtest1Ipv6IpamCidr2E5BBFED"
    ]
   },
   "testsbubnetRouteTableAssociationD6D083FA": {
@@ -150,8 +150,8 @@
     }
    },
    "DependsOn": [
-    "VPCintegtest1ipv4IpamCidr8105B4E4",
-    "VPCintegtest1Ipv6IpamCidrEF56F8F7"
+    "VPCintegtest1ipv4IpamCidr451A5376",
+    "VPCintegtest1Ipv6IpamCidr2E5BBFED"
    ]
   }
  },
