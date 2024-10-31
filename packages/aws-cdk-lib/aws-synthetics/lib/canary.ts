@@ -669,24 +669,21 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
   }
 
   private createArtifactConfig(props: CanaryProps): CfnCanary.ArtifactConfigProperty | undefined {
-    if (!props.artifactS3EncryptionMode) {
+    if (!props.artifactS3EncryptionMode && !props.artifactS3KmsKey) {
       return undefined;
     }
 
     const isNodeRuntime = props.runtime.family === RuntimeFamily.NODEJS;
-    const isArtifactS3EncryptionModeDefined = !cdk.Token.isUnresolved(props.artifactS3EncryptionMode) && props.artifactS3EncryptionMode;
-    const isArtifactS3KmsKeyDefined = !cdk.Token.isUnresolved(props.artifactS3KmsKey) && props.artifactS3KmsKey;
 
     if (
-      isArtifactS3EncryptionModeDefined &&
       props.artifactS3EncryptionMode !== ArtifactsEncryptionMode.KMS &&
-      isArtifactS3KmsKeyDefined
+      props.artifactS3KmsKey
     ) {
-      throw new Error('A customer-managed KMS key was provided, but the encryption mode is not set to SSE-KMS.');
+      throw new Error(`A customer-managed KMS key was provided, but the encryption mode is not set to SSE-KMS, got: ${props.artifactS3EncryptionMode}.`);
     }
 
     // Only check runtime family is Node.js because versions prior to `syn-nodejs-puppeteer-3.3` are deprecated and can no longer be configured.
-    if (!isNodeRuntime && isArtifactS3EncryptionModeDefined) {
+    if (!isNodeRuntime && props.artifactS3EncryptionMode) {
       throw new Error(`Artifact encryption is only supported for canaries that use Synthetics runtime version \`syn-nodejs-puppeteer-3.3\` or later, got \`${props.runtime.name}\`.`);
     }
 
