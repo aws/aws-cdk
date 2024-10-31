@@ -1,4 +1,4 @@
-import { Schedule, ScheduleExpression, ScheduleTargetInput } from '@aws-cdk/aws-scheduler-alpha';
+import { Group, Schedule, ScheduleExpression, ScheduleTargetInput } from '@aws-cdk/aws-scheduler-alpha';
 import { App, Duration, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as events from 'aws-cdk-lib/aws-events';
@@ -79,7 +79,23 @@ describe('eventBridge put events', () => {
         Statement: [
           {
             Effect: 'Allow',
-            Condition: { StringEquals: { 'aws:SourceAccount': '123456789012' } },
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': '123456789012',
+                'aws:SourceArn': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':scheduler:us-east-1:123456789012:schedule-group/default'
+                    ],
+                  ],
+                }
+              }
+            },
             Principal: {
               Service: 'scheduler.amazonaws.com',
             },
@@ -166,7 +182,23 @@ describe('eventBridge put events', () => {
         Statement: [
           {
             Effect: 'Allow',
-            Condition: { StringEquals: { 'aws:SourceAccount': '123456789012' } },
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': '123456789012',
+                'aws:SourceArn': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':scheduler:us-east-1:123456789012:schedule-group/default'
+                    ],
+                  ],
+                }
+              }
+            },
             Principal: {
               Service: 'scheduler.amazonaws.com',
             },
@@ -195,6 +227,93 @@ describe('eventBridge put events', () => {
     }, 1);
   });
 
+  test('creates IAM role and IAM policy for two schedules with the same target but different groups', () => {
+    const eventBusTarget = new EventBridgePutEvents(eventBusEventEntry, {});
+    const group = new Group(stack, 'Group', {
+      groupName: 'mygroup',
+    });
+
+    new Schedule(stack, 'MyScheduleDummy1', {
+      schedule: expr,
+      target: eventBusTarget,
+    });
+
+    new Schedule(stack, 'MyScheduleDummy2', {
+      schedule: expr,
+      target: eventBusTarget,
+      group,
+    });
+
+    const template = Template.fromStack(stack);
+
+    template.resourcePropertiesCountIs('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Effect: 'Allow',
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': '123456789012',
+                'aws:SourceArn': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':scheduler:us-east-1:123456789012:schedule-group/default'
+                    ],
+                  ],
+                }
+              }
+            },
+            Principal: {
+              Service: 'scheduler.amazonaws.com',
+            },
+            Action: 'sts:AssumeRole',
+          },
+          {
+            Effect: 'Allow',
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': '123456789012',
+                'aws:SourceArn': {
+                  'Fn::GetAtt': [
+                    'GroupC77FDACD',
+                    'Arn'
+                  ],
+                }
+              }
+            },
+            Principal: {
+              Service: 'scheduler.amazonaws.com',
+            },
+            Action: 'sts:AssumeRole',
+          },
+        ],
+      },
+    }, 1);
+
+    template.resourcePropertiesCountIs('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'events:PutEvents',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'MyEventBus251E60F8',
+                'Arn',
+              ],
+            },
+          },
+        ],
+      },
+      Roles: [{ Ref: roleId }],
+    }, 1);
+  });
   test('creates IAM policy for imported eventBus in the same account', () => {
     const importedEventBusArn = 'arn:aws:events:us-east-1:123456789012:event-bus/MyEventBus';
     const importedEventBus = events.EventBus.fromEventBusArn(stack, 'ImportedEventBus', importedEventBusArn);

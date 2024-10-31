@@ -5,6 +5,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import { SnsPublish } from '../lib/sns-publish';
+import { Group } from '@aws-cdk/aws-scheduler-alpha';
 
 describe('sns topic schedule target', () => {
   let app: App;
@@ -71,6 +72,18 @@ describe('sns topic schedule target', () => {
             Condition: {
               StringEquals: {
                 'aws:SourceAccount': '123456789012',
+                'aws:SourceArn': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':scheduler:us-east-1:123456789012:schedule-group/default'
+                    ],
+                  ],
+                }
               },
             },
             Principal: {
@@ -163,11 +176,114 @@ describe('sns topic schedule target', () => {
             Condition: {
               StringEquals: {
                 'aws:SourceAccount': '123456789012',
+                'aws:SourceArn': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':scheduler:us-east-1:123456789012:schedule-group/default'
+                    ],
+                  ],
+                }
               },
             },
             Principal: {
               Service: 'scheduler.amazonaws.com',
             },
+          },
+        ],
+      },
+    });
+
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'sns:Publish',
+            Effect: 'Allow',
+            Resource: {
+              Ref: 'TopicBFC7AF6E',
+            },
+          },
+        ],
+      },
+      Roles: [{
+        Ref: roleId,
+      }],
+    });
+  });
+
+  test('creates IAM role and IAM policy for two schedules with the same target but different groups', () => {
+    const target = new SnsPublish(topic);
+    const group = new Group(stack, 'Group', {
+      groupName: 'mygroup',
+    });
+
+    new scheduler.Schedule(stack, 'Schedule1', {
+      schedule: scheduleExpression,
+      target,
+    });
+
+    new scheduler.Schedule(stack, 'Schedule2', {
+      schedule: scheduleExpression,
+      target,
+      group,
+    });
+
+    const template = Template.fromStack(stack);
+
+    template.resourceCountIs('AWS::IAM::Policy', 1);
+    template.resourceCountIs('AWS::IAM::Role', 1);
+    template.resourceCountIs('AWS::Scheduler::Schedule', 2);
+
+    template.hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': '123456789012',
+                'aws:SourceArn': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':scheduler:us-east-1:123456789012:schedule-group/default'
+                    ],
+                  ],
+                }
+              },
+            },
+            Principal: {
+              Service: 'scheduler.amazonaws.com',
+            },
+          },
+          {
+            Effect: 'Allow',
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': '123456789012',
+                'aws:SourceArn': {
+                  'Fn::GetAtt': [
+                    'GroupC77FDACD',
+                    'Arn'
+                  ],
+                }
+              }
+            },
+            Principal: {
+              Service: 'scheduler.amazonaws.com',
+            },
+            Action: 'sts:AssumeRole',
           },
         ],
       },
