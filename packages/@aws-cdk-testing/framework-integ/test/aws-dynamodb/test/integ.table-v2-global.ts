@@ -74,6 +74,7 @@ class TestStack extends Stack {
 }
 
 const app = new App();
+Tags.of(app).add('stage', 'IntegTest');
 new IntegTest(app, 'aws-cdk-global-table-integ', {
   testCases: [new TestStack(app, 'aws-cdk-global-table', { env: { region: 'us-east-1' } })],
   regions: ['us-east-1'],

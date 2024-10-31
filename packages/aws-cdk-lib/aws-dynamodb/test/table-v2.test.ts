@@ -1322,6 +1322,35 @@ describe('replica tables', () => {
     });
   });
 
+  test('with TagAspect on parent scope', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-east-1' } });
+
+    // WHEN
+    new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      replicas: [{
+        region: 'us-west-1',
+      }],
+    });
+
+    Tags.of(stack).add('stage', 'Prod');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      Replicas: [
+        {
+          Region: 'us-west-1',
+          Tags: [{ Key: 'stage', Value: 'Prod' }],
+        },
+        {
+          Region: 'us-east-1',
+          Tags: [{ Key: 'stage', Value: 'Prod' }],
+        },
+      ],
+    });
+  });
+
   test('replica tags override tag aspect tags', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-east-1' } });
