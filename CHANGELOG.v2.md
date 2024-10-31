@@ -9,12 +9,10 @@ All notable changes to this project will be documented in this file. See [standa
 
 * **bootstrap:** add lifecycle rule to abort multipart uploads after 7 days ([#31956](https://github.com/aws/aws-cdk/issues/31956)) ([b800da8](https://github.com/aws/aws-cdk/commit/b800da8172919a1ab27f885549e701d98323c9bb)), closes [#29045](https://github.com/aws/aws-cdk/issues/29045)
 * **bootstrap:** delete noncurrent versions after 30 days ([#31949](https://github.com/aws/aws-cdk/issues/31949)) ([579041e](https://github.com/aws/aws-cdk/commit/579041e5d41e780ce1f6fb9f778c353868fb6938))
-* **cdk:** update tsconfig to more modern settings in typescript init templates  ([#31927](https://github.com/aws/aws-cdk/issues/31927)) ([8e4c247](https://github.com/aws/aws-cdk/commit/8e4c2473d9ac14bb26507a9aab1b1b62215d4c51))
 * **cli:** garbage collect ecr assets (under --unstable flag) ([#31841](https://github.com/aws/aws-cdk/issues/31841)) ([da85e54](https://github.com/aws/aws-cdk/commit/da85e54d7d3dfb4e33942f58564e91039e7d22ff)), closes [#31611](https://github.com/aws/aws-cdk/issues/31611)
 * **codebuild:** add support of organization webhook in github source ([#31740](https://github.com/aws/aws-cdk/issues/31740)) ([8c15b5f](https://github.com/aws/aws-cdk/commit/8c15b5f19a0c289fd0dad8c35b6734232d957836)), closes [#31736](https://github.com/aws/aws-cdk/issues/31736)
 * **cognito:** support UserPoolGroup ([#31351](https://github.com/aws/aws-cdk/issues/31351)) ([408b20f](https://github.com/aws/aws-cdk/commit/408b20f92122069a04ff5776b4783ae220d04a56)), closes [#21026](https://github.com/aws/aws-cdk/issues/21026)
 * update L1 CloudFormation resource definitions ([#31917](https://github.com/aws/aws-cdk/issues/31917)) ([8c93291](https://github.com/aws/aws-cdk/commit/8c93291f789b441397bc5a64308816e89f682199))
-* **VpcV2:** adding imports for first draft ([52c087c](https://github.com/aws/aws-cdk/commit/52c087c9fe36c040c8aea62ad2fc016256b3ca6c))
 
 
 ### Bug Fixes
@@ -22,14 +20,10 @@ All notable changes to this project will be documented in this file. See [standa
 * **assertions:** throw error or warn when `synth` is called multiple times on mutated construct tree ([#31865](https://github.com/aws/aws-cdk/issues/31865)) ([a261c9d](https://github.com/aws/aws-cdk/commit/a261c9d8a316ec389f19c873122691d48c5ca16d)), closes [#24689](https://github.com/aws/aws-cdk/issues/24689)
 * **cli:** ecr garbage collection hangs when repository has no images ([#31951](https://github.com/aws/aws-cdk/issues/31951)) ([a235a9f](https://github.com/aws/aws-cdk/commit/a235a9fad29bf0da141b27ca391861fa613f42b8))
 * **cli:** garbage collection ignores review_in_progress stacks ([#31906](https://github.com/aws/aws-cdk/issues/31906)) ([cb3ecfe](https://github.com/aws/aws-cdk/commit/cb3ecfe8f255e626db3706632c9590c86c28bea5))
-* **s3-assets:** cannot publish a file without extension ([#30597](https://github.com/aws/aws-cdk/issues/30597)) ([ccab485](https://github.com/aws/aws-cdk/commit/ccab485b87a7090ddf0773508d7b8ee84ff654b0)), closes [#30471](https://github.com/aws/aws-cdk/issues/30471) [/github.com/aws/aws-cdk/blob/c826d8faaeb310623eb9a1a1c82930b679768007/packages/aws-cdk-lib/core/lib/asset-staging.ts#L392](https://github.com/aws//github.com/aws/aws-cdk/blob/c826d8faaeb310623eb9a1a1c82930b679768007/packages/aws-cdk-lib/core/lib/asset-staging.ts/issues/L392) [/github.com/aws/aws-cdk/blob/c826d8faaeb310623eb9a1a1c82930b679768007/packages/aws-cdk-lib/core/lib/asset-staging.ts#L383](https://github.com/aws//github.com/aws/aws-cdk/blob/c826d8faaeb310623eb9a1a1c82930b679768007/packages/aws-cdk-lib/core/lib/asset-staging.ts/issues/L383)
+* **s3-assets:** cannot publish a file without extension ([#30597](https://github.com/aws/aws-cdk/issues/30597)) ([ccab485](https://github.com/aws/aws-cdk/commit/ccab485b87a7090ddf0773508d7b8ee84ff654b0)), closes [#30471](https://github.com/aws/aws-cdk/issues/30471)
 * **sqs:** queue with `fifo: false` does not deploy ([#31922](https://github.com/aws/aws-cdk/issues/31922)) ([a9d3b02](https://github.com/aws/aws-cdk/commit/a9d3b02783104fe862a3e863e8c89af845b49c8c)), closes [#8550](https://github.com/aws/aws-cdk/issues/8550)
 * enable node-fips compatible body checksums for S3 ([#31883](https://github.com/aws/aws-cdk/issues/31883)) ([4f29c1d](https://github.com/aws/aws-cdk/commit/4f29c1d04533b68535c1a5706855066d1d1ea577))
 
-
-### Reverts
-
-* feat(cdk): update tsconfig to more modern settings in typescript init templates ([#31953](https://github.com/aws/aws-cdk/issues/31953)) ([6f106c7](https://github.com/aws/aws-cdk/commit/6f106c7c042c05f59c9d1f7eb7e048264b394fb1))
 
 ## [2.164.1](https://github.com/aws/aws-cdk/compare/v2.164.0...v2.164.1) (2024-10-25)
 
