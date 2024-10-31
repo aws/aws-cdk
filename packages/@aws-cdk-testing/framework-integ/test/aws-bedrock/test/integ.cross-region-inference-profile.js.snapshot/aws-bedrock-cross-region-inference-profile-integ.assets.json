@@ -1,0 +1,19 @@
+{
+  "version": "38.0.1",
+  "files": {
+    "48816753a34ce35f71f5f6d56453a54f709daec138d0b72c1aa7643f1e8820ce": {
+      "source": {
+        "path": "aws-bedrock-cross-region-inference-profile-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "48816753a34ce35f71f5f6d56453a54f709daec138d0b72c1aa7643f1e8820ce.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
