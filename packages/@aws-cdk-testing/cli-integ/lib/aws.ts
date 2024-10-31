@@ -154,6 +154,8 @@ export class AwsClients {
           Objects: deletes,
           Quiet: false,
         },
+        // Necessary for the test that adds Object Lock to a bucket
+        BypassGovernanceRetention: true,
       }),
     );
   }
