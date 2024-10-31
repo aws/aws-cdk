@@ -1026,7 +1026,7 @@ new cognito.UserPoolIdentityProviderGoogle(this, 'google', {
 
 ### User Pool Group
 
-Support for groups in Amazon Cognito user pools enables you to create and manage groups, add users to groups, and remove users from groups.
+Support for groups in Amazon Cognito user pools enables you to create and manage groups and add users to groups.
 Use groups to create collections of users to manage their permissions or to represent different types of users.
 
 You can assign an AWS Identity and Access Management (IAM) role to a group to define the permissions for members of a group.
