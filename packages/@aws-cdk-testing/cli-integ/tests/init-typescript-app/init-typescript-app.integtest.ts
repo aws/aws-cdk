@@ -19,6 +19,7 @@ import { typescriptVersionsSync, typescriptVersionsYoungerThanDaysSync } from '.
   })));
 });
 
+// Same as https://github.com/DefinitelyTyped/DefinitelyTyped?tab=readme-ov-file#support-window
 const TYPESCRIPT_VERSION_AGE_DAYS = 2 * 365;
 
 const TYPESCRIPT_VERSIONS = typescriptVersionsYoungerThanDaysSync(TYPESCRIPT_VERSION_AGE_DAYS, typescriptVersionsSync());
