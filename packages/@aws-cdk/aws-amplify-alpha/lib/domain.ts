@@ -131,6 +131,13 @@ export class Domain extends Resource {
     this.subDomains = props.subDomains || [];
 
     const domainName = props.domainName || id;
+    if (domainName.length > 255) {
+      throw new Error(`Domain name must be 255 characters or less, got: ${domainName}`);
+    }
+    if (!/^(((?!-)[A-Za-z0-9-]{0,62}[A-Za-z0-9])\.)+((?!-)[A-Za-z0-9-]{1,62}[A-Za-z0-9])(\.)?$/.test(domainName)) {
+      throw new Error(`Domain name must be a valid hostname, got: ${domainName}`);
+    }
+
     const domain = new CfnDomain(this, 'Resource', {
       appId: props.app.appId,
       domainName,
