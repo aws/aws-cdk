@@ -6,6 +6,7 @@ import { ICustomAttribute, StandardAttribute, StandardAttributes } from './user-
 import { UserPoolClient, UserPoolClientOptions } from './user-pool-client';
 import { UserPoolDomain, UserPoolDomainOptions } from './user-pool-domain';
 import { UserPoolEmail, UserPoolEmailConfig } from './user-pool-email';
+import { UserPoolGroup, UserPoolGroupOptions } from './user-pool-group';
 import { IUserPoolIdentityProvider } from './user-pool-idp';
 import { UserPoolResourceServer, UserPoolResourceServerOptions } from './user-pool-resource-server';
 import { Grant, IGrantable, IRole, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
@@ -809,6 +810,12 @@ export interface IUserPool extends IResource {
   addResourceServer(id: string, options: UserPoolResourceServerOptions): UserPoolResourceServer;
 
   /**
+   * Add a new group to this user pool.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-user-groups.html
+   */
+  addGroup(id: string, options: UserPoolGroupOptions): UserPoolGroup;
+
+  /**
    * Register an identity provider with this user pool.
    */
   registerIdentityProvider(provider: IUserPoolIdentityProvider): void;
@@ -842,6 +849,13 @@ abstract class UserPoolBase extends Resource implements IUserPool {
 
   public addResourceServer(id: string, options: UserPoolResourceServerOptions): UserPoolResourceServer {
     return new UserPoolResourceServer(this, id, {
+      userPool: this,
+      ...options,
+    });
+  }
+
+  public addGroup(id: string, options: UserPoolGroupOptions): UserPoolGroup {
+    return new UserPoolGroup(this, id, {
       userPool: this,
       ...options,
     });
