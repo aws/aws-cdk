@@ -132,7 +132,7 @@ export class Domain extends Resource {
 
     const domainName = props.domainName || id;
     if (domainName.length > 255) {
-      throw new Error(`Domain name must be 255 characters or less, got: ${domainName}`);
+      throw new Error(`Domain name must be 255 characters or less, got: ${domainName.length}`);
     }
     if (!/^(((?!-)[A-Za-z0-9-]{0,62}[A-Za-z0-9])\.)+((?!-)[A-Za-z0-9-]{1,62}[A-Za-z0-9])(\.)?$/.test(domainName)) {
       throw new Error(`Domain name must be a valid hostname, got: ${domainName}`);
