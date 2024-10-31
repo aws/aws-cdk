@@ -92,6 +92,7 @@ const pipe = new pipes.Pipe(this, 'Pipe', {
 ### API Gateway (REST API)
 
 API Gateway can be used to enrich events of a pipe.
+Pipes only supports API Gateway REST APIs. HTTP APIs are not supported.
 
 ```ts
 declare const sourceQueue: sqs.Queue;
