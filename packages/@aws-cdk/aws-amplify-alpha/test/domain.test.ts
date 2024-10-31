@@ -195,7 +195,7 @@ test('throw error for invalid domain name length', () => {
       },
     ],
     domainName: 'a'.repeat(256),
-  })).toThrow('Domain name must be 255 characters or less, got: 256');
+  })).toThrow('Domain name must be 255 characters or less, got: 256 characters.');
 });
 
 test.each([
@@ -222,7 +222,7 @@ test.each([
       },
     ],
     domainName,
-  })).toThrow(`Domain name must be a valid hostname, got: ${domainName}`);
+  })).toThrow(`Domain name must be a valid hostname, got: ${domainName}.`);
 });
 
 test('throws at synthesis without subdomains', () => {
