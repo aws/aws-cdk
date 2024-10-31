@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.164.1](https://github.com/aws/aws-cdk/compare/v2.164.0...v2.164.1) (2024-10-25)
+
+
+### Bug Fixes
+
+* enable node-fips compatible body checksums for S3 ([#31883](https://github.com/aws/aws-cdk/issues/31883)) ([290a499](https://github.com/aws/aws-cdk/commit/290a499f31413bd71eece4ad9f196eb5993747a9))
+
+## [2.164.0](https://github.com/aws/aws-cdk/compare/v2.163.1...v2.164.0) (2024-10-24)
+
+
+### Features
+
+* **cli:** add ability to configure hotswap properties for ECS ([#30511](https://github.com/aws/aws-cdk/issues/30511)) ([fee2cf8](https://github.com/aws/aws-cdk/commit/fee2cf88c58c6c1f25b9e6fad87c8042de464fd9)), closes [#29618](https://github.com/aws/aws-cdk/issues/29618)
+* **cognito:** support email based MFA ([#31816](https://github.com/aws/aws-cdk/issues/31816)) ([f9d6eef](https://github.com/aws/aws-cdk/commit/f9d6eefd52d5bdc63ff2be844f567e8f1d0b4258)), closes [#31815](https://github.com/aws/aws-cdk/issues/31815)
+* **cognito:** the Cognito Identity Pools module is now in Developer Preview ([#31854](https://github.com/aws/aws-cdk/issues/31854)) ([b22899f](https://github.com/aws/aws-cdk/commit/b22899f9dee04d5c446ebcdfff810a954ac08dc6))
+
+
+### Bug Fixes
+
+* **cli:** cross-account asset publishing doesn't work without bootstrap stack ([#31876](https://github.com/aws/aws-cdk/issues/31876)) ([427bf63](https://github.com/aws/aws-cdk/commit/427bf630cb2e28ec98477b313eef32d5b9b91525)), closes [#31866](https://github.com/aws/aws-cdk/issues/31866)
+* **cli:** deploy-role is not authorized to perform DescribeStackResources ([#31878](https://github.com/aws/aws-cdk/issues/31878)) ([8d06824](https://github.com/aws/aws-cdk/commit/8d06824298d80b18c6b0143a9ac38b79ea5d6253))
+* **core:** fix policy synthesizer logic for precreated roles ([#31710](https://github.com/aws/aws-cdk/issues/31710)) ([aae03c9](https://github.com/aws/aws-cdk/commit/aae03c9f899ec2a77b841207ef0b4eb3a7e0ae00))
+* **dynamodb:** replication regions are incompatible with resource policies in TableV2 and feature flag ([#31513](https://github.com/aws/aws-cdk/issues/31513)) ([0b03eb0](https://github.com/aws/aws-cdk/commit/0b03eb0f62c132c1bd586a8ec31818398d07707f)), closes [#30705](https://github.com/aws/aws-cdk/issues/30705)
+* **events-targets:** kinesis Stream target with Customer-Managed KMS key causes EventBridge FailedInvocations ([#31836](https://github.com/aws/aws-cdk/issues/31836)) ([58dfda0](https://github.com/aws/aws-cdk/commit/58dfda087a8aabde2683cd99df005d6e5e73a7ce)), closes [#10996](https://github.com/aws/aws-cdk/issues/10996)
+
+## [2.163.1](https://github.com/aws/aws-cdk/compare/v2.163.0...v2.163.1) (2024-10-22)
+
+
+### Bug Fixes
+
+* 'Need to perform AWS calls for account' when doing cross-account deployments ([#31846](https://github.com/aws/aws-cdk/issues/31846)) ([5aa63d1](https://github.com/aws/aws-cdk/commit/5aa63d136294a42df2f65a3705655eb3c108fc2c)), closes [#31845](https://github.com/aws/aws-cdk/issues/31845)
+
 ## [2.163.0](https://github.com/aws/aws-cdk/compare/v2.162.1...v2.163.0) (2024-10-21)
 
 

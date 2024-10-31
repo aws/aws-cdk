@@ -1,20 +1,20 @@
 # Amazon Data Firehose Construct Library
-
 <!--BEGIN STABILITY BANNER-->
 
 ---
 
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
+![cdk-constructs: Developer Preview](https://img.shields.io/badge/cdk--constructs-developer--preview-informational.svg?style=for-the-badge)
 
-> The APIs of higher level constructs in this module are experimental and under active development.
-> They are subject to non-backward compatible changes or removal in any future version. These are
-> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
-> announced in the release notes. This means that while you may use them, you may need to update
-> your source code when upgrading to a newer version of this package.
+> The APIs of higher level constructs in this module are in **developer preview** before they
+> become stable. We will only make breaking changes to address unforeseen API issues. Therefore,
+> these APIs are not subject to [Semantic Versioning](https://semver.org/), and breaking changes
+> will be announced in release notes. This means that while you may use them, you may need to
+> update your source code when upgrading to a newer version of this package.
 
 ---
 
 <!--END STABILITY BANNER-->
+
 
 [Amazon Data Firehose](https://docs.aws.amazon.com/firehose/latest/dev/what-is-this-service.html), [formerly known as Amazon Kinesis Data Firehose](https://aws.amazon.com/about-aws/whats-new/2024/02/amazon-data-firehose-formerly-kinesis-data-firehose/),
 is a service for fully-managed delivery of real-time streaming data to storage services
@@ -54,7 +54,7 @@ The above example defines the following resources:
 
 ## Sources
 
-An Amazon Data Firehose delivery stream can accept data from three main sources: Kinesis Data Streams, Managed Streaming for Apache Kafka (MSK), or via a "direct put" (API calls).
+An Amazon Data Firehose delivery stream can accept data from three main sources: Kinesis Data Streams, Managed Streaming for Apache Kafka (MSK), or via a "direct put" (API calls). Currently only Kinesis Data Streams and direct put are supported in the CDK. 
 
 See: [Sending Data to a Delivery Stream](https://docs.aws.amazon.com/firehose/latest/dev/basic-write.html)
 in the *Amazon Data Firehose Developer Guide*.
@@ -96,7 +96,9 @@ Data must be provided via "direct put", ie., by using a `PutRecord` or
 
 ## Destinations
 
-The following destinations are supported. See [kinesisfirehose-destinations](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-kinesisfirehose-destinations-readme.html)
+Amazon Data Firehose supports multiple AWS and third-party services as destinations, including Amazon S3, Amazon Redshift, and more. You can find the full list of supported destination [here](https://docs.aws.amazon.com/firehose/latest/dev/create-destination.html). 
+
+Currently in the AWS CDK, only S3 is implemented as an L2 construct destination. Other destinations can still be configured using L1 constructs. See [kinesisfirehose-destinations](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-kinesisfirehose-destinations-readme.html)
 for the implementations of these destinations.
 
 ### S3
@@ -181,7 +183,7 @@ your delivery streams via logs and metrics.
 
 Amazon Data Firehose will send logs to CloudWatch when data transformation or data
 delivery fails. The CDK will enable logging by default and create a CloudWatch LogGroup
-and LogStream for your Delivery Stream.
+and LogStream with default settings for your Delivery Stream.
 
 When creating a destination, you can provide an `ILoggingConfig`, which can either be an `EnableLogging` or `DisableLogging` instance.
 If you use `EnableLogging`, the CDK will create a CloudWatch LogGroup and LogStream with all CloudFormation default settings for you, or you can optionally 
