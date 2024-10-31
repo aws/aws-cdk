@@ -174,17 +174,16 @@ export class SdkProvider {
       return { sdk, didAssumeRole: false };
     }
 
-    // We will proceed to AssumeRole using whatever we've been given.
-    const sdk = await this.withAssumedRole(
-      baseCreds,
-      options.assumeRoleArn,
-      options.assumeRoleExternalId,
-      options.assumeRoleAdditionalOptions,
-      env.region,
-    );
-
     try {
-      // Force retrieval here
+      // We will proceed to AssumeRole using whatever we've been given.
+      const sdk = await this.withAssumedRole(
+        baseCreds,
+        options.assumeRoleArn,
+        options.assumeRoleExternalId,
+        options.assumeRoleAdditionalOptions,
+        env.region,
+      );
+
       return { sdk, didAssumeRole: true };
     } catch (err: any) {
       if (err.name === 'ExpiredToken') {

@@ -331,6 +331,7 @@ describe('with intercepted network calls', () => {
     test('error we get from assuming a role is useful', async () => {
       // GIVEN
       prepareCreds({
+        fakeSts,
         config: {
           default: { aws_access_key_id: 'foo' },
         },

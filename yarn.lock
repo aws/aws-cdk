@@ -6749,7 +6749,7 @@
     "@smithy/util-stream" "^3.1.9"
     tslib "^2.6.2"
 
-"@smithy/types@3.5.0", "@smithy/types@3.6.0", "@smithy/types@^3.3.0", "@smithy/types@^3.4.0", "@smithy/types@^3.5.0", "@smithy/types@^3.6.0":
+"@smithy/types@3.5.0", "@smithy/types@^3.3.0", "@smithy/types@^3.4.0", "@smithy/types@^3.5.0", "@smithy/types@^3.6.0":
   version "3.5.0"
   resolved "https://registry.npmjs.org/@smithy/types/-/types-3.5.0.tgz#9589e154c50d9c5d00feb7d818112ef8fc285d6e"
   integrity sha512-QN0twHNfe8mNJdH9unwsCK13GURU7oEAZqkBI+rsvpv1jrmserO+WnLE7jidR9W/1dxwZ0u/CB01mV2Gms/K2Q==
