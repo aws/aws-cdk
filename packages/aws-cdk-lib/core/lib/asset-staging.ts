@@ -278,9 +278,10 @@ export class AssetStaging extends Construct {
    */
   private stageByCopying(): StagedAsset {
     const assetHash = this.calculateHash(this.hashType);
-    const stagedPath = this.stagingDisabled
+    const targetPath = this.stagingDisabled
       ? this.sourcePath
       : path.resolve(this.assetOutdir, renderAssetFilename(assetHash, getExtension(this.sourcePath)));
+    const stagedPath = this.renderStagedPath(this.sourcePath, targetPath);
 
     if (!this.sourceStats.isDirectory() && !this.sourceStats.isFile()) {
       throw new Error(`Asset ${this.sourcePath} is expected to be either a directory or a regular file`);
@@ -338,7 +339,10 @@ export class AssetStaging extends Construct {
     // Calculate assetHash afterwards if we still must
     assetHash = assetHash ?? this.calculateHash(this.hashType, bundling, bundledAsset.path);
 
-    const stagedPath = path.resolve(this.assetOutdir, renderAssetFilename(assetHash, bundledAsset.extension));
+    const stagedPath = this.renderStagedPath(
+      bundledAsset.path,
+      path.resolve(this.assetOutdir, renderAssetFilename(assetHash, bundledAsset.extension)),
+    );
 
     this.stageAsset(bundledAsset.path, stagedPath, 'move');
 
@@ -388,7 +392,7 @@ export class AssetStaging extends Construct {
     }
 
     // Moving can be done quickly
-    if (style == 'move') {
+    if (style === 'move') {
       fs.renameSync(sourcePath, targetPath);
       return;
     }
@@ -510,6 +514,17 @@ export class AssetStaging extends Construct {
       default:
         throw new Error('Unknown asset hash type.');
     }
+  }
+
+  private renderStagedPath(sourcePath: string, targetPath: string): string {
+    // Add a suffix to the asset file name
+    // because when a file without extension is specified, the source directory name is the same as the staged asset file name.
+    // But when the hashType is `AssetHashType.OUTPUT`, the source directory name begins with `bundling-temp-` and the staged asset file name is different.
+    // We only need to add a suffix when the hashType is not `AssetHashType.OUTPUT`.
+    if (this.hashType !== AssetHashType.OUTPUT && path.dirname(sourcePath) === targetPath) {
+      targetPath = targetPath + '_noext';
+    }
+    return targetPath;
   }
 }
 

@@ -9,7 +9,7 @@
     "InstanceTenancy": "default"
    }
   },
-  "VPCintegtest1SecondaryAddress256BAC1D3": {
+  "VPCintegtest1SecondaryAddress2B60D56E9": {
    "Type": "AWS::EC2::VPCCidrBlock",
    "Properties": {
     "CidrBlock": "10.2.0.0/16",
@@ -21,7 +21,7 @@
     }
    }
   },
-  "VPCintegtest1AmazonProvidedE0445E5C": {
+  "VPCintegtest1AmazonProvided48C2076B": {
    "Type": "AWS::EC2::VPCCidrBlock",
    "Properties": {
     "AmazonProvidedIpv6CidrBlock": true,
@@ -33,7 +33,7 @@
     }
    }
   },
-  "VPCintegtest1SecondaryAddress3BCA08E40": {
+  "VPCintegtest1SecondaryAddress35E910ECB": {
    "Type": "AWS::EC2::VPCCidrBlock",
    "Properties": {
     "CidrBlock": "10.3.0.0/16",
@@ -313,9 +313,9 @@
     }
    },
    "DependsOn": [
-    "VPCintegtest1AmazonProvidedE0445E5C",
-    "VPCintegtest1SecondaryAddress256BAC1D3",
-    "VPCintegtest1SecondaryAddress3BCA08E40"
+    "VPCintegtest1AmazonProvided48C2076B",
+    "VPCintegtest1SecondaryAddress2B60D56E9",
+    "VPCintegtest1SecondaryAddress35E910ECB"
    ]
   },
   "testsbubnetRouteTableD0136BEA": {
@@ -329,9 +329,9 @@
     }
    },
    "DependsOn": [
-    "VPCintegtest1AmazonProvidedE0445E5C",
-    "VPCintegtest1SecondaryAddress256BAC1D3",
-    "VPCintegtest1SecondaryAddress3BCA08E40"
+    "VPCintegtest1AmazonProvided48C2076B",
+    "VPCintegtest1SecondaryAddress2B60D56E9",
+    "VPCintegtest1SecondaryAddress35E910ECB"
    ]
   },
   "testsbubnetRouteTableAssociationD6D083FA": {
@@ -348,9 +348,9 @@
     }
    },
    "DependsOn": [
-    "VPCintegtest1AmazonProvidedE0445E5C",
-    "VPCintegtest1SecondaryAddress256BAC1D3",
-    "VPCintegtest1SecondaryAddress3BCA08E40"
+    "VPCintegtest1AmazonProvided48C2076B",
+    "VPCintegtest1SecondaryAddress2B60D56E9",
+    "VPCintegtest1SecondaryAddress35E910ECB"
    ]
   },
   "testsubnetSubnetDD417829": {
@@ -367,9 +367,9 @@
     }
    },
    "DependsOn": [
-    "VPCintegtest1AmazonProvidedE0445E5C",
-    "VPCintegtest1SecondaryAddress256BAC1D3",
-    "VPCintegtest1SecondaryAddress3BCA08E40"
+    "VPCintegtest1AmazonProvided48C2076B",
+    "VPCintegtest1SecondaryAddress2B60D56E9",
+    "VPCintegtest1SecondaryAddress35E910ECB"
    ]
   },
   "testsubnetRouteTable682580B2": {
@@ -383,9 +383,9 @@
     }
    },
    "DependsOn": [
-    "VPCintegtest1AmazonProvidedE0445E5C",
-    "VPCintegtest1SecondaryAddress256BAC1D3",
-    "VPCintegtest1SecondaryAddress3BCA08E40"
+    "VPCintegtest1AmazonProvided48C2076B",
+    "VPCintegtest1SecondaryAddress2B60D56E9",
+    "VPCintegtest1SecondaryAddress35E910ECB"
    ]
   },
   "testsubnetRouteTableAssociationC106676D": {
@@ -402,9 +402,9 @@
     }
    },
    "DependsOn": [
-    "VPCintegtest1AmazonProvidedE0445E5C",
-    "VPCintegtest1SecondaryAddress256BAC1D3",
-    "VPCintegtest1SecondaryAddress3BCA08E40"
+    "VPCintegtest1AmazonProvided48C2076B",
+    "VPCintegtest1SecondaryAddress2B60D56E9",
+    "VPCintegtest1SecondaryAddress35E910ECB"
    ]
   },
   "validateIpv6Subnet07BD40AE": {
@@ -421,9 +421,9 @@
     }
    },
    "DependsOn": [
-    "VPCintegtest1AmazonProvidedE0445E5C",
-    "VPCintegtest1SecondaryAddress256BAC1D3",
-    "VPCintegtest1SecondaryAddress3BCA08E40"
+    "VPCintegtest1AmazonProvided48C2076B",
+    "VPCintegtest1SecondaryAddress2B60D56E9",
+    "VPCintegtest1SecondaryAddress35E910ECB"
    ]
   },
   "validateIpv6RouteTable09389F8D": {
@@ -437,9 +437,9 @@
     }
    },
    "DependsOn": [
-    "VPCintegtest1AmazonProvidedE0445E5C",
-    "VPCintegtest1SecondaryAddress256BAC1D3",
-    "VPCintegtest1SecondaryAddress3BCA08E40"
+    "VPCintegtest1AmazonProvided48C2076B",
+    "VPCintegtest1SecondaryAddress2B60D56E9",
+    "VPCintegtest1SecondaryAddress35E910ECB"
    ]
   },
   "validateIpv6RouteTableAssociationD6330457": {
@@ -456,9 +456,9 @@
     }
    },
    "DependsOn": [
-    "VPCintegtest1AmazonProvidedE0445E5C",
-    "VPCintegtest1SecondaryAddress256BAC1D3",
-    "VPCintegtest1SecondaryAddress3BCA08E40"
+    "VPCintegtest1AmazonProvided48C2076B",
+    "VPCintegtest1SecondaryAddress2B60D56E9",
+    "VPCintegtest1SecondaryAddress35E910ECB"
    ]
   },
   "routeTableRouteTable23B79F0B": {

@@ -85,8 +85,6 @@ const cronBasedSchedule = new Schedule(this, 'Schedule', {
 A one-time schedule is a schedule that invokes a target only once. You configure a one-time schedule when by specifying the time of the day, date, 
 and time zone in which EventBridge Scheduler evaluates the schedule.
 
-[comment]: <> (TODO: Switch to `ts` once Schedule is implemented)
-
 ```ts
 declare const target: targets.LambdaInvoke;
 
@@ -207,11 +205,6 @@ const target = new targets.LambdaInvoke(fn, {
     role,
 });
 ```
-
-
-### Cross-account and cross-region targets
-
-Executing cross-account and cross-region targets are not supported yet.
 
 ### Specifying Encryption key
 

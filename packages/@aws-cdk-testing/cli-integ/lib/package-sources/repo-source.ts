@@ -49,6 +49,10 @@ export class RepoPackageSource implements IPackageSource {
     return releaseJson.majorVersion;
   }
 
+  public requestedCliVersion(): string {
+    return '*';
+  }
+
   public requestedFrameworkVersion(): string {
     return '*';
   }

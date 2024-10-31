@@ -92,7 +92,7 @@ export enum IpamScopeType {
  *
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipampool.html
  */
-export interface PoolOptions{
+export interface PoolOptions {
 
   /**
    * addressFamily - The address family of the pool (ipv4 or ipv6).
@@ -180,7 +180,7 @@ export interface IpamPoolCidrProvisioningOptions {
 /**
  * Definition used to add or create a new IPAM pool
  */
-export interface IIpamPool{
+export interface IIpamPool {
   /**
  * Pool ID to be passed to the VPC construct
  * @attribute IpamPoolId
@@ -191,6 +191,12 @@ export interface IIpamPool{
    * Pool CIDR for IPv6 to be provisioned with Public IP source set to 'Amazon'
    */
   readonly ipamCidrs: CfnIPAMPoolCidr[];
+
+  /**
+   * Pool CIDR for IPv4 to be provisioned using IPAM
+   * Required to check for subnet IP range is within the VPC range
+   */
+  readonly ipamIpv4Cidrs?: string[];
 
   /**
    * Function to associate a IPv6 address with IPAM pool
@@ -316,6 +322,12 @@ class IpamPool extends Resource implements IIpamPool {
   public readonly ipamCidrs: CfnIPAMPoolCidr[] = []
 
   /**
+   * Pool CIDR for IPv4 to be provisioned using IPAM
+   * Required to check for subnet IP range is within the VPC range
+   */
+  public readonly ipamIpv4Cidrs: string[] = []
+
+  /**
    * Reference to ipamPool resource created in this class
    */
   private readonly _ipamPool: CfnIPAMPool;
@@ -340,6 +352,9 @@ class IpamPool extends Resource implements IIpamPool {
       awsService: props.awsService,
     });
     this.ipamPoolId = this._ipamPool.attrIpamPoolId;
+
+    // Populating to check for subnet range against all IPv4 ranges assigned to VPC including IPAM
+    props.ipv4ProvisionedCidrs?.map(cidr => (this.ipamIpv4Cidrs.push(cidr)));
     this.node.defaultChild = this._ipamPool;
   }
 

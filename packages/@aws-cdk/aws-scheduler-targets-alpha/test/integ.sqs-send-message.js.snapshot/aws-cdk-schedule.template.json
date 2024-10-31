@@ -25,7 +25,7 @@
        "Arn"
       ]
      },
-     "Input": "\"test\"",
+     "Input": "test",
      "RetryPolicy": {
       "MaximumEventAgeInSeconds": 86400,
       "MaximumRetryAttempts": 185

@@ -37,6 +37,12 @@ if echo "$@" | grep "DOCKER_STUB_SINGLE_ARCHIVE"; then
   exit 0
 fi
 
+if echo "$@" | grep "DOCKER_STUB_SINGLE_FILE_WITHOUT_EXT"; then
+  outdir=$(echo "$@" | xargs -n1 | grep "/asset-output" | head -n1 | cut -d":" -f1)
+  touch ${outdir}/test # create a file witout extension
+  exit 0
+fi
+
 if echo "$@" | grep "DOCKER_STUB_SINGLE_FILE"; then
   outdir=$(echo "$@" | xargs -n1 | grep "/asset-output" | head -n1 | cut -d":" -f1)
   touch ${outdir}/test.txt

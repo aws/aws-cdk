@@ -675,6 +675,28 @@ test('test a queue throws when deduplicationScope specified on non fifo queue', 
   }).toThrow();
 });
 
+test('fifo: false is dropped from properties', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new sqs.Queue(stack, 'Queue', {
+    fifo: false,
+  });
+
+  // THEN
+  Template.fromStack(stack).templateMatches({
+    'Resources': {
+      'Queue4A7E3555': {
+        'Type': 'AWS::SQS::Queue',
+        'Properties': Match.absent(),
+        'UpdateReplacePolicy': 'Delete',
+        'DeletionPolicy': 'Delete',
+      },
+    },
+  });
+});
+
 test('test metrics', () => {
   // GIVEN
   const stack = new Stack();

@@ -147,6 +147,11 @@ export class Stage extends Construct {
   private assembly?: cxapi.CloudAssembly;
 
   /**
+   * The cached set of construct paths. Empty if assembly was not yet built.
+   */
+  private constructPathsCache: Set<string>;
+
+  /**
    * Validation plugins to run during synthesis. If any plugin reports any violation,
    * synthesis will be interrupted and the report displayed to the user.
    *
@@ -163,6 +168,7 @@ export class Stage extends Construct {
 
     Object.defineProperty(this, STAGE_SYMBOL, { value: true });
 
+    this.constructPathsCache = new Set<string>();
     this.parentStage = Stage.of(this);
 
     this.region = props.env?.region ?? this.parentStage?.region;
@@ -210,14 +216,60 @@ export class Stage extends Construct {
    * calls will return the same assembly.
    */
   public synth(options: StageSynthesisOptions = { }): cxapi.CloudAssembly {
-    if (!this.assembly || options.force) {
+
+    let newConstructPaths = this.listAllConstructPaths(this);
+
+    // If the assembly cache is uninitiazed, run synthesize and reset construct paths cache
+    if (this.constructPathsCache.size == 0 || !this.assembly || options.force) {
       this.assembly = synthesize(this, {
         skipValidation: options.skipValidation,
         validateOnSynthesis: options.validateOnSynthesis,
       });
+      newConstructPaths = this.listAllConstructPaths(this);
+      this.constructPathsCache = newConstructPaths;
     }
 
+    // If the construct paths set has changed
+    if (!this.constructPathSetsAreEqual(this.constructPathsCache, newConstructPaths)) {
+      const errorMessage = 'Synthesis has been called multiple times and the construct tree was modified after the first synthesis.';
+      if (options.errorOnDuplicateSynth ?? true) {
+        throw new Error(errorMessage + ' This is not allowed. Remove multple synth() calls and do not modify the construct tree after the first synth().');
+      } else {
+        // eslint-disable-next-line no-console
+        console.error(errorMessage + ' Only the results of the first synth() call are used, and modifications done after it are ignored. Avoid construct tree mutations after synth() has been called unless this is intentional.');
+      }
+    }
+
+    // Reset construct paths cache
+    this.constructPathsCache = newConstructPaths;
+
     return this.assembly;
+  }
+
+  // Function that lists all construct paths and returns them as a set
+  private listAllConstructPaths(construct: IConstruct): Set<string> {
+    const paths = new Set<string>();
+    function recurse(root: IConstruct) {
+      paths.add(root.node.path);
+      for (const child of root.node.children) {
+        if (!Stage.isStage(child)) {
+          recurse(child);
+        }
+      }
+    }
+    recurse(construct);
+    return paths;
+  }
+
+  // Checks if sets of construct paths are equal
+  private constructPathSetsAreEqual(set1: Set<string>, set2: Set<string>): boolean {
+    if (set1.size !== set2.size) return false;
+    for (const id of set1) {
+      if (!set2.has(id)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   private createBuilder(outdir?: string) {
@@ -259,4 +311,11 @@ export interface StageSynthesisOptions {
    * @default false
    */
   readonly force?: boolean;
+
+  /**
+   * Whether or not to throw a warning instead of an error if the construct tree has
+   * been mutated since the last synth.
+   * @default true
+   */
+  readonly errorOnDuplicateSynth?: boolean;
 }
