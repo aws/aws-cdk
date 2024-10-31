@@ -127,7 +127,7 @@ export class AwsClients {
     }
   }
 
-  public async emptyBucket(bucketName: string) {
+  public async emptyBucket(bucketName: string, options?: { bypassGovernance?: boolean }) {
     const objects = await this.s3.send(
       new ListObjectVersionsCommand({
         Bucket: bucketName,
@@ -154,8 +154,7 @@ export class AwsClients {
           Objects: deletes,
           Quiet: false,
         },
-        // Necessary for the test that adds Object Lock to a bucket
-        BypassGovernanceRetention: true,
+        BypassGovernanceRetention: options?.bypassGovernance ? true : undefined,
       }),
     );
   }

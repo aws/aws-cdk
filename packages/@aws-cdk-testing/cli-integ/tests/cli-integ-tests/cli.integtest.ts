@@ -1351,7 +1351,9 @@ integTest('deploy stack with Lambda Asset to Object Lock-enabled asset bucket', 
     ],
   });
 
-  // THEN - should not fail
+  // THEN - should not fail. Now clean the bucket with governance bypass: a regular delete
+  // operation will fail.
+  await fixture.aws.emptyBucket(bucketName, { bypassGovernance: true });
 }));
 
 integTest(
