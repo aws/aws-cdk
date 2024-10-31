@@ -60,6 +60,7 @@ import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Manifest } from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
+import * as promptly from 'promptly';
 import { instanceMockFrom, MockCloudExecutable, TestStackArtifact } from './util';
 import { MockSdkProvider } from './util/mock-sdk';
 import { Bootstrapper } from '../lib/api/bootstrap';
@@ -1282,6 +1283,8 @@ describe('synth', () => {
         stackArn: 'stack:arn',
       });
 
+    const mockedConfirm = jest.spyOn(promptly, 'confirm').mockResolvedValue(true);
+
     const toolkit = new CdkToolkit({
       cloudExecutable,
       configuration: cloudExecutable.configuration,
@@ -1294,12 +1297,13 @@ describe('synth', () => {
       hotswap: HotswapMode.FULL_DEPLOYMENT,
       rollback: false,
       requireApproval: RequireApproval.Never,
-      // Assume the user entered Y
-      force: true,
     });
 
     if (deployResult === 'failpaused-need-rollback-first') {
       expect(mockRollbackStack).toHaveBeenCalled();
+      expect(mockedConfirm).toHaveBeenCalledWith(expect.stringContaining('Roll back first and then proceed with deployment'));
+    } else {
+      expect(mockedConfirm).toHaveBeenCalledWith(expect.stringContaining('Perform a regular deployment'));
     }
 
     expect(mockedDeployStack).toHaveBeenNthCalledWith(1, expect.objectContaining({ rollback: false }));
