@@ -211,6 +211,7 @@ Resources:
           - Id: CleanupOldVersions
             Status: Enabled
             NoncurrentVersionExpiration:
+              NoncurrentDays: 30
           - Id: AbortIncompleteMultipartUploads
             Status: Enabled
             AbortIncompleteMultipartUpload:
