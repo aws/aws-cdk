@@ -66,7 +66,6 @@ export interface ScheduleTargetBaseProps {
  * Base class for Schedule Targets
  */
 export abstract class ScheduleTargetBase {
-  private role?: iam.IRole;
 
   constructor(
     private readonly baseProps: ScheduleTargetBaseProps,
@@ -77,9 +76,9 @@ export abstract class ScheduleTargetBase {
   protected abstract addTargetActionToRole(schedule: ISchedule, role: iam.IRole): void;
 
   protected bindBaseTargetConfig(_schedule: ISchedule): ScheduleTargetConfig {
-    this.role = this.baseProps.role ?? this.createOrGetScheduleTargetRole(_schedule, this.targetArn);
+    const role: iam.IRole = this.baseProps.role ?? this.createOrGetScheduleTargetRole(_schedule, this.targetArn);
 
-    this.addTargetActionToRole(_schedule, this.role);
+    this.addTargetActionToRole(_schedule, role);
 
     if (this.baseProps.deadLetterQueue) {
       this.addToDeadLetterQueueResourcePolicy(_schedule, this.baseProps.deadLetterQueue);
@@ -87,7 +86,7 @@ export abstract class ScheduleTargetBase {
 
     return {
       arn: this.targetArn,
-      role: this.role,
+      role,
       deadLetterConfig: this.baseProps.deadLetterQueue ? {
         arn: this.baseProps.deadLetterQueue.queueArn,
       } : undefined,
@@ -122,9 +121,17 @@ export abstract class ScheduleTargetBase {
       conditions: {
         StringEquals: {
           'aws:SourceAccount': schedule.env.account,
+          'aws:SourceArn': schedule.group?.groupArn ?? Stack.of(schedule).formatArn({
+            service: 'scheduler',
+            resource: 'schedule-group',
+            region: schedule.env.region,
+            account: schedule.env.account,
+            resourceName: schedule.group?.groupName ?? 'default',
+          }),
         },
       },
     });
+
     if (existingRole) {
       existingRole.assumeRolePolicy?.addStatements(new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,

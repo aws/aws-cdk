@@ -5,10 +5,6 @@
       "stacks": [
         "aws-cdk-scheduler-targets-firehose-put-record"
       ],
-      "allowDestroy": [
-        "AWS::IAM::Role",
-        "AWS::IAM::Policy"
-      ],
       "stackUpdateWorkflow": false,
       "assertionStack": "integrationtest-firehose-put-record/DefaultTest/DeployAssert",
       "assertionStackName": "integrationtestfirehoseputrecordDefaultTestDeployAssert781A189E"

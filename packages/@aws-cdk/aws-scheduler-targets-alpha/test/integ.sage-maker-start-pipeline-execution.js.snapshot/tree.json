@@ -454,7 +454,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-scheduler-alpha.Schedule",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },
@@ -484,6 +484,26 @@
                             "StringEquals": {
                               "aws:SourceAccount": {
                                 "Ref": "AWS::AccountId"
+                              },
+                              "aws:SourceArn": {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":scheduler:",
+                                    {
+                                      "Ref": "AWS::Region"
+                                    },
+                                    ":",
+                                    {
+                                      "Ref": "AWS::AccountId"
+                                    },
+                                    ":schedule-group/default"
+                                  ]
+                                ]
                               }
                             }
                           },

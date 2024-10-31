@@ -5,10 +5,6 @@
       "stacks": [
         "aws-cdk-scheduler-targets-kinesis-stream-put-record"
       ],
-      "allowDestroy": [
-        "AWS::IAM::Role",
-        "AWS::IAM::Policy"
-      ],
       "stackUpdateWorkflow": false,
       "assertionStack": "integrationtest-kinesis-stream-put-record/DefaultTest/DeployAssert",
       "assertionStackName": "integrationtestkinesisstreamputrecordDefaultTestDeployAssert6B5E163F"

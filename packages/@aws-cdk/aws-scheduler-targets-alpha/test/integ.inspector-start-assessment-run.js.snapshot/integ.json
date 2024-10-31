@@ -5,10 +5,6 @@
       "stacks": [
         "aws-cdk-scheduler-targets-inspector-start-assessment-run"
       ],
-      "allowDestroy": [
-        "AWS::IAM::Role",
-        "AWS::IAM::Policy"
-      ],
       "stackUpdateWorkflow": false,
       "assertionStack": "integrationtest-inspector-start-assessment-run/DefaultTest/DeployAssert",
       "assertionStackName": "integrationtestinspectorstartassessmentrunDefaultTestDeployAssertEF13D77A"

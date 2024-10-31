@@ -5,10 +5,6 @@
       "stacks": [
         "aws-cdk-schedule"
       ],
-      "allowDestroy": [
-        "AWS::IAM::Role",
-        "AWS::IAM::Policy"
-      ],
       "stackUpdateWorkflow": false,
       "assertionStack": "integtest-lambda-invoke/DefaultTest/DeployAssert",
       "assertionStackName": "integtestlambdainvokeDefaultTestDeployAssertEC6565E6"

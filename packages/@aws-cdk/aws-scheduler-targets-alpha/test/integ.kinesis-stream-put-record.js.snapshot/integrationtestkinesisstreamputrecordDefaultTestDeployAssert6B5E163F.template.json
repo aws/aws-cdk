@@ -23,7 +23,7 @@
     "outputPaths": [
      "ShardIterator"
     ],
-    "salt": "1730153552851"
+    "salt": "1730406489546"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -406,7 +406,7 @@
     "outputPaths": [
      "Records.0.PartitionKey"
     ],
-    "salt": "1730153552853"
+    "salt": "1730406489548"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

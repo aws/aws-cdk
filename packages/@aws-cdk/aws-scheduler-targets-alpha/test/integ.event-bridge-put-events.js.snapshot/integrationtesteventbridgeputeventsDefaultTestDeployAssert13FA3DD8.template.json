@@ -19,7 +19,7 @@
      "Name": "\"MyEventBridgePutParameter\""
     },
     "flattenResponse": "false",
-    "salt": "1730142706824"
+    "salt": "1730405612071"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

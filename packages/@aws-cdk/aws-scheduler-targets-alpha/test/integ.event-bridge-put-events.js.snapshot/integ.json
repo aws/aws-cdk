@@ -5,10 +5,6 @@
       "stacks": [
         "aws-cdk-scheduler-targets-event-bridge-put-events"
       ],
-      "allowDestroy": [
-        "AWS::IAM::Role",
-        "AWS::IAM::Policy"
-      ],
       "stackUpdateWorkflow": false,
       "assertionStack": "integrationtest-event-bridge-put-events/DefaultTest/DeployAssert",
       "assertionStackName": "integrationtesteventbridgeputeventsDefaultTestDeployAssert13FA3DD8"
