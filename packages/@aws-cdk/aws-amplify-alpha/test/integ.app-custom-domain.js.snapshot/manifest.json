@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "38.0.1",
   "artifacts": {
     "cdk-amplify-app-custom-domain.assets": {
       "type": "cdk:asset-manifest",
@@ -16,9 +16,10 @@
         "templateFile": "cdk-amplify-app-custom-domain.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5314d52dac3409b06902f1cf40df3d58dceb16146ad8cf66843edee0096d1d87.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/52c01435146f94b28f058464ccdc77ecea779ba1f2809be438facf8863e8b544.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -70,19 +71,16 @@
             "data": "AppdevB328DAFC"
           }
         ],
-        "/cdk-amplify-app-custom-domain/App/*.example.com/Resource": [
+        "/cdk-amplify-app-custom-domain/App/example.com/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Appexamplecom6AF1A3AD"
+            "data": "Appexamplecom93D8EC68"
           }
         ],
         "/cdk-amplify-app-custom-domain/Certificate/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Certificate4E7ABB08",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "Certificate4E7ABB08"
           }
         ],
         "/cdk-amplify-app-custom-domain/BootstrapVersion": [
@@ -115,6 +113,7 @@
         "templateFile": "amplifyappcustomdomainintegDefaultTestDeployAssert5F8CD1EB.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
