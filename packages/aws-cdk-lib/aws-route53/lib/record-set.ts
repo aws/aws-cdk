@@ -329,7 +329,7 @@ export class RecordSet extends Resource implements IRecordSet {
   constructor(scope: Construct, id: string, props: RecordSetProps) {
     super(scope, id);
 
-    if (props.weight && (props.weight < 0 || props.weight > 255)) {
+    if (props.weight && !Token.isUnresolved(props.weight) && (props.weight < 0 || props.weight > 255)) {
       throw new Error(`weight must be between 0 and 255 inclusive, got: ${props.weight}`);
     }
     if (props.setIdentifier && (props.setIdentifier.length < 1 || props.setIdentifier.length > 128)) {
@@ -439,8 +439,15 @@ export class RecordSet extends Resource implements IRecordSet {
     }
 
     if (this.weight !== undefined) {
-      const idPrefix = `WEIGHT_${this.weight}_ID_`;
-      return this.createIdentifier(idPrefix);
+      if (Token.isUnresolved(this.weight)) {
+        const replacement = 'XXX'; // XXX simply because 255 is the highest value for a record weight
+        const idPrefix = `WEIGHT_${replacement}_ID_`;
+        const idTemplate = this.createIdentifier(idPrefix);
+        return idTemplate.replace(replacement, Token.asString(this.weight));
+      } else {
+        const idPrefix = `WEIGHT_${this.weight}_ID_`;
+        return this.createIdentifier(idPrefix);
+      }
     }
 
     if (this.region) {
