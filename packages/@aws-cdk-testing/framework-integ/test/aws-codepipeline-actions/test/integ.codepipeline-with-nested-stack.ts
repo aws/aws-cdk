@@ -7,6 +7,12 @@ import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import { Construct } from 'constructs';
 
+/**
+ * To deploy this stack, you need to do the following:
+ * 1. export CDK_DEFAULT_ACCOUNT='<your-aws-account-id>'
+ * 2. deploy a state machine resource in 'eu-west-1' and name the state machine 'stateMachineFromAnotherRegion'
+ */
+
 export class MainStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
