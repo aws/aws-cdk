@@ -118,6 +118,20 @@ new rds.DatabaseClusterFromSnapshot(this, 'Database', {
 });
 ```
 
+By default, automatic minor version upgrades for the engine type are enabled in a cluster, but you can also disable this.
+To do so, set `autoMinorVersionUpgrade` to `false`.
+
+```ts
+declare const vpc: ec2.IVpc;
+
+new rds.DatabaseCluster(this, 'DatabaseCluster', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_07_0 }),
+  writer: rds.ClusterInstance.serverlessV2('writerInstance'),
+  vpc,
+  autoMinorVersionUpgrade: false,
+});
+```
+
 ### Updating the database instances in a cluster
 
 Database cluster instances may be updated in bulk or on a rolling basis.
