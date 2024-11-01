@@ -18,6 +18,7 @@ let us know if it's not up-to-date (even better, submit a PR with your correctio
   - [Publishing Your Own Package](#publishing-your-own-package)
     - [Trust and Third Party Packages](#trust-and-third-party-packages)
     - [Third Party Package Administration](#third-party-package-administration)
+- [Quick Start](#quick-start)
 - [Getting Started](#getting-started)
   - [Local setup](#setup)
   - [Dev Container](#dev-container)
@@ -124,7 +125,7 @@ This is by far the strongest signal you can give to the CDK team that a feature 
 
 #### Trust and Third Party Packages 
 
-An argument we commonly hear why contributors don't want to publish their contributions in their own packages, is that organizations have restrictions on what packages they allow to be used and these restrictions commonly include limiting usage of packages to those owned and distributed only from trusted sources. We recognize trust is an important part of the software dependency chain, and we take that into consideration when evaluating contributions in aws-cdk. However, not everything can be owned by the aws-cdk team. Strictly from a technical limitation perspective, `aws-cdk-lib` is big. Continuing a system that makes it, potentially, many multiple times bigger, has a cost on usability. Additionally, as the surface area widens, the aws-cdk team becomes stretched ever thinner and isn't able to property maintain what we own.
+An argument we commonly hear why contributors don't want to publish their contributions in their own packages, is that organizations have restrictions on what packages they allow to be used and these restrictions commonly include limiting usage of packages to those owned and distributed only from trusted sources. We recognize trust is an important part of the software dependency chain, and we take that into consideration when evaluating contributions in aws-cdk. However, not everything can be owned by the aws-cdk team. Strictly from a technical limitation perspective, `aws-cdk-lib` is big. Continuing a system that makes it, potentially, many multiple times bigger, has a cost on usability. Additionally, as the surface area widens, the aws-cdk team becomes stretched ever thinner and isn't able to properly maintain what we own.
 
 That being said, "trust", isn't as black and white as "it's owned by aws, so it's okay". The best way to trust that the packages you depend on to help generate your aws resources is to use [policy validation](https://docs.aws.amazon.com/cdk/v2/guide/policy-validation-synthesis.html) on the output of your application in order to ensure it is following the rules that are important to you or your organization.
 
@@ -135,6 +136,62 @@ Another reason we hear from authors that they don't want to publish their own pa
 1. [Projen](https://github.com/projen/projen) - A tool with common repository and publishing setup abstracted, has a construct specifically for CDK construct libraries.
 1. [Publib](https://github.com/cdklabs/publib) - A toolchain for publishing packages to multiple repositories. A lot of this is included in projen and we recommend using that instead of publib directly, but it may be useful for specific cases.
 1. [Construct Hub](https://constructs.dev) - An index of all construct libraries published to NPM. When you publish a construct library, it will automatically have documentation generated and published to Construct Hub.
+
+## Quick Start
+
+### Setup
+Fork the aws-cdk repository into your account: https://github.com/aws/aws-cdk/fork
+
+Clone the forked repository:
+```console
+$ git clone https://github.com/{your-account}/aws-cdk.git
+$ cd aws-cdk
+$ yarn install
+```
+
+Before you create a pull request:
+* Write code changes
+* Write unit tests
+* Write integ tests (aws-cdk/packages/@aws-cdk-testing/)
+* Commit changes and push to remote branch
+
+Build the entire aws-cdk repo (this may take some time):
+```console
+$ npx lerna run build --skip-nx-cache
+```
+
+### Testing
+Run the unit tests for the modules(e.g. aws-lambda) you've changed:
+```console
+$ cd aws-cdk/packages/aws-cdk-lib
+$ yarn test aws-lambda
+```
+
+Run the integration tests for the modules(e.g. aws-lambda) you've changed:
+```console
+$ cd aws-cdk/packages/@aws-cdk-testing/framework-integ
+$ yarn integ test/aws-lambda/test/integ.lambda.js --update-on-failed
+```
+
+If you've made changes to sample code in any README, ensure those examples compile with:
+```console
+$ /bin/bash ./scripts/run-rosetta.sh
+```
+
+### Linking
+If you would like to test your code changes against a CDK App, create the App and link your local CDK with it:
+```console
+$ mkdir cdkApp # in parent dir of aws-cdk
+$ cd cdkApp
+$ npx cdk init app --language typescript
+$ npx cdk --version # shows the latest CDK version e.g. 2.155.0 (build 34dcc5a)
+$ ../aws-cdk/link-all.sh # link the aws-cdk repo with your cdkApp
+$ npx cdk --version # verify linked cdk version 0.0.0
+# Define the resource that uses your aws-cdk changes in cdkApp lib folder
+$ npx cdk deploy # deploy successfully
+```
+
+Congratulations! Create pull request for review.
 
 ## Getting Started
 
@@ -153,8 +210,10 @@ The following tools need to be installed on your system prior to installing the 
 - [Python >= 3.8.0, < 4.0](https://www.python.org/downloads/release/python-380/)
 - [Docker >= 19.03](https://docs.docker.com/get-docker/)
   - the Docker daemon must also be running
+- [git-lfs](https://docs.github.com/en/repositories/working-with-files/managing-large-files/installing-git-large-file-storage)
+  - Without this, you'll get the message that the clone succeeded but the checkout failed when you initially clone the repo.
 
-First fork the repository, and then run the following commands to clone the repository locally.
+First fork the repository https://github.com/aws/aws-cdk/fork, and then run the following commands to clone the repository locally.
 
 ```console
 $ git clone https://github.com/{your-account}/aws-cdk.git
@@ -371,7 +430,7 @@ In some cases, it is useful to seek feedback by iterating on a design document. 
 In many cases, the comments section of the relevant GitHub issue is sufficient for such discussion, and can be a good place to socialize and get feedback on what you plan to do. If the changes are significant in scope, require a longer form medium to communicate, or you just want to ensure that the core team agrees with your planned implementation before you submit it for review to avoid wasted work, there are a few different strategies you can pursue.
 
 1. README driven development - This is the core team's preferred method for reviewing new APIs. Submit a draft PR with updates to the README for the package that you intend to change that clearly describes how the functionality will be used. For new L2s, include usage examples that cover common use cases and showcase the features of the API you're designing. The most important thing to consider for any feature is the public API and this will help to give a clear picture of what changes users can expect.
-1. Write an [RFC](aws/aws-cdk-rfcs) - This is a process for discussing new functionality that is large in scope, may incur breaking changes, or may otherwise warrant discussion from multiple stakeholders on the core team or within the community. Specifically, it is a good place to discuss new features in the core CDK framework or the CLI that are unable to be decoupled from the core cdk codebase.
+1. Write an [RFC](https://github.com/aws/aws-cdk-rfcs) - This is a process for discussing new functionality that is large in scope, may incur breaking changes, or may otherwise warrant discussion from multiple stakeholders on the core team or within the community. Specifically, it is a good place to discuss new features in the core CDK framework or the CLI that are unable to be decoupled from the core cdk codebase.
 1. Publish a package - A separate package is the best place to demonstrate the value of new functionality that you believe should be included within the CDK core libraries. It not only illustrates a complete solution with its entire API surface area available to review, it also proves that your design works! When publishing a package with the goal for eventual inclusion within aws-cdk-lib, make sure to follow our [design guidelines](./docs/DESIGN_GUIDELINES.md) wherever relevant.
 
 Performing any of the above processes helps us to ensure that expectations are clearly set before a contribution is made. We want to ensure that everyone is able to contribute to the CDK ecosystem effectively. If you make a contribution that is ultimately not merged by into aws-cdk-lib, but you believe it should be, we encourage you to keep pursuing it. The scope of the core framework is intentionally limited to ensure that we can effectively maintain its surface area and ensure code quality and reliability over the long term. However, new patterns may emerge in the ecosystem that clearly provide better solutions than those currently in aws-cdk-lib. If your solutions gains popularity within the community, and you want us to re-evaluate its inclusion, reach out to us on cdk.dev or create a GitHub issue with a feature request and references to your package. See [demonstrating value](#demonstrating-value) for more information. 
@@ -896,6 +955,24 @@ grantAwesomePowerBeta1()
 
 When we decide it's time to graduate the API, the latest preview version will
 be deprecated and the final version - `grantAwesomePower` will be added.
+
+### Adding new experimental CLI features
+
+In order to move fast when developing new CLI features, we may decide to release 
+functionality as "experimental" or "incremental." In this scenario we can utilize
+explicit opt-in via an `--unstable` flag.
+
+Explicit opt-ins would look something like this:
+
+```bash
+cdk new-command --unstable='new-command'
+
+cdk bootstrap --unstable='new-funky-bootstrap'
+```
+
+And can be simply added as an additional flag on the CLI command that is being worked on.
+When the time comes to stabilize the command, we remove the requirement that such a flag
+is set.
 
 ## Documentation
 

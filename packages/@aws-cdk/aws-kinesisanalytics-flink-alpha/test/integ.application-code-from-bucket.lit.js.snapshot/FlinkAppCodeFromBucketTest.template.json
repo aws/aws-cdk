@@ -175,7 +175,7 @@
       "SnapshotsEnabled": true
      }
     },
-    "RuntimeEnvironment": "FLINK-1_18",
+    "RuntimeEnvironment": "FLINK-1_19",
     "ServiceExecutionRole": {
      "Fn::GetAtt": [
       "AppRole1AF9B530",

@@ -1,6 +1,6 @@
 The @aws-cdk/integ-runner package includes the following third-party software/licensing:
 
-** ajv@8.16.0 - https://www.npmjs.com/package/ajv/v/8.16.0 | MIT
+** ajv@8.17.1 - https://www.npmjs.com/package/ajv/v/8.17.1 | MIT
 The MIT License (MIT)
 
 Copyright (c) 2015-2021 Evgeny Poberezkin
@@ -297,7 +297,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ----------------
 
-** escalade@3.1.2 - https://www.npmjs.com/package/escalade/v/3.1.2 | MIT
+** escalade@3.2.0 - https://www.npmjs.com/package/escalade/v/3.2.0 | MIT
 MIT License
 
 Copyright (c) Luke Edwards <luke.edwards05@gmail.com> (lukeed.com)
@@ -750,7 +750,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ----------------
 
-** semver@7.6.2 - https://www.npmjs.com/package/semver/v/7.6.2 | ISC
+** semver@7.6.3 - https://www.npmjs.com/package/semver/v/7.6.3 | ISC
 The ISC License
 
 Copyright (c) Isaac Z. Schlueter and Contributors

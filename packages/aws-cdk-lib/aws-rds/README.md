@@ -83,6 +83,29 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
 
 For more information about dual-stack mode, see [Working with a DB cluster in a VPC](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_VPC.WorkingWithRDSInstanceinaVPC.html).
 
+If you want to issue read/write transactions directly on an Aurora Replica, you can use local write forwarding on [Aurora MySQL](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-mysql-write-forwarding.html)
+and [Aurora PostgreSQL](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-postgresql-write-forwarding.html).
+Local write forwarding allows read replicas to accept write transactions and forward them to the writer DB instance to be committed.
+
+To enable local write forwarding, set the `enableLocalWriteForwarding` property to `true`:
+
+```ts
+declare const vpc: ec2.IVpc;
+
+new rds.DatabaseCluster(this, 'DatabaseCluster', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_07_0 }),
+  writer: rds.ClusterInstance.serverlessV2('writerInstance'),
+  readers: [
+    rds.ClusterInstance.serverlessV2('readerInstance1'),
+  ],
+  vpc,
+  enableLocalWriteForwarding: true,
+});
+```
+
+**Note**: Local write forwarding is supported only for Aurora MySQL 3.04 or higher, and for Aurora PostgreSQL
+16.4 or higher (for version 16), 15.8 or higher (for version 15), and 14.13 or higher (for version 14).
+
 Use `DatabaseClusterFromSnapshot` to create a cluster from a snapshot:
 
 ```ts
@@ -476,14 +499,14 @@ to use for the instance:
 declare const vpc: ec2.Vpc;
 
 const iopsInstance = new rds.DatabaseInstance(this, 'IopsInstance', {
-  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_39 }),
   vpc,
   storageType: rds.StorageType.IO1,
   iops: 5000,
 });
 
 const gp3Instance = new rds.DatabaseInstance(this, 'Gp3Instance', {
-  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_39 }),
   vpc,
   allocatedStorage: 500,
   storageType: rds.StorageType.GP3,
@@ -499,7 +522,7 @@ declare const vpc: ec2.Vpc;
 
 // Setting allocatedStorage for DatabaseInstance
 const iopsInstance = new rds.DatabaseInstance(this, 'IopsInstance', {
-  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_39 }),
   vpc,
   storageType: rds.StorageType.IO1,
   iops: 5000,
@@ -525,7 +548,7 @@ to use for the instance:
 declare const vpc: ec2.Vpc;
 
 new rds.DatabaseInstance(this, 'Instance', {
-  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_39 }),
   vpc,
   caCertificate: rds.CaCertificate.RDS_CA_RSA2048_G1,
 });
@@ -537,7 +560,7 @@ You can specify a custom CA certificate with:
 declare const vpc: ec2.Vpc;
 
 new rds.DatabaseInstance(this, 'Instance', {
-  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_39 }),
   vpc,
   caCertificate: rds.CaCertificate.of('future-rds-ca'),
 });
@@ -938,6 +961,7 @@ Data in S3 buckets can be imported to and exported from certain database engines
 functionality, set the `s3ImportBuckets` and `s3ExportBuckets` properties for import and export respectively. When
 configured, the CDK automatically creates and configures IAM roles as required.
 Additionally, the `s3ImportRole` and `s3ExportRole` properties can be used to set this role directly.
+Note: To use `s3ImportRole` and `s3ExportRole` with Aurora PostgreSQL, you must also enable the S3 import and export features when you create the DatabaseClusterEngine.
 
 You can read more about loading data to (or from) S3 here:
 
@@ -1178,6 +1202,7 @@ The following example shows granting Data API access to a Lamba function.
 ```ts
 declare const vpc: ec2.Vpc;
 declare const fn: lambda.Function;
+declare const secret: secretsmanager.Secret;
 
 // Create a serverless V1 cluster
 const serverlessV1Cluster = new rds.ServerlessCluster(this, 'AnotherCluster', {
@@ -1194,6 +1219,14 @@ const cluster = new rds.DatabaseCluster(this, 'Cluster', {
   enableDataApi: true, // Optional - will be automatically set if you call grantDataApiAccess()
 });
 cluster.grantDataApiAccess(fn);
+
+// Import an Aurora cluster
+const importedCluster = rds.DatabaseCluster.fromDatabaseClusterAttributes(this, 'ImportedCluster', {
+  clusterIdentifier: 'clusterIdentifier',
+  secret,
+  dataApiEnabled: true,
+});
+importedCluster.grantDataApiAccess(fn);
 ```
 
 **Note**: To invoke the Data API, the resource will need to read the secret associated with the cluster.
@@ -1241,3 +1274,87 @@ new rds.DatabaseCluster(this, 'DatabaseCluster', {
   preferredMaintenanceWindow: 'Sat:22:15-Sat:22:45',
 });
 ```
+
+## Performance Insights
+
+You can enable Performance Insights for a clustered database or an instance database.
+
+### Clustered Database
+
+You can enable Performance Insights at cluster level or instance level.
+
+To enable Performance Insights at the cluster level, set the `enablePerformanceInsights` property for the `DatabaseCluster` to `true`.
+If you want to specify the detailed settings, you can use the `performanceInsightRetention` and `performanceInsightEncryptionKey` properties.
+
+The settings are then applied to all instances in the cluster.
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const kmsKey: kms.Key;
+new rds.DatabaseCluster(this, 'Database', {
+  engine: rds.DatabaseClusterEngine.AURORA,
+  vpc: vpc,
+  enablePerformanceInsights: true,
+  performanceInsightRetention: rds.PerformanceInsightRetention.LONG_TERM,
+  performanceInsightEncryptionKey: kmsKey,
+  writer: rds.ClusterInstance.provisioned('Writer', {
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.R7G, ec2.InstanceSize.LARGE),
+  }),
+});
+```
+
+To enable Performance Insights at the instance level, set the same properties for each instance of the `writer` and the `readers`.
+
+In this way, different settings can be applied to different instances in a cluster.
+
+**Note:** If Performance Insights is enabled at the cluster level, it is also automatically enabled for each instance. If specified, Performance Insights
+for each instance require the same retention period and encryption key as the cluster level.
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const kmsKey: kms.Key;
+new rds.DatabaseCluster(this, 'Database', {
+  engine: rds.DatabaseClusterEngine.AURORA,
+  vpc: vpc,
+  writer: rds.ClusterInstance.provisioned('Writer', {
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.R7G, ec2.InstanceSize.LARGE),
+    enablePerformanceInsights: true,
+    performanceInsightRetention: rds.PerformanceInsightRetention.LONG_TERM,
+    performanceInsightEncryptionKey: kmsKey,
+  }),
+  readers: [
+    rds.ClusterInstance.provisioned('Reader', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.R7G, ec2.InstanceSize.LARGE),
+      enablePerformanceInsights: false,
+    }),
+  ],
+});
+```
+
+### Instance Database
+
+To enable Performance Insights for an instance database, set the `enablePerformanceInsights` property for the `DatabaseInstance` to `true`.
+If you want to specify the detailed settings, you can use the `performanceInsightRetention` and `performanceInsightEncryptionKey` properties.
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const kmsKey: kms.Key;
+const instance = new rds.DatabaseInstance(this, 'Instance', {
+  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_39 }),
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.R7G, ec2.InstanceSize.LARGE),
+  vpc,
+  enablePerformanceInsights: true,
+  performanceInsightRetention: rds.PerformanceInsightRetention.LONG_TERM,
+  performanceInsightEncryptionKey: kmsKey,
+});
+```
+
+### Supported Engines
+
+Performance Insights supports a limited number of engines.
+
+To see Amazon RDS DB engines that support Performance Insights, see [Amazon RDS DB engine, Region, and instance class support for Performance Insights](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PerfInsights.Overview.Engines.html).
+
+To see Amazon Aurora DB engines that support Performance Insights, see [Amazon Aurora DB engine, Region, and instance class support for Performance Insights](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_PerfInsights.Overview.Engines.html).
+
+For more information about Performance Insights, see [Monitoring DB load with Performance Insights on Amazon RDS](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PerfInsights.html).

@@ -1,7 +1,8 @@
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Stack } from 'aws-cdk-lib';
-import { DataSource, IntendedUse, PlaceIndex } from '../lib/place-index';
+import { IntendedUse, PlaceIndex } from '../lib/place-index';
+import { DataSource } from '../lib';
 
 let stack: Stack;
 beforeEach(() => {
@@ -15,6 +16,34 @@ test('create a place index', () => {
     DataSource: 'Esri',
     IndexName: 'PlaceIndex',
   });
+});
+
+test('create a place index with description', () => {
+  new PlaceIndex(stack, 'PlaceIndex', {
+    description: 'my-description',
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Location::PlaceIndex', {
+    DataSource: 'Esri',
+    IndexName: 'PlaceIndex',
+    Description: 'my-description',
+  });
+});
+
+test('creates a place index with empty description', () => {
+  new PlaceIndex(stack, 'PlaceIndex', {
+    description: '',
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Location::PlaceIndex', {
+    Description: '',
+  });
+});
+
+test('throws with invalid description', () => {
+  expect(() => new PlaceIndex(stack, 'PlaceIndex', {
+    description: 'a'.repeat(1001),
+  })).toThrow('`description` must be between 0 and 1000 characters. Received: 1001 characters');
 });
 
 test('throws with invalid name', () => {
