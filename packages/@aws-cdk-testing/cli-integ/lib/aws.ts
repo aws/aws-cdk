@@ -127,7 +127,7 @@ export class AwsClients {
     }
   }
 
-  public async emptyBucket(bucketName: string) {
+  public async emptyBucket(bucketName: string, options?: { bypassGovernance?: boolean }) {
     const objects = await this.s3.send(
       new ListObjectVersionsCommand({
         Bucket: bucketName,
@@ -154,6 +154,7 @@ export class AwsClients {
           Objects: deletes,
           Quiet: false,
         },
+        BypassGovernanceRetention: options?.bypassGovernance ? true : undefined,
       }),
     );
   }
