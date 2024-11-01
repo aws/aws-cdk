@@ -9,13 +9,13 @@
        "Action": "sts:AssumeRole",
        "Effect": "Allow",
        "Principal": {
-        "Service": "codebuild.amazonaws.com"
+        "Service": "codepipeline.amazonaws.com"
        }
       }
      ],
      "Version": "2012-10-17"
     },
-    "RoleName": "MyRoleName"
+    "RoleName": "MyPipelineRoleName"
    }
   },
   "RoleDefaultPolicy5FFB7DAB": {
@@ -38,34 +38,12 @@
        ],
        "Effect": "Allow",
        "Resource": [
+        "arn:aws:s3:::cross-region-support-us-weplicationbucketd4f9321e99090cb36376",
+        "arn:aws:s3:::cross-region-support-us-weplicationbucketd4f9321e99090cb36376/*",
         {
          "Fn::GetAtt": [
           "PipelineArtifactsBucket22248F97",
           "Arn"
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":s3:::integ-test-pipeline-nesteeplicationbucket5ad15bae8c248ec4e399"
-          ]
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":s3:::integ-test-pipeline-nesteeplicationbucket5ad15bae8c248ec4e399/*"
-          ]
          ]
         },
         {
@@ -107,15 +85,9 @@
        "Action": "sts:AssumeRole",
        "Effect": "Allow",
        "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          "arn:",
-          {
-           "Ref": "AWS::Partition"
-          },
-          ":iam::region:role/integ-test-pipeline-nestesttestactionrole85e1536225f4ce00510a"
-         ]
+        "Fn::GetAtt": [
+         "PipelineTestCodePipelineActionRoleDD85885D",
+         "Arn"
         ]
        }
       }
@@ -153,7 +125,7 @@
   "PipelineArtifactsBucketEncryptionKeyAlias5C510EEE": {
    "Type": "AWS::KMS::Alias",
    "Properties": {
-    "AliasName": "alias/codepipeline-integ-test-pipeline-nested-stack-cross-region-pipeline-08100cf8",
+    "AliasName": "alias/codepipeline-code-pipeline-nested-stack-pipelinecrossregionstack-pipeline-6b0d06de",
     "TargetKeyId": {
      "Fn::GetAtt": [
       "PipelineArtifactsBucketEncryptionKey01D58D69",
@@ -246,24 +218,13 @@
      {
       "ArtifactStore": {
        "EncryptionKey": {
-        "Id": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":kms:service:649563674902:alias/ne-nestetencryptionalias12623f8e5dd3096ed578"
-          ]
-         ]
-        },
+        "Id": "arn:aws:kms:us-west-2:649563674902:alias/ort-us-wtencryptionaliasde5d3f5e9831ab4a9861",
         "Type": "KMS"
        },
-       "Location": "integ-test-pipeline-nesteeplicationbucket5ad15bae8c248ec4e399",
+       "Location": "cross-region-support-us-weplicationbucketd4f9321e99090cb36376",
        "Type": "S3"
       },
-      "Region": "service"
+      "Region": "us-west-2"
      },
      {
       "ArtifactStore": {
@@ -328,22 +289,16 @@
          "Version": "1"
         },
         "Configuration": {
-         "StateMachineArn": "arn:arn:aws:service:region:account:resource:resourceName:states:eu-west-1:12345678:stateMachine/stateMachineFromAnotherRegion",
+         "StateMachineArn": "arn:aws:states:us-west-2:649563674902:stateMachine/MyStateMachine",
          "Input": "{}",
          "InputType": "Literal"
         },
         "Name": "Test",
-        "Region": "service",
+        "Region": "us-west-2",
         "RoleArn": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::region:role/integ-test-pipeline-nestesttestactionrole85e1536225f4ce00510a"
-          ]
+         "Fn::GetAtt": [
+          "PipelineTestCodePipelineActionRoleDD85885D",
+          "Arn"
          ]
         },
         "RunOrder": 1
@@ -377,6 +332,52 @@
      "Ref": "PipelineC660917D"
     },
     "TargetPipelineVersion": 1
+   }
+  },
+  "PipelineTestCodePipelineActionRoleDD85885D": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": "arn:aws:iam::649563674902:root"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "PipelineTestCodePipelineActionRoleDefaultPolicy7ECDF2A5": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "states:DescribeStateMachine",
+        "states:StartExecution"
+       ],
+       "Effect": "Allow",
+       "Resource": "arn:aws:states:us-west-2:649563674902:stateMachine/MyStateMachine"
+      },
+      {
+       "Action": "states:DescribeExecution",
+       "Effect": "Allow",
+       "Resource": "arn:aws:states:us-west-2:649563674902:execution:MyStateMachine:*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "PipelineTestCodePipelineActionRoleDefaultPolicy7ECDF2A5",
+    "Roles": [
+     {
+      "Ref": "PipelineTestCodePipelineActionRoleDD85885D"
+     }
+    ]
    }
   }
  }

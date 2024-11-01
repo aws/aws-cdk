@@ -44,13 +44,13 @@
                               "Action": "sts:AssumeRole",
                               "Effect": "Allow",
                               "Principal": {
-                                "Service": "codebuild.amazonaws.com"
+                                "Service": "codepipeline.amazonaws.com"
                               }
                             }
                           ],
                           "Version": "2012-10-17"
                         },
-                        "roleName": "MyRoleName"
+                        "roleName": "MyPipelineRoleName"
                       }
                     },
                     "constructInfo": {
@@ -85,34 +85,12 @@
                                   ],
                                   "Effect": "Allow",
                                   "Resource": [
+                                    "arn:aws:s3:::cross-region-support-us-weplicationbucketd4f9321e99090cb36376",
+                                    "arn:aws:s3:::cross-region-support-us-weplicationbucketd4f9321e99090cb36376/*",
                                     {
                                       "Fn::GetAtt": [
                                         "PipelineArtifactsBucket22248F97",
                                         "Arn"
-                                      ]
-                                    },
-                                    {
-                                      "Fn::Join": [
-                                        "",
-                                        [
-                                          "arn:",
-                                          {
-                                            "Ref": "AWS::Partition"
-                                          },
-                                          ":s3:::integ-test-pipeline-nesteeplicationbucket5ad15bae8c248ec4e399"
-                                        ]
-                                      ]
-                                    },
-                                    {
-                                      "Fn::Join": [
-                                        "",
-                                        [
-                                          "arn:",
-                                          {
-                                            "Ref": "AWS::Partition"
-                                          },
-                                          ":s3:::integ-test-pipeline-nesteeplicationbucket5ad15bae8c248ec4e399/*"
-                                        ]
                                       ]
                                     },
                                     {
@@ -154,15 +132,9 @@
                                   "Action": "sts:AssumeRole",
                                   "Effect": "Allow",
                                   "Resource": {
-                                    "Fn::Join": [
-                                      "",
-                                      [
-                                        "arn:",
-                                        {
-                                          "Ref": "AWS::Partition"
-                                        },
-                                        ":iam::region:role/integ-test-pipeline-nestesttestactionrole85e1536225f4ce00510a"
-                                      ]
+                                    "Fn::GetAtt": [
+                                      "PipelineTestCodePipelineActionRoleDD85885D",
+                                      "Arn"
                                     ]
                                   }
                                 }
@@ -244,7 +216,7 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::KMS::Alias",
                           "aws:cdk:cloudformation:props": {
-                            "aliasName": "alias/codepipeline-integ-test-pipeline-nested-stack-cross-region-pipeline-08100cf8",
+                            "aliasName": "alias/codepipeline-code-pipeline-nested-stack-pipelinecrossregionstack-pipeline-6b0d06de",
                             "targetKeyId": {
                               "Fn::GetAtt": [
                                 "PipelineArtifactsBucketEncryptionKey01D58D69",
@@ -381,24 +353,13 @@
                       "aws:cdk:cloudformation:props": {
                         "artifactStores": [
                           {
-                            "region": "service",
+                            "region": "us-west-2",
                             "artifactStore": {
                               "type": "S3",
-                              "location": "integ-test-pipeline-nesteeplicationbucket5ad15bae8c248ec4e399",
+                              "location": "cross-region-support-us-weplicationbucketd4f9321e99090cb36376",
                               "encryptionKey": {
                                 "type": "KMS",
-                                "id": {
-                                  "Fn::Join": [
-                                    "",
-                                    [
-                                      "arn:",
-                                      {
-                                        "Ref": "AWS::Partition"
-                                      },
-                                      ":kms:service:649563674902:alias/ne-nestetencryptionalias12623f8e5dd3096ed578"
-                                    ]
-                                  ]
-                                }
+                                "id": "arn:aws:kms:us-west-2:649563674902:alias/ort-us-wtencryptionaliasde5d3f5e9831ab4a9861"
                               }
                             }
                           },
@@ -467,24 +428,18 @@
                                   "provider": "StepFunctions"
                                 },
                                 "configuration": {
-                                  "StateMachineArn": "arn:arn:aws:service:region:account:resource:resourceName:states:eu-west-1:12345678:stateMachine/stateMachineFromAnotherRegion",
+                                  "StateMachineArn": "arn:aws:states:us-west-2:649563674902:stateMachine/MyStateMachine",
                                   "Input": "{}",
                                   "InputType": "Literal"
                                 },
                                 "runOrder": 1,
                                 "roleArn": {
-                                  "Fn::Join": [
-                                    "",
-                                    [
-                                      "arn:",
-                                      {
-                                        "Ref": "AWS::Partition"
-                                      },
-                                      ":iam::region:role/integ-test-pipeline-nestesttestactionrole85e1536225f4ce00510a"
-                                    ]
+                                  "Fn::GetAtt": [
+                                    "PipelineTestCodePipelineActionRoleDD85885D",
+                                    "Arn"
                                   ]
                                 },
-                                "region": "service"
+                                "region": "us-west-2"
                               }
                             ]
                           }
@@ -552,6 +507,98 @@
                       "Test": {
                         "id": "Test",
                         "path": "code-pipeline-nested-stack/PipelineCrossRegionStack/Pipeline/Test/Test",
+                        "children": {
+                          "CodePipelineActionRole": {
+                            "id": "CodePipelineActionRole",
+                            "path": "code-pipeline-nested-stack/PipelineCrossRegionStack/Pipeline/Test/Test/CodePipelineActionRole",
+                            "children": {
+                              "ImportCodePipelineActionRole": {
+                                "id": "ImportCodePipelineActionRole",
+                                "path": "code-pipeline-nested-stack/PipelineCrossRegionStack/Pipeline/Test/Test/CodePipelineActionRole/ImportCodePipelineActionRole",
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.Resource",
+                                  "version": "0.0.0"
+                                }
+                              },
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "code-pipeline-nested-stack/PipelineCrossRegionStack/Pipeline/Test/Test/CodePipelineActionRole/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                                  "aws:cdk:cloudformation:props": {
+                                    "assumeRolePolicyDocument": {
+                                      "Statement": [
+                                        {
+                                          "Action": "sts:AssumeRole",
+                                          "Effect": "Allow",
+                                          "Principal": {
+                                            "AWS": "arn:aws:iam::649563674902:root"
+                                          }
+                                        }
+                                      ],
+                                      "Version": "2012-10-17"
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                                  "version": "0.0.0"
+                                }
+                              },
+                              "DefaultPolicy": {
+                                "id": "DefaultPolicy",
+                                "path": "code-pipeline-nested-stack/PipelineCrossRegionStack/Pipeline/Test/Test/CodePipelineActionRole/DefaultPolicy",
+                                "children": {
+                                  "Resource": {
+                                    "id": "Resource",
+                                    "path": "code-pipeline-nested-stack/PipelineCrossRegionStack/Pipeline/Test/Test/CodePipelineActionRole/DefaultPolicy/Resource",
+                                    "attributes": {
+                                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                                      "aws:cdk:cloudformation:props": {
+                                        "policyDocument": {
+                                          "Statement": [
+                                            {
+                                              "Action": [
+                                                "states:DescribeStateMachine",
+                                                "states:StartExecution"
+                                              ],
+                                              "Effect": "Allow",
+                                              "Resource": "arn:aws:states:us-west-2:649563674902:stateMachine/MyStateMachine"
+                                            },
+                                            {
+                                              "Action": "states:DescribeExecution",
+                                              "Effect": "Allow",
+                                              "Resource": "arn:aws:states:us-west-2:649563674902:execution:MyStateMachine:*"
+                                            }
+                                          ],
+                                          "Version": "2012-10-17"
+                                        },
+                                        "policyName": "PipelineTestCodePipelineActionRoleDefaultPolicy7ECDF2A5",
+                                        "roles": [
+                                          {
+                                            "Ref": "PipelineTestCodePipelineActionRoleDD85885D"
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    "constructInfo": {
+                                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                                      "version": "0.0.0"
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_iam.Policy",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.Role",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.4.2"
@@ -593,7 +640,7 @@
                           {
                             "Ref": "AWS::URLSuffix"
                           },
-                          "/cdk-hnb659fds-assets-649563674902-us-east-1/7d4df7a27509d906d2dfe71d2b319bbea0c0027826c08e92d0cc9f3bbe1558b9.json"
+                          "/cdk-hnb659fds-assets-649563674902-us-east-1/5a4aac28b3a73f30fcdc6c5607d21896d725978905122d6a8675f582cb45cd87.json"
                         ]
                       ]
                     }
@@ -632,21 +679,21 @@
           "version": "0.0.0"
         }
       },
-      "cross-region-stack-649563674902:service": {
-        "id": "cross-region-stack-649563674902:service",
-        "path": "cross-region-stack-649563674902:service",
+      "cross-region-stack-649563674902:us-west-2": {
+        "id": "cross-region-stack-649563674902:us-west-2",
+        "path": "cross-region-stack-649563674902:us-west-2",
         "children": {
           "Default": {
             "id": "Default",
-            "path": "cross-region-stack-649563674902:service/Default",
+            "path": "cross-region-stack-649563674902:us-west-2/Default",
             "children": {
               "CrossRegionCodePipelineReplicationBucketEncryptionKey": {
                 "id": "CrossRegionCodePipelineReplicationBucketEncryptionKey",
-                "path": "cross-region-stack-649563674902:service/Default/CrossRegionCodePipelineReplicationBucketEncryptionKey",
+                "path": "cross-region-stack-649563674902:us-west-2/Default/CrossRegionCodePipelineReplicationBucketEncryptionKey",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "cross-region-stack-649563674902:service/Default/CrossRegionCodePipelineReplicationBucketEncryptionKey/Resource",
+                    "path": "cross-region-stack-649563674902:us-west-2/Default/CrossRegionCodePipelineReplicationBucketEncryptionKey/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::KMS::Key",
                       "aws:cdk:cloudformation:props": {
@@ -656,18 +703,7 @@
                               "Action": "kms:*",
                               "Effect": "Allow",
                               "Principal": {
-                                "AWS": {
-                                  "Fn::Join": [
-                                    "",
-                                    [
-                                      "arn:",
-                                      {
-                                        "Ref": "AWS::Partition"
-                                      },
-                                      ":iam::649563674902:root"
-                                    ]
-                                  ]
-                                }
+                                "AWS": "arn:aws:iam::649563674902:root"
                               },
                               "Resource": "*"
                             },
@@ -681,7 +717,7 @@
                               ],
                               "Effect": "Allow",
                               "Principal": {
-                                "AWS": "arn:aws:iam::649563674902:role/MyRoleName"
+                                "AWS": "arn:aws:iam::649563674902:role/MyPipelineRoleName"
                               },
                               "Resource": "*"
                             }
@@ -703,15 +739,15 @@
               },
               "CrossRegionCodePipelineReplicationBucketEncryptionAlias": {
                 "id": "CrossRegionCodePipelineReplicationBucketEncryptionAlias",
-                "path": "cross-region-stack-649563674902:service/Default/CrossRegionCodePipelineReplicationBucketEncryptionAlias",
+                "path": "cross-region-stack-649563674902:us-west-2/Default/CrossRegionCodePipelineReplicationBucketEncryptionAlias",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "cross-region-stack-649563674902:service/Default/CrossRegionCodePipelineReplicationBucketEncryptionAlias/Resource",
+                    "path": "cross-region-stack-649563674902:us-west-2/Default/CrossRegionCodePipelineReplicationBucketEncryptionAlias/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::KMS::Alias",
                       "aws:cdk:cloudformation:props": {
-                        "aliasName": "alias/ne-nestetencryptionalias12623f8e5dd3096ed578",
+                        "aliasName": "alias/ort-us-wtencryptionaliasde5d3f5e9831ab4a9861",
                         "targetKeyId": {
                           "Fn::GetAtt": [
                             "CrossRegionCodePipelineReplicationBucketEncryptionKey70216490",
@@ -733,11 +769,11 @@
               },
               "CrossRegionCodePipelineReplicationBucket": {
                 "id": "CrossRegionCodePipelineReplicationBucket",
-                "path": "cross-region-stack-649563674902:service/Default/CrossRegionCodePipelineReplicationBucket",
+                "path": "cross-region-stack-649563674902:us-west-2/Default/CrossRegionCodePipelineReplicationBucket",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "cross-region-stack-649563674902:service/Default/CrossRegionCodePipelineReplicationBucket/Resource",
+                    "path": "cross-region-stack-649563674902:us-west-2/Default/CrossRegionCodePipelineReplicationBucket/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                       "aws:cdk:cloudformation:props": {
@@ -750,11 +786,7 @@
                                   "Fn::Join": [
                                     "",
                                     [
-                                      "arn:",
-                                      {
-                                        "Ref": "AWS::Partition"
-                                      },
-                                      ":kms:service:649563674902:",
+                                      "arn:aws:kms:us-west-2:649563674902:",
                                       {
                                         "Ref": "CrossRegionCodePipelineReplicationBucketEncryptionAliasF1A0F37D"
                                       }
@@ -765,7 +797,7 @@
                             }
                           ]
                         },
-                        "bucketName": "integ-test-pipeline-nesteeplicationbucket5ad15bae8c248ec4e399",
+                        "bucketName": "cross-region-support-us-weplicationbucketd4f9321e99090cb36376",
                         "publicAccessBlockConfiguration": {
                           "blockPublicAcls": true,
                           "blockPublicPolicy": true,
@@ -781,11 +813,11 @@
                   },
                   "Policy": {
                     "id": "Policy",
-                    "path": "cross-region-stack-649563674902:service/Default/CrossRegionCodePipelineReplicationBucket/Policy",
+                    "path": "cross-region-stack-649563674902:us-west-2/Default/CrossRegionCodePipelineReplicationBucket/Policy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "cross-region-stack-649563674902:service/Default/CrossRegionCodePipelineReplicationBucket/Policy/Resource",
+                        "path": "cross-region-stack-649563674902:us-west-2/Default/CrossRegionCodePipelineReplicationBucket/Policy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
                           "aws:cdk:cloudformation:props": {
@@ -858,7 +890,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "cross-region-stack-649563674902:service/BootstrapVersion",
+            "path": "cross-region-stack-649563674902:us-west-2/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -866,135 +898,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "cross-region-stack-649563674902:service/CheckBootstrapVersion",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnRule",
-              "version": "0.0.0"
-            }
-          }
-        },
-        "constructInfo": {
-          "fqn": "aws-cdk-lib.Stack",
-          "version": "0.0.0"
-        }
-      },
-      "cross-account-support-stack-region": {
-        "id": "cross-account-support-stack-region",
-        "path": "cross-account-support-stack-region",
-        "children": {
-          "codepipelinenestedstackPipelineCrossRegionStackPipeline6B0D06DE-Test-Test-ActionRole": {
-            "id": "codepipelinenestedstackPipelineCrossRegionStackPipeline6B0D06DE-Test-Test-ActionRole",
-            "path": "cross-account-support-stack-region/codepipelinenestedstackPipelineCrossRegionStackPipeline6B0D06DE-Test-Test-ActionRole",
-            "children": {
-              "ImportcodepipelinenestedstackPipelineCrossRegionStackPipeline6B0D06DE-Test-Test-ActionRole": {
-                "id": "ImportcodepipelinenestedstackPipelineCrossRegionStackPipeline6B0D06DE-Test-Test-ActionRole",
-                "path": "cross-account-support-stack-region/codepipelinenestedstackPipelineCrossRegionStackPipeline6B0D06DE-Test-Test-ActionRole/ImportcodepipelinenestedstackPipelineCrossRegionStackPipeline6B0D06DE-Test-Test-ActionRole",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0"
-                }
-              },
-              "Resource": {
-                "id": "Resource",
-                "path": "cross-account-support-stack-region/codepipelinenestedstackPipelineCrossRegionStackPipeline6B0D06DE-Test-Test-ActionRole/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                  "aws:cdk:cloudformation:props": {
-                    "assumeRolePolicyDocument": {
-                      "Statement": [
-                        {
-                          "Action": "sts:AssumeRole",
-                          "Effect": "Allow",
-                          "Principal": {
-                            "AWS": {
-                              "Fn::Join": [
-                                "",
-                                [
-                                  "arn:",
-                                  {
-                                    "Ref": "AWS::Partition"
-                                  },
-                                  ":iam::649563674902:root"
-                                ]
-                              ]
-                            }
-                          }
-                        }
-                      ],
-                      "Version": "2012-10-17"
-                    },
-                    "roleName": "integ-test-pipeline-nestesttestactionrole85e1536225f4ce00510a"
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                  "version": "0.0.0"
-                }
-              },
-              "DefaultPolicy": {
-                "id": "DefaultPolicy",
-                "path": "cross-account-support-stack-region/codepipelinenestedstackPipelineCrossRegionStackPipeline6B0D06DE-Test-Test-ActionRole/DefaultPolicy",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "cross-account-support-stack-region/codepipelinenestedstackPipelineCrossRegionStackPipeline6B0D06DE-Test-Test-ActionRole/DefaultPolicy/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                      "aws:cdk:cloudformation:props": {
-                        "policyDocument": {
-                          "Statement": [
-                            {
-                              "Action": [
-                                "states:DescribeStateMachine",
-                                "states:StartExecution"
-                              ],
-                              "Effect": "Allow",
-                              "Resource": "arn:arn:aws:service:region:account:resource:resourceName:states:eu-west-1:12345678:stateMachine/stateMachineFromAnotherRegion"
-                            },
-                            {
-                              "Action": "states:DescribeExecution",
-                              "Effect": "Allow",
-                              "Resource": "arn:arn:states:service:region:execution:resource:resourceName:states:eu-west-1:12345678:stateMachine/stateMachineFromAnotherRegion:*"
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        },
-                        "policyName": "codepipelinenestedstackPipelineCrossRegionStackPipeline6B0D06DETestTestActionRoleDefaultPolicyB9100D39",
-                        "roles": [
-                          {
-                            "Ref": "codepipelinenestedstackPipelineCrossRegionStackPipeline6B0D06DETestTestActionRole260DF2CF"
-                          }
-                        ]
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Policy",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_iam.Role",
-              "version": "0.0.0"
-            }
-          },
-          "BootstrapVersion": {
-            "id": "BootstrapVersion",
-            "path": "cross-account-support-stack-region/BootstrapVersion",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnParameter",
-              "version": "0.0.0"
-            }
-          },
-          "CheckBootstrapVersion": {
-            "id": "CheckBootstrapVersion",
-            "path": "cross-account-support-stack-region/CheckBootstrapVersion",
+            "path": "cross-region-stack-649563674902:us-west-2/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"

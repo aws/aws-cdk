@@ -10,17 +10,16 @@ import { Construct } from 'constructs';
 /**
  * To deploy this stack, you need to do the following:
  * 1. export CDK_DEFAULT_ACCOUNT='<your-aws-account-id>'
- * 2. deploy a state machine resource in 'eu-west-1' and name the state machine 'stateMachineFromAnotherRegion'
+ * 2. make sure you've bootstrapped 'us-west-2' by running 'cdk bootstrap aws://<your-aws-account-id>/us-west-2'
+ * 3. deploy a state machine resource in 'us-west-2' and name the state machine 'stateMachineFromAnotherRegion'
+ * 4. run 'yarn integ aws-codepipeline-actions/test/integ.codepipeline-with-nested-stack --update-on-failed'
  */
 
 export class MainStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    new PipelineCrossRegionStack(this, 'PipelineCrossRegionStack', {
-      ...props,
-      stackName: 'integ-test-pipeline-nested-stack-cross-region',
-    });
+    new PipelineCrossRegionStack(this, 'PipelineCrossRegionStack', props);
   }
 }
 
@@ -31,16 +30,15 @@ export class PipelineCrossRegionStack extends cdk.NestedStack {
     const machine = cdk.Arn.format({
       service: 'states',
       resource: 'stateMachine',
-      account: cdk.Token.asString(process.env.CDK_INTEG_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT),
-      partition: cdk.ArnFormat.COLON_RESOURCE_NAME,
-      resourceName: 'stateMachineFromAnotherRegion',
-      region: 'eu-west-1',
+      account: cdk.Token.asString(process.env.CDK_DEFAULT_ACCOUNT),
+      resourceName: 'MyStateMachine',
+      region: 'us-west-2',
     }, this);
     const stateMachine = sfn.StateMachine.fromStateMachineArn(this, 'StateMachine', machine);
 
     const role = new Role(this, 'Role', {
-      roleName: 'MyRoleName',
-      assumedBy: new ServicePrincipal('codebuild.amazonaws.com'),
+      roleName: 'MyPipelineRoleName',
+      assumedBy: new ServicePrincipal('codepipeline.amazonaws.com'),
     });
     new Pipeline(this, 'Pipeline', {
       crossAccountKeys: true,

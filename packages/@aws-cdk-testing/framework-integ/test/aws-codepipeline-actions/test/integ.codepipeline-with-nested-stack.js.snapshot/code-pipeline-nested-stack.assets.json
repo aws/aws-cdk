@@ -1,7 +1,7 @@
 {
   "version": "38.0.1",
   "files": {
-    "7d4df7a27509d906d2dfe71d2b319bbea0c0027826c08e92d0cc9f3bbe1558b9": {
+    "5a4aac28b3a73f30fcdc6c5607d21896d725978905122d6a8675f582cb45cd87": {
       "source": {
         "path": "codepipelinenestedstackPipelineCrossRegionStack37C990C7.nested.template.json",
         "packaging": "file"
@@ -9,13 +9,13 @@
       "destinations": {
         "649563674902-us-east-1": {
           "bucketName": "cdk-hnb659fds-assets-649563674902-us-east-1",
-          "objectKey": "7d4df7a27509d906d2dfe71d2b319bbea0c0027826c08e92d0cc9f3bbe1558b9.json",
+          "objectKey": "5a4aac28b3a73f30fcdc6c5607d21896d725978905122d6a8675f582cb45cd87.json",
           "region": "us-east-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::649563674902:role/cdk-hnb659fds-file-publishing-role-649563674902-us-east-1"
         }
       }
     },
-    "f7300c06910e29a826a23c5d6456298917179224683912c889e2465366cd19d3": {
+    "ecc6a3aec26f51fbd7d3f5451c927e1c44e7e5120149610cf1d40c21f3b8a791": {
       "source": {
         "path": "code-pipeline-nested-stack.template.json",
         "packaging": "file"
@@ -23,7 +23,7 @@
       "destinations": {
         "649563674902-us-east-1": {
           "bucketName": "cdk-hnb659fds-assets-649563674902-us-east-1",
-          "objectKey": "f7300c06910e29a826a23c5d6456298917179224683912c889e2465366cd19d3.json",
+          "objectKey": "ecc6a3aec26f51fbd7d3f5451c927e1c44e7e5120149610cf1d40c21f3b8a791.json",
           "region": "us-east-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::649563674902:role/cdk-hnb659fds-file-publishing-role-649563674902-us-east-1"
         }

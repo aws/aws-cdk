@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import * as kms from '../../../aws-kms';
 import * as s3 from '../../../aws-s3';
 import * as cdk from '../../../core';
+import { makeUniqueResourceName } from '../../../core/lib/private/unique-resource-name';
 
 const REQUIRED_ALIAS_PREFIX = 'alias/';
 
@@ -150,6 +151,11 @@ export class CrossRegionSupportStack extends cdk.Stack {
   }
 }
 
-function generateStackName(props: CrossRegionSupportStackProps): string {
+function generateStackName(props: CrossRegionSupportStackProps): string | undefined {
+  // When the pipeline stack name is an unresolved token, we return 'undefined' here and
+  // let Stack construct to generate a stack name instead.
+  if (cdk.Token.isUnresolved(props.pipelineStackName)) {
+    return makeUniqueResourceName([`cross-region-support-${props.region}`], { maxLength: 128, allowedSpecialCharacters: '-' });
+  }
   return `${props.pipelineStackName}-support-${props.region}`;
 }

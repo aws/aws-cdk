@@ -75,13 +75,6 @@ export interface NestedStackProps {
    * @default - No description.
    */
   readonly description?: string;
-
-  /**
-   * The name of the stack
-   *
-   * @default - Derived from construct path.
-   */
-  readonly stackName?: string;
 }
 
 /**
@@ -157,7 +150,7 @@ export class NestedStack extends Stack {
     // if resolved from the outer stack, use the { Ref } of the AWS::CloudFormation::Stack resource
     // which resolves the ARN of the stack. We need to extract the stack name, which is the second
     // component after splitting by "/"
-    this._contextualStackName = props.stackName ?? this.contextualAttribute(Aws.STACK_NAME, Fn.select(1, Fn.split('/', this.resource.ref)));
+    this._contextualStackName = this.contextualAttribute(Aws.STACK_NAME, Fn.select(1, Fn.split('/', this.resource.ref)));
     this._contextualStackId = this.contextualAttribute(Aws.STACK_ID, this.resource.ref);
   }
 
