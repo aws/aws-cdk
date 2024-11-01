@@ -1,0 +1,13 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "integ-kinesis-resource-policy/DefaultTest": {
+      "stacks": [
+        "kinesis-resource-policy"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "integ-kinesis-resource-policy/DefaultTest/DeployAssert",
+      "assertionStackName": "integkinesisresourcepolicyDefaultTestDeployAssert52C5D16C"
+    }
+  }
+}
