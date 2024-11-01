@@ -17,16 +17,16 @@ Shout out to our top contributors!
 - [comcalvi](https://github.com/comcalvi)
 - [madeline-k](https://github.com/madeline-k)
 - [NetaNir](https://github.com/NetaNir)
-- [robertd](https://github.com/robertd)
 - [go-to-k](https://github.com/go-to-k)
+- [robertd](https://github.com/robertd)
+- [mazyu36](https://github.com/mazyu36)
 - [MrArnoldPalmer](https://github.com/MrArnoldPalmer)
 - [lpizzinidev](https://github.com/lpizzinidev)
 - [peterwoodworth](https://github.com/peterwoodworth)
-- [mazyu36](https://github.com/mazyu36)
-- [colifran](https://github.com/colifran)
 - [badmintoncryer](https://github.com/badmintoncryer)
+- [colifran](https://github.com/colifran)
 - [msambol](https://github.com/msambol)
 - [watany-dev](https://github.com/watany-dev)
 
 
-_Last updated: Tue, 01 Oct 24 00:12:17 +0000_
+_Last updated: Fri, 01 Nov 24 00:12:22 +0000_
