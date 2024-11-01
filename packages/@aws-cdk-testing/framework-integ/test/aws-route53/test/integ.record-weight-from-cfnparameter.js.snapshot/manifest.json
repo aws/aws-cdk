@@ -1,0 +1,163 @@
+{
+  "version": "38.0.1",
+  "artifacts": {
+    "record-weight-from-cfnparameter.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "record-weight-from-cfnparameter.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "record-weight-from-cfnparameter": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "record-weight-from-cfnparameter.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "notificationArns": [],
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9603704f36aac4a47218ab44a07a0ea096d4ef0e4c35203a39f72aef7b709c33.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "record-weight-from-cfnparameter.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "record-weight-from-cfnparameter.assets"
+      ],
+      "metadata": {
+        "/record-weight-from-cfnparameter/HostedZone/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HostedZoneDB99F866"
+          }
+        ],
+        "/record-weight-from-cfnparameter/RecordWeight0": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RecordWeight0"
+          }
+        ],
+        "/record-weight-from-cfnparameter/RecordWeight1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RecordWeight1"
+          }
+        ],
+        "/record-weight-from-cfnparameter/RecordWeight2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RecordWeight2"
+          }
+        ],
+        "/record-weight-from-cfnparameter/RecordWeight3": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RecordWeight3"
+          }
+        ],
+        "/record-weight-from-cfnparameter/RecordWithParamWeight0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RecordWithParamWeight01950FDF7"
+          }
+        ],
+        "/record-weight-from-cfnparameter/RecordWithParamWeight1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RecordWithParamWeight182FF0BDE"
+          }
+        ],
+        "/record-weight-from-cfnparameter/RecordWithParamWeight2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RecordWithParamWeight2C5120D0E"
+          }
+        ],
+        "/record-weight-from-cfnparameter/RecordWithParamWeight3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RecordWithParamWeight37D431545"
+          }
+        ],
+        "/record-weight-from-cfnparameter/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/record-weight-from-cfnparameter/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "record-weight-from-cfnparameter"
+    },
+    "Route53RecordWeightFromCfnParameterIntegDefaultTestDeployAssertB313B703.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "Route53RecordWeightFromCfnParameterIntegDefaultTestDeployAssertB313B703.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "Route53RecordWeightFromCfnParameterIntegDefaultTestDeployAssertB313B703": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "Route53RecordWeightFromCfnParameterIntegDefaultTestDeployAssertB313B703.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "notificationArns": [],
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "Route53RecordWeightFromCfnParameterIntegDefaultTestDeployAssertB313B703.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "Route53RecordWeightFromCfnParameterIntegDefaultTestDeployAssertB313B703.assets"
+      ],
+      "metadata": {
+        "/Route53RecordWeightFromCfnParameterInteg/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/Route53RecordWeightFromCfnParameterInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "Route53RecordWeightFromCfnParameterInteg/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
