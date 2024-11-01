@@ -70,7 +70,9 @@ const stack = new cdk.Stack(app, 'integ-servicecatalog-product', {
 
 class TestProductStack extends servicecatalog.ProductStack {
   constructor(scope: any, id: string) {
-    super(scope, id);
+    super(scope, id, {
+      description: 'foo bar',
+    });
 
     new sns.Topic(this, 'TopicProduct');
   }
@@ -139,6 +141,7 @@ const product = new servicecatalog.CloudFormationProduct(stack, 'TestProduct', {
       validateTemplate: false,
       cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(new TestAssetProductStack(stack, 'S3AssetProduct', {
         assetBucket: testAssetBucket,
+        analyticsReporting: true,
       })),
     },
     productStackHistory.currentVersion(),
