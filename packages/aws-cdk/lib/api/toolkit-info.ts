@@ -3,14 +3,14 @@ import * as chalk from 'chalk';
 import type { SDK } from './aws-auth';
 import { debug } from '../logging';
 import {
+  BOOTSTRAP_VARIANT_PARAMETER,
   BOOTSTRAP_VERSION_OUTPUT,
   BUCKET_DOMAIN_NAME_OUTPUT,
   BUCKET_NAME_OUTPUT,
-  BOOTSTRAP_VARIANT_PARAMETER,
   DEFAULT_BOOTSTRAP_VARIANT,
+  REPOSITORY_NAME_OUTPUT,
 } from './bootstrap/bootstrap-props';
-import { BOOTSTRAP_VERSION_OUTPUT, BUCKET_DOMAIN_NAME_OUTPUT, BUCKET_NAME_OUTPUT, BOOTSTRAP_VARIANT_PARAMETER, DEFAULT_BOOTSTRAP_VARIANT, REPOSITORY_NAME_OUTPUT } from './bootstrap/bootstrap-props';
-import { stabilizeStack, CloudFormationStack } from './util/cloudformation';
+import { CloudFormationStack, stabilizeStack } from './util/cloudformation';
 
 export const DEFAULT_TOOLKIT_STACK_NAME = 'CDKToolkit';
 

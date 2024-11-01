@@ -1,9 +1,8 @@
 import { DescribeServicesCommand, RegisterTaskDefinitionCommand, UpdateServiceCommand } from '@aws-sdk/client-ecs';
 import * as setup from './hotswap-test-setup';
-import { HotswapMode } from '../../../lib/api/hotswap/common';
-import { mockECSClient } from '../../util/mock-sdk';
 import { EcsHotswapProperties, HotswapMode, HotswapPropertyOverrides } from '../../../lib/api/hotswap/common';
 import { Configuration } from '../../../lib/settings';
+import { mockECSClient } from '../../util/mock-sdk';
 import { silentTest } from '../../util/silent';
 
 let hotswapMockSdkProvider: setup.HotswapMockSdkProvider;
@@ -671,7 +670,7 @@ describe.each([
       setup.stackSummaryOf('Service', 'AWS::ECS::Service',
         'arn:aws:ecs:region:account:service/my-cluster/my-service'),
     );
-    mockRegisterTaskDef.mockReturnValue({
+    mockECSClient.on(RegisterTaskDefinitionCommand).resolves({
       taskDefinition: {
         taskDefinitionArn: 'arn:aws:ecs:region:account:task-definition/my-task-def:3',
       },
@@ -709,13 +708,13 @@ describe.each([
 
     // THEN
     expect(deployStackResult).not.toBeUndefined();
-    expect(mockRegisterTaskDef).toBeCalledWith({
+    expect(mockECSClient).toHaveReceivedCommandWith(RegisterTaskDefinitionCommand, {
       family: 'my-task-def',
       containerDefinitions: [
         { image: 'image2' },
       ],
     });
-    expect(mockUpdateService).toBeCalledWith({
+    expect(mockECSClient).toHaveReceivedCommandWith(UpdateServiceCommand, {
       service: 'arn:aws:ecs:region:account:service/my-cluster/my-service',
       cluster: 'my-cluster',
       taskDefinition: 'arn:aws:ecs:region:account:task-definition/my-task-def:3',

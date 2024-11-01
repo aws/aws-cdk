@@ -2,7 +2,7 @@ import {
   type ChangeHotswapResult,
   classifyChanges,
   type HotswappableChangeCandidate,
- HotswapPropertyOverrides, lowerCaseFirstCharacter,
+  HotswapPropertyOverrides, lowerCaseFirstCharacter,
   reportNonHotswappableChange,
   transformObjectKeys,
 } from './common';

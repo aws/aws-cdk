@@ -82,7 +82,10 @@ import {
   ListResourceScansCommand,
   type ListResourceScansCommandInput,
   type ListResourceScansCommandOutput,
-  type ListStackResourcesCommandInput, ListStacksCommandInput, ListStacksCommandOutput,
+  type ListStackResourcesCommandInput,
+  ListStacksCommand,
+  ListStacksCommandInput,
+  ListStacksCommandOutput,
   paginateDescribeStackEvents,
   paginateListStackResources,
   RollbackStackCommand,
@@ -99,7 +102,6 @@ import {
   UpdateTerminationProtectionCommand,
   type UpdateTerminationProtectionCommandInput,
   type UpdateTerminationProtectionCommandOutput,
-  ListStacksCommand,
 } from '@aws-sdk/client-cloudformation';
 import {
   CloudWatchLogsClient,
@@ -147,6 +149,9 @@ import {
   EC2Client,
 } from '@aws-sdk/client-ec2';
 import {
+  BatchDeleteImageCommand,
+  BatchDeleteImageCommandInput,
+  BatchDeleteImageCommandOutput,
   CreateRepositoryCommand,
   type CreateRepositoryCommandInput,
   type CreateRepositoryCommandOutput,
@@ -160,9 +165,18 @@ import {
   GetAuthorizationTokenCommand,
   type GetAuthorizationTokenCommandInput,
   type GetAuthorizationTokenCommandOutput,
+  ListImagesCommand,
+  ListImagesCommandInput,
+  ListImagesCommandOutput,
+  PutImageCommand,
+  PutImageCommandInput,
+  PutImageCommandOutput,
   PutImageScanningConfigurationCommand,
   type PutImageScanningConfigurationCommandInput,
   type PutImageScanningConfigurationCommandOutput,
+  BatchGetImageCommandInput,
+  BatchGetImageCommand,
+  BatchGetImageCommandOutput,
 } from '@aws-sdk/client-ecr';
 import {
   DescribeServicesCommandInput,
@@ -307,19 +321,14 @@ import { defaultCliUserAgent } from './user-agent';
 import { debug } from '../../logging';
 import { traceMethods } from '../../util/tracing';
 
-// We need to map regions to domain suffixes, and the SDK already has a function to do this.
-// It's not part of the public API, but it's also unlikely to go away.
-//
-// Reuse that function, and add a safety check, so we don't accidentally break if they ever
-// refactor that away.
-
-/* eslint-disable @typescript-eslint/no-require-imports */
-const regionUtil = require('aws-sdk/lib/region_config');
-require('aws-sdk/lib/maintenance_mode_message').suppress = true;
-/* eslint-enable @typescript-eslint/no-require-imports */
-
-if (!regionUtil.getEndpointSuffix) {
-  throw new Error('This version of AWS SDK for JS does not have the \'getEndpointSuffix\' function!');
+export interface S3ClientOptions {
+  /**
+   * If APIs are used that require MD5 checksums.
+   *
+   * Some S3 APIs in SDKv2 have a bug that always requires them to use a MD5 checksum.
+   * These APIs are not going to be supported in a FIPS environment.
+   */
+  needsMd5Checksums?: boolean;
 }
 
 /**
@@ -346,6 +355,8 @@ export interface ConfigurationOptions {
   retryStrategy: ConfiguredRetryStrategy;
   customUserAgent: string;
   logger?: Logger;
+  s3DisableBodySigning?: boolean;
+  computeChecksums?: boolean;
 }
 
 export interface IAppSyncClient {
@@ -422,10 +433,14 @@ export interface IEC2Client {
 }
 
 export interface IECRClient {
+  batchDeleteImage(input: BatchDeleteImageCommandInput): Promise<BatchDeleteImageCommandOutput>;
+  batchGetImage(input: BatchGetImageCommandInput): Promise<BatchGetImageCommandOutput>;
   createRepository(input: CreateRepositoryCommandInput): Promise<CreateRepositoryCommandOutput>;
   describeImages(input: ECRDescribeImagesCommandInput): Promise<ECRDescribeImagesCommandOutput>;
   describeRepositories(input: DescribeRepositoriesCommandInput): Promise<DescribeRepositoriesCommandOutput>;
   getAuthorizationToken(input: GetAuthorizationTokenCommandInput): Promise<GetAuthorizationTokenCommandOutput>;
+  listImages(input: ListImagesCommandInput): Promise<ListImagesCommandOutput>;
+  putImage(input: PutImageCommandInput): Promise<PutImageCommandOutput>;
   putImageScanningConfiguration(
     input: PutImageScanningConfigurationCommandInput,
   ): Promise<PutImageScanningConfigurationCommandOutput>;
@@ -717,6 +732,10 @@ export class SDK {
   public ecr(): IECRClient {
     const client = new ECRClient(this.config);
     return {
+      batchDeleteImage: (input: BatchDeleteImageCommandInput): Promise<BatchDeleteImageCommandOutput> =>
+        client.send(new BatchDeleteImageCommand(input)),
+      batchGetImage: (input: BatchGetImageCommandInput): Promise<BatchGetImageCommandOutput> =>
+        client.send(new BatchGetImageCommand(input)),
       createRepository: (input: CreateRepositoryCommandInput): Promise<CreateRepositoryCommandOutput> =>
         client.send(new CreateRepositoryCommand(input)),
       describeImages: (input: ECRDescribeImagesCommandInput): Promise<ECRDescribeImagesCommandOutput> =>
@@ -725,6 +744,10 @@ export class SDK {
         client.send(new DescribeRepositoriesCommand(input)),
       getAuthorizationToken: (input: GetAuthorizationTokenCommandInput): Promise<GetAuthorizationTokenCommandOutput> =>
         client.send(new GetAuthorizationTokenCommand(input)),
+      listImages: (input: ListImagesCommandInput): Promise<ListImagesCommandOutput> =>
+        client.send(new ListImagesCommand(input)),
+      putImage: (input: PutImageCommandInput): Promise<PutImageCommandOutput> =>
+        client.send(new PutImageCommand(input)),
       putImageScanningConfiguration: (
         input: PutImageScanningConfigurationCommandInput,
       ): Promise<PutImageScanningConfigurationCommandOutput> =>
@@ -755,26 +778,6 @@ export class SDK {
         );
       },
     };
-  }
-
-  public s3({
-              needsMd5Checksums: apiRequiresMd5Checksum = false,
-            }: S3ClientOptions = {}): AWS.S3 {
-    const config = { ...this.config };
-
-    if (!apiRequiresMd5Checksum) {
-      // In FIPS enabled environments, the MD5 algorithm is not available for use in crypto module.
-      // However by default the S3 client is using an MD5 checksum for content integrity checking.
-      // While this usage is technically allowed in FIPS (MD5 is only prohibited for cryptographic use),
-      // in practice it is just easier to use an allowed checksum mechanism.
-      // We are disabling the S3 content checksums, and are re-enabling the regular SigV4 body signing.
-      // SigV4 uses SHA256 for their content checksum. This configuration matches the default behavior
-      // of the AWS SDKv3 and is a safe choice for all users, except in the above APIs.
-      config.s3DisableBodySigning = false;
-      config.computeChecksums = false;
-    }
-
-    return this.wrapServiceErrorHandling(new AWS.S3(config));
   }
 
   public elbv2(): IElasticLoadBalancingV2Client {
@@ -871,8 +874,23 @@ export class SDK {
     };
   }
 
-  public s3(): IS3Client {
-    const client = new S3Client(this.config);
+  public s3({ needsMd5Checksums: apiRequiresMd5Checksum = false }: S3ClientOptions = {}): IS3Client {
+
+    const config = { ...this.config };
+
+    if (!apiRequiresMd5Checksum) {
+      // In FIPS enabled environments, the MD5 algorithm is not available for use in crypto module.
+      // However by default the S3 client is using an MD5 checksum for content integrity checking.
+      // While this usage is technically allowed in FIPS (MD5 is only prohibited for cryptographic use),
+      // in practice it is just easier to use an allowed checksum mechanism.
+      // We are disabling the S3 content checksums, and are re-enabling the regular SigV4 body signing.
+      // SigV4 uses SHA256 for their content checksum. This configuration matches the default behavior
+      // of the AWS SDKv3 and is a safe choice for all users, except in the above APIs.
+      config.s3DisableBodySigning = false;
+      config.computeChecksums = false;
+    }
+
+    const client = new S3Client(config);
     return {
       deleteObjects: (input: DeleteObjectsCommandInput): Promise<DeleteObjectsCommandOutput> =>
         client.send(new DeleteObjectsCommand(input)),

@@ -1,9 +1,4 @@
-import {
-  DescribeStackResourcesCommand,
-  DescribeStacksCommand,
-  ResourceStatus,
-  StackStatus,
-} from '@aws-sdk/client-cloudformation';
+import { DescribeStacksCommand, StackStatus } from '@aws-sdk/client-cloudformation';
 import { determineAllowCrossAccountAssetPublishing, getBootstrapStackInfo } from '../../../lib/api/util/checks';
 import { mockCloudFormationClient, MockSdk } from '../../util/mock-sdk';
 
@@ -24,15 +19,17 @@ describe('determineAllowCrossAccountAssetPublishing', () => {
   });
 
   it.each(['', '-', '*', '---'])('should return true when the bucket output does not look like a real bucket', async (notABucketName) => {
-    AWSMock.mock('CloudFormation', 'describeStacks', (_params: any, callback: Function) => {
-      callback(null, {
-        Stacks: [{
-          Outputs: [
-            { OutputKey: 'BootstrapVersion', OutputValue: '1' },
-            { OutputKey: 'BucketName', OutputValue: notABucketName },
-          ],
-        }],
-      });
+    const mockSDK = new MockSdk();
+    mockCloudFormationClient.on(DescribeStacksCommand).resolves({
+      Stacks: [{
+        StackName: 'foo',
+        CreationTime: new Date(),
+        StackStatus: StackStatus.CREATE_COMPLETE,
+        Outputs: [
+          { OutputKey: 'BootstrapVersion', OutputValue: '1' },
+          { OutputKey: 'BucketName', OutputValue: notABucketName },
+        ],
+      }],
     });
 
     const result = await determineAllowCrossAccountAssetPublishing(mockSDK);
@@ -48,9 +45,9 @@ describe('determineAllowCrossAccountAssetPublishing', () => {
         CreationTime: new Date(),
         StackStatus: StackStatus.CREATE_COMPLETE,
         Outputs: [
-            { OutputKey: 'BootstrapVersion', OutputValue: '21' },
-            { OutputKey: 'BucketName', OutputValue: 'some-bucket' },
-          ],
+          { OutputKey: 'BootstrapVersion', OutputValue: '21' },
+          { OutputKey: 'BucketName', OutputValue: 'some-bucket' },
+        ],
       }],
     });
 
@@ -59,18 +56,16 @@ describe('determineAllowCrossAccountAssetPublishing', () => {
   });
 
   it('should return true if looking up the bootstrap stack fails', async () => {
-    AWSMock.mock('CloudFormation', 'describeStacks', (_params: any, callback: Function) => {
-      callback(new Error('Could not read bootstrap stack'));
-    });
+    const mockSDK = new MockSdk();
+    mockCloudFormationClient.on(DescribeStacksCommand).rejects(new Error('Could not read bootstrap stack'));
 
     const result = await determineAllowCrossAccountAssetPublishing(mockSDK);
     expect(result).toBe(true);
   });
 
   it('should return true if looking up the bootstrap stack fails', async () => {
-    AWSMock.mock('CloudFormation', 'describeStacks', (_params: any, callback: Function) => {
-      callback(new Error('Could not read bootstrap stack'));
-    });
+    const mockSDK = new MockSdk();
+    mockCloudFormationClient.on(DescribeStacksCommand).rejects(new Error('Could not read bootstrap stack'));
 
     const result = await determineAllowCrossAccountAssetPublishing(mockSDK);
     expect(result).toBe(true);
@@ -84,9 +79,9 @@ describe('determineAllowCrossAccountAssetPublishing', () => {
         CreationTime: new Date(),
         StackStatus: StackStatus.CREATE_COMPLETE,
         Outputs: [
-            { OutputKey: 'BootstrapVersion', OutputValue: '20' },
-            { OutputKey: 'BucketName', OutputValue: 'some-bucket' },
-          ],
+          { OutputKey: 'BootstrapVersion', OutputValue: '20' },
+          { OutputKey: 'BucketName', OutputValue: 'some-bucket' },
+        ],
       }],
     });
 
@@ -105,9 +100,9 @@ describe('getBootstrapStackInfo', () => {
         CreationTime: new Date(),
         StackStatus: StackStatus.CREATE_COMPLETE,
         Outputs: [
-            { OutputKey: 'BootstrapVersion', OutputValue: '21' },
-            { OutputKey: 'BucketName', OutputValue: 'some-bucket' },
-          ],
+          { OutputKey: 'BootstrapVersion', OutputValue: '21' },
+          { OutputKey: 'BucketName', OutputValue: 'some-bucket' },
+        ],
       }],
     });
 

@@ -15,7 +15,7 @@ import {
   HotswappableChange,
   NonHotswappableChange,
   HotswappableChangeCandidate,
- HotswapPropertyOverrides, ClassifiedResourceChanges,
+  HotswapPropertyOverrides, ClassifiedResourceChanges,
   reportNonHotswappableChange,
   reportNonHotswappableResource,
 } from './hotswap/common';

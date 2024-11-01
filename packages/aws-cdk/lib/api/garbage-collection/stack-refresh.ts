@@ -1,5 +1,4 @@
 import { ParameterDeclaration } from '@aws-sdk/client-cloudformation';
-import { CloudFormation } from 'aws-sdk';
 import { debug } from '../../logging';
 import { ICloudFormationClient } from '../aws-auth';
 
@@ -39,7 +38,7 @@ async function paginateSdkCall(cb: (nextToken?: string) => Promise<string | unde
 async function fetchAllStackTemplates(cfn: ICloudFormationClient, qualifier?: string) {
   const stackNames: string[] = [];
   await paginateSdkCall(async (nextToken) => {
-    const stacks = await cfn.listStacks({ NextToken: nextToken }).promise();
+    const stacks = await cfn.listStacks({ NextToken: nextToken });
 
     // We ignore stacks with these statuses because their assets are no longer live
     const ignoredStatues = ['CREATE_FAILED', 'DELETE_COMPLETE', 'DELETE_IN_PROGRESS', 'DELETE_FAILED', 'REVIEW_IN_PROGRESS'];
@@ -188,8 +187,4 @@ export class BackgroundStackRefresh {
   public stop() {
     clearTimeout(this.timeout);
   }
-}
-
-function sleep(ms: number) {
-  return new Promise((ok) => setTimeout(ok, ms));
 }

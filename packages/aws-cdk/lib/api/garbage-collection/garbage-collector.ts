@@ -1,10 +1,11 @@
 import * as crypto from 'node:crypto';
 import * as cxapi from '@aws-cdk/cx-api';
+import { ImageIdentifier } from '@aws-sdk/client-ecr';
 import { Tag } from '@aws-sdk/client-s3';
 import * as chalk from 'chalk';
 import * as promptly from 'promptly';
 import { debug, print } from '../../logging';
-import { SDK, SdkProvider, IS3Client } from '../aws-auth';
+import { SDK, SdkProvider, IS3Client, IECRClient } from '../aws-auth';
 import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitInfo } from '../toolkit-info';
 import { ProgressPrinter } from './progress-printer';
 import { ActiveAssetCache, BackgroundStackRefresh, refreshStacks } from './stack-refresh';
@@ -244,7 +245,7 @@ export class GarbageCollector {
   /**
    * Perform garbage collection on ECR assets
    */
-  public async garbageCollectEcr(sdk: ISDK, activeAssets: ActiveAssetCache, backgroundStackRefresh: BackgroundStackRefresh) {
+  public async garbageCollectEcr(sdk: SDK, activeAssets: ActiveAssetCache, backgroundStackRefresh: BackgroundStackRefresh) {
     const ecr = sdk.ecr();
     const repo = await this.bootstrapRepositoryName(sdk, this.bootstrapStackName);
     const numImages = await this.numImagesInRepo(ecr, repo);
@@ -317,7 +318,7 @@ export class GarbageCollector {
   /**
    * Perform garbage collection on S3 assets
    */
-  public async garbageCollectS3(sdk: ISDK, activeAssets: ActiveAssetCache, backgroundStackRefresh: BackgroundStackRefresh) {
+  public async garbageCollectS3(sdk: SDK, activeAssets: ActiveAssetCache, backgroundStackRefresh: BackgroundStackRefresh) {
     const s3 = sdk.s3({
       needsMd5Checksums: true,
     });
@@ -404,7 +405,7 @@ export class GarbageCollector {
    * Untag assets that were previously tagged, but now currently referenced.
    * Since this is treated as an implementation detail, we do not print the results in the printer.
    */
-  private async parallelUntagEcr(ecr: ECR, repo: string, untaggables: ImageAsset[]) {
+  private async parallelUntagEcr(ecr: IECRClient, repo: string, untaggables: ImageAsset[]) {
     const limit = pLimit(P_LIMIT);
 
     for (const img of untaggables) {
@@ -415,7 +416,7 @@ export class GarbageCollector {
           imageIds: [{
             imageTag: tag,
           }],
-        }).promise(),
+        }),
       );
     }
 
@@ -456,7 +457,7 @@ export class GarbageCollector {
   /**
    * Tag images in parallel using p-limit
    */
-  private async parallelTagEcr(ecr: ECR, repo: string, taggables: ImageAsset[], printer: ProgressPrinter) {
+  private async parallelTagEcr(ecr: IECRClient, repo: string, taggables: ImageAsset[], printer: ProgressPrinter) {
     const limit = pLimit(P_LIMIT);
 
     for (let i = 0; i < taggables.length; i++) {
@@ -468,7 +469,7 @@ export class GarbageCollector {
             imageDigest: img.digest,
             imageManifest: img.manifest,
             imageTag: img.buildImageTag(i),
-          }).promise();
+          });
         } catch (error) {
           // This is a false negative -- an isolated asset is untagged
           // likely due to an imageTag collision. We can safely ignore,
@@ -514,9 +515,9 @@ export class GarbageCollector {
   /**
    * Delete images in parallel. The deleteImage API supports batches of 100.
    */
-  private async parallelDeleteEcr(ecr: ECR, repo: string, deletables: ImageAsset[], printer: ProgressPrinter) {
+  private async parallelDeleteEcr(ecr: IECRClient, repo: string, deletables: ImageAsset[], printer: ProgressPrinter) {
     const batchSize = 100;
-    const imagesToDelete: ECR.ImageIdentifierList = deletables.map(img => ({
+    const imagesToDelete = deletables.map(img => ({
       imageDigest: img.digest,
     }));
 
@@ -530,7 +531,7 @@ export class GarbageCollector {
         await ecr.batchDeleteImage({
           imageIds: batch,
           repositoryName: repo,
-        }).promise();
+        });
 
         const deletedCount = batch.length;
         debug(`Deleted ${deletedCount} assets`);
@@ -606,7 +607,7 @@ export class GarbageCollector {
     return totalCount;
   }
 
-  private async numImagesInRepo(ecr: ECR, repo: string): Promise<number> {
+  private async numImagesInRepo(ecr: IECRClient, repo: string): Promise<number> {
     let totalCount = 0;
     let nextToken: string | undefined;
 
@@ -614,7 +615,7 @@ export class GarbageCollector {
       const response = await ecr.listImages({
         repositoryName: repo,
         nextToken: nextToken,
-      }).promise();
+      });
 
       totalCount += response.imageIds?.length ?? 0;
       nextToken = response.nextToken;
@@ -623,7 +624,7 @@ export class GarbageCollector {
     return totalCount;
   }
 
-  private async *readRepoInBatches(ecr: ECR, repo: string, batchSize: number = 1000, currentTime: number): AsyncGenerator<ImageAsset[]> {
+  private async *readRepoInBatches(ecr: IECRClient, repo: string, batchSize: number = 1000, currentTime: number): AsyncGenerator<ImageAsset[]> {
     let continuationToken: string | undefined;
 
     do {
@@ -632,7 +633,7 @@ export class GarbageCollector {
       while (batch.length < batchSize) {
         const response = await ecr.listImages({
           repositoryName: repo,
-        }).promise();
+        });
 
         // No images in the repository
         if (!response.imageIds || response.imageIds.length === 0) {
@@ -649,12 +650,12 @@ export class GarbageCollector {
         const describeImageInfo = await ecr.describeImages({
           repositoryName: repo,
           imageIds: imageIds,
-        }).promise();
+        });
 
         const getImageInfo = await ecr.batchGetImage({
           repositoryName: repo,
           imageIds: imageIds,
-        }).promise();
+        });
 
         const combinedImageInfo = describeImageInfo.imageDetails?.map(imageDetail => {
           const matchingImage = getImageInfo.images?.find(
@@ -765,7 +766,7 @@ function partition<A>(xs: Iterable<A>, pred: (x: A) => boolean): { included: A[]
   return result;
 }
 
-function imageMap(imageIds: ECR.ImageIdentifierList) {
+function imageMap(imageIds: ImageIdentifier[]) {
   const images: Record<string, string[]> = {};
   for (const image of imageIds ?? []) {
     if (!image.imageDigest || !image.imageTag) { continue; }
