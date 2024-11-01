@@ -7,7 +7,7 @@ import type { SDK } from './aws-auth/sdk';
 import type { CredentialsOptions, SdkForEnvironment, SdkProvider } from './aws-auth/sdk-provider';
 import { type DeploymentMethod, deployStack, type DeployStackResult, destroyStack } from './deploy-stack';
 import { type EnvironmentResources, EnvironmentResourcesRegistry } from './environment-resources';
-import { HotswapMode } from './hotswap/common';
+import { HotswapMode, HotswapPropertyOverrides } from './hotswap/common';
 import {
   loadCurrentTemplate,
   loadCurrentTemplateWithNestedStacks,
@@ -199,6 +199,11 @@ export interface DeployStackOptions {
    * @default - `HotswapMode.FULL_DEPLOYMENT` for regular deployments, `HotswapMode.HOTSWAP_ONLY` for 'watch' deployments
    */
   readonly hotswap?: HotswapMode;
+
+  /**
+  * Properties that configure hotswap behavior
+  */
+  readonly hotswapPropertyOverrides?: HotswapPropertyOverrides;
 
   /**
    * The extra string to append to the User-Agent header when performing AWS SDK calls.
@@ -522,6 +527,7 @@ export class Deployments {
       ci: options.ci,
       rollback: options.rollback,
       hotswap: options.hotswap,
+      hotswapPropertyOverrides: options.hotswapPropertyOverrides,
       extraUserAgent: options.extraUserAgent,
       resourcesToImport: options.resourcesToImport,
       overrideTemplate: options.overrideTemplate,
@@ -874,7 +880,7 @@ export class Deployments {
     const { manifest, stackEnv } = await this.prepareAndValidateAssets(asset, options);
     await publishAssets(manifest, this.sdkProvider, stackEnv, {
       ...options.publishOptions,
-      allowCrossAccount: await this.allowCrossAccountAssetPublishingForEnv(stackEnv),
+      allowCrossAccount: await this.allowCrossAccountAssetPublishingForEnv(options.stack),
     });
   }
 
@@ -926,15 +932,15 @@ export class Deployments {
     // No need to validate anymore, we already did that during build
     const publisher = this.cachedPublisher(assetManifest, stackEnv, options.stackName);
     // eslint-disable-next-line no-console
-    await publisher.publishEntry(asset, { allowCrossAccount: await this.allowCrossAccountAssetPublishingForEnv(stackEnv) });
+    await publisher.publishEntry(asset, { allowCrossAccount: await this.allowCrossAccountAssetPublishingForEnv(options.stack) });
     if (publisher.hasFailures) {
       throw new Error(`Failed to publish asset ${asset.id}`);
     }
   }
 
-  private async allowCrossAccountAssetPublishingForEnv(env: cxapi.Environment): Promise<boolean> {
+  private async allowCrossAccountAssetPublishingForEnv(stack: cxapi.CloudFormationStackArtifact): Promise<boolean> {
     if (this._allowCrossAccountAssetPublishing === undefined) {
-      const sdk = (await this.cachedSdkForEnvironment(env, Mode.ForReading)).sdk;
+      const { stackSdk: sdk } = await this.prepareSdkFor(stack, undefined, Mode.ForReading);
       this._allowCrossAccountAssetPublishing = await determineAllowCrossAccountAssetPublishing(sdk, this.props.toolkitStackName);
     }
     return this._allowCrossAccountAssetPublishing;

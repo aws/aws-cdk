@@ -2,6 +2,8 @@ import { DescribeServicesCommand, RegisterTaskDefinitionCommand, UpdateServiceCo
 import * as setup from './hotswap-test-setup';
 import { HotswapMode } from '../../../lib/api/hotswap/common';
 import { mockECSClient } from '../../util/mock-sdk';
+import { EcsHotswapProperties, HotswapMode, HotswapPropertyOverrides } from '../../../lib/api/hotswap/common';
+import { Configuration } from '../../../lib/settings';
 import { silentTest } from '../../util/silent';
 
 let hotswapMockSdkProvider: setup.HotswapMockSdkProvider;
@@ -634,6 +636,93 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       taskDefinition: 'arn:aws:ecs:region:account:task-definition/my-task-def:3',
       deploymentConfiguration: {
         minimumHealthyPercent: 0,
+      },
+      forceNewDeployment: true,
+    });
+  });
+});
+
+describe.each([
+  new Configuration().settings.set(['hotswap'], { ecs: { minimumHealthyPercent: 10 } }),
+  new Configuration().settings.set(['hotswap'], { ecs: { minimumHealthyPercent: 10, maximumHealthyPercent: 100 } }),
+])('hotswap properties', (settings) => {
+  test('should handle all possible hotswap properties', async () => {
+    // GIVEN
+    setup.setCurrentCfnStackTemplate({
+      Resources: {
+        TaskDef: {
+          Type: 'AWS::ECS::TaskDefinition',
+          Properties: {
+            Family: 'my-task-def',
+            ContainerDefinitions: [
+              { Image: 'image1' },
+            ],
+          },
+        },
+        Service: {
+          Type: 'AWS::ECS::Service',
+          Properties: {
+            TaskDefinition: { Ref: 'TaskDef' },
+          },
+        },
+      },
+    });
+    setup.pushStackResourceSummaries(
+      setup.stackSummaryOf('Service', 'AWS::ECS::Service',
+        'arn:aws:ecs:region:account:service/my-cluster/my-service'),
+    );
+    mockRegisterTaskDef.mockReturnValue({
+      taskDefinition: {
+        taskDefinitionArn: 'arn:aws:ecs:region:account:task-definition/my-task-def:3',
+      },
+    });
+    const cdkStackArtifact = setup.cdkStackArtifactOf({
+      template: {
+        Resources: {
+          TaskDef: {
+            Type: 'AWS::ECS::TaskDefinition',
+            Properties: {
+              Family: 'my-task-def',
+              ContainerDefinitions: [
+                { Image: 'image2' },
+              ],
+            },
+          },
+          Service: {
+            Type: 'AWS::ECS::Service',
+            Properties: {
+              TaskDefinition: { Ref: 'TaskDef' },
+            },
+          },
+        },
+      },
+    });
+
+    // WHEN
+    let ecsHotswapProperties = new EcsHotswapProperties(settings.get(['hotswap']).ecs.minimumHealthyPercent, settings.get(['hotswap']).ecs.maximumHealthyPercent);
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(
+      HotswapMode.HOTSWAP_ONLY,
+      cdkStackArtifact,
+      {},
+      new HotswapPropertyOverrides(ecsHotswapProperties),
+    );
+
+    // THEN
+    expect(deployStackResult).not.toBeUndefined();
+    expect(mockRegisterTaskDef).toBeCalledWith({
+      family: 'my-task-def',
+      containerDefinitions: [
+        { image: 'image2' },
+      ],
+    });
+    expect(mockUpdateService).toBeCalledWith({
+      service: 'arn:aws:ecs:region:account:service/my-cluster/my-service',
+      cluster: 'my-cluster',
+      taskDefinition: 'arn:aws:ecs:region:account:task-definition/my-task-def:3',
+      deploymentConfiguration: {
+        minimumHealthyPercent: settings.get(['hotswap']).ecs?.minimumHealthyPercent == undefined ?
+          0 : settings.get(['hotswap']).ecs?.minimumHealthyPercent,
+        maximumPercent: settings.get(['hotswap']).ecs?.maximumHealthyPercent,
       },
       forceNewDeployment: true,
     });

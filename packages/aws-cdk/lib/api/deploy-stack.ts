@@ -12,7 +12,7 @@ import * as uuid from 'uuid';
 import type { SDK, SdkProvider, ICloudFormationClient } from './aws-auth';
 import type { EnvironmentResources } from './environment-resources';
 import { CfnEvaluationException } from './evaluate-cloudformation-template';
-import { HotswapMode, ICON } from './hotswap/common';
+import { HotswapMode, HotswapPropertyOverrides, ICON } from './hotswap/common';
 import { tryHotswapDeployment } from './hotswap-deployments';
 import { addMetadataAssetsToManifest } from '../assets';
 import { debug, print, warning } from '../logging';
@@ -187,6 +187,11 @@ export interface DeployStackOptions {
   readonly hotswap?: HotswapMode;
 
   /**
+   * Extra properties that configure hotswap behavior
+   */
+  readonly hotswapPropertyOverrides?: HotswapPropertyOverrides;
+
+  /**
    * The extra string to append to the User-Agent header when performing AWS SDK calls.
    *
    * @default - nothing extra is appended to the User-Agent header
@@ -283,6 +288,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     : templateParams.supplyAll(finalParameterValues);
 
   const hotswapMode = options.hotswap ?? HotswapMode.FULL_DEPLOYMENT;
+  const hotswapPropertyOverrides = options.hotswapPropertyOverrides ?? new HotswapPropertyOverrides();
 
   if (await canSkipDeploy(options, cloudFormationStack, stackParams.hasChanges(cloudFormationStack.parameters))) {
     debug(`${deployName}: skipping deployment (use --force to override)`);
@@ -329,7 +335,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
         stackParams.values,
         cloudFormationStack,
         stackArtifact,
-        hotswapMode,
+        hotswapMode, hotswapPropertyOverrides,
       );
       if (hotswapDeploymentResult) {
         return hotswapDeploymentResult;

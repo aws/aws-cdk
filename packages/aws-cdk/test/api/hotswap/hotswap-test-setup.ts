@@ -2,7 +2,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { ListStackResourcesCommand, StackResourceSummary, StackStatus } from '@aws-sdk/client-cloudformation';
 import { GetFunctionConfigurationCommand } from '@aws-sdk/client-lambda';
 import { DeployStackResult, ICloudFormationClient } from '../../../lib/api';
-import { HotswapMode } from '../../../lib/api/hotswap/common';
+import { HotswapMode, HotswapPropertyOverrides } from '../../../lib/api/hotswap/common';
 import * as deployments from '../../../lib/api/hotswap-deployments';
 import { CloudFormationStack, Template } from '../../../lib/api/util/cloudformation';
 import { testStack, TestStackArtifact } from '../../util';
@@ -138,7 +138,9 @@ export class HotswapMockSdkProvider extends MockSdkProvider {
     hotswapMode: HotswapMode,
     stackArtifact: cxapi.CloudFormationStackArtifact,
     assetParams: { [key: string]: string } = {},
+    hotswapPropertyOverrides?: HotswapPropertyOverrides,
   ): Promise<DeployStackResult | undefined> {
-    return deployments.tryHotswapDeployment(this, assetParams, currentCfnStack, stackArtifact, hotswapMode);
+    let hotswapProps = hotswapPropertyOverrides || new HotswapPropertyOverrides();
+    return deployments.tryHotswapDeployment(this, assetParams, currentCfnStack, stackArtifact, hotswapMode, hotswapProps);
   }
 }

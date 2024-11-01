@@ -176,6 +176,7 @@ test('correctly passes CFN parameters when hotswapping', async () => {
     expect.anything(),
     expect.anything(),
     HotswapMode.FALL_BACK,
+    expect.anything()
   );
 });
 
@@ -215,6 +216,7 @@ test('correctly passes SSM parameters when hotswapping', async () => {
     expect.anything(),
     expect.anything(),
     HotswapMode.FALL_BACK,
+    expect.anything()
   );
 });
 

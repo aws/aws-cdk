@@ -2,7 +2,7 @@ import {
   type ChangeHotswapResult,
   classifyChanges,
   type HotswappableChangeCandidate,
-  lowerCaseFirstCharacter,
+ HotswapPropertyOverrides, lowerCaseFirstCharacter,
   reportNonHotswappableChange,
   transformObjectKeys,
 } from './common';
@@ -13,6 +13,7 @@ export async function isHotswappableEcsServiceChange(
   logicalId: string,
   change: HotswappableChangeCandidate,
   evaluateCfnTemplate: EvaluateCloudFormationTemplate,
+  hotswapPropertyOverrides: HotswapPropertyOverrides,
 ): Promise<ChangeHotswapResult> {
   // the only resource change we can evaluate here is an ECS TaskDefinition
   if (change.newValue.Type !== 'AWS::ECS::TaskDefinition') {
@@ -99,6 +100,10 @@ export async function isHotswappableEcsServiceChange(
         const registerTaskDefResponse = await sdk.ecs().registerTaskDefinition(lowercasedTaskDef);
         const taskDefRevArn = registerTaskDefResponse.taskDefinition?.taskDefinitionArn;
 
+        let ecsHotswapProperties = hotswapPropertyOverrides.ecsHotswapProperties;
+        let minimumHealthyPercent = ecsHotswapProperties?.minimumHealthyPercent;
+        let maximumHealthyPercent = ecsHotswapProperties?.maximumHealthyPercent;
+
         // Step 2 - update the services using that TaskDefinition to point to the new TaskDefinition Revision
         // Forcing New Deployment and setting Minimum Healthy Percent to 0.
         // As CDK HotSwap is development only, this seems the most efficient way to ensure all tasks are replaced immediately, regardless of original amount
@@ -112,7 +117,8 @@ export async function isHotswappableEcsServiceChange(
               cluster,
               forceNewDeployment: true,
               deploymentConfiguration: {
-                minimumHealthyPercent: 0,
+                minimumHealthyPercent: minimumHealthyPercent !== undefined ? minimumHealthyPercent : 0,
+                maximumPercent: maximumHealthyPercent !== undefined ? maximumHealthyPercent : undefined,
               },
             });
 

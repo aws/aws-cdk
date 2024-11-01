@@ -145,6 +145,7 @@ export function mockBootstrapStack(stack?: Partial<Stack>) {
     Outputs: [
       { OutputKey: 'BucketName', OutputValue: 'BUCKET_NAME' },
       { OutputKey: 'BucketDomainName', OutputValue: 'BUCKET_ENDPOINT' },
+      { OutputKey: 'ImageRepositoryName', OutputValue: 'REPO_NAME' },
       { OutputKey: 'BootstrapVersion', OutputValue: '1' },
       ...(stack?.Outputs ?? []),
     ],

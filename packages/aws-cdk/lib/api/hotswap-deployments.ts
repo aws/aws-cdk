@@ -15,7 +15,7 @@ import {
   HotswappableChange,
   NonHotswappableChange,
   HotswappableChangeCandidate,
-  ClassifiedResourceChanges,
+ HotswapPropertyOverrides, ClassifiedResourceChanges,
   reportNonHotswappableChange,
   reportNonHotswappableResource,
 } from './hotswap/common';
@@ -38,6 +38,7 @@ type HotswapDetector = (
   logicalId: string,
   change: HotswappableChangeCandidate,
   evaluateCfnTemplate: EvaluateCloudFormationTemplate,
+  hotswapPropertyOverrides: HotswapPropertyOverrides,
 ) => Promise<ChangeHotswapResult>;
 
 const RESOURCE_DETECTORS: { [key: string]: HotswapDetector } = {
@@ -83,7 +84,7 @@ export async function tryHotswapDeployment(
   assetParams: { [key: string]: string },
   cloudFormationStack: CloudFormationStack,
   stackArtifact: cxapi.CloudFormationStackArtifact,
-  hotswapMode: HotswapMode,
+  hotswapMode: HotswapMode, hotswapPropertyOverrides: HotswapPropertyOverrides,
 ): Promise<DeployStackResult | undefined> {
   // resolve the environment, so we can substitute things like AWS::Region in CFN expressions
   const resolvedEnv = await sdkProvider.resolveEnvironment(stackArtifact.environment);
@@ -109,7 +110,7 @@ export async function tryHotswapDeployment(
     stackChanges,
     evaluateCfnTemplate,
     sdk,
-    currentTemplate.nestedStacks,
+    currentTemplate.nestedStacks, hotswapPropertyOverrides,
   );
 
   logNonHotswappableChanges(nonHotswappableChanges, hotswapMode);
@@ -140,6 +141,7 @@ async function classifyResourceChanges(
   evaluateCfnTemplate: EvaluateCloudFormationTemplate,
   sdk: SDK,
   nestedStackNames: { [nestedStackName: string]: NestedStackTemplates },
+  hotswapPropertyOverrides: HotswapPropertyOverrides,
 ): Promise<ClassifiedResourceChanges> {
   const resourceDifferences = getStackResourceDifferences(stackChanges);
 
@@ -157,16 +159,14 @@ async function classifyResourceChanges(
   }
   // gather the results of the detector functions
   for (const [logicalId, change] of Object.entries(resourceDifferences)) {
-    if (
-      change.newValue?.Type === 'AWS::CloudFormation::Stack' &&
-      change.oldValue?.Type === 'AWS::CloudFormation::Stack'
-    ) {
+    if (change.newValue?.Type === 'AWS::CloudFormation::Stack' && change.oldValue?.Type === 'AWS::CloudFormation::Stack') {
       const nestedHotswappableResources = await findNestedHotswappableChanges(
         logicalId,
         change,
         nestedStackNames,
         evaluateCfnTemplate,
         sdk,
+        hotswapPropertyOverrides,
       );
       hotswappableResources.push(...nestedHotswappableResources.hotswappableChanges);
       nonHotswappableResources.push(...nestedHotswappableResources.nonHotswappableChanges);
@@ -188,7 +188,7 @@ async function classifyResourceChanges(
     if (resourceType in RESOURCE_DETECTORS) {
       // run detector functions lazily to prevent unhandled promise rejections
       promises.push(() =>
-        RESOURCE_DETECTORS[resourceType](logicalId, hotswappableChangeCandidate, evaluateCfnTemplate),
+        RESOURCE_DETECTORS[resourceType](logicalId, hotswappableChangeCandidate, evaluateCfnTemplate, hotswapPropertyOverrides),
       );
     } else {
       reportNonHotswappableChange(
@@ -281,6 +281,7 @@ async function findNestedHotswappableChanges(
   nestedStackTemplates: { [nestedStackName: string]: NestedStackTemplates },
   evaluateCfnTemplate: EvaluateCloudFormationTemplate,
   sdk: SDK,
+  hotswapPropertyOverrides: HotswapPropertyOverrides,
 ): Promise<ClassifiedResourceChanges> {
   const nestedStack = nestedStackTemplates[logicalId];
   if (!nestedStack.physicalName) {
@@ -314,7 +315,7 @@ async function findNestedHotswappableChanges(
     evaluateNestedCfnTemplate,
     sdk,
     nestedStackTemplates[logicalId].nestedStackTemplates,
-  );
+    hotswapPropertyOverrides);
 }
 
 /** Returns 'true' if a pair of changes is for the same resource. */

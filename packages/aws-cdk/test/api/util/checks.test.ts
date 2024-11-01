@@ -19,7 +19,21 @@ describe('determineAllowCrossAccountAssetPublishing', () => {
       }],
     });
 
-    mockCloudFormationClient.on(DescribeStackResourcesCommand).resolves({ StackResources: [] });
+    const result = await determineAllowCrossAccountAssetPublishing(mockSDK);
+    expect(result).toBe(true);
+  });
+
+  it.each(['', '-', '*', '---'])('should return true when the bucket output does not look like a real bucket', async (notABucketName) => {
+    AWSMock.mock('CloudFormation', 'describeStacks', (_params: any, callback: Function) => {
+      callback(null, {
+        Stacks: [{
+          Outputs: [
+            { OutputKey: 'BootstrapVersion', OutputValue: '1' },
+            { OutputKey: 'BucketName', OutputValue: notABucketName },
+          ],
+        }],
+      });
+    });
 
     const result = await determineAllowCrossAccountAssetPublishing(mockSDK);
     expect(result).toBe(true);
@@ -33,18 +47,29 @@ describe('determineAllowCrossAccountAssetPublishing', () => {
         StackName: 'foo',
         CreationTime: new Date(),
         StackStatus: StackStatus.CREATE_COMPLETE,
-        Outputs: [{ OutputKey: 'BootstrapVersion', OutputValue: '21' }],
+        Outputs: [
+            { OutputKey: 'BootstrapVersion', OutputValue: '21' },
+            { OutputKey: 'BucketName', OutputValue: 'some-bucket' },
+          ],
       }],
     });
 
-    mockCloudFormationClient.on(DescribeStackResourcesCommand).resolves({
-      StackResources: [{
-        LogicalResourceId: 'foo',
-        Timestamp: new Date(),
-        ResourceStatus: ResourceStatus.CREATE_COMPLETE,
-        ResourceType: 'AWS::S3::Bucket',
-        PhysicalResourceId: 'some-bucket',
-      }],
+    const result = await determineAllowCrossAccountAssetPublishing(mockSDK);
+    expect(result).toBe(true);
+  });
+
+  it('should return true if looking up the bootstrap stack fails', async () => {
+    AWSMock.mock('CloudFormation', 'describeStacks', (_params: any, callback: Function) => {
+      callback(new Error('Could not read bootstrap stack'));
+    });
+
+    const result = await determineAllowCrossAccountAssetPublishing(mockSDK);
+    expect(result).toBe(true);
+  });
+
+  it('should return true if looking up the bootstrap stack fails', async () => {
+    AWSMock.mock('CloudFormation', 'describeStacks', (_params: any, callback: Function) => {
+      callback(new Error('Could not read bootstrap stack'));
     });
 
     const result = await determineAllowCrossAccountAssetPublishing(mockSDK);
@@ -58,17 +83,10 @@ describe('determineAllowCrossAccountAssetPublishing', () => {
         StackName: 'foo',
         CreationTime: new Date(),
         StackStatus: StackStatus.CREATE_COMPLETE,
-        Outputs: [{ OutputKey: 'BootstrapVersion', OutputValue: '20' }],
-      }],
-    });
-
-    mockCloudFormationClient.on(DescribeStackResourcesCommand).resolves({
-      StackResources: [{
-        LogicalResourceId: 'foo',
-        Timestamp: new Date(),
-        ResourceStatus: ResourceStatus.CREATE_COMPLETE,
-        ResourceType: 'AWS::S3::Bucket',
-        PhysicalResourceId: 'some-bucket',
+        Outputs: [
+            { OutputKey: 'BootstrapVersion', OutputValue: '20' },
+            { OutputKey: 'BucketName', OutputValue: 'some-bucket' },
+          ],
       }],
     });
 
@@ -86,17 +104,10 @@ describe('getBootstrapStackInfo', () => {
         StackName: 'foo',
         CreationTime: new Date(),
         StackStatus: StackStatus.CREATE_COMPLETE,
-        Outputs: [{ OutputKey: 'BootstrapVersion', OutputValue: '21' }],
-      }],
-    });
-
-    mockCloudFormationClient.on(DescribeStackResourcesCommand).resolves({
-      StackResources: [{
-        LogicalResourceId: 'foo',
-        Timestamp: new Date(),
-        ResourceStatus: ResourceStatus.CREATE_COMPLETE,
-        ResourceType: 'AWS::S3::Bucket',
-        PhysicalResourceId: 'some-bucket',
+        Outputs: [
+            { OutputKey: 'BootstrapVersion', OutputValue: '21' },
+            { OutputKey: 'BucketName', OutputValue: 'some-bucket' },
+          ],
       }],
     });
 
