@@ -419,6 +419,13 @@ interface DatabaseClusterBaseProps {
    * @default - default master key
    */
   readonly performanceInsightEncryptionKey?: kms.IKey;
+
+  /**
+   * Specifies whether minor engine upgrades are applied automatically to the DB cluster during the maintenance window.
+   *
+   * @default true
+   */
+  readonly autoMinorVersionUpgrade?: boolean;
 }
 
 /**
@@ -795,6 +802,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       performanceInsightsEnabled: this.performanceInsightsEnabled || props.enablePerformanceInsights, // fall back to undefined if not set
       performanceInsightsKmsKeyId: this.performanceInsightEncryptionKey?.keyArn,
       performanceInsightsRetentionPeriod: this.performanceInsightRetention,
+      autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,
     };
   }
 

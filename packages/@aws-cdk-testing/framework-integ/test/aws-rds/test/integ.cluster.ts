@@ -62,6 +62,7 @@ class TestStack extends cdk.Stack {
       readers: readers,
       parameterGroup: params,
       storageEncryptionKey: kmsKey,
+      autoMinorVersionUpgrade: false,
     });
 
     cluster.connections.allowDefaultPortFromAnyIpv4('Open to the world');
