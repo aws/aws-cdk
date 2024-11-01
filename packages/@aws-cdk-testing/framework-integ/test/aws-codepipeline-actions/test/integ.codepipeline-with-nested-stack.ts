@@ -8,11 +8,16 @@ import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import { Construct } from 'constructs';
 
 /**
+ * This test is to make sure the stack names are resolved when using in nested stacks with
+ * CodePipeline construct. It needs additional setup to run the integration tests and deploy
+ * it. For simplicity, we should allow dry-run on this test as long as CDK synth is successful.
+ * 
  * To deploy this stack, you need to do the following:
  * 1. export CDK_DEFAULT_ACCOUNT='<your-aws-account-id>'
  * 2. make sure you've bootstrapped 'us-west-2' by running 'cdk bootstrap aws://<your-aws-account-id>/us-west-2'
  * 3. deploy a state machine resource in 'us-west-2' and name the state machine 'MyStateMachine'
- * 4. run 'yarn integ aws-codepipeline-actions/test/integ.codepipeline-with-nested-stack --update-on-failed'
+ * 4. update GitHub source section to use the valid OAuth token.
+ * 5. run 'yarn integ aws-codepipeline-actions/test/integ.codepipeline-with-nested-stack --update-on-failed'
  */
 
 export class MainStack extends cdk.Stack {
