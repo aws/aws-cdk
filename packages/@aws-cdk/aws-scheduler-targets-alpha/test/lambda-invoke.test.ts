@@ -85,11 +85,11 @@ describe('schedule target', () => {
                       {
                         Ref: 'AWS::Partition',
                       },
-                      ':scheduler:us-east-1:123456789012:schedule-group/default'
+                      ':scheduler:us-east-1:123456789012:schedule-group/default',
                     ],
                   ],
-                }
-              }
+                },
+              },
             },
             Principal: {
               Service: 'scheduler.amazonaws.com',
@@ -158,11 +158,11 @@ describe('schedule target', () => {
                       {
                         Ref: 'AWS::Partition',
                       },
-                      ':scheduler:us-east-1:123456789012:schedule-group/default'
+                      ':scheduler:us-east-1:123456789012:schedule-group/default',
                     ],
                   ],
-                }
-              }
+                },
+              },
             },
             Principal: {
               Service: 'scheduler.amazonaws.com',
@@ -256,11 +256,11 @@ describe('schedule target', () => {
                       {
                         Ref: 'AWS::Partition',
                       },
-                      ':scheduler:us-east-1:123456789012:schedule-group/default'
+                      ':scheduler:us-east-1:123456789012:schedule-group/default',
                     ],
                   ],
-                }
-              }
+                },
+              },
             },
             Principal: {
               Service: 'scheduler.amazonaws.com',
@@ -330,11 +330,11 @@ describe('schedule target', () => {
                       {
                         Ref: 'AWS::Partition',
                       },
-                      ':scheduler:us-east-1:123456789012:schedule-group/default'
+                      ':scheduler:us-east-1:123456789012:schedule-group/default',
                     ],
                   ],
-                }
-              }
+                },
+              },
             },
             Principal: {
               Service: 'scheduler.amazonaws.com',
@@ -349,10 +349,10 @@ describe('schedule target', () => {
                 'aws:SourceArn': {
                   'Fn::GetAtt': [
                     'GroupC77FDACD',
-                    'Arn'
+                    'Arn',
                   ],
-                }
-              }
+                },
+              },
             },
             Principal: {
               Service: 'scheduler.amazonaws.com',
@@ -488,11 +488,11 @@ describe('schedule target', () => {
                       {
                         Ref: 'AWS::Partition',
                       },
-                      ':scheduler:us-east-1:123456789012:schedule-group/default'
+                      ':scheduler:us-east-1:123456789012:schedule-group/default',
                     ],
                   ],
-                }
-              }
+                },
+              },
             },
             Principal: {
               Service: 'scheduler.amazonaws.com',

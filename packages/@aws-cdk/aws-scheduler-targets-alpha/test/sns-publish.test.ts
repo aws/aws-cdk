@@ -1,11 +1,11 @@
 import * as scheduler from '@aws-cdk/aws-scheduler-alpha';
+import { Group } from '@aws-cdk/aws-scheduler-alpha';
 import { App, Duration, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import { SnsPublish } from '../lib/sns-publish';
-import { Group } from '@aws-cdk/aws-scheduler-alpha';
 
 describe('sns topic schedule target', () => {
   let app: App;
@@ -80,10 +80,10 @@ describe('sns topic schedule target', () => {
                       {
                         Ref: 'AWS::Partition',
                       },
-                      ':scheduler:us-east-1:123456789012:schedule-group/default'
+                      ':scheduler:us-east-1:123456789012:schedule-group/default',
                     ],
                   ],
-                }
+                },
               },
             },
             Principal: {
@@ -184,10 +184,10 @@ describe('sns topic schedule target', () => {
                       {
                         Ref: 'AWS::Partition',
                       },
-                      ':scheduler:us-east-1:123456789012:schedule-group/default'
+                      ':scheduler:us-east-1:123456789012:schedule-group/default',
                     ],
                   ],
-                }
+                },
               },
             },
             Principal: {
@@ -257,10 +257,10 @@ describe('sns topic schedule target', () => {
                       {
                         Ref: 'AWS::Partition',
                       },
-                      ':scheduler:us-east-1:123456789012:schedule-group/default'
+                      ':scheduler:us-east-1:123456789012:schedule-group/default',
                     ],
                   ],
-                }
+                },
               },
             },
             Principal: {
@@ -275,10 +275,10 @@ describe('sns topic schedule target', () => {
                 'aws:SourceArn': {
                   'Fn::GetAtt': [
                     'GroupC77FDACD',
-                    'Arn'
+                    'Arn',
                   ],
-                }
-              }
+                },
+              },
             },
             Principal: {
               Service: 'scheduler.amazonaws.com',

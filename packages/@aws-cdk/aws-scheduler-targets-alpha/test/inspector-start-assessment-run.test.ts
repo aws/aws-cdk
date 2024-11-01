@@ -74,11 +74,11 @@ describe('schedule target', () => {
                       {
                         Ref: 'AWS::Partition',
                       },
-                      ':scheduler:us-east-1:123456789012:schedule-group/default'
+                      ':scheduler:us-east-1:123456789012:schedule-group/default',
                     ],
                   ],
-                }
-              }
+                },
+              },
             },
             Principal: {
               Service: 'scheduler.amazonaws.com',
@@ -160,11 +160,11 @@ describe('schedule target', () => {
                       {
                         Ref: 'AWS::Partition',
                       },
-                      ':scheduler:us-east-1:123456789012:schedule-group/default'
+                      ':scheduler:us-east-1:123456789012:schedule-group/default',
                     ],
                   ],
-                }
-              }
+                },
+              },
             },
             Principal: {
               Service: 'scheduler.amazonaws.com',
@@ -223,11 +223,11 @@ describe('schedule target', () => {
                       {
                         Ref: 'AWS::Partition',
                       },
-                      ':scheduler:us-east-1:123456789012:schedule-group/default'
+                      ':scheduler:us-east-1:123456789012:schedule-group/default',
                     ],
                   ],
-                }
-              }
+                },
+              },
             },
             Principal: {
               Service: 'scheduler.amazonaws.com',
@@ -242,10 +242,10 @@ describe('schedule target', () => {
                 'aws:SourceArn': {
                   'Fn::GetAtt': [
                     'GroupC77FDACD',
-                    'Arn'
+                    'Arn',
                   ],
-                }
-              }
+                },
+              },
             },
             Principal: {
               Service: 'scheduler.amazonaws.com',
@@ -269,7 +269,6 @@ describe('schedule target', () => {
       Roles: [{ Ref: roleId }],
     }, 1);
   });
-
 
   test('creates IAM policy for inspector assessment template in the another stack with the same account', () => {
     const stack2 = new Stack(app, 'Stack2', {
