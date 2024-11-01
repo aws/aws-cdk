@@ -393,19 +393,19 @@ async function uploadBodyParameterAndCreateChangeSet(
 ): Promise<DescribeChangeSetCommandOutput | undefined> {
   try {
     await uploadStackTemplateAssets(options.stack, options.deployments);
-    const preparedSdk = (await options.deployments.prepareSdkWithDeployRole(options.stack));
+    const env = await options.deployments.envs.accessStackForMutableStackOperations(options.stack);
 
     const bodyParameter = await makeBodyParameter(
       options.stack,
-      preparedSdk.resolvedEnvironment,
+      env.resolvedEnvironment,
       new AssetManifestBuilder(),
-      preparedSdk.envResources,
-      preparedSdk.stackSdk,
+      env.resources,
+      env.sdk,
     );
-    const cfn = preparedSdk.stackSdk.cloudFormation();
+    const cfn = env.sdk.cloudFormation();
     const exists = (await CloudFormationStack.lookup(cfn, options.stack.stackName, false)).exists;
 
-    const executionRoleArn = preparedSdk.cloudFormationRoleArn;
+    const executionRoleArn = await env.replacePlaceholders(options.stack.cloudFormationExecutionRoleArn);
     options.stream.write(
       'Hold on while we create a read-only change set to get a diff with accurate replacement information (use --no-change-set to use a less accurate but faster template-only diff)\n',
     );

@@ -90,6 +90,7 @@ import { CdkToolkit, Tag } from '../lib/cdk-toolkit';
 import { RequireApproval } from '../lib/diff';
 import { Configuration } from '../lib/settings';
 import { flatten } from '../lib/util';
+import { Mode } from '../lib/api/plugin';
 
 process.env.CXAPI_DISABLE_SELECT_BY_ID = '1';
 
@@ -266,7 +267,7 @@ describe('readCurrentTemplate', () => {
     // THEN
     expect(flatten(stderrMock.mock.calls)).toEqual(
       expect.arrayContaining([
-        expect.stringMatching(/Could not assume bloop-lookup:here:123456789012/),
+
         expect.stringContaining(
           "Bootstrap stack version '5' is required, found version '1'. To get rid of this error, please upgrade to bootstrap version >= 5",
         ),
@@ -306,7 +307,12 @@ describe('readCurrentTemplate', () => {
 
   test('fallback to deploy role if bootstrap version parameter not found', async () => {
     // GIVEN
-    mockSSMClient.on(GetParameterCommand).rejects('not found');
+    mockSSMClient.on(GetParameterCommand).callsFake(() => {
+      const e: any = new Error('not found');
+      e.code = e.name = 'ParameterNotFound';
+      throw e;
+    });
+
     const cdkToolkit = new CdkToolkit({
       cloudExecutable: mockCloudExecutable,
       configuration: mockCloudExecutable.configuration,
@@ -324,7 +330,7 @@ describe('readCurrentTemplate', () => {
 
     // THEN
     expect(flatten(stderrMock.mock.calls)).toEqual(
-      expect.arrayContaining([expect.stringMatching(/Could not assume bloop-lookup:here:123456789012/)]),
+      expect.arrayContaining([expect.stringMatching(/SSM parameter.*not found./)]),
     );
     expect(mockForEnvironment).toHaveBeenCalledTimes(3);
     expect(mockForEnvironment).toHaveBeenNthCalledWith(
@@ -359,7 +365,7 @@ describe('readCurrentTemplate', () => {
     // GIVEN
     // throw error first for the 'prepareSdkWithLookupRoleFor' call and succeed for the rest
     mockForEnvironment = jest.spyOn(sdkProvider, 'forEnvironment').mockImplementationOnce(() => {
-      throw new Error('error');
+      throw new Error('TheErrorThatGetsThrown');
     });
 
     const cdkToolkit = new CdkToolkit({
@@ -380,7 +386,7 @@ describe('readCurrentTemplate', () => {
     // THEN
     expect(mockSSMClient).not.toHaveReceivedAnyCommand();
     expect(flatten(stderrMock.mock.calls)).toEqual(
-      expect.arrayContaining([expect.stringMatching(/Could not assume bloop-lookup:here:123456789012/)]),
+      expect.arrayContaining([expect.stringMatching(/TheErrorThatGetsThrown/)]),
     );
     expect(mockForEnvironment).toHaveBeenCalledTimes(3);
     expect(mockForEnvironment).toHaveBeenNthCalledWith(
@@ -435,11 +441,10 @@ describe('readCurrentTemplate', () => {
     // THEN
     expect(flatten(stderrMock.mock.calls)).toEqual(
       expect.arrayContaining([
-        expect.stringMatching(/Lookup role exists but was not assumed. Proceeding with default credentials./),
+        expect.stringMatching(/Lookup role.*was not assumed. Proceeding with default credentials./),
       ]),
     );
     expect(mockSSMClient).not.toHaveReceivedAnyCommand();
-    expect(mockForEnvironment).toHaveBeenCalledTimes(3);
     expect(mockForEnvironment).toHaveBeenNthCalledWith(
       1,
       {
@@ -447,7 +452,7 @@ describe('readCurrentTemplate', () => {
         name: 'aws://123456789012/here',
         region: 'here',
       },
-      0,
+      Mode.ForReading,
       {
         assumeRoleArn: 'bloop-lookup:here:123456789012',
         assumeRoleExternalId: undefined,
@@ -460,7 +465,7 @@ describe('readCurrentTemplate', () => {
         name: 'aws://123456789012/here',
         region: 'here',
       },
-      0,
+      Mode.ForWriting,
       {
         assumeRoleArn: 'bloop:here:123456789012',
         assumeRoleExternalId: undefined,
@@ -1277,7 +1282,7 @@ describe('synth', () => {
       );
     });
 
-    cliTest('migrate succeeds for valid template from local path when no lanugage is provided', async (workDir) => {
+    cliTest('migrate succeeds for valid template from local path when no language is provided', async (workDir) => {
       const toolkit = defaultToolkitSetup();
       await toolkit.migrate({
         stackName: 'SQSTypeScript',
@@ -1291,7 +1296,7 @@ describe('synth', () => {
       expect(fs.pathExistsSync(path.join(workDir, 'SQSTypeScript', 'lib', 'sqs_type_script-stack.ts'))).toBeTruthy();
     });
 
-    cliTest('migrate succeeds for valid template from local path when lanugage is provided', async (workDir) => {
+    cliTest('migrate succeeds for valid template from local path when language is provided', async (workDir) => {
       const toolkit = defaultToolkitSetup();
       await toolkit.migrate({
         stackName: 'S3Python',
