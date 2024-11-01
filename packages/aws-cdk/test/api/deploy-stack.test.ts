@@ -1,5 +1,5 @@
 /* eslint-disable import/order */
-import { deployStack, DeployStackOptions } from '../../lib/api';
+import { assertIsSuccessfulDeployStackResult, deployStack, DeployStackOptions } from '../../lib/api';
 import { HotswapMode } from '../../lib/api/hotswap/common';
 import { tryHotswapDeployment } from '../../lib/api/hotswap-deployments';
 import { setCI } from '../../lib/logging';
@@ -939,6 +939,10 @@ test.each([
 
   // THEN
   expect(result.type).toEqual(expectedType);
+});
+
+test('assertIsSuccessfulDeployStackResult does what it says', () => {
+  expect(() => assertIsSuccessfulDeployStackResult({ type: 'replacement-requires-norollback' })).toThrow();
 });
 
 /**

@@ -1256,12 +1256,13 @@ describe('synth', () => {
     expect(mockedRollback).toHaveBeenCalled();
   });
 
-  type StackResultType = DeployStackResult['type'];
-
   test.each([
-    'failpaused-need-rollback-first',
-    'replacement-requires-norollback',
-  ] satisfies Array<StackResultType>)('no-rollback deployment that cant proceed will be called with rollback on retry: %p', async (deployResult) => {
+    [{ type: 'failpaused-need-rollback-first', reason: 'replacement' }, false],
+    [{ type: 'failpaused-need-rollback-first', reason: 'replacement' }, true],
+    [{ type: 'failpaused-need-rollback-first', reason: 'not-norollback' }, false],
+    [{ type: 'replacement-requires-norollback' }, false],
+    [{ type: 'replacement-requires-norollback' }, true],
+  ] satisfies Array<[DeployStackResult, boolean]>)('no-rollback deployment that cant proceed will be called with rollback on retry: %p (using force: %p)', async (firstResult, useForce) => {
     cloudExecutable = new MockCloudExecutable({
       stacks: [
         MockStack.MOCK_STACK_C,
@@ -1275,10 +1276,8 @@ describe('synth', () => {
 
     const mockedDeployStack = jest
       .spyOn(deployments, 'deployStack')
+      .mockResolvedValueOnce(firstResult)
       .mockResolvedValueOnce({
-        type: deployResult,
-        reason: 'replacement',
-      }).mockResolvedValueOnce({
         type: 'did-deploy-stack',
         noOp: false,
         outputs: {},
@@ -1299,13 +1298,20 @@ describe('synth', () => {
       hotswap: HotswapMode.FULL_DEPLOYMENT,
       rollback: false,
       requireApproval: RequireApproval.Never,
+      force: useForce,
     });
 
-    if (deployResult === 'failpaused-need-rollback-first') {
+    if (firstResult.type === 'failpaused-need-rollback-first') {
       expect(mockRollbackStack).toHaveBeenCalled();
-      expect(mockedConfirm).toHaveBeenCalledWith(expect.stringContaining('Roll back first and then proceed with deployment'));
-    } else {
-      expect(mockedConfirm).toHaveBeenCalledWith(expect.stringContaining('Perform a regular deployment'));
+    }
+
+    if (!useForce) {
+      // Questions will have been asked only if --force is not specified
+      if (firstResult.type === 'failpaused-need-rollback-first') {
+        expect(mockedConfirm).toHaveBeenCalledWith(expect.stringContaining('Roll back first and then proceed with deployment'));
+      } else {
+        expect(mockedConfirm).toHaveBeenCalledWith(expect.stringContaining('Perform a regular deployment'));
+      }
     }
 
     expect(mockedDeployStack).toHaveBeenNthCalledWith(1, expect.objectContaining({ rollback: false }));

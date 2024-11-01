@@ -1,10 +1,7 @@
 /* eslint-disable import/order */
 
-const mockDeployStack = jest.fn();
-
-jest.mock('../../lib/api/deploy-stack', () => ({
-  deployStack: mockDeployStack,
-}));
+import * as deployStack from '../../lib/api/deploy-stack';
+const mockDeployStack = jest.spyOn(deployStack, 'deployStack');
 
 import { IAM } from 'aws-sdk';
 import { Bootstrapper, DeployStackOptions, ToolkitInfo } from '../../lib/api';
@@ -56,6 +53,8 @@ describe('Bootstrapping v2', () => {
     mockDeployStack.mockResolvedValue({
       type: 'did-deploy-stack',
       noOp: false,
+      outputs: {},
+      stackArn: 'arn:stack',
     });
   });
 
@@ -345,7 +344,12 @@ describe('Bootstrapping v2', () => {
     let template: any;
     mockDeployStack.mockImplementation((args: DeployStackOptions) => {
       template = args.stack.template;
-      return Promise.resolve({ type: 'did-deploy-stack' });
+      return Promise.resolve({
+        type: 'did-deploy-stack',
+        noOp: false,
+        outputs: {},
+        stackArn: 'arn:stack',
+      });
     });
 
     await bootstrapper.bootstrapEnvironment(env, sdk, {

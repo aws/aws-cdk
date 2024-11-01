@@ -6,6 +6,7 @@ import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
 import { DeploymentMethod } from './api';
+import { assertIsSuccessfulDeployStackResult } from './api/deploy-stack';
 import { Deployments } from './api/deployments';
 import { ResourceIdentifierProperties, ResourcesToImport } from './api/util/cloudformation';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
@@ -153,9 +154,7 @@ export class ResourceImporter {
         resourcesToImport,
       });
 
-      if (result.type !== 'did-deploy-stack') {
-        throw new Error(`Unexpected deployStack result. This should not happen: ${JSON.stringify(result)}. If you are seeing this error, please report it at https://github.com/aws/aws-cdk/issues/new/choose.`);
-      }
+      assertIsSuccessfulDeployStackResult(result);
 
       const message = result.noOp
         ? ' ✅  %s (no changes)'

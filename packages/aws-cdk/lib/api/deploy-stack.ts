@@ -46,6 +46,12 @@ export interface ReplacementRequiresNoRollbackStackResult {
   readonly type: 'replacement-requires-norollback';
 }
 
+export function assertIsSuccessfulDeployStackResult(x: DeployStackResult): asserts x is SuccessfulDeployStackResult {
+  if (x.type !== 'did-deploy-stack') {
+    throw new Error(`Unexpected deployStack result. This should not happen: ${JSON.stringify(x)}. If you are seeing this error, please report it at https://github.com/aws/aws-cdk/issues/new/choose.`);
+  }
+}
+
 export interface DeployStackOptions {
   /**
    * The stack to be deployed
