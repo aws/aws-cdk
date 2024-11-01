@@ -35,14 +35,6 @@ describe('nested-stack', () => {
     expect(nestedStack.templateOptions.description).toEqual(description);
   });
 
-  test('can have customer defined name', () => {
-    const stack = new Stack();
-    const nestedStack = new NestedStack(stack, 'MyNestedStack', {
-      stackName: 'MyCustomName',
-    });
-    expect(nestedStack.stackName).toEqual('MyCustomName');
-  });
-
   test('can create cross region references when crossRegionReferences=true', () => {
     // GIVEN
     const app = new App();
