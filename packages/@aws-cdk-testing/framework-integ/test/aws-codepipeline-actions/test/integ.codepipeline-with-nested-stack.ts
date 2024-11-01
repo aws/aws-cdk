@@ -11,7 +11,7 @@ import { Construct } from 'constructs';
  * To deploy this stack, you need to do the following:
  * 1. export CDK_DEFAULT_ACCOUNT='<your-aws-account-id>'
  * 2. make sure you've bootstrapped 'us-west-2' by running 'cdk bootstrap aws://<your-aws-account-id>/us-west-2'
- * 3. deploy a state machine resource in 'us-west-2' and name the state machine 'stateMachineFromAnotherRegion'
+ * 3. deploy a state machine resource in 'us-west-2' and name the state machine 'MyStateMachine'
  * 4. run 'yarn integ aws-codepipeline-actions/test/integ.codepipeline-with-nested-stack --update-on-failed'
  */
 
