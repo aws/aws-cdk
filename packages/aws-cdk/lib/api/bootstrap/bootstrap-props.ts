@@ -1,4 +1,5 @@
 import { Tag } from '../../cdk-toolkit';
+import { StringWithoutPlaceholders } from '../util/placeholders';
 
 export const BUCKET_NAME_OUTPUT = 'BucketName';
 export const REPOSITORY_NAME_OUTPUT = 'ImageRepositoryName';
@@ -17,7 +18,7 @@ export const DEFAULT_BOOTSTRAP_VARIANT = 'AWS CDK: Default Resources';
  */
 export interface BootstrapEnvironmentOptions {
   readonly toolkitStackName?: string;
-  readonly roleArn?: string;
+  readonly roleArn?: StringWithoutPlaceholders;
   readonly parameters?: BootstrappingParameters;
   readonly force?: boolean;
 
