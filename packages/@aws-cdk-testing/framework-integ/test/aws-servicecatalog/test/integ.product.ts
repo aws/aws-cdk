@@ -141,7 +141,6 @@ const product = new servicecatalog.CloudFormationProduct(stack, 'TestProduct', {
       validateTemplate: false,
       cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(new TestAssetProductStack(stack, 'S3AssetProduct', {
         assetBucket: testAssetBucket,
-        analyticsReporting: true,
       })),
     },
     productStackHistory.currentVersion(),

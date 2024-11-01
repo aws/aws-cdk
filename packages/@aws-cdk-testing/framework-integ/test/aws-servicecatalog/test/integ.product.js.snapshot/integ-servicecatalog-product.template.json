@@ -405,7 +405,7 @@
       "DisableTemplateValidation": true,
       "Info": {
        "LoadTemplateFromURL": {
-        "Fn::Sub": "https://s3.test-region.${AWS::URLSuffix}/cdk-hnb659fds-assets-12345678-test-region/637d610872198d6ef282943047c31aba39c131e69b48896f65d3201cfd8624f6.json"
+        "Fn::Sub": "https://s3.test-region.${AWS::URLSuffix}/cdk-hnb659fds-assets-12345678-test-region/febf69072bf0640316efdf49d6c38d247fef7de32412b570eaf45f5ca3657784.json"
        }
       },
       "Name": "testAssetProduct"

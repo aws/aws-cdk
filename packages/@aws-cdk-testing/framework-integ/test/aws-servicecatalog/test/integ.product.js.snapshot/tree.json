@@ -651,32 +651,6 @@
                   "fqn": "aws-cdk-lib.aws_lambda.Function",
                   "version": "0.0.0"
                 }
-              },
-              "CDKMetadata": {
-                "id": "CDKMetadata",
-                "path": "integ-servicecatalog-product/S3AssetProduct/CDKMetadata",
-                "children": {
-                  "Default": {
-                    "id": "Default",
-                    "path": "integ-servicecatalog-product/S3AssetProduct/CDKMetadata/Default",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Condition": {
-                    "id": "Condition",
-                    "path": "integ-servicecatalog-product/S3AssetProduct/CDKMetadata/Condition",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnCondition",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.4.2"
-                }
               }
             },
             "constructInfo": {
@@ -1026,7 +1000,7 @@
                         "disableTemplateValidation": true,
                         "info": {
                           "LoadTemplateFromURL": {
-                            "Fn::Sub": "https://s3.test-region.${AWS::URLSuffix}/cdk-hnb659fds-assets-12345678-test-region/637d610872198d6ef282943047c31aba39c131e69b48896f65d3201cfd8624f6.json"
+                            "Fn::Sub": "https://s3.test-region.${AWS::URLSuffix}/cdk-hnb659fds-assets-12345678-test-region/febf69072bf0640316efdf49d6c38d247fef7de32412b570eaf45f5ca3657784.json"
                           }
                         }
                       },
