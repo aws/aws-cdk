@@ -44,11 +44,6 @@ export async function renderYargs(config: CliConfig): Promise<string> {
   }).render(scope);
 }
 
-interface MiddlewareExpression {
-  callback: Expression;
-  applyBeforeValidation?: Expression;
-}
-
 // Use the following configuration for array arguments:
 //
 //     { type: 'array', default: [], nargs: 1, requiresArg: true }
@@ -93,18 +88,14 @@ function makeOptions(prefix: Expression, options: { [optionName: string]: YargsO
   let optionsExpr = prefix;
   for (const option of Object.keys(options)) {
     // each option can define at most one middleware call; if we need more, handle a list of these instead
-    let middleware: MiddlewareExpression | undefined = undefined;
+    let middlewareCallback: Expression | undefined = undefined;
     const optionProps = options[option];
     const optionArgs: { [key: string]: Expression } = {};
     for (const optionProp of Object.keys(optionProps)) {
-      if (optionProp === 'middleware') {
+      if (optionProp === 'negativeAlias') {
         // middleware is a separate function call, so we can't store it with the regular option arguments, as those will all be treated as parameters:
         // .option('R', { type: 'boolean', hidden: true }).middleware(yargsNegativeAlias('R', 'rollback'), true)
-        middleware = {
-          callback: code.expr.builtInFn(optionProps.middleware!.callback, lit(optionProps.middleware!.args)),
-          applyBeforeValidation: lit(optionProps.middleware!.applyBeforeValidation),
-        };
-        break;
+        middlewareCallback = code.expr.builtInFn('yargsNegativeAlias', lit(option), lit(optionProps.negativeAlias));
       } else {
         const optionValue = (optionProps as any)[optionProp];
         if (optionValue && optionValue.dynamicType === 'parameter') {
@@ -121,9 +112,9 @@ function makeOptions(prefix: Expression, options: { [optionName: string]: YargsO
     }
 
     optionsExpr = optionsExpr.callMethod('option', lit(option), code.expr.object(optionArgs));
-    if (middleware) {
-      optionsExpr = optionsExpr.callMethod('middleware', middleware.callback, middleware.applyBeforeValidation ?? code.expr.UNDEFINED);
-      middleware = undefined;
+    if (middlewareCallback) {
+      optionsExpr = optionsExpr.callMethod('middleware', middlewareCallback, lit(true));
+      middlewareCallback = undefined;
     }
   }
 

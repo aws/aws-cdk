@@ -35,7 +35,7 @@ export interface YargsOption {
   requiresArg?: boolean;
   hidden?: boolean;
   count?: boolean;
-  middleware?: Middleware;
+  negativeAlias?: string;
 }
 
 export interface Middleware {

@@ -134,16 +134,12 @@ export async function makeConfig(): Promise<CliConfig> {
             type: 'boolean',
             desc: "Rollback stack to stable state on failure. Defaults to 'true', iterate more rapidly with --no-rollback or -R. " +
               'Note: do **not** disable this flag for deployments with resource replacements, as that will always fail',
+            negativeAlias: 'R',
           },
           'R': {
             type: 'boolean',
             hidden: true,
             // Hack to get '-R' as an alias for '--no-rollback', suggested by: https://github.com/yargs/yargs/issues/1729
-            middleware: {
-              callback: 'yargsNegativeAlias',
-              args: ['R', 'rollback'],
-              applyBeforeValidation: true,
-            },
           },
           'hotswap': {
             type: 'boolean',
@@ -275,16 +271,12 @@ export async function makeConfig(): Promise<CliConfig> {
             type: 'boolean',
             desc: "Rollback stack to stable state on failure. Defaults to 'true', iterate more rapidly with --no-rollback or -R. " +
               'Note: do **not** disable this flag for deployments with resource replacements, as that will always fail',
+            negativeAlias: '-R',
           },
           // same hack for -R as above in 'deploy'
           'R': {
             type: 'boolean',
             hidden: true,
-            middleware: {
-              callback: 'yargsNegativeAlias',
-              args: ['R', 'rollback'],
-              applyBeforeValidation: true,
-            },
           },
           'hotswap': {
             type: 'boolean',
