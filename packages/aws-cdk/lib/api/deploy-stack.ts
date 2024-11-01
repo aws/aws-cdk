@@ -19,6 +19,7 @@ import { TemplateBodyParameter, makeBodyParameter } from './util/template-body-p
 import { AssetManifestBuilder } from '../util/asset-manifest-builder';
 import { determineAllowCrossAccountAssetPublishing } from './util/checks';
 import { publishAssets } from '../util/asset-publishing';
+import { StringWithoutPlaceholders } from './util/placeholders';
 
 export type DeployStackResult =
   | SuccessfulDeployStackResult
@@ -70,14 +71,13 @@ export interface DeployStackOptions {
   /**
    * SDK provider (seeded with default credentials)
    *
-   * Will exclusively be used to assume publishing credentials (which must
-   * start out from current credentials regardless of whether we've assumed an
-   * action role to touch the stack or not).
+   * Will be used to:
    *
-   * Used for the following purposes:
-   *
-   * - Publish legacy assets.
-   * - Upload large CloudFormation templates to the staging bucket.
+   * - Publish assets, either legacy assets or large CFN templates
+   *   that aren't themselves assets from a manifest. (Needs an SDK
+   *   Provider because the file publishing role is declared as part
+   *   of the asset).
+   * - Hotswap
    */
   readonly sdkProvider: SdkProvider;
 
@@ -89,9 +89,13 @@ export interface DeployStackOptions {
   /**
    * Role to pass to CloudFormation to execute the change set
    *
-   * @default - Role specified on stack, otherwise current
+   * To obtain a `StringWithoutPlaceholders`, run a regular
+   * string though `TargetEnvironment.replacePlaceholders`.
+   *
+   * @default - No execution role; CloudFormation either uses the role currently associated with
+   * the stack, or otherwise uses current AWS credentials.
    */
-  readonly roleArn?: string;
+  readonly roleArn?: StringWithoutPlaceholders;
 
   /**
    * Notification ARNs to pass to CloudFormation to notify when the change set has completed
