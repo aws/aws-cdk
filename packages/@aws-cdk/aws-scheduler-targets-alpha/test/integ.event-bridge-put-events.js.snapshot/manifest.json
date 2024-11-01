@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "38.0.1",
   "artifacts": {
     "aws-cdk-scheduler-targets-event-bridge-put-events.assets": {
       "type": "cdk:asset-manifest",
@@ -16,9 +16,10 @@
         "templateFile": "aws-cdk-scheduler-targets-event-bridge-put-events.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/aabfc7953498365d6da19170b10ee2a19c523e8a6ee99af2a7f3e71abfec59b6.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/546f9ebf05ebfca9536697a5eba12a12ae8d2ae1b2886ad44d57fbe271f66b0b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -88,16 +89,16 @@
             "data": "Schedule83A77FD1"
           }
         ],
-        "/aws-cdk-scheduler-targets-event-bridge-put-events/SchedulerRoleForTarget-1441a7/Resource": [
+        "/aws-cdk-scheduler-targets-event-bridge-put-events/SchedulerRoleForTarget-6ff532/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SchedulerRoleForTarget1441a743A31888"
+            "data": "SchedulerRoleForTarget6ff5322488E9B3"
           }
         ],
-        "/aws-cdk-scheduler-targets-event-bridge-put-events/SchedulerRoleForTarget-1441a7/DefaultPolicy/Resource": [
+        "/aws-cdk-scheduler-targets-event-bridge-put-events/SchedulerRoleForTarget-6ff532/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SchedulerRoleForTarget1441a7DefaultPolicy885B6BFD"
+            "data": "SchedulerRoleForTarget6ff532DefaultPolicy3F7032D5"
           }
         ],
         "/aws-cdk-scheduler-targets-event-bridge-put-events/BootstrapVersion": [
@@ -130,9 +131,10 @@
         "templateFile": "integrationtesteventbridgeputeventsDefaultTestDeployAssert13FA3DD8.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8c69f0b921e80736f9263506e66f4d750ded58617b482a1bd0f44d61c93c34ba.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/aca77ff21ac9fdf93365bfe257d340b413616d273f98f97871d75fb2b07ba1c8.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -194,6 +196,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/integrationtest-event-bridge-put-events/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/integrationtest-event-bridge-put-events/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [

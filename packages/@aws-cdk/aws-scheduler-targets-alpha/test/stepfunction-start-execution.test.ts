@@ -1,4 +1,4 @@
-import { Schedule, ScheduleExpression } from '@aws-cdk/aws-scheduler-alpha';
+import { Group, Schedule, ScheduleExpression } from '@aws-cdk/aws-scheduler-alpha';
 import { App, Duration, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { AccountRootPrincipal, Role } from 'aws-cdk-lib/aws-iam';
@@ -11,6 +11,7 @@ describe('stepfunction start execution', () => {
   let stack: Stack;
   let stepFunction: sfn.StateMachine;
   const expr = ScheduleExpression.at(new Date(Date.UTC(1991, 2, 24, 0, 0, 0)));
+  const roleId = 'SchedulerRoleForTargetc174eeEF9C09F9';
 
   beforeEach(() => {
     app = new App({ context: { '@aws-cdk/aws-iam:minimizePolicies': true } });
@@ -35,7 +36,7 @@ describe('stepfunction start execution', () => {
           Arn: {
             Ref: 'MyStateMachine6C968CA5',
           },
-          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget1441a743A31888', 'Arn'] },
+          RoleArn: { 'Fn::GetAtt': [roleId, 'Arn'] },
           RetryPolicy: {},
         },
       },
@@ -51,7 +52,7 @@ describe('stepfunction start execution', () => {
           },
         ],
       },
-      Roles: [{ Ref: 'SchedulerRoleForTarget1441a743A31888' }],
+      Roles: [{ Ref: roleId }],
     });
 
     template.hasResourceProperties('AWS::IAM::Role', {
@@ -60,7 +61,23 @@ describe('stepfunction start execution', () => {
         Statement: [
           {
             Effect: 'Allow',
-            Condition: { StringEquals: { 'aws:SourceAccount': '123456789012' } },
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': '123456789012',
+                'aws:SourceArn': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':scheduler:us-east-1:123456789012:schedule-group/default',
+                    ],
+                  ],
+                },
+              },
+            },
             Principal: {
               Service: 'scheduler.amazonaws.com',
             },
@@ -112,7 +129,7 @@ describe('stepfunction start execution', () => {
     });
   });
 
-  test('reuses IAM role and IAM policy for two schedules from the same account', () => {
+  test('reuses IAM role and IAM policy for two schedules with the same target from the same account', () => {
     const stepFunctionTarget = new StepFunctionsStartExecution(stepFunction, {});
 
     new Schedule(stack, 'MyScheduleDummy1', {
@@ -133,7 +150,23 @@ describe('stepfunction start execution', () => {
         Statement: [
           {
             Effect: 'Allow',
-            Condition: { StringEquals: { 'aws:SourceAccount': '123456789012' } },
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': '123456789012',
+                'aws:SourceArn': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':scheduler:us-east-1:123456789012:schedule-group/default',
+                    ],
+                  ],
+                },
+              },
+            },
             Principal: {
               Service: 'scheduler.amazonaws.com',
             },
@@ -153,7 +186,90 @@ describe('stepfunction start execution', () => {
           },
         ],
       },
-      Roles: [{ Ref: 'SchedulerRoleForTarget1441a743A31888' }],
+      Roles: [{ Ref: roleId }],
+    }, 1);
+  });
+
+  test('creates IAM role and IAM policy for two schedules with the same target but different groups', () => {
+    const stepFunctionTarget = new StepFunctionsStartExecution(stepFunction, {});
+    const group = new Group(stack, 'Group', {
+      groupName: 'mygroup',
+    });
+
+    new Schedule(stack, 'MyScheduleDummy1', {
+      schedule: expr,
+      target: stepFunctionTarget,
+    });
+
+    new Schedule(stack, 'MyScheduleDummy2', {
+      schedule: expr,
+      target: stepFunctionTarget,
+      group,
+    });
+
+    const template = Template.fromStack(stack);
+
+    template.resourcePropertiesCountIs('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Effect: 'Allow',
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': '123456789012',
+                'aws:SourceArn': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':scheduler:us-east-1:123456789012:schedule-group/default',
+                    ],
+                  ],
+                },
+              },
+            },
+            Principal: {
+              Service: 'scheduler.amazonaws.com',
+            },
+            Action: 'sts:AssumeRole',
+          },
+          {
+            Effect: 'Allow',
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': '123456789012',
+                'aws:SourceArn': {
+                  'Fn::GetAtt': [
+                    'GroupC77FDACD',
+                    'Arn',
+                  ],
+                },
+              },
+            },
+            Principal: {
+              Service: 'scheduler.amazonaws.com',
+            },
+            Action: 'sts:AssumeRole',
+          },
+        ],
+      },
+    }, 1);
+
+    template.resourcePropertiesCountIs('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'states:StartExecution',
+            Effect: 'Allow',
+            Resource: { Ref: 'MyStateMachine6C968CA5' },
+          },
+        ],
+      },
+      Roles: [{ Ref: roleId }],
     }, 1);
   });
 
@@ -424,7 +540,7 @@ describe('stepfunction start execution', () => {
           Arn: {
             Ref: 'MyStateMachine6C968CA5',
           },
-          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget1441a743A31888', 'Arn'] },
+          RoleArn: { 'Fn::GetAtt': [roleId, 'Arn'] },
           RetryPolicy: {
             MaximumEventAgeInSeconds: 10800,
             MaximumRetryAttempts: 5,
