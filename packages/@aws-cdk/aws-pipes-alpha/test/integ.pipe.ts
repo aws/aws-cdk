@@ -11,6 +11,13 @@ const stack = new cdk.Stack(app, 'aws-cdk-pipes');
 const sourceQueue = new cdk.aws_sqs.Queue(stack, 'SourceQueue');
 const targetQueue = new cdk.aws_sqs.Queue(stack, 'TargetQueue');
 
+const enrichmentHandlerCode = 'exports.handler = async (event) => { return event.map( record => ({...record, body: `${record.body}-${record.name}-${record.static}` }) ) };';
+const enrichmentLambda = new cdk.aws_lambda.Function(stack, 'EnrichmentLambda', {
+  code: Code.fromInline(enrichmentHandlerCode),
+  handler: 'index.handler',
+  runtime: cdk.aws_lambda.Runtime.NODEJS_LATEST,
+});
+
 // When this module is promoted from alpha, TestSource should
 // be replaced with SqsSource from @aws-cdk/aws-pipes-sources-alpha
 class TestSource implements ISource {
@@ -50,13 +57,6 @@ class TestTarget implements ITarget {
     this.queue.grantSendMessages(pipeRole);
   }
 }
-
-const enrichmentHandlerCode = 'exports.handler = async (event) => { return event.map( record => ({...record, body: `${record.body}-${record.name}-${record.static}` }) ) };';
-const enrichmentLambda = new cdk.aws_lambda.Function(stack, 'EnrichmentLambda', {
-  code: Code.fromInline(enrichmentHandlerCode),
-  handler: 'index.handler',
-  runtime: cdk.aws_lambda.Runtime.NODEJS_LATEST,
-});
 
 const logGroup = new cdk.aws_logs.LogGroup(stack, 'LogGroup', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,

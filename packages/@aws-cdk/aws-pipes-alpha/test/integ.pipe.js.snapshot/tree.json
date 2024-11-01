@@ -868,13 +868,7 @@
                       ]
                     },
                     "targetParameters": {
-                      "inputTemplate": "<$.body>",
-                      "sqsQueueParameters": {
-                        "inputTransformation": {
-                          "type": "Text",
-                          "inputTemplate": "<$.body>"
-                        }
-                      }
+                      "inputTemplate": "<$.body>"
                     }
                   }
                 },
@@ -920,7 +914,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "BootstrapVersion": {
@@ -958,27 +952,27 @@
                 "path": "integtest-pipe-sqs-to-sqs/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
                 "path": "integtest-pipe-sqs-to-sqs/DefaultTest/DeployAssert",
                 "children": {
-                  "AwsApiCallSQSsendMessage6e0ab5518726e24036280e2cca8df67e": {
-                    "id": "AwsApiCallSQSsendMessage6e0ab5518726e24036280e2cca8df67e",
-                    "path": "integtest-pipe-sqs-to-sqs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage6e0ab5518726e24036280e2cca8df67e",
+                  "AwsApiCallSQSsendMessage6d7cea5919e8dab23a683dc614af3c19": {
+                    "id": "AwsApiCallSQSsendMessage6d7cea5919e8dab23a683dc614af3c19",
+                    "path": "integtest-pipe-sqs-to-sqs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage6d7cea5919e8dab23a683dc614af3c19",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "integtest-pipe-sqs-to-sqs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage6e0ab5518726e24036280e2cca8df67e/SdkProvider",
+                        "path": "integtest-pipe-sqs-to-sqs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage6d7cea5919e8dab23a683dc614af3c19/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "integtest-pipe-sqs-to-sqs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage6e0ab5518726e24036280e2cca8df67e/SdkProvider/AssertionsProvider",
+                            "path": "integtest-pipe-sqs-to-sqs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage6d7cea5919e8dab23a683dc614af3c19/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -989,11 +983,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "integtest-pipe-sqs-to-sqs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage6e0ab5518726e24036280e2cca8df67e/Default",
+                        "path": "integtest-pipe-sqs-to-sqs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage6d7cea5919e8dab23a683dc614af3c19/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "integtest-pipe-sqs-to-sqs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage6e0ab5518726e24036280e2cca8df67e/Default/Default",
+                            "path": "integtest-pipe-sqs-to-sqs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage6d7cea5919e8dab23a683dc614af3c19/Default/Default",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -1042,7 +1036,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "LatestNodeRuntimeMap": {
@@ -1066,7 +1060,7 @@
                             "path": "integtest-pipe-sqs-to-sqs/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -1106,7 +1100,7 @@
                                 "path": "integtest-pipe-sqs-to-sqs/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/WaitFor/IsCompleteProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.3.0"
+                                  "version": "10.4.2"
                                 }
                               },
                               "Invoke": {
@@ -1132,7 +1126,7 @@
                                 "path": "integtest-pipe-sqs-to-sqs/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/WaitFor/TimeoutProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.3.0"
+                                  "version": "10.4.2"
                                 }
                               },
                               "Invoke": {
@@ -1216,7 +1210,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a": {
@@ -1250,7 +1244,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "BootstrapVersion": {
@@ -1292,7 +1286,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },
