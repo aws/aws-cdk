@@ -3,7 +3,7 @@ import * as ec2 from '../../aws-ec2';
 import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as cdk from '../../core';
-import { ClusterParameterGroup, DatabaseCluster, DatabaseSecret, CaCertificate } from '../lib';
+import { ClusterParameterGroup, DatabaseCluster, DatabaseSecret, CaCertificate, StorageType } from '../lib';
 
 describe('DatabaseCluster', () => {
   test('check that instantiation works', () => {
@@ -1178,6 +1178,73 @@ describe('DatabaseCluster', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBCluster', {
       CopyTagsToSnapshot: value,
+    });
+  });
+
+  test.each(['1.0.0.1', '01.1.0', '1.0', '-1', '-0.1', 'abc', '1.0.a', 'a.b.c'])('throw error for invalid engine version %s', (engineVersion: string) => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // THEN
+    expect(() => {
+      new DatabaseCluster(stack, 'Database', {
+        instances: 1,
+        masterUser: {
+          username: 'admin',
+          password: cdk.SecretValue.unsafePlainText('tooshort'),
+        },
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.SMALL),
+        vpc,
+        engineVersion,
+      });
+    }).toThrow(`Invalid engine version: '${engineVersion}'. Engine version must be in the format x.y.z`);
+  });
+
+  describe('storage type', () => {
+    test('specify storage type', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        instances: 1,
+        masterUser: {
+          username: 'admin',
+          password: cdk.SecretValue.unsafePlainText('tooshort'),
+        },
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.SMALL),
+        vpc,
+        storageType: StorageType.IOPT1,
+        engineVersion: '5.0.0',
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBCluster', {
+        StorageType: 'iopt1',
+      });
+    });
+
+    test('throw error for invalid engine version with I/O optimized storage type', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // THEN
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          instances: 1,
+          masterUser: {
+            username: 'admin',
+            password: cdk.SecretValue.unsafePlainText('tooshort'),
+          },
+          instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.SMALL),
+          vpc,
+          storageType: StorageType.IOPT1,
+          engineVersion: '3.6.0',
+        });
+      }).toThrow("I/O-optimized storage is supported starting with engine version 5.0.0, got '3.6.0'");
     });
   });
 });

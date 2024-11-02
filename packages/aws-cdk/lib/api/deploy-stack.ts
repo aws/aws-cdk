@@ -5,19 +5,21 @@ import * as uuid from 'uuid';
 import { ISDK, SdkProvider } from './aws-auth';
 import { EnvironmentResources } from './environment-resources';
 import { CfnEvaluationException } from './evaluate-cloudformation-template';
-import { HotswapMode, ICON } from './hotswap/common';
+import { HotswapMode, HotswapPropertyOverrides, ICON } from './hotswap/common';
 import { tryHotswapDeployment } from './hotswap-deployments';
+import { addMetadataAssetsToManifest } from '../assets';
+import { Tag } from '../cdk-toolkit';
+import { debug, print, warning } from '../logging';
 import {
   changeSetHasNoChanges, CloudFormationStack, TemplateParameters, waitForChangeSet,
   waitForStackDeploy, waitForStackDelete, ParameterValues, ParameterChanges, ResourcesToImport,
 } from './util/cloudformation';
 import { StackActivityMonitor, StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
 import { TemplateBodyParameter, makeBodyParameter } from './util/template-body-parameter';
-import { addMetadataAssetsToManifest } from '../assets';
-import { Tag } from '../cdk-toolkit';
-import { debug, print, warning } from '../logging';
 import { AssetManifestBuilder } from '../util/asset-manifest-builder';
+import { determineAllowCrossAccountAssetPublishing } from './util/checks';
 import { publishAssets } from '../util/asset-publishing';
+import { StringWithoutPlaceholders } from './util/placeholders';
 
 export interface DeployStackResult {
   readonly noOp: boolean;
@@ -50,14 +52,13 @@ export interface DeployStackOptions {
   /**
    * SDK provider (seeded with default credentials)
    *
-   * Will exclusively be used to assume publishing credentials (which must
-   * start out from current credentials regardless of whether we've assumed an
-   * action role to touch the stack or not).
+   * Will be used to:
    *
-   * Used for the following purposes:
-   *
-   * - Publish legacy assets.
-   * - Upload large CloudFormation templates to the staging bucket.
+   * - Publish assets, either legacy assets or large CFN templates
+   *   that aren't themselves assets from a manifest. (Needs an SDK
+   *   Provider because the file publishing role is declared as part
+   *   of the asset).
+   * - Hotswap
    */
   readonly sdkProvider: SdkProvider;
 
@@ -69,9 +70,13 @@ export interface DeployStackOptions {
   /**
    * Role to pass to CloudFormation to execute the change set
    *
-   * @default - Role specified on stack, otherwise current
+   * To obtain a `StringWithoutPlaceholders`, run a regular
+   * string though `TargetEnvironment.replacePlaceholders`.
+   *
+   * @default - No execution role; CloudFormation either uses the role currently associated with
+   * the stack, or otherwise uses current AWS credentials.
    */
-  readonly roleArn?: string;
+  readonly roleArn?: StringWithoutPlaceholders;
 
   /**
    * Notification ARNs to pass to CloudFormation to notify when the change set has completed
@@ -173,6 +178,11 @@ export interface DeployStackOptions {
   readonly hotswap?: HotswapMode;
 
   /**
+   * Extra properties that configure hotswap behavior
+   */
+  readonly hotswapPropertyOverrides?: HotswapPropertyOverrides;
+
+  /**
    * The extra string to append to the User-Agent header when performing AWS SDK calls.
    *
    * @default - nothing extra is appended to the User-Agent header
@@ -263,6 +273,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     : templateParams.supplyAll(finalParameterValues);
 
   const hotswapMode = options.hotswap ?? HotswapMode.FULL_DEPLOYMENT;
+  const hotswapPropertyOverrides = options.hotswapPropertyOverrides ?? new HotswapPropertyOverrides();
 
   if (await canSkipDeploy(options, cloudFormationStack, stackParams.hasChanges(cloudFormationStack.parameters))) {
     debug(`${deployName}: skipping deployment (use --force to override)`);
@@ -287,15 +298,22 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     options.envResources,
     options.sdk,
     options.overrideTemplate);
+  let bootstrapStackName: string | undefined;
+  try {
+    bootstrapStackName = (await options.envResources.lookupToolkit()).stackName;
+  } catch (e) {
+    debug(`Could not determine the bootstrap stack name: ${e}`);
+  }
   await publishAssets(legacyAssets.toManifest(stackArtifact.assembly.directory), options.sdkProvider, stackEnv, {
     parallel: options.assetParallelism,
+    allowCrossAccount: await determineAllowCrossAccountAssetPublishing(options.sdk, bootstrapStackName),
   });
 
   if (hotswapMode !== HotswapMode.FULL_DEPLOYMENT) {
     // attempt to short-circuit the deployment if possible
     try {
       const hotswapDeploymentResult = await tryHotswapDeployment(
-        options.sdkProvider, stackParams.values, cloudFormationStack, stackArtifact, hotswapMode,
+        options.sdkProvider, stackParams.values, cloudFormationStack, stackArtifact, hotswapMode, hotswapPropertyOverrides,
       );
       if (hotswapDeploymentResult) {
         return hotswapDeploymentResult;
@@ -644,6 +662,12 @@ async function canSkipDeploy(
     return false;
   }
 
+  // Notification arns have changed
+  if (!arrayEquals(cloudFormationStack.notificationArns, deployStackOptions.notificationArns ?? [])) {
+    debug(`${deployName}: notification arns have changed`);
+    return false;
+  }
+
   // Termination protection has been updated
   if (!!deployStackOptions.stack.terminationProtection !== !!cloudFormationStack.terminationProtection) {
     debug(`${deployName}: termination protection has been updated`);
@@ -693,4 +717,8 @@ function suffixWithErrors(msg: string, errors?: string[]) {
   return errors && errors.length > 0
     ? `${msg}: ${errors.join(', ')}`
     : msg;
+}
+
+function arrayEquals(a: any[], b: any[]): boolean {
+  return a.every(item => b.includes(item)) && b.every(item => a.includes(item));
 }

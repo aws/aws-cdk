@@ -64,12 +64,15 @@ import { instanceMockFrom, MockCloudExecutable, TestStackArtifact } from './util
 import { MockSdkProvider } from './util/mock-sdk';
 import { Bootstrapper } from '../lib/api/bootstrap';
 import { DeployStackResult } from '../lib/api/deploy-stack';
-import { Deployments, DeployStackOptions, DestroyStackOptions } from '../lib/api/deployments';
+import { Deployments, DeployStackOptions, DestroyStackOptions, RollbackStackOptions, RollbackStackResult } from '../lib/api/deployments';
 import { HotswapMode } from '../lib/api/hotswap/common';
 import { Template } from '../lib/api/util/cloudformation';
 import { CdkToolkit, Tag } from '../lib/cdk-toolkit';
 import { RequireApproval } from '../lib/diff';
+import { Configuration } from '../lib/settings';
 import { flatten } from '../lib/util';
+
+process.env.CXAPI_DISABLE_SELECT_BY_ID = '1';
 
 let cloudExecutable: MockCloudExecutable;
 let bootstrapper: jest.Mocked<Bootstrapper>;
@@ -115,7 +118,6 @@ describe('readCurrentTemplate', () => {
   let mockForEnvironment = jest.fn();
   let mockCloudExecutable: MockCloudExecutable;
   beforeEach(() => {
-
     template = {
       Resources: {
         Func: {
@@ -240,7 +242,6 @@ describe('readCurrentTemplate', () => {
 
     // THEN
     expect(flatten(stderrMock.mock.calls)).toEqual(expect.arrayContaining([
-      expect.stringMatching(/Could not assume bloop-lookup:here:123456789012/),
       expect.stringContaining("Bootstrap stack version '5' is required, found version '1'. To get rid of this error, please upgrade to bootstrap version >= 5"),
     ]));
     expect(requestedParameterName!).toEqual('/bootstrap/parameter');
@@ -257,7 +258,9 @@ describe('readCurrentTemplate', () => {
     // GIVEN
     mockCloudExecutable.sdkProvider.stubSSM({
       getParameter() {
-        throw new Error('not found');
+        const e: any = new Error('not found');
+        e.code = e.name = 'ParameterNotFound';
+        throw e;
       },
     });
     const cdkToolkit = new CdkToolkit({
@@ -275,7 +278,7 @@ describe('readCurrentTemplate', () => {
 
     // THEN
     expect(flatten(stderrMock.mock.calls)).toEqual(expect.arrayContaining([
-      expect.stringMatching(/Could not assume bloop-lookup:here:123456789012/),
+      expect.stringMatching(/SSM parameter.*not found./),
     ]));
     expect(mockForEnvironment.mock.calls.length).toEqual(3);
     expect(mockForEnvironment.mock.calls[0][2]).toEqual({
@@ -289,12 +292,12 @@ describe('readCurrentTemplate', () => {
   test('fallback to deploy role if forEnvironment throws', async () => {
     // GIVEN
     // throw error first for the 'prepareSdkWithLookupRoleFor' call and succeed for the rest
-    mockForEnvironment = jest.fn().mockImplementationOnce(() => { throw new Error('error'); })
-      .mockImplementation(() => { return { sdk: mockCloudExecutable.sdkProvider.sdk, didAssumeRole: true };});
+    mockForEnvironment = jest.fn().mockImplementationOnce(() => { throw new Error('TheErrorThatGetsThrown'); })
+      .mockImplementation(() => { return { sdk: mockCloudExecutable.sdkProvider.sdk, didAssumeRole: true }; });
     mockCloudExecutable.sdkProvider.forEnvironment = mockForEnvironment;
     mockCloudExecutable.sdkProvider.stubSSM({
       getParameter() {
-        return { };
+        return {};
       },
     });
     const cdkToolkit = new CdkToolkit({
@@ -313,7 +316,7 @@ describe('readCurrentTemplate', () => {
     // THEN
     expect(mockCloudExecutable.sdkProvider.sdk.ssm).not.toHaveBeenCalled();
     expect(flatten(stderrMock.mock.calls)).toEqual(expect.arrayContaining([
-      expect.stringMatching(/Could not assume bloop-lookup:here:123456789012/),
+      expect.stringMatching(/TheErrorThatGetsThrown/),
     ]));
     expect(mockForEnvironment.mock.calls.length).toEqual(3);
     expect(mockForEnvironment.mock.calls[0][2]).toEqual({
@@ -336,7 +339,7 @@ describe('readCurrentTemplate', () => {
     });
     mockCloudExecutable.sdkProvider.stubSSM({
       getParameter() {
-        return { };
+        return {};
       },
     });
 
@@ -348,10 +351,9 @@ describe('readCurrentTemplate', () => {
 
     // THEN
     expect(flatten(stderrMock.mock.calls)).toEqual(expect.arrayContaining([
-      expect.stringMatching(/Lookup role exists but was not assumed. Proceeding with default credentials./),
+      expect.stringMatching(/Lookup role.*was not assumed. Proceeding with default credentials./),
     ]));
     expect(mockCloudExecutable.sdkProvider.sdk.ssm).not.toHaveBeenCalled();
-    expect(mockForEnvironment.mock.calls.length).toEqual(3);
     expect(mockForEnvironment.mock.calls[0][2]).toEqual({
       assumeRoleArn: 'bloop-lookup:here:123456789012',
     });
@@ -390,6 +392,29 @@ describe('readCurrentTemplate', () => {
     expect(mockForEnvironment.mock.calls[0][2]).toEqual({
       assumeRoleArn: undefined,
       assumeRoleExternalId: undefined,
+    });
+  });
+});
+
+describe('bootstrap', () => {
+  test('accepts qualifier from context', async () => {
+    // GIVEN
+    const toolkit = defaultToolkitSetup();
+    const configuration = new Configuration();
+    configuration.context.set('@aws-cdk/core:bootstrapQualifier', 'abcde');
+
+    // WHEN
+    await toolkit.bootstrap(['aws://56789/south-pole'], bootstrapper, {
+      parameters: {
+        qualifier: configuration.context.get('@aws-cdk/core:bootstrapQualifier'),
+      },
+    });
+
+    // THEN
+    expect(bootstrapper.bootstrapEnvironment).toHaveBeenCalledWith(expect.anything(), expect.anything(), {
+      parameters: {
+        qualifier: 'abcde',
+      },
     });
   });
 });
@@ -482,108 +507,253 @@ describe('deploy', () => {
       });
     });
 
-    test('with sns notification arns', async () => {
-      // GIVEN
-      const notificationArns = [
-        'arn:aws:sns:us-east-2:444455556666:MyTopic',
-        'arn:aws:sns:eu-west-1:111155556666:my-great-topic',
-      ];
-      const toolkit = new CdkToolkit({
-        cloudExecutable,
-        configuration: cloudExecutable.configuration,
-        sdkProvider: cloudExecutable.sdkProvider,
-        deployments: new FakeCloudFormation({
-          'Test-Stack-A': { Foo: 'Bar' },
-          'Test-Stack-B': { Baz: 'Zinga!' },
-        }, notificationArns),
+    describe('sns notification arns', () => {
+      beforeEach(() => {
+        cloudExecutable = new MockCloudExecutable({
+          stacks: [
+            MockStack.MOCK_STACK_A,
+            MockStack.MOCK_STACK_B,
+            MockStack.MOCK_STACK_WITH_NOTIFICATION_ARNS,
+            MockStack.MOCK_STACK_WITH_BAD_NOTIFICATION_ARNS,
+          ],
+        });
       });
 
-      // WHEN
-      await toolkit.deploy({
-        selector: { patterns: ['Test-Stack-A', 'Test-Stack-B'] },
-        notificationArns,
-        hotswap: HotswapMode.FULL_DEPLOYMENT,
-      });
-    });
+      test('with sns notification arns as options', async () => {
+        // GIVEN
+        const notificationArns = [
+          'arn:aws:sns:us-east-2:444455556666:MyTopic',
+          'arn:aws:sns:eu-west-1:111155556666:my-great-topic',
+        ];
+        const toolkit = new CdkToolkit({
+          cloudExecutable,
+          configuration: cloudExecutable.configuration,
+          sdkProvider: cloudExecutable.sdkProvider,
+          deployments: new FakeCloudFormation({
+            'Test-Stack-A': { Foo: 'Bar' },
+          }, notificationArns),
+        });
 
-    test('fail with incorrect sns notification arns', async () => {
-      // GIVEN
-      const notificationArns = ['arn:::cfn-my-cool-topic'];
-      const toolkit = new CdkToolkit({
-        cloudExecutable,
-        configuration: cloudExecutable.configuration,
-        sdkProvider: cloudExecutable.sdkProvider,
-        deployments: new FakeCloudFormation({
-          'Test-Stack-A': { Foo: 'Bar' },
-        }, notificationArns),
-      });
-
-      // WHEN
-      await expect(() =>
-        toolkit.deploy({
-          selector: { patterns: ['Test-Stack-A'] },
+        // WHEN
+        await toolkit.deploy({
+          // Stacks should be selected by their hierarchical ID, which is their displayName, not by the stack ID.
+          selector: { patterns: ['Test-Stack-A-Display-Name'] },
           notificationArns,
           hotswap: HotswapMode.FULL_DEPLOYMENT,
-        }),
-      ).rejects.toThrow('Notification arn arn:::cfn-my-cool-topic is not a valid arn for an SNS topic');
+        });
+      });
 
+      test('fail with incorrect sns notification arns as options', async () => {
+        // GIVEN
+        const notificationArns = ['arn:::cfn-my-cool-topic'];
+        const toolkit = new CdkToolkit({
+          cloudExecutable,
+          configuration: cloudExecutable.configuration,
+          sdkProvider: cloudExecutable.sdkProvider,
+          deployments: new FakeCloudFormation({
+            'Test-Stack-A': { Foo: 'Bar' },
+          }, notificationArns),
+        });
+
+        // WHEN
+        await expect(() =>
+          toolkit.deploy({
+            // Stacks should be selected by their hierarchical ID, which is their displayName, not by the stack ID.
+            selector: { patterns: ['Test-Stack-A-Display-Name'] },
+            notificationArns,
+            hotswap: HotswapMode.FULL_DEPLOYMENT,
+          }),
+        ).rejects.toThrow('Notification arn arn:::cfn-my-cool-topic is not a valid arn for an SNS topic');
+      });
+
+      test('with sns notification arns in the executable', async () => {
+        // GIVEN
+        const expectedNotificationArns = [
+          'arn:aws:sns:bermuda-triangle-1337:123456789012:MyTopic',
+        ];
+        const toolkit = new CdkToolkit({
+          cloudExecutable,
+          configuration: cloudExecutable.configuration,
+          sdkProvider: cloudExecutable.sdkProvider,
+          deployments: new FakeCloudFormation({
+            'Test-Stack-Notification-Arns': { Foo: 'Bar' },
+          }, expectedNotificationArns),
+        });
+
+        // WHEN
+        await toolkit.deploy({
+          selector: { patterns: ['Test-Stack-Notification-Arns'] },
+          hotswap: HotswapMode.FULL_DEPLOYMENT,
+        });
+      });
+
+      test('fail with incorrect sns notification arns in the executable', async () => {
+        // GIVEN
+        const toolkit = new CdkToolkit({
+          cloudExecutable,
+          configuration: cloudExecutable.configuration,
+          sdkProvider: cloudExecutable.sdkProvider,
+          deployments: new FakeCloudFormation({
+            'Test-Stack-Bad-Notification-Arns': { Foo: 'Bar' },
+          }),
+        });
+
+        // WHEN
+        await expect(() =>
+          toolkit.deploy({
+            selector: { patterns: ['Test-Stack-Bad-Notification-Arns'] },
+            hotswap: HotswapMode.FULL_DEPLOYMENT,
+          }),
+        ).rejects.toThrow('Notification arn arn:1337:123456789012:sns:bad is not a valid arn for an SNS topic');
+      });
+
+      test('with sns notification arns in the executable and as options', async () => {
+        // GIVEN
+        const notificationArns = [
+          'arn:aws:sns:us-east-2:444455556666:MyTopic',
+          'arn:aws:sns:eu-west-1:111155556666:my-great-topic',
+        ];
+
+        const expectedNotificationArns = notificationArns.concat(['arn:aws:sns:bermuda-triangle-1337:123456789012:MyTopic']);
+        const toolkit = new CdkToolkit({
+          cloudExecutable,
+          configuration: cloudExecutable.configuration,
+          sdkProvider: cloudExecutable.sdkProvider,
+          deployments: new FakeCloudFormation({
+            'Test-Stack-Notification-Arns': { Foo: 'Bar' },
+          }, expectedNotificationArns),
+        });
+
+        // WHEN
+        await toolkit.deploy({
+          selector: { patterns: ['Test-Stack-Notification-Arns'] },
+          notificationArns,
+          hotswap: HotswapMode.FULL_DEPLOYMENT,
+        });
+      });
+
+      test('fail with incorrect sns notification arns in the executable and incorrect sns notification arns as options', async () => {
+        // GIVEN
+        const notificationArns = ['arn:::cfn-my-cool-topic'];
+        const toolkit = new CdkToolkit({
+          cloudExecutable,
+          configuration: cloudExecutable.configuration,
+          sdkProvider: cloudExecutable.sdkProvider,
+          deployments: new FakeCloudFormation({
+            'Test-Stack-Bad-Notification-Arns': { Foo: 'Bar' },
+          }, notificationArns),
+        });
+
+        // WHEN
+        await expect(() =>
+          toolkit.deploy({
+            selector: { patterns: ['Test-Stack-Bad-Notification-Arns'] },
+            notificationArns,
+            hotswap: HotswapMode.FULL_DEPLOYMENT,
+          }),
+        ).rejects.toThrow('Notification arn arn:::cfn-my-cool-topic is not a valid arn for an SNS topic');
+      });
+
+      test('fail with incorrect sns notification arns in the executable and correct sns notification arns as options', async () => {
+        // GIVEN
+        const notificationArns = ['arn:aws:sns:bermuda-triangle-1337:123456789012:MyTopic'];
+        const toolkit = new CdkToolkit({
+          cloudExecutable,
+          configuration: cloudExecutable.configuration,
+          sdkProvider: cloudExecutable.sdkProvider,
+          deployments: new FakeCloudFormation({
+            'Test-Stack-Bad-Notification-Arns': { Foo: 'Bar' },
+          }, notificationArns),
+        });
+
+        // WHEN
+        await expect(() =>
+          toolkit.deploy({
+            selector: { patterns: ['Test-Stack-Bad-Notification-Arns'] },
+            notificationArns,
+            hotswap: HotswapMode.FULL_DEPLOYMENT,
+          }),
+        ).rejects.toThrow('Notification arn arn:1337:123456789012:sns:bad is not a valid arn for an SNS topic');
+      });
+
+      test('fail with correct sns notification arns in the executable and incorrect sns notification arns as options', async () => {
+        // GIVEN
+        const notificationArns = ['arn:::cfn-my-cool-topic'];
+        const toolkit = new CdkToolkit({
+          cloudExecutable,
+          configuration: cloudExecutable.configuration,
+          sdkProvider: cloudExecutable.sdkProvider,
+          deployments: new FakeCloudFormation({
+            'Test-Stack-Notification-Arns': { Foo: 'Bar' },
+          }, notificationArns),
+        });
+
+        // WHEN
+        await expect(() =>
+          toolkit.deploy({
+            selector: { patterns: ['Test-Stack-Notification-Arns'] },
+            notificationArns,
+            hotswap: HotswapMode.FULL_DEPLOYMENT,
+          }),
+        ).rejects.toThrow('Notification arn arn:::cfn-my-cool-topic is not a valid arn for an SNS topic');
+      });
     });
+  });
 
-    test('globless bootstrap uses environment without question', async () => {
+  test('globless bootstrap uses environment without question', async () => {
     // GIVEN
-      const toolkit = defaultToolkitSetup();
+    const toolkit = defaultToolkitSetup();
 
-      // WHEN
-      await toolkit.bootstrap(['aws://56789/south-pole'], bootstrapper, {});
+    // WHEN
+    await toolkit.bootstrap(['aws://56789/south-pole'], bootstrapper, {});
 
-      // THEN
-      expect(bootstrapper.bootstrapEnvironment).toHaveBeenCalledWith({
-        account: '56789',
-        region: 'south-pole',
-        name: 'aws://56789/south-pole',
-      }, expect.anything(), expect.anything());
-      expect(bootstrapper.bootstrapEnvironment).toHaveBeenCalledTimes(1);
-    });
+    // THEN
+    expect(bootstrapper.bootstrapEnvironment).toHaveBeenCalledWith({
+      account: '56789',
+      region: 'south-pole',
+      name: 'aws://56789/south-pole',
+    }, expect.anything(), expect.anything());
+    expect(bootstrapper.bootstrapEnvironment).toHaveBeenCalledTimes(1);
+  });
 
-    test('globby bootstrap uses whats in the stacks', async () => {
-      // GIVEN
-      const toolkit = defaultToolkitSetup();
-      cloudExecutable.configuration.settings.set(['app'], 'something');
+  test('globby bootstrap uses whats in the stacks', async () => {
+    // GIVEN
+    const toolkit = defaultToolkitSetup();
+    cloudExecutable.configuration.settings.set(['app'], 'something');
 
-      // WHEN
-      await toolkit.bootstrap(['aws://*/bermuda-triangle-1'], bootstrapper, {});
+    // WHEN
+    await toolkit.bootstrap(['aws://*/bermuda-triangle-1'], bootstrapper, {});
 
-      // THEN
-      expect(bootstrapper.bootstrapEnvironment).toHaveBeenCalledWith({
-        account: '123456789012',
-        region: 'bermuda-triangle-1',
-        name: 'aws://123456789012/bermuda-triangle-1',
-      }, expect.anything(), expect.anything());
-      expect(bootstrapper.bootstrapEnvironment).toHaveBeenCalledTimes(1);
-    });
+    // THEN
+    expect(bootstrapper.bootstrapEnvironment).toHaveBeenCalledWith({
+      account: '123456789012',
+      region: 'bermuda-triangle-1',
+      name: 'aws://123456789012/bermuda-triangle-1',
+    }, expect.anything(), expect.anything());
+    expect(bootstrapper.bootstrapEnvironment).toHaveBeenCalledTimes(1);
+  });
 
-    test('bootstrap can be invoked without the --app argument', async () => {
-      // GIVEN
-      cloudExecutable.configuration.settings.clear();
-      const mockSynthesize = jest.fn();
-      cloudExecutable.synthesize = mockSynthesize;
+  test('bootstrap can be invoked without the --app argument', async () => {
+    // GIVEN
+    cloudExecutable.configuration.settings.clear();
+    const mockSynthesize = jest.fn();
+    cloudExecutable.synthesize = mockSynthesize;
 
-      const toolkit = defaultToolkitSetup();
+    const toolkit = defaultToolkitSetup();
 
-      // WHEN
-      await toolkit.bootstrap(['aws://123456789012/west-pole'], bootstrapper, {});
+    // WHEN
+    await toolkit.bootstrap(['aws://123456789012/west-pole'], bootstrapper, {});
 
-      // THEN
-      expect(bootstrapper.bootstrapEnvironment).toHaveBeenCalledWith({
-        account: '123456789012',
-        region: 'west-pole',
-        name: 'aws://123456789012/west-pole',
-      }, expect.anything(), expect.anything());
-      expect(bootstrapper.bootstrapEnvironment).toHaveBeenCalledTimes(1);
+    // THEN
+    expect(bootstrapper.bootstrapEnvironment).toHaveBeenCalledWith({
+      account: '123456789012',
+      region: 'west-pole',
+      name: 'aws://123456789012/west-pole',
+    }, expect.anything(), expect.anything());
+    expect(bootstrapper.bootstrapEnvironment).toHaveBeenCalledTimes(1);
 
-      expect(cloudExecutable.hasApp).toEqual(false);
-      expect(mockSynthesize).not.toHaveBeenCalled();
-    });
+    expect(cloudExecutable.hasApp).toEqual(false);
+    expect(mockSynthesize).not.toHaveBeenCalled();
   });
 });
 
@@ -591,7 +761,7 @@ describe('destroy', () => {
   test('destroy correct stack', async () => {
     const toolkit = defaultToolkitSetup();
 
-    await expect(() => {
+    expect(() => {
       return toolkit.destroy({
         selector: { patterns: ['Test-Stack-A/Test-Stack-C'] },
         exclusively: true,
@@ -813,6 +983,7 @@ describe('watch', () => {
       });
 
       test("triggers a 'deploy' twice for two file changes", async () => {
+        // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
         await Promise.all([
           fakeChokidarWatcherOn.fileEventCallback('add', 'my-file1'),
           fakeChokidarWatcherOn.fileEventCallback('change', 'my-file2'),
@@ -822,6 +993,7 @@ describe('watch', () => {
       });
 
       test("batches file changes that happen during 'deploy'", async () => {
+        // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
         await Promise.all([
           fakeChokidarWatcherOn.fileEventCallback('add', 'my-file1'),
           fakeChokidarWatcherOn.fileEventCallback('change', 'my-file2'),
@@ -852,10 +1024,6 @@ describe('synth', () => {
     // THEN
     await toolkit.synth(['Test-Stack-A-Display-Name'], false, true);
     expect(mockData.mock.calls.length).toEqual(0);
-  });
-
-  afterEach(() => {
-    process.env.STACKS_TO_VALIDATE = undefined;
   });
 
   describe('migrate', () => {
@@ -920,7 +1088,7 @@ describe('synth', () => {
       expect(stderrMock.mock.calls[1][0]).toContain(' ❌  Migrate failed for `cannot-generate-template`: CannotGenerateTemplateStack could not be generated because rust is not a supported language');
     });
 
-    cliTest('migrate succeeds for valid template from local path when no lanugage is provided', async (workDir) => {
+    cliTest('migrate succeeds for valid template from local path when no language is provided', async (workDir) => {
       const toolkit = defaultToolkitSetup();
       await toolkit.migrate({
         stackName: 'SQSTypeScript',
@@ -934,7 +1102,7 @@ describe('synth', () => {
       expect(fs.pathExistsSync(path.join(workDir, 'SQSTypeScript', 'lib', 'sqs_type_script-stack.ts'))).toBeTruthy();
     });
 
-    cliTest('migrate succeeds for valid template from local path when lanugage is provided', async (workDir) => {
+    cliTest('migrate succeeds for valid template from local path when language is provided', async (workDir) => {
       const toolkit = defaultToolkitSetup();
       await toolkit.migrate({
         stackName: 'S3Python',
@@ -993,13 +1161,13 @@ describe('synth', () => {
       });
     });
 
-    test('causes synth to fail if autoValidate=true', async() => {
+    test('causes synth to fail if autoValidate=true', async () => {
       const toolkit = defaultToolkitSetup();
       const autoValidate = true;
       await expect(toolkit.synth([], false, true, autoValidate)).rejects.toBeDefined();
     });
 
-    test('causes synth to succeed if autoValidate=false', async() => {
+    test('causes synth to succeed if autoValidate=false', async () => {
       const toolkit = defaultToolkitSetup();
       const autoValidate = false;
       await toolkit.synth([], false, true, autoValidate);
@@ -1007,7 +1175,7 @@ describe('synth', () => {
     });
   });
 
-  test('stack has error and was explicitly selected', async() => {
+  test('stack has error and was explicitly selected', async () => {
     cloudExecutable = new MockCloudExecutable({
       stacks: [
         MockStack.MOCK_STACK_A,
@@ -1057,6 +1225,31 @@ describe('synth', () => {
 
     expect(mockData.mock.calls.length).toEqual(1);
     expect(mockData.mock.calls[0][0]).toBeDefined();
+  });
+
+  test('rollback uses deployment role', async () => {
+    cloudExecutable = new MockCloudExecutable({
+      stacks: [
+        MockStack.MOCK_STACK_C,
+      ],
+    });
+
+    const mockedRollback = jest.spyOn(Deployments.prototype, 'rollbackStack').mockResolvedValue({
+      success: true,
+    });
+
+    const toolkit = new CdkToolkit({
+      cloudExecutable,
+      configuration: cloudExecutable.configuration,
+      sdkProvider: cloudExecutable.sdkProvider,
+      deployments: new Deployments({ sdkProvider: new MockSdkProvider() }),
+    });
+
+    await toolkit.rollback({
+      selector: { patterns: [] },
+    });
+
+    expect(mockedRollback).toHaveBeenCalled();
   });
 });
 
@@ -1123,7 +1316,8 @@ class MockStack {
       ],
     },
     depends: [MockStack.MOCK_STACK_C.stackName],
-  }
+  };
+
   public static readonly MOCK_STACK_WITH_ERROR: TestStackArtifact = {
     stackName: 'witherrors',
     env: 'aws://123456789012/bermuda-triangle-1',
@@ -1155,6 +1349,39 @@ class MockStack {
       },
     },
   }
+  public static readonly MOCK_STACK_WITH_NOTIFICATION_ARNS: TestStackArtifact = {
+    stackName: 'Test-Stack-Notification-Arns',
+    notificationArns: ['arn:aws:sns:bermuda-triangle-1337:123456789012:MyTopic'],
+    template: { Resources: { TemplateName: 'Test-Stack-Notification-Arns' } },
+    env: 'aws://123456789012/bermuda-triangle-1337',
+    metadata: {
+      '/Test-Stack-Notification-Arns': [
+        {
+          type: cxschema.ArtifactMetadataEntryType.STACK_TAGS,
+          data: [
+            { key: 'Foo', value: 'Bar' },
+          ],
+        },
+      ],
+    },
+  }
+
+  public static readonly MOCK_STACK_WITH_BAD_NOTIFICATION_ARNS: TestStackArtifact = {
+    stackName: 'Test-Stack-Bad-Notification-Arns',
+    notificationArns: ['arn:1337:123456789012:sns:bad'],
+    template: { Resources: { TemplateName: 'Test-Stack-Bad-Notification-Arns' } },
+    env: 'aws://123456789012/bermuda-triangle-1337',
+    metadata: {
+      '/Test-Stack-Bad-Notification-Arns': [
+        {
+          type: cxschema.ArtifactMetadataEntryType.STACK_TAGS,
+          data: [
+            { key: 'Foo', value: 'Bar' },
+          ],
+        },
+      ],
+    },
+  }
 }
 
 class FakeCloudFormation extends Deployments {
@@ -1172,9 +1399,7 @@ class FakeCloudFormation extends Deployments {
         Object.entries(tags).map(([Key, Value]) => ({ Key, Value }))
           .sort((l, r) => l.Key.localeCompare(r.Key));
     }
-    if (expectedNotificationArns) {
-      this.expectedNotificationArns = expectedNotificationArns;
-    }
+    this.expectedNotificationArns = expectedNotificationArns ?? [];
   }
 
   public deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
@@ -1182,7 +1407,11 @@ class FakeCloudFormation extends Deployments {
       MockStack.MOCK_STACK_A.stackName,
       MockStack.MOCK_STACK_B.stackName,
       MockStack.MOCK_STACK_C.stackName,
+      // MockStack.MOCK_STACK_D deliberately omitted.
       MockStack.MOCK_STACK_WITH_ASSET.stackName,
+      MockStack.MOCK_STACK_WITH_ERROR.stackName,
+      MockStack.MOCK_STACK_WITH_NOTIFICATION_ARNS.stackName,
+      MockStack.MOCK_STACK_WITH_BAD_NOTIFICATION_ARNS.stackName,
     ]).toContain(options.stack.stackName);
 
     if (this.expectedTags[options.stack.stackName]) {
@@ -1195,6 +1424,12 @@ class FakeCloudFormation extends Deployments {
       noOp: false,
       outputs: { StackName: options.stack.stackName },
       stackArtifact: options.stack,
+    });
+  }
+
+  public rollbackStack(_options: RollbackStackOptions): Promise<RollbackStackResult> {
+    return Promise.resolve({
+      success: true,
     });
   }
 
@@ -1213,8 +1448,12 @@ class FakeCloudFormation extends Deployments {
         return Promise.resolve({});
       case MockStack.MOCK_STACK_WITH_ASSET.stackName:
         return Promise.resolve({});
+      case MockStack.MOCK_STACK_WITH_NOTIFICATION_ARNS.stackName:
+        return Promise.resolve({});
+      case MockStack.MOCK_STACK_WITH_BAD_NOTIFICATION_ARNS.stackName:
+        return Promise.resolve({});
       default:
-        return Promise.reject(`Not an expected mock stack: ${stack.stackName}`);
+        throw new Error(`not an expected mock stack: ${stack.stackName}`);
     }
   }
 }

@@ -193,6 +193,8 @@ If you do not provide any options for this method, it redirects HTTP port 80 to 
 By default all ingress traffic will be allowed on the source port. If you want to be more selective with your
 ingress rules then set `open: false` and use the listener's `connections` object to selectively grant access to the listener.
 
+**Note**: The `path` parameter must start with a `/`.
+
 ### Application Load Balancer attributes
 
 You can modify attributes of Application Load Balancers:
@@ -272,15 +274,39 @@ lb.logAccessLogs(bucket);
 Like access log bucket, the only server-side encryption option that's supported is Amazon S3-managed keys (SSE-S3). For more information
 Documentation: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-connection-logging.html
 
-```ts 
+```ts
 declare const vpc: ec2.Vpc;
 
-const bucket = new s3.Bucket(this, 'ALBConnectionLogsBucket',{ 
+const bucket = new s3.Bucket(this, 'ALBConnectionLogsBucket',{
   encryption: s3.BucketEncryption.S3_MANAGED,
 });
 
 const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', { vpc });
 lb.logConnectionLogs(bucket);
+```
+
+### Dualstack Application Load Balancer
+
+You can create a dualstack Network Load Balancer using the `ipAddressType` property:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
+  vpc,
+  ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+});
+```
+
+By setting `DUAL_STACK_WITHOUT_PUBLIC_IPV4`, you can provision load balancers without public IPv4s
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
+  vpc,
+  ipAddressType: elbv2.IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4,
+});
 ```
 
 ## Defining a Network Load Balancer
@@ -377,6 +403,40 @@ const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
   // Indicates how traffic is distributed among the load balancer Availability Zones.
   clientRoutingPolicy: elbv2.ClientRoutingPolicy.AVAILABILITY_ZONE_AFFINITY,
 });
+```
+
+### Network Load Balancer Listener attributes
+
+You can modify attributes of Network Load Balancer Listener:
+
+```ts
+declare const lb: elbv2.NetworkLoadBalancer;
+declare const group: elbv2.NetworkTargetGroup;
+
+const listener = lb.addListener('Listener', {
+  port: 80,
+  defaultAction: elbv2.NetworkListenerAction.forward([group]),
+
+  // The tcp idle timeout value. The valid range is 60-6000 seconds. The default is 350 seconds.
+  tcpIdleTimeout: Duration.seconds(100),
+});
+```
+
+### Network Load Balancer and EC2 IConnectable interface
+Network Load Balancer implements EC2 `IConnectable` and exposes `connections` property. EC2 Connections allows manage the allowed network connections for constructs with Security Groups. This class makes it easy to allow network connections to and from security groups, and between security groups individually. One thing to keep in mind is that network load balancers do not have security groups, and no automatic security group configuration is done for you. You will have to configure the security groups of the target yourself to allow traffic by clients and/or load balancer instances, depending on your target types.
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const sg1: ec2.ISecurityGroup;
+declare const sg2: ec2.ISecurityGroup;
+
+const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
+  vpc,
+  internetFacing: true,
+  securityGroups: [sg1],
+});
+lb.addSecurityGroup(sg2);
+lb.connections.allowFromAnyIpv4(ec2.Port.tcp(80));
 ```
 
 ## Targets and Target Groups
