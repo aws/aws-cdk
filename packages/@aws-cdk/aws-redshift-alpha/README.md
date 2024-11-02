@@ -76,6 +76,29 @@ const cluster = new Cluster(this, 'Redshift', {
 });
 ```
 
+## Availability Zone Relocation
+
+By using [relocation in Amazon Redshift](https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-recovery.html), you allow Amazon Redshift to move a cluster to another Availability Zone (AZ) without any loss of data or changes to your applications.
+
+To enable this feature, set the `availabilityZoneRelocation` property to `true` when creating the cluster.
+
+```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+
+declare const vpc: ec2.IVpc;
+
+const cluster = new Cluster(this, 'Redshift', {
+  masterUser: {
+    masterUsername: 'admin',
+  },
+  vpc,
+  nodeType: NodeType.RA3_XLPLUS,
+  availabilityZoneRelocation: true,
+});
+```
+
+**Note**: The `availabilityZoneRelocation` property is only available for RA3 node types.
+
 ## Connecting
 
 To control who can access the cluster, use the `.connections` attribute. Redshift Clusters have
