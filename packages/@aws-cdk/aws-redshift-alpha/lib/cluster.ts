@@ -81,6 +81,28 @@ export enum ClusterType {
 }
 
 /**
+ * The Amazon Redshift operation to be performed
+ */
+export enum ResourceAction {
+  /**
+   * Pause the cluster
+   */
+  PAUSE_CLUSTER = 'pause-cluster',
+
+  /**
+   * Resume the cluster
+   */
+  RESUME_CLUSTER = 'resume-cluster',
+
+  /**
+   * Failing over to the other availability zone
+   *
+   * @see https://docs.aws.amazon.com/redshift/latest/mgmt/test-cluster-multi-az.html
+   */
+  FAILOVER_PRIMARY_COMPUTE = 'failover-primary-compute',
+}
+
+/**
  * Username and password combination
  */
 export interface Login {
@@ -399,6 +421,13 @@ export interface ClusterProps {
    * @default - false
    */
   readonly multiAz?: boolean;
+
+  /**
+   * The Amazon Redshift operation to be performed.
+   *
+   * @default - no operation
+   */
+  readonly resourceAction?: ResourceAction;
 }
 
 /**
@@ -613,6 +642,7 @@ export class Cluster extends ClusterBase {
       elasticIp: props.elasticIp,
       enhancedVpcRouting: props.enhancedVpcRouting,
       multiAz: props.multiAz,
+      resourceAction: props.resourceAction,
     });
 
     this.cluster.applyRemovalPolicy(removalPolicy, {

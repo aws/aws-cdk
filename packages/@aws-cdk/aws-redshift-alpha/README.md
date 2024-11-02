@@ -448,6 +448,48 @@ cluster.addToParameterGroup('enable_user_activity_logging', 'true');
 cluster.enableRebootForParameterChanges()
 ```
 
+## Resource Action
+
+You can perform various actions on the Redshift resource by specifying the `resourceAction` property,
+including [pausing and resuming the cluster](https://docs.aws.amazon.com/redshift/latest/mgmt/rs-mgmt-pause-resume-cluster.html), as well as initiating [failover for Multi-AZ clusters](https://docs.aws.amazon.com/redshift/latest/mgmt/test-cluster-multi-az.html).
+
+```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { ResourceAction } from '@aws-cdk/aws-redshift-alpha';
+
+declare const vpc: ec2.IVpc;
+
+// Pause the cluster
+new Cluster(this, 'PausedCluster', {
+  masterUser: {
+    masterUsername: 'admin',
+  },
+  vpc,
+  resourceAction: ResourceAction.PAUSE,
+});
+
+// Resume the cluster
+new Cluster(this, 'ResumedCluster', {
+  masterUser: {
+    masterUsername: 'admin',
+  },
+  vpc,
+  resourceAction: ResourceAction.RESUME,
+});
+
+// Failover the cluster
+new Cluster(this, 'FailOverCluster', {
+  masterUser: {
+    masterUsername: 'admin',
+  },
+  // VPC must have 3 AZs for the cluster which executes failover action
+  vpc,
+  // Must be a multi-AZ cluster to failover
+  multiAz: true,
+  resourceAction: ResourceAction.FAILOVER_PRIMARY_COMPUTE,
+});
+```
+
 ## Elastic IP
 
 If you configure your cluster to be publicly accessible, you can optionally select an *elastic IP address* to use for the external IP address. An elastic IP address is a static IP address that is associated with your AWS account. You can use an elastic IP address to connect to your cluster from outside the VPC. An elastic IP address gives you the ability to change your underlying configuration without affecting the IP address that clients use to connect to your cluster. This approach can be helpful for situations such as recovery after a failure.
