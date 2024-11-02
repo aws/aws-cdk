@@ -115,6 +115,7 @@ export const USE_CORRECT_VALUE_FOR_INSTANCE_RESOURCE_ID_PROPERTY = '@aws-cdk/aws
 export const CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS = '@aws-cdk/core:cfnIncludeRejectComplexResourceUpdateCreatePolicyIntrinsics';
 export const LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES = '@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages';
 export const STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY = '@aws-cdk/aws-stepfunctions-tasks:fixRunEcsTaskPolicy';
+export const BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT = '@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1155,8 +1156,8 @@ export const FLAGS: Record<string, FlagInfo> = {
     type: FlagType.BugFix,
     summary: 'When enabled will allow you to specify a resource policy per replica, and not copy the source table policy to all replicas',
     detailsMd: `
-      If this flag is not set, the default behavior for \`TableV2\` is to use a different \`resourcePolicy\` for each replica. 
-      
+      If this flag is not set, the default behavior for \`TableV2\` is to use a different \`resourcePolicy\` for each replica.
+
       If this flag is set to false, the behavior is that each replica shares the same \`resourcePolicy\` as the source table.
       This will prevent you from creating a new table which has an additional replica and a resource policy.
 
@@ -1249,6 +1250,23 @@ export const FLAGS: Record<string, FlagInfo> = {
     `,
     introducedIn: { v2: '2.163.0' },
     recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT]: {
+    type: FlagType.ApiDefault,
+    summary: 'When enabled, the BastionHost construct will use the latest Amazon Linux 2023 AMI, instead of Amazon Linux 2.',
+    detailsMd: `
+      Currently, if the machineImage property of the BastionHost construct defaults to using the latest Amazon Linux 2
+      AMI. Amazon Linux 2 hits end-of-life in June 2025, so using Amazon Linux 2023 by default is a more future-proof
+      and secure option.
+
+      When this feature flag is enabled, if you do not pass the machineImage property to the BastionHost construct,
+      the latest Amazon Linux 2023 version will be used instead of Amazon Linux 2.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag or explicitly pass an Amazon Linux 2 machine image to the BastionHost construct.',
   },
 };
 
