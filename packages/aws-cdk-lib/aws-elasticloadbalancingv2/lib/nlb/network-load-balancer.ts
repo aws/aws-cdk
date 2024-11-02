@@ -70,6 +70,8 @@ export interface NetworkLoadBalancerProps extends BaseLoadBalancerProps {
   /**
    * Indicates whether zonal shift is enabled
    *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/network/zonal-shift.html
+   *
    * @default false
    */
   readonly zonalShift?: boolean;
