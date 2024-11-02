@@ -491,7 +491,21 @@ test.each([
     },
     vpc,
     resourceAction,
+    multiAz: true,
   });
+});
+
+test.each([false, undefined])('throw error for failover primary compute action with single AZ cluster', (multiAz) => {
+  expect(() => {
+    new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      multiAz,
+      resourceAction: ResourceAction.FAILOVER_PRIMARY_COMPUTE,
+    });
+  }).toThrow('ResourceAction.FAILOVER_PRIMARY_COMPUTE can only be used with multi-AZ clusters.')
 });
 
 test('throws when trying to add rotation to a cluster without secret', () => {

@@ -81,7 +81,7 @@ export enum ClusterType {
 }
 
 /**
- * The Amazon Redshift operation to be performed
+ * The Amazon Redshift operation
  */
 export enum ResourceAction {
   /**
@@ -611,6 +611,10 @@ export class Cluster extends ClusterBase {
       if (clusterType === ClusterType.SINGLE_NODE) {
         throw new Error('Multi-AZ cluster is not supported for `clusterType` single-node');
       }
+    }
+
+    if (props.resourceAction === ResourceAction.FAILOVER_PRIMARY_COMPUTE && !props.multiAz) {
+      throw new Error('ResourceAction.FAILOVER_PRIMARY_COMPUTE can only be used with multi-AZ clusters.');
     }
 
     this.cluster = new CfnCluster(this, 'Resource', {
