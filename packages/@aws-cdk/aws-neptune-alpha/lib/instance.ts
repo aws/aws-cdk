@@ -407,7 +407,7 @@ export interface DatabaseInstanceProps {
   /**
    * Indicates that minor version patches are applied automatically.
    *
-   * @default true
+   * @default - same as the cluster's autoMinorVersionUpgrade setting
    */
   readonly autoMinorVersionUpgrade?: boolean;
 }
