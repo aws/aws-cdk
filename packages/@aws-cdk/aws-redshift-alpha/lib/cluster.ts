@@ -593,8 +593,8 @@ export class Cluster extends ClusterBase {
       }
     }
 
-    if (props.availabilityZoneRelocation && nodeType.startsWith('dc2')) {
-      throw new Error(`Availability zone relocation is not supported for DC2 node types, got: ${props.nodeType}`);
+    if (props.availabilityZoneRelocation && !nodeType.startsWith('ra3')) {
+      throw new Error(`Availability zone relocation is supported for only RA3 node types, got: ${props.nodeType}`);
     }
 
     this.cluster = new CfnCluster(this, 'Resource', {
