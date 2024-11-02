@@ -1,14 +1,9 @@
-import { Pipe } from '@aws-cdk/aws-pipes-alpha';
-import { SqsSource } from '@aws-cdk/aws-pipes-sources-alpha';
+import { IPipe, ISource, Pipe, SourceConfig } from '@aws-cdk/aws-pipes-alpha';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as apigw from 'aws-cdk-lib/aws-apigateway';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { ApiGatewayTarget } from '../lib/api-gateway';
-
-const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-pipes-targets-api-gw');
-const sourceQueue = new cdk.aws_sqs.Queue(stack, 'SourceQueue');
 
 /*
  * This integration test sends a message to an SQS queue which invokes
@@ -18,6 +13,29 @@ const sourceQueue = new cdk.aws_sqs.Queue(stack, 'SourceQueue');
  *
  * SQS (pipe source) --> API Gateway REST API (pipe target) --> Lambda function
  */
+
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'aws-cdk-pipes-targets-api-gw');
+const sourceQueue = new cdk.aws_sqs.Queue(stack, 'SourceQueue');
+
+// When this module is promoted from alpha, TestSource should
+// be replaced with SqsSource from @aws-cdk/aws-pipes-sources-alpha
+class TestSource implements ISource {
+  sourceArn: string;
+  sourceParameters = undefined;
+  constructor(private readonly queue: cdk.aws_sqs.Queue) {
+    this.queue = queue;
+    this.sourceArn = queue.queueArn;
+  }
+  bind(_pipe: IPipe): SourceConfig {
+    return {
+      sourceParameters: this.sourceParameters,
+    };
+  }
+  grantRead(pipeRole: cdk.aws_iam.IRole): void {
+    this.queue.grantConsumeMessages(pipeRole);
+  }
+}
 
 const fn = new lambda.Function(stack, 'ConnectHandler', {
   runtime: lambda.Runtime.NODEJS_LATEST,
@@ -29,7 +47,7 @@ const restApi = new apigw.RestApi(stack, 'RestApi', {});
 restApi.root.addResource('books').addResource('fiction').addMethod('GET', new apigw.LambdaIntegration(fn));
 
 new Pipe(stack, 'Pipe', {
-  source: new SqsSource(sourceQueue),
+  source: new TestSource(sourceQueue),
   target: new ApiGatewayTarget(restApi, {
     method: 'GET',
     path: '/books/*',
