@@ -1,5 +1,5 @@
 {
-  "version": "36.0.24",
+  "version": "38.0.1",
   "files": {
     "bde7b5c89cb43285f884c94f0b9e17cdb0f5eb5345005114dd60342e0b8a85a1": {
       "source": {
@@ -14,7 +14,7 @@
         }
       }
     },
-    "94dba9d0100458f81b67c0096ade9a061f8abba8c7e0a7edee6c484a5f15304c": {
+    "da3d793672a3694b89d65ddb67cceda5a164d94127c21488abff49f99c682f0a": {
       "source": {
         "path": "EnableLocalWriteForwardingClusterStack.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "94dba9d0100458f81b67c0096ade9a061f8abba8c7e0a7edee6c484a5f15304c.json",
+          "objectKey": "da3d793672a3694b89d65ddb67cceda5a164d94127c21488abff49f99c682f0a.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
