@@ -131,7 +131,7 @@ export class SecretRotationApplication {
 
   constructor(applicationId: string, semanticVersion: string, options?: SecretRotationApplicationOptions) {
     // partitions are handled explicitly via applicationArnForPartition()
-    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    // eslint-disable-next-line @cdklabs/no-literal-partition
     this.applicationId = `arn:aws:serverlessrepo:us-east-1:297356227824:applications/${applicationId}`;
     this.semanticVersion = semanticVersion;
     this.applicationName = applicationId;

@@ -49,3 +49,103 @@ declare const role: iam.Role;
 const placeIndex = new location.PlaceIndex(this, 'PlaceIndex');
 placeIndex.grantSearch(role);
 ```
+
+## Geofence Collection
+
+Geofence collection resources allow you to store and manage geofences—virtual boundaries on a map.
+You can evaluate locations against a geofence collection resource and get notifications when the location
+update crosses the boundary of any of the geofences in the geofence collection.
+
+```ts
+declare const key: kms.Key;
+
+new location.GeofenceCollection(this, 'GeofenceCollection', {
+  geofenceCollectionName: 'MyGeofenceCollection', // optional, defaults to a generated name
+  kmsKey: key, // optional, defaults to use an AWS managed key
+});
+```
+
+Use the `grant()` or `grantRead()` method to grant the given identity permissions to perform actions
+on the geofence collection:
+
+```ts
+declare const role: iam.Role;
+
+const geofenceCollection = new location.GeofenceCollection(this, 'GeofenceCollection', {
+  geofenceCollectionName: 'MyGeofenceCollection',
+});
+
+geofenceCollection.grantRead(role);
+```
+
+## Route Calculator
+
+Route calculator resources allow you to find routes and estimate travel time based on up-to-date road network and live traffic information from your chosen data provider.
+
+For more information, see [Routes](https://docs.aws.amazon.com/location/latest/developerguide/route-concepts.html).
+
+To create a route calculator, define a `RouteCalculator`:
+
+```ts
+new location.RouteCalculator(this, 'RouteCalculator', {
+  routeCalculatorName: 'MyRouteCalculator', // optional, defaults to a generated name
+  dataSource: location.DataSource.ESRI,
+});
+```
+
+Use the `grant()` or `grantRead()` method to grant the given identity permissions to perform actions
+on the route calculator:
+
+```ts
+declare const role: iam.Role;
+
+const routeCalculator = new location.RouteCalculator(this, 'RouteCalculator', {
+  dataSource: location.DataSource.ESRI,
+});
+routeCalculator.grantRead(role);
+```
+
+## Tracker
+
+A tracker stores position updates for a collection of devices. The tracker can be used to query the devices' current location or location history. It stores the updates, but reduces storage space and visual noise by filtering the locations before storing them.
+
+For more information, see [Trackers](https://docs.aws.amazon.com/location/latest/developerguide/geofence-tracker-concepts.html#tracking-overview).
+
+To create a tracker, define a `Tracker`:
+
+```ts
+declare const key: kms.Key;
+
+new location.Tracker(this, 'Tracker', {
+  trackerName: 'MyTracker', // optional, defaults to a generated name
+  kmsKey: key, // optional, defaults to use an AWS managed key
+});
+```
+
+Use the `grant()`, `grantUpdateDevicePositions` or `grantRead()` method to grant the given identity permissions to perform actions
+on the geofence collection:
+
+```ts
+declare const role: iam.Role;
+
+const tracker = new location.Tracker(this, 'Tracker', {
+  trackerName: 'MyTracker',
+});
+
+tracker.grantRead(role);
+```
+
+If you want to associate a tracker with geofence collections, define a `geofenceCollections` property or use `addGeofenceCollections` method.
+
+```ts
+declare const geofenceCollection: location.GeofenceCollection;
+declare const geofenceCollectionForAdd: location.GeofenceCollection;
+declare const tracker: location.Tracker;
+
+const tracker = new location.Tracker(this, 'Tracker', {
+  trackerName: 'MyTracker',
+  geofenceCollections: [geofenceCollection],
+});
+
+tracker.addGeofenceCollections(geofenceCollectionForAdd);
+```

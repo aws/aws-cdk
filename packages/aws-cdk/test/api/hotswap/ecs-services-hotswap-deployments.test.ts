@@ -1,7 +1,8 @@
-/* eslint-disable import/order */
 import * as AWS from 'aws-sdk';
 import * as setup from './hotswap-test-setup';
-import { HotswapMode } from '../../../lib/api/hotswap/common';
+import { EcsHotswapProperties, HotswapMode, HotswapPropertyOverrides } from '../../../lib/api/hotswap/common';
+import { Configuration } from '../../../lib/settings';
+import { silentTest } from '../../util/silent';
 
 let hotswapMockSdkProvider: setup.HotswapMockSdkProvider;
 let mockRegisterTaskDef: jest.Mock<AWS.ECS.RegisterTaskDefinitionResponse, AWS.ECS.RegisterTaskDefinitionRequest[]>;
@@ -9,7 +10,6 @@ let mockUpdateService: (params: AWS.ECS.UpdateServiceRequest) => AWS.ECS.UpdateS
 
 beforeEach(() => {
   hotswapMockSdkProvider = setup.setupHotswapTests();
-
   mockRegisterTaskDef = jest.fn();
   mockUpdateService = jest.fn();
   hotswapMockSdkProvider.stubEcs({
@@ -31,7 +31,7 @@ beforeEach(() => {
 });
 
 describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotswapMode) => {
-  test('should call registerTaskDefinition and updateService for a difference only in the TaskDefinition with a Family property', async () => {
+  silentTest('should call registerTaskDefinition and updateService for a difference only in the TaskDefinition with a Family property', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -105,7 +105,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
   });
 
-  test('any other TaskDefinition property change besides ContainerDefinition cannot be hotswapped in CLASSIC mode but does not block HOTSWAP_ONLY mode deployments', async () => {
+  silentTest('any other TaskDefinition property change besides ContainerDefinition cannot be hotswapped in CLASSIC mode but does not block HOTSWAP_ONLY mode deployments', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -192,7 +192,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     }
   });
 
-  test('deleting any other TaskDefinition property besides ContainerDefinition results in a full deployment in CLASSIC mode and a hotswap deployment in HOTSWAP_ONLY mode', async () => {
+  silentTest('deleting any other TaskDefinition property besides ContainerDefinition results in a full deployment in CLASSIC mode and a hotswap deployment in HOTSWAP_ONLY mode', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -278,7 +278,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     }
   });
 
-  test('should call registerTaskDefinition and updateService for a difference only in the TaskDefinition without a Family property', async () => {
+  silentTest('should call registerTaskDefinition and updateService for a difference only in the TaskDefinition without a Family property', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -352,7 +352,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
   });
 
-  test('a difference just in a TaskDefinition, without any services using it, is not hotswappable in FALL_BACK mode', async () => {
+  silentTest('a difference just in a TaskDefinition, without any services using it, is not hotswappable in FALL_BACK mode', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -415,7 +415,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     }
   });
 
-  test('if anything besides an ECS Service references the changed TaskDefinition, hotswapping is not possible in CLASSIC mode but is possible in HOTSWAP_ONLY', async () => {
+  silentTest('if anything besides an ECS Service references the changed TaskDefinition, hotswapping is not possible in CLASSIC mode but is possible in HOTSWAP_ONLY', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -519,7 +519,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     }
   });
 
-  test('should call registerTaskDefinition with certain properties not lowercased', async () => {
+  silentTest('should call registerTaskDefinition with certain properties not lowercased', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -632,6 +632,93 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       taskDefinition: 'arn:aws:ecs:region:account:task-definition/my-task-def:3',
       deploymentConfiguration: {
         minimumHealthyPercent: 0,
+      },
+      forceNewDeployment: true,
+    });
+  });
+});
+
+describe.each([
+  new Configuration().settings.set(['hotswap'], { ecs: { minimumHealthyPercent: 10 } }),
+  new Configuration().settings.set(['hotswap'], { ecs: { minimumHealthyPercent: 10, maximumHealthyPercent: 100 } }),
+])('hotswap properties', (settings) => {
+  test('should handle all possible hotswap properties', async () => {
+    // GIVEN
+    setup.setCurrentCfnStackTemplate({
+      Resources: {
+        TaskDef: {
+          Type: 'AWS::ECS::TaskDefinition',
+          Properties: {
+            Family: 'my-task-def',
+            ContainerDefinitions: [
+              { Image: 'image1' },
+            ],
+          },
+        },
+        Service: {
+          Type: 'AWS::ECS::Service',
+          Properties: {
+            TaskDefinition: { Ref: 'TaskDef' },
+          },
+        },
+      },
+    });
+    setup.pushStackResourceSummaries(
+      setup.stackSummaryOf('Service', 'AWS::ECS::Service',
+        'arn:aws:ecs:region:account:service/my-cluster/my-service'),
+    );
+    mockRegisterTaskDef.mockReturnValue({
+      taskDefinition: {
+        taskDefinitionArn: 'arn:aws:ecs:region:account:task-definition/my-task-def:3',
+      },
+    });
+    const cdkStackArtifact = setup.cdkStackArtifactOf({
+      template: {
+        Resources: {
+          TaskDef: {
+            Type: 'AWS::ECS::TaskDefinition',
+            Properties: {
+              Family: 'my-task-def',
+              ContainerDefinitions: [
+                { Image: 'image2' },
+              ],
+            },
+          },
+          Service: {
+            Type: 'AWS::ECS::Service',
+            Properties: {
+              TaskDefinition: { Ref: 'TaskDef' },
+            },
+          },
+        },
+      },
+    });
+
+    // WHEN
+    let ecsHotswapProperties = new EcsHotswapProperties(settings.get(['hotswap']).ecs.minimumHealthyPercent, settings.get(['hotswap']).ecs.maximumHealthyPercent);
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(
+      HotswapMode.HOTSWAP_ONLY,
+      cdkStackArtifact,
+      {},
+      new HotswapPropertyOverrides(ecsHotswapProperties),
+    );
+
+    // THEN
+    expect(deployStackResult).not.toBeUndefined();
+    expect(mockRegisterTaskDef).toBeCalledWith({
+      family: 'my-task-def',
+      containerDefinitions: [
+        { image: 'image2' },
+      ],
+    });
+    expect(mockUpdateService).toBeCalledWith({
+      service: 'arn:aws:ecs:region:account:service/my-cluster/my-service',
+      cluster: 'my-cluster',
+      taskDefinition: 'arn:aws:ecs:region:account:task-definition/my-task-def:3',
+      deploymentConfiguration: {
+        minimumHealthyPercent: settings.get(['hotswap']).ecs?.minimumHealthyPercent == undefined ?
+          0 : settings.get(['hotswap']).ecs?.minimumHealthyPercent,
+        maximumPercent: settings.get(['hotswap']).ecs?.maximumHealthyPercent,
       },
       forceNewDeployment: true,
     });

@@ -1045,7 +1045,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
         },
       ],
       MemorySize: 256,
-      Runtime: 'python3.9',
+      Runtime: 'python3.11',
       Timeout: 30,
     });
   });

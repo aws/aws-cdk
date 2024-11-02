@@ -264,6 +264,51 @@ describe('tests', () => {
     });
   });
 
+  describe('http2Enabled', () => {
+    test('http2Enabled is not set', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      // WHEN
+      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+        vpc,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        LoadBalancerAttributes: Match.not(
+          Match.arrayWith([
+            {
+              Key: 'routing.http2.enabled',
+              Value: Match.anyValue(),
+            },
+          ]),
+        ),
+      });
+    });
+
+    test.each([true, false])('http2Enabled is set to %s', (http2Enabled) => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+      // WHEN
+      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+        vpc,
+        http2Enabled,
+      });
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        LoadBalancerAttributes: Match.arrayWith([
+          {
+            Key: 'routing.http2.enabled',
+            Value: String(http2Enabled),
+          },
+        ]),
+      });
+    });
+  });
+
   test('Deletion protection false', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -325,7 +370,7 @@ describe('tests', () => {
       }
     }
 
-    function loggingSetup(withEncryption: boolean = false ): { stack: cdk.Stack; bucket: s3.Bucket; lb: elbv2.ApplicationLoadBalancer } {
+    function loggingSetup(withEncryption: boolean = false): { stack: cdk.Stack; bucket: s3.Bucket; lb: elbv2.ApplicationLoadBalancer } {
       const app = new cdk.App();
       const stack = new cdk.Stack(app, undefined, { env: { region: 'us-east-1' } });
       const vpc = new ec2.Vpc(stack, 'Stack');
@@ -1407,6 +1452,41 @@ describe('tests', () => {
         Type: 'application',
         IpAddressType: 'dualstack',
       });
+    });
+  });
+
+  describe('dualstack without public ipv4', () => {
+    test('Can create internet-facing dualstack without public ipv4 ApplicationLoadBalancer', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      // WHEN
+      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+        vpc,
+        internetFacing: true,
+        ipAddressType: elbv2.IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        Scheme: 'internet-facing',
+        Type: 'application',
+        IpAddressType: 'dualstack-without-public-ipv4',
+      });
+    });
+
+    test('Cannot create internal dualstack without public ipv4 ApplicationLoadBalancer', () => {
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      expect(() => {
+        new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+          vpc,
+          internetFacing: false,
+          ipAddressType: elbv2.IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4,
+        });
+      }).toThrow('dual-stack without public IPv4 address can only be used with internet-facing scheme.');
     });
   });
 });

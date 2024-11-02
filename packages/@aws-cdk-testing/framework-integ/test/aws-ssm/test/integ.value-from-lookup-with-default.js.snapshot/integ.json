@@ -1,0 +1,13 @@
+{
+  "enableLookups": true,
+  "version": "36.0.24",
+  "testCases": {
+    "ValueFromLookupWithDefaultTest/DefaultTest": {
+      "stacks": [
+        "value-from-lookup-with-defaults"
+      ],
+      "assertionStack": "ValueFromLookupWithDefaultTest/DefaultTest/DeployAssert",
+      "assertionStackName": "ValueFromLookupWithDefaultTestDeployAssert525E0911"
+    }
+  }
+}

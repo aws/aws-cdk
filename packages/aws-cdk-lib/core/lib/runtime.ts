@@ -49,6 +49,7 @@ function pad(x: number) {
  * Turn a tag object into the proper CloudFormation representation
  */
 export function cfnTagToCloudFormation(x: any): any {
+  if (!canInspect(x)) { return x; }
   return {
     Key: x.key,
     Value: x.value,
