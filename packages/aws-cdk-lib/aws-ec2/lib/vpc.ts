@@ -2583,42 +2583,17 @@ function tap<T>(x: T, fn: (x: T) => void): T {
 class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivateSubnet {
   public readonly internetConnectivityEstablished: IDependable = new DependencyGroup();
   public readonly subnetId: string;
-  public readonly routeTable: IRouteTable;
   private readonly _availabilityZone?: string;
   private readonly _ipv4CidrBlock?: string;
+  private readonly _routeTableId?: string;
 
   constructor(scope: Construct, id: string, attrs: SubnetAttributes) {
     super(scope, id);
 
-    if (!attrs.routeTableId) {
-      // The following looks a little weird, but comes down to:
-      //
-      // * Is the subnetId itself unresolved ({ Ref: Subnet }); or
-      // * Was it the accidentally extracted first element of a list-encoded
-      //   token? ({ Fn::ImportValue: Subnets } => ['#{Token[1234]}'] =>
-      //   '#{Token[1234]}'
-      //
-      // There's no other API to test for the second case than to the string back into
-      // a list and see if the combination is Unresolved.
-      //
-      // In both cases we can't output the subnetId literally into the metadata (because it'll
-      // be useless). In the 2nd case even, if we output it to metadata, the `resolve()` call
-      // that gets done on the metadata will even `throw`, because the '#{Token}' value will
-      // occur in an illegal position (not in a list context).
-      const ref = Token.isUnresolved(attrs.subnetId) || Token.isUnresolved([attrs.subnetId])
-        ? `at '${Node.of(scope).path}/${id}'`
-        : `'${attrs.subnetId}'`;
-      // eslint-disable-next-line max-len
-      Annotations.of(this).addWarningV2('@aws-cdk/aws-ec2:noSubnetRouteTableId', `No routeTableId was provided to the subnet ${ref}. Attempting to read its .routeTable.routeTableId will return null/undefined. (More info: https://github.com/aws/aws-cdk/pull/3171)`);
-    }
-
     this._ipv4CidrBlock = attrs.ipv4CidrBlock;
     this._availabilityZone = attrs.availabilityZone;
+    this._routeTableId = attrs.routeTableId;
     this.subnetId = attrs.subnetId;
-    this.routeTable = {
-      // Forcing routeTableId to pretend non-null to maintain backwards-compatibility. See https://github.com/aws/aws-cdk/pull/3171
-      routeTableId: attrs.routeTableId!,
-    };
   }
 
   public get availabilityZone(): string {
@@ -2635,6 +2610,15 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
       throw new Error('You cannot reference an imported Subnet\'s IPv4 CIDR if it was not supplied. Add the ipv4CidrBlock when importing using Subnet.fromSubnetAttributes()');
     }
     return this._ipv4CidrBlock;
+  }
+
+  public get routeTable(): IRouteTable {
+    if (!this._routeTableId) {
+      throw new Error('You cannot reference an imported Subnet\'s route table if it was not supplied. Add the routeTableId when importing using Subnet.fromSubnetAttributes()')
+    }
+    return {
+      routeTableId: this._routeTableId
+    }
   }
 
   public associateNetworkAcl(id: string, networkAcl: INetworkAcl): void {
