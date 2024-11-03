@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { IDeliveryStream } from '@aws-cdk/aws-kinesisfirehose-alpha';
 import { IRole } from 'aws-cdk-lib/aws-iam';
 import { ILogGroup } from 'aws-cdk-lib/aws-logs';
@@ -47,7 +46,7 @@ export enum LogLevel {
  */
 export enum S3OutputFormat {
   /**
-  * PLAIN
+  * Plain text
   */
   PLAIN = 'plain',
   /**
@@ -55,7 +54,8 @@ export enum S3OutputFormat {
   */
   JSON = 'json',
   /**
-  * W3C
+  * W3C extended log File format
+  * @see https://www.w3.org/TR/WD-logfile
   */
   W3C = 'w3c',
 }
@@ -65,7 +65,10 @@ export enum S3OutputFormat {
  */
 export interface S3LogDestinationProps {
   /**
-   * The name of the S3 bucket to deliver the log records for the pipe.
+   * The S3 bucket to deliver the log records for the pipe.
+   *
+   * The bucket can be in the same or a different AWS Account. If the bucket is in
+   * a different acccount, the bucket policy must allow access to the Pipes role.
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-s3logdestination.html#cfn-pipes-pipe-s3logdestination-bucketname
    */
