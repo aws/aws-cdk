@@ -505,7 +505,7 @@ test.each([false, undefined])('throw error for failover primary compute action w
       multiAz,
       resourceAction: ResourceAction.FAILOVER_PRIMARY_COMPUTE,
     });
-  }).toThrow('ResourceAction.FAILOVER_PRIMARY_COMPUTE can only be used with multi-AZ clusters.')
+  }).toThrow('ResourceAction.FAILOVER_PRIMARY_COMPUTE can only be used with multi-AZ clusters.');
 });
 
 test('throws when trying to add rotation to a cluster without secret', () => {
