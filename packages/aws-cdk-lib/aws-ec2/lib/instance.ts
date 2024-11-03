@@ -491,15 +491,17 @@ export class Instance extends Resource implements IInstance {
     this.securityGroups.push(this.securityGroup);
     Tags.of(this).add(NAME_TAG, props.instanceName || this.node.path);
 
-    if (props.instanceProfile && (props.role || props.ssmSessionPermissions)) {
-      throw new Error('You cannot provide both instanceProfile and (role or ssmSessionPermissions)');
+    if (props.instanceProfile && props.role) {
+      throw new Error('You cannot provide both instanceProfile and role');
+    } else if (props.instanceProfile && props.ssmSessionPermissions) {
+      throw new Error('You cannot provide both instanceProfile and ssmSessionPermissions');
     }
 
     // use provided instance profile or create one if a role was provided
-    let iamProfileArn: string | undefined = undefined;
+    let iamProfileName: string | undefined = undefined;
     if (props.instanceProfile?.role) {
       this.role = props.instanceProfile.role;
-      iamProfileArn = props.instanceProfile.instanceProfileArn;
+      iamProfileName = props.instanceProfile.instanceProfileName;
     } else {
       this.role = props.role || new iam.Role(this, 'InstanceRole', {
         assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
@@ -513,7 +515,7 @@ export class Instance extends Resource implements IInstance {
         roles: [this.role.roleName],
       });
 
-      iamProfileArn = iamProfile.attrArn;
+      iamProfileName = iamProfile.instanceProfileName;
     }
 
     this.grantPrincipal = this.role;
@@ -591,7 +593,7 @@ export class Instance extends Resource implements IInstance {
       subnetId: networkInterfaces ? undefined : subnet.subnetId,
       securityGroupIds: networkInterfaces ? undefined : securityGroupsToken,
       networkInterfaces,
-      iamInstanceProfile: { arn: iamProfileArn },
+      iamInstanceProfile: iamProfileName,
       userData: userDataToken,
       availabilityZone: subnet.availabilityZone,
       sourceDestCheck: props.sourceDestCheck,
