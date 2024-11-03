@@ -78,7 +78,7 @@ export interface S3LogDestinationProps {
    * The AWS Account that owns the Amazon S3 bucket to which EventBridge delivers the log records for the pipe.
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-s3logdestination.html#cfn-pipes-pipe-s3logdestination-bucketowner
-   * @default - no value
+   * @default - account ID derived from `bucket`
    */
   readonly bucketOwner?: string;
   /**
@@ -219,7 +219,7 @@ export class S3LogDestination implements ILogDestination {
       parameters: {
         s3LogDestination: {
           bucketName: this.parameters.bucket.bucketName,
-          bucketOwner: this.parameters.bucketOwner,
+          bucketOwner: this.parameters.bucketOwner || this.parameters.bucket.env.account,
           outputFormat: this.parameters.outputFormat,
           prefix: this.parameters.prefix,
         },

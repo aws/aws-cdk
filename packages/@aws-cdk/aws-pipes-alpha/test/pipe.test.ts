@@ -510,6 +510,7 @@ describe('Pipe', () => {
               BucketName: {
                 Ref: 'LogBucketCC3B17E8',
               },
+              BucketOwner: stack.account,
               Prefix: 'mike',
               OutputFormat: 'w3c',
             },
