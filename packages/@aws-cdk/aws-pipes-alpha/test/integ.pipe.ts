@@ -5,6 +5,7 @@ import * as cdk from 'aws-cdk-lib';
 import { Code } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import { CloudwatchLogsLogDestination, DynamicInput, EnrichmentParametersConfig, FirehoseLogDestination, IEnrichment, IPipe, ISource, ITarget, IncludeExecutionData, InputTransformation, LogLevel, Pipe, S3LogDestination, S3OutputFormat, SourceConfig, TargetConfig } from '../lib';
+import { name } from '../package.json';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-pipes');
@@ -20,6 +21,9 @@ const enrichmentLambda = new cdk.aws_lambda.Function(stack, 'EnrichmentLambda', 
 
 // When this module is promoted from alpha, TestSource should
 // be replaced with SqsSource from @aws-cdk/aws-pipes-sources-alpha
+if (!name.endsWith('-alpha')) {
+  throw new Error('aws-pipes has exited alpha, TestSource should now be replaced with SqsSource from @aws-cdk/aws-pipes-sources-alpha');
+}
 class TestSource implements ISource {
   sourceArn: string;
   sourceParameters = undefined;

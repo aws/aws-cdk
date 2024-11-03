@@ -488,6 +488,45 @@ describe('Pipe', () => {
       const s3LogDestination = new S3LogDestination({
         bucket,
         prefix: 'mike',
+        outputFormat: S3OutputFormat.W3C,
+      });
+
+      new Pipe(stack, 'TestPipe', {
+        pipeName: 'TestPipe',
+        source,
+        target,
+        logLevel: LogLevel.ERROR,
+        logIncludeExecutionData: [IncludeExecutionData.ALL],
+        logDestinations: [s3LogDestination],
+      });
+
+      const template = Template.fromStack(stack);
+
+      // THEN
+      template.hasResource('AWS::Pipes::Pipe', {
+        Properties: {
+          LogConfiguration: {
+            S3LogDestination: {
+              BucketName: {
+                Ref: 'LogBucketCC3B17E8',
+              },
+              Prefix: 'mike',
+              OutputFormat: 'w3c',
+            },
+            Level: 'ERROR',
+            IncludeExecutionData: ['ALL'],
+          },
+        },
+      });
+    });
+
+    it('should pass along s3 log configuration for cross-account bucket', () => {
+      // WHEN
+      const bucket = new Bucket(stack, 'LogBucket');
+      const s3LogDestination = new S3LogDestination({
+        bucket,
+        bucketOwner: '111111111111',
+        prefix: 'mike',
         outputFormat: S3OutputFormat.JSON,
       });
 
@@ -510,7 +549,7 @@ describe('Pipe', () => {
               BucketName: {
                 Ref: 'LogBucketCC3B17E8',
               },
-              BucketOwner: stack.account,
+              BucketOwner: '111111111111',
               Prefix: 'mike',
               OutputFormat: 'json',
             },
