@@ -43,6 +43,9 @@ class TestSource implements ISource {
 
 // When this module is promoted from alpha, TestTarget should
 // be replaced with SqsTarget from @aws-cdk/aws-pipes-targets-alpha
+if (!name.endsWith('-alpha')) {
+  throw new Error('aws-pipes has exited alpha, TestTarget should now be replaced with SqsTarget from @aws-cdk/aws-pipes-targets-alpha');
+}
 class TestTarget implements ITarget {
   targetArn: string;
   inputTransformation: InputTransformation = InputTransformation.fromEventPath('$.body');
