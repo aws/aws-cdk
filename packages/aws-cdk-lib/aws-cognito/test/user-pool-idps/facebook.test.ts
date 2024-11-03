@@ -94,8 +94,8 @@ describe('UserPoolIdentityProvider', () => {
         AttributeMapping: {
           given_name: 'name',
           address: 'fb-address',
-          customAttr1: 'email',
-          customAttr2: 'fb-custom-attr',
+          customAttr1: 'custom:email',
+          customAttr2: 'custom:fb-custom-attr',
         },
       });
     });

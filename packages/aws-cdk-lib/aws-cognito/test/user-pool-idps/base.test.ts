@@ -67,8 +67,8 @@ describe('UserPoolIdentityProvider', () => {
 
       // THEN
       expect(idp.mapping).toStrictEqual({
-        'custom-attr-1': 'email',
-        'custom-attr-2': 'name',
+        'custom-attr-1': 'custom:email',
+        'custom-attr-2': 'custom:name',
       });
     });
 

@@ -182,8 +182,8 @@ describe('UserPoolIdentityProvider', () => {
         AttributeMapping: {
           family_name: 'family_name',
           given_name: 'given_name',
-          customAttr1: 'email',
-          customAttr2: 'sub',
+          customAttr1: 'custom:email',
+          customAttr2: 'custom:sub',
         },
       });
     });

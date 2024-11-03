@@ -93,8 +93,8 @@ describe('UserPoolIdentityProvider', () => {
         AttributeMapping: {
           given_name: 'name',
           address: 'google-address',
-          customAttr1: 'email',
-          customAttr2: 'google-custom-attr',
+          customAttr1: 'custom:email',
+          customAttr2: 'custom:google-custom-attr',
         },
       });
     });

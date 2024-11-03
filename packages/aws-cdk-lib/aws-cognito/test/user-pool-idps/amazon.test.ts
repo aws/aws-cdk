@@ -92,8 +92,8 @@ describe('UserPoolIdentityProvider', () => {
         AttributeMapping: {
           given_name: 'name',
           address: 'amzn-address',
-          customAttr1: 'email',
-          customAttr2: 'amzn-custom-attr',
+          customAttr1: 'custom:email',
+          customAttr2: 'custom:amzn-custom-attr',
         },
       });
     });
