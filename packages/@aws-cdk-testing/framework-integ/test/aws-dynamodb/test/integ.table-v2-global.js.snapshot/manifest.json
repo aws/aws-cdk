@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "38.0.1",
   "artifacts": {
     "aws-cdk-global-table.assets": {
       "type": "cdk:asset-manifest",
@@ -15,10 +15,14 @@
       "properties": {
         "templateFile": "aws-cdk-global-table.template.json",
         "terminationProtection": false,
+        "tags": {
+          "stage": "IntegTest"
+        },
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/a38411fa5a0afe5343485b65f2c16b2b258cbf8f67e1bf8dc53f06668c3b91d2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/f76e4db697eb7d6e297e40f4bafd35a109a7849082124cc1946d6efb31becfbd.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,6 +38,17 @@
         "aws-cdk-global-table.assets"
       ],
       "metadata": {
+        "/aws-cdk-global-table": [
+          {
+            "type": "aws:cdk:stack-tags",
+            "data": [
+              {
+                "Key": "stage",
+                "Value": "IntegTest"
+              }
+            ]
+          }
+        ],
         "/aws-cdk-global-table/Stream/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -89,7 +104,11 @@
       "properties": {
         "templateFile": "awscdkglobaltableintegDefaultTestDeployAssertA2A9E81F.template.json",
         "terminationProtection": false,
+        "tags": {
+          "stage": "IntegTest"
+        },
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
@@ -108,6 +127,17 @@
         "awscdkglobaltableintegDefaultTestDeployAssertA2A9E81F.assets"
       ],
       "metadata": {
+        "/aws-cdk-global-table-integ/DefaultTest/DeployAssert": [
+          {
+            "type": "aws:cdk:stack-tags",
+            "data": [
+              {
+                "Key": "stage",
+                "Value": "IntegTest"
+              }
+            ]
+          }
+        ],
         "/aws-cdk-global-table-integ/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",

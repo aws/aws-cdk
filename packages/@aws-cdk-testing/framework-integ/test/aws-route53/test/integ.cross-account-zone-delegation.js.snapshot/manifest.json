@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "38.0.1",
   "artifacts": {
     "parent-stack.assets": {
       "type": "cdk:asset-manifest",
@@ -16,9 +16,10 @@
         "templateFile": "parent-stack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-us-east-1/3f1315b27c99d1b75dccc6f588b8886eedd87e0ca51af42a9c519db49f6ba80f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-us-east-1/3b5bacebef67a4ca0e4f8c27aa8428dbc0e3859c9b62b09d7e4206f0494fe5ee.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -244,6 +245,12 @@
             "data": "TheVPCRestrictDefaultSecurityGroupCustomResourceAFA88FCE"
           }
         ],
+        "/parent-stack/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
         "/parent-stack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
           {
             "type": "aws:cdk:logicalId",
@@ -304,9 +311,10 @@
         "templateFile": "child-stack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-deploy-role-234567890123-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-cfn-exec-role-234567890123-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-234567890123-us-east-1/fb6893ad14af11fa88e80580882b7e2eb673a9fec5790bd5836a9a10120f95a2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-234567890123-us-east-1/782158ed682d580cf9822bca8a0d773946359fcd50cbcbf122bbe3f42cf7898c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -339,6 +347,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "delegateCrossAccountZoneDelegationCustomResource23BD590B"
+          }
+        ],
+        "/child-stack/Custom::CrossAccountZoneDelegationCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
           }
         ],
         "/child-stack/Custom::CrossAccountZoneDelegationCustomResourceProvider/Role": [
@@ -383,9 +397,10 @@
         "templateFile": "child-opt-in-stack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-deploy-role-234567890123-af-south-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-cfn-exec-role-234567890123-af-south-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-234567890123-af-south-1/ccc4c2cfc1a5e4ddfff948ef48f10dc649ce97f1a141949961a06713cbc28a5b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-234567890123-af-south-1/09b79c75445f2a9c7492ba92cb07287633dc52a8afc7bafe47a1189345874dad.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -418,6 +433,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "delegateCrossAccountZoneDelegationCustomResource23BD590B"
+          }
+        ],
+        "/child-opt-in-stack/Custom::CrossAccountZoneDelegationCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
           }
         ],
         "/child-opt-in-stack/Custom::CrossAccountZoneDelegationCustomResourceProvider/Role": [
@@ -462,9 +483,10 @@
         "templateFile": "child-opt-in-stack-with-assume-role-region.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-deploy-role-234567890123-af-south-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-cfn-exec-role-234567890123-af-south-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-234567890123-af-south-1/2f4e27ba20303f1dd8e588cbbc82f15c9cd8b1aa43aa6e82c3622d267de5da47.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-234567890123-af-south-1/81f6a85921696bdb2e6bffc3f7e1c5b54f6a748bf8595a83404dbf5112074380.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -497,6 +519,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "delegateCrossAccountZoneDelegationCustomResource23BD590B"
+          }
+        ],
+        "/child-opt-in-stack-with-assume-role-region/Custom::CrossAccountZoneDelegationCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
           }
         ],
         "/child-opt-in-stack-with-assume-role-region/Custom::CrossAccountZoneDelegationCustomResourceProvider/Role": [
@@ -541,6 +569,7 @@
         "templateFile": "Route53CrossAccountIntegDefaultTestDeployAssertF1D808C9.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
@@ -580,5 +609,21 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "missing": [
+    {
+      "key": "availability-zones:account=12345678:region=us-east-1",
+      "provider": "availability-zones",
+      "props": {
+        "dummyValue": [
+          "dummy1a",
+          "dummy1b",
+          "dummy1c"
+        ],
+        "account": "12345678",
+        "region": "us-east-1",
+        "lookupRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-lookup-role-12345678-us-east-1"
+      }
+    }
+  ]
 }

@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.165.0](https://github.com/aws/aws-cdk/compare/v2.164.1...v2.165.0) (2024-10-31)
+
+
+### Features
+
+* **bootstrap:** add lifecycle rule to abort multipart uploads after 7 days ([#31956](https://github.com/aws/aws-cdk/issues/31956)) ([b800da8](https://github.com/aws/aws-cdk/commit/b800da8172919a1ab27f885549e701d98323c9bb)), closes [#29045](https://github.com/aws/aws-cdk/issues/29045)
+* **bootstrap:** delete noncurrent versions after 30 days ([#31949](https://github.com/aws/aws-cdk/issues/31949)) ([579041e](https://github.com/aws/aws-cdk/commit/579041e5d41e780ce1f6fb9f778c353868fb6938))
+* **cli:** garbage collect ecr assets (under --unstable flag) ([#31841](https://github.com/aws/aws-cdk/issues/31841)) ([da85e54](https://github.com/aws/aws-cdk/commit/da85e54d7d3dfb4e33942f58564e91039e7d22ff)), closes [#31611](https://github.com/aws/aws-cdk/issues/31611)
+* **codebuild:** add support of organization webhook in github source ([#31740](https://github.com/aws/aws-cdk/issues/31740)) ([8c15b5f](https://github.com/aws/aws-cdk/commit/8c15b5f19a0c289fd0dad8c35b6734232d957836)), closes [#31736](https://github.com/aws/aws-cdk/issues/31736)
+* **cognito:** support UserPoolGroup ([#31351](https://github.com/aws/aws-cdk/issues/31351)) ([408b20f](https://github.com/aws/aws-cdk/commit/408b20f92122069a04ff5776b4783ae220d04a56)), closes [#21026](https://github.com/aws/aws-cdk/issues/21026)
+* update L1 CloudFormation resource definitions ([#31917](https://github.com/aws/aws-cdk/issues/31917)) ([8c93291](https://github.com/aws/aws-cdk/commit/8c93291f789b441397bc5a64308816e89f682199))
+
+
+### Bug Fixes
+
+* **assertions:** throw error or warn when `synth` is called multiple times on mutated construct tree ([#31865](https://github.com/aws/aws-cdk/issues/31865)) ([a261c9d](https://github.com/aws/aws-cdk/commit/a261c9d8a316ec389f19c873122691d48c5ca16d)), closes [#24689](https://github.com/aws/aws-cdk/issues/24689)
+* **cli:** ecr garbage collection hangs when repository has no images ([#31951](https://github.com/aws/aws-cdk/issues/31951)) ([a235a9f](https://github.com/aws/aws-cdk/commit/a235a9fad29bf0da141b27ca391861fa613f42b8))
+* **cli:** garbage collection ignores review_in_progress stacks ([#31906](https://github.com/aws/aws-cdk/issues/31906)) ([cb3ecfe](https://github.com/aws/aws-cdk/commit/cb3ecfe8f255e626db3706632c9590c86c28bea5))
+* **s3-assets:** cannot publish a file without extension ([#30597](https://github.com/aws/aws-cdk/issues/30597)) ([ccab485](https://github.com/aws/aws-cdk/commit/ccab485b87a7090ddf0773508d7b8ee84ff654b0)), closes [#30471](https://github.com/aws/aws-cdk/issues/30471)
+* **sqs:** queue with `fifo: false` does not deploy ([#31922](https://github.com/aws/aws-cdk/issues/31922)) ([a9d3b02](https://github.com/aws/aws-cdk/commit/a9d3b02783104fe862a3e863e8c89af845b49c8c)), closes [#8550](https://github.com/aws/aws-cdk/issues/8550)
+* enable node-fips compatible body checksums for S3 ([#31883](https://github.com/aws/aws-cdk/issues/31883)) ([4f29c1d](https://github.com/aws/aws-cdk/commit/4f29c1d04533b68535c1a5706855066d1d1ea577))
+
+
+## [2.164.1](https://github.com/aws/aws-cdk/compare/v2.164.0...v2.164.1) (2024-10-25)
+
+
+### Bug Fixes
+
+* enable node-fips compatible body checksums for S3 ([#31883](https://github.com/aws/aws-cdk/issues/31883)) ([290a499](https://github.com/aws/aws-cdk/commit/290a499f31413bd71eece4ad9f196eb5993747a9))
+
 ## [2.164.0](https://github.com/aws/aws-cdk/compare/v2.163.1...v2.164.0) (2024-10-24)
 
 

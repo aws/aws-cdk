@@ -29,7 +29,7 @@ describe('cluster new api', () => {
       expect(() => {
         // WHEN
         new DatabaseCluster(stack, 'Database', {
-          engine: DatabaseClusterEngine.AURORA,
+          engine: DatabaseClusterEngine.AURORA_MYSQL,
           instanceProps: {
             instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
             vpc,
@@ -49,7 +49,7 @@ describe('cluster new api', () => {
       expect(() => {
         // WHEN
         new DatabaseCluster(stack, 'Database', {
-          engine: DatabaseClusterEngine.AURORA,
+          engine: DatabaseClusterEngine.AURORA_MYSQL,
           vpc,
           iamAuthentication: true,
         });
@@ -64,7 +64,7 @@ describe('cluster new api', () => {
       expect(() => {
         // WHEN
         new DatabaseCluster(stack, 'Database', {
-          engine: DatabaseClusterEngine.AURORA,
+          engine: DatabaseClusterEngine.AURORA_MYSQL,
           writer: ClusterInstance.serverlessV2('writer'),
           iamAuthentication: true,
         });
@@ -80,7 +80,7 @@ describe('cluster new api', () => {
       expect(() => {
         // WHEN
         new DatabaseCluster(stack, 'Database', {
-          engine: DatabaseClusterEngine.AURORA,
+          engine: DatabaseClusterEngine.AURORA_MYSQL,
           instanceProps: {
             instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
             vpc,
@@ -100,7 +100,7 @@ describe('cluster new api', () => {
       expect(() => {
         // WHEN
         new DatabaseCluster(stack, 'Database', {
-          engine: DatabaseClusterEngine.AURORA,
+          engine: DatabaseClusterEngine.AURORA_MYSQL,
           instanceProps: {
             instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
             vpcSubnets: vpc.selectSubnets( { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS } ),
@@ -130,7 +130,7 @@ describe('cluster new api', () => {
       expect(() => {
         // WHEN
         new DatabaseCluster(stack, 'Database', {
-          engine: DatabaseClusterEngine.AURORA,
+          engine: DatabaseClusterEngine.AURORA_MYSQL,
           vpc,
           vpcSubnets: vpc.selectSubnets( { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS } ),
           serverlessV2MaxCapacity: maxCapacity,
@@ -143,6 +143,27 @@ describe('cluster new api', () => {
   });
 
   describe('cluster options', () => {
+    test.each([true, false])('specify auto minor version upgrade', (autoMinorVersionUpgrade) => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        autoMinorVersionUpgrade,
+        writer: ClusterInstance.serverlessV2('writer'),
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::RDS::DBCluster', {
+        Engine: 'aurora-mysql',
+        AutoMinorVersionUpgrade: autoMinorVersionUpgrade,
+      });
+    });
+
     test('with serverless instances', () => {
       // GIVEN
       const stack = testStack();
@@ -150,7 +171,7 @@ describe('cluster new api', () => {
 
       // WHEN
       new DatabaseCluster(stack, 'Database', {
-        engine: DatabaseClusterEngine.AURORA,
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
         vpc,
         writer: ClusterInstance.serverlessV2('writer'),
         iamAuthentication: true,
@@ -207,7 +228,7 @@ describe('cluster new api', () => {
 
       // WHEN
       new DatabaseCluster(stack, 'Database', {
-        engine: DatabaseClusterEngine.AURORA,
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
         vpc,
         vpcSubnets: vpc.selectSubnets({ subnetType: ec2.SubnetType.PUBLIC }),
         writer: ClusterInstance.serverlessV2('writer'),
@@ -244,7 +265,7 @@ describe('cluster new api', () => {
 
       // WHEN
       new DatabaseCluster(stack, 'Database', {
-        engine: DatabaseClusterEngine.AURORA,
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
         instanceProps: {
           vpc: vpc,
           preferredMaintenanceWindow: PREFERRED_MAINTENANCE_WINDOW,
@@ -267,7 +288,7 @@ describe('cluster new api', () => {
 
       // WHEN
       new DatabaseCluster(stack, 'Database', {
-        engine: DatabaseClusterEngine.AURORA,
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
         vpc: vpc,
         writer: ClusterInstance.provisioned('Instance1', {
           preferredMaintenanceWindow: PREFERRED_MAINTENANCE_WINDOW,
@@ -290,7 +311,7 @@ describe('cluster new api', () => {
 
       // WHEN
       new DatabaseCluster(stack, 'Database', {
-        engine: DatabaseClusterEngine.AURORA,
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
         vpc: vpc,
         writer: ClusterInstance.provisioned('Instance1', {
           // No preferredMaintenanceWindow set
@@ -322,7 +343,7 @@ describe('cluster new api', () => {
 
         // WHEN
         const pg = new ParameterGroup(stack, 'pg', {
-          engine: DatabaseClusterEngine.AURORA,
+          engine: DatabaseClusterEngine.AURORA_MYSQL,
         });
         const sg = new ec2.SecurityGroup(stack, 'sg', {
           vpc,
@@ -342,13 +363,13 @@ describe('cluster new api', () => {
       const test1 = createCase(stack1);
       const test2 = createCase(stack2);
       new DatabaseCluster(stack1, 'Database', {
-        engine: DatabaseClusterEngine.AURORA,
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
         instanceProps: test1,
         iamAuthentication: true,
       });
 
       new DatabaseCluster(stack2, 'Database', {
-        engine: DatabaseClusterEngine.AURORA,
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
         vpc: test2.vpc,
         securityGroups: test2.securityGroups,
         writer: ClusterInstance.provisioned('Instance1', {
@@ -384,7 +405,7 @@ describe('cluster new api', () => {
 
         // WHEN
         const pg = new ParameterGroup(stack, 'pg', {
-          engine: DatabaseClusterEngine.AURORA,
+          engine: DatabaseClusterEngine.AURORA_MYSQL,
         });
         const sg = new ec2.SecurityGroup(stack, 'sg', {
           vpc,
@@ -407,7 +428,7 @@ describe('cluster new api', () => {
       // Create serverless cluster using workaround described here:
       // https://github.com/aws/aws-cdk/issues/20197#issuecomment-1284485844
       const workaroundCluster = new DatabaseCluster(stack1, 'Database', {
-        engine: DatabaseClusterEngine.AURORA,
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
         instanceProps: test1,
         iamAuthentication: true,
       });
@@ -426,7 +447,7 @@ describe('cluster new api', () => {
       // Create serverless cluster using new/official approach.
       // This should provide a non-breaking migration path from the workaround.
       new DatabaseCluster(stack2, 'Database', {
-        engine: DatabaseClusterEngine.AURORA,
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
         vpc: test2.vpc,
         securityGroups: test2.securityGroups,
         writer: ClusterInstance.serverlessV2('Instance1', {
@@ -462,7 +483,7 @@ describe('cluster new api', () => {
 
       // WHEN
       new DatabaseCluster(stack, 'Database', {
-        engine: DatabaseClusterEngine.AURORA,
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
         vpc,
         writer: ClusterInstance.serverlessV2('writer'),
         iamAuthentication: true,
@@ -475,7 +496,7 @@ describe('cluster new api', () => {
       template.hasResourceProperties('AWS::RDS::DBInstance', {
         DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
         DBInstanceClass: 'db.serverless',
-        Engine: 'aurora',
+        Engine: 'aurora-mysql',
         PromotionTier: 0,
       });
     });
@@ -488,13 +509,13 @@ describe('cluster new api', () => {
       // WHEN
       new DatabaseCluster(stack, 'Database', {
         removalPolicy: RemovalPolicy.RETAIN,
-        engine: DatabaseClusterEngine.AURORA,
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
         vpc,
         writer: ClusterInstance.serverlessV2('writer', {
           allowMajorVersionUpgrade: true,
           autoMinorVersionUpgrade: true,
           enablePerformanceInsights: true,
-          parameterGroup: new ParameterGroup(stack, 'pg', { engine: DatabaseClusterEngine.AURORA }),
+          parameterGroup: new ParameterGroup(stack, 'pg', { engine: DatabaseClusterEngine.AURORA_MYSQL }),
         }),
       });
 
@@ -510,7 +531,7 @@ describe('cluster new api', () => {
           DBInstanceClass: 'db.serverless',
           DBParameterGroupName: { Ref: 'pg749EE6ED' },
           EnablePerformanceInsights: true,
-          Engine: 'aurora',
+          Engine: 'aurora-mysql',
           PerformanceInsightsRetentionPeriod: 7,
           PromotionTier: 0,
         },
@@ -526,7 +547,7 @@ describe('cluster new api', () => {
 
       // WHEN
       new DatabaseCluster(stack, 'Database', {
-        engine: DatabaseClusterEngine.AURORA,
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
         vpc,
         writer: ClusterInstance.provisioned('writer'),
         iamAuthentication: true,
@@ -550,14 +571,14 @@ describe('cluster new api', () => {
 
       // WHEN
       new DatabaseCluster(stack, 'Database', {
-        engine: DatabaseClusterEngine.AURORA,
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
         vpc,
         writer: ClusterInstance.provisioned('writer', {
           allowMajorVersionUpgrade: true,
           autoMinorVersionUpgrade: true,
           enablePerformanceInsights: true,
           instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE ),
-          parameterGroup: new ParameterGroup(stack, 'pg', { engine: DatabaseClusterEngine.AURORA }),
+          parameterGroup: new ParameterGroup(stack, 'pg', { engine: DatabaseClusterEngine.AURORA_MYSQL }),
         }),
         iamAuthentication: true,
       });
@@ -574,7 +595,7 @@ describe('cluster new api', () => {
         DBInstanceClass: 'db.c4.large',
         DBParameterGroupName: { Ref: 'pg749EE6ED' },
         EnablePerformanceInsights: true,
-        Engine: 'aurora',
+        Engine: 'aurora-mysql',
         PerformanceInsightsRetentionPeriod: 7,
         PromotionTier: 0,
       });
@@ -587,7 +608,7 @@ describe('cluster new api', () => {
 
       // WHEN
       new DatabaseCluster(stack, 'Database', {
-        engine: DatabaseClusterEngine.AURORA,
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
         vpc,
         vpcSubnets: vpc.selectSubnets({ subnetType: ec2.SubnetType.PUBLIC }),
         writer: ClusterInstance.serverlessV2('writer'),
@@ -624,7 +645,7 @@ describe('cluster new api', () => {
 
       //WHEN
       const cluster = new DatabaseCluster(stack, 'Database', {
-        engine: DatabaseClusterEngine.AURORA,
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
         vpc,
         writer: ClusterInstance.serverlessV2('writer'),
         readers: [ClusterInstance.serverlessV2('reader')],
@@ -647,7 +668,7 @@ describe('cluster new api', () => {
 
       //WHEN
       const cluster = new DatabaseCluster(stack, 'Database', {
-        engine: DatabaseClusterEngine.AURORA,
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
         vpc,
         writer: ClusterInstance.serverlessV2('writer'),
         readers: [ClusterInstance.serverlessV2('reader')],
@@ -694,7 +715,7 @@ describe('cluster new api', () => {
 
       //WHEN
       const cluster = new DatabaseClusterFromSnapshot(stack, 'Database', {
-        engine: DatabaseClusterEngine.AURORA,
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
         vpc,
         snapshotIdentifier: 'snapshot-identifier',
         iamAuthentication: true,
@@ -744,7 +765,7 @@ describe('cluster new api', () => {
 
       // WHEN
       const cluster = new DatabaseCluster(stack, 'Database', {
-        engine: DatabaseClusterEngine.AURORA,
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
         vpc,
         writer: ClusterInstance.provisioned('writer'),
         readers: [ClusterInstance.serverlessV2('reader')],
@@ -781,7 +802,7 @@ describe('cluster new api', () => {
 
       // WHEN
       const cluster = new DatabaseCluster(stack, 'Database', {
-        engine: DatabaseClusterEngine.AURORA,
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
         vpc,
         writer: ClusterInstance.provisioned('writer'),
         readers: [ClusterInstance.serverlessV2('reader')],
@@ -827,7 +848,7 @@ describe('cluster new api', () => {
 
       // WHEN
       const cluster = new DatabaseCluster(stack, 'Database', {
-        engine: DatabaseClusterEngine.AURORA,
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
         vpc,
         writer: ClusterInstance.provisioned('writer'),
         readers: [ClusterInstance.serverlessV2('reader')],
@@ -864,7 +885,7 @@ describe('cluster new api', () => {
 
       // WHEN
       new DatabaseCluster(stack, 'Database', {
-        engine: DatabaseClusterEngine.AURORA,
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
         vpc,
         writer: ClusterInstance.provisioned('writer'),
         readers: [ClusterInstance.serverlessV2('reader', { scaleWithWriter: true })],
@@ -905,7 +926,7 @@ describe('cluster new api', () => {
 
       // WHEN
       new DatabaseCluster(stack, 'Database', {
-        engine: DatabaseClusterEngine.AURORA,
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
         vpc,
         writer: ClusterInstance.provisioned('writer', {
           instanceType,
@@ -947,7 +968,7 @@ describe('cluster new api', () => {
 
       // WHEN
       new DatabaseCluster(stack, 'Database', {
-        engine: DatabaseClusterEngine.AURORA,
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
         vpc,
         writer: ClusterInstance.provisioned('writer', {
           // instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE24 ),
@@ -980,7 +1001,7 @@ describe('cluster new api', () => {
 
       // WHEN
       new DatabaseCluster(stack, 'Database', {
-        engine: DatabaseClusterEngine.AURORA,
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
         vpc,
         writer: ClusterInstance.provisioned('writer', {
           instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE24 ),
@@ -1028,7 +1049,7 @@ describe('cluster new api', () => {
 
       // WHEN
       new DatabaseCluster(stack, 'Database', {
-        engine: DatabaseClusterEngine.AURORA,
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
         vpc,
         writer: ClusterInstance.provisioned('writer', {
           instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE24 ),
@@ -1072,7 +1093,7 @@ describe('cluster new api', () => {
 
       // WHEN
       new DatabaseCluster(stack, 'Database', {
-        engine: DatabaseClusterEngine.AURORA,
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
         vpc,
         writer: ClusterInstance.provisioned('writer', {}),
         readers: [
@@ -1113,7 +1134,7 @@ describe('cluster new api', () => {
 
       // WHEN
       new DatabaseCluster(stack, 'Database', {
-        engine: DatabaseClusterEngine.AURORA,
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
         vpc,
         writer: ClusterInstance.provisioned('writer', {
           instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE24 ),
@@ -1156,7 +1177,7 @@ describe('cluster new api', () => {
 
       // WHEN
       new DatabaseCluster(stack, 'Database', {
-        engine: DatabaseClusterEngine.AURORA,
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
         vpc,
         writer: ClusterInstance.provisioned('writer', {
           instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE24 ),
@@ -1210,7 +1231,7 @@ describe('cluster new api', () => {
 
       // WHEN
       new DatabaseCluster(stack, 'Database', {
-        engine: DatabaseClusterEngine.AURORA,
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
         vpc,
         writer: ClusterInstance.provisioned('writer', {
           instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE24 ),
@@ -1261,7 +1282,7 @@ describe('cluster', () => {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       credentials: {
         username: 'admin',
         password: cdk.SecretValue.unsafePlainText('tooshort'),
@@ -1276,7 +1297,7 @@ describe('cluster', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::RDS::DBCluster', {
       Properties: {
-        Engine: 'aurora',
+        Engine: 'aurora-mysql',
         DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
         MasterUsername: 'admin',
         MasterUserPassword: 'tooshort',
@@ -1303,7 +1324,7 @@ describe('cluster', () => {
     expect(() => {
       new DatabaseCluster(stack, 'Database', {
         instances: parameter.valueAsNumber,
-        engine: DatabaseClusterEngine.AURORA,
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
         instanceProps: {
           vpc,
         },
@@ -1318,7 +1339,7 @@ describe('cluster', () => {
 
     // WHEN
     const cluster = new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       instances: 1,
       credentials: {
         username: 'admin',
@@ -1332,7 +1353,7 @@ describe('cluster', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
-      Engine: 'aurora',
+      Engine: 'aurora-mysql',
       DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
       MasterUsername: 'admin',
       MasterUserPassword: 'tooshort',
@@ -1370,7 +1391,7 @@ describe('cluster', () => {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       instances: 5,
       instanceProps: {
         vpc,
@@ -1403,7 +1424,7 @@ describe('cluster', () => {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       instances: 1,
       credentials: {
         username: 'admin',
@@ -1418,7 +1439,7 @@ describe('cluster', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
-      Engine: 'aurora',
+      Engine: 'aurora-mysql',
       DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
       MasterUsername: 'admin',
       MasterUserPassword: 'tooshort',
@@ -1433,14 +1454,14 @@ describe('cluster', () => {
 
     // WHEN
     const group = new ParameterGroup(stack, 'Params', {
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       description: 'bye',
       parameters: {
         param: 'value',
       },
     });
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       credentials: {
         username: 'admin',
         password: cdk.SecretValue.unsafePlainText('tooshort'),
@@ -1464,7 +1485,7 @@ describe('cluster', () => {
 
     new DatabaseCluster(stack, 'Cluster', {
       credentials: { username: 'admin' },
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       instanceProps: {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
         vpc,
@@ -1568,7 +1589,7 @@ describe('cluster', () => {
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
     const parameterGroup = new ParameterGroup(stack, 'ParameterGroup', {
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       parameters: {
         key: 'value',
       },
@@ -1576,7 +1597,7 @@ describe('cluster', () => {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       credentials: {
         username: 'admin',
       },
@@ -1601,7 +1622,7 @@ describe('cluster', () => {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       parameters: {
         locks: '100',
       },
@@ -1620,7 +1641,7 @@ describe('cluster', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBClusterParameterGroup', {
-      Family: 'aurora5.6',
+      Family: 'aurora-mysql5.7',
       Parameters: {
         locks: '100',
       },
@@ -1633,7 +1654,7 @@ describe('cluster', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBParameterGroup', {
-      Family: 'aurora5.6',
+      Family: 'aurora-mysql5.7',
       Parameters: {
         locks: '200',
       },
@@ -1655,7 +1676,7 @@ describe('cluster', () => {
 
     expect(() => {
       new DatabaseCluster(stack, 'Database', {
-        engine: DatabaseClusterEngine.AURORA,
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
         parameters: {
           locks: '100',
         },
@@ -1685,7 +1706,7 @@ describe('cluster', () => {
 
     expect(() => {
       new DatabaseCluster(stack, 'Database', {
-        engine: DatabaseClusterEngine.AURORA,
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
         parameters: {
           locks: '100',
         },
@@ -2175,7 +2196,7 @@ describe('cluster', () => {
 
       // WHEN
       new DatabaseCluster(stack, 'Database', {
-        engine: DatabaseClusterEngine.AURORA,
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
         credentials: {
           username: 'admin',
         },
@@ -2201,7 +2222,7 @@ describe('cluster', () => {
 
       // WHEN
       new DatabaseCluster(stack, 'Database', {
-        engine: DatabaseClusterEngine.AURORA,
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
         credentials: {
           username: 'admin',
         },
@@ -2224,7 +2245,7 @@ describe('cluster', () => {
 
       expect(() => {
         new DatabaseCluster(stack, 'Database', {
-          engine: DatabaseClusterEngine.AURORA,
+          engine: DatabaseClusterEngine.AURORA_MYSQL,
           credentials: {
             username: 'admin',
           },
@@ -2245,7 +2266,7 @@ describe('cluster', () => {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       instanceProps: {
         autoMinorVersionUpgrade: false,
         vpc,
@@ -2264,7 +2285,7 @@ describe('cluster', () => {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       instanceProps: {
         allowMajorVersionUpgrade: true,
         vpc,
@@ -2283,7 +2304,7 @@ describe('cluster', () => {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       instanceProps: {
         deleteAutomatedBackups: false,
         vpc,
@@ -2354,7 +2375,7 @@ describe('cluster', () => {
 
     // WHEN
     const cluster = new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       credentials: {
         username: 'admin',
       },
@@ -2445,7 +2466,7 @@ describe('cluster', () => {
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     const cluster = new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_02_0 }),
+      engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_07_1 }),
       credentials: {
         username: 'admin',
         password: cdk.SecretValue.unsafePlainText('tooshort'),
@@ -2473,7 +2494,7 @@ describe('cluster', () => {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       instances: 1,
       credentials: {
         username: 'admin',
@@ -2530,7 +2551,7 @@ describe('cluster', () => {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       vpc,
       writer: ClusterInstance.serverlessV2('writer'),
       iamAuthentication: true,
@@ -2589,7 +2610,7 @@ describe('cluster', () => {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       instances: 1,
       credentials: {
         username: 'admin',
@@ -2987,7 +3008,7 @@ describe('cluster', () => {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       instances: 1,
       credentials: {
         username: 'admin',
@@ -3012,7 +3033,7 @@ describe('cluster', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBClusterParameterGroup', {
-      Family: 'aurora5.6',
+      Family: 'aurora-mysql5.7',
       Parameters: {
         aurora_load_from_s3_role: {
           'Fn::GetAtt': [
@@ -3033,7 +3054,7 @@ describe('cluster', () => {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       instances: 1,
       credentials: {
         username: 'admin',
@@ -3058,7 +3079,7 @@ describe('cluster', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBClusterParameterGroup', {
-      Family: 'aurora5.6',
+      Family: 'aurora-mysql5.7',
       Parameters: {
         aurora_load_from_s3_role: {
           'Fn::GetAtt': [
@@ -3236,7 +3257,7 @@ describe('cluster', () => {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       instances: 1,
       credentials: {
         username: 'admin',
@@ -3261,7 +3282,7 @@ describe('cluster', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBClusterParameterGroup', {
-      Family: 'aurora5.6',
+      Family: 'aurora-mysql5.7',
       Parameters: {
         aurora_select_into_s3_role: {
           'Fn::GetAtt': [
@@ -3282,7 +3303,7 @@ describe('cluster', () => {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       instances: 1,
       credentials: {
         username: 'admin',
@@ -3307,7 +3328,7 @@ describe('cluster', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBClusterParameterGroup', {
-      Family: 'aurora5.6',
+      Family: 'aurora-mysql5.7',
       Parameters: {
         aurora_select_into_s3_role: {
           'Fn::GetAtt': [
@@ -3374,7 +3395,7 @@ describe('cluster', () => {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       instances: 1,
       credentials: {
         username: 'admin',
@@ -3408,7 +3429,7 @@ describe('cluster', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBClusterParameterGroup', {
-      Family: 'aurora5.6',
+      Family: 'aurora-mysql5.7',
       Parameters: {
         aurora_load_from_s3_role: {
           'Fn::GetAtt': [
@@ -3432,7 +3453,7 @@ describe('cluster', () => {
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     const parameterGroup = new ParameterGroup(stack, 'ParameterGroup', {
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       parameters: {
         key: 'value',
       },
@@ -3443,7 +3464,7 @@ describe('cluster', () => {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       instances: 1,
       credentials: {
         username: 'admin',
@@ -3478,7 +3499,7 @@ describe('cluster', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBClusterParameterGroup', {
-      Family: 'aurora5.6',
+      Family: 'aurora-mysql5.7',
       Parameters: {
         key: 'value',
         aurora_load_from_s3_role: {
@@ -3671,7 +3692,7 @@ describe('cluster', () => {
 
     // THEN
     expect(() => new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       instances: 1,
       credentials: {
         username: 'admin',
@@ -3697,7 +3718,7 @@ describe('cluster', () => {
 
     // THEN
     expect(() => new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       instances: 1,
       credentials: {
         username: 'admin',
@@ -3718,7 +3739,7 @@ describe('cluster', () => {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       credentials: {
         username: 'admin',
         password: cdk.SecretValue.unsafePlainText('tooshort'),
@@ -3743,7 +3764,7 @@ describe('cluster', () => {
 
     // WHEN
     const cluster = new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       credentials: {
         username: 'admin',
         password: cdk.SecretValue.unsafePlainText('tooshort'),
@@ -3789,7 +3810,7 @@ describe('cluster', () => {
 
     expect(() => {
       new DatabaseCluster(stack, 'Database', {
-        engine: DatabaseClusterEngine.AURORA,
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
         credentials: {
           username: 'admin',
           password: cdk.SecretValue.unsafePlainText('tooshort'),
@@ -3810,7 +3831,7 @@ describe('cluster', () => {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       credentials: {
         username: 'admin',
         password: cdk.SecretValue.unsafePlainText('tooshort'),
@@ -3836,7 +3857,7 @@ describe('cluster', () => {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       instances: 1,
       credentials: {
         username: 'admin',
@@ -3862,7 +3883,7 @@ describe('cluster', () => {
 
     // WHEN
     const cluster = new DatabaseClusterFromSnapshot(stack, 'Database', {
-      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_07_1 }),
       instanceProps: {
         vpc,
       },
@@ -3873,8 +3894,8 @@ describe('cluster', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::RDS::DBCluster', {
       Properties: {
-        Engine: 'aurora',
-        EngineVersion: '5.6.mysql_aurora.1.22.2',
+        Engine: 'aurora-mysql',
+        EngineVersion: '8.0.mysql_aurora.3.07.1',
         DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
         VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
         SnapshotIdentifier: 'mySnapshot',
@@ -3918,7 +3939,7 @@ describe('cluster', () => {
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     new DatabaseClusterFromSnapshot(stack, 'Database', {
-      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_07_1 }),
       instanceProps: {
         vpc,
       },
@@ -3956,7 +3977,7 @@ describe('cluster', () => {
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     new DatabaseClusterFromSnapshot(stack, 'Database', {
-      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_07_1 }),
       instanceProps: {
         vpc,
       },
@@ -3980,7 +4001,7 @@ describe('cluster', () => {
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     expect(() => new DatabaseClusterFromSnapshot(stack, 'Database', {
-      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_07_1 }),
       instanceProps: {
         vpc,
       },
@@ -3998,7 +4019,7 @@ describe('cluster', () => {
       encryptionKey: new kms.Key(stack, 'PasswordKey'),
     });
     new DatabaseClusterFromSnapshot(stack, 'Database', {
-      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_07_1 }),
       instanceProps: {
         vpc,
       },
@@ -4028,7 +4049,7 @@ describe('cluster', () => {
 
     // WHEN
     new DatabaseClusterFromSnapshot(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       snapshotIdentifier: 'mySnapshot',
       snapshotCredentials: SnapshotCredentials.fromSecret(secret),
       writer: ClusterInstance.serverlessV2('writer'),
@@ -4053,7 +4074,7 @@ describe('cluster', () => {
 
     // WHEN
     new DatabaseClusterFromSnapshot(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       snapshotIdentifier: 'mySnapshot',
       snapshotCredentials: SnapshotCredentials.fromSecret(secret),
       writer: ClusterInstance.serverlessV2('writer'),
@@ -4070,7 +4091,7 @@ describe('cluster', () => {
 
     // WHEN
     new DatabaseClusterFromSnapshot(stack, 'Database', {
-      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_07_1 }),
       instanceProps: {
         vpc,
       },
@@ -4091,7 +4112,7 @@ describe('cluster', () => {
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     const cluster = new DatabaseClusterFromSnapshot(stack, 'Database', {
-      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_07_1 }),
       instanceProps: {
         vpc,
       },
@@ -4115,7 +4136,7 @@ describe('cluster', () => {
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     const cluster = new DatabaseClusterFromSnapshot(stack, 'Database', {
-      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_07_1 }),
       instanceProps: {
         vpc,
       },
@@ -4135,7 +4156,7 @@ describe('cluster', () => {
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     const cluster = new DatabaseClusterFromSnapshot(stack, 'Database', {
-      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_07_1 }),
       instanceProps: {
         vpc,
       },
@@ -4178,7 +4199,7 @@ describe('cluster', () => {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_07_1 }),
       credentials: {
         username: 'admin',
       },
@@ -4202,7 +4223,7 @@ describe('cluster', () => {
 
     // WHEN
     const cluster = new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_07_1 }),
       credentials: {
         username: 'admin',
       },
@@ -4222,7 +4243,7 @@ describe('cluster', () => {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_07_1 }),
       credentials: Credentials.fromGeneratedSecret('admin'),
       instanceProps: {
         vpc,
@@ -4254,7 +4275,7 @@ describe('cluster', () => {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_07_1 }),
       credentials: Credentials.fromGeneratedSecret('admin', {
         replicaRegions: [{ region: 'eu-west-1' }],
       }),
@@ -4285,7 +4306,7 @@ describe('cluster', () => {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_07_1 }),
       credentials: Credentials.fromSecret(secret),
       instanceProps: {
         vpc,
@@ -4306,7 +4327,7 @@ describe('cluster', () => {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_07_1 }),
       credentials: Credentials.fromGeneratedSecret('admin', { secretName }),
       instanceProps: {
         vpc,
@@ -4326,7 +4347,7 @@ describe('cluster', () => {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       instanceProps: {
         vpc,
         vpcSubnets: {
@@ -4337,7 +4358,7 @@ describe('cluster', () => {
     });
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
-      Engine: 'aurora',
+      Engine: 'aurora-mysql',
       PubliclyAccessible: true,
     });
   });
@@ -4349,7 +4370,7 @@ describe('cluster', () => {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       instanceProps: {
         vpc,
         vpcSubnets: {
@@ -4360,7 +4381,7 @@ describe('cluster', () => {
     });
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
-      Engine: 'aurora',
+      Engine: 'aurora-mysql',
       PubliclyAccessible: false,
     });
   });
@@ -4372,7 +4393,7 @@ describe('cluster', () => {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       instanceProps: {
         vpc,
         vpcSubnets: {
@@ -4382,7 +4403,7 @@ describe('cluster', () => {
     });
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
-      Engine: 'aurora',
+      Engine: 'aurora-mysql',
       PubliclyAccessible: true,
     });
   });
@@ -4394,7 +4415,7 @@ describe('cluster', () => {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       writer: ClusterInstance.serverlessV2('writer'),
       vpc,
       vpcSubnets: {
@@ -4404,7 +4425,7 @@ describe('cluster', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
-      Engine: 'aurora',
+      Engine: 'aurora-mysql',
       PubliclyAccessible: true,
     });
   });
@@ -4416,7 +4437,7 @@ describe('cluster', () => {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       writer: ClusterInstance.serverlessV2('writer', {
         publiclyAccessible: true,
       }),
@@ -4428,7 +4449,7 @@ describe('cluster', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
-      Engine: 'aurora',
+      Engine: 'aurora-mysql',
       PubliclyAccessible: true,
     });
   });
@@ -4440,7 +4461,7 @@ describe('cluster', () => {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       writer: ClusterInstance.serverlessV2('writer', {
         publiclyAccessible: false,
       }),
@@ -4452,7 +4473,7 @@ describe('cluster', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
-      Engine: 'aurora',
+      Engine: 'aurora-mysql',
       PubliclyAccessible: false,
     });
   });
@@ -4465,7 +4486,7 @@ describe('cluster', () => {
     // WHEN
     const clusterIdentifier = 'TestClusterIdentifier';
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       instanceProps: { vpc },
       clusterIdentifier,
     });
@@ -4485,7 +4506,7 @@ describe('cluster', () => {
     // WHEN
     const clusterIdentifier = 'TestClusterIdentifier';
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       instanceProps: { vpc },
       clusterIdentifier,
     });
@@ -4503,7 +4524,7 @@ describe('cluster', () => {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       instanceProps: {
         vpc,
       },
@@ -4522,7 +4543,7 @@ describe('cluster', () => {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       instanceProps: {
         vpc,
       },
@@ -4542,7 +4563,7 @@ describe('cluster', () => {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       copyTagsToSnapshot: true,
       instanceProps: {
         vpc,
@@ -4562,7 +4583,7 @@ describe('cluster', () => {
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA,
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
       instanceProps: {
         vpc,
       },
@@ -4912,7 +4933,7 @@ test.each([
   // WHEN
   new DatabaseCluster(stack, 'Cluster', {
     credentials: { username: 'admin' },
-    engine: DatabaseClusterEngine.AURORA,
+    engine: DatabaseClusterEngine.AURORA_MYSQL,
     instanceProps: {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
       vpc: new ec2.Vpc(stack, 'Vpc'),
@@ -4946,7 +4967,7 @@ test.each([
   // WHEN
   new DatabaseCluster(stack, 'Cluster', {
     credentials: { username: 'admin' },
-    engine: DatabaseClusterEngine.AURORA,
+    engine: DatabaseClusterEngine.AURORA_MYSQL,
     instanceProps: {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
       vpc: new ec2.Vpc(stack, 'Vpc'),
