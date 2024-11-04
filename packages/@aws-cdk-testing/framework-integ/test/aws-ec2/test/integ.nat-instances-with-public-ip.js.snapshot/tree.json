@@ -233,9 +233,6 @@
                                 }
                               ]
                             },
-                            "iamInstanceProfile": {
-                              "Ref": "VpcPublicSubnet1NatInstanceInstanceProfileEE10C485"
-                            },
                             "imageId": {
                               "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61arm64C96584B6F00A464EAD1953AFF4B05118Parameter"
                             },
@@ -483,9 +480,6 @@
                                   "Fn::GetAZs": ""
                                 }
                               ]
-                            },
-                            "iamInstanceProfile": {
-                              "Ref": "VpcPublicSubnet2NatInstanceInstanceProfile549888F0"
                             },
                             "imageId": {
                               "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61arm64C96584B6F00A464EAD1953AFF4B05118Parameter"
@@ -917,7 +911,7 @@
                 "path": "nat-instance-v2-with-public-ip-integ-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -963,7 +957,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },

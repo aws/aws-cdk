@@ -111,9 +111,6 @@
     "CreditSpecification": {
      "CPUCredits": "standard"
     },
-    "IamInstanceProfile": {
-     "Ref": "MyVpcPublicSubnet1NatInstanceInstanceProfile2FD934CB"
-    },
     "ImageId": {
      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
     },

@@ -1,5 +1,5 @@
 {
-  "version": "32.0.0",
+  "version": "38.0.1",
   "artifacts": {
     "TestStack.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,12 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "TestStack.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a199e8eb329a5d9963b37d63e0ed1df710a2d45d2f208f121329f7325f8a4861.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9b36bccaabb52996eceac486bd6a3ac9b737859f6b223006b457b123aedc0632.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -198,10 +200,7 @@
         "/TestStack/BastionHost/Resource/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "BastionHost30F9ED05",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "BastionHost30F9ED05"
           }
         ],
         "/TestStack/BastionHost/BastionHostId": [

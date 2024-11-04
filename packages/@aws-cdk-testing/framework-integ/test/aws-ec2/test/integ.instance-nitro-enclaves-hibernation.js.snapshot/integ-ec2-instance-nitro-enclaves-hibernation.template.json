@@ -586,9 +586,6 @@
     "HibernationOptions": {
      "Configured": false
     },
-    "IamInstanceProfile": {
-     "Ref": "InstanceNitroEnclavesEnabledInstanceProfile9E95679C"
-    },
     "ImageId": {
      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
     },
@@ -678,9 +675,6 @@
     },
     "HibernationOptions": {
      "Configured": true
-    },
-    "IamInstanceProfile": {
-     "Ref": "InstanceHibernationEnabledInstanceProfile2F0E93E0"
     },
     "ImageId": {
      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"

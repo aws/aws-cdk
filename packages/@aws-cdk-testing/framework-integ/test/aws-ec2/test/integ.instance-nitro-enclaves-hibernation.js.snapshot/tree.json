@@ -841,9 +841,6 @@
                     "hibernationOptions": {
                       "configured": false
                     },
-                    "iamInstanceProfile": {
-                      "Ref": "InstanceNitroEnclavesEnabledInstanceProfile9E95679C"
-                    },
                     "imageId": {
                       "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
                     },
@@ -999,9 +996,6 @@
                     "hibernationOptions": {
                       "configured": true
                     },
-                    "iamInstanceProfile": {
-                      "Ref": "InstanceHibernationEnabledInstanceProfile2F0E93E0"
-                    },
                     "imageId": {
                       "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
                     },
@@ -1074,7 +1068,7 @@
                 "path": "instance-nitro-enclaves-hibernation/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -1120,7 +1114,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },
