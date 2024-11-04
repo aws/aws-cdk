@@ -503,6 +503,16 @@ export interface JobProps {
   readonly description?: string;
 
   /**
+   * Specifies whether job run queuing is enabled for the job runs for this job.
+   * A value of true means job run queuing is enabled for the job runs.
+   * If false or not populated, the job runs will not be considered for queueing.
+   * If this field does not match the value set in the job run, then the value from the job run field will be used.
+   *
+   * @default - no job run queuing
+   */
+  readonly jobRunQueuingEnabled?: boolean;
+
+  /**
    * The number of AWS Glue data processing units (DPUs) that can be allocated when this job runs.
    * Cannot be used for Glue version 2.0 and later - workerType and workerCount should be used instead.
    *
@@ -722,6 +732,9 @@ export class Job extends JobBase {
       if (props.workerType && (props.workerType !== WorkerType.G_1X && props.workerType !== WorkerType.G_2X)) {
         throw new Error('FLEX ExecutionClass is only available for WorkerType G_1X or G_2X');
       }
+      if (props.jobRunQueuingEnabled === true) {
+        throw new Error('FLEX ExecutionClass is only available if job run queuing is disabled');
+      }
     }
 
     let maxCapacity = props.maxCapacity;
@@ -743,6 +756,10 @@ export class Job extends JobBase {
       throw new Error('Both workerType and workerCount must be set');
     }
 
+    if (props.jobRunQueuingEnabled === true && props.maxRetries !== undefined && !cdk.Token.isUnresolved(props.maxRetries) && props.maxRetries > 0) {
+      throw new Error(`Maximum retries was set to ${props.maxRetries}, must be set to 0 with job run queuing enabled`);
+    }
+
     const jobResource = new CfnJob(this, 'Resource', {
       name: props.jobName,
       description: props.description,
@@ -756,6 +773,7 @@ export class Job extends JobBase {
       glueVersion: executable.glueVersion.name,
       workerType: props.workerType?.name,
       numberOfWorkers: props.workerCount,
+      jobRunQueuingEnabled: props.jobRunQueuingEnabled,
       maxCapacity: props.maxCapacity,
       maxRetries: props.maxRetries,
       executionClass: props.executionClass,
