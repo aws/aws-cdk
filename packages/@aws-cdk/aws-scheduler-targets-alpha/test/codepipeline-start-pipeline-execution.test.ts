@@ -1,4 +1,4 @@
-import { Schedule, ScheduleExpression } from '@aws-cdk/aws-scheduler-alpha';
+import { Group, Schedule, ScheduleExpression } from '@aws-cdk/aws-scheduler-alpha';
 import { App, Duration, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Artifact, Pipeline } from 'aws-cdk-lib/aws-codepipeline';
@@ -28,6 +28,7 @@ describe('codepipeline start execution', () => {
     ],
   };
   const expr = ScheduleExpression.at(new Date(Date.UTC(1991, 2, 24, 0, 0, 0)));
+  const roleId = 'SchedulerRoleForTarget1b3000F5862F75';
 
   beforeEach(() => {
     app = new App({ context: { '@aws-cdk/aws-iam:minimizePolicies': true } });
@@ -48,7 +49,7 @@ describe('codepipeline start execution', () => {
       Properties: {
         Target: {
           Arn: pipelineArn,
-          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget1441a743A31888', 'Arn'] },
+          RoleArn: { 'Fn::GetAtt': [roleId, 'Arn'] },
           RetryPolicy: {},
         },
       },
@@ -64,7 +65,7 @@ describe('codepipeline start execution', () => {
           },
         ],
       },
-      Roles: [{ Ref: 'SchedulerRoleForTarget1441a743A31888' }],
+      Roles: [{ Ref: roleId }],
     });
 
     template.hasResourceProperties('AWS::IAM::Role', {
@@ -73,7 +74,23 @@ describe('codepipeline start execution', () => {
         Statement: [
           {
             Effect: 'Allow',
-            Condition: { StringEquals: { 'aws:SourceAccount': '123456789012' } },
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': '123456789012',
+                'aws:SourceArn': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':scheduler:us-east-1:123456789012:schedule-group/default',
+                    ],
+                  ],
+                },
+              },
+            },
             Principal: {
               Service: 'scheduler.amazonaws.com',
             },
@@ -123,7 +140,7 @@ describe('codepipeline start execution', () => {
     });
   });
 
-  test('reuses IAM role and IAM policy for two schedules from the same account', () => {
+  test('reuses IAM role and IAM policy for two schedules with the same target from the same account', () => {
     const codepipelineTarget = new CodePipelineStartPipelineExecution(codepipeline, {});
 
     new Schedule(stack, 'MyScheduleDummy1', {
@@ -144,7 +161,23 @@ describe('codepipeline start execution', () => {
         Statement: [
           {
             Effect: 'Allow',
-            Condition: { StringEquals: { 'aws:SourceAccount': '123456789012' } },
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': '123456789012',
+                'aws:SourceArn': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':scheduler:us-east-1:123456789012:schedule-group/default',
+                    ],
+                  ],
+                },
+              },
+            },
             Principal: {
               Service: 'scheduler.amazonaws.com',
             },
@@ -164,7 +197,90 @@ describe('codepipeline start execution', () => {
           },
         ],
       },
-      Roles: [{ Ref: 'SchedulerRoleForTarget1441a743A31888' }],
+      Roles: [{ Ref: roleId }],
+    }, 1);
+  });
+
+  test('creates IAM role and IAM policy for two schedules with the same target but different groups', () => {
+    const codepipelineTarget = new CodePipelineStartPipelineExecution(codepipeline, {});
+    const group = new Group(stack, 'Group', {
+      groupName: 'mygroup',
+    });
+
+    new Schedule(stack, 'MyScheduleDummy1', {
+      schedule: expr,
+      target: codepipelineTarget,
+    });
+
+    new Schedule(stack, 'MyScheduleDummy2', {
+      schedule: expr,
+      target: codepipelineTarget,
+      group,
+    });
+
+    const template = Template.fromStack(stack);
+
+    template.resourcePropertiesCountIs('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Effect: 'Allow',
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': '123456789012',
+                'aws:SourceArn': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':scheduler:us-east-1:123456789012:schedule-group/default',
+                    ],
+                  ],
+                },
+              },
+            },
+            Principal: {
+              Service: 'scheduler.amazonaws.com',
+            },
+            Action: 'sts:AssumeRole',
+          },
+          {
+            Effect: 'Allow',
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': '123456789012',
+                'aws:SourceArn': {
+                  'Fn::GetAtt': [
+                    'GroupC77FDACD',
+                    'Arn',
+                  ],
+                },
+              },
+            },
+            Principal: {
+              Service: 'scheduler.amazonaws.com',
+            },
+            Action: 'sts:AssumeRole',
+          },
+        ],
+      },
+    }, 1);
+
+    template.resourcePropertiesCountIs('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'codepipeline:StartPipelineExecution',
+            Effect: 'Allow',
+            Resource: pipelineArn,
+          },
+        ],
+      },
+      Roles: [{ Ref: roleId }],
     }, 1);
   });
 
@@ -431,7 +547,7 @@ describe('codepipeline start execution', () => {
       Properties: {
         Target: {
           Arn: pipelineArn,
-          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget1441a743A31888', 'Arn'] },
+          RoleArn: { 'Fn::GetAtt': [roleId, 'Arn'] },
           RetryPolicy: {
             MaximumEventAgeInSeconds: 10800,
             MaximumRetryAttempts: 5,
