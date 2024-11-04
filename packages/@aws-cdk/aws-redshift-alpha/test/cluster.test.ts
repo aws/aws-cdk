@@ -491,6 +491,7 @@ test.each([
     },
     vpc,
     resourceAction,
+    nodeType: NodeType.RA3_XLPLUS,
     multiAz: true,
   });
 });
