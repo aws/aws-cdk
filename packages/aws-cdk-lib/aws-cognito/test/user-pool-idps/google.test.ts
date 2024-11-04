@@ -91,10 +91,10 @@ describe('UserPoolIdentityProvider', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolIdentityProvider', {
         AttributeMapping: {
-          given_name: 'name',
-          address: 'google-address',
-          customAttr1: 'email',
-          customAttr2: 'google-custom-attr',
+          'given_name': 'name',
+          'address': 'google-address',
+          'custom:customAttr1': 'email',
+          'custom:customAttr2': 'google-custom-attr',
         },
       });
     });

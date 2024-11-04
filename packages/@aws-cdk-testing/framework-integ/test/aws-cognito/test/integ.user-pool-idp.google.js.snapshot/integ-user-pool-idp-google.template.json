@@ -90,7 +90,7 @@
      "email": "email",
      "email_verified": "email_verified",
      "gender": "gender",
-     "names": "names"
+     "custom:names": "names"
     },
     "ProviderDetails": {
      "client_id": "google-client-id",

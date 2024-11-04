@@ -1,7 +1,7 @@
 import { App, CfnOutput, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
-import { UserPoolClientIdentityProvider, UserPool, UserPoolIdentityProviderSaml, UserPoolIdentityProviderSamlMetadata, SigningAlgorithm } from 'aws-cdk-lib/aws-cognito';
+import { UserPoolClientIdentityProvider, UserPool, UserPoolIdentityProviderSaml, UserPoolIdentityProviderSamlMetadata, SigningAlgorithm, ProviderAttribute } from 'aws-cdk-lib/aws-cognito';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string) {
@@ -17,6 +17,11 @@ class TestStack extends Stack {
       metadata: UserPoolIdentityProviderSamlMetadata.url('https://fujifish.github.io/samling/public/metadata.xml'),
       encryptedResponses: true,
       requestSigningAlgorithm: SigningAlgorithm.RSA_SHA256,
+      attributeMapping: {
+        custom: {
+          department: ProviderAttribute.other('department'),
+        },
+      },
     });
 
     const client = userpool.addClient('client');

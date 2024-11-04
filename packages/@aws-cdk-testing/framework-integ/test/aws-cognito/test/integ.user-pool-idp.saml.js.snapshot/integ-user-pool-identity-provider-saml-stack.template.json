@@ -72,6 +72,9 @@
   "samlProvider6C4CC492": {
    "Type": "AWS::Cognito::UserPoolIdentityProvider",
    "Properties": {
+    "AttributeMapping": {
+     "custom:department": "department"
+    },
     "ProviderDetails": {
      "IDPSignout": false,
      "MetadataURL": "https://fujifish.github.io/samling/public/metadata.xml",
