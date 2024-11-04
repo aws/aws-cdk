@@ -38,9 +38,9 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "b4ca3ffac109973b26fb14c1a215be999046520164982ae2391cd639cb473911.zip"
+     "S3Key": "bcc0b05ef0a1a225a30c245c26232f00ff0b69ef30f3afa548235ab51e1cc225.zip"
     },
-    "Description": "version-hash:b2269874bc0dad74827b072eb35bbd6e",
+    "Description": "version-hash:8c084350bd5f45040943cca49cb6ae65",
     "Handler": "index.main",
     "Role": {
      "Fn::GetAtt": [
@@ -54,7 +54,7 @@
     "MyLambdaServiceRole4539ECB6"
    ]
   },
-  "MyLambdaCurrentVersionE7A382CC59bdb67fa1659795f5310ce1074a431e": {
+  "MyLambdaCurrentVersionE7A382CC45f41452e4af8108d62930f8af7039ec": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -73,7 +73,7 @@
     "MaximumRetryAttempts": 1,
     "Qualifier": {
      "Fn::GetAtt": [
-      "MyLambdaCurrentVersionE7A382CC59bdb67fa1659795f5310ce1074a431e",
+      "MyLambdaCurrentVersionE7A382CC45f41452e4af8108d62930f8af7039ec",
       "Version"
      ]
     }
@@ -87,7 +87,7 @@
     },
     "FunctionVersion": {
      "Fn::GetAtt": [
-      "MyLambdaCurrentVersionE7A382CC59bdb67fa1659795f5310ce1074a431e",
+      "MyLambdaCurrentVersionE7A382CC45f41452e4af8108d62930f8af7039ec",
       "Version"
      ]
     },

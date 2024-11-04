@@ -28,7 +28,7 @@
     "npm-check-updates": "^16",
     "standard-version": "^9",
     "ts-jest": "^29",
-    "typescript": "~5.4.5"
+    "typescript": "~5.5.2"
   },
   "dependencies": {
     "esbuild": "^0.24.0",

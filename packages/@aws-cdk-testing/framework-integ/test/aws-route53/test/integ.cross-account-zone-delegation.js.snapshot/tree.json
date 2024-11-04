@@ -69,7 +69,7 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "availabilityZone": "us-east-1a",
+                        "availabilityZone": "dummy1a",
                         "cidrBlock": "10.0.0.0/19",
                         "mapPublicIpOnLaunch": true,
                         "tags": [
@@ -229,7 +229,7 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "availabilityZone": "us-east-1b",
+                        "availabilityZone": "dummy1b",
                         "cidrBlock": "10.0.32.0/19",
                         "mapPublicIpOnLaunch": true,
                         "tags": [
@@ -389,7 +389,7 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "availabilityZone": "us-east-1c",
+                        "availabilityZone": "dummy1c",
                         "cidrBlock": "10.0.64.0/19",
                         "mapPublicIpOnLaunch": true,
                         "tags": [
@@ -549,7 +549,7 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "availabilityZone": "us-east-1a",
+                        "availabilityZone": "dummy1a",
                         "cidrBlock": "10.0.96.0/19",
                         "mapPublicIpOnLaunch": false,
                         "tags": [
@@ -661,7 +661,7 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "availabilityZone": "us-east-1b",
+                        "availabilityZone": "dummy1b",
                         "cidrBlock": "10.0.128.0/19",
                         "mapPublicIpOnLaunch": false,
                         "tags": [
@@ -773,7 +773,7 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "availabilityZone": "us-east-1c",
+                        "availabilityZone": "dummy1c",
                         "cidrBlock": "10.0.160.0/19",
                         "mapPublicIpOnLaunch": false,
                         "tags": [
@@ -1747,7 +1747,7 @@
                 "path": "Route53CrossAccountInteg/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -1793,7 +1793,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },
