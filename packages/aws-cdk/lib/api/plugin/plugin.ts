@@ -5,6 +5,12 @@ import { type ContextProviderPlugin, isContextProviderPlugin } from './context-p
 import type { CredentialProviderSource } from './credential-provider-source';
 import { error } from '../../logging';
 
+export let TESTING = false;
+
+export function markTesting() {
+  TESTING = true;
+}
+
 /**
  * The basic contract for plug-ins to adhere to::
  *
@@ -52,7 +58,7 @@ export class PluginHost {
   public readonly contextProviderPlugins: Record<string, ContextProviderPlugin> = {};
 
   constructor() {
-    if (PluginHost.instance && PluginHost.instance !== this) {
+    if (!TESTING && PluginHost.instance && PluginHost.instance !== this) {
       throw new Error('New instances of PluginHost must not be built. Use PluginHost.instance instead!');
     }
   }
@@ -72,11 +78,11 @@ export class PluginHost {
         throw new Error(`Module ${moduleSpec} does not define a valid plug-in.`);
       }
       if (plugin.init) {
-        plugin.init(PluginHost.instance);
+        plugin.init(this);
       }
     } catch (e: any) {
       error(`Unable to load ${chalk.green(moduleSpec)}: ${e.stack}`);
-      throw new Error(`Unable to load plug-in: ${moduleSpec}`);
+      throw new Error(`Unable to load plug-in: ${moduleSpec}: ${e}`);
     }
 
     function isPlugin(x: any): x is Plugin {

@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "38.0.1",
   "files": {
     "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
       "source": {
@@ -14,7 +14,7 @@
         }
       }
     },
-    "65c663666d008c681da906ab8a85459b0869cf18ecebe1f5defb8f332988008c": {
+    "04be5889cfa44a81268106945773c35a89b9acae9c99b9aaa546db21c74dfe4d": {
       "source": {
         "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "65c663666d008c681da906ab8a85459b0869cf18ecebe1f5defb8f332988008c.json",
+          "objectKey": "04be5889cfa44a81268106945773c35a89b9acae9c99b9aaa546db21c74dfe4d.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
