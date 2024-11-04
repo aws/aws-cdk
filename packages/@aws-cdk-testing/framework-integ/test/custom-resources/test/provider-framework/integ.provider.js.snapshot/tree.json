@@ -205,7 +205,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "c66233dc0804d5658a2ea2fdf2189b3486234224411bf91660f53f72f6165480.zip"
+                          "s3Key": "4e48efd39ed107e3d109e81d320e0c66d56d3dbcb4c232e7b8e0ea5b62f911af.zip"
                         },
                         "handler": "index.onEvent",
                         "role": {
