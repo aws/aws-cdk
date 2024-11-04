@@ -15251,12 +15251,12 @@ typescript@next:
   resolved "https://registry.npmjs.org/typescript/-/typescript-5.7.0-dev.20241023.tgz#83a5ecd5b4f98f1f94ba915bcc858faa765733df"
   integrity sha512-HB6rRd9ySnFMoQUuDasWnBtvOg1P4CFG3nRfs2ZvFbenUkxSzoeeZ0PUwJJ7MKJp5zz7uMTZamGt7zdj0tP9YA==
 
-typescript@~5.4, typescript@~5.4.5:
+typescript@~5.4:
   version "5.4.5"
   resolved "https://registry.npmjs.org/typescript/-/typescript-5.4.5.tgz#42ccef2c571fdbd0f6718b1d1f5e6e5ef006f611"
   integrity sha512-vcI4UpRgg81oIRUFwR0WSIHKt11nJ7SAVlYNIu+QpqeyXP+gpQJy/Z4+F0aGxSE4MqwjyXvW/TzgkLAx2AGHwQ==
 
-typescript@~5.5, typescript@~5.5.0:
+typescript@~5.5, typescript@~5.5.0, typescript@~5.5.2:
   version "5.5.4"
   resolved "https://registry.npmjs.org/typescript/-/typescript-5.5.4.tgz#d9852d6c82bad2d2eda4fd74a5762a8f5909e9ba"
   integrity sha512-Mtq29sKDAEYP7aljRgtPOpTvOfbwRWlS6dPRzwjdE+C0R4brX/GUyhHSecbHMFLNBLcJIPt9nl9yG5TZ1weH+Q==
