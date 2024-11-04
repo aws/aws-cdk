@@ -85,8 +85,6 @@ const cronBasedSchedule = new Schedule(this, 'Schedule', {
 A one-time schedule is a schedule that invokes a target only once. You configure a one-time schedule when by specifying the time of the day, date, 
 and time zone in which EventBridge Scheduler evaluates the schedule.
 
-[comment]: <> (TODO: Switch to `ts` once Schedule is implemented)
-
 ```ts
 declare const target: targets.LambdaInvoke;
 
@@ -208,11 +206,6 @@ const target = new targets.LambdaInvoke(fn, {
 });
 ```
 
-
-### Cross-account and cross-region targets
-
-Executing cross-account and cross-region targets are not supported yet.
-
 ### Specifying Encryption key
 
 EventBridge Scheduler integrates with AWS Key Management Service (AWS KMS) to encrypt and decrypt your data using an AWS KMS key. 
@@ -282,25 +275,6 @@ const target = new targets.LambdaInvoke(fn, {
     deadLetterQueue: dlq,
     maxEventAge: Duration.minutes(1),
     retryAttempts: 3
-});
-```
-
-## Overriding Target Properties 
-
-If you wish to reuse the same target in multiple schedules, you can override target properties like `input`, 
-`retryAttempts` and `maxEventAge` when creating a Schedule using the `targetOverrides` parameter:
-
-```ts
-declare const target: targets.LambdaInvoke;
-
-const oneTimeSchedule = new Schedule(this, 'Schedule', {
-    schedule: ScheduleExpression.rate(cdk.Duration.hours(12)),
-    target,
-    targetOverrides: {
-        input: ScheduleTargetInput.fromText('Overriding Target Input'),
-        maxEventAge: Duration.seconds(180),
-        retryAttempts: 5,
-    },
 });
 ```
 

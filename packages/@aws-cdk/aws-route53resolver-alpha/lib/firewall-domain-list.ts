@@ -164,47 +164,47 @@ export class FirewallDomainList extends Resource implements IFirewallDomainList 
   public readonly firewallDomainListArn: string;
 
   /**
-    * The date and time that the domain list was created
-    * @attribute
-    */
+   * The date and time that the domain list was created
+   * @attribute
+   */
   public readonly firewallDomainListCreationTime: string;
 
   /**
-    * The creator request ID
-    * @attribute
-    */
+   * The creator request ID
+   * @attribute
+   */
   public readonly firewallDomainListCreatorRequestId: string;
 
   /**
-    * The number of domains in the list
-    * @attribute
-    */
+   * The number of domains in the list
+   * @attribute
+   */
   public readonly firewallDomainListDomainCount: number;
 
   /**
-    * The owner of the list, used only for lists that are not managed by you.
-    * For example, the managed domain list `AWSManagedDomainsMalwareDomainList`
-    * has the managed owner name `Route 53 Resolver DNS Firewall`.
-    * @attribute
-    */
+   * The owner of the list, used only for lists that are not managed by you.
+   * For example, the managed domain list `AWSManagedDomainsMalwareDomainList`
+   * has the managed owner name `Route 53 Resolver DNS Firewall`.
+   * @attribute
+   */
   public readonly firewallDomainListManagedOwnerName: string;
 
   /**
-    * The date and time that the domain list was last modified
-    * @attribute
-    */
+   * The date and time that the domain list was last modified
+   * @attribute
+   */
   public readonly firewallDomainListModificationTime: string;
 
   /**
-    * The status of the domain list
-    * @attribute
-    */
+   * The status of the domain list
+   * @attribute
+   */
   public readonly firewallDomainListStatus: string;
 
   /**
-    * Additional information about the status of the rule group
-    * @attribute
-    */
+   * Additional information about the status of the rule group
+   * @attribute
+   */
   public readonly firewallDomainListStatusMessage: string;
 
   constructor(scope: Construct, id: string, props: FirewallDomainListProps) {

@@ -17,6 +17,7 @@ import {
   PutRolePolicyCommand,
 } from '@aws-sdk/client-iam';
 import { InvokeCommand } from '@aws-sdk/client-lambda';
+import { PutObjectLockConfigurationCommand } from '@aws-sdk/client-s3';
 import { CreateTopicCommand, DeleteTopicCommand } from '@aws-sdk/client-sns';
 import { AssumeRoleCommand, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
 import {
@@ -1318,6 +1319,43 @@ integTest(
   }),
 );
 
+integTest('deploy stack with Lambda Asset to Object Lock-enabled asset bucket', withoutBootstrap(async (fixture) => {
+  // Bootstrapping with custom toolkit stack name and qualifier
+  const qualifier = fixture.qualifier;
+  const toolkitStackName = fixture.bootstrapStackName;
+  await fixture.cdkBootstrapModern({
+    verbose: true,
+    toolkitStackName: toolkitStackName,
+    qualifier: qualifier,
+  });
+
+  const bucketName = `cdk-${qualifier}-assets-${await fixture.aws.account()}-${fixture.aws.region}`;
+  await fixture.aws.s3.send(new PutObjectLockConfigurationCommand({
+    Bucket: bucketName,
+    ObjectLockConfiguration: {
+      ObjectLockEnabled: 'Enabled',
+      Rule: {
+        DefaultRetention: {
+          Days: 1,
+          Mode: 'GOVERNANCE',
+        },
+      },
+    },
+  }));
+
+  // Deploy a stack that definitely contains a file asset
+  await fixture.cdkDeploy('lambda', {
+    options: [
+      '--toolkit-stack-name', toolkitStackName,
+      '--context', `@aws-cdk/core:bootstrapQualifier=${qualifier}`,
+    ],
+  });
+
+  // THEN - should not fail. Now clean the bucket with governance bypass: a regular delete
+  // operation will fail.
+  await fixture.aws.emptyBucket(bucketName, { bypassGovernance: true });
+}));
+
 integTest(
   'cdk ls',
   withDefaultFixture(async (fixture) => {
@@ -1662,7 +1700,7 @@ integTest(
         const targetName = template.replace(/.js$/, '');
         await shell([process.execPath, template, '>', targetName], {
           cwd: cxAsmDir,
-          output: fixture.output,
+          outputs: [fixture.output],
           modEnv: {
             TEST_ACCOUNT: await fixture.aws.account(),
             TEST_REGION: fixture.aws.region,
@@ -2300,6 +2338,58 @@ integTest('hotswap deployment supports AppSync APIs with many functions',
     }
   }),
 );
+
+integTest('hotswap ECS deployment respects properties override', withDefaultFixture(async (fixture) => {
+  // Update the CDK context with the new ECS properties
+  let ecsMinimumHealthyPercent = 100;
+  let ecsMaximumHealthyPercent = 200;
+  let cdkJson = JSON.parse(await fs.readFile(path.join(fixture.integTestDir, 'cdk.json'), 'utf8'));
+  cdkJson = {
+    ...cdkJson,
+    hotswap: {
+      ecs: {
+        minimumHealthyPercent: ecsMinimumHealthyPercent,
+        maximumHealthyPercent: ecsMaximumHealthyPercent,
+      },
+    },
+  };
+
+  await fs.writeFile(path.join(fixture.integTestDir, 'cdk.json'), JSON.stringify(cdkJson));
+
+  // GIVEN
+  const stackArn = await fixture.cdkDeploy('ecs-hotswap', {
+    captureStderr: false,
+  });
+
+  // WHEN
+  await fixture.cdkDeploy('ecs-hotswap', {
+    options: [
+      '--hotswap',
+    ],
+    modEnv: {
+      DYNAMIC_ECS_PROPERTY_VALUE: 'new value',
+    },
+  });
+
+  const describeStacksResponse = await fixture.aws.cloudFormation.send(
+    new DescribeStacksCommand({
+      StackName: stackArn,
+    }),
+  );
+
+  const clusterName = describeStacksResponse.Stacks?.[0].Outputs?.find(output => output.OutputKey == 'ClusterName')?.OutputValue!;
+  const serviceName = describeStacksResponse.Stacks?.[0].Outputs?.find(output => output.OutputKey == 'ServiceName')?.OutputValue!;
+
+  // THEN
+  const describeServicesResponse = await fixture.aws.ecs.send(
+    new DescribeServicesCommand({
+      cluster: clusterName,
+      services: [serviceName],
+    }),
+  );
+  expect(describeServicesResponse.services?.[0].deploymentConfiguration?.minimumHealthyPercent).toEqual(ecsMinimumHealthyPercent);
+  expect(describeServicesResponse.services?.[0].deploymentConfiguration?.maximumPercent).toEqual(ecsMaximumHealthyPercent);
+}));
 
 async function listChildren(parent: string, pred: (x: string) => Promise<boolean>) {
   const ret = new Array<string>();
