@@ -561,6 +561,43 @@ describe('Pipe', () => {
       });
     });
 
+    it('should pass along bucketOwner for imported bucket', () => {
+      // WHEN
+      const bucket = Bucket.fromBucketName(stack, 'ImportedBucket', 'MyTestBucket');
+      const s3LogDestination = new S3LogDestination({
+        bucket,
+        prefix: 'mike',
+        outputFormat: S3OutputFormat.JSON,
+      });
+
+      new Pipe(stack, 'TestPipe', {
+        pipeName: 'TestPipe',
+        source,
+        target,
+        logLevel: LogLevel.ERROR,
+        logIncludeExecutionData: [IncludeExecutionData.ALL],
+        logDestinations: [s3LogDestination],
+      });
+
+      const template = Template.fromStack(stack);
+
+      // THEN
+      template.hasResource('AWS::Pipes::Pipe', {
+        Properties: {
+          LogConfiguration: {
+            S3LogDestination: {
+              BucketName: 'MyTestBucket',
+              BucketOwner: '123456789012',
+              Prefix: 'mike',
+              OutputFormat: 'json',
+            },
+            Level: 'ERROR',
+            IncludeExecutionData: ['ALL'],
+          },
+        },
+      });
+    });
+
     it('should allow write to S3 bucket with pipe role', () => {
       // WHEN
       const bucket = new Bucket(stack, 'LogBucket');
