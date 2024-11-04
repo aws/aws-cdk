@@ -115,7 +115,7 @@ async function parseCommandLineArguments(args: string[]) {
       .option('template', { type: 'string', requiresArg: true, desc: 'Use the template from the given file instead of the built-in one (use --show-template to obtain an example)' })
       .option('previous-parameters', { type: 'boolean', default: true, desc: 'Use previous values for existing parameters (you must specify all parameters on every deployment if this is disabled)' }),
     )
-    .command('gc [ENVIRONMENTS..]', 'Garbage collect assets', (yargs: Argv) => yargs
+    .command('gc [ENVIRONMENTS..]', 'Garbage collect assets. Options detailed here: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk/README.md#cdk-gc', (yargs: Argv) => yargs
       .option('action', { type: 'string', desc: 'The action (or sub-action) you want to perform. Valid entires are "print", "tag", "delete-tagged", "full".', default: 'full' })
       .option('type', { type: 'string', desc: 'Specify either ecr, s3, or all', default: 'all' })
       .option('rollback-buffer-days', { type: 'number', desc: 'Delete assets that have been marked as isolated for this many days', default: 0 })
