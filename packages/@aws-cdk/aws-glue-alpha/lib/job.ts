@@ -74,7 +74,7 @@ export class WorkerType {
 /**
  * Job states emitted by Glue to CloudWatch Events.
  *
- * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/EventTypes.html#glue-event-types for more information.
+ * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/EventTypes.html#glue-event-types
  */
 export enum JobState {
   /**
@@ -583,7 +583,8 @@ export interface JobProps {
   /**
    * The default arguments for this job, specified as name-value pairs.
    *
-   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html for a list of reserved parameters
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+   *
    * @default - no arguments
    */
   readonly defaultArguments?: { [key: string]: string };
