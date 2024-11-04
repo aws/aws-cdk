@@ -9,15 +9,20 @@ import { Construct } from 'constructs';
 
 /**
  * This test is to make sure the stack names are resolved when using in nested stacks with
- * CodePipeline construct. It needs additional setup to run the integration tests and deploy
- * it. For simplicity, we should allow dry-run on this test as long as CDK synth is successful.
+ * cross-region CodePipeline construct. We should allow dry-run on this integration test. The reason
+ * is that cross-region support for CodePipeline requires an explicit account during stack
+ * creation. The local account vs CI account would always be different and cause failure
+ * during the integration test run.
  *
- * To deploy this stack, you need to do the following:
- * 1. export CDK_DEFAULT_ACCOUNT='<your-aws-account-id>'
- * 2. make sure you've bootstrapped 'us-west-2' by running 'cdk bootstrap aws://<your-aws-account-id>/us-west-2'
- * 3. deploy a state machine resource in 'us-west-2' and name the state machine 'MyStateMachine'
- * 4. update GitHub source section to use the valid OAuth token.
- * 5. run 'yarn integ aws-codepipeline-actions/test/integ.codepipeline-with-nested-stack --update-on-failed'
+ * To update the snapshots, run `yarn integ aws-codepipeline-actions/test/integ.codepipeline-with-nested-stack --update-on-failed --dry-run`.
+ *
+ * To deploy this stack manually, you need to do the following:
+ * 1. change the account id in stack from '123456789012' to your local account id.
+ * 2. update imported SFN account id from '123456789012' to your local account id.
+ * 3. make sure you've bootstrapped 'us-west-2' by running 'cdk bootstrap aws://<your-aws-account-id>/us-west-2'
+ * 4. deploy a state machine resource in 'us-west-2' and name the state machine 'MyStateMachine'
+ * 5. update GitHub source section to use the valid OAuth token.
+ * 6. run 'yarn integ aws-codepipeline-actions/test/integ.codepipeline-with-nested-stack --update-on-failed --force'
  */
 
 export class MainStack extends cdk.Stack {
@@ -35,7 +40,7 @@ export class PipelineCrossRegionStack extends cdk.NestedStack {
     const machine = cdk.Arn.format({
       service: 'states',
       resource: 'stateMachine',
-      account: cdk.Token.asString(process.env.CDK_DEFAULT_ACCOUNT),
+      account: cdk.Token.asString('123456789012'),
       resourceName: 'MyStateMachine',
       region: 'us-west-2',
     }, this);
@@ -84,7 +89,7 @@ const app = new cdk.App({
 });
 const testCase = new MainStack(app, 'code-pipeline-nested-stack', {
   env: {
-    account: process.env.CDK_DEFAULT_ACCOUNT,
+    account: '123456789012',
     region: 'us-east-1',
   },
 });

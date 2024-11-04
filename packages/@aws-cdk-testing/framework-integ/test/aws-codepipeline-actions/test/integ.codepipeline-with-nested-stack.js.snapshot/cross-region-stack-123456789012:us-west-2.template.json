@@ -9,7 +9,7 @@
        "Action": "kms:*",
        "Effect": "Allow",
        "Principal": {
-        "AWS": "arn:aws:iam::649563674902:root"
+        "AWS": "arn:aws:iam::123456789012:root"
        },
        "Resource": "*"
       },
@@ -23,7 +23,7 @@
        ],
        "Effect": "Allow",
        "Principal": {
-        "AWS": "arn:aws:iam::649563674902:role/MyPipelineRoleName"
+        "AWS": "arn:aws:iam::123456789012:role/MyPipelineRoleName"
        },
        "Resource": "*"
       }
@@ -37,7 +37,7 @@
   "CrossRegionCodePipelineReplicationBucketEncryptionAliasF1A0F37D": {
    "Type": "AWS::KMS::Alias",
    "Properties": {
-    "AliasName": "alias/ort-us-wtencryptionaliasde5d3f5e9831ab4a9861",
+    "AliasName": "alias/ort-us-wtencryptionalias8f9701ce6a32f909886f",
     "TargetKeyId": {
      "Fn::GetAtt": [
       "CrossRegionCodePipelineReplicationBucketEncryptionKey70216490",
@@ -59,7 +59,7 @@
          "Fn::Join": [
           "",
           [
-           "arn:aws:kms:us-west-2:649563674902:",
+           "arn:aws:kms:us-west-2:123456789012:",
            {
             "Ref": "CrossRegionCodePipelineReplicationBucketEncryptionAliasF1A0F37D"
            }
@@ -71,7 +71,7 @@
       }
      ]
     },
-    "BucketName": "cross-region-support-us-weplicationbucketd4f9321e99090cb36376",
+    "BucketName": "cross-region-support-us-weplicationbucket8a287d3945436008ebfd",
     "PublicAccessBlockConfiguration": {
      "BlockPublicAcls": true,
      "BlockPublicPolicy": true,

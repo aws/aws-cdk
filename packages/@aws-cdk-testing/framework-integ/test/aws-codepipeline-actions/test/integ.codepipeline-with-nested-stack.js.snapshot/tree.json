@@ -85,8 +85,8 @@
                                   ],
                                   "Effect": "Allow",
                                   "Resource": [
-                                    "arn:aws:s3:::cross-region-support-us-weplicationbucketd4f9321e99090cb36376",
-                                    "arn:aws:s3:::cross-region-support-us-weplicationbucketd4f9321e99090cb36376/*",
+                                    "arn:aws:s3:::cross-region-support-us-weplicationbucket8a287d3945436008ebfd",
+                                    "arn:aws:s3:::cross-region-support-us-weplicationbucket8a287d3945436008ebfd/*",
                                     {
                                       "Fn::GetAtt": [
                                         "PipelineArtifactsBucket22248F97",
@@ -186,7 +186,7 @@
                                   "Action": "kms:*",
                                   "Effect": "Allow",
                                   "Principal": {
-                                    "AWS": "arn:aws:iam::649563674902:root"
+                                    "AWS": "arn:aws:iam::123456789012:root"
                                   },
                                   "Resource": "*"
                                 }
@@ -356,10 +356,10 @@
                             "region": "us-west-2",
                             "artifactStore": {
                               "type": "S3",
-                              "location": "cross-region-support-us-weplicationbucketd4f9321e99090cb36376",
+                              "location": "cross-region-support-us-weplicationbucket8a287d3945436008ebfd",
                               "encryptionKey": {
                                 "type": "KMS",
-                                "id": "arn:aws:kms:us-west-2:649563674902:alias/ort-us-wtencryptionaliasde5d3f5e9831ab4a9861"
+                                "id": "arn:aws:kms:us-west-2:123456789012:alias/ort-us-wtencryptionalias8f9701ce6a32f909886f"
                               }
                             }
                           },
@@ -428,7 +428,7 @@
                                   "provider": "StepFunctions"
                                 },
                                 "configuration": {
-                                  "StateMachineArn": "arn:aws:states:us-west-2:649563674902:stateMachine/MyStateMachine",
+                                  "StateMachineArn": "arn:aws:states:us-west-2:123456789012:stateMachine/MyStateMachine",
                                   "Input": "{}",
                                   "InputType": "Literal"
                                 },
@@ -532,7 +532,7 @@
                                           "Action": "sts:AssumeRole",
                                           "Effect": "Allow",
                                           "Principal": {
-                                            "AWS": "arn:aws:iam::649563674902:root"
+                                            "AWS": "arn:aws:iam::123456789012:root"
                                           }
                                         }
                                       ],
@@ -563,12 +563,12 @@
                                                 "states:StartExecution"
                                               ],
                                               "Effect": "Allow",
-                                              "Resource": "arn:aws:states:us-west-2:649563674902:stateMachine/MyStateMachine"
+                                              "Resource": "arn:aws:states:us-west-2:123456789012:stateMachine/MyStateMachine"
                                             },
                                             {
                                               "Action": "states:DescribeExecution",
                                               "Effect": "Allow",
-                                              "Resource": "arn:aws:states:us-west-2:649563674902:execution:MyStateMachine:*"
+                                              "Resource": "arn:aws:states:us-west-2:123456789012:execution:MyStateMachine:*"
                                             }
                                           ],
                                           "Version": "2012-10-17"
@@ -640,7 +640,7 @@
                           {
                             "Ref": "AWS::URLSuffix"
                           },
-                          "/cdk-hnb659fds-assets-649563674902-us-east-1/5a4aac28b3a73f30fcdc6c5607d21896d725978905122d6a8675f582cb45cd87.json"
+                          "/cdk-hnb659fds-assets-123456789012-us-east-1/e9bdb2e29c996292dd4a35bf37486dfd5d453c102ecee8dd47db844ba97465d6.json"
                         ]
                       ]
                     }
@@ -679,21 +679,21 @@
           "version": "0.0.0"
         }
       },
-      "cross-region-stack-649563674902:us-west-2": {
-        "id": "cross-region-stack-649563674902:us-west-2",
-        "path": "cross-region-stack-649563674902:us-west-2",
+      "cross-region-stack-123456789012:us-west-2": {
+        "id": "cross-region-stack-123456789012:us-west-2",
+        "path": "cross-region-stack-123456789012:us-west-2",
         "children": {
           "Default": {
             "id": "Default",
-            "path": "cross-region-stack-649563674902:us-west-2/Default",
+            "path": "cross-region-stack-123456789012:us-west-2/Default",
             "children": {
               "CrossRegionCodePipelineReplicationBucketEncryptionKey": {
                 "id": "CrossRegionCodePipelineReplicationBucketEncryptionKey",
-                "path": "cross-region-stack-649563674902:us-west-2/Default/CrossRegionCodePipelineReplicationBucketEncryptionKey",
+                "path": "cross-region-stack-123456789012:us-west-2/Default/CrossRegionCodePipelineReplicationBucketEncryptionKey",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "cross-region-stack-649563674902:us-west-2/Default/CrossRegionCodePipelineReplicationBucketEncryptionKey/Resource",
+                    "path": "cross-region-stack-123456789012:us-west-2/Default/CrossRegionCodePipelineReplicationBucketEncryptionKey/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::KMS::Key",
                       "aws:cdk:cloudformation:props": {
@@ -703,7 +703,7 @@
                               "Action": "kms:*",
                               "Effect": "Allow",
                               "Principal": {
-                                "AWS": "arn:aws:iam::649563674902:root"
+                                "AWS": "arn:aws:iam::123456789012:root"
                               },
                               "Resource": "*"
                             },
@@ -717,7 +717,7 @@
                               ],
                               "Effect": "Allow",
                               "Principal": {
-                                "AWS": "arn:aws:iam::649563674902:role/MyPipelineRoleName"
+                                "AWS": "arn:aws:iam::123456789012:role/MyPipelineRoleName"
                               },
                               "Resource": "*"
                             }
@@ -739,15 +739,15 @@
               },
               "CrossRegionCodePipelineReplicationBucketEncryptionAlias": {
                 "id": "CrossRegionCodePipelineReplicationBucketEncryptionAlias",
-                "path": "cross-region-stack-649563674902:us-west-2/Default/CrossRegionCodePipelineReplicationBucketEncryptionAlias",
+                "path": "cross-region-stack-123456789012:us-west-2/Default/CrossRegionCodePipelineReplicationBucketEncryptionAlias",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "cross-region-stack-649563674902:us-west-2/Default/CrossRegionCodePipelineReplicationBucketEncryptionAlias/Resource",
+                    "path": "cross-region-stack-123456789012:us-west-2/Default/CrossRegionCodePipelineReplicationBucketEncryptionAlias/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::KMS::Alias",
                       "aws:cdk:cloudformation:props": {
-                        "aliasName": "alias/ort-us-wtencryptionaliasde5d3f5e9831ab4a9861",
+                        "aliasName": "alias/ort-us-wtencryptionalias8f9701ce6a32f909886f",
                         "targetKeyId": {
                           "Fn::GetAtt": [
                             "CrossRegionCodePipelineReplicationBucketEncryptionKey70216490",
@@ -769,11 +769,11 @@
               },
               "CrossRegionCodePipelineReplicationBucket": {
                 "id": "CrossRegionCodePipelineReplicationBucket",
-                "path": "cross-region-stack-649563674902:us-west-2/Default/CrossRegionCodePipelineReplicationBucket",
+                "path": "cross-region-stack-123456789012:us-west-2/Default/CrossRegionCodePipelineReplicationBucket",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "cross-region-stack-649563674902:us-west-2/Default/CrossRegionCodePipelineReplicationBucket/Resource",
+                    "path": "cross-region-stack-123456789012:us-west-2/Default/CrossRegionCodePipelineReplicationBucket/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                       "aws:cdk:cloudformation:props": {
@@ -786,7 +786,7 @@
                                   "Fn::Join": [
                                     "",
                                     [
-                                      "arn:aws:kms:us-west-2:649563674902:",
+                                      "arn:aws:kms:us-west-2:123456789012:",
                                       {
                                         "Ref": "CrossRegionCodePipelineReplicationBucketEncryptionAliasF1A0F37D"
                                       }
@@ -797,7 +797,7 @@
                             }
                           ]
                         },
-                        "bucketName": "cross-region-support-us-weplicationbucketd4f9321e99090cb36376",
+                        "bucketName": "cross-region-support-us-weplicationbucket8a287d3945436008ebfd",
                         "publicAccessBlockConfiguration": {
                           "blockPublicAcls": true,
                           "blockPublicPolicy": true,
@@ -813,11 +813,11 @@
                   },
                   "Policy": {
                     "id": "Policy",
-                    "path": "cross-region-stack-649563674902:us-west-2/Default/CrossRegionCodePipelineReplicationBucket/Policy",
+                    "path": "cross-region-stack-123456789012:us-west-2/Default/CrossRegionCodePipelineReplicationBucket/Policy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "cross-region-stack-649563674902:us-west-2/Default/CrossRegionCodePipelineReplicationBucket/Policy/Resource",
+                        "path": "cross-region-stack-123456789012:us-west-2/Default/CrossRegionCodePipelineReplicationBucket/Policy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
                           "aws:cdk:cloudformation:props": {
@@ -890,7 +890,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "cross-region-stack-649563674902:us-west-2/BootstrapVersion",
+            "path": "cross-region-stack-123456789012:us-west-2/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -898,7 +898,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "cross-region-stack-649563674902:us-west-2/CheckBootstrapVersion",
+            "path": "cross-region-stack-123456789012:us-west-2/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"

@@ -11,28 +11,28 @@
     },
     "code-pipeline-nested-stack": {
       "type": "aws:cloudformation:stack",
-      "environment": "aws://649563674902/us-east-1",
+      "environment": "aws://123456789012/us-east-1",
       "properties": {
         "templateFile": "code-pipeline-nested-stack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "notificationArns": [],
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::649563674902:role/cdk-hnb659fds-deploy-role-649563674902-us-east-1",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::649563674902:role/cdk-hnb659fds-cfn-exec-role-649563674902-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-649563674902-us-east-1/ecc6a3aec26f51fbd7d3f5451c927e1c44e7e5120149610cf1d40c21f3b8a791.json",
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-deploy-role-123456789012-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-cfn-exec-role-123456789012-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-123456789012-us-east-1/f990258ec094de5d996b40bc8d84c6caf91c8c2040b7ee9121466ef19fb24c9d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
           "code-pipeline-nested-stack.assets"
         ],
         "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::649563674902:role/cdk-hnb659fds-lookup-role-649563674902-us-east-1",
+          "arn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-lookup-role-123456789012-us-east-1",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }
       },
       "dependencies": [
-        "cross-region-stack-649563674902:us-west-2",
+        "cross-region-stack-123456789012:us-west-2",
         "code-pipeline-nested-stack.assets"
       ],
       "metadata": {
@@ -123,79 +123,79 @@
       },
       "displayName": "code-pipeline-nested-stack"
     },
-    "cross-region-stack-649563674902:us-west-2.assets": {
+    "cross-region-stack-123456789012:us-west-2.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "cross-region-stack-649563674902:us-west-2.assets.json",
+        "file": "cross-region-stack-123456789012:us-west-2.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "cross-region-stack-649563674902:us-west-2": {
+    "cross-region-stack-123456789012:us-west-2": {
       "type": "aws:cloudformation:stack",
-      "environment": "aws://649563674902/us-west-2",
+      "environment": "aws://123456789012/us-west-2",
       "properties": {
-        "templateFile": "cross-region-stack-649563674902:us-west-2.template.json",
+        "templateFile": "cross-region-stack-123456789012:us-west-2.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "notificationArns": [],
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::649563674902:role/cdk-hnb659fds-deploy-role-649563674902-us-west-2",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::649563674902:role/cdk-hnb659fds-cfn-exec-role-649563674902-us-west-2",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-649563674902-us-west-2/bda9ae7119dfdbe87b84da7346baf7394cde95ac9ff4d4e4da2c68bb407e3acb.json",
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-deploy-role-123456789012-us-west-2",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-cfn-exec-role-123456789012-us-west-2",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-123456789012-us-west-2/6ead11ac2a258f5956aa4d821020d99d8460173de308c7fd28a388dc243e3f89.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "cross-region-stack-649563674902:us-west-2.assets"
+          "cross-region-stack-123456789012:us-west-2.assets"
         ],
         "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::649563674902:role/cdk-hnb659fds-lookup-role-649563674902-us-west-2",
+          "arn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-lookup-role-123456789012-us-west-2",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         },
         "stackName": "cross-region-support-us-west-2"
       },
       "dependencies": [
-        "cross-region-stack-649563674902:us-west-2.assets"
+        "cross-region-stack-123456789012:us-west-2.assets"
       ],
       "metadata": {
-        "/cross-region-stack-649563674902:us-west-2/Default/CrossRegionCodePipelineReplicationBucketEncryptionKey/Resource": [
+        "/cross-region-stack-123456789012:us-west-2/Default/CrossRegionCodePipelineReplicationBucketEncryptionKey/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CrossRegionCodePipelineReplicationBucketEncryptionKey70216490"
           }
         ],
-        "/cross-region-stack-649563674902:us-west-2/Default/CrossRegionCodePipelineReplicationBucketEncryptionAlias/Resource": [
+        "/cross-region-stack-123456789012:us-west-2/Default/CrossRegionCodePipelineReplicationBucketEncryptionAlias/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CrossRegionCodePipelineReplicationBucketEncryptionAliasF1A0F37D"
           }
         ],
-        "/cross-region-stack-649563674902:us-west-2/Default/CrossRegionCodePipelineReplicationBucket/Resource": [
+        "/cross-region-stack-123456789012:us-west-2/Default/CrossRegionCodePipelineReplicationBucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CrossRegionCodePipelineReplicationBucketFC3227F2"
           }
         ],
-        "/cross-region-stack-649563674902:us-west-2/Default/CrossRegionCodePipelineReplicationBucket/Policy/Resource": [
+        "/cross-region-stack-123456789012:us-west-2/Default/CrossRegionCodePipelineReplicationBucket/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CrossRegionCodePipelineReplicationBucketPolicyB7BA2BCA"
           }
         ],
-        "/cross-region-stack-649563674902:us-west-2/BootstrapVersion": [
+        "/cross-region-stack-123456789012:us-west-2/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/cross-region-stack-649563674902:us-west-2/CheckBootstrapVersion": [
+        "/cross-region-stack-123456789012:us-west-2/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "cross-region-stack-649563674902:us-west-2"
+      "displayName": "cross-region-stack-123456789012:us-west-2"
     },
     "integcodepipelinenestedstackDefaultTestDeployAssertCC253196.assets": {
       "type": "cdk:asset-manifest",
