@@ -131,9 +131,6 @@
    "Type": "AWS::EC2::Instance",
    "Properties": {
     "AvailabilityZone": "us-west-2a",
-    "IamInstanceProfile": {
-     "Ref": "InstanceInstanceProfileAB5AEF02"
-    },
     "ImageId": {
      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
     },
