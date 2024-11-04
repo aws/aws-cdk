@@ -1,5 +1,4 @@
-import { InputTransformation, Pipe } from '@aws-cdk/aws-pipes-alpha';
-import { SqsSource } from '@aws-cdk/aws-pipes-sources-alpha';
+import { InputTransformation, IPipe, ISource, Pipe, SourceConfig } from '@aws-cdk/aws-pipes-alpha';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { CloudWatchLogsTarget } from '../lib';
@@ -18,13 +17,32 @@ const targetLogGroup = new cdk.aws_logs.LogGroup(stack, 'TargetLogGroup');
 const logStreamName = 'Mexico';
 const body = 'Cozumel';
 
+// When this module is promoted from alpha, TestSource should
+// be replaced with SqsSource from @aws-cdk/aws-pipes-sources-alpha
+class TestSource implements ISource {
+  sourceArn: string;
+  sourceParameters = undefined;
+  constructor(private readonly queue: cdk.aws_sqs.Queue) {
+    this.queue = queue;
+    this.sourceArn = queue.queueArn;
+  }
+  bind(_pipe: IPipe): SourceConfig {
+    return {
+      sourceParameters: this.sourceParameters,
+    };
+  }
+  grantRead(pipeRole: cdk.aws_iam.IRole): void {
+    this.queue.grantConsumeMessages(pipeRole);
+  }
+}
+
 new cdk.aws_logs.LogStream(stack, 'TargetLogStream', {
   logGroup: targetLogGroup,
   logStreamName: logStreamName,
 });
 
 new Pipe(stack, 'Pipe', {
-  source: new SqsSource(sourceQueue),
+  source: new TestSource(sourceQueue),
   target: new CloudWatchLogsTarget(targetLogGroup, {
     logStreamName,
     inputTransformation: InputTransformation.fromEventPath('$.body'),
