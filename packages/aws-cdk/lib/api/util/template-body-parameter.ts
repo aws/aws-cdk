@@ -8,7 +8,7 @@ import { AssetManifestBuilder } from '../../util/asset-manifest-builder';
 import { AssetsPublishedProof } from '../../util/asset-publishing';
 import { contentHash } from '../../util/content-hash';
 import { ISDK } from '../aws-auth';
-import { EnvironmentResources } from '../environment-resources';
+import { TargetEnvironment } from '../environment-access';
 
 export type TemplateBodyParameter = {
   TemplateBody?: string;
@@ -35,9 +35,7 @@ type MakeBodyParameterResult =
  */
 export async function makeBodyParameter(
   stack: cxapi.CloudFormationStackArtifact,
-  resolvedEnvironment: cxapi.Environment,
-  resources: EnvironmentResources,
-  sdk: ISDK,
+  env: TargetEnvironment,
   _assetsPublishedProof: AssetsPublishedProof,
   overrideTemplate?: unknown,
 ): Promise<MakeBodyParameterResult> {
@@ -46,7 +44,7 @@ export async function makeBodyParameter(
   if (stack.stackTemplateAssetObjectUrl && !overrideTemplate) {
     return {
       type: 'direct',
-      param: { TemplateURL: restUrlFromManifest(stack.stackTemplateAssetObjectUrl, resolvedEnvironment, sdk) },
+      param: { TemplateURL: restUrlFromManifest(stack.stackTemplateAssetObjectUrl, env.resolvedEnvironment, env.sdk) },
     };
   }
 
@@ -57,13 +55,13 @@ export async function makeBodyParameter(
     return { type: 'direct', param: { TemplateBody: templateJson } };
   }
 
-  const toolkitInfo = await resources.lookupToolkit();
+  const toolkitInfo = await env.resources.lookupToolkit();
   if (!toolkitInfo.found) {
     error(
       `The template for stack "${stack.displayName}" is ${Math.round(templateJson.length / 1024)}KiB. ` +
       `Templates larger than ${LARGE_TEMPLATE_SIZE_KB}KiB must be uploaded to S3.\n` +
       'Run the following command in order to setup an S3 bucket in this environment, and then re-deploy:\n\n',
-      chalk.blue(`\t$ cdk bootstrap ${resolvedEnvironment.name}\n`));
+      chalk.blue(`\t$ cdk bootstrap ${env.resolvedEnvironment.name}\n`));
 
     throw new Error('Template too large to deploy ("cdk bootstrap" is required)');
   }

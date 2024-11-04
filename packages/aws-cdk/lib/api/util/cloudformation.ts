@@ -364,17 +364,11 @@ function templatesFromAssetManifestArtifact(artifact: cxapi.AssetManifestArtifac
 
 async function uploadBodyParameterAndCreateChangeSet(options: PrepareChangeSetOptions): Promise<DescribeChangeSetOutput | undefined> {
   try {
-    const preparedSdk = (await options.deployments.prepareSdkWithDeployRole(options.stack));
-    const proof = await uploadStackTemplateAssets(options.stack, options.sdkProvider, preparedSdk.resolvedEnvironment);
+    const env = (await options.deployments.envs.accessStackForMutableStackOperations(options.stack));
+    const proof = await uploadStackTemplateAssets(options.stack, options.sdkProvider, env.resolvedEnvironment);
 
     let bodyParameter;
-    const bodyAction = await makeBodyParameter(
-      options.stack,
-      preparedSdk.resolvedEnvironment,
-      preparedSdk.envResources,
-      preparedSdk.stackSdk,
-      proof,
-    );
+    const bodyAction = await makeBodyParameter(options.stack, env, proof);
     switch (bodyAction.type) {
       case 'direct':
         bodyParameter = bodyAction.param;
@@ -383,14 +377,14 @@ async function uploadBodyParameterAndCreateChangeSet(options: PrepareChangeSetOp
       case 'upload':
         const builder = new AssetManifestBuilder();
         bodyParameter = bodyAction.addToManifest(builder);
-        await publishAssets(builder.toManifest(options.stack.assembly.directory), options.sdkProvider, preparedSdk.resolvedEnvironment);
+        await publishAssets(builder.toManifest(options.stack.assembly.directory), options.sdkProvider, env.resolvedEnvironment);
         break;
     }
 
-    const cfn = preparedSdk.stackSdk.cloudFormation();
+    const cfn = env.sdk.cloudFormation();
     const exists = (await CloudFormationStack.lookup(cfn, options.stack.stackName, false)).exists;
 
-    const executionRoleArn = preparedSdk.cloudFormationRoleArn;
+    const executionRoleArn = await env.replacePlaceholders(options.stack.cloudFormationExecutionRoleArn);
     options.stream.write('Hold on while we create a read-only change set to get a diff with accurate replacement information (use --no-change-set to use a less accurate but faster template-only diff)\n');
 
     return await createChangeSet({

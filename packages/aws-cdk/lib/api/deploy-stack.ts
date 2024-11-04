@@ -3,9 +3,9 @@ import type { CloudFormation } from 'aws-sdk';
 import * as chalk from 'chalk';
 import * as uuid from 'uuid';
 import { ISDK, SdkProvider } from './aws-auth';
-import { EnvironmentResources } from './environment-resources';
+import { TargetEnvironment } from './environment-access';
 import { CfnEvaluationException } from './evaluate-cloudformation-template';
-import { HotswapMode, ICON } from './hotswap/common';
+import { HotswapMode, HotswapPropertyOverrides, ICON } from './hotswap/common';
 import { tryHotswapDeployment } from './hotswap-deployments';
 import { addMetadataAssetsToManifest } from '../assets';
 import { Tag } from '../cdk-toolkit';
@@ -18,6 +18,7 @@ import { StackActivityMonitor, StackActivityProgress } from './util/cloudformati
 import { TemplateBodyParameter, makeBodyParameter } from './util/template-body-parameter';
 import { AssetManifestBuilder } from '../util/asset-manifest-builder';
 import { iAmDeployStack, publishAssets } from '../util/asset-publishing';
+import { StringWithoutPlaceholders } from './util/placeholders';
 
 export interface DeployStackResult {
   readonly noOp: boolean;
@@ -33,45 +34,32 @@ export interface DeployStackOptions {
 
   /**
    * The environment to deploy this stack in
-   *
-   * The environment on the stack artifact may be unresolved, this one
-   * must be resolved.
    */
-  readonly resolvedEnvironment: cxapi.Environment;
-
-  /**
-   * The SDK to use for deploying the stack
-   *
-   * Should have been initialized with the correct role with which
-   * stack operations should be performed.
-   */
-  readonly sdk: ISDK;
+  readonly env: TargetEnvironment;
 
   /**
    * SDK provider (seeded with default credentials)
    *
-   * Will exclusively be used to assume publishing credentials (which must
-   * start out from current credentials regardless of whether we've assumed an
-   * action role to touch the stack or not).
+   * Will be used to:
    *
-   * Used for the following purposes:
-   *
-   * - Publish legacy assets.
-   * - Upload large CloudFormation templates to the staging bucket.
+   * - Publish assets, either legacy assets or large CFN templates
+   *   that aren't themselves assets from a manifest. (Needs an SDK
+   *   Provider because the file publishing role is declared as part
+   *   of the asset).
+   * - Hotswap
    */
   readonly sdkProvider: SdkProvider;
 
   /**
-   * Information about the bootstrap stack found in the target environment
-   */
-  readonly envResources: EnvironmentResources;
-
-  /**
    * Role to pass to CloudFormation to execute the change set
    *
-   * @default - Role specified on stack, otherwise current
+   * To obtain a `StringWithoutPlaceholders`, run a regular
+   * string though `TargetEnvironment.replacePlaceholders`.
+   *
+   * @default - No execution role; CloudFormation either uses the role currently associated with
+   * the stack, or otherwise uses current AWS credentials.
    */
-  readonly roleArn?: string;
+  readonly roleArn?: StringWithoutPlaceholders;
 
   /**
    * Notification ARNs to pass to CloudFormation to notify when the change set has completed
@@ -173,6 +161,11 @@ export interface DeployStackOptions {
   readonly hotswap?: HotswapMode;
 
   /**
+   * Extra properties that configure hotswap behavior
+   */
+  readonly hotswapPropertyOverrides?: HotswapPropertyOverrides;
+
+  /**
    * The extra string to append to the User-Agent header when performing AWS SDK calls.
    *
    * @default - nothing extra is appended to the User-Agent header
@@ -228,11 +221,12 @@ export interface ChangeSetDeploymentMethod {
 
 export async function deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
   const stackArtifact = options.stack;
+  const env = options.env;
 
-  const stackEnv = options.resolvedEnvironment;
+  const stackEnv = env.resolvedEnvironment;
 
-  options.sdk.appendCustomUserAgent(options.extraUserAgent);
-  const cfn = options.sdk.cloudFormation();
+  env.sdk.appendCustomUserAgent(options.extraUserAgent);
+  const cfn = env.sdk.cloudFormation();
   const deployName = options.deployName || stackArtifact.stackName;
   let cloudFormationStack = await CloudFormationStack.lookup(cfn, deployName);
 
@@ -253,7 +247,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   // an ad-hoc asset manifest, while passing their locations via template
   // parameters.
   const legacyAssets = new AssetManifestBuilder();
-  const assetParams = await addMetadataAssetsToManifest(stackArtifact, legacyAssets, options.envResources, options.reuseAssets);
+  const assetParams = await addMetadataAssetsToManifest(stackArtifact, legacyAssets, env.resources, options.reuseAssets);
 
   const finalParameterValues = { ...options.parameters, ...assetParams };
 
@@ -263,6 +257,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     : templateParams.supplyAll(finalParameterValues);
 
   const hotswapMode = options.hotswap ?? HotswapMode.FULL_DEPLOYMENT;
+  const hotswapPropertyOverrides = options.hotswapPropertyOverrides ?? new HotswapPropertyOverrides();
 
   if (await canSkipDeploy(options, cloudFormationStack, stackParams.hasChanges(cloudFormationStack.parameters))) {
     debug(`${deployName}: skipping deployment (use --force to override)`);
@@ -281,13 +276,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   }
 
   let bodyParameter;
-  const bodyAction = await makeBodyParameter(
-    stackArtifact,
-    options.resolvedEnvironment,
-    options.envResources,
-    options.sdk,
-    iAmDeployStack(),
-    options.overrideTemplate);
+  const bodyAction = await makeBodyParameter(stackArtifact, env, iAmDeployStack(), options.overrideTemplate);
   switch (bodyAction.type) {
     case 'direct':
       bodyParameter = bodyAction.param;
@@ -299,13 +288,14 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
 
   await publishAssets(legacyAssets.toManifest(stackArtifact.assembly.directory), options.sdkProvider, stackEnv, {
     parallel: options.assetParallelism,
+    allowCrossAccount: await options.env.resources.allowCrossAccountAssetPublishing(),
   });
 
   if (hotswapMode !== HotswapMode.FULL_DEPLOYMENT) {
     // attempt to short-circuit the deployment if possible
     try {
       const hotswapDeploymentResult = await tryHotswapDeployment(
-        options.sdkProvider, stackParams.values, cloudFormationStack, stackArtifact, hotswapMode,
+        options.sdkProvider, stackParams.values, cloudFormationStack, stackArtifact, hotswapMode, hotswapPropertyOverrides,
       );
       if (hotswapDeploymentResult) {
         return hotswapDeploymentResult;
@@ -320,7 +310,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
 
     if (hotswapMode === HotswapMode.FALL_BACK) {
       print('Falling back to doing a full deployment');
-      options.sdk.appendCustomUserAgent('cdk-hotswap/fallback');
+      env.sdk.appendCustomUserAgent('cdk-hotswap/fallback');
     } else {
       return { noOp: true, stackArn: cloudFormationStack.stackId, outputs: cloudFormationStack.outputs };
     }
@@ -357,7 +347,7 @@ class FullCloudFormationDeployment {
     private readonly stackParams: ParameterValues,
     private readonly bodyParameter: TemplateBodyParameter,
   ) {
-    this.cfn = options.sdk.cloudFormation();
+    this.cfn = options.env.sdk.cloudFormation();
     this.stackName = options.deployName ?? stackArtifact.stackName;
 
     this.update = cloudFormationStack.exists && cloudFormationStack.stackStatus.name !== 'REVIEW_IN_PROGRESS';
