@@ -43,14 +43,35 @@ test('throws with invalid description', () => {
   expect(() => new Map(stack, 'Map', {
     description: 'a'.repeat(1001),
     style: Style.VECTOR_ESRI_NAVIGATION,
-  })).toThrow('`description` must be between 0 and 1000 characters. Received: 1001 characters');
+  })).toThrow('`description` must be between 0 and 1000 characters, got: 1001 characters.');
 });
 
 test('throws with invalid name', () => {
   expect(() => new Map(stack, 'Map', {
     mapName: 'inv@lid',
     style: Style.VECTOR_ESRI_NAVIGATION,
-  })).toThrow('Invalid map name. The map index name must be between 1 and 100 characters and contain only alphanumeric characters, hyphens, periods and underscores. Received: inv@lid');
+  })).toThrow('`mapName` must contain only alphanumeric characters, hyphens, periods and underscores, got: inv@lid.');
+});
+
+test('throws with invalid name length', () => {
+  expect(() => new Map(stack, 'Map', {
+    mapName: '',
+    style: Style.VECTOR_ESRI_NAVIGATION,
+  })).toThrow('`mapName` must be between 1 and 100 characters, got: 0 characters.');
+});
+
+test('throws with invalid name length', () => {
+  expect(() => new Map(stack, 'Map', {
+    mapName: 'a'.repeat(101),
+    style: Style.VECTOR_ESRI_NAVIGATION,
+  })).toThrow('`mapName` must be between 1 and 100 characters, got: 101 characters.');
+});
+
+test.each(['', 'a'.repeat(101)])('throws with invalid name, got: %s', (mapName) => {
+  expect(() => new Map(stack, 'Map', {
+    mapName,
+    style: Style.VECTOR_ESRI_NAVIGATION,
+  })).toThrow(`\`mapName\` must be between 1 and 100 characters, got: ${mapName.length} characters.`);
 });
 
 test('grant rendering ', () => {

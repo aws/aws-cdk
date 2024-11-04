@@ -52,7 +52,7 @@ export interface MapProps {
   /**
    * Specifies the custom layers for the style.
    *
-   * @default - no cutom layes
+   * @default - no custom layes
    */
   readonly customLayers?: CustomLayer[];
 
@@ -274,11 +274,17 @@ export class Map extends Resource implements IMap {
 
   constructor(scope: Construct, id: string, props: MapProps) {
     if (props.description && !Token.isUnresolved(props.description) && props.description.length > 1000) {
-      throw new Error(`\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`);
+      throw new Error(`\`description\` must be between 0 and 1000 characters, got: ${props.description.length} characters.`);
     }
 
-    if (props.mapName && !Token.isUnresolved(props.mapName) && !/^[-.\w]{1,100}$/.test(props.mapName)) {
-      throw new Error(`Invalid map name. The map index name must be between 1 and 100 characters and contain only alphanumeric characters, hyphens, periods and underscores. Received: ${props.mapName}`);
+    if (props.mapName !== undefined && !Token.isUnresolved(props.mapName)) {
+      if (props.mapName.length < 1 || props.mapName.length > 100) {
+        throw new Error(`\`mapName\` must be between 1 and 100 characters, got: ${props.mapName.length} characters.`);
+      }
+
+      if (!/^[-._\w]+$/.test(props.mapName)) {
+        throw new Error(`\`mapName\` must contain only alphanumeric characters, hyphens, periods and underscores, got: ${props.mapName}.`);
+      }
     }
 
     super(scope, id, {
