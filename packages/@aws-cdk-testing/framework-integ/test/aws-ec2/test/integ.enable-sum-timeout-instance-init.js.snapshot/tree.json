@@ -861,9 +861,6 @@
                         }
                       ]
                     },
-                    "iamInstanceProfile": {
-                      "Ref": "Instance2InstanceProfile582F915C"
-                    },
                     "imageId": {
                       "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
                     },
@@ -1001,7 +998,7 @@
                 "path": "EnableSumTimeoutInstanceTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -1047,7 +1044,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },

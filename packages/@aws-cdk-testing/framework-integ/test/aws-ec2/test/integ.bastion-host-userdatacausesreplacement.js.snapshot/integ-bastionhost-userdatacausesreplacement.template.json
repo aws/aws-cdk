@@ -482,9 +482,6 @@
       }
      ]
     },
-    "IamInstanceProfile": {
-     "Ref": "BastionHostUserDataReplacementEnabledInstanceProfile1C737811"
-    },
     "ImageId": {
      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amikernel510hvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
     },
@@ -605,9 +602,6 @@
        "Fn::GetAZs": ""
       }
      ]
-    },
-    "IamInstanceProfile": {
-     "Ref": "BastionHostUserDataReplacementDisabledInstanceProfile847B5D26"
     },
     "ImageId": {
      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amikernel510hvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"

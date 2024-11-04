@@ -856,9 +856,6 @@
                       }
                     ],
                     "ebsOptimized": true,
-                    "iamInstanceProfile": {
-                      "Ref": "InstanceInstanceProfileAB5AEF02"
-                    },
                     "imageId": {
                       "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
                     },
@@ -947,7 +944,7 @@
                 "path": "instance-ebs-optimized-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -993,7 +990,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },

@@ -601,9 +601,6 @@
      }
     ],
     "EbsOptimized": true,
-    "IamInstanceProfile": {
-     "Ref": "InstanceInstanceProfileAB5AEF02"
-    },
     "ImageId": {
      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
     },
