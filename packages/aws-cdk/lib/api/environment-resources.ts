@@ -206,6 +206,10 @@ export class NoBootstrapStackEnvironmentResources extends EnvironmentResources {
   public async lookupToolkit(): Promise<ToolkitInfo> {
     throw new Error('Trying to perform an operation that requires a bootstrap stack; you should not see this error, this is a bug in the CDK CLI.');
   }
+
+  public async allowCrossAccountAssetPublishing(): Promise<boolean> {
+    return true;
+  }
 }
 
 /**

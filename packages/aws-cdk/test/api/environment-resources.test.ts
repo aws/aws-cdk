@@ -18,6 +18,7 @@ beforeEach(() => {
 
 afterEach(() => {
   toolkitMock.dispose();
+  jest.clearAllMocks();
 });
 
 function mockToolkitInfo(ti: ToolkitInfo) {
@@ -67,10 +68,6 @@ test('failure to read SSM parameter results in exception passthrough for existin
 describe('validateversion without bootstrap stack', () => {
   beforeEach(() => {
     mockToolkitInfo(ToolkitInfo.bootstrapStackNotFoundInfo('TestBootstrapStack'));
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
   });
 
   test('validating version with explicit SSM parameter succeeds', async () => {
@@ -139,5 +136,59 @@ describe('validateversion without bootstrap stack', () => {
 
     // WHEN
     await expect(envResources().validateVersion(8, '/abc')).rejects.toThrow(/Has the environment been bootstrapped?/);
+  });
+});
+
+describe('determineAllowCrossAccountAssetPublishing', () => {
+  it('should return true when hasStagingBucket is false', async () => {
+    mockToolkitInfo(ToolkitInfo.fromStack(mockBootstrapStack(mockSdk, {
+      Outputs: [{ OutputKey: 'BootstrapVersion', OutputValue: '1' }],
+    })));
+
+    const result = await envResources().allowCrossAccountAssetPublishing();
+    expect(result).toBe(true);
+  });
+
+  it.each(['', '-', '*', '---'])('should return true when the bucket output does not look like a real bucket', async (notABucketName) => {
+    mockToolkitInfo(ToolkitInfo.fromStack(mockBootstrapStack(mockSdk, {
+      Outputs: [
+        { OutputKey: 'BootstrapVersion', OutputValue: '1' },
+        { OutputKey: 'BucketName', OutputValue: notABucketName },
+      ],
+    })));
+
+    const result = await envResources().allowCrossAccountAssetPublishing();
+    expect(result).toBe(true);
+  });
+
+  it('should return true when bootstrap version is >= 21', async () => {
+    mockToolkitInfo(ToolkitInfo.fromStack(mockBootstrapStack(mockSdk, {
+      Outputs: [
+        { OutputKey: 'BootstrapVersion', OutputValue: '21' },
+        { OutputKey: 'BucketName', OutputValue: 'some-bucket' },
+      ],
+    })));
+
+    const result = await envResources().allowCrossAccountAssetPublishing();
+    expect(result).toBe(true);
+  });
+
+  it('should return true if looking up the bootstrap stack fails', async () => {
+    mockToolkitInfo(ToolkitInfo.bootstrapStackNotFoundInfo('TestBootstrapStack'));
+
+    const result = await envResources().allowCrossAccountAssetPublishing();
+    expect(result).toBe(true);
+  });
+
+  it('should return false for other scenarios', async () => {
+    mockToolkitInfo(ToolkitInfo.fromStack(mockBootstrapStack(mockSdk, {
+      Outputs: [
+        { OutputKey: 'BootstrapVersion', OutputValue: '20' },
+        { OutputKey: 'BucketName', OutputValue: 'some-bucket' },
+      ],
+    })));
+
+    const result = await envResources().allowCrossAccountAssetPublishing();
+    expect(result).toBe(false);
   });
 });

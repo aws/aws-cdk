@@ -11,9 +11,6 @@ const env = {
   name: 'mock',
 };
 
-jest.mock('../../lib/api/util/checks', () => ({
-  determineAllowCrossAccountAssetPublishing: jest.fn().mockResolvedValue(true),
-}));
 let sdk: MockSdkProvider;
 let executed: boolean;
 let protectedTermination: boolean;

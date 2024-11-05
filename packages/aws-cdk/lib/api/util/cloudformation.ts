@@ -12,6 +12,7 @@ import { AssetManifestBuilder } from '../../util/asset-manifest-builder';
 import { AssetsPublishedProof, multipleAssetPublishedProof, publishAssets } from '../../util/asset-publishing';
 import { SdkProvider } from '../aws-auth';
 import { Deployments } from '../deployments';
+import { TargetEnvironment } from '../environment-access';
 
 export type Template = {
   Parameters?: Record<string, TemplateParameter>;
@@ -365,7 +366,7 @@ function templatesFromAssetManifestArtifact(artifact: cxapi.AssetManifestArtifac
 async function uploadBodyParameterAndCreateChangeSet(options: PrepareChangeSetOptions): Promise<DescribeChangeSetOutput | undefined> {
   try {
     const env = (await options.deployments.envs.accessStackForMutableStackOperations(options.stack));
-    const proof = await uploadStackTemplateAssets(options.stack, options.sdkProvider, env.resolvedEnvironment);
+    const proof = await uploadStackTemplateAssets(options.stack, options.sdkProvider, env);
 
     let bodyParameter;
     const bodyAction = await makeBodyParameter(options.stack, env, proof);
@@ -377,7 +378,9 @@ async function uploadBodyParameterAndCreateChangeSet(options: PrepareChangeSetOp
       case 'upload':
         const builder = new AssetManifestBuilder();
         bodyParameter = bodyAction.addToManifest(builder);
-        await publishAssets(builder.toManifest(options.stack.assembly.directory), options.sdkProvider, env.resolvedEnvironment);
+        await publishAssets(builder.toManifest(options.stack.assembly.directory), options.sdkProvider, env.resolvedEnvironment, {
+          allowCrossAccount: await env.resources.allowCrossAccountAssetPublishing(),
+        });
         break;
     }
 
@@ -418,13 +421,14 @@ async function uploadBodyParameterAndCreateChangeSet(options: PrepareChangeSetOp
 export async function uploadStackTemplateAssets(
   stack: cxapi.CloudFormationStackArtifact,
   sdkProvider: SdkProvider,
-  environment: cxapi.Environment,
+  env: TargetEnvironment,
 ): Promise<AssetsPublishedProof> {
   const assetDependencies = stack.dependencies.filter(cxapi.AssetManifestArtifact.isAssetManifestArtifact);
+  const allowCrossAccount = await env.resources.allowCrossAccountAssetPublishing();
 
   return multipleAssetPublishedProof(assetDependencies, (artifact) => {
     const templates = templatesFromAssetManifestArtifact(artifact);
-    return publishAssets(templates, sdkProvider, environment);
+    return publishAssets(templates, sdkProvider, env.resolvedEnvironment, { allowCrossAccount });
   });
 }
 

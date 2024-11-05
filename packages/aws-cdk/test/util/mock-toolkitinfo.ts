@@ -31,6 +31,7 @@ export class MockToolkitInfo extends ToolkitInfo {
   public readonly version: number;
   public readonly variant: string;
   public readonly stackName = 'MockBootstrapStack';
+  public readonly allowCrossAccountAssetPublishing = false;
 
   private readonly _bootstrapStack?: CloudFormationStack;
 

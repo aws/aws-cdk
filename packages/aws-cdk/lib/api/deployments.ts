@@ -385,7 +385,7 @@ export class Deployments {
     const env = await this.envs.accessStackForReadOnlyStackOperations(stackArtifact);
     const cfn = env.sdk.cloudFormation();
 
-    const proof = await uploadStackTemplateAssets(stackArtifact, this.assetSdkProvider, env.resolvedEnvironment);
+    const proof = await uploadStackTemplateAssets(stackArtifact, this.assetSdkProvider, env);
 
     // Upload the template, if necessary, before passing it to CFN
     let cfnParam;
