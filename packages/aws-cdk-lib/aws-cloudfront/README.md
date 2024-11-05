@@ -1188,3 +1188,33 @@ See:
 
 - <https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PrivateContent.html>
 - <https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-trusted-signers.html>
+
+### WAF security protections
+
+Enable [WAF default one-click security protection](https://aws.amazon.com/about-aws/whats-new/2023/05/amazon-cloudfront-one-click-security-protections/)
+
+```ts
+declare const sourceBucket: s3.Bucket;
+
+new cloudfront.Distribution(this, 'MyCfWebDistribution', {
+  defaultBehavior: {
+    origin: new origins.S3Origin(sourceBucket),
+  },
+  enableWafCoreProtections: true,
+});
+```
+
+Or use your own WAF security settings
+
+```ts
+declare const options: aws_wafv2.CfnWebACLProps;
+
+const dist = new cloudfront.Distribution(...);
+dist.addWafCoreProtection(options);
+```
+
+Note: cannot be used if webAclId already specified
+
+See:
+
+- <https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/distribution-web-awswaf.html>
