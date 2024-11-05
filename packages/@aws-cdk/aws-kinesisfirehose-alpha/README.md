@@ -326,7 +326,7 @@ encryption with AWS Key Management Service (AWS KMS) for encrypting delivered da
 Amazon S3. You can choose to not encrypt the data or to encrypt with a key from the list
 of AWS KMS keys that you own. For more information,
 see [Protecting Data Using Server-Side Encryption with AWS KMS–Managed Keys (SSE-KMS)](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingKMSEncryption.html).
-Data is not encrypted by default.
+By default, encryption isn’t directly enabled on the delivery stream; instead, it uses the default encryption settings of the destination S3 bucket.
 
 ```ts
 declare const bucket: s3.Bucket;

@@ -898,7 +898,10 @@ cdk bootstrap --no-previous-parameters
 CDK Garbage Collection.
 
 > [!CAUTION]
-> CDK Garbage Collection is under development and therefore must be opted in via the `--unstable` flag: `cdk gc --unstable=gc`.
+> CDK Garbage Collection is under development and therefore must be opted in via the 
+>`--unstable` flag: `cdk gc --unstable=gc`. `--unstable` indicates that the scope and 
+> API of feature might still change. Otherwise the feature is generally production 
+> ready and fully supported.
 
 `cdk gc` garbage collects unused assets from your bootstrap bucket via the following mechanism:
 
