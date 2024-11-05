@@ -54,7 +54,7 @@ export enum S3OutputFormat {
   */
   JSON = 'json',
   /**
-  * W3C extended log File format
+  * W3C extended log file format
   * @see https://www.w3.org/TR/WD-logfile
   */
   W3C = 'w3c',
