@@ -679,7 +679,7 @@ describe(Notices, () => {
       const configuration = new Configuration();
       (configuration.context as any) = { get: (key: string) => context[key] };
 
-      const notices = Notices.create({ configuration, includeAcknowlegded: true });
+      const notices = Notices.create({ configuration, includeAcknowledged: true });
       await notices.refresh({
         dataSource: { fetch: async () => [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE] },
       });
@@ -849,7 +849,7 @@ describe(Notices, () => {
       const configuration = new Configuration();
       (configuration.context as any) = { get: (key: string) => context[key] };
 
-      const notices = Notices.create({ configuration, includeAcknowlegded: true });
+      const notices = Notices.create({ configuration, includeAcknowledged: true });
       await notices.refresh({
         dataSource: { fetch: async () => [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE] },
       });

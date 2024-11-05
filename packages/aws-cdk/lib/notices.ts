@@ -24,7 +24,7 @@ export interface NoticesProps {
    *
    * @default false
    */
-  readonly includeAcknowlegded?: boolean;
+  readonly includeAcknowledged?: boolean;
 
 }
 
@@ -223,7 +223,7 @@ export class Notices {
   private constructor(props: NoticesProps) {
     this.configuration = props.configuration;
     this.acknowledgedIssueNumbers = new Set(this.configuration.context.get('acknowledged-issue-numbers') ?? []);
-    this.includeAcknowlegded = props.includeAcknowlegded ?? false;
+    this.includeAcknowlegded = props.includeAcknowledged ?? false;
   }
 
   /**
