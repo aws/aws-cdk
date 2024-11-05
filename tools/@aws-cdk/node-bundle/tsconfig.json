@@ -25,6 +25,7 @@
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
     "stripInternal": true,
+    "noErrorTruncation": true,
     "target": "ES2019"
   },
   "include": [
