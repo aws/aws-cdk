@@ -1,6 +1,6 @@
 import { Expression, FreeFunction, Module, SelectiveModuleImport, Statement, Type, TypeScriptRenderer, code } from '@cdklabs/typewriter';
 import { EsLintRules } from '@cdklabs/typewriter/lib/eslint-rules';
-import { NULL } from '@cdklabs/typewriter/lib/expressions/builder';
+import * as prettier from 'prettier';
 import { CliConfig, YargsOption } from './yargs-types';
 
 export async function renderYargs(config: CliConfig): Promise<string> {
@@ -24,7 +24,7 @@ export async function renderYargs(config: CliConfig): Promise<string> {
     returnType: Type.ANY,
     parameters: [
       { name: 'args', type: Type.arrayOf(Type.STRING) },
-      { name: 'browserDefault', type: Type.STRING, optional: true },
+      { name: 'browserDefault', type: Type.STRING },
       { name: 'availableInitLanguages', type: Type.arrayOf(Type.STRING) },
       { name: 'migrateSupportedLanguages', type: Type.arrayOf(Type.STRING) },
       { name: 'version', type: Type.STRING },
@@ -33,7 +33,7 @@ export async function renderYargs(config: CliConfig): Promise<string> {
   });
   parseCommandLineArguments.addBody(makeYargs(config));
 
-  return new TypeScriptRenderer({
+  const ts = new TypeScriptRenderer({
     disabledEsLintRules: [
       EsLintRules.COMMA_DANGLE,
       EsLintRules.COMMA_SPACING,
@@ -42,6 +42,12 @@ export async function renderYargs(config: CliConfig): Promise<string> {
       EsLintRules.QUOTE_PROPS,
     ],
   }).render(scope);
+
+  return prettier.format(ts, {
+    parser: 'typescript',
+    printWidth: 150,
+    singleQuote: true,
+  });
 }
 
 // Use the following configuration for array arguments:
@@ -141,7 +147,7 @@ function lit(value: any): Expression {
   switch (value) {
     case undefined:
       return code.expr.UNDEFINED;
-    case NULL:
+    case null:
       return code.expr.NULL;
     default:
       return code.expr.lit(value);

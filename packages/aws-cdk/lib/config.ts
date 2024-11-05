@@ -8,7 +8,7 @@ import { RequireApproval } from './diff';
  * Source of truth for all CDK CLI commands. `yargs-gen` translates this into the `yargs` definition
  * in `lib/parse-command-line-arguments.ts`.
  */
-export async function makeConfig(): Promise<CliConfig> {
+export function makeConfig(): CliConfig {
   return {
     globalOptions: {
       'app': { type: 'string', alias: 'a', desc: 'REQUIRED WHEN RUNNING APP: command-line for executing your app or a cloud assembly directory (e.g. "node bin/my-app.js"). Can also be specified in cdk.json or ~/.cdk.json', requiresArg: true },

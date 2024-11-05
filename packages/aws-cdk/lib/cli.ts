@@ -37,13 +37,14 @@ if (!process.stdout.isTTY) {
 }
 
 export async function exec(args: string[], synthesizer?: Synthesizer): Promise<number | void> {
-  function makeBrowserDefault(): string | undefined {
+  function makeBrowserDefault(): string {
     const defaultBrowserCommand: { [key in NodeJS.Platform]?: string } = {
       darwin: 'open %u',
       win32: 'start %u',
     };
 
-    return process.platform in defaultBrowserCommand ? defaultBrowserCommand[process.platform] : 'xdg-open %u';
+    const cmd = defaultBrowserCommand[process.platform];
+    return cmd ?? 'xdg-open %u';
   }
 
   const argv = await parseCommandLineArguments(args, makeBrowserDefault(), await availableInitLanguages(), MIGRATE_SUPPORTED_LANGUAGES as string[], version.DISPLAY_VERSION, yargsNegativeAlias);
@@ -84,7 +85,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
   const cmd = argv._[0];
 
-  const notices = Notices.create({ configuration, includeAcknowlegded: cmd === 'notices' ? !argv.unacknowledged : false });
+  const notices = Notices.create({ configuration, includeAcknowledged: cmd === 'notices' ? !argv.unacknowledged : false });
   await notices.refresh();
 
   const sdkProvider = await SdkProvider.withAwsCliCompatibleDefaults({

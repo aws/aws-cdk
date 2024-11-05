@@ -17,7 +17,6 @@ interface YargsCommand {
   arg?: YargsArg;
 }
 
-// might need to expand
 interface YargsArg {
   name: string;
   variadic: boolean;

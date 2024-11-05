@@ -4,7 +4,6 @@ module.exports = {
   ...baseConfig,
   coverageThreshold: {
     global: {
-      // Pretty bad but we disabled snapshots
       branches: 30,
     },
   },
