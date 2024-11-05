@@ -114,7 +114,6 @@ fi
 
 echo "============================================================================================="
 echo "building..."
-rm -rf .nx
 time npx lerna run $bail --concurrency=$concurrency $runtarget $flags || fail
 
 if [ "$check_compat" == "true" ]; then
