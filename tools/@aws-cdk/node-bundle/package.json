@@ -17,6 +17,7 @@
     "@types/license-checker": "^25.0.6",
     "@types/madge": "^5.0.3",
     "@types/node": "^16",
+    "@types/yargs": "^17",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
     "eslint": "^8",
