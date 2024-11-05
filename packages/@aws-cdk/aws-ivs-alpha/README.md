@@ -130,7 +130,7 @@ You can create a recording configuration:
 const recordingBucket = new s3.Bucket(this, 'RecordingBucket');
 
 // create a basic recording configuration
-const recordingConfiguration= new ivs.RecordingConfiguration(this, 'RecordingConfiguration', {
+const recordingConfiguration = new ivs.RecordingConfiguration(this, 'RecordingConfiguration', {
   bucket: recordingBucket,
 });
 ```
