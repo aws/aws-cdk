@@ -236,6 +236,29 @@ describe('helm chart', () => {
 
     });
 
+    test('should enable reuse values when specified', () => {
+      //GIVEN
+      const { stack, cluster } = testFixtureCluster();
+
+      //WHEN
+      new eks.HelmChart(stack, 'MyReuseValuesChart', { cluster, chart: 'chart', reuseValues: true });
+
+      //THEN
+      Template.fromStack(stack).hasResourceProperties(eks.HelmChart.RESOURCE_TYPE, { ReuseValues: true });
+    });
+
+    test('should disable reuse values operations by default', () => {
+      //GIVEN
+      const { stack, cluster } = testFixtureCluster();
+
+      //WHEN
+      new eks.HelmChart(stack, 'MyReuseValuesChart', { cluster, chart: 'chart' });
+
+      //THEN
+      const charts = Template.fromStack(stack).findResources(eks.HelmChart.RESOURCE_TYPE, { ReuseValues: false });
+      expect(Object.keys(charts).length).toEqual(0);
+    });
+
     test('should timeout only after 10 minutes', () => {
       // GIVEN
       const { stack, cluster } = testFixtureCluster();

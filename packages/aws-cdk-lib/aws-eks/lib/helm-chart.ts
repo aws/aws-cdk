@@ -91,6 +91,14 @@ export interface HelmChartOptions {
    * @default - CRDs are installed if not already present
    */
   readonly skipCrds?: boolean;
+
+  /**
+  * When upgrading, reuse the last release's values and merge in any overrides from the 'values'.
+  * The 'release' and 'chart' arguments should be set to the original parameters, and priority
+  * is given to new values.
+  * @default false
+  */
+  readonly reuseValues?: boolean;
 }
 
 /**
@@ -158,6 +166,8 @@ export class HelmChart extends Construct {
     const skipCrds = props.skipCrds ?? false;
     // default to set atomic as false
     const atomic = props.atomic ?? false;
+    // default to set reuse_values as false
+    const reuseValues = props.reuseValues ?? false;
 
     this.chartAsset?.grantRead(provider.handlerRole);
 
@@ -179,6 +189,7 @@ export class HelmChart extends Construct {
         CreateNamespace: createNamespace || undefined,
         SkipCrds: skipCrds || undefined,
         Atomic: atomic || undefined, // props are stringified so we encode “false” as undefined
+        ReuseValues: reuseValues || undefined,
       },
     });
   }

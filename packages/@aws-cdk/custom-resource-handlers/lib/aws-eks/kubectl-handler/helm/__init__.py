@@ -53,6 +53,7 @@ def helm_handler(event, context):
     repository       = props.get('Repository', None)
     values_text      = props.get('Values', None)
     skip_crds        = props.get('SkipCrds', False)
+    reuse_values     = props.get('ReuseValues', False)
 
     # "log in" to the cluster
     subprocess.check_call([ 'aws', 'eks', 'update-kubeconfig',
@@ -91,7 +92,7 @@ def helm_handler(event, context):
             chart_dir = get_chart_from_oci(tmpdir.name, repository, version)
             chart = chart_dir
 
-        helm('upgrade', release, chart, repository, values_file, namespace, version, wait, timeout, create_namespace, atomic=atomic)
+        helm('upgrade', release, chart, repository, values_file, namespace, version, wait, timeout, create_namespace, atomic=atomic, reuse_values=reuse_values)
     elif request_type == "Delete":
         try:
             helm('uninstall', release, namespace=namespace, wait=wait, timeout=timeout)
@@ -158,7 +159,7 @@ def get_chart_from_oci(tmpdir, repository = None, version = None):
     raise Exception(f'Operation failed after {maxAttempts} attempts: {output}')
 
 
-def helm(verb, release, chart = None, repo = None, file = None, namespace = None, version = None, wait = False, timeout = None, create_namespace = None, skip_crds = False, atomic = False):
+def helm(verb, release, chart = None, repo = None, file = None, namespace = None, version = None, wait = False, timeout = None, create_namespace = None, skip_crds = False, atomic = False, reuse_values = False):
     import subprocess
 
     cmnd = ['helm', verb, release]
@@ -183,7 +184,9 @@ def helm(verb, release, chart = None, repo = None, file = None, namespace = None
     if not timeout is None:
         cmnd.extend(['--timeout', timeout])
     if atomic:
-        cmnd.append('--atomic')    
+        cmnd.append('--atomic')
+    if atomic:
+        cmnd.append('--reuse-values')    
     cmnd.extend(['--kubeconfig', kubeconfig])
 
     maxAttempts = 3
