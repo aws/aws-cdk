@@ -2,6 +2,8 @@ import { CfnRecordingConfiguration } from 'aws-cdk-lib/aws-ivs';
 import { IBucket } from 'aws-cdk-lib/aws-s3';
 import { Duration, Fn, IResource, Resource, Stack, Token } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
+import { RenditionConfiguration } from './rendition-configuration';
+import { ThumbnailConfiguration } from './thumbnail-configuration';
 
 /**
  * Properties of the IVS Recording configuration
@@ -31,130 +33,22 @@ export interface RecordingConfigurationProps {
   readonly recordingReconnectWindow?: Duration;
 
   /**
-   * The set of renditions are recorded for a stream.
-   * For BASIC channels, the CUSTOM value has no effect.
-   * Custom renditions do not apply to BASIC channels.
+   * A rendition configuration describes which renditions should be recorded for a stream.
    *
-   * @default RenditionSelection.ALL
-   */
-  readonly renditionSelection?: RenditionSelection;
-
-  /**
-   * A list of which renditions are recorded for a stream.
-   * This property must be set when `renditionSelection` is `RenditionSelection.CUSTOM`.
-
-   * @default - no resolution selected
-   */
-  readonly renditions?: Resolution[];
-
-  /**
-   * Thumbnail recording mode.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ivs-recordingconfiguration-renditionconfiguration.html
    *
-   * @default ThumbnailRecordingMode.INTERVAL
+   * @default - no rendition configuration
    */
-  readonly thumbnailRecordingMode?: ThumbnailRecordingMode;
+  readonly renditionConfiguration?: RenditionConfiguration;
 
   /**
-   * The desired resolution of recorded thumbnails for a stream.
-   * Thumbnails are recorded at the selected resolution if the corresponding rendition is available during the stream;
-   * otherwise, they are recorded at source resolution.
+   * A thumbnail configuration enables/disables the recording of thumbnails for a live session and controls the interval at which thumbnails are generated for the live session.
    *
-   * @default - Source (same resolution as Input stream)
-   * @see https://docs.aws.amazon.com/ivs/latest/LowLatencyUserGuide/record-to-s3.html
-   */
-  readonly thumbnailResolution?: Resolution;
-
-  /**
-   * The format in which thumbnails are recorded for a stream.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ivs-recordingconfiguration-thumbnailconfiguration.html
    *
-   * @default ThumbnailStorage.SEQUENTIAL
+   * @default - no thumbnail configuration
    */
-  readonly thumbnailStorage?: ThumbnailStorage[];
-
-  /**
-   * The targeted thumbnail-generation interval.
-   * This is configurable (and required) only if `thumbnailRecordingMode` is `ThumbnailRecordingMode.INTERVAL`.
-   *
-   * `thumbnailTargetInterval` must be between 1 and 60 seconds
-   *
-   * @default Duration.seconds(60)
-   */
-  readonly thumbnailTargetInterval?: Duration;
-}
-
-/**
- * Rendition selection mode.
- */
-export enum RenditionSelection {
-  /**
-   * Record all available renditions.
-   */
-  ALL = 'ALL',
-
-  /**
-   * Does not record any video. This option is useful if you just want to record thumbnails.
-   */
-  NONE = 'NONE',
-
-  /**
-   * Select a subset of video renditions to record.
-   */
-  CUSTOM = 'CUSTOM',
-}
-
-/**
- * Resolution for rendition
- */
-export enum Resolution {
-  /**
-   * Full HD (1080p)
-   */
-  FULL_HD = 'FULL_HD',
-
-  /**
-   * HD (720p)
-   */
-  HD = 'HD',
-
-  /**
-   * SD (480p)
-   */
-  SD = 'SD',
-
-  /**
-   * Lowest resolution
-   */
-  LOWEST_RESOLUTION = 'LOWEST_RESOLUTION',
-}
-
-/**
- * Thumbnail recording mode.
- */
-export enum ThumbnailRecordingMode {
-  /**
-   * Use INTERVAL to enable the generation of thumbnails for recorded video at a time interval controlled by the TargetIntervalSeconds property.
-   */
-  INTERVAL = 'INTERVAL',
-
-  /**
-   * Use DISABLED to disable the generation of thumbnails for recorded video.
-   */
-  DISABLED = 'DISABLED',
-}
-
-/**
- * The format in which thumbnails are recorded for a stream.
- */
-export enum ThumbnailStorage {
-  /**
-   * SEQUENTIAL records all generated thumbnails in a serial manner, to the media/thumbnails directory.
-   */
-  SEQUENTIAL = 'SEQUENTIAL',
-
-  /**
-   * LATEST saves the latest thumbnail in media/thumbnails/latest/thumb.jpg and overwrites it at the interval specified by thumbnailTargetInterval.
-   */
-  LATEST = 'LATEST',
+  readonly thumbnailConfiguration?:ThumbnailConfiguration;
 }
 
 /**
@@ -241,8 +135,6 @@ export class RecordingConfiguration extends Resource implements IRecordingConfig
 
     this.validateRecordingConfigurationName();
     this.validateRecordingReconnectWindowSeconds();
-    this.validateRenditionSettings();
-    this.validateThumbnailSettings();
 
     const resource = new CfnRecordingConfiguration(this, 'Resource', {
       destinationConfiguration: {
@@ -261,29 +153,26 @@ export class RecordingConfiguration extends Resource implements IRecordingConfig
   }
 
   private _renderRenditionConfiguration(): CfnRecordingConfiguration.RenditionConfigurationProperty | undefined {
-    if (!this.props.renditions && !this.props.renditionSelection) {
+    if (!this.props.renditionConfiguration) {
       return;
     }
 
     return {
-      renditions: this.props.renditions,
-      renditionSelection: this.props.renditionSelection,
+      renditions: this.props.renditionConfiguration.renditions,
+      renditionSelection: this.props.renditionConfiguration.renditionSelection,
     };
   };
 
   private _renderThumbnailConfiguration(): CfnRecordingConfiguration.ThumbnailConfigurationProperty | undefined {
-    if (!this.props.thumbnailRecordingMode
-      && !this.props.thumbnailResolution
-      && !this.props.thumbnailStorage
-      && !this.props.thumbnailTargetInterval) {
+    if (!this.props.thumbnailConfiguration) {
       return;
     }
 
     return {
-      recordingMode: this.props.thumbnailRecordingMode,
-      resolution: this.props.thumbnailResolution,
-      storage: this.props.thumbnailStorage,
-      targetIntervalSeconds: this.props.thumbnailTargetInterval?.toSeconds(),
+      recordingMode: this.props.thumbnailConfiguration.recordingMode,
+      resolution: this.props.thumbnailConfiguration.resolution,
+      storage: this.props.thumbnailConfiguration.storage,
+      targetIntervalSeconds: this.props.thumbnailConfiguration.targetInterval?.toSeconds(),
     };
   };
 
@@ -316,51 +205,6 @@ export class RecordingConfiguration extends Resource implements IRecordingConfig
 
     if (recordingReconnectWindow.toSeconds() > 300) {
       throw new Error(`\`recordingReconnectWindow\` must be between 0 and 300 seconds, got ${recordingReconnectWindow.toSeconds()} seconds.`);
-    }
-  };
-
-  private validateRenditionSettings(): undefined {
-    if (this.props.renditionSelection === RenditionSelection.CUSTOM && !this.props.renditions) {
-      throw new Error('`renditions` must be provided when \`renditionSelection\` is `RenditionSelection.CUSTOM`.');
-    }
-
-    if (this.props.renditionSelection !== RenditionSelection.CUSTOM && this.props.renditions) {
-      throw new Error(`\`renditions\` can only be set when \`renditionSelection\` is \`RenditionSelection.CUSTOM\`, got ${this.props.renditionSelection}.`);
-    }
-  };
-
-  private validateThumbnailSettings(): undefined {
-    const thumbnailRecordingMode = this.props.thumbnailRecordingMode;
-    const thumbnailResolution = this.props.thumbnailResolution;
-    const thumbnailStorage = this.props.thumbnailStorage;
-    const thumbnailTargetInterval = this.props.thumbnailTargetInterval;
-
-    if (Token.isUnresolved(thumbnailTargetInterval)) {
-      return;
-    }
-
-    if (thumbnailRecordingMode === ThumbnailRecordingMode.INTERVAL && thumbnailTargetInterval !== undefined) {
-      if (thumbnailTargetInterval.toMilliseconds() < Duration.seconds(1).toMilliseconds()) {
-        throw new Error(`\`thumbnailTargetInterval\` must be between 1 and 60 seconds, got ${thumbnailTargetInterval.toMilliseconds()} milliseconds.`);
-      }
-
-      if (thumbnailTargetInterval.toSeconds() > 60) {
-        throw new Error(`\`thumbnailTargetInterval\` must be between 1 and 60 seconds, got ${thumbnailTargetInterval.toSeconds()} seconds.`);
-      }
-    }
-
-    if (thumbnailRecordingMode !== ThumbnailRecordingMode.INTERVAL) {
-      if (thumbnailResolution) {
-        throw new Error('`thumbnailResolution` can only be set when `thumbnailRecordingMode` is `ThumbnailRecordingMode.INTERVAL`.');
-      }
-
-      if (thumbnailStorage !== undefined) {
-        throw new Error('`thumbnailStorage` can only be set when `thumbnailRecordingMode` is `ThumbnailRecordingMode.INTERVAL`.');
-      }
-
-      if (thumbnailTargetInterval !== undefined) {
-        throw new Error('`thumbnailTargetInterval` can only be set when `thumbnailRecordingMode` is `ThumbnailRecordingMode.INTERVAL`.');
-      }
     }
   };
 }

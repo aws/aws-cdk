@@ -1,7 +1,9 @@
 import { App, Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
-import { Channel, ChannelType, RecordingConfiguration, RenditionSelection, Resolution, ThumbnailRecordingMode, ThumbnailStorage } from '../lib';
+import { Channel, ChannelType, RecordingConfiguration, Resolution } from '../lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
+import { RenditionConfiguration } from '../lib/rendition-configuration';
+import { Storage, ThumbnailConfiguration } from '../lib/thumbnail-configuration';
 
 const app = new App();
 
@@ -16,17 +18,13 @@ const recordingConfiguration = new RecordingConfiguration(stack, 'RecordingConfi
   recordingConfigurationName: 'my-recording-configuration',
   bucket,
   recordingReconnectWindow: Duration.seconds(10),
-  renditionSelection: RenditionSelection.CUSTOM,
-  renditions: [
+  renditionConfiguration: RenditionConfiguration.custom([
     Resolution.FULL_HD,
     Resolution.HD,
     Resolution.SD,
     Resolution.LOWEST_RESOLUTION,
-  ],
-  thumbnailRecordingMode: ThumbnailRecordingMode.INTERVAL,
-  thumbnailResolution: Resolution.FULL_HD,
-  thumbnailStorage: [ThumbnailStorage.LATEST, ThumbnailStorage.SEQUENTIAL],
-  thumbnailTargetInterval: Duration.seconds(30),
+  ]),
+  thumbnailConfiguration: ThumbnailConfiguration.interval(Resolution.FULL_HD, [Storage.LATEST, Storage.SEQUENTIAL], Duration.seconds(30)),
 });
 
 new Channel(stack, 'Channel', {

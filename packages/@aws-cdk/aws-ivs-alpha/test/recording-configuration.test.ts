@@ -1,7 +1,9 @@
 import { App, Duration, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
-import { IRecordingConfiguration, RecordingConfiguration, RenditionSelection, Resolution, ThumbnailRecordingMode, ThumbnailStorage } from '../lib';
+import { IRecordingConfiguration, RecordingConfiguration, Resolution } from '../lib';
+import { Storage, ThumbnailConfiguration } from '../lib/thumbnail-configuration';
+import { RenditionConfiguration } from '../lib/rendition-configuration';
 
 describe('IVS Recording Configuration', () => {
   let app: App;
@@ -54,15 +56,12 @@ describe('IVS Recording Configuration', () => {
     });
   });
 
-  describe('test rendition settings', () => {
-    test.each([
-      RenditionSelection.ALL,
-      RenditionSelection.NONE,
-    ])('set renditionSelection to %s and renditions to %s', (renditionSelection) => {
+  describe('test rendition configuration', () => {
+    test('set rendition all', () => {
       // WHEN
       new RecordingConfiguration(stack, 'MyRecordingConfiguration', {
         bucket,
-        renditionSelection,
+        renditionConfiguration: RenditionConfiguration.all(),
       });
 
       // THEN
@@ -74,20 +73,16 @@ describe('IVS Recording Configuration', () => {
           },
         },
         RenditionConfiguration: {
-          RenditionSelection: renditionSelection,
+          RenditionSelection: 'ALL',
         },
       });
     });
 
-    test.each([
-      [RenditionSelection.CUSTOM, [Resolution.FULL_HD]],
-      [RenditionSelection.CUSTOM, [Resolution.FULL_HD, Resolution.HD, Resolution.SD, Resolution.LOWEST_RESOLUTION]],
-    ])('set renditionSelection to %s and renditions to %s', (renditionSelection, renditions) => {
+    test('set rendition none', () => {
       // WHEN
       new RecordingConfiguration(stack, 'MyRecordingConfiguration', {
         bucket,
-        renditionSelection,
-        renditions,
+        renditionConfiguration: RenditionConfiguration.none(),
       });
 
       // THEN
@@ -99,21 +94,16 @@ describe('IVS Recording Configuration', () => {
           },
         },
         RenditionConfiguration: {
-          RenditionSelection: renditionSelection,
-          Renditions: renditions,
+          RenditionSelection: 'NONE',
         },
       });
     });
 
-    test.each([
-      [RenditionSelection.CUSTOM, [Resolution.FULL_HD]],
-      [RenditionSelection.CUSTOM, [Resolution.FULL_HD, Resolution.HD, Resolution.SD, Resolution.LOWEST_RESOLUTION]],
-    ])('set renditionSelection to %s and renditions to %s', (renditionSelection, renditions) => {
+    test('set rendition custom', () => {
       // WHEN
       new RecordingConfiguration(stack, 'MyRecordingConfiguration', {
         bucket,
-        renditionSelection,
-        renditions,
+        renditionConfiguration: RenditionConfiguration.custom([Resolution.HD, Resolution.SD]),
       });
 
       // THEN
@@ -125,20 +115,20 @@ describe('IVS Recording Configuration', () => {
           },
         },
         RenditionConfiguration: {
-          RenditionSelection: renditionSelection,
-          Renditions: renditions,
+          RenditionSelection: 'CUSTOM',
+          Renditions: ['HD', 'SD'],
         },
       });
     });
   });
 
-  describe('test thumbnail settings', () => {
-    test('set thumbnailRecordingMode to ThumbnailRecordingMode.DISABLED', () => {
+  describe('test thumbnail configuration', () => {
+    test('set thumbnail disable', () => {
       // WHEN
       new RecordingConfiguration(stack, 'MyRecordingConfiguration', {
         recordingConfigurationName: 'my-recording-configuration',
         bucket,
-        thumbnailRecordingMode: ThumbnailRecordingMode.DISABLED,
+        thumbnailConfiguration: ThumbnailConfiguration.disable(),
       });
 
       // THEN
@@ -156,18 +146,12 @@ describe('IVS Recording Configuration', () => {
       });
     });
 
-    test.each([
-      Resolution.FULL_HD,
-      Resolution.HD,
-      Resolution.SD,
-      Resolution.LOWEST_RESOLUTION,
-    ])('set thumbnairlResolution to %s when thumbnailRecordingMode is ThumbnailRecordingMode.INTERVAL', (thumbnailResolution) => {
+    test('set thumbnail interval', () => {
       // WHEN
       new RecordingConfiguration(stack, 'MyRecordingConfiguration', {
         recordingConfigurationName: 'my-recording-configuration',
         bucket,
-        thumbnailRecordingMode: ThumbnailRecordingMode.INTERVAL,
-        thumbnailResolution,
+        thumbnailConfiguration: ThumbnailConfiguration.interval(Resolution.HD, [Storage.LATEST, Storage.SEQUENTIAL], Duration.seconds(30)),
       });
 
       // THEN
@@ -181,59 +165,8 @@ describe('IVS Recording Configuration', () => {
         },
         ThumbnailConfiguration: {
           RecordingMode: 'INTERVAL',
-          Resolution: thumbnailResolution,
-        },
-      });
-    });
-
-    test.each([
-      [[ThumbnailStorage.LATEST]],
-      [[ThumbnailStorage.LATEST, ThumbnailStorage.SEQUENTIAL]],
-    ])('set thumbnailStorage to %s when thumbnailRecordingMode is ThumbnailRecordingMode.INTERVAL', (thumbnailStorage) => {
-      // WHEN
-      new RecordingConfiguration(stack, 'MyRecordingConfiguration', {
-        recordingConfigurationName: 'my-recording-configuration',
-        bucket,
-        thumbnailRecordingMode: ThumbnailRecordingMode.INTERVAL,
-        thumbnailStorage,
-      });
-
-      // THEN
-      const template = Template.fromStack(stack);
-      template.hasResourceProperties('AWS::IVS::RecordingConfiguration', {
-        Name: 'my-recording-configuration',
-        DestinationConfiguration: {
-          S3: {
-            BucketName: stack.resolve(bucket.bucketName),
-          },
-        },
-        ThumbnailConfiguration: {
-          RecordingMode: 'INTERVAL',
-          Storage: thumbnailStorage,
-        },
-      });
-    });
-
-    test('set thumbnailTargetInterval', () => {
-      // WHEN
-      new RecordingConfiguration(stack, 'MyRecordingConfiguration', {
-        recordingConfigurationName: 'my-recording-configuration',
-        bucket,
-        thumbnailRecordingMode: ThumbnailRecordingMode.INTERVAL,
-        thumbnailTargetInterval: Duration.seconds(30),
-      });
-
-      // THEN
-      const template = Template.fromStack(stack);
-      template.hasResourceProperties('AWS::IVS::RecordingConfiguration', {
-        Name: 'my-recording-configuration',
-        DestinationConfiguration: {
-          S3: {
-            BucketName: stack.resolve(bucket.bucketName),
-          },
-        },
-        ThumbnailConfiguration: {
-          RecordingMode: 'INTERVAL',
+          Resolution: 'HD',
+          Storage: ['LATEST', 'SEQUENTIAL'],
           TargetIntervalSeconds: 30,
         },
       });
@@ -325,78 +258,23 @@ describe('IVS Recording Configuration', () => {
     });
   });
 
-  describe('validateRenditionSettings test', () => {
-    test('throws when renditionSelection is RenditionSelection.CUSTOM without renditions.', () => {
+  describe('validate thumbnailConfiguraion test', () => {
+    test('throws when targetInterval is smaller than 1 second.', () => {
       expect(() => {
         new RecordingConfiguration(stack, 'MyRecordingConfiguration', {
           bucket,
-          thumbnailRecordingMode: ThumbnailRecordingMode.INTERVAL,
-          renditionSelection: RenditionSelection.CUSTOM,
+          thumbnailConfiguration: ThumbnailConfiguration.interval(Resolution.HD, [Storage.LATEST], Duration.millis(1)),
         });
-      }).toThrow('`renditions` must be provided when \`renditionSelection\` is `RenditionSelection.CUSTOM`.');
+      }).toThrow('\`targetInterval\` must be between 1 and 60 seconds, got 1 milliseconds.');
     });
 
-    test('throws when thumbnailTargetInterval is invalid seconds.', () => {
+    test('throws when targetInterval is invalid seconds.', () => {
       expect(() => {
         new RecordingConfiguration(stack, 'MyRecordingConfiguration', {
           bucket,
-          thumbnailRecordingMode: ThumbnailRecordingMode.INTERVAL,
-          renditionSelection: RenditionSelection.ALL,
-          renditions: [Resolution.FULL_HD],
+          thumbnailConfiguration: ThumbnailConfiguration.interval(Resolution.HD, [Storage.LATEST], Duration.seconds(61)),
         });
-      }).toThrow('\`renditions\` can only be set when \`renditionSelection\` is \`RenditionSelection.CUSTOM\`, got ALL.');
-    });
-  });
-
-  describe('validateThumbnailSettings test', () => {
-    test('throws when thumbnailTargetInterval is smaller than 1 second.', () => {
-      expect(() => {
-        new RecordingConfiguration(stack, 'MyRecordingConfiguration', {
-          bucket,
-          thumbnailRecordingMode: ThumbnailRecordingMode.INTERVAL,
-          thumbnailTargetInterval: Duration.millis(1),
-        });
-      }).toThrow('\`thumbnailTargetInterval\` must be between 1 and 60 seconds, got 1 milliseconds.');
-    });
-
-    test('throws when thumbnailTargetInterval is invalid seconds.', () => {
-      expect(() => {
-        new RecordingConfiguration(stack, 'MyRecordingConfiguration', {
-          bucket,
-          thumbnailRecordingMode: ThumbnailRecordingMode.INTERVAL,
-          thumbnailTargetInterval: Duration.seconds(61),
-        });
-      }).toThrow('\`thumbnailTargetInterval\` must be between 1 and 60 seconds, got 61 seconds.');
-    });
-
-    test('throws when thumbnailResolution is set with not ThmbnailRecordingMode.INTERVAL.', () => {
-      expect(() => {
-        new RecordingConfiguration(stack, 'MyRecordingConfiguration', {
-          bucket,
-          thumbnailRecordingMode: ThumbnailRecordingMode.DISABLED,
-          thumbnailResolution: Resolution.FULL_HD,
-        });
-      }).toThrow('`thumbnailResolution` can only be set when `thumbnailRecordingMode` is `ThumbnailRecordingMode.INTERVAL`.');
-    });
-
-    test('throws when thumbnailStorage is set with not ThmbnailRecordingMode.INTERVAL.', () => {
-      expect(() => {
-        new RecordingConfiguration(stack, 'MyRecordingConfiguration', {
-          bucket,
-          thumbnailRecordingMode: ThumbnailRecordingMode.DISABLED,
-          thumbnailStorage: [ThumbnailStorage.LATEST],
-        });
-      }).toThrow('`thumbnailStorage` can only be set when `thumbnailRecordingMode` is `ThumbnailRecordingMode.INTERVAL`.');
-    });
-
-    test('throws when thumbnailTargetInterval is set with not ThmbnailRecordingMode.INTERVAL.', () => {
-      expect(() => {
-        new RecordingConfiguration(stack, 'MyRecordingConfiguration', {
-          bucket,
-          thumbnailRecordingMode: ThumbnailRecordingMode.DISABLED,
-          thumbnailTargetInterval: Duration.seconds(30),
-        });
-      }).toThrow('`thumbnailTargetInterval` can only be set when `thumbnailRecordingMode` is `ThumbnailRecordingMode.INTERVAL`.');
+      }).toThrow('\`targetInterval\` must be between 1 and 60 seconds, got 61 seconds.');
     });
   });
 });

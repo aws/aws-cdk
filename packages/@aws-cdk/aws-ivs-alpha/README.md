@@ -139,9 +139,6 @@ const recordingConfiguration = new ivs.RecordingConfiguration(this, 'RecordingCo
 
 When you stream content to an Amazon IVS channel, auto-record-to-s3 uses the source video to generate multiple renditions.
 
-If the recording configuration’s `renditionSelection` value is `ALL`, all renditions are selected for recording.
-If `renditionSelection` is `CUSTOM`, the user must select one or more of the following options: `LOWEST_RESOLUTION`, `SD`, `HD`, and `FULL_HD`.
-
 For more information, see [Discovering the Renditions of a Recording](https://docs.aws.amazon.com/ivs/latest/LowLatencyUserGuide/record-to-s3.html#r2s3-recording-renditions).
 
 ```ts
@@ -150,13 +147,8 @@ declare const recordingBucket: s3.Bucket;
 const recordingConfiguration= new ivs.RecordingConfiguration(this, 'RecordingConfiguration', {
   bucket: recordingBucket,
 
-  // set rendition settings
-  renditionSelection: ivs.RenditionSelection.CUSTOM,
-  renditions: [
-    ivs.Resolution.FULL_HD,
-    ivs.Resolution.HD,
-    ivs.Resolution.SD,
-  ],
+  // set rendition configuration
+  renditionConfiguration: ivs.RenditionConfiguration.custom([ivs.Resolution.HD, ivs.Resolution.SD]),
 });
 ```
 
@@ -165,8 +157,6 @@ const recordingConfiguration= new ivs.RecordingConfiguration(this, 'RecordingCon
 You can enable or disable the recording of thumbnails for a live session and modify the interval at which thumbnails are generated for the live session.
 
 Thumbnail intervals may range from 1 second to 60 seconds; by default, thumbnail recording is enabled, at an interval of 60 seconds.
-
-Thumbnail configuration also may include the `thumbnailStorage` property (`SEQUENTIAL` and/or `LATEST`) and `thumbnailResolution` (`LOWEST_RESOLUTION`, `SD`, `HD`, or `FULL_HD`).
 
 For more information, see [Thumbnails](https://docs.aws.amazon.com/ivs/latest/LowLatencyUserGuide/record-to-s3.html#r2s3-thumbnails).
 
@@ -177,13 +167,7 @@ const recordingConfiguration = new ivs.RecordingConfiguration(this, 'RecordingCo
   bucket: recordingBucket,
 
   // set thumbnail settings
-  thumbnailRecordingMode: ivs.ThumbnailRecordingMode.INTERVAL,
-  thumbnailTargetInterval: Duration.seconds(30),
-  thumbnailStorage: [
-    ivs.ThumbnailStorage.SEQUENTIAL,
-    ivs.ThumbnailStorage.LATEST,
-  ],
-  thumbnailResolution: ivs.Resolution.HD,
+  thumbnailConfiguration: ivs.ThumbnailConfiguration.interval(ivs.Resolution.HD, [ivs.Storage.LATEST, ivs.Storage.SEQUENTIAL], Duration.seconds(30)),
 });
 ```
 
