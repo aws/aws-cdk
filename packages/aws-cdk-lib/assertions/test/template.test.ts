@@ -1368,7 +1368,7 @@ describe('Template', () => {
     }).toThrow(/dependency cycle/);
   });
 
-  test('throws when given a template with cyclic dependencies if a skip flag is false', () => {
+  test('throws when given a template with cyclic dependencies if skipCyclicalDependenciesCheck is false', () => {
     expect(() => {
       Template.fromJSON({
         Resources: {
@@ -1389,7 +1389,7 @@ describe('Template', () => {
     }).toThrow(/dependency cycle/);
   });
 
-  test('does not throw when given a template with cyclic dependencies if check is skipped', () => {
+  test('does not throw when given a template with cyclic dependencies if skipCyclicalDependenciesCheck is true', () => {
     expect(() => {
       Template.fromJSON({
         Resources: {
