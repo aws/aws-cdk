@@ -7,7 +7,7 @@ function versionNumber(): string {
   return fs.readJSONSync(path.join(__dirname, '..', 'package.json')).version;
 }
 
-export async function cliMain(args: string[]) {
+export async function cliMain(cliArgs: string[]) {
   const argv = await yargs
     .usage('Usage: node-bundle COMMAND')
     .option('entrypoint', { type: 'array', nargs: 1, desc: 'List of entrypoints to bundle' })
@@ -34,7 +34,7 @@ export async function cliMain(args: string[]) {
     })
     .help()
     .version(versionNumber())
-    .parse(args);
+    .parse(cliArgs);
 
   const command = argv._[0];
 
