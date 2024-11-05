@@ -132,6 +132,14 @@ describe('with intercepted network calls', () => {
       expect(sdk.currentRegion).toEqual('rgn');
     });
 
+    test('throws if no credentials could be found', async () => {
+      const account = uniq('11111');
+      const provider = await providerFromProfile(undefined);
+      await expect((provider.forEnvironment({ ...env(account), region: 'rgn' }, Mode.ForReading)))
+        .rejects
+        .toThrow(/Need to perform AWS calls for account .*, but no credentials have been configured, and none of these plugins found any/);
+    });
+
     test('throws if profile credentials are not for the right account', async () => {
       // WHEN
       jest.spyOn(AwsCliCompatible, 'region').mockResolvedValue('us-east-123');
