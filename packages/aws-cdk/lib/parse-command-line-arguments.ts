@@ -145,7 +145,7 @@ export function parseCommandLineArguments(
     })
     .option('unstable', {
       type: 'array',
-      desc: 'Opt in to specific unstable features. Can be specified multiple times.',
+      desc: 'Opt in to unstable features. The flag indicates that the scope and API of a feature might still change. Otherwise the feature is generally production ready and fully supported. Can be specified multiple times.',
       default: [],
     })
     .command(['list [STACKS..]', 'ls  [STACKS..]'], 'Lists all stacks in the app', (yargs: Argv) =>

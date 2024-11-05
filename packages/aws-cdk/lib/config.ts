@@ -35,7 +35,7 @@ export function makeConfig(): CliConfig {
       'notices': { type: 'boolean', desc: 'Show relevant notices' },
       'no-color': { type: 'boolean', desc: 'Removes colors and other style from console output', default: false },
       'ci': { type: 'boolean', desc: 'Force CI detection. If CI=true then logs will be sent to stdout instead of stderr', default: DynamicValue.fromInline(() => process.env.CI !== undefined) },
-      'unstable': { type: 'array', desc: 'Opt in to specific unstable features. Can be specified multiple times.', default: [] },
+      'unstable': { type: 'array', desc: 'Opt in to unstable features. The flag indicates that the scope and API of a feature might still change. Otherwise the feature is generally production ready and fully supported. Can be specified multiple times.', default: [] },
     },
     commands: {
       'list': {
@@ -91,7 +91,7 @@ export function makeConfig(): CliConfig {
         },
       },
       gc: {
-        description: 'Garbage collect assets',
+        description: 'Garbage collect assets. Options detailed here: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk/README.md#cdk-gc',
         arg: {
           name: 'ENVIRONMENTS',
           variadic: true,

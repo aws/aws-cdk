@@ -7,7 +7,7 @@
   },
   "scripts": {
     "build": "cdk-build",
-    "yargs-gen": "yarn ts-node scripts/yargs-gen.ts",
+    "yargs-gen": "yarn ts-node --preferTsExts scripts/yargs-gen.ts",
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "pkglint": "pkglint -f",
