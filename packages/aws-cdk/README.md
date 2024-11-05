@@ -205,11 +205,14 @@ $ cdk deploy -R
 ```
 
 If a deployment fails you can update your code and immediately retry the
-deployment from the point of failure. If you would like to explicitly roll back a failed, paused deployment,
-use `cdk rollback`.
+deployment from the point of failure. If you would like to explicitly roll back
+a failed, paused deployment, use `cdk rollback`.
 
-NOTE: you cannot use `--no-rollback` for any updates that would cause a resource replacement, only for updates
-and creations of new resources.
+`--no-rollback` deployments cannot contain resource replacements. If the CLI
+detects that a resource is being replaced, it will prompt you to perform
+a regular replacement instead. If the stack rollback is currently paused
+and you are trying to perform an deployment that contains a replacement, you
+will be prompted to roll back first.
 
 #### Deploying multiple stacks
 
@@ -801,7 +804,7 @@ In practice this means for any resource in the provided template, for example,
     }
 ```
 
-There must not exist a resource of that type with the same identifier in the desired region. In this example that identfier 
+There must not exist a resource of that type with the same identifier in the desired region. In this example that identfier
 would be "amzn-s3-demo-bucket"
 
 ##### **The provided template is not deployed to CloudFormation in the account/region, and there *is* overlap with existing resources in the account/region**
@@ -900,7 +903,7 @@ CDK Garbage Collection.
 > API of feature might still change. Otherwise the feature is generally production 
 > ready and fully supported.
 
-`cdk gc` garbage collects unused assets from your bootstrap bucket via the following mechanism: 
+`cdk gc` garbage collects unused assets from your bootstrap bucket via the following mechanism:
 
 - for each object in the bootstrap S3 Bucket, check to see if it is referenced in any existing CloudFormation templates
 - if not, it is treated as unused and gc will either tag it or delete it, depending on your configuration.
@@ -938,7 +941,7 @@ Found X objects to delete based off of the following criteria:
 Delete this batch (yes/no/delete-all)?
 ```
 
-Since it's quite possible that the bootstrap bucket has many objects, we work in batches of 1000 objects or 100 images. 
+Since it's quite possible that the bootstrap bucket has many objects, we work in batches of 1000 objects or 100 images.
 To skip the prompt either reply with `delete-all`, or use the `--confirm=false` option.
 
 ```console
@@ -948,7 +951,7 @@ cdk gc --unstable=gc --confirm=false
 If you are concerned about deleting assets too aggressively, there are multiple levers you can configure:
 
 - rollback-buffer-days: this is the amount of days an asset has to be marked as isolated before it is elligible for deletion.
-- created-buffer-days: this is the amount of days an asset must live before it is elligible for deletion. 
+- created-buffer-days: this is the amount of days an asset must live before it is elligible for deletion.
 
 When using `rollback-buffer-days`, instead of deleting unused objects, `cdk gc` will tag them with
 today's date instead. It will also check if any objects have been tagged by previous runs of `cdk gc`

@@ -67,6 +67,10 @@ export class StackStatus {
     }
   }
 
+  get isRollbackable(): boolean {
+    return [RollbackChoice.START_ROLLBACK, RollbackChoice.CONTINUE_UPDATE_ROLLBACK].includes(this.rollbackChoice);
+  }
+
   public toString(): string {
     return this.name + (this.reason ? ` (${this.reason})` : '');
   }
