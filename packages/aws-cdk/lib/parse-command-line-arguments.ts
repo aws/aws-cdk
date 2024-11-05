@@ -15,6 +15,7 @@ export function parseCommandLineArguments(
   yargsNegativeAlias: any
 ): any {
   return yargs
+    .env('CDK')
     .usage('Usage: cdk -a <cdk-app> COMMAND')
     .option('app', {
       type: 'string',
@@ -148,7 +149,7 @@ export function parseCommandLineArguments(
       desc: 'Opt in to unstable features. The flag indicates that the scope and API of a feature might still change. Otherwise the feature is generally production ready and fully supported. Can be specified multiple times.',
       default: [],
     })
-    .command(['list [STACKS..]', 'ls  [STACKS..]'], 'Lists all stacks in the app', (yargs: Argv) =>
+    .command(['list [STACKS..]', 'ls [STACKS..]'], 'Lists all stacks in the app', (yargs: Argv) =>
       yargs
         .option('long', {
           type: 'boolean',
@@ -163,7 +164,7 @@ export function parseCommandLineArguments(
           desc: 'Display stack dependency information for each stack',
         })
     )
-    .command(['synthesize [STACKS..]', 'synth  [STACKS..]'], 'Synthesizes and prints the CloudFormation template for this stack', (yargs: Argv) =>
+    .command(['synthesize [STACKS..]', 'synth [STACKS..]'], 'Synthesizes and prints the CloudFormation template for this stack', (yargs: Argv) =>
       yargs
         .option('exclusively', {
           type: 'boolean',
@@ -182,7 +183,7 @@ export function parseCommandLineArguments(
           default: false,
         })
     )
-    .command(['bootstrap [ENVIRONMENTS..]'], 'Deploys the CDK toolkit stack into an AWS environment', (yargs: Argv) =>
+    .command('bootstrap [ENVIRONMENTS..]', 'Deploys the CDK toolkit stack into an AWS environment', (yargs: Argv) =>
       yargs
         .option('bootstrap-bucket-name', {
           type: 'string',
@@ -292,40 +293,43 @@ export function parseCommandLineArguments(
           desc: 'Use previous values for existing parameters (you must specify all parameters on every deployment if this is disabled)',
         })
     )
-    .command(['gc [ENVIRONMENTS..]'], 'Garbage collect assets', (yargs: Argv) =>
-      yargs
-        .option('action', {
-          type: 'string',
-          desc: 'The action (or sub-action) you want to perform. Valid entires are "print", "tag", "delete-tagged", "full".',
-          default: 'full',
-        })
-        .option('type', {
-          type: 'string',
-          desc: 'Specify either ecr, s3, or all',
-          default: 'all',
-        })
-        .option('rollback-buffer-days', {
-          type: 'number',
-          desc: 'Delete assets that have been marked as isolated for this many days',
-          default: 0,
-        })
-        .option('created-buffer-days', {
-          type: 'number',
-          desc: 'Never delete assets younger than this (in days)',
-          default: 1,
-        })
-        .option('confirm', {
-          type: 'boolean',
-          desc: 'Confirm via manual prompt before deletion',
-          default: true,
-        })
-        .option('bootstrap-stack-name', {
-          type: 'string',
-          desc: 'The name of the CDK toolkit stack, if different from the default "CDKToolkit"',
-          requiresArg: true,
-        })
+    .command(
+      'gc [ENVIRONMENTS..]',
+      'Garbage collect assets. Options detailed here: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk/README.md#cdk-gc',
+      (yargs: Argv) =>
+        yargs
+          .option('action', {
+            type: 'string',
+            desc: 'The action (or sub-action) you want to perform. Valid entires are "print", "tag", "delete-tagged", "full".',
+            default: 'full',
+          })
+          .option('type', {
+            type: 'string',
+            desc: 'Specify either ecr, s3, or all',
+            default: 'all',
+          })
+          .option('rollback-buffer-days', {
+            type: 'number',
+            desc: 'Delete assets that have been marked as isolated for this many days',
+            default: 0,
+          })
+          .option('created-buffer-days', {
+            type: 'number',
+            desc: 'Never delete assets younger than this (in days)',
+            default: 1,
+          })
+          .option('confirm', {
+            type: 'boolean',
+            desc: 'Confirm via manual prompt before deletion',
+            default: true,
+          })
+          .option('bootstrap-stack-name', {
+            type: 'string',
+            desc: 'The name of the CDK toolkit stack, if different from the default "CDKToolkit"',
+            requiresArg: true,
+          })
     )
-    .command(['deploy [STACKS..]'], 'Deploys the stack(s) named STACKS into your AWS account', (yargs: Argv) =>
+    .command('deploy [STACKS..]', 'Deploys the stack(s) named STACKS into your AWS account', (yargs: Argv) =>
       yargs
         .option('all', {
           type: 'boolean',
@@ -459,7 +463,7 @@ export function parseCommandLineArguments(
           default: false,
         })
     )
-    .command(['rollback [STACKS..]'], 'Rolls back the stack(s) named STACKS to their last stable state', (yargs: Argv) =>
+    .command('rollback [STACKS..]', 'Rolls back the stack(s) named STACKS to their last stable state', (yargs: Argv) =>
       yargs
         .option('all', {
           type: 'boolean',
@@ -488,7 +492,7 @@ export function parseCommandLineArguments(
           default: [],
         })
     )
-    .command(['import [STACK]'], 'Import existing resource(s) into the given STACK', (yargs: Argv) =>
+    .command('import [STACK]', 'Import existing resource(s) into the given STACK', (yargs: Argv) =>
       yargs
         .option('execute', {
           type: 'boolean',
@@ -526,7 +530,7 @@ export function parseCommandLineArguments(
           desc: 'If specified, CDK will use the given file to map physical resources to CDK resources for import, instead of interactively asking the user. Can be run from scripts',
         })
     )
-    .command(['watch [STACKS..]'], "Shortcut for 'deploy --watch'", (yargs: Argv) =>
+    .command('watch [STACKS..]', "Shortcut for 'deploy --watch'", (yargs: Argv) =>
       yargs
         .option('build-exclude', {
           type: 'array',
@@ -589,7 +593,7 @@ export function parseCommandLineArguments(
           requiresArg: true,
         })
     )
-    .command(['destroy [STACKS..]'], 'Destroy the stack(s) named STACKS', (yargs: Argv) =>
+    .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', (yargs: Argv) =>
       yargs
         .option('all', {
           type: 'boolean',
@@ -608,7 +612,7 @@ export function parseCommandLineArguments(
         })
     )
     .command(
-      ['diff [STACKS..]'],
+      'diff [STACKS..]',
       'Compares the specified stack with the deployed stack or a local template file, and returns with status 1 if any difference is found',
       (yargs: Argv) =>
         yargs
@@ -660,9 +664,9 @@ export function parseCommandLineArguments(
             default: true,
           })
     )
-    .command(['metadata [STACK]'], 'Returns all metadata associated with this stack')
-    .command(['acknowledge [ID]', 'ack  [ID]'], 'Acknowledge a notice so that it does not show up anymore')
-    .command(['notices'], 'Returns a list of relevant notices', (yargs: Argv) =>
+    .command('metadata [STACK]', 'Returns all metadata associated with this stack')
+    .command(['acknowledge [ID]', 'ack [ID]'], 'Acknowledge a notice so that it does not show up anymore')
+    .command('notices', 'Returns a list of relevant notices', (yargs: Argv) =>
       yargs.option('unacknowledged', {
         type: 'boolean',
         alias: 'u',
@@ -670,7 +674,7 @@ export function parseCommandLineArguments(
         desc: 'Returns a list of unacknowledged notices',
       })
     )
-    .command(['init [TEMPLATE]'], 'Create a new, empty CDK project from a template.', (yargs: Argv) =>
+    .command('init [TEMPLATE]', 'Create a new, empty CDK project from a template.', (yargs: Argv) =>
       yargs
         .option('language', {
           type: 'string',
@@ -688,7 +692,7 @@ export function parseCommandLineArguments(
           desc: 'If true, only generates project files, without executing additional operations such as setting up a git repo, installing dependencies or compiling the project',
         })
     )
-    .command(['migrate'], false, (yargs: Argv) =>
+    .command('migrate', false, (yargs: Argv) =>
       yargs
         .option('stack-name', {
           type: 'string',
@@ -736,7 +740,7 @@ export function parseCommandLineArguments(
           desc: 'Use this flag to zip the generated CDK app',
         })
     )
-    .command(['context'], 'Manage cached context values', (yargs: Argv) =>
+    .command('context', 'Manage cached context values', (yargs: Argv) =>
       yargs
         .option('reset', {
           alias: 'e',
@@ -755,7 +759,7 @@ export function parseCommandLineArguments(
           type: 'boolean',
         })
     )
-    .command(['docs', 'doc '], 'Opens the reference documentation in a browser', (yargs: Argv) =>
+    .command(['docs', 'doc'], 'Opens the reference documentation in a browser', (yargs: Argv) =>
       yargs.option('browser', {
         alias: 'b',
         desc: 'the command to use to open the browser, using %u as a placeholder for the path of the file to open',
@@ -763,9 +767,9 @@ export function parseCommandLineArguments(
         default: browserDefault,
       })
     )
-    .command(['doctor'], 'Check your set-up for potential problems')
+    .command('doctor', 'Check your set-up for potential problems')
     .version(version)
-    .demandCommand(1, "''")
+    .demandCommand(1, '')
     .recommendCommands()
     .help()
     .alias('h', 'help')

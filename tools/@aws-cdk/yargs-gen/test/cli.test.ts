@@ -40,6 +40,7 @@ describe('render', () => {
         yargsNegativeAlias: any
       ): any {
         return yargs
+          .env('CDK')
           .usage('Usage: cdk -a <cdk-app> COMMAND')
           .option('one', {
             type: 'string',
@@ -59,7 +60,7 @@ describe('render', () => {
             requiresArg: true,
           })
           .version(version)
-          .demandCommand(1, "''")
+          .demandCommand(1, '')
           .recommendCommands()
           .help()
           .alias('h', 'help')

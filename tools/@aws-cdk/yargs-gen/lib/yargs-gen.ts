@@ -64,7 +64,9 @@ export async function renderYargs(config: CliConfig): Promise<string> {
 //   ./prog --arg one --arg two position  =>  will parse to  { arg: ['one', 'two'], _: ['positional'] }.
 function makeYargs(config: CliConfig): Statement {
   let yargsExpr: Expression = code.expr.ident('yargs');
-  yargsExpr = yargsExpr.callMethod('usage', lit('Usage: cdk -a <cdk-app> COMMAND'));
+  yargsExpr = yargsExpr
+    .callMethod('env', lit('CDK'))
+    .callMethod('usage', lit('Usage: cdk -a <cdk-app> COMMAND'));
 
   // we must compute global options first, as they are not part of an argument to a command call
   yargsExpr = makeOptions(yargsExpr, config.globalOptions);
@@ -75,16 +77,26 @@ function makeYargs(config: CliConfig): Statement {
       ? ` [${commandFacts.arg?.name}${commandFacts.arg?.variadic ? '..' : ''}]`
       : '';
     const aliases = commandFacts.aliases
-      ? commandFacts.aliases.map((alias) => `, '${alias} ${commandArg}'`)
+      ? commandFacts.aliases.map((alias) => `, '${alias}${commandArg}'`)
       : '';
 
     // must compute options before we compute the full command, because in yargs, the options are an argument to the command call.
     let optionsExpr: Expression = code.expr.directCode('(yargs: Argv) => yargs');
     optionsExpr = makeOptions(optionsExpr, commandFacts.options ?? {});
 
-    yargsExpr = commandFacts.options
-      ? yargsExpr.callMethod('command', code.expr.directCode(`['${command}${commandArg}'${aliases}]`), lit(commandFacts.description), optionsExpr)
-      : yargsExpr.callMethod('command', code.expr.directCode(`['${command}${commandArg}'${aliases}]`), lit(commandFacts.description));
+    const commandCallArgs: Array<Expression> = [];
+    if (aliases) {
+      commandCallArgs.push(code.expr.directCode(`['${command}${commandArg}'${aliases}]`));
+    } else {
+      commandCallArgs.push(code.expr.directCode(`'${command}${commandArg}'`));
+    }
+    commandCallArgs.push(lit(commandFacts.description));
+
+    if (commandFacts.options) {
+      commandCallArgs.push(optionsExpr);
+    }
+
+    yargsExpr = yargsExpr.callMethod('command', ...commandCallArgs);
   }
 
   return code.stmt.ret(makeEpilogue(yargsExpr));
@@ -129,7 +141,7 @@ function makeOptions(prefix: Expression, options: { [optionName: string]: YargsO
 
 function makeEpilogue(prefix: Expression) {
   let completeDefinition = prefix.callMethod('version', code.expr.ident('version'));
-  completeDefinition = completeDefinition.callMethod('demandCommand', lit(1), lit("''")); // just print help
+  completeDefinition = completeDefinition.callMethod('demandCommand', lit(1), lit('')); // just print help
   completeDefinition = completeDefinition.callMethod('recommendCommands');
   completeDefinition = completeDefinition.callMethod('help');
   completeDefinition = completeDefinition.callMethod('alias', lit('h'), lit('help'));
