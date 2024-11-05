@@ -269,7 +269,7 @@ export interface CanaryProps {
    * Artifact encryption is only supported for canaries that use Synthetics runtime
    * version `syn-nodejs-puppeteer-3.3` or later.
    *
-   * @default - Artifacts are encrypted at rest using an AWS managed key
+   * @default - `ArtifactsEncryptionMode.KMS` is set if you specify `artifactS3KmsKey`, otherwise artifacts are encrypted at rest using an AWS managed key
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_artifact_encryption.html
    */
@@ -676,7 +676,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
     const isNodeRuntime = props.runtime.family === RuntimeFamily.NODEJS;
 
     if (
-      props.artifactS3EncryptionMode !== ArtifactsEncryptionMode.KMS &&
+      props.artifactS3EncryptionMode === ArtifactsEncryptionMode.S3_MANAGED &&
       props.artifactS3KmsKey
     ) {
       throw new Error(`A customer-managed KMS key was provided, but the encryption mode is not set to SSE-KMS, got: ${props.artifactS3EncryptionMode}.`);
@@ -688,15 +688,25 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
     }
 
     let encryptionKey: kms.IKey | undefined;
-    if (props.artifactS3EncryptionMode === ArtifactsEncryptionMode.KMS) {
-      encryptionKey = props.artifactS3KmsKey ?? new kms.Key(this, 'Key', { description: `Created by ${this.node.path}` });
+    if (props.artifactS3EncryptionMode === ArtifactsEncryptionMode.KMS && !props.artifactS3KmsKey) {
+      encryptionKey = new kms.Key(this, 'Key', { description: `Created by ${this.node.path}` });
+    } else {
+      encryptionKey = props.artifactS3KmsKey;
     }
 
     encryptionKey?.grantEncryptDecrypt(this.role);
 
+    let encryptionMode: ArtifactsEncryptionMode | undefined;
+
+    if (props.artifactS3KmsKey && !props.artifactS3EncryptionMode) {
+      encryptionMode = ArtifactsEncryptionMode.KMS;
+    } else {
+      encryptionMode = props.artifactS3EncryptionMode;
+    }
+
     return {
       s3Encryption: {
-        encryptionMode: props.artifactS3EncryptionMode,
+        encryptionMode,
         kmsKeyArn: encryptionKey?.keyArn,
       },
     };

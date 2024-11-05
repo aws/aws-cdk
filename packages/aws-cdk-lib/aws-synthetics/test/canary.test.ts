@@ -1031,6 +1031,32 @@ describe('artifact encryption test', () => {
     });
   });
 
+  test('No artifactS3EncryptionMode setting with a key is set to SSE_KMS', () => {
+    // GIVEN
+    const stack = new Stack();
+    const key = new kms.Key(stack, 'myKey');
+
+    // WHEN
+    new synthetics.Canary(stack, 'Canary', {
+      test: synthetics.Test.custom({
+        handler: 'index.handler',
+        code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+      }),
+      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+      artifactS3KmsKey: key,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+      ArtifactConfig: {
+        S3Encryption: {
+          EncryptionMode: 'SSE_KMS',
+          KmsKeyArn: stack.resolve(key.keyArn),
+        },
+      },
+    });
+  });
+
   test('SSE-S3 with a key throws', () => {
     const stack = new Stack();
     const key = new kms.Key(stack, 'myKey');
@@ -1046,22 +1072,6 @@ describe('artifact encryption test', () => {
         artifactS3KmsKey: key,
       });
     }).toThrow('A customer-managed KMS key was provided, but the encryption mode is not set to SSE-KMS, got: SSE_S3.');
-  });
-
-  test('No artifactS3EncryptionMode setting with a key throws', () => {
-    const stack = new Stack();
-    const key = new kms.Key(stack, 'myKey');
-
-    expect(() => {
-      new synthetics.Canary(stack, 'Canary', {
-        test: synthetics.Test.custom({
-          handler: 'index.handler',
-          code: synthetics.Code.fromInline('/* Synthetics handler code */'),
-        }),
-        runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
-        artifactS3KmsKey: key,
-      });
-    }).toThrow('A customer-managed KMS key was provided, but the encryption mode is not set to SSE-KMS, got: undefined.');
   });
 
   test('Artifact encryption for non-Node.js runtime throws an error', () => {
