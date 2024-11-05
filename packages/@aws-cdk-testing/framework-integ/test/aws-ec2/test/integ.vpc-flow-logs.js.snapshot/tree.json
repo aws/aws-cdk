@@ -1033,7 +1033,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "FlowLogsInstance": {
@@ -1160,9 +1160,6 @@
                           "Fn::GetAZs": ""
                         }
                       ]
-                    },
-                    "iamInstanceProfile": {
-                      "Ref": "FlowLogsInstanceInstanceProfile5CDC5493"
                     },
                     "imageId": {
                       "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
@@ -3512,7 +3509,7 @@
                 "path": "FlowLogs/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -3532,7 +3529,7 @@
                             "path": "FlowLogs/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2514d18a6e9074cf1c0ab0c9379420062/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -3604,7 +3601,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "LatestNodeRuntimeMap": {
@@ -3654,7 +3651,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },

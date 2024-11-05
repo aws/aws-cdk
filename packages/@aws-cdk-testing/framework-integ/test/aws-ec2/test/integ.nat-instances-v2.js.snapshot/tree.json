@@ -233,9 +233,6 @@
                                 }
                               ]
                             },
-                            "iamInstanceProfile": {
-                              "Ref": "MyVpcPublicSubnet1NatInstanceInstanceProfile2FD934CB"
-                            },
                             "imageId": {
                               "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
                             },
@@ -477,9 +474,6 @@
                                   "Fn::GetAZs": ""
                                 }
                               ]
-                            },
-                            "iamInstanceProfile": {
-                              "Ref": "MyVpcPublicSubnet2NatInstanceInstanceProfile5AB09EF6"
                             },
                             "imageId": {
                               "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
@@ -1208,7 +1202,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "BootstrapVersion": {
@@ -1246,7 +1240,7 @@
                 "path": "nat-instance-v2-integ-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -1266,7 +1260,7 @@
                             "path": "nat-instance-v2-integ-test/DefaultTest/DeployAssert/HttpApiCall5667927ff42f0a5713f7f2c90e9178c5/HttpProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -1338,7 +1332,15 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
+                    }
+                  },
+                  "LatestNodeRuntimeMap": {
+                    "id": "LatestNodeRuntimeMap",
+                    "path": "nat-instance-v2-integ-test/DefaultTest/DeployAssert/LatestNodeRuntimeMap",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnMapping",
+                      "version": "0.0.0"
                     }
                   },
                   "BootstrapVersion": {
@@ -1380,7 +1382,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },

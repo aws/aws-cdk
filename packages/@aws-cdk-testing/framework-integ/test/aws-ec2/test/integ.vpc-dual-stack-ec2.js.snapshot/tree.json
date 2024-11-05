@@ -1166,9 +1166,6 @@
                         }
                       ]
                     },
-                    "iamInstanceProfile": {
-                      "Ref": "MyInstanceInstanceProfile2784C631"
-                    },
                     "imageId": {
                       "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amikernel510hvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
                     },
@@ -1286,7 +1283,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "BootstrapVersion": {
@@ -1324,7 +1321,7 @@
                 "path": "vpc-dual-stack-ec2-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -1344,7 +1341,7 @@
                             "path": "vpc-dual-stack-ec2-test/DefaultTest/DeployAssert/HttpApiCall4a6aba59f387265cc68ff7ed40f2e1a0/HttpProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -1416,7 +1413,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "LatestNodeRuntimeMap": {
@@ -1466,7 +1463,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },

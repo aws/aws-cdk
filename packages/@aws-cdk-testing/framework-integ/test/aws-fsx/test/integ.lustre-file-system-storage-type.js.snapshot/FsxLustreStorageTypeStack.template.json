@@ -542,9 +542,6 @@
       }
      ]
     },
-    "IamInstanceProfile": {
-     "Ref": "SsdFsxInstanceInstanceProfile0AD53366"
-    },
     "ImageId": {
      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
     },
@@ -726,9 +723,6 @@
        "Fn::GetAZs": ""
       }
      ]
-    },
-    "IamInstanceProfile": {
-     "Ref": "HddFsxInstanceInstanceProfile0833AA40"
     },
     "ImageId": {
      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"

@@ -959,9 +959,6 @@
                         }
                       ]
                     },
-                    "iamInstanceProfile": {
-                      "Ref": "Instance0InstanceProfile3A61DE71"
-                    },
                     "imageId": {
                       "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
                     },
@@ -1139,9 +1136,6 @@
                           "Fn::GetAZs": ""
                         }
                       ]
-                    },
-                    "iamInstanceProfile": {
-                      "Ref": "Instance1InstanceProfileC04770B7"
                     },
                     "imageId": {
                       "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
@@ -1501,7 +1495,7 @@
                 "path": "GlobalAcceleratorInteg/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -1547,7 +1541,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },

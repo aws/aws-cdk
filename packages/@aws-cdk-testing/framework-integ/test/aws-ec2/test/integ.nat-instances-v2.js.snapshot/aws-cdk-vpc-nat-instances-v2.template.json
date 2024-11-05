@@ -131,9 +131,6 @@
       }
      ]
     },
-    "IamInstanceProfile": {
-     "Ref": "MyVpcPublicSubnet1NatInstanceInstanceProfile2FD934CB"
-    },
     "ImageId": {
      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
     },
@@ -279,9 +276,6 @@
        "Fn::GetAZs": ""
       }
      ]
-    },
-    "IamInstanceProfile": {
-     "Ref": "MyVpcPublicSubnet2NatInstanceInstanceProfile5AB09EF6"
     },
     "ImageId": {
      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"

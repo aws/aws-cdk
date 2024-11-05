@@ -557,9 +557,6 @@
       }
      ]
     },
-    "IamInstanceProfile": {
-     "Ref": "Instance0InstanceProfile3A61DE71"
-    },
     "ImageId": {
      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
     },
@@ -654,9 +651,6 @@
        "Fn::GetAZs": ""
       }
      ]
-    },
-    "IamInstanceProfile": {
-     "Ref": "Instance1InstanceProfileC04770B7"
     },
     "ImageId": {
      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
@@ -760,7 +754,7 @@
        {
         "Ref": "VPCB9E5F0B4"
        },
-       "\"]}]},\"physicalResourceId\":{\"responsePath\":\"SecurityGroups.0.GroupId\"}}"
+       "\"]}]},\"physicalResourceId\":{\"responsePath\":\"SecurityGroups.0.GroupId\"},\"logApiResponseData\":true}"
       ]
      ]
     },
@@ -772,7 +766,7 @@
        {
         "Ref": "VPCB9E5F0B4"
        },
-       "\"]}]},\"physicalResourceId\":{\"responsePath\":\"SecurityGroups.0.GroupId\"}}"
+       "\"]}]},\"physicalResourceId\":{\"responsePath\":\"SecurityGroups.0.GroupId\"},\"logApiResponseData\":true}"
       ]
      ]
     },

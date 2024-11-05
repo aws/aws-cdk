@@ -18,9 +18,6 @@
   "IntegUserdataVpcPublicSubnet1Subnet9AE7FE85": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "IntegUserdataVpcDE2938ED"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -44,21 +41,24 @@
       "Key": "Name",
       "Value": "integ-userdata/IntegUserdataVpc/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "IntegUserdataVpcDE2938ED"
+    }
    }
   },
   "IntegUserdataVpcPublicSubnet1RouteTable7B342D96": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "IntegUserdataVpcDE2938ED"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "integ-userdata/IntegUserdataVpc/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "IntegUserdataVpcDE2938ED"
+    }
    }
   },
   "IntegUserdataVpcPublicSubnet1RouteTableAssociation724A6375": {
@@ -75,12 +75,12 @@
   "IntegUserdataVpcPublicSubnet1DefaultRoute8F93CC39": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "IntegUserdataVpcPublicSubnet1RouteTable7B342D96"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "IntegUserdataVpcIGWB657C40E"
+    },
+    "RouteTableId": {
+     "Ref": "IntegUserdataVpcPublicSubnet1RouteTable7B342D96"
     }
    },
    "DependsOn": [
@@ -102,14 +102,14 @@
   "IntegUserdataVpcPublicSubnet1NATGatewayC9F60940": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "IntegUserdataVpcPublicSubnet1Subnet9AE7FE85"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
       "IntegUserdataVpcPublicSubnet1EIP41DE8CA6",
       "AllocationId"
      ]
+    },
+    "SubnetId": {
+     "Ref": "IntegUserdataVpcPublicSubnet1Subnet9AE7FE85"
     },
     "Tags": [
      {
@@ -126,9 +126,6 @@
   "IntegUserdataVpcPublicSubnet2Subnet7EC040B5": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "IntegUserdataVpcDE2938ED"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -152,21 +149,24 @@
       "Key": "Name",
       "Value": "integ-userdata/IntegUserdataVpc/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "IntegUserdataVpcDE2938ED"
+    }
    }
   },
   "IntegUserdataVpcPublicSubnet2RouteTable98BA8E97": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "IntegUserdataVpcDE2938ED"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "integ-userdata/IntegUserdataVpc/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "IntegUserdataVpcDE2938ED"
+    }
    }
   },
   "IntegUserdataVpcPublicSubnet2RouteTableAssociationBA5DC07F": {
@@ -183,12 +183,12 @@
   "IntegUserdataVpcPublicSubnet2DefaultRoute90FCB645": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "IntegUserdataVpcPublicSubnet2RouteTable98BA8E97"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "IntegUserdataVpcIGWB657C40E"
+    },
+    "RouteTableId": {
+     "Ref": "IntegUserdataVpcPublicSubnet2RouteTable98BA8E97"
     }
    },
    "DependsOn": [
@@ -210,14 +210,14 @@
   "IntegUserdataVpcPublicSubnet2NATGatewayB25F84D3": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "IntegUserdataVpcPublicSubnet2Subnet7EC040B5"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
       "IntegUserdataVpcPublicSubnet2EIP662D51E3",
       "AllocationId"
      ]
+    },
+    "SubnetId": {
+     "Ref": "IntegUserdataVpcPublicSubnet2Subnet7EC040B5"
     },
     "Tags": [
      {
@@ -234,9 +234,6 @@
   "IntegUserdataVpcPrivateSubnet1Subnet4EFBF430": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "IntegUserdataVpcDE2938ED"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -260,21 +257,24 @@
       "Key": "Name",
       "Value": "integ-userdata/IntegUserdataVpc/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "IntegUserdataVpcDE2938ED"
+    }
    }
   },
   "IntegUserdataVpcPrivateSubnet1RouteTable63E39754": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "IntegUserdataVpcDE2938ED"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "integ-userdata/IntegUserdataVpc/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "IntegUserdataVpcDE2938ED"
+    }
    }
   },
   "IntegUserdataVpcPrivateSubnet1RouteTableAssociation176A5EB9": {
@@ -291,21 +291,18 @@
   "IntegUserdataVpcPrivateSubnet1DefaultRoute03370EF2": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "IntegUserdataVpcPrivateSubnet1RouteTable63E39754"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "IntegUserdataVpcPublicSubnet1NATGatewayC9F60940"
+    },
+    "RouteTableId": {
+     "Ref": "IntegUserdataVpcPrivateSubnet1RouteTable63E39754"
     }
    }
   },
   "IntegUserdataVpcPrivateSubnet2SubnetAFD1E5B4": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "IntegUserdataVpcDE2938ED"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -329,21 +326,24 @@
       "Key": "Name",
       "Value": "integ-userdata/IntegUserdataVpc/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "IntegUserdataVpcDE2938ED"
+    }
    }
   },
   "IntegUserdataVpcPrivateSubnet2RouteTable7944CD08": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "IntegUserdataVpcDE2938ED"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "integ-userdata/IntegUserdataVpc/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "IntegUserdataVpcDE2938ED"
+    }
    }
   },
   "IntegUserdataVpcPrivateSubnet2RouteTableAssociation3B0C1389": {
@@ -360,12 +360,12 @@
   "IntegUserdataVpcPrivateSubnet2DefaultRouteA120F4F4": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "IntegUserdataVpcPrivateSubnet2RouteTable7944CD08"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "IntegUserdataVpcPublicSubnet2NATGatewayB25F84D3"
+    },
+    "RouteTableId": {
+     "Ref": "IntegUserdataVpcPrivateSubnet2RouteTable7944CD08"
     }
    }
   },
@@ -383,11 +383,11 @@
   "IntegUserdataVpcVPCGWFA86AC6A": {
    "Type": "AWS::EC2::VPCGatewayAttachment",
    "Properties": {
-    "VpcId": {
-     "Ref": "IntegUserdataVpcDE2938ED"
-    },
     "InternetGatewayId": {
      "Ref": "IntegUserdataVpcIGWB657C40E"
+    },
+    "VpcId": {
+     "Ref": "IntegUserdataVpcDE2938ED"
     }
    }
   },
@@ -456,9 +456,6 @@
        "Fn::GetAZs": ""
       }
      ]
-    },
-    "IamInstanceProfile": {
-     "Ref": "WindowsInstanceInstanceProfile20441977"
     },
     "ImageId": {
      "Ref": "SsmParameterValueawsserviceamiwindowslatestWindowsServer2022EnglishFullBaseC96584B6F00A464EAD1953AFF4B05118Parameter"
