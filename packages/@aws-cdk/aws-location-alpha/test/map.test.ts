@@ -53,20 +53,6 @@ test('throws with invalid name', () => {
   })).toThrow('`mapName` must contain only alphanumeric characters, hyphens, periods and underscores, got: inv@lid.');
 });
 
-test('throws with invalid name length', () => {
-  expect(() => new Map(stack, 'Map', {
-    mapName: '',
-    style: Style.VECTOR_ESRI_NAVIGATION,
-  })).toThrow('`mapName` must be between 1 and 100 characters, got: 0 characters.');
-});
-
-test('throws with invalid name length', () => {
-  expect(() => new Map(stack, 'Map', {
-    mapName: 'a'.repeat(101),
-    style: Style.VECTOR_ESRI_NAVIGATION,
-  })).toThrow('`mapName` must be between 1 and 100 characters, got: 101 characters.');
-});
-
 test.each(['', 'a'.repeat(101)])('throws with invalid name, got: %s', (mapName) => {
   expect(() => new Map(stack, 'Map', {
     mapName,
