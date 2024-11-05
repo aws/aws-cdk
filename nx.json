@@ -42,7 +42,7 @@
       ]
     }
   },
-  "extends": "@nx/workspace/presets/npm.json",
+  "extends": "@nrwl/workspace/presets/npm.json",
   "workspaceLayout": {},
   "tasksRunnerOptions": {
     "default": {
