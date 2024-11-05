@@ -895,7 +895,10 @@ cdk bootstrap --no-previous-parameters
 CDK Garbage Collection.
 
 > [!CAUTION]
-> CDK Garbage Collection is under development and therefore must be opted in via the `--unstable` flag: `cdk gc --unstable=gc`.
+> CDK Garbage Collection is under development and therefore must be opted in via the 
+>`--unstable` flag: `cdk gc --unstable=gc`. `--unstable` indicates that the scope and 
+> API of feature might still change. Otherwise the feature is generally production 
+> ready and fully supported.
 
 `cdk gc` garbage collects unused assets from your bootstrap bucket via the following mechanism: 
 
@@ -970,6 +973,26 @@ cdk gc --unstable=gc --action=delete-tagged --rollback-buffer-days=30
 ```
 
 This will delete assets that have been unused for >30 days, but will not tag additional assets.
+
+Here is a diagram that shows the algorithm of garbage collection:
+
+![Diagram of Garbage Collection algorithm](images/garbage-collection.png)
+
+#### Theoretical Race Condition with `REVIEW_IN_PROGRESS` stacks
+
+When gathering stack templates, we are currently ignoring `REVIEW_IN_PROGRESS` stacks as no template
+is available during the time the stack is in that state. However, stacks in `REVIEW_IN_PROGRESS` have already
+passed through the asset uploading step, where it either uploads new assets or ensures that the asset exists.
+Therefore it is possible the assets it references are marked as isolated and garbage collected before the stack
+template is available.
+
+Our recommendation is to not deploy stacks and run garbage collection at the same time. If that is unavoidable,
+setting `--created-buffer-days` will help as garbage collection will avoid deleting assets that are recently
+created. Finally, if you do result in a failed deployment, the mitigation is to redeploy, as the asset upload step
+will be able to reupload the missing asset.
+
+In practice, this race condition is only for a specific edge case and unlikely to happen but please open an
+issue if you think that this has happened to your stack.
 
 ### `cdk doctor`
 
