@@ -15,6 +15,7 @@ import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
+import * as aws_wafv2 from '../../aws-wafv2';
 import { ArnFormat, IResource, Lazy, Resource, Stack, Token, Duration, Names, FeatureFlags, Annotations } from '../../core';
 import { CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 } from '../../cx-api';
 
@@ -59,6 +60,13 @@ export interface IDistribution extends IResource {
    * @param identity The principal
    */
   grantCreateInvalidation(identity: iam.IGrantable): iam.Grant;
+
+  /**
+   * Add WAF security protection.
+   *
+   * @param props WAF WebACL security options
+   */
+  addWafCoreProtection(props?: aws_wafv2.CfnWebACLProps): void;
 }
 
 /**
@@ -225,6 +233,16 @@ export interface DistributionProps {
   readonly webAclId?: string;
 
   /**
+   * Enable or disable WAF one-click security protections.
+   * Cannot be used with webAclId
+   * 
+   * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/distribution-web-awswaf.html
+   *
+   * @default false
+   */
+  readonly enableWafCoreProtections?: boolean;
+
+  /**
    * How CloudFront should handle requests that are not successful (e.g., PageNotFound).
    *
    * @default - No custom error responses.
@@ -297,12 +315,16 @@ export class Distribution extends Resource implements IDistribution {
       public grantCreateInvalidation(grantee: iam.IGrantable): iam.Grant {
         return this.grant(grantee, 'cloudfront:CreateInvalidation');
       }
+      addWafCoreProtection(props?: aws_wafv2.CfnWebACLProps): void {
+        return this.addWafCoreProtection(props);
+      }
     }();
   }
 
   public readonly domainName: string;
   public readonly distributionDomainName: string;
   public readonly distributionId: string;
+  private webAclId?: string;
 
   private readonly defaultBehavior: CacheBehavior;
   private readonly additionalBehaviors: CacheBehavior[] = [];
@@ -315,6 +337,10 @@ export class Distribution extends Resource implements IDistribution {
 
   constructor(scope: Construct, id: string, props: DistributionProps) {
     super(scope, id);
+
+    if (props.webAclId && props.enableWafCoreProtections) {
+      throw new Error('Cannot specify both \'webAclId\' and \'enableWafCoreProtections\'');
+    }
 
     if (props.certificate) {
       const certificateRegion = Stack.of(this).splitArn(props.certificate.certificateArn, ArnFormat.SLASH_RESOURCE_NAME).region;
@@ -333,6 +359,14 @@ export class Distribution extends Resource implements IDistribution {
       Object.entries(props.additionalBehaviors).forEach(([pathPattern, behaviorOptions]) => {
         this.addBehavior(pathPattern, behaviorOptions.origin, behaviorOptions);
       });
+    }
+
+    if (props.enableWafCoreProtections) {
+      this.addWafCoreProtection();
+    }
+
+    if (props.webAclId) {
+      this.webAclId = props.webAclId;
     }
 
     this.certificate = props.certificate;
@@ -363,7 +397,7 @@ export class Distribution extends Resource implements IDistribution {
         restrictions: this.renderRestrictions(props.geoRestriction),
         viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate,
           props.minimumProtocolVersion, props.sslSupportMethod) : undefined,
-        webAclId: props.webAclId,
+        webAclId: this.webAclId,
       },
     });
 
@@ -564,6 +598,37 @@ export class Distribution extends Resource implements IDistribution {
       throw new Error('504 error rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'');
     }
     return this.metric('504ErrorRate', props);
+  }
+
+  public addWafCoreProtection(props?: aws_wafv2.CfnWebACLProps) {
+    if (this.webAclId) {
+      throw new Error('This distribution already had WAF WebAcl attached');
+    }
+
+    const defaultWebAclOptions: aws_wafv2.CfnWebACLProps = {
+      defaultAction: {
+        allow: {
+          customRequestHandling: {
+            insertHeaders: [
+              {
+                name: "TBD",
+                value: "TBD"
+              }
+            ]
+          }
+        }
+      },
+      scope: 'CLOUDFRONT',
+      visibilityConfig: {
+        cloudWatchMetricsEnabled: false,
+        metricName: "TBD",
+        sampledRequestsEnabled: false,
+      },
+    }
+
+    const webAcl = new aws_wafv2.CfnWebACL(this, 'WebAcl', props ?? defaultWebAclOptions);
+
+    this.webAclId = webAcl.attrId;
   }
 
   /**
