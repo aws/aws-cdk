@@ -1,20 +1,20 @@
-import { CliConfig, renderYargs } from '../lib';
+import { CliConfig, renderYargs } from "../lib";
 
-describe('render', () => {
-  test('can generate global options', async () => {
+describe("render", () => {
+  test("can generate global options", async () => {
     const config: CliConfig = {
       globalOptions: {
         one: {
-          type: 'string',
-          alias: 'o',
-          desc: 'text for one',
+          type: "string",
+          alias: "o",
+          desc: "text for one",
           requiresArg: true,
         },
-        two: { type: 'number', desc: 'text for two' },
+        two: { type: "number", desc: "text for two" },
         three: {
-          type: 'array',
-          alias: 't',
-          desc: 'text for three',
+          type: "array",
+          alias: "t",
+          desc: "text for three",
           nargs: 1,
           requiresArg: true,
         },
@@ -40,6 +40,7 @@ describe('render', () => {
         yargsNegativeAlias: any
       ): any {
         return yargs
+          .env('CDK')
           .usage('Usage: cdk -a <cdk-app> COMMAND')
           .option('one', {
             type: 'string',
@@ -59,7 +60,7 @@ describe('render', () => {
             requiresArg: true,
           })
           .version(version)
-          .demandCommand(1, "''")
+          .demandCommand(1, '')
           .recommendCommands()
           .help()
           .alias('h', 'help')
