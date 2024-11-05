@@ -1,5 +1,5 @@
 import { ISchedule, ScheduleTargetConfig, ScheduleTargetInput } from '@aws-cdk/aws-scheduler-alpha';
-import { Annotations, Duration, Names, PhysicalName, Stack, Token } from 'aws-cdk-lib';
+import { Annotations, Duration, PhysicalName, Stack, Token } from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnSchedule } from 'aws-cdk-lib/aws-scheduler';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
@@ -81,7 +81,7 @@ export abstract class ScheduleTargetBase {
     this.addTargetActionToRole(_schedule, role);
 
     if (this.baseProps.deadLetterQueue) {
-      this.addToDeadLetterQueueResourcePolicy(_schedule, this.baseProps.deadLetterQueue);
+      this.addDeadLetterQueueActionToRole(_schedule, role, this.baseProps.deadLetterQueue);
     }
 
     return {
@@ -148,25 +148,14 @@ export abstract class ScheduleTargetBase {
   }
 
   /**
-   * Allow a schedule to send events with failed invocation to an Amazon SQS queue.
-   * @param schedule schedule to add DLQ to
-   * @param queue the DLQ
+   * Allow schedule to send events with failed invocation to an Amazon SQS queue.
    */
-  private addToDeadLetterQueueResourcePolicy(schedule: ISchedule, queue: sqs.IQueue) {
-    if (!sameEnvDimension(schedule.env.region, queue.env.region)) {
-      throw new Error(`Cannot assign Dead Letter Queue in region ${queue.env.region} to the schedule ${Names.nodeUniqueId(schedule.node)} in region ${schedule.env.region}. Both the queue and the schedule must be in the same region.`);
-    }
-
+  private addDeadLetterQueueActionToRole(schedule: ISchedule, role: iam.IRole, queue: sqs.IQueue) {
     // Skip Resource Policy creation if the Queue is not in the same account.
     // There is no way to add a target onto an imported schedule, so we can assume we will run the following code only
     // in the account where the schedule is created.
     if (sameEnvDimension(schedule.env.account, queue.env.account)) {
-      const policyStatementId = `AllowSchedule${Names.nodeUniqueId(schedule.node)}`;
-
-      queue.addToResourcePolicy(new iam.PolicyStatement({
-        sid: policyStatementId,
-        principals: [new iam.ServicePrincipal('scheduler.amazonaws.com')],
-        effect: iam.Effect.ALLOW,
+      role.addToPrincipalPolicy(new iam.PolicyStatement({
         actions: ['sqs:SendMessage'],
         resources: [queue.queueArn],
       }));

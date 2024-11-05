@@ -1,7 +1,7 @@
 import * as scheduler from '@aws-cdk/aws-scheduler-alpha';
 import { Group } from '@aws-cdk/aws-scheduler-alpha';
 import { App, Duration, Stack } from 'aws-cdk-lib';
-import { Template } from 'aws-cdk-lib/assertions';
+import { Annotations, Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
@@ -457,7 +457,7 @@ describe('sns topic schedule target', () => {
       })).toThrow(/Both the target and the execution role must be in the same account/);
   });
 
-  test('adds permissions to DLQ', () => {
+  test('adds permissions to execution role for sending messages to DLQ', () => {
     const dlq = new sqs.Queue(stack, 'DeadLetterQueue');
 
     const target = new SnsPublish(topic, {
@@ -471,50 +471,30 @@ describe('sns topic schedule target', () => {
 
     const template = Template.fromStack(stack);
 
-    template.hasResourceProperties('AWS::SQS::QueuePolicy', {
+    template.hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
+            Action: 'sns:Publish',
+            Effect: 'Allow',
+            Resource: {
+              Ref: 'TopicBFC7AF6E',
+            },
+          },
+          {
             Action: 'sqs:SendMessage',
             Effect: 'Allow',
-            Principal: {
-              Service: 'scheduler.amazonaws.com',
-            },
             Resource: {
               'Fn::GetAtt': ['DeadLetterQueue9F481546', 'Arn'],
             },
           },
         ],
       },
-      Queues: [
-        {
-          Ref: 'DeadLetterQueue9F481546',
-        },
-      ],
+      Roles: [{ Ref: roleId }],
     });
   });
 
-  test('throws when adding permission to DLQ from a different region', () => {
-    const differentRegionStack = new Stack(app, 'Stack2', {
-      env: {
-        region: 'us-west-2',
-        account: '123456789012',
-      },
-    });
-    const queue = new sqs.Queue(differentRegionStack, 'DeadLetterQueue9F481546');
-
-    const target = new SnsPublish(topic, {
-      deadLetterQueue: queue,
-    });
-
-    expect(() =>
-      new scheduler.Schedule(stack, 'Schedule', {
-        schedule: scheduleExpression,
-        target,
-      })).toThrow(/Both the queue and the schedule must be in the same region/);
-  });
-
-  test('does not create a queue policy when DLQ is imported', () => {
+  test('adds permission to execution role when imported DLQ is in same account', () => {
     const importedQueue = sqs.Queue.fromQueueArn(stack, 'ImportedQueue', 'arn:aws:sqs:us-east-1:123456789012:my-queue');
 
     const target = new SnsPublish(topic, {
@@ -527,10 +507,28 @@ describe('sns topic schedule target', () => {
     });
 
     const template = Template.fromStack(stack);
-    template.resourceCountIs('AWS::SQS::QueuePolicy', 0);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'sns:Publish',
+            Effect: 'Allow',
+            Resource: {
+              Ref: 'TopicBFC7AF6E',
+            },
+          },
+          {
+            Action: 'sqs:SendMessage',
+            Effect: 'Allow',
+            Resource: importedQueue.queueArn,
+          },
+        ],
+      },
+      Roles: [{ Ref: roleId }],
+    });
   });
 
-  test('does not create a queue policy when DLQ is created in a different account', () => {
+  test('does not add IAM policy when DLQ is created in a different account', () => {
     const differentAccountStack = new Stack(app, 'Stack2', {
       env: {
         region: 'us-east-1',
@@ -551,9 +549,7 @@ describe('sns topic schedule target', () => {
       target,
     });
 
-    const template = Template.fromStack(stack);
-
-    template.resourceCountIs('AWS::SQS::QueuePolicy', 0);
+    Annotations.fromStack(stack).hasWarning('/Stack/Schedule', 'Cannot add a resource policy to your dead letter queue associated with schedule undefined because the queue is in a different account. You must add the resource policy manually to the dead letter queue in account 234567890123.');
   });
 
   test('renders expected retry policy', () => {
