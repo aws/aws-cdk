@@ -108,6 +108,20 @@ class EksClusterStack extends Stack {
       values: { aws: { region: this.region } },
     });
 
+    // testing installation with reuse values flag set to true
+    // https://gallery.ecr.aws/aws-controllers-k8s/sns-chart
+    this.cluster.addHelmChart('test-reusevalues', {
+      chart: 'ec2-chart',
+      release: 'ec2-chart-release',
+      repository: 'oci://public.ecr.aws/aws-controllers-k8s/ec2-chart',
+      version: '1.2.13',
+      namespace: 'ack-system',
+      createNamespace: true,
+      skipCrds: true,
+      reuseValues: true,
+      values: { aws: { region: this.region } },
+    });
+
     // https://github.com/orgs/grafana-operator/packages/container/package/helm-charts%2Fgrafana-operator
     this.cluster.addHelmChart('test-non-ecr-oci-chart', {
       chart: 'grafana-operator',
