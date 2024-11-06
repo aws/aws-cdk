@@ -1,3 +1,4 @@
+import * as crypto from 'crypto';
 import * as AWS from 'aws-sdk';
 import type { ConfigurationOptions } from 'aws-sdk/lib/config-base';
 import { debug, trace } from './_env';
@@ -19,6 +20,16 @@ require('aws-sdk/lib/maintenance_mode_message').suppress = true;
 
 if (!regionUtil.getEndpointSuffix) {
   throw new Error('This version of AWS SDK for JS does not have the \'getEndpointSuffix\' function!');
+}
+
+export interface S3ClientOptions {
+  /**
+   * If APIs are used that require MD5 checksums.
+   *
+   * Some S3 APIs in SDKv2 have a bug that always requires them to use a MD5 checksum.
+   * These APIs are not going to be supported in a FIPS environment.
+   */
+  needsMd5Checksums?: boolean;
 }
 
 export interface ISDK {
@@ -56,7 +67,7 @@ export interface ISDK {
   ec2(): AWS.EC2;
   iam(): AWS.IAM;
   ssm(): AWS.SSM;
-  s3(): AWS.S3;
+  s3(options?: S3ClientOptions): AWS.S3;
   route53(): AWS.Route53;
   ecr(): AWS.ECR;
   ecs(): AWS.ECS;
@@ -173,19 +184,36 @@ export class SDK implements ISDK {
     return this.wrapServiceErrorHandling(new AWS.SSM(this.config));
   }
 
-  public s3(): AWS.S3 {
-    return this.wrapServiceErrorHandling(new AWS.S3({
+  public s3({
+    needsMd5Checksums: apiRequiresMd5Checksum = false,
+  }: S3ClientOptions = {}): AWS.S3 {
+    const config = { ...this.config };
+
+    if (crypto.getFips() && apiRequiresMd5Checksum) {
+      // This should disappear for SDKv3; in SDKv3, we can always force the client to use SHA256 checksums
+      throw new Error('This operation requires MD5 for integrity purposes; unfortunately, it therefore is not available in FIPS enabled environments.');
+    }
+
+    if (crypto.getFips()) {
       // In FIPS enabled environments, the MD5 algorithm is not available for use in crypto module.
       // However by default the S3 client is using an MD5 checksum for content integrity checking.
       // While this usage is technically allowed in FIPS (MD5 is only prohibited for cryptographic use),
       // in practice it is just easier to use an allowed checksum mechanism.
       // We are disabling the S3 content checksums, and are re-enabling the regular SigV4 body signing.
-      // SigV4 uses SHA256 for their content checksum. This configuration matches the default behavior
-      // of the AWS SDKv3 and is a safe choice for all users.
-      s3DisableBodySigning: false,
-      computeChecksums: false,
-      ...this.config,
-    }));
+      // SigV4 uses SHA256 for their content checksum.
+      //
+      // As far as we know, this configuration will work for most APIs except:
+      // - DeleteObjects (note the plural)
+      // - PutObject to a bucket with Object Lock enabled.
+      //
+      // These APIs refuse to work without a content checksum at the S3 level (a SigV4 checksum is not
+      // good enough). There is no way to get those to work with SHA256 in the SDKv2, but this limitation
+      // will be alleviated once we migrate to SDKv3.
+      config.s3DisableBodySigning = false;
+      config.computeChecksums = false;
+    }
+
+    return this.wrapServiceErrorHandling(new AWS.S3(config));
   }
 
   public route53(): AWS.Route53 {
