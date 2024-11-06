@@ -64,85 +64,22 @@ describe('Schedule', () => {
     });
   });
 
-  test('returns metric for number of invocations throttled across all schedules', () => {
+  test.each([
+    ['metricAllThrottled', 'InvocationThrottleCount'],
+    ['metricAllErrors', 'TargetErrorCount'],
+    ['metricAllAttempts', 'InvocationAttemptCount'],
+    ['metricAllTargetThrottled', 'TargetErrorThrottledCount'],
+    ['metricAllDropped', 'InvocationDroppedCount'],
+    ['metricAllSentToDLQ', 'InvocationsSentToDeadLetterCount'],
+    ['metricAllSentToDLQTruncated', 'InvocationsSentToDeadLetterCount_Truncated_MessageSizeExceeded'],
+
+  ])('returns expected metric for %s', (metricMethodName: string, metricName: string) => {
     // WHEN
-    const metric = Schedule.metricAllThrottled();
+    const metric = (Schedule as any)[metricMethodName]();
 
     // THEN
     expect(metric.namespace).toEqual('AWS/Scheduler');
-    expect(metric.metricName).toEqual('InvocationThrottleCount');
-    expect(metric.dimensions).toBeUndefined();
-    expect(metric.statistic).toEqual('Sum');
-    expect(metric.period).toEqual(Duration.minutes(5));
-  });
-
-  test('returns metric for number of invocations attempts across all schedules', () => {
-    // WHEN
-    const metric = Schedule.metricAllAttempts();
-
-    // THEN
-    expect(metric.namespace).toEqual('AWS/Scheduler');
-    expect(metric.metricName).toEqual('InvocationAttemptCount');
-    expect(metric.dimensions).toBeUndefined();
-    expect(metric.statistic).toEqual('Sum');
-    expect(metric.period).toEqual(Duration.minutes(5));
-  });
-
-  test('returns metric for invocation failures due to API throttling by the target across all schedules', () => {
-    // WHEN
-    const metric = Schedule.metricAllTargetThrottled();
-
-    // THEN
-    expect(metric.namespace).toEqual('AWS/Scheduler');
-    expect(metric.metricName).toEqual('TargetErrorThrottledCount');
-    expect(metric.dimensions).toBeUndefined();
-    expect(metric.statistic).toEqual('Sum');
-    expect(metric.period).toEqual(Duration.minutes(5));
-  });
-
-  test('returns metric for dropped invocations across all schedules', () => {
-    // WHEN
-    const metric = Schedule.metricAllDropped();
-
-    // THEN
-    expect(metric.namespace).toEqual('AWS/Scheduler');
-    expect(metric.metricName).toEqual('InvocationDroppedCount');
-    expect(metric.dimensions).toBeUndefined();
-    expect(metric.statistic).toEqual('Sum');
-    expect(metric.period).toEqual(Duration.minutes(5));
-  });
-
-  test('returns metric for invocations delivered to DLQ across all schedules', () => {
-    // WHEN
-    const metric = Schedule.metricAllSentToDLQ();
-
-    // THEN
-    expect(metric.namespace).toEqual('AWS/Scheduler');
-    expect(metric.metricName).toEqual('InvocationsSentToDeadLetterCount');
-    expect(metric.dimensions).toBeUndefined();
-    expect(metric.statistic).toEqual('Sum');
-    expect(metric.period).toEqual(Duration.minutes(5));
-  });
-
-  test('returns metric for failed invocations to DLQ when the payload of event sent to DLQ exceeds the maximum size', () => {
-    // WHEN
-    const metric = Schedule.metricAllSentToDLQTruncated();
-
-    // THEN
-    expect(metric.namespace).toEqual('AWS/Scheduler');
-    expect(metric.metricName).toEqual('InvocationsSentToDeadLetterCount_Truncated_MessageSizeExceeded');
-    expect(metric.dimensions).toBeUndefined();
-    expect(metric.statistic).toEqual('Sum');
-    expect(metric.period).toEqual(Duration.minutes(5));
-  });
-
-  test('returns metric for delivery of failed invocations to DLQ', () => {
-    // WHEN
-    const metric = Schedule.metricAllFailedToBeSentToDLQ();
-
-    // THEN
-    expect(metric.namespace).toEqual('AWS/Scheduler');
-    expect(metric.metricName).toEqual('InvocationsFailedToBeSentToDeadLetterCount');
+    expect(metric.metricName).toEqual(metricName);
     expect(metric.dimensions).toBeUndefined();
     expect(metric.statistic).toEqual('Sum');
     expect(metric.period).toEqual(Duration.minutes(5));
@@ -155,6 +92,18 @@ describe('Schedule', () => {
     // THEN
     expect(metric.namespace).toEqual('AWS/Scheduler');
     expect(metric.metricName).toEqual('InvocationsFailedToBeSentToDeadLetterCount_test_error_code');
+    expect(metric.dimensions).toBeUndefined();
+    expect(metric.statistic).toEqual('Sum');
+    expect(metric.period).toEqual(Duration.minutes(5));
+  });
+
+  test('returns metric for delivery of failed invocations to DLQ with no error code', () => {
+    // WHEN
+    const metric = Schedule.metricAllFailedToBeSentToDLQ();
+
+    // THEN
+    expect(metric.namespace).toEqual('AWS/Scheduler');
+    expect(metric.metricName).toEqual('InvocationsFailedToBeSentToDeadLetterCount');
     expect(metric.dimensions).toBeUndefined();
     expect(metric.statistic).toEqual('Sum');
     expect(metric.period).toEqual(Duration.minutes(5));
