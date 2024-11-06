@@ -152,8 +152,8 @@ export class CrossRegionSupportStack extends cdk.Stack {
 }
 
 function generateStackName(props: CrossRegionSupportStackProps): string | undefined {
-  // When the pipeline stack name is an unresolved token, we return 'undefined' here and
-  // let Stack construct to generate a stack name instead.
+  // When the pipeline stack name is an unresolved token, we generate stack name here
+  // without including tokenized value in the generated stack name.
   if (cdk.Token.isUnresolved(props.pipelineStackName)) {
     return makeUniqueResourceName([`cross-region-support-${props.region}`], { maxLength: 128, allowedSpecialCharacters: '-' });
   }
