@@ -1,5 +1,5 @@
 {
-  "name": "aws-cdk-lib",
+  "name": "@ajb-cdk-lib/aws-cdk-lib",
   "version": "0.0.0",
   "description": "Version 2 of the AWS Cloud Development Kit library",
   "main": "index.js",
