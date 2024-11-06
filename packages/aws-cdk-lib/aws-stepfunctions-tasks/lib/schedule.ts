@@ -22,7 +22,7 @@ export class Schedule {
   }
 
   /**
-   * Construct a schedule from an interval.
+   * Construct a rate-based schedule from an interval.
    *
    * The minimum interval is 1 minute.
    */
