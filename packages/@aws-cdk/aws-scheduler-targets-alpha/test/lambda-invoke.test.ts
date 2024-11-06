@@ -1,4 +1,4 @@
-import { ScheduleExpression, Schedule } from '@aws-cdk/aws-scheduler-alpha';
+import { ScheduleExpression, Schedule, Group } from '@aws-cdk/aws-scheduler-alpha';
 import { App, Duration, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { AccountRootPrincipal, Role } from 'aws-cdk-lib/aws-iam';
@@ -39,7 +39,7 @@ describe('schedule target', () => {
           Arn: {
             'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'],
           },
-          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget1441a743A31888', 'Arn'] },
+          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget637b5173FB8068', 'Arn'] },
           RetryPolicy: {},
         },
       },
@@ -65,7 +65,7 @@ describe('schedule target', () => {
           },
         ],
       },
-      Roles: [{ Ref: 'SchedulerRoleForTarget1441a743A31888' }],
+      Roles: [{ Ref: 'SchedulerRoleForTarget637b5173FB8068' }],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
@@ -74,7 +74,23 @@ describe('schedule target', () => {
         Statement: [
           {
             Effect: 'Allow',
-            Condition: { StringEquals: { 'aws:SourceAccount': '123456789012' } },
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': '123456789012',
+                'aws:SourceArn': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':scheduler:us-east-1:123456789012:schedule-group/default',
+                    ],
+                  ],
+                },
+              },
+            },
             Principal: {
               Service: 'scheduler.amazonaws.com',
             },
@@ -104,7 +120,7 @@ describe('schedule target', () => {
           Arn: {
             Ref: 'MyLambdaVersion2EF97E33',
           },
-          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget1441a743A31888', 'Arn'] },
+          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTargetd8a041965BDCA6', 'Arn'] },
           RetryPolicy: {},
         },
       },
@@ -122,7 +138,7 @@ describe('schedule target', () => {
           },
         ],
       },
-      Roles: [{ Ref: 'SchedulerRoleForTarget1441a743A31888' }],
+      Roles: [{ Ref: 'SchedulerRoleForTargetd8a041965BDCA6' }],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
@@ -131,7 +147,23 @@ describe('schedule target', () => {
         Statement: [
           {
             Effect: 'Allow',
-            Condition: { StringEquals: { 'aws:SourceAccount': '123456789012' } },
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': '123456789012',
+                'aws:SourceArn': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':scheduler:us-east-1:123456789012:schedule-group/default',
+                    ],
+                  ],
+                },
+              },
+            },
             Principal: {
               Service: 'scheduler.amazonaws.com',
             },
@@ -193,8 +225,8 @@ describe('schedule target', () => {
     });
   });
 
-  test('reuses IAM role and IAM policy for two schedules from the same account', () => {
-    const lambdaTarget = new LambdaInvoke(func, { });
+  test('reuses IAM role and IAM policy for two schedules with the same target from the same account', () => {
+    const lambdaTarget = new LambdaInvoke(func, {});
 
     new Schedule(stack, 'MyScheduleDummy1', {
       schedule: expr,
@@ -213,7 +245,23 @@ describe('schedule target', () => {
         Statement: [
           {
             Effect: 'Allow',
-            Condition: { StringEquals: { 'aws:SourceAccount': '123456789012' } },
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': '123456789012',
+                'aws:SourceArn': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':scheduler:us-east-1:123456789012:schedule-group/default',
+                    ],
+                  ],
+                },
+              },
+            },
             Principal: {
               Service: 'scheduler.amazonaws.com',
             },
@@ -243,7 +291,99 @@ describe('schedule target', () => {
           },
         ],
       },
-      Roles: [{ Ref: 'SchedulerRoleForTarget1441a743A31888' }],
+      Roles: [{ Ref: 'SchedulerRoleForTarget637b5173FB8068' }],
+    }, 1);
+  });
+
+  test('creates IAM role and IAM policy for two schedules with the same target but different groups', () => {
+    const lambdaTarget = new LambdaInvoke(func, {});
+    const group = new Group(stack, 'Group', {
+      groupName: 'mygroup',
+    });
+
+    new Schedule(stack, 'MyScheduleDummy1', {
+      schedule: expr,
+      target: lambdaTarget,
+    });
+
+    new Schedule(stack, 'MyScheduleDummy2', {
+      schedule: expr,
+      target: lambdaTarget,
+      group,
+    });
+
+    Template.fromStack(stack).resourceCountIs('AWS::Lambda::Permission', 0);
+    Template.fromStack(stack).resourcePropertiesCountIs('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Effect: 'Allow',
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': '123456789012',
+                'aws:SourceArn': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':scheduler:us-east-1:123456789012:schedule-group/default',
+                    ],
+                  ],
+                },
+              },
+            },
+            Principal: {
+              Service: 'scheduler.amazonaws.com',
+            },
+            Action: 'sts:AssumeRole',
+          },
+          {
+            Effect: 'Allow',
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': '123456789012',
+                'aws:SourceArn': {
+                  'Fn::GetAtt': [
+                    'GroupC77FDACD',
+                    'Arn',
+                  ],
+                },
+              },
+            },
+            Principal: {
+              Service: 'scheduler.amazonaws.com',
+            },
+            Action: 'sts:AssumeRole',
+          },
+        ],
+      },
+    }, 1);
+
+    Template.fromStack(stack).resourcePropertiesCountIs('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'lambda:InvokeFunction',
+            Effect: 'Allow',
+            Resource: [{
+              'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'],
+            },
+            {
+              'Fn::Join': [
+                '', [
+                  { 'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'] },
+                  ':*',
+                ],
+              ],
+            }],
+          },
+        ],
+      },
+      Roles: [{ Ref: 'SchedulerRoleForTarget637b5173FB8068' }],
     }, 1);
   });
 
@@ -310,7 +450,7 @@ describe('schedule target', () => {
           Arn: {
             Ref: 'MyLambdaAliasD26C43B4',
           },
-          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget1441a743A31888', 'Arn'] },
+          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget447112D2459CC7', 'Arn'] },
           RetryPolicy: {},
         },
       },
@@ -328,7 +468,7 @@ describe('schedule target', () => {
           },
         ],
       },
-      Roles: [{ Ref: 'SchedulerRoleForTarget1441a743A31888' }],
+      Roles: [{ Ref: 'SchedulerRoleForTarget447112D2459CC7' }],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
@@ -337,7 +477,23 @@ describe('schedule target', () => {
         Statement: [
           {
             Effect: 'Allow',
-            Condition: { StringEquals: { 'aws:SourceAccount': '123456789012' } },
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': '123456789012',
+                'aws:SourceArn': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':scheduler:us-east-1:123456789012:schedule-group/default',
+                    ],
+                  ],
+                },
+              },
+            },
             Principal: {
               Service: 'scheduler.amazonaws.com',
             },
@@ -582,7 +738,7 @@ describe('schedule target', () => {
           Arn: {
             'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'],
           },
-          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget1441a743A31888', 'Arn'] },
+          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget637b5173FB8068', 'Arn'] },
           RetryPolicy: {
             MaximumEventAgeInSeconds: 10800,
             MaximumRetryAttempts: 5,
