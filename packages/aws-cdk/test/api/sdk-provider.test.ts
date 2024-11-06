@@ -140,6 +140,17 @@ describe('with intercepted network calls', () => {
         .toThrow(/Need to perform AWS calls for account .*, but no credentials have been configured, and none of these plugins found any/);
     });
 
+    test('no base credentials partition if token is expired', async () => {
+      const account = uniq('11111');
+      const error = new Error('Expired Token');
+      error.name = 'ExpiredToken';
+      const identityProvider = () => Promise.reject(error);
+      const provider = new SdkProvider(identityProvider, 'rgn');
+      const creds = await provider.baseCredentialsPartition({ ...env(account), region: 'rgn' }, Mode.ForReading);
+
+      expect(creds).toBeUndefined();
+    });
+
     test('throws if profile credentials are not for the right account', async () => {
       // WHEN
       jest.spyOn(AwsCliCompatible, 'region').mockResolvedValue('us-east-123');

@@ -12,6 +12,10 @@ module.exports = {
             lines: 81
         },
     },
+    "coveragePathIgnorePatterns": [
+        // Mostly wrappers around the SDK, which get mocked in unit tests
+        "<rootDir>/lib/api/aws-auth/sdk.ts",
+    ],
 
     // We have many tests here that commonly time out
     testTimeout: 30_000,
