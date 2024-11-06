@@ -6,7 +6,7 @@ import { Duration } from '../../core';
 export class Schedule {
 
   /**
-   * Construct a schedule from a Date.
+   * Construct a one-time schedule from a Date.
    */
   public static oneTime(time: Date): Schedule {
     const pad = (num: number) => (num < 10 ? '0' + num : num);
