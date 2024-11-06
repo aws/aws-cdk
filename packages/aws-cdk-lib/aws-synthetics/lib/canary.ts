@@ -269,7 +269,7 @@ export interface CanaryProps {
    * Artifact encryption is only supported for canaries that use Synthetics runtime
    * version `syn-nodejs-puppeteer-3.3` or later.
    *
-   * @default - `ArtifactsEncryptionMode.KMS` is set if you specify `artifactS3KmsKey`, otherwise artifacts are encrypted at rest using an AWS managed key
+   * @default - Artifacts are encrypted at rest using an AWS managed key. `ArtifactsEncryptionMode.KMS` is set if you specify `artifactS3KmsKey`.
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_artifact_encryption.html
    */
@@ -687,22 +687,15 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
       throw new Error(`Artifact encryption is only supported for canaries that use Synthetics runtime version \`syn-nodejs-puppeteer-3.3\` or later, got \`${props.runtime.name}\`.`);
     }
 
+    const encryptionMode = props.artifactS3EncryptionMode ? props.artifactS3EncryptionMode :
+      props.artifactS3KmsKey ? ArtifactsEncryptionMode.KMS : undefined;
+
     let encryptionKey: kms.IKey | undefined;
-    if (props.artifactS3EncryptionMode === ArtifactsEncryptionMode.KMS && !props.artifactS3KmsKey) {
-      encryptionKey = new kms.Key(this, 'Key', { description: `Created by ${this.node.path}` });
-    } else {
-      encryptionKey = props.artifactS3KmsKey;
+    if (encryptionMode === ArtifactsEncryptionMode.KMS) {
+      encryptionKey = props.artifactS3KmsKey ?? new kms.Key(this, 'Key', { description: `Created by ${this.node.path}` });
     }
 
     encryptionKey?.grantEncryptDecrypt(this.role);
-
-    let encryptionMode: ArtifactsEncryptionMode | undefined;
-
-    if (props.artifactS3KmsKey && !props.artifactS3EncryptionMode) {
-      encryptionMode = ArtifactsEncryptionMode.KMS;
-    } else {
-      encryptionMode = props.artifactS3EncryptionMode;
-    }
 
     return {
       s3Encryption: {
