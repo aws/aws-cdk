@@ -46,7 +46,47 @@ export class StackStatus {
       || this.name === 'UPDATE_ROLLBACK_COMPLETE';
   }
 
+  /**
+   * Whether the stack is in a paused state due to `--no-rollback`.
+   *
+   * The possible actions here are retrying a new `--no-rollback` deployment, or initiating a rollback.
+   */
+  get rollbackChoice(): RollbackChoice {
+    switch (this.name) {
+      case 'CREATE_FAILED':
+      case 'UPDATE_FAILED':
+        return RollbackChoice.START_ROLLBACK;
+      case 'UPDATE_ROLLBACK_FAILED':
+        return RollbackChoice.CONTINUE_UPDATE_ROLLBACK;
+      case 'ROLLBACK_FAILED':
+        // Unfortunately there is no option to continue a failed rollback without
+        // a stable target state.
+        return RollbackChoice.ROLLBACK_FAILED;
+      default:
+        return RollbackChoice.NONE;
+    }
+  }
+
+  get isRollbackable(): boolean {
+    return [RollbackChoice.START_ROLLBACK, RollbackChoice.CONTINUE_UPDATE_ROLLBACK].includes(this.rollbackChoice);
+  }
+
   public toString(): string {
     return this.name + (this.reason ? ` (${this.reason})` : '');
   }
+}
+
+/**
+ * Describe the current rollback options for this state
+ */
+export enum RollbackChoice {
+  START_ROLLBACK,
+  CONTINUE_UPDATE_ROLLBACK,
+  /**
+   * A sign that stack creation AND its rollback have failed.
+   *
+   * There is no way to recover from this, other than recreating the stack.
+   */
+  ROLLBACK_FAILED,
+  NONE,
 }

@@ -61,7 +61,7 @@ Example:
 ```ts
 const gitHubSource = codebuild.Source.gitHub({
   owner: 'awslabs',
-  repo: 'aws-cdk',
+  repo: 'aws-cdk', // optional, default: undefined if unspecified will create organization webhook
   webhook: true, // optional, default: true if `webhookFilters` were provided, false otherwise
   webhookTriggersBatchBuild: true, // optional, default is false
   webhookFilters: [
@@ -72,6 +72,21 @@ const gitHubSource = codebuild.Source.gitHub({
     codebuild.FilterGroup
       .inEventOf(codebuild.EventAction.RELEASED)
       .andBranchIs('main')
+  ], // optional, by default all pushes and Pull Requests will trigger a build
+});
+```
+
+The `GitHubSource` is also able to trigger all repos in GitHub Organizations
+Example:
+```ts
+const gitHubSource = codebuild.Source.gitHub({
+  owner: 'aws',
+  webhookTriggersBatchBuild: true, // optional, default is false
+  webhookFilters: [
+    codebuild.FilterGroup
+      .inEventOf(codebuild.EventAction.WORKFLOW_JOB_QUEUED)
+      .andRepositoryNameIs("aws-.*")
+      .andRepositoryNameIsNot("aws-cdk-lib"),
   ], // optional, by default all pushes and Pull Requests will trigger a build
 });
 ```
@@ -357,7 +372,7 @@ new codebuild.Project(this, 'Project', {
     buildImage: codebuild.WindowsBuildImage.fromEcrRepository(ecrRepository, 'v1.0', codebuild.WindowsImageType.SERVER_2019),
     // optional certificate to include in the build image
     certificate: {
-      bucket: s3.Bucket.fromBucketName(this, 'Bucket', 'my-bucket'),
+      bucket: s3.Bucket.fromBucketName(this, 'Bucket', 'amzn-s3-demo-bucket'),
       objectKey: 'path/to/cert.pem',
     },
   },

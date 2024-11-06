@@ -19,7 +19,11 @@ class MyStack extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-s3:keepNotificationInImportedBucket': false,
+  },
+});
 
 new MyStack(app, 'sns-bucket-notifications');
 
