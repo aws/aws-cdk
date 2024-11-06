@@ -49,7 +49,7 @@ export class RenditionConfiguration {
 
   /**
    * @param renditionSelection The set of renditions are recorded for a stream.
-   * @param renditions A list of which renditions are recorded for a stream.
+   * @param renditions A list of which renditions are recorded for a stream. If you do not specify this property, no resolution is selected.
    */
   private constructor(public readonly renditionSelection: RenditionSelection, public readonly renditions?: Resolution[]) { }
 }

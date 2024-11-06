@@ -45,19 +45,19 @@ export class ThumbnailConfiguration {
   /**
    * Enable the generation of thumbnails for recorded video at a time interval.
    *
-   * @param resolution The desired resolution of recorded thumbnails for a stream.
-   * @param storage The format in which thumbnails are recorded for a stream.
-   * @param targetInterval The targeted thumbnail-generation interval.
+   * @param resolution The desired resolution of recorded thumbnails for a stream. If you do not specify this property, same resolution as Input stream is used.
+   * @param storage The format in which thumbnails are recorded for a stream. If you do not specify this property, `ThumbnailStorage.SEQUENTIAL` is set.
+   * @param targetInterval The targeted thumbnail-generation interval. If you do not specify this property, `Duration.seconds(60)` is set.
    */
   public static interval(resolution?: Resolution, storage?: Storage[], targetInterval?: Duration): ThumbnailConfiguration {
     return new ThumbnailConfiguration(RecordingMode.INTERVAL, resolution, storage, targetInterval);
   }
 
   /**
-   * @param recordingMode Thumbnail recording mode.
-   * @param resolution The desired resolution of recorded thumbnails for a stream.
-   * @param storage The format in which thumbnails are recorded for a stream.
-   * @param targetInterval The targeted thumbnail-generation interval. Must be between 1 and 60 seconds.
+   * @param recordingMode Thumbnail recording mode. If you do not specify this property, `ThumbnailRecordingMode.INTERVAL` is set.
+   * @param resolution The desired resolution of recorded thumbnails for a stream. If you do not specify this property, same resolution as Input stream is used.
+   * @param storage The format in which thumbnails are recorded for a stream. If you do not specify this property, `ThumbnailStorage.SEQUENTIAL` is set.
+   * @param targetInterval The targeted thumbnail-generation interval. Must be between 1 and 60 seconds. If you do not specify this property, `Duration.seconds(60)` is set.
    */
   private constructor(
     public readonly recordingMode?: RecordingMode,
