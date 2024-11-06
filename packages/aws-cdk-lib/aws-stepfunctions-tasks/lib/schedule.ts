@@ -41,7 +41,7 @@ export class Schedule {
   }
 
   /**
-   * Create a schedule from a set of cron fields
+   * Create a cron-based schedule from a set of cron fields
    */
   public static cron(options: CronOptions): Schedule {
     if (options.weekDay !== undefined && options.day !== undefined) {
