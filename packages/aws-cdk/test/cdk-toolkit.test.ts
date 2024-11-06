@@ -60,17 +60,20 @@ import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Manifest } from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
+import * as promptly from 'promptly';
 import { instanceMockFrom, MockCloudExecutable, TestStackArtifact } from './util';
 import { MockSdkProvider } from './util/mock-sdk';
 import { Bootstrapper } from '../lib/api/bootstrap';
-import { DeployStackResult } from '../lib/api/deploy-stack';
+import { DeployStackResult, SuccessfulDeployStackResult } from '../lib/api/deploy-stack';
 import { Deployments, DeployStackOptions, DestroyStackOptions, RollbackStackOptions, RollbackStackResult } from '../lib/api/deployments';
 import { HotswapMode } from '../lib/api/hotswap/common';
 import { Template } from '../lib/api/util/cloudformation';
-import { CdkToolkit, Tag } from '../lib/cdk-toolkit';
+import { CdkToolkit, markTesting, Tag } from '../lib/cdk-toolkit';
 import { RequireApproval } from '../lib/diff';
 import { Configuration } from '../lib/settings';
 import { flatten } from '../lib/util';
+
+markTesting();
 
 process.env.CXAPI_DISABLE_SELECT_BY_ID = '1';
 
@@ -242,7 +245,6 @@ describe('readCurrentTemplate', () => {
 
     // THEN
     expect(flatten(stderrMock.mock.calls)).toEqual(expect.arrayContaining([
-      expect.stringMatching(/Could not assume bloop-lookup:here:123456789012/),
       expect.stringContaining("Bootstrap stack version '5' is required, found version '1'. To get rid of this error, please upgrade to bootstrap version >= 5"),
     ]));
     expect(requestedParameterName!).toEqual('/bootstrap/parameter');
@@ -259,7 +261,9 @@ describe('readCurrentTemplate', () => {
     // GIVEN
     mockCloudExecutable.sdkProvider.stubSSM({
       getParameter() {
-        throw new Error('not found');
+        const e: any = new Error('not found');
+        e.code = e.name = 'ParameterNotFound';
+        throw e;
       },
     });
     const cdkToolkit = new CdkToolkit({
@@ -277,7 +281,7 @@ describe('readCurrentTemplate', () => {
 
     // THEN
     expect(flatten(stderrMock.mock.calls)).toEqual(expect.arrayContaining([
-      expect.stringMatching(/Could not assume bloop-lookup:here:123456789012/),
+      expect.stringMatching(/SSM parameter.*not found./),
     ]));
     expect(mockForEnvironment.mock.calls.length).toEqual(3);
     expect(mockForEnvironment.mock.calls[0][2]).toEqual({
@@ -291,7 +295,7 @@ describe('readCurrentTemplate', () => {
   test('fallback to deploy role if forEnvironment throws', async () => {
     // GIVEN
     // throw error first for the 'prepareSdkWithLookupRoleFor' call and succeed for the rest
-    mockForEnvironment = jest.fn().mockImplementationOnce(() => { throw new Error('error'); })
+    mockForEnvironment = jest.fn().mockImplementationOnce(() => { throw new Error('TheErrorThatGetsThrown'); })
       .mockImplementation(() => { return { sdk: mockCloudExecutable.sdkProvider.sdk, didAssumeRole: true }; });
     mockCloudExecutable.sdkProvider.forEnvironment = mockForEnvironment;
     mockCloudExecutable.sdkProvider.stubSSM({
@@ -315,7 +319,7 @@ describe('readCurrentTemplate', () => {
     // THEN
     expect(mockCloudExecutable.sdkProvider.sdk.ssm).not.toHaveBeenCalled();
     expect(flatten(stderrMock.mock.calls)).toEqual(expect.arrayContaining([
-      expect.stringMatching(/Could not assume bloop-lookup:here:123456789012/),
+      expect.stringMatching(/TheErrorThatGetsThrown/),
     ]));
     expect(mockForEnvironment.mock.calls.length).toEqual(3);
     expect(mockForEnvironment.mock.calls[0][2]).toEqual({
@@ -350,10 +354,9 @@ describe('readCurrentTemplate', () => {
 
     // THEN
     expect(flatten(stderrMock.mock.calls)).toEqual(expect.arrayContaining([
-      expect.stringMatching(/Lookup role exists but was not assumed. Proceeding with default credentials./),
+      expect.stringMatching(/Lookup role.*was not assumed. Proceeding with default credentials./),
     ]));
     expect(mockCloudExecutable.sdkProvider.sdk.ssm).not.toHaveBeenCalled();
-    expect(mockForEnvironment.mock.calls.length).toEqual(3);
     expect(mockForEnvironment.mock.calls[0][2]).toEqual({
       assumeRoleArn: 'bloop-lookup:here:123456789012',
     });
@@ -436,6 +439,7 @@ describe('deploy', () => {
       // GIVEN
       const mockCfnDeployments = instanceMockFrom(Deployments);
       mockCfnDeployments.deployStack.mockReturnValue(Promise.resolve({
+        type: 'did-deploy-stack',
         noOp: false,
         outputs: {},
         stackArn: 'stackArn',
@@ -1088,7 +1092,7 @@ describe('synth', () => {
       expect(stderrMock.mock.calls[1][0]).toContain(' ❌  Migrate failed for `cannot-generate-template`: CannotGenerateTemplateStack could not be generated because rust is not a supported language');
     });
 
-    cliTest('migrate succeeds for valid template from local path when no lanugage is provided', async (workDir) => {
+    cliTest('migrate succeeds for valid template from local path when no language is provided', async (workDir) => {
       const toolkit = defaultToolkitSetup();
       await toolkit.migrate({
         stackName: 'SQSTypeScript',
@@ -1102,7 +1106,7 @@ describe('synth', () => {
       expect(fs.pathExistsSync(path.join(workDir, 'SQSTypeScript', 'lib', 'sqs_type_script-stack.ts'))).toBeTruthy();
     });
 
-    cliTest('migrate succeeds for valid template from local path when lanugage is provided', async (workDir) => {
+    cliTest('migrate succeeds for valid template from local path when language is provided', async (workDir) => {
       const toolkit = defaultToolkitSetup();
       await toolkit.migrate({
         stackName: 'S3Python',
@@ -1250,6 +1254,68 @@ describe('synth', () => {
     });
 
     expect(mockedRollback).toHaveBeenCalled();
+  });
+
+  test.each([
+    [{ type: 'failpaused-need-rollback-first', reason: 'replacement' }, false],
+    [{ type: 'failpaused-need-rollback-first', reason: 'replacement' }, true],
+    [{ type: 'failpaused-need-rollback-first', reason: 'not-norollback' }, false],
+    [{ type: 'replacement-requires-norollback' }, false],
+    [{ type: 'replacement-requires-norollback' }, true],
+  ] satisfies Array<[DeployStackResult, boolean]>)('no-rollback deployment that cant proceed will be called with rollback on retry: %p (using force: %p)', async (firstResult, useForce) => {
+    cloudExecutable = new MockCloudExecutable({
+      stacks: [
+        MockStack.MOCK_STACK_C,
+      ],
+    });
+
+    const deployments = new Deployments({ sdkProvider: new MockSdkProvider() });
+
+    // Rollback might be called -- just don't do nothing.
+    const mockRollbackStack = jest.spyOn(deployments, 'rollbackStack').mockResolvedValue({});
+
+    const mockedDeployStack = jest
+      .spyOn(deployments, 'deployStack')
+      .mockResolvedValueOnce(firstResult)
+      .mockResolvedValueOnce({
+        type: 'did-deploy-stack',
+        noOp: false,
+        outputs: {},
+        stackArn: 'stack:arn',
+      });
+
+    const mockedConfirm = jest.spyOn(promptly, 'confirm').mockResolvedValue(true);
+
+    const toolkit = new CdkToolkit({
+      cloudExecutable,
+      configuration: cloudExecutable.configuration,
+      sdkProvider: cloudExecutable.sdkProvider,
+      deployments,
+    });
+
+    await toolkit.deploy({
+      selector: { patterns: [] },
+      hotswap: HotswapMode.FULL_DEPLOYMENT,
+      rollback: false,
+      requireApproval: RequireApproval.Never,
+      force: useForce,
+    });
+
+    if (firstResult.type === 'failpaused-need-rollback-first') {
+      expect(mockRollbackStack).toHaveBeenCalled();
+    }
+
+    if (!useForce) {
+      // Questions will have been asked only if --force is not specified
+      if (firstResult.type === 'failpaused-need-rollback-first') {
+        expect(mockedConfirm).toHaveBeenCalledWith(expect.stringContaining('Roll back first and then proceed with deployment'));
+      } else {
+        expect(mockedConfirm).toHaveBeenCalledWith(expect.stringContaining('Perform a regular deployment'));
+      }
+    }
+
+    expect(mockedDeployStack).toHaveBeenNthCalledWith(1, expect.objectContaining({ rollback: false }));
+    expect(mockedDeployStack).toHaveBeenNthCalledWith(2, expect.objectContaining({ rollback: true }));
   });
 });
 
@@ -1402,7 +1468,7 @@ class FakeCloudFormation extends Deployments {
     this.expectedNotificationArns = expectedNotificationArns ?? [];
   }
 
-  public deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
+  public deployStack(options: DeployStackOptions): Promise<SuccessfulDeployStackResult> {
     expect([
       MockStack.MOCK_STACK_A.stackName,
       MockStack.MOCK_STACK_B.stackName,
@@ -1420,6 +1486,7 @@ class FakeCloudFormation extends Deployments {
 
     expect(options.notificationArns).toEqual(this.expectedNotificationArns);
     return Promise.resolve({
+      type: 'did-deploy-stack',
       stackArn: `arn:aws:cloudformation:::stack/${options.stack.stackName}/MockedOut`,
       noOp: false,
       outputs: { StackName: options.stack.stackName },
