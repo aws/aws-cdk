@@ -6,6 +6,7 @@ import * as ddb from 'aws-cdk-lib/aws-dynamodb';
 import { Construct } from 'constructs';
 import * as pipes from '@aws-cdk/aws-pipes-alpha';
 import * as sources from '@aws-cdk/aws-pipes-sources-alpha';
+import { SqsTarget } from '@aws-cdk/aws-pipes-targets-alpha';
 
 class SomeTarget implements pipes.ITarget {
   targetArn: string;

@@ -9,7 +9,7 @@ the AWS Construct Library in order to ensure a consistent and integrated
 experience across the entire AWS surface area.
 
 * [Preface](#preface)
-* [What's Included](#what-s-included)
+* [What's Included](#whats-included)
 * [API Design](#api-design)
   * [Modules](#modules)
   * [Construct Class](#construct-class)
@@ -66,7 +66,7 @@ experience across the entire AWS surface area.
   * [Unit tests](#unit-tests)
   * [Integration tests](#integration-tests)
   * [Versioning](#versioning)
-* [Naming & Style](#naming---style)
+* [Naming & Style](#naming--style)
   * [Naming Conventions](#naming-conventions)
   * [Coding Style](#coding-style)
 

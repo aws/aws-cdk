@@ -119,19 +119,16 @@ export function printSecurityDiff(
   oldTemplate: any,
   newTemplate: cxapi.CloudFormationStackArtifact,
   requireApproval: RequireApproval,
-  quiet?: boolean,
+  _quiet?: boolean,
   stackName?: string,
   changeSet?: DescribeChangeSetOutput,
   stream: FormatStream = process.stderr,
 ): boolean {
   const diff = fullDiff(oldTemplate, newTemplate.template, changeSet);
 
-  // must output the stack name if there are differences, even if quiet
-  if (!quiet || !diff.isEmpty) {
+  if (diffRequiresApproval(diff, requireApproval)) {
     stream.write(format('Stack %s\n', chalk.bold(stackName)));
-  }
 
-  if (difRequiresApproval(diff, requireApproval)) {
     // eslint-disable-next-line max-len
     warning(`This deployment will make potentially sensitive changes according to your current security approval level (--require-approval ${requireApproval}).`);
     warning('Please confirm you intend to make the following modifications:\n');
@@ -148,7 +145,7 @@ export function printSecurityDiff(
  * TODO: Filter the security impact determination based off of an enum that allows
  * us to pick minimum "severities" to alert on.
  */
-function difRequiresApproval(diff: TemplateDiff, requireApproval: RequireApproval) {
+function diffRequiresApproval(diff: TemplateDiff, requireApproval: RequireApproval) {
   switch (requireApproval) {
     case RequireApproval.Never: return false;
     case RequireApproval.AnyChange: return diff.permissionsAnyChanges;

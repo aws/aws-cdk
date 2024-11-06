@@ -17,6 +17,7 @@ import {
   PutRolePolicyCommand,
 } from '@aws-sdk/client-iam';
 import { InvokeCommand } from '@aws-sdk/client-lambda';
+import { PutObjectLockConfigurationCommand } from '@aws-sdk/client-s3';
 import { CreateTopicCommand, DeleteTopicCommand } from '@aws-sdk/client-sns';
 import { AssumeRoleCommand, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
 import {
@@ -1318,6 +1319,43 @@ integTest(
   }),
 );
 
+integTest('deploy stack with Lambda Asset to Object Lock-enabled asset bucket', withoutBootstrap(async (fixture) => {
+  // Bootstrapping with custom toolkit stack name and qualifier
+  const qualifier = fixture.qualifier;
+  const toolkitStackName = fixture.bootstrapStackName;
+  await fixture.cdkBootstrapModern({
+    verbose: true,
+    toolkitStackName: toolkitStackName,
+    qualifier: qualifier,
+  });
+
+  const bucketName = `cdk-${qualifier}-assets-${await fixture.aws.account()}-${fixture.aws.region}`;
+  await fixture.aws.s3.send(new PutObjectLockConfigurationCommand({
+    Bucket: bucketName,
+    ObjectLockConfiguration: {
+      ObjectLockEnabled: 'Enabled',
+      Rule: {
+        DefaultRetention: {
+          Days: 1,
+          Mode: 'GOVERNANCE',
+        },
+      },
+    },
+  }));
+
+  // Deploy a stack that definitely contains a file asset
+  await fixture.cdkDeploy('lambda', {
+    options: [
+      '--toolkit-stack-name', toolkitStackName,
+      '--context', `@aws-cdk/core:bootstrapQualifier=${qualifier}`,
+    ],
+  });
+
+  // THEN - should not fail. Now clean the bucket with governance bypass: a regular delete
+  // operation will fail.
+  await fixture.aws.emptyBucket(bucketName, { bypassGovernance: true });
+}));
+
 integTest(
   'cdk ls',
   withDefaultFixture(async (fixture) => {
@@ -2403,6 +2441,103 @@ integTest(
 
       // Rollback
       await fixture.cdk(['rollback'], {
+        modEnv: { PHASE: phase },
+        verbose: false,
+      });
+    } finally {
+      await fixture.cdkDestroy('test-rollback');
+    }
+  }),
+);
+
+integTest(
+  'automatic rollback if paused and change contains a replacement',
+  withSpecificFixture('rollback-test-app', async (fixture) => {
+    let phase = '1';
+
+    // Should succeed
+    await fixture.cdkDeploy('test-rollback', {
+      options: ['--no-rollback'],
+      modEnv: { PHASE: phase },
+      verbose: false,
+    });
+    try {
+      phase = '2a';
+
+      // Should fail
+      const deployOutput = await fixture.cdkDeploy('test-rollback', {
+        options: ['--no-rollback'],
+        modEnv: { PHASE: phase },
+        verbose: false,
+        allowErrExit: true,
+      });
+      expect(deployOutput).toContain('UPDATE_FAILED');
+
+      // Do a deployment with a replacement and --force: this will roll back first and then deploy normally
+      phase = '3';
+      await fixture.cdkDeploy('test-rollback', {
+        options: ['--no-rollback', '--force'],
+        modEnv: { PHASE: phase },
+        verbose: false,
+      });
+    } finally {
+      await fixture.cdkDestroy('test-rollback');
+    }
+  }),
+);
+
+integTest(
+  'automatic rollback if paused and --no-rollback is removed from flags',
+  withSpecificFixture('rollback-test-app', async (fixture) => {
+    let phase = '1';
+
+    // Should succeed
+    await fixture.cdkDeploy('test-rollback', {
+      options: ['--no-rollback'],
+      modEnv: { PHASE: phase },
+      verbose: false,
+    });
+    try {
+      phase = '2a';
+
+      // Should fail
+      const deployOutput = await fixture.cdkDeploy('test-rollback', {
+        options: ['--no-rollback'],
+        modEnv: { PHASE: phase },
+        verbose: false,
+        allowErrExit: true,
+      });
+      expect(deployOutput).toContain('UPDATE_FAILED');
+
+      // Do a deployment removing --no-rollback: this will roll back first and then deploy normally
+      phase = '1';
+      await fixture.cdkDeploy('test-rollback', {
+        options: ['--force'],
+        modEnv: { PHASE: phase },
+        verbose: false,
+      });
+    } finally {
+      await fixture.cdkDestroy('test-rollback');
+    }
+  }),
+);
+
+integTest(
+  'automatic rollback if replacement and --no-rollback is removed from flags',
+  withSpecificFixture('rollback-test-app', async (fixture) => {
+    let phase = '1';
+
+    // Should succeed
+    await fixture.cdkDeploy('test-rollback', {
+      options: ['--no-rollback'],
+      modEnv: { PHASE: phase },
+      verbose: false,
+    });
+    try {
+      // Do a deployment with a replacement and removing --no-rollback: this will do a regular rollback deploy
+      phase = '3';
+      await fixture.cdkDeploy('test-rollback', {
+        options: ['--force'],
         modEnv: { PHASE: phase },
         verbose: false,
       });

@@ -38,7 +38,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c12bcea99402579807f652afcfc96ca3da8544cdb4d02ba9cad57e2cca16c5ea.zip"
+     "S3Key": "1a1a5806c7ba6c308e1a83f863e2d6f1f82a6daeb20286116d4a8b049faf1506.zip"
     },
     "Handler": "mylambdafile.handler",
     "Role": {

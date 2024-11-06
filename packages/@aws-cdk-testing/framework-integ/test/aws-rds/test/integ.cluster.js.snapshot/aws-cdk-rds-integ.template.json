@@ -495,6 +495,7 @@
   "DatabaseB269D8BB": {
    "Type": "AWS::RDS::DBCluster",
    "Properties": {
+    "AutoMinorVersionUpgrade": false,
     "CopyTagsToSnapshot": true,
     "DBClusterParameterGroupName": {
      "Ref": "ParamsA8366201"

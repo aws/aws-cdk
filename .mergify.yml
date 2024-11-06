@@ -4,7 +4,17 @@ queue_rules:
     update_method: merge
     merge_method: merge
     conditions:
+      - -title~=(WIP|wip)
+      - -label~=(blocked|do-not-merge)
+      # Only if no-squash is set
+      - label~=no-squash
+      - -merged
+      - -closed
+      - "#approved-reviews-by>=1"
+      - -approved-reviews-by~=author
+      - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
+      - status-success=validate-pr
     commit_message_template: |-
       {{ title }} (#{{ number }})
       {{ body }}
@@ -13,7 +23,16 @@ queue_rules:
     update_method: merge
     merge_method: squash
     conditions:
+      - base!=release
+      - -title~=(WIP|wip)
+      - -label~=(blocked|do-not-merge|no-squash)
+      - -merged
+      - -closed
+      - "#approved-reviews-by>=1"
+      - -approved-reviews-by~=author
+      - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
+      - status-success=validate-pr
     commit_message_template: |-
       {{ title }} (#{{ number }})
       {{ body }}
@@ -24,7 +43,7 @@ pull_request_rules:
       label:
         add: [ contribution/core ]
     conditions:
-      - author~=^(rix0rrr|iliapolo|otaviomacedo|kaizencc|comcalvi|TheRealAmazonKendra|mrgrain|pahud|ashishdhingra|kellertk|HBobertz|sumupitchayan|colifran|moelasmar|paulhcsun|GavinZZ|aaythapa|xazhao|gracelu0|jfuss|shikha372|kirtishrinkhala|godwingrs22|bergjaak|samson-keung|IanKonlog|Leo10Gama|scorbiere|michelle-wangg|jiayiwang7|1kaileychen)$
+      - author~=^(rix0rrr|iliapolo|otaviomacedo|kaizencc|comcalvi|TheRealAmazonKendra|mrgrain|pahud|ashishdhingra|kellertk|HBobertz|sumupitchayan|colifran|moelasmar|paulhcsun|GavinZZ|aaythapa|xazhao|gracelu0|jfuss|shikha372|kirtishrinkhala|godwingrs22|bergjaak|samson-keung|IanKonlog|Leo10Gama|scorbiere|michelle-wangg|jiayiwang7|1kaileychen|saiyush|5d)$
       - -label~="contribution/core"
   - name: automatic merge
     actions:

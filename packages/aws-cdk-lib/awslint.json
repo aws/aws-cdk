@@ -124,6 +124,7 @@
     "props-physical-name:aws-cdk-lib.aws_iam.OpenIdConnectProviderProps",
     "props-physical-name:aws-cdk-lib.aws_iam.SamlProviderProps",
     "props-physical-name:aws-cdk-lib.aws_kms.KeyProps",
+    "props-physical-name:aws-cdk-lib.aws_kinesis.ResourcePolicyProps",
     "props-physical-name:aws-cdk-lib.aws_lambda.CodeSigningConfigProps",
     "props-physical-name:aws-cdk-lib.aws_lambda.EventInvokeConfigProps",
     "props-physical-name:aws-cdk-lib.aws_lambda.EventSourceMappingProps",

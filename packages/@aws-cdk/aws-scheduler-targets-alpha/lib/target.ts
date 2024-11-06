@@ -1,5 +1,5 @@
 import { ISchedule, ScheduleTargetConfig, ScheduleTargetInput } from '@aws-cdk/aws-scheduler-alpha';
-import { Annotations, Duration, Names, PhysicalName, Token, Stack } from 'aws-cdk-lib';
+import { Annotations, Duration, Names, PhysicalName, Stack, Token } from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnSchedule } from 'aws-cdk-lib/aws-scheduler';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
@@ -76,7 +76,8 @@ export abstract class ScheduleTargetBase {
   protected abstract addTargetActionToRole(schedule: ISchedule, role: iam.IRole): void;
 
   protected bindBaseTargetConfig(_schedule: ISchedule): ScheduleTargetConfig {
-    const role: iam.IRole = this.baseProps.role ?? this.singletonScheduleRole(_schedule, this.targetArn);
+    const role: iam.IRole = this.baseProps.role ?? this.createOrGetScheduleTargetRole(_schedule, this.targetArn);
+
     this.addTargetActionToRole(_schedule, role);
 
     if (this.baseProps.deadLetterQueue) {
@@ -85,7 +86,7 @@ export abstract class ScheduleTargetBase {
 
     return {
       arn: this.targetArn,
-      role: role,
+      role,
       deadLetterConfig: this.baseProps.deadLetterQueue ? {
         arn: this.baseProps.deadLetterQueue.queueArn,
       } : undefined,
@@ -104,14 +105,14 @@ export abstract class ScheduleTargetBase {
   }
 
   /**
-   * Obtain the Role for the EventBridge Scheduler event
+   * Get or create the Role for the EventBridge Scheduler event
    *
    * If a role already exists, it will be returned. This ensures that if multiple
-   * events have the same target, they will share a role.
+   * schedules have the same target, they will share a role.
    */
-  private singletonScheduleRole(schedule: ISchedule, targetArn: string): iam.IRole {
+  private createOrGetScheduleTargetRole(schedule: ISchedule, targetArn: string): iam.IRole {
     const stack = Stack.of(schedule);
-    const arn = Token.isUnresolved(targetArn) ? stack.resolve(targetArn).toString() : targetArn;
+    const arn = Token.isUnresolved(targetArn) ? JSON.stringify(stack.resolve(targetArn)) : targetArn;
     const hash = md5hash(arn).slice(0, 6);
     const id = 'SchedulerRoleForTarget-' + hash;
     const existingRole = stack.node.tryFindChild(id) as iam.Role;
@@ -120,9 +121,17 @@ export abstract class ScheduleTargetBase {
       conditions: {
         StringEquals: {
           'aws:SourceAccount': schedule.env.account,
+          'aws:SourceArn': schedule.group?.groupArn ?? Stack.of(schedule).formatArn({
+            service: 'scheduler',
+            resource: 'schedule-group',
+            region: schedule.env.region,
+            account: schedule.env.account,
+            resourceName: schedule.group?.groupName ?? 'default',
+          }),
         },
       },
     });
+
     if (existingRole) {
       existingRole.assumeRolePolicy?.addStatements(new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,

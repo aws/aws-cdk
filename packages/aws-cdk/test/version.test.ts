@@ -3,6 +3,7 @@ import * as path from 'path';
 import { setTimeout as _setTimeout } from 'timers';
 import { promisify } from 'util';
 import * as fs from 'fs-extra';
+import * as os from 'os';
 import * as sinon from 'sinon';
 import * as logging from '../lib/logging';
 import * as npm from '../lib/util/npm';
@@ -15,6 +16,10 @@ const setTimeout = promisify(_setTimeout);
 function tmpfile(): string {
   return `/tmp/version-${Math.floor(Math.random() * 10000)}`;
 }
+
+beforeEach(() => {
+  process.chdir(os.tmpdir()); // Need a chdir because in the workspace 'npm view' will take a long time
+});
 
 afterEach(done => {
   sinon.restore();

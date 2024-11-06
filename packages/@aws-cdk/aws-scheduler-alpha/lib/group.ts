@@ -202,7 +202,7 @@ abstract class GroupBase extends Resource implements IGroup {
    *
    * @default - sum over 5 minutes
    */
-  metricSentToDLQ(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+  public metricSentToDLQ(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('InvocationsSentToDeadLetterCount', props);
   }
 

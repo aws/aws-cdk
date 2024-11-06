@@ -2075,7 +2075,7 @@ describe('stack', () => {
     expect(asm.getStackArtifact(stack2.artifactId).tags).toEqual(expected);
   });
 
-  test('stack tags may not contain tokens', () => {
+  test('warning when stack tags contain tokens', () => {
     // GIVEN
     const app = new App({
       stackTraces: false,
@@ -2087,7 +2087,14 @@ describe('stack', () => {
       },
     });
 
-    expect(() => app.synth()).toThrow(/Stack tags may not contain deploy-time values/);
+    const asm = app.synth();
+    const stackArtifact = asm.stacks[0];
+    expect(stackArtifact.manifest.metadata?.['/stack1']).toEqual([
+      {
+        type: 'aws:cdk:warning',
+        data: expect.stringContaining('Ignoring stack tags that contain deploy-time values'),
+      },
+    ]);
   });
 
   test('stack notification arns are reflected in the stack artifact properties', () => {

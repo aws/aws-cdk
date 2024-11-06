@@ -983,6 +983,37 @@ test('readCurrentTemplateWithNestedStacks() succesfully ignores stacks without m
   });
 });
 
+describe('stackExists', () => {
+  test.each([
+    [false, 'deploy:here:123456789012'],
+    [true, 'lookup:here:123456789012'],
+  ])('uses lookup role if requested: %p', async (tryLookupRole, expectedRoleArn) => {
+    const mockForEnvironment = jest.fn().mockImplementation(() => { return { sdk: sdkProvider.sdk }; });
+    sdkProvider.forEnvironment = mockForEnvironment;
+    givenStacks({
+      '*': { template: {} },
+    });
+
+    const result = await deployments.stackExists({
+      stack: testStack({
+        stackName: 'boop',
+        properties: {
+          assumeRoleArn: 'deploy:${AWS::Region}:${AWS::AccountId}',
+          lookupRole: {
+            arn: 'lookup:${AWS::Region}:${AWS::AccountId}',
+          },
+        },
+      }),
+      tryLookupRole,
+    });
+
+    expect(result).toBeTruthy();
+    expect(mockForEnvironment).toHaveBeenCalledWith(expect.anything(), expect.anything(), expect.objectContaining({
+      assumeRoleArn: expectedRoleArn,
+    }));
+  });
+});
+
 function pushStackResourceSummaries(stackName: string, ...items: CloudFormation.StackResourceSummary[]) {
   if (!currentCfnStackResources[stackName]) {
     currentCfnStackResources[stackName] = [];
