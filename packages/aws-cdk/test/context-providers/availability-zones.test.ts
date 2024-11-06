@@ -1,7 +1,7 @@
-import { FAKE_CREDENTIALS, mockEC2Client, MockSdkProvider } from "../util/mock-sdk";
-import { SDK, SdkForEnvironment } from "../../lib";
-import { DescribeAvailabilityZonesCommand } from "@aws-sdk/client-ec2";
-import { AZContextProviderPlugin } from "../../lib/context-providers/availability-zones";
+import { DescribeAvailabilityZonesCommand } from '@aws-sdk/client-ec2';
+import { SDK, SdkForEnvironment } from '../../lib';
+import { AZContextProviderPlugin } from '../../lib/context-providers/availability-zones';
+import { FAKE_CREDENTIALS, mockEC2Client, MockSdkProvider } from '../util/mock-sdk';
 
 const mockSDK = new (class extends MockSdkProvider {
   public forEnvironment(): Promise<SdkForEnvironment> {
