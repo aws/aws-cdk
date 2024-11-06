@@ -9,7 +9,7 @@
     "InstanceTenancy": "default"
    }
   },
-  "vpcpcAmazonIpv66504EEB2": {
+  "vpcpcAmazonIpv632B82F32": {
    "Type": "AWS::EC2::VPCCidrBlock",
    "Properties": {
     "AmazonProvidedIpv6CidrBlock": true,
@@ -57,7 +57,7 @@
     }
    },
    "DependsOn": [
-    "vpcpcAmazonIpv66504EEB2"
+    "vpcpcAmazonIpv632B82F32"
    ]
   },
   "vpcpcSubnetRouteTableAssociation8531BF5C": {
@@ -74,7 +74,7 @@
     }
    },
    "DependsOn": [
-    "vpcpcAmazonIpv66504EEB2"
+    "vpcpcAmazonIpv632B82F32"
    ]
   }
  },

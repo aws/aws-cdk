@@ -1,5 +1,5 @@
 import { CfnEIP, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnRouteTable, CfnVPCGatewayAttachment, CfnVPNGateway, CfnVPNGatewayRoutePropagation, GatewayVpcEndpoint, IRouteTable, IVpcEndpoint, RouterType } from 'aws-cdk-lib/aws-ec2';
-import { Construct, IConstruct, IDependable } from 'constructs';
+import { Construct, IDependable } from 'constructs';
 import { Annotations, Duration, IResource, Resource } from 'aws-cdk-lib/core';
 import { IVpcV2, VPNGatewayV2Options } from './vpc-v2-base';
 import { NetworkUtils, allRouteTableIds } from './util';
@@ -456,7 +456,7 @@ export class RouteTargetType {
 /**
  * Interface to define a route.
  */
-export interface IRoute extends IConstruct, IResource {
+export interface IRouteV2 extends IResource {
   /**
    * The ID of the route table for the route.
    * @attribute routeTable
@@ -512,7 +512,7 @@ export interface RouteProps {
  * Creates a new route with added functionality.
  * @resource AWS::EC2::Route
  */
-export class Route extends Resource implements IRoute, IDependable {
+export class Route extends Resource implements IRouteV2 {
   /**
    * The IPv4 or IPv6 CIDR block used for the destination match.
    *

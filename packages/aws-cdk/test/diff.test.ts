@@ -72,7 +72,7 @@ describe('fixed template', () => {
     const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '');
     expect(exitCode).toBe(0);
     expect(plainTextOutput.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '')).toContain(`Resources
-[~] AWS::SomeService::SomeResource SomeResource 
+[~] AWS::SomeService::SomeResource SomeResource
  └─ [~] Something
      ├─ [-] old-value
      └─ [+] new-value
@@ -152,6 +152,7 @@ describe('imports', () => {
       });
     });
     cloudFormation.deployStack.mockImplementation((options) => Promise.resolve({
+      type: 'did-deploy-stack',
       noOp: true,
       outputs: {},
       stackArn: '',
@@ -272,6 +273,7 @@ describe('non-nested stacks', () => {
       });
     });
     cloudFormation.deployStack.mockImplementation((options) => Promise.resolve({
+      type: 'did-deploy-stack',
       noOp: true,
       outputs: {},
       stackArn: '',
@@ -393,15 +395,37 @@ describe('non-nested stacks', () => {
 
     // WHEN
     const exitCode = await toolkit.diff({
-      stackNames: ['A', 'A'],
+      stackNames: ['D'],
       stream: buffer,
       fail: false,
       quiet: true,
     });
 
     // THEN
-    expect(buffer.data.trim()).not.toContain('Stack A');
-    expect(buffer.data.trim()).not.toContain('There were no differences');
+    const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '');
+    expect(plainTextOutput).not.toContain('Stack D');
+    expect(plainTextOutput).not.toContain('There were no differences');
+    expect(buffer.data.trim()).toContain('✨  Number of stacks with differences: 0');
+    expect(exitCode).toBe(0);
+  });
+
+  test('when quiet mode is enabled, stacks with diffs should print stack name to stdout', async () => {
+    // GIVEN
+    const buffer = new StringWritable();
+
+    // WHEN
+    const exitCode = await toolkit.diff({
+      stackNames: ['A'],
+      stream: buffer,
+      fail: false,
+      quiet: true,
+    });
+
+    // THEN
+    const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '');
+    expect(plainTextOutput).toContain('Stack A');
+    expect(plainTextOutput).not.toContain('There were no differences');
+    expect(buffer.data.trim()).toContain('✨  Number of stacks with differences: 1');
     expect(exitCode).toBe(0);
   });
 });
@@ -463,6 +487,7 @@ describe('stack exists checks', () => {
       });
     });
     cloudFormation.deployStack.mockImplementation((options) => Promise.resolve({
+      type: 'did-deploy-stack',
       noOp: true,
       outputs: {},
       stackArn: '',
@@ -548,10 +573,16 @@ describe('stack exists checks', () => {
 describe('nested stacks', () => {
   beforeEach(() => {
     cloudExecutable = new MockCloudExecutable({
-      stacks: [{
-        stackName: 'Parent',
-        template: {},
-      }],
+      stacks: [
+        {
+          stackName: 'Parent',
+          template: {},
+        },
+        {
+          stackName: 'UnchangedParent',
+          template: {},
+        },
+      ],
     });
 
     cloudFormation = instanceMockFrom(Deployments);
@@ -718,6 +749,78 @@ describe('nested stacks', () => {
               },
               physicalName: undefined,
             },
+            UnChangedChild: {
+              deployedTemplate: {
+                Resources: {
+                  SomeResource: {
+                    Type: 'AWS::Something',
+                    Properties: {
+                      Prop: 'unchanged',
+                    },
+                  },
+                },
+              },
+              generatedTemplate: {
+                Resources: {
+                  SomeResource: {
+                    Type: 'AWS::Something',
+                    Properties: {
+                      Prop: 'unchanged',
+                    },
+                  },
+                },
+              },
+              nestedStackTemplates: {},
+              physicalName: 'UnChangedChild',
+            },
+          },
+        });
+      }
+      if (stackArtifact.stackName === 'UnchangedParent') {
+        stackArtifact.template.Resources = {
+          UnchangedChild: {
+            Type: 'AWS::CloudFormation::Stack',
+            Properties: {
+              TemplateURL: 'child-url',
+            },
+          },
+        };
+        return Promise.resolve({
+          deployedRootTemplate: {
+            Resources: {
+              UnchangedChild: {
+                Type: 'AWS::CloudFormation::Stack',
+                Properties: {
+                  TemplateURL: 'child-url',
+                },
+              },
+            },
+          },
+          nestedStacks: {
+            UnchangedChild: {
+              deployedTemplate: {
+                Resources: {
+                  SomeResource: {
+                    Type: 'AWS::Something',
+                    Properties: {
+                      Prop: 'unchanged',
+                    },
+                  },
+                },
+              },
+              generatedTemplate: {
+                Resources: {
+                  SomeResource: {
+                    Type: 'AWS::Something',
+                    Properties: {
+                      Prop: 'unchanged',
+                    },
+                  },
+                },
+              },
+              nestedStackTemplates: {},
+              physicalName: 'UnchangedChild',
+            },
           },
         });
       }
@@ -784,6 +887,7 @@ Stack newGrandChild
 Resources
 [+] AWS::Something SomeResource
 
+Stack UnChangedChild
 
 ✨  Number of stacks with differences: 6`);
 
@@ -847,11 +951,94 @@ Stack newGrandChild
 Resources
 [+] AWS::Something SomeResource
 
+Stack UnChangedChild
 
 ✨  Number of stacks with differences: 6`);
 
     expect(exitCode).toBe(0);
     expect(changeSetSpy).not.toHaveBeenCalled();
+  });
+
+  test('when quiet mode is enabled, nested stacks with no diffs should not print stack name & no differences to stdout', async () => {
+    // GIVEN
+    const buffer = new StringWritable();
+
+    // WHEN
+    const exitCode = await toolkit.diff({
+      stackNames: ['UnchangedParent'],
+      stream: buffer,
+      fail: false,
+      quiet: true,
+    });
+
+    // THEN
+    const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '').replace(/[ \t]+$/mg, '');
+    expect(plainTextOutput).not.toContain('Stack UnchangedParent');
+    expect(plainTextOutput).not.toContain('There were no differences');
+    expect(buffer.data.trim()).toContain('✨  Number of stacks with differences: 0');
+    expect(exitCode).toBe(0);
+  });
+
+  test('when quiet mode is enabled, nested stacks with diffs should print stack name to stdout', async () => {
+    // GIVEN
+    const buffer = new StringWritable();
+
+    // WHEN
+    const exitCode = await toolkit.diff({
+      stackNames: ['Parent'],
+      stream: buffer,
+      fail: false,
+      quiet: true,
+    });
+
+    // THEN
+    const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '').replace(/[ \t]+$/mg, '');
+    expect(plainTextOutput).toContain(`Stack Parent
+Resources
+[~] AWS::CloudFormation::Stack AdditionChild
+ └─ [~] TemplateURL
+     ├─ [-] addition-child-url-new
+     └─ [+] addition-child-url-old
+[~] AWS::CloudFormation::Stack DeletionChild
+ └─ [~] TemplateURL
+     ├─ [-] deletion-child-url-new
+     └─ [+] deletion-child-url-old
+[~] AWS::CloudFormation::Stack ChangedChild
+ └─ [~] TemplateURL
+     ├─ [-] changed-child-url-new
+     └─ [+] changed-child-url-old
+
+Stack AdditionChild
+Resources
+[~] AWS::Something SomeResource
+ └─ [+] Prop
+     └─ added-value
+
+Stack DeletionChild
+Resources
+[~] AWS::Something SomeResource
+ └─ [-] Prop
+     └─ value-to-be-removed
+
+Stack ChangedChild
+Resources
+[~] AWS::Something SomeResource
+ └─ [~] Prop
+     ├─ [-] old-value
+     └─ [+] new-value
+
+Stack newChild
+Resources
+[+] AWS::Something SomeResource
+
+Stack newGrandChild
+Resources
+[+] AWS::Something SomeResource
+
+
+✨  Number of stacks with differences: 6`);
+    expect(plainTextOutput).not.toContain('Stack UnChangedChild');
+    expect(exitCode).toBe(0);
   });
 });
 
@@ -859,6 +1046,14 @@ describe('--strict', () => {
   const templatePath = 'oldTemplate.json';
   beforeEach(() => {
     const oldTemplate = {};
+
+    cloudFormation = instanceMockFrom(Deployments);
+    cloudFormation.readCurrentTemplateWithNestedStacks.mockImplementation((_stackArtifact: CloudFormationStackArtifact) => {
+      return Promise.resolve({
+        deployedRootTemplate: {},
+        nestedStacks: {},
+      });
+    });
 
     cloudExecutable = new MockCloudExecutable({
       stacks: [{
@@ -911,8 +1106,8 @@ describe('--strict', () => {
     const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '');
     expect(plainTextOutput.trim()).toEqual(`Stack A
 Resources
-[+] AWS::CDK::Metadata MetadataResource 
-[+] AWS::Something::Amazing SomeOtherResource 
+[+] AWS::CDK::Metadata MetadataResource
+[+] AWS::Something::Amazing SomeOtherResource
 
 Other Changes
 [+] Unknown Rules: {\"CheckBootstrapVersion\":{\"newCheck\":\"newBootstrapVersion\"}}
@@ -936,7 +1131,7 @@ Other Changes
     const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '');
     expect(plainTextOutput.trim()).toEqual(`Stack A
 Resources
-[+] AWS::Something::Amazing SomeOtherResource 
+[+] AWS::Something::Amazing SomeOtherResource
 
 
 ✨  Number of stacks with differences: 1`);
