@@ -1,6 +1,7 @@
 import { Duration, IResource, Resource, Token } from 'aws-cdk-lib';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as kms from 'aws-cdk-lib/aws-kms';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnSchedule } from 'aws-cdk-lib/aws-scheduler';
 import { Construct } from 'constructs';
 import { IGroup } from './group';
@@ -325,6 +326,25 @@ export class Schedule extends Resource implements ISchedule {
       resource: 'schedule',
       resourceName: `${this.group?.groupName ?? 'default'}/${this.physicalName}`,
     });
+  }
+
+  /**
+   * Grant the indicated permissions on this schedule to the given principal
+   */
+  public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions,
+      resourceArns: [this.scheduleArn],
+      scope: this,
+    });
+  }
+
+  /**
+   * Grant get schedule permission to the given principal
+   */
+  public grantRead(grantee: iam.IGrantable): iam.Grant {
+    return this.grant(grantee, 'scheduler:GetSchedule');
   }
 
   private renderRetryPolicy(): CfnSchedule.RetryPolicyProperty | undefined {
