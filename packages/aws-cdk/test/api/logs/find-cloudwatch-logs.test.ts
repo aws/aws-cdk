@@ -8,7 +8,13 @@ import {
 import { SdkProvider } from '../../../lib';
 import { findCloudWatchLogGroups } from '../../../lib/api/logs/find-cloudwatch-logs';
 import { testStack, TestStackArtifact } from '../../util';
-import { mockCloudFormationClient, MockSdk, MockSdkProvider } from '../../util/mock-sdk';
+import {
+  mockCloudFormationClient,
+  MockSdk,
+  MockSdkProvider,
+  restoreSdkMocksToDefault,
+  setDefaultSTSMocks
+} from '../../util/mock-sdk';
 
 let sdk: MockSdk;
 let logsMockSdkProvider: SdkProvider;
@@ -17,6 +23,8 @@ beforeEach(() => {
   logsMockSdkProvider = new MockSdkProvider();
   sdk = new MockSdk();
   sdk.getUrlSuffix = () => Promise.resolve('amazonaws.com');
+  restoreSdkMocksToDefault();
+  setDefaultSTSMocks();
   jest.resetAllMocks();
   // clear the array
   currentCfnStackResources.splice(0);

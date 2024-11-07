@@ -8,7 +8,7 @@ import {
   mockBootstrapStack,
   mockIAMClient,
   MockSdkProvider,
-  restoreSdkMocksToDefault,
+  restoreSdkMocksToDefault, setDefaultSTSMocks,
 } from '../util/mock-sdk';
 
 const mockDeployStack = jest.spyOn(deployStack, 'deployStack');
@@ -50,6 +50,7 @@ describe('Bootstrapping v2', () => {
       },
     };
     restoreSdkMocksToDefault();
+    setDefaultSTSMocks();
     mockIAMClient.on(GetPolicyCommand).resolves(value);
     mockIAMClient.on(CreatePolicyCommand).resolves(value);
     mockDeployStack.mockResolvedValue({
