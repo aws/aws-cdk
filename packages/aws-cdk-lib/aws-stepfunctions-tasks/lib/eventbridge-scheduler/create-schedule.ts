@@ -301,7 +301,7 @@ export class EventBridgeSchedulerCreateScheduleTask extends sfn.TaskStateBase {
     return {
       Resource: integrationResourceArn('aws-sdk:scheduler', 'createSchedule', this.integrationPattern),
       Parameters: {
-        ActionAfterCompletion: this.props.actionAfterCompletion,
+        ActionAfterCompletion: this.props.actionAfterCompletion ?? ActionAfterCompletion.NONE,
         ClientToken: this.props.clientToken,
         Description: this.props.description,
         EndDate: this.props.endDate ? this.props.endDate.toISOString() : undefined,

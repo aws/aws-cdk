@@ -56,6 +56,7 @@ describe('Create Schedule', () => {
       },
       End: true,
       Parameters: {
+        ActionAfterCompletion: 'NONE',
         FlexibleTimeWindow: {
           Mode: 'OFF',
         },
