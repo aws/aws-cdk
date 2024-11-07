@@ -1,11 +1,10 @@
-import * as crypto from 'node:crypto';
 import * as cxapi from '@aws-cdk/cx-api';
 import { ImageIdentifier } from '@aws-sdk/client-ecr';
 import { Tag } from '@aws-sdk/client-s3';
 import * as chalk from 'chalk';
 import * as promptly from 'promptly';
 import { debug, print } from '../../logging';
-import { SDK, SdkProvider, IS3Client, IECRClient } from '../aws-auth';
+import { IECRClient, IS3Client, SDK, SdkProvider } from '../aws-auth';
 import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitInfo } from '../toolkit-info';
 import { ProgressPrinter } from './progress-printer';
 import { ActiveAssetCache, BackgroundStackRefresh, refreshStacks } from './stack-refresh';
@@ -204,16 +203,6 @@ export class GarbageCollector {
     const sdk = (await this.props.sdkProvider.forEnvironment(this.props.resolvedEnvironment, Mode.ForWriting)).sdk;
     const cfn = sdk.cloudFormation();
 
-    // Some S3 APIs in SDKv2 have a bug that always requires them to use a MD5 checksum.
-    // These APIs are not going to be supported in a FIPS environment.
-    // We fail with a nice error message.
-    // Once we switch this code to SDKv3, this can be made work again by adding
-    // `ChecksumAlgorithm: 'SHA256'` to the affected APIs.
-    // Currently known to affect only DeleteObjects (note the plural)
-    if (crypto.getFips() === 1) {
-      throw new Error('Garbage Collection is currently not supported in FIPS environments');
-    }
-
     const qualifier = await this.bootstrapQualifier(sdk, this.bootstrapStackName);
     const activeAssets = new ActiveAssetCache();
 
@@ -319,9 +308,7 @@ export class GarbageCollector {
    * Perform garbage collection on S3 assets
    */
   public async garbageCollectS3(sdk: SDK, activeAssets: ActiveAssetCache, backgroundStackRefresh: BackgroundStackRefresh) {
-    const s3 = sdk.s3({
-      needsMd5Checksums: true,
-    });
+    const s3 = sdk.s3();
     const bucket = await this.bootstrapBucketName(sdk, this.bootstrapStackName);
     const numObjects = await this.numObjectsInBucket(s3, bucket);
     const printer = new ProgressPrinter(numObjects, 1000);

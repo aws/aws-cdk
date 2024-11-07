@@ -1,4 +1,3 @@
-import * as crypto from 'crypto';
 import {
   AppSyncClient,
   FunctionConfiguration,
@@ -875,38 +874,14 @@ export class SDK {
     };
   }
 
-  public s3({ needsMd5Checksums: apiRequiresMd5Checksum = false }: S3ClientOptions = {}): IS3Client {
-
-    const config = { ...this.config };
-
-    if (crypto.getFips() && apiRequiresMd5Checksum) {
-      // This should disappear for SDKv3; in SDKv3, we can always force the client to use SHA256 checksums
-      throw new Error('This operation requires MD5 for integrity purposes; unfortunately, it therefore is not available in FIPS enabled environments.');
-    }
-
-    if (crypto.getFips()) {
-      // In FIPS enabled environments, the MD5 algorithm is not available for use in crypto module.
-      // However by default the S3 client is using an MD5 checksum for content integrity checking.
-      // While this usage is technically allowed in FIPS (MD5 is only prohibited for cryptographic use),
-      // in practice it is just easier to use an allowed checksum mechanism.
-      // We are disabling the S3 content checksums, and are re-enabling the regular SigV4 body signing.
-      // SigV4 uses SHA256 for their content checksum.
-      //
-      // As far as we know, this configuration will work for most APIs except:
-      // - DeleteObjects (note the plural)
-      // - PutObject to a bucket with Object Lock enabled.
-      //
-      // These APIs refuse to work without a content checksum at the S3 level (a SigV4 checksum is not
-      // good enough). There is no way to get those to work with SHA256 in the SDKv2, but this limitation
-      // will be alleviated once we migrate to SDKv3.
-      config.s3DisableBodySigning = false;
-      config.computeChecksums = false;
-    }
-
-    const client = new S3Client(config);
+  public s3(): IS3Client {
+    const client = new S3Client(this.config);
     return {
       deleteObjects: (input: DeleteObjectsCommandInput): Promise<DeleteObjectsCommandOutput> =>
-        client.send(new DeleteObjectsCommand(input)),
+        client.send(new DeleteObjectsCommand({
+          ...input,
+          ChecksumAlgorithm: 'SHA256',
+        })),
       deleteObjectTagging: (input: DeleteObjectTaggingCommandInput): Promise<DeleteObjectTaggingCommandOutput> =>
         client.send(new DeleteObjectTaggingCommand(input)),
       getBucketEncryption: (input: GetBucketEncryptionCommandInput): Promise<GetBucketEncryptionCommandOutput> =>
@@ -920,12 +895,15 @@ export class SDK {
       listObjectsV2: (input: ListObjectsV2CommandInput): Promise<ListObjectsV2CommandOutput> =>
         client.send(new ListObjectsV2Command(input)),
       putObjectTagging: (input: PutObjectTaggingCommandInput): Promise<PutObjectTaggingCommandOutput> =>
-        client.send(new PutObjectTaggingCommand(input)),
+        client.send(new PutObjectTaggingCommand({
+          ...input,
+          ChecksumAlgorithm: 'SHA256',
+        })),
       upload: (input: PutObjectCommandInput): Promise<CompleteMultipartUploadCommandOutput> => {
         try {
           const upload = new Upload({
             client,
-            params: input,
+            params: { ...input, ChecksumAlgorithm: 'SHA256' },
           });
 
           return upload.done();
