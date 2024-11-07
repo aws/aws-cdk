@@ -167,7 +167,7 @@ export class ConfigurationSet extends Resource implements IConfigurationSet {
       physicalName: props.configurationSetName,
     });
 
-    if (props.maxDeliveryDuration && Token.isUnresolved(props.maxDeliveryDuration)) {
+    if (props.maxDeliveryDuration && !Token.isUnresolved(props.maxDeliveryDuration)) {
       if (props.maxDeliveryDuration.toMilliseconds() < Duration.seconds(1).toMilliseconds()) {
         throw new Error(`The maximum delivery duration must be greater than or equal to 5 minutes (300 seconds), got: ${props.maxDeliveryDuration.toMilliseconds()} milliseconds.`);
       }
@@ -183,7 +183,7 @@ export class ConfigurationSet extends Resource implements IConfigurationSet {
       deliveryOptions: undefinedIfNoKeys({
         sendingPoolName: props.dedicatedIpPool?.dedicatedIpPoolName,
         tlsPolicy: props.tlsPolicy,
-        maxDeliveryDuration: props.maxDeliveryDuration?.toSeconds(),
+        // maxDeliverySeconds: props.maxDeliveryDuration?.toSeconds(),
       }),
       name: this.physicalName,
       reputationOptions: undefinedIfNoKeys({

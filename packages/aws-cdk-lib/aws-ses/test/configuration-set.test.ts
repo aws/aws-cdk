@@ -21,7 +21,7 @@ test('configuration set with options', () => {
     suppressionReasons: SuppressionReasons.COMPLAINTS_ONLY,
     tlsPolicy: ConfigurationSetTlsPolicy.REQUIRE,
     dedicatedIpPool: new DedicatedIpPool(stack, 'Pool'),
-    maxDeliveryDuration: Duration.minutes(30),
+    maxDeliveryDuration: Duration.seconds(300),
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::SES::ConfigurationSet', {
@@ -30,7 +30,7 @@ test('configuration set with options', () => {
         Ref: 'PoolD3F588B8',
       },
       TlsPolicy: 'REQUIRE',
-      MaxDeliverySeconds: 1800,
+      MaxDeliverySeconds: 300,
     },
     SuppressionOptions: {
       SuppressedReasons: [
