@@ -6,7 +6,6 @@ import { CreatePolicyCommand, GetPolicyCommand } from '@aws-sdk/client-iam';
 import { Bootstrapper, DeployStackOptions, ToolkitInfo } from '../../lib/api';
 import {
   mockBootstrapStack,
-  mockCloudFormationClient,
   mockIAMClient,
   MockSdkProvider,
   restoreSdkMocksToDefault,
