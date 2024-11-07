@@ -108,7 +108,7 @@ export interface CronOptions {
   /**
    * The day of the week to run this rule at
    *
-   * @default - Any day of the week
+   * @default - Whichever day of the week that `day` falls on
    */
   readonly weekDay?: string;
 
