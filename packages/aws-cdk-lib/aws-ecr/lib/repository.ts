@@ -18,6 +18,8 @@ import {
   TokenComparison,
   CustomResource,
   Aws,
+  CfnCondition,
+  Fn,
 } from '../../core';
 import { AutoDeleteImagesProvider } from '../../custom-resource-handlers/dist/aws-ecr/auto-delete-images-provider.generated';
 
@@ -166,6 +168,11 @@ export abstract class RepositoryBase extends Resource implements IRepository {
     'ecr:PutImage',
   ];
 
+  // a map to make sure that we do not add more than one condition for the same Token
+  private tokenConditions: { [id: string]: CfnCondition } = { };
+  // Used to make sure that the condition logical id is unique
+  private conditionsNumber: number = 0;
+
   /**
    * The name of the repository
    */
@@ -224,10 +231,31 @@ export abstract class RepositoryBase extends Resource implements IRepository {
    * @param tagOrDigest Optional image tag or digest (digests must start with `sha256:`)
    */
   public repositoryUriForTagOrDigest(tagOrDigest?: string): string {
-    if (tagOrDigest?.startsWith('sha256:')) {
-      return this.repositoryUriForDigest(tagOrDigest);
+    if (tagOrDigest && Token.isUnresolved(tagOrDigest)) {
+
+      let isInputDigestCondition;
+
+      // Use the existing condition of the same Token is existed, and if not create a new one
+      if (tagOrDigest in this.tokenConditions) {
+        isInputDigestCondition = this.tokenConditions[tagOrDigest];
+      } else {
+        this.conditionsNumber += 1;
+        isInputDigestCondition = new CfnCondition(this, `IsInputDigest${this.conditionsNumber}`, {
+          // we split the value of the Token using the delimiter : to check if the first element equals sha256
+          // to check if it is a digest, or it will be an image tag.
+          expression: Fn.conditionEquals(Fn.select(0, Fn.split(':', tagOrDigest)), 'sha256'),
+        });
+        this.tokenConditions[tagOrDigest] = isInputDigestCondition;
+      }
+
+      const suffix = Fn.conditionIf(isInputDigestCondition.logicalId, `@${tagOrDigest}`, `:${tagOrDigest}`).toString();
+      return this.repositoryUriWithSuffix(suffix);
     } else {
-      return this.repositoryUriForTag(tagOrDigest);
+      if (tagOrDigest?.startsWith('sha256:')) {
+        return this.repositoryUriForDigest(tagOrDigest);
+      } else {
+        return this.repositoryUriForTag(tagOrDigest);
+      }
     }
   }
 
