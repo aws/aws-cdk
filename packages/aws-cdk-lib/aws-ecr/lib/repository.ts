@@ -242,7 +242,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
         this.conditionsNumber += 1;
         isInputDigestCondition = new CfnCondition(this, `IsInputDigest${this.conditionsNumber}`, {
           // we split the value of the Token using the delimiter : to check if the first element equals sha256
-          // to check if it is a digest, or it will be an image tag.
+          // in order to determine if it is a digest or an image tag.
           expression: Fn.conditionEquals(Fn.select(0, Fn.split(':', tagOrDigest)), 'sha256'),
         });
         this.tokenConditions[tagOrDigest] = isInputDigestCondition;
