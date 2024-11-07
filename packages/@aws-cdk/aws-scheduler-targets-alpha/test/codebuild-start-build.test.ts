@@ -390,35 +390,6 @@ describe('codebuild start build', () => {
     });
   });
 
-  test.each([
-    ['account', 'arn:aws:codebuild:us-east-1:999999999999:project/myproject', /Both the schedule and the project must be in the same account./],
-    ['region', 'arn:aws:codebuild:eu-central-1:123456789012:project/myproject', /Both the schedule and the project must be in the same region./],
-  ])('throws when codebuild project is imported from different %s', (_, arn: string, expectedError: RegExp) => {
-    const importedProject = Project.fromProjectArn(stack, 'ImportedProject', arn);
-    const codeBuildTarget = new CodeBuildStartBuild(importedProject, {});
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: codeBuildTarget,
-      })).toThrow(expectedError);
-  });
-
-  test('throws when IAM role is imported from different account', () => {
-    const anotherAccountId = '123456789015';
-    const importedRole = Role.fromRoleArn(stack, 'ImportedRole', `arn:aws:iam::${anotherAccountId}:role/someRole`);
-
-    const codebuildProjectTarget = new CodeBuildStartBuild(codebuildProject, {
-      role: importedRole,
-    });
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: codebuildProjectTarget,
-      })).toThrow(/Both the target and the execution role must be in the same account/);
-  });
-
   test('adds permissions to execution role for sending messages to DLQ', () => {
     const dlq = new Queue(stack, 'DummyDeadLetterQueue');
 

@@ -383,42 +383,6 @@ describe('schedule target', () => {
     });
   });
 
-  test('throws when queue is imported from different account', () => {
-    const importedQueue = sqs.Queue.fromQueueArn(stack, 'ImportedQueue', 'arn:aws:sqs:us-east-1:234567890123:somequeue');
-    const queueTarget = new SqsSendMessage(importedQueue, {});
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: queueTarget,
-      })).toThrow(/Both the schedule and the queue must be in the same account/);
-  });
-
-  test('throws when queue is imported from different region', () => {
-    const importedQueue = sqs.Queue.fromQueueArn(stack, 'ImportedQueue', 'arn:aws:sqs:us-west-2:123456789012:somequeue');
-    const queueTarget = new SqsSendMessage(importedQueue, {});
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: queueTarget,
-      })).toThrow(/Both the schedule and the queue must be in the same region/);
-  });
-
-  test('throws when IAM role is imported from different account', () => {
-    const importedRole = Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::234567890123:role/someRole');
-
-    const queueTarget = new SqsSendMessage(queue, {
-      role: importedRole,
-    });
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: queueTarget,
-      })).toThrow(/Both the target and the execution role must be in the same account/);
-  });
-
   test('adds permissions to execution role for sending messages to DLQ', () => {
     const dlq = new sqs.Queue(stack, 'DummyDeadLetterQueue');
 

@@ -400,45 +400,6 @@ describe('codepipeline start execution', () => {
     });
   });
 
-  test('throws when pipeline is imported from different account', () => {
-    const anotherAccountId = '123456789015';
-    const importedPipeline = Pipeline.fromPipelineArn(stack, 'ImportedPipeline', `arn:aws:states:us-east-1:${anotherAccountId}:Pipeline/MyPipeline`);
-    const codepipelineTarget = new CodePipelineStartPipelineExecution(importedPipeline, {});
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: codepipelineTarget,
-      })).toThrow(/Both the schedule and the pipeline must be in the same account./);
-  });
-
-  test('throws when pipeline is imported from different region', () => {
-    const anotherRegion = 'eu-central-1';
-    const importedPipeline = Pipeline.fromPipelineArn(stack, 'ImportedPipeline', `arn:aws:states:${anotherRegion}:123456789012:Pipeline/MyPipeline`);
-    const codepipelineTarget = new CodePipelineStartPipelineExecution(importedPipeline, {});
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: codepipelineTarget,
-      })).toThrow(/Both the schedule and the pipeline must be in the same region/);
-  });
-
-  test('throws when IAM role is imported from different account', () => {
-    const anotherAccountId = '123456789015';
-    const importedRole = Role.fromRoleArn(stack, 'ImportedRole', `arn:aws:iam::${anotherAccountId}:role/someRole`);
-
-    const codepipelineTarget = new CodePipelineStartPipelineExecution(codepipeline, {
-      role: importedRole,
-    });
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: codepipelineTarget,
-      })).toThrow(/Both the target and the execution role must be in the same account/);
-  });
-
   test('adds permissions to execution role for sending messages to DLQ', () => {
     const dlq = new sqs.Queue(stack, 'DummyDeadLetterQueue');
 

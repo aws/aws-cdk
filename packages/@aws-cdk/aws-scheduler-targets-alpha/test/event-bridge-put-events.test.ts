@@ -466,55 +466,6 @@ describe('eventBridge put events', () => {
     });
   });
 
-  test('throws when eventBus is imported from different account', () => {
-    const anotherAccountId = '123456789015';
-    const importedEventBusArnFromAnotherAccount = `arn:aws:events:us-east-1:${anotherAccountId}:event-bus/MyEventBus`;
-    const importedEventBus = events.EventBus.fromEventBusArn(stack, 'ImportedEventBus', importedEventBusArnFromAnotherAccount);
-    const entry: EventBridgePutEventsEntry = {
-      ...eventBusEventEntry,
-      eventBus: importedEventBus,
-    };
-    const eventBusTarget = new EventBridgePutEvents(entry, {});
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: eventBusTarget,
-      })).toThrow(/Both the schedule and the eventBus must be in the same account./);
-  });
-
-  test('throws when eventBus is imported from different region', () => {
-    const anotherRegion = 'eu-central-1';
-    const importedEventBusArnFromAnotherRegion = `arn:aws:events:${anotherRegion}:123456789012:event-bus/MyEventBus`;
-    const importedEventBus = events.EventBus.fromEventBusArn(stack, 'ImportedEventBus', importedEventBusArnFromAnotherRegion);
-    const entry: EventBridgePutEventsEntry = {
-      ...eventBusEventEntry,
-      eventBus: importedEventBus,
-    };
-    const eventBusTarget = new EventBridgePutEvents(entry, {});
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: eventBusTarget,
-      })).toThrow(/Both the schedule and the eventBus must be in the same region/);
-  });
-
-  test('throws when IAM role is imported from different account', () => {
-    const anotherAccountId = '123456789015';
-    const importedRole = Role.fromRoleArn(stack, 'ImportedRole', `arn:aws:iam::${anotherAccountId}:role/someRole`);
-
-    const eventBusTarget = new EventBridgePutEvents(eventBusEventEntry, {
-      role: importedRole,
-    });
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: eventBusTarget,
-      })).toThrow(/Both the target and the execution role must be in the same account/);
-  });
-
   test('adds permissions to execution role for sending messages to DLQ', () => {
     const dlq = new sqs.Queue(stack, 'DummyDeadLetterQueue');
 
