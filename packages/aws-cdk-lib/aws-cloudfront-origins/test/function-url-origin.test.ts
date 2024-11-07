@@ -151,7 +151,7 @@ describe('FunctionUrlOriginAccessControl', () => {
     });
 
     const fnUrl = fn.addFunctionUrl({
-      authType: lambda.FunctionUrlAuthType.NONE,
+      authType: lambda.FunctionUrlAuthType.AWS_IAM,
     });
 
     new cloudfront.Distribution(stack, 'MyDistribution', {
@@ -161,11 +161,6 @@ describe('FunctionUrlOriginAccessControl', () => {
         }),
       },
     });
-
-    // Check that the warning is added
-    Annotations.fromStack(stack).hasWarning('*',
-      'FunctionUrlOriginWithOAC: When the origin access control signing method is SIGV4_ALWAYS, it is recommended to set the authType of the Function URL to AWS_IAM.',
-    );
 
     const template = Template.fromStack(stack);
 
@@ -422,5 +417,29 @@ describe('FunctionUrlOriginAccessControl', () => {
         ],
       },
     });
+  });
+
+  test('OAC SigV4 and AuthType is None', () => {
+    const fn = new lambda.Function(stack, 'MyFunction', {
+      code: lambda.Code.fromInline('exports.handler = async () => {};'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_20_X,
+    });
+
+    const fnUrl = fn.addFunctionUrl({
+      authType: lambda.FunctionUrlAuthType.NONE,
+    });
+
+    expect(() => {
+      new cloudfront.Distribution(stack, 'MyDistribution', {
+        defaultBehavior: {
+          origin: FunctionUrlOrigin.withOriginAccessControl(fnUrl, {
+            originAccessControl: new cloudfront.FunctionUrlOriginAccessControl(stack, 'OAC', {
+              signing: cloudfront.Signing.SIGV4_ALWAYS,
+            }),
+          }),
+        },
+      });
+    }).toThrow('The authType of the Function URL must be set to AWS_IAM when origin access control signing method is SIGV4_ALWAYS.');
   });
 });

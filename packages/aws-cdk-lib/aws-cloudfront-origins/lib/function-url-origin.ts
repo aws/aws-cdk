@@ -115,12 +115,9 @@ class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
     if (!this.originAccessControl) {
       this.originAccessControl = new cloudfront.FunctionUrlOriginAccessControl(scope, 'FunctionUrlOriginAccessControl');
     }
+    this.validateAuthType();
 
     this.addInvokePermission(scope, options);
-
-    if (!this.validateAuthType()) {
-      throw new Error('The authType of the Function URL must be set to AWS_IAM when origin access control signing method is SIGV4_ALWAYS.');
-    }
 
     return {
       ...originBindConfig,
@@ -145,15 +142,22 @@ class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
   /**
    * Validation method: Ensures that when the OAC signing method is SIGV4_ALWAYS, the authType is set to AWS_IAM.
    */
-  private validateAuthType(): boolean {
+  private validateAuthType() {
+    const cfnOriginAccessControl = this.originAccessControl?.node.children.find(
+      (child) => child instanceof cloudfront.CfnOriginAccessControl,
+    ) as cloudfront.CfnOriginAccessControl;
+    const originConfig = cfnOriginAccessControl.originAccessControlConfig;
+    const originAccessControlConfig = originConfig as cloudfront.CfnOriginAccessControl.OriginAccessControlConfigProperty;
 
-    const cfnFunctionUrl = this.functionUrl.node.defaultChild as lambda.CfnUrl;
-    const CfnOriginAccessControl
-      = this.originAccessControl?.node.defaultChild as unknown as cloudfront.CfnOriginAccessControl.OriginAccessControlConfigProperty;
+    const isAlwaysSigning: boolean =
+      originAccessControlConfig.signingBehavior === cloudfront.SigningBehavior.ALWAYS &&
+      originAccessControlConfig.signingProtocol === cloudfront.SigningProtocol.SIGV4;
 
-    return (CfnOriginAccessControl.signingBehavior === cloudfront.SigningBehavior.ALWAYS
-       && CfnOriginAccessControl.signingProtocol === cloudfront.SigningProtocol.SIGV4
-       && cfnFunctionUrl.authType !== 'AWS_IAM'
-    );
+    const isAuthTypeIsNone: boolean = this.functionUrl.authType !== lambda.FunctionUrlAuthType.AWS_IAM;
+
+    if (isAlwaysSigning && isAuthTypeIsNone) {
+      throw new Error('The authType of the Function URL must be set to AWS_IAM when origin access control signing method is SIGV4_ALWAYS.');
+    }
+
   }
 }
