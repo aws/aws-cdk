@@ -77,6 +77,12 @@ describe(Match, () => {
     ]);
   });
 
+  test('wildcard', () => {
+    expect(stack.resolve(Match.wildcard('*.json'))).toEqual([
+      { wildcard: '*.json' },
+    ]);
+  });
+
   test('equalsIgnoreCase', () => {
     expect(stack.resolve(Match.equalsIgnoreCase('foo'))).toEqual([
       { 'equals-ignore-case': 'foo' },
