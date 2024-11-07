@@ -1,8 +1,7 @@
-import { Annotations, Template, Match } from '../../assertions';
+import { Template, Match } from '../../assertions';
 import * as cloudfront from '../../aws-cloudfront';
 import * as lambda from '../../aws-lambda';
-import { Stack } from '../../core';
-import * as cdk from '../../core';
+import { Duration, Stack } from '../../core';
 import { FunctionUrlOrigin } from '../lib';
 
 let stack: Stack;
@@ -59,8 +58,8 @@ test('Correctly sets readTimeout and keepaliveTimeout', () => {
   });
 
   const origin = new FunctionUrlOrigin(fnUrl, {
-    readTimeout: cdk.Duration.seconds(120),
-    keepaliveTimeout: cdk.Duration.seconds(60),
+    readTimeout: Duration.seconds(120),
+    keepaliveTimeout: Duration.seconds(60),
   });
 
   const originBindConfig = origin.bind(stack, { originId: 'StackOriginLambdaFunctionURL' });
@@ -385,8 +384,8 @@ describe('FunctionUrlOriginAccessControl', () => {
     });
 
     const origin = FunctionUrlOrigin.withOriginAccessControl(fnUrl, {
-      readTimeout: cdk.Duration.seconds(120),
-      keepaliveTimeout: cdk.Duration.seconds(60),
+      readTimeout: Duration.seconds(120),
+      keepaliveTimeout: Duration.seconds(60),
     });
 
     const originBindConfig = origin.bind(stack, { originId: 'StackOriginLambdaFunctionURL' });
