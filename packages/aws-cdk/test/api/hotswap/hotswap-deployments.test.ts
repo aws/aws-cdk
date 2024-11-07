@@ -20,10 +20,10 @@ let hotswapMockSdkProvider: setup.HotswapMockSdkProvider;
 let sdk: MockSdk;
 
 beforeEach(() => {
-  hotswapMockSdkProvider = setup.setupHotswapTests();
   sdk = new MockSdk();
   sdk.getUrlSuffix = () => Promise.resolve('amazonaws.com');
   jest.resetAllMocks();
+  hotswapMockSdkProvider = setup.setupHotswapTests();
 });
 
 describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotswapMode) => {
