@@ -34,7 +34,7 @@
     "outputPaths": [
      "Messages.0.Body"
     ],
-    "salt": "1729876139336"
+    "salt": "1730407597091"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -127,7 +127,7 @@
      "Fn::Join": [
       "",
       [
-       "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":5,\"MaxAttempts\":36,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
+       "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":10,\"MaxAttempts\":18,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
        {
         "Fn::GetAtt": [
          "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
@@ -222,7 +222,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "e77649078c9dea5bbb707b7fe68014cfa5d919a38d31b467f6a205b51ea63a83.zip"
+     "S3Key": "d1a40db4788714a346364a87b7de0ff15b732e7367f085acf14f4a680c57c418.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -291,7 +291,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "e77649078c9dea5bbb707b7fe68014cfa5d919a38d31b467f6a205b51ea63a83.zip"
+     "S3Key": "d1a40db4788714a346364a87b7de0ff15b732e7367f085acf14f4a680c57c418.zip"
     },
     "Timeout": 120,
     "Handler": "index.isComplete",
@@ -341,7 +341,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "e77649078c9dea5bbb707b7fe68014cfa5d919a38d31b467f6a205b51ea63a83.zip"
+     "S3Key": "d1a40db4788714a346364a87b7de0ff15b732e7367f085acf14f4a680c57c418.zip"
     },
     "Timeout": 120,
     "Handler": "index.onTimeout",

@@ -2,6 +2,50 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.166.0](https://github.com/aws/aws-cdk/compare/v2.165.0...v2.166.0) (2024-11-06)
+
+
+### Features
+
+* **cli:** automatically roll back stacks if necessary ([#31920](https://github.com/aws/aws-cdk/issues/31920)) ([2f9fb1e](https://github.com/aws/aws-cdk/commit/2f9fb1e050331efbbe84bb0d5943ff7798cbf3fe)), closes [#30546](https://github.com/aws/aws-cdk/issues/30546)
+* **kinesis:** support resource policy for a data stream ([#31909](https://github.com/aws/aws-cdk/issues/31909)) ([18fbd6d](https://github.com/aws/aws-cdk/commit/18fbd6d5a1a3069b0fc1356d87e534a75239e668)), closes [#28814](https://github.com/aws/aws-cdk/issues/28814)
+* **rds:** configure `autoMinorVersionUpgrade` for a database cluster ([#31962](https://github.com/aws/aws-cdk/issues/31962)) ([0fb6106](https://github.com/aws/aws-cdk/commit/0fb610678495deb150fad1adebde259fc5fc0993))
+* **route53:** support HTTPS, SSHFP, SVCB, and TLSA DNS resource record ([#31955](https://github.com/aws/aws-cdk/issues/31955)) ([afc2b0d](https://github.com/aws/aws-cdk/commit/afc2b0d1d1d620e6350e96cc464428485fca198e)), closes [/docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/aws-resource-route53-recordset.html#cfn-route53](https://github.com/aws//docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/aws-resource-route53-recordset.html/issues/cfn-route53)
+* **synthetics:** add `artifactS3Encryption` property to the Canary Construct. ([#30197](https://github.com/aws/aws-cdk/issues/30197)) ([1f39cb9](https://github.com/aws/aws-cdk/commit/1f39cb9e0770b5c02302b9b36ac874ee6bf53329)), closes [#30190](https://github.com/aws/aws-cdk/issues/30190)
+* update L1 CloudFormation resource definitions ([#32007](https://github.com/aws/aws-cdk/issues/32007)) ([be6a964](https://github.com/aws/aws-cdk/commit/be6a964ec17f22a065aa64511f7d3d31341d0ba5))
+
+
+### Bug Fixes
+
+* deploy-time stack tags cause synthesis to fail ([#32041](https://github.com/aws/aws-cdk/issues/32041)) ([18c19fd](https://github.com/aws/aws-cdk/commit/18c19fd49f2b83fee3d1cdb7de8b53ea310729b4)), closes [#32040](https://github.com/aws/aws-cdk/issues/32040)
+* **aws_route53:** cannot use CfnParameter.valueAsNumber for L2 RecordSet weight ([#31823](https://github.com/aws/aws-cdk/issues/31823)) ([14561ac](https://github.com/aws/aws-cdk/commit/14561aca0ad9c0d5eef29729dbc97fc3ccd4d171)), closes [#31810](https://github.com/aws/aws-cdk/issues/31810)
+* **cli:** asset uploads fail if Object Lock is enabled on access bucket ([#31937](https://github.com/aws/aws-cdk/issues/31937)) ([ab1e91d](https://github.com/aws/aws-cdk/commit/ab1e91d11ec2d3abc1edad318b7ea67ff91c9a88))
+* **dynamoDB:** make TableV2 taggable ([#31867](https://github.com/aws/aws-cdk/issues/31867)) ([796c6d1](https://github.com/aws/aws-cdk/commit/796c6d170a91d9f5fa96f3915a6fb6a7f7bddff3)), closes [#30631](https://github.com/aws/aws-cdk/issues/30631)
+* **opensearch:** add I4G to list of OpenSearch nodes not requiring EBS volumes ([#31948](https://github.com/aws/aws-cdk/issues/31948)) ([73378f2](https://github.com/aws/aws-cdk/commit/73378f288e8c422228fbd145d9d41efcb3605857))
+
+## [2.165.0](https://github.com/aws/aws-cdk/compare/v2.164.1...v2.165.0) (2024-10-31)
+
+
+### Features
+
+* **bootstrap:** add lifecycle rule to abort multipart uploads after 7 days ([#31956](https://github.com/aws/aws-cdk/issues/31956)) ([b800da8](https://github.com/aws/aws-cdk/commit/b800da8172919a1ab27f885549e701d98323c9bb)), closes [#29045](https://github.com/aws/aws-cdk/issues/29045)
+* **bootstrap:** delete noncurrent versions after 30 days ([#31949](https://github.com/aws/aws-cdk/issues/31949)) ([579041e](https://github.com/aws/aws-cdk/commit/579041e5d41e780ce1f6fb9f778c353868fb6938))
+* **cli:** garbage collect ecr assets (under --unstable flag) ([#31841](https://github.com/aws/aws-cdk/issues/31841)) ([da85e54](https://github.com/aws/aws-cdk/commit/da85e54d7d3dfb4e33942f58564e91039e7d22ff)), closes [#31611](https://github.com/aws/aws-cdk/issues/31611)
+* **codebuild:** add support of organization webhook in github source ([#31740](https://github.com/aws/aws-cdk/issues/31740)) ([8c15b5f](https://github.com/aws/aws-cdk/commit/8c15b5f19a0c289fd0dad8c35b6734232d957836)), closes [#31736](https://github.com/aws/aws-cdk/issues/31736)
+* **cognito:** support UserPoolGroup ([#31351](https://github.com/aws/aws-cdk/issues/31351)) ([408b20f](https://github.com/aws/aws-cdk/commit/408b20f92122069a04ff5776b4783ae220d04a56)), closes [#21026](https://github.com/aws/aws-cdk/issues/21026)
+* update L1 CloudFormation resource definitions ([#31917](https://github.com/aws/aws-cdk/issues/31917)) ([8c93291](https://github.com/aws/aws-cdk/commit/8c93291f789b441397bc5a64308816e89f682199))
+
+
+### Bug Fixes
+
+* **assertions:** throw error or warn when `synth` is called multiple times on mutated construct tree ([#31865](https://github.com/aws/aws-cdk/issues/31865)) ([a261c9d](https://github.com/aws/aws-cdk/commit/a261c9d8a316ec389f19c873122691d48c5ca16d)), closes [#24689](https://github.com/aws/aws-cdk/issues/24689)
+* **cli:** ecr garbage collection hangs when repository has no images ([#31951](https://github.com/aws/aws-cdk/issues/31951)) ([a235a9f](https://github.com/aws/aws-cdk/commit/a235a9fad29bf0da141b27ca391861fa613f42b8))
+* **cli:** garbage collection ignores review_in_progress stacks ([#31906](https://github.com/aws/aws-cdk/issues/31906)) ([cb3ecfe](https://github.com/aws/aws-cdk/commit/cb3ecfe8f255e626db3706632c9590c86c28bea5))
+* **s3-assets:** cannot publish a file without extension ([#30597](https://github.com/aws/aws-cdk/issues/30597)) ([ccab485](https://github.com/aws/aws-cdk/commit/ccab485b87a7090ddf0773508d7b8ee84ff654b0)), closes [#30471](https://github.com/aws/aws-cdk/issues/30471)
+* **sqs:** queue with `fifo: false` does not deploy ([#31922](https://github.com/aws/aws-cdk/issues/31922)) ([a9d3b02](https://github.com/aws/aws-cdk/commit/a9d3b02783104fe862a3e863e8c89af845b49c8c)), closes [#8550](https://github.com/aws/aws-cdk/issues/8550)
+* enable node-fips compatible body checksums for S3 ([#31883](https://github.com/aws/aws-cdk/issues/31883)) ([4f29c1d](https://github.com/aws/aws-cdk/commit/4f29c1d04533b68535c1a5706855066d1d1ea577))
+
+
 ## [2.164.1](https://github.com/aws/aws-cdk/compare/v2.164.0...v2.164.1) (2024-10-25)
 
 
