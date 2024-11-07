@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.166.0](https://github.com/aws/aws-cdk/compare/v2.165.0...v2.166.0) (2024-11-06)
+
+
+### Features
+
+* **cli:** automatically roll back stacks if necessary ([#31920](https://github.com/aws/aws-cdk/issues/31920)) ([2f9fb1e](https://github.com/aws/aws-cdk/commit/2f9fb1e050331efbbe84bb0d5943ff7798cbf3fe)), closes [#30546](https://github.com/aws/aws-cdk/issues/30546)
+* **kinesis:** support resource policy for a data stream ([#31909](https://github.com/aws/aws-cdk/issues/31909)) ([18fbd6d](https://github.com/aws/aws-cdk/commit/18fbd6d5a1a3069b0fc1356d87e534a75239e668)), closes [#28814](https://github.com/aws/aws-cdk/issues/28814)
+* **rds:** configure `autoMinorVersionUpgrade` for a database cluster ([#31962](https://github.com/aws/aws-cdk/issues/31962)) ([0fb6106](https://github.com/aws/aws-cdk/commit/0fb610678495deb150fad1adebde259fc5fc0993))
+* **route53:** support HTTPS, SSHFP, SVCB, and TLSA DNS resource record ([#31955](https://github.com/aws/aws-cdk/issues/31955)) ([afc2b0d](https://github.com/aws/aws-cdk/commit/afc2b0d1d1d620e6350e96cc464428485fca198e)), closes [/docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/aws-resource-route53-recordset.html#cfn-route53](https://github.com/aws//docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/aws-resource-route53-recordset.html/issues/cfn-route53)
+* **synthetics:** add `artifactS3Encryption` property to the Canary Construct. ([#30197](https://github.com/aws/aws-cdk/issues/30197)) ([1f39cb9](https://github.com/aws/aws-cdk/commit/1f39cb9e0770b5c02302b9b36ac874ee6bf53329)), closes [#30190](https://github.com/aws/aws-cdk/issues/30190)
+* update L1 CloudFormation resource definitions ([#32007](https://github.com/aws/aws-cdk/issues/32007)) ([be6a964](https://github.com/aws/aws-cdk/commit/be6a964ec17f22a065aa64511f7d3d31341d0ba5))
+
+
+### Bug Fixes
+
+* deploy-time stack tags cause synthesis to fail ([#32041](https://github.com/aws/aws-cdk/issues/32041)) ([18c19fd](https://github.com/aws/aws-cdk/commit/18c19fd49f2b83fee3d1cdb7de8b53ea310729b4)), closes [#32040](https://github.com/aws/aws-cdk/issues/32040)
+* **aws_route53:** cannot use CfnParameter.valueAsNumber for L2 RecordSet weight ([#31823](https://github.com/aws/aws-cdk/issues/31823)) ([14561ac](https://github.com/aws/aws-cdk/commit/14561aca0ad9c0d5eef29729dbc97fc3ccd4d171)), closes [#31810](https://github.com/aws/aws-cdk/issues/31810)
+* **cli:** asset uploads fail if Object Lock is enabled on access bucket ([#31937](https://github.com/aws/aws-cdk/issues/31937)) ([ab1e91d](https://github.com/aws/aws-cdk/commit/ab1e91d11ec2d3abc1edad318b7ea67ff91c9a88))
+* **dynamoDB:** make TableV2 taggable ([#31867](https://github.com/aws/aws-cdk/issues/31867)) ([796c6d1](https://github.com/aws/aws-cdk/commit/796c6d170a91d9f5fa96f3915a6fb6a7f7bddff3)), closes [#30631](https://github.com/aws/aws-cdk/issues/30631)
+* **opensearch:** add I4G to list of OpenSearch nodes not requiring EBS volumes ([#31948](https://github.com/aws/aws-cdk/issues/31948)) ([73378f2](https://github.com/aws/aws-cdk/commit/73378f288e8c422228fbd145d9d41efcb3605857))
+
 ## [2.165.0](https://github.com/aws/aws-cdk/compare/v2.164.1...v2.165.0) (2024-10-31)
 
 
