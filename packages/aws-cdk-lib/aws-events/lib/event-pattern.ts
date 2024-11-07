@@ -66,6 +66,13 @@ export class Match implements IResolvable {
   }
 
   /**
+   * Matches strings with the given wildcard pattern in the JSON of the event
+   */
+  public static wildcard(value: string): string[] {
+    return this.fromObjects([{ wildcard: value }]);
+  }
+
+  /**
    * Matches IPv4 and IPv6 network addresses using the Classless Inter-Domain Routing (CIDR) format
    */
   public static cidr(range: string): string[] {
