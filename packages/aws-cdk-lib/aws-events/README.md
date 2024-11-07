@@ -100,11 +100,12 @@ const rule = new events.Rule(this, 'rule', {
       object: {
         // Matchers may appear at any level
         size: events.Match.greaterThan(1024),
+        key: events.Match.wildcard('path/to/object/*.txt'),
       },
 
       // 'OR' condition
       'source-storage-class': events.Match.anyOf(
-        events.Match.prefix("GLACIER"),
+        events.Match.prefix('GLACIER'),
         events.Match.exactString('DEEP_ARCHIVE'),
       ),
     },
