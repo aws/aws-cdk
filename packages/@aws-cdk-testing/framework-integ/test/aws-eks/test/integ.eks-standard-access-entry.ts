@@ -19,6 +19,7 @@ class EksStandardAccessEntry extends Stack {
       vpc,
       ...getClusterVersionConfig(this, eks.KubernetesVersion.V1_30),
       defaultCapacity: 0,
+      authenticationMode: eks.AuthenticationMode.API_AND_CONFIG_MAP,
     });
 
     const role = new iam.Role(this, 'Role', {
