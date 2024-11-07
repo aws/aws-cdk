@@ -528,30 +528,6 @@ describe('sns topic schedule target', () => {
     });
   });
 
-  test('does not add IAM policy when DLQ is created in a different account', () => {
-    const differentAccountStack = new Stack(app, 'Stack2', {
-      env: {
-        region: 'us-east-1',
-        account: '234567890123',
-      },
-    });
-
-    const queue = new sqs.Queue(differentAccountStack, 'DeadLetterQueue', {
-      queueName: 'DummyDeadLetterQueue',
-    });
-
-    const target = new SnsPublish(topic, {
-      deadLetterQueue: queue,
-    });
-
-    new scheduler.Schedule(stack, 'Schedule', {
-      schedule: scheduleExpression,
-      target,
-    });
-
-    Annotations.fromStack(stack).hasWarning('/Stack/Schedule', 'Cannot add a resource policy to your dead letter queue associated with schedule undefined because the queue is in a different account. You must add the resource policy manually to the dead letter queue in account 234567890123.');
-  });
-
   test('renders expected retry policy', () => {
     const target = new SnsPublish(topic, {
       retryAttempts: 5,

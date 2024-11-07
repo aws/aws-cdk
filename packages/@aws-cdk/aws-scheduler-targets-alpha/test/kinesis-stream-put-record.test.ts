@@ -510,31 +510,6 @@ describe('schedule target', () => {
     });
   });
 
-  test('does not add IAM policy when DLQ is created in a different account', () => {
-    const stack2 = new Stack(app, 'Stack2', {
-      env: {
-        region: 'us-east-1',
-        account: '234567890123',
-      },
-    });
-
-    const dlq = new sqs.Queue(stack2, 'DummyDeadLetterQueue', {
-      queueName: 'DummyDeadLetterQueue',
-    });
-
-    const streamTarget = new KinesisStreamPutRecord(stream, {
-      partitionKey: 'key',
-      deadLetterQueue: dlq,
-    });
-
-    new Schedule(stack, 'MyScheduleDummy', {
-      schedule: expr,
-      target: streamTarget,
-    });
-
-    Annotations.fromStack(stack).hasWarning('/Stack/MyScheduleDummy', 'Cannot add a resource policy to your dead letter queue associated with schedule undefined because the queue is in a different account. You must add the resource policy manually to the dead letter queue in account 234567890123.');
-  });
-
   test('renders expected retry policy', () => {
     const streamTarget = new KinesisStreamPutRecord(stream, {
       partitionKey: 'key',

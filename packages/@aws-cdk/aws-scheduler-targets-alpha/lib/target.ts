@@ -81,7 +81,7 @@ export abstract class ScheduleTargetBase {
     this.addTargetActionToRole(_schedule, role);
 
     if (this.baseProps.deadLetterQueue) {
-      this.addDeadLetterQueueActionToRole(_schedule, role, this.baseProps.deadLetterQueue);
+      this.addDeadLetterQueueActionToRole(role, this.baseProps.deadLetterQueue);
     }
 
     return {
@@ -150,18 +150,11 @@ export abstract class ScheduleTargetBase {
   /**
    * Allow schedule to send events with failed invocation to an Amazon SQS queue.
    */
-  private addDeadLetterQueueActionToRole(schedule: ISchedule, role: iam.IRole, queue: sqs.IQueue) {
-    // Skip Resource Policy creation if the Queue is not in the same account.
-    // There is no way to add a target onto an imported schedule, so we can assume we will run the following code only
-    // in the account where the schedule is created.
-    if (sameEnvDimension(schedule.env.account, queue.env.account)) {
-      role.addToPrincipalPolicy(new iam.PolicyStatement({
-        actions: ['sqs:SendMessage'],
-        resources: [queue.queueArn],
-      }));
-    } else {
-      Annotations.of(schedule).addWarning(`Cannot add a resource policy to your dead letter queue associated with schedule ${schedule.scheduleName} because the queue is in a different account. You must add the resource policy manually to the dead letter queue in account ${queue.env.account}.`);
-    }
+  private addDeadLetterQueueActionToRole(role: iam.IRole, queue: sqs.IQueue) {
+    role.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: ['sqs:SendMessage'],
+      resources: [queue.queueArn],
+    }));
   }
 
   private renderRetryPolicy(maximumEventAge: Duration | undefined, maximumRetryAttempts: number | undefined): CfnSchedule.RetryPolicyProperty {
