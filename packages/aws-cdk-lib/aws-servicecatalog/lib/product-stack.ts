@@ -54,7 +54,7 @@ export interface ProductStackProps {
   /**
    * Include runtime versioning information in this Stack
    *
-   * @default `analyticsReporting` setting of containing `App`, or value of
+   * @default - `analyticsReporting` setting of containing `App`, or value of
    * 'aws:cdk:version-reporting' context key
    */
   readonly analyticsReporting?: boolean;
