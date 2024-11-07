@@ -235,7 +235,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
 
       let isInputDigestCondition;
 
-      // Use the existing condition of the same Token is existed, and if not create a new one
+      // Use the existing condition of the Token if it already exists, and if not create a new one
       if (tagOrDigest in this.tokenConditions) {
         isInputDigestCondition = this.tokenConditions[tagOrDigest];
       } else {
