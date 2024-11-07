@@ -34,10 +34,35 @@ import { determineAllowCrossAccountAssetPublishing } from './util/checks';
 import { publishAssets } from '../util/asset-publishing';
 import { StringWithoutPlaceholders } from './util/placeholders';
 
-export interface DeployStackResult {
+export type DeployStackResult =
+  | SuccessfulDeployStackResult
+  | NeedRollbackFirstDeployStackResult
+  | ReplacementRequiresNoRollbackStackResult
+  ;
+
+/** Successfully deployed a stack */
+export interface SuccessfulDeployStackResult {
+  readonly type: 'did-deploy-stack';
   readonly noOp: boolean;
   readonly outputs: { [name: string]: string };
   readonly stackArn: string;
+}
+
+/** The stack is currently in a failpaused state, and needs to be rolled back before the deployment */
+export interface NeedRollbackFirstDeployStackResult {
+  readonly type: 'failpaused-need-rollback-first';
+  readonly reason: 'not-norollback' | 'replacement';
+}
+
+/** The upcoming change has a replacement, which requires deploying without --no-rollback */
+export interface ReplacementRequiresNoRollbackStackResult {
+  readonly type: 'replacement-requires-norollback';
+}
+
+export function assertIsSuccessfulDeployStackResult(x: DeployStackResult): asserts x is SuccessfulDeployStackResult {
+  if (x.type !== 'did-deploy-stack') {
+    throw new Error(`Unexpected deployStack result. This should not happen: ${JSON.stringify(x)}. If you are seeing this error, please report it at https://github.com/aws/aws-cdk/issues/new/choose.`);
+  }
 }
 
 export interface DeployStackOptions {
@@ -305,6 +330,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
       );
     }
     return {
+      type: 'did-deploy-stack',
       noOp: true,
       outputs: cloudFormationStack.outputs,
       stackArn: cloudFormationStack.stackId,
@@ -363,6 +389,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
       options.sdk.appendCustomUserAgent('cdk-hotswap/fallback');
     } else {
       return {
+        type: 'did-deploy-stack',
         noOp: true,
         stackArn: cloudFormationStack.stackId,
         outputs: cloudFormationStack.outputs,
@@ -460,6 +487,7 @@ class FullCloudFormationDeployment {
       }
 
       return {
+        type: 'did-deploy-stack',
         noOp: true,
         outputs: this.cloudFormationStack.outputs,
         stackArn: changeSetDescription.StackId!,
@@ -472,10 +500,25 @@ class FullCloudFormationDeployment {
         changeSetDescription.ChangeSetId,
       );
       return {
+        type: 'did-deploy-stack',
         noOp: false,
         outputs: this.cloudFormationStack.outputs,
         stackArn: changeSetDescription.StackId!,
       };
+    }
+
+    // If there are replacements in the changeset, check the rollback flag and stack status
+    const replacement = hasReplacement(changeSetDescription);
+    const isPausedFailState = this.cloudFormationStack.stackStatus.isRollbackable;
+    const rollback = this.options.rollback ?? true;
+    if (isPausedFailState && replacement) {
+      return { type: 'failpaused-need-rollback-first', reason: 'replacement' };
+    }
+    if (isPausedFailState && !rollback) {
+      return { type: 'failpaused-need-rollback-first', reason: 'not-norollback' };
+    }
+    if (!rollback && replacement) {
+      return { type: 'replacement-requires-norollback' };
     }
 
     return this.executeChangeSet(changeSetDescription);
@@ -503,7 +546,7 @@ class FullCloudFormationDeployment {
     });
   }
 
-  private async executeChangeSet(changeSet: DescribeChangeSetCommandOutput): Promise<DeployStackResult> {
+  private async executeChangeSet(changeSet: DescribeChangeSetCommandOutput): Promise<SuccessfulDeployStackResult> {
     debug('Initiating execution of changeset %s on stack %s', changeSet.ChangeSetId, this.stackName);
 
     await this.cfn.executeChangeSet({
@@ -554,7 +597,7 @@ class FullCloudFormationDeployment {
     }
   }
 
-  private async directDeployment(): Promise<DeployStackResult> {
+  private async directDeployment(): Promise<SuccessfulDeployStackResult> {
     print('%s: %s stack...', chalk.bold(this.stackName), this.update ? 'updating' : 'creating');
 
     const startTime = new Date();
@@ -573,6 +616,7 @@ class FullCloudFormationDeployment {
         if (err.message === 'No updates are to be performed.') {
           debug('No updates are to be performed for stack %s', this.stackName);
           return {
+            type: 'did-deploy-stack',
             noOp: true,
             outputs: this.cloudFormationStack.outputs,
             stackArn: this.cloudFormationStack.stackId,
@@ -598,7 +642,7 @@ class FullCloudFormationDeployment {
     }
   }
 
-  private async monitorDeployment(startTime: Date, expectedChanges: number | undefined): Promise<DeployStackResult> {
+  private async monitorDeployment(startTime: Date, expectedChanges: number | undefined): Promise<SuccessfulDeployStackResult> {
     const monitor = this.options.quiet
       ? undefined
       : StackActivityMonitor.withDefaultPrinter(this.cfn, this.stackName, this.stackArtifact, {
@@ -624,6 +668,7 @@ class FullCloudFormationDeployment {
     }
     debug('Stack %s has completed updating', this.stackName);
     return {
+      type: 'did-deploy-stack',
       noOp: false,
       outputs: finalState.outputs,
       stackArn: finalState.stackId,
@@ -810,4 +855,11 @@ function suffixWithErrors(msg: string, errors?: string[]) {
 
 function arrayEquals(a: any[], b: any[]): boolean {
   return a.every((item) => b.includes(item)) && b.every((item) => a.includes(item));
+}
+
+function hasReplacement(cs: DescribeChangeSetCommandOutput) {
+  return (cs.Changes ?? []).some(c => {
+    const a = c.ResourceChange?.PolicyAction;
+    return a === 'ReplaceAndDelete' || a === 'ReplaceAndRetain' || a === 'ReplaceAndSnapshot';
+  });
 }

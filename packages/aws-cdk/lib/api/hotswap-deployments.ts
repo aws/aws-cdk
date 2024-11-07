@@ -3,7 +3,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { WaiterResult } from '@smithy/util-waiter';
 import * as chalk from 'chalk';
 import type { SDK, SdkProvider } from './aws-auth';
-import type { DeployStackResult } from './deploy-stack';
+import type { SuccessfulDeployStackResult } from './deploy-stack';
 import { EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
 import { print } from '../logging';
 import { isHotswappableAppSyncChange } from './hotswap/appsync-mapping-templates';
@@ -85,7 +85,7 @@ export async function tryHotswapDeployment(
   cloudFormationStack: CloudFormationStack,
   stackArtifact: cxapi.CloudFormationStackArtifact,
   hotswapMode: HotswapMode, hotswapPropertyOverrides: HotswapPropertyOverrides,
-): Promise<DeployStackResult | undefined> {
+): Promise<SuccessfulDeployStackResult | undefined> {
   // resolve the environment, so we can substitute things like AWS::Region in CFN expressions
   const resolvedEnv = await sdkProvider.resolveEnvironment(stackArtifact.environment);
   // create a new SDK using the CLI credentials, because the default one will not work for new-style synthesis -
@@ -126,6 +126,7 @@ export async function tryHotswapDeployment(
   await applyAllHotswappableChanges(sdk, hotswappableChanges);
 
   return {
+    type: 'did-deploy-stack',
     noOp: hotswappableChanges.length === 0,
     stackArn: cloudFormationStack.stackId,
     outputs: cloudFormationStack.outputs,

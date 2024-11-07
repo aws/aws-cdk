@@ -616,7 +616,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "03b88dabbf9959e20788fc81687646e0ed6a152c994cfe69b0cd04169b3412b1.zip"
+     "S3Key": "53679ad86565ff7a88cb1dffac5a651338a0d7283411216457d1a4d309c397c0.zip"
     },
     "Handler": "index.onEventHandler",
     "Role": {
@@ -735,7 +735,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "03b88dabbf9959e20788fc81687646e0ed6a152c994cfe69b0cd04169b3412b1.zip"
+     "S3Key": "53679ad86565ff7a88cb1dffac5a651338a0d7283411216457d1a4d309c397c0.zip"
     },
     "Handler": "index.isCompleteHandler",
     "Role": {
@@ -858,7 +858,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "d320874294f5d626406d5f86087c2a2c8e6efc0aab690c5105572555dc445fd4.zip"
+     "S3Key": "fe4094cd52f099e46f858f05efdde02f5de79288c9c783676b3fa53a494d04b5.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider)",
     "Environment": {
@@ -1003,7 +1003,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "d320874294f5d626406d5f86087c2a2c8e6efc0aab690c5105572555dc445fd4.zip"
+     "S3Key": "fe4094cd52f099e46f858f05efdde02f5de79288c9c783676b3fa53a494d04b5.zip"
     },
     "Description": "AWS CDK resource provider framework - isComplete (cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider)",
     "Environment": {
@@ -1145,7 +1145,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "d320874294f5d626406d5f86087c2a2c8e6efc0aab690c5105572555dc445fd4.zip"
+     "S3Key": "fe4094cd52f099e46f858f05efdde02f5de79288c9c783676b3fa53a494d04b5.zip"
     },
     "Description": "AWS CDK resource provider framework - onTimeout (cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider)",
     "Environment": {

@@ -6,7 +6,7 @@ import * as chokidar from 'chokidar';
 import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
 import * as uuid from 'uuid';
-import { DeploymentMethod } from './api';
+import { DeploymentMethod, SuccessfulDeployStackResult } from './api';
 import { SdkProvider } from './api/aws-auth';
 import { Bootstrapper, BootstrapEnvironmentOptions } from './api/bootstrap';
 import {
@@ -58,6 +58,12 @@ import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob 
 // Must use a require() otherwise esbuild complains about calling a namespace
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const pLimit: typeof import('p-limit') = require('p-limit');
+
+let TESTING = false;
+
+export function markTesting() {
+  TESTING = true;
+}
 
 export interface CdkToolkitProps {
   /**
@@ -322,8 +328,8 @@ export class CdkToolkit {
       });
     };
 
-    const deployStack = async (assetNode: StackNode) => {
-      const stack = assetNode.stack;
+    const deployStack = async (stackNode: StackNode) => {
+      const stack = stackNode.stack;
       if (stackCollection.stackCount !== 1) {
         highlight(stack.displayName);
       }
@@ -356,28 +362,11 @@ export class CdkToolkit {
       if (requireApproval !== RequireApproval.Never) {
         const currentTemplate = await this.props.deployments.readCurrentTemplate(stack);
         if (printSecurityDiff(currentTemplate, stack, requireApproval)) {
-          await withCorkedLogging(async () => {
-            // only talk to user if STDIN is a terminal (otherwise, fail)
-            if (!process.stdin.isTTY) {
-              throw new Error(
-                '"--require-approval" is enabled and stack includes security-sensitive updates, ' +
-                  'but terminal (TTY) is not attached so we are unable to get a confirmation from the user',
-              );
-            }
-
-            // only talk to user if concurrency is 1 (otherwise, fail)
-            if (concurrency > 1) {
-              throw new Error(
-                '"--require-approval" is enabled and stack includes security-sensitive updates, ' +
-                  'but concurrency is greater than 1 so we are unable to get a confirmation from the user',
-              );
-            }
-
-            const confirmed = await promptly.confirm('Do you wish to deploy these changes (y/n)?');
-            if (!confirmed) {
-              throw new Error('Aborted by user');
-            }
-          });
+          await askUserConfirmation(
+            concurrency,
+            '"--require-approval" is enabled and stack includes security-sensitive updates',
+            'Do you wish to deploy these changes',
+          );
         }
       }
 
@@ -402,50 +391,116 @@ export class CdkToolkit {
 
       let elapsedDeployTime = 0;
       try {
-        const result = await this.props.deployments.deployStack({
-          stack,
-          deployName: stack.stackName,
-          roleArn: options.roleArn,
-          toolkitStackName: options.toolkitStackName,
-          reuseAssets: options.reuseAssets,
-          notificationArns,
-          tags,
-          execute: options.execute,
-          changeSetName: options.changeSetName,
-          deploymentMethod: options.deploymentMethod,
-          force: options.force,
-          parameters: Object.assign({}, parameterMap['*'], parameterMap[stack.stackName]),
-          usePreviousParameters: options.usePreviousParameters,
-          progress,
-          ci: options.ci,
-          rollback: options.rollback,
-          hotswap: options.hotswap,
-          hotswapPropertyOverrides: hotswapPropertyOverrides,
-          extraUserAgent: options.extraUserAgent,
-          assetParallelism: options.assetParallelism,
-          ignoreNoStacks: options.ignoreNoStacks,
-        });
+        let deployResult: SuccessfulDeployStackResult | undefined;
 
-        const message = result.noOp ? ' ✅  %s (no changes)' : ' ✅  %s';
+        let rollback = options.rollback;
+        let iteration = 0;
+        while (!deployResult) {
+          if (++iteration > 2) {
+            throw new Error('This loop should have stabilized in 2 iterations, but didn\'t. If you are seeing this error, please report it at https://github.com/aws/aws-cdk/issues/new/choose');
+          }
+
+          const r = await this.props.deployments.deployStack({
+            stack,
+            deployName: stack.stackName,
+            roleArn: options.roleArn,
+            toolkitStackName: options.toolkitStackName,
+            reuseAssets: options.reuseAssets,
+            notificationArns,
+            tags,
+            execute: options.execute,
+            changeSetName: options.changeSetName,
+            deploymentMethod: options.deploymentMethod,
+            force: options.force,
+            parameters: Object.assign({}, parameterMap['*'], parameterMap[stack.stackName]),
+            usePreviousParameters: options.usePreviousParameters,
+            progress,
+            ci: options.ci,
+            rollback,
+            hotswap: options.hotswap,
+            hotswapPropertyOverrides: hotswapPropertyOverrides,
+            extraUserAgent: options.extraUserAgent,
+            assetParallelism: options.assetParallelism,
+            ignoreNoStacks: options.ignoreNoStacks,
+          });
+
+          switch (r.type) {
+            case 'did-deploy-stack':
+              deployResult = r;
+              break;
+
+            case 'failpaused-need-rollback-first': {
+              const motivation = r.reason === 'replacement'
+                ? 'Stack is in a paused fail state and change includes a replacement which cannot be deployed with "--no-rollback"'
+                : 'Stack is in a paused fail state and command line arguments do not include "--no-rollback"';
+
+              if (options.force) {
+                warning(`${motivation}. Rolling back first (--force).`);
+              } else {
+                await askUserConfirmation(
+                  concurrency,
+                  motivation,
+                  `${motivation}. Roll back first and then proceed with deployment`,
+                );
+              }
+
+              // Perform a rollback
+              await this.rollback({
+                selector: { patterns: [stack.hierarchicalId] },
+                toolkitStackName: options.toolkitStackName,
+                force: options.force,
+              });
+
+              // Go around through the 'while' loop again but switch rollback to true.
+              rollback = true;
+              break;
+            }
+
+            case 'replacement-requires-norollback': {
+              const motivation = 'Change includes a replacement which cannot be deployed with "--no-rollback"';
+
+              if (options.force) {
+                warning(`${motivation}. Proceeding with regular deployment (--force).`);
+              } else {
+                await askUserConfirmation(
+                  concurrency,
+                  motivation,
+                  `${motivation}. Perform a regular deployment`,
+                );
+              }
+
+              // Go around through the 'while' loop again but switch rollback to false.
+              rollback = true;
+              break;
+            }
+
+            default:
+              throw new Error(`Unexpected result type from deployStack: ${JSON.stringify(r)}. If you are seeing this error, please report it at https://github.com/aws/aws-cdk/issues/new/choose`);
+          }
+        }
+
+        const message = deployResult.noOp
+          ? ' ✅  %s (no changes)'
+          : ' ✅  %s';
 
         success('\n' + message, stack.displayName);
         elapsedDeployTime = new Date().getTime() - startDeployTime;
         print('\n✨  Deployment time: %ss\n', formatTime(elapsedDeployTime));
 
-        if (Object.keys(result.outputs).length > 0) {
+        if (Object.keys(deployResult.outputs).length > 0) {
           print('Outputs:');
 
-          stackOutputs[stack.stackName] = result.outputs;
+          stackOutputs[stack.stackName] = deployResult.outputs;
         }
 
-        for (const name of Object.keys(result.outputs).sort()) {
-          const value = result.outputs[name];
+        for (const name of Object.keys(deployResult.outputs).sort()) {
+          const value = deployResult.outputs[name];
           print('%s.%s = %s', chalk.cyan(stack.id), chalk.cyan(name), chalk.underline(chalk.cyan(value)));
         }
 
         print('Stack ARN:');
 
-        data(result.stackArn);
+        data(deployResult.stackArn);
       } catch (e: any) {
         // It has to be exactly this string because an integration test tests for
         // "bold(stackname) failed: ResourceNotReady: <error>"
@@ -1879,4 +1934,31 @@ function obscureTemplate(template: any = {}) {
   }
 
   return template;
+}
+
+/**
+ * Ask the user for a yes/no confirmation
+ *
+ * Automatically fail the confirmation in case we're in a situation where the confirmation
+ * cannot be interactively obtained from a human at the keyboard.
+ */
+async function askUserConfirmation(
+  concurrency: number,
+  motivation: string,
+  question: string,
+) {
+  await withCorkedLogging(async () => {
+    // only talk to user if STDIN is a terminal (otherwise, fail)
+    if (!TESTING && !process.stdin.isTTY) {
+      throw new Error(`${motivation}, but terminal (TTY) is not attached so we are unable to get a confirmation from the user`);
+    }
+
+    // only talk to user if concurrency is 1 (otherwise, fail)
+    if (concurrency > 1) {
+      throw new Error(`${motivation}, but concurrency is greater than 1 so we are unable to get a confirmation from the user`);
+    }
+
+    const confirmed = await promptly.confirm(`${chalk.cyan(question)} (y/n)?`);
+    if (!confirmed) { throw new Error('Aborted by user'); }
+  });
 }

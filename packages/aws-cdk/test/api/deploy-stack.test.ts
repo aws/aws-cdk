@@ -16,7 +16,7 @@ import {
   UpdateStackCommand,
   UpdateTerminationProtectionCommand,
 } from '@aws-sdk/client-cloudformation';
-import { deployStack, DeployStackOptions } from '../../lib/api';
+import { assertIsSuccessfulDeployStackResult, deployStack, DeployStackOptions } from '../../lib/api';
 import { NoBootstrapStackEnvironmentResources } from '../../lib/api/environment-resources';
 import { HotswapMode } from '../../lib/api/hotswap/common';
 import { tryHotswapDeployment } from '../../lib/api/hotswap-deployments';
@@ -148,7 +148,7 @@ test("calls tryHotswapDeployment() if 'hotswap' is `HotswapMode.HOTSWAP_ONLY`", 
   });
 
   // THEN
-  expect(deployStackResult.noOp).toEqual(true);
+  expect(deployStackResult.type === 'did-deploy-stack' && deployStackResult.noOp).toEqual(true);
   expect(tryHotswapDeployment).toHaveBeenCalled();
   // check that the extra User-Agent is honored
   expect(spyOnSdk).toHaveBeenCalledWith('extra-user-agent');
@@ -320,7 +320,7 @@ test('do deploy executable change set with 0 changes', async () => {
   });
 
   // THEN
-  expect(ret.noOp).toBeFalsy();
+  expect(ret.type === 'did-deploy-stack' && ret.noOp).toBeFalsy();
   expect(mockCloudFormationClient).toHaveReceivedCommand(ExecuteChangeSetCommand);
 });
 
@@ -778,7 +778,7 @@ test('deployStack reports no change if describeChangeSet returns specific error'
   });
 
   // THEN
-  expect(deployResult.noOp).toEqual(true);
+  expect(deployResult.type === 'did-deploy-stack' && deployResult.noOp).toEqual(true);
 });
 
 test('deploy not skipped if template did not change but one tag removed', async () => {
@@ -1125,6 +1125,33 @@ describe('disable rollback', () => {
     } as ExecuteChangeSetCommandInput);
   });
 });
+
+test.each([
+  [StackStatus.UPDATE_FAILED, 'failpaused-need-rollback-first'],
+  [StackStatus.CREATE_COMPLETE, 'replacement-requires-norollback'],
+])('no-rollback and replacement is disadvised: %p -> %p', async (stackStatus, expectedType) => {
+  // GIVEN
+  givenTemplateIs(FAKE_STACK.template);
+  givenStackExists({
+    NotificationARNs: ['arn:aws:sns:bermuda-triangle-1337:123456789012:TestTopic'],
+    StackStatus: stackStatus,
+  });
+  givenChangeSetContainsReplacement();
+
+  // WHEN
+  const result = await deployStack({
+    ...standardDeployStackArguments(),
+    stack: FAKE_STACK,
+    rollback: false,
+  });
+
+  // THEN
+  expect(result.type).toEqual(expectedType);
+});
+
+test('assertIsSuccessfulDeployStackResult does what it says', () => {
+  expect(() => assertIsSuccessfulDeployStackResult({ type: 'replacement-requires-norollback' })).toThrow();
+});
 /**
  * Set up the mocks so that it looks like the stack exists to start with
  *
@@ -1148,5 +1175,36 @@ function givenStackExists(...overrides: Array<Partial<Stack>>) {
 function givenTemplateIs(template: any) {
   mockCloudFormationClient.on(GetTemplateCommand).resolves({
     TemplateBody: JSON.stringify(template),
+  });
+}
+
+function givenChangeSetContainsReplacement() {
+  mockCloudFormationClient.on(DescribeChangeSetCommand).resolves({
+    Status: 'CREATE_COMPLETE',
+    Changes: [
+      {
+        Type: 'Resource',
+        ResourceChange: {
+          PolicyAction: 'ReplaceAndDelete',
+          Action: 'Modify',
+          LogicalResourceId: 'Queue4A7E3555',
+          PhysicalResourceId: 'https://sqs.eu-west-1.amazonaws.com/111111111111/Queue4A7E3555-P9C8nK3uv8v6.fifo',
+          ResourceType: 'AWS::SQS::Queue',
+          Replacement: 'True',
+          Scope: ['Properties'],
+          Details: [
+            {
+              Target: {
+                Attribute: 'Properties',
+                Name: 'FifoQueue',
+                RequiresRecreation: 'Always',
+              },
+              Evaluation: 'Static',
+              ChangeSource: 'DirectModification',
+            },
+          ],
+        },
+      },
+    ],
   });
 }

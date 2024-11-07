@@ -66,6 +66,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { DescribeStacksCommand, GetTemplateCommand, StackStatus } from '@aws-sdk/client-cloudformation';
 import { GetParameterCommand } from '@aws-sdk/client-ssm';
 import * as fs from 'fs-extra';
+import * as promptly from 'promptly';
 import { instanceMockFrom, MockCloudExecutable, TestStackArtifact } from './util';
 import { SdkProvider } from '../lib';
 import {
@@ -76,7 +77,7 @@ import {
   restoreSdkMocksToDefault,
 } from './util/mock-sdk';
 import { Bootstrapper } from '../lib/api/bootstrap';
-import { DeployStackResult } from '../lib/api/deploy-stack';
+import { DeployStackResult, SuccessfulDeployStackResult } from '../lib/api/deploy-stack';
 import {
   Deployments,
   DeployStackOptions,
@@ -87,10 +88,12 @@ import {
 import { HotswapMode } from '../lib/api/hotswap/common';
 import { Mode } from '../lib/api/plugin';
 import { Template } from '../lib/api/util/cloudformation';
-import { CdkToolkit, Tag } from '../lib/cdk-toolkit';
+import { CdkToolkit, markTesting, Tag } from '../lib/cdk-toolkit';
 import { RequireApproval } from '../lib/diff';
 import { Configuration } from '../lib/settings';
 import { flatten } from '../lib/util';
+
+markTesting();
 
 process.env.CXAPI_DISABLE_SELECT_BY_ID = '1';
 
@@ -571,6 +574,7 @@ describe('deploy', () => {
       const mockCfnDeployments = instanceMockFrom(Deployments);
       mockCfnDeployments.deployStack.mockReturnValue(
         Promise.resolve({
+          type: 'did-deploy-stack',
           noOp: false,
           outputs: {},
           stackArn: 'stackArn',
@@ -1458,6 +1462,68 @@ describe('synth', () => {
 
     expect(mockedRollback).toHaveBeenCalled();
   });
+
+  test.each([
+    [{ type: 'failpaused-need-rollback-first', reason: 'replacement' }, false],
+    [{ type: 'failpaused-need-rollback-first', reason: 'replacement' }, true],
+    [{ type: 'failpaused-need-rollback-first', reason: 'not-norollback' }, false],
+    [{ type: 'replacement-requires-norollback' }, false],
+    [{ type: 'replacement-requires-norollback' }, true],
+  ] satisfies Array<[DeployStackResult, boolean]>)('no-rollback deployment that cant proceed will be called with rollback on retry: %p (using force: %p)', async (firstResult, useForce) => {
+    cloudExecutable = new MockCloudExecutable({
+      stacks: [
+        MockStack.MOCK_STACK_C,
+      ],
+    });
+
+    const deployments = new Deployments({ sdkProvider: new MockSdkProvider() });
+
+    // Rollback might be called -- just don't do nothing.
+    const mockRollbackStack = jest.spyOn(deployments, 'rollbackStack').mockResolvedValue({});
+
+    const mockedDeployStack = jest
+      .spyOn(deployments, 'deployStack')
+      .mockResolvedValueOnce(firstResult)
+      .mockResolvedValueOnce({
+        type: 'did-deploy-stack',
+        noOp: false,
+        outputs: {},
+        stackArn: 'stack:arn',
+      });
+
+    const mockedConfirm = jest.spyOn(promptly, 'confirm').mockResolvedValue(true);
+
+    const toolkit = new CdkToolkit({
+      cloudExecutable,
+      configuration: cloudExecutable.configuration,
+      sdkProvider: cloudExecutable.sdkProvider,
+      deployments,
+    });
+
+    await toolkit.deploy({
+      selector: { patterns: [] },
+      hotswap: HotswapMode.FULL_DEPLOYMENT,
+      rollback: false,
+      requireApproval: RequireApproval.Never,
+      force: useForce,
+    });
+
+    if (firstResult.type === 'failpaused-need-rollback-first') {
+      expect(mockRollbackStack).toHaveBeenCalled();
+    }
+
+    if (!useForce) {
+      // Questions will have been asked only if --force is not specified
+      if (firstResult.type === 'failpaused-need-rollback-first') {
+        expect(mockedConfirm).toHaveBeenCalledWith(expect.stringContaining('Roll back first and then proceed with deployment'));
+      } else {
+        expect(mockedConfirm).toHaveBeenCalledWith(expect.stringContaining('Perform a regular deployment'));
+      }
+    }
+
+    expect(mockedDeployStack).toHaveBeenNthCalledWith(1, expect.objectContaining({ rollback: false }));
+    expect(mockedDeployStack).toHaveBeenNthCalledWith(2, expect.objectContaining({ rollback: true }));
+  });
 });
 
 class MockStack {
@@ -1595,7 +1661,7 @@ class FakeCloudFormation extends Deployments {
     this.expectedNotificationArns = expectedNotificationArns ?? [];
   }
 
-  public deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
+  public deployStack(options: DeployStackOptions): Promise<SuccessfulDeployStackResult> {
     expect([
       MockStack.MOCK_STACK_A.stackName,
       MockStack.MOCK_STACK_B.stackName,
@@ -1613,6 +1679,7 @@ class FakeCloudFormation extends Deployments {
 
     expect(options.notificationArns).toEqual(this.expectedNotificationArns);
     return Promise.resolve({
+      type: 'did-deploy-stack',
       stackArn: `arn:aws:cloudformation:::stack/${options.stack.stackName}/MockedOut`,
       noOp: false,
       outputs: { StackName: options.stack.stackName },

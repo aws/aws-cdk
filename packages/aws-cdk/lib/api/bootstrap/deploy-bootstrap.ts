@@ -4,15 +4,15 @@ import { ArtifactType } from '@aws-cdk/cloud-assembly-schema';
 import { CloudAssemblyBuilder, Environment, EnvironmentUtils } from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import {
-  BOOTSTRAP_VERSION_OUTPUT,
-  BootstrapEnvironmentOptions,
-  BOOTSTRAP_VERSION_RESOURCE,
   BOOTSTRAP_VARIANT_PARAMETER,
+  BOOTSTRAP_VERSION_OUTPUT,
+  BOOTSTRAP_VERSION_RESOURCE,
+  BootstrapEnvironmentOptions,
   DEFAULT_BOOTSTRAP_VARIANT,
 } from './bootstrap-props';
 import * as logging from '../../logging';
-import type { SdkProvider, SDK } from '../aws-auth';
-import { deployStack, type DeployStackResult } from '../deploy-stack';
+import type { SDK, SdkProvider } from '../aws-auth';
+import { assertIsSuccessfulDeployStackResult, deployStack, SuccessfulDeployStackResult } from '../deploy-stack';
 import { NoBootstrapStackEnvironmentResources } from '../environment-resources';
 import { Mode } from '../plugin';
 import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitInfo } from '../toolkit-info';
@@ -70,14 +70,15 @@ export class BootstrapStack {
     template: any,
     parameters: Record<string, string | undefined>,
     options: Omit<BootstrapEnvironmentOptions, 'parameters'>,
-  ): Promise<DeployStackResult> {
+  ): Promise<SuccessfulDeployStackResult> {
     if (this.currentToolkitInfo.found && !options.force) {
       // Safety checks
       const abortResponse = {
+        type: 'did-deploy-stack',
         noOp: true,
         outputs: {},
         stackArn: this.currentToolkitInfo.bootstrapStack.stackId,
-      };
+      } satisfies SuccessfulDeployStackResult;
 
       // Validate that the bootstrap stack we're trying to replace is from the same variant as the one we're trying to deploy
       const currentVariant = this.currentToolkitInfo.variant;
@@ -123,7 +124,7 @@ export class BootstrapStack {
 
     const assembly = builder.buildAssembly();
 
-    return deployStack({
+    const ret = await deployStack({
       stack: assembly.getStackByName(this.toolkitStackName),
       resolvedEnvironment: this.resolvedEnvironment,
       sdk: this.sdk,
@@ -137,6 +138,10 @@ export class BootstrapStack {
       // Obviously we can't need a bootstrap stack to deploy a bootstrap stack
       envResources: new NoBootstrapStackEnvironmentResources(this.resolvedEnvironment, this.sdk),
     });
+
+    assertIsSuccessfulDeployStackResult(ret);
+
+    return ret;
   }
 }
 

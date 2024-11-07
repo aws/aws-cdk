@@ -73,7 +73,7 @@ describe('fixed template', () => {
     const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '');
     expect(exitCode).toBe(0);
     expect(plainTextOutput.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '')).toContain(`Resources
-[~] AWS::SomeService::SomeResource SomeResource 
+[~] AWS::SomeService::SomeResource SomeResource
  └─ [~] Something
      ├─ [-] old-value
      └─ [+] new-value
@@ -158,6 +158,7 @@ describe('imports', () => {
     );
     cloudFormation.deployStack.mockImplementation((options) =>
       Promise.resolve({
+        type: 'did-deploy-stack',
         noOp: true,
         outputs: {},
         stackArn: '',
@@ -284,6 +285,7 @@ describe('non-nested stacks', () => {
     );
     cloudFormation.deployStack.mockImplementation((options) =>
       Promise.resolve({
+        type: 'did-deploy-stack',
         noOp: true,
         outputs: {},
         stackArn: '',
@@ -508,6 +510,7 @@ describe('stack exists checks', () => {
     );
     cloudFormation.deployStack.mockImplementation((options) =>
       Promise.resolve({
+        type: 'did-deploy-stack',
         noOp: true,
         outputs: {},
         stackArn: '',
@@ -1055,6 +1058,14 @@ describe('--strict', () => {
   beforeEach(() => {
     const oldTemplate = {};
 
+    cloudFormation = instanceMockFrom(Deployments);
+    cloudFormation.readCurrentTemplateWithNestedStacks.mockImplementation((_stackArtifact: CloudFormationStackArtifact) => {
+      return Promise.resolve({
+        deployedRootTemplate: {},
+        nestedStacks: {},
+      });
+    });
+
     cloudExecutable = new MockCloudExecutable({
       stacks: [
         {
@@ -1108,8 +1119,8 @@ describe('--strict', () => {
     const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '');
     expect(plainTextOutput.trim()).toEqual(`Stack A
 Resources
-[+] AWS::CDK::Metadata MetadataResource 
-[+] AWS::Something::Amazing SomeOtherResource 
+[+] AWS::CDK::Metadata MetadataResource
+[+] AWS::Something::Amazing SomeOtherResource
 
 Other Changes
 [+] Unknown Rules: {\"CheckBootstrapVersion\":{\"newCheck\":\"newBootstrapVersion\"}}
@@ -1133,7 +1144,7 @@ Other Changes
     const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '');
     expect(plainTextOutput.trim()).toEqual(`Stack A
 Resources
-[+] AWS::Something::Amazing SomeOtherResource 
+[+] AWS::Something::Amazing SomeOtherResource
 
 
 ✨  Number of stacks with differences: 1`);

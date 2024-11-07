@@ -1,13 +1,18 @@
-const mockDeployStack = jest.fn();
+/* eslint-disable import/order */
 
-jest.mock('../../lib/api/deploy-stack', () => ({
-  deployStack: mockDeployStack,
-}));
-
+import * as deployStack from '../../lib/api/deploy-stack';
 import { Stack } from '@aws-sdk/client-cloudformation';
 import { CreatePolicyCommand, GetPolicyCommand } from '@aws-sdk/client-iam';
 import { Bootstrapper, DeployStackOptions, ToolkitInfo } from '../../lib/api';
-import { mockBootstrapStack, mockIAMClient, MockSdkProvider, restoreSdkMocksToDefault } from '../util/mock-sdk';
+import {
+  mockBootstrapStack,
+  mockCloudFormationClient,
+  mockIAMClient,
+  MockSdkProvider,
+  restoreSdkMocksToDefault,
+} from '../util/mock-sdk';
+
+const mockDeployStack = jest.spyOn(deployStack, 'deployStack');
 
 let bootstrapper: Bootstrapper;
 let stderrMock: jest.SpyInstance;
@@ -48,6 +53,12 @@ describe('Bootstrapping v2', () => {
     restoreSdkMocksToDefault();
     mockIAMClient.on(GetPolicyCommand).resolves(value);
     mockIAMClient.on(CreatePolicyCommand).resolves(value);
+    mockDeployStack.mockResolvedValue({
+      type: 'did-deploy-stack',
+      noOp: false,
+      outputs: {},
+      stackArn: 'arn:stack',
+    });
   });
 
   afterEach(() => {
@@ -357,6 +368,12 @@ describe('Bootstrapping v2', () => {
     let template: any;
     mockDeployStack.mockImplementation((args: DeployStackOptions) => {
       template = args.stack.template;
+      return Promise.resolve({
+        type: 'did-deploy-stack',
+        noOp: false,
+        outputs: {},
+        stackArn: 'arn:stack',
+      });
     });
 
     await bootstrapper.bootstrapEnvironment(env, sdk, {

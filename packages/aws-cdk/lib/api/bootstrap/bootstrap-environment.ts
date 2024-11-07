@@ -8,7 +8,7 @@ import { warning } from '../../logging';
 import { loadStructuredFile, serializeStructure } from '../../serialize';
 import { rootDir } from '../../util/directories';
 import type { SDK, SdkProvider } from '../aws-auth';
-import type { DeployStackResult } from '../deploy-stack';
+import type { SuccessfulDeployStackResult } from '../deploy-stack';
 import { Mode } from '../plugin';
 
 export type BootstrapSource = { source: 'legacy' } | { source: 'default' } | { source: 'custom'; templateFile: string };
@@ -20,7 +20,7 @@ export class Bootstrapper {
     environment: cxapi.Environment,
     sdkProvider: SdkProvider,
     options: BootstrapEnvironmentOptions = {},
-  ): Promise<DeployStackResult> {
+  ): Promise<SuccessfulDeployStackResult> {
     switch (this.source.source) {
       case 'legacy':
         return this.legacyBootstrap(environment, sdkProvider, options);
@@ -44,7 +44,7 @@ export class Bootstrapper {
     environment: cxapi.Environment,
     sdkProvider: SdkProvider,
     options: BootstrapEnvironmentOptions = {},
-  ): Promise<DeployStackResult> {
+  ): Promise<SuccessfulDeployStackResult> {
     const params = options.parameters ?? {};
 
     if (params.trustedAccounts?.length) {
@@ -79,7 +79,7 @@ export class Bootstrapper {
     environment: cxapi.Environment,
     sdkProvider: SdkProvider,
     options: BootstrapEnvironmentOptions = {},
-  ): Promise<DeployStackResult> {
+  ): Promise<SuccessfulDeployStackResult> {
     const params = options.parameters ?? {};
 
     const bootstrapTemplate = await this.loadTemplate();
@@ -327,7 +327,7 @@ export class Bootstrapper {
     environment: cxapi.Environment,
     sdkProvider: SdkProvider,
     options: BootstrapEnvironmentOptions = {},
-  ): Promise<DeployStackResult> {
+  ): Promise<SuccessfulDeployStackResult> {
     // Look at the template, decide whether it's most likely a legacy or modern bootstrap
     // template, and use the right bootstrapper for that.
     const version = bootstrapVersionFromTemplate(await this.loadTemplate());
