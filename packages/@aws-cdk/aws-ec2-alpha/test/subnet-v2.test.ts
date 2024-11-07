@@ -207,7 +207,7 @@ describe('Subnet V2 with custom IP and routing', () => {
                     },
         },
         TestVPCD26570D8: { Type: 'AWS::EC2::VPC' },
-        TestVPCipv6Ipam6024F9EC: { Type: 'AWS::EC2::VPCCidrBlock' },
+        TestVPCipv6IpamFF061725: { Type: 'AWS::EC2::VPCCidrBlock' },
         IpamSubnet78671F8A: {
           Type: 'AWS::EC2::Subnet',
           Properties: {
@@ -301,5 +301,4 @@ describe('Subnet V2 with custom IP and routing', () => {
 
     expect(Template.fromStack(stack).hasResource('AWS::EC2::SubnetNetworkAclAssociation', {}));
   });
-
 });

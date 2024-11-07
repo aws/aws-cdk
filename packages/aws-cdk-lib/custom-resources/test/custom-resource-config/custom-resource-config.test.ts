@@ -1,4 +1,9 @@
+import { readFileSync } from 'fs';
+import * as path from 'path';
 import { Template } from '../../../assertions';
+import * as dynamodb from '../../../aws-dynamodb';
+import { ReplicaProvider } from '../../../aws-dynamodb/lib/replica-provider';
+import * as lambda from '../../../aws-lambda';
 import * as logs from '../../../aws-logs';
 import * as s3 from '../../../aws-s3';
 import * as s3deploy from '../../../aws-s3-deployment';
@@ -198,5 +203,263 @@ test('addLogRetentionLifetime modifies the retention period of the custom resour
   templateB.resourceCountIs('AWS::Logs::LogGroup', 1);
   templateB.hasResourceProperties('AWS::Logs::LogGroup', {
     RetentionInDays: customResourceLogRetention,
+  });
+});
+
+describe('when custom resource logGroup removalPolicy is Retain', () => {
+  test('addRemovalPolicy modifies custom resource logGroup to Delete', () => {
+    // GIVEN
+    const customResourceRemovalPolicy = cdk.RemovalPolicy.DESTROY;
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
+    new s3deploy.BucketDeployment(stack, 'BucketDeployment', {
+      sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
+      destinationBucket: websiteBucket,
+      logGroup: new logs.LogGroup(stack, 'LogGroup', {
+        removalPolicy: cdk.RemovalPolicy.RETAIN, // Explicitly set to the default value `RETAIN`
+      }),
+    });
+
+    // WHEN
+    CustomResourceConfig.of(app).addRemovalPolicy(customResourceRemovalPolicy);
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::Logs::LogGroup', 1);
+    template.hasResource('AWS::Logs::LogGroup', {
+      UpdateReplacePolicy: 'Delete',
+      DeletionPolicy: 'Delete',
+    });
+  });
+
+  test('addLogRetentionLifetime creates a new logGroup and addRemovalPolicy can set its removal policy to destroy', () => {
+    // GIVEN
+    const customResourceLogRetention = logs.RetentionDays.TEN_YEARS;
+    const customResourceRemovalPolicy = cdk.RemovalPolicy.DESTROY;
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
+    new s3deploy.BucketDeployment(stack, 'BucketDeployment', {
+      sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
+      destinationBucket: websiteBucket,
+    });
+    CustomResourceConfig.of(app).addLogRetentionLifetime(customResourceLogRetention);
+
+    // WHEN
+    CustomResourceConfig.of(app).addRemovalPolicy(customResourceRemovalPolicy);
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::Logs::LogGroup', 1);
+    template.hasResource('AWS::Logs::LogGroup', {
+      UpdateReplacePolicy: 'Delete',
+      DeletionPolicy: 'Delete',
+    });
+  });
+
+  test("addRemovalPolicy can set a custom resource logGroup's removal policy to Retain", () => {
+    // GIVEN
+    const customResourceRemovalPolicy = cdk.RemovalPolicy.RETAIN;
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
+    new s3deploy.BucketDeployment(stack, 'BucketDeployment', {
+      sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
+      destinationBucket: websiteBucket,
+      logGroup: new logs.LogGroup(stack, 'LogGroup1', {}),
+    });
+
+    // WHEN
+    CustomResourceConfig.of(app).addRemovalPolicy(customResourceRemovalPolicy);
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::Logs::LogGroup', 1);
+    template.hasResource('AWS::Logs::LogGroup', {
+      UpdateReplacePolicy: 'Retain',
+      DeletionPolicy: 'Retain',
+    });
+  });
+
+  test('addRemovalPolicy only affects custom resource log groups', () => {
+    // GIVEN
+    const customResourceRemovalPolicy = cdk.RemovalPolicy.DESTROY;
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
+    new s3deploy.BucketDeployment(stack, 'BucketDeployment', {
+      sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
+      destinationBucket: websiteBucket,
+      logGroup: new logs.LogGroup(stack, 'LogGroup1', {
+        removalPolicy: cdk.RemovalPolicy.RETAIN,
+      }),
+    });
+    new logs.LogGroup(stack, 'LogGroup2', {
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
+
+    // WHEN
+    CustomResourceConfig.of(app).addRemovalPolicy(customResourceRemovalPolicy);
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::Logs::LogGroup', 2);
+    template.hasResource('AWS::Logs::LogGroup', {
+      UpdateReplacePolicy: 'Delete',
+      DeletionPolicy: 'Delete',
+    });
+    template.hasResource('AWS::Logs::LogGroup', {
+      UpdateReplacePolicy: 'Retain',
+      DeletionPolicy: 'Retain',
+    });
+  });
+});
+
+describe('when custom resource lambda runtime is set by addLambdaRuntime', () => {
+  test('addLambdaRuntime sets custom resource lambda runtime to python3.12', () => {
+    // GIVEN
+    const customResourceRuntime = lambda.Runtime.PYTHON_3_12;
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
+    new s3deploy.BucketDeployment(stack, 'BucketDeployment', { // BucketDeployment uses python3.9
+      sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
+      destinationBucket: websiteBucket,
+    });
+
+    // WHEN
+    CustomResourceConfig.of(app).addLambdaRuntime(customResourceRuntime);
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::Lambda::Function', {
+      Runtime: customResourceRuntime.toString(),
+    });
+  });
+
+  test('addLambdaRuntime sets custom resource lambda runtime and does not modify non custom resource lambda', () => {
+    // GIVEN
+    const customResourceRuntime = lambda.Runtime.PYTHON_3_12;
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
+    new s3deploy.BucketDeployment(stack, 'BucketDeployment', { // python3.9
+      sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
+      destinationBucket: websiteBucket,
+    });
+    new lambda.Function(stack, 'LambdaFunction', {
+      runtime: lambda.Runtime.PYTHON_3_11,
+      code: lambda.Code.fromInline('helloWorld'),
+      handler: 'index.handler',
+    });
+
+    // WHEN
+    CustomResourceConfig.of(app).addLambdaRuntime(customResourceRuntime);
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::Lambda::Function', 2);
+    template.hasResourceProperties('AWS::Lambda::Function', {
+      Runtime: customResourceRuntime.toString(),
+    });
+    template.hasResourceProperties('AWS::Lambda::Function', {
+      Runtime: lambda.Runtime.PYTHON_3_11.toString(),
+    });
+
+  });
+
+  test('addLambdaRuntime does not set custom resource lambda runtime in a different runtime family', () => {
+    // GIVEN
+    const customResourceRuntime = lambda.Runtime.NODEJS_20_X;
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
+    new s3deploy.BucketDeployment(stack, 'BucketDeployment', { // BucketDeployment uses Python3.9, not node
+      sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
+      destinationBucket: websiteBucket,
+    });
+
+    // WHEN
+    CustomResourceConfig.of(app).addLambdaRuntime(customResourceRuntime);
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::Lambda::Function', {
+      Runtime: 'python3.11',
+    });
+  });
+
+  test('addLambdaRuntime sets custom resource lambda runtime to nodejs18.x', () => {
+    // GIVEN
+    const customResourceRuntime = lambda.Runtime.NODEJS_18_X;
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const table = new dynamodb.Table(stack, 'Table', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING,
+      },
+      replicationRegions: [
+        'us-east-2',
+      ], // latestNodeJS at least Node20
+    });
+
+    // WHEN
+    CustomResourceConfig.of(app).addLambdaRuntime(customResourceRuntime);
+
+    // THEN
+    const assembly = app.synth();
+    const replicaArtifactId = ReplicaProvider.getOrCreate(stack, {
+      regions: ['us-east-2'],
+      tableName: table.tableName,
+    }).artifactId;
+    const nestedTemplate = JSON.parse(readFileSync(path.join(assembly.directory, `${replicaArtifactId}.nested.template.json`), 'utf8'));
+    const template = Template.fromJSON(nestedTemplate);
+    template.resourcePropertiesCountIs('AWS::Lambda::Function', {
+      Runtime: customResourceRuntime.toString(),
+    }, 2);
+  });
+
+  test('addLambdaRuntime sets two custom resource lambda runtime in their specified runtime family', () => {
+    // GIVEN
+    const dynamodbReplicaCustomResourceRuntime = lambda.Runtime.NODEJS_18_X;
+    const s3BucketDeploymentCustomResourceRuntime = lambda.Runtime.PYTHON_3_12;
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const table = new dynamodb.Table(stack, 'Table', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING,
+      },
+      replicationRegions: [
+        'us-east-2',
+      ], // latestNodeJS at least Node20
+    });
+    const websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
+    new s3deploy.BucketDeployment(stack, 'BucketDeployment', { // python3.9
+      sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
+      destinationBucket: websiteBucket,
+    });
+
+    // WHEN
+    CustomResourceConfig.of(app).addLambdaRuntime(dynamodbReplicaCustomResourceRuntime);
+    CustomResourceConfig.of(app).addLambdaRuntime(s3BucketDeploymentCustomResourceRuntime);
+
+    // THEN
+    const template1 = Template.fromStack(stack);
+    template1.hasResourceProperties('AWS::Lambda::Function', {
+      Runtime: s3BucketDeploymentCustomResourceRuntime.toString(),
+    });
+    const assembly = app.synth();
+    const replicaArtifactId = ReplicaProvider.getOrCreate(stack, {
+      regions: ['us-east-2'],
+      tableName: table.tableName,
+    }).artifactId;
+    const nestedTemplate = JSON.parse(readFileSync(path.join(assembly.directory, `${replicaArtifactId}.nested.template.json`), 'utf8'));
+    const template2 = Template.fromJSON(nestedTemplate);
+    template2.resourcePropertiesCountIs('AWS::Lambda::Function', {
+      Runtime: dynamodbReplicaCustomResourceRuntime.toString(),
+    }, 2);
   });
 });

@@ -41,6 +41,15 @@ const key = new kms.Key(this, 'MyKey', {
 });
 ```
 
+
+Create a multi-Region primary key:
+
+```ts
+const key = new kms.Key(this, 'MyKey', {
+  multiRegion: true, // Default is false
+});
+```
+
 ## Sharing keys between stacks
 
 To use a KMS key in a different stack in the same CDK application,
@@ -113,6 +122,24 @@ myKeyLookup.grantEncryptDecrypt(role);
 Note that a call to `.addToResourcePolicy(statement)` on `myKeyLookup` will not have
 an affect on the key's policy because it is not owned by your stack. The call
 will be a no-op.
+
+If the target key is not found in your account, an error will be thrown.
+To prevent the error in the case, you can receive a dummy key without the error
+by setting `returnDummyKeyOnMissing` to `true`. The dummy key has a `keyId` of
+`1234abcd-12ab-34cd-56ef-1234567890ab`. The value of the dummy key id can also be
+referenced using the `Key.DEFAULT_DUMMY_KEY_ID` variable, and you can check if the
+key is a dummy key by using the `Key.isLookupDummy()` method.
+
+```ts
+const dummy = kms.Key.fromLookup(this, 'MyKeyLookup', {
+  aliasName: 'alias/NonExistentAlias',
+  returnDummyKeyOnMissing: true,
+});
+
+if (kms.Key.isLookupDummy(dummy)) {
+  // alternative process
+}
+```
 
 ## Key Policies
 
