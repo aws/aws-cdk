@@ -50,13 +50,13 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "ScheduleGroup": {
@@ -70,7 +70,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "TargetQueue": {
@@ -86,13 +86,13 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "DeadLetterQueue": {
@@ -108,13 +108,13 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "SchedulerRole": {
@@ -126,7 +126,7 @@
                 "path": "createScheduleInteg/SchedulerRole/ImportSchedulerRole",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "Resource": {
@@ -151,7 +151,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DefaultPolicy": {
@@ -204,19 +204,19 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "createSchedule1": {
@@ -224,7 +224,7 @@
             "path": "createScheduleInteg/createSchedule1",
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "createSchedule2": {
@@ -232,7 +232,7 @@
             "path": "createScheduleInteg/createSchedule2",
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "Start Task": {
@@ -240,7 +240,7 @@
             "path": "createScheduleInteg/Start Task",
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "End Task": {
@@ -248,7 +248,7 @@
             "path": "createScheduleInteg/End Task",
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "stateMachine": {
@@ -264,7 +264,7 @@
                     "path": "createScheduleInteg/stateMachine/Role/ImportRole",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "Resource": {
@@ -289,7 +289,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "DefaultPolicy": {
@@ -377,19 +377,19 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "version": "10.4.2"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "Resource": {
@@ -442,7 +442,7 @@
                           {
                             "Ref": "AWS::Partition"
                           },
-                          ":states:::aws-sdk:scheduler:createSchedule\",\"Parameters\":{\"FlexibleTimeWindow\":{\"Mode\":\"OFF\"},\"Name\":\"TestScheduleB\",\"ScheduleExpression\":\"rate(1 minutes)\",\"State\":\"ENABLED\",\"Target\":{\"Arn\":\"",
+                          ":states:::aws-sdk:scheduler:createSchedule\",\"Parameters\":{\"ActionAfterCompletion\":\"NONE\",\"FlexibleTimeWindow\":{\"Mode\":\"OFF\"},\"Name\":\"TestScheduleB\",\"ScheduleExpression\":\"rate(1 minutes)\",\"State\":\"ENABLED\",\"Target\":{\"Arn\":\"",
                           {
                             "Fn::GetAtt": [
                               "TargetQueue08AD2B3C",
@@ -470,13 +470,13 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "Exports": {
@@ -488,13 +488,13 @@
                 "path": "createScheduleInteg/Exports/Output{\"Ref\":\"stateMachineE926C166\"}",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "BootstrapVersion": {
@@ -502,7 +502,7 @@
             "path": "createScheduleInteg/BootstrapVersion",
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "CheckBootstrapVersion": {
@@ -510,13 +510,13 @@
             "path": "createScheduleInteg/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           }
         },
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       },
       "PutEvents": {
@@ -532,7 +532,7 @@
                 "path": "PutEvents/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -552,7 +552,7 @@
                             "path": "PutEvents/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutiond6fda8c72eba625f027cf7cd23e6cea8/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -570,13 +570,13 @@
                             "path": "PutEvents/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutiond6fda8c72eba625f027cf7cd23e6cea8/Default/Default",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "version": "10.4.2"
                         }
                       }
                     },
@@ -594,7 +594,7 @@
                         "path": "PutEvents/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "version": "10.4.2"
                         }
                       },
                       "Role": {
@@ -602,7 +602,7 @@
                         "path": "PutEvents/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "version": "10.4.2"
                         }
                       },
                       "Handler": {
@@ -610,13 +610,13 @@
                         "path": "PutEvents/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "version": "10.4.2"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "LatestNodeRuntimeMap": {
@@ -624,7 +624,7 @@
                     "path": "PutEvents/DefaultTest/DeployAssert/LatestNodeRuntimeMap",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "AwsApiCallStepFunctionsdescribeExecution175e2dd816caa8f2043963960672472b": {
@@ -640,7 +640,7 @@
                             "path": "PutEvents/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution175e2dd816caa8f2043963960672472b/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -658,13 +658,13 @@
                             "path": "PutEvents/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution175e2dd816caa8f2043963960672472b/Default/Default",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "version": "10.4.2"
                         }
                       },
                       "AssertionResults": {
@@ -672,7 +672,7 @@
                         "path": "PutEvents/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution175e2dd816caa8f2043963960672472b/AssertionResults",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "version": "10.4.2"
                         }
                       }
                     },
@@ -686,7 +686,7 @@
                     "path": "PutEvents/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "CheckBootstrapVersion": {
@@ -694,13 +694,13 @@
                     "path": "PutEvents/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               }
             },
@@ -720,13 +720,13 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },
     "constructInfo": {
       "fqn": "constructs.Construct",
-      "version": "10.3.0"
+      "version": "10.4.2"
     }
   }
 }

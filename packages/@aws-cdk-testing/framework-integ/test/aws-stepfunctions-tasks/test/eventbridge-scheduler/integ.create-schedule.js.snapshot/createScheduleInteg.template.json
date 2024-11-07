@@ -249,7 +249,7 @@
        {
         "Ref": "AWS::Partition"
        },
-       ":states:::aws-sdk:scheduler:createSchedule\",\"Parameters\":{\"FlexibleTimeWindow\":{\"Mode\":\"OFF\"},\"Name\":\"TestScheduleB\",\"ScheduleExpression\":\"rate(1 minutes)\",\"State\":\"ENABLED\",\"Target\":{\"Arn\":\"",
+       ":states:::aws-sdk:scheduler:createSchedule\",\"Parameters\":{\"ActionAfterCompletion\":\"NONE\",\"FlexibleTimeWindow\":{\"Mode\":\"OFF\"},\"Name\":\"TestScheduleB\",\"ScheduleExpression\":\"rate(1 minutes)\",\"State\":\"ENABLED\",\"Target\":{\"Arn\":\"",
        {
         "Fn::GetAtt": [
          "TargetQueue08AD2B3C",

@@ -1,7 +1,7 @@
 {
-  "version": "36.0.0",
+  "version": "38.0.1",
   "files": {
-    "eda5ccd65389f871f7cdc00770bb04740357a30a352ff10d81ba623900e5e453": {
+    "b519c62f4c427b2fad8cde0f25a88feacdd027c5952a777d1e5e5d78ea264858": {
       "source": {
         "path": "createScheduleInteg.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "eda5ccd65389f871f7cdc00770bb04740357a30a352ff10d81ba623900e5e453.json",
+          "objectKey": "b519c62f4c427b2fad8cde0f25a88feacdd027c5952a777d1e5e5d78ea264858.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
