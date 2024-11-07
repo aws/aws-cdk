@@ -1,6 +1,6 @@
 import { Group, Schedule, ScheduleExpression } from '@aws-cdk/aws-scheduler-alpha';
 import { App, Duration, Stack } from 'aws-cdk-lib';
-import { Annotations, Template } from 'aws-cdk-lib/assertions';
+import { Template } from 'aws-cdk-lib/assertions';
 import { Artifact, Pipeline } from 'aws-cdk-lib/aws-codepipeline';
 import { ManualApprovalAction, S3SourceAction } from 'aws-cdk-lib/aws-codepipeline-actions';
 import { AccountRootPrincipal, Role } from 'aws-cdk-lib/aws-iam';

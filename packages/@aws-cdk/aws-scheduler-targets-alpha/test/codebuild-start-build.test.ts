@@ -1,6 +1,6 @@
 import { Group, Schedule, ScheduleExpression } from '@aws-cdk/aws-scheduler-alpha';
 import { App, Duration, Stack } from 'aws-cdk-lib';
-import { Annotations, Template } from 'aws-cdk-lib/assertions';
+import { Template } from 'aws-cdk-lib/assertions';
 import { BuildSpec, Project } from 'aws-cdk-lib/aws-codebuild';
 import { AccountRootPrincipal, Role } from 'aws-cdk-lib/aws-iam';
 import { Queue } from 'aws-cdk-lib/aws-sqs';

@@ -1,10 +1,9 @@
 import { ISchedule, ScheduleTargetConfig, ScheduleTargetInput } from '@aws-cdk/aws-scheduler-alpha';
-import { Annotations, Duration, PhysicalName, Stack, Token } from 'aws-cdk-lib';
+import { Duration, PhysicalName, Stack, Token } from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnSchedule } from 'aws-cdk-lib/aws-scheduler';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import { md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
-import { sameEnvDimension } from './util';
 
 /**
  * Base properties for a Schedule Target
