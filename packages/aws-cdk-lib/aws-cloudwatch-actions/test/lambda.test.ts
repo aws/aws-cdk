@@ -6,6 +6,50 @@ import { Stack } from '../../core';
 import { LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION } from '../../cx-api';
 import * as actions from '../lib/index';
 
+test('can use same lambda for multiple alarms with the same id', () => {
+  const stack = new Stack();
+  const alarmLambda = new lambda.Function(stack, 'alarmLambda', {
+    runtime: lambda.Runtime.PYTHON_3_12,
+    functionName: 'alarmLambda',
+    code: lambda.Code.fromInline(`
+def handler(event, context):
+  print('event:', event)
+  print('.............................................')
+  print('context:', context)`),
+    handler: 'index.handler',
+  });
+
+  // WHEN
+  {
+    const child = new Construct(stack, 'Child1');
+    const alarm = new cloudwatch.Alarm(child, 'Alarm', {
+      metric: new cloudwatch.Metric({ namespace: 'AWS', metricName: 'Test' }),
+      evaluationPeriods: 3,
+      threshold: 100,
+    });
+    alarm.addAlarmAction(new actions.LambdaAction(alarmLambda));
+  }
+  {
+    const child = new Construct(stack, 'Child2');
+    const alarm = new cloudwatch.Alarm(child, 'Alarm', {
+      metric: new cloudwatch.Metric({ namespace: 'AWS', metricName: 'Test' }),
+      evaluationPeriods: 3,
+      threshold: 100,
+    });
+    alarm.addAlarmAction(new actions.LambdaAction(alarmLambda));
+  }
+
+  // THEN
+  Template.fromStack(stack).resourceCountIs('AWS::Lambda::Permission', 2);
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+    AlarmActions: [
+      {
+        'Fn::GetAtt': ['alarmLambda131DB691', 'Arn'],
+      },
+    ],
+  });
+});
+
 test('can use lambda as alarm action', () => {
   // GIVEN
   const stack = new Stack();
@@ -183,47 +227,6 @@ def handler(event, context):
       },
       {
         'Fn::GetAtt': ['alarmLambda131DB691', 'Arn'],
-      },
-    ],
-  });
-});
-
-test('can use same lambda for multiple alarms with the same id', () => {
-  const stack = new Stack();
-
-  const handler = new lambda.Function(stack, 'Handler', {
-    runtime: lambda.Runtime.PYTHON_3_12,
-    functionName: 'alarmLambda',
-    code: lambda.Code.fromInline('code'),
-    handler: 'index.handler',
-  });
-
-  // WHEN
-  {
-    const child = new Construct(stack, 'Child1');
-    const alarm = new cloudwatch.Alarm(child, 'Alarm', {
-      metric: new cloudwatch.Metric({ namespace: 'AWS', metricName: 'Test' }),
-      evaluationPeriods: 3,
-      threshold: 100,
-    });
-    alarm.addAlarmAction(new actions.LambdaAction(handler));
-  }
-  {
-    const child = new Construct(stack, 'Child2');
-    const alarm = new cloudwatch.Alarm(child, 'Alarm', {
-      metric: new cloudwatch.Metric({ namespace: 'AWS', metricName: 'Test' }),
-      evaluationPeriods: 3,
-      threshold: 100,
-    });
-    alarm.addAlarmAction(new actions.LambdaAction(handler));
-  }
-
-  // THEN
-  Template.fromStack(stack).resourceCountIs('AWS::Lambda::Permission', 2);
-  Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
-    AlarmActions: [
-      {
-        'Fn::GetAtt': ['Handler886CB40B', 'Arn'],
       },
     ],
   });
