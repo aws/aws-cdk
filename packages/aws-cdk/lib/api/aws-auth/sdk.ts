@@ -602,7 +602,7 @@ export class SDK {
   public cloudFormation(): ICloudFormationClient {
     const client = new CloudFormationClient({
       ...this.config,
-      retryStrategy: new ConfiguredRetryStrategy(11, (attempt: number) => attempt ** 1000),
+      retryStrategy: new ConfiguredRetryStrategy(11, (attempt: number) => 1000 * (2 ** attempt)),
     });
     return {
       continueUpdateRollback: async (
