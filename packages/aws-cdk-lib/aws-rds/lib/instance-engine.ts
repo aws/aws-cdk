@@ -2585,6 +2585,8 @@ export class SqlServerEngineVersion {
   public static readonly VER_13_00_6441_1_V1 = SqlServerEngineVersion.of('13.00.6441.1.v1', '13.00');
   /** Version "13.00.6445.1.v1". */
   public static readonly VER_13_00_6445_1_V1 = SqlServerEngineVersion.of('13.00.6445.1.v1', '13.00');
+  /** Version "13.00.6450.1.v1". */
+  public static readonly VER_13_00_6450_1_V1 = SqlServerEngineVersion.of('13.00.6450.1.v1', '13.00');
 
   /** Version "14.00" (only a major version, without a specific minor version). */
   public static readonly VER_14 = SqlServerEngineVersion.of('14.00', '14.00');
@@ -2640,6 +2642,8 @@ export class SqlServerEngineVersion {
   public static readonly VER_14_00_3471_2_V1 = SqlServerEngineVersion.of('14.00.3471.2.v1 ', '14.00');
   /** Version "14.00.3475.1.v1 ". */
   public static readonly VER_14_00_3475_1_V1 = SqlServerEngineVersion.of('14.00.3475.1.v1 ', '14.00');
+  /** Version "14.00.3480.1.v1 ". */
+  public static readonly VER_14_00_3480_1_V1 = SqlServerEngineVersion.of('14.00.3480.1.v1 ', '14.00');
 
   /** Version "15.00" (only a major version, without a specific minor version). */
   public static readonly VER_15 = SqlServerEngineVersion.of('15.00', '15.00');
@@ -2680,6 +2684,8 @@ export class SqlServerEngineVersion {
   public static readonly VER_15_00_4385_2_V1 = SqlServerEngineVersion.of('15.00.4385.2.v1', '15.00');
   /** Version "15.00.4390.2.v1". */
   public static readonly VER_15_00_4390_2_V1 = SqlServerEngineVersion.of('15.00.4390.2.v1', '15.00');
+  /** Version "15.00.4395.2.v1". */
+  public static readonly VER_15_00_4395_2_V1 = SqlServerEngineVersion.of('15.00.4395.2.v1', '15.00');
 
   /** Version "16.00" (only a major version, without a specific minor version). */
   public static readonly VER_16 = SqlServerEngineVersion.of('16.00', '16.00');
@@ -2701,6 +2707,8 @@ export class SqlServerEngineVersion {
   public static readonly VER_16_00_4135_4_V1 = SqlServerEngineVersion.of('16.00.4135.4.v1', '16.00');
   /** Version "16.00.4140.3.v1". */
   public static readonly VER_16_00_4140_3_V1 = SqlServerEngineVersion.of('16.00.4140.3.v1', '16.00');
+  /** Version "16.00.4150.1.v1". */
+  public static readonly VER_16_00_4150_1_V1 = SqlServerEngineVersion.of('16.00.4150.1.v1', '16.00');
 
   /**
    * Create a new SqlServerEngineVersion with an arbitrary version.
