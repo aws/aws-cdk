@@ -2,8 +2,7 @@ import { Construct } from 'constructs';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
-import { FeatureFlags, Stack } from '../../core';
-import { LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION } from '../../cx-api';
+import { Stack } from '../../core';
 
 /**
  * Use a Lambda action as an Alarm action
@@ -22,8 +21,7 @@ export class LambdaAction implements cloudwatch.IAlarmAction {
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/API_PutMetricAlarm.html
    */
   bind(scope: Construct, alarm: cloudwatch.IAlarm): cloudwatch.AlarmActionConfig {
-    const idPrefix = FeatureFlags.of(scope).isEnabled(LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION) ? alarm.node.id : '';
-    const permissionId = `${idPrefix}AlarmPermission`;
+    const permissionId = `AlarmPermission${alarm.node.addr}`;
     const permissionNode = this.lambdaFunction.permissionsNode.tryFindChild(permissionId) as lambda.CfnPermission | undefined;
 
     // If the Lambda permission has already been added to this function

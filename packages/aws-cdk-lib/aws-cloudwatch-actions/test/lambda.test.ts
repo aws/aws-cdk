@@ -1,3 +1,4 @@
+import { Construct } from 'constructs';
 import { Template } from '../../assertions';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as lambda from '../../aws-lambda';
@@ -151,42 +152,6 @@ def handler(event, context):
   Template.fromStack(stack).resourceCountIs('AWS::Lambda::Permission', 2);
 });
 
-test('throws when multiple alarms are created for the same lambda if feature flag is set to false', () => {
-  // GIVEN
-  const stack = new Stack();
-  stack.node.setContext(LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION, false); // Default, but explicit just in case.
-  const alarm1 = new cloudwatch.Alarm(stack, 'Alarm1', {
-    metric: new cloudwatch.Metric({ namespace: 'AWS', metricName: 'Test' }),
-    evaluationPeriods: 3,
-    threshold: 100,
-  });
-  const alarm2 = new cloudwatch.Alarm(stack, 'Alarm2', {
-    metric: new cloudwatch.Metric({ namespace: 'AWS', metricName: 'Test2' }),
-    evaluationPeriods: 3,
-    threshold: 100,
-  });
-
-  // WHEN
-  const alarmLambda = new lambda.Function(stack, 'alarmLambda', {
-    runtime: lambda.Runtime.PYTHON_3_12,
-    functionName: 'alarmLambda',
-    code: lambda.Code.fromInline(`
-def handler(event, context):
-  print('event:', event)
-  print('.............................................')
-  print('context:', context)`),
-    handler: 'index.handler',
-  });
-  alarm1.addAlarmAction(new actions.LambdaAction(alarmLambda));
-  alarm1.addOkAction(new actions.LambdaAction(alarmLambda));
-  alarm1.addInsufficientDataAction(new actions.LambdaAction(alarmLambda));
-
-  // THEN
-  expect(() => {
-    alarm2.addAlarmAction(new actions.LambdaAction(alarmLambda));
-  }).toThrow(/There is already a Construct with name 'AlarmPermission' in Function \[alarmLambda\]/);
-});
-
 test('can use same lambda for same action multiple time', () => {
   const stack = new Stack();
   const alarm = new cloudwatch.Alarm(stack, 'Alarm', {
@@ -216,6 +181,51 @@ def handler(event, context):
       {
         'Fn::GetAtt': ['alarmLambda131DB691', 'Arn'],
       },
+      {
+        'Fn::GetAtt': ['alarmLambda131DB691', 'Arn'],
+      },
+    ],
+  });
+});
+
+test('can use same lambda for multiple alarms with the same id', () => {
+  const stack = new Stack();
+
+  const alarmLambda = new lambda.Function(stack, 'alarmLambda', {
+    runtime: lambda.Runtime.PYTHON_3_12,
+    functionName: 'alarmLambda',
+    code: lambda.Code.fromInline(`
+def handler(event, context):
+  print('event:', event)
+  print('.............................................')
+  print('context:', context)`),
+    handler: 'index.handler',
+  });
+
+  // WHEN
+  {
+    const child = new Construct(stack, 'Child1');
+    const alarm = new cloudwatch.Alarm(child, 'Alarm', {
+      metric: new cloudwatch.Metric({ namespace: 'AWS', metricName: 'Test' }),
+      evaluationPeriods: 3,
+      threshold: 100,
+    });
+    alarm.addAlarmAction(new actions.LambdaAction(alarmLambda));
+  }
+  {
+    const child = new Construct(stack, 'Child2');
+    const alarm = new cloudwatch.Alarm(child, 'Alarm', {
+      metric: new cloudwatch.Metric({ namespace: 'AWS', metricName: 'Test' }),
+      evaluationPeriods: 3,
+      threshold: 100,
+    });
+    alarm.addAlarmAction(new actions.LambdaAction(alarmLambda));
+  }
+
+  // THEN
+  Template.fromStack(stack).resourceCountIs('AWS::Lambda::Permission', 2);
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+    AlarmActions: [
       {
         'Fn::GetAtt': ['alarmLambda131DB691', 'Arn'],
       },
