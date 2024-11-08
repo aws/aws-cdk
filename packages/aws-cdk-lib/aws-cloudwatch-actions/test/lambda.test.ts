@@ -191,14 +191,10 @@ def handler(event, context):
 test('can use same lambda for multiple alarms with the same id', () => {
   const stack = new Stack();
 
-  const alarmLambda = new lambda.Function(stack, 'alarmLambda', {
+  const handler = new lambda.Function(stack, 'Handler', {
     runtime: lambda.Runtime.PYTHON_3_12,
     functionName: 'alarmLambda',
-    code: lambda.Code.fromInline(`
-def handler(event, context):
-  print('event:', event)
-  print('.............................................')
-  print('context:', context)`),
+    code: lambda.Code.fromInline('code'),
     handler: 'index.handler',
   });
 
@@ -210,7 +206,7 @@ def handler(event, context):
       evaluationPeriods: 3,
       threshold: 100,
     });
-    alarm.addAlarmAction(new actions.LambdaAction(alarmLambda));
+    alarm.addAlarmAction(new actions.LambdaAction(handler));
   }
   {
     const child = new Construct(stack, 'Child2');
@@ -219,7 +215,7 @@ def handler(event, context):
       evaluationPeriods: 3,
       threshold: 100,
     });
-    alarm.addAlarmAction(new actions.LambdaAction(alarmLambda));
+    alarm.addAlarmAction(new actions.LambdaAction(handler));
   }
 
   // THEN
@@ -227,7 +223,7 @@ def handler(event, context):
   Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
     AlarmActions: [
       {
-        'Fn::GetAtt': ['alarmLambda131DB691', 'Arn'],
+        'Fn::GetAtt': ['Handler886CB40B', 'Arn'],
       },
     ],
   });
