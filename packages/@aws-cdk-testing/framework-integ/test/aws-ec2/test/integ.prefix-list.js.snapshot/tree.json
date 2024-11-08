@@ -19,8 +19,6 @@
                   "aws:cdk:cloudformation:type": "AWS::EC2::PrefixList",
                   "aws:cdk:cloudformation:props": {
                     "addressFamily": "IPv4",
-                    "maxEntries": 2,
-                    "prefixListName": "integec2prefixlisttestPrefixList498BBB96",
                     "entries": [
                       {
                         "cidr": "10.0.0.1/32"
@@ -29,7 +27,9 @@
                         "cidr": "10.0.0.2/32",
                         "description": "sample1"
                       }
-                    ]
+                    ],
+                    "maxEntries": 2,
+                    "prefixListName": "integec2prefixlisttestPrefixList498BBB96"
                   }
                 },
                 "constructInfo": {
@@ -78,7 +78,7 @@
                 "path": "integ-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -124,7 +124,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.4.2"
         }
       }
     },
