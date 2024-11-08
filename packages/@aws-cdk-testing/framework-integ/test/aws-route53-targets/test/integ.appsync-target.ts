@@ -43,8 +43,8 @@ class TestStack extends Stack {
   }
 }
 
-const certificateArn = process.env.CDK_INTEG_CERT_ARN ?? process.env.CERTIFICATE_ARN;
-if (!certificateArn) throw new Error('For this test you must provide your own CertificateArn as an env var "CERTIFICATE_ARN". See framework-integ/README.md for details.');
+const certificateArn = process.env.CDK_INTEG_CERT_ARN ?? process.env.CERT_ARN;
+if (!certificateArn) throw new Error('For this test you must provide your own CertificateArn as an env var "CERT_ARN". See framework-integ/README.md for details.');
 const domainName = process.env.CDK_INTEG_DOMAIN_NAME ?? process.env.DOMAIN_NAME;
 if (!domainName) throw new Error('For this test you must provide your own DomainName as an env var "DOMAIN_NAME". See framework-integ/README.md for details.');
 const hostedZoneId = process.env.CDK_INTEG_HOSTED_ZONE_ID ?? process.env.HOSTED_ZONE_ID;
@@ -53,5 +53,8 @@ if (!hostedZoneId) throw new Error('For this test you must provide your own Host
 const app = new App();
 const testCase = new TestStack(app, 'aws-cdk-appsync-alias-integ', { certificateArn, domainName, hostedZoneId });
 new IntegTest(app, 'appsync-domain-name', {
+  enableLookups: false,
+  regions: ['us-east-1'],
+  stackUpdateWorkflow: false,
   testCases: [testCase],
 });
