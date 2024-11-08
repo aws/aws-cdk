@@ -327,7 +327,7 @@ export class Bundle {
 
       if (this.test) {
         const command = `${path.join(bundleDir, this.test)}`;
-        console.log(`Running santiy test: ${command}`);
+        console.log(`Running sanity test: ${command}`);
         shell(command, { cwd: bundleDir });
       }
 
