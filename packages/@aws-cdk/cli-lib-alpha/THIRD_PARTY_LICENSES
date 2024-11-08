@@ -207,7 +207,7 @@ The @aws-cdk/cli-lib-alpha package includes the following third-party software/l
 
 ----------------
 
-** @jsii/check-node@1.103.1 - https://www.npmjs.com/package/@jsii/check-node/v/1.103.1 | Apache-2.0
+** @jsii/check-node@1.104.0 - https://www.npmjs.com/package/@jsii/check-node/v/1.104.0 | Apache-2.0
 jsii
 Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
@@ -3562,7 +3562,7 @@ THE SOFTWARE.
 
 ----------------
 
-** tslib@2.7.0 - https://www.npmjs.com/package/tslib/v/2.7.0 | 0BSD
+** tslib@2.8.0 - https://www.npmjs.com/package/tslib/v/2.8.0 | 0BSD
 Copyright (c) Microsoft Corporation.
 
 Permission to use, copy, modify, and/or distribute this software for any

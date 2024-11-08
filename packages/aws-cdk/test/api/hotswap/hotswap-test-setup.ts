@@ -3,7 +3,7 @@ import * as AWS from 'aws-sdk';
 import * as codebuild from 'aws-sdk/clients/codebuild';
 import * as lambda from 'aws-sdk/clients/lambda';
 import * as stepfunctions from 'aws-sdk/clients/stepfunctions';
-import { DeployStackResult } from '../../../lib/api';
+import { SuccessfulDeployStackResult } from '../../../lib/api';
 import { HotswapMode, HotswapPropertyOverrides } from '../../../lib/api/hotswap/common';
 import * as deployments from '../../../lib/api/hotswap-deployments';
 import { CloudFormationStack, Template } from '../../../lib/api/util/cloudformation';
@@ -180,7 +180,7 @@ export class HotswapMockSdkProvider {
     stackArtifact: cxapi.CloudFormationStackArtifact,
     assetParams: { [key: string]: string } = {},
     hotswapPropertyOverrides?: HotswapPropertyOverrides,
-  ): Promise<DeployStackResult | undefined> {
+  ): Promise<SuccessfulDeployStackResult | undefined> {
     let hotswapProps = hotswapPropertyOverrides || new HotswapPropertyOverrides();
     return deployments.tryHotswapDeployment(this.mockSdkProvider, assetParams, currentCfnStack, stackArtifact, hotswapMode, hotswapProps);
   }
