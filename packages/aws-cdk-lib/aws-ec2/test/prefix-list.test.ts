@@ -1,6 +1,6 @@
 import { Template } from '../../assertions';
 import { Stack } from '../../core';
-import { AddressFamily, PrefixList } from '../lib/prefix-list';
+import { AddressFamily, EntryProperty, PrefixList } from '../lib/prefix-list';
 
 describe('prefix list', () => {
   test('default empty prefixlist', () => {
@@ -35,11 +35,13 @@ describe('prefix list', () => {
   test('prefixlist with entries', () => {
     // GIVEN
     const stack = new Stack();
+
+    const entries: EntryProperty[] = [
+      { cidr: '10.0.0.1/32' },
+      { cidr: '10.0.0.2/32', description: 'sample1' },
+    ];
     new PrefixList(stack, 'prefix-list', {
-      entries: [
-        { cidr: '10.0.0.1/32' },
-        { cidr: '10.0.0.2/32', description: 'sample1' },
-      ],
+      entries,
       prefixListName: 'prefix-list',
     });
 

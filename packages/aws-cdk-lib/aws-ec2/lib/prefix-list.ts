@@ -15,6 +15,14 @@ export interface IPrefixList extends IResource {
 }
 
 /**
+ * An entry for a prefix list.
+ */
+export interface EntryProperty extends CfnPrefixList.EntryProperty{
+  cidr: string;
+  description?: string;
+}
+
+/**
  * The IP address type.
  */
 export enum AddressFamily {
@@ -60,7 +68,7 @@ export interface PrefixListProps extends PrefixListOptions {
    *
    * @default []
    */
-  readonly entries?: CfnPrefixList.EntryProperty[];
+  readonly entries?: EntryProperty[];
 }
 
 /**
