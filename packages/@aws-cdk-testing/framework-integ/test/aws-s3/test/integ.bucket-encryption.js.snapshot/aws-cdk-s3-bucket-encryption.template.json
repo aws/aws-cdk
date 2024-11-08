@@ -13,8 +13,8 @@
      ]
     }
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "MySSES3Bucket6973690D": {
    "Type": "AWS::S3::Bucket",
@@ -30,8 +30,8 @@
      ]
     }
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "MyKMSBucketKey9CACDA9E": {
    "Type": "AWS::KMS::Key",
@@ -67,8 +67,8 @@
      "Version": "2012-10-17"
     }
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "MyKMSBucketDF8715AC": {
    "Type": "AWS::S3::Bucket",
@@ -89,8 +89,8 @@
      ]
     }
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Parameters": {

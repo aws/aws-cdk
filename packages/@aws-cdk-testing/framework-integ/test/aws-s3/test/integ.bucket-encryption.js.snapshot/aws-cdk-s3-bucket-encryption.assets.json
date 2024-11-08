@@ -1,7 +1,7 @@
 {
   "version": "38.0.1",
   "files": {
-    "d2738bad1a73f00f60061ddfe0a38769bba70c9e709b8ee91363e7e232c08efe": {
+    "958a440cc168ca1a5e3dee9acecf551051130acee758d7dd2d6a8afc6d7ba3ec": {
       "source": {
         "path": "aws-cdk-s3-bucket-encryption.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "d2738bad1a73f00f60061ddfe0a38769bba70c9e709b8ee91363e7e232c08efe.json",
+          "objectKey": "958a440cc168ca1a5e3dee9acecf551051130acee758d7dd2d6a8afc6d7ba3ec.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
