@@ -27,6 +27,8 @@ export interface EntryProperty {
    * A description for the entry.
    *
    * Constraints: Up to 255 characters in length.
+   *
+   * @default No Value.
    */
   readonly description?: string;
 }
