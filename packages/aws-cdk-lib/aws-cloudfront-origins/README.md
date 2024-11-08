@@ -73,7 +73,7 @@ new cloudfront.Distribution(this, 'myDist', {
 
 When creating a standard S3 origin using `origins.S3BucketOrigin.withOriginAccessControl()`, an [Origin Access Control resource](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-originaccesscontrol-originaccesscontrolconfig.html) is automatically created with the origin type set to `s3` and signing behavior set to `always`.
 
-You can also grant read, list, write or delete access to the OAC using the `originAccessLevels` property:
+You can grant read, list, write or delete access to the OAC using the `originAccessLevels` property:
 
 ```ts
 const myBucket = new s3.Bucket(this, 'myBucket');
@@ -362,7 +362,6 @@ new cloudfront.Distribution(this, 'distribution', {
 
 It is highly recommended to specify `defaultRootObject` distribution property.
 Without it, the root path `https://xxxx.cloudfront.net/` will return the list of the S3 object keys.
-
 
 #### Setting up an OAI (legacy)
 
