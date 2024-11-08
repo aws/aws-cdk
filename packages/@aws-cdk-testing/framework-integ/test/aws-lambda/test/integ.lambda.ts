@@ -36,8 +36,8 @@ class TestLambdaFunction extends cdk.Stack {
       authType: lambda.FunctionUrlAuthType.NONE,
     });
 
-// Changes the function description when the feature flag is present
-// to validate the changed function hash.
+    // Changes the function description when the feature flag is present
+    // to validate the changed function hash.
     cdk.Aspects.of(this).add(new lambda.FunctionVersionUpgrade(LAMBDA_RECOGNIZE_LAYER_VERSION));
 
     new lambda.Function(this, 'MySnapStartLambda', {
