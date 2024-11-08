@@ -9,7 +9,7 @@ class RedshiftRA3LargeTestStack extends Stack {
     super(scope, id, props);
 
     const vpc = new ec2.Vpc(this, 'VPC', {
-      restrictDefaultSecurityGroup: false
+      restrictDefaultSecurityGroup: false,
     });
 
     new redshift.Cluster(this, 'RA3LargeCluster', {
