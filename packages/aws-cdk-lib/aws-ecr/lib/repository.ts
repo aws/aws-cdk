@@ -235,20 +235,23 @@ export abstract class RepositoryBase extends Resource implements IRepository {
 
       let isInputDigestCondition;
 
-      // Use the existing condition of the same Token is existed, and if not create a new one
+      // Use the existing condition of the Token if it already exists, and if not create a new one
       if (tagOrDigest in this.tokenConditions) {
         isInputDigestCondition = this.tokenConditions[tagOrDigest];
       } else {
         this.conditionsNumber += 1;
         isInputDigestCondition = new CfnCondition(this, `IsInputDigest${this.conditionsNumber}`, {
           // we split the value of the Token using the delimiter : to check if the first element equals sha256
-          // to check if it is a digest, or it will be an image tag.
+          // in order to determine if it is a digest or an image tag.
           expression: Fn.conditionEquals(Fn.select(0, Fn.split(':', tagOrDigest)), 'sha256'),
         });
         this.tokenConditions[tagOrDigest] = isInputDigestCondition;
       }
 
-      const suffix = Fn.conditionIf(isInputDigestCondition.logicalId, `@${tagOrDigest}`, `:${tagOrDigest}`).toString();
+      const imageTagWithPrefix = `:${tagOrDigest}`;
+      const imageDigestWithPrefix = `@${tagOrDigest}`;
+
+      const suffix = Fn.conditionIf(isInputDigestCondition.logicalId, imageDigestWithPrefix, imageTagWithPrefix).toString();
       return this.repositoryUriWithSuffix(suffix);
     } else {
       if (tagOrDigest?.startsWith('sha256:')) {
