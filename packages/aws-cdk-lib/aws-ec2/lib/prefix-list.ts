@@ -17,9 +17,18 @@ export interface IPrefixList extends IResource {
 /**
  * An entry for a prefix list.
  */
-export interface EntryProperty extends CfnPrefixList.EntryProperty{
-  cidr: string;
-  description?: string;
+export interface EntryProperty {
+  /**
+   * The CIDR block.
+   */
+  readonly cidr: string;
+
+  /**
+   * A description for the entry.
+   *
+   * Constraints: Up to 255 characters in length.
+   */
+  readonly description?: string;
 }
 
 /**
