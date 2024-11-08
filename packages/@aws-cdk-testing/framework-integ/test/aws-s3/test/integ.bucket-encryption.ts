@@ -15,6 +15,10 @@ new s3.Bucket(stack, 'MySSES3Bucket', {
   bucketKeyEnabled: true,
 });
 
+new s3.Bucket(stack, 'MyKMSBucket', {
+  encryption: s3.BucketEncryption.KMS,
+});
+
 new integ.IntegTest(app, 'IntegTestDSSEBucket', {
   testCases: [stack],
 });
