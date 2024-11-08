@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "efsReplicationIntegTest/DefaultTest": {
+      "stacks": [
+        "efsReplication"
+      ],
+      "assertionStack": "efsReplicationIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "efsReplicationIntegTestDefaultTestDeployAssert2C078280"
+    }
+  }
+}

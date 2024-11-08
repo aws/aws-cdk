@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "integtest-pipe-target-sfn/DefaultTest": {
+      "stacks": [
+        "aws-cdk-pipes-sfn-target"
+      ],
+      "assertionStack": "integtest-pipe-target-sfn/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestpipetargetsfnDefaultTestDeployAssert006F7F8F"
+    }
+  }
+}

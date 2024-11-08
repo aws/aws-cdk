@@ -71,6 +71,13 @@ export interface ParameterGroupProps {
   readonly engine: IEngine;
 
   /**
+   * The name of this parameter group.
+   *
+   * @default - CloudFormation-generated name
+   */
+  readonly name?: string;
+
+  /**
    * Description for this parameter group
    *
    * @default a CDK generated description
@@ -126,6 +133,7 @@ export class ParameterGroup extends Resource implements IParameterGroup {
   private readonly family: string;
   private readonly removalPolicy?: RemovalPolicy;
   private readonly description?: string;
+  private readonly name?: string;
 
   private clusterCfnGroup?: CfnDBClusterParameterGroup;
   private instanceCfnGroup?: CfnDBParameterGroup;
@@ -139,6 +147,7 @@ export class ParameterGroup extends Resource implements IParameterGroup {
     }
     this.family = family;
     this.description = props.description;
+    this.name = props.name;
     this.parameters = props.parameters ?? {};
     this.removalPolicy = props.removalPolicy;
   }
@@ -149,6 +158,7 @@ export class ParameterGroup extends Resource implements IParameterGroup {
       this.clusterCfnGroup = new CfnDBClusterParameterGroup(this, id, {
         description: this.description || `Cluster parameter group for ${this.family}`,
         family: this.family,
+        dbClusterParameterGroupName: this.name,
         parameters: Lazy.any({ produce: () => this.parameters }),
       });
     }
@@ -166,6 +176,7 @@ export class ParameterGroup extends Resource implements IParameterGroup {
       this.instanceCfnGroup = new CfnDBParameterGroup(this, id, {
         description: this.description || `Parameter group for ${this.family}`,
         family: this.family,
+        dbParameterGroupName: this.name,
         parameters: Lazy.any({ produce: () => this.parameters }),
       });
     }

@@ -104,13 +104,18 @@ test('calls create resource record set with DELETE for Delete event', async () =
   });
 });
 
-test('calls listHostedZonesByName to get zoneId if ParentZoneId is not provided', async () => {
+test('calls listHostedZonesByName to get public zoneId if ParentZoneId is not provided', async () => {
   // GIVEN
   const parentZoneName = 'some.zone';
   const parentZoneId = 'zone-id';
 
   mockStsClient.assumeRole.mockResolvedValueOnce({ Credentials: { AccessKeyId: 'K', SecretAccessKey: 'S', SessionToken: 'T' } });
-  mockRoute53Client.listHostedZonesByName.mockResolvedValueOnce({ HostedZones: [{ Name: `${parentZoneName}.`, Id: parentZoneId }] });
+  mockRoute53Client.listHostedZonesByName.mockResolvedValueOnce({
+    HostedZones: [
+      { Name: `${parentZoneName}.`, Id: parentZoneId },
+      { Name: `${parentZoneName}.`, Id: parentZoneId, Config: { PrivateZone: true } },
+    ],
+  });
   mockRoute53Client.changeResourceRecordSets.mockResolvedValueOnce({});
 
   // WHEN
@@ -141,7 +146,7 @@ test('calls listHostedZonesByName to get zoneId if ParentZoneId is not provided'
   });
 });
 
-test('throws if more than one HostedZones are returnd for the provided ParentHostedZone', async () => {
+test('throws if more than one HostedZones are returned for the provided ParentHostedZone', async () => {
   // GIVEN
   const parentZoneName = 'some.zone';
   const parentZoneId = 'zone-id';

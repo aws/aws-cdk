@@ -87,15 +87,15 @@ async function main(argv: string[]) {
   }
 
   const root = path.resolve(__dirname, '..');
-  await renderStateMachineToTypeScript(sortedStateMachine, path.join(root, 'packages/@aws-cdk/sdk-v2-to-v3-adapter/lib/parameter-types.ts'));
+  await renderStateMachineToTypeScript(sortedStateMachine, path.join(root, 'packages/@aws-cdk/aws-custom-resource-sdk-adapter/lib/parameter-types.ts'));
 
   await writeAllServiceToModelFile(allServices, [
     path.join(root, 'packages/aws-cdk-lib/custom-resources/lib/helpers-internal/sdk-v3-metadata.json'),
-    path.join(root, 'packages/@aws-cdk/sdk-v2-to-v3-adapter/lib/sdk-v3-metadata.json'),
+    path.join(root, 'packages/@aws-cdk/aws-custom-resource-sdk-adapter/lib/sdk-v3-metadata.json'),
   ]);
   await writeV2ToV3Mapping([
     path.join(root, 'packages/aws-cdk-lib/custom-resources/lib/helpers-internal/sdk-v2-to-v3.json'),
-    path.join(root, 'packages/@aws-cdk/sdk-v2-to-v3-adapter/lib/sdk-v2-to-v3.json'),
+    path.join(root, 'packages/@aws-cdk/aws-custom-resource-sdk-adapter/lib/sdk-v2-to-v3.json'),
   ]);
 }
 

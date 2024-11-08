@@ -37,6 +37,13 @@ class TestStack extends Stack {
       runtime: STANDARD_NODEJS_RUNTIME,
     });
 
+    new lambda.NodejsFunction(this, 'js-handler-bundling-path', {
+      entry: path.join(__dirname, 'integ-handlers/js-handler.js'),
+      bundling: {
+        inject: [path.join(__dirname, 'whitespace path/shim.js')],
+      },
+    });
+
     new lambda.NodejsFunction(this, 'ts-handler-vpc', {
       entry: path.join(__dirname, 'integ-handlers/ts-handler.ts'),
       runtime: STANDARD_NODEJS_RUNTIME,

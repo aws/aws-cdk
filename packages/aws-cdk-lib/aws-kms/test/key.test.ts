@@ -491,6 +491,7 @@ test('key with some options', () => {
     enableKeyRotation: true,
     enabled: false,
     pendingWindow: cdk.Duration.days(7),
+    rotationPeriod: cdk.Duration.days(180),
   });
 
   cdk.Tags.of(key).add('tag1', 'value1');
@@ -501,6 +502,7 @@ test('key with some options', () => {
     Enabled: false,
     EnableKeyRotation: true,
     PendingWindowInDays: 7,
+    RotationPeriodInDays: 180,
     Tags: [
       {
         Key: 'tag1',
@@ -518,10 +520,28 @@ test('key with some options', () => {
   });
 });
 
+test('set rotationPeriod without enabling enableKeyRotation', () => {
+  const stack = new cdk.Stack();
+  new kms.Key(stack, 'MyKey', {
+    rotationPeriod: cdk.Duration.days(180),
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+    EnableKeyRotation: true,
+    RotationPeriodInDays: 180,
+  });
+});
+
 test('setting pendingWindow value to not in allowed range will throw', () => {
   const stack = new cdk.Stack();
   expect(() => new kms.Key(stack, 'MyKey', { enableKeyRotation: true, pendingWindow: cdk.Duration.days(6) }))
     .toThrow('\'pendingWindow\' value must between 7 and 30 days. Received: 6');
+});
+
+test.each([89, 2561])('throw if rotationPeriod is not in allowed range', (period) => {
+  const stack = new cdk.Stack();
+  expect(() => new kms.Key(stack, 'MyKey', { enableKeyRotation: true, rotationPeriod: cdk.Duration.days(period) }))
+    .toThrow(`'rotationPeriod' value must between 90 and 2650 days. Received: ${period}`);
 });
 
 describeDeprecated('trustAccountIdentities is deprecated', () => {
@@ -624,6 +644,17 @@ test('fails if key policy has no IAM principals', () => {
   }));
 
   expect(() => app.synth()).toThrow(/A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
+});
+
+test('multi-region primary key', () => {
+  const stack = new cdk.Stack();
+  new kms.Key(stack, 'MyKey', {
+    multiRegion: true,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+    MultiRegion: true,
+  });
 });
 
 describe('imported keys', () => {

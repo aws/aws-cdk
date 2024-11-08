@@ -416,6 +416,26 @@
       "Value": "defensive"
      },
      {
+      "Key": "routing.http.preserve_host_header.enabled",
+      "Value": "true"
+     },
+     {
+      "Key": "routing.http.x_amzn_tls_version_and_cipher_suite.enabled",
+      "Value": "true"
+     },
+     {
+      "Key": "routing.http.xff_client_port.enabled",
+      "Value": "true"
+     },
+     {
+      "Key": "routing.http.xff_header_processing.mode",
+      "Value": "preserve"
+     },
+     {
+      "Key": "waf.fail_open.enabled",
+      "Value": "true"
+     },
+     {
       "Key": "client_keep_alive.seconds",
       "Value": "1000"
      }
@@ -564,6 +584,63 @@
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
     "GroupDescription": "Automatically created Security Group for ELB awscdkelbv2integDesyncMitigationModeStrictest08B70110",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "255.255.255.255/32",
+      "Description": "Disallow all traffic",
+      "FromPort": 252,
+      "IpProtocol": "icmp",
+      "ToPort": 86
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "Http2EnabledTrue1D814EE8": {
+   "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+   "Properties": {
+    "LoadBalancerAttributes": [
+     {
+      "Key": "deletion_protection.enabled",
+      "Value": "false"
+     },
+     {
+      "Key": "routing.http2.enabled",
+      "Value": "true"
+     }
+    ],
+    "Scheme": "internet-facing",
+    "SecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "Http2EnabledTrueSecurityGroupD6B38082",
+       "GroupId"
+      ]
+     }
+    ],
+    "Subnets": [
+     {
+      "Ref": "VPCPublicSubnet1SubnetB4246D30"
+     },
+     {
+      "Ref": "VPCPublicSubnet2Subnet74179F39"
+     }
+    ],
+    "Type": "application"
+   },
+   "DependsOn": [
+    "VPCPublicSubnet1DefaultRoute91CEF279",
+    "VPCPublicSubnet1RouteTableAssociation0B0896DC",
+    "VPCPublicSubnet2DefaultRouteB7481BBA",
+    "VPCPublicSubnet2RouteTableAssociation5A808732"
+   ]
+  },
+  "Http2EnabledTrueSecurityGroupD6B38082": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Automatically created Security Group for ELB awscdkelbv2integHttp2EnabledTrue2D380E08",
     "SecurityGroupEgress": [
      {
       "CidrIp": "255.255.255.255/32",

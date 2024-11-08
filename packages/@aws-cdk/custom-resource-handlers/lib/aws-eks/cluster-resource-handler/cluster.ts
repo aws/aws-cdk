@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as EKS from '@aws-sdk/client-eks';
+import { IsCompleteResponse, OnEventResponse } from 'aws-cdk-lib/custom-resources/lib/provider-framework/types';
 import { EksClient, ResourceEvent, ResourceHandler } from './common';
 import { compareLoggingProps } from './compareLogging';
-import { IsCompleteResponse, OnEventResponse } from 'aws-cdk-lib/custom-resources/lib/provider-framework/types';
 
 const MAX_CLUSTER_NAME_LEN = 100;
 
@@ -116,8 +116,7 @@ export class ClusterResourceHandler extends ResourceHandler {
     // if there is an update that requires replacement, go ahead and just create
     // a new cluster with the new config. The old cluster will automatically be
     // deleted by cloudformation upon success.
-    if (updates.replaceName || updates.replaceRole || updates.replaceVpc) {
-
+    if (updates.replaceName || updates.replaceRole || updates.updateBootstrapClusterCreatorAdminPermissions ) {
       // if we are replacing this cluster and the cluster has an explicit
       // physical name, the creation of the new cluster will fail with "there is
       // already a cluster with that name". this is a common behavior for
@@ -129,6 +128,71 @@ export class ClusterResourceHandler extends ResourceHandler {
       return this.onCreate();
     }
 
+    // We can only update one type of the UpdateTypes:
+    type UpdateTypes = {
+      updateLogging: boolean;
+      updateAccess: boolean;
+      updateVpc: boolean;
+      updateAuthMode: boolean;
+    };
+    // validate updates
+    const updateTypes = Object.keys(updates) as (keyof UpdateTypes)[];
+    const enabledUpdateTypes = updateTypes.filter((type) => updates[type]);
+    console.log(enabledUpdateTypes);
+
+    if (enabledUpdateTypes.length > 1) {
+      throw new Error(
+        'Only one type of update - VpcConfigUpdate, LoggingUpdate, EndpointAccessUpdate, or AuthModeUpdate can be allowed',
+      );
+    }
+
+    // Update tags
+    if (updates.updateTags) {
+      try {
+        // Describe the cluster to get the ARN for tagging APIs and to make sure Cluster exists
+        const cluster = (await this.eks.describeCluster({ name: this.clusterName })).cluster;
+        if (this.oldProps.tags) {
+          if (this.newProps.tags) {
+            // This means there are old tags as well as new tags so get the difference
+            // Update existing tag keys and add newly added tags
+            const tagsToAdd = getTagsToUpdate(this.oldProps.tags, this.newProps.tags);
+            if (tagsToAdd) {
+              const tagConfig: EKS.TagResourceCommandInput = {
+                resourceArn: cluster?.arn,
+                tags: tagsToAdd,
+              };
+              await this.eks.tagResource(tagConfig);
+            }
+            // Remove the tags that were removed in newProps
+            const tagsToRemove = getTagsToRemove(this.oldProps.tags, this.newProps.tags);
+            if (tagsToRemove.length > 0 ) {
+              const config: EKS.UntagResourceCommandInput = {
+                resourceArn: cluster?.arn,
+                tagKeys: tagsToRemove,
+              };
+              await this.eks.untagResource(config);
+            }
+          } else {
+            // This means newProps.tags is empty hence remove all tags
+            const config: EKS.UntagResourceCommandInput = {
+              resourceArn: cluster?.arn,
+              tagKeys: Object.keys(this.oldProps.tags),
+            };
+            await this.eks.untagResource(config);
+          }
+        } else {
+          // This means oldProps.tags was empty hence add all tags from newProps.tags
+          const config: EKS.TagResourceCommandInput = {
+            resourceArn: cluster?.arn,
+            tags: this.newProps.tags,
+          };
+          await this.eks.tagResource(config);
+        }
+      } catch (e: any) {
+        throw e;
+      }
+    }
+
     // if a version update is required, issue the version update
     if (updates.updateVersion) {
       if (!this.newProps.version) {
@@ -138,11 +202,7 @@ export class ClusterResourceHandler extends ResourceHandler {
       return this.updateClusterVersion(this.newProps.version);
     }
 
-    if (updates.updateLogging && updates.updateAccess) {
-      throw new Error('Cannot update logging and access at the same time');
-    }
-
-    if (updates.updateLogging || updates.updateAccess) {
+    if (updates.updateLogging || updates.updateAccess || updates.updateVpc || updates.updateAuthMode) {
       const config: EKS.UpdateClusterConfigCommandInput = {
         name: this.clusterName,
       };
@@ -150,15 +210,64 @@ export class ClusterResourceHandler extends ResourceHandler {
         config.logging = this.newProps.logging;
       };
       if (updates.updateAccess) {
-        // Updating the cluster with securityGroupIds and subnetIds (as specified in the warning here:
-        // https://awscli.amazonaws.com/v2/documentation/api/latest/reference/eks/update-cluster-config.html)
-        // will fail, therefore we take only the access fields explicitly
         config.resourcesVpcConfig = {
           endpointPrivateAccess: this.newProps.resourcesVpcConfig?.endpointPrivateAccess,
           endpointPublicAccess: this.newProps.resourcesVpcConfig?.endpointPublicAccess,
           publicAccessCidrs: this.newProps.resourcesVpcConfig?.publicAccessCidrs,
         };
+      };
+
+      if (updates.updateAuthMode) {
+        // the update path must be
+        // `undefined or CONFIG_MAP` -> `API_AND_CONFIG_MAP` -> `API`
+        // and it's one way path.
+        // old value is API - cannot fallback backwards
+        if (this.oldProps.accessConfig?.authenticationMode === 'API' &&
+          this.newProps.accessConfig?.authenticationMode !== 'API') {
+          throw new Error(`Cannot fallback authenticationMode from API to ${this.newProps.accessConfig?.authenticationMode}`);
+        }
+        // old value is API_AND_CONFIG_MAP - cannot fallback to CONFIG_MAP
+        if (this.oldProps.accessConfig?.authenticationMode === 'API_AND_CONFIG_MAP' &&
+          this.newProps.accessConfig?.authenticationMode === 'CONFIG_MAP') {
+          throw new Error(`Cannot fallback authenticationMode from API_AND_CONFIG_MAP to ${this.newProps.accessConfig?.authenticationMode}`);
+        }
+        // cannot fallback from defined to undefined
+        if (this.oldProps.accessConfig?.authenticationMode !== undefined &&
+          this.newProps.accessConfig?.authenticationMode === undefined) {
+          throw new Error('Cannot fallback authenticationMode from defined to undefined');
+        }
+        // cannot update from undefined to API because undefined defaults CONFIG_MAP which
+        // can only change to API_AND_CONFIG_MAP
+        if (this.oldProps.accessConfig?.authenticationMode === undefined &&
+          this.newProps.accessConfig?.authenticationMode === 'API') {
+          throw new Error('Cannot update from undefined(CONFIG_MAP) to API');
+        }
+        // cannot update from CONFIG_MAP to API
+        if (this.oldProps.accessConfig?.authenticationMode === 'CONFIG_MAP' &&
+          this.newProps.accessConfig?.authenticationMode === 'API') {
+          throw new Error('Cannot update from CONFIG_MAP to API');
+        }
+        // update-authmode will fail if we try to update to the same mode,
+        // so skip in this case.
+        try {
+          const cluster = (await this.eks.describeCluster({ name: this.clusterName })).cluster;
+          if (cluster?.accessConfig?.authenticationMode === this.newProps.accessConfig?.authenticationMode) {
+            console.log(`cluster already at ${cluster?.accessConfig?.authenticationMode}, skipping authMode update`);
+            return;
+          }
+        } catch (e: any) {
+          throw e;
+        }
+        config.accessConfig = this.newProps.accessConfig;
+      };
+
+      if (updates.updateVpc) {
+        config.resourcesVpcConfig = {
+          subnetIds: this.newProps.resourcesVpcConfig?.subnetIds,
+          securityGroupIds: this.newProps.resourcesVpcConfig?.securityGroupIds,
+        };
       }
+
       const updateResponse = await this.eks.updateClusterConfig(config);
 
       return { EksUpdateId: updateResponse.update?.id };
@@ -304,13 +413,16 @@ function parseProps(props: any): EKS.CreateClusterCommandInput {
 
 interface UpdateMap {
   replaceName: boolean; // name
-  replaceVpc: boolean; // resourcesVpcConfig.subnetIds and securityGroupIds
   replaceRole: boolean; // roleArn
 
   updateVersion: boolean; // version
   updateLogging: boolean; // logging
   updateEncryption: boolean; // encryption (cannot be updated)
   updateAccess: boolean; // resourcesVpcConfig.endpointPrivateAccess and endpointPublicAccess
+  updateAuthMode: boolean; // accessConfig.authenticationMode
+  updateBootstrapClusterCreatorAdminPermissions: boolean; // accessConfig.bootstrapClusterCreatorAdminPermissions
+  updateVpc: boolean; // resourcesVpcConfig.subnetIds and securityGroupIds
+  updateTags: boolean; // tags
 }
 
 function analyzeUpdate(oldProps: Partial<EKS.CreateClusterCommandInput>, newProps: EKS.CreateClusterCommandInput): UpdateMap {
@@ -324,10 +436,12 @@ function analyzeUpdate(oldProps: Partial<EKS.CreateClusterCommandInput>, newProp
   const newPublicAccessCidrs = new Set(newVpcProps.publicAccessCidrs ?? []);
   const newEnc = newProps.encryptionConfig || {};
   const oldEnc = oldProps.encryptionConfig || {};
+  const newAccessConfig = newProps.accessConfig || {};
+  const oldAccessConfig = oldProps.accessConfig || {};
 
   return {
     replaceName: newProps.name !== oldProps.name,
-    replaceVpc:
+    updateVpc:
       JSON.stringify(newVpcProps.subnetIds?.sort()) !== JSON.stringify(oldVpcProps.subnetIds?.sort()) ||
       JSON.stringify(newVpcProps.securityGroupIds?.sort()) !== JSON.stringify(oldVpcProps.securityGroupIds?.sort()),
     updateAccess:
@@ -338,9 +452,41 @@ function analyzeUpdate(oldProps: Partial<EKS.CreateClusterCommandInput>, newProp
     updateVersion: newProps.version !== oldProps.version,
     updateEncryption: JSON.stringify(newEnc) !== JSON.stringify(oldEnc),
     updateLogging: JSON.stringify(newProps.logging) !== JSON.stringify(oldProps.logging),
+    updateAuthMode: JSON.stringify(newAccessConfig.authenticationMode) !== JSON.stringify(oldAccessConfig.authenticationMode),
+    updateBootstrapClusterCreatorAdminPermissions: JSON.stringify(newAccessConfig.bootstrapClusterCreatorAdminPermissions) !==
+      JSON.stringify(oldAccessConfig.bootstrapClusterCreatorAdminPermissions),
+    updateTags: JSON.stringify(newProps.tags) !== JSON.stringify(oldProps.tags),
   };
 }
 
 function setsEqual(first: Set<string>, second: Set<string>) {
   return first.size === second.size && [...first].every((e: string) => second.has(e));
+}
+
+function getTagsToUpdate<T extends Record<string, string>>(oldTags: T, newTags: T): T {
+  const diff: T = {} as T;
+  // Get all tag keys that are newly added and keys whose value have changed
+  for (const key in newTags) {
+    if (newTags.hasOwnProperty(key)) {
+      if (!oldTags.hasOwnProperty(key)) {
+        diff[key] = newTags[key];
+      } else if (oldTags[key] !== newTags[key]) {
+        diff[key] = newTags[key];
+      }
+    }
+  }
+
+  return diff;
+}
+
+function getTagsToRemove<T extends Record<string, string>>(oldTags: T, newTags: T): string[] {
+  const missingKeys: string[] = [];
+  //Get all tag keys to remove
+  for (const key in oldTags) {
+    if (oldTags.hasOwnProperty(key) && !newTags.hasOwnProperty(key)) {
+      missingKeys.push(key);
+    }
+  }
+
+  return missingKeys;
 }

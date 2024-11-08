@@ -6,14 +6,14 @@ import { IManagedPolicy, ManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
 import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
-import { AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
+import { AccountPrincipal, AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment, ServicePrincipal } from './principals';
 import { defaultAddPrincipalToAssumeRole } from './private/assume-role-policy';
 import { ImmutableRole } from './private/immutable-role';
 import { ImportedRole } from './private/imported-role';
 import { MutatingPolicyDocumentAdapter } from './private/policydoc-adapter';
 import { PrecreatedRole } from './private/precreated-role';
 import { AttachedPolicies, UniqueStringSet } from './private/util';
-import { ArnFormat, Duration, Resource, Stack, Token, TokenComparison, Aspects, Annotations } from '../../core';
+import { ArnFormat, Duration, Resource, Stack, Token, TokenComparison, Aspects, Annotations, RemovalPolicy } from '../../core';
 import { getCustomizeRolesConfig, getPrecreatedRoleConfig, CUSTOMIZE_ROLES_CONTEXT_KEY, CustomizeRoleConfig } from '../../core/lib/helpers-internal';
 
 const MAX_INLINE_SIZE = 10000;
@@ -300,7 +300,7 @@ export class Role extends Resource implements IRole {
   }
 
   /**
-    * Return whether the given object is a Role
+   * Return whether the given object is a Role
    */
   public static isRole(x: any) : x is Role {
     return x !== null && typeof(x) === 'object' && IAM_ROLE_SYMBOL in x;
@@ -594,6 +594,10 @@ export class Role extends Resource implements IRole {
    * Grant permissions to the given principal to assume this role.
    */
   public grantAssumeRole(identity: IPrincipal) {
+    // Service and account principals must use assumeRolePolicy
+    if (identity instanceof ServicePrincipal || identity instanceof AccountPrincipal) {
+      throw new Error('Cannot use a service or account principal with grantAssumeRole, use assumeRolePolicy instead.');
+    }
     return this.grant(identity, 'sts:AssumeRole');
   }
 
@@ -625,6 +629,19 @@ export class Role extends Resource implements IRole {
     }
 
     return this.immutableRole;
+  }
+
+  /**
+   * Skip applyRemovalPolicy if role synthesis is prevented by customizeRoles.
+   * Because in this case, this construct does not have a CfnResource in the tree.
+   * @override
+   * @param policy RemovalPolicy
+   */
+  public applyRemovalPolicy(policy: RemovalPolicy): void {
+    const config = this.getPrecreatedRoleConfig();
+    if (!config.preventSynthesis) {
+      super.applyRemovalPolicy(policy);
+    }
   }
 
   private validateRole(): string[] {

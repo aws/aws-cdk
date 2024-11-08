@@ -37,7 +37,7 @@
                     "encryptionAtRestOptions": {
                       "enabled": false
                     },
-                    "engineVersion": "OpenSearch_2.11",
+                    "engineVersion": "OpenSearch_2.13",
                     "logPublishingOptions": {
                       "SEARCH_SLOW_LOGS": {
                         "enabled": false

@@ -17,7 +17,8 @@ policy2.addStatements(new PolicyStatement({ resources: ['*'], actions: ['lambda:
 policy2.attachToUser(user);
 
 const role = new Role(stack, 'Role', { assumedBy: new AccountRootPrincipal() });
-role.grantAssumeRole(policy.grantPrincipal);
+role.grantAssumeRole(user);
+
 Grant.addToPrincipal({ actions: ['iam:*'], resourceArns: [role.roleArn], grantee: policy2 });
 
 new IntegTest(app, 'PolicyInteg', {

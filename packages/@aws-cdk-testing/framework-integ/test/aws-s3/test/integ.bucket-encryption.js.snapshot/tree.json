@@ -40,6 +40,39 @@
               "version": "0.0.0"
             }
           },
+          "MySSES3Bucket": {
+            "id": "MySSES3Bucket",
+            "path": "aws-cdk-s3-bucket-encryption/MySSES3Bucket",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-s3-bucket-encryption/MySSES3Bucket/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {
+                    "bucketEncryption": {
+                      "serverSideEncryptionConfiguration": [
+                        {
+                          "bucketKeyEnabled": true,
+                          "serverSideEncryptionByDefault": {
+                            "sseAlgorithm": "AES256"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_s3.Bucket",
+              "version": "0.0.0"
+            }
+          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "aws-cdk-s3-bucket-encryption/BootstrapVersion",
@@ -75,7 +108,7 @@
                 "path": "IntegTestDSSEBucket/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.26"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -121,7 +154,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.26"
+          "version": "10.3.0"
         }
       }
     },

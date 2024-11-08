@@ -239,7 +239,7 @@ test('esbuild bundling with esbuild options', () => {
       'process.env.STRING': JSON.stringify('this is a "test"'),
     },
     format: OutputFormat.ESM,
-    inject: ['./my-shim.js'],
+    inject: ['./my-shim.js', './path with space/second-shim.js'],
     esbuildArgs: {
       '--log-limit': '0',
       '--resolve-extensions': '.ts,.js',
@@ -264,7 +264,7 @@ test('esbuild bundling with esbuild options', () => {
           defineInstructions,
           '--log-level=silent --keep-names --tsconfig=/asset-input/lib/custom-tsconfig.ts',
           '--metafile=/asset-output/index.meta.json --banner:js="/* comments */" --footer:js="/* comments */"',
-          '--main-fields=module,main --inject:./my-shim.js',
+          '--main-fields=module,main --inject:"./my-shim.js" --inject:"./path with space/second-shim.js"',
           '--log-limit="0" --resolve-extensions=".ts,.js" --splitting --keep-names --out-extension:".js=.mjs"',
         ].join(' '),
       ],
@@ -308,6 +308,118 @@ test('esbuild bundling source map default', () => {
           `esbuild --bundle "/asset-input/lib/handler.ts" --target=${STANDARD_TARGET} --platform=node --outfile="/asset-output/index.js"`,
           `--sourcemap --external:${STANDARD_EXTERNAL}`,
         ].join(' '),
+      ],
+    }),
+  });
+});
+
+test.each([
+  [Runtime.NODEJS_18_X, 'node18'],
+  [Runtime.NODEJS_20_X, 'node20'],
+]) ('esbuild bundling without aws-sdk v3 and smithy with feature flag enabled using Node 18+', (runtime, target) => {
+  const cdkApp = new App({
+    context: {
+      '@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages': true,
+    },
+  });
+  const cdkStack = new Stack(cdkApp, 'MyTestStack');
+  Bundling.bundle(cdkStack, {
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: runtime,
+    architecture: Architecture.X86_64,
+  });
+
+  // Correctly bundles with esbuild
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        `esbuild --bundle "/asset-input/lib/handler.ts" --target=${target} --platform=node --outfile="/asset-output/index.js" --external:@aws-sdk/* --external:@smithy/*`,
+      ],
+    }),
+  });
+});
+
+test('esbuild bundling with bundleAwsSdk true with feature flag enabled using Node 18+', () => {
+  const cdkApp = new App({
+    context: {
+      '@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages': true,
+    },
+  });
+  const cdkStack = new Stack(cdkApp, 'MyTestStack');
+  Bundling.bundle(cdkStack, {
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    bundleAwsSDK: true,
+    runtime: Runtime.NODEJS_18_X,
+    architecture: Architecture.X86_64,
+  });
+
+  // Correctly bundles with esbuild
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        `esbuild --bundle "/asset-input/lib/handler.ts" --target=${STANDARD_TARGET} --platform=node --outfile="/asset-output/index.js"`,
+      ],
+    }),
+  });
+});
+
+test('esbuild bundling with feature flag enabled using Node Latest', () => {
+  const cdkApp = new App({
+    context: {
+      '@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages': true,
+    },
+  });
+  const cdkStack = new Stack(cdkApp, 'MyTestStack');
+  Bundling.bundle(cdkStack, {
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: Runtime.NODEJS_LATEST,
+    architecture: Architecture.X86_64,
+  });
+
+  // Correctly bundles with esbuild
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        `esbuild --bundle "/asset-input/lib/handler.ts" --target=${STANDARD_TARGET} --platform=node --outfile="/asset-output/index.js"`,
+      ],
+    }),
+  });
+});
+
+test('esbuild bundling with feature flag enabled using Node 16', () => {
+  const cdkApp = new App({
+    context: {
+      '@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages': true,
+    },
+  });
+  const cdkStack = new Stack(cdkApp, 'MyTestStack');
+  Bundling.bundle(cdkStack, {
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: Runtime.NODEJS_16_X,
+    architecture: Architecture.X86_64,
+  });
+
+  // Correctly bundles with esbuild
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        'esbuild --bundle "/asset-input/lib/handler.ts" --target=node16 --platform=node --outfile="/asset-output/index.js" --external:aws-sdk',
       ],
     }),
   });
@@ -950,7 +1062,7 @@ test('bundling with <= Node16 does not warn with default externalModules', () =>
   );
 });
 
-test('bundling with >= Node18 warns when sdk v3 is external', () => {
+test('bundling with >= Node18 warns when sdk v2 is external', () => {
   Bundling.bundle(stack, {
     entry,
     projectRoot,
@@ -995,6 +1107,20 @@ test('bundling with NODEJS_LATEST warns when any dependencies are external', () 
 
   Annotations.fromStack(stack).hasWarning('*',
     'When using NODEJS_LATEST the runtime version may change as new runtimes are released, this may affect the availability of packages shipped with the environment. Ensure that any external dependencies are available through layers or specify a specific runtime version. [ack: @aws-cdk/aws-lambda-nodejs:variableRuntimeExternals]',
+  );
+});
+
+test('Node 16 runtimes warn about sdk v2 upgrades', () => {
+  Bundling.bundle(stack, {
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: Runtime.NODEJS_16_X,
+    architecture: Architecture.X86_64,
+  });
+
+  Annotations.fromStack(stack).hasWarning('*',
+    'Be aware that the NodeJS runtime of Node 16 will be deprecated by Lambda on June 12, 2024. Lambda runtimes Node 18 and higher include SDKv3 and not SDKv2. Updating your Lambda runtime will require bundling the SDK, or updating all SDK calls in your handler code to use SDKv3 (which is not a trivial update). Please account for this added complexity and update as soon as possible. [ack: aws-cdk-lib/aws-lambda-nodejs:runtimeUpdateSdkV2Breakage]',
   );
 });
 

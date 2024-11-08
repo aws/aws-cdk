@@ -26,6 +26,10 @@ runtime code.
  * `lambda.Code.fromDockerBuild(path, options)` - use the result of a Docker
    build as code. The runtime code is expected to be located at `/asset` in the
    image and will be zipped and uploaded to S3 as an asset.
+ * `lambda.Code.fromCustomCommand(output, command, customCommandOptions)` - 
+   supply a command that is invoked during cdk synth. That command is meant to direct
+   the generated code to output (a zip file or a directory), which is then used as the 
+   code for the created AWS Lambda.
 
 The following example shows how to define a Python function and deploy the code
 from the local directory `my-lambda-handler` to it:
@@ -73,6 +77,10 @@ configurations as well as choosing a specific tag or digest. See their docs for 
 
 To deploy a `DockerImageFunction` on Lambda `arm64` architecture, specify `Architecture.ARM_64` in `architecture`.
 This will bundle docker image assets for `arm64` architecture with `--platform linux/arm64` even if build within an `x86_64` host.
+
+With that being said, if you are bundling `DockerImageFunction` for Lambda `amd64` architecture from a `arm64` machine like a Macbook with `arm64` CPU, you would 
+need to specify `architecture: lambda.Architecture.X86_64` as well. This ensures the `--platform` argument is passed to the image assets
+bundling process so you can bundle up `X86_64` images from the `arm64` machine.
 
 ```ts
 new lambda.DockerImageFunction(this, 'AssetFunction', {
@@ -160,20 +168,20 @@ as choosing the log group:
 ```ts
 import { ILogGroup } from 'aws-cdk-lib/aws-logs';
 
-declare const logGroup: ILogGroup;  
+declare const logGroup: ILogGroup;
 
 new lambda.Function(this, 'Lambda', {
   code: new lambda.InlineCode('foo'),
   handler: 'index.handler',
   runtime: lambda.Runtime.NODEJS_18_X,
   loggingFormat: lambda.LoggingFormat.JSON,
-  systemLogLevel: lambda.SystemLogLevel.INFO,
-  applicationLogLevel: lambda.ApplicationLogLevel.INFO,
+  systemLogLevelV2: lambda.SystemLogLevel.INFO,
+  applicationLogLevelV2: lambda.ApplicationLogLevel.INFO,
   logGroup: logGroup,
 });
 ```
 
-To use `applicationLogLevel` and/or `systemLogLevel` you must set `loggingFormat` to `LoggingFormat.JSON`.
+To use `applicationLogLevelV2` and/or `systemLogLevelV2` you must set `loggingFormat` to `LoggingFormat.JSON`.
 
 ## Resource-based Policies
 
@@ -200,6 +208,27 @@ fn.addPermission('my-service Invocation', {
 You can also restrict permissions given to AWS services by providing
 a source account or ARN (representing the account and identifier of the resource
 that accesses the function or layer).
+
+**Important**: 
+> By default `fn.grantInvoke()` grants permission to the principal to invoke any version of the function, including all past ones. If you only want the principal to be granted permission to invoke the latest version or the unqualified Lambda ARN, use `grantInvokeLatestVersion(grantee)`.
+
+```ts
+declare const fn: lambda.Function;
+const principal = new iam.ServicePrincipal('my-service');
+// Grant invoke only to latest version and unqualified lambda arn
+fn.grantInvokeLatestVersion(principal);
+
+```
+
+If you want to grant access for invoking a specific version of Lambda function, you can use `fn.grantInvokeVersion(grantee, version)`
+
+```ts
+declare const fn: lambda.Function;
+const principal = new iam.ServicePrincipal('my-service');
+declare const version: lambda.IVersion;
+// Grant invoke only to the specific version
+fn.grantInvokeVersion(principal, version);
+```
 
 For more information, see
 [Granting function access to AWS services](https://docs.aws.amazon.com/lambda/latest/dg/access-control-resource-based.html#permissions-resource-serviceinvoke)
@@ -259,7 +288,7 @@ resource policy.
 ```ts
 declare const fn: lambda.Function;
 const servicePrincipal = new iam.ServicePrincipal('my-service');
-const sourceArn = 'arn:aws:s3:::my-bucket';
+const sourceArn = 'arn:aws:s3:::amzn-s3-demo-bucket';
 const sourceAccount = '111122223333';
 const servicePrincipalWithConditions = servicePrincipal.withConditions({
   ArnLike: {
@@ -755,6 +784,53 @@ fn.addEventSource(new eventsources.DynamoEventSource(table, {
 }));
 ```
 
+By default, Lambda will encrypt Filter Criteria using AWS managed keys. But if you want to use a self managed KMS key to encrypt the filters, You can specify the self managed key using the `filterEncryption` property.
+
+```ts
+import * as eventsources from 'aws-cdk-lib/aws-lambda-event-sources';
+import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
+import { Key } from 'aws-cdk-lib/aws-kms';
+
+declare const fn: lambda.Function;
+const table = new dynamodb.Table(this, 'Table', {
+  partitionKey: {
+    name: 'id',
+    type: dynamodb.AttributeType.STRING,
+  },
+  stream: dynamodb.StreamViewType.NEW_IMAGE,
+});
+// Your self managed KMS key
+const myKey = Key.fromKeyArn(
+  this,
+  'SourceBucketEncryptionKey',
+  'arn:aws:kms:us-east-1:123456789012:key/<key-id>',
+);
+
+fn.addEventSource(new eventsources.DynamoEventSource(table, {
+  startingPosition: lambda.StartingPosition.LATEST,
+  filters: [lambda.FilterCriteria.filter({ eventName: lambda.FilterRule.isEqual('INSERT') })],
+  filterEncryption: myKey,
+}));
+```
+
+> Lambda requires allow `kms:Decrypt` on Lambda principal `lambda.amazonaws.com` to use the key for Filter Criteria Encryption. If you create the KMS key in the stack, CDK will automatically add this permission to the Key when you creates eventSourceMapping. However, if you import the key using function like `Key.fromKeyArn` then you need to add the following permission to the KMS key before using it to encrypt Filter Criteria
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "lambda.amazonaws.com"
+            },
+            "Action": "kms:Decrypt",
+            "Resource": "*"
+        }
+    ]
+}
+```
+
 See the documentation for the __@aws-cdk/aws-lambda-event-sources__ module for more details.
 
 ## Imported Lambdas
@@ -937,12 +1013,11 @@ const fn = new lambda.Function(this, 'MyFunction', {
 });
 ```
 
-See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/concurrent-executions.html)
-managing concurrency.
+https://docs.aws.amazon.com/lambda/latest/dg/invocation-recursion.html
 
 ## Lambda with SnapStart
 
-SnapStart is currently supported only on Java 11/Java 17 runtime. SnapStart does not support provisioned concurrency, the arm64 architecture, Amazon Elastic File System (Amazon EFS), or ephemeral storage greater than 512 MB. After you enable Lambda SnapStart for a particular Lambda function, publishing a new version of the function will trigger an optimization process.
+SnapStart is currently supported only on Java 11 and later [Java managed runtimes](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html). SnapStart does not support provisioned concurrency, Amazon Elastic File System (Amazon EFS), or ephemeral storage greater than 512 MB. After you enable Lambda SnapStart for a particular Lambda function, publishing a new version of the function will trigger an optimization process.
 
 See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/snapstart.html) to learn more about AWS Lambda SnapStart
 
@@ -1014,6 +1089,26 @@ new lambda.Function(this, 'Lambda', {
 Providing a user-controlled log group was rolled out to commercial regions on 2023-11-16.
 If you are deploying to another type of region, please check regional availability first.
 
+## Lambda with Recursive Loop protection
+
+Recursive loop protection is to stop unintended loops. The customers are opted in by default for Lambda to detect and terminate unintended loops between Lambda and other AWS Services.
+The property can be assigned two values here, "Allow" and "Terminate". 
+
+The default value is set to "Terminate", which lets the Lambda to detect and terminate the recursive loops. 
+
+When the value is set to "Allow", the customers opt out of recursive loop detection and Lambda does not terminate recursive loops if any. 
+
+See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/invocation-recursion.html) to learn more about AWS Lambda Recusrive Loop Detection
+
+```ts
+const fn = new lambda.Function(this, 'MyFunction', {
+  code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+  runtime: lambda.Runtime.JAVA_11,
+  handler: 'example.Handler::handleRequest',
+  recursiveLoop: lambda.RecursiveLoop.TERMINATE,
+  });
+```
+
 ### Legacy Log Retention
 
 As an alternative to providing a custom, user controlled log group, the legacy `logRetention` property can be used to set a different expiration period.
@@ -1077,8 +1172,8 @@ const fn = new lambda.Function(this, 'MyLambda', {
 
 ## IPv6 support
 
-You can configure IPv6 connectivity for lambda function by setting `Ipv6AllowedForDualStack` to true. 
-It allows Lambda functions to specify whether the IPv6 traffic should be allowed when using dual-stack VPCs. 
+You can configure IPv6 connectivity for lambda function by setting `Ipv6AllowedForDualStack` to true.
+It allows Lambda functions to specify whether the IPv6 traffic should be allowed when using dual-stack VPCs.
 To access IPv6 network using Lambda, Dual-stack VPC is required. Using dual-stack VPC a function communicates with subnet over either of IPv4 or IPv6.
 
 ```ts
@@ -1117,6 +1212,26 @@ const fn = new lambda.Function(this, 'Lambda_with_IPv6_VPC', {
   ipv6AllowedForDualStack: true,
 });
 ```
+
+## Outbound traffic
+By default, when creating a Lambda function, it would add a security group outbound rule to allow sending all network traffic (except IPv6). This is controlled by `allowAllOutbound` in function properties, which has a default value of `true`.
+
+To allow outbound IPv6 traffic by default, explicitly set `allowAllIpv6Outbound` to `true` in function properties as shown below (the default value for `allowAllIpv6Outbound` is `false`):
+```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+
+const vpc = new ec2.Vpc(this, 'Vpc');
+
+const fn = new lambda.Function(this, 'LambdaWithIpv6Outbound', {
+  code: new lambda.InlineCode('def main(event, context): pass'),
+  handler: 'index.main',
+  runtime: lambda.Runtime.PYTHON_3_9,
+  vpc: vpc,
+  allowAllIpv6Outbound: true,
+});
+```
+
+Do not specify `allowAllOutbound` or `allowAllIpv6Outbound` property if the `securityGroups` or `securityGroup` property is set. Instead, configure these properties directly on the security group.
 
 ## Ephemeral Storage
 
@@ -1210,6 +1325,8 @@ Code signing for AWS Lambda helps to ensure that only trusted code runs in your 
 When enabled, AWS Lambda checks every code deployment and verifies that the code package is signed by a trusted source.
 For more information, see [Configuring code signing for AWS Lambda](https://docs.aws.amazon.com/lambda/latest/dg/configuration-codesigning.html).
 The following code configures a function with code signing.
+
+Please note the code will not be automatically signed before deployment. To ensure your code is properly signed, you'll need to conduct the code signing process either through the AWS CLI (Command Line Interface) [start-signing-job](https://awscli.amazonaws.com/v2/documentation/api/latest/reference/signer/start-signing-job.html) or by accessing the AWS Signer console.
 
 ```ts
 import * as signer from 'aws-cdk-lib/aws-signer';

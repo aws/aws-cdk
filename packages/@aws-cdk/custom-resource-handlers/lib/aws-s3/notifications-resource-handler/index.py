@@ -15,13 +15,14 @@ def handler(event: dict, context):
     props = event["ResourceProperties"]
     notification_configuration = props["NotificationConfiguration"]
     managed = props.get('Managed', 'true').lower() == 'true'
+    skipDestinationValidation = props.get('SkipDestinationValidation', 'false').lower() == 'true'
     stack_id = event['StackId']
     old = event.get("OldResourceProperties", {}).get("NotificationConfiguration", {})
     if managed:
       config = handle_managed(event["RequestType"], notification_configuration)
     else:
       config = handle_unmanaged(props["BucketName"], stack_id, event["RequestType"], notification_configuration, old)
-    s3.put_bucket_notification_configuration(Bucket=props["BucketName"], NotificationConfiguration=config)
+    s3.put_bucket_notification_configuration(Bucket=props["BucketName"], NotificationConfiguration=config, SkipDestinationValidation=skipDestinationValidation)
   except Exception as e:
     logging.exception("Failed to put bucket notification configuration")
     response_status = "FAILED"
@@ -35,8 +36,13 @@ def handle_managed(request_type, notification_configuration):
   return notification_configuration
 
 def handle_unmanaged(bucket, stack_id, request_type, notification_configuration, old):
+  def get_id(n):
+    n['Id'] = ''
+    sorted_notifications = sort_filter_rules(n)
+    strToHash=json.dumps(sorted_notifications, sort_keys=True).replace('"Name": "prefix"', '"Name": "Prefix"').replace('"Name": "suffix"', '"Name": "Suffix"')
+    return f"{stack_id}-{hash(strToHash)}"
   def with_id(n):
-    n['Id'] = f"{stack_id}-{hash(json.dumps(n, sort_keys=True))}"
+    n['Id'] = get_id(n)
     return n
 
   # find external notifications
@@ -44,10 +50,13 @@ def handle_unmanaged(bucket, stack_id, request_type, notification_configuration,
   existing_notifications = s3.get_bucket_notification_configuration(Bucket=bucket)
   for t in CONFIGURATION_TYPES:
     if request_type == 'Update':
-        ids = [with_id(n) for n in old.get(t, [])]
-        old_incoming_ids = [n['Id'] for n in ids]
+        old_incoming_ids = [get_id(n) for n in old.get(t, [])]
         # if the notification was created by us, we know what id to expect so we can filter by it.
-        external_notifications[t] = [n for n in existing_notifications.get(t, []) if not n['Id'] in old_incoming_ids]
+        external_notifications[t] = [n for n in existing_notifications.get(t, []) if not get_id(n) in old_incoming_ids]      
+    elif request_type == 'Delete':
+        # For 'Delete' request, old parameter is an empty dict so we cannot use this to determine which are external
+        # notifications. Fall back to rely on the stack naming logic.
+        external_notifications[t] = [n for n in existing_notifications.get(t, []) if not n['Id'].startswith(f"{stack_id}-")]
     elif request_type == 'Create':
         # if this is a create event then all existing notifications are external
         external_notifications[t] = [n for n in existing_notifications.get(t, [])]
@@ -95,3 +104,20 @@ def submit_response(event: dict, context, response_status: str, error_message: s
     print("Status code: " + response.reason)
   except Exception as e:
       print("send(..) failed executing request.urlopen(..): " + str(e))
+
+def sort_filter_rules(json_obj):
+  # Check if the input is a dictionary
+  if not isinstance(json_obj, dict):
+      return json_obj
+  # Recursively sort the filter rules for nested dictionaries
+  for key, value in json_obj.items():
+      if isinstance(value, dict):
+          json_obj[key] = sort_filter_rules(value)
+      elif isinstance(value, list):
+          json_obj[key] = [sort_filter_rules(item) for item in value]
+  # Sort the FilterRules list if it exists
+  if "Filter" in json_obj and "Key" in json_obj["Filter"] and "FilterRules" in json_obj["Filter"]["Key"]:
+      filter_rules = json_obj["Filter"]["Key"]["FilterRules"]
+      sorted_filter_rules = sorted(filter_rules, key=lambda x: x["Name"])
+      json_obj["Filter"]["Key"]["FilterRules"] = sorted_filter_rules
+  return json_obj

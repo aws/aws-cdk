@@ -1,4 +1,5 @@
 import * as scheduler from '@aws-cdk/aws-scheduler-alpha';
+import { Group } from '@aws-cdk/aws-scheduler-alpha';
 import { App, Duration, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -11,9 +12,10 @@ describe('sns topic schedule target', () => {
   let stack: Stack;
   let topic: sns.ITopic;
   const scheduleExpression = scheduler.ScheduleExpression.at(new Date(Date.UTC(1969, 10, 20, 0, 0, 0)));
+  const roleId = 'SchedulerRoleForTarget0f6b2b82B558C1';
 
   beforeEach(() => {
-    app = new App();
+    app = new App({ context: { '@aws-cdk/aws-iam:minimizePolicies': true } });
     stack = new Stack(app, 'Stack', { env: { region: 'us-east-1', account: '123456789012' } });
     topic = new sns.Topic(stack, 'Topic');
   });
@@ -36,7 +38,7 @@ describe('sns topic schedule target', () => {
           },
           RoleArn: {
             'Fn::GetAtt': [
-              'SchedulerRoleForTarget1441a743A31888', 'Arn',
+              roleId, 'Arn',
             ],
           },
           RetryPolicy: {},
@@ -57,7 +59,7 @@ describe('sns topic schedule target', () => {
         ],
       },
       Roles: [{
-        Ref: 'SchedulerRoleForTarget1441a743A31888',
+        Ref: roleId,
       }],
     });
 
@@ -70,6 +72,18 @@ describe('sns topic schedule target', () => {
             Condition: {
               StringEquals: {
                 'aws:SourceAccount': '123456789012',
+                'aws:SourceArn': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':scheduler:us-east-1:123456789012:schedule-group/default',
+                    ],
+                  ],
+                },
               },
             },
             Principal: {
@@ -162,6 +176,18 @@ describe('sns topic schedule target', () => {
             Condition: {
               StringEquals: {
                 'aws:SourceAccount': '123456789012',
+                'aws:SourceArn': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':scheduler:us-east-1:123456789012:schedule-group/default',
+                    ],
+                  ],
+                },
               },
             },
             Principal: {
@@ -185,7 +211,98 @@ describe('sns topic schedule target', () => {
         ],
       },
       Roles: [{
-        Ref: 'SchedulerRoleForTarget1441a743A31888',
+        Ref: roleId,
+      }],
+    });
+  });
+
+  test('creates IAM role and IAM policy for two schedules with the same target but different groups', () => {
+    const target = new SnsPublish(topic);
+    const group = new Group(stack, 'Group', {
+      groupName: 'mygroup',
+    });
+
+    new scheduler.Schedule(stack, 'Schedule1', {
+      schedule: scheduleExpression,
+      target,
+    });
+
+    new scheduler.Schedule(stack, 'Schedule2', {
+      schedule: scheduleExpression,
+      target,
+      group,
+    });
+
+    const template = Template.fromStack(stack);
+
+    template.resourceCountIs('AWS::IAM::Policy', 1);
+    template.resourceCountIs('AWS::IAM::Role', 1);
+    template.resourceCountIs('AWS::Scheduler::Schedule', 2);
+
+    template.hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': '123456789012',
+                'aws:SourceArn': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':scheduler:us-east-1:123456789012:schedule-group/default',
+                    ],
+                  ],
+                },
+              },
+            },
+            Principal: {
+              Service: 'scheduler.amazonaws.com',
+            },
+          },
+          {
+            Effect: 'Allow',
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': '123456789012',
+                'aws:SourceArn': {
+                  'Fn::GetAtt': [
+                    'GroupC77FDACD',
+                    'Arn',
+                  ],
+                },
+              },
+            },
+            Principal: {
+              Service: 'scheduler.amazonaws.com',
+            },
+            Action: 'sts:AssumeRole',
+          },
+        ],
+      },
+    });
+
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'sns:Publish',
+            Effect: 'Allow',
+            Resource: {
+              Ref: 'TopicBFC7AF6E',
+            },
+          },
+        ],
+      },
+      Roles: [{
+        Ref: roleId,
       }],
     });
   });
@@ -340,7 +457,7 @@ describe('sns topic schedule target', () => {
       })).toThrow(/Both the target and the execution role must be in the same account/);
   });
 
-  test('adds permissions to DLQ', () => {
+  test('adds permissions to execution role for sending messages to DLQ', () => {
     const dlq = new sqs.Queue(stack, 'DeadLetterQueue');
 
     const target = new SnsPublish(topic, {
@@ -354,50 +471,30 @@ describe('sns topic schedule target', () => {
 
     const template = Template.fromStack(stack);
 
-    template.hasResourceProperties('AWS::SQS::QueuePolicy', {
+    template.hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
+            Action: 'sns:Publish',
+            Effect: 'Allow',
+            Resource: {
+              Ref: 'TopicBFC7AF6E',
+            },
+          },
+          {
             Action: 'sqs:SendMessage',
             Effect: 'Allow',
-            Principal: {
-              Service: 'scheduler.amazonaws.com',
-            },
             Resource: {
               'Fn::GetAtt': ['DeadLetterQueue9F481546', 'Arn'],
             },
           },
         ],
       },
-      Queues: [
-        {
-          Ref: 'DeadLetterQueue9F481546',
-        },
-      ],
+      Roles: [{ Ref: roleId }],
     });
   });
 
-  test('throws when adding permission to DLQ from a different region', () => {
-    const differentRegionStack = new Stack(app, 'Stack2', {
-      env: {
-        region: 'us-west-2',
-        account: '123456789012',
-      },
-    });
-    const queue = new sqs.Queue(differentRegionStack, 'DeadLetterQueue9F481546');
-
-    const target = new SnsPublish(topic, {
-      deadLetterQueue: queue,
-    });
-
-    expect(() =>
-      new scheduler.Schedule(stack, 'Schedule', {
-        schedule: scheduleExpression,
-        target,
-      })).toThrow(/Both the queue and the schedule must be in the same region/);
-  });
-
-  test('does not create a queue policy when DLQ is imported', () => {
+  test('adds permission to execution role when imported DLQ is in same account', () => {
     const importedQueue = sqs.Queue.fromQueueArn(stack, 'ImportedQueue', 'arn:aws:sqs:us-east-1:123456789012:my-queue');
 
     const target = new SnsPublish(topic, {
@@ -410,33 +507,25 @@ describe('sns topic schedule target', () => {
     });
 
     const template = Template.fromStack(stack);
-    template.resourceCountIs('AWS::SQS::QueuePolicy', 0);
-  });
-
-  test('does not create a queue policy when DLQ is created in a different account', () => {
-    const differentAccountStack = new Stack(app, 'Stack2', {
-      env: {
-        region: 'us-east-1',
-        account: '234567890123',
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'sns:Publish',
+            Effect: 'Allow',
+            Resource: {
+              Ref: 'TopicBFC7AF6E',
+            },
+          },
+          {
+            Action: 'sqs:SendMessage',
+            Effect: 'Allow',
+            Resource: importedQueue.queueArn,
+          },
+        ],
       },
+      Roles: [{ Ref: roleId }],
     });
-
-    const queue = new sqs.Queue(differentAccountStack, 'DeadLetterQueue', {
-      queueName: 'DummyDeadLetterQueue',
-    });
-
-    const target = new SnsPublish(topic, {
-      deadLetterQueue: queue,
-    });
-
-    new scheduler.Schedule(stack, 'Schedule', {
-      schedule: scheduleExpression,
-      target,
-    });
-
-    const template = Template.fromStack(stack);
-
-    template.resourceCountIs('AWS::SQS::QueuePolicy', 0);
   });
 
   test('renders expected retry policy', () => {
@@ -459,7 +548,7 @@ describe('sns topic schedule target', () => {
             Ref: 'TopicBFC7AF6E',
           },
           RoleArn: {
-            'Fn::GetAtt': ['SchedulerRoleForTarget1441a743A31888', 'Arn'],
+            'Fn::GetAtt': [roleId, 'Arn'],
           },
           RetryPolicy: {
             MaximumEventAgeInSeconds: 3600 * 3,

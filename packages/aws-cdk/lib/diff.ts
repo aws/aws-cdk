@@ -1,8 +1,15 @@
 import { format } from 'util';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import * as cfnDiff from '@aws-cdk/cloudformation-diff';
+import {
+  type DescribeChangeSetOutput,
+  type FormatStream,
+  type TemplateDiff,
+  formatDifferences,
+  formatSecurityChanges,
+  fullDiff,
+  mangleLikeCloudFormation,
+} from '@aws-cdk/cloudformation-diff';
 import * as cxapi from '@aws-cdk/cx-api';
-import { CloudFormation } from 'aws-sdk';
 import * as chalk from 'chalk';
 import { NestedStackTemplates } from './api/nested-stack-helpers';
 import { print, warning } from './logging';
@@ -12,7 +19,7 @@ import { print, warning } from './logging';
  *
  * @param oldTemplate the old/current state of the stack.
  * @param newTemplate the new/target state of the stack.
- * @param strict      do not filter out AWS::CDK::Metadata
+ * @param strict      do not filter out AWS::CDK::Metadata or Rules
  * @param context     lines of context to use in arbitrary JSON diff
  * @param quiet       silences \'There were no differences\' messages
  *
@@ -24,18 +31,27 @@ export function printStackDiff(
   strict: boolean,
   context: number,
   quiet: boolean,
-  changeSet?: CloudFormation.DescribeChangeSetOutput,
+  stackName?: string,
+  changeSet?: DescribeChangeSetOutput,
   isImport?: boolean,
-  stream: cfnDiff.FormatStream = process.stderr,
+  stream: FormatStream = process.stderr,
   nestedStackTemplates?: { [nestedStackLogicalId: string]: NestedStackTemplates }): number {
+  let diff = fullDiff(oldTemplate, newTemplate.template, changeSet, isImport);
 
-  let diff = cfnDiff.fullDiff(oldTemplate, newTemplate.template, changeSet, isImport);
+  // must output the stack name if there are differences, even if quiet
+  if (stackName && (!quiet || !diff.isEmpty)) {
+    stream.write(format('Stack %s\n', chalk.bold(stackName)));
+  }
+
+  if (!quiet && isImport) {
+    stream.write('Parameters and rules created during migration do not affect resource configuration.\n');
+  }
 
   // detect and filter out mangled characters from the diff
   let filteredChangesCount = 0;
   if (diff.differenceCount && !strict) {
-    const mangledNewTemplate = JSON.parse(cfnDiff.mangleLikeCloudFormation(JSON.stringify(newTemplate.template)));
-    const mangledDiff = cfnDiff.fullDiff(oldTemplate, mangledNewTemplate, changeSet);
+    const mangledNewTemplate = JSON.parse(mangleLikeCloudFormation(JSON.stringify(newTemplate.template)));
+    const mangledDiff = fullDiff(oldTemplate, mangledNewTemplate, changeSet);
     filteredChangesCount = Math.max(0, diff.differenceCount - mangledDiff.differenceCount);
     if (filteredChangesCount > 0) {
       diff = mangledDiff;
@@ -43,19 +59,15 @@ export function printStackDiff(
   }
 
   // filter out 'AWS::CDK::Metadata' resources from the template
-  if (diff.resources && !strict) {
-    diff.resources = diff.resources.filter(change => {
-      if (!change) { return true; }
-      if (change.newResourceType === 'AWS::CDK::Metadata') { return false; }
-      if (change.oldResourceType === 'AWS::CDK::Metadata') { return false; }
-      return true;
-    });
+  // filter out 'CheckBootstrapVersion' rules from the template
+  if (!strict) {
+    obscureDiff(diff);
   }
 
   let stackDiffCount = 0;
   if (!diff.isEmpty) {
     stackDiffCount++;
-    cfnDiff.formatDifferences(stream, diff, {
+    formatDifferences(stream, diff, {
       ...logicalIdMapFromTemplate(oldTemplate),
       ...buildLogicalToPathMap(newTemplate),
     }, context);
@@ -71,9 +83,6 @@ export function printStackDiff(
       break;
     }
     const nestedStack = nestedStackTemplates[nestedStackLogicalId];
-    if (!quiet) {
-      stream.write(format('Stack %s\n', chalk.bold(nestedStack.physicalName ?? nestedStackLogicalId)));
-    }
 
     (newTemplate as any)._template = nestedStack.generatedTemplate;
     stackDiffCount += printStackDiff(
@@ -82,6 +91,7 @@ export function printStackDiff(
       strict,
       context,
       quiet,
+      nestedStack.physicalName ?? nestedStackLogicalId,
       undefined,
       isImport,
       stream,
@@ -109,16 +119,21 @@ export function printSecurityDiff(
   oldTemplate: any,
   newTemplate: cxapi.CloudFormationStackArtifact,
   requireApproval: RequireApproval,
-  changeSet?: CloudFormation.DescribeChangeSetOutput,
+  _quiet?: boolean,
+  stackName?: string,
+  changeSet?: DescribeChangeSetOutput,
+  stream: FormatStream = process.stderr,
 ): boolean {
-  const diff = cfnDiff.fullDiff(oldTemplate, newTemplate.template, changeSet);
+  const diff = fullDiff(oldTemplate, newTemplate.template, changeSet);
 
-  if (difRequiresApproval(diff, requireApproval)) {
+  if (diffRequiresApproval(diff, requireApproval)) {
+    stream.write(format('Stack %s\n', chalk.bold(stackName)));
+
     // eslint-disable-next-line max-len
     warning(`This deployment will make potentially sensitive changes according to your current security approval level (--require-approval ${requireApproval}).`);
     warning('Please confirm you intend to make the following modifications:\n');
 
-    cfnDiff.formatSecurityChanges(process.stdout, diff, buildLogicalToPathMap(newTemplate));
+    formatSecurityChanges(process.stdout, diff, buildLogicalToPathMap(newTemplate));
     return true;
   }
   return false;
@@ -130,7 +145,7 @@ export function printSecurityDiff(
  * TODO: Filter the security impact determination based off of an enum that allows
  * us to pick minimum "severities" to alert on.
  */
-function difRequiresApproval(diff: cfnDiff.TemplateDiff, requireApproval: RequireApproval) {
+function diffRequiresApproval(diff: TemplateDiff, requireApproval: RequireApproval) {
   switch (requireApproval) {
     case RequireApproval.Never: return false;
     case RequireApproval.AnyChange: return diff.permissionsAnyChanges;
@@ -157,4 +172,31 @@ function logicalIdMapFromTemplate(template: any) {
     }
   }
   return ret;
+}
+
+/**
+ * Remove any template elements that we don't want to show users.
+ * This is currently:
+ * - AWS::CDK::Metadata resource
+ * - CheckBootstrapVersion Rule
+ */
+function obscureDiff(diff: TemplateDiff) {
+  if (diff.unknown) {
+    // see https://github.com/aws/aws-cdk/issues/17942
+    diff.unknown = diff.unknown.filter(change => {
+      if (!change) { return true; }
+      if (change.newValue?.CheckBootstrapVersion) { return false; }
+      if (change.oldValue?.CheckBootstrapVersion) { return false; }
+      return true;
+    });
+  }
+
+  if (diff.resources) {
+    diff.resources = diff.resources.filter(change => {
+      if (!change) { return true; }
+      if (change.newResourceType === 'AWS::CDK::Metadata') { return false; }
+      if (change.oldResourceType === 'AWS::CDK::Metadata') { return false; }
+      return true;
+    });
+  }
 }

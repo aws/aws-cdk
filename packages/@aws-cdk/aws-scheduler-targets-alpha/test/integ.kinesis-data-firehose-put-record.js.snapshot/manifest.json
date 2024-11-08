@@ -1,5 +1,5 @@
 {
-  "version": "35.0.0",
+  "version": "38.0.1",
   "artifacts": {
     "aws-cdk-scheduler-targets-firehose-put-record.assets": {
       "type": "cdk:asset-manifest",
@@ -16,9 +16,10 @@
         "templateFile": "aws-cdk-scheduler-targets-firehose-put-record.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0d3df05c3dec5107383ce03d849520a8b99c04af5ce5bbbba132109b8356d0fe.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b294e83eca6f470c39e7c0370b0118ec835f0f4c29ef07c651c402f89dee2f55.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -50,6 +51,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "DestinationBucketAutoDeleteObjectsCustomResource8ECA4428"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-firehose-put-record/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-firehose-put-record/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
           }
         ],
         "/aws-cdk-scheduler-targets-firehose-put-record/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
@@ -88,16 +101,16 @@
             "data": "Schedule83A77FD1"
           }
         ],
-        "/aws-cdk-scheduler-targets-firehose-put-record/SchedulerRoleForTarget-1441a7/Resource": [
+        "/aws-cdk-scheduler-targets-firehose-put-record/SchedulerRoleForTarget-380bba/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SchedulerRoleForTarget1441a743A31888"
+            "data": "SchedulerRoleForTarget380bba149146B2"
           }
         ],
-        "/aws-cdk-scheduler-targets-firehose-put-record/SchedulerRoleForTarget-1441a7/DefaultPolicy/Resource": [
+        "/aws-cdk-scheduler-targets-firehose-put-record/SchedulerRoleForTarget-380bba/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SchedulerRoleForTarget1441a7DefaultPolicy885B6BFD"
+            "data": "SchedulerRoleForTarget380bbaDefaultPolicy076E1FE7"
           }
         ],
         "/aws-cdk-scheduler-targets-firehose-put-record/Exports/Output{\"Ref\":\"DestinationBucket4BECDB47\"}": [
@@ -136,9 +149,10 @@
         "templateFile": "integrationtestfirehoseputrecordDefaultTestDeployAssert781A189E.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/735b4267383b866f2e6d4a6f66652226b52b4d0a75d676e627a109afbc80570b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3cacb68a454cfdf8b21666d7e59e470a9a13e93759e0e90f539d234089157703.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -201,6 +215,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/integrationtest-firehose-put-record/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/integrationtest-firehose-put-record/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [

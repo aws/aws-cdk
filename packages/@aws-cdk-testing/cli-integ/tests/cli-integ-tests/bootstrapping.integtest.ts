@@ -1,8 +1,12 @@
-/* eslint-disable @aws-cdk/no-literal-partition */
+/* eslint-disable @cdklabs/no-literal-partition */
 import * as fs from 'fs';
 import * as path from 'path';
+import { DescribeStackResourcesCommand, DescribeStacksCommand } from '@aws-sdk/client-cloudformation';
+import { DescribeRepositoriesCommand } from '@aws-sdk/client-ecr';
+import { CreatePolicyCommand, DeletePolicyCommand, GetRoleCommand } from '@aws-sdk/client-iam';
 import * as yaml from 'yaml';
 import { integTest, randomString, withoutBootstrap } from '../../lib';
+import eventually from '../../lib/eventually';
 
 jest.setTimeout(2 * 60 * 60_000); // Includes the time to acquire locks, worst-case single-threaded runtime
 
@@ -14,9 +18,11 @@ integTest('can bootstrap without execution', withoutBootstrap(async (fixture) =>
     noExecute: true,
   });
 
-  const resp = await fixture.aws.cloudFormation('describeStacks', {
-    StackName: bootstrapStackName,
-  });
+  const resp = await fixture.aws.cloudFormation.send(
+    new DescribeStacksCommand({
+      StackName: bootstrapStackName,
+    }),
+  );
 
   expect(resp.Stacks?.[0].StackStatus).toEqual('REVIEW_IN_PROGRESS');
 }));
@@ -73,6 +79,43 @@ integTest('can and deploy if omitting execution policies', withoutBootstrap(asyn
 
   // Deploy stack that uses file assets
   await fixture.cdkDeploy('lambda', {
+    options: [
+      '--toolkit-stack-name', bootstrapStackName,
+      '--context', `@aws-cdk/core:bootstrapQualifier=${fixture.qualifier}`,
+      '--context', '@aws-cdk/core:newStyleStackSynthesis=1',
+    ],
+  });
+}));
+
+integTest('can deploy with session tags on the deploy, lookup, file asset, and image asset publishing roles', withoutBootstrap(async (fixture) => {
+  const bootstrapStackName = fixture.bootstrapStackName;
+
+  await fixture.cdkBootstrapModern({
+    toolkitStackName: bootstrapStackName,
+    bootstrapTemplate: path.join(__dirname, '..', '..', 'resources', 'bootstrap-templates', 'session-tags.all-roles-deny-all.yaml'),
+  });
+
+  await fixture.cdkDeploy('session-tags', {
+    options: [
+      '--toolkit-stack-name', bootstrapStackName,
+      '--context', `@aws-cdk/core:bootstrapQualifier=${fixture.qualifier}`,
+      '--context', '@aws-cdk/core:newStyleStackSynthesis=1',
+    ],
+    modEnv: {
+      ENABLE_VPC_TESTING: 'IMPORT',
+    },
+  });
+}));
+
+integTest('can deploy without execution role and with session tags on deploy role', withoutBootstrap(async (fixture) => {
+  const bootstrapStackName = fixture.bootstrapStackName;
+
+  await fixture.cdkBootstrapModern({
+    toolkitStackName: bootstrapStackName,
+    bootstrapTemplate: path.join(__dirname, '..', '..', 'resources', 'bootstrap-templates', 'session-tags.deploy-role-deny-sqs.yaml'),
+  });
+
+  await fixture.cdkDeploy('session-tags-with-custom-synthesizer', {
     options: [
       '--toolkit-stack-name', bootstrapStackName,
       '--context', `@aws-cdk/core:bootstrapQualifier=${fixture.qualifier}`,
@@ -144,7 +187,7 @@ integTest('can create a legacy bootstrap stack with --public-access-block-config
     tags: 'Foo=Bar',
   });
 
-  const response = await fixture.aws.cloudFormation('describeStacks', { StackName: bootstrapStackName });
+  const response = await fixture.aws.cloudFormation.send(new DescribeStacksCommand({ StackName: bootstrapStackName }));
   expect(response.Stacks?.[0].Tags).toEqual([
     { Key: 'Foo', Value: 'Bar' },
   ]);
@@ -166,7 +209,7 @@ integTest('can create multiple legacy bootstrap stacks', withoutBootstrap(async 
     toolkitStackName: bootstrapStackName2,
   });
 
-  const response = await fixture.aws.cloudFormation('describeStacks', { StackName: bootstrapStackName1 });
+  const response = await fixture.aws.cloudFormation.send(new DescribeStacksCommand({ StackName: bootstrapStackName1 }));
   expect(response.Stacks?.[0].Tags).toEqual([
     { Key: 'Foo', Value: 'Bar' },
   ]);
@@ -271,36 +314,50 @@ integTest('can remove customPermissionsBoundary', withoutBootstrap(async (fixtur
   const policyName = `${bootstrapStackName}-pb`;
   let policyArn;
   try {
-    const policy = await fixture.aws.iam('createPolicy', {
-      PolicyName: policyName,
-      PolicyDocument: JSON.stringify({
-        Version: '2012-10-17',
-        Statement: {
-          Action: ['*'],
-          Resource: ['*'],
-          Effect: 'Allow',
-        },
+    const policy = await fixture.aws.iam.send(
+      new CreatePolicyCommand({
+        PolicyName: policyName,
+        PolicyDocument: JSON.stringify({
+          Version: '2012-10-17',
+          Statement: {
+            Action: ['*'],
+            Resource: ['*'],
+            Effect: 'Allow',
+          },
+        }),
       }),
-    });
+    );
     policyArn = policy.Policy?.Arn;
-    await fixture.cdkBootstrapModern({
-      // toolkitStackName doesn't matter for this particular invocation
-      toolkitStackName: bootstrapStackName,
-      customPermissionsBoundary: policyName,
-    });
 
-    const response = await fixture.aws.cloudFormation('describeStacks', { StackName: bootstrapStackName });
-    expect(
-      response.Stacks?.[0].Parameters?.some(
-        param => (param.ParameterKey === 'InputPermissionsBoundary' && param.ParameterValue === policyName),
-      )).toEqual(true);
+    // Policy creation and consistency across regions is "almost immediate"
+    // See: https://docs.aws.amazon.com/IAM/latest/UserGuide/troubleshoot_general.html#troubleshoot_general_eventual-consistency
+    // We will put this in an `eventually` block to retry stack creation with a reasonable timeout
+    const createStackWithPermissionBoundary = async (): Promise<void> => {
+      await fixture.cdkBootstrapModern({
+        // toolkitStackName doesn't matter for this particular invocation
+        toolkitStackName: bootstrapStackName,
+        customPermissionsBoundary: policyName,
+      });
+
+      const response = await fixture.aws.cloudFormation.send(
+        new DescribeStacksCommand({ StackName: bootstrapStackName }),
+      );
+      expect(
+        response.Stacks?.[0].Parameters?.some(
+          param => (param.ParameterKey === 'InputPermissionsBoundary' && param.ParameterValue === policyName),
+        )).toEqual(true);
+    };
+
+    await eventually(createStackWithPermissionBoundary, { maxAttempts: 3 });
 
     await fixture.cdkBootstrapModern({
       // toolkitStackName doesn't matter for this particular invocation
       toolkitStackName: bootstrapStackName,
       usePreviousParameters: false,
     });
-    const response2 = await fixture.aws.cloudFormation('describeStacks', { StackName: bootstrapStackName });
+    const response2 = await fixture.aws.cloudFormation.send(
+      new DescribeStacksCommand({ StackName: bootstrapStackName }),
+    );
     expect(
       response2.Stacks?.[0].Parameters?.some(
         param => (param.ParameterKey === 'InputPermissionsBoundary' && !param.ParameterValue),
@@ -308,12 +365,17 @@ integTest('can remove customPermissionsBoundary', withoutBootstrap(async (fixtur
 
     const region = fixture.aws.region;
     const account = await fixture.aws.account();
-    const role = await fixture.aws.iam('getRole', { RoleName: `cdk-${fixture.qualifier}-cfn-exec-role-${account}-${region}` });
+    const role = await fixture.aws.iam.send(
+      new GetRoleCommand({ RoleName: `cdk-${fixture.qualifier}-cfn-exec-role-${account}-${region}` }),
+    );
+    if (!role.Role) {
+      throw new Error('Role not found');
+    }
     expect(role.Role.PermissionsBoundary).toBeUndefined();
 
   } finally {
     if (policyArn) {
-      await fixture.aws.iam('deletePolicy', { PolicyArn: policyArn });
+      await fixture.aws.iam.send(new DeletePolicyCommand({ PolicyArn: policyArn }));
     }
   }
 }));
@@ -333,7 +395,7 @@ integTest('switch on termination protection, switch is left alone on re-bootstra
     force: true,
   });
 
-  const response = await fixture.aws.cloudFormation('describeStacks', { StackName: bootstrapStackName });
+  const response = await fixture.aws.cloudFormation.send(new DescribeStacksCommand({ StackName: bootstrapStackName }));
   expect(response.Stacks?.[0].EnableTerminationProtection).toEqual(true);
 }));
 
@@ -352,7 +414,7 @@ integTest('add tags, left alone on re-bootstrap', withoutBootstrap(async (fixtur
     force: true,
   });
 
-  const response = await fixture.aws.cloudFormation('describeStacks', { StackName: bootstrapStackName });
+  const response = await fixture.aws.cloudFormation.send(new DescribeStacksCommand({ StackName: bootstrapStackName }));
   expect(response.Stacks?.[0].Tags).toEqual([
     { Key: 'Foo', Value: 'Bar' },
   ]);
@@ -375,7 +437,7 @@ integTest('can add tags then update tags during re-bootstrap', withoutBootstrap(
     force: true,
   });
 
-  const response = await fixture.aws.cloudFormation('describeStacks', { StackName: bootstrapStackName });
+  const response = await fixture.aws.cloudFormation.send(new DescribeStacksCommand({ StackName: bootstrapStackName }));
   expect(response.Stacks?.[0].Tags).toEqual([
     { Key: 'Foo', Value: 'BarBaz' },
   ]);
@@ -409,18 +471,22 @@ integTest('create ECR with tag IMMUTABILITY to set on', withoutBootstrap(async (
     toolkitStackName: bootstrapStackName,
   });
 
-  const response = await fixture.aws.cloudFormation('describeStackResources', {
-    StackName: bootstrapStackName,
-  });
+  const response = await fixture.aws.cloudFormation.send(
+    new DescribeStackResourcesCommand({
+      StackName: bootstrapStackName,
+    }),
+  );
   const ecrResource = response.StackResources?.find(resource => resource.LogicalResourceId === 'ContainerAssetsRepository');
   expect(ecrResource).toBeDefined();
 
-  const ecrResponse = await fixture.aws.ecr('describeRepositories', {
-    repositoryNames: [
-      // This is set, as otherwise we don't end up here
-      ecrResource?.PhysicalResourceId ?? '',
-    ],
-  });
+  const ecrResponse = await fixture.aws.ecr.send(
+    new DescribeRepositoriesCommand({
+      repositoryNames: [
+        // This is set, as otherwise we don't end up here
+        ecrResource?.PhysicalResourceId ?? '',
+      ],
+    }),
+  );
 
   expect(ecrResponse.repositories?.[0].imageTagMutability).toEqual('IMMUTABLE');
 }));

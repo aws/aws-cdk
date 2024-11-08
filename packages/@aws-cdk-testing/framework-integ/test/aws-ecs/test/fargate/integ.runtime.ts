@@ -27,6 +27,7 @@ const taskDefinitiongraviton2 = new ecs.FargateTaskDefinition(stack, 'TaskDefGra
   },
   cpu: 256,
   memoryLimitMiB: 1024,
+  pidMode: ecs.PidMode.TASK,
 });
 
 taskDefinitionwindows.addContainer('windowsservercore', {

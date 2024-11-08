@@ -84,7 +84,11 @@ describe('tests', () => {
       idleTimeout: cdk.Duration.seconds(1000),
       dropInvalidHeaderFields: true,
       clientKeepAlive: cdk.Duration.seconds(200),
-      denyAllIgwTraffic: true,
+      preserveHostHeader: true,
+      xAmznTlsVersionAndCipherSuiteHeaders: true,
+      preserveXffClientPort: true,
+      xffHeaderProcessingMode: elbv2.XffHeaderProcessingMode.PRESERVE,
+      wafFailOpen: true,
     });
 
     // THEN
@@ -92,10 +96,6 @@ describe('tests', () => {
       LoadBalancerAttributes: [
         {
           Key: 'deletion_protection.enabled',
-          Value: 'true',
-        },
-        {
-          Key: 'ipv6.deny_all_igw_traffic',
           Value: 'true',
         },
         {
@@ -108,6 +108,26 @@ describe('tests', () => {
         },
         {
           Key: 'routing.http.drop_invalid_header_fields.enabled',
+          Value: 'true',
+        },
+        {
+          Key: 'routing.http.preserve_host_header.enabled',
+          Value: 'true',
+        },
+        {
+          Key: 'routing.http.x_amzn_tls_version_and_cipher_suite.enabled',
+          Value: 'true',
+        },
+        {
+          Key: 'routing.http.xff_client_port.enabled',
+          Value: 'true',
+        },
+        {
+          Key: 'routing.http.xff_header_processing.mode',
+          Value: 'preserve',
+        },
+        {
+          Key: 'waf.fail_open.enabled',
           Value: 'true',
         },
         {
@@ -144,6 +164,26 @@ describe('tests', () => {
         clientKeepAlive: cdk.Duration.millis(100),
       });
     }).toThrow('\'clientKeepAlive\' must be between 60 and 604800 seconds. Got: 100 milliseconds');
+  });
+
+  test.each([
+    [false, undefined],
+    [true, undefined],
+    [false, elbv2.IpAddressType.IPV4],
+    [true, elbv2.IpAddressType.IPV4],
+  ])('throw error for denyAllIgwTraffic set to %s for Ipv4 (default) addressing.', (denyAllIgwTraffic, ipAddressType) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // THEN
+    expect(() => {
+      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+        vpc,
+        denyAllIgwTraffic: denyAllIgwTraffic,
+        ipAddressType: ipAddressType,
+      });
+    }).toThrow(`'denyAllIgwTraffic' may only be set on load balancers with ${elbv2.IpAddressType.DUAL_STACK} addressing.`);
   });
 
   describe('Desync mitigation mode', () => {
@@ -224,6 +264,51 @@ describe('tests', () => {
     });
   });
 
+  describe('http2Enabled', () => {
+    test('http2Enabled is not set', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      // WHEN
+      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+        vpc,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        LoadBalancerAttributes: Match.not(
+          Match.arrayWith([
+            {
+              Key: 'routing.http2.enabled',
+              Value: Match.anyValue(),
+            },
+          ]),
+        ),
+      });
+    });
+
+    test.each([true, false])('http2Enabled is set to %s', (http2Enabled) => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+      // WHEN
+      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+        vpc,
+        http2Enabled,
+      });
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        LoadBalancerAttributes: Match.arrayWith([
+          {
+            Key: 'routing.http2.enabled',
+            Value: String(http2Enabled),
+          },
+        ]),
+      });
+    });
+  });
+
   test('Deletion protection false', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -285,7 +370,7 @@ describe('tests', () => {
       }
     }
 
-    function loggingSetup(withEncryption: boolean = false ): { stack: cdk.Stack; bucket: s3.Bucket; lb: elbv2.ApplicationLoadBalancer } {
+    function loggingSetup(withEncryption: boolean = false): { stack: cdk.Stack; bucket: s3.Bucket; lb: elbv2.ApplicationLoadBalancer } {
       const app = new cdk.App();
       const stack = new cdk.Stack(app, undefined, { env: { region: 'us-east-1' } });
       const vpc = new ec2.Vpc(stack, 'Stack');
@@ -605,6 +690,345 @@ describe('tests', () => {
     });
   });
 
+  describe('logConnectionLogs', () => {
+
+    class ExtendedLB extends elbv2.ApplicationLoadBalancer {
+      constructor(scope: Construct, id: string, vpc: ec2.IVpc) {
+        super(scope, id, { vpc });
+
+        const connectionLogsBucket = new s3.Bucket(this, 'ALBConnectionLogsBucket', {
+          blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+          encryption: s3.BucketEncryption.S3_MANAGED,
+          versioned: true,
+          serverAccessLogsPrefix: 'selflog/',
+          enforceSSL: true,
+        });
+
+        this.logConnectionLogs(connectionLogsBucket);
+      }
+    }
+
+    function loggingSetup(withEncryption: boolean = false ): { stack: cdk.Stack; bucket: s3.Bucket; lb: elbv2.ApplicationLoadBalancer } {
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, undefined, { env: { region: 'us-east-1' } });
+      const vpc = new ec2.Vpc(stack, 'Stack');
+      let bucketProps = {};
+      if (withEncryption) {
+        const kmsKey = new Key(stack, 'TestKMSKey');
+        bucketProps = { ...bucketProps, encryption: s3.BucketEncryption.KMS, encyptionKey: kmsKey };
+      }
+      const bucket = new s3.Bucket(stack, 'ConnectionLogBucket', { ...bucketProps });
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+      return { stack, bucket, lb };
+    }
+
+    test('sets load balancer attributes', () => {
+      // GIVEN
+      const { stack, bucket, lb } = loggingSetup();
+
+      // WHEN
+      lb.logConnectionLogs(bucket);
+
+      //THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        LoadBalancerAttributes: Match.arrayWith([
+          {
+            Key: 'connection_logs.s3.enabled',
+            Value: 'true',
+          },
+          {
+            Key: 'connection_logs.s3.bucket',
+            Value: { Ref: 'ConnectionLogBucketFDE8490A' },
+          },
+          {
+            Key: 'connection_logs.s3.prefix',
+            Value: '',
+          },
+        ]),
+      });
+    });
+
+    test('adds a dependency on the bucket', () => {
+      // GIVEN
+      const { stack, bucket, lb } = loggingSetup();
+
+      // WHEN
+      lb.logConnectionLogs(bucket);
+
+      // THEN
+      // verify the ALB depends on the bucket policy
+      Template.fromStack(stack).hasResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        DependsOn: ['ConnectionLogBucketPolicyF17C8635'],
+      });
+    });
+
+    test('logging bucket permissions', () => {
+      // GIVEN
+      const { stack, bucket, lb } = loggingSetup();
+
+      // WHEN
+      lb.logConnectionLogs(bucket);
+
+      // THEN
+      // verify the bucket policy allows the ALB to put objects in the bucket
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
+        PolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Action: 's3:PutObject',
+              Effect: 'Allow',
+              Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::127311923021:root']] } },
+              Resource: {
+                'Fn::Join': ['', [{ 'Fn::GetAtt': ['ConnectionLogBucketFDE8490A', 'Arn'] }, '/AWSLogs/',
+                  { Ref: 'AWS::AccountId' }, '/*']],
+              },
+            },
+            {
+              Action: 's3:PutObject',
+              Effect: 'Allow',
+              Principal: { Service: 'delivery.logs.amazonaws.com' },
+              Resource: {
+                'Fn::Join': ['', [{ 'Fn::GetAtt': ['ConnectionLogBucketFDE8490A', 'Arn'] }, '/AWSLogs/',
+                  { Ref: 'AWS::AccountId' }, '/*']],
+              },
+              Condition: { StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' } },
+            },
+            {
+              Action: 's3:GetBucketAcl',
+              Effect: 'Allow',
+              Principal: { Service: 'delivery.logs.amazonaws.com' },
+              Resource: {
+                'Fn::GetAtt': ['ConnectionLogBucketFDE8490A', 'Arn'],
+              },
+            },
+          ],
+        },
+      });
+    });
+
+    test('connection logging with prefix', () => {
+      // GIVEN
+      const { stack, bucket, lb } = loggingSetup();
+
+      // WHEN
+      lb.logConnectionLogs(bucket, 'prefix-of-connection-logs');
+
+      // THEN
+      // verify that the LB attributes reference the bucket
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        LoadBalancerAttributes: Match.arrayWith([
+          {
+            Key: 'connection_logs.s3.enabled',
+            Value: 'true',
+          },
+          {
+            Key: 'connection_logs.s3.bucket',
+            Value: { Ref: 'ConnectionLogBucketFDE8490A' },
+          },
+          {
+            Key: 'connection_logs.s3.prefix',
+            Value: 'prefix-of-connection-logs',
+          },
+        ]),
+      });
+
+      // verify the bucket policy allows the ALB to put objects in the bucket
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
+        PolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Action: 's3:PutObject',
+              Effect: 'Allow',
+              Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::127311923021:root']] } },
+              Resource: {
+                'Fn::Join': ['', [{ 'Fn::GetAtt': ['ConnectionLogBucketFDE8490A', 'Arn'] }, '/prefix-of-connection-logs/AWSLogs/',
+                  { Ref: 'AWS::AccountId' }, '/*']],
+              },
+            },
+            {
+              Action: 's3:PutObject',
+              Effect: 'Allow',
+              Principal: { Service: 'delivery.logs.amazonaws.com' },
+              Resource: {
+                'Fn::Join': ['', [{ 'Fn::GetAtt': ['ConnectionLogBucketFDE8490A', 'Arn'] }, '/prefix-of-connection-logs/AWSLogs/',
+                  { Ref: 'AWS::AccountId' }, '/*']],
+              },
+              Condition: { StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' } },
+            },
+            {
+              Action: 's3:GetBucketAcl',
+              Effect: 'Allow',
+              Principal: { Service: 'delivery.logs.amazonaws.com' },
+              Resource: {
+                'Fn::GetAtt': ['ConnectionLogBucketFDE8490A', 'Arn'],
+              },
+            },
+          ],
+        },
+      });
+    });
+
+    test('bucket with KMS throws validation error', () => {
+      //GIVEN
+      const { stack, bucket, lb } = loggingSetup(true);
+
+      // WHEN
+      const logConnectionLogFunctionTest = () => lb.logConnectionLogs(bucket);
+
+      // THEN
+      // verify failure in case the connection log bucket is encrypted with KMS
+      expect(logConnectionLogFunctionTest).toThrow('Encryption key detected. Bucket encryption using KMS keys is unsupported');
+
+    });
+
+    test('connection logging on imported bucket', () => {
+      // GIVEN
+      const { stack, lb } = loggingSetup();
+
+      const bucket = s3.Bucket.fromBucketName(stack, 'ImportedConnectionLoggingBucket', 'imported-bucket');
+      // Imported buckets have `autoCreatePolicy` disabled by default
+      bucket.policy = new s3.BucketPolicy(stack, 'ImportedConnectionLoggingBucketPolicy', {
+        bucket,
+      });
+
+      // WHEN
+      lb.logConnectionLogs(bucket);
+
+      // THEN
+      // verify that the LB attributes reference the bucket
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        LoadBalancerAttributes: Match.arrayWith([
+          {
+            Key: 'connection_logs.s3.enabled',
+            Value: 'true',
+          },
+          {
+            Key: 'connection_logs.s3.bucket',
+            Value: 'imported-bucket',
+          },
+          {
+            Key: 'connection_logs.s3.prefix',
+            Value: '',
+          },
+        ]),
+      });
+
+      // verify the bucket policy allows the ALB to put objects in the bucket
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
+        PolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Action: 's3:PutObject',
+              Effect: 'Allow',
+              Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::127311923021:root']] } },
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':s3:::imported-bucket/AWSLogs/',
+                    { Ref: 'AWS::AccountId' },
+                    '/*',
+                  ],
+                ],
+              },
+            },
+            {
+              Action: 's3:PutObject',
+              Effect: 'Allow',
+              Principal: { Service: 'delivery.logs.amazonaws.com' },
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':s3:::imported-bucket/AWSLogs/',
+                    { Ref: 'AWS::AccountId' },
+                    '/*',
+                  ],
+                ],
+              },
+              Condition: { StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' } },
+            },
+            {
+              Action: 's3:GetBucketAcl',
+              Effect: 'Allow',
+              Principal: { Service: 'delivery.logs.amazonaws.com' },
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':s3:::imported-bucket',
+                  ],
+                ],
+              },
+            },
+          ],
+        },
+      });
+
+      // verify the ALB depends on the bucket policy
+      Template.fromStack(stack).hasResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        DependsOn: ['ImportedConnectionLoggingBucketPolicy548EEC12'],
+      });
+    });
+
+    test('does not add circular dependency on bucket with extended load balancer', () => {
+      // GIVEN
+      const { stack } = loggingSetup();
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+
+      // WHEN
+      new ExtendedLB(stack, 'ExtendedLB', vpc);
+
+      // THEN
+      Template.fromStack(stack).hasResource('AWS::S3::Bucket', {
+        Type: 'AWS::S3::Bucket',
+        Properties: {
+          AccessControl: 'LogDeliveryWrite',
+          BucketEncryption: {
+            ServerSideEncryptionConfiguration: [
+              {
+                ServerSideEncryptionByDefault: {
+                  SSEAlgorithm: 'AES256',
+                },
+              },
+            ],
+          },
+          LoggingConfiguration: {
+            LogFilePrefix: 'selflog/',
+          },
+          OwnershipControls: {
+            Rules: [
+              {
+                ObjectOwnership: 'ObjectWriter',
+              },
+            ],
+          },
+          PublicAccessBlockConfiguration: {
+            BlockPublicAcls: true,
+            BlockPublicPolicy: true,
+            IgnorePublicAcls: true,
+            RestrictPublicBuckets: true,
+          },
+          VersioningConfiguration: {
+            Status: 'Enabled',
+          },
+        },
+        UpdateReplacePolicy: 'Retain',
+        DeletionPolicy: 'Retain',
+        DependsOn: Match.absent(),
+      });
+    });
+  });
+
   test('Exercise metrics', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -642,6 +1066,29 @@ describe('tests', () => {
         LoadBalancer: { 'Fn::GetAtt': ['LB8A12904C', 'LoadBalancerFullName'] },
       });
     }
+  });
+
+  test.each([
+    elbv2.HttpCodeElb.ELB_500_COUNT,
+    elbv2.HttpCodeElb.ELB_502_COUNT,
+    elbv2.HttpCodeElb.ELB_503_COUNT,
+    elbv2.HttpCodeElb.ELB_504_COUNT,
+  ])('use specific load balancer generated 5XX metrics', (metricName) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+
+    // WHEN
+    const metric = lb.metrics.httpCodeElb(metricName);
+
+    // THEN
+    expect(metric.namespace).toEqual('AWS/ApplicationELB');
+    expect(metric.statistic).toEqual('Sum');
+    expect(metric.metricName).toEqual(metricName);
+    expect(stack.resolve(metric.dimensions)).toEqual({
+      LoadBalancer: { 'Fn::GetAtt': ['LB8A12904C', 'LoadBalancerFullName'] },
+    });
   });
 
   test('loadBalancerName', () => {
@@ -777,6 +1224,72 @@ describe('tests', () => {
     });
   });
 
+  // test cases for crossZoneEnabled
+  describe('crossZoneEnabled', () => {
+    test('crossZoneEnabled can be true', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'stack');
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+
+      // WHEN
+      new elbv2.ApplicationLoadBalancer(stack, 'alb', {
+        vpc,
+        crossZoneEnabled: true,
+      });
+      const t = Template.fromStack(stack);
+      t.resourceCountIs('AWS::ElasticLoadBalancingV2::LoadBalancer', 1);
+      t.hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        LoadBalancerAttributes: [
+          {
+            Key: 'deletion_protection.enabled',
+            Value: 'false',
+          },
+          {
+            Key: 'load_balancing.cross_zone.enabled',
+            Value: 'true',
+          },
+        ],
+      });
+    });
+    test('crossZoneEnabled can be undefined', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'stack');
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+
+      // WHEN
+      new elbv2.ApplicationLoadBalancer(stack, 'alb', {
+        vpc,
+      });
+      const t = Template.fromStack(stack);
+      t.resourceCountIs('AWS::ElasticLoadBalancingV2::LoadBalancer', 1);
+      t.hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        LoadBalancerAttributes: [
+          {
+            Key: 'deletion_protection.enabled',
+            Value: 'false',
+          },
+        ],
+      });
+    });
+    test('crossZoneEnabled cannot be false', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'stack');
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+
+      // expect the error
+      expect(() => {
+        new elbv2.ApplicationLoadBalancer(stack, 'alb', {
+          vpc,
+          crossZoneEnabled: false,
+        });
+      }).toThrow('crossZoneEnabled cannot be false with Application Load Balancers.');
+
+    });
+  });
+
   describe('lookup', () => {
     test('Can look up an ApplicationLoadBalancer', () => {
       // GIVEN
@@ -880,6 +1393,27 @@ describe('tests', () => {
       });
     });
 
+    test('Can create internet-facing dualstack ApplicationLoadBalancer with denyAllIgwTraffic set to false', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      // WHEN
+      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+        vpc,
+        denyAllIgwTraffic: false,
+        internetFacing: true,
+        ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        Scheme: 'internet-facing',
+        Type: 'application',
+        IpAddressType: 'dualstack',
+      });
+    });
+
     test('Can create internal dualstack ApplicationLoadBalancer', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -897,6 +1431,62 @@ describe('tests', () => {
         Type: 'application',
         IpAddressType: 'dualstack',
       });
+    });
+
+    test.each([undefined, false])('Can create internal dualstack ApplicationLoadBalancer with denyAllIgwTraffic set to true', (internetFacing) => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      // WHEN
+      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+        vpc,
+        denyAllIgwTraffic: true,
+        internetFacing: internetFacing,
+        ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        Scheme: 'internal',
+        Type: 'application',
+        IpAddressType: 'dualstack',
+      });
+    });
+  });
+
+  describe('dualstack without public ipv4', () => {
+    test('Can create internet-facing dualstack without public ipv4 ApplicationLoadBalancer', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      // WHEN
+      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+        vpc,
+        internetFacing: true,
+        ipAddressType: elbv2.IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        Scheme: 'internet-facing',
+        Type: 'application',
+        IpAddressType: 'dualstack-without-public-ipv4',
+      });
+    });
+
+    test('Cannot create internal dualstack without public ipv4 ApplicationLoadBalancer', () => {
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      expect(() => {
+        new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+          vpc,
+          internetFacing: false,
+          ipAddressType: elbv2.IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4,
+        });
+      }).toThrow('dual-stack without public IPv4 address can only be used with internet-facing scheme.');
     });
   });
 });

@@ -503,6 +503,12 @@ describe('security group', () => {
         }],
       });
     });
+
+    test('Static well-known ports are well-defined', () => {
+      // THEN
+      expect(Port.SSH).toEqual(Port.tcp(22));
+      expect(Port.DNS_UDP).toEqual(Port.udp(53));
+    });
   });
 });
 

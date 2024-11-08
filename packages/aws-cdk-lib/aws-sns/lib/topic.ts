@@ -12,6 +12,9 @@ export interface TopicProps {
   /**
    * A developer-defined string that can be used to identify this SNS topic.
    *
+   * The display name must be maximum 100 characters long, including hyphens (-),
+   * underscores (_), spaces, and tabs.
+   *
    * @default None
    */
   readonly displayName?: string;
@@ -86,6 +89,15 @@ export interface TopicProps {
    * @default 1
    */
   readonly signatureVersion?: string;
+
+  /**
+   * Tracing mode of an Amazon SNS topic.
+   *
+   * @see https://docs.aws.amazon.com/sns/latest/dg/sns-active-tracing.html
+   *
+   * @default TracingConfig.PASS_THROUGH
+   */
+  readonly tracingConfig?: TracingConfig;
 }
 
 /**
@@ -154,6 +166,39 @@ export enum LoggingProtocol {
 }
 
 /**
+ * The tracing mode of an Amazon SNS topic
+ */
+export enum TracingConfig {
+  /**
+   * The mode that topic passes trace headers received from the Amazon SNS publisher to its subscription.
+   */
+  PASS_THROUGH = 'PassThrough',
+
+  /**
+   * The mode that Amazon SNS vend X-Ray segment data to topic owner account if the sampled flag in the tracing header is true.
+   */
+  ACTIVE = 'Active',
+}
+
+/**
+ * Represents an SNS topic defined outside of this stack.
+ */
+export interface TopicAttributes {
+  /**
+   * The ARN of the SNS topic.
+   */
+  readonly topicArn: string;
+
+  /**
+   * Whether content-based deduplication is enabled.
+   * Only applicable for FIFO topics.
+   *
+   * @default false
+   */
+  readonly contentBasedDeduplication?: boolean;
+}
+
+/**
  * A new SNS topic
  */
 export class Topic extends TopicBase {
@@ -166,16 +211,34 @@ export class Topic extends TopicBase {
    * @param topicArn topic ARN (i.e. arn:aws:sns:us-east-2:444455556666:MyTopic)
    */
   public static fromTopicArn(scope: Construct, id: string, topicArn: string): ITopic {
+    return Topic.fromTopicAttributes(scope, id, { topicArn });
+  };
+
+  /**
+   * Import an existing SNS topic provided a topic attributes
+   *
+   * @param scope The parent creating construct
+   * @param id The construct's name
+   * @param attrs the attributes of the topic to import
+   */
+  public static fromTopicAttributes(scope: Construct, id: string, attrs: TopicAttributes): ITopic {
+    const topicName = Stack.of(scope).splitArn(attrs.topicArn, ArnFormat.NO_RESOURCE_NAME).resource;
+    const fifo = topicName.endsWith('.fifo');
+
+    if (attrs.contentBasedDeduplication && !fifo) {
+      throw new Error('Cannot import topic; contentBasedDeduplication is only available for FIFO SNS topics.');
+    }
+
     class Import extends TopicBase {
-      public readonly topicArn = topicArn;
-      public readonly topicName = Stack.of(scope).splitArn(topicArn, ArnFormat.NO_RESOURCE_NAME).resource;
-      public readonly fifo = this.topicName.endsWith('.fifo');
-      public readonly contentBasedDeduplication = false;
+      public readonly topicArn = attrs.topicArn;
+      public readonly topicName = topicName;
+      public readonly fifo = fifo;
+      public readonly contentBasedDeduplication = attrs.contentBasedDeduplication || false;
       protected autoCreatePolicy: boolean = false;
     }
 
     return new Import(scope, id, {
-      environmentFromArn: topicArn,
+      environmentFromArn: attrs.topicArn,
     });
   }
 
@@ -236,6 +299,10 @@ export class Topic extends TopicBase {
       throw new Error(`signatureVersion must be "1" or "2", received: "${props.signatureVersion}"`);
     }
 
+    if (props.displayName && !Token.isUnresolved(props.displayName) && props.displayName.length > 100) {
+      throw new Error(`displayName must be less than or equal to 100 characters, got ${props.displayName.length}`);
+    }
+
     const resource = new CfnTopic(this, 'Resource', {
       archivePolicy: props.messageRetentionPeriodInDays ? {
         MessageRetentionPeriod: props.messageRetentionPeriodInDays,
@@ -247,6 +314,7 @@ export class Topic extends TopicBase {
       fifoTopic: props.fifo,
       signatureVersion: props.signatureVersion,
       deliveryStatusLogging: Lazy.any({ produce: () => this.renderLoggingConfigs() }, { omitEmptyArray: true }),
+      tracingConfig: props.tracingConfig,
     });
 
     this.topicArn = this.getResourceArnAttribute(resource.ref, {

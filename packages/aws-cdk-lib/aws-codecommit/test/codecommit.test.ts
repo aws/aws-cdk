@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import { join, resolve } from 'path';
 import { Template } from '../../assertions';
 import { Role, ServicePrincipal } from '../../aws-iam';
+import * as kms from '../../aws-kms';
 import { Asset } from '../../aws-s3-assets';
 import { App, Stack } from '../../core';
 import { Code, Repository, RepositoryProps } from '../lib';
@@ -309,6 +310,21 @@ describe('codecommit', () => {
         ],
       });
 
+    });
+
+    test('specify a kms key', () => {
+      const stack = new Stack();
+
+      const key = new kms.Key(stack, 'Key');
+      new Repository(stack, 'Repository', {
+        repositoryName: 'my-repo',
+        kmsKey: key,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeCommit::Repository', {
+        RepositoryName: 'my-repo',
+        KmsKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+      });
     });
   });
 });

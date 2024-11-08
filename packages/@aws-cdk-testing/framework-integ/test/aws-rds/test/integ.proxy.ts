@@ -13,7 +13,7 @@ const kmsKey = new kms.Key(stack, 'SecretEncryptionKey');
 
 const dbInstance = new rds.DatabaseInstance(stack, 'dbInstance', {
   engine: rds.DatabaseInstanceEngine.postgres({
-    version: rds.PostgresEngineVersion.VER_15_2,
+    version: rds.PostgresEngineVersion.VER_16_3,
   }),
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
   credentials: rds.Credentials.fromUsername('master', {
@@ -49,6 +49,30 @@ cluster.addProxy('Proxy', {
 });
 cluster.addProxy('Proxy2', {
   secrets: [cluster.secret!],
+  vpc,
+});
+
+// With `writer` and `readers` properties instead of the legacy `instanceProps`
+const clusterWithWriterAndReaders = new rds.DatabaseCluster(stack, 'dbClusterWithWriterAndReaders', {
+  engine: rds.DatabaseClusterEngine.auroraPostgres({
+    version: rds.AuroraPostgresEngineVersion.VER_14_5,
+  }),
+  vpc,
+  writer: rds.ClusterInstance.provisioned('writer'),
+  readers: [rds.ClusterInstance.provisioned('reader')],
+});
+
+new rds.DatabaseProxy(stack, 'Proxy3', {
+  proxyTarget: rds.ProxyTarget.fromCluster(clusterWithWriterAndReaders),
+  secrets: [clusterWithWriterAndReaders.secret!],
+  vpc,
+});
+clusterWithWriterAndReaders.addProxy('Proxy4', {
+  secrets: [clusterWithWriterAndReaders.secret!],
+  vpc,
+});
+clusterWithWriterAndReaders.addProxy('Proxy5', {
+  secrets: [clusterWithWriterAndReaders.secret!],
   vpc,
 });
 

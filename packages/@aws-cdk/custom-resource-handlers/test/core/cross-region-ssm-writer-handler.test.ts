@@ -1,7 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { InvalidResourceId } from '@aws-sdk/client-ssm';
-import { SSM_EXPORT_PATH_PREFIX } from '../../lib/core/types';
 import { handler } from '../../lib/core/cross-region-ssm-writer-handler/index';
+import { SSM_EXPORT_PATH_PREFIX } from '../../lib/core/types';
 
 let mockPutParameter: jest.Mock = jest.fn() ;
 let mocklistTagsForResource: jest.Mock = jest.fn();
@@ -96,7 +96,7 @@ describe('cross-region-ssm-writer entrypoint', () => {
       });
 
       // THEN
-      await expect(handler(event)).rejects.toThrow(/Exports cannot be updated/);
+      await expect(handler(event)).rejects.toThrow('Exports cannot be updated: \n/cdk/exports/MyStack/MyExport is in use by stack(s) MyStack');
     });
 
     test('Create event does not throw for new parameters', async () => {

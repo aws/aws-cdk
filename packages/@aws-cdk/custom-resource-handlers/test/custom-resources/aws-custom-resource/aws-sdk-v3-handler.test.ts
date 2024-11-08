@@ -1,15 +1,15 @@
 /* eslint-disable import/no-extraneous-dependencies */
 process.env.AWS_REGION = 'us-east-1';
 
+import { CloudWatchClient, GetMetricDataCommand } from '@aws-sdk/client-cloudwatch';
 import { EncryptCommand, KMSClient } from '@aws-sdk/client-kms';
 import * as S3 from '@aws-sdk/client-s3';
-import { CloudWatchClient, GetMetricDataCommand } from '@aws-sdk/client-cloudwatch';
 import { mockClient } from 'aws-sdk-client-mock';
 import * as fs from 'fs-extra';
 import * as nock from 'nock';
-import { v3handler as handler } from '../../../lib/custom-resources/aws-custom-resource-handler';
-import { forceSdkInstallation } from '../../../lib/custom-resources/aws-custom-resource-handler/aws-sdk-v3-handler';
+import { handler } from '../../../lib/custom-resources/aws-custom-resource-handler';
 import { AwsSdkCall } from '../../../lib/custom-resources/aws-custom-resource-handler/construct-types';
+import { forceSdkInstallation } from '../../../lib/custom-resources/aws-custom-resource-handler/load-sdk';
 import 'aws-sdk-client-mock-jest' ;
 
 // This test performs an 'npm install' which may take longer than the default
@@ -446,6 +446,34 @@ test('can specify apiVersion and region', async () => {
     body.Data!.apiVersion === '2010-03-31' &&
     body.Data!.region === 'eu-west-1',
   );
+
+  await handler(event, {} as AWSLambda.Context);
+
+  expect(request.isDone()).toBeTruthy();
+});
+
+test('logApiResponseData can be false', async () => {
+  s3MockClient.on(S3.GetObjectCommand).resolves({});
+
+  const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
+    ...eventCommon,
+    RequestType: 'Create',
+    ResourceProperties: {
+      ServiceToken: 'token',
+      Create: JSON.stringify({
+        service: '@aws-sdk/client-s3',
+        action: 'GetObjectCommand',
+        parameters: {
+          Bucket: 'my-bucket',
+          Key: 'key',
+        },
+        logApiResponseData: false,
+        physicalResourceId: { id: 'id' },
+      } satisfies AwsSdkCall),
+    },
+  };
+
+  const request = createRequest(body => body.Status === 'SUCCESS');
 
   await handler(event, {} as AWSLambda.Context);
 

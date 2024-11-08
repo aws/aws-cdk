@@ -259,7 +259,7 @@
                               }
                             ],
                             "userData": {
-                              "Fn::Base64": "#!/bin/bash\nyum install iptables-services -y\nsystemctl enable iptables\nsystemctl start iptables\necho \"net.ipv4.ip_forward=1\" > /etc/sysctl.d/custom-ip-forwarding.conf\nsudo sysctl -p /etc/sysctl.d/custom-ip-forwarding.conf\nsudo /sbin/iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE\nsudo /sbin/iptables -F FORWARD\nsudo service iptables save"
+                              "Fn::Base64": "#!/bin/bash\nyum install iptables-services -y\nsystemctl enable iptables\nsystemctl start iptables\necho \"net.ipv4.ip_forward=1\" > /etc/sysctl.d/custom-ip-forwarding.conf\nsudo sysctl -p /etc/sysctl.d/custom-ip-forwarding.conf\nsudo /sbin/iptables -t nat -A POSTROUTING -o $(route | awk '/^default/{print $NF}') -j MASQUERADE\nsudo /sbin/iptables -F FORWARD\nsudo service iptables save"
                             }
                           }
                         },
@@ -504,7 +504,7 @@
                               }
                             ],
                             "userData": {
-                              "Fn::Base64": "#!/bin/bash\nyum install iptables-services -y\nsystemctl enable iptables\nsystemctl start iptables\necho \"net.ipv4.ip_forward=1\" > /etc/sysctl.d/custom-ip-forwarding.conf\nsudo sysctl -p /etc/sysctl.d/custom-ip-forwarding.conf\nsudo /sbin/iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE\nsudo /sbin/iptables -F FORWARD\nsudo service iptables save"
+                              "Fn::Base64": "#!/bin/bash\nyum install iptables-services -y\nsystemctl enable iptables\nsystemctl start iptables\necho \"net.ipv4.ip_forward=1\" > /etc/sysctl.d/custom-ip-forwarding.conf\nsudo sysctl -p /etc/sysctl.d/custom-ip-forwarding.conf\nsudo /sbin/iptables -t nat -A POSTROUTING -o $(route | awk '/^default/{print $NF}') -j MASQUERADE\nsudo /sbin/iptables -F FORWARD\nsudo service iptables save"
                             }
                           }
                         },
@@ -870,6 +870,347 @@
               "version": "0.0.0"
             }
           },
+          "ALB": {
+            "id": "ALB",
+            "path": "aws-cdk-vpc-nat-instances-v2/ALB",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-vpc-nat-instances-v2/ALB/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+                  "aws:cdk:cloudformation:props": {
+                    "loadBalancerAttributes": [
+                      {
+                        "key": "deletion_protection.enabled",
+                        "value": "false"
+                      }
+                    ],
+                    "scheme": "internal",
+                    "securityGroups": [
+                      {
+                        "Fn::GetAtt": [
+                          "ALBSecurityGroup8B8624F8",
+                          "GroupId"
+                        ]
+                      }
+                    ],
+                    "subnets": [
+                      {
+                        "Ref": "MyVpcPrivateSubnet1Subnet5057CF7E"
+                      },
+                      {
+                        "Ref": "MyVpcPrivateSubnet2Subnet0040C983"
+                      }
+                    ],
+                    "type": "application"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.CfnLoadBalancer",
+                  "version": "0.0.0"
+                }
+              },
+              "SecurityGroup": {
+                "id": "SecurityGroup",
+                "path": "aws-cdk-vpc-nat-instances-v2/ALB/SecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-vpc-nat-instances-v2/ALB/SecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "Automatically created Security Group for ELB awscdkvpcnatinstancesv2ALB92DFD50B",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "255.255.255.255/32",
+                            "description": "Disallow all traffic",
+                            "ipProtocol": "icmp",
+                            "fromPort": 252,
+                            "toPort": 86
+                          }
+                        ],
+                        "securityGroupIngress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "ipProtocol": "tcp",
+                            "fromPort": 80,
+                            "toPort": 80,
+                            "description": "Allow from anyone on port 80"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "MyVpcF9F0CA6F"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "listener": {
+                "id": "listener",
+                "path": "aws-cdk-vpc-nat-instances-v2/ALB/listener",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-vpc-nat-instances-v2/ALB/listener/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::Listener",
+                      "aws:cdk:cloudformation:props": {
+                        "defaultActions": [
+                          {
+                            "type": "fixed-response",
+                            "fixedResponseConfig": {
+                              "statusCode": "200"
+                            }
+                          }
+                        ],
+                        "loadBalancerArn": {
+                          "Ref": "ALBAEE750D2"
+                        },
+                        "port": 80,
+                        "protocol": "HTTP"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.CfnListener",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "targetGroup": {
+                    "id": "targetGroup",
+                    "path": "aws-cdk-vpc-nat-instances-v2/ALB/listener/targetGroup",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-vpc-nat-instances-v2/ALB/listener/targetGroup/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+                          "aws:cdk:cloudformation:props": {
+                            "port": 80,
+                            "protocol": "HTTP",
+                            "targetGroupAttributes": [
+                              {
+                                "key": "stickiness.enabled",
+                                "value": "false"
+                              }
+                            ],
+                            "vpcId": {
+                              "Ref": "MyVpcF9F0CA6F"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.CfnTargetGroup",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.ApplicationTargetGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.ApplicationListener",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.ApplicationLoadBalancer",
+              "version": "0.0.0"
+            }
+          },
+          "HttpProxyPrivateApi": {
+            "id": "HttpProxyPrivateApi",
+            "path": "aws-cdk-vpc-nat-instances-v2/HttpProxyPrivateApi",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-vpc-nat-instances-v2/HttpProxyPrivateApi/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Api",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "HttpProxyPrivateApi",
+                    "protocolType": "HTTP"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnApi",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultRoute": {
+                "id": "DefaultRoute",
+                "path": "aws-cdk-vpc-nat-instances-v2/HttpProxyPrivateApi/DefaultRoute",
+                "children": {
+                  "DefaultIntegration": {
+                    "id": "DefaultIntegration",
+                    "path": "aws-cdk-vpc-nat-instances-v2/HttpProxyPrivateApi/DefaultRoute/DefaultIntegration",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-vpc-nat-instances-v2/HttpProxyPrivateApi/DefaultRoute/DefaultIntegration/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Integration",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Ref": "HttpProxyPrivateApiA55E154D"
+                            },
+                            "connectionId": {
+                              "Ref": "HttpProxyPrivateApiVpcLink190366CAE"
+                            },
+                            "connectionType": "VPC_LINK",
+                            "integrationMethod": "ANY",
+                            "integrationType": "HTTP_PROXY",
+                            "integrationUri": {
+                              "Ref": "ALBlistener54C7411C"
+                            },
+                            "payloadFormatVersion": "1.0"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnIntegration",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpIntegration",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-vpc-nat-instances-v2/HttpProxyPrivateApi/DefaultRoute/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "HttpProxyPrivateApiA55E154D"
+                        },
+                        "authorizationType": "NONE",
+                        "routeKey": "$default",
+                        "target": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "integrations/",
+                              {
+                                "Ref": "HttpProxyPrivateApiDefaultRouteDefaultIntegration002C2760"
+                              }
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpRoute",
+                  "version": "0.0.0"
+                }
+              },
+              "VpcLink-1": {
+                "id": "VpcLink-1",
+                "path": "aws-cdk-vpc-nat-instances-v2/HttpProxyPrivateApi/VpcLink-1",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-vpc-nat-instances-v2/HttpProxyPrivateApi/VpcLink-1/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::VpcLink",
+                      "aws:cdk:cloudformation:props": {
+                        "name": "awscdkvpcnatinstancesv2HttpProxyPrivateApiVpcLink196266F3B",
+                        "securityGroupIds": [],
+                        "subnetIds": [
+                          {
+                            "Ref": "MyVpcPrivateSubnet1Subnet5057CF7E"
+                          },
+                          {
+                            "Ref": "MyVpcPrivateSubnet2Subnet0040C983"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnVpcLink",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.VpcLink",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultStage": {
+                "id": "DefaultStage",
+                "path": "aws-cdk-vpc-nat-instances-v2/HttpProxyPrivateApi/DefaultStage",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-vpc-nat-instances-v2/HttpProxyPrivateApi/DefaultStage/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Stage",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "HttpProxyPrivateApiA55E154D"
+                        },
+                        "autoDeploy": true,
+                        "stageName": "$default"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnStage",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpStage",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpApi",
+              "version": "0.0.0"
+            }
+          },
+          "Exports": {
+            "id": "Exports",
+            "path": "aws-cdk-vpc-nat-instances-v2/Exports",
+            "children": {
+              "Output{\"Ref\":\"HttpProxyPrivateApiA55E154D\"}": {
+                "id": "Output{\"Ref\":\"HttpProxyPrivateApiA55E154D\"}",
+                "path": "aws-cdk-vpc-nat-instances-v2/Exports/Output{\"Ref\":\"HttpProxyPrivateApiA55E154D\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "aws-cdk-vpc-nat-instances-v2/BootstrapVersion",
@@ -912,6 +1253,94 @@
                 "id": "DeployAssert",
                 "path": "nat-instance-v2-integ-test/DefaultTest/DeployAssert",
                 "children": {
+                  "HttpApiCall5667927ff42f0a5713f7f2c90e9178c5": {
+                    "id": "HttpApiCall5667927ff42f0a5713f7f2c90e9178c5",
+                    "path": "nat-instance-v2-integ-test/DefaultTest/DeployAssert/HttpApiCall5667927ff42f0a5713f7f2c90e9178c5",
+                    "children": {
+                      "HttpProvider": {
+                        "id": "HttpProvider",
+                        "path": "nat-instance-v2-integ-test/DefaultTest/DeployAssert/HttpApiCall5667927ff42f0a5713f7f2c90e9178c5/HttpProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "nat-instance-v2-integ-test/DefaultTest/DeployAssert/HttpApiCall5667927ff42f0a5713f7f2c90e9178c5/HttpProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "nat-instance-v2-integ-test/DefaultTest/DeployAssert/HttpApiCall5667927ff42f0a5713f7f2c90e9178c5/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "nat-instance-v2-integ-test/DefaultTest/DeployAssert/HttpApiCall5667927ff42f0a5713f7f2c90e9178c5/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "nat-instance-v2-integ-test/DefaultTest/DeployAssert/HttpApiCall5667927ff42f0a5713f7f2c90e9178c5/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.HttpApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "SingletonFunction1488541a7b23466481b69b4408076b81": {
+                    "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "path": "nat-instance-v2-integ-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "nat-instance-v2-integ-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "nat-instance-v2-integ-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "nat-instance-v2-integ-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
                     "path": "nat-instance-v2-integ-test/DefaultTest/DeployAssert/BootstrapVersion",

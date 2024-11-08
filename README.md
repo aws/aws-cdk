@@ -140,7 +140,7 @@ You may also find help on these community resources:
 
 ## Roadmap
 
-The [AWS CDK Roadmap project board](https://github.com/orgs/aws/projects/7) lets developers know about our upcoming features and priorities to help them plan how to best leverage the CDK and identify opportunities to contribute to the project. See [ROADMAP.md](https://github.com/aws/aws-cdk/blob/main/ROADMAP.md) for more information and FAQs.
+The AWS CDK Roadmap lets developers know about our upcoming features and priorities to help them plan how to best leverage the CDK and identify opportunities to contribute to the project. See [ROADMAP.md](https://github.com/aws/aws-cdk/blob/main/ROADMAP.md) for more information and FAQs.
 
 ## Contributing
 

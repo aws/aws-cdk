@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "RepositoryEncryptionTest/DefaultTest": {
+      "stacks": [
+        "RepositoryEncryption"
+      ],
+      "assertionStack": "RepositoryEncryptionTest/DefaultTest/DeployAssert",
+      "assertionStackName": "RepositoryEncryptionTestDefaultTestDeployAssert819A2226"
+    }
+  }
+}

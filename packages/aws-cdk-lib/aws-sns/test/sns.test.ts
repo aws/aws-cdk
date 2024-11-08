@@ -176,6 +176,16 @@ describe('Topic', () => {
         signatureVersion: '3',
       })).toThrow(/signatureVersion must be "1" or "2", received: "3"/);
     });
+
+    test('throw error when displayName is too long', () => {
+      const stack = new cdk.Stack();
+
+      expect(() => {
+        new sns.Topic(stack, 'MyTopic', {
+          displayName: 'a'.repeat(101),
+        });
+      }).toThrow('displayName must be less than or equal to 100 characters, got 101');
+    });
   });
 
   test('can add a policy to the topic', () => {
@@ -267,6 +277,31 @@ describe('Topic', () => {
         'Statement': [
           {
             'Action': 'sns:Publish',
+            'Effect': 'Allow',
+            'Resource': stack.resolve(topic.topicArn),
+          },
+        ],
+      },
+    });
+
+  });
+
+  test('give subscribing permissions', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const topic = new sns.Topic(stack, 'Topic');
+    const user = new iam.User(stack, 'User');
+
+    // WHEN
+    topic.grantSubscribe(user);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      'PolicyDocument': {
+        Version: '2012-10-17',
+        'Statement': [
+          {
+            'Action': 'sns:Subscribe',
             'Effect': 'Allow',
             'Resource': stack.resolve(topic.topicArn),
           },
@@ -453,6 +488,48 @@ describe('Topic', () => {
     expect(imported.topicName).toEqual('mytopic.fifo');
     expect(imported.topicArn).toEqual('arn:aws:sns:*:123456789012:mytopic.fifo');
     expect(imported.fifo).toEqual(true);
+  });
+
+  test('fromTopicAttributes contentBasedDeduplication false', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const imported = sns.Topic.fromTopicAttributes(stack, 'Imported', {
+      topicArn: 'arn:aws:sns:*:123456789012:mytopic',
+    });
+
+    // THEN
+    expect(imported.topicName).toEqual('mytopic');
+    expect(imported.topicArn).toEqual('arn:aws:sns:*:123456789012:mytopic');
+    expect(imported.contentBasedDeduplication).toEqual(false);
+  });
+
+  test('fromTopicAttributes contentBasedDeduplication true', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const imported = sns.Topic.fromTopicAttributes(stack, 'Imported', {
+      topicArn: 'arn:aws:sns:*:123456789012:mytopic.fifo',
+      contentBasedDeduplication: true,
+    });
+
+    // THEN
+    expect(imported.topicName).toEqual('mytopic.fifo');
+    expect(imported.topicArn).toEqual('arn:aws:sns:*:123456789012:mytopic.fifo');
+    expect(imported.contentBasedDeduplication).toEqual(true);
+  });
+
+  test('fromTopicAttributes throws with contentBasedDeduplication on non-fifo topic', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    expect(() => sns.Topic.fromTopicAttributes(stack, 'Imported', {
+      topicArn: 'arn:aws:sns:*:123456789012:mytopic',
+      contentBasedDeduplication: true,
+    })).toThrow(/Cannot import topic; contentBasedDeduplication is only available for FIFO SNS topics./);
   });
 
   test('sets account for imported topic env', () => {
@@ -757,6 +834,24 @@ describe('Topic', () => {
           messageRetentionPeriodInDays: 12,
         }),
       ).toThrow('`messageRetentionPeriodInDays` is only valid for FIFO SNS topics');
+    });
+  });
+
+  describe('tracingConfig', () => {
+    test('specify tracingConfig', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app);
+
+      // WHEN
+      new sns.Topic(stack, 'MyTopic', {
+        tracingConfig: sns.TracingConfig.ACTIVE,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::SNS::Topic', {
+        'TracingConfig': 'Active',
+      });
     });
   });
 });

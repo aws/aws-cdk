@@ -14,6 +14,75 @@ let cloudExecutable: MockCloudExecutable;
 let cloudFormation: jest.Mocked<Deployments>;
 let toolkit: CdkToolkit;
 
+describe('fixed template', () => {
+  const templatePath = 'oldTemplate.json';
+  beforeEach(() => {
+    const oldTemplate = {
+      Resources: {
+        SomeResource: {
+          Type: 'AWS::SomeService::SomeResource',
+          Properties: {
+            Something: 'old-value',
+          },
+        },
+      },
+    };
+
+    cloudExecutable = new MockCloudExecutable({
+      stacks: [{
+        stackName: 'A',
+        template: {
+          Resources: {
+            SomeResource: {
+              Type: 'AWS::SomeService::SomeResource',
+              Properties: {
+                Something: 'new-value',
+              },
+            },
+          },
+        },
+      }],
+    });
+
+    toolkit = new CdkToolkit({
+      cloudExecutable,
+      deployments: cloudFormation,
+      configuration: cloudExecutable.configuration,
+      sdkProvider: cloudExecutable.sdkProvider,
+    });
+
+    fs.writeFileSync(templatePath, JSON.stringify(oldTemplate));
+  });
+
+  afterEach(() => fs.rmSync(templatePath));
+
+  test('fixed template with valid templates', async () => {
+    // GIVEN
+    const buffer = new StringWritable();
+
+    // WHEN
+    const exitCode = await toolkit.diff({
+      stackNames: ['A'],
+      stream: buffer,
+      changeSet: undefined,
+      templatePath,
+    });
+
+    // THEN
+    const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '');
+    expect(exitCode).toBe(0);
+    expect(plainTextOutput.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '')).toContain(`Resources
+[~] AWS::SomeService::SomeResource SomeResource
+ └─ [~] Something
+     ├─ [-] old-value
+     └─ [+] new-value
+
+
+✨  Number of stacks with differences: 1
+`);
+  });
+});
+
 describe('imports', () => {
   beforeEach(() => {
     const outputToJson = {
@@ -83,6 +152,7 @@ describe('imports', () => {
       });
     });
     cloudFormation.deployStack.mockImplementation((options) => Promise.resolve({
+      type: 'did-deploy-stack',
       noOp: true,
       outputs: {},
       stackArn: '',
@@ -203,6 +273,7 @@ describe('non-nested stacks', () => {
       });
     });
     cloudFormation.deployStack.mockImplementation((options) => Promise.resolve({
+      type: 'did-deploy-stack',
       noOp: true,
       outputs: {},
       stackArn: '',
@@ -324,19 +395,120 @@ describe('non-nested stacks', () => {
 
     // WHEN
     const exitCode = await toolkit.diff({
-      stackNames: ['A', 'A'],
+      stackNames: ['D'],
       stream: buffer,
       fail: false,
       quiet: true,
     });
 
     // THEN
-    expect(buffer.data.trim()).not.toContain('Stack A');
-    expect(buffer.data.trim()).not.toContain('There were no differences');
+    const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '');
+    expect(plainTextOutput).not.toContain('Stack D');
+    expect(plainTextOutput).not.toContain('There were no differences');
+    expect(buffer.data.trim()).toContain('✨  Number of stacks with differences: 0');
     expect(exitCode).toBe(0);
   });
 
-  test('diff does not check for stack existence when --no-changeset is passed', async () => {
+  test('when quiet mode is enabled, stacks with diffs should print stack name to stdout', async () => {
+    // GIVEN
+    const buffer = new StringWritable();
+
+    // WHEN
+    const exitCode = await toolkit.diff({
+      stackNames: ['A'],
+      stream: buffer,
+      fail: false,
+      quiet: true,
+    });
+
+    // THEN
+    const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '');
+    expect(plainTextOutput).toContain('Stack A');
+    expect(plainTextOutput).not.toContain('There were no differences');
+    expect(buffer.data.trim()).toContain('✨  Number of stacks with differences: 1');
+    expect(exitCode).toBe(0);
+  });
+});
+
+describe('stack exists checks', () => {
+  beforeEach(() => {
+
+    jest.resetAllMocks();
+
+    cloudExecutable = new MockCloudExecutable({
+      stacks: [{
+        stackName: 'A',
+        template: { resource: 'A' },
+      },
+      {
+        stackName: 'B',
+        depends: ['A'],
+        template: { resource: 'B' },
+      },
+      {
+        stackName: 'C',
+        depends: ['A'],
+        template: { resource: 'C' },
+        metadata: {
+          '/resource': [
+            {
+              type: cxschema.ArtifactMetadataEntryType.ERROR,
+              data: 'this is an error',
+            },
+          ],
+        },
+      },
+      {
+        stackName: 'D',
+        template: { resource: 'D' },
+      }],
+    });
+
+    cloudFormation = instanceMockFrom(Deployments);
+
+    toolkit = new CdkToolkit({
+      cloudExecutable,
+      deployments: cloudFormation,
+      configuration: cloudExecutable.configuration,
+      sdkProvider: cloudExecutable.sdkProvider,
+    });
+
+    // Default implementations
+    cloudFormation.readCurrentTemplateWithNestedStacks.mockImplementation((stackArtifact: CloudFormationStackArtifact) => {
+      if (stackArtifact.stackName === 'D') {
+        return Promise.resolve({
+          deployedRootTemplate: { resource: 'D' },
+          nestedStacks: {},
+        });
+      }
+      return Promise.resolve({
+        deployedRootTemplate: {},
+        nestedStacks: {},
+      });
+    });
+    cloudFormation.deployStack.mockImplementation((options) => Promise.resolve({
+      type: 'did-deploy-stack',
+      noOp: true,
+      outputs: {},
+      stackArn: '',
+      stackArtifact: options.stack,
+    }));
+
+    jest.spyOn(cfn, 'createDiffChangeSet').mockImplementationOnce(async () => {
+      return {
+        Changes: [
+          {
+            ResourceChange: {
+              Action: 'Add',
+              LogicalResourceId: 'Object',
+            },
+          },
+        ],
+      };
+    });
+  });
+
+  test('diff does not check for stack existence when --no-change-set is passed', async () => {
     // GIVEN
     const buffer = new StringWritable();
 
@@ -353,15 +525,64 @@ describe('non-nested stacks', () => {
     expect(exitCode).toBe(0);
     expect(cloudFormation.stackExists).not.toHaveBeenCalled();
   });
+
+  test('diff falls back to classic diff when stack does not exist', async () => {
+    // GIVEN
+    const buffer = new StringWritable();
+    cloudFormation.stackExists = jest.fn().mockReturnValue(Promise.resolve(false));
+
+    // WHEN
+    const exitCode = await toolkit.diff({
+      stackNames: ['A', 'A'],
+      stream: buffer,
+      fail: false,
+      quiet: true,
+      changeSet: true,
+    });
+
+    // THEN
+    expect(exitCode).toBe(0);
+    expect(cloudFormation.stackExists).toHaveBeenCalled();
+    expect(cfn.createDiffChangeSet).not.toHaveBeenCalled();
+  });
+
+  test('diff falls back to classic diff when stackExists call fails', async () => {
+    // GIVEN
+    const buffer = new StringWritable();
+
+    cloudFormation.stackExists.mockImplementation(() => {
+      throw new Error('Fail fail fail');
+    });
+
+    // WHEN
+    const exitCode = await toolkit.diff({
+      stackNames: ['A', 'A'],
+      stream: buffer,
+      fail: false,
+      quiet: true,
+      changeSet: true,
+    });
+
+    // THEN
+    expect(exitCode).toBe(0);
+    expect(cloudFormation.stackExists).toHaveBeenCalled();
+    expect(cfn.createDiffChangeSet).not.toHaveBeenCalled();
+  });
 });
 
 describe('nested stacks', () => {
   beforeEach(() => {
     cloudExecutable = new MockCloudExecutable({
-      stacks: [{
-        stackName: 'Parent',
-        template: {},
-      }],
+      stacks: [
+        {
+          stackName: 'Parent',
+          template: {},
+        },
+        {
+          stackName: 'UnchangedParent',
+          template: {},
+        },
+      ],
     });
 
     cloudFormation = instanceMockFrom(Deployments);
@@ -528,6 +749,78 @@ describe('nested stacks', () => {
               },
               physicalName: undefined,
             },
+            UnChangedChild: {
+              deployedTemplate: {
+                Resources: {
+                  SomeResource: {
+                    Type: 'AWS::Something',
+                    Properties: {
+                      Prop: 'unchanged',
+                    },
+                  },
+                },
+              },
+              generatedTemplate: {
+                Resources: {
+                  SomeResource: {
+                    Type: 'AWS::Something',
+                    Properties: {
+                      Prop: 'unchanged',
+                    },
+                  },
+                },
+              },
+              nestedStackTemplates: {},
+              physicalName: 'UnChangedChild',
+            },
+          },
+        });
+      }
+      if (stackArtifact.stackName === 'UnchangedParent') {
+        stackArtifact.template.Resources = {
+          UnchangedChild: {
+            Type: 'AWS::CloudFormation::Stack',
+            Properties: {
+              TemplateURL: 'child-url',
+            },
+          },
+        };
+        return Promise.resolve({
+          deployedRootTemplate: {
+            Resources: {
+              UnchangedChild: {
+                Type: 'AWS::CloudFormation::Stack',
+                Properties: {
+                  TemplateURL: 'child-url',
+                },
+              },
+            },
+          },
+          nestedStacks: {
+            UnchangedChild: {
+              deployedTemplate: {
+                Resources: {
+                  SomeResource: {
+                    Type: 'AWS::Something',
+                    Properties: {
+                      Prop: 'unchanged',
+                    },
+                  },
+                },
+              },
+              generatedTemplate: {
+                Resources: {
+                  SomeResource: {
+                    Type: 'AWS::Something',
+                    Properties: {
+                      Prop: 'unchanged',
+                    },
+                  },
+                },
+              },
+              nestedStackTemplates: {},
+              physicalName: 'UnchangedChild',
+            },
           },
         });
       }
@@ -594,6 +887,7 @@ Stack newGrandChild
 Resources
 [+] AWS::Something SomeResource
 
+Stack UnChangedChild
 
 ✨  Number of stacks with differences: 6`);
 
@@ -657,11 +951,191 @@ Stack newGrandChild
 Resources
 [+] AWS::Something SomeResource
 
+Stack UnChangedChild
 
 ✨  Number of stacks with differences: 6`);
 
     expect(exitCode).toBe(0);
     expect(changeSetSpy).not.toHaveBeenCalled();
+  });
+
+  test('when quiet mode is enabled, nested stacks with no diffs should not print stack name & no differences to stdout', async () => {
+    // GIVEN
+    const buffer = new StringWritable();
+
+    // WHEN
+    const exitCode = await toolkit.diff({
+      stackNames: ['UnchangedParent'],
+      stream: buffer,
+      fail: false,
+      quiet: true,
+    });
+
+    // THEN
+    const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '').replace(/[ \t]+$/mg, '');
+    expect(plainTextOutput).not.toContain('Stack UnchangedParent');
+    expect(plainTextOutput).not.toContain('There were no differences');
+    expect(buffer.data.trim()).toContain('✨  Number of stacks with differences: 0');
+    expect(exitCode).toBe(0);
+  });
+
+  test('when quiet mode is enabled, nested stacks with diffs should print stack name to stdout', async () => {
+    // GIVEN
+    const buffer = new StringWritable();
+
+    // WHEN
+    const exitCode = await toolkit.diff({
+      stackNames: ['Parent'],
+      stream: buffer,
+      fail: false,
+      quiet: true,
+    });
+
+    // THEN
+    const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '').replace(/[ \t]+$/mg, '');
+    expect(plainTextOutput).toContain(`Stack Parent
+Resources
+[~] AWS::CloudFormation::Stack AdditionChild
+ └─ [~] TemplateURL
+     ├─ [-] addition-child-url-new
+     └─ [+] addition-child-url-old
+[~] AWS::CloudFormation::Stack DeletionChild
+ └─ [~] TemplateURL
+     ├─ [-] deletion-child-url-new
+     └─ [+] deletion-child-url-old
+[~] AWS::CloudFormation::Stack ChangedChild
+ └─ [~] TemplateURL
+     ├─ [-] changed-child-url-new
+     └─ [+] changed-child-url-old
+
+Stack AdditionChild
+Resources
+[~] AWS::Something SomeResource
+ └─ [+] Prop
+     └─ added-value
+
+Stack DeletionChild
+Resources
+[~] AWS::Something SomeResource
+ └─ [-] Prop
+     └─ value-to-be-removed
+
+Stack ChangedChild
+Resources
+[~] AWS::Something SomeResource
+ └─ [~] Prop
+     ├─ [-] old-value
+     └─ [+] new-value
+
+Stack newChild
+Resources
+[+] AWS::Something SomeResource
+
+Stack newGrandChild
+Resources
+[+] AWS::Something SomeResource
+
+
+✨  Number of stacks with differences: 6`);
+    expect(plainTextOutput).not.toContain('Stack UnChangedChild');
+    expect(exitCode).toBe(0);
+  });
+});
+
+describe('--strict', () => {
+  const templatePath = 'oldTemplate.json';
+  beforeEach(() => {
+    const oldTemplate = {};
+
+    cloudFormation = instanceMockFrom(Deployments);
+    cloudFormation.readCurrentTemplateWithNestedStacks.mockImplementation((_stackArtifact: CloudFormationStackArtifact) => {
+      return Promise.resolve({
+        deployedRootTemplate: {},
+        nestedStacks: {},
+      });
+    });
+
+    cloudExecutable = new MockCloudExecutable({
+      stacks: [{
+        stackName: 'A',
+        template: {
+          Resources: {
+            MetadataResource: {
+              Type: 'AWS::CDK::Metadata',
+              Properties: {
+                newMeta: 'newData',
+              },
+            },
+            SomeOtherResource: {
+              Type: 'AWS::Something::Amazing',
+            },
+          },
+          Rules: {
+            CheckBootstrapVersion: {
+              newCheck: 'newBootstrapVersion',
+            },
+          },
+        },
+      }],
+    });
+
+    toolkit = new CdkToolkit({
+      cloudExecutable,
+      deployments: cloudFormation,
+      configuration: cloudExecutable.configuration,
+      sdkProvider: cloudExecutable.sdkProvider,
+    });
+
+    fs.writeFileSync(templatePath, JSON.stringify(oldTemplate));
+  });
+
+  afterEach(() => fs.rmSync(templatePath));
+
+  test('--strict does not obscure CDK::Metadata or CheckBootstrapVersion', async () => {
+    // GIVEN
+    const buffer = new StringWritable();
+
+    // WHEN
+    const exitCode = await toolkit.diff({
+      stackNames: ['A'],
+      stream: buffer,
+      strict: true,
+    });
+
+    // THEN
+    const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '');
+    expect(plainTextOutput.trim()).toEqual(`Stack A
+Resources
+[+] AWS::CDK::Metadata MetadataResource
+[+] AWS::Something::Amazing SomeOtherResource
+
+Other Changes
+[+] Unknown Rules: {\"CheckBootstrapVersion\":{\"newCheck\":\"newBootstrapVersion\"}}
+
+
+✨  Number of stacks with differences: 1`);
+    expect(exitCode).toBe(0);
+  });
+
+  test('--no-strict obscures CDK::Metadata and CheckBootstrapVersion', async () => {
+    // GIVEN
+    const buffer = new StringWritable();
+
+    // WHEN
+    const exitCode = await toolkit.diff({
+      stackNames: ['A'],
+      stream: buffer,
+    });
+
+    // THEN
+    const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '');
+    expect(plainTextOutput.trim()).toEqual(`Stack A
+Resources
+[+] AWS::Something::Amazing SomeOtherResource
+
+
+✨  Number of stacks with differences: 1`);
+    expect(exitCode).toBe(0);
   });
 });
 

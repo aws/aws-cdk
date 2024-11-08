@@ -105,7 +105,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "d7d3785243d748927f2a8d6edcecf909f96191df27a815e305aaeba98bcd2c64.zip"
+                      "s3Key": "9b3143f6d2fe3103f2f3162c221163ad6a5a0ba2219cc1e5af2e300325588714.zip"
                     },
                     "handler": "index.handler",
                     "role": {
@@ -171,7 +171,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpStage",
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpStage",
                   "version": "0.0.0"
                 }
               },
@@ -209,7 +209,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpIntegration",
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpIntegration",
                       "version": "0.0.0"
                     }
                   },
@@ -292,7 +292,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpRoute",
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpRoute",
                   "version": "0.0.0"
                 }
               },
@@ -349,7 +349,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpAuthorizer",
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpAuthorizer",
                   "version": "0.0.0"
                 }
               },
@@ -403,7 +403,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpApi",
+              "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpApi",
               "version": "0.0.0"
             }
           },
@@ -450,7 +450,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpStage",
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpStage",
                   "version": "0.0.0"
                 }
               },
@@ -507,7 +507,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpAuthorizer",
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpAuthorizer",
                   "version": "0.0.0"
                 }
               },
@@ -561,7 +561,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpApi",
+              "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpApi",
               "version": "0.0.0"
             }
           },
@@ -662,7 +662,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "54deaef2af5b9afbfc9cbcbb9261b1c0d4cce6560831d7ae1959f3da899011c8.zip"
+                      "s3Key": "0793b3c94d0be9d628975dbbcd1dc523196de50a41fb1920880248ae3c24259b.zip"
                     },
                     "handler": "index.handler",
                     "role": {
@@ -719,7 +719,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpIntegration",
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpIntegration",
                   "version": "0.0.0"
                 }
               },
@@ -802,7 +802,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpRoute",
+              "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpRoute",
               "version": "0.0.0"
             }
           },
@@ -817,6 +817,22 @@
           "URLWithDefaultAuthorizer": {
             "id": "URLWithDefaultAuthorizer",
             "path": "AuthorizerInteg/URLWithDefaultAuthorizer",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "AuthorizerId": {
+            "id": "AuthorizerId",
+            "path": "AuthorizerInteg/AuthorizerId",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "AuthorizationType": {
+            "id": "AuthorizationType",
+            "path": "AuthorizerInteg/AuthorizationType",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnOutput",
               "version": "0.0.0"
@@ -849,7 +865,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.3.0"
         }
       }
     },

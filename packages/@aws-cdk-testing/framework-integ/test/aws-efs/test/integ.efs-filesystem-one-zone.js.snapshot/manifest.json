@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0d3f463a0b0e6942ac2691ff19492638a2cc847bac126d21a3c31ed59c986143.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2ca0fced40c1ba03410ad6ab0ae8e4925294801627d5d30421d1e05b7163e489.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -178,6 +178,12 @@
             "data": "VpcRestrictDefaultSecurityGroupCustomResourceC73DA2BE"
           }
         ],
+        "/test-efs-one-zone-integ/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
         "/test-efs-one-zone-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
           {
             "type": "aws:cdk:logicalId",
@@ -206,6 +212,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "FileSystemEfsMountTargetPrivateSubnet1BB305AF3"
+          }
+        ],
+        "/test-efs-one-zone-integ/FileSystem2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FileSystem2C84D7800"
+          }
+        ],
+        "/test-efs-one-zone-integ/FileSystem2/EfsSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FileSystem2EfsSecurityGroup2AF8F758"
+          }
+        ],
+        "/test-efs-one-zone-integ/FileSystem2/EfsMountTarget-PrivateSubnet2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FileSystem2EfsMountTargetPrivateSubnet26E5947D6"
           }
         ],
         "/test-efs-one-zone-integ/BootstrapVersion": [

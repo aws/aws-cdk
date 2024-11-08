@@ -188,6 +188,41 @@ export interface PortProps {
  * Interface for classes that provide the connection-specification parts of a security group rule
  */
 export class Port {
+  /** Well-known SSH port (TCP 22) */
+  public static readonly SSH = Port.tcp(22);
+  /** Well-known SMTP port (TCP 25) */
+  public static readonly SMTP = Port.tcp(25);
+  /** Well-known DNS port (UDP 53) */
+  public static readonly DNS_UDP = Port.udp(53);
+  /** Well-known DNS port (TCP 53) */
+  public static readonly DNS_TCP = Port.tcp(53);
+  /** Well-known HTTP port (TCP 80) */
+  public static readonly HTTP = Port.tcp(80);
+  /** Well-known POP3 port (TCP 110) */
+  public static readonly POP3 = Port.tcp(110);
+  /** Well-known IMAP port (TCP 143) */
+  public static readonly IMAP = Port.tcp(143);
+  /** Well-known LDAP port (TCP 389) */
+  public static readonly LDAP = Port.tcp(389);
+  /** Well-known HTTPS port (TCP 443) */
+  public static readonly HTTPS = Port.tcp(443);
+  /** Well-known SMB port (TCP 445) */
+  public static readonly SMB = Port.tcp(445);
+  /** Well-known IMAPS port (TCP 993) */
+  public static readonly IMAPS = Port.tcp(993);
+  /** Well-known POP3S port (TCP 995) */
+  public static readonly POP3S = Port.tcp(995);
+  /** Well-known Microsoft SQL Server port (TCP 1433) */
+  public static readonly MSSQL = Port.tcp(1433);
+  /** Well-known NFS port (TCP 2049) */
+  public static readonly NFS = Port.tcp(2049);
+  /** Well-known MySQL and Aurora port (TCP 3306) */
+  public static readonly MYSQL_AURORA = Port.tcp(3306);
+  /** Well-known Microsoft Remote Desktop Protocol port (TCP 3389) */
+  public static readonly RDP = Port.tcp(3389);
+  /** Well-known PostgreSQL port (TCP 5432) */
+  public static readonly POSTGRES = Port.tcp(5432);
+
   /**
    * A single TCP port
    */

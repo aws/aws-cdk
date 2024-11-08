@@ -24,13 +24,13 @@ This is what happens under the hood:
 
 1. When this stack is deployed (either via `cdk deploy` or via CI/CD), the
    contents of the local `website-dist` directory will be archived and uploaded
-   to an intermediary assets bucket. If there is more than one source, they will
-   be individually uploaded.
-2. The `BucketDeployment` construct synthesizes a custom CloudFormation resource
+   to an intermediary assets bucket (the `StagingBucket` of the CDK bootstrap stack).
+   If there is more than one source, they will be individually uploaded.
+2. The `BucketDeployment` construct synthesizes a Lambda-backed custom CloudFormation resource
    of type `Custom::CDKBucketDeployment` into the template. The source bucket/key
    is set to point to the assets bucket.
-3. The custom resource downloads the .zip archive, extracts it and issues `aws
-   s3 sync --delete` against the destination bucket (in this case
+3. The custom resource invokes its associated Lambda function, which downloads the .zip archive,
+   extracts it and issues `aws s3 sync --delete` against the destination bucket (in this case
    `websiteBucket`). If there is more than one source, the sources will be
    downloaded and merged pre-deployment at this step.
 
@@ -66,6 +66,58 @@ const deployment = new s3deploy.BucketDeployment(this, 'DeployWebsite', {
 
 deployment.addSource(s3deploy.Source.asset('./another-asset'));
 ```
+
+For the Lambda function to download object(s) from the source bucket, besides the obvious
+`s3:GetObject*` permissions, the Lambda's execution role needs the `kms:Decrypt` and `kms:DescribeKey`
+permissions on the KMS key that is used to encrypt the bucket. By default, when the source bucket is
+encrypted with the S3 managed key of the account, these permissions are granted by the key's
+resource-based policy, so they do not need to be on the Lambda's execution role policy explicitly.
+However, if the encryption key is not the s3 managed one, its resource-based policy is quite likely
+to NOT grant such KMS permissions. In this situation, the Lambda execution will fail with an error
+message like below:
+
+```txt
+download failed: ...
+An error occurred (AccessDenied) when calling the GetObject operation:
+User: *** is not authorized to perform: kms:Decrypt on the resource associated with this ciphertext
+because no identity-based policy allows the kms:Decrypt action
+```
+
+When this happens, users can use the public `handlerRole` property of `BucketDeployment` to manually 
+add the KMS permissions:
+
+```ts
+declare const destinationBucket: s3.Bucket;
+
+const deployment = new s3deploy.BucketDeployment(this, 'DeployFiles', {
+  sources: [s3deploy.Source.asset(path.join(__dirname, 'source-files'))],
+  destinationBucket,
+});
+
+deployment.handlerRole.addToPolicy(
+  new iam.PolicyStatement({
+    actions: ['kms:Decrypt', 'kms:DescribeKey'],
+    effect: iam.Effect.ALLOW,
+    resources: ['<encryption key ARN>'],
+  }),
+);
+```
+
+The situation above could arise from the following scenarios:
+
+- User created a customer managed KMS key and passed its ID to the `cdk bootstrap` command via
+  the `--bootstrap-kms-key-id` CLI option.
+  The [default key policy](https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-default.html#key-policy-default-allow-root-enable-iam)
+  alone is not sufficient to grant the Lambda KMS permissions.
+
+- A corporation uses its own custom CDK bootstrap process, which encrypts the CDK `StagingBucket`
+  by a KMS key from a management account of the corporation's AWS Organization. In this cross-account
+  access scenario, the KMS permissions must be explicitly present in the Lambda's execution role policy.
+
+- One of the sources for the `BucketDeployment` comes from the `Source.bucket` static method, which
+  points to a bucket whose encryption key is not the S3 managed one, and the resource-based policy
+  of the encryption key is not sufficient to grant the Lambda `kms:Decrypt` and `kms:DescribeKey`
+  permissions.
 
 ## Supported sources
 
@@ -370,7 +422,6 @@ The syntax for template variables is `{{ variableName }}` in your local file. Th
 specify the substitutions in CDK like this:
 
 ```ts
-import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 
 declare const myLambdaFunction: lambda.Function;
@@ -418,6 +469,26 @@ new cdk.CfnOutput(this, 'ObjectKey', {
 });
 ```
 
+## Controlling the Output of Source Object Keys
+
+By default, the keys of the source objects copied to the destination bucket are returned in the Data property of the custom resource. However, you can disable this behavior by setting the outputObjectKeys property to false. This is particularly useful when the number of objects is too large and might exceed the size limit of the responseData property.
+
+```ts
+import * as cdk from 'aws-cdk-lib';
+
+declare const destinationBucket: s3.Bucket;
+
+const myBucketDeployment = new s3deploy.BucketDeployment(this, 'DeployMeWithoutExtractingFilesOnDestination', {
+  sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+  destinationBucket,
+  outputObjectKeys: false,
+});
+
+new cdk.CfnOutput(this, 'ObjectKey', {
+  value: cdk.Fn.select(0, myBucketDeployment.objectKeys),
+});
+```
+
 ## Notes
 
 - This library uses an AWS CloudFormation custom resource which is about 10MiB in
@@ -438,8 +509,9 @@ new cdk.CfnOutput(this, 'ObjectKey', {
 ## Development
 
 The custom resource is implemented in Python 3.9 in order to be able to leverage
-the AWS CLI for "aws s3 sync". The code is under [`lib/lambda`](https://github.com/aws/aws-cdk/tree/main/packages/aws-cdk-lib/aws-s3-deployment/lib/lambda) and
-unit tests are under [`test/lambda`](https://github.com/aws/aws-cdk/tree/main/packages/aws-cdk-lib/aws-s3-deployment/test/lambda).
+the AWS CLI for "aws s3 sync".
+The code is now in the `@aws-cdk/custom-resource-handlers` package under [`lib/aws-s3-deployment/bucket-deployment-handler`](https://github.com/aws/aws-cdk/tree/main/packages/@aws-cdk/custom-resource-handlers/lib/aws-s3-deployment/bucket-deployment-handler/) and
+unit tests are under [`test/aws-s3-deployment/bucket-deployment-handler`](https://github.com/aws/aws-cdk/tree/main/packages/@aws-cdk/custom-resource-handlers/test/aws-s3-deployment/bucket-deployment-handler/).
 
 This package requires Python 3.9 during build time in order to create the custom
 resource Lambda bundle and test it. It also relies on a few bash scripts, so

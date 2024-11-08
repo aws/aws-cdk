@@ -38,23 +38,23 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "8811a2632ac5564a08fd269e159298f7e497f259578b0dc5e927a1f48ab24d34.zip"
+     "S3Key": "bcc0b05ef0a1a225a30c245c26232f00ff0b69ef30f3afa548235ab51e1cc225.zip"
     },
+    "Description": "version-hash:8c084350bd5f45040943cca49cb6ae65",
+    "Handler": "index.main",
     "Role": {
      "Fn::GetAtt": [
       "MyLambdaServiceRole4539ECB6",
       "Arn"
      ]
     },
-    "Description": "version-hash:729d0f94105773f32ab290a92db57227",
-    "Handler": "index.main",
     "Runtime": "python3.8"
    },
    "DependsOn": [
     "MyLambdaServiceRole4539ECB6"
    ]
   },
-  "MyLambdaCurrentVersionE7A382CC2ea27ea57e328c1e5be4991bd1bd072d": {
+  "MyLambdaCurrentVersionE7A382CC45f41452e4af8108d62930f8af7039ec": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -70,13 +70,13 @@
     "FunctionName": {
      "Ref": "MyLambdaCCE802FB"
     },
+    "MaximumRetryAttempts": 1,
     "Qualifier": {
      "Fn::GetAtt": [
-      "MyLambdaCurrentVersionE7A382CC2ea27ea57e328c1e5be4991bd1bd072d",
+      "MyLambdaCurrentVersionE7A382CC45f41452e4af8108d62930f8af7039ec",
       "Version"
      ]
-    },
-    "MaximumRetryAttempts": 1
+    }
    }
   },
   "MyLambdaCurrentVersionAliaslive9151E913": {
@@ -87,7 +87,7 @@
     },
     "FunctionVersion": {
      "Fn::GetAtt": [
-      "MyLambdaCurrentVersionE7A382CC2ea27ea57e328c1e5be4991bd1bd072d",
+      "MyLambdaCurrentVersionE7A382CC45f41452e4af8108d62930f8af7039ec",
       "Version"
      ]
     },

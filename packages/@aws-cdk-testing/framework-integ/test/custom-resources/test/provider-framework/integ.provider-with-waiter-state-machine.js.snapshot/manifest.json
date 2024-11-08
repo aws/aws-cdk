@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "38.0.1",
   "artifacts": {
     "integ-provider-with-waiter-state-machine.assets": {
       "type": "cdk:asset-manifest",
@@ -16,9 +16,10 @@
         "templateFile": "integ-provider-with-waiter-state-machine.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/faf4469d4e97e2394218414954ab965ea90e60ab729bdbcf25f2e702b4ec22e4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/58de086818c2a392799bb757cf03da8cd03bd852488a69d9a7da90de0674f766.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -178,6 +179,18 @@
             "data": "VpcRestrictDefaultSecurityGroupCustomResourceC73DA2BE"
           }
         ],
+        "/integ-provider-with-waiter-state-machine/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/integ-provider-with-waiter-state-machine/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
         "/integ-provider-with-waiter-state-machine/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
           {
             "type": "aws:cdk:logicalId",
@@ -298,6 +311,84 @@
             "data": "MyProviderwaiterstatemachineC1FBB9F9"
           }
         ],
+        "/integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-onEvent/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProviderWithoutLogOptionsframeworkonEventServiceRole42DA2E00"
+          }
+        ],
+        "/integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProviderWithoutLogOptionsframeworkonEventServiceRoleDefaultPolicy03CDAD2E"
+          }
+        ],
+        "/integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-onEvent/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProviderWithoutLogOptionsframeworkonEvent6E5DE0A9"
+          }
+        ],
+        "/integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-isComplete/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProviderWithoutLogOptionsframeworkisCompleteServiceRole731825B1"
+          }
+        ],
+        "/integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-isComplete/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProviderWithoutLogOptionsframeworkisCompleteServiceRoleDefaultPolicy51B53947"
+          }
+        ],
+        "/integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-isComplete/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProviderWithoutLogOptionsframeworkisComplete81812F27"
+          }
+        ],
+        "/integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-onTimeout/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProviderWithoutLogOptionsframeworkonTimeoutServiceRoleC30A6329"
+          }
+        ],
+        "/integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-onTimeout/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProviderWithoutLogOptionsframeworkonTimeoutServiceRoleDefaultPolicy891DADC3"
+          }
+        ],
+        "/integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-onTimeout/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProviderWithoutLogOptionsframeworkonTimeout5860EE91"
+          }
+        ],
+        "/integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/waiter-state-machine/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProviderWithoutLogOptionswaiterstatemachineRole9043F015"
+          }
+        ],
+        "/integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/waiter-state-machine/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProviderWithoutLogOptionswaiterstatemachineRoleDefaultPolicy57D9D4D8"
+          }
+        ],
+        "/integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/waiter-state-machine/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProviderWithoutLogOptionswaiterstatemachineLogGroupEDE99092"
+          }
+        ],
+        "/integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/waiter-state-machine/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProviderWithoutLogOptionswaiterstatemachine72EFA8B2"
+          }
+        ],
         "/integ-provider-with-waiter-state-machine/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -328,6 +419,7 @@
         "templateFile": "IntegProviderWithWaiterStateMachineDefaultTestDeployAssert2D0F0427.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",

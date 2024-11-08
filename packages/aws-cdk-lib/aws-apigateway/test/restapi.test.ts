@@ -14,6 +14,8 @@ describe('restapi', () => {
     api.root.addMethod('GET'); // must have at least one method or an API definition
 
     // THEN
+    expect(apigw.RestApi.isRestApi(api)).toBe(true);
+
     Template.fromStack(stack).templateMatches({
       Resources: {
         myapi4C7BF186: {
@@ -1064,6 +1066,8 @@ describe('SpecRestApi', () => {
     resource.addMethod('GET');
 
     // THEN
+    expect(apigw.RestApi.isRestApi(api)).toBe(false);
+
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Resource', {
       PathPart: 'pets',
       ParentId: stack.resolve(api.restApiRootResourceId),

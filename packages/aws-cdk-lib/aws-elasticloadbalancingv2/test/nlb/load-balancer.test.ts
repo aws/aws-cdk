@@ -80,8 +80,8 @@ describe('tests', () => {
     new elbv2.NetworkLoadBalancer(stack, 'LB', {
       vpc,
       crossZoneEnabled: true,
-      denyAllIgwTraffic: true,
       clientRoutingPolicy: elbv2.ClientRoutingPolicy.PARTIAL_AVAILABILITY_ZONE_AFFINITY,
+      zonalShift: true,
     });
 
     // THEN
@@ -92,12 +92,12 @@ describe('tests', () => {
           Value: 'true',
         },
         {
-          Key: 'ipv6.deny_all_igw_traffic',
-          Value: 'true',
-        },
-        {
           Key: 'dns_record.client_routing_policy',
           Value: 'partial_availability_zone_affinity',
+        },
+        {
+          Key: 'zonal_shift.config.enabled',
+          Value: 'true',
         },
       ]),
     });
@@ -486,6 +486,26 @@ describe('tests', () => {
     expect(() => {
       app.synth();
     }).toThrow('Load balancer name: "my load balancer" must contain only alphanumeric characters or hyphens.');
+  });
+
+  test.each([
+    [false, undefined],
+    [true, undefined],
+    [false, elbv2.IpAddressType.IPV4],
+    [true, elbv2.IpAddressType.IPV4],
+  ])('throw error for denyAllIgwTraffic set to %s for Ipv4 (default) addressing.', (denyAllIgwTraffic, ipAddressType) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // THEN
+    expect(() => {
+      new elbv2.NetworkLoadBalancer(stack, 'NLB', {
+        vpc,
+        denyAllIgwTraffic: denyAllIgwTraffic,
+        ipAddressType: ipAddressType,
+      });
+    }).toThrow(`'denyAllIgwTraffic' may only be set on load balancers with ${elbv2.IpAddressType.DUAL_STACK} addressing.`);
   });
 
   test('imported network load balancer with no vpc specified throws error when calling addTargets', () => {
@@ -977,6 +997,82 @@ describe('tests', () => {
     });
   });
 
+  // test cases for crossZoneEnabled
+  describe('crossZoneEnabled', () => {
+    test('crossZoneEnabled can be true', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'stack');
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+
+      // WHEN
+      new elbv2.NetworkLoadBalancer(stack, 'nlb', {
+        vpc,
+        crossZoneEnabled: true,
+      });
+      const t = Template.fromStack(stack);
+      t.resourceCountIs('AWS::ElasticLoadBalancingV2::LoadBalancer', 1);
+      t.hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        LoadBalancerAttributes: [
+          {
+            Key: 'deletion_protection.enabled',
+            Value: 'false',
+          },
+          {
+            Key: 'load_balancing.cross_zone.enabled',
+            Value: 'true',
+          },
+        ],
+      });
+    });
+    test('crossZoneEnabled can be false', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'stack');
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+
+      // WHEN
+      new elbv2.NetworkLoadBalancer(stack, 'nlb', {
+        vpc,
+        crossZoneEnabled: false,
+      });
+      const t = Template.fromStack(stack);
+      t.resourceCountIs('AWS::ElasticLoadBalancingV2::LoadBalancer', 1);
+      t.hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        LoadBalancerAttributes: [
+          {
+            Key: 'deletion_protection.enabled',
+            Value: 'false',
+          },
+          {
+            Key: 'load_balancing.cross_zone.enabled',
+            Value: 'false',
+          },
+        ],
+      });
+    });
+    test('crossZoneEnabled can be undefined', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'stack');
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+
+      // WHEN
+      new elbv2.NetworkLoadBalancer(stack, 'nlb', {
+        vpc,
+      });
+      const t = Template.fromStack(stack);
+      t.resourceCountIs('AWS::ElasticLoadBalancingV2::LoadBalancer', 1);
+      t.hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        LoadBalancerAttributes: [
+          {
+            Key: 'deletion_protection.enabled',
+            Value: 'false',
+          },
+        ],
+      });
+    });
+  });
   describe('dualstack', () => {
     test('Can create internet-facing dualstack NetworkLoadBalancer', () => {
       // GIVEN
@@ -998,7 +1094,7 @@ describe('tests', () => {
       });
     });
 
-    test('Can create internal dualstack NetworkLoadBalancer', () => {
+    test('Can create internet-facing dualstack NetworkLoadBalancer with denyAllIgwTraffic set to false', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'Stack');
@@ -1006,6 +1102,29 @@ describe('tests', () => {
       // WHEN
       new elbv2.NetworkLoadBalancer(stack, 'LB', {
         vpc,
+        denyAllIgwTraffic: false,
+        internetFacing: true,
+        ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        Scheme: 'internet-facing',
+        Type: 'network',
+        IpAddressType: 'dualstack',
+      });
+    });
+
+    test.each([undefined, false])('Can create internal dualstack NetworkLoadBalancer with denyAllIgwTraffic set to true', (internetFacing) => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      // WHEN
+      new elbv2.NetworkLoadBalancer(stack, 'LB', {
+        vpc,
+        denyAllIgwTraffic: true,
+        internetFacing: internetFacing,
         ipAddressType: elbv2.IpAddressType.DUAL_STACK,
       });
 
@@ -1050,6 +1169,21 @@ describe('tests', () => {
           defaultAction: elbv2.NetworkListenerAction.forward([targetGroup]),
         });
       }).toThrow(/UDP or TCP_UDP listeners cannot be added to a dualstack network load balancer/);
+    });
+  });
+
+  describe('dualstack without public ipv4', () => {
+    test('Throws when creating a dualstack without public ipv4 and a NetworkLoadBalancer', () => {
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      expect(() => {
+        new elbv2.NetworkLoadBalancer(stack, 'LB', {
+          vpc,
+          internetFacing: true,
+          ipAddressType: elbv2.IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4,
+        });
+      }).toThrow('\'ipAddressType\' DUAL_STACK_WITHOUT_PUBLIC_IPV4 can only be used with Application Load Balancer, got network');
     });
   });
 });

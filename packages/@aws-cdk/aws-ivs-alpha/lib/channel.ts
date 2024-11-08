@@ -3,6 +3,7 @@ import { Lazy, Names } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnChannel } from 'aws-cdk-lib/aws-ivs';
 import { StreamKey } from './stream-key';
+import { IRecordingConfiguration } from './recording-configuration';
 
 /**
  * Represents an IVS Channel
@@ -53,22 +54,53 @@ export enum LatencyMode {
 /**
   * The channel type, which determines the allowable resolution and bitrate.
   * If you exceed the allowable resolution or bitrate, the stream probably will disconnect immediately.
+  *
+  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ivs-channel.html
 */
 export enum ChannelType {
   /**
-   * Multiple qualities are generated from the original input, to automatically give viewers the best experience for
-   * their devices and network conditions.
-   *
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ivs-channel.html
+   * Multiple qualities are generated from the original input, to automatically give viewers the best experience for their devices and network conditions.
+   * Transcoding allows higher playback quality across a range of download speeds. Resolution can be up to 1080p and bitrate can be up to 8.5 Mbps.
+   * Audio is transcoded only for renditions 360p and below; above that, audio is passed through.
    */
   STANDARD = 'STANDARD',
 
   /**
-   * delivers the original input to viewers. The viewer’s video-quality choice is limited to the original input.
-   *
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ivs-channel.html
+   * Delivers the original input to viewers. The viewer’s video-quality choice is limited to the original input.
    */
   BASIC = 'BASIC',
+
+  /**
+   * Multiple qualities are generated from the original input, to automatically give viewers the best experience for their devices and network conditions.
+   * Input resolution can be up to 1080p and bitrate can be up to 8.5 Mbps; output is capped at SD quality (480p).
+   * Audio for all renditions is transcoded, and an audio-only rendition is available.
+   */
+  ADVANCED_SD = 'ADVANCED_SD',
+
+  /**
+   * Multiple qualities are generated from the original input, to automatically give viewers the best experience for their devices and network conditions.
+   * Input resolution can be up to 1080p and bitrate can be up to 8.5 Mbps; output is capped at HD quality (720p).
+   * Audio for all renditions is transcoded, and an audio-only rendition is available.
+   */
+  ADVANCED_HD = 'ADVANCED_HD',
+}
+
+/**
+  * An optional transcode preset for the channel. This is selectable only for ADVANCED_HD and ADVANCED_SD channel types.
+  *
+  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ivs-channel.html
+*/
+export enum Preset {
+  /**
+   * Use a lower bitrate than STANDARD for each quality level. Use it if you have low download bandwidth and/or simple video content (e.g., talking heads).
+   */
+  CONSTRAINED_BANDWIDTH_DELIVERY = 'CONSTRAINED_BANDWIDTH_DELIVERY',
+
+  /**
+   * Use a higher bitrate for each quality level. Use it if you have high download bandwidth and/or complex video content (e.g., flashes and quick scene changes).
+   */
+  HIGHER_BANDWIDTH_DELIVERY = 'HIGHER_BANDWIDTH_DELIVERY',
+
 }
 
 /**
@@ -85,6 +117,13 @@ export interface ChannelProps {
    * @default false
    */
   readonly authorized?: boolean;
+
+  /**
+   * Whether the channel allows insecure RTMP ingest.
+   *
+   * @default false
+   */
+  readonly insecureIngest?: boolean;
 
   /**
    * Channel latency mode.
@@ -107,6 +146,21 @@ export interface ChannelProps {
    * @default ChannelType.STANDARD
    */
   readonly type?: ChannelType;
+
+  /**
+   * An optional transcode preset for the channel. Can be used for ADVANCED_HD and ADVANCED_SD channel types.
+   * When LOW or STANDARD is used, the preset will be overridden and set to none regardless of the value provided.
+   *
+   * @default - Preset.HIGHER_BANDWIDTH_DELIVERY if channelType is ADVANCED_SD or ADVANCED_HD, none otherwise
+   */
+  readonly preset?: Preset;
+
+  /**
+   * A recording configuration for the channel.
+   *
+   * @default - recording is disabled
+   */
+  readonly recordingConfiguration?: IRecordingConfiguration;
 }
 
 /**
@@ -162,11 +216,22 @@ export class Channel extends ChannelBase {
       throw new Error(`channelName must contain only numbers, letters, hyphens and underscores, got: '${this.physicalName}'`);
     }
 
+    let preset;
+
+    if (props.type && [ChannelType.STANDARD, ChannelType.BASIC].includes(props.type) && props.preset) {
+      preset = '';
+    } else {
+      preset = props.preset;
+    }
+
     const resource = new CfnChannel(this, 'Resource', {
       authorized: props.authorized,
+      insecureIngest: props.insecureIngest,
       latencyMode: props.latencyMode,
       name: this.physicalName,
       type: props.type,
+      preset,
+      recordingConfigurationArn: props.recordingConfiguration?.recordingConfigurationArn,
     });
 
     this.channelArn = resource.attrArn;

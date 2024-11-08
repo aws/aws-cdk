@@ -1,0 +1,22 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "resource-policy-integ-test/DefaultTest": {
+      "stacks": [
+        "resource-policy-stack"
+      ],
+      "regions": [
+        "us-east-1"
+      ],
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "rollback": true
+          }
+        }
+      },
+      "assertionStack": "resource-policy-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "resourcepolicyintegtestDefaultTestDeployAssert9778837B"
+    }
+  }
+}

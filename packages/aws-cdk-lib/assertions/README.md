@@ -595,3 +595,57 @@ Annotations.fromStack(stack).hasError(
   Match.stringLikeRegexp('.*Foo::Bar.*'),
 );
 ```
+
+## Asserting Stack tags
+
+Tags applied to a `Stack` are not part of the rendered template: instead, they
+are included as properties in the Cloud Assembly Manifest. To test that stacks
+are tagged as expected, simple assertions can be written.
+
+Given the following setup:
+
+```ts nofixture
+import { App, Stack } from 'aws-cdk-lib';
+import { Tags } from 'aws-cdk-lib/assertions';
+
+const app = new App();
+const stack = new Stack(app, 'MyStack', {
+  tags: {
+    'tag-name': 'tag-value',
+  },
+});
+```
+
+It is possible to test against these values:
+
+```ts
+const tags = Tags.fromStack(stack);
+
+// using a default 'objectLike' Matcher
+tags.hasValues({
+  'tag-name': 'tag-value',
+});
+
+// ... with Matchers embedded
+tags.hasValues({
+  'tag-name': Match.stringLikeRegexp('value'),
+});
+
+// or another object Matcher at the top level
+tags.hasValues(Match.objectEquals({
+  'tag-name': Match.anyValue(),
+}));
+```
+
+When tags are not defined on the stack, it is represented as an empty object
+rather than `undefined`. To make this more obvious, there is a `hasNone()`
+method that can be used in place of `Match.exactly({})`. If `Match.absent()` is
+passed, an error will result.
+
+```ts
+// no tags present
+Tags.fromStack(stack).hasNone();
+
+// don't use absent() at the top level, it won't work
+expect(() => { Tags.fromStack(stack).hasValues(Match.absent()); }).toThrow(/will never match/i);
+```

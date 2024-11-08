@@ -6,6 +6,7 @@ Define a KMS key:
 ```ts
 new kms.Key(this, 'MyKey', {
   enableKeyRotation: true,
+  rotationPeriod: Duration.days(180), // Default is 365 days
 });
 ```
 
@@ -37,6 +38,15 @@ Valid `keySpec` values depends on `keyUsage` value.
 const key = new kms.Key(this, 'MyKey', {
   keySpec: kms.KeySpec.ECC_SECG_P256K1, // Default to SYMMETRIC_DEFAULT
   keyUsage: kms.KeyUsage.SIGN_VERIFY,    // and ENCRYPT_DECRYPT
+});
+```
+
+
+Create a multi-Region primary key:
+
+```ts
+const key = new kms.Key(this, 'MyKey', {
+  multiRegion: true, // Default is false
 });
 ```
 
@@ -112,6 +122,24 @@ myKeyLookup.grantEncryptDecrypt(role);
 Note that a call to `.addToResourcePolicy(statement)` on `myKeyLookup` will not have
 an affect on the key's policy because it is not owned by your stack. The call
 will be a no-op.
+
+If the target key is not found in your account, an error will be thrown.
+To prevent the error in the case, you can receive a dummy key without the error
+by setting `returnDummyKeyOnMissing` to `true`. The dummy key has a `keyId` of
+`1234abcd-12ab-34cd-56ef-1234567890ab`. The value of the dummy key id can also be
+referenced using the `Key.DEFAULT_DUMMY_KEY_ID` variable, and you can check if the
+key is a dummy key by using the `Key.isLookupDummy()` method.
+
+```ts
+const dummy = kms.Key.fromLookup(this, 'MyKeyLookup', {
+  aliasName: 'alias/NonExistentAlias',
+  returnDummyKeyOnMissing: true,
+});
+
+if (kms.Key.isLookupDummy(dummy)) {
+  // alternative process
+}
+```
 
 ## Key Policies
 

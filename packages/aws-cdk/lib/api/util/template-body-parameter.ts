@@ -1,12 +1,12 @@
+import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
 import { debug, error } from '../../logging';
 import { toYAML } from '../../serialize';
 import { AssetManifestBuilder } from '../../util/asset-manifest-builder';
-import { publishAssets } from '../../util/asset-publishing';
 import { contentHash } from '../../util/content-hash';
-import { ISDK, SdkProvider } from '../aws-auth';
+import { ISDK } from '../aws-auth';
 import { EnvironmentResources } from '../environment-resources';
 
 export type TemplateBodyParameter = {
@@ -68,7 +68,8 @@ export async function makeBodyParameter(
   if (overrideTemplate) {
     // Add a variant of this template
     templateFile = `${stack.templateFile}-${templateHash}.yaml`;
-    await fs.writeFile(templateFile, templateJson, { encoding: 'utf-8' });
+    const templateFilePath = path.join(stack.assembly.directory, templateFile);
+    await fs.writeFile(templateFilePath, templateJson, { encoding: 'utf-8' });
   }
 
   assetManifest.addFileAsset(templateHash, {
@@ -81,34 +82,6 @@ export async function makeBodyParameter(
   const templateURL = `${toolkitInfo.bucketUrl}/${key}`;
   debug('Storing template in S3 at:', templateURL);
   return { TemplateURL: templateURL };
-}
-
-/**
- * Prepare a body parameter for CFN, performing the upload
- *
- * Return it as-is if it is small enough to pass in the API call,
- * upload to S3 and return the coordinates if it is not.
- */
-export async function makeBodyParameterAndUpload(
-  stack: cxapi.CloudFormationStackArtifact,
-  resolvedEnvironment: cxapi.Environment,
-  resources: EnvironmentResources,
-  sdkProvider: SdkProvider,
-  sdk: ISDK,
-  overrideTemplate?: any): Promise<TemplateBodyParameter> {
-
-  // We don't have access to the actual asset manifest here, so pretend that the
-  // stack doesn't have a pre-published URL.
-  const forceUploadStack = Object.create(stack, {
-    stackTemplateAssetObjectUrl: { value: undefined },
-  });
-
-  const builder = new AssetManifestBuilder();
-  const bodyparam = await makeBodyParameter(forceUploadStack, resolvedEnvironment, builder, resources, sdk, overrideTemplate);
-  const manifest = builder.toManifest(stack.assembly.directory);
-  await publishAssets(manifest, sdkProvider, resolvedEnvironment, { quiet: true });
-
-  return bodyparam;
 }
 
 /**

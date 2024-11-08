@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1259adb9d491b9491b349aff3ff67ac9e96ed23a68a4f774f130a37ed7f67cb4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/879d43bd7fa593d0da48ddd22d54a1ec2eab5a43a0ec95fb9933166ec27ea119.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -260,6 +260,54 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ScheduledEc2TaskScheduledTaskDefEventsRoleDefaultPolicyA6C9177A"
+          }
+        ],
+        "/aws-ecs-integ-ecs/ScheduledEc2Task2/ScheduledEventRule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScheduledEc2Task2ScheduledEventRule904C0930"
+          }
+        ],
+        "/aws-ecs-integ-ecs/ScheduledEc2Task2/ScheduledTaskDef/TaskRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScheduledEc2Task2ScheduledTaskDefTaskRoleF24CD72E"
+          }
+        ],
+        "/aws-ecs-integ-ecs/ScheduledEc2Task2/ScheduledTaskDef/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScheduledEc2Task2ScheduledTaskDef5A1A589E"
+          }
+        ],
+        "/aws-ecs-integ-ecs/ScheduledEc2Task2/ScheduledTaskDef/differentName/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScheduledEc2Task2ScheduledTaskDefdifferentNameLogGroup576E34BD"
+          }
+        ],
+        "/aws-ecs-integ-ecs/ScheduledEc2Task2/ScheduledTaskDef/ExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScheduledEc2Task2ScheduledTaskDefExecutionRoleC4A2CB80"
+          }
+        ],
+        "/aws-ecs-integ-ecs/ScheduledEc2Task2/ScheduledTaskDef/ExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScheduledEc2Task2ScheduledTaskDefExecutionRoleDefaultPolicy70781945"
+          }
+        ],
+        "/aws-ecs-integ-ecs/ScheduledEc2Task2/ScheduledTaskDef/EventsRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScheduledEc2Task2ScheduledTaskDefEventsRoleE4A47A7F"
+          }
+        ],
+        "/aws-ecs-integ-ecs/ScheduledEc2Task2/ScheduledTaskDef/EventsRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScheduledEc2Task2ScheduledTaskDefEventsRoleDefaultPolicyF5EB7640"
           }
         ],
         "/aws-ecs-integ-ecs/BootstrapVersion": [

@@ -3,13 +3,13 @@
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
-For a high level overview of what AWS AppConfig is and how it works, please take a look here: 
+For a high level overview of what AWS AppConfig is and how it works, please take a look here:
 [What is AWS AppConfig?](https://docs.aws.amazon.com/appconfig/latest/userguide/what-is-appconfig.html)
 
 
 ## Basic Hosted Configuration Use Case
 
-> The main way most AWS AppConfig users utilize the service is through hosted configuration, which involves storing 
+> The main way most AWS AppConfig users utilize the service is through hosted configuration, which involves storing
 > configuration data directly within AWS AppConfig.
 
 An example use case:
@@ -27,7 +27,7 @@ new appconfig.HostedConfiguration(this, 'MyHostedConfig', {
 });
 ```
 
-This will create the application and environment for your configuration and then deploy your configuration to the 
+This will create the application and environment for your configuration and then deploy your configuration to the
 specified environment.
 
 For more information about what these resources are: [Creating feature flags and free form configuration data in AWS AppConfig](https://docs.aws.amazon.com/appconfig/latest/userguide/creating-feature-flags-and-configuration-data.html).
@@ -42,11 +42,11 @@ For an in-depth walkthrough of specific resources and how to use them, please ta
 
 [AWS AppConfig Application Documentation](https://docs.aws.amazon.com/appconfig/latest/userguide/appconfig-creating-namespace.html)
 
-In AWS AppConfig, an application is simply an organizational 
-construct like a folder. Configurations and environments are 
+In AWS AppConfig, an application is simply an organizational
+construct like a folder. Configurations and environments are
 associated with the application.
 
-When creating an application through CDK, the name and 
+When creating an application through CDK, the name and
 description of an application are optional.
 
 Create a simple application:
@@ -77,6 +77,25 @@ new appconfig.Environment(this, 'MyEnvironment', {
 
 Environment monitors also support L1 `CfnEnvironment.MonitorsProperty` constructs through the `fromCfnMonitorsProperty` method.
 However, this is not the recommended approach for CloudWatch alarms because a role will not be auto-generated if not provided.
+
+See [About the AWS AppConfig data plane service](https://docs.aws.amazon.com/appconfig/latest/userguide/about-data-plane.html) for more information.
+
+### Permissions
+
+You can grant read permission on the environment's configurations with the grantReadConfig method as follows:
+
+```ts
+import * as iam from 'aws-cdk-lib/aws-iam';
+
+const app = new appconfig.Application(this, 'MyAppConfig');
+const env = new appconfig.Environment(this, 'MyEnvironment', {
+  application: app,
+});
+
+const user = new iam.User(this, 'MyUser');
+env.grantReadConfig(user);
+```
+
 
 ## Deployment Strategy
 
@@ -123,14 +142,14 @@ appconfig.DeploymentStrategy.fromDeploymentStrategyId(
 
 ## Configuration
 
-A configuration is a higher-level construct that can either be a `HostedConfiguration` (stored internally through AWS 
-AppConfig) or a `SourcedConfiguration` (stored in an Amazon S3 bucket, AWS Secrets Manager secrets, Systems Manager (SSM) 
+A configuration is a higher-level construct that can either be a `HostedConfiguration` (stored internally through AWS
+AppConfig) or a `SourcedConfiguration` (stored in an Amazon S3 bucket, AWS Secrets Manager secrets, Systems Manager (SSM)
 Parameter Store parameters, SSM documents, or AWS CodePipeline). This construct manages deployments on creation.
 
 ### HostedConfiguration
 
-A hosted configuration represents configuration stored in the AWS AppConfig hosted configuration store. A hosted configuration 
-takes in the configuration content and associated AWS AppConfig application. On construction of a hosted configuration, the 
+A hosted configuration represents configuration stored in the AWS AppConfig hosted configuration store. A hosted configuration
+takes in the configuration content and associated AWS AppConfig application. On construction of a hosted configuration, the
 configuration is deployed.
 
 You can define hosted configuration content using any of the following ConfigurationContent methods:
@@ -208,8 +227,8 @@ new appconfig.HostedConfiguration(this, 'MyHostedConfiguration', {
 });
 ```
 
-When you create a configuration and configuration profile, you can specify up to two validators. A validator ensures that your 
-configuration data is syntactically and semantically correct. You can create validators in either JSON Schema or as an AWS 
+When you create a configuration and configuration profile, you can specify up to two validators. A validator ensures that your
+configuration data is syntactically and semantically correct. You can create validators in either JSON Schema or as an AWS
 Lambda function.
 See [About validators](https://docs.aws.amazon.com/appconfig/latest/userguide/appconfig-creating-configuration-and-profile.html#appconfig-creating-configuration-and-profile-validators) for more information.
 
@@ -231,7 +250,7 @@ new appconfig.HostedConfiguration(this, 'MyHostedConfiguration', {
 });
 ```
 
-You can attach a deployment strategy (as described in the previous section) to your configuration to specify how you want your 
+You can attach a deployment strategy (as described in the previous section) to your configuration to specify how you want your
 configuration to roll out.
 
 A hosted configuration with a deployment strategy:
@@ -252,8 +271,7 @@ new appconfig.HostedConfiguration(this, 'MyHostedConfiguration', {
 });
 ```
 
-The `deployTo` parameter is used to specify which environments to deploy the configuration to. If this parameter is not 
-specified, there will not be a deployment.
+The `deployTo` parameter is used to specify which environments to deploy the configuration to.
 
 A hosted configuration with `deployTo`:
 
@@ -268,19 +286,108 @@ new appconfig.HostedConfiguration(this, 'MyHostedConfiguration', {
 });
 ```
 
+When more than one configuration is set to deploy to the same environment, the
+deployments will occur one at a time. This is done to satisfy
+[AppConfig's constraint](https://docs.aws.amazon.com/appconfig/latest/userguide/appconfig-deploying.html):
+> [!NOTE]
+> You can only deploy one configuration at a time to an environment.
+> However, you can deploy one configuration each to different environments at the same time.
+
+The deployment order matches the order in which the configurations are declared.
+
+```ts
+const app = new appconfig.Application(this, 'MyApp');
+const env = new appconfig.Environment(this, 'MyEnv', {
+  application: app,
+});
+
+new appconfig.HostedConfiguration(this, 'MyFirstHostedConfig', {
+  application: app,
+  deployTo: [env],
+  content: appconfig.ConfigurationContent.fromInlineText('This is my first configuration content.'),
+});
+
+new appconfig.HostedConfiguration(this, 'MySecondHostedConfig', {
+  application: app,
+  deployTo: [env],
+  content: appconfig.ConfigurationContent.fromInlineText('This is my second configuration content.'),
+});
+```
+
+If an application would benefit from a deployment order that differs from the
+declared order, you can defer the decision by using `IEnvironment.addDeployment`
+rather than the `deployTo` property.
+In this example, `firstConfig` will be deployed before `secondConfig`.
+
+```ts
+const app = new appconfig.Application(this, 'MyApp');
+const env = new appconfig.Environment(this, 'MyEnv', {
+  application: app,
+});
+
+const secondConfig = new appconfig.HostedConfiguration(this, 'MySecondHostedConfig', {
+  application: app,
+  content: appconfig.ConfigurationContent.fromInlineText('This is my second configuration content.'),
+});
+
+const firstConfig = new appconfig.HostedConfiguration(this, 'MyFirstHostedConfig', {
+  application: app,
+  deployTo: [env],
+  content: appconfig.ConfigurationContent.fromInlineText('This is my first configuration content.'),
+});
+
+env.addDeployment(secondConfig);
+```
+
+Alternatively, you can defer multiple deployments in favor of
+`IEnvironment.addDeployments`, which allows you to declare multiple
+configurations in the order they will be deployed.
+In this example the deployment order will be
+`firstConfig`, then `secondConfig`, and finally `thirdConfig`.
+
+```ts
+const app = new appconfig.Application(this, 'MyApp');
+const env = new appconfig.Environment(this, 'MyEnv', {
+  application: app,
+});
+
+const secondConfig = new appconfig.HostedConfiguration(this, 'MySecondHostedConfig', {
+  application: app,
+  content: appconfig.ConfigurationContent.fromInlineText('This is my second configuration content.'),
+});
+
+const thirdConfig = new appconfig.HostedConfiguration(this, 'MyThirdHostedConfig', {
+  application: app,
+  content: appconfig.ConfigurationContent.fromInlineText('This is my third configuration content.'),
+});
+
+const firstConfig = new appconfig.HostedConfiguration(this, 'MyFirstHostedConfig', {
+  application: app,
+  content: appconfig.ConfigurationContent.fromInlineText('This is my first configuration content.'),
+});
+
+env.addDeployments(firstConfig, secondConfig, thirdConfig);
+```
+
+Any mix of `deployTo`, `addDeployment`, and `addDeployments` is permitted.
+The declaration order will be respected regardless of the approach used.
+
+> [!IMPORTANT]
+> If none of these options are utilized, there will not be any deployments.
+
 ### SourcedConfiguration
 
 A sourced configuration represents configuration stored in any of the following:
 
 * Amazon S3 bucket
 * AWS Secrets Manager secret
-* Systems Manager 
+* Systems Manager
 * (SSM) Parameter Store parameter
 * SSM document
 * AWS CodePipeline.
 
-A sourced configuration takes in the location source 
-construct and optionally a version number to deploy. On construction of a sourced configuration, the configuration is deployed 
+A sourced configuration takes in the location source
+construct and optionally a version number to deploy. On construction of a sourced configuration, the configuration is deployed
 only if a version number is specified.
 
 ### S3
@@ -428,7 +535,7 @@ new appconfig.SourcedConfiguration(this, 'MySourcedConfiguration', {
 
 ## Extension
 
-An extension augments your ability to inject logic or behavior at different points during the AWS AppConfig workflow of 
+An extension augments your ability to inject logic or behavior at different points during the AWS AppConfig workflow of
 creating or deploying a configuration.
 See: https://docs.aws.amazon.com/appconfig/latest/userguide/working-with-appconfig-extensions.html
 
@@ -520,8 +627,8 @@ new appconfig.Extension(this, 'MyExtension', {
 });
 ```
 
-You can also add extensions and their associations directly by calling `onDeploymentComplete()` or any other action point 
-method on the AWS AppConfig application, configuration, or environment resource. To add an association to an existing 
+You can also add extensions and their associations directly by calling `onDeploymentComplete()` or any other action point
+method on the AWS AppConfig application, configuration, or environment resource. To add an association to an existing
 extension, you can call `addExtension()` on the resource.
 
 Adding an association to an AWS AppConfig application:

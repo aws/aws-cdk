@@ -295,6 +295,8 @@ export class EvaluateCloudFormationTemplate {
     }
 
     if (Array.isArray(cfnExpression)) {
+      // Small arrays in practice
+      // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
       return Promise.all(cfnExpression.map(expr => this.evaluateCfnExpression(expr)));
     }
 
@@ -504,6 +506,7 @@ const RESOURCE_TYPE_ATTRIBUTES_FORMATS: { [type: string]: { [attribute: string]:
   'AWS::AppSync::GraphQLApi': { ApiId: appsyncGraphQlApiApiIdFmt },
   'AWS::AppSync::FunctionConfiguration': { FunctionId: appsyncGraphQlFunctionIDFmt },
   'AWS::AppSync::DataSource': { Name: appsyncGraphQlDataSourceNameFmt },
+  'AWS::KMS::Key': { Arn: stdSlashResourceArnFmt },
 };
 
 function iamArnFmt(parts: ArnParts): string {

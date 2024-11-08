@@ -12,7 +12,7 @@ const awsAccountId = stack.account;
 
 /// !show
 const layer = new lambda.LayerVersion(stack, 'MyLayer', {
-  code: lambda.Code.fromAsset(path.join(__dirname, 'layer-code')),
+  code: lambda.Code.fromAsset(path.join(__dirname, 'layer-code'), { exclude: ['*.ts'] }),
   compatibleRuntimes: [STANDARD_NODEJS_RUNTIME],
   license: 'Apache-2.0',
   description: 'A layer to test the L2 construct',

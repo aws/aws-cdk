@@ -157,20 +157,13 @@ test('deletes all objects when the name changes on update event', async () => {
   };
 
   // WHEN
-  await invokeHandler(event);
+  const response = await invokeHandler(event);
 
   // THEN
-  expect(mockECRClient.describeRepositories).toHaveBeenCalledTimes(1);
-  expect(mockECRClient.listImages).toHaveBeenCalledTimes(1);
-  expect(mockECRClient.listImages).toHaveBeenCalledWith({ repositoryName: 'MyRepo' });
-  expect(mockECRClient.batchDeleteImage).toHaveBeenCalledTimes(1);
-  expect(mockECRClient.batchDeleteImage).toHaveBeenCalledWith({
-    repositoryName: 'MyRepo',
-    imageIds: [
-      { imageDigest: 'ImageDigest1', imageTag: 'ImageTag1' },
-      { imageDigest: 'ImageDigest2', imageTag: 'ImageTag2' },
-    ],
-  });
+  expect(response).toEqual({ PhysicalResourceId: 'MyRepo-renamed' });
+  expect(mockECRClient.listImages).toHaveBeenCalledTimes(0);
+  expect(mockECRClient.batchDeleteImage).toHaveBeenCalledTimes(0);
+  expect(mockECRClient.describeRepositories).toHaveBeenCalledTimes(0);
 });
 
 test('deletes no images on delete event when repository has no images', async () => {

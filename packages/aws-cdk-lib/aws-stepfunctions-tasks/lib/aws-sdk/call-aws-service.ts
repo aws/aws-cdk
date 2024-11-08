@@ -94,6 +94,7 @@ export class CallAwsService extends sfn.TaskStateBase {
       cloudwatchlogs: 'logs',
       mediapackagevod: 'mediapackage-vod',
       mwaa: 'airflow',
+      efs: 'elasticfilesystem',
     };
     const iamService = iamServiceMap[props.service] ?? props.service;
 
@@ -118,6 +119,9 @@ export class CallAwsService extends sfn.TaskStateBase {
       service = service.toLowerCase();
     }
 
+    // The pattern here is: "arn:aws:states:::aws-sdk:serviceName:apiAction.[serviceIntegrationPattern]"
+    // See here: https://docs.aws.amazon.com/step-functions/latest/dg/supported-services-awssdk.html
+    // This does not change with sdk upgrades, TT:P125388388
     return {
       Resource: integrationResourceArn(
         'aws-sdk',

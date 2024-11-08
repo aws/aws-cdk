@@ -34,9 +34,6 @@
   "poolclient2623294C": {
    "Type": "AWS::Cognito::UserPoolClient",
    "Properties": {
-    "UserPoolId": {
-     "Ref": "pool056F3F7E"
-    },
     "AllowedOAuthFlows": [
      "implicit",
      "code"
@@ -54,10 +51,13 @@
     ],
     "SupportedIdentityProviders": [
      {
-      "Ref": "cdk52888317"
+      "Ref": "samlProvider6C4CC492"
      },
      "COGNITO"
-    ]
+    ],
+    "UserPoolId": {
+     "Ref": "pool056F3F7E"
+    }
    }
   },
   "pooldomain430FA744": {
@@ -69,17 +69,93 @@
     }
    }
   },
-  "cdk52888317": {
+  "samlProvider6C4CC492": {
    "Type": "AWS::Cognito::UserPoolIdentityProvider",
    "Properties": {
-    "ProviderName": "cdk",
+    "ProviderDetails": {
+     "IDPSignout": false,
+     "MetadataURL": "https://fujifish.github.io/samling/public/metadata.xml",
+     "EncryptedResponses": true,
+     "RequestSigningAlgorithm": "rsa-sha256"
+    },
+    "ProviderName": "provider",
     "ProviderType": "SAML",
     "UserPoolId": {
      "Ref": "pool056F3F7E"
+    }
+   }
+  },
+  "poolForIdpInitiatedSaml8B7CB492": {
+   "Type": "AWS::Cognito::UserPool",
+   "Properties": {
+    "AccountRecoverySetting": {
+     "RecoveryMechanisms": [
+      {
+       "Name": "verified_phone_number",
+       "Priority": 1
+      },
+      {
+       "Name": "verified_email",
+       "Priority": 2
+      }
+     ]
     },
+    "AdminCreateUserConfig": {
+     "AllowAdminCreateUserOnly": true
+    },
+    "EmailVerificationMessage": "The verification code to your new account is {####}",
+    "EmailVerificationSubject": "Verify your new account",
+    "SmsVerificationMessage": "The verification code to your new account is {####}",
+    "VerificationMessageTemplate": {
+     "DefaultEmailOption": "CONFIRM_WITH_CODE",
+     "EmailMessage": "The verification code to your new account is {####}",
+     "EmailSubject": "Verify your new account",
+     "SmsMessage": "The verification code to your new account is {####}"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "poolForIdpInitiatedSamlidpInitiatedClientACB7B7B4": {
+   "Type": "AWS::Cognito::UserPoolClient",
+   "Properties": {
+    "AllowedOAuthFlows": [
+     "implicit",
+     "code"
+    ],
+    "AllowedOAuthFlowsUserPoolClient": true,
+    "AllowedOAuthScopes": [
+     "profile",
+     "phone",
+     "email",
+     "openid",
+     "aws.cognito.signin.user.admin"
+    ],
+    "CallbackURLs": [
+     "https://example.com"
+    ],
+    "SupportedIdentityProviders": [
+     {
+      "Ref": "samlProviderIdpInitiatedA5C8CB58"
+     }
+    ],
+    "UserPoolId": {
+     "Ref": "poolForIdpInitiatedSaml8B7CB492"
+    }
+   }
+  },
+  "samlProviderIdpInitiatedA5C8CB58": {
+   "Type": "AWS::Cognito::UserPoolIdentityProvider",
+   "Properties": {
     "ProviderDetails": {
      "IDPSignout": false,
-     "MetadataURL": "https://fujifish.github.io/samling/public/metadata.xml"
+     "MetadataURL": "https://fujifish.github.io/samling/public/metadata.xml",
+     "IDPInit": true
+    },
+    "ProviderName": "IdPInitiatedProvider",
+    "ProviderType": "SAML",
+    "UserPoolId": {
+     "Ref": "poolForIdpInitiatedSaml8B7CB492"
     }
    }
   }

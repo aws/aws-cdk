@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "eb6e93c17ce84da302f80abe024243e559721864a62a25a653dfbe134c6e1686": {
+      "source": {
+        "path": "aws-events-targets-api-gateway-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "eb6e93c17ce84da302f80abe024243e559721864a62a25a653dfbe134c6e1686.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

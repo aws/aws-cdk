@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "nat-instance-v2-custom-integ-test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-vpc-nat-instance-v2-custom"
+      ],
+      "assertionStack": "nat-instance-v2-custom-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "natinstancev2customintegtestDefaultTestDeployAssertEFDD468A"
+    }
+  }
+}

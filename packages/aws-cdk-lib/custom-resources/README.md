@@ -156,7 +156,7 @@ The return value from `onEvent` must be a JSON object with the following fields:
 | -------------------- | ------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `PhysicalResourceId` | String  | No       | The allocated/assigned physical ID of the resource. If omitted for `Create` events, the event's `RequestId` will be used. For `Update`, the current physical ID will be used. If a different value is returned, CloudFormation will follow with a subsequent `Delete` for the previous ID (resource replacement). For `Delete`, it will always return the current physical resource ID, and if the user returns a different one, an error will occur. |
 | `Data`               | JSON    | No       | Resource attributes, which can later be retrieved through `Fn::GetAtt` on the custom resource object.                                                                                                                                                                                                                                                                                                                                                 |
-| `NoEcho`             | Boolean | No       | Whether to mask the output of the custom resource when retrieved by using the `Fn::GetAtt` function.                                                                                                                                                                                                                                                                                                                                                  |
+| `NoEcho`             | Boolean | No       | Whether to mask the output of the custom resource when retrieved by using the `Fn::GetAtt` function and to mask the `Data` values.                                                                                                                                                                                                                                                                                                                                                 |
 | *any*                | *any*   | No       | Any other field included in the response will be passed through to `isComplete`. This can sometimes be useful to pass state between the handlers.                                                                                                                                                                                                                                                                                                     |
 
 [Custom Resource Provider Request]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/crpg-ref-requests.html#crpg-ref-request-fields
@@ -214,6 +214,48 @@ As a rule of thumb, if your custom resource supports configuring a physical name
 must return this name in `PhysicalResourceId` and make sure to handle
 replacement properly. The `S3File` example demonstrates this
 through the `objectKey` property.
+
+### Masking the output of log statements
+
+When using the Provider framework to create a custom resource, the request and response
+objects are logged by the provider function.If secret values are returned in the custom
+resource's Data object, it would be logged and exposed which possesses security threats.
+
+To mask the output of log statements, you can utilize the `NoEcho` field in the custom
+resource handler's response.
+
+```ts
+// Create custom resource handler entrypoint
+const handler = new lambda.Function(this , 'my-handler', {
+  runtime: lambda.Runtime.NODEJS_20_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromInline(`
+  exports.handler = async (event, context) => {
+    return {
+      PhysicalResourceId: '1234',
+      NoEcho: true,
+      Data: {
+        mySecret: 'secret-value',
+        hello: 'world',
+        ghToken: 'gho_xxxxxxx',
+      },
+    };
+  };`),
+});
+
+// Provision a custom resource provider framework
+const provider = new cr.Provider(this , 'my-provider', {
+  onEventHandler: handler,
+});
+
+new CustomResource(this , 'my-cr', {
+  serviceToken: provider.serviceToken,
+});
+```
+
+When `NoEcho` field is set to `true` in the response of custom resource handler,
+it will automatically mask all values in the `Data` object in the log statements
+to asterisks (*****).
 
 ### When there are errors
 
@@ -542,7 +584,7 @@ In both the cases, you will get a synth time error if you attempt to use it in c
 
 ### Customizing the Lambda function implementing the custom resource
 
-Use the `role`, `timeout`, `logGroup`, `functionName` and `removalPolicy` properties to customize
+Use the `role`, `timeout`, `memorySize`, `logGroup`, `functionName` and `removalPolicy` properties to customize
 the Lambda function implementing the custom resource:
 
 ```ts
@@ -550,6 +592,7 @@ declare const myRole: iam.Role;
 new cr.AwsCustomResource(this, 'Customized', {
   role: myRole, // must be assumable by the `lambda.amazonaws.com` service principal
   timeout: Duration.minutes(10), // defaults to 2 minutes
+  memorySize: 1025, // defaults to 512 if installLatestAwsSdk is true
   logGroup: new logs.LogGroup(this, 'AwsCustomResourceLogs', {
     retention: logs.RetentionDays.ONE_DAY,
   }),
@@ -593,7 +636,7 @@ new cr.AwsCustomResource(this, 'ListObjects', {
     service: 's3',
     action: 'ListObjectsV2',
     parameters: {
-      Bucket: 'my-bucket',
+      Bucket: 'amzn-s3-demo-bucket',
     },
     physicalResourceId: cr.PhysicalResourceId.of('id'),
     outputPaths: ['Contents.0.Key', 'Contents.1.Key'], // Output only the two first keys
@@ -606,6 +649,76 @@ new cr.AwsCustomResource(this, 'ListObjects', {
 
 Note that even if you restrict the output of your custom resource you can still use any
 path in `PhysicalResourceId.fromResponse()`.
+
+### Custom Resource Logging for SDK Calls
+
+By default, logging occurs during execution of the singleton Lambda used by a custom resource. The data being logged includes:
+* The event object that is received by the Lambda handler
+* The response received after making an API call
+* The response object that the Lambda handler will return
+* SDK versioning information
+* Caught and uncaught errors
+
+The `logging` property defined on the `AwsSdkCall` interface allows control over what data is being logged on a per SDK call basis. This is configurable via an instance of the `Logging` class. The `Logging` class exposes two options that can be used to configure logging:
+1. `Logging.all()` which enables logging of all data. This is the default `logging` configuration.
+2. `Logging.withDataHidden()` which prevents logging of all data associated with the API call response, including logging the raw API call response and the `Data` field on the Lambda handler response object. This configuration option is particularly useful for situations where the API call response may contain sensitive information.
+
+For further context about `Logging.withDataHidden()`, consider a user who might be making an API call that is returning sensitive information that they may want to keep hidden. To do this, they would configure `logging` with `Logging.withDataHidden()`:
+
+```ts
+const getParameter = new cr.AwsCustomResource(this, 'GetParameter', {
+  onUpdate: {
+    service: 'SSM',
+    action: 'GetParameter',
+    parameters: {
+      Name: 'my-parameter',
+      WithDecryption: true,
+    },
+    physicalResourceId: cr.PhysicalResourceId.of(Date.now().toString()),
+    logging: cr.Logging.withDataHidden(),
+  },
+  policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
+    resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
+  }),
+});
+```
+
+With this configuration option set, the raw API call response would not be logged and the `Data` field of the response object would be hidden:
+
+```
+{
+  "Status": "SUCCESS",
+  "Reason": "OK",
+  "PhysicalResourceId": "1234567890123",
+  "StackId": "arn:aws:cloudformation:us-west-2:123456789012:stack/Test/043tyub2-194e-4cy2-a969-9891ghj6cd0d",
+  "RequestId": "a16y677a-a8b6-41a6-bf7b-7644586861a5",
+  "LogicalResourceId": "Sercret",
+  "NoEcho": false,
+}
+```
+
+For comparison, configuring `logging` with `Logging.all()` would result in the raw API call response being logged, as well as the full response object:
+
+```
+{
+  "Status": "SUCCESS",
+  "Reason": "OK",
+  "PhysicalResourceId": "1234567890123",
+  "StackId": "arn:aws:cloudformation:us-west-2:123456789012:stack/Test/043tyub2-194e-4cy2-a969-9891ghj6cd0d",
+  "RequestId": "a16y677a-a8b6-41a6-bf7b-7644586861a5",
+  "LogicalResourceId": "Sercret",
+  "NoEcho": false,
+  "Data": {
+    "region": "us-west-2",
+    "Parameter.ARN": "arn:aws:ssm:us-west-2:123456789012:parameter/Test/Parameter",
+    "Parameter.DataType": "text",
+    "Parameter.Name": "/Test/Parameter",
+    "Parameter.Type": "SecureString",
+    "Parameter.Value": "ThisIsSecret!123",
+    "Parameter.Version": 1
+  }
+}
+```
 
 ### Custom Resource Examples
 
@@ -709,5 +822,126 @@ new cr.AwsCustomResource(this, 'CrossAccount', {
     Action: "sts:AssumeRole",
     Resource: crossAccountRoleArn,
   })]),
+});
+```
+
+#### Custom Resource Config
+
+**This feature is currently experimental**
+
+You can configure every CDK-vended custom resource in a given scope with `CustomResourceConfig`. 
+
+Note that `CustomResourceConfig` uses Aspects to modify your constructs. There is no guarantee in the order in which Aspects modify the construct tree, which means that adding the same Aspect more than once to a given scope produces undefined behavior. This example guarantees that every affected resource will have a log retention of ten years or one day, but you cannot know which:  
+CustomResourceConfig.of(App).addLogRetentionLifetime(logs.RetentionDays.TEN_YEARS);
+CustomResourceConfig.of(App).addLogRetentionLifetime(logs.RetentionDays.ONE_DAY);
+
+### Setting Log Retention Lifetime
+
+The following example configures every custom resource in this CDK app to retain its logs for ten years:
+```ts
+import * as cdk from 'aws-cdk-lib';
+import { CustomResourceConfig } from 'aws-cdk-lib/custom-resources';
+import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
+
+const app = new cdk.App();
+CustomResourceConfig.of(app).addLogRetentionLifetime(logs.RetentionDays.TEN_YEARS);
+const stack = new cdk.Stack(app, 'Stack');
+
+let websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
+new s3deploy.BucketDeployment(stack, 's3deploy', {
+  sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
+  destinationBucket: websiteBucket,
+});
+```
+
+The following example configures every custom resource in two top-level stacks to retain its log for ten years:
+```ts
+import * as cdk from 'aws-cdk-lib';
+import { CustomResourceConfig } from 'aws-cdk-lib/custom-resources';
+import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
+
+const app = new cdk.App();
+CustomResourceConfig.of(app).addLogRetentionLifetime(logs.RetentionDays.TEN_YEARS);
+
+const stackA = new cdk.Stack(app, 'stackA');
+let websiteBucketA = new s3.Bucket(stackA, "WebsiteBucketA", {});
+new s3deploy.BucketDeployment(stackA, "s3deployA", {
+    sources: [s3deploy.Source.jsonData("file.json", { a: "b" })],
+    destinationBucket: websiteBucketA,
+    logRetention: logs.RetentionDays.ONE_DAY, // overridden by the `TEN_YEARS` set by `CustomResourceConfig`.
+});
+
+const stackB = new cdk.Stack(app, 'stackB');
+let websiteBucketB = new s3.Bucket(stackB, "WebsiteBucketB", {});
+new s3deploy.BucketDeployment(stackB, "s3deployB", {
+    sources: [s3deploy.Source.jsonData("file.json", { a: "b" })],
+    destinationBucket: websiteBucketB,
+    logRetention: logs.RetentionDays.ONE_DAY, // overridden by the `TEN_YEARS` set by `CustomResourceConfig`.
+});
+
+```
+
+This also applies to nested stacks:
+```ts
+import * as cdk from 'aws-cdk-lib';
+import { CustomResourceConfig } from 'aws-cdk-lib/custom-resources';
+import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
+
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'Stack');
+CustomResourceConfig.of(app).addLogRetentionLifetime(logs.RetentionDays.TEN_YEARS);
+
+const nestedStackA = new cdk.NestedStack(stack, 'NestedStackA');
+let websiteBucketA = new s3.Bucket(nestedStackA, "WebsiteBucketA", {});
+new s3deploy.BucketDeployment(nestedStackA, "s3deployA", {
+    sources: [s3deploy.Source.jsonData("file.json", { a: "b" })],
+    destinationBucket: websiteBucketA,
+    logRetention: logs.RetentionDays.ONE_DAY, // overridden by the `TEN_YEARS` set by `CustomResourceConfig`.
+});
+
+const nestedStackB = new cdk.NestedStack(stack, 'NestedStackB');
+let websiteBucketB = new s3.Bucket(nestedStackB, "WebsiteBucketB", {});
+new s3deploy.BucketDeployment(nestedStackB, "s3deployB", {
+    sources: [s3deploy.Source.jsonData("file.json", { a: "b" })],
+    destinationBucket: websiteBucketB,
+    logRetention: logs.RetentionDays.ONE_DAY, // overridden by the `TEN_YEARS` set by `CustomResourceConfig`.
+});
+```
+
+### Setting Log Group Removal Policy
+
+The `addLogRetentionLifetime` method of `CustomResourceConfig` will associate a log group with a AWS-vended custom resource lambda.
+The `addRemovalPolicy` method will configure the custom resource lambda log group removal policy to `DESTROY`.
+```ts
+import * as cdk from 'aws-cdk-lib';
+import * as ses from 'aws-cdk-lib/aws-ses';
+import { CustomResourceConfig } from 'aws-cdk-lib/custom-resources';
+
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'Stack');
+CustomResourceConfig.of(app).addLogRetentionLifetime(logs.RetentionDays.TEN_YEARS);
+CustomResourceConfig.of(app).addRemovalPolicy(cdk.RemovalPolicy.DESTROY);
+
+new ses.ReceiptRuleSet(app, 'RuleSet', {
+  dropSpam: true,
+});    
+```
+
+### Setting Lambda Runtimes
+
+The `addLambdaRuntime` method of `CustomResourceConfig` will set every AWS-vended custom resource to the specified lambda runtime, provided that the custom resource lambda is in the same runtime family as the one you specified. The S3 BucketDeployment construct uses lambda runtime Python 3.9. The following example sets the custom resource lambda runtime to `PYTHON_3_12`:
+```ts
+import * as cdk from 'aws-cdk-lib';
+import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
+import { CustomResourceConfig } from 'aws-cdk-lib/custom-resources';
+
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'Stack');
+CustomResourceConfig.of(app).addLambdaRuntime(lambda.Runtime.PYTHON_3_12);
+
+let websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});
+new s3deploy.BucketDeployment(stack, 's3deploy', {
+  sources: [s3deploy.Source.jsonData('file.json', { a: 'b' })],
+  destinationBucket: websiteBucket,
 });
 ```

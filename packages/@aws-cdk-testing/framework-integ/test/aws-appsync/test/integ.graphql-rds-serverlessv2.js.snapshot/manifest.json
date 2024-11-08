@@ -1,0 +1,359 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "appsync-rds-serverlessV2.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "appsync-rds-serverlessV2.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "appsync-rds-serverlessV2": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "appsync-rds-serverlessV2.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8eef82b2770d7e5ac94e3de1723fc445f18560c57661a003d65b20e05f206840.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "appsync-rds-serverlessV2.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "appsync-rds-serverlessV2.assets"
+      ],
+      "metadata": {
+        "/appsync-rds-serverlessV2/Integ-VPC/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegVPC2FF1AB0E"
+          }
+        ],
+        "/appsync-rds-serverlessV2/Integ-VPC/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegVPCPublicSubnet1SubnetE05F7E7D"
+          }
+        ],
+        "/appsync-rds-serverlessV2/Integ-VPC/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegVPCPublicSubnet1RouteTable622895C7"
+          }
+        ],
+        "/appsync-rds-serverlessV2/Integ-VPC/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegVPCPublicSubnet1RouteTableAssociation0E84800B"
+          }
+        ],
+        "/appsync-rds-serverlessV2/Integ-VPC/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegVPCPublicSubnet1DefaultRouteE885D95E"
+          }
+        ],
+        "/appsync-rds-serverlessV2/Integ-VPC/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegVPCPublicSubnet1EIP1AC057E9"
+          }
+        ],
+        "/appsync-rds-serverlessV2/Integ-VPC/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegVPCPublicSubnet1NATGateway380AC0A0"
+          }
+        ],
+        "/appsync-rds-serverlessV2/Integ-VPC/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegVPCPublicSubnet2Subnet9648DE97"
+          }
+        ],
+        "/appsync-rds-serverlessV2/Integ-VPC/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegVPCPublicSubnet2RouteTableB79B3910"
+          }
+        ],
+        "/appsync-rds-serverlessV2/Integ-VPC/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegVPCPublicSubnet2RouteTableAssociation831EA0CC"
+          }
+        ],
+        "/appsync-rds-serverlessV2/Integ-VPC/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegVPCPublicSubnet2DefaultRoute2FC4B163"
+          }
+        ],
+        "/appsync-rds-serverlessV2/Integ-VPC/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegVPCPublicSubnet2EIPEA07DF99"
+          }
+        ],
+        "/appsync-rds-serverlessV2/Integ-VPC/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegVPCPublicSubnet2NATGateway912800A3"
+          }
+        ],
+        "/appsync-rds-serverlessV2/Integ-VPC/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegVPCPrivateSubnet1SubnetD5B61223"
+          }
+        ],
+        "/appsync-rds-serverlessV2/Integ-VPC/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegVPCPrivateSubnet1RouteTableF2678D77"
+          }
+        ],
+        "/appsync-rds-serverlessV2/Integ-VPC/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegVPCPrivateSubnet1RouteTableAssociationAD4B0EBF"
+          }
+        ],
+        "/appsync-rds-serverlessV2/Integ-VPC/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegVPCPrivateSubnet1DefaultRoute140D7A84"
+          }
+        ],
+        "/appsync-rds-serverlessV2/Integ-VPC/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegVPCPrivateSubnet2SubnetFCC4EF23"
+          }
+        ],
+        "/appsync-rds-serverlessV2/Integ-VPC/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegVPCPrivateSubnet2RouteTable4132D373"
+          }
+        ],
+        "/appsync-rds-serverlessV2/Integ-VPC/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegVPCPrivateSubnet2RouteTableAssociation9A15DAD6"
+          }
+        ],
+        "/appsync-rds-serverlessV2/Integ-VPC/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegVPCPrivateSubnet2DefaultRouteAE44E307"
+          }
+        ],
+        "/appsync-rds-serverlessV2/Integ-VPC/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegVPCIGW02FC78B6"
+          }
+        ],
+        "/appsync-rds-serverlessV2/Integ-VPC/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegVPCVPCGW4DD476C7"
+          }
+        ],
+        "/appsync-rds-serverlessV2/Integ-VPC/RestrictDefaultSecurityGroupCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegVPCRestrictDefaultSecurityGroupCustomResource42DF8AB1"
+          }
+        ],
+        "/appsync-rds-serverlessV2/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/appsync-rds-serverlessV2/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+          }
+        ],
+        "/appsync-rds-serverlessV2/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+          }
+        ],
+        "/appsync-rds-serverlessV2/Integ-Cluster/Subnets/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegClusterSubnets629F72ED"
+          }
+        ],
+        "/appsync-rds-serverlessV2/Integ-Cluster/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegClusterSecurityGroupECB0A218"
+          }
+        ],
+        "/appsync-rds-serverlessV2/Integ-Cluster/Secret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "appsyncrdsserverlessV2IntegClusterSecret660F89C53fdaad7efa858a3daf9490cf0a702aeb"
+          }
+        ],
+        "/appsync-rds-serverlessV2/Integ-Cluster/Secret/Attachment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegClusterSecretAttachmentC627C903"
+          }
+        ],
+        "/appsync-rds-serverlessV2/Integ-Cluster/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegCluster4261F36F"
+          }
+        ],
+        "/appsync-rds-serverlessV2/Integ-Cluster/writer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegClusterwriter03032C94"
+          }
+        ],
+        "/appsync-rds-serverlessV2/RdsServerlessV2API/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RdsServerlessV2API9BB3798C"
+          }
+        ],
+        "/appsync-rds-serverlessV2/RdsServerlessV2API/Schema": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RdsServerlessV2APISchema3A85CED2"
+          }
+        ],
+        "/appsync-rds-serverlessV2/RdsServerlessV2API/DefaultApiKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RdsServerlessV2APIDefaultApiKeyF5675D80"
+          }
+        ],
+        "/appsync-rds-serverlessV2/RdsServerlessV2API/ds/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RdsServerlessV2APIdsServiceRole31B5B0D1"
+          }
+        ],
+        "/appsync-rds-serverlessV2/RdsServerlessV2API/ds/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RdsServerlessV2APIdsServiceRoleDefaultPolicy387D3F05"
+          }
+        ],
+        "/appsync-rds-serverlessV2/RdsServerlessV2API/ds/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RdsServerlessV2APIds151E4AA6"
+          }
+        ],
+        "/appsync-rds-serverlessV2/RdsServerlessV2API/QueryGetallPostsResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RdsServerlessV2APIQueryGetallPostsResolver65741DC0"
+          }
+        ],
+        "/appsync-rds-serverlessV2/RdsServerlessV2API/QueryGetPostResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RdsServerlessV2APIQueryGetPostResolver2FD6B46A"
+          }
+        ],
+        "/appsync-rds-serverlessV2/RdsServerlessV2API/MutationAddPostResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RdsServerlessV2APIMutationAddPostResolverA1BDAED2"
+          }
+        ],
+        "/appsync-rds-serverlessV2/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/appsync-rds-serverlessV2/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "appsync-rds-serverlessV2"
+    },
+    "rdsserverlessV2stackDefaultTestDeployAssert877504EC.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "rdsserverlessV2stackDefaultTestDeployAssert877504EC.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "rdsserverlessV2stackDefaultTestDeployAssert877504EC": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "rdsserverlessV2stackDefaultTestDeployAssert877504EC.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "rdsserverlessV2stackDefaultTestDeployAssert877504EC.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "rdsserverlessV2stackDefaultTestDeployAssert877504EC.assets"
+      ],
+      "metadata": {
+        "/rds-serverlessV2-stack/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/rds-serverlessV2-stack/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "rds-serverlessV2-stack/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

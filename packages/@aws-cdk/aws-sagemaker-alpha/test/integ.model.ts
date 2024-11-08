@@ -131,6 +131,15 @@ new sagemaker.Model(stack, 'HuggingFaceModel', {
   ],
 });
 
+new sagemaker.Model(stack, 'NetworkIsolationModel', {
+  containers: [
+    { image: localImage },
+    { image: localImage, modelData: localModelData },
+    { image: localImage, modelData: localModelData },
+  ],
+  networkIsolation: true,
+});
+
 new IntegTest(app, 'integtest-model', {
   testCases: [stack],
 });

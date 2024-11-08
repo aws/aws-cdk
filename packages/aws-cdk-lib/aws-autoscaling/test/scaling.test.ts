@@ -193,6 +193,28 @@ describe('scaling', () => {
     });
   });
 
+  test('setting cooldown on step scaling is ineffective', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'ASG', {
+      minCapacity: 1,
+      maxCapacity: 100,
+      instanceType: new ec2.InstanceType('t-1000.macro'),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+    });
+    new autoscaling.StepScalingAction(stack, 'Action', {
+      autoScalingGroup,
+      cooldown: cdk.Duration.days(1),
+    });
+
+    // THEN
+    expect(() => Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::ScalingPolicy', {
+      CoolDown: undefined,
+    })).toThrow(/Template has 1 resources with type AWS::AutoScaling::ScalingPolicy, but none match as expected/);
+  });
+
   test('step scaling', () => {
     // GIVEN
     const stack = new cdk.Stack();

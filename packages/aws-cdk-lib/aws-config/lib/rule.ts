@@ -35,6 +35,29 @@ export interface IRule extends IResource {
 }
 
 /**
+ * The mode of evaluation for the rule.
+ */
+export class EvaluationMode {
+  /**
+   * Evaluate resources that have already been deployed
+   */
+  public static readonly DETECTIVE = new EvaluationMode(['DETECTIVE']);
+  /**
+   * Evaluate resources before they have been deployed
+   */
+  public static readonly PROACTIVE = new EvaluationMode(['PROACTIVE']);
+  /**
+   * Evaluate resources that have already been deployed and before they have been deployed
+   */
+  public static readonly DETECTIVE_AND_PROACTIVE = new EvaluationMode(['DETECTIVE', 'PROACTIVE']);
+
+  /**
+   * @param modes The modes of evaluation for the rule
+   */
+  protected constructor(public readonly modes: string[]) {}
+}
+
+/**
  * A new or imported rule.
  */
 abstract class RuleBase extends Resource implements IRule {
@@ -222,6 +245,13 @@ export interface RuleProps {
    * @default - evaluations for the rule are triggered when any resource in the recording group changes.
    */
   readonly ruleScope?: RuleScope;
+
+  /**
+   * The modes the AWS Config rule can be evaluated in. The valid values are distinct objects.
+   *
+   * @default - Detective evaluation mode only
+   */
+  readonly evaluationModes?: EvaluationMode;
 }
 
 /**
@@ -271,6 +301,9 @@ export class ManagedRule extends RuleNew {
         owner: 'AWS',
         sourceIdentifier: props.identifier,
       },
+      evaluationModes: props.evaluationModes?.modes.map((mode) => ({
+        mode,
+      })),
     });
 
     this.configRuleName = rule.ref;
@@ -444,6 +477,9 @@ export class CustomRule extends RuleNew {
         sourceDetails,
         sourceIdentifier: props.lambdaFunction.functionArn,
       },
+      evaluationModes: props.evaluationModes?.modes.map((mode) => ({
+        mode,
+      })),
     });
 
     this.configRuleName = rule.ref;
@@ -500,7 +536,7 @@ export class CustomPolicy extends RuleNew {
     if (!props.policyText || [...props.policyText].length === 0) {
       throw new Error('Policy Text cannot be empty.');
     }
-    if ( [...props.policyText].length > 10000 ) {
+    if ([...props.policyText].length > 10000) {
       throw new Error('Policy Text is limited to 10,000 characters or less.');
     }
 
@@ -529,6 +565,9 @@ export class CustomPolicy extends RuleNew {
           policyText: props.policyText,
         },
       },
+      evaluationModes: props.evaluationModes?.modes.map((mode) => ({
+        mode,
+      })),
     });
 
     this.configRuleName = rule.ref;
@@ -1280,9 +1319,9 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly EKS_CLUSTER_OLDEST_SUPPORTED_VERSION = 'EKS_CLUSTER_OLDEST_SUPPORTED_VERSION';
   /**
-    * Checks if an Amazon Elastic Kubernetes Service (EKS) cluster is running a supported Kubernetes version.
-    * @see https://docs.aws.amazon.com/config/latest/developerguide/eks-cluster-supported-version.html
-    */
+   * Checks if an Amazon Elastic Kubernetes Service (EKS) cluster is running a supported Kubernetes version.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/eks-cluster-supported-version.html
+   */
   public static readonly EKS_CLUSTER_SUPPORTED_VERSION = 'EKS_CLUSTER_SUPPORTED_VERSION';
   /**
    * Checks whether Amazon Elastic Kubernetes Service (Amazon EKS) endpoint is not publicly accessible.
@@ -1908,7 +1947,7 @@ export class ManagedRuleIdentifiers {
    * Checks whether S3 buckets have policies that require requests to use Secure Socket Layer (SSL).
    * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-bucket-ssl-requests-only.html
    */
-  public static readonly S3_BUCKET_SSL_REQUESTS_ONLY= 'S3_BUCKET_SSL_REQUESTS_ONLY';
+  public static readonly S3_BUCKET_SSL_REQUESTS_ONLY = 'S3_BUCKET_SSL_REQUESTS_ONLY';
   /**
    * Checks whether versioning is enabled for your S3 buckets.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-bucket-versioning-enabled.html
@@ -2263,7 +2302,7 @@ export class ResourceType {
   /** Amazon RDS global cluster */
   public static readonly RDS_GLOBAL_CLUSTER = new ResourceType('AWS::RDS::GlobalCluster');
   /** Amazon Route53 Hosted Zone */
-  public static readonly ROUTE53_HOSTED_ZONE= new ResourceType('AWS::Route53::HostedZone');
+  public static readonly ROUTE53_HOSTED_ZONE = new ResourceType('AWS::Route53::HostedZone');
   /** Amazon Route53 Health Check */
   public static readonly ROUTE53_HEALTH_CHECK = new ResourceType('AWS::Route53::HealthCheck');
   /** Amazon Route53 resolver resolver endpoint */
@@ -2549,6 +2588,330 @@ export class ResourceType {
   public static readonly ELBV2_LISTENER = new ResourceType('AWS::ElasticLoadBalancingV2::Listener');
   /** AWS Elemental MediaPackage packaging group */
   public static readonly MEDIAPACKAGE_PACKAGING_GROUP = new ResourceType('AWS::MediaPackage::PackagingGroup');
+  /** AWS Device Farm Test Grid Project */
+  public static readonly DEVICE_FARM_TEST_GRID_PROJECT = new ResourceType('AWS::DeviceFarm::TestGridProject');
+  /** AWS Budgets Budgets Action */
+  public static readonly BUDGETS_BUDGETS_ACTION = new ResourceType('AWS::Budgets::BudgetsAction');
+  /** Amazon Lex Bot */
+  public static readonly LEX_BOT = new ResourceType('AWS::Lex::Bot');
+  /** Amazon Lex Bot Alias */
+  public static readonly LEX_BOT_ALIAS = new ResourceType('AWS::Lex::BotAlias');
+  /** Amazon CodeGuru Reviewer Repository Association */
+  public static readonly CODE_GURU_REVIEWER_REPOSITORY_ASSOCIATION = new ResourceType('AWS::CodeGuruReviewer::RepositoryAssociation');
+  /** AWS IoT Custom Metric */
+  public static readonly IOT_CUSTOM_METRIC = new ResourceType('AWS::IoT::CustomMetric');
+  /** AWS IoT Account Audit Configuration */
+  public static readonly IOT_ACCOUNT_AUDIT_CONFIGURATION = new ResourceType('AWS::IoT::AccountAuditConfiguration');
+  /** AWS IoT Scheduled Audit */
+  public static readonly IOT_SCHEDULED_AUDIT = new ResourceType('AWS::IoT::ScheduledAudit');
+  /** Amazon Route53 Resolver Firewall Domain List */
+  public static readonly ROUTE53_RESOLVER_FIREWALL_DOMAIN_LIST = new ResourceType('AWS::Route53Resolver::FirewallDomainList');
+  /** AWS RoboMaker Robot Application Version */
+  public static readonly ROBO_MAKER_ROBOT_APPLICATION_VERSION = new ResourceType('AWS::RoboMaker::RobotApplicationVersion');
+  /** EC2 Traffic Mirror Session */
+  public static readonly EC2_TRAFFIC_MIRROR_SESSION = new ResourceType('AWS::EC2::TrafficMirrorSession');
+  /** EC2 Traffic Mirror Target */
+  public static readonly EC2_TRAFFIC_MIRROR_TARGET = new ResourceType('AWS::EC2::TrafficMirrorTarget');
+  /** AWS IoT SiteWise Gateway */
+  public static readonly IOT_SITEWISE_GATEWAY = new ResourceType('AWS::IoTSiteWise::Gateway');
+  /** AWS Lookout Metrics Alert */
+  public static readonly LOOKOUT_METRICS_ALERT = new ResourceType('AWS::LookoutMetrics::Alert');
+  /** Amazon S3 Storage Lens */
+  public static readonly S3_STORAGE_LENS = new ResourceType('AWS::S3::StorageLens');
+  /** Amazon EventBridge Connection */
+  public static readonly EVENTS_CONNECTION = new ResourceType('AWS::Events::Connection');
+  /** Amazon EventBridge Schemas Schema */
+  public static readonly EVENT_SCHEMAS_SCHEMA = new ResourceType('AWS::EventSchemas::Schema');
+  /** AWS Elemental MediaPackage Packaging Configuration */
+  public static readonly MEDIA_PACKAGE_PACKAGING_CONFIGURATION = new ResourceType('AWS::MediaPackage::PackagingConfiguration');
+  /** Amazon AppStream Directory Config */
+  public static readonly APP_STREAM_DIRECTORY_CONFIG = new ResourceType('AWS::AppStream::DirectoryConfig');
+  /** EC2 Auto Scaling Warm Pool */
+  public static readonly AUTO_SCALING_WARM_POOL = new ResourceType('AWS::AutoScaling::WarmPool');
+  /** Amazon Connect Phone Number */
+  public static readonly CONNECT_PHONE_NUMBER = new ResourceType('AWS::Connect::PhoneNumber');
+  /** Amazon Connect Customer Profiles Domain */
+  public static readonly CUSTOMER_PROFILES_DOMAIN = new ResourceType('AWS::CustomerProfiles::Domain');
+  /** EC2 DHCP Options */
+  public static readonly EC2_DHCP_OPTIONS = new ResourceType('AWS::EC2::DHCPOptions');
+  /** EC2 IPAM */
+  public static readonly EC2_IPAM = new ResourceType('AWS::EC2::IPAM');
+  /** EC2 Network Insights Path */
+  public static readonly EC2_NETWORK_INSIGHTS_PATH = new ResourceType('AWS::EC2::NetworkInsightsPath');
+  /** EC2 Traffic Mirror Filter */
+  public static readonly EC2_TRAFFIC_MIRROR_FILTER = new ResourceType('AWS::EC2::TrafficMirrorFilter');
+  /** Amazon EventBridge Events Rule */
+  public static readonly EVENTS_RULE = new ResourceType('AWS::Events::Rule');
+  /** AWS HealthLake FHIR Datastore */
+  public static readonly HEALTH_LAKE_FHIR_DATASTORE = new ResourceType('AWS::HealthLake::FHIRDatastore');
+  /** AWS IoT Twin Maker Scene */
+  public static readonly IOT_TWIN_MAKER_SCENE = new ResourceType('AWS::IoTTwinMaker::Scene');
+  /** Amazon Kinesis Video Streams Signaling Channel */
+  public static readonly KINESIS_VIDEO_SIGNALING_CHANNEL = new ResourceType('AWS::KinesisVideo::SignalingChannel');
+  /** Amazon Lookout Vision Project */
+  public static readonly LOOKOUT_VISION_PROJECT = new ResourceType('AWS::LookoutVision::Project');
+  /** AWS Network Manager Transit Gateway Registration */
+  public static readonly NETWORK_MANAGER_TRANSIT_GATEWAY_REGISTRATION = new ResourceType('AWS::NetworkManager::TransitGatewayRegistration');
+  /** Amazon Pinpoint Application Settings */
+  public static readonly PINPOINT_APPLICATION_SETTINGS = new ResourceType('AWS::Pinpoint::ApplicationSettings');
+  /** Amazon Pinpoint Segment */
+  public static readonly PINPOINT_SEGMENT = new ResourceType('AWS::Pinpoint::Segment');
+  /** AWS RoboMaker Robot Application */
+  public static readonly ROBO_MAKER_ROBOT_APPLICATION = new ResourceType('AWS::RoboMaker::RobotApplication');
+  /** AWS RoboMaker Simulation Application */
+  public static readonly ROBO_MAKER_SIMULATION_APPLICATION = new ResourceType('AWS::RoboMaker::SimulationApplication');
+  /** Amazon Route53 Recovery Control Cluster */
+  public static readonly ROUTE53_RECOVERY_CONTROL_CLUSTER = new ResourceType('AWS::Route53RecoveryControl::Cluster');
+  /** Amazon Route53 Recovery Control Control Panel */
+  public static readonly ROUTE53_RECOVERY_CONTROL_CONTROL_PANEL = new ResourceType('AWS::Route53RecoveryControl::ControlPanel');
+  /** Amazon Route53 Recovery Control Routing Control */
+  public static readonly ROUTE53_RECOVERY_CONTROL_ROUTING_CONTROL = new ResourceType('AWS::Route53RecoveryControl::RoutingControl');
+  /** Amazon Route53 Recovery Control Safety Rule */
+  public static readonly ROUTE53_RECOVERY_CONTROL_SAFETY_RULE = new ResourceType('AWS::Route53RecoveryControl::SafetyRule');
+  /** Amazon Route53 Recovery Readiness Resource Set */
+  public static readonly ROUTE53_RECOVERY_READINESS_RESOURCE_SET = new ResourceType('AWS::Route53RecoveryReadiness::ResourceSet');
+  /** Amazon Route53 Resolver Firewall Rule Group Association */
+  public static readonly ROUTE53_RESOLVER_FIREWALL_RULE_GROUP_ASSOCIATION = new ResourceType('AWS::Route53Resolver::FirewallRuleGroupAssociation');
+  /** EC2 EC2 Fleet */
+  public static readonly EC2_EC2_FLEET = new ResourceType('AWS::EC2::EC2Fleet');
+  /** AWS IoTWireless Service Profile */
+  public static readonly IOT_WIRELESS_SERVICE_PROFILE = new ResourceType('AWS::IoTWireless::ServiceProfile');
+  /** EC2 Subnet Route Table Association */
+  public static readonly EC2_SUBNET_ROUTE_TABLE_ASSOCIATION = new ResourceType('AWS::EC2::SubnetRouteTableAssociation');
+  /** AWS Network Manager Global Network */
+  public static readonly NETWORK_MANAGER_GLOBAL_NETWORK = new ResourceType('AWS::NetworkManager::GlobalNetwork');
+  /** AWS DeviceFarm Instance Profile */
+  public static readonly DEVICE_FARM_INSTANCE_PROFILE = new ResourceType('AWS::DeviceFarm::InstanceProfile');
+  /** AWS GroundStation Config */
+  public static readonly GROUND_STATION_CONFIG = new ResourceType('AWS::GroundStation::Config');
+  /** Amazon AppFlow Flow */
+  public static readonly APP_FLOW_FLOW = new ResourceType('AWS::AppFlow::Flow');
+  /** Amazon Redshift Scheduled Action */
+  public static readonly REDSHIFT_SCHEDULED_ACTION = new ResourceType('AWS::Redshift::ScheduledAction');
+  /** Amazon Pinpoint App */
+  public static readonly PINPOINT_APP = new ResourceType('AWS::Pinpoint::App');
+  /** AWS IoT Fleet Metric */
+  public static readonly IOT_FLEET_METRIC = new ResourceType('AWS::IoT::FleetMetric');
+  /** AWS AppConfig Deployment Strategy */
+  public static readonly APP_CONFIG_DEPLOYMENT_STRATEGY = new ResourceType('AWS::AppConfig::DeploymentStrategy');
+  /** AWS Network Manager Device */
+  public static readonly NETWORK_MANAGER_DEVICE = new ResourceType('AWS::NetworkManager::Device');
+  /** EC2 Image Builder Image Pipeline */
+  public static readonly IMAGE_BUILDER_IMAGE_PIPELINE = new ResourceType('AWS::ImageBuilder::ImagePipeline');
+  /** Amazon CloudWatch Metric Stream */
+  public static readonly CLOUD_WATCH_METRIC_STREAM = new ResourceType('AWS::CloudWatch::MetricStream');
+  /** AWS Panorama Package */
+  public static readonly PANORAMA_PACKAGE = new ResourceType('AWS::Panorama::Package');
+  /** Amazon SageMaker Image */
+  public static readonly SAGE_MAKER_IMAGE = new ResourceType('AWS::SageMaker::Image');
+  /** Amazon ECR PullThrough Cache Rule */
+  public static readonly ECR_PULL_THROUGH_CACHE_RULE = new ResourceType('AWS::ECR::PullThroughCacheRule');
+  /** AWS AuditManager Assessment */
+  public static readonly AUDIT_MANAGER_ASSESSMENT = new ResourceType('AWS::AuditManager::Assessment');
+  /** AWS NetworkManager Site */
+  public static readonly NETWORK_MANAGER_SITE = new ResourceType('AWS::NetworkManager::Site');
+  /** Amazon SageMaker AppImageConfig */
+  public static readonly SAGE_MAKER_APP_IMAGE_CONFIG = new ResourceType('AWS::SageMaker::AppImageConfig');
+  /** AWS DeviceFarm Project */
+  public static readonly DEVICE_FARM_PROJECT = new ResourceType('AWS::DeviceFarm::Project');
+  /** AWS NetworkManager Link */
+  public static readonly NETWORK_MANAGER_LINK = new ResourceType('AWS::NetworkManager::Link');
+  /** AWS NetworkFirewall TLSInspectionConfiguration */
+  public static readonly NETWORK_FIREWALL_TLS_INSPECTION_CONFIGURATION = new ResourceType('AWS::NetworkFirewall::TLSInspectionConfiguration');
+  /** AWS Amplify App */
+  public static readonly AMPLIFY_APP = new ResourceType('AWS::Amplify::App');
+  /** AWS AppMesh VirtualNode */
+  public static readonly APP_MESH_VIRTUAL_NODE = new ResourceType('AWS::AppMesh::VirtualNode');
+  /** AWS AppMesh VirtualService */
+  public static readonly APP_MESH_VIRTUAL_SERVICE = new ResourceType('AWS::AppMesh::VirtualService');
+  /** AWS AppRunner VpcConnector */
+  public static readonly APP_RUNNER_VPC_CONNECTOR = new ResourceType('AWS::AppRunner::VpcConnector');
+  /** Amazon AppStream Application */
+  public static readonly APP_STREAM_APPLICATION = new ResourceType('AWS::AppStream::Application');
+  /** Amazon KeySpaces Cassandra Keyspace */
+  public static readonly CASSANDRA_KEYSPACE = new ResourceType('AWS::Cassandra::Keyspace');
+  /** AWS CodeArtifact Repository */
+  public static readonly CODE_ARTIFACT_REPOSITORY = new ResourceType('AWS::CodeArtifact::Repository');
+  /** EC2 PrefixList */
+  public static readonly EC2_PREFIX_LIST = new ResourceType('AWS::EC2::PrefixList');
+  /** EC2 SpotFleet */
+  public static readonly EC2_SPOT_FLEET = new ResourceType('AWS::EC2::SpotFleet');
+  /** Amazon ECS TaskSet */
+  public static readonly ECS_TASK_SET = new ResourceType('AWS::ECS::TaskSet');
+  /** Amazon CloudWatch Evidently Project */
+  public static readonly EVIDENTLY_PROJECT = new ResourceType('AWS::Evidently::Project');
+  /** Amazon Forecast Dataset */
+  public static readonly FORECAST_DATASET = new ResourceType('AWS::Forecast::Dataset');
+  /** AWS IAM SAMLProvider */
+  public static readonly IAM_SAML_PROVIDER = new ResourceType('AWS::IAM::SAMLProvider');
+  /** AWS IAM ServerCertificate */
+  public static readonly IAM_SERVER_CERTIFICATE = new ResourceType('AWS::IAM::ServerCertificate');
+  /** Amazon Kinesis Firehose DeliveryStream */
+  public static readonly KINESIS_FIREHOSE_DELIVERY_STREAM = new ResourceType('AWS::KinesisFirehose::DeliveryStream');
+  /** Amazon Pinpoint Campaign */
+  public static readonly PINPOINT_CAMPAIGN = new ResourceType('AWS::Pinpoint::Campaign');
+  /** Amazon Pinpoint InAppTemplate */
+  public static readonly PINPOINT_IN_APP_TEMPLATE = new ResourceType('AWS::Pinpoint::InAppTemplate');
+  /** AWS Signer SigningProfile */
+  public static readonly SIGNER_SIGNING_PROFILE = new ResourceType('AWS::Signer::SigningProfile');
+  /** Amazon SageMaker Domain */
+  public static readonly SAGEMAKER_DOMAIN = new ResourceType('AWS::SageMaker::Domain');
+  /** AWS Transfer Agreement */
+  public static readonly TRANSFER_AGREEMENT = new ResourceType('AWS::Transfer::Agreement');
+  /** AWS Transfer Connector */
+  public static readonly TRANSFER_CONNECTOR = new ResourceType('AWS::Transfer::Connector');
+  /** AWS Private Certificate Authority CertificateAuthority */
+  public static readonly ACMPCA_CERTIFICATE_AUTHORITY = new ResourceType('AWS::ACMPCA::CertificateAuthority');
+  /** AWS AppConfig HostedConfigurationVersion */
+  public static readonly APP_CONFIG_HOSTED_CONFIGURATION_VERSION = new ResourceType('AWS::AppConfig::HostedConfigurationVersion');
+  /** AWS AppMesh VirtualGateway */
+  public static readonly APP_MESH_VIRTUAL_GATEWAY = new ResourceType('AWS::AppMesh::VirtualGateway');
+  /** AWS AppMesh VirtualRouter */
+  public static readonly APP_MESH_VIRTUAL_ROUTER = new ResourceType('AWS::AppMesh::VirtualRouter');
+  /** AWS AppRunner Service */
+  public static readonly APP_RUNNER_SERVICE = new ResourceType('AWS::AppRunner::Service');
+  /** Amazon Connect CustomerProfiles ObjectType */
+  public static readonly CUSTOMER_PROFILES_OBJECT_TYPE = new ResourceType('AWS::CustomerProfiles::ObjectType');
+  /** AWS DMS Endpoint */
+  public static readonly DMS_ENDPOINT = new ResourceType('AWS::DMS::Endpoint');
+  /** EC2 CapacityReservation */
+  public static readonly EC2_CAPACITY_RESERVATION = new ResourceType('AWS::EC2::CapacityReservation');
+  /** EC2 ClientVpnEndpoint */
+  public static readonly EC2_CLIENT_VPN_ENDPOINT = new ResourceType('AWS::EC2::ClientVpnEndpoint');
+  /** Amazon Kendra Index */
+  public static readonly KENDRA_INDEX = new ResourceType('AWS::Kendra::Index');
+  /** Amazon Kinesis Video Stream */
+  public static readonly KINESIS_VIDEO_STREAM = new ResourceType('AWS::KinesisVideo::Stream');
+  /** Amazon CloudWatch Logs Destination */
+  public static readonly LOGS_DESTINATION = new ResourceType('AWS::Logs::Destination');
+  /** AWS NetworkManager CustomerGatewayAssociation */
+  public static readonly NETWORK_MANAGER_CUSTOMER_GATEWAY_ASSOCIATION = new ResourceType('AWS::NetworkManager::CustomerGatewayAssociation');
+  /** AWS NetworkManager LinkAssociation */
+  public static readonly NETWORK_MANAGER_LINK_ASSOCIATION = new ResourceType('AWS::NetworkManager::LinkAssociation');
+  /** Amazon Pinpoint EmailChannel */
+  public static readonly PINPOINT_EMAIL_CHANNEL = new ResourceType('AWS::Pinpoint::EmailChannel');
+  /** Amazon S3 AccessPoint */
+  public static readonly S3_ACCESS_POINT = new ResourceType('AWS::S3::AccessPoint');
+  /** AWS Amplify Branch */
+  public static readonly AMPLIFY_BRANCH = new ResourceType('AWS::Amplify::Branch');
+  /** Amazon AppIntegrations EventIntegration */
+  public static readonly APP_INTEGRATIONS_EVENT_INTEGRATION = new ResourceType('AWS::AppIntegrations::EventIntegration');
+  /** AWS AppMesh Route */
+  public static readonly APP_MESH_ROUTE = new ResourceType('AWS::AppMesh::Route');
+  /** Amazon Athena PreparedStatement */
+  public static readonly ATHENA_PREPARED_STATEMENT = new ResourceType('AWS::Athena::PreparedStatement');
+  /** EC2 IPAMScope */
+  public static readonly EC2_IPAM_SCOPE = new ResourceType('AWS::EC2::IPAMScope');
+  /** Amazon CloudWatch Evidently Launch */
+  public static readonly EVIDENTLY_LAUNCH = new ResourceType('AWS::Evidently::Launch');
+  /** Amazon Forecast DatasetGroup */
+  public static readonly FORECAST_DATASET_GROUP = new ResourceType('AWS::Forecast::DatasetGroup');
+  /** AWS IoT Greengrass Version2 ComponentVersion */
+  public static readonly GREENGRASSV2_COMPONENT_VERSION = new ResourceType('AWS::GreengrassV2::ComponentVersion');
+  /** AWS GroundStation MissionProfile */
+  public static readonly GROUNDSTATION_MISSION_PROFILE = new ResourceType('AWS::GroundStation::MissionProfile');
+  /** AWS Elemental MediaConnect FlowEntitlement */
+  public static readonly MEDIACONNECT_FLOW_ENTITLEMENT = new ResourceType('AWS::MediaConnect::FlowEntitlement');
+  /** AWS Elemental MediaConnect FlowVpcInterface */
+  public static readonly MEDIACONNECT_FLOW_VPC_INTERFACE = new ResourceType('AWS::MediaConnect::FlowVpcInterface');
+  /** AWS Elemental MediaTailor PlaybackConfiguration */
+  public static readonly MEDIATAILOR_PLAYBACK_CONFIGURATION = new ResourceType('AWS::MediaTailor::PlaybackConfiguration');
+  /** Amazon MSK Configuration */
+  public static readonly MSK_CONFIGURATION = new ResourceType('AWS::MSK::Configuration');
+  /** Amazon Personalize Dataset */
+  public static readonly PERSONALIZE_DATASET = new ResourceType('AWS::Personalize::Dataset');
+  /** Amazon Personalize Schema */
+  public static readonly PERSONALIZE_SCHEMA = new ResourceType('AWS::Personalize::Schema');
+  /** Amazon Personalize Solution */
+  public static readonly PERSONALIZE_SOLUTION = new ResourceType('AWS::Personalize::Solution');
+  /** Amazon Pinpoint EmailTemplate */
+  public static readonly PINPOINT_EMAIL_TEMPLATE = new ResourceType('AWS::Pinpoint::EmailTemplate');
+  /** Amazon Pinpoint EventStream */
+  public static readonly PINPOINT_EVENT_STREAM = new ResourceType('AWS::Pinpoint::EventStream');
+  /** AWS ResilienceHub App */
+  public static readonly RESILIENCEHUB_APP = new ResourceType('AWS::ResilienceHub::App');
+  /** Amazon CodeGuruP rofiler ProfilingGroup */
+  public static readonly CODE_GURU_PROFILER_PROFILING_GROUP = new ResourceType('AWS::CodeGuruProfiler::ProfilingGroup');
+  /** AWS Elemental MediaConnect FlowSource */
+  public static readonly MEDIA_CONNECT_FLOW_SOURCE = new ResourceType('AWS::MediaConnect::FlowSource');
+  /** AWS Transfer Family Certificate */
+  public static readonly TRANSFER_CERTIFICATE = new ResourceType('AWS::Transfer::Certificate');
+  /** Amazon Managed Service for Prometheus RuleGroupsNamespace */
+  public static readonly APS_RULE_GROUPS_NAMESPACE = new ResourceType('AWS::APS::RuleGroupsNamespace');
+  /** AWS Batch SchedulingPolicy */
+  public static readonly BATCH_SCHEDULING_POLICY = new ResourceType('AWS::Batch::SchedulingPolicy');
+  /** AWS Cloud Map Instance */
+  public static readonly SERVICE_DISCOVERY_INSTANCE = new ResourceType('AWS::ServiceDiscovery::Instance');
+  /** Amazon Route53 Resolver ResolverQueryLoggingConfig */
+  public static readonly ROUTE53_RESOLVER_QUERY_LOGGING_CONFIG = new ResourceType('AWS::Route53Resolver::ResolverQueryLoggingConfig');
+  /** Amazon Route53 Resolver ResolverQueryLoggingConfigAssociation */
+  public static readonly ROUTE53_RESOLVER_QUERY_LOGGING_CONFIG_ASSOCIATION = new ResourceType('AWS::Route53Resolver::ResolverQueryLoggingConfigAssociation');
+  /** AWS IoT JobTemplate */
+  public static readonly IOT_JOB_TEMPLATE = new ResourceType('AWS::IoT::JobTemplate');
+  /** AWS IoT TwinMaker ComponentType */
+  public static readonly IOT_TWIN_MAKER_COMPONENT_TYPE = new ResourceType('AWS::IoTTwinMaker::ComponentType');
+  /** AWS IoT Wireless MulticastGroup */
+  public static readonly IOT_WIRELESS_MULTICAST_GROUP = new ResourceType('AWS::IoTWireless::MulticastGroup');
+  /** Amazon Personalize DatasetGroup */
+  public static readonly PERSONALIZE_DATASET_GROUP = new ResourceType('AWS::Personalize::DatasetGroup');
+  /** AWS IoT ProvisioningTemplate */
+  public static readonly IOT_PROVISIONING_TEMPLATE = new ResourceType('AWS::IoT::ProvisioningTemplate');
+  /** AWS IoT Wireless FuotaTask */
+  public static readonly IOT_WIRELESS_FUOTA_TASK = new ResourceType('AWS::IoTWireless::FuotaTask');
+  /** Amazon MSK BatchScramSecret */
+  public static readonly MSK_BATCH_SCRAM_SECRET = new ResourceType('AWS::MSK::BatchScramSecret');
+  /** Amazon SageMaker FeatureGroup */
+  public static readonly SAGEMAKER_FEATURE_GROUP = new ResourceType('AWS::SageMaker::FeatureGroup');
+  /** AWS CodeBuild ReportGroup */
+  public static readonly CODE_BUILD_REPORT_GROUP = new ResourceType('AWS::CodeBuild::ReportGroup');
+  /** Amazon AppStream Stack */
+  public static readonly APP_STREAM_STACK = new ResourceType('AWS::AppStream::Stack');
+  /** Amazon Inspector Filter */
+  public static readonly INSPECTORV2_FILTER = new ResourceType('AWS::InspectorV2::Filter');
+  /** Amazon AppStream Fleet */
+  public static readonly APP_STREAM_FLEET = new ResourceType('AWS::AppStream::Fleet');
+  /** Amazon Managed Grafana Workspace */
+  public static readonly GRAFANA_WORKSPACE = new ResourceType('AWS::Grafana::Workspace');
+  /** AWS KMS Alias */
+  public static readonly KMS_ALIAS = new ResourceType('AWS::KMS::Alias');
+  /** Amazon RDS OptionGroup */
+  public static readonly RDS_OPTION_GROUP = new ResourceType('AWS::RDS::OptionGroup');
+  /** AWS Route53 Resolver FirewallRuleGroup */
+  public static readonly ROUTE53_RESOLVER_FIREWALL_RULE_GROUP = new ResourceType('AWS::Route53Resolver::FirewallRuleGroup');
+  /** AWS IAM InstanceProfile */
+  public static readonly IAM_INSTANCE_PROFILE = new ResourceType('AWS::IAM::InstanceProfile');
+  /** AWS NetworkManager ConnectPeer */
+  public static readonly NETWORK_MANAGER_CONNECT_PEER = new ResourceType('AWS::NetworkManager::ConnectPeer');
+  /** AWS Private Certificate Authority CertificateAuthorityActivation */
+  public static readonly ACMPCA_CERTIFICATE_AUTHORITY_ACTIVATION = new ResourceType('AWS::ACMPCA::CertificateAuthorityActivation');
+  /** AWS AppMesh GatewayRoute */
+  public static readonly APP_MESH_GATEWAY_ROUTE = new ResourceType('AWS::AppMesh::GatewayRoute');
+  /** AWS AppMesh Mesh */
+  public static readonly APP_MESH_MESH = new ResourceType('AWS::AppMesh::Mesh');
+  /** Amazon Connect QuickConnect */
+  public static readonly CONNECT_QUICK_CONNECT = new ResourceType('AWS::Connect::QuickConnect');
+  /** EC2 CarrierGateway */
+  public static readonly EC2_CARRIER_GATEWAY = new ResourceType('AWS::EC2::CarrierGateway');
+  /** EC2 TransitGatewayConnect */
+  public static readonly EC2_TRANSIT_GATEWAY_CONNECT = new ResourceType('AWS::EC2::TransitGatewayConnect');
+  /** Amazon ECS CapacityProvider */
+  public static readonly ECS_CAPACITY_PROVIDER = new ResourceType('AWS::ECS::CapacityProvider');
+  /** AWS IoT CACertificate */
+  public static readonly IOT_CA_CERTIFICATE = new ResourceType('AWS::IoT::CACertificate');
+  /** AWS IoT TwinMaker SyncJob */
+  public static readonly IOT_TWIN_MAKER_SYNC_JOB = new ResourceType('AWS::IoTTwinMaker::SyncJob');
+  /** Amazon Managed Streaming for Apache Kafka Connect Connector */
+  public static readonly KAFKA_CONNECT_CONNECTOR = new ResourceType('AWS::KafkaConnect::Connector');
+  /** AWS Lambda CodeSigningConfig */
+  public static readonly LAMBDA_CODE_SIGNING_CONFIG = new ResourceType('AWS::Lambda::CodeSigningConfig');
+  /** AWS Resource Explorer Index */
+  public static readonly RESOURCE_EXPLORER2_INDEX = new ResourceType('AWS::ResourceExplorer2::Index');
+  /** Amazon Connect Instance */
+  public static readonly CONNECT_INSTANCE = new ResourceType('AWS::Connect::Instance');
+  /** EC2 IPAMPool */
+  public static readonly EC2_IPAM_POOL = new ResourceType('AWS::EC2::IPAMPool');
+  /** EC2 TransitGatewayMulticastDomain */
+  public static readonly EC2_TRANSIT_GATEWAY_MULTICAST_DOMAIN = new ResourceType('AWS::EC2::TransitGatewayMulticastDomain');
 
   /** A custom resource type to support future cases. */
   public static of(type: string): ResourceType {

@@ -1227,7 +1227,8 @@
         ]
        }
       ]
-     }
+     },
+     "accessConfig": {}
     },
     "AssumeRoleArn": {
      "Fn::GetAtt": [
@@ -1235,7 +1236,7 @@
       "Arn"
      ]
     },
-    "AttributesRevision": 2
+    "AttributesRevision": 3
    },
    "DependsOn": [
     "CIDR6",
@@ -4677,7 +4678,7 @@
       "OpenIdConnectIssuerUrl"
      ]
     },
-    "CodeHash": "9243a37c51ef38f361f19b938e8dd0cd37fd4a2c18460dca4546ad79d72b465c"
+    "CodeHash": "469d5d61e22fea12a07cfcadd430b3a6babbbd52a6d677d3eb99b583b278761d"
    },
    "DependsOn": [
     "CIDR6"
@@ -4824,7 +4825,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/fd71a94cb3c2a0119c8579011bf76c1207c1facb6034a1dbcb3c221f9f3f53a8.json"
+       "/acf36df7147f6a8d611b2e0a8d594625a97642c12d016a6fbf3c677c783f41e0.json"
       ]
      ]
     }
@@ -4870,7 +4871,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/17f94cdd83c5b9a47e0cb9cb42d0a5c5d6f80592a6a74581c901f4cc653a5484.json"
+       "/1b52751cdbc52a425751400a1ff5fcd438ef670e77050243bd6312a71c0bf2f7.json"
       ]
      ]
     }
@@ -4988,7 +4989,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "9243a37c51ef38f361f19b938e8dd0cd37fd4a2c18460dca4546ad79d72b465c.zip"
+     "S3Key": "469d5d61e22fea12a07cfcadd430b3a6babbbd52a6d677d3eb99b583b278761d.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -4999,7 +5000,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs20.x"
    },
    "DependsOn": [
     "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderRole517FED65"
@@ -5034,7 +5035,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "7e3e77a5ee3d2db0eeb9f1ca27d1864b68dcd5f1ef5f72269689043834710c60.zip"
+     "S3Key": "a4052fc8993f394f879e80c418974b5f01321a8ea600ed16668222a0705b6d1a.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -5045,7 +5046,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs20.x"
    },
    "DependsOn": [
     "AWSCDKCfnUtilsProviderCustomResourceProviderRoleFE0EE867"

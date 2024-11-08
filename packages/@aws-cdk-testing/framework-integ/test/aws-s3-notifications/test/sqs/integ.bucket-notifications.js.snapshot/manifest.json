@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "36.0.24",
   "artifacts": {
     "sqs-bucket-notifications.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e2c7344db2dc1c217796ad3be9c2142d61ff0013678470f520369be0ab2fae68.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ccfb57f9fd37b16cf683acc8b776fce86584ab7df3eb797c156ddfdc50a3a3ac.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -100,6 +100,18 @@
             "data": "Bucket2NotificationsD9BA2A77"
           }
         ],
+        "/sqs-bucket-notifications/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/sqs-bucket-notifications/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
         "/sqs-bucket-notifications/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
           {
             "type": "aws:cdk:logicalId",
@@ -128,6 +140,30 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "EncryptedQueuePolicy8AEB1708"
+          }
+        ],
+        "/sqs-bucket-notifications/Bucket3WithSkipDestinationValidation/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Bucket3WithSkipDestinationValidation4A19337A"
+          }
+        ],
+        "/sqs-bucket-notifications/Bucket3WithSkipDestinationValidation/Notifications/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Bucket3WithSkipDestinationValidationNotificationsA897B602"
+          }
+        ],
+        "/sqs-bucket-notifications/MyQueueWithIncorrectS3Permissions/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyQueueWithIncorrectS3PermissionsBE3BD1C7"
+          }
+        ],
+        "/sqs-bucket-notifications/MyQueueWithIncorrectS3Permissions/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyQueueWithIncorrectS3PermissionsPolicy9249BED3"
           }
         ],
         "/sqs-bucket-notifications/Exports/Output{\"Ref\":\"MyQueueE6CA6235\"}": [
@@ -174,7 +210,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/add9c9ae94a30c6b88e1648f7467b2cc40603b5608d452bf68ee6dba187a3e0e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a56d91616b9a7a97cff285b9a8d7657f43a65ea71fd4e6fe4d898c2b88992a5a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -207,6 +243,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/SQSBucketNotificationsTest/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallS3putObjectfdcc2b330314993fae3423f6d19b433f/Default/Default": [

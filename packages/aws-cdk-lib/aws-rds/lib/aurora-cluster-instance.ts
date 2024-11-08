@@ -224,6 +224,17 @@ export interface ClusterInstanceOptions {
   readonly publiclyAccessible?: boolean;
 
   /**
+   * A preferred maintenance window day/time range. Should be specified as a range ddd:hh24:mi-ddd:hh24:mi (24H Clock UTC).
+   *
+   * Example: 'Sun:23:45-Mon:00:15'
+   *
+   * @default - 30-minute window selected at random from an 8-hour block of time for
+   * each AWS Region, occurring on a random day of the week.
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_UpgradeDBInstance.Maintenance.html#Concepts.DBMaintenance
+   */
+  readonly preferredMaintenanceWindow?: string;
+
+  /**
    * The parameters in the DBParameterGroup to create automatically
    *
    * You can only specify parameterGroup or parameters but not both.
@@ -425,9 +436,24 @@ export interface IAuroraClusterInstance extends IResource {
   readonly instanceSize?: string;
 
   /**
-   * Te promotion tier the instance was created in
+   * The promotion tier the instance was created in
    */
   readonly tier: number;
+
+  /**
+   * Whether Performance Insights is enabled
+   */
+  readonly performanceInsightsEnabled?: boolean;
+
+  /**
+   * The amount of time, in days, to retain Performance Insights data.
+   */
+  readonly performanceInsightRetention?: PerformanceInsightRetention;
+
+  /**
+   * The AWS KMS key for encryption of Performance Insights data.
+   */
+  readonly performanceInsightEncryptionKey?: kms.IKey;
 }
 
 class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
@@ -438,6 +464,9 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
   public readonly type: InstanceType;
   public readonly tier: number;
   public readonly instanceSize?: string;
+  public readonly performanceInsightsEnabled: boolean;
+  public readonly performanceInsightRetention?: PerformanceInsightRetention;
+  public readonly performanceInsightEncryptionKey?: kms.IKey;
   constructor(scope: Construct, id: string, props: AuroraClusterInstanceProps) {
     super(
       scope,
@@ -473,6 +502,12 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
       throw new Error('`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set');
     }
 
+    this.performanceInsightsEnabled = enablePerformanceInsights;
+    this.performanceInsightRetention = enablePerformanceInsights
+      ? (props.performanceInsightRetention || PerformanceInsightRetention.DEFAULT)
+      : undefined;
+    this.performanceInsightEncryptionKey = props.performanceInsightEncryptionKey;
+
     const instanceParameterGroup = props.parameterGroup ?? (
       props.parameters
         ? FeatureFlags.of(this).isEnabled(AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS)
@@ -499,11 +534,10 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
         // Instance properties
         dbInstanceClass: props.instanceType ? databaseInstanceType(instanceType) : undefined,
         publiclyAccessible,
-        enablePerformanceInsights: enablePerformanceInsights || props.enablePerformanceInsights, // fall back to undefined if not set
-        performanceInsightsKmsKeyId: props.performanceInsightEncryptionKey?.keyArn,
-        performanceInsightsRetentionPeriod: enablePerformanceInsights
-          ? (props.performanceInsightRetention || PerformanceInsightRetention.DEFAULT)
-          : undefined,
+        preferredMaintenanceWindow: props.preferredMaintenanceWindow,
+        enablePerformanceInsights: this.performanceInsightsEnabled || props.enablePerformanceInsights, // fall back to undefined if not set
+        performanceInsightsKmsKeyId: this.performanceInsightEncryptionKey?.keyArn,
+        performanceInsightsRetentionPeriod: this.performanceInsightRetention,
         // only need to supply this when migrating from legacy method.
         // this is not applicable for aurora instances, but if you do provide it and then
         // change it it will cause an instance replacement

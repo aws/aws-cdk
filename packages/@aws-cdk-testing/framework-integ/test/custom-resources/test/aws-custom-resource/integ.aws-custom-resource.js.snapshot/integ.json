@@ -1,9 +1,8 @@
 {
-  "version": "36.0.0",
+  "version": "36.0.5",
   "testCases": {
     "AwsCustomResourceTest/DefaultTest": {
       "stacks": [
-        "aws-cdk-sdk-js",
         "aws-cdk-sdk-js-v3"
       ],
       "diffAssets": true,

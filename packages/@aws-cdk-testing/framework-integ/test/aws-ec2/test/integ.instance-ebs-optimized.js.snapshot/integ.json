@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "instance-ebs-optimized-test/DefaultTest": {
+      "stacks": [
+        "integ-ec2-instance-ebs-optimized"
+      ],
+      "assertionStack": "instance-ebs-optimized-test/DefaultTest/DeployAssert",
+      "assertionStackName": "instanceebsoptimizedtestDefaultTestDeployAssert9D93190D"
+    }
+  }
+}
