@@ -19,7 +19,7 @@
         "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7670389c01b2de06cbd775e76daaf8ac9a2c0a150a84b71a97e22a3e0b102016.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/58768f2ca04c43cb93223c6e37585a3f03502ed56f7cd28f976b3c2f79c098df.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -65,28 +65,28 @@
             "data": "MyRepoIsInputDigest23551BB24"
           }
         ],
-        "/aws-cdk-lambda-image/DeployDockerImage2/CustomResource/Default": [
+        "/aws-cdk-lambda-image/CustomResourceHandler/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DeployDockerImage2CustomResource8447B221"
+            "data": "CustomResourceHandlerServiceRole41AEC181"
           }
         ],
-        "/aws-cdk-lambda-image/Custom::CDKECRDeploymentbd07c930edb94112a20f03f096f53666512MiB/ServiceRole/Resource": [
+        "/aws-cdk-lambda-image/CustomResourceHandler/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CustomCDKECRDeploymentbd07c930edb94112a20f03f096f53666512MiBServiceRole8C8B0491"
+            "data": "CustomResourceHandlerServiceRoleDefaultPolicy73F93F56"
           }
         ],
-        "/aws-cdk-lambda-image/Custom::CDKECRDeploymentbd07c930edb94112a20f03f096f53666512MiB/ServiceRole/DefaultPolicy/Resource": [
+        "/aws-cdk-lambda-image/CustomResourceHandler/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CustomCDKECRDeploymentbd07c930edb94112a20f03f096f53666512MiBServiceRoleDefaultPolicy280095F8"
+            "data": "CustomResourceHandlerE8FB56BA"
           }
         ],
-        "/aws-cdk-lambda-image/Custom::CDKECRDeploymentbd07c930edb94112a20f03f096f53666512MiB/Resource": [
+        "/aws-cdk-lambda-image/CustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CustomCDKECRDeploymentbd07c930edb94112a20f03f096f53666512MiB28EAD8E4"
+            "data": "CustomResource"
           }
         ],
         "/aws-cdk-lambda-image/ImageLambdaDigest/ServiceRole/Resource": [
@@ -194,7 +194,7 @@
         "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/157465680172783b6b0b45a84de3abcaec4edda06c122169b2e3eb8dea36c1ae.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/87ecedc4812b1fae79d5af8d1f605b8118e850045de50cfd50b4325bb965163e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

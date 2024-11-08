@@ -79,61 +79,25 @@
               "version": "0.0.0"
             }
           },
-          "DeployDockerImage2": {
-            "id": "DeployDockerImage2",
-            "path": "aws-cdk-lambda-image/DeployDockerImage2",
-            "children": {
-              "CustomResourceHandler": {
-                "id": "CustomResourceHandler",
-                "path": "aws-cdk-lambda-image/DeployDockerImage2/CustomResourceHandler",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
-                  "version": "2.166.0"
-                }
-              },
-              "CustomResource": {
-                "id": "CustomResource",
-                "path": "aws-cdk-lambda-image/DeployDockerImage2/CustomResource",
-                "children": {
-                  "Default": {
-                    "id": "Default",
-                    "path": "aws-cdk-lambda-image/DeployDockerImage2/CustomResource/Default",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
-                      "version": "2.166.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "2.166.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "cdk-ecr-deployment.ECRDeployment",
-              "version": "3.0.135"
-            }
-          },
-          "Custom::CDKECRDeploymentbd07c930edb94112a20f03f096f53666512MiB": {
-            "id": "Custom::CDKECRDeploymentbd07c930edb94112a20f03f096f53666512MiB",
-            "path": "aws-cdk-lambda-image/Custom::CDKECRDeploymentbd07c930edb94112a20f03f096f53666512MiB",
+          "CustomResourceHandler": {
+            "id": "CustomResourceHandler",
+            "path": "aws-cdk-lambda-image/CustomResourceHandler",
             "children": {
               "ServiceRole": {
                 "id": "ServiceRole",
-                "path": "aws-cdk-lambda-image/Custom::CDKECRDeploymentbd07c930edb94112a20f03f096f53666512MiB/ServiceRole",
+                "path": "aws-cdk-lambda-image/CustomResourceHandler/ServiceRole",
                 "children": {
                   "ImportServiceRole": {
                     "id": "ImportServiceRole",
-                    "path": "aws-cdk-lambda-image/Custom::CDKECRDeploymentbd07c930edb94112a20f03f096f53666512MiB/ServiceRole/ImportServiceRole",
+                    "path": "aws-cdk-lambda-image/CustomResourceHandler/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "2.166.0"
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-lambda-image/Custom::CDKECRDeploymentbd07c930edb94112a20f03f096f53666512MiB/ServiceRole/Resource",
+                    "path": "aws-cdk-lambda-image/CustomResourceHandler/ServiceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -167,16 +131,16 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "2.166.0"
+                      "version": "0.0.0"
                     }
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "aws-cdk-lambda-image/Custom::CDKECRDeploymentbd07c930edb94112a20f03f096f53666512MiB/ServiceRole/DefaultPolicy",
+                    "path": "aws-cdk-lambda-image/CustomResourceHandler/ServiceRole/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-lambda-image/Custom::CDKECRDeploymentbd07c930edb94112a20f03f096f53666512MiB/ServiceRole/DefaultPolicy/Resource",
+                        "path": "aws-cdk-lambda-image/CustomResourceHandler/ServiceRole/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -206,60 +170,60 @@
                               ],
                               "Version": "2012-10-17"
                             },
-                            "policyName": "CustomCDKECRDeploymentbd07c930edb94112a20f03f096f53666512MiBServiceRoleDefaultPolicy280095F8",
+                            "policyName": "CustomResourceHandlerServiceRoleDefaultPolicy73F93F56",
                             "roles": [
                               {
-                                "Ref": "CustomCDKECRDeploymentbd07c930edb94112a20f03f096f53666512MiBServiceRole8C8B0491"
+                                "Ref": "CustomResourceHandlerServiceRole41AEC181"
                               }
                             ]
                           }
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                          "version": "2.166.0"
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "2.166.0"
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "2.166.0"
+                  "version": "0.0.0"
                 }
               },
               "Code": {
                 "id": "Code",
-                "path": "aws-cdk-lambda-image/Custom::CDKECRDeploymentbd07c930edb94112a20f03f096f53666512MiB/Code",
+                "path": "aws-cdk-lambda-image/CustomResourceHandler/Code",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "aws-cdk-lambda-image/Custom::CDKECRDeploymentbd07c930edb94112a20f03f096f53666512MiB/Code/Stage",
+                    "path": "aws-cdk-lambda-image/CustomResourceHandler/Code/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
-                      "version": "2.166.0"
+                      "version": "0.0.0"
                     }
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "aws-cdk-lambda-image/Custom::CDKECRDeploymentbd07c930edb94112a20f03f096f53666512MiB/Code/AssetBucket",
+                    "path": "aws-cdk-lambda-image/CustomResourceHandler/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "2.166.0"
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                  "version": "2.166.0"
+                  "version": "0.0.0"
                 }
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-lambda-image/Custom::CDKECRDeploymentbd07c930edb94112a20f03f096f53666512MiB/Resource",
+                "path": "aws-cdk-lambda-image/CustomResourceHandler/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
@@ -270,10 +234,9 @@
                       "s3Key": "fab2cc1ec3e0ff9794767dee88ff6e57ae1d186feb5549dbddd4b1e9ba28f4f6.zip"
                     },
                     "handler": "bootstrap",
-                    "memorySize": 512,
                     "role": {
                       "Fn::GetAtt": [
-                        "CustomCDKECRDeploymentbd07c930edb94112a20f03f096f53666512MiBServiceRole8C8B0491",
+                        "CustomResourceHandlerServiceRole41AEC181",
                         "Arn"
                       ]
                     },
@@ -283,13 +246,31 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                  "version": "2.166.0"
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "2.166.0"
+              "version": "0.0.0"
+            }
+          },
+          "CustomResource": {
+            "id": "CustomResource",
+            "path": "aws-cdk-lambda-image/CustomResource",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "aws-cdk-lambda-image/CustomResource/Default",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CustomResource",
+              "version": "0.0.0"
             }
           },
           "ImageLambdaDigest": {
@@ -570,7 +551,7 @@
                             {
                               "Ref": "MyRepoF4F48043"
                             },
-                            "@sha256:55d873154f78cd9a13487c9539ff380f396b887f4a815d84fd698ed872c74749"
+                            "@sha256:0690b41474a8ebfc84649594473b5956a548290dddc9b1accc4a305517779906"
                           ]
                         ]
                       }

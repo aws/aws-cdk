@@ -11,7 +11,7 @@
     },
     "service": "Lambda",
     "api": "GetFunction",
-    "expected": "{\"$StringLike\":\".+@sha256:55d873154f78cd9a13487c9539ff380f396b887f4a815d84fd698ed872c74749\"}",
+    "expected": "{\"$StringLike\":\".+@sha256:0690b41474a8ebfc84649594473b5956a548290dddc9b1accc4a305517779906\"}",
     "actualPath": "Code.ImageUri",
     "parameters": {
      "FunctionName": {
@@ -31,7 +31,7 @@
     "outputPaths": [
      "Code.ImageUri"
     ],
-    "salt": "1730983340069"
+    "salt": "1731058471863"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -143,7 +143,7 @@
     },
     "service": "Lambda",
     "api": "GetFunction",
-    "expected": "{\"$StringLike\":\".+@sha256:55d873154f78cd9a13487c9539ff380f396b887f4a815d84fd698ed872c74749\"}",
+    "expected": "{\"$StringLike\":\".+@sha256:0690b41474a8ebfc84649594473b5956a548290dddc9b1accc4a305517779906\"}",
     "actualPath": "Code.ImageUri",
     "parameters": {
      "FunctionName": {
@@ -163,7 +163,7 @@
     "outputPaths": [
      "Code.ImageUri"
     ],
-    "salt": "1730983340070"
+    "salt": "1731058471864"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -199,7 +199,7 @@
     "outputPaths": [
      "Code.ImageUri"
     ],
-    "salt": "1730983340070"
+    "salt": "1731058471864"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -235,7 +235,7 @@
     "outputPaths": [
      "Code.ImageUri"
     ],
-    "salt": "1730983340070"
+    "salt": "1731058471864"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
