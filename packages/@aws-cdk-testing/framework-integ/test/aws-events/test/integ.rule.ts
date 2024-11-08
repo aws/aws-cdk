@@ -30,7 +30,7 @@ new Rule(stack, 'MyRule', {
       notPrefixedBy: Match.anythingButPrefix('sensitive-'),
       suffix: Match.suffix('.com'),
       equalsIgnoreCase: Match.equalsIgnoreCase('ignore case'),
-      wildcard: Match.wildcard('*:*:*:*:*:event-bus/*'),
+      wildcard: Match.wildcard('*.txt'),
     },
     detailType: ['detailType1'],
     id: ['id1', 'id2'],
