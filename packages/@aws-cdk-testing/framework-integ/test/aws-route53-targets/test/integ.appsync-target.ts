@@ -43,7 +43,7 @@ class TestStack extends Stack {
   }
 }
 
-const certificateArn = process.env.CDK_INTEG_CERTIFICATE_ARN ?? process.env.CERTIFICATE_ARN;
+const certificateArn = process.env.CDK_INTEG_CERT_ARN ?? process.env.CERTIFICATE_ARN;
 if (!certificateArn) throw new Error('For this test you must provide your own CertificateArn as an env var "CERTIFICATE_ARN". See framework-integ/README.md for details.');
 const domainName = process.env.CDK_INTEG_DOMAIN_NAME ?? process.env.DOMAIN_NAME;
 if (!domainName) throw new Error('For this test you must provide your own DomainName as an env var "DOMAIN_NAME". See framework-integ/README.md for details.');
