@@ -8,25 +8,19 @@ import { Construct } from 'constructs';
 import * as targets from 'aws-cdk-lib/aws-route53-targets';
 import { join } from 'path';
 
-/**********************************************************************************************************************
- *
- *    Warning! As with integ.api-gateway-domain-name.ts, this test case can not be deployed!
- *
- *    Save yourself some time and move on.
- *    The latest given reason is:
- *    - 2023-08-30: With hardcoded domain name and ARNs this will never work, @mrgrain
- *
- *********************************************************************************************************************/
+type TestStackProps = {
+  certificateArn: string;
+  domainName: string;
+  hostedZoneId: string;
+}
 
 class TestStack extends Stack {
-  constructor(scope: Construct, id: string) {
+  constructor(scope: Construct, id: string, props: TestStackProps) {
     super(scope, id);
 
-    const domainName = 'example.com';
-    const certArn = 'arn:aws:acm:us-east-1:111111111111:certificate';
-    const hostedZoneId = 'AAAAAAAAAAAAA';
+    const { domainName, certificateArn, hostedZoneId } = props;
 
-    const certificate = acm.Certificate.fromCertificateArn(this, 'cert', certArn);
+    const certificate = acm.Certificate.fromCertificateArn(this, 'cert', certificateArn);
 
     const api = new appsync.GraphqlApi(this, 'api', {
       definition: appsync.Definition.fromFile(join(__dirname, '..', '..', 'aws-appsync', 'test', 'appsync.test.graphql')),
@@ -49,8 +43,15 @@ class TestStack extends Stack {
   }
 }
 
+const certificateArn = process.env.CDK_INTEG_CERTIFICATE_ARN ?? process.env.CERTIFICATE_ARN;
+if (!certificateArn) throw new Error('For this test you must provide your own CertificateArn as an env var "CERTIFICATE_ARN". See framework-integ/README.md for details.');
+const domainName = process.env.CDK_INTEG_DOMAIN_NAME ?? process.env.DOMAIN_NAME;
+if (!domainName) throw new Error('For this test you must provide your own DomainName as an env var "DOMAIN_NAME". See framework-integ/README.md for details.');
+const hostedZoneId = process.env.CDK_INTEG_HOSTED_ZONE_ID ?? process.env.HOSTED_ZONE_ID;
+if (!hostedZoneId) throw new Error('For this test you must provide your own HostedZoneId as an env var "HOSTED_ZONE_ID". See framework-integ/README.md for details.');
+
 const app = new App();
-const testCase = new TestStack(app, 'aws-cdk-appsync-alias-integ');
+const testCase = new TestStack(app, 'aws-cdk-appsync-alias-integ', { certificateArn, domainName, hostedZoneId });
 new IntegTest(app, 'appsync-domain-name', {
   testCases: [testCase],
 });

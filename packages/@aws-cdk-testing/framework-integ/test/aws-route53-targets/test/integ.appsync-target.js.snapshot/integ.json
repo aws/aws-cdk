@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "appsync-domain-name/DefaultTest": {
+      "stacks": [
+        "aws-cdk-appsync-alias-integ"
+      ],
+      "assertionStack": "appsync-domain-name/DefaultTest/DeployAssert",
+      "assertionStackName": "appsyncdomainnameDefaultTestDeployAssert6D41B82A"
+    }
+  }
+}
