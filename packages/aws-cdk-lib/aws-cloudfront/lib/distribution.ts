@@ -7,7 +7,7 @@ import { IKeyGroup } from './key-group';
 import { IOrigin, OriginBindConfig, OriginBindOptions } from './origin';
 import { IOriginRequestPolicy } from './origin-request-policy';
 import { CacheBehavior } from './private/cache-behavior';
-import { formatDistributionArn } from './private/utils';
+import { formatDistributionArn, getDefaultWAFWebAclProps } from './private/utils';
 import { IRealtimeLogConfig } from './realtime-log-config';
 import { IResponseHeadersPolicy } from './response-headers-policy';
 import * as acm from '../../aws-certificatemanager';
@@ -235,7 +235,7 @@ export interface DistributionProps {
   /**
    * Enable or disable WAF one-click security protections.
    * Cannot be used with webAclId
-   * 
+   *
    * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/distribution-web-awswaf.html
    *
    * @default false
@@ -605,28 +605,9 @@ export class Distribution extends Resource implements IDistribution {
       throw new Error('This distribution already had WAF WebAcl attached');
     }
 
-    const defaultWebAclOptions: aws_wafv2.CfnWebACLProps = {
-      defaultAction: {
-        allow: {
-          customRequestHandling: {
-            insertHeaders: [
-              {
-                name: "TBD",
-                value: "TBD"
-              }
-            ]
-          }
-        }
-      },
-      scope: 'CLOUDFRONT',
-      visibilityConfig: {
-        cloudWatchMetricsEnabled: false,
-        metricName: "TBD",
-        sampledRequestsEnabled: false,
-      },
-    }
+    const webAclName = `CreatedByCloudFront-${Names.uniqueId(this)}`
 
-    const webAcl = new aws_wafv2.CfnWebACL(this, 'WebAcl', props ?? defaultWebAclOptions);
+    const webAcl = new aws_wafv2.CfnWebACL(this, 'WebAcl', props ?? getDefaultWAFWebAclProps(webAclName));
 
     this.webAclId = webAcl.attrId;
   }
