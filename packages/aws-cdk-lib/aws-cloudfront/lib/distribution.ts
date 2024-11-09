@@ -60,13 +60,6 @@ export interface IDistribution extends IResource {
    * @param identity The principal
    */
   grantCreateInvalidation(identity: iam.IGrantable): iam.Grant;
-
-  /**
-   * Add WAF security protection.
-   *
-   * @param props WAF WebACL security options
-   */
-  addWafCoreProtection(props?: aws_wafv2.CfnWebACLProps): void;
 }
 
 /**
@@ -315,16 +308,13 @@ export class Distribution extends Resource implements IDistribution {
       public grantCreateInvalidation(grantee: iam.IGrantable): iam.Grant {
         return this.grant(grantee, 'cloudfront:CreateInvalidation');
       }
-      addWafCoreProtection(props?: aws_wafv2.CfnWebACLProps): void {
-        return this.addWafCoreProtection(props);
-      }
     }();
   }
 
   public readonly domainName: string;
   public readonly distributionDomainName: string;
   public readonly distributionId: string;
-  private webAclId?: string;
+  private _webAclId?: string;
 
   private readonly defaultBehavior: CacheBehavior;
   private readonly additionalBehaviors: CacheBehavior[] = [];
@@ -366,7 +356,7 @@ export class Distribution extends Resource implements IDistribution {
     }
 
     if (props.webAclId) {
-      this.webAclId = props.webAclId;
+      this._webAclId = props.webAclId;
     }
 
     this.certificate = props.certificate;
@@ -397,7 +387,7 @@ export class Distribution extends Resource implements IDistribution {
         restrictions: this.renderRestrictions(props.geoRestriction),
         viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate,
           props.minimumProtocolVersion, props.sslSupportMethod) : undefined,
-        webAclId: this.webAclId,
+        webAclId: this._webAclId,
       },
     });
 
@@ -600,18 +590,6 @@ export class Distribution extends Resource implements IDistribution {
     return this.metric('504ErrorRate', props);
   }
 
-  public addWafCoreProtection(props?: aws_wafv2.CfnWebACLProps) {
-    if (this.webAclId) {
-      throw new Error('This distribution already had WAF WebAcl attached');
-    }
-
-    const webAclName = `CreatedByCloudFront-${Names.uniqueId(this)}`
-
-    const webAcl = new aws_wafv2.CfnWebACL(this, 'WebAcl', props ?? getDefaultWAFWebAclProps(webAclName));
-
-    this.webAclId = webAcl.attrId;
-  }
-
   /**
    * Adds a new behavior to this distribution for the given pathPattern.
    *
@@ -645,6 +623,30 @@ export class Distribution extends Resource implements IDistribution {
    */
   public grantCreateInvalidation(identity: iam.IGrantable): iam.Grant {
     return this.grant(identity, 'cloudfront:CreateInvalidation');
+  }
+
+  /**
+   * Associated WAF WebAcl id of Distribution.
+   */
+  public get webAclId(): string | undefined {
+    return this._webAclId;
+  }
+
+  /**
+   * Adds WAF security protection.
+   *
+   * @param props WAF WebAcl options
+   */
+  private addWafCoreProtection(props?: aws_wafv2.CfnWebACLProps) {
+    if (this._webAclId) {
+      throw new Error('This distribution already had WAF WebAcl attached');
+    }
+
+    const webAclName = `CreatedByCloudFront-${Names.uniqueId(this)}`;
+
+    const webAcl = new aws_wafv2.CfnWebACL(this, 'WebAcl', props ?? getDefaultWAFWebAclProps(webAclName));
+
+    this._webAclId = webAcl.attrArn;
   }
 
   private addOrigin(origin: IOrigin, isFailoverOrigin: boolean = false): string {

@@ -1204,15 +1204,6 @@ new cloudfront.Distribution(this, 'MyCfWebDistribution', {
 });
 ```
 
-Or use your own WAF security settings
-
-```ts
-declare const options: aws_wafv2.CfnWebACLProps;
-
-const dist = new cloudfront.Distribution(...);
-dist.addWafCoreProtection(options);
-```
-
 Note: cannot be used if webAclId already specified
 
 See:

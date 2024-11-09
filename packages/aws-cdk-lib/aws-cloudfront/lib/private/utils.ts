@@ -1,5 +1,5 @@
 import { IDistribution } from '..';
-import { aws_wafv2 } from '../../..';
+import * as aws_wafv2 from '../../../aws-wafv2';
 import { Stack } from '../../../core';
 
 /**
@@ -14,9 +14,10 @@ export function formatDistributionArn(dist: IDistribution) {
   });
 }
 
-
 /**
  * Populate recommended one-click security WAF WebACL setting for CloudFront
+ *
+ * TODO: how to keep this up-to-date
  */
 export function getDefaultWAFWebAclProps(webAclName: string): aws_wafv2.CfnWebACLProps {
   return {
@@ -32,59 +33,59 @@ export function getDefaultWAFWebAclProps(webAclName: string): aws_wafv2.CfnWebAC
     },
     rules: [
       {
-        name: "AWS-AWSManagedRulesAmazonIpReputationList",
+        name: 'AWS-AWSManagedRulesAmazonIpReputationList',
         priority: 0,
         statement: {
           managedRuleGroupStatement: {
-            vendorName: "AWS",
-            name: "AWSManagedRulesAmazonIpReputationList"
-          }
+            vendorName: 'AWS',
+            name: 'AWSManagedRulesAmazonIpReputationList',
+          },
         },
         overrideAction: {
-          none: {}
+          none: {},
         },
         visibilityConfig: {
           sampledRequestsEnabled: true,
           cloudWatchMetricsEnabled: true,
-          metricName: "AWS-AWSManagedRulesAmazonIpReputationList"
-        }
+          metricName: 'AWS-AWSManagedRulesAmazonIpReputationList',
+        },
       },
       {
-        name: "AWS-AWSManagedRulesCommonRuleSet",
+        name: 'AWS-AWSManagedRulesCommonRuleSet',
         priority: 1,
         statement: {
           managedRuleGroupStatement: {
-            vendorName: "AWS",
-            name: "AWSManagedRulesCommonRuleSet"
-          }
+            vendorName: 'AWS',
+            name: 'AWSManagedRulesCommonRuleSet',
+          },
         },
         overrideAction: {
-          none: {}
+          none: {},
         },
         visibilityConfig: {
           sampledRequestsEnabled: true,
           cloudWatchMetricsEnabled: true,
-          metricName: "AWS-AWSManagedRulesCommonRuleSet"
-        }
+          metricName: 'AWS-AWSManagedRulesCommonRuleSet',
+        },
       },
       {
-        name: "AWS-AWSManagedRulesKnownBadInputsRuleSet",
+        name: 'AWS-AWSManagedRulesKnownBadInputsRuleSet',
         priority: 2,
         statement: {
           managedRuleGroupStatement: {
-            vendorName: "AWS",
-            name: "AWSManagedRulesKnownBadInputsRuleSet"
-          }
+            vendorName: 'AWS',
+            name: 'AWSManagedRulesKnownBadInputsRuleSet',
+          },
         },
         overrideAction: {
-          none: {}
+          none: {},
         },
         visibilityConfig: {
           sampledRequestsEnabled: true,
           cloudWatchMetricsEnabled: true,
-          metricName: "AWS-AWSManagedRulesKnownBadInputsRuleSet"
-        }
-      }
+          metricName: 'AWS-AWSManagedRulesKnownBadInputsRuleSet',
+        },
+      },
     ],
   };
 }

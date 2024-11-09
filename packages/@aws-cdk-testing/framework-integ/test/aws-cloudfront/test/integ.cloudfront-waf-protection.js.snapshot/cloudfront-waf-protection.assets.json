@@ -1,0 +1,19 @@
+{
+  "version": "38.0.1",
+  "files": {
+    "c6dd77219d951631c5195199e057c98c41d11489d18d3d0ec3e9837f34292b88": {
+      "source": {
+        "path": "cloudfront-waf-protection.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "c6dd77219d951631c5195199e057c98c41d11489d18d3d0ec3e9837f34292b88.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
