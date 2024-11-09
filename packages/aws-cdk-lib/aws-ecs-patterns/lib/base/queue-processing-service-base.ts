@@ -6,8 +6,7 @@ import {
   ICluster, LogDriver, PropagatedTagSource, Secret,
 } from '../../../aws-ecs';
 import { IQueue, Queue } from '../../../aws-sqs';
-import { CfnOutput, Duration, FeatureFlags, Stack } from '../../../core';
-import * as cxapi from '../../../cx-api';
+import { CfnOutput, Duration, Stack } from '../../../core';
 
 /**
  * The properties for the base QueueProcessingEc2Service or QueueProcessingFargateService service.
@@ -54,15 +53,6 @@ export interface QueueProcessingServiceBaseProps {
    * @default - CMD value built into container image.
    */
   readonly command?: string[];
-
-  /**
-   * The desired number of instantiations of the task definition to keep running on the service.
-   *
-   * @default - The minScalingCapacity is 1 for all new services and uses the existing services desired count
-   * when updating an existing service.
-   * @deprecated - Use `minScalingCapacity` or a literal object instead.
-   */
-  readonly desiredTaskCount?: number;
 
   /**
    * Flag to indicate whether to enable logging.
@@ -287,12 +277,6 @@ export abstract class QueueProcessingServiceBase extends Construct {
   public readonly secrets?: { [key: string]: Secret };
 
   /**
-   * The minimum number of tasks to run.
-   * @deprecated - Use `minCapacity` instead.
-   */
-  public readonly desiredCount: number;
-
-  /**
    * The maximum number of instances for autoscaling to scale up to.
    */
   public readonly maxCapacity: number;
@@ -381,25 +365,8 @@ export abstract class QueueProcessingServiceBase extends Construct {
     this.disableCpuBasedScaling = props.disableCpuBasedScaling ?? false;
     this.cpuTargetUtilizationPercent = props.cpuTargetUtilizationPercent ?? 50;
 
-    this.desiredCount = props.desiredTaskCount ?? 1;
-
-    // Determine the desired task count (minimum) and maximum scaling capacity
-    if (!FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT)) {
-      this.minCapacity = props.minScalingCapacity ?? this.desiredCount;
-      this.maxCapacity = props.maxScalingCapacity || (2 * this.desiredCount);
-    } else {
-      if (props.desiredTaskCount != null) {
-        this.minCapacity = props.minScalingCapacity ?? this.desiredCount;
-        this.maxCapacity = props.maxScalingCapacity || (2 * this.desiredCount);
-      } else {
-        this.minCapacity = props.minScalingCapacity ?? 1;
-        this.maxCapacity = props.maxScalingCapacity || 2;
-      }
-    }
-
-    if (!this.desiredCount && !this.maxCapacity) {
-      throw new Error('maxScalingCapacity must be set and greater than 0 if desiredCount is 0');
-    }
+    this.minCapacity = props.minScalingCapacity ?? 1;
+    this.maxCapacity = props.maxScalingCapacity || 2;
 
     new CfnOutput(this, 'SQSQueue', { value: this.sqsQueue.queueName });
     new CfnOutput(this, 'SQSQueueArn', { value: this.sqsQueue.queueArn });

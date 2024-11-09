@@ -1,7 +1,5 @@
 import { Construct } from 'constructs';
 import { Ec2Service, Ec2TaskDefinition, PlacementConstraint, PlacementStrategy } from '../../../aws-ecs';
-import { FeatureFlags } from '../../../core';
-import * as cxapi from '../../../cx-api';
 import { QueueProcessingServiceBase, QueueProcessingServiceBaseProps } from '../base/queue-processing-service-base';
 
 /**
@@ -128,14 +126,10 @@ export class QueueProcessingEc2Service extends QueueProcessingServiceBase {
       logging: this.logDriver,
     });
 
-    // The desiredCount should be removed from the fargate service when the feature flag is removed.
-    const desiredCount = FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT) ? undefined : this.desiredCount;
-
     // Create an ECS service with the previously defined Task Definition and configure
     // autoscaling based on cpu utilization and number of messages visible in the SQS queue.
     this.service = new Ec2Service(this, 'QueueProcessingService', {
       cluster: this.cluster,
-      desiredCount: desiredCount,
       taskDefinition: this.taskDefinition,
       serviceName: props.serviceName,
       minHealthyPercent: props.minHealthyPercent,
