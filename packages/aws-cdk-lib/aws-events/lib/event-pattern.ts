@@ -218,7 +218,10 @@ export class Match implements IResolvable {
       throw new Error('anythingBut matchers must be non-empty lists');
     }
 
-    return this.fromObjects([{ 'anything-but': { [filterKey]: values.length === 1 ? values[0] : values } }]);
+    // When there is a single value return it, otherwise return the array
+    const filterValue = values.length === 1 ? values[0] : values;
+
+    return this.fromObjects([{ 'anything-but': { [filterKey]: filterValue } }]);
   }
 
   private static numeric(operator: ComparisonOperator, value: number): string[] {
