@@ -144,4 +144,14 @@ new glue.Job(stack, 'EtlJobWithFLEX', {
   executionClass: glue.ExecutionClass.FLEX,
 });
 
+new glue.Job(stack, 'EtlJobWithRunQueuing', {
+  jobName: 'EtlJobWithRunQueuing',
+  executable: glue.JobExecutable.pythonEtl({
+    glueVersion: glue.GlueVersion.V4_0,
+    pythonVersion: glue.PythonVersion.THREE,
+    script,
+  }),
+  jobRunQueuingEnabled: true,
+});
+
 app.synth();

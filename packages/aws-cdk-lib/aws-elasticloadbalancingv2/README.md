@@ -402,6 +402,9 @@ const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
 
   // Indicates how traffic is distributed among the load balancer Availability Zones.
   clientRoutingPolicy: elbv2.ClientRoutingPolicy.AVAILABILITY_ZONE_AFFINITY,
+
+  // Indicates whether zonal shift is enabled.
+  zonalShift: true,
 });
 ```
 

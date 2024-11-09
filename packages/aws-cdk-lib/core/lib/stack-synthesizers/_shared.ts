@@ -26,15 +26,22 @@ export function addStackArtifactToAssembly(
   // nested stack tags are applied at the AWS::CloudFormation::Stack resource
   // level and are not needed in the cloud assembly.
   if (Object.entries(stackTags).length > 0) {
-    for (const [k, v] of Object.entries(stackTags)) {
-      if (Token.isUnresolved(k) || Token.isUnresolved(v)) {
-        throw new Error(`Stack tags may not contain deploy-time values (tag: ${k}=${v}). Apply tags containing deploy-time values to resources only, avoid tagging stacks.`);
-      }
+    const resolvedTags = Object.entries(stackTags).filter(([k, v]) => !(Token.isUnresolved(k) || Token.isUnresolved(v)));
+    const unresolvedTags = Object.entries(stackTags).filter(([k, v]) => Token.isUnresolved(k) || Token.isUnresolved(v));
+
+    if (unresolvedTags.length > 0) {
+      const rendered = unresolvedTags.map(([k, v]) => `${Token.isUnresolved(k) ? '<TOKEN>': k}=${Token.isUnresolved(v) ? '<TOKEN>' : v}`).join(', ');
+      stack.node.addMetadata(
+        cxschema.ArtifactMetadataEntryType.WARN,
+        `Ignoring stack tags that contain deploy-time values (found: ${rendered}). Apply tags containing deploy-time values to resources only, avoid tagging stacks (for example using { excludeResourceTypes: ['aws:cdk:stack'] }).`,
+      );
     }
 
-    stack.node.addMetadata(
-      cxschema.ArtifactMetadataEntryType.STACK_TAGS,
-      Object.entries(stackTags).map(([key, value]) => ({ Key: key, Value: value })));
+    if (resolvedTags.length > 0) {
+      stack.node.addMetadata(
+        cxschema.ArtifactMetadataEntryType.STACK_TAGS,
+        resolvedTags.map(([key, value]) => ({ Key: key, Value: value })));
+    }
   }
 
   const deps = [
