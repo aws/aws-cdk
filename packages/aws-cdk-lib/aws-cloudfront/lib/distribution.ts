@@ -329,7 +329,7 @@ export class Distribution extends Resource implements IDistribution {
     super(scope, id);
 
     if (props.webAclId && props.enableWafCoreProtections) {
-      throw new Error('Cannot specify both \'webAclId\' and \'enableWafCoreProtections\'');
+      throw new Error('Cannot specify both webAclId and enableWafCoreProtections');
     }
 
     if (props.certificate) {

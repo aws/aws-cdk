@@ -1334,3 +1334,96 @@ describe('Distribution metrics tests', () => {
     }).toThrow(new RegExp(`${metric.errorMetricName} metric is only available if 'publishAdditionalMetrics' is set 'true'`));
   });
 });
+
+describe('WAF protection', () => {
+  test('default one-click security rendered correctly', () => {
+    const origin = defaultOrigin();
+    const nameMatcher = Match.stringLikeRegexp('CreatedByCloudFront-');
+
+    new Distribution(stack, 'MyDist', {
+      defaultBehavior: { origin },
+      enableWafCoreProtections: true,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::WAFv2::WebACL', Match.objectLike({
+      Name: nameMatcher,
+      DefaultAction: {
+        Allow: {},
+      },
+      Scope: 'CLOUDFRONT',
+      VisibilityConfig: {
+        CloudWatchMetricsEnabled: true,
+        MetricName: nameMatcher,
+        SampledRequestsEnabled: true,
+      },
+      Rules: [
+        {
+          Name: 'AWS-AWSManagedRulesAmazonIpReputationList',
+          Priority: 0,
+          Statement: {
+            ManagedRuleGroupStatement: {
+              VendorName: 'AWS',
+              Name: 'AWSManagedRulesAmazonIpReputationList',
+            },
+          },
+          OverrideAction: {
+            None: {},
+          },
+          VisibilityConfig: {
+            SampledRequestsEnabled: true,
+            CloudWatchMetricsEnabled: true,
+            MetricName: 'AWS-AWSManagedRulesAmazonIpReputationList',
+          },
+        },
+        {
+          Name: 'AWS-AWSManagedRulesCommonRuleSet',
+          Priority: 1,
+          Statement: {
+            ManagedRuleGroupStatement: {
+              VendorName: 'AWS',
+              Name: 'AWSManagedRulesCommonRuleSet',
+            },
+          },
+          OverrideAction: {
+            None: {},
+          },
+          VisibilityConfig: {
+            SampledRequestsEnabled: true,
+            CloudWatchMetricsEnabled: true,
+            MetricName: 'AWS-AWSManagedRulesCommonRuleSet',
+          },
+        },
+        {
+          Name: 'AWS-AWSManagedRulesKnownBadInputsRuleSet',
+          Priority: 2,
+          Statement: {
+            ManagedRuleGroupStatement: {
+              VendorName: 'AWS',
+              Name: 'AWSManagedRulesKnownBadInputsRuleSet',
+            },
+          },
+          OverrideAction: {
+            None: {},
+          },
+          VisibilityConfig: {
+            SampledRequestsEnabled: true,
+            CloudWatchMetricsEnabled: true,
+            MetricName: 'AWS-AWSManagedRulesKnownBadInputsRuleSet',
+          },
+        },
+      ],
+    }));
+  });
+
+  test('throws error if used with webAclId', () => {
+    const origin = defaultOrigin();
+
+    expect(() => {
+      new Distribution(stack, 'MyDist', {
+        defaultBehavior: { origin },
+        enableWafCoreProtections: true,
+        webAclId: 'dummy',
+      });
+    }).toThrow(/Cannot specify both webAclId and enableWafCoreProtections/);
+  });
+});
