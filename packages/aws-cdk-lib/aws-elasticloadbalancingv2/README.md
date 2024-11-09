@@ -558,7 +558,7 @@ const tg = new elbv2.ApplicationTargetGroup(this, 'TargetGroup', {
 
 You can set cross-zone load balancing setting at the target group level by setting `crossZone` property.
 
-If not specified, use load balancer configuration.
+If not specified, it will use the load balancer's configuration.
 
 For more infomation, see [How Elastic Load Balancing works](https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/how-elastic-load-balancing-works.html).
 
