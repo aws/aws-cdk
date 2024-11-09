@@ -105,7 +105,9 @@
       "notPrefixedBy": [
        {
         "anything-but": {
-         "prefix": "sensitive-"
+         "prefix": [
+          "sensitive-"
+         ]
         }
        }
       ],
@@ -149,45 +151,83 @@
     "State": "ENABLED"
    }
   },
-  "MyWilcardRuleF89CAFCF": {
+  "MyWildcardRule477FB0F9": {
    "Type": "AWS::Events::Rule",
    "Properties": {
     "EventPattern": {
      "account": [
-      "account1",
-      "account2"
-     ],
-     "detail": {
-      "wildcard": [
-       {
-        "wildcard": "*.txt"
+      {
+       "wildcard": "account*"
+      }
+     ]
+    },
+    "State": "ENABLED"
+   }
+  },
+  "MyAnythingButPrefixRule756FC7C6": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "EventPattern": {
+     "account": [
+      {
+       "anything-but": {
+        "prefix": [
+         "prefix-"
+        ]
        }
-      ]
-     },
-     "detail-type": [
-      "detailType1"
-     ],
-     "id": [
-      "id1",
-      "id2"
-     ],
-     "region": [
-      "region1",
-      "region2",
-      "region3"
-     ],
-     "resources": [
-      "r1"
-     ],
-     "source": [
-      "src1",
-      "src2"
-     ],
-     "time": [
-      "t1"
-     ],
-     "version": [
-      "0"
+      }
+     ]
+    },
+    "State": "ENABLED"
+   }
+  },
+  "MyAnythingButSuffixRuleB1E496DF": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "EventPattern": {
+     "account": [
+      {
+       "anything-but": {
+        "suffix": [
+         "-suffix"
+        ]
+       }
+      }
+     ]
+    },
+    "State": "ENABLED"
+   }
+  },
+  "MyAnythingButWildcardRuleEED7F44B": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "EventPattern": {
+     "account": [
+      {
+       "anything-but": {
+        "wildcard": [
+         "account*"
+        ]
+       }
+      }
+     ]
+    },
+    "State": "ENABLED"
+   }
+  },
+  "MyAnythingButEqualsIgnoreCaseEBE7F91F": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "EventPattern": {
+     "account": [
+      {
+       "anything-but": {
+        "equals-ignore-case": [
+         "account1",
+         "account2"
+        ]
+       }
+      }
      ]
     },
     "State": "ENABLED"

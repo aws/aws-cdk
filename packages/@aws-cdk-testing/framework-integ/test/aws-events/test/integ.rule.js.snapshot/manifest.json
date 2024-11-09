@@ -19,7 +19,7 @@
         "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/48930e0b4798a89ba9deb6969b39a19e74642b31c089a4f6fe95dbdff1077c2f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4d02feea7194b2b0cb0ce0c947b90f63a75ed25725de6ea5ac1d25d0e73d38ff.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -41,10 +41,34 @@
             "data": "MyRuleA44AB831"
           }
         ],
-        "/RuleStack/MyWilcardRule/Resource": [
+        "/RuleStack/MyWildcardRule/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyWilcardRuleF89CAFCF"
+            "data": "MyWildcardRule477FB0F9"
+          }
+        ],
+        "/RuleStack/MyAnythingButPrefixRule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyAnythingButPrefixRule756FC7C6"
+          }
+        ],
+        "/RuleStack/MyAnythingButSuffixRule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyAnythingButSuffixRuleB1E496DF"
+          }
+        ],
+        "/RuleStack/MyAnythingButWildcardRule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyAnythingButWildcardRuleEED7F44B"
+          }
+        ],
+        "/RuleStack/MyAnythingButEqualsIgnoreCase/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyAnythingButEqualsIgnoreCaseEBE7F91F"
           }
         ],
         "/RuleStack/BootstrapVersion": [
@@ -57,6 +81,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "MyWilcardRuleF89CAFCF": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyWilcardRuleF89CAFCF",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

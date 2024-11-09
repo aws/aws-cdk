@@ -43,17 +43,31 @@ new Rule(stack, 'MyRule', {
 
 new Rule(stack, 'MyWildcardRule', {
   eventPattern: {
-    account: ['account1', 'account2'],
-    detail: {
-      wildcard: Match.wildcard('*.txt'),
-    },
-    detailType: ['detailType1'],
-    id: ['id1', 'id2'],
-    region: ['region1', 'region2', 'region3'],
-    resources: ['r1'],
-    source: ['src1', 'src2'],
-    time: ['t1'],
-    version: ['0'],
+    account: Match.wildcard('account*'),
+  },
+});
+
+new Rule(stack, 'MyAnythingButPrefixRule', {
+  eventPattern: {
+    account: Match.anythingButPrefix('prefix-'),
+  },
+});
+
+new Rule(stack, 'MyAnythingButSuffixRule', {
+  eventPattern: {
+    account: Match.anythingButSuffix('-suffix'),
+  },
+});
+
+new Rule(stack, 'MyAnythingButWildcardRule', {
+  eventPattern: {
+    account: Match.anythingButWildcard('account*'),
+  },
+});
+
+new Rule(stack, 'MyAnythingButEqualsIgnoreCase', {
+  eventPattern: {
+    account: Match.anythingButEqualsIgnoreCase('account1', 'account2'),
   },
 });
 

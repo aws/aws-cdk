@@ -116,8 +116,45 @@ export class Match implements IResolvable {
   /**
    * Matches any string that doesn't start with the given prefix.
    */
-  public static anythingButPrefix(prefix: string): string[] {
-    return this.fromObjects([{ 'anything-but': { prefix: prefix } }]);
+  public static anythingButPrefix(...values: string[]): string[] {
+    if (values.length === 0) {
+      throw new Error('anythingBut matchers must be non-empty lists');
+    }
+
+    return this.fromObjects([{ 'anything-but': { prefix: values } }]);
+  }
+
+  /**
+   * Matches any string that doesn't end with the given suffix.
+   */
+  public static anythingButSuffix(...values: string[]): string[] {
+    if (values.length === 0) {
+      throw new Error('anythingBut matchers must be non-empty lists');
+    }
+
+    return this.fromObjects([{ 'anything-but': { suffix: values } }]);
+  }
+
+  /**
+   * Matches any string that doesn't match with the given wildcard pattern.
+   */
+  public static anythingButWildcard(...values: string[]): string[] {
+    if (values.length === 0) {
+      throw new Error('anythingBut matchers must be non-empty lists');
+    }
+
+    return this.fromObjects([{ 'anything-but': { wildcard: values } }]);
+  }
+
+  /**
+   * Matches any string that doesn't match with the given value regardless of character casing.
+   */
+  public static anythingButEqualsIgnoreCase(...values: string[]): string[] {
+    if (values.length === 0) {
+      throw new Error('anythingBut matchers must be non-empty lists');
+    }
+
+    return this.fromObjects([{ 'anything-but': { 'equals-ignore-case': values } }]);
   }
 
   /**
