@@ -1,5 +1,5 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { Template } from '../../../assertions';
+import { Match, Template } from '../../../assertions';
 import * as ec2 from '../../../aws-ec2';
 import * as cdk from '../../../core';
 import * as elbv2 from '../../lib';
@@ -837,15 +837,10 @@ describe('tests', () => {
       const vpc = new ec2.Vpc(stack, 'VPC', {});
 
       // WHEN
-      new elbv2.ApplicationTargetGroup(stack, 'LB', { vpc });
+      new elbv2.ApplicationTargetGroup(stack, 'LB', { vpc, targetType: elbv2.TargetType.LAMBDA });
 
       Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
-        TargetGroupAttributes: [
-          {
-            Key: 'stickiness.enabled',
-            Value: 'false',
-          },
-        ],
+        TargetGroupAttributes: Match.absent(),
       });
     });
   });
