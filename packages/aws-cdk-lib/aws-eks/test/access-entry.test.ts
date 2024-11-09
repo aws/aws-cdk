@@ -137,7 +137,7 @@ describe('AccessEntry', () => {
       ClusterName: { Ref: 'Cluster9EE0221C' },
       PrincipalArn: mockProps.principal,
       AccessPolicies: [
-        { PolicyArn: mockProps.accessPolicies[0].policy },
+        { PolicyArn: mockProps.accessPolicies![0].policy },
         {
           AccessScope: {
             Type: 'cluster',
