@@ -31,6 +31,7 @@ export class Schedule {
       throw new Error('Duration cannot be less than 1 minute');
     }
 
+    // maybeRate method returns the rate if the rate is whole number
     const maybeRate = (value: number, unit: string) => (value > 0 && Number.isInteger(value)) ? `${value} ${unit}` : undefined;
 
     let rate = maybeRate(duration.toDays({ integral: false }), 'days');
