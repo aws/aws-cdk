@@ -224,6 +224,36 @@
     },
     "State": "ENABLED"
    }
+  },
+  "MyPrefixEqualsIgnoreCaseC9726B40": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "EventPattern": {
+     "account": [
+      {
+       "prefix": {
+        "equals-ignore-case": "prefix-"
+       }
+      }
+     ]
+    },
+    "State": "ENABLED"
+   }
+  },
+  "MySuffixEqualsIgnoreCaseBE2DDE03": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "EventPattern": {
+     "account": [
+      {
+       "suffix": {
+        "equals-ignore-case": "-suffix"
+       }
+      }
+     ]
+    },
+    "State": "ENABLED"
+   }
   }
  },
  "Parameters": {

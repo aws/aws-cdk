@@ -71,6 +71,18 @@ new Rule(stack, 'MyAnythingButEqualsIgnoreCase', {
   },
 });
 
+new Rule(stack, 'MyPrefixEqualsIgnoreCase', {
+  eventPattern: {
+    account: Match.prefixEqualsIgnoreCase('prefix-'),
+  },
+});
+
+new Rule(stack, 'MySuffixEqualsIgnoreCase', {
+  eventPattern: {
+    account: Match.suffixEqualsIgnoreCase('-suffix'),
+  },
+});
+
 new IntegTest(app, 'IntegTest-BatchDefaultEnvVarsStack', {
   testCases: [stack],
 });

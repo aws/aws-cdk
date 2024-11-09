@@ -19,7 +19,7 @@
         "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d45c24d09ea606a0afb79a53e2106a076bb6a634c118a7b3b12f9993994a38ba.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/48862253eb1fed012c1b274795624b9ddc15444520044ea09a9ecd3ed2f4c300.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -69,6 +69,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyAnythingButEqualsIgnoreCaseEBE7F91F"
+          }
+        ],
+        "/RuleStack/MyPrefixEqualsIgnoreCase/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPrefixEqualsIgnoreCaseC9726B40"
+          }
+        ],
+        "/RuleStack/MySuffixEqualsIgnoreCase/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MySuffixEqualsIgnoreCaseBE2DDE03"
           }
         ],
         "/RuleStack/BootstrapVersion": [
