@@ -21,42 +21,50 @@ describe(Match, () => {
 
   test('anythingButPrefix', () => {
     expect(stack.resolve(Match.anythingButPrefix('foo'))).toEqual([
-      { 'anything-but': { prefix: ['foo'] } },
+      { 'anything-but': { prefix: 'foo' } },
     ]);
 
     expect(stack.resolve(Match.anythingButPrefix('foo', 'bar'))).toEqual([
       { 'anything-but': { prefix: ['foo', 'bar'] } },
     ]);
+
+    expect(() => stack.resolve(Match.anythingButPrefix())).toThrowError(/must be non-empty lists/);
   });
 
   test('anythingButSuffix', () => {
     expect(stack.resolve(Match.anythingButSuffix('foo'))).toEqual([
-      { 'anything-but': { suffix: ['foo'] } },
+      { 'anything-but': { suffix: 'foo' } },
     ]);
 
     expect(stack.resolve(Match.anythingButSuffix('foo', 'bar'))).toEqual([
       { 'anything-but': { suffix: ['foo', 'bar'] } },
     ]);
+
+    expect(() => stack.resolve(Match.anythingButPrefix())).toThrowError(/must be non-empty lists/);
   });
 
   test('anythingButWildcard', () => {
     expect(stack.resolve(Match.anythingButWildcard('*.txt'))).toEqual([
-      { 'anything-but': { wildcard: ['*.txt'] } },
+      { 'anything-but': { wildcard: '*.txt' } },
     ]);
 
     expect(stack.resolve(Match.anythingButWildcard('*.txt', '*.json'))).toEqual([
       { 'anything-but': { wildcard: ['*.txt', '*.json'] } },
     ]);
+
+    expect(() => stack.resolve(Match.anythingButPrefix())).toThrowError(/must be non-empty lists/);
   });
 
   test('anythingButEqualsIgnoreCase', () => {
     expect(stack.resolve(Match.anythingButEqualsIgnoreCase('foo'))).toEqual([
-      { 'anything-but': { 'equals-ignore-case': ['foo'] } },
+      { 'anything-but': { 'equals-ignore-case': 'foo' } },
     ]);
 
     expect(stack.resolve(Match.anythingButEqualsIgnoreCase('foo', 'bar'))).toEqual([
       { 'anything-but': { 'equals-ignore-case': ['foo', 'bar'] } },
     ]);
+
+    expect(() => stack.resolve(Match.anythingButPrefix())).toThrowError(/must be non-empty lists/);
   });
 
   test('numeric', () => {

@@ -117,44 +117,28 @@ export class Match implements IResolvable {
    * Matches any string that doesn't start with the given prefix.
    */
   public static anythingButPrefix(...values: string[]): string[] {
-    if (values.length === 0) {
-      throw new Error('anythingBut matchers must be non-empty lists');
-    }
-
-    return this.fromObjects([{ 'anything-but': { prefix: values } }]);
+    return this.anythingButConjunction('prefix', values);
   }
 
   /**
    * Matches any string that doesn't end with the given suffix.
    */
   public static anythingButSuffix(...values: string[]): string[] {
-    if (values.length === 0) {
-      throw new Error('anythingBut matchers must be non-empty lists');
-    }
-
-    return this.fromObjects([{ 'anything-but': { suffix: values } }]);
+    return this.anythingButConjunction('suffix', values);
   }
 
   /**
    * Matches any string that doesn't match with the given wildcard pattern.
    */
   public static anythingButWildcard(...values: string[]): string[] {
-    if (values.length === 0) {
-      throw new Error('anythingBut matchers must be non-empty lists');
-    }
-
-    return this.fromObjects([{ 'anything-but': { wildcard: values } }]);
+    return this.anythingButConjunction('wildcard', values);
   }
 
   /**
    * Matches any string that doesn't match with the given value regardless of character casing.
    */
   public static anythingButEqualsIgnoreCase(...values: string[]): string[] {
-    if (values.length === 0) {
-      throw new Error('anythingBut matchers must be non-empty lists');
-    }
-
-    return this.fromObjects([{ 'anything-but': { 'equals-ignore-case': values } }]);
+    return this.anythingButConjunction('equals-ignore-case', values);
   }
 
   /**
@@ -227,6 +211,14 @@ export class Match implements IResolvable {
       throw new Error('A list of matchers must contain at least one element.');
     }
     return this.fromObjects(matchers);
+  }
+
+  private static anythingButConjunction(filterKey: string, values: string[]): string[] {
+    if (values.length === 0) {
+      throw new Error('anythingBut matchers must be non-empty lists');
+    }
+
+    return this.fromObjects([{ 'anything-but': { [filterKey]: values.length === 1 ? values[0] : values } }]);
   }
 
   private static numeric(operator: ComparisonOperator, value: number): string[] {

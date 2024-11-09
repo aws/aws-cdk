@@ -198,7 +198,7 @@ describe('rule', () => {
                 },
                 state: [{ 'anything-but': ['initializing'] }],
                 limit: [{ 'anything-but': [100, 200, 300] }],
-                notPrefixedBy: [{ 'anything-but': { 'prefix': ['sensitive-'] } }],
+                notPrefixedBy: [{ 'anything-but': { 'prefix': 'sensitive-' } }],
               },
               'detail-type': ['detailType1'],
               id: ['id1', 'id2'],
