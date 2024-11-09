@@ -34,7 +34,7 @@ const describeDefault = integTest.assertions.awsApiCall('EC2', 'describeInstance
 // validate
 describeDefault.assertAtPath(
   'Reservations.0.Instances.0.IamInstanceProfile.Arn',
-  ExpectedResult.stringLikeRegexp(instanceProfile.instanceProfileArn)
+  ExpectedResult.stringLikeRegexp(instanceProfile.instanceProfileArn),
 );
 
 app.synth();
