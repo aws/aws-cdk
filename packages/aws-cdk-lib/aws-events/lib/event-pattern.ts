@@ -66,6 +66,20 @@ export class Match implements IResolvable {
   }
 
   /**
+   * Matches strings with the given prefix in the JSON of the event regardless of the casing
+   */
+  public static prefixEqualsIgnoreCase(value: string): string[] {
+    return this.fromObjects([{ prefix: { 'equals-ignore-case': value } }]);
+  }
+
+  /**
+   * Matches strings with the given suffix in the JSON of the event regardless of the casing
+   */
+  public static suffixEqualsIgnoreCase(value: string): string[] {
+    return this.fromObjects([{ suffix: { 'equals-ignore-case': value } }]);
+  }
+
+  /**
    * Matches strings with the given wildcard pattern in the JSON of the event
    */
   public static wildcard(value: string): string[] {

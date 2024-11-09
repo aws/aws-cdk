@@ -119,6 +119,18 @@ describe(Match, () => {
     ]);
   });
 
+  test('prefixEqualsIgnoreCase', () => {
+    expect(stack.resolve(Match.prefixEqualsIgnoreCase('foo'))).toEqual([
+      { prefix: { 'equals-ignore-case': 'foo' } },
+    ]);
+  });
+
+  test('suffixEqualsIgnoreCase', () => {
+    expect(stack.resolve(Match.suffixEqualsIgnoreCase('foo'))).toEqual([
+      { suffix: { 'equals-ignore-case': 'foo' } },
+    ]);
+  });
+
   test('wildcard', () => {
     expect(stack.resolve(Match.wildcard('*.json'))).toEqual([
       { wildcard: '*.json' },
