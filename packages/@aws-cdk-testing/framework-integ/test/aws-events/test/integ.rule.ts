@@ -30,6 +30,21 @@ new Rule(stack, 'MyRule', {
       notPrefixedBy: Match.anythingButPrefix('sensitive-'),
       suffix: Match.suffix('.com'),
       equalsIgnoreCase: Match.equalsIgnoreCase('ignore case'),
+    },
+    detailType: ['detailType1'],
+    id: ['id1', 'id2'],
+    region: ['region1', 'region2', 'region3'],
+    resources: ['r1'],
+    source: ['src1', 'src2'],
+    time: ['t1'],
+    version: ['0'],
+  },
+});
+
+new Rule(stack, 'MyWildcardRule', {
+  eventPattern: {
+    account: ['account1', 'account2'],
+    detail: {
       wildcard: Match.wildcard('*.txt'),
     },
     detailType: ['detailType1'],

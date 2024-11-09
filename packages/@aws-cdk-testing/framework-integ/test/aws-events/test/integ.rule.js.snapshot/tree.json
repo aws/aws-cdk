@@ -175,6 +175,68 @@
               "version": "0.0.0"
             }
           },
+          "MyWilcardRule": {
+            "id": "MyWilcardRule",
+            "path": "RuleStack/MyWilcardRule",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "RuleStack/MyWilcardRule/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Events::Rule",
+                  "aws:cdk:cloudformation:props": {
+                    "eventPattern": {
+                      "account": [
+                        "account1",
+                        "account2"
+                      ],
+                      "detail": {
+                        "wildcard": [
+                          {
+                            "wildcard": "*.txt"
+                          }
+                        ]
+                      },
+                      "detail-type": [
+                        "detailType1"
+                      ],
+                      "id": [
+                        "id1",
+                        "id2"
+                      ],
+                      "region": [
+                        "region1",
+                        "region2",
+                        "region3"
+                      ],
+                      "resources": [
+                        "r1"
+                      ],
+                      "source": [
+                        "src1",
+                        "src2"
+                      ],
+                      "time": [
+                        "t1"
+                      ],
+                      "version": [
+                        "0"
+                      ]
+                    },
+                    "state": "ENABLED"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_events.CfnRule",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_events.Rule",
+              "version": "0.0.0"
+            }
+          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "RuleStack/BootstrapVersion",
