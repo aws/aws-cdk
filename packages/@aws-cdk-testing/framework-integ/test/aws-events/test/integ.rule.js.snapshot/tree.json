@@ -120,9 +120,7 @@
                         "notPrefixedBy": [
                           {
                             "anything-but": {
-                              "prefix": [
-                                "sensitive-"
-                              ]
+                              "prefix": "sensitive-"
                             }
                           }
                         ],
@@ -222,9 +220,7 @@
                       "account": [
                         {
                           "anything-but": {
-                            "prefix": [
-                              "prefix-"
-                            ]
+                            "prefix": "prefix-"
                           }
                         }
                       ]
@@ -257,9 +253,7 @@
                       "account": [
                         {
                           "anything-but": {
-                            "suffix": [
-                              "-suffix"
-                            ]
+                            "suffix": "-suffix"
                           }
                         }
                       ]
@@ -292,9 +286,7 @@
                       "account": [
                         {
                           "anything-but": {
-                            "wildcard": [
-                              "account*"
-                            ]
+                            "wildcard": "account*"
                           }
                         }
                       ]
