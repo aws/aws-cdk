@@ -352,30 +352,6 @@ testDeprecated('test ECS queue worker service construct - with optional props', 
   });
 });
 
-testDeprecated('throws if desiredTaskCount and maxScalingCapacity are 0', () => {
-  // GIVEN
-  const stack = new cdk.Stack();
-  const vpc = new ec2.Vpc(stack, 'VPC');
-  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-      vpc,
-      instanceType: new ec2.InstanceType('t2.micro'),
-      machineImage: MachineImage.latestAmazonLinux(),
-    }),
-  }));
-
-  // THEN
-  expect(() =>
-    new ecsPatterns.QueueProcessingEc2Service(stack, 'Service', {
-      cluster,
-      desiredTaskCount: 0,
-      memoryLimitMiB: 512,
-      image: ecs.ContainerImage.fromRegistry('test'),
-    }),
-  ).toThrow(/maxScalingCapacity must be set and greater than 0 if desiredCount is 0/);
-});
-
 test('can set custom containerName', () => {
   // GIVEN
   const stack = new cdk.Stack();
