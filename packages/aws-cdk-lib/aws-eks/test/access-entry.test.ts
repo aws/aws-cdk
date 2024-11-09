@@ -37,7 +37,7 @@ describe('AccessEntry', () => {
     };
   });
 
-  test('creates a new AccessEntry', () => {
+  test('creates a new AccessEntry with accessPolicies', () => {
     // WHEN
     new AccessEntry(stack, 'AccessEntry', {
       cluster,
@@ -58,6 +58,48 @@ describe('AccessEntry', () => {
           PolicyArn: 'mock-policy-arn',
         },
       ],
+    });
+  });
+
+  test('creates a new AccessEntry with kubernetesGroups', () => {
+    // WHEN
+    new AccessEntry(stack, 'AccessEntry', {
+      cluster,
+      kubernetesGroups: ['my-kubernetes-group'],
+      accessPolicies: mockAccessPolicies,
+      principal: 'mock-principal-arn',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::AccessEntry', {
+      ClusterName: { Ref: 'Cluster9EE0221C' },
+      PrincipalArn: 'mock-principal-arn',
+      AccessPolicies: [
+        {
+          AccessScope: {
+            Namespaces: ['default'],
+            Type: 'namespace',
+          },
+          PolicyArn: 'mock-policy-arn',
+        },
+      ],
+      KubernetesGroups: ['my-kubernetes-group'],
+    });
+  });
+
+  test('creates a new AccessEntry with accessPolicies and kubernetesGroups', () => {
+    // WHEN
+    new AccessEntry(stack, 'AccessEntry', {
+      cluster,
+      kubernetesGroups: ['my-kubernetes-group'],
+      principal: 'mock-principal-arn',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::AccessEntry', {
+      ClusterName: { Ref: 'Cluster9EE0221C' },
+      PrincipalArn: 'mock-principal-arn',
+      KubernetesGroups: ['my-kubernetes-group'],
     });
   });
 

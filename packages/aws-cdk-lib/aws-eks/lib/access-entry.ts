@@ -281,11 +281,16 @@ export interface AccessEntryProps {
   /**
    * The access policies that define the permissions and scope for the access entry.
    */
-  readonly accessPolicies: IAccessPolicy[];
+  readonly accessPolicies?: IAccessPolicy[];
   /**
    * The Amazon Resource Name (ARN) of the principal (user or role) to associate the access entry with.
    */
   readonly principal: string;
+  /**
+   * The kubernetes groups you want to associate with this access policy.
+   * Those groups can be used as subjects in (Cluster)RoleBindings.
+   */
+  readonly kubernetesGroups?: string[];
 }
 
 /**
@@ -323,28 +328,36 @@ export class AccessEntry extends Resource implements IAccessEntry {
   private cluster: ICluster;
   private principal: string;
   private accessPolicies: IAccessPolicy[];
+  private kubernetesGroups?: string[];
 
   constructor(scope: Construct, id: string, props: AccessEntryProps ) {
     super(scope, id);
 
     this.cluster = props.cluster;
     this.principal = props.principal;
-    this.accessPolicies = props.accessPolicies;
-
-    const resource = new CfnAccessEntry(this, 'Resource', {
-      clusterName: this.cluster.clusterName,
-      principalArn: this.principal,
-      type: props.accessEntryType,
-      accessPolicies: Lazy.any({
-        produce: () => this.accessPolicies.map(p => ({
+    this.accessPolicies = props.accessPolicies ?? [];
+    this.kubernetesGroups = props.kubernetesGroups;
+    const accessPolicies = Lazy.any({
+      produce: () => {
+        if (this.accessPolicies.length === 0) {
+          return undefined;
+        }
+        return this.accessPolicies!.map(p => ({
           accessScope: {
             type: p.accessScope.type,
             namespaces: p.accessScope.namespaces,
           },
           policyArn: p.policy,
-        })),
-      }),
+        }));
+      },
+    });
 
+    const resource = new CfnAccessEntry(this, 'Resource', {
+      clusterName: this.cluster.clusterName,
+      principalArn: this.principal,
+      type: props.accessEntryType,
+      accessPolicies,
+      kubernetesGroups: this.kubernetesGroups,
     });
     this.accessEntryName = this.getResourceNameAttribute(resource.ref);
     this.accessEntryArn = this.getResourceArnAttribute(resource.attrAccessEntryArn, {
