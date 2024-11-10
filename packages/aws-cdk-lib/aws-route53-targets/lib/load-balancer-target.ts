@@ -22,6 +22,7 @@ export class LoadBalancerTarget implements route53.IAliasRecordTarget {
 export interface LoadBalancerTargetProps {
   /**
    * Evaluate target health
+   *
    * @default - no health check configuration
    */
   readonly evaluateTargetHealth?: boolean;
