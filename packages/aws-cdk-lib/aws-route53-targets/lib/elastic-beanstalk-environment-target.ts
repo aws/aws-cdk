@@ -44,6 +44,7 @@ export class ElasticBeanstalkEnvironmentEndpointTarget implements route53.IAlias
 export interface ElasticBeanstalkEnvironmentEndpointTargetProps {
   /**
    * Evaluate target health
+   *
    * @default - false
    */
   readonly evaluateTargetHealth?: boolean;
