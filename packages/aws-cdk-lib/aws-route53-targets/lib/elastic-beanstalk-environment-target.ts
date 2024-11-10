@@ -42,7 +42,7 @@ export interface ElasticBeanstalkEnvironmentEndpointTargetProps {
   /**
    * Evaluate target health
    *
-   * @default - false
+   * @default - no health check configuration
    */
   readonly evaluateTargetHealth?: boolean;
 }
