@@ -10,7 +10,7 @@ import { RegionInfo } from '../../region-info';
  * Only supports Elastic Beanstalk environments created after 2016 that have a regional endpoint.
  */
 export class ElasticBeanstalkEnvironmentEndpointTarget implements route53.IAliasRecordTarget {
-  constructor( private readonly environmentEndpoint: string, private readonly props: ElasticBeanstalkEnvironmentEndpointTargetProps) {}
+  constructor( private readonly environmentEndpoint: string, private readonly props?: ElasticBeanstalkEnvironmentEndpointTargetProps) {}
 
   public bind(_record: route53.IRecordSet, _zone?: route53.IHostedZone): route53.AliasRecordTargetConfig {
     if (cdk.Token.isUnresolved(this.environmentEndpoint)) {
@@ -30,7 +30,7 @@ export class ElasticBeanstalkEnvironmentEndpointTarget implements route53.IAlias
     return {
       hostedZoneId,
       dnsName,
-      evaluateTargetHealth: this.props.evaluateTargetHealth,
+      evaluateTargetHealth: this.props?.evaluateTargetHealth,
     };
   }
 }
