@@ -4,17 +4,17 @@
     "id": "App",
     "path": "",
     "children": {
-      "kinesis-resource-policy": {
-        "id": "kinesis-resource-policy",
-        "path": "kinesis-resource-policy",
+      "kinesis-stream-consumer": {
+        "id": "kinesis-stream-consumer",
+        "path": "kinesis-stream-consumer",
         "children": {
-          "MyStream": {
-            "id": "MyStream",
-            "path": "kinesis-resource-policy/MyStream",
+          "Stream": {
+            "id": "Stream",
+            "path": "kinesis-stream-consumer/Stream",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "kinesis-resource-policy/MyStream/Resource",
+                "path": "kinesis-stream-consumer/Stream/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Kinesis::Stream",
                   "aws:cdk:cloudformation:props": {
@@ -38,71 +38,6 @@
                   "fqn": "aws-cdk-lib.aws_kinesis.CfnStream",
                   "version": "0.0.0"
                 }
-              },
-              "Policy": {
-                "id": "Policy",
-                "path": "kinesis-resource-policy/MyStream/Policy",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "kinesis-resource-policy/MyStream/Policy/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::Kinesis::ResourcePolicy",
-                      "aws:cdk:cloudformation:props": {
-                        "resourceArn": {
-                          "Fn::GetAtt": [
-                            "MyStream5C050E93",
-                            "Arn"
-                          ]
-                        },
-                        "resourcePolicy": {
-                          "Statement": [
-                            {
-                              "Action": [
-                                "kinesis:DescribeStreamSummary",
-                                "kinesis:GetRecords"
-                              ],
-                              "Effect": "Allow",
-                              "Principal": {
-                                "AWS": {
-                                  "Fn::Join": [
-                                    "",
-                                    [
-                                      "arn:",
-                                      {
-                                        "Ref": "AWS::Partition"
-                                      },
-                                      ":iam::",
-                                      {
-                                        "Ref": "AWS::AccountId"
-                                      },
-                                      ":root"
-                                    ]
-                                  ]
-                                }
-                              },
-                              "Resource": {
-                                "Fn::GetAtt": [
-                                  "MyStream5C050E93",
-                                  "Arn"
-                                ]
-                              }
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_kinesis.CfnResourcePolicy",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_kinesis.ResourcePolicy",
-                  "version": "0.0.0"
-                }
               }
             },
             "constructInfo": {
@@ -112,7 +47,7 @@
           },
           "AwsCdkKinesisEncryptedStreamsUnsupportedRegions": {
             "id": "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
-            "path": "kinesis-resource-policy/AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
+            "path": "kinesis-stream-consumer/AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnCondition",
               "version": "0.0.0"
@@ -120,18 +55,18 @@
           },
           "StreamConsumer": {
             "id": "StreamConsumer",
-            "path": "kinesis-resource-policy/StreamConsumer",
+            "path": "kinesis-stream-consumer/StreamConsumer",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "kinesis-resource-policy/StreamConsumer/Resource",
+                "path": "kinesis-stream-consumer/StreamConsumer/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Kinesis::StreamConsumer",
                   "aws:cdk:cloudformation:props": {
                     "consumerName": "stream-consumer",
                     "streamArn": {
                       "Fn::GetAtt": [
-                        "MyStream5C050E93",
+                        "Stream790BDEE4",
                         "Arn"
                       ]
                     }
@@ -141,49 +76,102 @@
                   "fqn": "aws-cdk-lib.aws_kinesis.CfnStreamConsumer",
                   "version": "0.0.0"
                 }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_kinesis.StreamConsumer",
+              "version": "0.0.0"
+            }
+          },
+          "Role": {
+            "id": "Role",
+            "path": "kinesis-stream-consumer/Role",
+            "children": {
+              "ImportRole": {
+                "id": "ImportRole",
+                "path": "kinesis-stream-consumer/Role/ImportRole",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
               },
-              "Policy": {
-                "id": "Policy",
-                "path": "kinesis-resource-policy/StreamConsumer/Policy",
+              "Resource": {
+                "id": "Resource",
+                "path": "kinesis-stream-consumer/Role/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":iam::",
+                                  {
+                                    "Ref": "AWS::AccountId"
+                                  },
+                                  ":root"
+                                ]
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "kinesis-stream-consumer/Role/DefaultPolicy",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "kinesis-resource-policy/StreamConsumer/Policy/Resource",
+                    "path": "kinesis-stream-consumer/Role/DefaultPolicy/Resource",
                     "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::Kinesis::ResourcePolicy",
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                       "aws:cdk:cloudformation:props": {
-                        "resourceArn": {
-                          "Fn::GetAtt": [
-                            "StreamConsumer58240CBA",
-                            "ConsumerARN"
-                          ]
-                        },
-                        "resourcePolicy": {
+                        "policyDocument": {
                           "Statement": [
+                            {
+                              "Action": [
+                                "kinesis:DescribeStream",
+                                "kinesis:DescribeStreamConsumer",
+                                "kinesis:DescribeStreamSummary",
+                                "kinesis:GetRecords",
+                                "kinesis:GetShardIterator",
+                                "kinesis:ListShards",
+                                "kinesis:ListStreams",
+                                "kinesis:SubscribeToShard"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "Stream790BDEE4",
+                                  "Arn"
+                                ]
+                              }
+                            },
                             {
                               "Action": [
                                 "kinesis:DescribeStreamConsumer",
                                 "kinesis:SubscribeToShard"
                               ],
                               "Effect": "Allow",
-                              "Principal": {
-                                "AWS": {
-                                  "Fn::Join": [
-                                    "",
-                                    [
-                                      "arn:",
-                                      {
-                                        "Ref": "AWS::Partition"
-                                      },
-                                      ":iam::",
-                                      {
-                                        "Ref": "AWS::AccountId"
-                                      },
-                                      ":root"
-                                    ]
-                                  ]
-                                }
-                              },
                               "Resource": {
                                 "Fn::GetAtt": [
                                   "StreamConsumer58240CBA",
@@ -193,29 +181,35 @@
                             }
                           ],
                           "Version": "2012-10-17"
-                        }
+                        },
+                        "policyName": "RoleDefaultPolicy5FFB7DAB",
+                        "roles": [
+                          {
+                            "Ref": "Role1ABCC5F0"
+                          }
+                        ]
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_kinesis.CfnResourcePolicy",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_kinesis.ResourcePolicy",
+                  "fqn": "aws-cdk-lib.aws_iam.Policy",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_kinesis.StreamConsumer",
+              "fqn": "aws-cdk-lib.aws_iam.Role",
               "version": "0.0.0"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "kinesis-resource-policy/BootstrapVersion",
+            "path": "kinesis-stream-consumer/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -223,7 +217,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "kinesis-resource-policy/CheckBootstrapVersion",
+            "path": "kinesis-stream-consumer/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
@@ -235,17 +229,17 @@
           "version": "0.0.0"
         }
       },
-      "integ-kinesis-resource-policy": {
-        "id": "integ-kinesis-resource-policy",
-        "path": "integ-kinesis-resource-policy",
+      "integ-kinesis-stream-consumer": {
+        "id": "integ-kinesis-stream-consumer",
+        "path": "integ-kinesis-stream-consumer",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "integ-kinesis-resource-policy/DefaultTest",
+            "path": "integ-kinesis-stream-consumer/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "integ-kinesis-resource-policy/DefaultTest/Default",
+                "path": "integ-kinesis-stream-consumer/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.4.2"
@@ -253,11 +247,11 @@
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "integ-kinesis-resource-policy/DefaultTest/DeployAssert",
+                "path": "integ-kinesis-stream-consumer/DefaultTest/DeployAssert",
                 "children": {
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
-                    "path": "integ-kinesis-resource-policy/DefaultTest/DeployAssert/BootstrapVersion",
+                    "path": "integ-kinesis-stream-consumer/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
@@ -265,7 +259,7 @@
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
-                    "path": "integ-kinesis-resource-policy/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "path": "integ-kinesis-stream-consumer/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"

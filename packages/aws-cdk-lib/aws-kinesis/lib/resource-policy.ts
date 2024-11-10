@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnResourcePolicy } from './kinesis.generated';
 import { IStream } from './stream';
+import { IStreamConsumer } from './stream-consumer';
 import { PolicyDocument } from '../../aws-iam';
 import { Resource } from '../../core';
 
@@ -10,8 +11,21 @@ import { Resource } from '../../core';
 export interface ResourcePolicyProps {
   /**
    * The stream this policy applies to.
+   *
+   * Note: only one of `stream` and `streamConsumer` must be set.
+   *
+   * @default - policy is not associated to a stream
    */
-  readonly stream: IStream;
+  readonly stream?: IStream;
+
+  /**
+   * The stream consumer this policy applies to.
+   *
+   * Note: only one of `stream` and `streamConsumer` must be set.
+   *
+   * @default - policy is not associated to a consumer
+   */
+  readonly streamConsumer?: IStreamConsumer;
 
   /**
    * IAM policy document to apply to a data stream.
@@ -44,11 +58,23 @@ export class ResourcePolicy extends Resource {
   constructor(scope: Construct, id: string, props: ResourcePolicyProps) {
     super(scope, id);
 
+    if (props.stream && props.streamConsumer) {
+      throw new Error('Only one of stream or streamConsumer can be set');
+    }
+    if (props.stream === undefined && props.streamConsumer === undefined) {
+      throw new Error('One of stream or streamConsumer must be set');
+    }
+
     this.document = props.policyDocument ?? this.document;
 
-    new CfnResourcePolicy(this, 'Resource', {
+    if (props.stream) this.resourcePolicy(props.stream.streamArn);
+    else if (props.streamConsumer) this.resourcePolicy(props.streamConsumer.streamConsumerArn);
+  }
+
+  private resourcePolicy(resourceArn: string): CfnResourcePolicy {
+    return new CfnResourcePolicy(this, 'Resource', {
       resourcePolicy: this.document,
-      resourceArn: props.stream.streamArn,
+      resourceArn,
     });
   }
 }

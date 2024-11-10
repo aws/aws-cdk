@@ -34,6 +34,7 @@
     "docs-public-apis:aws-cdk-lib.TagType",
     "docs-public-apis:aws-cdk-lib.TagType.*",
     "module-name:aws-cdk-lib",
+    "construct-ctor-props-optional:aws-cdk-lib.aws_kinesis.ResourcePolicy",
     "construct-ctor:aws-cdk-lib.App.<initializer>",
     "props-no-cfn-types:aws-cdk-lib.CfnCodeDeployBlueGreenHookProps.applications",
     "props-no-cfn-types:aws-cdk-lib.CfnCodeDeployBlueGreenHookProps.additionalOptions",
