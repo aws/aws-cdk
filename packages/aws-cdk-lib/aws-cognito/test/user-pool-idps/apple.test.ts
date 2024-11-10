@@ -94,8 +94,8 @@ describe('UserPoolIdentityProvider', () => {
           givenName: ProviderAttribute.APPLE_FIRST_NAME,
           emailVerified: ProviderAttribute.APPLE_EMAIL_VERIFIED,
           custom: {
-            customAttr1: ProviderAttribute.APPLE_EMAIL,
-            customAttr2: ProviderAttribute.other('sub'),
+            'custom:customAttr1': ProviderAttribute.APPLE_EMAIL,
+            'customAttr2': ProviderAttribute.other('sub'),
           },
         },
       });

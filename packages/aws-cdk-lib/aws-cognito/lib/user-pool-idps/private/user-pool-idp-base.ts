@@ -30,7 +30,8 @@ export abstract class UserPoolIdentityProviderBase extends Resource implements I
       }, mapping);
     if (this.props.attributeMapping.custom) {
       mapping = Object.entries(this.props.attributeMapping.custom).reduce((agg, [k, v]) => {
-        return { ...agg, [`custom:${k}`]: v.attributeName };
+        let customAttributeKey = k.toLowerCase().startsWith('custom:') ? k : `custom:${k}`;
+        return { ...agg, [customAttributeKey]: v.attributeName };
       }, mapping);
     }
     if (Object.keys(mapping).length === 0) { return undefined; }

@@ -121,8 +121,8 @@ describe('UserPoolIdentityProvider', () => {
           familyName: ProviderAttribute.other('family_name'),
           givenName: ProviderAttribute.other('given_name'),
           custom: {
-            customAttr1: ProviderAttribute.other('email'),
-            customAttr2: ProviderAttribute.other('sub'),
+            'custom:customAttr1': ProviderAttribute.other('email'),
+            'customAttr2': ProviderAttribute.other('sub'),
           },
         },
       });

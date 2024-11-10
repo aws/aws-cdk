@@ -83,8 +83,8 @@ describe('UserPoolIdentityProvider', () => {
           givenName: ProviderAttribute.FACEBOOK_NAME,
           address: ProviderAttribute.other('fb-address'),
           custom: {
-            customAttr1: ProviderAttribute.FACEBOOK_EMAIL,
-            customAttr2: ProviderAttribute.other('fb-custom-attr'),
+            'custom:customAttr1': ProviderAttribute.FACEBOOK_EMAIL,
+            'customAttr2': ProviderAttribute.other('fb-custom-attr'),
           },
         },
       });

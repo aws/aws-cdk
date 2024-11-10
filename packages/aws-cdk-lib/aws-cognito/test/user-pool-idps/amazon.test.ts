@@ -81,8 +81,8 @@ describe('UserPoolIdentityProvider', () => {
           givenName: ProviderAttribute.AMAZON_NAME,
           address: ProviderAttribute.other('amzn-address'),
           custom: {
-            customAttr1: ProviderAttribute.AMAZON_EMAIL,
-            customAttr2: ProviderAttribute.other('amzn-custom-attr'),
+            'custom:customAttr1': ProviderAttribute.AMAZON_EMAIL,
+            'customAttr2': ProviderAttribute.other('amzn-custom-attr'),
           },
         },
       });
