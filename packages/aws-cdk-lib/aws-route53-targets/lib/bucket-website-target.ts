@@ -36,6 +36,7 @@ export class BucketWebsiteTarget implements route53.IAliasRecordTarget {
 export interface BucketWebsiteTargetProps {
   /**
    * Evaluate target health
+   *
    * @default - no health check configuration
    */
   readonly evaluateTargetHealth?: boolean;
