@@ -44,6 +44,7 @@ export class GlobalAcceleratorTarget extends GlobalAcceleratorDomainTarget {
 export interface GlobalAcceleratorDomainTargetProps {
   /**
    * Evaluate target health
+   *
    * @default - no health check configuration
    */
   readonly evaluateTargetHealth?: boolean;
