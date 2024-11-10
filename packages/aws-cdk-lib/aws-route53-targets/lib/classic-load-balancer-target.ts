@@ -22,6 +22,7 @@ export class ClassicLoadBalancerTarget implements route53.IAliasRecordTarget {
 export interface ClassicLoadBalancerTargetProps {
   /**
    * Evaluate target health
+   *
    * @default - no health check configuration
    */
   readonly evaluateTargetHealth?: boolean;
