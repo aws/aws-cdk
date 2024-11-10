@@ -2,7 +2,7 @@ import { Match, Template } from '../../assertions';
 import { ArnPrincipal, PolicyDocument, PolicyStatement } from '../../aws-iam';
 import { Stream } from '../../aws-kinesis';
 import { Key } from '../../aws-kms';
-import { CfnDeletionPolicy, Lazy, RemovalPolicy, Stack } from '../../core';
+import { CfnDeletionPolicy, Lazy, RemovalPolicy, Stack, Tags } from '../../core';
 import {
   AttributeType, Billing, Capacity, GlobalSecondaryIndexPropsV2, TableV2,
   LocalSecondaryIndexProps, ProjectionType, StreamViewType, TableClass, TableEncryptionV2,
@@ -1288,6 +1288,107 @@ describe('replica tables', () => {
         },
         {
           Region: 'us-east-1',
+        },
+      ],
+    });
+  });
+
+  test('with TagAspect', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-east-1' } });
+
+    // WHEN
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      replicas: [{
+        region: 'us-west-1',
+      }],
+    });
+
+    Tags.of(table).add('tagKey', 'tagValue');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      Replicas: [
+        {
+          Region: 'us-west-1',
+          Tags: [{ Key: 'tagKey', Value: 'tagValue' }],
+        },
+        {
+          Region: 'us-east-1',
+          Tags: [{ Key: 'tagKey', Value: 'tagValue' }],
+        },
+      ],
+    });
+  });
+
+  test('with TagAspect on parent scope', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-east-1' } });
+
+    // WHEN
+    new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      replicas: [{
+        region: 'us-west-1',
+      }],
+    });
+
+    Tags.of(stack).add('stage', 'Prod');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      Replicas: [
+        {
+          Region: 'us-west-1',
+          Tags: [{ Key: 'stage', Value: 'Prod' }],
+        },
+        {
+          Region: 'us-east-1',
+          Tags: [{ Key: 'stage', Value: 'Prod' }],
+        },
+      ],
+    });
+  });
+
+  test('replica tags override tag aspect tags', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-east-1' } });
+
+    // WHEN
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      replicas: [{
+        region: 'us-west-1',
+        tags: [{ key: 'tableTagProperty', value: 'replicaW1TagPropertyValue' }],
+      }, {
+        region: 'us-west-2',
+      }],
+      tags: [{ key: 'tableTagProperty', value: 'defaultReplicaTagPropertyValue' }],
+    });
+
+    Tags.of(table).add('tableTagProperty', 'tagAspectValue');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      Replicas: [
+        {
+          Region: 'us-west-1',
+          Tags: [
+            { Key: 'tableTagProperty', Value: 'replicaW1TagPropertyValue' },
+          ],
+        },
+        {
+          Region: 'us-west-2',
+          Tags: [
+            { Key: 'tableTagProperty', Value: 'tagAspectValue' },
+          ],
+        },
+        {
+          Region: 'us-east-1',
+          Tags: [
+            { Key: 'tableTagProperty', Value: 'defaultReplicaTagPropertyValue' },
+          ],
         },
       ],
     });
