@@ -14,4 +14,6 @@ export enum EnvironmentType {
   WINDOWS_SERVER_2019_CONTAINER = 'WINDOWS_SERVER_2019_CONTAINER',
   /** Windows Server 2022 container */
   WINDOWS_SERVER_2022_CONTAINER = 'WINDOWS_SERVER_2022_CONTAINER',
+  /** MacOS ARM container */
+  MAC_ARM = 'MAC_ARM',
 }

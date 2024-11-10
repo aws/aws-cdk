@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "KinesisDlq/DefaultTest": {
+      "stacks": [
+        "aws-cdk-kinesis-event-target-dlq"
+      ],
+      "assertionStack": "KinesisDlq/DefaultTest/DeployAssert",
+      "assertionStackName": "KinesisDlqDefaultTestDeployAssertE4CFAC29"
+    }
+  }
+}
