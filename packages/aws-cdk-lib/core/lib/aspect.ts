@@ -76,17 +76,33 @@ export class Aspects {
  * to, and the priority value of that Aspect.
  */
 export class AspectApplication {
+  /**
+   * The construct that the Aspect was applied to.
+   */
   public readonly construct: IConstruct;
+
+  /**
+   * The Aspect that was applied.
+   */
   public readonly aspect: IAspect;
+
+  /**
+   * The priority value of this Aspect. Must be non-negative integer.
+   */
   private _priority: number;
 
+  /**
+   * Initializes AspectApplication object
+   */
   public constructor(construct: IConstruct, aspect: IAspect, priority: number) {
     this.construct = construct;
     this.aspect = aspect;
     this._priority = priority;
   }
 
-  // Getter for priority
+  /**
+   * Gets the priority value.
+   */
   public get priority(): number {
     return this._priority;
   }
@@ -99,7 +115,10 @@ export class AspectApplication {
     this._priority = priority;
   }
 
-  // Method to change priority (uses the setter internally)
+  /**
+   * Method that will change the priority of this AspectApplication
+   * @param priority - non-negative integer value
+   */
   public changePriority(priority: number): void {
     this.priority = priority;
   }
