@@ -2,6 +2,7 @@ import { Construct, IConstruct } from 'constructs';
 import * as cxschema from '../../cloud-assembly-schema';
 import { App } from '../lib';
 import { IAspect, Aspects } from '../lib/aspect';
+import exp from 'constants';
 
 class MyConstruct extends Construct {
   public static IsMyConstruct(x: any): x is MyConstruct {
@@ -68,5 +69,32 @@ describe('aspect', () => {
     // no warning is added
     expect(root.node.metadata.length).toEqual(1);
     expect(child.node.metadata.length).toEqual(1);
+  });
+
+  test('Aspects applied without priority get the default priority value', () => {
+    const app = new App();
+    const root = new MyConstruct(app, 'Construct');
+    const child = new MyConstruct(root, 'ChildConstruct');
+
+    // WHEN - adding an Aspect without priority specified
+    Aspects.of(root).add(new MyAspect());
+
+    // THEN - the priority is set to default (600)
+    let aspectApplication = Aspects.of(root).list[0];
+    expect(aspectApplication.priority).toEqual(600);
+  });
+
+  test('Can override Aspect priority with changePriority() function', () => {
+    const app = new App();
+    const root = new MyConstruct(app, 'Construct');
+    const child = new MyConstruct(root, 'ChildConstruct');
+
+    // WHEN - adding an Aspect without priority specified and resetting it.
+    Aspects.of(root).add(new MyAspect());
+    let aspectApplication = Aspects.of(root).list[0];
+
+    // THEN - we can reset the priority of an Aspect
+    aspectApplication.changePriority(0);
+    expect(Aspects.of(root).list[0].priority).toEqual(0);
   });
 });
