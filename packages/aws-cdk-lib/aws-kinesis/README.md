@@ -16,6 +16,7 @@ intake and aggregation.
     - [Custom Permissions](#custom-permissions)
   - [Metrics](#metrics)
 - [Stream Consumers](#stream-consumers)
+  - [Read Permissions](#read-permissions-1)
 - [Resource Policy](#resource-policy)
 
 
@@ -202,7 +203,7 @@ To create and associate a stream consumer with a stream
 ```ts
 const stream = new kinesis.Stream(this, 'MyStream');
 
-const streamConsumer = new StreamConsumer(stack, 'MyStreamConsumer', {
+const streamConsumer = new kinesis.StreamConsumer(this, 'MyStreamConsumer', {
   streamConsumerName: 'MyStreamConsumer',
   stream,
 });
@@ -221,7 +222,7 @@ const lambdaRole = new iam.Role(this, 'Role', {
 const stream = new kinesis.Stream(this, 'MyEncryptedStream', {
   encryption: kinesis.StreamEncryption.KMS,
 });
-const streamConsumer = new StreamConsumer(stack, 'MyStreamConsumer', {
+const streamConsumer = new kinesis.StreamConsumer(this, 'MyStreamConsumer', {
   streamConsumerName: 'MyStreamConsumer',
   stream,
 });
@@ -246,7 +247,7 @@ Using `addToResourcePolicy` is the simplest way to add a resource policy:
 
 ```ts
 const stream = new kinesis.Stream(this, 'MyStream');
-const streamConsumer = new StreamConsumer(stack, 'MyStreamConsumer', {
+const streamConsumer = new kinesis.StreamConsumer(this, 'MyStreamConsumer', {
   streamConsumerName: 'MyStreamConsumer',
   stream,
 });
@@ -272,7 +273,7 @@ If not, a blank policy document will be set.
 
 ```ts
 const stream = new kinesis.Stream(this, 'MyStream');
-const streamConsumer = new StreamConsumer(stack, 'MyStreamConsumer', {
+const streamConsumer = new kinesis.StreamConsumer(this, 'MyStreamConsumer', {
   streamConsumerName: 'MyStreamConsumer',
   stream,
 });
