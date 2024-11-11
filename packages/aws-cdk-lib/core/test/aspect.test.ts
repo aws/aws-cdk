@@ -1,6 +1,6 @@
 import { Construct, IConstruct } from 'constructs';
 import * as cxschema from '../../cloud-assembly-schema';
-import { App, Stack } from '../lib';
+import { App, CfnResource, Stack } from '../lib';
 import { IAspect, Aspects } from '../lib/aspect';
 import { Bucket, CfnBucket } from '../../aws-s3';
 import { Template } from '../../assertions';
@@ -32,6 +32,21 @@ class EnableBucketVersioningAspect implements IAspect {
       node.versioningConfiguration = {
         status: 'Enabled'
       };
+    }
+  }
+}
+
+class AddLoggingBucketAspect implements IAspect {
+  public visit(node: IConstruct): void {
+    // Check if the node is an S3 Bucket
+    if (node instanceof CfnBucket) {
+      // Add a new logging bucket Bucket
+      new CfnResource(node, 'NewResource', {
+        type: 'AWS::S3::Bucket',
+        properties: {
+          BucketName: 'my-new-logging-bucket-from-aspect',
+        },
+      });
     }
   }
 }
@@ -118,7 +133,7 @@ describe('aspect', () => {
       versioned: false,
     });
 
-    // WHEN - adding a the Aspect to enable bucket versioning gets applied:
+    // WHEN - adding the Aspect to enable bucket versioning gets applied:
     Aspects.of(stack).add(new EnableBucketVersioningAspect());
 
     // THEN - Aspect is successfully applied
@@ -126,6 +141,25 @@ describe('aspect', () => {
       'VersioningConfiguration': {
         'Status': 'Enabled',
       }
+    });
+  });
+
+  test('mutating Aspect that creates a node gets applied', () => {
+    const app = new App();
+    const stack = new Stack(app, 'My-Stack');
+
+    // GIVEN - Bucket with versioning disabled
+    const bucket = new Bucket(stack, 'my-bucket', {
+      bucketName: 'my-original-bucket',
+      versioned: false,
+    });
+
+    // WHEN - adding the Aspect to add a logging bucket:
+    Aspects.of(stack).add(new AddLoggingBucketAspect());
+
+    // THEN - Aspect is successfully applied, new logging bucket is added
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      'BucketName': 'my-new-logging-bucket-from-aspect'
     });
   });
 });
