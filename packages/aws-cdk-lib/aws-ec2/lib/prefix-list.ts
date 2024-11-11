@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import { CfnPrefixList } from './ec2.generated';
+import { IPeer, Peer } from './peer';
 import { IResource, Lazy, Resource, Names } from '../../core';
 
 /**
@@ -129,6 +130,13 @@ export class PrefixList extends PrefixListBase {
    */
   public readonly addressFamily: string;
 
+  /**
+   * The ID of the prefix list
+   *
+   * @attribute
+   */
+  public readonly peer: IPeer;
+
   constructor(scope: Construct, id: string, props?: PrefixListProps) {
     super(scope, id, {
       physicalName: props?.prefixListName ?? Lazy.string({
@@ -179,6 +187,7 @@ export class PrefixList extends PrefixListBase {
     });
 
     this.prefixListId = prefixList.attrPrefixListId;
+    this.peer = Peer.prefixList(prefixList.attrPrefixListId);
     this.prefixListArn = prefixList.attrArn;
     this.ownerId = prefixList.attrOwnerId;
     this.version = prefixList.attrVersion;

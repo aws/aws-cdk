@@ -1,6 +1,10 @@
 import { Template } from '../../assertions';
 import { Stack } from '../../core';
+import { Peer } from '../lib/peer';
+import { Port } from '../lib/port';
 import { AddressFamily, PrefixList } from '../lib/prefix-list';
+import { SecurityGroup } from '../lib/security-group';
+import { Vpc } from '../lib/vpc';
 
 describe('prefix list', () => {
   test('default empty prefixlist', () => {
@@ -51,6 +55,26 @@ describe('prefix list', () => {
         { Cidr: '10.0.0.2/32', Description: 'sample1' },
       ],
     });
+  });
+
+  test('security group with prefix list peer', () => {
+    const stack = new Stack();
+
+    const prefixList = new PrefixList(stack, 'prefix-list', {
+      maxEntries: 100,
+      entries: [
+        { cidr: '10.0.0.1/32' },
+      ],
+    });
+
+    const vpc = new Vpc(stack, 'vpc', {});
+    const sg = new SecurityGroup(stack, 'SecurityGroup', { vpc });
+    sg.addIngressRule(prefixList.peer, Port.tcp(80));
+    sg.addEgressRule(prefixList.peer, Port.tcp(80));
+    sg.connections.allowFrom(prefixList.peer, Port.tcp(443));
+    sg.connections.allowTo(prefixList.peer, Port.tcp(443));
+
+    // THEN -- no crash
   });
 
   test('invalid prefixlist name startwith amazon', () => {
