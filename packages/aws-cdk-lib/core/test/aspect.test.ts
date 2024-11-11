@@ -2,7 +2,6 @@ import { Construct, IConstruct } from 'constructs';
 import * as cxschema from '../../cloud-assembly-schema';
 import { App } from '../lib';
 import { IAspect, Aspects } from '../lib/aspect';
-import exp from 'constants';
 
 class MyConstruct extends Construct {
   public static IsMyConstruct(x: any): x is MyConstruct {
