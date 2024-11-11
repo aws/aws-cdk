@@ -8,7 +8,7 @@ import { CloudAssembly } from '../../../cx-api';
 import * as cxapi from '../../../cx-api';
 import { Annotations } from '../annotations';
 import { App } from '../app';
-import { Aspects, IAspect } from '../aspect';
+import { AspectApplication, Aspects, IAspect } from '../aspect';
 import { FileSystem } from '../fs';
 import { Stack } from '../stack';
 import { ISynthesisSession } from '../stack-synthesizers/types';
@@ -214,44 +214,96 @@ function synthNestedAssemblies(root: IConstruct, options: StageSynthesisOptions)
  * Aspects are not propagated across Assembly boundaries. The same Aspect will not be invoked
  * twice for the same construct.
  */
+// function invokeAspects(root: IConstruct) {
+//   const invokedByPath: { [nodePath: string]: IAspect[] } = { };
+
+//   let nestedAspectWarning = false;
+//   recurse(root, []);
+
+//   function recurse(construct: IConstruct, inheritedAspects: IAspect[]) {
+//     const node = construct.node;
+//     const aspects = Aspects.of(construct);
+//     const allAspectsHere = [...inheritedAspects ?? [], ...aspects.all];
+//     const nodeAspectsCount = aspects.all.length;
+//     for (const aspect of allAspectsHere) {
+//       let invoked = invokedByPath[node.path];
+//       if (!invoked) {
+//         invoked = invokedByPath[node.path] = [];
+//       }
+
+//       if (invoked.includes(aspect)) { continue; }
+
+//       aspect.visit(construct);
+
+//       // if an aspect was added to the node while invoking another aspect it will not be invoked, emit a warning
+//       // the `nestedAspectWarning` flag is used to prevent the warning from being emitted for every child
+//       if (!nestedAspectWarning && nodeAspectsCount !== aspects.all.length) {
+//         Annotations.of(construct).addWarningV2('@aws-cdk/core:ignoredAspect', 'We detected an Aspect was added via another Aspect, and will not be applied');
+//         nestedAspectWarning = true;
+//       }
+
+//       // mark as invoked for this node
+//       invoked.push(aspect);
+//     }
+
+//     for (const child of construct.node.children) {
+//       if (!Stage.isStage(child)) {
+//         recurse(child, allAspectsHere);
+//       }
+//     }
+//   }
+// }
 function invokeAspects(root: IConstruct) {
-  const invokedByPath: { [nodePath: string]: IAspect[] } = { };
+  const aspectsMap = collectAllAspectApplications(root);
 
-  let nestedAspectWarning = false;
-  recurse(root, []);
+  const orderedPriorities = Array.from(aspectsMap.keys()).sort();
 
-  function recurse(construct: IConstruct, inheritedAspects: IAspect[]) {
-    const node = construct.node;
-    const aspects = Aspects.of(construct);
-    const allAspectsHere = [...inheritedAspects ?? [], ...aspects.all];
-    const nodeAspectsCount = aspects.all.length;
-    for (const aspect of allAspectsHere) {
-      let invoked = invokedByPath[node.path];
-      if (!invoked) {
-        invoked = invokedByPath[node.path] = [];
-      }
-
-      if (invoked.includes(aspect)) { continue; }
-
-      aspect.visit(construct);
-
-      // if an aspect was added to the node while invoking another aspect it will not be invoked, emit a warning
-      // the `nestedAspectWarning` flag is used to prevent the warning from being emitted for every child
-      if (!nestedAspectWarning && nodeAspectsCount !== aspects.all.length) {
-        Annotations.of(construct).addWarningV2('@aws-cdk/core:ignoredAspect', 'We detected an Aspect was added via another Aspect, and will not be applied');
-        nestedAspectWarning = true;
-      }
-
-      // mark as invoked for this node
-      invoked.push(aspect);
-    }
-
-    for (const child of construct.node.children) {
-      if (!Stage.isStage(child)) {
-        recurse(child, allAspectsHere);
-      }
+  for (const priority of orderedPriorities) {
+    for (const aspectApplication of aspectsMap.get(priority)!) {
+      invokeAspect(aspectApplication.construct, aspectApplication.aspect);
     }
   }
+}
+
+/**
+ * Invokes an individual Aspect on a construct and all of its children in the construct tree.
+ */
+function invokeAspect(construct: IConstruct, aspect: IAspect) {
+  aspect.visit(construct);
+  for (const child of construct.node.children) {
+    invokeAspect(child, aspect);
+  }
+}
+
+/**
+ * Returns a Map of AspectApplications organized by Priority value.
+ *
+ * Returs a Map where the keys are Priority (number) and the values are Set<AspectApplication>
+ */
+function collectAllAspectApplications(root: IConstruct): Map<number, Set<AspectApplication>> {
+  let aspectsMap = new Map<number, Set<AspectApplication>>();
+
+  function aspectsFromNode(node: IConstruct) {
+    for (const aspectApplication of Aspects.of(node).list) {
+      const curPriority = aspectApplication.priority;
+      if (!aspectsMap.has(curPriority)) {
+        aspectsMap.set(curPriority, new Set());
+      }
+
+      let aspectsSet = aspectsMap.get(curPriority)!;
+      aspectsSet.add(aspectApplication);
+
+      aspectsMap.set(curPriority, aspectsSet);
+    }
+
+    for (const child of node.node.children) {
+      aspectsFromNode(child);
+    }
+  }
+
+  aspectsFromNode(root);
+
+  return aspectsMap;
 }
 
 /**
