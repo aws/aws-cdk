@@ -162,4 +162,27 @@ describe('aspect', () => {
       'BucketName': 'my-new-logging-bucket-from-aspect'
     });
   });
+
+  test('can set mutating Aspects in specified orcder and visit newly created node', () => {
+    const app = new App();
+    const stack = new Stack(app, 'My-Stack');
+
+    // GIVEN - Bucket with versioning disabled
+    const bucket = new Bucket(stack, 'my-bucket', {
+      bucketName: 'my-original-bucket',
+      versioned: false,
+    });
+
+    // WHEN - adding both Aspects but making LoggingBucket Aspect run first
+    Aspects.of(stack).add(new AddLoggingBucketAspect(), 0);
+    Aspects.of(stack).add(new EnableBucketVersioningAspect());
+
+    // THEN - both Aspects are successfully applied, new logging bucket is added with versioning enabled
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      'BucketName': 'my-new-logging-bucket-from-aspect',
+      'VersioningConfiguration': {
+        'Status': 'Enabled',
+      }
+    });
+  });
 });
