@@ -1,7 +1,9 @@
 import { Construct, IConstruct } from 'constructs';
 import * as cxschema from '../../cloud-assembly-schema';
-import { App } from '../lib';
+import { App, Stack } from '../lib';
 import { IAspect, Aspects } from '../lib/aspect';
+import { Bucket, CfnBucket } from '../../aws-s3';
+import { Template } from '../../assertions';
 
 class MyConstruct extends Construct {
   public static IsMyConstruct(x: any): x is MyConstruct {
@@ -21,6 +23,16 @@ class VisitOnce implements IAspect {
 class MyAspect implements IAspect {
   public visit(node: IConstruct): void {
     node.node.addMetadata('foo', 'bar');
+  }
+}
+
+class EnableBucketVersioningAspect implements IAspect {
+  public visit(node: IConstruct): void {
+    if (node instanceof CfnBucket) {
+      node.versioningConfiguration = {
+        status: 'Enabled'
+      };
+    }
   }
 }
 
@@ -95,5 +107,25 @@ describe('aspect', () => {
     // THEN - we can reset the priority of an Aspect
     aspectApplication.changePriority(0);
     expect(Aspects.of(root).list[0].priority).toEqual(0);
+  });
+
+  test('In-place mutating Aspect gets applied', () => {
+    const app = new App();
+    const stack = new Stack(app, 'My-Stack');
+
+    // GIVEN - Bucket with versioning disabled
+    const bucket = new Bucket(stack, 'my-bucket', {
+      versioned: false,
+    });
+
+    // WHEN - adding a the Aspect to enable bucket versioning gets applied:
+    Aspects.of(stack).add(new EnableBucketVersioningAspect());
+
+    // THEN - Aspect is successfully applied
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      'VersioningConfiguration': {
+        'Status': 'Enabled',
+      }
+    });
   });
 });
