@@ -16,8 +16,19 @@ export interface IAspect {
  * Default Priority values for Aspects.
  */
 export class AspectPriority {
+  /**
+   * Suggested priority for Aspects that mutate the construct tree.
+   */
   static readonly MUTATING: number = 200;
+
+  /**
+   * Suggested priority for Aspects that only read the construct tree.
+   */
   static readonly READONLY: number = 1000;
+
+  /**
+   * Default priority for Aspects that are applied without a priority.
+   */
   static readonly DEFAULT: number = 600;
 }
 
@@ -28,7 +39,7 @@ export interface AspectOptions {
   /**
    * The priority value to apply on an Aspect.
    * Priority must be a non-negative integer.
-   * 
+   *
    * @default - AspectPriority.DEFAULT
    */
   readonly priority?: number;
