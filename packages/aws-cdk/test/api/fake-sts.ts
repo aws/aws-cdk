@@ -140,7 +140,6 @@ export class FakeSts {
 
       throw new Error(`Unrecognized Action in MockAwsHttp: ${mockRequest.parsedBody.Action}`);
     })();
-    // console.log(mockRequest.parsedBody, '->', response);
     return response;
   }
 
