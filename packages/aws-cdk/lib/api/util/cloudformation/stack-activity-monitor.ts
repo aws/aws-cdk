@@ -101,7 +101,7 @@ export class StackActivityMonitor {
     };
 
     const isWindows = process.platform === 'win32';
-    const verbose = options.logLevel;
+    const verbose = options.logLevel ?? LogLevel.INFO;
     // On some CI systems (such as CircleCI) output still reports as a TTY so we also
     // need an individual check for whether we're running on CI.
     // see: https://discuss.circleci.com/t/circleci-terminal-is-a-tty-but-term-is-not-set/9965
