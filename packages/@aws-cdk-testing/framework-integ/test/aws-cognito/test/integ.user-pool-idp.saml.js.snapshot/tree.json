@@ -139,6 +139,9 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolIdentityProvider",
                   "aws:cdk:cloudformation:props": {
+                    "attributeMapping": {
+                      "custom:department": "department"
+                    },
                     "providerDetails": {
                       "IDPSignout": false,
                       "MetadataURL": "https://fujifish.github.io/samling/public/metadata.xml",
@@ -332,7 +335,7 @@
                 "path": "integ-user-pool-identity-provider-saml-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -378,7 +381,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },
