@@ -1,10 +1,9 @@
 import { Construct, IConstruct } from 'constructs';
+import { Template } from '../../assertions';
+import { Bucket, CfnBucket } from '../../aws-s3';
 import * as cxschema from '../../cloud-assembly-schema';
 import { App, CfnResource, Stack } from '../lib';
-import { IAspect, Aspects } from '../lib/aspect';
-import { Bucket, CfnBucket } from '../../aws-s3';
-import { Template } from '../../assertions';
-
+import { IAspect, Aspects, AspectPriority } from '../lib/aspect';
 class MyConstruct extends Construct {
   public static IsMyConstruct(x: any): x is MyConstruct {
     return x.visitCounter !== undefined;
@@ -30,7 +29,7 @@ class EnableBucketVersioningAspect implements IAspect {
   public visit(node: IConstruct): void {
     if (node instanceof CfnBucket) {
       node.versioningConfiguration = {
-        status: 'Enabled'
+        status: 'Enabled',
       };
     }
   }
@@ -43,7 +42,7 @@ class AddLoggingBucketAspect implements IAspect {
       // Add a new logging bucket Bucket to the stack this bucket belongs to.
       const stack = Stack.of(node);
       new Bucket(stack, 'my-new-logging-bucket-from-aspect', {
-        bucketName: 'my-new-logging-bucket-from-aspect'
+        bucketName: 'my-new-logging-bucket-from-aspect',
       });
     }
   }
@@ -105,7 +104,7 @@ describe('aspect', () => {
 
     // THEN - the priority is set to default (600)
     let aspectApplication = Aspects.of(root).list[0];
-    expect(aspectApplication.priority).toEqual(600);
+    expect(aspectApplication.priority).toEqual(AspectPriority.DEFAULT);
   });
 
   test('Can override Aspect priority', () => {
@@ -136,9 +135,9 @@ describe('aspect', () => {
 
     // THEN - Aspect is successfully applied
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
-      'VersioningConfiguration': {
-        'Status': 'Enabled',
-      }
+      VersioningConfiguration: {
+        Status: 'Enabled',
+      },
     });
   });
 
@@ -157,7 +156,7 @@ describe('aspect', () => {
 
     // THEN - Aspect is successfully applied, new logging bucket is added
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
-      'BucketName': 'my-new-logging-bucket-from-aspect'
+      BucketName: 'my-new-logging-bucket-from-aspect',
     });
   });
 
@@ -177,10 +176,10 @@ describe('aspect', () => {
 
     // THEN - both Aspects are successfully applied, new logging bucket is added with versioning enabled
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
-      'BucketName': 'my-new-logging-bucket-from-aspect',
-      'VersioningConfiguration': {
-        'Status': 'Enabled',
-      }
+      BucketName: 'my-new-logging-bucket-from-aspect',
+      VersioningConfiguration: {
+        Status: 'Enabled',
+      },
     });
   });
 });

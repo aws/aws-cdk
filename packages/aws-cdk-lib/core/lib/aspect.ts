@@ -12,10 +12,24 @@ export interface IAspect {
   visit(node: IConstruct): void;
 }
 
+/**
+ * Default Priority values for Aspects.
+ */
+export class AspectPriority {
+  static readonly MUTATING: number = 200;
+  static readonly READONLY: number = 1000;
+  static readonly DEFAULT: number = 600;
+}
+
+/**
+ * Options when Applying an Aspect.
+ */
 export interface AspectOptions {
   /**
    * The priority value to apply on an Aspect.
-   * Priority be a non-negative integer.
+   * Priority must be a non-negative integer.
+   * 
+   * @default - AspectPriority.DEFAULT
    */
   readonly priority?: number;
 }
@@ -54,9 +68,10 @@ export class Aspects {
   /**
    * Adds an aspect to apply this scope before synthesis.
    * @param aspect The aspect to add.
+   * @param options Options to apply on this aspect.
    */
   public add(aspect: IAspect, options?: AspectOptions) {
-    this._appliedAspects.push(new AspectApplication(this._scope, aspect, options?.priority ?? 600));
+    this._appliedAspects.push(new AspectApplication(this._scope, aspect, options?.priority ?? AspectPriority.DEFAULT));
   }
 
   /**
