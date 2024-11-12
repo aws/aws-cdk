@@ -270,19 +270,27 @@ function invokeAspects(root: IConstruct) {
 function invokeAspect(construct: IConstruct, aspect: IAspect) {
   aspect.visit(construct);
   for (const child of construct.node.children) {
-    invokeAspect(child, aspect);
+    // Do not cross the Stage boundary
+    if (!Stage.isStage(child)) {
+      invokeAspect(child, aspect);
+    }
   }
 }
 
 /**
  * Returns a Map of AspectApplications organized by Priority value.
  *
- * Returs a Map where the keys are Priority (number) and the values are Set<AspectApplication>
+ * Returns a Map where the keys are Priority (number) and the values are Set<AspectApplication>
  */
 function collectAllAspectApplications(root: IConstruct): Map<number, Set<AspectApplication>> {
   let aspectsMap = new Map<number, Set<AspectApplication>>();
 
-  function aspectsFromNode(node: IConstruct) {
+  recurse(root);
+
+  return aspectsMap;
+
+  // Helper function recurses tree to collect Aspects from every node.
+  function recurse(node: IConstruct) {
     for (const aspectApplication of Aspects.of(node).list) {
       const curPriority = aspectApplication.priority;
       if (!aspectsMap.has(curPriority)) {
@@ -296,13 +304,12 @@ function collectAllAspectApplications(root: IConstruct): Map<number, Set<AspectA
     }
 
     for (const child of node.node.children) {
-      aspectsFromNode(child);
+      // Do not cross the stage boundary
+      if (!Stage.isStage(child)) {
+        recurse(child);
+      }
     }
   }
-
-  aspectsFromNode(root);
-
-  return aspectsMap;
 }
 
 /**
