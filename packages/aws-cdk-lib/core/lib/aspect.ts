@@ -36,11 +36,9 @@ export class Aspects {
   }
 
   private readonly _scope: IConstruct;
-  private readonly _aspects: IAspect[];
   private readonly _appliedAspects: AspectApplication[];
 
   private constructor(scope: IConstruct) {
-    this._aspects = [];
     this._appliedAspects = [];
     this._scope = scope;
   }
@@ -50,7 +48,6 @@ export class Aspects {
    * @param aspect The aspect to add.
    */
   public add(aspect: IAspect, priority?: number) {
-    this._aspects.push(aspect);
     this._appliedAspects.push(new AspectApplication(this._scope, aspect, priority ?? 600));
   }
 
@@ -58,7 +55,7 @@ export class Aspects {
    * The list of aspects which were directly applied on this scope.
    */
   public get all(): IAspect[] {
-    return [...this._aspects];
+    return this._appliedAspects.map(application => application.aspect);
   }
 
   /**
