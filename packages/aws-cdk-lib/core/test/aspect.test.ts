@@ -108,7 +108,7 @@ describe('aspect', () => {
     expect(aspectApplication.priority).toEqual(600);
   });
 
-  test('Can override Aspect priority with changePriority() function', () => {
+  test('Can override Aspect priority', () => {
     const app = new App();
     const root = new MyConstruct(app, 'Construct');
     const child = new MyConstruct(root, 'ChildConstruct');
@@ -118,7 +118,7 @@ describe('aspect', () => {
     let aspectApplication = Aspects.of(root).list[0];
 
     // THEN - we can reset the priority of an Aspect
-    aspectApplication.changePriority(0);
+    aspectApplication.priority = 0;
     expect(Aspects.of(root).list[0].priority).toEqual(0);
   });
 

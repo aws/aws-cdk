@@ -112,19 +112,13 @@ export class AspectApplication {
     return this._priority;
   }
 
-  // Setter for priority
-  private set priority(priority: number) {
+  /**
+   * Sets the priority value.
+   */
+  public set priority(priority: number) {
     if (priority < 0) {
       throw new Error('Priority must be a non-negative number');
     }
     this._priority = priority;
-  }
-
-  /**
-   * Method that will change the priority of this AspectApplication
-   * @param priority - non-negative integer value
-   */
-  public changePriority(priority: number): void {
-    this.priority = priority;
   }
 }
