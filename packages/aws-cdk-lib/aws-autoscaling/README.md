@@ -763,6 +763,37 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
 });
 ```
 
+## Availability Zone Distribution
+
+You can configure how Auto Scaling distributes instances across Availability Zones when scaling operations occur. This is particularly useful when you need strict control over instance distribution for high availability.
+
+### capacityDistributionStrategy
+
+If launches fail in an Availability Zone, the following strategies are available.
+
+* `BALANCED_BEST_EFFORT` (default) - If launches fail in an Availability Zone, Auto Scaling will attempt to launch in another healthy Availability Zone instead.
+* `BALANCED_ONLY` - If launches fail in an Availability Zone, Auto Scaling will continue to attempt to launch in the unhealthy zone to preserve a balanced distribution.
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const instanceType: ec2.InstanceType;
+declare const machineImage: ec2.IMachineImage;
+
+const myKeyPair = new ec2.KeyPair(this, 'MyKeyPair');
+
+new autoscaling.AutoScalingGroup(this, 'ASG', {
+  vpc,
+  instanceType,
+  machineImage,
+
+  // ...
+
+  availabilityZoneDistribution: {
+    capacityDistributionStrategy: autoscaling.CapacityDistributionStrategy.BALANCED_BEST_EFFORT,
+  }
+});
+```
+
 ## Future work
 
 * [ ] CloudWatch Events (impossible to add currently as the AutoScalingGroup ARN is

@@ -2797,6 +2797,29 @@ describe('InstanceMaintenancePolicy', () => {
     });
   });
 
+  test('can specify capacityDistributionStrategy', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      availabilityZoneDistribution: {
+        capacityDistributionStrategy: autoscaling.CapacityDistributionStrategy.BALANCED_ONLY,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
+      AvailabilityZoneDistribution: {
+        CapacityDistributionStrategy: 'balanced-only',
+      },
+    });
+  });
+
   test('throws if maxHealthyPercentage is greater than 200', () => {
     // GIVEN
     const stack = new cdk.Stack();

@@ -47,6 +47,28 @@ export enum Monitoring {
 }
 
 /**
+ * The strategies for when launches fail in an Availability Zone.
+ */
+export enum CapacityDistributionStrategy {
+  /**
+   * If launches fail in an Availability Zone, Auto Scaling will continue to attempt to launch in the unhealthy zone to preserve a balanced distribution.
+   */
+  BALANCED_ONLY = 'balanced-only',
+  /**
+   * If launches fail in an Availability Zone, Auto Scaling will attempt to launch in another healthy Availability Zone instead.
+   */
+  BALANCED_BEST_EFFORT= 'balanced-best-effort',
+}
+
+export interface AvailabilityZoneDistribution {
+  /**
+   * The strategy for distributing instances across Availability Zones.
+   * @default BALANCED_BEST_EFFORT
+   */
+  readonly capacityDistributionStrategy: CapacityDistributionStrategy;
+}
+
+/**
  * Basic properties of an AutoScalingGroup, except the exact machines to run and where they should run
  *
  * Constructs that want to create AutoScalingGroups can inherit
@@ -410,6 +432,12 @@ export interface CommonAutoScalingGroupProps {
    * @default false
    */
   readonly ssmSessionPermissions?: boolean;
+
+  /**
+   * The instance capacity distribution across Availability Zones.
+   * @default { capacityDistributionStrategy: CapacityDistributionStrategy.BALANCED_BEST_EFFORT }
+   */
+  readonly availabilityZoneDistribution?: AvailabilityZoneDistribution;
 }
 
 /**
@@ -1529,6 +1557,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
     const asgProps: CfnAutoScalingGroupProps = {
       autoScalingGroupName: this.physicalName,
+      availabilityZoneDistribution: props.availabilityZoneDistribution,
       cooldown: props.cooldown?.toSeconds().toString(),
       minSize: Tokenization.stringifyNumber(minCapacity),
       maxSize: Tokenization.stringifyNumber(maxCapacity),
