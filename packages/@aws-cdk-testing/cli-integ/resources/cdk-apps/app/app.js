@@ -35,7 +35,7 @@ if (process.env.PACKAGE_LAYOUT_VERSION === '1') {
 }
 
 const { Annotations } = cdk;
-const { StackWithNestedStack, StackWithNestedStackUsingParameters } = require('./nested-stack');
+const { StackWithNestedStack, StackWithDoublyNestedStack, StackWithNestedStackUsingParameters } = require('./nested-stack');
 
 const stackPrefix = process.env.STACK_NAME_PREFIX;
 if (!stackPrefix) {
@@ -176,7 +176,7 @@ class DependentStack extends Stack {
     super(scope, id);
 
     const innerDependentStack = new InnerDependentStack(this, 'InnerDependentStack');
-    
+
     this.addDependency(innerDependentStack);
   }
 }
@@ -204,7 +204,7 @@ class MigrateStack extends cdk.Stack {
       new cdk.CfnOutput(this, 'QueueUrl', {
         value: queue.queueUrl,
       });
-      
+
       new cdk.CfnOutput(this, 'QueueLogicalId', {
         value: queue.node.defaultChild.logicalId,
       });
@@ -258,7 +258,7 @@ class ImportableStack extends cdk.Stack {
       new cdk.CfnOutput(this, 'QueueUrl', {
         value: queue.queueUrl,
       });
-      
+
       new cdk.CfnOutput(this, 'QueueLogicalId', {
         value: queue.node.defaultChild.logicalId,
       });
@@ -438,9 +438,17 @@ class IamRolesStack extends cdk.Stack {
     // Environment variabile is used to create a bunch of roles to test
     // that large diff templates are uploaded to S3 to create the changeset.
     for(let i = 1; i <= Number(process.env.NUMBER_OF_ROLES) ; i++) {
-      new iam.Role(this, `Role${i}`, {
+      const role = new iam.Role(this, `Role${i}`, {
         assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
       });
+      const cfnRole = role.node.defaultChild;
+
+      // For any extra IAM roles created, add a ton of metadata so that the template size is > 50 KiB.
+      if (i > 1) {
+        for(let i = 1; i <= 30 ; i++) {
+          cfnRole.addMetadata('a'.repeat(1000), 'v');
+        }
+      }
     }
   }
 }
@@ -594,6 +602,19 @@ class DockerStack extends cdk.Stack {
     // be deployed (and its assets never built)
     new cdk.CfnResource(this, 'Handle', {
       type: 'AWS::CloudFormation::WaitConditionHandle'
+    });
+  }
+}
+
+class DockerInUseStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    // Use the docker file in a lambda otherwise it will not be referenced in the template
+    const fn = new lambda.Function(this, 'my-function', {
+      code: lambda.Code.fromAssetImage(path.join(__dirname, 'docker')),
+      runtime: lambda.Runtime.FROM_IMAGE,
+      handler: lambda.Handler.FROM_IMAGE,
     });
   }
 }
@@ -792,6 +813,7 @@ switch (stackSet) {
 
     new LambdaStack(app, `${stackPrefix}-lambda`);
 
+    // This stack is used to test diff with large templates by creating a role with a ton of metadata
     new IamRolesStack(app, `${stackPrefix}-iam-roles`);
 
     if (process.env.ENABLE_VPC_TESTING == 'IMPORT') {
@@ -805,6 +827,7 @@ switch (stackSet) {
     new EcsHotswapStack(app, `${stackPrefix}-ecs-hotswap`);
     new AppSyncHotswapStack(app, `${stackPrefix}-appsync-hotswap`);
     new DockerStack(app, `${stackPrefix}-docker`);
+    new DockerInUseStack(app, `${stackPrefix}-docker-in-use`);
     new DockerStackWithCustomFile(app, `${stackPrefix}-docker-with-custom-file`);
 
     new NotificationArnPropStack(app, `${stackPrefix}-notification-arn-prop`, {
@@ -835,6 +858,7 @@ switch (stackSet) {
 
     new StackWithNestedStack(app, `${stackPrefix}-with-nested-stack`);
     new StackWithNestedStackUsingParameters(app, `${stackPrefix}-with-nested-stack-using-parameters`);
+    new StackWithDoublyNestedStack(app, `${stackPrefix}-with-doubly-nested-stack`);
     new ListStack(app, `${stackPrefix}-list-stacks`)
     new ListMultipleDependentStack(app, `${stackPrefix}-list-multiple-dependent-stacks`);
 

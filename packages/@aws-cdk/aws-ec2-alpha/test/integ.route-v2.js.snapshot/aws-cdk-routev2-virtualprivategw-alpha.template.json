@@ -9,7 +9,7 @@
     "InstanceTenancy": "default"
    }
   },
-  "vpgwAmazonIpv6C872FF1E": {
+  "vpgwAmazonIpv6D24D8752": {
    "Type": "AWS::EC2::VPCCidrBlock",
    "Properties": {
     "AmazonProvidedIpv6CidrBlock": true,
@@ -80,7 +80,7 @@
     }
    },
    "DependsOn": [
-    "vpgwAmazonIpv6C872FF1E"
+    "vpgwAmazonIpv6D24D8752"
    ]
   },
   "vpgwSubnetRouteTableAssociation49921F90": {
@@ -97,7 +97,7 @@
     }
    },
    "DependsOn": [
-    "vpgwAmazonIpv6C872FF1E"
+    "vpgwAmazonIpv6D24D8752"
    ]
   },
   "testVPGWIGW816C7C4F": {

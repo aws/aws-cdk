@@ -1,10 +1,13 @@
 import { Aws, Resource, Annotations } from 'aws-cdk-lib';
 import { IVpc, ISubnet, SubnetSelection, SelectedSubnets, EnableVpnGatewayOptions, VpnGateway, VpnConnectionType, CfnVPCGatewayAttachment, CfnVPNGatewayRoutePropagation, VpnConnectionOptions, VpnConnection, ClientVpnEndpointOptions, ClientVpnEndpoint, InterfaceVpcEndpointOptions, InterfaceVpcEndpoint, GatewayVpcEndpointOptions, GatewayVpcEndpoint, FlowLogOptions, FlowLog, FlowLogResourceType, SubnetType, SubnetFilter, CfnVPCCidrBlock } from 'aws-cdk-lib/aws-ec2';
+import { Resource, Annotations } from 'aws-cdk-lib';
+import { IVpc, ISubnet, SubnetSelection, SelectedSubnets, EnableVpnGatewayOptions, VpnGateway, VpnConnectionType, CfnVPCGatewayAttachment, CfnVPNGatewayRoutePropagation, VpnConnectionOptions, VpnConnection, ClientVpnEndpointOptions, ClientVpnEndpoint, InterfaceVpcEndpointOptions, InterfaceVpcEndpoint, GatewayVpcEndpointOptions, GatewayVpcEndpoint, FlowLogOptions, FlowLog, FlowLogResourceType, SubnetType, SubnetFilter } from 'aws-cdk-lib/aws-ec2';
 import { allRouteTableIds, flatten, subnetGroupNameFromConstructId } from './util';
 import { IDependable, Dependable, IConstruct, DependencyGroup } from 'constructs';
 import { EgressOnlyInternetGateway, InternetGateway, NatConnectivityType, NatGateway, NatGatewayOptions, Route, VPCPeeringConnection, VPCPeeringConnectionOptions, VPNGatewayV2 } from './route';
 import { ISubnetV2 } from './subnet-v2';
 import { AccountPrincipal, Effect, PolicyStatement, Role } from 'aws-cdk-lib/aws-iam';
+import { IVPCCidrBlock } from './vpc-v2';
 
 /**
  * Options to define EgressOnlyInternetGateway for VPC
@@ -87,7 +90,7 @@ export interface IVpcV2 extends IVpc {
    *
    * For more information, see the {@link https://docs.aws.amazon.com/vpc/latest/userguide/vpc-cidr-blocks.html#vpc-resize}.
    */
-  readonly secondaryCidrBlock: CfnVPCCidrBlock[];
+  readonly secondaryCidrBlock?: IVPCCidrBlock[];
 
   /**
    * The primary IPv4 CIDR block associated with the VPC.
@@ -102,14 +105,21 @@ export interface IVpcV2 extends IVpc {
    *
    * @default - current stack's environment region
    */
-  readonly region?: string;
+  readonly region: string;
 
   /**
    * The ID of the AWS account that owns the VPC
    *
    * @default - the account id of the parent stack
    */
-  readonly ownerAccountId?: string;
+  readonly ownerAccountId: string;
+
+  /**
+   * IPv4 CIDR provisioned under pool
+   * Required to check for overlapping CIDRs after provisioning
+   * is complete under IPAM pool
+   */
+  readonly ipv4IpamProvisionedCidrs?: string[];
 
   /**
    * Add an Egress only Internet Gateway to current VPC.
@@ -226,7 +236,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
    * Secondary IPs for the VPC, can be multiple Ipv4 or Ipv6
    * Ipv4 should be within RFC#1918 range
    */
-  public abstract readonly secondaryCidrBlock: CfnVPCCidrBlock[];
+  public abstract readonly secondaryCidrBlock?: IVPCCidrBlock[];
 
   /**
    * The primary IPv4 CIDR block associated with the VPC.
@@ -235,6 +245,23 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
    * For more information, see the {@link https://docs.aws.amazon.com/vpc/latest/userguide/vpc-cidr-blocks.html#vpc-sizing-ipv4}.
    */
   public abstract readonly ipv4CidrBlock: string;
+
+  /**
+  * Region for this VPC
+  */
+  public abstract readonly region: string;
+
+  /**
+  * Identifier of the owner for this VPC
+  */
+  public abstract readonly ownerAccountId: string;
+
+  /**
+   * IPv4 CIDR provisioned under pool
+   * Required to check for overlapping CIDRs after provisioning
+   * is complete under IPAM pool
+   */
+  public abstract readonly ipv4IpamProvisionedCidrs?: string[];
 
   /**
   * If this is set to true, don't error out on trying to select subnets
@@ -382,8 +409,11 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
       vpc: this,
     });
 
-    const useIpv6 = (this.secondaryCidrBlock.some((secondaryAddress) => secondaryAddress.amazonProvidedIpv6CidrBlock === true ||
+    let useIpv6;
+    if (this.secondaryCidrBlock) {
+      useIpv6 = (this.secondaryCidrBlock.some((secondaryAddress) => secondaryAddress.amazonProvidedIpv6CidrBlock === true ||
     secondaryAddress.ipv6IpamPoolId != undefined));
+    }
 
     if (!useIpv6) {
       throw new Error('Egress only IGW can only be added to Ipv6 enabled VPC');

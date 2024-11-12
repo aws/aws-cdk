@@ -9,7 +9,7 @@
     "InstanceTenancy": "default"
    }
   },
-  "eigwAmazonIpv69E78211F": {
+  "eigwAmazonIpv6DB7F7BE7": {
    "Type": "AWS::EC2::VPCCidrBlock",
    "Properties": {
     "AmazonProvidedIpv6CidrBlock": true,
@@ -67,7 +67,7 @@
     }
    },
    "DependsOn": [
-    "eigwAmazonIpv69E78211F"
+    "eigwAmazonIpv6DB7F7BE7"
    ]
   },
   "eigwSubnetRouteTableAssociation887F4A97": {
@@ -84,7 +84,7 @@
     }
    },
    "DependsOn": [
-    "eigwAmazonIpv69E78211F"
+    "eigwAmazonIpv6DB7F7BE7"
    ]
   },
   "testEOIGWEIGW54CCAD37": {

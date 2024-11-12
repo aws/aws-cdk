@@ -210,6 +210,8 @@ The following tools need to be installed on your system prior to installing the 
 - [Python >= 3.8.0, < 4.0](https://www.python.org/downloads/release/python-380/)
 - [Docker >= 19.03](https://docs.docker.com/get-docker/)
   - the Docker daemon must also be running
+- [git-lfs](https://docs.github.com/en/repositories/working-with-files/managing-large-files/installing-git-large-file-storage)
+  - Without this, you'll get the message that the clone succeeded but the checkout failed when you initially clone the repo.
 
 First fork the repository https://github.com/aws/aws-cdk/fork, and then run the following commands to clone the repository locally.
 
@@ -761,6 +763,40 @@ You can find the dependabot config file [here](./.github/dependabot.yml).
 
 **If you think your PR introduces a new unconventional dependency, make sure to call it
 out in the description so that we can discuss the best way to manage that dependency.**
+
+### Addressing Code Coverage Gaps
+
+We leverage [Codecov](https://about.codecov.io/) to track code coverage of the project.
+If your PR doesn't meet the coverage requirements, you'll see failing status checks, which will prevent the PR from merging.
+
+There are two requirements we define, each are enforced both on the overall 
+project as well as individual packages.
+
+1. Coverage percentage must not decrease.
+2. Patch percentage must be at least 95%.
+
+Following is an example of status checks for a PR that violates both requirements:
+
+![](./images/codecov-violations.png)
+
+To fix and diagnose coverage gaps in your PR, there are two options:
+
+1. Push your changes to the PR and wait for Codecov to comment on the PR.
+2. If you find option 1 too slow, you can open a local coverage report located in `<path-to-package>/coverage/index.html`
+
+> [!NOTE]
+> Coverage percentage in local reports differs slightly from the percentage you'll see on Codecov.
+> This is ok, and is related to how Codecov handles function signatures (probably).
+> Ultimately Codecov is the source of truth, but you can still use local reports to locate uncovered
+> lines and address them.
+
+Even though it should be rare, sometimes specific lines will be hard to cover by tests.
+To disable coverage of specific lines, you can use:
+
+```ts
+/* istanbul ignore next */
+console.log('This cannot be covered')
+```
 
 ### Step 5: Merge
 

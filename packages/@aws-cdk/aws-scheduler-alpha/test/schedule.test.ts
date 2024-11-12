@@ -64,13 +64,22 @@ describe('Schedule', () => {
     });
   });
 
-  test('returns metric for delivery of failed invocations to DLQ', () => {
+  test.each([
+    ['metricAllThrottled', 'InvocationThrottleCount'],
+    ['metricAllErrors', 'TargetErrorCount'],
+    ['metricAllAttempts', 'InvocationAttemptCount'],
+    ['metricAllTargetThrottled', 'TargetErrorThrottledCount'],
+    ['metricAllDropped', 'InvocationDroppedCount'],
+    ['metricAllSentToDLQ', 'InvocationsSentToDeadLetterCount'],
+    ['metricAllSentToDLQTruncated', 'InvocationsSentToDeadLetterCount_Truncated_MessageSizeExceeded'],
+
+  ])('returns expected metric for %s', (metricMethodName: string, metricName: string) => {
     // WHEN
-    const metric = Schedule.metricAllFailedToBeSentToDLQ();
+    const metric = (Schedule as any)[metricMethodName]();
 
     // THEN
     expect(metric.namespace).toEqual('AWS/Scheduler');
-    expect(metric.metricName).toEqual('InvocationsFailedToBeSentToDeadLetterCount');
+    expect(metric.metricName).toEqual(metricName);
     expect(metric.dimensions).toBeUndefined();
     expect(metric.statistic).toEqual('Sum');
     expect(metric.period).toEqual(Duration.minutes(5));
@@ -83,6 +92,18 @@ describe('Schedule', () => {
     // THEN
     expect(metric.namespace).toEqual('AWS/Scheduler');
     expect(metric.metricName).toEqual('InvocationsFailedToBeSentToDeadLetterCount_test_error_code');
+    expect(metric.dimensions).toBeUndefined();
+    expect(metric.statistic).toEqual('Sum');
+    expect(metric.period).toEqual(Duration.minutes(5));
+  });
+
+  test('returns metric for delivery of failed invocations to DLQ with no error code', () => {
+    // WHEN
+    const metric = Schedule.metricAllFailedToBeSentToDLQ();
+
+    // THEN
+    expect(metric.namespace).toEqual('AWS/Scheduler');
+    expect(metric.metricName).toEqual('InvocationsFailedToBeSentToDeadLetterCount');
     expect(metric.dimensions).toBeUndefined();
     expect(metric.statistic).toEqual('Sum');
     expect(metric.period).toEqual(Duration.minutes(5));
@@ -119,7 +140,7 @@ describe('Schedule', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['kms:Decrypt', 'kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'],
+            Action: 'kms:Decrypt',
             Effect: 'Allow',
             Resource: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
           },

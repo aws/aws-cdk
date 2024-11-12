@@ -62,7 +62,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 
 const vpc = new ec2.Vpc(this, 'Vpc');
-const bucket = s3.Bucket.fromBucketName(this, 'bucket', 'logging-bucket');
+const bucket = s3.Bucket.fromBucketName(this, 'bucket', 'amzn-s3-demo-bucket');
 
 const cluster = new Cluster(this, 'Redshift', {
   masterUser: {
@@ -75,6 +75,30 @@ const cluster = new Cluster(this, 'Redshift', {
   }
 });
 ```
+
+## Availability Zone Relocation
+
+By using [relocation in Amazon Redshift](https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-recovery.html), you allow Amazon Redshift to move a cluster to another Availability Zone (AZ) without any loss of data or changes to your applications.
+This feature can be applied to both new and existing clusters.
+
+To enable this feature, set the `availabilityZoneRelocation` property to `true`.
+
+```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+
+declare const vpc: ec2.IVpc;
+
+const cluster = new Cluster(this, 'Redshift', {
+  masterUser: {
+    masterUsername: 'admin',
+  },
+  vpc,
+  nodeType: NodeType.RA3_XLPLUS,
+  availabilityZoneRelocation: true,
+});
+```
+
+**Note**: The `availabilityZoneRelocation` property is only available for RA3 node types.
 
 ## Connecting
 
@@ -271,6 +295,24 @@ new Table(this, 'Table', {
   ],
   cluster: cluster,
   databaseName: 'databaseName',
+});
+```
+
+Query execution duration is limited to 1 minute by default. You can change this by setting the `timeout` property.
+
+Valid timeout values are between 1 seconds and 15 minutes.
+
+```ts fixture=cluster
+import { Duration } from 'aws-cdk-lib';
+
+new Table(this, 'Table', {
+  tableColumns: [
+    { id: 'col1', name: 'col1', dataType: 'varchar(4)' },
+    { id: 'col2', name: 'col2', dataType: 'float' }
+  ],
+  cluster: cluster,
+  databaseName: 'databaseName',
+  timeout: Duration.minutes(15),
 });
 ```
 

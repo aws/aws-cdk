@@ -192,7 +192,7 @@ export class App extends Stage {
     if (autoSynth) {
       // synth() guarantees it will only execute once, so a default of 'true'
       // doesn't bite manual calling of the function.
-      process.once('beforeExit', () => this.synth());
+      process.once('beforeExit', () => this.synth({ errorOnDuplicateSynth: false }));
     }
 
     this._treeMetadata = props.treeMetadata ?? true;

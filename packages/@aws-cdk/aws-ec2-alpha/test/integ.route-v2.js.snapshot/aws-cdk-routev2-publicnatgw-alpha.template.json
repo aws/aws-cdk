@@ -9,7 +9,7 @@
     "InstanceTenancy": "default"
    }
   },
-  "natgwpubAmazonIpv625B947F8": {
+  "natgwpubAmazonIpv6204D6A95": {
    "Type": "AWS::EC2::VPCCidrBlock",
    "Properties": {
     "AmazonProvidedIpv6CidrBlock": true,
@@ -101,7 +101,7 @@
     }
    },
    "DependsOn": [
-    "natgwpubAmazonIpv625B947F8"
+    "natgwpubAmazonIpv6204D6A95"
    ]
   },
   "natgwpubSubnetRouteTableAssociation019CE26A": {
@@ -118,7 +118,7 @@
     }
    },
    "DependsOn": [
-    "natgwpubAmazonIpv625B947F8"
+    "natgwpubAmazonIpv6204D6A95"
    ]
   },
   "testNATgwIGW6AC97E9A": {
