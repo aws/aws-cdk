@@ -775,8 +775,6 @@ declare const vpc: ec2.Vpc;
 declare const instanceType: ec2.InstanceType;
 declare const machineImage: ec2.IMachineImage;
 
-const myKeyPair = new ec2.KeyPair(this, 'MyKeyPair');
-
 new autoscaling.AutoScalingGroup(this, 'ASG', {
   vpc,
   instanceType,
