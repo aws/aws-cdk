@@ -64,7 +64,7 @@ export class Aspects {
    * Also returns inherited Aspects of this node.
    */
   public get list(): AspectApplication[] {
-    return this._appliedAspects;
+    return [...this._appliedAspects];
   }
 }
 
