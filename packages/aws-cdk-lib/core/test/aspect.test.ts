@@ -40,12 +40,10 @@ class AddLoggingBucketAspect implements IAspect {
   public visit(node: IConstruct): void {
     // Check if the node is an S3 Bucket
     if (node instanceof CfnBucket) {
-      // Add a new logging bucket Bucket
-      new CfnResource(node, 'NewResource', {
-        type: 'AWS::S3::Bucket',
-        properties: {
-          BucketName: 'my-new-logging-bucket-from-aspect',
-        },
+      // Add a new logging bucket Bucket to the stack this bucket belongs to.
+      const stack = Stack.of(node);
+      new Bucket(stack, 'my-new-logging-bucket-from-aspect', {
+        bucketName: 'my-new-logging-bucket-from-aspect'
       });
     }
   }
