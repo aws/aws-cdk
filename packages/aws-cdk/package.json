@@ -106,7 +106,6 @@
     "@aws-cdk/cloudformation-diff": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
-    "@aws-cdk/yargs-gen": "0.0.0",
     "@aws-sdk/client-appsync": "3.632.0",
     "@aws-sdk/client-cloudformation": "3.632.0",
     "@aws-sdk/client-cloudwatch-logs": "3.632.0",
