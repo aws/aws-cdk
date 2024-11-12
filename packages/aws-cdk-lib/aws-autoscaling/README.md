@@ -763,11 +763,7 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
 });
 ```
 
-## Availability Zone Distribution
-
-You can configure how Auto Scaling distributes instances across Availability Zones when scaling operations occur. This is particularly useful when you need strict control over instance distribution for high availability.
-
-### capacityDistributionStrategy
+## Capacity Distribution Strategy
 
 If launches fail in an Availability Zone, the following strategies are available.
 
