@@ -1,8 +1,8 @@
-import { Construct } from 'constructs';
-import { ICluster } from './cluster';
-import { KubectlProvider } from './kubectl-provider';
-import { Asset } from '../../aws-s3-assets';
-import { CustomResource, Duration, Names, Stack } from '../../core';
+import { Construct } from "constructs";
+import { ICluster } from "./cluster";
+import { KubectlProvider } from "./kubectl-provider";
+import { Asset } from "../../aws-s3-assets";
+import { CustomResource, Duration, Names, Stack } from "../../core";
 
 /**
  * Helm Chart options.
@@ -36,11 +36,11 @@ export interface HelmChartOptions {
   readonly repository?: string;
 
   /**
-  * The chart in the form of an asset.
-  * Either this or `chart` must be specified.
-  *
-  * @default - No chart asset. Implies `chart` is used.
-  */
+   * The chart in the form of an asset.
+   * Either this or `chart` must be specified.
+   *
+   * @default - No chart asset. Implies `chart` is used.
+   */
   readonly chartAsset?: Asset;
 
   /**
@@ -58,7 +58,7 @@ export interface HelmChartOptions {
    * }
    * @default - No values are provided to the chart.
    */
-  readonly values?: {[key: string]: any};
+  readonly values?: { [key: string]: any };
 
   /**
    * Whether or not Helm should wait until all Pods, PVCs, Services, and minimum number of Pods of a
@@ -114,7 +114,7 @@ export class HelmChart extends Construct {
   /**
    * The CloudFormation resource type.
    */
-  public static readonly RESOURCE_TYPE = 'Custom::AWSCDK-EKS-HelmChart';
+  public static readonly RESOURCE_TYPE = "Custom::AWSCDK-EKS-HelmChart";
   public readonly chart?: string;
   public readonly repository?: string;
   public readonly version?: string;
@@ -137,16 +137,18 @@ export class HelmChart extends Construct {
 
     const timeout = props.timeout?.toSeconds();
     if (timeout && timeout > 900) {
-      throw new Error('Helm chart timeout cannot be higher than 15 minutes.');
+      throw new Error("Helm chart timeout cannot be higher than 15 minutes.");
     }
 
     if (!this.chart && !this.chartAsset) {
-      throw new Error("Either 'chart' or 'chartAsset' must be specified to install a helm chart");
+      throw new Error(
+        "Either 'chart' or 'chartAsset' must be specified to install a helm chart"
+      );
     }
 
     if (this.chartAsset && (this.repository || this.version)) {
       throw new Error(
-        "Neither 'repository' nor 'version' can be used when configuring 'chartAsset'",
+        "Neither 'repository' nor 'version' can be used when configuring 'chartAsset'"
       );
     }
 
@@ -160,8 +162,10 @@ export class HelmChart extends Construct {
     const atomic = props.atomic ?? false;
 
     this.chartAsset?.grantRead(provider.handlerRole);
+    // to wait the permission affected
+    this.chartAsset?.node.addDependency(provider.handlerRole);
 
-    new CustomResource(this, 'Resource', {
+    new CustomResource(this, "Resource", {
       serviceToken: provider.serviceToken,
       resourceType: HelmChart.RESOURCE_TYPE,
       properties: {
@@ -173,8 +177,8 @@ export class HelmChart extends Construct {
         Version: this.version,
         Wait: wait || undefined, // props are stringified so we encode “false” as undefined
         Timeout: timeout ? `${timeout.toString()}s` : undefined, // Helm v3 expects duration instead of integer
-        Values: (props.values ? stack.toJsonString(props.values) : undefined),
-        Namespace: props.namespace ?? 'default',
+        Values: props.values ? stack.toJsonString(props.values) : undefined,
+        Namespace: props.namespace ?? "default",
         Repository: this.repository,
         CreateNamespace: createNamespace || undefined,
         SkipCrds: skipCrds || undefined,
