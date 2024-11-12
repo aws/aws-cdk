@@ -172,7 +172,7 @@ describe('aspect', () => {
     });
 
     // WHEN - adding both Aspects but making LoggingBucket Aspect run first
-    Aspects.of(stack).add(new AddLoggingBucketAspect(), 0);
+    Aspects.of(stack).add(new AddLoggingBucketAspect(), { priority: 0 });
     Aspects.of(stack).add(new EnableBucketVersioningAspect());
 
     // THEN - both Aspects are successfully applied, new logging bucket is added with versioning enabled

@@ -12,6 +12,14 @@ export interface IAspect {
   visit(node: IConstruct): void;
 }
 
+export interface AspectOptions {
+  /**
+   * The priority value to apply on an Aspect.
+   * Priority be a non-negative integer.
+   */
+  readonly priority?: number;
+}
+
 /**
  * Aspects can be applied to CDK tree scopes and can operate on the tree before
  * synthesis.
@@ -47,8 +55,8 @@ export class Aspects {
    * Adds an aspect to apply this scope before synthesis.
    * @param aspect The aspect to add.
    */
-  public add(aspect: IAspect, priority?: number) {
-    this._appliedAspects.push(new AspectApplication(this._scope, aspect, priority ?? 600));
+  public add(aspect: IAspect, options?: AspectOptions) {
+    this._appliedAspects.push(new AspectApplication(this._scope, aspect, options?.priority ?? 600));
   }
 
   /**
