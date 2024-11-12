@@ -1,7 +1,7 @@
 import { debug } from '../../logging';
-import { ISDK } from '../aws-auth/sdk';
+import { SDK } from '../aws-auth/sdk';
 
-export async function determineAllowCrossAccountAssetPublishing(sdk: ISDK, customStackName?: string): Promise<boolean> {
+export async function determineAllowCrossAccountAssetPublishing(sdk: SDK, customStackName?: string): Promise<boolean> {
   try {
     const stackName = customStackName || 'CDKToolkit';
     const stackInfo = await getBootstrapStackInfo(sdk, stackName);
@@ -39,10 +39,10 @@ interface BootstrapStackInfo {
   bootstrapVersion: number;
 }
 
-export async function getBootstrapStackInfo(sdk: ISDK, stackName: string): Promise<BootstrapStackInfo> {
+export async function getBootstrapStackInfo(sdk: SDK, stackName: string): Promise<BootstrapStackInfo> {
   try {
     const cfn = sdk.cloudFormation();
-    const stackResponse = await cfn.describeStacks({ StackName: stackName }).promise();
+    const stackResponse = await cfn.describeStacks({ StackName: stackName });
 
     if (!stackResponse.Stacks || stackResponse.Stacks.length === 0) {
       throw new Error(`Toolkit stack ${stackName} not found`);

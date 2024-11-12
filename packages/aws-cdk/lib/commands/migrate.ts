@@ -3,12 +3,24 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Environment, UNKNOWN_ACCOUNT, UNKNOWN_REGION } from '@aws-cdk/cx-api';
-import { CloudFormation } from 'aws-sdk';
+import type {
+  DescribeGeneratedTemplateCommandOutput,
+  DescribeResourceScanCommandOutput,
+  GetGeneratedTemplateCommandOutput,
+  ListResourceScanResourcesCommandInput,
+  ResourceDefinition,
+  ResourceDetail,
+  ResourceIdentifierSummary,
+  ResourceScanSummary,
+  ScannedResource,
+  ScannedResourceIdentifier,
+} from '@aws-sdk/client-cloudformation';
 import * as cdk_from_cfn from 'cdk-from-cfn';
 import * as chalk from 'chalk';
 import { cliInit } from '../../lib/init';
 import { print } from '../../lib/logging';
-import { Mode, SdkProvider } from '../api/aws-auth';
+import type { ICloudFormationClient, SdkProvider } from '../api/aws-auth';
+import { Mode } from '../api/plugin';
 import { CloudFormationStack } from '../api/util/cloudformation';
 import { zipDirectory } from '../util/archive';
 const camelCase = require('camelcase');
@@ -24,8 +36,13 @@ export const MIGRATE_SUPPORTED_LANGUAGES: readonly string[] = cdk_from_cfn.suppo
  * @param language The language to generate the CDK app in
  * @param outputPath The path at which to generate the CDK app
  */
-export async function generateCdkApp(stackName: string, stack: string, language: string, outputPath?: string, compress?: boolean)
-  : Promise<void> {
+export async function generateCdkApp(
+  stackName: string,
+  stack: string,
+  language: string,
+  outputPath?: string,
+  compress?: boolean,
+): Promise<void> {
   const resolvedOutputPath = path.join(outputPath ?? process.cwd(), stackName);
   const formattedStackName = decamelize(stackName);
 
@@ -61,7 +78,9 @@ export async function generateCdkApp(stackName: string, stack: string, language:
         stackFileName = `${resolvedOutputPath}/${formattedStackName}.go`;
         break;
       default:
-        throw new Error(`${language} is not supported by CDK Migrate. Please choose from: ${MIGRATE_SUPPORTED_LANGUAGES.join(', ')}`);
+        throw new Error(
+          `${language} is not supported by CDK Migrate. Please choose from: ${MIGRATE_SUPPORTED_LANGUAGES.join(', ')}`,
+        );
     }
     fs.writeFileSync(stackFileName, stack);
     if (compress) {
@@ -117,16 +136,21 @@ export function readFromPath(inputPath: string): string {
  * @param environment The account and region where the stack is deployed
  * @returns A string representation of the template if present, otherwise undefined
  */
-export async function readFromStack(stackName: string, sdkProvider: SdkProvider, environment: Environment): Promise<string | undefined> {
+export async function readFromStack(
+  stackName: string,
+  sdkProvider: SdkProvider,
+  environment: Environment,
+): Promise<string | undefined> {
   const cloudFormation = (await sdkProvider.forEnvironment(environment, Mode.ForReading)).sdk.cloudFormation();
 
   const stack = await CloudFormationStack.lookup(cloudFormation, stackName, true);
   if (stack.stackStatus.isDeploySuccess || stack.stackStatus.isRollbackSuccess) {
     return JSON.stringify(await stack.template());
   } else {
-    throw new Error(`Stack '${stackName}' in account ${environment.account} and region ${environment.region} has a status of '${stack.stackStatus.name}' due to '${stack.stackStatus.reason}'. The stack cannot be migrated until it is in a healthy state.`);
+    throw new Error(
+      `Stack '${stackName}' in account ${environment.account} and region ${environment.region} has a status of '${stack.stackStatus.name}' due to '${stack.stackStatus.reason}'. The stack cannot be migrated until it is in a healthy state.`,
+    );
   }
-  return;
 }
 
 /**
@@ -136,23 +160,21 @@ export async function readFromStack(stackName: string, sdkProvider: SdkProvider,
  * @param GenerateTemplateOptions An object containing the stack name, filters, sdkProvider, environment, and newScan flag
  * @returns a generated cloudformation template
  */
-export async function generateTemplate(
-  options: GenerateTemplateOptions,
-): Promise<GenerateTemplateOutput> {
+export async function generateTemplate(options: GenerateTemplateOptions): Promise<GenerateTemplateOutput> {
   const cfn = new CfnTemplateGeneratorProvider(await buildCfnClient(options.sdkProvider, options.environment));
 
   const scanId = await findLastSuccessfulScan(cfn, options);
 
   // if a customer accidentally ctrl-c's out of the command and runs it again, this will continue the progress bar where it left off
   const curScan = await cfn.describeResourceScan(scanId);
-  if ((curScan.Status == ScanStatus.IN_PROGRESS)) {
+  if (curScan.Status == ScanStatus.IN_PROGRESS) {
     print('Resource scan in progress. Please wait, this can take 10 minutes or longer.');
     await scanProgressBar(scanId, cfn);
   }
 
   displayTimeDiff(new Date(), new Date(curScan.StartTime!));
 
-  let resources: CloudFormation.ScannedResources = await cfn.listResourceScanResources(scanId!, options.filters);
+  let resources: ScannedResource[] = await cfn.listResourceScanResources(scanId!, options.filters);
 
   print('finding related resources.');
   let relatedResources = await cfn.getResourceScanRelatedResources(scanId!, resources);
@@ -171,11 +193,18 @@ export async function generateTemplate(
   }
   print('');
   print('Template successfully generated!');
-  return buildGenertedTemplateOutput(generatedTemplate, (await cfn.getGeneratedTemplate(templateArn)).TemplateBody!, templateArn);
+  return buildGenertedTemplateOutput(
+    generatedTemplate,
+    (await cfn.getGeneratedTemplate(templateArn)).TemplateBody!,
+    templateArn,
+  );
 }
 
-async function findLastSuccessfulScan(cfn: CfnTemplateGeneratorProvider, options: GenerateTemplateOptions): Promise<string> {
-  let resourceScanSummaries: CloudFormation.ResourceScanSummaries | undefined = [];
+async function findLastSuccessfulScan(
+  cfn: CfnTemplateGeneratorProvider,
+  options: GenerateTemplateOptions,
+): Promise<string> {
+  let resourceScanSummaries: ResourceScanSummary[] | undefined = [];
   const clientRequestToken = `cdk-migrate-${options.environment.account}-${options.environment.region}`;
   if (options.fromScan === FromScan.NEW) {
     print(`Starting new scan for account ${options.environment.account} in region ${options.environment.region}`);
@@ -213,7 +242,9 @@ async function findLastSuccessfulScan(cfn: CfnTemplateGeneratorProvider, options
  * @param filters a string of filters in the format of key1=value1,key2=value2
  * @returns a map of the filters
  */
-function parseFilters(filters: string): {[key in FilterType]: string | undefined } {
+function parseFilters(filters: string): {
+  [key in FilterType]: string | undefined;
+} {
   if (!filters) {
     return {
       'resource-identifier': undefined,
@@ -221,7 +252,7 @@ function parseFilters(filters: string): {[key in FilterType]: string | undefined
       'tag-key': undefined,
       'tag-value': undefined,
     };
-  };
+  }
 
   const filterShorthands: { [key: string]: FilterType } = {
     'identifier': FilterType.RESOURCE_IDENTIFIER,
@@ -232,7 +263,7 @@ function parseFilters(filters: string): {[key in FilterType]: string | undefined
 
   const filterList = filters.split(',');
 
-  let filterMap: { [key in FilterType]: string | undefined} = {
+  let filterMap: { [key in FilterType]: string | undefined } = {
     [FilterType.RESOURCE_IDENTIFIER]: undefined,
     [FilterType.RESOURCE_TYPE_PREFIX]: undefined,
     [FilterType.TAG_KEY]: undefined,
@@ -278,7 +309,11 @@ export function chunks(list: any[], chunkSize: number): any[][] {
  * @returns The environment object
  */
 export function setEnvironment(account?: string, region?: string): Environment {
-  return { account: account ?? UNKNOWN_ACCOUNT, region: region ?? UNKNOWN_REGION, name: 'cdk-migrate-env' };
+  return {
+    account: account ?? UNKNOWN_ACCOUNT,
+    region: region ?? UNKNOWN_REGION,
+    name: 'cdk-migrate-env',
+  };
 }
 
 /**
@@ -296,8 +331,7 @@ export enum TemplateSourceOptions {
 type TemplateSource =
   | { source: TemplateSourceOptions.SCAN }
   | { source: TemplateSourceOptions.PATH; templatePath: string }
-  | { source: TemplateSourceOptions.STACK; stackName: string }
-  ;
+  | { source: TemplateSourceOptions.STACK; stackName: string };
 
 /**
  * Enum for the status of a resource scan
@@ -342,11 +376,13 @@ export function parseSourceOptions(fromPath?: string, fromStack?: boolean, stack
  * @param resourceList the list of resources provided by the list scanned resources calls
  * @returns a list of resources not managed by cfn stacks
  */
-function excludeManaged(resourceList: CloudFormation.ScannedResources): CloudFormation.ScannedResourceIdentifiers {
-  return resourceList.filter((r) => !r.ManagedByStack).map((r) => ({
-    ResourceType: r.ResourceType!,
-    ResourceIdentifier: r.ResourceIdentifier!,
-  }));
+function excludeManaged(resourceList: ScannedResource[]): ScannedResourceIdentifier[] {
+  return resourceList
+    .filter((r) => !r.ManagedByStack)
+    .map((r) => ({
+      ResourceType: r.ResourceType!,
+      ResourceIdentifier: r.ResourceIdentifier!,
+    }));
 }
 
 /**
@@ -354,12 +390,12 @@ function excludeManaged(resourceList: CloudFormation.ScannedResources): CloudFor
  * Setting the value of the field to undefined effectively removes it from the object.
  *
  * @param resourceList the list of resources provided by the list scanned resources calls
- * @returns a list of ScannedResourceIdentifiers
+ * @returns a list of ScannedResourceIdentifier[]
  */
-function resourceIdentifiers(resourceList: CloudFormation.ScannedResources): CloudFormation.ScannedResourceIdentifiers {
-  const identifiers: CloudFormation.ScannedResourceIdentifiers = [];
+function resourceIdentifiers(resourceList: ScannedResource[]): ScannedResourceIdentifier[] {
+  const identifiers: ScannedResourceIdentifier[] = [];
   resourceList.forEach((r) => {
-    const identifier: CloudFormation.ScannedResourceIdentifier = {
+    const identifier: ScannedResourceIdentifier = {
       ResourceType: r.ResourceType!,
       ResourceIdentifier: r.ResourceIdentifier!,
     };
@@ -377,12 +413,15 @@ function resourceIdentifiers(resourceList: CloudFormation.ScannedResources): Clo
 export async function scanProgressBar(scanId: string, cfn: CfnTemplateGeneratorProvider) {
   let curProgress = 0.5;
   // we know it's in progress initially since we wouldn't have gotten here if it wasn't
-  let curScan: CloudFormation.DescribeResourceScanOutput = { Status: ScanStatus.IN_PROGRESS };
+  let curScan: DescribeResourceScanCommandOutput = {
+    Status: ScanStatus.IN_PROGRESS,
+    $metadata: {},
+  };
   while (curScan.Status == ScanStatus.IN_PROGRESS) {
     curScan = await cfn.describeResourceScan(scanId);
     curProgress = curScan.PercentageCompleted ?? curProgress;
     printBar(30, curProgress);
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 2000));
   }
   print('');
   print('✅ Scan Complete!');
@@ -422,21 +461,19 @@ export function printBar(width: number, progress: number) {
  * @param timeoutx4 The amount of time to wait before printing the next period
  */
 export async function printDots(message: string, timeoutx4: number) {
-
   if (!process.env.MIGRATE_INTEG_TEST) {
     rewriteLine(message + ' .');
-    await new Promise(resolve => setTimeout(resolve, timeoutx4));
+    await new Promise((resolve) => setTimeout(resolve, timeoutx4));
 
     rewriteLine(message + ' ..');
-    await new Promise(resolve => setTimeout(resolve, timeoutx4));
+    await new Promise((resolve) => setTimeout(resolve, timeoutx4));
 
     rewriteLine(message + ' ...');
-    await new Promise(resolve => setTimeout(resolve, timeoutx4));
+    await new Promise((resolve) => setTimeout(resolve, timeoutx4));
 
     rewriteLine(message);
-    await new Promise(resolve => setTimeout(resolve, timeoutx4));
+    await new Promise((resolve) => setTimeout(resolve, timeoutx4));
   }
-
 }
 
 /**
@@ -474,13 +511,20 @@ export function displayTimeDiff(time1: Date, time2: Date): void {
  * @param stackName The name of the stack
  * @param generatedOutput The output of the template generator
  */
-export function writeMigrateJsonFile(outputPath: string | undefined, stackName: string, migrateJson: MigrateJsonFormat) {
+export function writeMigrateJsonFile(
+  outputPath: string | undefined,
+  stackName: string,
+  migrateJson: MigrateJsonFormat,
+) {
   const outputToJson = {
     '//': 'This file is generated by cdk migrate. It will be automatically deleted after the first successful deployment of this app to the environment of the original resources.',
     'Source': migrateJson.source,
     'Resources': migrateJson.resources,
   };
-  fs.writeFileSync(`${path.join(outputPath ?? process.cwd(), stackName)}/migrate.json`, JSON.stringify(outputToJson, null, 2));
+  fs.writeFileSync(
+    `${path.join(outputPath ?? process.cwd(), stackName)}/migrate.json`,
+    JSON.stringify(outputToJson, null, 2),
+  );
 }
 
 /**
@@ -528,9 +572,12 @@ export function isThereAWarning(generatedTemplateOutput: GenerateTemplateOutput)
  * @param templateBody The body of the generated template
  * @returns A GenerateTemplateOutput object
  */
-export function buildGenertedTemplateOutput(generatedTemplateSummary: CloudFormation.DescribeGeneratedTemplateOutput,
-  templateBody: string, source: string): GenerateTemplateOutput {
-  const resources: CloudFormation.ResourceDetails | undefined = generatedTemplateSummary.Resources;
+export function buildGenertedTemplateOutput(
+  generatedTemplateSummary: DescribeGeneratedTemplateCommandOutput,
+  templateBody: string,
+  source: string,
+): GenerateTemplateOutput {
+  const resources: ResourceDetail[] | undefined = generatedTemplateSummary.Resources;
   const migrateJson: MigrateJsonFormat = {
     templateBody: templateBody,
     source: source,
@@ -556,11 +603,9 @@ export function buildGenertedTemplateOutput(generatedTemplateSummary: CloudForma
  * @returns A CloudFormation sdk client
  */
 export async function buildCfnClient(sdkProvider: SdkProvider, environment: Environment) {
-  const cloudFormationClient = (await sdkProvider.forEnvironment(environment, Mode.ForReading)).sdk.cloudFormation();
-
-  cloudFormationClient.config.customUserAgent = 'cdk-migrate';
-
-  return cloudFormationClient;
+  const sdk = (await sdkProvider.forEnvironment(environment, Mode.ForReading)).sdk;
+  sdk.appendCustomUserAgent('cdk-migrate');
+  return sdk.cloudFormation();
 }
 
 /**
@@ -569,15 +614,19 @@ export async function buildCfnClient(sdkProvider: SdkProvider, environment: Envi
  * @param filepath The path to the readme file
  * @param resources A list of resources to append warnings for
  */
-export function appendWarningsToReadme(filepath: string, resources: CloudFormation.ResourceDetails) {
+export function appendWarningsToReadme(filepath: string, resources: ResourceDetail[]) {
   const readme = fs.readFileSync(filepath, 'utf8');
   const lines = readme.split('\n');
   const index = lines.findIndex((line) => line.trim() === 'Enjoy!');
   let linesToAdd = ['\n## Warnings'];
   linesToAdd.push('### Write-only properties');
-  linesToAdd.push("Write-only properties are resource property values that can be written to but can't be read by AWS CloudFormation or CDK Migrate. For more information, see [IaC generator and write-only properties](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/generate-IaC-write-only-properties.html).");
+  linesToAdd.push(
+    "Write-only properties are resource property values that can be written to but can't be read by AWS CloudFormation or CDK Migrate. For more information, see [IaC generator and write-only properties](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/generate-IaC-write-only-properties.html).",
+  );
   linesToAdd.push('\n');
-  linesToAdd.push('Write-only properties discovered during migration are organized here by resource ID and categorized by write-only property type. Resolve write-only properties by providing property values in your CDK app. For guidance, see [Resolve write-only properties](https://docs.aws.amazon.com/cdk/v2/guide/migrate.html#migrate-resources-writeonly).');
+  linesToAdd.push(
+    'Write-only properties discovered during migration are organized here by resource ID and categorized by write-only property type. Resolve write-only properties by providing property values in your CDK app. For guidance, see [Resolve write-only properties](https://docs.aws.amazon.com/cdk/v2/guide/migrate.html#migrate-resources-writeonly).',
+  );
   for (const resource of resources) {
     if (resource.Warnings && resource.Warnings.length > 0) {
       linesToAdd.push(`### ${resource.LogicalResourceId}`);
@@ -599,8 +648,8 @@ export function appendWarningsToReadme(filepath: string, resources: CloudFormati
  * @param resources A list of resources to deduplicate
  * @returns A list of unique resources
  */
-function deduplicateResources(resources: CloudFormation.ResourceDetails) {
-  let uniqueResources: {[key: string]: CloudFormation.ResourceDetail} = {};
+function deduplicateResources(resources: ResourceDetail[]) {
+  let uniqueResources: { [key: string]: ResourceDetail } = {};
 
   for (const resource of resources) {
     const key = Object.keys(resource.ResourceIdentifier!)[0];
@@ -612,23 +661,27 @@ function deduplicateResources(resources: CloudFormation.ResourceDetails) {
   }
 
   return Object.values(uniqueResources);
-};
+}
 
 /**
  * Class for making CloudFormation template generator calls
  */
 export class CfnTemplateGeneratorProvider {
-  private cfn: CloudFormation;
-  constructor(cfn: CloudFormation) {
+  private cfn: ICloudFormationClient;
+  constructor(cfn: ICloudFormationClient) {
     this.cfn = cfn;
   }
 
-  async checkForResourceScan(resourceScanSummaries: CloudFormation.ResourceScanSummaries | undefined,
-    options: GenerateTemplateOptions, clientRequestToken: string) {
-
+  async checkForResourceScan(
+    resourceScanSummaries: ResourceScanSummary[] | undefined,
+    options: GenerateTemplateOptions,
+    clientRequestToken: string,
+  ) {
     if (!resourceScanSummaries || resourceScanSummaries.length === 0) {
       if (options.fromScan === FromScan.MOST_RECENT) {
-        throw new Error('No scans found. Please either start a new scan with the `--from-scan` new or do not specify a `--from-scan` option.');
+        throw new Error(
+          'No scans found. Please either start a new scan with the `--from-scan` new or do not specify a `--from-scan` option.',
+        );
       } else {
         print('No scans found. Initiating a new resource scan.');
         await this.startResourceScan(clientRequestToken);
@@ -643,8 +696,10 @@ export class CfnTemplateGeneratorProvider {
    * @param scanId scan id for the to list resources for
    * @param resources A list of resources to find related resources for
    */
-  async getResourceScanRelatedResources(scanId: string, resources: CloudFormation.ScannedResources )
-    : Promise<CloudFormation.ScannedResourceIdentifiers> {
+  async getResourceScanRelatedResources(
+    scanId: string,
+    resources: ScannedResource[],
+  ): Promise<ScannedResourceIdentifier[]> {
     let relatedResourceList = resources;
 
     // break the list of resources into chunks of 100 to avoid hitting the 100 resource limit
@@ -653,7 +708,7 @@ export class CfnTemplateGeneratorProvider {
       const res = await this.cfn.listResourceScanRelatedResources({
         ResourceScanId: scanId,
         Resources: chunk,
-      }).promise();
+      });
 
       // add the first page to the list
       relatedResourceList.push(...(res.RelatedResources ?? []));
@@ -665,7 +720,7 @@ export class CfnTemplateGeneratorProvider {
           ResourceScanId: scanId,
           Resources: resourceIdentifiers(resources),
           NextToken: nextToken,
-        }).promise();
+        });
         nextToken = nextRelatedResources.NextToken;
         relatedResourceList.push(...(nextRelatedResources.RelatedResources ?? []));
       }
@@ -674,7 +729,9 @@ export class CfnTemplateGeneratorProvider {
     relatedResourceList = deduplicateResources(relatedResourceList);
 
     // prune the managedbystack flag off of them again.
-    return process.env.MIGRATE_INTEG_TEST ? resourceIdentifiers(relatedResourceList) : resourceIdentifiers(excludeManaged(relatedResourceList)) ;
+    return process.env.MIGRATE_INTEG_TEST
+      ? resourceIdentifiers(relatedResourceList)
+      : resourceIdentifiers(excludeManaged(relatedResourceList));
   }
 
   /**
@@ -684,10 +741,12 @@ export class CfnTemplateGeneratorProvider {
    *
    * @returns A string representing the scan id
    */
-  async startResourceScan(requestToken: string ) {
-    return (await this.cfn.startResourceScan({
-      ClientRequestToken: requestToken,
-    }).promise()).ResourceScanId;
+  async startResourceScan(requestToken: string) {
+    return (
+      await this.cfn.startResourceScan({
+        ClientRequestToken: requestToken,
+      })
+    ).ResourceScanId;
   }
 
   /**
@@ -696,24 +755,21 @@ export class CfnTemplateGeneratorProvider {
    * @returns a list of resource scan summaries
    */
   async listResourceScans() {
-
-    return this.cfn.listResourceScans().promise();
+    return this.cfn.listResourceScans();
   }
 
   /**
    * Retrieves a tokenized list of resources from a resource scan. If a token is present, this function
-   * will loop through all pages and combine them into a single list of ScannedResources.
+   * will loop through all pages and combine them into a single list of ScannedResource[].
    * Additionally will apply any filters provided by the customer.
    *
    * @param scanId scan id for the to list resources for
    * @param filters a string of filters in the format of key1=value1,key2=value2
    * @returns a combined list of all resources from the scan
    */
-  async listResourceScanResources(scanId: string, filters: string[] = [] )
-    : Promise<CloudFormation.ScannedResourceIdentifiers> {
-
-    let resourceList: CloudFormation.ScannedResources = [];
-    let resourceScanInputs: CloudFormation.ListResourceScanResourcesInput;
+  async listResourceScanResources(scanId: string, filters: string[] = []): Promise<ScannedResourceIdentifier[]> {
+    let resourceList: ScannedResource[] = [];
+    let resourceScanInputs: ListResourceScanResourcesCommandInput;
 
     if (filters.length > 0) {
       print('Applying filters to resource scan.');
@@ -726,14 +782,14 @@ export class CfnTemplateGeneratorProvider {
           TagKey: filterList[FilterType.TAG_KEY],
           TagValue: filterList[FilterType.TAG_VALUE],
         };
-        const resources = await this.cfn.listResourceScanResources(resourceScanInputs).promise();
+        const resources = await this.cfn.listResourceScanResources(resourceScanInputs);
         resourceList = resourceList.concat(resources.Resources ?? []);
         let nextToken = resources.NextToken;
 
         // cycle through the pages adding all resources to the list until we run out of pages
         while (nextToken) {
           resourceScanInputs.NextToken = nextToken;
-          const nextResources = await this.cfn.listResourceScanResources(resourceScanInputs).promise();
+          const nextResources = await this.cfn.listResourceScanResources(resourceScanInputs);
           nextToken = nextResources.NextToken;
           resourceList = resourceList!.concat(nextResources.Resources ?? []);
         }
@@ -743,14 +799,14 @@ export class CfnTemplateGeneratorProvider {
       resourceScanInputs = {
         ResourceScanId: scanId,
       };
-      const resources = await this.cfn.listResourceScanResources(resourceScanInputs).promise();
+      const resources = await this.cfn.listResourceScanResources(resourceScanInputs);
       resourceList = resourceList!.concat(resources.Resources ?? []);
       let nextToken = resources.NextToken;
 
       // cycle through the pages adding all resources to the list until we run out of pages
       while (nextToken) {
         resourceScanInputs.NextToken = nextToken;
-        const nextResources = await this.cfn.listResourceScanResources(resourceScanInputs).promise();
+        const nextResources = await this.cfn.listResourceScanResources(resourceScanInputs);
         nextToken = nextResources.NextToken;
         resourceList = resourceList!.concat(nextResources.Resources ?? []);
       }
@@ -760,7 +816,9 @@ export class CfnTemplateGeneratorProvider {
     }
     resourceList = deduplicateResources(resourceList);
 
-    return process.env.MIGRATE_INTEG_TEST ? resourceIdentifiers(resourceList) : resourceIdentifiers(excludeManaged(resourceList));
+    return process.env.MIGRATE_INTEG_TEST
+      ? resourceIdentifiers(resourceList)
+      : resourceIdentifiers(excludeManaged(resourceList));
   }
 
   /**
@@ -769,12 +827,10 @@ export class CfnTemplateGeneratorProvider {
    * @param scanId scan id for the to list resources for
    * @returns information about the scan
    */
-  async describeResourceScan(scanId: string ):
-  Promise<CloudFormation.DescribeResourceScanOutput> {
-
+  async describeResourceScan(scanId: string): Promise<DescribeResourceScanCommandOutput> {
     return this.cfn.describeResourceScan({
       ResourceScanId: scanId,
-    }).promise();
+    });
   }
 
   /**
@@ -783,12 +839,10 @@ export class CfnTemplateGeneratorProvider {
    * @param templateId A string representing the template id
    * @returns DescribeGeneratedTemplateOutput an object containing the template status and results
    */
-  async describeGeneratedTemplate(templateId: string ):
-  Promise<CloudFormation.DescribeGeneratedTemplateOutput> {
-
+  async describeGeneratedTemplate(templateId: string): Promise<DescribeGeneratedTemplateCommandOutput> {
     const generatedTemplate = await this.cfn.describeGeneratedTemplate({
       GeneratedTemplateName: templateId,
-    }).promise();
+    });
 
     if (generatedTemplate.Status == ScanStatus.FAILED) {
       throw new Error(generatedTemplate.StatusReason);
@@ -798,33 +852,30 @@ export class CfnTemplateGeneratorProvider {
   }
 
   /**
- * Retrieves a completed generated cloudformation template from the template generator.
- *
- * @param templateId A string representing the template id
- * @param cloudFormation The CloudFormation sdk client to use
- * @returns DescribeGeneratedTemplateOutput an object containing the template status and body
- */
-  async getGeneratedTemplate(templateId: string ):
-  Promise<CloudFormation.GetGeneratedTemplateOutput> {
-
+   * Retrieves a completed generated cloudformation template from the template generator.
+   *
+   * @param templateId A string representing the template id
+   * @param cloudFormation The CloudFormation sdk client to use
+   * @returns DescribeGeneratedTemplateOutput an object containing the template status and body
+   */
+  async getGeneratedTemplate(templateId: string): Promise<GetGeneratedTemplateCommandOutput> {
     return this.cfn.getGeneratedTemplate({
       GeneratedTemplateName: templateId,
-    }).promise();
+    });
   }
 
   /**
- * Kicks off a template generation for a set of resources.
- *
- * @param stackName The name of the stack
- * @param resources A list of resources to generate the template from
- * @returns CreateGeneratedTemplateOutput an object containing the template arn to query on later
- */
-  async createGeneratedTemplate(stackName: string, resources: CloudFormation.ResourceDefinitions ) {
-
+   * Kicks off a template generation for a set of resources.
+   *
+   * @param stackName The name of the stack
+   * @param resources A list of resources to generate the template from
+   * @returns CreateGeneratedTemplateOutput an object containing the template arn to query on later
+   */
+  async createGeneratedTemplate(stackName: string, resources: ResourceDefinition[]) {
     const createTemplateOutput = await this.cfn.createGeneratedTemplate({
       Resources: resources,
       GeneratedTemplateName: stackName,
-    }).promise();
+    });
 
     if (createTemplateOutput.GeneratedTemplateId === undefined) {
       throw new Error('CreateGeneratedTemplate failed to return an Arn.');
@@ -841,7 +892,7 @@ export class CfnTemplateGeneratorProvider {
   async deleteGeneratedTemplate(templateArn: string): Promise<void> {
     await this.cfn.deleteGeneratedTemplate({
       GeneratedTemplateName: templateArn,
-    }).promise();
+    });
   }
 }
 
@@ -890,7 +941,7 @@ export interface GenerateTemplateOptions {
  */
 export interface GenerateTemplateOutput {
   migrateJson: MigrateJsonFormat;
-  resources?: CloudFormation.ResourceDetails;
+  resources?: ResourceDetail[];
   templateId?: string;
 }
 
@@ -918,5 +969,5 @@ export interface GeneratedResourceImportIdentifier {
   // cdk deploy expects the migrate.json resource identifiers to be PascalCase, not camelCase.
   ResourceType: string;
   LogicalResourceId: string;
-  ResourceIdentifier: CloudFormation.ResourceIdentifierProperties;
+  ResourceIdentifier: ResourceIdentifierSummary;
 }

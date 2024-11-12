@@ -1,17 +1,14 @@
-/* eslint-disable import/order */
-import * as AWS from 'aws-sdk';
+import 'aws-sdk-client-mock-jest';
+
+import { ListStackResourcesCommand } from '@aws-sdk/client-cloudformation';
 import { LazyListStackResources } from '../../lib/api/evaluate-cloudformation-template';
-import { MockSdk } from '../util/mock-sdk';
+import { MockSdk, mockCloudFormationClient } from '../util/mock-sdk';
 
 describe('Lazy ListStackResources', () => {
   test('correctly caches calls to the CloudFormation API', async () => {
     // GIVEN
-    const listStackResMock: jest.Mock<AWS.CloudFormation.ListStackResourcesOutput, AWS.CloudFormation.ListStackResourcesInput[]> = jest.fn();
     const mockSdk = new MockSdk();
-    mockSdk.stubCloudFormation({
-      listStackResources: listStackResMock,
-    });
-    listStackResMock.mockReturnValue({
+    mockCloudFormationClient.on(ListStackResourcesCommand).resolves({
       StackResourceSummaries: [],
       NextToken: undefined,
     });
@@ -25,6 +22,6 @@ describe('Lazy ListStackResources', () => {
 
     // THEN
     expect(result.length).toBe(0);
-    expect(listStackResMock).toHaveBeenCalledTimes(1);
+    expect(mockCloudFormationClient).toHaveReceivedCommandTimes(ListStackResourcesCommand, 1);
   });
 });

@@ -1,5 +1,6 @@
-import { CloudFormation } from 'aws-sdk';
+import { ParameterDeclaration } from '@aws-sdk/client-cloudformation';
 import { debug } from '../../logging';
+import { ICloudFormationClient } from '../aws-auth';
 
 export class ActiveAssetCache {
   private readonly stacks: Set<string> = new Set();
@@ -34,17 +35,17 @@ async function paginateSdkCall(cb: (nextToken?: string) => Promise<string | unde
  * - stacks in DELETE_COMPLETE or DELETE_IN_PROGRESS stage
  * - stacks that are using a different bootstrap qualifier
  */
-async function fetchAllStackTemplates(cfn: CloudFormation, qualifier?: string) {
+async function fetchAllStackTemplates(cfn: ICloudFormationClient, qualifier?: string) {
   const stackNames: string[] = [];
   await paginateSdkCall(async (nextToken) => {
-    const stacks = await cfn.listStacks({ NextToken: nextToken }).promise();
+    const stacks = await cfn.listStacks({ NextToken: nextToken });
 
     // We ignore stacks with these statuses because their assets are no longer live
     const ignoredStatues = ['CREATE_FAILED', 'DELETE_COMPLETE', 'DELETE_IN_PROGRESS', 'DELETE_FAILED', 'REVIEW_IN_PROGRESS'];
     stackNames.push(
       ...(stacks.StackSummaries ?? [])
-        .filter(s => !ignoredStatues.includes(s.StackStatus))
-        .map(s => s.StackId ?? s.StackName),
+        .filter((s: any) => !ignoredStatues.includes(s.StackStatus))
+        .map((s: any) => s.StackId ?? s.StackName),
     );
 
     return stacks.NextToken;
@@ -57,7 +58,7 @@ async function fetchAllStackTemplates(cfn: CloudFormation, qualifier?: string) {
     let summary;
     summary = await cfn.getTemplateSummary({
       StackName: stack,
-    }).promise();
+    });
 
     if (bootstrapFilter(summary.Parameters, qualifier)) {
       // This stack is definitely bootstrapped to a different qualifier so we can safely ignore it
@@ -65,7 +66,7 @@ async function fetchAllStackTemplates(cfn: CloudFormation, qualifier?: string) {
     } else {
       const template = await cfn.getTemplate({
         StackName: stack,
-      }).promise();
+      });
 
       templates.push((template.TemplateBody ?? '') + JSON.stringify(summary?.Parameters));
     }
@@ -85,7 +86,7 @@ async function fetchAllStackTemplates(cfn: CloudFormation, qualifier?: string) {
  * This is intentionally done in a way where we ONLY filter out stacks that are meant for a different qualifier
  * because we are okay with false positives.
  */
-function bootstrapFilter(parameters?: CloudFormation.ParameterDeclarations, qualifier?: string) {
+function bootstrapFilter(parameters?: ParameterDeclaration[], qualifier?: string) {
   const bootstrapVersion = parameters?.find((p) => p.ParameterKey === 'BootstrapVersion');
   const splitBootstrapVersion = bootstrapVersion?.DefaultValue?.split('/');
   // We find the qualifier in a specific part of the bootstrap version parameter
@@ -95,7 +96,7 @@ function bootstrapFilter(parameters?: CloudFormation.ParameterDeclarations, qual
           splitBootstrapVersion[2] != qualifier);
 }
 
-export async function refreshStacks(cfn: CloudFormation, activeAssets: ActiveAssetCache, qualifier?: string) {
+export async function refreshStacks(cfn: ICloudFormationClient, activeAssets: ActiveAssetCache, qualifier?: string) {
   try {
     const stacks = await fetchAllStackTemplates(cfn, qualifier);
     for (const stack of stacks) {
@@ -113,7 +114,7 @@ export interface BackgroundStackRefreshProps {
   /**
    * The CFN SDK handler
    */
-  readonly cfn: CloudFormation;
+  readonly cfn: ICloudFormationClient;
 
   /**
    * Active Asset storage

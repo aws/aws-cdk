@@ -1,12 +1,12 @@
-import * as AWS from 'aws-sdk';
+import { ListExportsCommand } from '@aws-sdk/client-cloudformation';
 import { LazyLookupExport } from '../../lib/api/evaluate-cloudformation-template';
-import { MockSdk } from '../util/mock-sdk';
+import { MockSdk, mockCloudFormationClient, restoreSdkMocksToDefault } from '../util/mock-sdk';
 
 describe('LazyLookupExport', () => {
-  const listExports: jest.Mock<AWS.CloudFormation.ListExportsOutput, AWS.CloudFormation.ListExportsInput[]> = jest.fn();
   const mockSdk = new MockSdk();
-  mockSdk.stubCloudFormation({
-    listExports,
+
+  beforeEach(() => {
+    restoreSdkMocksToDefault();
   });
 
   const createExport = (num: number) => ({
@@ -16,7 +16,7 @@ describe('LazyLookupExport', () => {
   });
 
   it('skips over any results that omit Name property', async () => {
-    listExports.mockReturnValueOnce({
+    mockCloudFormationClient.on(ListExportsCommand).resolvesOnce({
       Exports: [
         createExport(1),
         createExport(2),
@@ -27,6 +27,7 @@ describe('LazyLookupExport', () => {
       ],
       NextToken: undefined,
     });
+
     const lookup = new LazyLookupExport(mockSdk);
 
     const result = await lookup.lookupExport('test-name-3');
@@ -37,29 +38,18 @@ describe('LazyLookupExport', () => {
     let lookup: LazyLookupExport;
     beforeEach(() => {
       lookup = new LazyLookupExport(mockSdk);
-      listExports
-        .mockReset()
-        .mockReturnValueOnce({
-          Exports: [
-            createExport(1),
-            createExport(2),
-            createExport(3),
-          ],
+      mockCloudFormationClient
+        .on(ListExportsCommand)
+        .resolvesOnce({
+          Exports: [createExport(1), createExport(2), createExport(3)],
           NextToken: 'next-token-1',
         })
-        .mockReturnValueOnce({
-          Exports: [
-            createExport(4),
-            createExport(5),
-            createExport(6),
-          ],
+        .resolvesOnce({
+          Exports: [createExport(4), createExport(5), createExport(6)],
           NextToken: 'next-token-2',
         })
-        .mockReturnValueOnce({
-          Exports: [
-            createExport(7),
-            createExport(8),
-          ],
+        .resolvesOnce({
+          Exports: [createExport(7), createExport(8)],
           NextToken: undefined,
         });
     });
@@ -73,16 +63,16 @@ describe('LazyLookupExport', () => {
 
     it('stops fetching once export is found', async () => {
       await lookup.lookupExport('test-name-3');
-      expect(listExports).toHaveBeenCalledTimes(1);
+      expect(mockCloudFormationClient).toHaveReceivedCommandTimes(ListExportsCommand, 1);
     });
 
     it('paginates', async () => {
       await lookup.lookupExport('test-name-7');
-      expect(listExports).toHaveBeenCalledTimes(3);
-      expect(listExports).toHaveBeenCalledWith({
+      expect(mockCloudFormationClient).toHaveReceivedCommandTimes(ListExportsCommand, 3);
+      expect(mockCloudFormationClient).toHaveReceivedCommandWith(ListExportsCommand, {
         NextToken: 'next-token-1',
       });
-      expect(listExports).toHaveBeenCalledWith({
+      expect(mockCloudFormationClient).toHaveReceivedCommandWith(ListExportsCommand, {
         NextToken: 'next-token-2',
       });
     });
@@ -91,7 +81,7 @@ describe('LazyLookupExport', () => {
       await lookup.lookupExport('test-name-3');
       await lookup.lookupExport('test-name-3');
       await lookup.lookupExport('test-name-3');
-      expect(listExports).toHaveBeenCalledTimes(1);
+      expect(mockCloudFormationClient).toHaveReceivedCommandTimes(ListExportsCommand, 1);
     });
 
     it('returns undefined if the export does not exist', async () => {
