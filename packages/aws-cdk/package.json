@@ -70,6 +70,7 @@
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
+    "@aws-cdk/yargs-gen": "0.0.0",
     "@octokit/rest": "^18.12.0",
     "@types/archiver": "^5.3.4",
     "@types/fs-extra": "^9.0.13",
@@ -104,7 +105,6 @@
     "@aws-cdk/cloudformation-diff": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
-    "@aws-cdk/yargs-gen": "0.0.0",
     "@jsii/check-node": "1.104.0",
     "archiver": "^5.3.2",
     "aws-sdk": "^2.1691.0",
