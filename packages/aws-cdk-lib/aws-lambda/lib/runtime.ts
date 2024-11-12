@@ -186,6 +186,14 @@ export class Runtime {
   });
 
   /**
+   * The Python 3.13 runtime (python3.13)
+   */
+  public static readonly PYTHON_3_13 = new Runtime('python3.13', RuntimeFamily.PYTHON, {
+    supportsInlineCode: true,
+    supportsCodeGuruProfiling: true,
+  });
+
+  /**
    * The Java 8 runtime (java8)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest Java runtime.
    */
