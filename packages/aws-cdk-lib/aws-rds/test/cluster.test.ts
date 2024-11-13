@@ -17,6 +17,7 @@ import {
   DatabaseClusterEngine, DatabaseClusterFromSnapshot, ParameterGroup, PerformanceInsightRetention, SubnetGroup, DatabaseSecret,
   DatabaseInstanceEngine, SqlServerEngineVersion, SnapshotCredentials, InstanceUpdateBehaviour, NetworkType, ClusterInstance, CaCertificate,
   IClusterEngine,
+  ClusterScailabilityType,
 } from '../lib';
 
 describe('cluster new api', () => {
@@ -161,6 +162,26 @@ describe('cluster new api', () => {
       template.hasResourceProperties('AWS::RDS::DBCluster', {
         Engine: 'aurora-mysql',
         AutoMinorVersionUpgrade: autoMinorVersionUpgrade,
+      });
+    });
+
+    test('cluster scailability option', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Cluster', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        clusterScailabilityType: ClusterScailabilityType.STANDARD,
+        writer: ClusterInstance.serverlessV2('writer'),
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::RDS::DBCluster', {
+        ClusterScalabilityType: 'standard',
       });
     });
 
