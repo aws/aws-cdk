@@ -15,6 +15,7 @@ import { Stage, StageSynthesisOptions } from '../stage';
 import { IPolicyValidationPluginBeta1 } from '../validation';
 import { ConstructTree } from '../validation/private/construct-tree';
 import { PolicyValidationReportFormatter, NamedValidationPluginReport } from '../validation/private/report';
+import { Annotations } from '../annotations';
 
 const POLICY_VALIDATION_FILE_PATH = 'policy-validation-report.json';
 const VALIDATION_REPORT_JSON_CONTEXT = '@aws-cdk/core:validationReportJson';
@@ -220,20 +221,29 @@ function invokeAspects(root: IConstruct) {
 
   for (const priority of orderedPriorities) {
     for (const aspectApplication of aspectsMap.get(priority)!) {
-      invokeAspect(aspectApplication.construct, aspectApplication.aspect);
+      invokeAspect(aspectApplication.construct, aspectApplication.aspect, false);
     }
   }
 }
 
 /**
  * Invokes an individual Aspect on a construct and all of its children in the construct tree.
+ * 
+ * nestedAspectWarning argument is used to prevent the nested Aspect warning from being emitted for every child
  */
-function invokeAspect(construct: IConstruct, aspect: IAspect) {
+function invokeAspect(construct: IConstruct, aspect: IAspect, nestedAspectWarning: boolean) {
+  const aspectsCount = Aspects.of(construct).all.length;
   aspect.visit(construct);
+  const aspectsCount2 = Aspects.of(construct).all.length;
+  // if an aspect was added to the node while invoking another aspect it will not be invoked, emit a warning
+  if ((aspectsCount != aspectsCount2) && !nestedAspectWarning) {
+    nestedAspectWarning = true;
+    Annotations.of(construct).addWarningV2('@aws-cdk/core:ignoredAspect', 'We detected an Aspect was added via another Aspect, and will not be applied');
+  }
   for (const child of construct.node.children) {
     // Do not cross the Stage boundary
     if (!Stage.isStage(child)) {
-      invokeAspect(child, aspect);
+      invokeAspect(child, aspect, nestedAspectWarning);
     }
   }
 }
