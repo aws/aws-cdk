@@ -2,7 +2,7 @@ import { Construct, IConstruct } from 'constructs';
 import { Template } from '../../assertions';
 import { Bucket, CfnBucket } from '../../aws-s3';
 import * as cxschema from '../../cloud-assembly-schema';
-import { App, CfnResource, Stack } from '../lib';
+import { App, CfnResource, Stack, Tags } from '../lib';
 import { IAspect, Aspects, AspectPriority } from '../lib/aspect';
 class MyConstruct extends Construct {
   public static IsMyConstruct(x: any): x is MyConstruct {
@@ -180,6 +180,35 @@ describe('aspect', () => {
       VersioningConfiguration: {
         Status: 'Enabled',
       },
+    });
+  });
+
+  test('Tags are applied to newly created node from the LoggingBucket Aspect', () => {
+    const app = new App();
+    const stack = new Stack(app, 'My-Stack');
+
+    // GIVEN - Bucket with versioning disabled
+    const bucket = new Bucket(stack, 'my-bucket', {
+      bucketName: 'my-original-bucket',
+      versioned: false,
+    });
+
+    // WHEN - adding both Aspects but making LoggingBucket Aspect run first
+    Aspects.of(stack).add(new AddLoggingBucketAspect(), { priority: 0 });
+    Tags.of(stack).add('TestKey', 'TestValue');
+
+    // THEN - check that Tags Aspect is applied to stack with default priority
+    let aspectApplications = Aspects.of(stack).list;
+    expect(aspectApplications.length).toEqual(2);
+    expect(aspectApplications[1].priority).toEqual(AspectPriority.DEFAULT);
+
+    // THEN - both Aspects are successfully applied, new logging bucket is added with versioning enabled
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      BucketName: 'my-new-logging-bucket-from-aspect',
+      Tags: [{
+        Key: 'TestKey',
+        Value: 'TestValue'
+      }]
     });
   });
 });
