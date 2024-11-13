@@ -1,29 +1,34 @@
 /* eslint-disable import/order */
 
 import * as deployStack from '../../lib/api/deploy-stack';
+import { Stack } from '@aws-sdk/client-cloudformation';
+import { CreatePolicyCommand, GetPolicyCommand } from '@aws-sdk/client-iam';
+import { Bootstrapper, DeployStackOptions, ToolkitInfo } from '../../lib/api';
+import {
+  mockBootstrapStack,
+  mockIAMClient,
+  MockSdkProvider,
+  restoreSdkMocksToDefault, setDefaultSTSMocks,
+} from '../util/mock-sdk';
+
 const mockDeployStack = jest.spyOn(deployStack, 'deployStack');
 
-import { IAM } from 'aws-sdk';
-import { Bootstrapper, DeployStackOptions, ToolkitInfo } from '../../lib/api';
-import { mockBootstrapStack, MockSdk, MockSdkProvider } from '../util/mock-sdk';
-
 let bootstrapper: Bootstrapper;
-let mockGetPolicyIamCode: (params: IAM.Types.GetPolicyRequest) => IAM.Types.GetPolicyResponse;
-let mockCreatePolicyIamCode: (params: IAM.Types.CreatePolicyRequest) => IAM.Types.CreatePolicyResponse;
 let stderrMock: jest.SpyInstance;
 
 beforeEach(() => {
   bootstrapper = new Bootstrapper({ source: 'default' });
-  stderrMock = jest.spyOn(process.stderr, 'write').mockImplementation(() => { return true; });
+  stderrMock = jest.spyOn(process.stderr, 'write').mockImplementation(() => {
+    return true;
+  });
 });
 
 afterEach(() => {
   stderrMock.mockRestore();
 });
 
-function mockTheToolkitInfo(stackProps: Partial<AWS.CloudFormation.Stack>) {
-  const sdk = new MockSdk();
-  (ToolkitInfo as any).lookup = jest.fn().mockResolvedValue(ToolkitInfo.fromStack(mockBootstrapStack(sdk, stackProps)));
+function mockTheToolkitInfo(stackProps: Partial<Stack>) {
+  (ToolkitInfo as any).lookup = jest.fn().mockResolvedValue(ToolkitInfo.fromStack(mockBootstrapStack(stackProps)));
 }
 
 describe('Bootstrapping v2', () => {
@@ -35,7 +40,7 @@ describe('Bootstrapping v2', () => {
 
   let sdk: MockSdkProvider;
   beforeEach(() => {
-    sdk = new MockSdkProvider({ realSdk: false });
+    sdk = new MockSdkProvider();
     // By default, we'll return a non-found toolkit info
     (ToolkitInfo as any).lookup = jest.fn().mockResolvedValue(ToolkitInfo.bootstrapStackNotFoundInfo('BootstrapStack'));
     const value = {
@@ -44,12 +49,10 @@ describe('Bootstrapping v2', () => {
         Arn: 'arn:aws:iam::0123456789012:policy/my-policy',
       },
     };
-    mockGetPolicyIamCode = jest.fn().mockReturnValue(value);
-    mockCreatePolicyIamCode = jest.fn().mockReturnValue(value);
-    sdk.stubIam({
-      createPolicy: mockCreatePolicyIamCode,
-      getPolicy: mockGetPolicyIamCode,
-    });
+    restoreSdkMocksToDefault();
+    setDefaultSTSMocks();
+    mockIAMClient.on(GetPolicyCommand).resolves(value);
+    mockIAMClient.on(CreatePolicyCommand).resolves(value);
     mockDeployStack.mockResolvedValue({
       type: 'did-deploy-stack',
       noOp: false,
@@ -70,12 +73,14 @@ describe('Bootstrapping v2', () => {
       },
     });
 
-    expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
-      parameters: expect.objectContaining({
-        FileAssetsBucketName: 'my-bucket-name',
-        PublicAccessBlockConfiguration: 'true',
+    expect(mockDeployStack).toHaveBeenCalledWith(
+      expect.objectContaining({
+        parameters: expect.objectContaining({
+          FileAssetsBucketName: 'my-bucket-name',
+          PublicAccessBlockConfiguration: 'true',
+        }),
       }),
-    }));
+    );
   });
 
   test('passes the KMS key ID as a CFN parameter', async () => {
@@ -86,12 +91,14 @@ describe('Bootstrapping v2', () => {
       },
     });
 
-    expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
-      parameters: expect.objectContaining({
-        FileAssetsBucketKmsKeyId: 'my-kms-key-id',
-        PublicAccessBlockConfiguration: 'true',
+    expect(mockDeployStack).toHaveBeenCalledWith(
+      expect.objectContaining({
+        parameters: expect.objectContaining({
+          FileAssetsBucketKmsKeyId: 'my-kms-key-id',
+          PublicAccessBlockConfiguration: 'true',
+        }),
       }),
-    }));
+    );
   });
 
   test('passes false to PublicAccessBlockConfiguration', async () => {
@@ -102,11 +109,13 @@ describe('Bootstrapping v2', () => {
       },
     });
 
-    expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
-      parameters: expect.objectContaining({
-        PublicAccessBlockConfiguration: 'false',
+    expect(mockDeployStack).toHaveBeenCalledWith(
+      expect.objectContaining({
+        parameters: expect.objectContaining({
+          PublicAccessBlockConfiguration: 'false',
+        }),
       }),
-    }));
+    );
   });
 
   test('passes true to PermissionsBoundary', async () => {
@@ -116,11 +125,13 @@ describe('Bootstrapping v2', () => {
       },
     });
 
-    expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
-      parameters: expect.objectContaining({
-        InputPermissionsBoundary: 'cdk-hnb659fds-permissions-boundary',
+    expect(mockDeployStack).toHaveBeenCalledWith(
+      expect.objectContaining({
+        parameters: expect.objectContaining({
+          InputPermissionsBoundary: 'cdk-hnb659fds-permissions-boundary',
+        }),
       }),
-    }));
+    );
   });
 
   test('passes value to PermissionsBoundary', async () => {
@@ -138,16 +149,20 @@ describe('Bootstrapping v2', () => {
       },
     });
 
-    expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
-      parameters: expect.objectContaining({
-        InputPermissionsBoundary: 'permissions-boundary-name',
+    expect(mockDeployStack).toHaveBeenCalledWith(
+      expect.objectContaining({
+        parameters: expect.objectContaining({
+          InputPermissionsBoundary: 'permissions-boundary-name',
+        }),
       }),
-    }));
-    expect(stderrMock.mock.calls).toEqual(expect.arrayContaining([
+    );
+    expect(stderrMock.mock.calls).toEqual(
       expect.arrayContaining([
-        expect.stringMatching(/Changing permissions boundary from existing-pb to permissions-boundary-name/),
+        expect.arrayContaining([
+          expect.stringMatching(/Changing permissions boundary from existing-pb to permissions-boundary-name/),
+        ]),
       ]),
-    ]));
+    );
   });
 
   test('permission boundary switch message does not appear', async () => {
@@ -161,11 +176,9 @@ describe('Bootstrapping v2', () => {
     });
     await bootstrapper.bootstrapEnvironment(env, sdk);
 
-    expect(stderrMock.mock.calls).toEqual(expect.arrayContaining([
-      expect.not.arrayContaining([
-        expect.stringMatching(/Changing permissions boundary/),
-      ]),
-    ]));
+    expect(stderrMock.mock.calls).toEqual(
+      expect.arrayContaining([expect.not.arrayContaining([expect.stringMatching(/Changing permissions boundary/)])]),
+    );
   });
 
   test('adding new permissions boundary', async () => {
@@ -183,11 +196,11 @@ describe('Bootstrapping v2', () => {
       },
     });
 
-    expect(stderrMock.mock.calls).toEqual(expect.arrayContaining([
+    expect(stderrMock.mock.calls).toEqual(
       expect.arrayContaining([
-        expect.stringMatching(/Adding new permissions boundary permissions-boundary-name/),
+        expect.arrayContaining([expect.stringMatching(/Adding new permissions boundary permissions-boundary-name/)]),
       ]),
-    ]));
+    );
   });
 
   test('removing existing permissions boundary', async () => {
@@ -203,11 +216,13 @@ describe('Bootstrapping v2', () => {
       parameters: {},
     });
 
-    expect(stderrMock.mock.calls).toEqual(expect.arrayContaining([
+    expect(stderrMock.mock.calls).toEqual(
       expect.arrayContaining([
-        expect.stringMatching(/Removing existing permissions boundary permissions-boundary-name/),
+        expect.arrayContaining([
+          expect.stringMatching(/Removing existing permissions boundary permissions-boundary-name/),
+        ]),
       ]),
-    ]));
+    );
   });
 
   test('adding permission boundary with path in policy name', async () => {
@@ -225,21 +240,23 @@ describe('Bootstrapping v2', () => {
       },
     });
 
-    expect(stderrMock.mock.calls).toEqual(expect.arrayContaining([
+    expect(stderrMock.mock.calls).toEqual(
       expect.arrayContaining([
-        expect.stringMatching(/Adding new permissions boundary permissions-boundary-name\/with\/path/),
+        expect.arrayContaining([
+          expect.stringMatching(/Adding new permissions boundary permissions-boundary-name\/with\/path/),
+        ]),
       ]),
-    ]));
+    );
   });
 
   test('passing trusted accounts without CFN managed policies results in an error', async () => {
-    await expect(bootstrapper.bootstrapEnvironment(env, sdk, {
-      parameters: {
-        trustedAccounts: ['123456789012'],
-      },
-    }))
-      .rejects
-      .toThrow(/--cloudformation-execution-policies/);
+    await expect(
+      bootstrapper.bootstrapEnvironment(env, sdk, {
+        parameters: {
+          trustedAccounts: ['123456789012'],
+        },
+      }),
+    ).rejects.toThrow(/--cloudformation-execution-policies/);
   });
 
   test('passing trusted accounts without CFN managed policies on the existing stack results in an error', async () => {
@@ -252,13 +269,13 @@ describe('Bootstrapping v2', () => {
       ],
     });
 
-    await expect(bootstrapper.bootstrapEnvironment(env, sdk, {
-      parameters: {
-        trustedAccounts: ['123456789012'],
-      },
-    }))
-      .rejects
-      .toThrow(/--cloudformation-execution-policies/);
+    await expect(
+      bootstrapper.bootstrapEnvironment(env, sdk, {
+        parameters: {
+          trustedAccounts: ['123456789012'],
+        },
+      }),
+    ).rejects.toThrow(/--cloudformation-execution-policies/);
   });
 
   test('passing no CFN managed policies without trusted accounts is okay', async () => {
@@ -266,11 +283,13 @@ describe('Bootstrapping v2', () => {
       parameters: {},
     });
 
-    expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
-      parameters: expect.objectContaining({
-        CloudFormationExecutionPolicies: '',
+    expect(mockDeployStack).toHaveBeenCalledWith(
+      expect.objectContaining({
+        parameters: expect.objectContaining({
+          CloudFormationExecutionPolicies: '',
+        }),
       }),
-    }));
+    );
   });
 
   test('passing trusted accounts for lookup generates the correct stack parameter', async () => {
@@ -281,11 +300,13 @@ describe('Bootstrapping v2', () => {
       },
     });
 
-    expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
-      parameters: expect.objectContaining({
-        TrustedAccountsForLookup: '123456789012',
+    expect(mockDeployStack).toHaveBeenCalledWith(
+      expect.objectContaining({
+        parameters: expect.objectContaining({
+          TrustedAccountsForLookup: '123456789012',
+        }),
       }),
-    }));
+    );
   });
 
   test('allow adding trusted account if there was already a policy on the stack', async () => {
@@ -318,11 +339,13 @@ describe('Bootstrapping v2', () => {
       ],
     });
 
-    await expect(bootstrapper.bootstrapEnvironment(env, sdk, {
-      parameters: {
-        cloudFormationExecutionPolicies: ['arn:policy'],
-      },
-    })).resolves.toEqual(expect.objectContaining({ noOp: true }));
+    await expect(
+      bootstrapper.bootstrapEnvironment(env, sdk, {
+        parameters: {
+          cloudFormationExecutionPolicies: ['arn:policy'],
+        },
+      }),
+    ).resolves.toEqual(expect.objectContaining({ noOp: true }));
   });
 
   test('Do not allow overwriting bootstrap stack from a different vendor', async () => {
@@ -336,8 +359,9 @@ describe('Bootstrapping v2', () => {
       ],
     });
 
-    await expect(bootstrapper.bootstrapEnvironment(env, sdk, {
-    })).resolves.toEqual(expect.objectContaining({ noOp: true }));
+    await expect(bootstrapper.bootstrapEnvironment(env, sdk, {})).resolves.toEqual(
+      expect.objectContaining({ noOp: true }),
+    );
   });
 
   test('bootstrap template has the right exports', async () => {
@@ -376,11 +400,13 @@ describe('Bootstrapping v2', () => {
         },
       });
 
-      expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
-        stack: expect.objectContaining({
-          terminationProtection: false,
+      expect(mockDeployStack).toHaveBeenCalledWith(
+        expect.objectContaining({
+          stack: expect.objectContaining({
+            terminationProtection: false,
+          }),
         }),
-      }));
+      );
     });
 
     test('stack is termination protected when option is set', async () => {
@@ -391,11 +417,13 @@ describe('Bootstrapping v2', () => {
         },
       });
 
-      expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
-        stack: expect.objectContaining({
-          terminationProtection: true,
+      expect(mockDeployStack).toHaveBeenCalledWith(
+        expect.objectContaining({
+          stack: expect.objectContaining({
+            terminationProtection: true,
+          }),
         }),
-      }));
+      );
     });
 
     test('termination protection is left alone when option is not given', async () => {
@@ -409,11 +437,13 @@ describe('Bootstrapping v2', () => {
         },
       });
 
-      expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
-        stack: expect.objectContaining({
-          terminationProtection: true,
+      expect(mockDeployStack).toHaveBeenCalledWith(
+        expect.objectContaining({
+          stack: expect.objectContaining({
+            terminationProtection: true,
+          }),
         }),
-      }));
+      );
     });
 
     test('termination protection can be switched off', async () => {
@@ -428,11 +458,13 @@ describe('Bootstrapping v2', () => {
         },
       });
 
-      expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
-        stack: expect.objectContaining({
-          terminationProtection: false,
+      expect(mockDeployStack).toHaveBeenCalledWith(
+        expect.objectContaining({
+          stack: expect.objectContaining({
+            terminationProtection: false,
+          }),
         }),
-      }));
+      );
     });
   });
 
@@ -444,24 +476,29 @@ describe('Bootstrapping v2', () => {
       [true, ''],
       // Don't create a new key
       [false, 'AWS_MANAGED_KEY'],
-    ])('(new stack) createCustomerMasterKey=%p => parameter becomes %p ', async (createCustomerMasterKey, paramKeyId) => {
-      // GIVEN: no existing stack
+    ])(
+      '(new stack) createCustomerMasterKey=%p => parameter becomes %p ',
+      async (createCustomerMasterKey, paramKeyId) => {
+        // GIVEN: no existing stack
 
-      // WHEN
-      await bootstrapper.bootstrapEnvironment(env, sdk, {
-        parameters: {
-          createCustomerMasterKey,
-          cloudFormationExecutionPolicies: ['arn:booh'],
-        },
-      });
+        // WHEN
+        await bootstrapper.bootstrapEnvironment(env, sdk, {
+          parameters: {
+            createCustomerMasterKey,
+            cloudFormationExecutionPolicies: ['arn:booh'],
+          },
+        });
 
-      // THEN
-      expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
-        parameters: expect.objectContaining({
-          FileAssetsBucketKmsKeyId: paramKeyId,
-        }),
-      }));
-    });
+        // THEN
+        expect(mockDeployStack).toHaveBeenCalledWith(
+          expect.objectContaining({
+            parameters: expect.objectContaining({
+              FileAssetsBucketKmsKeyId: paramKeyId,
+            }),
+          }),
+        );
+      },
+    );
 
     test.each([
       // Old bootstrap stack being upgraded to new one
@@ -472,31 +509,38 @@ describe('Bootstrapping v2', () => {
       ['arn:aws:key', false, 'AWS_MANAGED_KEY'],
       // Switch on existing key
       ['AWS_MANAGED_KEY', true, ''],
-    ])('(upgrading) current param %p, createCustomerMasterKey=%p => parameter becomes %p ', async (currentKeyId, createCustomerMasterKey, paramKeyId) => {
-      // GIVEN
-      mockTheToolkitInfo({
-        Parameters: currentKeyId ? [
-          {
-            ParameterKey: 'FileAssetsBucketKmsKeyId',
-            ParameterValue: currentKeyId,
+    ])(
+      '(upgrading) current param %p, createCustomerMasterKey=%p => parameter becomes %p ',
+      async (currentKeyId, createCustomerMasterKey, paramKeyId) => {
+        // GIVEN
+        mockTheToolkitInfo({
+          Parameters: currentKeyId
+            ? [
+              {
+                ParameterKey: 'FileAssetsBucketKmsKeyId',
+                ParameterValue: currentKeyId,
+              },
+            ]
+            : undefined,
+        });
+
+        // WHEN
+        await bootstrapper.bootstrapEnvironment(env, sdk, {
+          parameters: {
+            createCustomerMasterKey,
+            cloudFormationExecutionPolicies: ['arn:booh'],
           },
-        ] : undefined,
-      });
+        });
 
-      // WHEN
-      await bootstrapper.bootstrapEnvironment(env, sdk, {
-        parameters: {
-          createCustomerMasterKey,
-          cloudFormationExecutionPolicies: ['arn:booh'],
-        },
-      });
-
-      // THEN
-      expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
-        parameters: expect.objectContaining({
-          FileAssetsBucketKmsKeyId: paramKeyId,
-        }),
-      }));
-    });
+        // THEN
+        expect(mockDeployStack).toHaveBeenCalledWith(
+          expect.objectContaining({
+            parameters: expect.objectContaining({
+              FileAssetsBucketKmsKeyId: paramKeyId,
+            }),
+          }),
+        );
+      },
+    );
   });
 });

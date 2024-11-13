@@ -66,6 +66,15 @@ export interface NetworkLoadBalancerProps extends BaseLoadBalancerProps {
    * @default true
    */
   readonly enforceSecurityGroupInboundRulesOnPrivateLinkTraffic?: boolean;
+
+  /**
+   * Indicates whether zonal shift is enabled
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/network/zonal-shift.html
+   *
+   * @default false
+   */
+  readonly zonalShift?: boolean;
 }
 
 /**
@@ -261,6 +270,9 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
     this.ipAddressType = props.ipAddressType ?? IpAddressType.IPV4;
     if (props.clientRoutingPolicy) {
       this.setAttribute('dns_record.client_routing_policy', props.clientRoutingPolicy);
+    }
+    if (props.zonalShift !== undefined) {
+      this.setAttribute('zonal_shift.config.enabled', props.zonalShift ? 'true' : 'false');
     }
     this._enforceSecurityGroupInboundRulesOnPrivateLinkTraffic = props.enforceSecurityGroupInboundRulesOnPrivateLinkTraffic;
   }
