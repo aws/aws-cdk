@@ -134,6 +134,8 @@ set to an email, all of the rules in that configuration set are applied to the e
 Use the `ConfigurationSet` construct to create a configuration set:
 
 ```ts
+import { Duration } from 'aws-cdk-lib';
+
 declare const myPool: ses.IDedicatedIpPool;
 
 new ses.ConfigurationSet(this, 'ConfigurationSet', {
