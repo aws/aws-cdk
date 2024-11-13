@@ -39,17 +39,17 @@ class TestStack extends cdk.Stack {
     appVersion.node.addDependency(app);
     appVersion.node.addDependency(asset);
 
-    const myRole = new iam.Role(this, `${appName}-aws-elasticbeanstalk-ec2-role`, {
+    const instanceRole = new iam.Role(this, `${appName}-aws-elasticbeanstalk-ec2-role`, {
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
     });
 
     const managedPolicy = iam.ManagedPolicy.fromAwsManagedPolicyName('AWSElasticBeanstalkWebTier');
-    myRole.addManagedPolicy(managedPolicy);
+    instanceRole.addManagedPolicy(managedPolicy);
 
     const instanceProfile = `${appName}-aws-elasticbeanstalk-ec2-instance-profile`;
     new iam.CfnInstanceProfile(this, instanceProfile, {
       instanceProfileName: instanceProfile,
-      roles: [myRole.roleName],
+      roles: [instanceRole.roleName],
     });
 
     const optionSettingProperties: elasticbeanstalk.CfnEnvironment.OptionSettingProperty[] = [
@@ -92,8 +92,10 @@ class TestStack extends cdk.Stack {
           EnvironmentNames: [cdk.Token.asString(eb.environmentName)],
         },
         physicalResourceId: custom.PhysicalResourceId.of('EnvironmentUrl'),
+        logging: custom.Logging.withDataHidden(),
       },
       policy: custom.AwsCustomResourcePolicy.fromSdkCalls({ resources: custom.AwsCustomResourcePolicy.ANY_RESOURCE }),
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
     getEnvironmentUrl.node.addDependency(eb);
 
