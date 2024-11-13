@@ -1,6 +1,5 @@
 import { Template } from '../../assertions';
 import { Stack } from '../../core';
-import { Peer } from '../lib/peer';
 import { Port } from '../lib/port';
 import { AddressFamily, PrefixList } from '../lib/prefix-list';
 import { SecurityGroup } from '../lib/security-group';
@@ -57,7 +56,7 @@ describe('prefix list', () => {
     });
   });
 
-  test('security group with prefix list peer', () => {
+  test('security group with prefix list', () => {
     const stack = new Stack();
 
     const prefixList = new PrefixList(stack, 'prefix-list', {
@@ -69,10 +68,9 @@ describe('prefix list', () => {
 
     const vpc = new Vpc(stack, 'vpc', {});
     const sg = new SecurityGroup(stack, 'SecurityGroup', { vpc });
-    sg.addIngressRule(prefixList.peer, Port.tcp(80));
-    sg.addEgressRule(prefixList.peer, Port.tcp(80));
-    sg.connections.allowFrom(prefixList.peer, Port.tcp(443));
-    sg.connections.allowTo(prefixList.peer, Port.tcp(443));
+
+    sg.connections.allowFrom(prefixList, Port.tcp(443));
+    sg.connections.allowTo(prefixList, Port.tcp(443));
 
     // THEN -- no crash
   });

@@ -1,12 +1,13 @@
 import { Construct } from 'constructs';
+import { IConnectable, Connections } from './connections';
 import { CfnPrefixList } from './ec2.generated';
-import { IPeer, Peer } from './peer';
-import { IResource, Lazy, Resource, Names } from '../../core';
+import { IPeer } from './peer';
+import { IResource, Lazy, Resource, Names, Token } from '../../core';
 
 /**
  * A prefix list
  */
-export interface IPrefixList extends IResource {
+export interface IPrefixList extends IResource, IConnectable {
   /**
    * The ID of the prefix list
    *
@@ -65,6 +66,28 @@ export interface PrefixListProps extends PrefixListOptions {
 }
 
 /**
+ * A prefix list peer for security group rules
+ */
+class PrefixListPeer implements IPeer {
+  public readonly canInlineRule = false;
+  public readonly uniqueId: string;
+  public readonly connections: Connections;
+
+  constructor(private readonly prefixListId: string) {
+    this.uniqueId = Token.isUnresolved(prefixListId) ? prefixListId : `pl-${prefixListId}`;
+    this.connections = new Connections({ peer: this });
+  }
+
+  public toIngressRuleConfig(): any {
+    return { sourcePrefixListId: this.prefixListId };
+  }
+
+  public toEgressRuleConfig(): any {
+    return { destinationPrefixListId: this.prefixListId };
+  }
+}
+
+/**
  * The base class for a prefix list
  */
 abstract class PrefixListBase extends Resource implements IPrefixList {
@@ -74,6 +97,20 @@ abstract class PrefixListBase extends Resource implements IPrefixList {
    * @attribute
    */
   public abstract readonly prefixListId: string;
+
+  /**
+   * The network connections associated with this prefix list.
+   */
+  public readonly connections: Connections;
+
+  constructor(scope: Construct, id: string, props: { physicalName?: string } = {}) {
+    super(scope, id, props);
+
+    // Create connections using a lazy peer that will be created once the prefix list ID is available
+    this.connections = new Connections({
+      peer: new PrefixListPeer(Lazy.string({ produce: () => this.prefixListId })),
+    });
+  }
 }
 
 /**
@@ -86,11 +123,12 @@ export class PrefixList extends PrefixListBase {
    *
    */
   public static fromPrefixListId(scope: Construct, id: string, prefixListId: string): IPrefixList {
-    class Import extends Resource implements IPrefixList {
+    class Import extends PrefixListBase {
       public readonly prefixListId = prefixListId;
     }
     return new Import(scope, id);
   }
+
   /**
    * The ID of the prefix list
    *
@@ -129,13 +167,6 @@ export class PrefixList extends PrefixListBase {
    *
    */
   public readonly addressFamily: string;
-
-  /**
-   * The ID of the prefix list
-   *
-   * @attribute
-   */
-  public readonly peer: IPeer;
 
   constructor(scope: Construct, id: string, props?: PrefixListProps) {
     super(scope, id, {
@@ -187,7 +218,6 @@ export class PrefixList extends PrefixListBase {
     });
 
     this.prefixListId = prefixList.attrPrefixListId;
-    this.peer = Peer.prefixList(prefixList.attrPrefixListId);
     this.prefixListArn = prefixList.attrArn;
     this.ownerId = prefixList.attrOwnerId;
     this.version = prefixList.attrVersion;

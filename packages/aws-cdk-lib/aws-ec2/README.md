@@ -2479,8 +2479,7 @@ const prefixList = new ec2.PrefixList(this, 'EmptyPrefixList', {
 });
 
 // Attach to Security Group
-sg.addIngressRule(prefixList.peer, Port.tcp(80));
-sg.connections.allowFrom(prefixList.peer, Port.tcp(443));
+sg.connections.allowFrom(prefixList, Port.tcp(443));
 ```
 
 `maxEntries` can also be omitted as follows. In this case `maxEntries: 2`, will be set.
