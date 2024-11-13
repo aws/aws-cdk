@@ -97,11 +97,17 @@ To define a pattern, use the matcher API, which provides a number of factory met
 const rule = new events.Rule(this, 'rule', {
   eventPattern: {
     detail: {
+      bucket: {
+        name: events.Match.prefixEqualsIgnoreCase('my-prefix-')
+      }
+
       object: {
         // Matchers may appear at any level
         size: events.Match.greaterThan(1024),
         key: events.Match.wildcard('path/to/object/*.txt'),
       },
+
+      requester: events.Match.suffixEqualsIgnoreCase('.AMAZONAWS.COM')
 
       // 'OR' condition
       'source-storage-class': events.Match.anyOf(
