@@ -1,8 +1,7 @@
-/* eslint-disable import/order */
-import { CloudFormation } from 'aws-sdk';
+import { ICloudFormationClient } from '../../lib';
 import { CloudFormationStack, Template } from '../../lib/api/util/cloudformation';
-import { instanceMockFrom } from '../util';
 import { StackStatus } from '../../lib/api/util/cloudformation/stack-status';
+import { MockSdk } from '../util/mock-sdk';
 
 export interface FakeCloudFormationStackProps {
   readonly stackName: string;
@@ -10,15 +9,15 @@ export interface FakeCloudFormationStackProps {
   readonly stackStatus?: string;
 }
 
+const client = new MockSdk().cloudFormation();
 export class FakeCloudformationStack extends CloudFormationStack {
-  public readonly cfnMock: jest.Mocked<CloudFormation>;
+  public readonly client: ICloudFormationClient;
   private readonly props: FakeCloudFormationStackProps;
   private __template: Template;
 
   public constructor(props: FakeCloudFormationStackProps) {
-    const cfnMock = instanceMockFrom(CloudFormation);
-    super(cfnMock, props.stackName);
-    this.cfnMock = cfnMock;
+    super(client, props.stackName);
+    this.client = client;
     this.props = props;
     this.__template = {};
   }
