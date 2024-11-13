@@ -15,7 +15,7 @@
     "build-all": "tsc -b"
   },
   "devDependencies": {
-    "@nx/workspace": "^19.8.6",
+    "@nx/workspace": "^19.8.10",
     "@types/node": "18.11.19",
     "@types/prettier": "2.6.0",
     "@yarnpkg/lockfile": "^1.1.0",
@@ -28,14 +28,14 @@
     "jsii-diff": "1.104.0",
     "jsii-pacmak": "1.104.0",
     "jsii-reflect": "1.104.0",
-    "lerna": "^8.1.8",
-    "nx": "^19.8.6",
+    "lerna": "^8.1.9",
+    "nx": "^19.8.10",
     "patch-package": "^6.5.1",
     "semver": "^7.6.3",
     "standard-version": "^9.5.0",
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
-    "typescript": "~5.5.2"
+    "typescript": "~5.5.4"
   },
   "resolutions": {
     "colors": "1.4.0",
