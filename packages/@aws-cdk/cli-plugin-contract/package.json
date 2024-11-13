@@ -13,7 +13,8 @@
     "build+extract": "yarn build",
     "build+test+package": "yarn build+test && yarn package",
     "build+test+extract": "yarn build+test",
-    "package": "cdk-package"
+    "package": "cdk-package",
+    "test": "cdk-test"
   },
   "ubergen": {
     "exclude": true
