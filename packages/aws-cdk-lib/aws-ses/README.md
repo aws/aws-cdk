@@ -141,6 +141,10 @@ new ses.ConfigurationSet(this, 'ConfigurationSet', {
   suppressionReasons: ses.SuppressionReasons.COMPLAINTS_ONLY,
   tlsPolicy: ses.ConfigurationSetTlsPolicy.REQUIRE,
   dedicatedIpPool: myPool,
+  // Specify maximum delivery time
+  // This configuration can be useful in such cases as time-sensitive emails (like those containing a one-time-password),
+  // transactional emails, and email that you want to ensure isn't delivered during non-business hours.
+  maxDeliveryDuration: Duration.minutes(10),
 });
 ```
 

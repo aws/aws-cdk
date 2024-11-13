@@ -183,7 +183,7 @@ export class ConfigurationSet extends Resource implements IConfigurationSet {
       deliveryOptions: undefinedIfNoKeys({
         sendingPoolName: props.dedicatedIpPool?.dedicatedIpPoolName,
         tlsPolicy: props.tlsPolicy,
-        // maxDeliverySeconds: props.maxDeliveryDuration?.toSeconds(),
+        maxDeliverySeconds: props.maxDeliveryDuration?.toSeconds(),
       }),
       name: this.physicalName,
       reputationOptions: undefinedIfNoKeys({
