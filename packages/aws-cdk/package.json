@@ -102,6 +102,7 @@
     "xml-js": "^1.6.11"
   },
   "dependencies": {
+    "@aws-cdk/cli-plugin-contract": "0.0.0",
     "@aws-cdk/cloud-assembly-schema": "^38.0.0",
     "@aws-cdk/cloudformation-diff": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
@@ -187,5 +188,8 @@
   "maturity": "stable",
   "publishConfig": {
     "tag": "latest"
+  },
+  "peerDependencies": {
+    "@aws-cdk/cli-plugin-contract": "0.0.0"
   }
 }

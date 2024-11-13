@@ -60,6 +60,7 @@ jest.setTimeout(30_000);
 import 'aws-sdk-client-mock';
 import * as os from 'os';
 import * as path from 'path';
+import { Mode } from '@aws-cdk/cli-plugin-contract';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Manifest } from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
@@ -86,7 +87,6 @@ import {
   RollbackStackResult,
 } from '../lib/api/deployments';
 import { HotswapMode } from '../lib/api/hotswap/common';
-import { Mode } from '../lib/api/plugin';
 import { Template } from '../lib/api/util/cloudformation';
 import { CdkToolkit, markTesting, Tag } from '../lib/cdk-toolkit';
 import { RequireApproval } from '../lib/diff';

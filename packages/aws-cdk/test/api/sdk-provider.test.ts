@@ -1,5 +1,6 @@
 import * as os from 'os';
 import { bockfs } from '@aws-cdk/cdk-build-tools';
+import { Mode } from '@aws-cdk/cli-plugin-contract';
 import * as cxapi from '@aws-cdk/cx-api';
 import { AssumeRoleCommand, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
 import * as promptly from 'promptly';
@@ -8,7 +9,7 @@ import { FakeSts, RegisterRoleOptions, RegisterUserOptions } from './fake-sts';
 import { ConfigurationOptions, SDK, SdkProvider } from '../../lib/api/aws-auth';
 import { AwsCliCompatible } from '../../lib/api/aws-auth/awscli-compatible';
 import { defaultCliUserAgent } from '../../lib/api/aws-auth/user-agent';
-import { Mode, PluginHost } from '../../lib/api/plugin';
+import { PluginHost } from '../../lib/api/plugin';
 import * as logging from '../../lib/logging';
 import { withMocked } from '../util';
 import { mockSTSClient, restoreSdkMocksToDefault } from '../util/mock-sdk';

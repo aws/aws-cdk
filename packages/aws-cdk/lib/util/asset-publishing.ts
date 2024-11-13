@@ -1,3 +1,4 @@
+import { Mode } from '@aws-cdk/cli-plugin-contract';
 import { type Environment, UNKNOWN_ACCOUNT, UNKNOWN_REGION } from '@aws-cdk/cx-api';
 import {
   type Account,
@@ -14,7 +15,6 @@ import {
 } from 'cdk-assets';
 import type { SDK } from '../api';
 import type { SdkProvider } from '../api/aws-auth/sdk-provider';
-import { Mode } from '../api/plugin';
 import { debug, error, print } from '../logging';
 
 export interface PublishAssetsOptions {

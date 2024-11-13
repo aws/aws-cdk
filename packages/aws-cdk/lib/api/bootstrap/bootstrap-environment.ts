@@ -1,5 +1,6 @@
 import { info } from 'console';
 import * as path from 'path';
+import { Mode } from '@aws-cdk/cli-plugin-contract';
 import * as cxapi from '@aws-cdk/cx-api';
 import type { BootstrapEnvironmentOptions, BootstrappingParameters } from './bootstrap-props';
 import { BootstrapStack, bootstrapVersionFromTemplate } from './deploy-bootstrap';
@@ -9,7 +10,6 @@ import { loadStructuredFile, serializeStructure } from '../../serialize';
 import { rootDir } from '../../util/directories';
 import type { SDK, SdkProvider } from '../aws-auth';
 import type { SuccessfulDeployStackResult } from '../deploy-stack';
-import { Mode } from '../plugin';
 
 export type BootstrapSource = { source: 'legacy' } | { source: 'default' } | { source: 'custom'; templateFile: string };
 

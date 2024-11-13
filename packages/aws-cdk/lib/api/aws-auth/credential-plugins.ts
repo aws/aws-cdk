@@ -1,6 +1,7 @@
+import { AwsCredentials, CredentialProviderSource, Mode } from '@aws-cdk/cli-plugin-contract';
 import type { AwsCredentialIdentity } from '@smithy/types';
 import { debug, warning } from '../../logging';
-import { CredentialProviderSource, Mode, PluginHost } from '../plugin';
+import { PluginHost } from '../plugin';
 
 /**
  * Cache for credential providers.
@@ -65,13 +66,13 @@ export class CredentialPlugins {
       // Otherwise it must have returned credentials.
       const credentials = (providerOrCreds as any).resolvePromise
         ? await (providerOrCreds as any).resolvePromise()
-        : providerOrCreds;
+        : providerOrCreds as AwsCredentials;
 
       // Another layer of backwards compatibility: in SDK v2, the credentials object
       // is both a container and a provider. So we need to force the refresh using getPromise.
       // In SDK v3, these two responsibilities are separate, and the getPromise doesn't exist.
-      if ((credentials as any).getPromise) {
-        await (credentials as any).getPromise();
+      if (credentials.getPromise) {
+        await credentials.getPromise();
       }
 
       return { credentials, pluginName: source.name };

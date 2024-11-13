@@ -1,7 +1,7 @@
+import { Mode } from '@aws-cdk/cli-plugin-contract';
 import { type Environment, EnvironmentPlaceholders } from '@aws-cdk/cx-api';
 import { Branded } from '../../util/type-brands';
 import type { SdkProvider } from '../aws-auth/sdk-provider';
-import { Mode } from '../plugin/credential-provider-source';
 
 /**
  * Replace the {ACCOUNT} and {REGION} placeholders in all strings found in a complex object.
