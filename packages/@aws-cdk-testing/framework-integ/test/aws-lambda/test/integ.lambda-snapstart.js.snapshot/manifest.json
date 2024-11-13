@@ -19,7 +19,7 @@
         "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3c060d3d0515faba606c0465abb5718ccff49401daaf05a385ae7de9a7a76515.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/45c1527ff0ae033c7e2bb4fa9b83b353902213c7c73162bdfa055210d24bd9ef.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -53,22 +53,40 @@
             "data": "JavaSnapstartLambdaB19F6BA4"
           }
         ],
-        "/aws-cdk-lambda-runtime-management/PythonSnapstartLambda": [
+        "/aws-cdk-lambda-runtime-management/Python312SnapstartLambda": [
           {
             "type": "aws:cdk:warning",
             "data": "SnapStart only support published Lambda versions. Ignore if function already have published versions [ack: @aws-cdk/aws-lambda:snapStartRequirePublish]"
           }
         ],
-        "/aws-cdk-lambda-runtime-management/PythonSnapstartLambda/ServiceRole/Resource": [
+        "/aws-cdk-lambda-runtime-management/Python312SnapstartLambda/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PythonSnapstartLambdaServiceRole8EF8BB34"
+            "data": "Python312SnapstartLambdaServiceRole16F303C0"
           }
         ],
-        "/aws-cdk-lambda-runtime-management/PythonSnapstartLambda/Resource": [
+        "/aws-cdk-lambda-runtime-management/Python312SnapstartLambda/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PythonSnapstartLambdaC0CE7563"
+            "data": "Python312SnapstartLambdaB0C15475"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-management/Python313SnapstartLambda": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "SnapStart only support published Lambda versions. Ignore if function already have published versions [ack: @aws-cdk/aws-lambda:snapStartRequirePublish]"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-management/Python313SnapstartLambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Python313SnapstartLambdaServiceRoleC3989FBF"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-management/Python313SnapstartLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Python313SnapstartLambda008EE7A4"
           }
         ],
         "/aws-cdk-lambda-runtime-management/DotnetSnapstartLambda": [
@@ -99,6 +117,60 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "PythonSnapstartLambdaServiceRole8EF8BB34": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PythonSnapstartLambdaServiceRole8EF8BB34",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "PythonSnapstartLambdaC0CE7563": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PythonSnapstartLambdaC0CE7563",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "Python13SnapstartLambdaServiceRole4FF7D1E9": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Python13SnapstartLambdaServiceRole4FF7D1E9",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "Python13SnapstartLambdaF3D6F9F4": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Python13SnapstartLambdaF3D6F9F4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "Python11SnapstartLambdaServiceRoleA18C39FB": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Python11SnapstartLambdaServiceRoleA18C39FB",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "Python11SnapstartLambda8C62C534": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Python11SnapstartLambda8C62C534",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

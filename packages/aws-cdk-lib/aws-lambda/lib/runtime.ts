@@ -192,6 +192,7 @@ export class Runtime {
   public static readonly PYTHON_3_13 = new Runtime('python3.13', RuntimeFamily.PYTHON, {
     supportsInlineCode: true,
     supportsCodeGuruProfiling: true,
+    supportsSnapStart: true,
   });
 
   /**

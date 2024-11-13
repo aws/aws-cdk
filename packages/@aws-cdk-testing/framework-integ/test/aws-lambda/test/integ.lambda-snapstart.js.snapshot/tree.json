@@ -131,17 +131,17 @@
               "version": "0.0.0"
             }
           },
-          "PythonSnapstartLambda": {
-            "id": "PythonSnapstartLambda",
-            "path": "aws-cdk-lambda-runtime-management/PythonSnapstartLambda",
+          "Python312SnapstartLambda": {
+            "id": "Python312SnapstartLambda",
+            "path": "aws-cdk-lambda-runtime-management/Python312SnapstartLambda",
             "children": {
               "ServiceRole": {
                 "id": "ServiceRole",
-                "path": "aws-cdk-lambda-runtime-management/PythonSnapstartLambda/ServiceRole",
+                "path": "aws-cdk-lambda-runtime-management/Python312SnapstartLambda/ServiceRole",
                 "children": {
                   "ImportServiceRole": {
                     "id": "ImportServiceRole",
-                    "path": "aws-cdk-lambda-runtime-management/PythonSnapstartLambda/ServiceRole/ImportServiceRole",
+                    "path": "aws-cdk-lambda-runtime-management/Python312SnapstartLambda/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -149,7 +149,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-lambda-runtime-management/PythonSnapstartLambda/ServiceRole/Resource",
+                    "path": "aws-cdk-lambda-runtime-management/Python312SnapstartLambda/ServiceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -194,7 +194,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-lambda-runtime-management/PythonSnapstartLambda/Resource",
+                "path": "aws-cdk-lambda-runtime-management/Python312SnapstartLambda/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
@@ -204,11 +204,105 @@
                     "handler": "Handler",
                     "role": {
                       "Fn::GetAtt": [
-                        "PythonSnapstartLambdaServiceRole8EF8BB34",
+                        "Python312SnapstartLambdaServiceRole16F303C0",
                         "Arn"
                       ]
                     },
                     "runtime": "python3.12",
+                    "snapStart": {
+                      "applyOn": "PublishedVersions"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "Python313SnapstartLambda": {
+            "id": "Python313SnapstartLambda",
+            "path": "aws-cdk-lambda-runtime-management/Python313SnapstartLambda",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "aws-cdk-lambda-runtime-management/Python313SnapstartLambda/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "aws-cdk-lambda-runtime-management/Python313SnapstartLambda/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-lambda-runtime-management/Python313SnapstartLambda/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-lambda-runtime-management/Python313SnapstartLambda/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "zipFile": "pass"
+                    },
+                    "handler": "Handler",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "Python313SnapstartLambdaServiceRoleC3989FBF",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "python3.13",
                     "snapStart": {
                       "applyOn": "PublishedVersions"
                     }

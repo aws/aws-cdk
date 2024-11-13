@@ -14,10 +14,17 @@ new Function(stack, 'JavaSnapstartLambda', {
   snapStart: SnapStartConf.ON_PUBLISHED_VERSIONS,
 });
 
-new Function(stack, 'PythonSnapstartLambda', {
+new Function(stack, 'Python312SnapstartLambda', {
   code: Code.fromInline('pass'),
   handler: 'Handler',
   runtime: Runtime.PYTHON_3_12,
+  snapStart: SnapStartConf.ON_PUBLISHED_VERSIONS,
+});
+
+new Function(stack, 'Python313SnapstartLambda', {
+  code: Code.fromInline('pass'),
+  handler: 'Handler',
+  runtime: Runtime.PYTHON_3_13,
   snapStart: SnapStartConf.ON_PUBLISHED_VERSIONS,
 });
 
