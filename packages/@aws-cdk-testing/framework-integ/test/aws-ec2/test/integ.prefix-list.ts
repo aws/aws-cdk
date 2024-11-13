@@ -16,9 +16,12 @@ export class TestCase extends Stack {
         { cidr: '10.0.0.2/32', description: 'sample1' },
       ],
     });
-    const vpc = new ec2.Vpc(this, 'vpc');
+    const vpc = new ec2.Vpc(this, 'vpc', {
+      natGateways: 0,
+      maxAzs: 1,
+    });
     const sg = new ec2.SecurityGroup(this, 'sg', { vpc });
-    sg.connections.allowFrom(prefixList.peer, ec2.Port.udp(80));
+    sg.connections.allowFrom(prefixList, ec2.Port.udp(80));
   }
 }
 
