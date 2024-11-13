@@ -213,45 +213,6 @@ function synthNestedAssemblies(root: IConstruct, options: StageSynthesisOptions)
  * Aspects are not propagated across Assembly boundaries. The same Aspect will not be invoked
  * twice for the same construct.
  */
-// function invokeAspects(root: IConstruct) {
-//   const invokedByPath: { [nodePath: string]: IAspect[] } = { };
-
-//   let nestedAspectWarning = false;
-//   recurse(root, []);
-
-//   function recurse(construct: IConstruct, inheritedAspects: IAspect[]) {
-//     const node = construct.node;
-//     const aspects = Aspects.of(construct);
-//     const allAspectsHere = [...inheritedAspects ?? [], ...aspects.all];
-//     const nodeAspectsCount = aspects.all.length;
-//     for (const aspect of allAspectsHere) {
-//       let invoked = invokedByPath[node.path];
-//       if (!invoked) {
-//         invoked = invokedByPath[node.path] = [];
-//       }
-
-//       if (invoked.includes(aspect)) { continue; }
-
-//       aspect.visit(construct);
-
-//       // if an aspect was added to the node while invoking another aspect it will not be invoked, emit a warning
-//       // the `nestedAspectWarning` flag is used to prevent the warning from being emitted for every child
-//       if (!nestedAspectWarning && nodeAspectsCount !== aspects.all.length) {
-//         Annotations.of(construct).addWarningV2('@aws-cdk/core:ignoredAspect', 'We detected an Aspect was added via another Aspect, and will not be applied');
-//         nestedAspectWarning = true;
-//       }
-
-//       // mark as invoked for this node
-//       invoked.push(aspect);
-//     }
-
-//     for (const child of construct.node.children) {
-//       if (!Stage.isStage(child)) {
-//         recurse(child, allAspectsHere);
-//       }
-//     }
-//   }
-// }
 function invokeAspects(root: IConstruct) {
   const aspectsMap = collectAllAspectApplications(root);
 
