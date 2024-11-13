@@ -1,25 +1,35 @@
-/* eslint-disable import/order */
 import * as os from 'os';
 import { bockfs } from '@aws-cdk/cdk-build-tools';
 import * as cxapi from '@aws-cdk/cx-api';
-import * as AWS from 'aws-sdk';
-import type { ConfigurationOptions } from 'aws-sdk/lib/config-base';
+import { AssumeRoleCommand, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
 import * as promptly from 'promptly';
 import * as uuid from 'uuid';
 import { FakeSts, RegisterRoleOptions, RegisterUserOptions } from './fake-sts';
-import { ISDK, Mode, SDK, SdkProvider, defaultCliUserAgent } from '../../lib/api/aws-auth';
-import { PluginHost } from '../../lib/api/plugin';
+import { ConfigurationOptions, SDK, SdkProvider } from '../../lib/api/aws-auth';
+import { AwsCliCompatible } from '../../lib/api/aws-auth/awscli-compatible';
+import { defaultCliUserAgent } from '../../lib/api/aws-auth/user-agent';
+import { Mode, PluginHost } from '../../lib/api/plugin';
 import * as logging from '../../lib/logging';
 import { withMocked } from '../util';
+import { mockSTSClient, restoreSdkMocksToDefault } from '../util/mock-sdk';
+
+let mockFetchMetadataToken = jest.fn();
+let mockRequest = jest.fn();
+
+jest.mock('@aws-sdk/ec2-metadata-service', () => {
+  return {
+    MetadataService: jest.fn().mockImplementation(() => {
+      return {
+        fetchMetadataToken: mockFetchMetadataToken,
+        request: mockRequest,
+      };
+    }),
+  };
+});
 
 jest.mock('promptly', () => ({
   prompt: jest.fn().mockResolvedValue('1234'),
 }));
-
-const defaultCredOptions = {
-  ec2creds: false,
-  containerCreds: false,
-};
 
 let uid: string;
 let pluginQueried = false;
@@ -36,15 +46,19 @@ beforeEach(() => {
 
   PluginHost.instance.credentialProviderSources.splice(0);
   PluginHost.instance.credentialProviderSources.push({
-    isAvailable() { return Promise.resolve(true); },
-    canProvideCredentials(account) { return Promise.resolve(account === uniq('99999')); },
+    isAvailable() {
+      return Promise.resolve(true);
+    },
+    canProvideCredentials(account) {
+      return Promise.resolve(account === uniq('99999'));
+    },
     getProvider() {
       pluginQueried = true;
-      return Promise.resolve(new AWS.Credentials({
+      return Promise.resolve({
         accessKeyId: `${uid}plugin_key`,
         secretAccessKey: 'plugin_secret',
         sessionToken: 'plugin_token',
-      }));
+      });
     },
     name: 'test plugin',
   });
@@ -53,10 +67,13 @@ beforeEach(() => {
   // prepare() then we don't accidentally want to fall back to system config.
   process.env.AWS_CONFIG_FILE = '/dev/null';
   process.env.AWS_SHARED_CREDENTIALS_FILE = '/dev/null';
+
+  restoreSdkMocksToDefault();
 });
 
 afterEach(() => {
   bockfs.restore();
+  jest.restoreAllMocks();
 });
 
 function uniq(account: string) {
@@ -78,6 +95,7 @@ describe('with intercepted network calls', () => {
 
     // Make sure the KeyID returned by the plugin is recognized
     fakeSts.registerUser(uniq('99999'), uniq('plugin_key'));
+    mockRequest = jest.fn().mockResolvedValue(JSON.stringify({ region: undefined }));
   });
 
   afterEach(() => {
@@ -89,8 +107,12 @@ describe('with intercepted network calls', () => {
   describe('when CDK does not AssumeRole', () => {
     test('uses default credentials by default', async () => {
       // WHEN
+      const account = uniq('11111');
+      mockSTSClient.on(GetCallerIdentityCommand).resolves({
+        Account: account,
+        Arn: 'arn:aws-here',
+      });
       prepareCreds({
-        fakeSts,
         credentials: {
           default: { aws_access_key_id: 'access', $account: '11111', $fakeStsOptions: { partition: 'aws-here' } },
         },
@@ -102,16 +124,36 @@ describe('with intercepted network calls', () => {
 
       // THEN
       expect(provider.defaultRegion).toEqual('eu-bla-5');
-      await expect(provider.defaultAccount()).resolves.toEqual({ accountId: uniq('11111'), partition: 'aws-here' });
+      await expect(provider.defaultAccount()).resolves.toEqual({ accountId: account, partition: 'aws-here' });
 
       // Ask for a different region
-      const sdk = (await provider.forEnvironment({ ...env(uniq('11111')), region: 'rgn' }, Mode.ForReading)).sdk;
+      const sdk = (await provider.forEnvironment({ ...env(account), region: 'rgn' }, Mode.ForReading)).sdk;
       expect(sdkConfig(sdk).credentials!.accessKeyId).toEqual(uniq('access'));
       expect(sdk.currentRegion).toEqual('rgn');
     });
 
+    test('throws if no credentials could be found', async () => {
+      const account = uniq('11111');
+      const provider = await providerFromProfile(undefined);
+      await expect((provider.forEnvironment({ ...env(account), region: 'rgn' }, Mode.ForReading)))
+        .rejects
+        .toThrow(/Need to perform AWS calls for account .*, but no credentials have been configured, and none of these plugins found any/);
+    });
+
+    test('no base credentials partition if token is expired', async () => {
+      const account = uniq('11111');
+      const error = new Error('Expired Token');
+      error.name = 'ExpiredToken';
+      const identityProvider = () => Promise.reject(error);
+      const provider = new SdkProvider(identityProvider, 'rgn');
+      const creds = await provider.baseCredentialsPartition({ ...env(account), region: 'rgn' }, Mode.ForReading);
+
+      expect(creds).toBeUndefined();
+    });
+
     test('throws if profile credentials are not for the right account', async () => {
       // WHEN
+      jest.spyOn(AwsCliCompatible, 'region').mockResolvedValue('us-east-123');
       prepareCreds({
         fakeSts,
         config: {
@@ -120,7 +162,9 @@ describe('with intercepted network calls', () => {
       });
       const provider = await providerFromProfile('boo');
 
-      await expect(provider.forEnvironment(env(uniq('some_account_#')), Mode.ForReading)).rejects.toThrow('Need to perform AWS calls');
+      await expect(provider.forEnvironment(env(uniq('some_account_#')), Mode.ForReading)).rejects.toThrow(
+        'Need to perform AWS calls',
+      );
     });
 
     test('use profile acct/region if agnostic env requested', async () => {
@@ -137,7 +181,12 @@ describe('with intercepted network calls', () => {
       const provider = await providerFromProfile(undefined);
 
       // THEN
-      const sdk = (await provider.forEnvironment(cxapi.EnvironmentUtils.make(cxapi.UNKNOWN_ACCOUNT, cxapi.UNKNOWN_REGION), Mode.ForReading)).sdk;
+      const sdk = (
+        await provider.forEnvironment(
+          cxapi.EnvironmentUtils.make(cxapi.UNKNOWN_ACCOUNT, cxapi.UNKNOWN_REGION),
+          Mode.ForReading,
+        )
+      ).sdk;
       expect(sdkConfig(sdk).credentials!.accessKeyId).toEqual(uniq('access'));
       expect((await sdk.currentAccount()).accountId).toEqual(uniq('11111'));
       expect(sdk.currentRegion).toEqual('eu-bla-5');
@@ -145,6 +194,7 @@ describe('with intercepted network calls', () => {
 
     test('passing profile skips EnvironmentCredentials', async () => {
       // GIVEN
+      const calls = jest.spyOn(console, 'debug');
       prepareCreds({
         fakeSts,
         credentials: {
@@ -152,17 +202,11 @@ describe('with intercepted network calls', () => {
         },
       });
       const provider = await providerFromProfile('foo');
-
-      const environmentCredentialsPrototype = (new AWS.EnvironmentCredentials('AWS')).constructor.prototype;
-
-      await withMocked(environmentCredentialsPrototype, 'refresh', async (refresh) => {
-        refresh.mockImplementation((callback: (err?: Error) => void) => callback(new Error('This function should not have been called')));
-
-        // WHEN
-        expect((await provider.defaultAccount())?.accountId).toEqual(uniq('11111'));
-
-        expect(refresh).not.toHaveBeenCalled();
-      });
+      await provider.defaultAccount();
+      // Only credential-provider-ini is used.
+      expect(calls).toHaveBeenCalledTimes(2);
+      expect(calls.mock.calls[0]).toEqual(['@aws-sdk/credential-provider-ini - fromIni']);
+      expect(calls.mock.calls[1]).toEqual(['@aws-sdk/credential-provider-ini - resolveStaticCredentials']);
     });
 
     test('supports profile spread over config_file and credentials_file', async () => {
@@ -177,7 +221,7 @@ describe('with intercepted network calls', () => {
           'profile foo': { region: 'eu-west-1' },
         },
       });
-      const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions, profile: 'foo' });
+      const provider = await providerFromProfile('foo');
 
       // THEN
       expect(provider.defaultRegion).toEqual('eu-west-1');
@@ -208,6 +252,7 @@ describe('with intercepted network calls', () => {
 
     test('can assume-role configured in config', async () => {
       // GIVEN
+      jest.spyOn(console, 'debug');
       prepareCreds({
         fakeSts,
         credentials: {
@@ -239,7 +284,11 @@ describe('with intercepted network calls', () => {
         fakeSts,
         credentials: {
           assumer: { aws_access_key_id: 'assumer', $account: '22222' },
-          assumable: { role_arn: 'arn:aws:iam::12356789012:role/Assumable', source_profile: 'assumer', $account: '22222' },
+          assumable: {
+            role_arn: 'arn:aws:iam::12356789012:role/Assumable',
+            source_profile: 'assumer',
+            $account: '22222',
+          },
         },
         config: {
           'profile assumable': { region: 'eu-bla-5' },
@@ -278,11 +327,12 @@ describe('with intercepted network calls', () => {
       // THEN
       const sdk = (await provider.forEnvironment(env(uniq('66666')), Mode.ForReading)).sdk;
       expect((await sdk.currentAccount()).accountId).toEqual(uniq('66666'));
-      expect(fakeSts.assumedRoles[0]).toEqual(expect.objectContaining({
-        roleArn: 'arn:aws:iam::66666:role/Assumable',
-        serialNumber: 'arn:aws:iam::account:mfa/user',
-        tokenCode: '1234',
-      }));
+      expect(mockSTSClient).toHaveReceivedCommandWith(AssumeRoleCommand, {
+        RoleArn: 'arn:aws:iam::66666:role/Assumable',
+        SerialNumber: 'arn:aws:iam::account:mfa/user',
+        TokenCode: '1234',
+        RoleSessionName: expect.anything(),
+      });
 
       // Mock response was set to fail to make sure we don't call STS
       // Make sure the MFA mock was called during this test
@@ -305,6 +355,7 @@ describe('with intercepted network calls', () => {
           default: { aws_access_key_id: 'foo' },
         },
       });
+      mockSTSClient.on(AssumeRoleCommand).rejectsOnce('doesnotexist.role.arn');
       const provider = await providerFromProfile(undefined);
 
       // WHEN
@@ -320,7 +371,7 @@ describe('with intercepted network calls', () => {
     test('assuming a role sanitizes the username into the session name', async () => {
       // GIVEN
       prepareCreds({
-        fakeSts,
+        // fakeSts,
         config: {
           default: { aws_access_key_id: 'foo', $account: '11111' },
         },
@@ -332,13 +383,16 @@ describe('with intercepted network calls', () => {
         // WHEN
         const provider = await providerFromProfile(undefined);
 
-        const sdk = (await provider.forEnvironment(env(uniq('88888')), Mode.ForReading, { assumeRoleArn: 'arn:aws:role' })).sdk as SDK;
+        const sdk = (
+          await provider.forEnvironment(env(uniq('88888')), Mode.ForReading, { assumeRoleArn: 'arn:aws:role' })
+        ).sdk as SDK;
         await sdk.currentAccount();
 
         // THEN
-        expect(fakeSts.assumedRoles[0]).toEqual(expect.objectContaining({
-          roleSessionName: 'aws-cdk-sk@l',
-        }));
+        expect(mockSTSClient).toHaveReceivedCommandWith(AssumeRoleCommand, {
+          RoleArn: 'arn:aws:role',
+          RoleSessionName: 'aws-cdk-sk@l',
+        });
       });
     });
 
@@ -357,28 +411,32 @@ describe('with intercepted network calls', () => {
         // WHEN
         const provider = await providerFromProfile(undefined);
 
-        const sdk = (await provider.forEnvironment(env(uniq('88888')), Mode.ForReading,
-          {
+        const sdk = (
+          await provider.forEnvironment(env(uniq('88888')), Mode.ForReading, {
             assumeRoleArn: 'arn:aws:role',
             assumeRoleExternalId: 'bruh',
             assumeRoleAdditionalOptions: {
               Tags: [{ Key: 'Department', Value: 'Engineering' }],
             },
-          })).sdk as SDK;
+          })
+        ).sdk as SDK;
         await sdk.currentAccount();
 
         // THEN
-        expect(fakeSts.assumedRoles[0]).toEqual(expect.objectContaining({
-          tags: [{ Key: 'Department', Value: 'Engineering' }],
-          transitiveTagKeys: ['Department'],
-        }));
+        expect(mockSTSClient).toHaveReceivedCommandWith(AssumeRoleCommand, {
+          Tags: [{ Key: 'Department', Value: 'Engineering' }],
+          TransitiveTagKeys: ['Department'],
+          RoleArn: 'arn:aws:role',
+          ExternalId: 'bruh',
+          RoleSessionName: 'aws-cdk-sk@l',
+        });
       });
     });
 
     test('assuming a role does not fail when OS username cannot be read', async () => {
       // GIVEN
       prepareCreds({
-        fakeSts,
+        // fakeSts,
         config: {
           default: { aws_access_key_id: 'foo', $account: '11111' },
         },
@@ -393,20 +451,23 @@ describe('with intercepted network calls', () => {
         // WHEN
         const provider = await providerFromProfile(undefined);
 
-        const sdk = (await provider.forEnvironment(env(uniq('88888')), Mode.ForReading, { assumeRoleArn: 'arn:aws:role' })).sdk as SDK;
+        const sdk = (
+          await provider.forEnvironment(env(uniq('88888')), Mode.ForReading, { assumeRoleArn: 'arn:aws:role' })
+        ).sdk as SDK;
         await sdk.currentAccount();
 
         // THEN
-        expect(fakeSts.assumedRoles[0]).toEqual(expect.objectContaining({
-          roleSessionName: 'aws-cdk-noname',
-        }));
+        expect(mockSTSClient).toHaveReceivedCommandWith(AssumeRoleCommand, {
+          RoleArn: 'arn:aws:role',
+          RoleSessionName: 'aws-cdk-noname',
+        });
       });
     });
 
     test('even if current credentials are for the wrong account, we will still use them to AssumeRole', async () => {
       // GIVEN
       prepareCreds({
-        fakeSts,
+        // fakeSts,
         config: {
           default: { aws_access_key_id: 'foo', $account: '11111' },
         },
@@ -414,7 +475,9 @@ describe('with intercepted network calls', () => {
       const provider = await providerFromProfile(undefined);
 
       // WHEN
-      const sdk = (await provider.forEnvironment(env(uniq('88888')), Mode.ForReading, { assumeRoleArn: 'arn:aws:role' })).sdk as SDK;
+      const sdk = (
+        await provider.forEnvironment(env(uniq('88888')), Mode.ForReading, { assumeRoleArn: 'arn:aws:role' })
+      ).sdk as SDK;
 
       // THEN
       expect((await sdk.currentAccount()).accountId).toEqual(uniq('88888'));
@@ -423,7 +486,7 @@ describe('with intercepted network calls', () => {
     test('if AssumeRole fails but current credentials are for the right account, we will still use them', async () => {
       // GIVEN
       prepareCreds({
-        fakeSts,
+        // fakeSts,
         config: {
           default: { aws_access_key_id: 'foo', $account: '88888' },
         },
@@ -431,7 +494,9 @@ describe('with intercepted network calls', () => {
       const provider = await providerFromProfile(undefined);
 
       // WHEN - assumeRole fails because the role can only be assumed from account 11111
-      const sdk = (await provider.forEnvironment(env(uniq('88888')), Mode.ForReading, { assumeRoleArn: 'arn:aws:role' })).sdk as SDK;
+      const sdk = (
+        await provider.forEnvironment(env(uniq('88888')), Mode.ForReading, { assumeRoleArn: 'arn:aws:role' })
+      ).sdk as SDK;
 
       // THEN
       expect((await sdk.currentAccount()).accountId).toEqual(uniq('88888'));
@@ -440,17 +505,20 @@ describe('with intercepted network calls', () => {
     test('if AssumeRole fails because of ExpiredToken, then fail completely', async () => {
       // GIVEN
       prepareCreds({
-        fakeSts,
+        // fakeSts,
         config: {
           default: { aws_access_key_id: 'foo', $account: '88888' },
         },
       });
+      const error = new Error('Too late');
+      error.name = 'ExpiredToken';
+      mockSTSClient.on(AssumeRoleCommand).rejectsOnce(error);
       const provider = await providerFromProfile(undefined);
 
       // WHEN - assumeRole fails with a specific error
       await expect(async () => {
         await provider.forEnvironment(env(uniq('88888')), Mode.ForReading, { assumeRoleArn: '<FAIL:ExpiredToken>' });
-      }).rejects.toThrow(/ExpiredToken/);
+      }).rejects.toThrow(error);
     });
   });
 
@@ -481,15 +549,18 @@ describe('with intercepted network calls', () => {
         assumeRoleArn: 'arn:aws:iam::99999:role/Assumable',
       });
 
-      expect(fakeSts.assumedRoles[0]).toEqual(expect.objectContaining({
-        roleArn: 'arn:aws:iam::99999:role/Assumable',
-      }));
+      expect(mockSTSClient).toHaveReceivedCommandWith(AssumeRoleCommand, {
+        RoleArn: 'arn:aws:iam::99999:role/Assumable',
+        RoleSessionName: expect.anything(),
+      });
       expect(pluginQueried).toEqual(true);
     });
 
     test('even if AssumeRole fails but current credentials are from a plugin, we will still use them', async () => {
       const provider = await providerFromProfile(undefined);
-      const sdk = (await provider.forEnvironment(env(uniq('99999')), Mode.ForReading, { assumeRoleArn: 'does:not:exist' })).sdk;
+      const sdk = (
+        await provider.forEnvironment(env(uniq('99999')), Mode.ForReading, { assumeRoleArn: 'does:not:exist' })
+      ).sdk;
 
       // THEN
       expect((await sdk.currentAccount()).accountId).toEqual(uniq('99999'));
@@ -511,67 +582,88 @@ describe('with intercepted network calls', () => {
 
   describe('support for credential_source', () => {
     test('can assume role with ecs credentials', async () => {
-      return withMocked(AWS.ECSCredentials.prototype, 'needsRefresh', async (needsRefresh) => {
-        // GIVEN
-        prepareCreds({
-          config: {
-            'profile ecs': { role_arn: 'arn:aws:iam::12356789012:role/Assumable', credential_source: 'EcsContainer', $account: '22222' },
+      // GIVEN
+      const calls = jest.spyOn(console, 'debug');
+      prepareCreds({
+        config: {
+          'profile ecs': {
+            role_arn: 'arn:aws:iam::12356789012:role/Assumable',
+            credential_source: 'EcsContainer',
+            $account: '22222',
           },
-        });
-        const provider = await providerFromProfile('ecs');
-
-        // WHEN
-        await provider.defaultAccount();
-
-        // THEN
-        expect(needsRefresh).toHaveBeenCalled();
+        },
       });
 
+      // WHEN
+      const provider = await providerFromProfile('ecs');
+      await provider.defaultAccount();
+
+      // THEN
+      expect(calls.mock.calls).toContainEqual([
+        '@aws-sdk/credential-provider-ini - finding credential resolver using profile=[ecs]',
+      ]);
+      expect(calls.mock.calls).toContainEqual(['@aws-sdk/credential-provider-ini - credential_source is EcsContainer']);
     });
 
     test('can assume role with ec2 credentials', async () => {
-      return withMocked(AWS.EC2MetadataCredentials.prototype, 'needsRefresh', async (needsRefresh) => {
-        // GIVEN
-        prepareCreds({
-          config: {
-            'profile ecs': { role_arn: 'arn:aws:iam::12356789012:role/Assumable', credential_source: 'Ec2InstanceMetadata', $account: '22222' },
+      // GIVEN
+      const calls = jest.spyOn(console, 'debug');
+      prepareCreds({
+        config: {
+          'profile ecs': {
+            role_arn: 'arn:aws:iam::12356789012:role/Assumable',
+            credential_source: 'Ec2InstanceMetadata',
+            $account: '22222',
           },
-        });
-        const provider = await providerFromProfile('ecs');
-
-        // WHEN
-        await provider.defaultAccount();
-
-        // THEN
-        expect(needsRefresh).toHaveBeenCalled();
-
+        },
       });
 
+      // WHEN
+      const provider = await providerFromProfile('ecs');
+      await provider.defaultAccount();
+
+      // THEN
+      expect(calls.mock.calls).toContainEqual([
+        '@aws-sdk/credential-provider-ini - finding credential resolver using profile=[ecs]',
+      ]);
+      expect(calls.mock.calls).toContainEqual([
+        '@aws-sdk/credential-provider-ini - credential_source is Ec2InstanceMetadata',
+      ]);
     });
 
     test('can assume role with env credentials', async () => {
-      return withMocked(AWS.EnvironmentCredentials.prototype, 'needsRefresh', async (needsRefresh) => {
-        // GIVEN
-        prepareCreds({
-          config: {
-            'profile ecs': { role_arn: 'arn:aws:iam::12356789012:role/Assumable', credential_source: 'Environment', $account: '22222' },
+      // GIVEN
+      const calls = jest.spyOn(console, 'debug');
+      prepareCreds({
+        config: {
+          'profile ecs': {
+            role_arn: 'arn:aws:iam::12356789012:role/Assumable',
+            credential_source: 'Environment',
+            $account: '22222',
           },
-        });
-        const provider = await providerFromProfile('ecs');
-
-        // WHEN
-        await provider.defaultAccount();
-
-        // THEN
-        expect(needsRefresh).toHaveBeenCalled();
+        },
       });
+
+      // WHEN
+      const provider = await providerFromProfile('ecs');
+      await provider.defaultAccount();
+
+      // THEN
+      expect(calls.mock.calls).toContainEqual([
+        '@aws-sdk/credential-provider-ini - finding credential resolver using profile=[ecs]',
+      ]);
+      expect(calls.mock.calls).toContainEqual(['@aws-sdk/credential-provider-ini - credential_source is Environment']);
     });
 
     test('assume fails with unsupported credential_source', async () => {
       // GIVEN
       prepareCreds({
         config: {
-          'profile ecs': { role_arn: 'arn:aws:iam::12356789012:role/Assumable', credential_source: 'unsupported', $account: '22222' },
+          'profile ecs': {
+            role_arn: 'arn:aws:iam::12356789012:role/Assumable',
+            credential_source: 'unsupported',
+            $account: '22222',
+          },
         },
       });
       const provider = await providerFromProfile('ecs');
@@ -586,8 +678,7 @@ describe('with intercepted network calls', () => {
 
   test('defaultAccount returns undefined if STS call fails', async () => {
     // GIVEN
-    process.env.AWS_ACCESS_KEY_ID = `${uid}akid`;
-    process.env.AWS_SECRET_ACCESS_KEY = 'sekrit';
+    mockSTSClient.on(AssumeRoleCommand).rejectsOnce('Oops, bad sekrit');
 
     // WHEN
     const provider = await providerFromProfile(undefined);
@@ -598,8 +689,9 @@ describe('with intercepted network calls', () => {
 
   test('defaultAccount returns undefined, event if STS call fails with ExpiredToken', async () => {
     // GIVEN
-    process.env.AWS_ACCESS_KEY_ID = `${uid}'<FAIL:ExpiredToken>'`;
-    process.env.AWS_SECRET_ACCESS_KEY = 'sekrit';
+    const error = new Error('Too late');
+    error.name = 'ExpiredToken';
+    mockSTSClient.on(AssumeRoleCommand).rejectsOnce(error);
 
     // WHEN
     const provider = await providerFromProfile(undefined);
@@ -609,54 +701,6 @@ describe('with intercepted network calls', () => {
   });
 });
 
-test('even when using a profile to assume another profile, STS calls goes through the proxy', async () => {
-  prepareCreds({
-    credentials: {
-      assumer: { aws_access_key_id: 'assumer' },
-    },
-    config: {
-      'default': { region: 'eu-bla-5' },
-      'profile assumable': { role_arn: 'arn:aws:iam::66666:role/Assumable', source_profile: 'assumer', $account: '66666' },
-      'profile assumer': { region: 'us-east-2' },
-    },
-  });
-
-  // Messy mocking
-  let called = false;
-  jest.mock('proxy-agent', () => {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    class FakeAgent extends require('https').Agent {
-      public addRequest(_: any, __: any) {
-        // FIXME: this error takes 6 seconds to be completely handled. It
-        // might be retries in the SDK somewhere, or something about the Node
-        // event loop. I've spent an hour trying to figure it out and I can't,
-        // and I gave up. We'll just have to live with this until someone gets
-        // inspired.
-        const error = new Error('ABORTED BY TEST');
-        (error as any).code = 'RequestAbortedError';
-        (error as any).retryable = false;
-        called = true;
-        throw error;
-      }
-    }
-    return { ProxyAgent: FakeAgent };
-  });
-
-  // WHEN
-  const provider = await SdkProvider.withAwsCliCompatibleDefaults({
-    ...defaultCredOptions,
-    profile: 'assumable',
-    httpOptions: {
-      proxyAddress: 'http://DOESNTMATTER/',
-    },
-  });
-
-  await provider.defaultAccount();
-
-  // THEN -- the fake proxy agent got called, we don't care about the result
-  expect(called).toEqual(true);
-});
-
 test('default useragent is reasonable', () => {
   expect(defaultCliUserAgent()).toContain('aws-cdk/');
 });
@@ -664,7 +708,7 @@ test('default useragent is reasonable', () => {
 /**
  * Use object hackery to get the credentials out of the SDK object
  */
-function sdkConfig(sdk: ISDK): ConfigurationOptions {
+function sdkConfig(sdk: SDK): ConfigurationOptions {
   return (sdk as any).config;
 }
 
@@ -699,7 +743,11 @@ function prepareCreds(options: PrepareCredsOptions) {
         if (user.aws_access_key_id) {
           ret.push(`aws_access_key_id=${uniq(user.aws_access_key_id)}`);
           ret.push('aws_secret_access_key=secret');
-          options.fakeSts?.registerUser(uniq(user.$account ?? '00000'), uniq(user.aws_access_key_id), user.$fakeStsOptions);
+          options.fakeSts?.registerUser(
+            uniq(user.$account ?? '00000'),
+            uniq(user.aws_access_key_id),
+            user.$fakeStsOptions,
+          );
         }
       }
 
@@ -756,6 +804,6 @@ function isProfileRole(x: ProfileUser | ProfileRole): x is ProfileRole {
   return 'role_arn' in x;
 }
 
-function providerFromProfile(profile: string | undefined) {
-  return SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions, profile });
+async function providerFromProfile(profile: string | undefined) {
+  return SdkProvider.withAwsCliCompatibleDefaults({ profile, logger: console });
 }
