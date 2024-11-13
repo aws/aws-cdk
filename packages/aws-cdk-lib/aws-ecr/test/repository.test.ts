@@ -1214,4 +1214,99 @@ describe('repository', () => {
       },
     });
   });
+
+  test.each([
+    ['image digest', 'sha256:55d873154f78cd9a13487c9539ff380f396b887f4a815d84fd698ed872c74749', '@'],
+    ['image tag', 'testTag', ':'],
+  ])('repositoryUriForTagOrDigest returns correct uri with %s', (type, value, separator) => {
+    const stack = new cdk.Stack();
+    const repo = new ecr.Repository(stack, 'Repo');
+    const uri = repo.repositoryUriForTagOrDigest(value);
+    expect(uri).toMatch(new RegExp(`.+${separator}${value}`));
+  });
+
+  test.each([
+    ['image digest', 'sha256:55d873154f78cd9a13487c9539ff380f396b887f4a815d84fd698ed872c74749'],
+    ['image tag', 'testTag'],
+  ])('repositoryUriForTagOrDigest returns correct uri with %s for Token input', (type, value) => {
+    const stack = new cdk.Stack();
+    const param = new cdk.CfnParameter(stack, 'Param', {
+      default: value,
+    });
+    const repo = new ecr.Repository(stack, 'Repo');
+    const uri = repo.repositoryUriForTagOrDigest(param.valueAsString);
+    new cdk.CfnOutput(stack, 'Uri', {
+      value: uri,
+    });
+    const template = Template.fromStack(stack);
+    const condition = template.findConditions('*');
+    const conditionLogicalId = Object.keys(condition)[0];
+    expect(conditionLogicalId).toMatch(new RegExp('IsInputDigest1.+'));
+    expect(condition[conditionLogicalId]).toMatchObject({
+      'Fn::Equals': [
+        {
+          'Fn::Select': [
+            0,
+            {
+              'Fn::Split': [
+                ':',
+                {
+                  'Ref': 'Param',
+                },
+              ],
+            },
+          ],
+        },
+        'sha256',
+      ],
+    });
+    const output = template.findOutputs('Uri');
+    expect(output.Uri.Value['Fn::Join'][1][7]).toMatchObject({
+      'Fn::If': [
+        conditionLogicalId,
+        {
+          'Fn::Join': [
+            '',
+            [
+              '@',
+              {
+                'Ref': 'Param',
+              },
+            ],
+          ],
+        },
+        {
+          'Fn::Join': [
+            '',
+            [
+              ':',
+              {
+                'Ref': 'Param',
+              },
+            ],
+          ],
+        },
+      ],
+    });
+  });
+
+  test('repositoryUriForTagOrDigest add unique conditions', () => {
+    const stack = new cdk.Stack();
+    const tagParam = new cdk.CfnParameter(stack, 'tagParam', {
+      default: 'testingTag',
+    });
+    const digestParam = new cdk.CfnParameter(stack, 'digestParam', {
+      default: 'sha256:55d873154f78cd9a13487c9539ff380f396b887f4a815d84fd698ed872c74749',
+    });
+
+    const repo = new ecr.Repository(stack, 'Repo');
+    repo.repositoryUriForTagOrDigest(tagParam.valueAsString);
+    repo.repositoryUriForTagOrDigest(tagParam.valueAsString);
+    repo.repositoryUriForTagOrDigest(digestParam.valueAsString);
+    repo.repositoryUriForTagOrDigest(digestParam.valueAsString);
+    repo.repositoryUriForTagOrDigest(digestParam.valueAsString);
+    const template = Template.fromStack(stack);
+    const conditions = template.findConditions('*');
+    expect(Object.keys(conditions).length).toEqual(2);
+  });
 });

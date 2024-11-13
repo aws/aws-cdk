@@ -81,6 +81,7 @@ describe('tests', () => {
       vpc,
       crossZoneEnabled: true,
       clientRoutingPolicy: elbv2.ClientRoutingPolicy.PARTIAL_AVAILABILITY_ZONE_AFFINITY,
+      zonalShift: true,
     });
 
     // THEN
@@ -93,6 +94,10 @@ describe('tests', () => {
         {
           Key: 'dns_record.client_routing_policy',
           Value: 'partial_availability_zone_affinity',
+        },
+        {
+          Key: 'zonal_shift.config.enabled',
+          Value: 'true',
         },
       ]),
     });

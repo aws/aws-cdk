@@ -1,4 +1,4 @@
-import { CliConfig, DynamicValue } from '@aws-cdk/yargs-gen';
+import type { CliConfig, DynamicResult } from '@aws-cdk/yargs-gen';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
 import { RequireApproval } from './diff';
 
@@ -416,4 +416,27 @@ export function makeConfig(): CliConfig {
       },
     },
   };
+}
+
+/**
+ * Informs the code library, `@aws-cdk/yargs-gen`, that
+ * this value references an entity not defined in this configuration file.
+ */
+export class DynamicValue {
+  /**
+   * Instructs `yargs-gen` to retrieve this value from the parameter with passed name.
+   */
+  public static fromParameter(parameterName: string): DynamicResult {
+    return {
+      dynamicType: 'parameter',
+      dynamicValue: parameterName,
+    };
+  }
+
+  public static fromInline(f: () => any): DynamicResult {
+    return {
+      dynamicType: 'function',
+      dynamicValue: f,
+    };
+  }
 }

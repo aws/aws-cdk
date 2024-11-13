@@ -1,13 +1,14 @@
-import * as crypto from 'node:crypto';
 import * as cxapi from '@aws-cdk/cx-api';
-import { ECR, S3 } from 'aws-sdk';
+import { ImageIdentifier } from '@aws-sdk/client-ecr';
+import { Tag } from '@aws-sdk/client-s3';
 import * as chalk from 'chalk';
 import * as promptly from 'promptly';
 import { debug, print } from '../../logging';
-import { ISDK, Mode, SdkProvider } from '../aws-auth';
+import { IECRClient, IS3Client, SDK, SdkProvider } from '../aws-auth';
 import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitInfo } from '../toolkit-info';
 import { ProgressPrinter } from './progress-printer';
 import { ActiveAssetCache, BackgroundStackRefresh, refreshStacks } from './stack-refresh';
+import { Mode } from '../plugin';
 
 // Must use a require() otherwise esbuild complains
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -70,7 +71,7 @@ export class ImageAsset {
  * An object asset that lives in the bootstrapped S3 Bucket
  */
 export class ObjectAsset {
-  private cached_tags: S3.TagSet | undefined = undefined;
+  private cached_tags: Tag[] | undefined = undefined;
 
   public constructor(private readonly bucket: string, public readonly key: string, public readonly size: number) {}
 
@@ -78,12 +79,12 @@ export class ObjectAsset {
     return this.key.split('.')[0];
   }
 
-  public async allTags(s3: S3) {
+  public async allTags(s3: IS3Client) {
     if (this.cached_tags) {
       return this.cached_tags;
     }
 
-    const response = await s3.getObjectTagging({ Bucket: this.bucket, Key: this.key }).promise();
+    const response = await s3.getObjectTagging({ Bucket: this.bucket, Key: this.key });
     this.cached_tags = response.TagSet;
     return this.cached_tags;
   }
@@ -92,14 +93,14 @@ export class ObjectAsset {
     if (!this.cached_tags) {
       throw new Error('Cannot call getTag before allTags');
     }
-    return this.cached_tags.find(t => t.Key === tag)?.Value;
+    return this.cached_tags.find((t: any) => t.Key === tag)?.Value;
   }
 
   private hasTag(tag: string) {
     if (!this.cached_tags) {
       throw new Error('Cannot call hasTag before allTags');
     }
-    return this.cached_tags.some(t => t.Key === tag);
+    return this.cached_tags.some((t: any) => t.Key === tag);
   }
 
   public hasIsolatedTag() {
@@ -202,16 +203,6 @@ export class GarbageCollector {
     const sdk = (await this.props.sdkProvider.forEnvironment(this.props.resolvedEnvironment, Mode.ForWriting)).sdk;
     const cfn = sdk.cloudFormation();
 
-    // Some S3 APIs in SDKv2 have a bug that always requires them to use a MD5 checksum.
-    // These APIs are not going to be supported in a FIPS environment.
-    // We fail with a nice error message.
-    // Once we switch this code to SDKv3, this can be made work again by adding
-    // `ChecksumAlgorithm: 'SHA256'` to the affected APIs.
-    // Currently known to affect only DeleteObjects (note the plural)
-    if (crypto.getFips() === 1) {
-      throw new Error('Garbage Collection is currently not supported in FIPS environments');
-    }
-
     const qualifier = await this.bootstrapQualifier(sdk, this.bootstrapStackName);
     const activeAssets = new ActiveAssetCache();
 
@@ -243,7 +234,7 @@ export class GarbageCollector {
   /**
    * Perform garbage collection on ECR assets
    */
-  public async garbageCollectEcr(sdk: ISDK, activeAssets: ActiveAssetCache, backgroundStackRefresh: BackgroundStackRefresh) {
+  public async garbageCollectEcr(sdk: SDK, activeAssets: ActiveAssetCache, backgroundStackRefresh: BackgroundStackRefresh) {
     const ecr = sdk.ecr();
     const repo = await this.bootstrapRepositoryName(sdk, this.bootstrapStackName);
     const numImages = await this.numImagesInRepo(ecr, repo);
@@ -316,10 +307,8 @@ export class GarbageCollector {
   /**
    * Perform garbage collection on S3 assets
    */
-  public async garbageCollectS3(sdk: ISDK, activeAssets: ActiveAssetCache, backgroundStackRefresh: BackgroundStackRefresh) {
-    const s3 = sdk.s3({
-      needsMd5Checksums: true,
-    });
+  public async garbageCollectS3(sdk: SDK, activeAssets: ActiveAssetCache, backgroundStackRefresh: BackgroundStackRefresh) {
+    const s3 = sdk.s3();
     const bucket = await this.bootstrapBucketName(sdk, this.bootstrapStackName);
     const numObjects = await this.numObjectsInBucket(s3, bucket);
     const printer = new ProgressPrinter(numObjects, 1000);
@@ -391,7 +380,7 @@ export class GarbageCollector {
     }
   }
 
-  private async parallelReadAllTags(s3: S3, objects: ObjectAsset[]) {
+  private async parallelReadAllTags(s3: IS3Client, objects: ObjectAsset[]) {
     const limit = pLimit(P_LIMIT);
 
     for (const obj of objects) {
@@ -403,7 +392,7 @@ export class GarbageCollector {
    * Untag assets that were previously tagged, but now currently referenced.
    * Since this is treated as an implementation detail, we do not print the results in the printer.
    */
-  private async parallelUntagEcr(ecr: ECR, repo: string, untaggables: ImageAsset[]) {
+  private async parallelUntagEcr(ecr: IECRClient, repo: string, untaggables: ImageAsset[]) {
     const limit = pLimit(P_LIMIT);
 
     for (const img of untaggables) {
@@ -414,7 +403,7 @@ export class GarbageCollector {
           imageIds: [{
             imageTag: tag,
           }],
-        }).promise(),
+        }),
       );
     }
 
@@ -425,18 +414,18 @@ export class GarbageCollector {
    * Untag assets that were previously tagged, but now currently referenced.
    * Since this is treated as an implementation detail, we do not print the results in the printer.
    */
-  private async parallelUntagS3(s3: S3, bucket: string, untaggables: ObjectAsset[]) {
+  private async parallelUntagS3(s3: IS3Client, bucket: string, untaggables: ObjectAsset[]) {
     const limit = pLimit(P_LIMIT);
 
     for (const obj of untaggables) {
-      const tags = await obj.allTags(s3);
-      const updatedTags = tags.filter(tag => tag.Key !== S3_ISOLATED_TAG);
+      const tags = await obj.allTags(s3) ?? [];
+      const updatedTags = tags.filter((tag: Tag) => tag.Key !== S3_ISOLATED_TAG);
       await limit(() =>
         s3.deleteObjectTagging({
           Bucket: bucket,
           Key: obj.key,
 
-        }).promise(),
+        }),
       );
       await limit(() =>
         s3.putObjectTagging({
@@ -445,7 +434,7 @@ export class GarbageCollector {
           Tagging: {
             TagSet: updatedTags,
           },
-        }).promise(),
+        }),
       );
     }
 
@@ -455,7 +444,7 @@ export class GarbageCollector {
   /**
    * Tag images in parallel using p-limit
    */
-  private async parallelTagEcr(ecr: ECR, repo: string, taggables: ImageAsset[], printer: ProgressPrinter) {
+  private async parallelTagEcr(ecr: IECRClient, repo: string, taggables: ImageAsset[], printer: ProgressPrinter) {
     const limit = pLimit(P_LIMIT);
 
     for (let i = 0; i < taggables.length; i++) {
@@ -467,7 +456,7 @@ export class GarbageCollector {
             imageDigest: img.digest,
             imageManifest: img.manifest,
             imageTag: img.buildImageTag(i),
-          }).promise();
+          });
         } catch (error) {
           // This is a false negative -- an isolated asset is untagged
           // likely due to an imageTag collision. We can safely ignore,
@@ -486,7 +475,7 @@ export class GarbageCollector {
    * Tag objects in parallel using p-limit. The putObjectTagging API does not
    * support batch tagging so we must handle the parallelism client-side.
    */
-  private async parallelTagS3(s3: S3, bucket: string, taggables: ObjectAsset[], date: number, printer: ProgressPrinter) {
+  private async parallelTagS3(s3: IS3Client, bucket: string, taggables: ObjectAsset[], date: number, printer: ProgressPrinter) {
     const limit = pLimit(P_LIMIT);
 
     for (const obj of taggables) {
@@ -502,7 +491,7 @@ export class GarbageCollector {
               },
             ],
           },
-        }).promise(),
+        }),
       );
     }
 
@@ -513,9 +502,9 @@ export class GarbageCollector {
   /**
    * Delete images in parallel. The deleteImage API supports batches of 100.
    */
-  private async parallelDeleteEcr(ecr: ECR, repo: string, deletables: ImageAsset[], printer: ProgressPrinter) {
+  private async parallelDeleteEcr(ecr: IECRClient, repo: string, deletables: ImageAsset[], printer: ProgressPrinter) {
     const batchSize = 100;
-    const imagesToDelete: ECR.ImageIdentifierList = deletables.map(img => ({
+    const imagesToDelete = deletables.map(img => ({
       imageDigest: img.digest,
     }));
 
@@ -529,7 +518,7 @@ export class GarbageCollector {
         await ecr.batchDeleteImage({
           imageIds: batch,
           repositoryName: repo,
-        }).promise();
+        });
 
         const deletedCount = batch.length;
         debug(`Deleted ${deletedCount} assets`);
@@ -543,9 +532,9 @@ export class GarbageCollector {
   /**
    * Delete objects in parallel. The deleteObjects API supports batches of 1000.
    */
-  private async parallelDeleteS3(s3: S3, bucket: string, deletables: ObjectAsset[], printer: ProgressPrinter) {
+  private async parallelDeleteS3(s3: IS3Client, bucket: string, deletables: ObjectAsset[], printer: ProgressPrinter) {
     const batchSize = 1000;
-    const objectsToDelete: S3.ObjectIdentifierList = deletables.map(asset => ({
+    const objectsToDelete = deletables.map(asset => ({
       Key: asset.key,
     }));
 
@@ -562,7 +551,7 @@ export class GarbageCollector {
             Objects: batch,
             Quiet: true,
           },
-        }).promise();
+        });
 
         const deletedCount = batch.length;
         debug(`Deleted ${deletedCount} assets`);
@@ -573,22 +562,22 @@ export class GarbageCollector {
     }
   }
 
-  private async bootstrapBucketName(sdk: ISDK, bootstrapStackName: string): Promise<string> {
+  private async bootstrapBucketName(sdk: SDK, bootstrapStackName: string): Promise<string> {
     const info = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
     return info.bucketName;
   }
 
-  private async bootstrapRepositoryName(sdk: ISDK, bootstrapStackName: string): Promise<string> {
+  private async bootstrapRepositoryName(sdk: SDK, bootstrapStackName: string): Promise<string> {
     const info = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
     return info.repositoryName;
   }
 
-  private async bootstrapQualifier(sdk: ISDK, bootstrapStackName: string): Promise<string | undefined> {
+  private async bootstrapQualifier(sdk: SDK, bootstrapStackName: string): Promise<string | undefined> {
     const info = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
     return info.bootstrapStack.parameters.Qualifier;
   }
 
-  private async numObjectsInBucket(s3: S3, bucket: string): Promise<number> {
+  private async numObjectsInBucket(s3: IS3Client, bucket: string): Promise<number> {
     let totalCount = 0;
     let continuationToken: string | undefined;
 
@@ -596,7 +585,7 @@ export class GarbageCollector {
       const response = await s3.listObjectsV2({
         Bucket: bucket,
         ContinuationToken: continuationToken,
-      }).promise();
+      });
 
       totalCount += response.KeyCount ?? 0;
       continuationToken = response.NextContinuationToken;
@@ -605,7 +594,7 @@ export class GarbageCollector {
     return totalCount;
   }
 
-  private async numImagesInRepo(ecr: ECR, repo: string): Promise<number> {
+  private async numImagesInRepo(ecr: IECRClient, repo: string): Promise<number> {
     let totalCount = 0;
     let nextToken: string | undefined;
 
@@ -613,7 +602,7 @@ export class GarbageCollector {
       const response = await ecr.listImages({
         repositoryName: repo,
         nextToken: nextToken,
-      }).promise();
+      });
 
       totalCount += response.imageIds?.length ?? 0;
       nextToken = response.nextToken;
@@ -622,7 +611,7 @@ export class GarbageCollector {
     return totalCount;
   }
 
-  private async *readRepoInBatches(ecr: ECR, repo: string, batchSize: number = 1000, currentTime: number): AsyncGenerator<ImageAsset[]> {
+  private async *readRepoInBatches(ecr: IECRClient, repo: string, batchSize: number = 1000, currentTime: number): AsyncGenerator<ImageAsset[]> {
     let continuationToken: string | undefined;
 
     do {
@@ -631,7 +620,7 @@ export class GarbageCollector {
       while (batch.length < batchSize) {
         const response = await ecr.listImages({
           repositoryName: repo,
-        }).promise();
+        });
 
         // No images in the repository
         if (!response.imageIds || response.imageIds.length === 0) {
@@ -648,12 +637,12 @@ export class GarbageCollector {
         const describeImageInfo = await ecr.describeImages({
           repositoryName: repo,
           imageIds: imageIds,
-        }).promise();
+        });
 
         const getImageInfo = await ecr.batchGetImage({
           repositoryName: repo,
           imageIds: imageIds,
-        }).promise();
+        });
 
         const combinedImageInfo = describeImageInfo.imageDetails?.map(imageDetail => {
           const matchingImage = getImageInfo.images?.find(
@@ -688,7 +677,7 @@ export class GarbageCollector {
   /**
    * Generator function that reads objects from the S3 Bucket in batches.
    */
-  private async *readBucketInBatches(s3: S3, bucket: string, batchSize: number = 1000, currentTime: number): AsyncGenerator<ObjectAsset[]> {
+  private async *readBucketInBatches(s3: IS3Client, bucket: string, batchSize: number = 1000, currentTime: number): AsyncGenerator<ObjectAsset[]> {
     let continuationToken: string | undefined;
 
     do {
@@ -698,9 +687,9 @@ export class GarbageCollector {
         const response = await s3.listObjectsV2({
           Bucket: bucket,
           ContinuationToken: continuationToken,
-        }).promise();
+        });
 
-        response.Contents?.forEach((obj) => {
+        response.Contents?.forEach((obj: any) => {
           const key = obj.Key ?? '';
           const size = obj.Size ?? 0;
           const lastModified = obj.LastModified ?? new Date(currentTime);
@@ -764,7 +753,7 @@ function partition<A>(xs: Iterable<A>, pred: (x: A) => boolean): { included: A[]
   return result;
 }
 
-function imageMap(imageIds: ECR.ImageIdentifierList) {
+function imageMap(imageIds: ImageIdentifier[]) {
   const images: Record<string, string[]> = {};
   for (const image of imageIds ?? []) {
     if (!image.imageDigest || !image.imageTag) { continue; }

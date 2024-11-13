@@ -1,10 +1,18 @@
-import * as AWS from 'aws-sdk';
-import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate, lowerCaseFirstCharacter, transformObjectKeys } from './common';
-import { ISDK } from '../aws-auth';
-import { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
+import type { UpdateProjectCommandInput } from '@aws-sdk/client-codebuild';
+import {
+  type ChangeHotswapResult,
+  classifyChanges,
+  type HotswappableChangeCandidate,
+  lowerCaseFirstCharacter,
+  transformObjectKeys,
+} from './common';
+import type { SDK } from '../aws-auth';
+import type { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
 
 export async function isHotswappableCodeBuildProjectChange(
-  logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
+  logicalId: string,
+  change: HotswappableChangeCandidate,
+  evaluateCfnTemplate: EvaluateCloudFormationTemplate,
 ): Promise<ChangeHotswapResult> {
   if (change.newValue.Type !== 'AWS::CodeBuild::Project') {
     return [];
@@ -15,17 +23,20 @@ export async function isHotswappableCodeBuildProjectChange(
   const classifiedChanges = classifyChanges(change, ['Source', 'Environment', 'SourceVersion']);
   classifiedChanges.reportNonHotswappablePropertyChanges(ret);
   if (classifiedChanges.namesOfHotswappableProps.length > 0) {
-    const updateProjectInput: AWS.CodeBuild.UpdateProjectInput = {
+    const updateProjectInput: UpdateProjectCommandInput = {
       name: '',
     };
-    const projectName = await evaluateCfnTemplate.establishResourcePhysicalName(logicalId, change.newValue.Properties?.Name);
+    const projectName = await evaluateCfnTemplate.establishResourcePhysicalName(
+      logicalId,
+      change.newValue.Properties?.Name,
+    );
     ret.push({
       hotswappable: true,
       resourceType: change.newValue.Type,
       propsChanged: classifiedChanges.namesOfHotswappableProps,
       service: 'codebuild',
       resourceNames: [`CodeBuild Project '${projectName}'`],
-      apply: async (sdk: ISDK) => {
+      apply: async (sdk: SDK) => {
         if (!projectName) {
           return;
         }
@@ -52,7 +63,7 @@ export async function isHotswappableCodeBuildProjectChange(
           }
         }
 
-        await sdk.codeBuild().updateProject(updateProjectInput).promise();
+        await sdk.codeBuild().updateProject(updateProjectInput);
       },
     });
   }

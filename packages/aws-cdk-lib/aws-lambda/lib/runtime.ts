@@ -183,6 +183,16 @@ export class Runtime {
   public static readonly PYTHON_3_12 = new Runtime('python3.12', RuntimeFamily.PYTHON, {
     supportsInlineCode: true,
     supportsCodeGuruProfiling: true,
+    supportsSnapStart: true,
+  });
+
+  /**
+   * The Python 3.13 runtime (python3.13)
+   */
+  public static readonly PYTHON_3_13 = new Runtime('python3.13', RuntimeFamily.PYTHON, {
+    supportsInlineCode: true,
+    supportsCodeGuruProfiling: true,
+    supportsSnapStart: true,
   });
 
   /**
@@ -232,7 +242,9 @@ export class Runtime {
   /**
    * The .NET 8 runtime (dotnet8)
    */
-  public static readonly DOTNET_8 = new Runtime('dotnet8', RuntimeFamily.DOTNET_CORE);
+  public static readonly DOTNET_8 = new Runtime('dotnet8', RuntimeFamily.DOTNET_CORE, {
+    supportsSnapStart: true,
+  });
 
   /**
    * The .NET Core 1.0 runtime (dotnetcore1.0)

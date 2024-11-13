@@ -1,8 +1,9 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { ISDK, Mode } from './aws-auth';
+import { SDK } from './aws-auth';
 import { warning } from '../logging';
 import { CredentialsOptions, SdkForEnvironment, SdkProvider } from './aws-auth/sdk-provider';
 import { EnvironmentResources, EnvironmentResourcesRegistry } from './environment-resources';
+import { Mode } from './plugin';
 import { replaceEnvPlaceholders, StringWithoutPlaceholders } from './util/placeholders';
 
 /**
@@ -227,7 +228,7 @@ export interface TargetEnvironment {
   /**
    * The SDK for the given environment
    */
-  readonly sdk: ISDK;
+  readonly sdk: SDK;
 
   /**
    * The resolved environment for the stack

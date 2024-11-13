@@ -354,7 +354,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
 
   /**
   * Enable SnapStart for Lambda Function.
-  * SnapStart is currently supported only for Java 11, 17 runtime
+  * SnapStart is currently supported for Java 11, Java 17, Python 3.12, Python 3.13, and .NET 8 runtime
   *
   * @default - No snapstart
   */
@@ -1040,6 +1040,7 @@ export class Function extends FunctionBase {
         s3ObjectVersion: code.s3Location && code.s3Location.objectVersion,
         zipFile: code.inlineCode,
         imageUri: code.image?.imageUri,
+        sourceKmsKeyArn: code.sourceKMSKeyArn,
       },
       layers: Lazy.list({ produce: () => this.renderLayers() }), // Evaluated on synthesis
       handler: props.handler === Handler.FROM_IMAGE ? undefined : props.handler,

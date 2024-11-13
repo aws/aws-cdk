@@ -432,6 +432,39 @@ test('publicly accessible cluster', () => {
   });
 });
 
+test('availability zone relocation enabled', () => {
+  // WHEN
+  new Cluster(stack, 'Redshift', {
+    masterUser: {
+      masterUsername: 'admin',
+    },
+    vpc,
+    availabilityZoneRelocation: true,
+    nodeType: NodeType.RA3_XLPLUS,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
+    AvailabilityZoneRelocation: true,
+  });
+});
+
+test.each([
+  NodeType.DC1_8XLARGE,
+  NodeType.DC2_LARGE,
+])('throw error when availability zone relocation is enabled for invalid node type %s', (nodeType) => {
+  expect(() => {
+    new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      availabilityZoneRelocation: true,
+      nodeType,
+    });
+  }).toThrow(`Availability zone relocation is supported for only RA3 node types, got: ${nodeType}`);
+});
+
 test('imported cluster with imported security group honors allowAllOutbound', () => {
   // GIVEN
   const cluster = Cluster.fromClusterAttributes(stack, 'Database', {
