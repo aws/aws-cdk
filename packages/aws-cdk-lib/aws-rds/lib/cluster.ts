@@ -426,6 +426,15 @@ interface DatabaseClusterBaseProps {
    * @default true
    */
   readonly autoMinorVersionUpgrade?: boolean;
+
+  /**
+   * Specifies the scalability mode of the Aurora DB cluster.
+   *
+   * Set LIMITLESS if you want to use a limitless database; otherwise, set it to STANDARD.
+   *
+   * @default ClusterScailabilityType.STANDARD
+   */
+  readonly clusterScailabilityType?: ClusterScailabilityType;
 }
 
 /**
@@ -460,6 +469,24 @@ export enum InstanceUpdateBehaviour {
    * If your cluster consists of more than 1 instance, the downtime periods are limited to the time a primary switch needs.
    */
   ROLLING = 'ROLLING',
+}
+
+/**
+ * The scalability mode of the Aurora DB cluster.
+ */
+export enum ClusterScailabilityType {
+  /**
+   * The cluster uses normal DB instance creation.
+   */
+  STANDARD = 'standard',
+
+  /**
+   * The cluster operates as an Aurora Limitless Database,
+   * allowing you to create a DB shard group for horizontal scaling (sharding) capabilities.
+   *
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/limitless.html
+   */
+  LIMITLESS = 'limitless',
 }
 
 /**
@@ -785,6 +812,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       }),
       storageType: props.storageType?.toString(),
       enableLocalWriteForwarding: props.enableLocalWriteForwarding,
+      clusterScalabilityType: props.clusterScailabilityType,
       // Admin
       backtrackWindow: props.backtrackWindow?.toSeconds(),
       backupRetentionPeriod: props.backup?.retention?.toDays(),
