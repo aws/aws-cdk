@@ -98,8 +98,8 @@ const rule = new events.Rule(this, 'rule', {
   eventPattern: {
     detail: {
       bucket: {
-        name: events.Match.prefixEqualsIgnoreCase('my-prefix-')
-      }
+        name: events.Match.prefixEqualsIgnoreCase('my-prefix-'),
+      },
 
       object: {
         // Matchers may appear at any level
@@ -107,7 +107,7 @@ const rule = new events.Rule(this, 'rule', {
         key: events.Match.wildcard('path/to/object/*.txt'),
       },
 
-      requester: events.Match.suffixEqualsIgnoreCase('.AMAZONAWS.COM')
+      requester: events.Match.suffixEqualsIgnoreCase('.AMAZONAWS.COM'),
 
       // 'OR' condition
       'source-storage-class': events.Match.anyOf(
