@@ -1332,6 +1332,17 @@ function generateInvalidKeySpecKeyUsageCombinations() {
       KeySpec.SYMMETRIC_DEFAULT,
       KeySpec.SM2,
     ],
+    [KeyUsage.KEY_AGREEMENT]: [
+      KeySpec.SYMMETRIC_DEFAULT,
+      KeySpec.RSA_2048,
+      KeySpec.RSA_3072,
+      KeySpec.RSA_4096,
+      KeySpec.ECC_SECG_P256K1,
+      KeySpec.HMAC_224,
+      KeySpec.HMAC_256,
+      KeySpec.HMAC_384,
+      KeySpec.HMAC_512,
+    ],
   };
   const testCases: { keySpec: KeySpec; keyUsage: KeyUsage; toString: () => string }[] = [];
   for (const keySpec in KeySpec) {
