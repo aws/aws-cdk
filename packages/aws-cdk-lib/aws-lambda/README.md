@@ -16,8 +16,29 @@ const fn = new lambda.Function(this, 'MyFunction', {
 The `lambda.Code` class includes static convenience methods for various types of
 runtime code.
 
- * `lambda.Code.fromBucket(bucket, key[, objectVersion])` - specify an S3 object
+ * `lambda.Code.fromBucket(bucket, key, objectVersion)` - specify an S3 object
    that contains the archive of your runtime code.
+ * `lambda.Code.fromBucketV2(bucket, key, {objectVersion: version, sourceKMSKey: key})` - specify an S3 object
+  that contains the archive of your runtime code.
+
+  ```ts
+
+  import { Key } from 'aws-cdk-lib/aws-kms';
+  import * as s3 from 'aws-cdk-lib/aws-s3';
+
+  const bucket = new s3.Bucket(this, 'Bucket');
+  declare const key: Key;
+  
+  const options = {
+      sourceKMSKey: key,
+  };
+  const fnBucket = new lambda.Function(this, 'myFunction2', {
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      handler: 'index.handler',
+      code: lambda.Code.fromBucketV2(bucket, 'python-lambda-handler.zip', options),
+  });
+
+  ```
  * `lambda.Code.fromInline(code)` - inline the handle code as a string. This is
    limited to supported runtimes.
  * `lambda.Code.fromAsset(path)` - specify a directory or a .zip file in the local

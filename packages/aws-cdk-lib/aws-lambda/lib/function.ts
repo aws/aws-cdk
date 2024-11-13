@@ -1040,6 +1040,7 @@ export class Function extends FunctionBase {
         s3ObjectVersion: code.s3Location && code.s3Location.objectVersion,
         zipFile: code.inlineCode,
         imageUri: code.image?.imageUri,
+        sourceKmsKeyArn: code.sourceKMSKeyArn,
       },
       layers: Lazy.list({ produce: () => this.renderLayers() }), // Evaluated on synthesis
       handler: props.handler === Handler.FROM_IMAGE ? undefined : props.handler,
