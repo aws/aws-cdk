@@ -12,10 +12,11 @@
 
 ## Overview
 
-As any piece of software that interacts with an AWS account, the CDK CLI, needs
+As any piece of software that interacts with an AWS account, the CDK CLI needs
 AWS credentials for authentication and authorization. When it comes to choose
-which sources to get credentials from, it has the same behavior as the AWS CLI.
-But this basic behavior may result in some failure scenarios:
+which sources to get credentials from, it has
+the [same behavior as the AWS CLI][cli-auth]. But this basic behavior may result
+in some failure scenarios:
 
 - The initial set of credentials to work with cannot be obtained.
 - The account to which the initial credentials belong to cannot be obtained.
@@ -24,10 +25,14 @@ But this basic behavior may result in some failure scenarios:
 
 Since these failures may happen for valid use case reasons, the CDK CLI offers
 an alternative mechanism for users to provide AWS credentials: credential
-plugins. This package defines the types and the contract between the CLI and the
-plugins, which plugin authors are expected to adhere to.
+provider plugins.
 
-[//]: # (TODO explain how the CLI gets hold of a plugin in the first place)
+This package defines the types and the contract between the CLI and the plugins,
+which plugin authors are expected to adhere to.
+
+The entrypoint is communicated to the CLI via the `--plugin` command line
+argument. The value of this argument should be a JavaScript file that, when
+`require`'d, will return an instance of the `Plugin` interface.
 
 Once the CLI gets an instance of a plugin, it first initializes plugin by
 calling the `Plugin.init()` method, if one is defined. The CLI uses this method
@@ -49,4 +54,6 @@ If both checks pass, the CLI asks the source for credentials by calling
 `Mode` of operation, which can be `ForReading` or `ForWriting`. This information
 may be useful to tailor the credentials for the use case. For example, if the
 CLI needs the credentials only for reading, the plugin may return credentials
-with more restricted permissions. 
+with more restricted permissions.
+
+[cli-auth]: (https://docs.aws.amazon.com/cli/v1/userguide/cli-chap-authentication.html)
