@@ -1,6 +1,6 @@
-import { ChangeHotswapResult, HotswappableChangeCandidate } from './common';
-import { ISDK } from '../aws-auth';
-import { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
+import type { ChangeHotswapResult, HotswappableChangeCandidate } from './common';
+import type { SDK } from '../aws-auth';
+import type { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
 
 /**
  * This means that the value is required to exist by CloudFormation's Custom Resource API (or our S3 Bucket Deployment Lambda's API)
@@ -9,7 +9,9 @@ import { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-templ
 export const REQUIRED_BY_CFN = 'required-to-be-present-by-cfn';
 
 export async function isHotswappableS3BucketDeploymentChange(
-  _logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
+  _logicalId: string,
+  change: HotswappableChangeCandidate,
+  evaluateCfnTemplate: EvaluateCloudFormationTemplate,
 ): Promise<ChangeHotswapResult> {
   // In old-style synthesis, the policy used by the lambda to copy assets Ref's the assets directly,
   // meaning that the changes made to the Policy are artifacts that can be safely ignored
@@ -31,14 +33,14 @@ export async function isHotswappableS3BucketDeploymentChange(
     propsChanged: ['*'],
     service: 'custom-s3-deployment',
     resourceNames: [`Contents of S3 Bucket '${customResourceProperties.DestinationBucketName}'`],
-    apply: async (sdk: ISDK) => {
+    apply: async (sdk: SDK) => {
       // note that this gives the ARN of the lambda, not the name. This is fine though, the invoke() sdk call will take either
       const functionName = await evaluateCfnTemplate.evaluateCfnExpression(change.newValue.Properties?.ServiceToken);
       if (!functionName) {
         return;
       }
 
-      await sdk.lambda().invoke({
+      await sdk.lambda().invokeCommand({
         FunctionName: functionName,
         // Lambda refuses to take a direct JSON object and requires it to be stringify()'d
         Payload: JSON.stringify({
@@ -50,7 +52,7 @@ export async function isHotswappableS3BucketDeploymentChange(
           LogicalResourceId: REQUIRED_BY_CFN,
           ResourceProperties: stringifyObject(customResourceProperties), // JSON.stringify() doesn't turn the actual objects to strings, but the lambda expects strings
         }),
-      }).promise();
+      });
     },
   });
 
@@ -58,7 +60,9 @@ export async function isHotswappableS3BucketDeploymentChange(
 }
 
 export async function skipChangeForS3DeployCustomResourcePolicy(
-  iamPolicyLogicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
+  iamPolicyLogicalId: string,
+  change: HotswappableChangeCandidate,
+  evaluateCfnTemplate: EvaluateCloudFormationTemplate,
 ): Promise<boolean> {
   if (change.newValue.Type !== 'AWS::IAM::Policy') {
     return false;
@@ -81,21 +85,26 @@ export async function skipChangeForS3DeployCustomResourcePolicy(
     }
 
     // Find all interesting reference to the role
-    const roleRefs = evaluateCfnTemplate.findReferencesTo(roleLogicalId)
+    const roleRefs = evaluateCfnTemplate
+      .findReferencesTo(roleLogicalId)
       // we are not interested in the reference from the original policy - it always exists
-      .filter(roleRef => !(roleRef.Type == 'AWS::IAM::Policy' && roleRef.LogicalId === iamPolicyLogicalId));
+      .filter((roleRef) => !(roleRef.Type == 'AWS::IAM::Policy' && roleRef.LogicalId === iamPolicyLogicalId));
 
     // Check if the role is only used for S3Deployment
     // We know this is the case, if S3Deployment -> Lambda -> Role is satisfied for every reference
     // And we have at least one reference.
-    const isRoleOnlyForS3Deployment = roleRefs.length >= 1 && roleRefs.every(roleRef => {
-      if (roleRef.Type === 'AWS::Lambda::Function') {
-        const lambdaRefs = evaluateCfnTemplate.findReferencesTo(roleRef.LogicalId);
-        // Every reference must be to the custom resource and at least one reference must be present
-        return lambdaRefs.length >= 1 && lambdaRefs.every(lambdaRef => lambdaRef.Type === 'Custom::CDKBucketDeployment');
-      }
-      return false;
-    });
+    const isRoleOnlyForS3Deployment =
+      roleRefs.length >= 1 &&
+      roleRefs.every((roleRef) => {
+        if (roleRef.Type === 'AWS::Lambda::Function') {
+          const lambdaRefs = evaluateCfnTemplate.findReferencesTo(roleRef.LogicalId);
+          // Every reference must be to the custom resource and at least one reference must be present
+          return (
+            lambdaRefs.length >= 1 && lambdaRefs.every((lambdaRef) => lambdaRef.Type === 'Custom::CDKBucketDeployment')
+          );
+        }
+        return false;
+      });
 
     // We have determined this role is used for something else, so we can't skip the change
     if (!isRoleOnlyForS3Deployment) {
