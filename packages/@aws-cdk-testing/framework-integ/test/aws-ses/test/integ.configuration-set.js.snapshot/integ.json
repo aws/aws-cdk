@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "ConfigurationSetInteg/DefaultTest": {
+      "stacks": [
+        "cdk-ses-configuration-set-integ"
+      ],
+      "assertionStack": "ConfigurationSetInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "ConfigurationSetIntegDefaultTestDeployAssert9B6AD46A"
+    }
+  }
+}
