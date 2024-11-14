@@ -11,6 +11,13 @@ describe('AwsCliCompatible.region', () => {
     process.env.AWS_CONFIG_FILE = '/dev/null';
     process.env.AWS_SHARED_CREDENTIALS_FILE = '/dev/null';
 
+    // these take precedence over the ini files so we need to disable them for
+    // the test to invoke the right function
+    delete process.env.AWS_REGION;
+    delete process.env.AMAZON_REGION;
+    delete process.env.AWS_DEFAULT_REGION;
+    delete process.env.AMAZON_DEFAULT_REGION;
+
   });
 
   test('default region can be specified in config', async () => {
