@@ -5,6 +5,14 @@ import { AwsCliCompatible } from '../../../lib/api/aws-auth/awscli-compatible';
 
 describe('AwsCliCompatible.region', () => {
 
+  beforeEach(() => {
+
+    // make sure we don't mistakenly point to an unrelated file
+    process.env.AWS_CONFIG_FILE = '/dev/null';
+    process.env.AWS_SHARED_CREDENTIALS_FILE = '/dev/null';
+
+  });
+
   test('default region can be specified in config', async () => {
 
     const config = `
@@ -55,12 +63,12 @@ describe('AwsCliCompatible.region', () => {
   region=region-in-config
   `;
 
-    const credentials = `
+    const creds = `
   [default]
   region=region-in-credentials
   `;
 
-    await expect(region({ credentialsFile: credentials, configFile: config })).resolves.toBe('region-in-config');
+    await expect(region({ credentialsFile: creds, configFile: config })).resolves.toBe('region-in-config');
   });
 
 });
@@ -90,8 +98,6 @@ async function region(opts: {
     return await AwsCliCompatible.region(opts.profile);
 
   } finally {
-    process.env.AWS_CONFIG_FILE = '/dev/null';
-    process.env.AWS_SHARED_CREDENTIALS_FILE = '/dev/null';
     fs.removeSync(workdir);
   }
 }
