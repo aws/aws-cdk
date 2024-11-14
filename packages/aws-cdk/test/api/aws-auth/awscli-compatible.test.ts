@@ -56,19 +56,152 @@ describe('AwsCliCompatible.region', () => {
 
   });
 
-  test('region from config takes precedence over region from credentials', async () => {
+  test('with profile | profile-region-in-credentials is priority 1', async () => {
 
     const config = `
   [default]
-  region=region-in-config
+  region=default-region-in-config
+
+  [profile user]
+  region=profile-region-in-config
+
   `;
 
     const creds = `
   [default]
-  region=region-in-credentials
+  region=default-region-in-credentials
+
+  [user]
+  region=profile-region-in-credentials
   `;
 
-    await expect(region({ credentialsFile: creds, configFile: config })).resolves.toBe('region-in-config');
+    await expect(region({ credentialsFile: creds, configFile: config, profile: 'user' })).resolves.toBe('profile-region-in-credentials');
+  });
+
+  test('with profile | profile-region-in-config is priority 2', async () => {
+
+    const config = `
+  [default]
+  region=default-region-in-config
+
+  [profile user]
+  region=profile-region-in-config
+
+  `;
+
+    const creds = `
+  [default]
+  region=default-region-in-credentials
+
+  [user]
+  `;
+
+    await expect(region({ credentialsFile: creds, configFile: config, profile: 'user' })).resolves.toBe('profile-region-in-config');
+  });
+
+  test('with profile | default-region-in-credentials is priority 3', async () => {
+
+    const config = `
+  [default]
+  region=default-region-in-config
+
+  [profile user]
+
+  `;
+
+    const creds = `
+  [default]
+  region=default-region-in-credentials
+
+  [user]
+  `;
+
+    await expect(region({ credentialsFile: creds, configFile: config, profile: 'user' })).resolves.toBe('default-region-in-credentials');
+  });
+
+  test('with profile | default-region-in-config is priority 4', async () => {
+
+    const config = `
+  [default]
+  region=default-region-in-config
+
+  [profile user]
+
+  `;
+
+    const creds = `
+  [default]
+
+  [user]
+  `;
+
+    await expect(region({ credentialsFile: creds, configFile: config, profile: 'user' })).resolves.toBe('default-region-in-config');
+  });
+
+  test('with profile | us-east-1 is priority 5', async () => {
+
+    const config = `
+  [default]
+
+  [profile user]
+
+  `;
+
+    const creds = `
+  [default]
+
+  [user]
+  `;
+
+    await expect(region({ credentialsFile: creds, configFile: config, profile: 'user' })).resolves.toBe('us-east-1');
+  });
+
+  test('without profile | default-region-in-credentials is priority 1', async () => {
+
+    const config = `
+  [default]
+  region=default-region-in-config
+
+  `;
+
+    const creds = `
+  [default]
+  region=default-region-in-credentials
+
+  `;
+
+    await expect(region({ credentialsFile: creds, configFile: config })).resolves.toBe('default-region-in-credentials');
+  });
+
+  test('without profile | default-region-in-config is priority 2', async () => {
+
+    const config = `
+  [default]
+  region=default-region-in-config
+
+  `;
+
+    const creds = `
+  [default]
+
+  `;
+
+    await expect(region({ credentialsFile: creds, configFile: config })).resolves.toBe('default-region-in-config');
+  });
+
+  test('without profile | us-east-1 is priority 3', async () => {
+
+    const config = `
+  [default]
+
+  `;
+
+    const creds = `
+  [default]
+
+  `;
+
+    await expect(region({ credentialsFile: creds, configFile: config })).resolves.toBe('us-east-1');
   });
 
 });
