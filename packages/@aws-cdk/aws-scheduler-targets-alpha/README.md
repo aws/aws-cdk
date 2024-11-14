@@ -207,7 +207,7 @@ const eventEntry: targets.EventBridgePutEventsEntry = {
 
 new Schedule(this, 'Schedule', {
   schedule: ScheduleExpression.rate(Duration.hours(1)),
-  target: new targets.EventBridgePutEvents(eventEntry, {}),
+  target: new targets.EventBridgePutEvents(eventEntry),
 });
 ```
 

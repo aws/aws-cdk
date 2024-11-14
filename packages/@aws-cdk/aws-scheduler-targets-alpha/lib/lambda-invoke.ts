@@ -1,4 +1,4 @@
-import { ISchedule, IScheduleTarget } from '@aws-cdk/aws-scheduler-alpha';
+import { IScheduleTarget } from '@aws-cdk/aws-scheduler-alpha';
 import { IRole } from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { ScheduleTargetBase, ScheduleTargetBaseProps } from './target';
@@ -17,7 +17,7 @@ export class LambdaInvoke extends ScheduleTargetBase implements IScheduleTarget 
     this.func = func;
   }
 
-  protected addTargetActionToRole(_schedule: ISchedule, role: IRole): void {
+  protected addTargetActionToRole(role: IRole): void {
     this.func.grantInvoke(role);
   }
 }
