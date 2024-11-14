@@ -152,6 +152,8 @@ async function getRegionFromIni(profile: string): Promise<string | undefined> {
 
   // Priority:
   //
+  // credentials come before config because aws-cli v1 behaves like that.
+  //
   // 1. profile-region-in-credentials
   // 2. profile-region-in-config
   // 3. default-region-in-credentials
