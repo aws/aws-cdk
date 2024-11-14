@@ -2,6 +2,7 @@ import { ScheduleExpression, Schedule, Group } from '@aws-cdk/aws-scheduler-alph
 import { App, Duration, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { AccountRootPrincipal, Role } from 'aws-cdk-lib/aws-iam';
+import * as kms from 'aws-cdk-lib/aws-kms';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import { SqsSendMessage } from '../lib';
 
@@ -42,7 +43,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['sqs:GetQueueAttributes', 'sqs:GetQueueUrl', 'sqs:SendMessage'],
+            Action: 'sqs:SendMessage',
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
@@ -116,7 +117,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['sqs:GetQueueAttributes', 'sqs:GetQueueUrl', 'sqs:SendMessage'],
+            Action: 'sqs:SendMessage',
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
@@ -177,7 +178,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['sqs:GetQueueAttributes', 'sqs:GetQueueUrl', 'sqs:SendMessage'],
+            Action: 'sqs:SendMessage',
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
@@ -260,7 +261,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['sqs:GetQueueAttributes', 'sqs:GetQueueUrl', 'sqs:SendMessage'],
+            Action: 'sqs:SendMessage',
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
@@ -296,7 +297,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['sqs:GetQueueAttributes', 'sqs:GetQueueUrl', 'sqs:SendMessage'],
+            Action: 'sqs:SendMessage',
             Effect: 'Allow',
             Resource: 'arn:aws:sqs:us-east-1:123456789012:somequeue',
           },
@@ -334,7 +335,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['sqs:GetQueueAttributes', 'sqs:GetQueueUrl', 'sqs:SendMessage'],
+            Action: 'sqs:SendMessage',
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
@@ -373,7 +374,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['sqs:GetQueueAttributes', 'sqs:GetQueueUrl', 'sqs:SendMessage'],
+            Action: 'sqs:SendMessage',
             Effect: 'Allow',
             Resource: 'arn:aws:sqs:us-east-1:123456789012:somequeue',
           },
@@ -399,18 +400,16 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['sqs:GetQueueAttributes', 'sqs:GetQueueUrl', 'sqs:SendMessage'],
-            Effect: 'Allow',
-            Resource: {
-              'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
-            },
-          },
-          {
             Action: 'sqs:SendMessage',
             Effect: 'Allow',
-            Resource: {
-              'Fn::GetAtt': ['DummyDeadLetterQueueCEBF3463', 'Arn'],
-            },
+            Resource: [
+              {
+                'Fn::GetAtt': ['DummyDeadLetterQueueCEBF3463', 'Arn'],
+              },
+              {
+                'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
+              },
+            ],
           },
         ],
       },
@@ -434,20 +433,53 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['sqs:GetQueueAttributes', 'sqs:GetQueueUrl', 'sqs:SendMessage'],
-            Effect: 'Allow',
-            Resource: {
-              'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
-            },
-          },
-          {
             Action: 'sqs:SendMessage',
             Effect: 'Allow',
-            Resource: importedQueue.queueArn,
+            Resource: [
+              importedQueue.queueArn,
+              { 'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'] },
+            ],
           },
         ],
       },
       Roles: [{ Ref: roleId }],
+    });
+  });
+
+  test('adds kms permissions to execution role when queue uses customer-managed key for encryption', () => {
+    const key = new kms.Key(stack, 'MyKey');
+    const ssekmsqueue = new sqs.Queue(stack, 'MySSEKMSQueue', {
+      encryptionMasterKey: key,
+    });
+    const queueTarget = new SqsSendMessage(ssekmsqueue, {});
+    new Schedule(stack, 'MyScheduleDummy', {
+      schedule: expr,
+      target: queueTarget,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'sqs:SendMessage',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': ['MySSEKMSQueueB12ED8F3', 'Arn'],
+            },
+          },
+          {
+            Action: [
+              'kms:Decrypt',
+              'kms:GenerateDataKey*',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': ['MyKey6AB29FA6', 'Arn'],
+            },
+          },
+        ],
+      },
+      Roles: [{ Ref: 'SchedulerRoleForTarget4bd89cBD24D046' }],
     });
   });
 
