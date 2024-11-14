@@ -779,6 +779,24 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       throw new Error('`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set');
     }
 
+    if (props.clusterScailabilityType === ClusterScailabilityType.LIMITLESS) {
+      if (!props.enablePerformanceInsights) {
+        throw new Error('Performance Insights must be enabled for Aurora Limitless Database.');
+      }
+      if (!props.monitoringInterval) {
+        throw new Error('Enhanced monitoring must be set for Aurora Limitless Database. Please set `monitoringInterval`.');
+      }
+      if (props.monitoringInterval.toMilliseconds() < Duration.days(31).toMilliseconds()) {
+        throw new Error('Enhanced monitoring interval must be at least 31 days for Aurora Limitless Database.');
+      }
+      if (props.writer || props.readers) {
+        throw new Error('Aurora Limitless Database does not support readers or writer instances.');
+      }
+      if (!props.engine.engineVersion?.fullVersion?.endsWith('limitless')) {
+        throw new Error(`Aurora Limitless Database requires an engine version that supports it., got ${props.engine.engineVersion?.fullVersion}`);
+      }
+    }
+
     this.performanceInsightsEnabled = enablePerformanceInsights;
     this.performanceInsightRetention = enablePerformanceInsights
       ? (props.performanceInsightRetention || PerformanceInsightRetention.DEFAULT)

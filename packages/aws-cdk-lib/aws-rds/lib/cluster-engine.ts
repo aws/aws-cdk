@@ -1060,6 +1060,8 @@ export class AuroraPostgresEngineVersion {
   public static readonly VER_16_3 = AuroraPostgresEngineVersion.of('16.3', '16', { s3Import: true, s3Export: true });
   /** Version "16.4". */
   public static readonly VER_16_4 = AuroraPostgresEngineVersion.of('16.4', '16', { s3Import: true, s3Export: true });
+  /** Version "16.4 limitless" */
+  public static readonly VER_16_4_LIMITLESS = AuroraPostgresEngineVersion.of('16.4-limitless', '16', { s3Import: true, s3Export: true });
 
   /**
    * Create a new AuroraPostgresEngineVersion with an arbitrary version.
