@@ -11,6 +11,8 @@ jobs:
     name: collect
     if: github.repository == 'aws/aws-cdk'
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write    
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -19,10 +21,10 @@ jobs:
         uses: actions/setup-node@v4
 
       - name: Install dependencies
-        run: cd packages/aws-cdk && yarn install
+        run: yarn install
 
       - name: Build CLI
-        run: cd packages/aws-cdk && npx lerna run build --scope=aws-cdk
+        run: npx lerna run build --scope=aws-cdk
 
       - name: Run tests
         run: cd packages/aws-cdk && yarn test
@@ -33,4 +35,4 @@ jobs:
           directory: packages/aws-cdk/coverage
           fail_ci_if_error: true
           flags: suite.unit
-          token: ${{ secrets.CODECOV_TOKEN }}
+          use_oidc: true
