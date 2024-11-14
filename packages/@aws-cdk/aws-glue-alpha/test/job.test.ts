@@ -908,6 +908,7 @@ describe('Job', () => {
           executable: glue.JobExecutable.pythonRay({
             glueVersion: glue.GlueVersion.V4_0,
             pythonVersion: glue.PythonVersion.THREE_NINE,
+            runtime: glue.Runtime.RAY_TWO_FOUR,
             script,
           }),
           workerType,
@@ -918,11 +919,13 @@ describe('Job', () => {
 
     test('throw error for specifying timeout', () => {
       expect(() => new glue.Job(stack, 'Job', {
-        executable: glue.JobExecutable.pythonEtl({
-          glueVersion: glue.GlueVersion.V2_0,
-          pythonVersion: glue.PythonVersion.THREE,
+        executable: glue.JobExecutable.pythonRay({
+          glueVersion: glue.GlueVersion.V4_0,
+          pythonVersion: glue.PythonVersion.THREE_NINE,
+          runtime: glue.Runtime.RAY_TWO_FOUR,
           script,
         }),
+        workerType: glue.WorkerType.Z_2X,
         timeout: cdk.Duration.minutes(5),
       })).toThrow('Timeout cannot be set for Ray jobs');
     });
