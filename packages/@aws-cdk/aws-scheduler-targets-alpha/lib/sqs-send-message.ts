@@ -29,7 +29,7 @@ export interface SqsSendMessageProps extends ScheduleTargetBaseProps {
 export class SqsSendMessage extends ScheduleTargetBase implements IScheduleTarget {
   constructor(
     private readonly queue: sqs.IQueue,
-    private readonly props: SqsSendMessageProps,
+    private readonly props: SqsSendMessageProps = {},
   ) {
     super(props, queue.queueArn);
 

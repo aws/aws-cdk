@@ -25,7 +25,7 @@ describe('codebuild start build', () => {
   });
 
   test('creates IAM role and IAM policy for codebuild target in the same account', () => {
-    const codeBuildTarget = new CodeBuildStartBuild(codebuildProject, {});
+    const codeBuildTarget = new CodeBuildStartBuild(codebuildProject);
 
     new Schedule(stack, 'MyScheduleDummy', {
       schedule: expr,
@@ -131,7 +131,7 @@ describe('codebuild start build', () => {
   });
 
   test('reuses IAM role and IAM policy for two schedules with the same target from the same account', () => {
-    const codeBuildTarget = new CodeBuildStartBuild(codebuildProject, {});
+    const codeBuildTarget = new CodeBuildStartBuild(codebuildProject);
 
     new Schedule(stack, 'MyScheduleDummy1', {
       schedule: expr,
@@ -192,7 +192,7 @@ describe('codebuild start build', () => {
   });
 
   test('creates IAM role and IAM policy for two schedules with the same target but different groups', () => {
-    const codeBuildTarget = new CodeBuildStartBuild(codebuildProject, {});
+    const codeBuildTarget = new CodeBuildStartBuild(codebuildProject);
     const group = new Group(stack, 'Group', {
       groupName: 'mygroup',
     });
@@ -278,7 +278,7 @@ describe('codebuild start build', () => {
     const importedCodeBuildArn = 'arn:aws:codebuild:us-east-1:123456789012:project/myproject';
     const importedCodeBuild = Project.fromProjectArn(stack, 'ImportedProject', importedCodeBuildArn);
 
-    const codeBuildTarget = new CodeBuildStartBuild(importedCodeBuild, {});
+    const codeBuildTarget = new CodeBuildStartBuild(importedCodeBuild);
 
     new Schedule(stack, 'MyScheduleDummy', {
       schedule: expr,

@@ -27,7 +27,7 @@ describe('eventBridge put events', () => {
   });
 
   test('creates IAM role and IAM policy for event bus put events target in the same account', () => {
-    const eventBusTarget = new EventBridgePutEvents(eventBusEventEntry, {});
+    const eventBusTarget = new EventBridgePutEvents(eventBusEventEntry);
 
     new Schedule(stack, 'MyScheduleDummy', {
       schedule: expr,
@@ -162,7 +162,7 @@ describe('eventBridge put events', () => {
   });
 
   test('reuses IAM role and IAM policy for two schedules with the same target from the same account', () => {
-    const eventBusTarget = new EventBridgePutEvents(eventBusEventEntry, {});
+    const eventBusTarget = new EventBridgePutEvents(eventBusEventEntry);
 
     new Schedule(stack, 'MyScheduleDummy1', {
       schedule: expr,
@@ -228,7 +228,7 @@ describe('eventBridge put events', () => {
   });
 
   test('creates IAM role and IAM policy for two schedules with the same target but different groups', () => {
-    const eventBusTarget = new EventBridgePutEvents(eventBusEventEntry, {});
+    const eventBusTarget = new EventBridgePutEvents(eventBusEventEntry);
     const group = new Group(stack, 'Group', {
       groupName: 'mygroup',
     });
@@ -322,7 +322,7 @@ describe('eventBridge put events', () => {
       eventBus: importedEventBus,
     };
 
-    const eventBusTarget = new EventBridgePutEvents(entry, {});
+    const eventBusTarget = new EventBridgePutEvents(entry);
 
     new Schedule(stack, 'MyScheduleDummy', {
       schedule: expr,

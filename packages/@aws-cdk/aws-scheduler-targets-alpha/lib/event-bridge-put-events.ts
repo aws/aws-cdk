@@ -49,7 +49,7 @@ export interface EventBridgePutEventsEntry {
 export class EventBridgePutEvents extends ScheduleTargetBase implements IScheduleTarget {
   constructor(
     private readonly entry: EventBridgePutEventsEntry,
-    private readonly props: ScheduleTargetBaseProps,
+    private readonly props: ScheduleTargetBaseProps = {},
   ) {
     super(props, entry.eventBus.eventBusArn);
     if (this.props.input) {
