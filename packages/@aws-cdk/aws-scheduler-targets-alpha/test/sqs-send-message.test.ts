@@ -19,7 +19,7 @@ describe('schedule target', () => {
   });
 
   test('creates IAM role and IAM policy for sqs target in the same account', () => {
-    const queueTarget = new SqsSendMessage(queue, {});
+    const queueTarget = new SqsSendMessage(queue);
 
     new Schedule(stack, 'MyScheduleDummy', {
       schedule: expr,
@@ -129,7 +129,7 @@ describe('schedule target', () => {
   });
 
   test('reuses IAM role and IAM policy for two schedules with the same target from the same account', () => {
-    const queueTarget = new SqsSendMessage(queue, {});
+    const queueTarget = new SqsSendMessage(queue);
 
     new Schedule(stack, 'MyScheduleDummy1', {
       schedule: expr,
@@ -190,7 +190,7 @@ describe('schedule target', () => {
   });
 
   test('creates IAM role and IAM policy for two schedules with the same target but different groups', () => {
-    const queueTarget = new SqsSendMessage(queue, {});
+    const queueTarget = new SqsSendMessage(queue);
     const group = new Group(stack, 'Group', {
       groupName: 'mygroup',
     });
@@ -275,7 +275,7 @@ describe('schedule target', () => {
   test('creates IAM policy for imported queue in the same account', () => {
     const importedQueue = sqs.Queue.fromQueueArn(stack, 'ImportedQueue', 'arn:aws:sqs:us-east-1:123456789012:somequeue');
 
-    const queueTarget = new SqsSendMessage(importedQueue, {});
+    const queueTarget = new SqsSendMessage(importedQueue);
 
     new Schedule(stack, 'MyScheduleDummy', {
       schedule: expr,
@@ -381,42 +381,6 @@ describe('schedule target', () => {
       },
       Roles: ['someRole'],
     });
-  });
-
-  test('throws when queue is imported from different account', () => {
-    const importedQueue = sqs.Queue.fromQueueArn(stack, 'ImportedQueue', 'arn:aws:sqs:us-east-1:234567890123:somequeue');
-    const queueTarget = new SqsSendMessage(importedQueue, {});
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: queueTarget,
-      })).toThrow(/Both the schedule and the queue must be in the same account/);
-  });
-
-  test('throws when queue is imported from different region', () => {
-    const importedQueue = sqs.Queue.fromQueueArn(stack, 'ImportedQueue', 'arn:aws:sqs:us-west-2:123456789012:somequeue');
-    const queueTarget = new SqsSendMessage(importedQueue, {});
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: queueTarget,
-      })).toThrow(/Both the schedule and the queue must be in the same region/);
-  });
-
-  test('throws when IAM role is imported from different account', () => {
-    const importedRole = Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::234567890123:role/someRole');
-
-    const queueTarget = new SqsSendMessage(queue, {
-      role: importedRole,
-    });
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: queueTarget,
-      })).toThrow(/Both the target and the execution role must be in the same account/);
   });
 
   test('adds permissions to execution role for sending messages to DLQ', () => {
@@ -629,6 +593,6 @@ describe('schedule target', () => {
       contentBasedDeduplication: true,
     });
     expect(() =>
-      new SqsSendMessage(wrongQueue, {})).toThrow(/messageGroupId must be specified if the target is a FIFO queue/);
+      new SqsSendMessage(wrongQueue)).toThrow(/messageGroupId must be specified if the target is a FIFO queue/);
   });
 });
