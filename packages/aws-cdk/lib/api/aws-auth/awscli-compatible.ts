@@ -182,8 +182,9 @@ function caBundlePathFromEnvironment(): string | undefined {
 function shouldPrioritizeEnv() {
   const id = process.env.AWS_ACCESS_KEY_ID || process.env.AMAZON_ACCESS_KEY_ID;
   const key = process.env.AWS_SECRET_ACCESS_KEY || process.env.AMAZON_SECRET_ACCESS_KEY;
-  if (process.env.AWS_SESSION_TOKEN || process.env.AMAZON_SESSION_TOKEN) {
-    process.env.AWS_SESSION_TOKEN = process.env.AWS_SESSION_TOKEN || process.env.AMAZON_SESSION_TOKEN;
+ const sessionToken = process.env.AWS_SESSION_TOKEN || process.env.AMAZON_SESSION_TOKEN;
+  if (sessionToken) {
+    process.env.AWS_SESSION_TOKEN = sessionToken;
   }
 
   if (!!id && !!key) {
