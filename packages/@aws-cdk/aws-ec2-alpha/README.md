@@ -298,15 +298,19 @@ const acceptorVpc = new VpcV2(this, 'VpcA', {
 const acceptorRoleArn = acceptorVpc.createAcceptorVpcRole('000000000000') // Requestor account ID
 ```
 
-After creating an IAM role in the acceptor account, we can initiate the peering connection request from the requestor VPC.
+After creating an IAM role in the acceptor account, we can initiate the peering connection request from the requestor VPC. Import accpeptorVpc to the stack using `fromVpcV2Attributes` method, it is recommended to specify owner account id of the acceptor VPC in case of cross account peering connection, if acceptor VPC is hosted in different region provide region value for import as well. 
+The following code snippet demonstrates how to set up VPC peering between two VPCs in different AWS accounts using CDK:
 
 ```ts
 const stack = new Stack();
 
-// TODO: Import acceptorVpc into the requestor stack
-const acceptorVpc = new VpcV2(this, 'VpcA', {
-  primaryAddressBlock: IpAddresses.ipv4('10.0.0.0/16'),
-});
+const acceptorVpc = VpcV2.fromVpcV2Attributes(this, 'acceptorVpc', {
+      //Replace VPC Id before running integ test again
+      vpcId: 'vpc-XXXX',
+      vpcCidrBlock: '10.0.0.0/16',
+      region: 'us-east-2',
+      ownerAccountId: '111111111111',
+    });
 
 const acceptorRoleArn = 'arn:aws:iam::111111111111:role/VpcPeeringRole';
 

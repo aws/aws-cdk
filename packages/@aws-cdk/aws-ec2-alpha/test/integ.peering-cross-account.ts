@@ -18,14 +18,19 @@
  *     - assuming this is the default profile for aws credentials
  *
  * 2. Set environment variables
- *   a. `export CDK_INTEG_ACCOUNT=123456789012`
- *   b. `export CDK_INTEG_CROSS_ACCOUNT=234567890123`
+ *   a. `export CDK_INTEG_ACCOUNT=123456789012` //Requestor Account
+ *   b. `export CDK_INTEG_CROSS_ACCOUNT=234567890123` //Acceptor Account
  *
- * 3. Run the integ test (from the @aws-cdk/aws-ec2-alpha/test directory)
+ * 3. Run the integ test (from the @aws-cdk/aws-ec2-alpha/test directory)with no clean flag
  *   a. Get temporary console access credentials for Requestor Account
- *     - `yarn integ test/integ.vpcpc.js`
+ *     - `yarn integ test/integ.vpcpc.js --no-clean`
  *   b. Fall back if temp credentials do not work (account info may be in snapshot)
  *     - `yarn integ test/integ.vpcpc.js --profiles cross-account`
+ * Note: Integration test will fail since vpcId of acceptor stack is a dummy value
+ *
+ * 4. Modify acceptorVpcId to actual physical Id and rerun the integration test to
+ *    test cross account peering
+ *    - `yarn integ test/integ.vpcpc.js`
 */
 
 import * as vpc_v2 from '../lib/vpc-v2';
@@ -45,7 +50,18 @@ class AcceptorStack extends cdk.Stack {
     const acceptorVpc = new vpc_v2.VpcV2(this, 'acceptorVpc', {
       primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.0.0.0/16'),
     });
-    acceptorVpc.createAcceptorVpcRole(acceptorAccount);
+
+    //Same account VPC peering
+    const requestorVpc = new vpc_v2.VpcV2(this, 'requestorVpcSameAccount', {
+      primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.1.0.0/16'),
+    });
+
+    requestorVpc.createPeeringConnection('sameAccountPeering', {
+      acceptorVpc: acceptorVpc,
+    });
+
+    //For cross-account peering connection
+    acceptorVpc.createAcceptorVpcRole(account);
   }
 }
 
@@ -53,19 +69,22 @@ class RequestorStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // TODO: Import acceptorVpc into the requestor stack
-    // Once implemented, need to test for cross account
-    const acceptorVpc = new vpc_v2.VpcV2(this, 'requestorVpc', {
-      primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.1.0.0/16'),
-      secondaryAddressBlocks: [vpc_v2.IpAddresses.ipv4('10.3.0.0/16', { cidrBlockName: 'TempBlock' })],
+    //Import acceptorVpc into the requestor stack, change vpcId after vpc is created using acceptorStack definition
+    const acceptorVpc = vpc_v2.VpcV2.fromVpcV2Attributes(this, 'acceptorVpc', {
+      //Replace VPC Id before running integ test again
+      vpcId: 'vpc-09b9235d8a3195ba3',
+      vpcCidrBlock: '10.0.0.0/16',
+      region: 'us-east-1',
+      ownerAccountId: acceptorAccount,
     });
 
-    const requestorVpc = new vpc_v2.VpcV2(this, 'VpcB', {
+    const requestorVpc = new vpc_v2.VpcV2(this, 'requestorVpcCrossAccount', {
       primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.2.0.0/16'),
     });
 
     const peeringConnection = requestorVpc.createPeeringConnection('acceptorAccountCrossRegionPeering', {
       acceptorVpc: acceptorVpc,
+      peerRoleArn: 'arn:aws:iam::916743627080:role/VpcPeeringRole',
     });
 
     const routeTable = new RouteTable(this, 'RouteTable', {

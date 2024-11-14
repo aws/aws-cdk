@@ -402,16 +402,6 @@ export class VpcV2 extends VpcV2Base {
   public readonly privateSubnets: ISubnet[];
 
   /**
-  * Region for this VPC
-  */
-  public readonly region?: string;
-
-  /**
-  * Identifier of the owner for this VPC
-  */
-  public readonly ownerAccountId?: string;
-
-  /**
    * To define dependency on internet connectivity
    */
   public readonly internetConnectivityEstablished: IDependable;

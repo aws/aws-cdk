@@ -1,27 +1,6 @@
 {
  "Resources": {
-  "requestorVpcFFA7DDD4": {
-   "Type": "AWS::EC2::VPC",
-   "Properties": {
-    "CidrBlock": "10.1.0.0/16",
-    "EnableDnsHostnames": true,
-    "EnableDnsSupport": true,
-    "InstanceTenancy": "default"
-   }
-  },
-  "requestorVpcTempBlock78E0B4F4": {
-   "Type": "AWS::EC2::VPCCidrBlock",
-   "Properties": {
-    "CidrBlock": "10.3.0.0/16",
-    "VpcId": {
-     "Fn::GetAtt": [
-      "requestorVpcFFA7DDD4",
-      "VpcId"
-     ]
-    }
-   }
-  },
-  "VpcB98A08B07": {
+  "requestorVpcCrossAccount6372A252": {
    "Type": "AWS::EC2::VPC",
    "Properties": {
     "CidrBlock": "10.2.0.0/16",
@@ -30,20 +9,16 @@
     "InstanceTenancy": "default"
    }
   },
-  "VpcBacceptorAccountCrossRegionPeeringVPCPeeringConnection8510BFF3": {
+  "requestorVpcCrossAccountacceptorAccountCrossRegionPeeringVPCPeeringConnection3605B6B0": {
    "Type": "AWS::EC2::VPCPeeringConnection",
    "Properties": {
-    "PeerOwnerId": "12345678",
+    "PeerOwnerId": "916743627080",
     "PeerRegion": "us-east-1",
-    "PeerVpcId": {
-     "Fn::GetAtt": [
-      "requestorVpcFFA7DDD4",
-      "VpcId"
-     ]
-    },
+    "PeerRoleArn": "arn:aws:iam::916743627080:role/VpcPeeringRole",
+    "PeerVpcId": "vpc-09b9235d8a3195ba3",
     "VpcId": {
      "Fn::GetAtt": [
-      "VpcB98A08B07",
+      "requestorVpcCrossAccount6372A252",
       "VpcId"
      ]
     }
@@ -54,7 +29,7 @@
    "Properties": {
     "VpcId": {
      "Fn::GetAtt": [
-      "VpcB98A08B07",
+      "requestorVpcCrossAccount6372A252",
       "VpcId"
      ]
     }
@@ -72,13 +47,13 @@
     },
     "VpcPeeringConnectionId": {
      "Fn::GetAtt": [
-      "VpcBacceptorAccountCrossRegionPeeringVPCPeeringConnection8510BFF3",
+      "requestorVpcCrossAccountacceptorAccountCrossRegionPeeringVPCPeeringConnection3605B6B0",
       "Id"
      ]
     }
    },
    "DependsOn": [
-    "VpcBacceptorAccountCrossRegionPeeringVPCPeeringConnection8510BFF3"
+    "requestorVpcCrossAccountacceptorAccountCrossRegionPeeringVPCPeeringConnection3605B6B0"
    ]
   }
  },

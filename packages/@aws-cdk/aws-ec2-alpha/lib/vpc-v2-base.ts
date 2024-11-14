@@ -1,6 +1,4 @@
 import { Aws, Resource, Annotations } from 'aws-cdk-lib';
-import { IVpc, ISubnet, SubnetSelection, SelectedSubnets, EnableVpnGatewayOptions, VpnGateway, VpnConnectionType, CfnVPCGatewayAttachment, CfnVPNGatewayRoutePropagation, VpnConnectionOptions, VpnConnection, ClientVpnEndpointOptions, ClientVpnEndpoint, InterfaceVpcEndpointOptions, InterfaceVpcEndpoint, GatewayVpcEndpointOptions, GatewayVpcEndpoint, FlowLogOptions, FlowLog, FlowLogResourceType, SubnetType, SubnetFilter, CfnVPCCidrBlock } from 'aws-cdk-lib/aws-ec2';
-import { Resource, Annotations } from 'aws-cdk-lib';
 import { IVpc, ISubnet, SubnetSelection, SelectedSubnets, EnableVpnGatewayOptions, VpnGateway, VpnConnectionType, CfnVPCGatewayAttachment, CfnVPNGatewayRoutePropagation, VpnConnectionOptions, VpnConnection, ClientVpnEndpointOptions, ClientVpnEndpoint, InterfaceVpcEndpointOptions, InterfaceVpcEndpoint, GatewayVpcEndpointOptions, GatewayVpcEndpoint, FlowLogOptions, FlowLog, FlowLogResourceType, SubnetType, SubnetFilter } from 'aws-cdk-lib/aws-ec2';
 import { allRouteTableIds, flatten, subnetGroupNameFromConstructId } from './util';
 import { IDependable, Dependable, IConstruct, DependencyGroup } from 'constructs';
@@ -204,16 +202,6 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
   * List of isolated subnets in this VPC
   */
   public abstract readonly isolatedSubnets: ISubnet[];
-
-  /**
-  * Region for this VPC
-  */
-  public abstract readonly region?: string;
-
-  /**
-  * Identifier of the owner for this VPC
-  */
-  public abstract readonly ownerAccountId?: string;
 
   /**
   * AZs for this VPC

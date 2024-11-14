@@ -18,7 +18,7 @@
        "Action": "sts:AssumeRole",
        "Effect": "Allow",
        "Principal": {
-        "AWS": "arn:aws:iam::234567890123:root"
+        "AWS": "arn:aws:iam::12345678:root"
        }
       }
      ],
@@ -44,7 +44,7 @@
           {
            "Ref": "AWS::Partition"
           },
-          ":ec2:us-east-1:234567890123:vpc/",
+          ":ec2:us-east-1:916743627080:vpc/",
           {
            "Fn::GetAtt": [
             "acceptorVpc5B7D1670",
@@ -67,7 +67,7 @@
             {
              "Ref": "AWS::Partition"
             },
-            ":ec2:us-east-1:234567890123:vpc/",
+            ":ec2:us-east-1:916743627080:vpc/",
             {
              "Fn::GetAtt": [
               "acceptorVpc5B7D1670",
@@ -88,7 +88,7 @@
           {
            "Ref": "AWS::Partition"
           },
-          ":ec2:us-east-1:234567890123:vpc-peering-connection/*"
+          ":ec2:us-east-1:916743627080:vpc-peering-connection/*"
          ]
         ]
        }
@@ -102,6 +102,34 @@
       "Ref": "acceptorVpcVpcPeeringRoleF389E47A"
      }
     ]
+   }
+  },
+  "requestorVpcSameAccountF27E91F7": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.1.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default"
+   }
+  },
+  "requestorVpcSameAccountsameAccountPeeringVPCPeeringConnection4E07C8CD": {
+   "Type": "AWS::EC2::VPCPeeringConnection",
+   "Properties": {
+    "PeerOwnerId": "916743627080",
+    "PeerRegion": "us-east-1",
+    "PeerVpcId": {
+     "Fn::GetAtt": [
+      "acceptorVpc5B7D1670",
+      "VpcId"
+     ]
+    },
+    "VpcId": {
+     "Fn::GetAtt": [
+      "requestorVpcSameAccountF27E91F7",
+      "VpcId"
+     ]
+    }
    }
   }
  },
