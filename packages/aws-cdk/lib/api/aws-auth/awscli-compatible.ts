@@ -2,7 +2,7 @@ import { createCredentialChain, fromEnv, fromIni, fromNodeProviderChain } from '
 import { MetadataService } from '@aws-sdk/ec2-metadata-service';
 import type { NodeHttpHandlerOptions } from '@smithy/node-http-handler';
 import { loadSharedConfigFiles } from '@smithy/shared-ini-file-loader';
-import { AwsCredentialIdentityProvider, Logger } from '@smithy/types';
+import { AwsCredentialIdentityProvider, Logger, ParsedIniData } from '@smithy/types';
 import * as promptly from 'promptly';
 import type { SdkHttpOptions } from './sdk-provider';
 import { readIfPossible } from './util';
@@ -149,7 +149,12 @@ export class AwsCliCompatible {
  */
 async function getRegionFromIni(profile: string): Promise<string | undefined> {
   const sharedFiles = await loadSharedConfigFiles({ ignoreCache: true });
-  return sharedFiles?.configFile?.[profile]?.region || sharedFiles?.configFile?.default?.region;
+  // https://docs.aws.amazon.com/cli/v1/userguide/cli-configure-files.html
+  return getRegionFromIniFile(profile, sharedFiles.configFile) ?? getRegionFromIniFile(profile, sharedFiles.credentialsFile);
+}
+
+function getRegionFromIniFile(profile: string, data?: ParsedIniData) {
+  return data?.[profile]?.region ?? data?.default?.region;
 }
 
 function tryGetCACert(bundlePath?: string) {
