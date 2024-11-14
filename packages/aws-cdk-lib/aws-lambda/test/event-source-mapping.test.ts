@@ -1,5 +1,6 @@
 import { Match, Template } from '../../assertions';
 import { Key } from '../../aws-kms';
+import { MetricType } from '../../aws-lambda-event-sources';
 import * as cdk from '../../core';
 import * as lambda from '../lib';
 import { Code, EventSourceMapping, Function, Runtime, Alias, StartingPosition, FilterRule, FilterCriteria } from '../lib';
@@ -491,5 +492,45 @@ describe('event source mapping', () => {
       startingPosition: StartingPosition.LATEST,
       startingPositionTimestamp: 1640995200,
     })).toThrow(/startingPositionTimestamp can only be used when startingPosition is AT_TIMESTAMP/);
+  });
+
+  test('adding metrics config', () => {
+    new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: '',
+      startingPosition: StartingPosition.AT_TIMESTAMP,
+      startingPositionTimestamp: 1640995200,
+      metricsConfig: {
+        metrics: [],
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      StartingPosition: 'AT_TIMESTAMP',
+      StartingPositionTimestamp: 1640995200,
+      MetricsConfig: {
+        Metrics: [],
+      },
+    });
+  });
+
+  test('adding metrics config', () => {
+    new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: '',
+      startingPosition: StartingPosition.AT_TIMESTAMP,
+      startingPositionTimestamp: 1640995200,
+      metricsConfig: {
+        metrics: [MetricType.EVENT_COUNT],
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      StartingPosition: 'AT_TIMESTAMP',
+      StartingPositionTimestamp: 1640995200,
+      MetricsConfig: {
+        Metrics: ['EventCount'],
+      },
+    });
   });
 });

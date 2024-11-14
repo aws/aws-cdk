@@ -68,6 +68,33 @@ export interface SqsEventSourceProps {
    * @default - No specific limit.
    */
   readonly maxConcurrency?: number;
+
+  /**
+   * Configuration for enhanced monitoring metrics collection
+   * When specified, enables collection of additional metrics for the stream event source
+   *
+   * @default - Enhanced monitoring is disabled
+   */
+  readonly metricsConfig?: MetricsConfig;
+}
+
+enum MetricType{
+  /**
+   * Event Count metrics provide insights into the processing behavior of your event source mapping,
+   * including the number of events successfully processed, filtered out, or dropped.
+   * These metrics help you monitor the flow and status of events through your event source mapping.
+   */
+  EVENT_COUNT = 'EventCount',
+}
+
+/**
+ * Configuration for collecting metrics from the event source
+ */
+interface MetricsConfig {
+  /**
+  * List of metric types to enable for this event source
+  */
+  readonly metrics: MetricType[];
 }
 
 /**
@@ -106,6 +133,7 @@ export class SqsEventSource implements lambda.IEventSource {
       eventSourceArn: this.queue.queueArn,
       filters: this.props.filters,
       filterEncryption: this.props.filterEncryption,
+      metricsConfig: this.props.metricsConfig,
     });
     this._eventSourceMappingId = eventSourceMapping.eventSourceMappingId;
     this._eventSourceMappingArn = eventSourceMapping.eventSourceMappingArn;
