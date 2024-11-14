@@ -11,8 +11,6 @@ jobs:
     name: collect
     if: github.repository == 'aws/aws-cdk'
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write    
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -35,4 +33,4 @@ jobs:
           directory: packages/aws-cdk/coverage
           fail_ci_if_error: true
           flags: suite.unit
-          use_oidc: true
+          token: ${{ secrets.CODECOV_TOKEN }}
