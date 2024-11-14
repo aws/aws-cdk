@@ -1,26 +1,52 @@
 import { AwsCliCompatible } from '../../../lib/api/aws-auth/awscli-compatible';
 
-test('does not mess up with session token env variables if they are undefined', async () => {
-  process.env.AWS_ACCESS_KEY_ID = 'foo';
-  process.env.SECRET_ACCESS_KEY = 'bar';
+describe('Session token', () => {
+  test('does not mess up with session token env variables if they are undefined', async () => {
+    process.env.AWS_ACCESS_KEY_ID = 'foo';
+    process.env.SECRET_ACCESS_KEY = 'bar';
 
-  // Making sure these variables are not defined
-  delete process.env.AWS_SESSION_TOKEN;
-  delete process.env.AMAZON_SESSION_TOKEN;
+    // Making sure these variables are not defined
+    delete process.env.AWS_SESSION_TOKEN;
+    delete process.env.AMAZON_SESSION_TOKEN;
 
-  await AwsCliCompatible.credentialChainBuilder();
+    await AwsCliCompatible.credentialChainBuilder();
 
-  expect(process.env.AWS_SESSION_TOKEN).toBeUndefined();
-});
+    expect(process.env.AWS_SESSION_TOKEN).toBeUndefined();
+  });
 
-test('preserves session token env variables if they are defined', async () => {
-  process.env.AWS_ACCESS_KEY_ID = 'foo';
-  process.env.SECRET_ACCESS_KEY = 'bar';
+  test('preserves AWS_SESSION_TOKEN if it is defined', async () => {
+    process.env.AWS_ACCESS_KEY_ID = 'foo';
+    process.env.SECRET_ACCESS_KEY = 'bar';
 
-  process.env.AWS_SESSION_TOKEN = 'aaa';
-  process.env.AMAZON_SESSION_TOKEN = 'bbb';
+    process.env.AWS_SESSION_TOKEN = 'aaa';
+    delete process.env.AMAZON_SESSION_TOKEN;
 
-  await AwsCliCompatible.credentialChainBuilder();
+    await AwsCliCompatible.credentialChainBuilder();
 
-  expect(process.env.AWS_SESSION_TOKEN).toEqual('aaa');
+    expect(process.env.AWS_SESSION_TOKEN).toEqual('aaa');
+  });
+
+  test('assigns AWS_SESSION_TOKEN if it is not defined but AMAZON_SESSION_TOKEN is', async () => {
+    process.env.AWS_ACCESS_KEY_ID = 'foo';
+    process.env.SECRET_ACCESS_KEY = 'bar';
+
+    delete process.env.AWS_SESSION_TOKEN;
+    process.env.AMAZON_SESSION_TOKEN = 'aaa';
+
+    await AwsCliCompatible.credentialChainBuilder();
+
+    expect(process.env.AWS_SESSION_TOKEN).toEqual('aaa');
+  });
+
+  test('preserves AWS_SESSION_TOKEN if both are defined', async () => {
+    process.env.AWS_ACCESS_KEY_ID = 'foo';
+    process.env.SECRET_ACCESS_KEY = 'bar';
+
+    process.env.AWS_SESSION_TOKEN = 'aaa';
+    process.env.AMAZON_SESSION_TOKEN = 'bbb';
+
+    await AwsCliCompatible.credentialChainBuilder();
+
+    expect(process.env.AWS_SESSION_TOKEN).toEqual('aaa');
+  });
 });
