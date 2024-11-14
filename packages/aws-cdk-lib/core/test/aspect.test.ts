@@ -207,8 +207,8 @@ describe('aspect', () => {
       BucketName: 'my-new-logging-bucket-from-aspect',
       Tags: [{
         Key: 'TestKey',
-        Value: 'TestValue'
-      }]
+        Value: 'TestValue',
+      }],
     });
   });
 });
