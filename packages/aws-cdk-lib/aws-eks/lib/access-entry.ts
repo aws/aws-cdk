@@ -280,7 +280,7 @@ export interface AccessEntryProps {
   readonly cluster: ICluster;
   /**
    * The access policies that define the permissions and scope for the access entry.
-   * @default []
+   * @default - No access policies are provided
    */
   readonly accessPolicies?: IAccessPolicy[];
   /**
@@ -290,7 +290,7 @@ export interface AccessEntryProps {
   /**
    * The kubernetes groups you want to associate with this access policy.
    * Those groups can be used as subjects in (Cluster)RoleBindings.
-   * @default undefined
+   * @default - No kubernetes groups are provided
    */
   readonly kubernetesGroups?: string[];
 }
