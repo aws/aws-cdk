@@ -795,6 +795,12 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       if (!props.engine.engineVersion?.fullVersion?.endsWith('limitless')) {
         throw new Error(`Aurora Limitless Database requires an engine version that supports it., got ${props.engine.engineVersion?.fullVersion}`);
       }
+      if (props.storageType !== DBClusterStorageType.AURORA_IOPT1) {
+        throw new Error(`Aurora Limitless Database requires I/O optimized storage type, got: ${props.storageType}`);
+      }
+      if (props.cloudwatchLogsExports === undefined || props.cloudwatchLogsExports.length === 0) {
+        throw new Error('Aurora Limitless Database requires CloudWatch Logs exports to be set.');
+      }
     }
 
     this.performanceInsightsEnabled = enablePerformanceInsights;
@@ -1245,19 +1251,25 @@ export class DatabaseCluster extends DatabaseClusterNew {
     cluster.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.SNAPSHOT);
 
     setLogRetention(this, props);
-    if ((props.writer || props.readers) && (props.instances || props.instanceProps)) {
-      throw new Error('Cannot provide writer or readers if instances or instanceProps are provided');
-    }
 
-    if (!props.instanceProps && !props.writer) {
-      throw new Error('writer must be provided');
-    }
+    // create the instances for only standard aurora clusters
+    if (props.clusterScailabilityType !== ClusterScailabilityType.LIMITLESS) {
+      if ((props.writer || props.readers) && (props.instances || props.instanceProps)) {
+        throw new Error('Cannot provide writer or readers if instances or instanceProps are provided');
+      }
 
-    const createdInstances = props.writer ? this._createInstances(this, props) : legacyCreateInstances(this, props, this.subnetGroup);
-    this.instanceIdentifiers = createdInstances.instanceIdentifiers;
-    this.instanceEndpoints = createdInstances.instanceEndpoints;
+      if (!props.instanceProps && !props.writer) {
+        throw new Error('writer must be provided');
+      }
+
+      const createdInstances = props.writer ? this._createInstances(this, props) : legacyCreateInstances(this, props, this.subnetGroup);
+      this.instanceIdentifiers = createdInstances.instanceIdentifiers;
+      this.instanceEndpoints = createdInstances.instanceEndpoints;
+    } else {
+      this.instanceIdentifiers = [];
+      this.instanceEndpoints = [];
+    }
   }
-
 }
 
 /**
