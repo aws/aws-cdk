@@ -896,6 +896,35 @@ describe('Job', () => {
           workerCount: 2,
         })).toThrow('Runtime is required for Ray jobs');
       });
+
+      test.each([
+        glue.WorkerType.G_025X,
+        glue.WorkerType.G_1X,
+        glue.WorkerType.G_2X,
+        glue.WorkerType.G_4X,
+        glue.WorkerType.G_8X,
+      ])('throw error for unsupported worker type', (workerType) => {
+        expect(() => new glue.Job(stack, 'Job', {
+          executable: glue.JobExecutable.pythonRay({
+            glueVersion: glue.GlueVersion.V4_0,
+            pythonVersion: glue.PythonVersion.THREE_NINE,
+            script,
+          }),
+          workerType,
+          workerCount: 2,
+        })).toThrow(`WorkerType must be Z_2X for Ray jobs, got: ${workerType}`);
+      });
+    });
+
+    test('throw error for specifying timeout', () => {
+      expect(() => new glue.Job(stack, 'Job', {
+        executable: glue.JobExecutable.pythonEtl({
+          glueVersion: glue.GlueVersion.V2_0,
+          pythonVersion: glue.PythonVersion.THREE,
+          script,
+        }),
+        timeout: cdk.Duration.minutes(5),
+      })).toThrow('Timeout cannot be set for Ray jobs');
     });
 
     test('etl job with all props should synthesize correctly', () => {
