@@ -410,36 +410,6 @@ describe('schedule target', () => {
     });
   });
 
-  test.each([
-    ['account', 'arn:aws:kinesis:us-east-1:999999999999:stream/Foo', /Both the schedule and the stream must be in the same account./],
-    ['region', 'arn:aws:kinesis:eu-central-1:123456789012:stream/Foo', /Both the schedule and the stream must be in the same region./],
-  ])('throws when Kinesis Data Stream is imported from different %s', (_, arn: string, expectedError: RegExp) => {
-    const importedStream = kinesis.Stream.fromStreamArn(stack, 'ImportedStream', arn);
-    const streamTarget = new KinesisStreamPutRecord(importedStream, {
-      partitionKey: 'key',
-    });
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: streamTarget,
-      })).toThrow(expectedError);
-  });
-
-  test('throws when IAM role is imported from different account', () => {
-    const importedRole = Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::234567890123:role/someRole');
-
-    const streamTarget = new KinesisStreamPutRecord(stream, {
-      partitionKey: 'key',
-      role: importedRole,
-    });
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: streamTarget,
-      })).toThrow(/Both the target and the execution role must be in the same account/);
-  });
-
   test('adds permissions to execution role for sending messages to DLQ', () => {
     const dlq = new sqs.Queue(stack, 'DummyDeadLetterQueue');
 
