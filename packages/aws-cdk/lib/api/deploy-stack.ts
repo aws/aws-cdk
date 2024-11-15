@@ -10,6 +10,7 @@ import type {
 import * as chalk from 'chalk';
 import * as uuid from 'uuid';
 import type { SDK, SdkProvider, ICloudFormationClient } from './aws-auth';
+import { TargetEnvironment } from './environment-access';
 import { CfnEvaluationException } from './evaluate-cloudformation-template';
 import { HotswapMode, HotswapPropertyOverrides, ICON } from './hotswap/common';
 import { tryHotswapDeployment } from './hotswap-deployments';
@@ -31,7 +32,6 @@ import { type TemplateBodyParameter, makeBodyParameter } from './util/template-b
 import { AssetManifestBuilder } from '../util/asset-manifest-builder';
 import { iAmDeployStack, publishAssets } from '../util/asset-publishing';
 import { StringWithoutPlaceholders } from './util/placeholders';
-import { TargetEnvironment } from './environment-access';
 
 export type DeployStackResult =
   | SuccessfulDeployStackResult
