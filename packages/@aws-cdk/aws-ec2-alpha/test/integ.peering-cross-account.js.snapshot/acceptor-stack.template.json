@@ -44,7 +44,7 @@
           {
            "Ref": "AWS::Partition"
           },
-          ":ec2:us-east-1:916743627080:vpc/",
+          ":ec2:us-east-1:234567890123:vpc/",
           {
            "Fn::GetAtt": [
             "acceptorVpc5B7D1670",
@@ -67,7 +67,7 @@
             {
              "Ref": "AWS::Partition"
             },
-            ":ec2:us-east-1:916743627080:vpc/",
+            ":ec2:us-east-1:234567890123:vpc/",
             {
              "Fn::GetAtt": [
               "acceptorVpc5B7D1670",
@@ -88,7 +88,7 @@
           {
            "Ref": "AWS::Partition"
           },
-          ":ec2:us-east-1:916743627080:vpc-peering-connection/*"
+          ":ec2:us-east-1:234567890123:vpc-peering-connection/*"
          ]
         ]
        }
@@ -116,7 +116,7 @@
   "requestorVpcSameAccountsameAccountPeeringVPCPeeringConnection4E07C8CD": {
    "Type": "AWS::EC2::VPCPeeringConnection",
    "Properties": {
-    "PeerOwnerId": "916743627080",
+    "PeerOwnerId": "234567890123",
     "PeerRegion": "us-east-1",
     "PeerVpcId": {
      "Fn::GetAtt": [

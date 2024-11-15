@@ -91,7 +91,7 @@
                                         {
                                           "Ref": "AWS::Partition"
                                         },
-                                        ":ec2:us-east-1:916743627080:vpc/",
+                                        ":ec2:us-east-1:234567890123:vpc/",
                                         {
                                           "Fn::GetAtt": [
                                             "acceptorVpc5B7D1670",
@@ -114,7 +114,7 @@
                                             {
                                               "Ref": "AWS::Partition"
                                             },
-                                            ":ec2:us-east-1:916743627080:vpc/",
+                                            ":ec2:us-east-1:234567890123:vpc/",
                                             {
                                               "Fn::GetAtt": [
                                                 "acceptorVpc5B7D1670",
@@ -135,7 +135,7 @@
                                         {
                                           "Ref": "AWS::Partition"
                                         },
-                                        ":ec2:us-east-1:916743627080:vpc-peering-connection/*"
+                                        ":ec2:us-east-1:234567890123:vpc-peering-connection/*"
                                       ]
                                     ]
                                   }
@@ -205,7 +205,7 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::VPCPeeringConnection",
                       "aws:cdk:cloudformation:props": {
-                        "peerOwnerId": "916743627080",
+                        "peerOwnerId": "234567890123",
                         "peerRegion": "us-east-1",
                         "peerVpcId": {
                           "Fn::GetAtt": [
@@ -303,7 +303,7 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::VPCPeeringConnection",
                       "aws:cdk:cloudformation:props": {
-                        "peerOwnerId": "916743627080",
+                        "peerOwnerId": "234567890123",
                         "peerRegion": "us-east-1",
                         "peerRoleArn": "arn:aws:iam::916743627080:role/VpcPeeringRole",
                         "peerVpcId": "vpc-09b9235d8a3195ba3",
