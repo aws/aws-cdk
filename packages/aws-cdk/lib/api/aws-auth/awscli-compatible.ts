@@ -149,7 +149,25 @@ export class AwsCliCompatible {
  */
 async function getRegionFromIni(profile: string): Promise<string | undefined> {
   const sharedFiles = await loadSharedConfigFiles({ ignoreCache: true });
-  return sharedFiles?.configFile?.[profile]?.region || sharedFiles?.configFile?.default?.region;
+
+  // Priority:
+  //
+  // credentials come before config because aws-cli v1 behaves like that.
+  //
+  // 1. profile-region-in-credentials
+  // 2. profile-region-in-config
+  // 3. default-region-in-credentials
+  // 4. default-region-in-config
+
+  return getRegionFromIniFile(profile, sharedFiles.credentialsFile)
+    ?? getRegionFromIniFile(profile, sharedFiles.configFile)
+    ?? getRegionFromIniFile('default', sharedFiles.credentialsFile)
+    ?? getRegionFromIniFile('default', sharedFiles.configFile);
+
+}
+
+function getRegionFromIniFile(profile: string, data?: any) {
+  return data?.[profile]?.region;
 }
 
 function tryGetCACert(bundlePath?: string) {
@@ -182,11 +200,16 @@ function caBundlePathFromEnvironment(): string | undefined {
 function shouldPrioritizeEnv() {
   const id = process.env.AWS_ACCESS_KEY_ID || process.env.AMAZON_ACCESS_KEY_ID;
   const key = process.env.AWS_SECRET_ACCESS_KEY || process.env.AMAZON_SECRET_ACCESS_KEY;
-  process.env.AWS_SESSION_TOKEN = process.env.AWS_SESSION_TOKEN || process.env.AMAZON_SESSION_TOKEN;
 
   if (!!id && !!key) {
     process.env.AWS_ACCESS_KEY_ID = id;
     process.env.AWS_SECRET_ACCESS_KEY = key;
+
+    const sessionToken = process.env.AWS_SESSION_TOKEN ?? process.env.AMAZON_SESSION_TOKEN;
+    if (sessionToken) {
+      process.env.AWS_SESSION_TOKEN = sessionToken;
+    }
+
     return true;
   }
 
