@@ -234,10 +234,10 @@ interface DatabaseClusterBaseProps {
   readonly cloudwatchLogsRetentionRole?: IRole;
 
   /**
-   * The interval, in seconds, between points when Amazon RDS collects enhanced
+   * The interval between points when Amazon RDS collects enhanced
    * monitoring metrics for the DB instances.
    *
-   * @default no enhanced monitoring
+   * @default - no enhanced monitoring
    */
   readonly monitoringInterval?: Duration;
 
@@ -247,6 +247,21 @@ interface DatabaseClusterBaseProps {
    * @default - A role is automatically created for you
    */
   readonly monitoringRole?: IRole;
+
+  /**
+   * The interval between points when Amazon RDS collects enhanced
+   * monitoring metrics for the DB instances.
+   *
+   * @default - no enhanced monitoring
+   */
+  readonly monitoringIntervalForCluster?: Duration;
+
+  /**
+   * Role that will be used to manage DB instances monitoring.
+   *
+   * @default - A role is automatically created for you
+   */
+  readonly monitoringRoleForCluster?: IRole;
 
   /**
    * Role that will be associated with this DB cluster to enable S3 import.
@@ -758,6 +773,17 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       : undefined;
     this.performanceInsightEncryptionKey = props.performanceInsightEncryptionKey;
 
+    // configure enhanced monitoring role for the cluster
+    let monitoringRoleForCluster = props.monitoringRoleForCluster;
+    if (!props.monitoringRoleForCluster && props.monitoringIntervalForCluster && props.monitoringIntervalForCluster.toSeconds()) {
+      monitoringRoleForCluster = new Role(this, 'MonitoringRoleForCluster', {
+        assumedBy: new ServicePrincipal('monitoring.rds.amazonaws.com'),
+        managedPolicies: [
+          ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSEnhancedMonitoringRole'),
+        ],
+      });
+    }
+
     this.newCfnProps = {
       // Basic
       engine: props.engine.engineType,
@@ -803,6 +829,8 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       performanceInsightsKmsKeyId: this.performanceInsightEncryptionKey?.keyArn,
       performanceInsightsRetentionPeriod: this.performanceInsightRetention,
       autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,
+      monitoringInterval: props.monitoringIntervalForCluster?.toSeconds(),
+      monitoringRoleArn: monitoringRoleForCluster?.roleArn,
     };
   }
 

@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "EnhancedMonitoringClusterInteg/DefaultTest": {
+      "stacks": [
+        "EnhancedMonitoringClusterTestStack"
+      ],
+      "assertionStack": "EnhancedMonitoringClusterInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "EnhancedMonitoringClusterIntegDefaultTestDeployAssertBBA17BDD"
+    }
+  }
+}
