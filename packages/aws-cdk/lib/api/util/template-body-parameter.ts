@@ -1,5 +1,7 @@
 import * as path from 'path';
-import * as cxapi from '@aws-cdk/cx-api';
+import { type CloudFormationStackArtifact, type Environment, EnvironmentPlaceholders } from '@aws-cdk/cx-api';
+import { HeadObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { getEndpointFromInstructions } from '@smithy/middleware-endpoint';
 import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
 import { debug, error } from '../../logging';
@@ -7,7 +9,6 @@ import { toYAML } from '../../serialize';
 import { AssetManifestBuilder } from '../../util/asset-manifest-builder';
 import { AssetsPublishedProof } from '../../util/asset-publishing';
 import { contentHash } from '../../util/content-hash';
-import { ISDK } from '../aws-auth';
 import { TargetEnvironment } from '../environment-access';
 
 export type TemplateBodyParameter = {
@@ -34,7 +35,7 @@ type MakeBodyParameterResult =
  * there is no staging bucket, an error is thrown.
  */
 export async function makeBodyParameter(
-  stack: cxapi.CloudFormationStackArtifact,
+  stack: CloudFormationStackArtifact,
   env: TargetEnvironment,
   _assetsPublishedProof: AssetsPublishedProof,
   overrideTemplate?: unknown,
@@ -44,7 +45,7 @@ export async function makeBodyParameter(
   if (stack.stackTemplateAssetObjectUrl && !overrideTemplate) {
     return {
       type: 'direct',
-      param: { TemplateURL: restUrlFromManifest(stack.stackTemplateAssetObjectUrl, env.resolvedEnvironment, env.sdk) },
+      param: { TemplateURL: await restUrlFromManifest(stack.stackTemplateAssetObjectUrl, env.resolvedEnvironment) },
     };
   }
 
@@ -102,29 +103,39 @@ export async function makeBodyParameter(
  * and reformats s3://.../... urls into S3 REST URLs (which CloudFormation
  * expects)
  */
-function restUrlFromManifest(url: string, environment: cxapi.Environment, sdk: ISDK): string {
+async function restUrlFromManifest(url: string, environment: Environment): Promise<string> {
   const doNotUseMarker = '**DONOTUSE**';
+  const region = environment.region;
   // This URL may contain placeholders, so still substitute those.
-  url = cxapi.EnvironmentPlaceholders.replace(url, {
+  url = EnvironmentPlaceholders.replace(url, {
     accountId: environment.account,
-    region: environment.region,
+    region,
     partition: doNotUseMarker,
   });
 
   // Yes, this is extremely crude, but we don't actually need this so I'm not inclined to spend
   // a lot of effort trying to thread the right value to this location.
   if (url.indexOf(doNotUseMarker) > -1) {
-    throw new Error('Cannot use \'${AWS::Partition}\' in the \'stackTemplateAssetObjectUrl\' field');
+    throw new Error("Cannot use '${AWS::Partition}' in the 'stackTemplateAssetObjectUrl' field");
   }
 
   const s3Url = url.match(/s3:\/\/([^/]+)\/(.*)$/);
-  if (!s3Url) { return url; }
+  if (!s3Url) {
+    return url;
+  }
 
   // We need to pass an 'https://s3.REGION.amazonaws.com[.cn]/bucket/object' URL to CloudFormation, but we
   // got an 's3://bucket/object' URL instead. Construct the rest API URL here.
   const bucketName = s3Url[1];
   const objectKey = s3Url[2];
 
-  const urlSuffix: string = sdk.getEndpointSuffix(environment.region);
-  return `https://s3.${environment.region}.${urlSuffix}/${bucketName}/${objectKey}`;
+  // SDK v3 no longer allows for getting endpoints from only region.
+  // A command and client config must now be provided.
+  const s3 = new S3Client({ region });
+  const endpoint = await getEndpointFromInstructions({}, HeadObjectCommand, {
+    ...s3.config,
+  });
+  endpoint.url.hostname;
+
+  return `${endpoint.url.origin}/${bucketName}/${objectKey}`;
 }

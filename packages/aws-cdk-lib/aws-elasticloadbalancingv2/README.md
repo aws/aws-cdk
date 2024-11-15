@@ -402,6 +402,9 @@ const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
 
   // Indicates how traffic is distributed among the load balancer Availability Zones.
   clientRoutingPolicy: elbv2.ClientRoutingPolicy.AVAILABILITY_ZONE_AFFINITY,
+
+  // Indicates whether zonal shift is enabled.
+  zonalShift: true,
 });
 ```
 
@@ -551,6 +554,27 @@ const tg = new elbv2.ApplicationTargetGroup(this, 'TargetGroup', {
   vpc,
   loadBalancingAlgorithmType: elbv2.TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM,
   enableAnomalyMitigation: true,
+});
+```
+
+### Target Group level cross-zone load balancing setting for Application Load Balancers and Network Load Balancers
+
+You can set cross-zone load balancing setting at the target group level by setting `crossZone` property.
+
+If not specified, it will use the load balancer's configuration.
+
+For more infomation, see [How Elastic Load Balancing works](https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/how-elastic-load-balancing-works.html).
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const targetGroup = new elbv2.ApplicationTargetGroup(this, 'TargetGroup', {
+  vpc,
+  port: 80,
+  targetType: elbv2.TargetType.INSTANCE,
+
+  // Whether cross zone load balancing is enabled.
+  crossZoneEnabled: true,
 });
 ```
 

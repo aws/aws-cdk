@@ -2,6 +2,7 @@ import { ScheduleExpression, Schedule, Group } from '@aws-cdk/aws-scheduler-alph
 import { App, Duration, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { AccountRootPrincipal, Role } from 'aws-cdk-lib/aws-iam';
+import * as kms from 'aws-cdk-lib/aws-kms';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import { SqsSendMessage } from '../lib';
 
@@ -19,7 +20,7 @@ describe('schedule target', () => {
   });
 
   test('creates IAM role and IAM policy for sqs target in the same account', () => {
-    const queueTarget = new SqsSendMessage(queue, {});
+    const queueTarget = new SqsSendMessage(queue);
 
     new Schedule(stack, 'MyScheduleDummy', {
       schedule: expr,
@@ -42,7 +43,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['sqs:GetQueueAttributes', 'sqs:GetQueueUrl', 'sqs:SendMessage'],
+            Action: 'sqs:SendMessage',
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
@@ -116,7 +117,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['sqs:GetQueueAttributes', 'sqs:GetQueueUrl', 'sqs:SendMessage'],
+            Action: 'sqs:SendMessage',
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
@@ -129,7 +130,7 @@ describe('schedule target', () => {
   });
 
   test('reuses IAM role and IAM policy for two schedules with the same target from the same account', () => {
-    const queueTarget = new SqsSendMessage(queue, {});
+    const queueTarget = new SqsSendMessage(queue);
 
     new Schedule(stack, 'MyScheduleDummy1', {
       schedule: expr,
@@ -177,7 +178,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['sqs:GetQueueAttributes', 'sqs:GetQueueUrl', 'sqs:SendMessage'],
+            Action: 'sqs:SendMessage',
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
@@ -190,7 +191,7 @@ describe('schedule target', () => {
   });
 
   test('creates IAM role and IAM policy for two schedules with the same target but different groups', () => {
-    const queueTarget = new SqsSendMessage(queue, {});
+    const queueTarget = new SqsSendMessage(queue);
     const group = new Group(stack, 'Group', {
       groupName: 'mygroup',
     });
@@ -260,7 +261,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['sqs:GetQueueAttributes', 'sqs:GetQueueUrl', 'sqs:SendMessage'],
+            Action: 'sqs:SendMessage',
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
@@ -275,7 +276,7 @@ describe('schedule target', () => {
   test('creates IAM policy for imported queue in the same account', () => {
     const importedQueue = sqs.Queue.fromQueueArn(stack, 'ImportedQueue', 'arn:aws:sqs:us-east-1:123456789012:somequeue');
 
-    const queueTarget = new SqsSendMessage(importedQueue, {});
+    const queueTarget = new SqsSendMessage(importedQueue);
 
     new Schedule(stack, 'MyScheduleDummy', {
       schedule: expr,
@@ -296,7 +297,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['sqs:GetQueueAttributes', 'sqs:GetQueueUrl', 'sqs:SendMessage'],
+            Action: 'sqs:SendMessage',
             Effect: 'Allow',
             Resource: 'arn:aws:sqs:us-east-1:123456789012:somequeue',
           },
@@ -334,7 +335,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['sqs:GetQueueAttributes', 'sqs:GetQueueUrl', 'sqs:SendMessage'],
+            Action: 'sqs:SendMessage',
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
@@ -373,7 +374,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['sqs:GetQueueAttributes', 'sqs:GetQueueUrl', 'sqs:SendMessage'],
+            Action: 'sqs:SendMessage',
             Effect: 'Allow',
             Resource: 'arn:aws:sqs:us-east-1:123456789012:somequeue',
           },
@@ -383,43 +384,7 @@ describe('schedule target', () => {
     });
   });
 
-  test('throws when queue is imported from different account', () => {
-    const importedQueue = sqs.Queue.fromQueueArn(stack, 'ImportedQueue', 'arn:aws:sqs:us-east-1:234567890123:somequeue');
-    const queueTarget = new SqsSendMessage(importedQueue, {});
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: queueTarget,
-      })).toThrow(/Both the schedule and the queue must be in the same account/);
-  });
-
-  test('throws when queue is imported from different region', () => {
-    const importedQueue = sqs.Queue.fromQueueArn(stack, 'ImportedQueue', 'arn:aws:sqs:us-west-2:123456789012:somequeue');
-    const queueTarget = new SqsSendMessage(importedQueue, {});
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: queueTarget,
-      })).toThrow(/Both the schedule and the queue must be in the same region/);
-  });
-
-  test('throws when IAM role is imported from different account', () => {
-    const importedRole = Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::234567890123:role/someRole');
-
-    const queueTarget = new SqsSendMessage(queue, {
-      role: importedRole,
-    });
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: queueTarget,
-      })).toThrow(/Both the target and the execution role must be in the same account/);
-  });
-
-  test('adds permissions to DLQ', () => {
+  test('adds permissions to execution role for sending messages to DLQ', () => {
     const dlq = new sqs.Queue(stack, 'DummyDeadLetterQueue');
 
     const queueTarget = new SqsSendMessage(queue, {
@@ -431,49 +396,28 @@ describe('schedule target', () => {
       target: queueTarget,
     });
 
-    Template.fromStack(stack).hasResourceProperties('AWS::SQS::QueuePolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
             Action: 'sqs:SendMessage',
-            Principal: {
-              Service: 'scheduler.amazonaws.com',
-            },
             Effect: 'Allow',
-            Resource: {
-              'Fn::GetAtt': ['DummyDeadLetterQueueCEBF3463', 'Arn'],
-            },
+            Resource: [
+              {
+                'Fn::GetAtt': ['DummyDeadLetterQueueCEBF3463', 'Arn'],
+              },
+              {
+                'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
+              },
+            ],
           },
         ],
       },
-      Queues: [
-        {
-          Ref: 'DummyDeadLetterQueueCEBF3463',
-        },
-      ],
+      Roles: [{ Ref: roleId }],
     });
   });
 
-  test('throws when adding permissions to DLQ from a different region', () => {
-    const stack2 = new Stack(app, 'Stack2', {
-      env: {
-        region: 'eu-west-2',
-      },
-    });
-    const dlq = new sqs.Queue(stack2, 'DummyDeadLetterQueue');
-
-    const queueTarget = new SqsSendMessage(queue, {
-      deadLetterQueue: dlq,
-    });
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: queueTarget,
-      })).toThrow(/Both the queue and the schedule must be in the same region./);
-  });
-
-  test('does not create a queue policy when DLQ is imported', () => {
+  test('adds permission to execution role when imported DLQ is in same account', () => {
     const importedQueue = sqs.Queue.fromQueueArn(stack, 'ImportedQueue', 'arn:aws:sqs:us-east-1:123456789012:somequeue1');
 
     const queueTarget = new SqsSendMessage(queue, {
@@ -485,31 +429,58 @@ describe('schedule target', () => {
       target: queueTarget,
     });
 
-    Template.fromStack(stack).resourceCountIs('AWS::SQS::QueuePolicy', 0);
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'sqs:SendMessage',
+            Effect: 'Allow',
+            Resource: [
+              importedQueue.queueArn,
+              { 'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'] },
+            ],
+          },
+        ],
+      },
+      Roles: [{ Ref: roleId }],
+    });
   });
 
-  test('does not create a queue policy when DLQ is created in a different account', () => {
-    const stack2 = new Stack(app, 'Stack2', {
-      env: {
-        region: 'us-east-1',
-        account: '234567890123',
-      },
+  test('adds kms permissions to execution role when queue uses customer-managed key for encryption', () => {
+    const key = new kms.Key(stack, 'MyKey');
+    const ssekmsqueue = new sqs.Queue(stack, 'MySSEKMSQueue', {
+      encryptionMasterKey: key,
     });
-
-    const dlq = new sqs.Queue(stack2, 'DummyDeadLetterQueue', {
-      queueName: 'DummyDeadLetterQueue',
-    });
-
-    const queueTarget = new SqsSendMessage(queue, {
-      deadLetterQueue: dlq,
-    });
-
+    const queueTarget = new SqsSendMessage(ssekmsqueue, {});
     new Schedule(stack, 'MyScheduleDummy', {
       schedule: expr,
       target: queueTarget,
     });
 
-    Template.fromStack(stack).resourceCountIs('AWS::SQS::QueuePolicy', 0);
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'sqs:SendMessage',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': ['MySSEKMSQueueB12ED8F3', 'Arn'],
+            },
+          },
+          {
+            Action: [
+              'kms:Decrypt',
+              'kms:GenerateDataKey*',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': ['MyKey6AB29FA6', 'Arn'],
+            },
+          },
+        ],
+      },
+      Roles: [{ Ref: 'SchedulerRoleForTarget4bd89cBD24D046' }],
+    });
   });
 
   test('renders expected retry policy', () => {
@@ -654,6 +625,6 @@ describe('schedule target', () => {
       contentBasedDeduplication: true,
     });
     expect(() =>
-      new SqsSendMessage(wrongQueue, {})).toThrow(/messageGroupId must be specified if the target is a FIFO queue/);
+      new SqsSendMessage(wrongQueue)).toThrow(/messageGroupId must be specified if the target is a FIFO queue/);
   });
 });

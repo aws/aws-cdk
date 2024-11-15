@@ -1,10 +1,9 @@
 import { ISchedule, ScheduleTargetConfig, ScheduleTargetInput } from '@aws-cdk/aws-scheduler-alpha';
-import { Annotations, Duration, Names, PhysicalName, Stack, Token } from 'aws-cdk-lib';
+import { Duration, PhysicalName, Stack, Token } from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnSchedule } from 'aws-cdk-lib/aws-scheduler';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import { md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
-import { sameEnvDimension } from './util';
 
 /**
  * Base properties for a Schedule Target
@@ -16,10 +15,6 @@ export interface ScheduleTargetBaseProps {
    * If none provided templates target will automatically create an IAM role with all the minimum necessary
    * permissions to interact with the templated target. If you wish you may specify your own IAM role, then the templated targets
    * will grant minimal required permissions.
-   *
-   * Universal target automatically create an IAM role if you do not specify your own IAM role.
-   * However, in comparison with templated targets, for universal targets you must grant the required
-   * IAM permissions yourself.
    *
    * @default - created by target
    */
@@ -73,15 +68,15 @@ export abstract class ScheduleTargetBase {
   ) {
   }
 
-  protected abstract addTargetActionToRole(schedule: ISchedule, role: iam.IRole): void;
+  protected abstract addTargetActionToRole(role: iam.IRole): void;
 
   protected bindBaseTargetConfig(_schedule: ISchedule): ScheduleTargetConfig {
     const role: iam.IRole = this.baseProps.role ?? this.createOrGetScheduleTargetRole(_schedule, this.targetArn);
 
-    this.addTargetActionToRole(_schedule, role);
+    this.addTargetActionToRole(role);
 
     if (this.baseProps.deadLetterQueue) {
-      this.addToDeadLetterQueueResourcePolicy(_schedule, this.baseProps.deadLetterQueue);
+      this.addDeadLetterQueueActionToRole(role, this.baseProps.deadLetterQueue);
     }
 
     return {
@@ -148,31 +143,13 @@ export abstract class ScheduleTargetBase {
   }
 
   /**
-   * Allow a schedule to send events with failed invocation to an Amazon SQS queue.
-   * @param schedule schedule to add DLQ to
-   * @param queue the DLQ
+   * Allow schedule to send events with failed invocation to an Amazon SQS queue.
    */
-  private addToDeadLetterQueueResourcePolicy(schedule: ISchedule, queue: sqs.IQueue) {
-    if (!sameEnvDimension(schedule.env.region, queue.env.region)) {
-      throw new Error(`Cannot assign Dead Letter Queue in region ${queue.env.region} to the schedule ${Names.nodeUniqueId(schedule.node)} in region ${schedule.env.region}. Both the queue and the schedule must be in the same region.`);
-    }
-
-    // Skip Resource Policy creation if the Queue is not in the same account.
-    // There is no way to add a target onto an imported schedule, so we can assume we will run the following code only
-    // in the account where the schedule is created.
-    if (sameEnvDimension(schedule.env.account, queue.env.account)) {
-      const policyStatementId = `AllowSchedule${Names.nodeUniqueId(schedule.node)}`;
-
-      queue.addToResourcePolicy(new iam.PolicyStatement({
-        sid: policyStatementId,
-        principals: [new iam.ServicePrincipal('scheduler.amazonaws.com')],
-        effect: iam.Effect.ALLOW,
-        actions: ['sqs:SendMessage'],
-        resources: [queue.queueArn],
-      }));
-    } else {
-      Annotations.of(schedule).addWarning(`Cannot add a resource policy to your dead letter queue associated with schedule ${schedule.scheduleName} because the queue is in a different account. You must add the resource policy manually to the dead letter queue in account ${queue.env.account}.`);
-    }
+  private addDeadLetterQueueActionToRole(role: iam.IRole, queue: sqs.IQueue) {
+    role.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: ['sqs:SendMessage'],
+      resources: [queue.queueArn],
+    }));
   }
 
   private renderRetryPolicy(maximumEventAge: Duration | undefined, maximumRetryAttempts: number | undefined): CfnSchedule.RetryPolicyProperty {
