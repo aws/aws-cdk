@@ -34,7 +34,8 @@ export class KinesisStreamPutRecord extends ScheduleTargetBase implements ISched
   }
 
   protected addTargetActionToRole(role: IRole): void {
-    this.stream.grantWrite(role);
+    this.stream.grant(role, 'kinesis:PutRecord', 'kinesis:PutRecords');
+    this.stream.encryptionKey?.grant(role, 'kms:GenerateDataKey*');
   }
 
   protected bindBaseTargetConfig(_schedule: ISchedule): ScheduleTargetConfig {
