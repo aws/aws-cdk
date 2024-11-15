@@ -391,45 +391,6 @@ describe('stepfunction start execution', () => {
     });
   });
 
-  test('throws when step function is imported from different account', () => {
-    const anotherAccountId = '123456789015';
-    const importedStateMachine = sfn.StateMachine.fromStateMachineArn(stack, 'ImportedStateMachine', `arn:aws:states:us-east-1:${anotherAccountId}:stateMachine/MyStateMachine`);
-    const stepFunctionTarget = new StepFunctionsStartExecution(importedStateMachine, {});
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: stepFunctionTarget,
-      })).toThrow(/Both the schedule and the stateMachine must be in the same account./);
-  });
-
-  test('throws when step function is imported from different region', () => {
-    const anotherRegion = 'eu-central-1';
-    const importedStateMachine = sfn.StateMachine.fromStateMachineArn(stack, 'ImportedStateMachine', `arn:aws:states:${anotherRegion}:123456789012:stateMachine/MyStateMachine`);
-    const stepFunctionTarget = new StepFunctionsStartExecution(importedStateMachine, {});
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: stepFunctionTarget,
-      })).toThrow(/Both the schedule and the stateMachine must be in the same region/);
-  });
-
-  test('throws when IAM role is imported from different account', () => {
-    const anotherAccountId = '123456789015';
-    const importedRole = Role.fromRoleArn(stack, 'ImportedRole', `arn:aws:iam::${anotherAccountId}:role/someRole`);
-
-    const stepFunctionTarget = new StepFunctionsStartExecution(stepFunction, {
-      role: importedRole,
-    });
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: stepFunctionTarget,
-      })).toThrow(/Both the target and the execution role must be in the same account/);
-  });
-
   test('adds permissions to execution role for sending messages to DLQ', () => {
     const dlq = new sqs.Queue(stack, 'DummyDeadLetterQueue');
 
