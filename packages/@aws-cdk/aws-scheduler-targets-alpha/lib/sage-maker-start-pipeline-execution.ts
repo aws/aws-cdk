@@ -1,9 +1,7 @@
 import { ISchedule, IScheduleTarget, ScheduleTargetConfig } from '@aws-cdk/aws-scheduler-alpha';
-import { Names } from 'aws-cdk-lib';
 import { IRole } from 'aws-cdk-lib/aws-iam';
 import { IPipeline } from 'aws-cdk-lib/aws-sagemaker';
 import { ScheduleTargetBase, ScheduleTargetBaseProps } from './target';
-import { sameEnvDimension } from './util';
 
 /**
  * Properties for a pipeline parameter
@@ -51,19 +49,7 @@ export class SageMakerStartPipelineExecution extends ScheduleTargetBase implemen
     }
   }
 
-  protected addTargetActionToRole(schedule: ISchedule, role: IRole): void {
-    if (!sameEnvDimension(this.pipeline.stack.region, schedule.env.region)) {
-      throw new Error(`Cannot assign pipeline in region ${this.pipeline.stack.region} to the schedule ${Names.nodeUniqueId(schedule.node)} in region ${schedule.env.region}. Both the schedule and the pipeline must be in the same region.`);
-    }
-
-    if (!sameEnvDimension(this.pipeline.stack.account, schedule.env.account)) {
-      throw new Error(`Cannot assign pipeline in account ${this.pipeline.stack.account} to the schedule ${Names.nodeUniqueId(schedule.node)} in account ${schedule.env.region}. Both the schedule and the pipeline must be in the same account.`);
-    }
-
-    if (this.props.role && !sameEnvDimension(this.props.role.env.account, this.pipeline.stack.account)) {
-      throw new Error(`Cannot grant permission to execution role in account ${this.props.role.env.account} to invoke target ${Names.nodeUniqueId(this.pipeline.node)} in account ${this.pipeline.stack.account}. Both the target and the execution role must be in the same account.`);
-    }
-
+  protected addTargetActionToRole(role: IRole): void {
     this.pipeline.grantStartPipelineExecution(role);
   }
 

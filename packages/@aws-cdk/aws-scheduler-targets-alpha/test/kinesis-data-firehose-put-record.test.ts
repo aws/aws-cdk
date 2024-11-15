@@ -404,55 +404,6 @@ describe('schedule target', () => {
     });
   });
 
-  test('throws when firehose is in the another stack with different account', () => {
-    const stack2 = new Stack(app, 'Stack2', {
-      env: {
-        region: 'us-east-1',
-        account: '234567890123',
-      },
-    });
-    const anotherFirehose = new CfnDeliveryStream(stack2, 'AnotherFirehose');
-    const firehoseTarget = new KinesisDataFirehosePutRecord(anotherFirehose);
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: firehoseTarget,
-      })).toThrow(/Both the schedule and the Firehose delivery stream must be in the same account/);
-  });
-
-  test('throws when firehose is in the another stack with different region', () => {
-    const stack2 = new Stack(app, 'Stack2', {
-      env: {
-        region: 'us-west-2',
-        account: '123456789012',
-      },
-    });
-    const anotherFirehose = new CfnDeliveryStream(stack2, 'AnotherFirehose');
-
-    const firehoseTarget = new KinesisDataFirehosePutRecord(anotherFirehose);
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: firehoseTarget,
-      })).toThrow(/Both the schedule and the Firehose delivery stream must be in the same region/);
-  });
-
-  test('throws when IAM role is imported from different account', () => {
-    const importedRole = Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::234567890123:role/someRole');
-
-    const firehoseTarget = new KinesisDataFirehosePutRecord(firehose, {
-      role: importedRole,
-    });
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: firehoseTarget,
-      })).toThrow(/Both the target and the execution role must be in the same account/);
-  });
-
   test('adds permissions to execution role for sending messages to DLQ', () => {
     const dlq = new sqs.Queue(stack, 'DummyDeadLetterQueue');
 

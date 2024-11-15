@@ -28,28 +28,22 @@
     "PolicyDocument": {
      "Statement": [
       {
-       "Action": [
-        "sqs:GetQueueAttributes",
-        "sqs:GetQueueUrl",
-        "sqs:SendMessage"
-       ],
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "ScheduleTargetQueueFA42B954",
-         "Arn"
-        ]
-       }
-      },
-      {
        "Action": "sqs:SendMessage",
        "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "ScheduleDeadLetterQueue0D6B48D2",
-         "Arn"
-        ]
-       }
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "ScheduleDeadLetterQueue0D6B48D2",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "ScheduleTargetQueueFA42B954",
+          "Arn"
+         ]
+        }
+       ]
       }
      ],
      "Version": "2012-10-17"
