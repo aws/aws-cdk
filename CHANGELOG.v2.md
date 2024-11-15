@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.167.1](https://github.com/aws/aws-cdk/compare/v2.167.0...v2.167.1) (2024-11-14)
+
+
+### Bug Fixes
+
+* **cli:** failure to get credentials when session token is not set ([#32134](https://github.com/aws/aws-cdk/issues/32134)) ([425efbc](https://github.com/aws/aws-cdk/commit/425efbc3625d4512b83225dcb1d1c155d13b4b9e)), closes [#32120](https://github.com/aws/aws-cdk/issues/32120)
+* **cli:** region specified in `~/.aws/credentials` is ignored ([#32133](https://github.com/aws/aws-cdk/issues/32133)) ([9859f33](https://github.com/aws/aws-cdk/commit/9859f33a11fb385419c611945bd9bb171b458dad)), closes [#32130](https://github.com/aws/aws-cdk/issues/32130)
+
 ## [2.167.0](https://github.com/aws/aws-cdk/compare/v2.166.0...v2.167.0) (2024-11-13)
 
 
