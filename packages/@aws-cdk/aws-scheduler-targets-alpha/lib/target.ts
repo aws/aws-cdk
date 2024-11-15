@@ -72,12 +72,12 @@ export abstract class ScheduleTargetBase {
   ) {
   }
 
-  protected abstract addTargetActionToRole(schedule: ISchedule, role: iam.IRole): void;
+  protected abstract addTargetActionToRole(role: iam.IRole): void;
 
   protected bindBaseTargetConfig(_schedule: ISchedule): ScheduleTargetConfig {
     const role: iam.IRole = this.baseProps.role ?? this.createOrGetScheduleTargetRole(_schedule, this.targetArn);
 
-    this.addTargetActionToRole(_schedule, role);
+    this.addTargetActionToRole(role);
 
     if (this.baseProps.deadLetterQueue) {
       this.addDeadLetterQueueActionToRole(role, this.baseProps.deadLetterQueue);
