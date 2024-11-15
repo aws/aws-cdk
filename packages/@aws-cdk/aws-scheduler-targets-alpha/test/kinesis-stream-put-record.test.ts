@@ -3,6 +3,7 @@ import { App, Duration, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { AccountRootPrincipal, Role } from 'aws-cdk-lib/aws-iam';
 import * as kinesis from 'aws-cdk-lib/aws-kinesis';
+import * as kms from 'aws-cdk-lib/aws-kms';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import { KinesisStreamPutRecord } from '../lib';
 
@@ -48,7 +49,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['kinesis:ListShards', 'kinesis:PutRecord', 'kinesis:PutRecords'],
+            Action: ['kinesis:PutRecord', 'kinesis:PutRecords'],
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': ['MyStream5C050E93', 'Arn'],
@@ -126,7 +127,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['kinesis:ListShards', 'kinesis:PutRecord', 'kinesis:PutRecords'],
+            Action: ['kinesis:PutRecord', 'kinesis:PutRecords'],
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': ['MyStream5C050E93', 'Arn'],
@@ -189,7 +190,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['kinesis:ListShards', 'kinesis:PutRecord', 'kinesis:PutRecords'],
+            Action: ['kinesis:PutRecord', 'kinesis:PutRecords'],
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': ['MyStream5C050E93', 'Arn'],
@@ -274,7 +275,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['kinesis:ListShards', 'kinesis:PutRecord', 'kinesis:PutRecords'],
+            Action: ['kinesis:PutRecord', 'kinesis:PutRecords'],
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': ['MyStream5C050E93', 'Arn'],
@@ -315,7 +316,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['kinesis:ListShards', 'kinesis:PutRecord', 'kinesis:PutRecords'],
+            Action: ['kinesis:PutRecord', 'kinesis:PutRecords'],
             Effect: 'Allow',
             Resource: 'arn:aws:kinesis:us-east-1:123456789012:stream/Foo',
           },
@@ -357,7 +358,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['kinesis:ListShards', 'kinesis:PutRecord', 'kinesis:PutRecords'],
+            Action: ['kinesis:PutRecord', 'kinesis:PutRecords'],
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': ['MyStream5C050E93', 'Arn'],
@@ -400,7 +401,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['kinesis:ListShards', 'kinesis:PutRecord', 'kinesis:PutRecords'],
+            Action: ['kinesis:PutRecord', 'kinesis:PutRecords'],
             Effect: 'Allow',
             Resource: 'arn:aws:kinesis:us-east-1:123456789012:stream/Foo',
           },
@@ -427,7 +428,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['kinesis:ListShards', 'kinesis:PutRecord', 'kinesis:PutRecords'],
+            Action: ['kinesis:PutRecord', 'kinesis:PutRecords'],
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': ['MyStream5C050E93', 'Arn'],
@@ -463,7 +464,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['kinesis:ListShards', 'kinesis:PutRecord', 'kinesis:PutRecords'],
+            Action: ['kinesis:PutRecord', 'kinesis:PutRecords'],
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': ['MyStream5C050E93', 'Arn'],
@@ -477,6 +478,42 @@ describe('schedule target', () => {
         ],
       },
       Roles: [{ Ref: roleId }],
+    });
+  });
+
+  test('adds kms permissions to execution role when stream uses customer-managed key for encryption', () => {
+    const key = new kms.Key(stack, 'MyKey');
+    const ssekmsstream = new kinesis.Stream(stack, 'MySSEKMSStream', {
+      encryptionKey: key,
+    });
+    const streamTarget = new KinesisStreamPutRecord(ssekmsstream, {
+      partitionKey: 'key',
+    });
+    new Schedule(stack, 'MyScheduleDummy', {
+      schedule: expr,
+      target: streamTarget,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: ['kinesis:PutRecord', 'kinesis:PutRecords'],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': ['MySSEKMSStreamB597D4E1', 'Arn'],
+            },
+          },
+          {
+            Action: 'kms:GenerateDataKey*',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': ['MyKey6AB29FA6', 'Arn'],
+            },
+          },
+        ],
+      },
+      Roles: [{ Ref: 'SchedulerRoleForTargeta736fbE883CED5' }],
     });
   });
 

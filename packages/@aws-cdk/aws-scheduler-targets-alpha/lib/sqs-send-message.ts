@@ -49,7 +49,8 @@ export class SqsSendMessage extends ScheduleTargetBase implements IScheduleTarge
   }
 
   protected addTargetActionToRole(role: IRole): void {
-    this.queue.grantSendMessages(role);
+    this.queue.grant(role, 'sqs:SendMessage');
+    this.queue.encryptionMasterKey?.grant(role, 'kms:Decrypt', 'kms:GenerateDataKey*');
   }
 
   protected bindBaseTargetConfig(_schedule: ISchedule): ScheduleTargetConfig {

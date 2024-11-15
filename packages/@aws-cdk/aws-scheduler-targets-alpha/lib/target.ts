@@ -16,10 +16,6 @@ export interface ScheduleTargetBaseProps {
    * permissions to interact with the templated target. If you wish you may specify your own IAM role, then the templated targets
    * will grant minimal required permissions.
    *
-   * Universal target automatically create an IAM role if you do not specify your own IAM role.
-   * However, in comparison with templated targets, for universal targets you must grant the required
-   * IAM permissions yourself.
-   *
    * @default - created by target
    */
   readonly role?: iam.IRole;
