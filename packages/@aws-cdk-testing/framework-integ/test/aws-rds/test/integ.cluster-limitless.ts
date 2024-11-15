@@ -1,6 +1,6 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib';
-import { AuroraPostgresEngineVersion, ClusterScailabilityType, DatabaseCluster, DatabaseClusterEngine, DBClusterStorageType } from 'aws-cdk-lib/aws-rds';
+import { AuroraPostgresEngineVersion, ClusterScailabilityType, DatabaseCluster, DatabaseClusterEngine, DBClusterStorageType, PerformanceInsightRetention } from 'aws-cdk-lib/aws-rds';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 class TestStack extends cdk.Stack {
@@ -16,7 +16,8 @@ class TestStack extends cdk.Stack {
       vpc,
       clusterScailabilityType: ClusterScailabilityType.LIMITLESS,
       enablePerformanceInsights: true,
-      monitoringInterval: cdk.Duration.days(40),
+      performanceInsightRetention: PerformanceInsightRetention.MONTHS_1,
+      monitoringInterval: cdk.Duration.days(1),
       storageType: DBClusterStorageType.AURORA_IOPT1,
       cloudwatchLogsExports: ['postgresql'],
     });

@@ -783,11 +783,11 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       if (!props.enablePerformanceInsights) {
         throw new Error('Performance Insights must be enabled for Aurora Limitless Database.');
       }
+      if (!props.performanceInsightRetention || props.performanceInsightRetention < PerformanceInsightRetention.MONTHS_1) {
+        throw new Error('Performance Insights retention period must be set at least 31 days for Aurora Limitless Database.');
+      }
       if (!props.monitoringInterval) {
         throw new Error('Enhanced monitoring must be set for Aurora Limitless Database. Please set `monitoringInterval`.');
-      }
-      if (props.monitoringInterval.toMilliseconds() < Duration.days(31).toMilliseconds()) {
-        throw new Error('Enhanced monitoring interval must be at least 31 days for Aurora Limitless Database.');
       }
       if (props.writer || props.readers) {
         throw new Error('Aurora Limitless Database does not support readers or writer instances.');
@@ -855,6 +855,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       performanceInsightsKmsKeyId: this.performanceInsightEncryptionKey?.keyArn,
       performanceInsightsRetentionPeriod: this.performanceInsightRetention,
       autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,
+      monitoringInterval: props.monitoringInterval?.toSeconds(),
     };
   }
 
