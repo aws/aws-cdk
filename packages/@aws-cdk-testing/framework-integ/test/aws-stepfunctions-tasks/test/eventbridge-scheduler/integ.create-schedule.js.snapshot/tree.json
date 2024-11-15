@@ -1,0 +1,732 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "createScheduleInteg": {
+        "id": "createScheduleInteg",
+        "path": "createScheduleInteg",
+        "children": {
+          "Key": {
+            "id": "Key",
+            "path": "createScheduleInteg/Key",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "createScheduleInteg/Key/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::KMS::Key",
+                  "aws:cdk:cloudformation:props": {
+                    "keyPolicy": {
+                      "Statement": [
+                        {
+                          "Action": "kms:*",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":iam::",
+                                  {
+                                    "Ref": "AWS::AccountId"
+                                  },
+                                  ":root"
+                                ]
+                              ]
+                            }
+                          },
+                          "Resource": "*"
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "ScheduleGroup": {
+            "id": "ScheduleGroup",
+            "path": "createScheduleInteg/ScheduleGroup",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::Scheduler::ScheduleGroup",
+              "aws:cdk:cloudformation:props": {
+                "name": "TestGroup"
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "TargetQueue": {
+            "id": "TargetQueue",
+            "path": "createScheduleInteg/TargetQueue",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "createScheduleInteg/TargetQueue/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "DeadLetterQueue": {
+            "id": "DeadLetterQueue",
+            "path": "createScheduleInteg/DeadLetterQueue",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "createScheduleInteg/DeadLetterQueue/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "SchedulerRole": {
+            "id": "SchedulerRole",
+            "path": "createScheduleInteg/SchedulerRole",
+            "children": {
+              "ImportSchedulerRole": {
+                "id": "ImportSchedulerRole",
+                "path": "createScheduleInteg/SchedulerRole/ImportSchedulerRole",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "createScheduleInteg/SchedulerRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "scheduler.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "createScheduleInteg/SchedulerRole/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "createScheduleInteg/SchedulerRole/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sqs:SendMessage",
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "TargetQueue08AD2B3C",
+                                  "Arn"
+                                ]
+                              }
+                            },
+                            {
+                              "Action": [
+                                "kms:Decrypt",
+                                "kms:Encrypt",
+                                "kms:GenerateDataKey*",
+                                "kms:ReEncrypt*"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "Key961B73FD",
+                                  "Arn"
+                                ]
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "SchedulerRoleDefaultPolicy66F774B8",
+                        "roles": [
+                          {
+                            "Ref": "SchedulerRole59E73443"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "createSchedule1": {
+            "id": "createSchedule1",
+            "path": "createScheduleInteg/createSchedule1",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "createSchedule2": {
+            "id": "createSchedule2",
+            "path": "createScheduleInteg/createSchedule2",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "Start Task": {
+            "id": "Start Task",
+            "path": "createScheduleInteg/Start Task",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "End Task": {
+            "id": "End Task",
+            "path": "createScheduleInteg/End Task",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "stateMachine": {
+            "id": "stateMachine",
+            "path": "createScheduleInteg/stateMachine",
+            "children": {
+              "Role": {
+                "id": "Role",
+                "path": "createScheduleInteg/stateMachine/Role",
+                "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "createScheduleInteg/stateMachine/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "createScheduleInteg/stateMachine/Role/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "states.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "createScheduleInteg/stateMachine/Role/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "createScheduleInteg/stateMachine/Role/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "scheduler:CreateSchedule",
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":scheduler:",
+                                          {
+                                            "Ref": "AWS::Region"
+                                          },
+                                          ":",
+                                          {
+                                            "Ref": "AWS::AccountId"
+                                          },
+                                          ":schedule/",
+                                          {
+                                            "Ref": "ScheduleGroup"
+                                          },
+                                          "/TestScheduleA"
+                                        ]
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":scheduler:",
+                                          {
+                                            "Ref": "AWS::Region"
+                                          },
+                                          ":",
+                                          {
+                                            "Ref": "AWS::AccountId"
+                                          },
+                                          ":schedule/default/TestScheduleB"
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "Action": "iam:PassRole",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "SchedulerRole59E73443",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "stateMachineRoleDefaultPolicy9579E9AD",
+                            "roles": [
+                              {
+                                "Ref": "stateMachineRole64DF9B42"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "createScheduleInteg/stateMachine/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
+                  "aws:cdk:cloudformation:props": {
+                    "definitionString": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "{\"StartAt\":\"Start Task\",\"States\":{\"Start Task\":{\"Type\":\"Pass\",\"Next\":\"createSchedule1\"},\"createSchedule1\":{\"Next\":\"createSchedule2\",\"Type\":\"Task\",\"Resource\":\"arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":states:::aws-sdk:scheduler:createSchedule\",\"Parameters\":{\"ActionAfterCompletion\":\"NONE\",\"ClientToken\":\"testToken\",\"Description\":\"Testdescription\",\"EndDate\":\"2030-01-01T01:00:00.000Z\",\"FlexibleTimeWindow\":{\"Mode\":\"FLEXIBLE\",\"MaximumWindowInMinutes\":5},\"GroupName\":\"",
+                          {
+                            "Ref": "ScheduleGroup"
+                          },
+                          "\",\"KmsKeyArn\":\"",
+                          {
+                            "Fn::GetAtt": [
+                              "Key961B73FD",
+                              "Arn"
+                            ]
+                          },
+                          "\",\"Name\":\"TestScheduleA\",\"ScheduleExpression\":\"rate(1 minutes)\",\"ScheduleExpressionTimezone\":\"UTC\",\"StartDate\":\"2030-01-01T00:00:00.000Z\",\"State\":\"ENABLED\",\"Target\":{\"Arn\":\"",
+                          {
+                            "Fn::GetAtt": [
+                              "TargetQueue08AD2B3C",
+                              "Arn"
+                            ]
+                          },
+                          "\",\"RoleArn\":\"",
+                          {
+                            "Fn::GetAtt": [
+                              "SchedulerRole59E73443",
+                              "Arn"
+                            ]
+                          },
+                          "\",\"RetryPolicy\":{\"MaximumEventAgeInSeconds\":300,\"MaximumRetryAttempts\":2},\"DeadLetterConfig\":{\"Arn\":\"",
+                          {
+                            "Fn::GetAtt": [
+                              "DeadLetterQueue9F481546",
+                              "Arn"
+                            ]
+                          },
+                          "\"}}}},\"createSchedule2\":{\"Next\":\"End Task\",\"Type\":\"Task\",\"Resource\":\"arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":states:::aws-sdk:scheduler:createSchedule\",\"Parameters\":{\"ActionAfterCompletion\":\"NONE\",\"FlexibleTimeWindow\":{\"Mode\":\"OFF\"},\"Name\":\"TestScheduleB\",\"ScheduleExpression\":\"rate(1 minutes)\",\"State\":\"ENABLED\",\"Target\":{\"Arn\":\"",
+                          {
+                            "Fn::GetAtt": [
+                              "TargetQueue08AD2B3C",
+                              "Arn"
+                            ]
+                          },
+                          "\",\"RoleArn\":\"",
+                          {
+                            "Fn::GetAtt": [
+                              "SchedulerRole59E73443",
+                              "Arn"
+                            ]
+                          },
+                          "\"}}},\"End Task\":{\"Type\":\"Pass\",\"End\":true}}}"
+                        ]
+                      ]
+                    },
+                    "roleArn": {
+                      "Fn::GetAtt": [
+                        "stateMachineRole64DF9B42",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "Exports": {
+            "id": "Exports",
+            "path": "createScheduleInteg/Exports",
+            "children": {
+              "Output{\"Ref\":\"stateMachineE926C166\"}": {
+                "id": "Output{\"Ref\":\"stateMachineE926C166\"}",
+                "path": "createScheduleInteg/Exports/Output{\"Ref\":\"stateMachineE926C166\"}",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "createScheduleInteg/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "createScheduleInteg/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
+        }
+      },
+      "PutEvents": {
+        "id": "PutEvents",
+        "path": "PutEvents",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "PutEvents/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "PutEvents/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "PutEvents/DefaultTest/DeployAssert",
+                "children": {
+                  "AwsApiCallStepFunctionsstartExecutiond6fda8c72eba625f027cf7cd23e6cea8": {
+                    "id": "AwsApiCallStepFunctionsstartExecutiond6fda8c72eba625f027cf7cd23e6cea8",
+                    "path": "PutEvents/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutiond6fda8c72eba625f027cf7cd23e6cea8",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "PutEvents/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutiond6fda8c72eba625f027cf7cd23e6cea8/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "PutEvents/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutiond6fda8c72eba625f027cf7cd23e6cea8/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "PutEvents/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutiond6fda8c72eba625f027cf7cd23e6cea8/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "PutEvents/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutiond6fda8c72eba625f027cf7cd23e6cea8/Default/Default",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "SingletonFunction1488541a7b23466481b69b4408076b81": {
+                    "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "path": "PutEvents/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "PutEvents/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "PutEvents/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "PutEvents/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "LatestNodeRuntimeMap": {
+                    "id": "LatestNodeRuntimeMap",
+                    "path": "PutEvents/DefaultTest/DeployAssert/LatestNodeRuntimeMap",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "AwsApiCallStepFunctionsdescribeExecution175e2dd816caa8f2043963960672472b": {
+                    "id": "AwsApiCallStepFunctionsdescribeExecution175e2dd816caa8f2043963960672472b",
+                    "path": "PutEvents/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution175e2dd816caa8f2043963960672472b",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "PutEvents/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution175e2dd816caa8f2043963960672472b/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "PutEvents/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution175e2dd816caa8f2043963960672472b/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "PutEvents/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution175e2dd816caa8f2043963960672472b/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "PutEvents/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution175e2dd816caa8f2043963960672472b/Default/Default",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "PutEvents/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution175e2dd816caa8f2043963960672472b/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "PutEvents/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "PutEvents/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.4.2"
+    }
+  }
+}
