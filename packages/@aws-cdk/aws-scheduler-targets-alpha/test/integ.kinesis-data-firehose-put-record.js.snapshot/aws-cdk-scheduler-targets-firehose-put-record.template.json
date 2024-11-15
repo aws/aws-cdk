@@ -208,6 +208,19 @@
          ]
         }
        ]
+      },
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "MyFirehoseStreamLogGroup5DE95CF8",
+         "Arn"
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -220,10 +233,29 @@
     ]
    }
   },
-  "MyFirehose": {
+  "MyFirehoseStreamLogGroup5DE95CF8": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "MyFirehoseStreamLogGroupS3DestinationB2F1AD1D": {
+   "Type": "AWS::Logs::LogStream",
+   "Properties": {
+    "LogGroupName": {
+     "Ref": "MyFirehoseStreamLogGroup5DE95CF8"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "MyFirehoseStream2282904B": {
    "Type": "AWS::KinesisFirehose::DeliveryStream",
    "Properties": {
-    "S3DestinationConfiguration": {
+    "DeliveryStreamType": "DirectPut",
+    "ExtendedS3DestinationConfiguration": {
      "BucketARN": {
       "Fn::GetAtt": [
        "DestinationBucket4BECDB47",
@@ -231,7 +263,17 @@
       ]
      },
      "BufferingHints": {
-      "IntervalInSeconds": 60
+      "IntervalInSeconds": 60,
+      "SizeInMBs": 5
+     },
+     "CloudWatchLoggingOptions": {
+      "Enabled": true,
+      "LogGroupName": {
+       "Ref": "MyFirehoseStreamLogGroup5DE95CF8"
+      },
+      "LogStreamName": {
+       "Ref": "MyFirehoseStreamLogGroupS3DestinationB2F1AD1D"
+      }
      },
      "RoleARN": {
       "Fn::GetAtt": [
@@ -240,7 +282,10 @@
       ]
      }
     }
-   }
+   },
+   "DependsOn": [
+    "deliveryStreamRoleDefaultPolicyC9208632"
+   ]
   },
   "Schedule83A77FD1": {
    "Type": "AWS::Scheduler::Schedule",
@@ -254,7 +299,7 @@
     "Target": {
      "Arn": {
       "Fn::GetAtt": [
-       "MyFirehose",
+       "MyFirehoseStream2282904B",
        "Arn"
       ]
      },
@@ -265,14 +310,14 @@
      },
      "RoleArn": {
       "Fn::GetAtt": [
-       "SchedulerRoleForTarget380bba149146B2",
+       "SchedulerRoleForTarget5bddb4D77D7575",
        "Arn"
       ]
      }
     }
    }
   },
-  "SchedulerRoleForTarget380bba149146B2": {
+  "SchedulerRoleForTarget5bddb4D77D7575": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -316,7 +361,7 @@
     }
    }
   },
-  "SchedulerRoleForTarget380bbaDefaultPolicy076E1FE7": {
+  "SchedulerRoleForTarget5bddb4DefaultPolicy95F55636": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -326,7 +371,7 @@
        "Effect": "Allow",
        "Resource": {
         "Fn::GetAtt": [
-         "MyFirehose",
+         "MyFirehoseStream2282904B",
          "Arn"
         ]
        }
@@ -334,10 +379,10 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "SchedulerRoleForTarget380bbaDefaultPolicy076E1FE7",
+    "PolicyName": "SchedulerRoleForTarget5bddb4DefaultPolicy95F55636",
     "Roles": [
      {
-      "Ref": "SchedulerRoleForTarget380bba149146B2"
+      "Ref": "SchedulerRoleForTarget5bddb4D77D7575"
      }
     ]
    }
@@ -464,6 +509,107 @@
    },
    "us-west-2": {
     "value": "nodejs20.x"
+   }
+  },
+  "awscdkawskinesisfirehoseCidrBlocks": {
+   "af-south-1": {
+    "FirehoseCidrBlock": "13.244.121.224/27"
+   },
+   "ap-east-1": {
+    "FirehoseCidrBlock": "18.162.221.32/27"
+   },
+   "ap-northeast-1": {
+    "FirehoseCidrBlock": "13.113.196.224/27"
+   },
+   "ap-northeast-2": {
+    "FirehoseCidrBlock": "13.209.1.64/27"
+   },
+   "ap-northeast-3": {
+    "FirehoseCidrBlock": "13.208.177.192/27"
+   },
+   "ap-south-1": {
+    "FirehoseCidrBlock": "13.232.67.32/27"
+   },
+   "ap-south-2": {
+    "FirehoseCidrBlock": "18.60.192.128/27"
+   },
+   "ap-southeast-1": {
+    "FirehoseCidrBlock": "13.228.64.192/27"
+   },
+   "ap-southeast-2": {
+    "FirehoseCidrBlock": "13.210.67.224/27"
+   },
+   "ap-southeast-3": {
+    "FirehoseCidrBlock": "108.136.221.64/27"
+   },
+   "ap-southeast-4": {
+    "FirehoseCidrBlock": "16.50.161.128/27"
+   },
+   "ca-central-1": {
+    "FirehoseCidrBlock": "35.183.92.128/27"
+   },
+   "ca-west-1": {
+    "FirehoseCidrBlock": "40.176.98.192/27"
+   },
+   "cn-north-1": {
+    "FirehoseCidrBlock": "52.81.151.32/27"
+   },
+   "cn-northwest-1": {
+    "FirehoseCidrBlock": "161.189.23.64/27"
+   },
+   "eu-central-1": {
+    "FirehoseCidrBlock": "35.158.127.160/27"
+   },
+   "eu-central-2": {
+    "FirehoseCidrBlock": "16.62.183.32/27"
+   },
+   "eu-north-1": {
+    "FirehoseCidrBlock": "13.53.63.224/27"
+   },
+   "eu-south-1": {
+    "FirehoseCidrBlock": "15.161.135.128/27"
+   },
+   "eu-south-2": {
+    "FirehoseCidrBlock": "18.100.71.96/27"
+   },
+   "eu-west-1": {
+    "FirehoseCidrBlock": "52.19.239.192/27"
+   },
+   "eu-west-2": {
+    "FirehoseCidrBlock": "18.130.1.96/27"
+   },
+   "eu-west-3": {
+    "FirehoseCidrBlock": "35.180.1.96/27"
+   },
+   "il-central-1": {
+    "FirehoseCidrBlock": "51.16.102.0/27"
+   },
+   "me-central-1": {
+    "FirehoseCidrBlock": "3.28.159.32/27"
+   },
+   "me-south-1": {
+    "FirehoseCidrBlock": "15.185.91.0/27"
+   },
+   "sa-east-1": {
+    "FirehoseCidrBlock": "18.228.1.128/27"
+   },
+   "us-east-1": {
+    "FirehoseCidrBlock": "52.70.63.192/27"
+   },
+   "us-east-2": {
+    "FirehoseCidrBlock": "13.58.135.96/27"
+   },
+   "us-gov-east-1": {
+    "FirehoseCidrBlock": "18.253.138.96/27"
+   },
+   "us-gov-west-1": {
+    "FirehoseCidrBlock": "52.61.204.160/27"
+   },
+   "us-west-1": {
+    "FirehoseCidrBlock": "13.57.135.192/27"
+   },
+   "us-west-2": {
+    "FirehoseCidrBlock": "52.89.255.224/27"
    }
   }
  },

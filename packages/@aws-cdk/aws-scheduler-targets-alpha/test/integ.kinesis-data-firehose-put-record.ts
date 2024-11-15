@@ -1,9 +1,8 @@
+import * as firehose from '@aws-cdk/aws-kinesisfirehose-alpha';
+import * as destinations from '@aws-cdk/aws-kinesisfirehose-destinations-alpha';
 import * as scheduler from '@aws-cdk/aws-scheduler-alpha';
 import { AwsApiCall, ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
-import * as firehose from '@aws-cdk/aws-kinesisfirehose-alpha';
-import * as destinations from '@aws-cdk/aws-kinesisfirehose-destinations-alpha';
-import { CfnDeliveryStream } from 'aws-cdk-lib/aws-kinesisfirehose';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { KinesisDataFirehosePutRecord } from '../lib';
 
@@ -30,16 +29,6 @@ const deliveryStreamRole = new cdk.aws_iam.Role(stack, 'deliveryStreamRole', {
 });
 
 destinationBucket.grantReadWrite(deliveryStreamRole);
-
-new CfnDeliveryStream(stack, 'MyFirehose', {
-  s3DestinationConfiguration: {
-    bucketArn: destinationBucket.bucketArn,
-    roleArn: deliveryStreamRole.roleArn,
-    bufferingHints: {
-      intervalInSeconds: 60,
-    },
-  },
-});
 
 const firehoseStream = new firehose.DeliveryStream(stack, 'MyFirehoseStream', {
   destination: new destinations.S3Bucket(destinationBucket, {
@@ -78,5 +67,3 @@ if (objects instanceof AwsApiCall && objects.waiterProvider) {
     Resource: ['*'],
   });
 }
-
-app.synth();

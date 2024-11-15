@@ -1,6 +1,6 @@
+import { IDeliveryStream } from '@aws-cdk/aws-kinesisfirehose-alpha';
 import { IScheduleTarget } from '@aws-cdk/aws-scheduler-alpha';
 import { IRole, PolicyStatement } from 'aws-cdk-lib/aws-iam';
-import { IDeliveryStream } from '@aws-cdk/aws-kinesisfirehose-alpha';
 import { ScheduleTargetBase, ScheduleTargetBaseProps } from './target';
 
 /**
@@ -9,7 +9,7 @@ import { ScheduleTargetBase, ScheduleTargetBaseProps } from './target';
 export class KinesisDataFirehosePutRecord extends ScheduleTargetBase implements IScheduleTarget {
   constructor(
     private readonly deliveryStream: IDeliveryStream,
-    private readonly props: ScheduleTargetBaseProps = {},
+    props: ScheduleTargetBaseProps = {},
   ) {
     super(props, deliveryStream.deliveryStreamArn);
   }

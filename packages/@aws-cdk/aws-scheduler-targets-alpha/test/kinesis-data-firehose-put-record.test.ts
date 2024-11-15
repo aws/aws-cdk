@@ -1,11 +1,11 @@
+import * as firehose from '@aws-cdk/aws-kinesisfirehose-alpha';
 import { ScheduleExpression, Schedule, Group } from '@aws-cdk/aws-scheduler-alpha';
 import { App, CfnResource, Duration, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { AccountRootPrincipal, Role } from 'aws-cdk-lib/aws-iam';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
-import { KinesisDataFirehosePutRecord } from '../lib';
-import * as firehose from '@aws-cdk/aws-kinesisfirehose-alpha';
 import { Construct } from 'constructs';
+import { KinesisDataFirehosePutRecord } from '../lib';
 
 describe('schedule target', () => {
   let app: App;
