@@ -657,12 +657,16 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
    */
   public readonly performanceInsightEncryptionKey?: kms.IKey;
 
+  /**
+   * The IAM role for the enhanced monitoring.
+   */
+  public readonly monitoringRole?: iam.IRole;
+
   protected readonly serverlessV2MinCapacity: number;
   protected readonly serverlessV2MaxCapacity: number;
 
   protected hasServerlessInstance?: boolean;
   protected enableDataApi?: boolean;
-  protected readonly monitoringRole?: iam.IRole;
 
   constructor(scope: Construct, id: string, props: DatabaseClusterBaseProps) {
     super(scope, id);
@@ -1479,16 +1483,6 @@ function legacyCreateInstances(cluster: DatabaseClusterNew, props: DatabaseClust
   // Get the actual subnet objects so we can depend on internet connectivity.
   const internetConnected = instanceProps.vpc.selectSubnets(instanceProps.vpcSubnets).internetConnectivityEstablished;
 
-  let monitoringRole;
-  if (props.monitoringInterval && props.monitoringInterval.toSeconds()) {
-    monitoringRole = props.monitoringRole || new Role(cluster, 'MonitoringRole', {
-      assumedBy: new ServicePrincipal('monitoring.rds.amazonaws.com'),
-      managedPolicies: [
-        ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSEnhancedMonitoringRole'),
-      ],
-    });
-  }
-
   const enablePerformanceInsights = instanceProps.enablePerformanceInsights
     || instanceProps.performanceInsightRetention !== undefined || instanceProps.performanceInsightEncryptionKey !== undefined;
   if (enablePerformanceInsights && instanceProps.enablePerformanceInsights === false) {
@@ -1545,8 +1539,8 @@ function legacyCreateInstances(cluster: DatabaseClusterNew, props: DatabaseClust
       // This is already set on the Cluster. Unclear to me whether it should be repeated or not. Better yes.
       dbSubnetGroupName: subnetGroup.subnetGroupName,
       dbParameterGroupName: instanceParameterGroupConfig?.parameterGroupName,
-      monitoringInterval: props.monitoringInterval && props.monitoringInterval.toSeconds(),
-      monitoringRoleArn: monitoringRole && monitoringRole.roleArn,
+      monitoringInterval: props.enableClusterLevelEnhancedMonitoring ? undefined : props.monitoringInterval?.toSeconds(),
+      monitoringRoleArn: props.enableClusterLevelEnhancedMonitoring ? undefined : cluster.monitoringRole?.roleArn,
       autoMinorVersionUpgrade: instanceProps.autoMinorVersionUpgrade,
       allowMajorVersionUpgrade: instanceProps.allowMajorVersionUpgrade,
       deleteAutomatedBackups: instanceProps.deleteAutomatedBackups,
