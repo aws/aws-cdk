@@ -356,6 +356,24 @@ resource handler.
 > NOTE: a new AWS Lambda handler will be created in your stack for each combination
 > of memory and storage size.
 
+## Connectivity Control
+To constraint the network connectivity of the underlying lambda function you can provide `vpc`, `subnets` and `securityGroup` properties
+
+```ts
+declare const destinationBucket: s3.Bucket;
+declare const vpc: ec2.Vpc;
+declare const subnets: ec2.SubnetSelection
+declare const securityGroups: ec2.SecurityGroup[]
+
+new s3deploy.BucketDeployment(this, 'DeployMeWithVpc', {
+  sources: [s3deploy.Source.asset(path.join(__dirname, 'content'))],
+  destinationBucket,
+  vpcSubnets,
+  securityGroups,
+  vpc,
+});
+```
+
 ## JSON-Aware Source Processing
 When using `Source.jsonData` with CDK Tokens (references to construct properties), you may need to enable the escaping option. This is particularly important when the referenced properties might contain special characters that require proper JSON escaping (like double quotes, line breaks, etc.).
 

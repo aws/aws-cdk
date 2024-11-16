@@ -266,6 +266,13 @@ export interface BucketDeploymentProps {
   readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
+   * Security group to use with the vpc and subnet.
+   *
+   * @default - the Vpc default strategy if not specified
+   */
+  readonly securityGroups?: ec2.SecurityGroup[];
+
+  /**
    * If set to true, uploads will precompute the value of `x-amz-content-sha256`
    * and include it in the signed S3 request headers.
    *
@@ -366,6 +373,7 @@ export class BucketDeployment extends Construct {
       ephemeralStorageSize: props.ephemeralStorageSize,
       vpc: props.vpc,
       vpcSubnets: props.vpcSubnets,
+      securityGroups: props.securityGroups,
       filesystem: accessPoint ? lambda.FileSystem.fromEfsAccessPoint(
         accessPoint,
         mountPath,

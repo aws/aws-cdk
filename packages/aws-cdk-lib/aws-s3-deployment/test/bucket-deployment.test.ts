@@ -1082,7 +1082,7 @@ test('deployment allows vpc to be implicitly supplied to lambda', () => {
   });
 });
 
-test('deployment allows vpc and subnets to be implicitly supplied to lambda', () => {
+test('deployment allows vpc, subnets and security groups to be explicitly supplied to lambda', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const bucket = new s3.Bucket(stack, 'Dest');
@@ -1092,6 +1092,14 @@ test('deployment allows vpc and subnets to be implicitly supplied to lambda', ()
     availabilityZone: vpc.availabilityZones[0],
     cidrBlock: vpc.vpcCidrBlock,
   });
+  const sg: ec2.SecurityGroup[] = [
+    new ec2.SecurityGroup(stack, 'sg1', {
+      vpc,
+      allowAllOutbound: false,
+      description: 'custom security group',
+      securityGroupName: 'controlled egress',
+    }),
+  ];
 
   // WHEN
   new s3deploy.BucketDeployment(stack, 'DeployWithVpc2', {
@@ -1101,6 +1109,7 @@ test('deployment allows vpc and subnets to be implicitly supplied to lambda', ()
     vpcSubnets: {
       availabilityZones: [vpc.availabilityZones[0]],
     },
+    securityGroups: sg,
   });
 
   // THEN
@@ -1109,7 +1118,7 @@ test('deployment allows vpc and subnets to be implicitly supplied to lambda', ()
       SecurityGroupIds: [
         {
           'Fn::GetAtt': [
-            'CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8a39596cb8641929fcf6a288bc9db5ab7b0f656adSecurityGroup11274779',
+            'sg15CEFF4E3',
             'GroupId',
           ],
         },
