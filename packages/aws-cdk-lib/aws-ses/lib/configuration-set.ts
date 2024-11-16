@@ -86,7 +86,7 @@ export interface ConfigurationSetProps {
    *
    * This value must be greater than or equal to 5 minutes and less than or equal to 14 hours.
    *
-   * @default - 14 hours
+   * @default undefined - SES defaults to 14 hours
    */
   readonly maxDeliveryDuration?: Duration;
 }
@@ -168,11 +168,8 @@ export class ConfigurationSet extends Resource implements IConfigurationSet {
     });
 
     if (props.maxDeliveryDuration && !Token.isUnresolved(props.maxDeliveryDuration)) {
-      if (props.maxDeliveryDuration.toMilliseconds() < Duration.seconds(1).toMilliseconds()) {
-        throw new Error(`The maximum delivery duration must be greater than or equal to 5 minutes (300 seconds), got: ${props.maxDeliveryDuration.toMilliseconds()} milliseconds.`);
-      }
-      if (props.maxDeliveryDuration.toSeconds() < Duration.minutes(5).toSeconds()) {
-        throw new Error(`The maximum delivery duration must be greater than or equal to 5 minutes (300 seconds), got: ${props.maxDeliveryDuration.toSeconds()} seconds.`);
+      if (props.maxDeliveryDuration.toMilliseconds() < Duration.minutes(5).toMilliseconds()) {
+        throw new Error(`The maximum delivery duration must be greater than or equal to 5 minutes (300_000 milliseconds), got: ${props.maxDeliveryDuration.toSeconds()} milliseconds.`);
       }
       if (props.maxDeliveryDuration.toSeconds() > Duration.hours(14).toSeconds()) {
         throw new Error(`The maximum delivery duration must be less than or equal to 14 hours (50400 seconds), got: ${props.maxDeliveryDuration.toSeconds()} seconds.`);

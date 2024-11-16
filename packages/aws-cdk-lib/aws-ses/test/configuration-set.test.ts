@@ -93,20 +93,12 @@ test('configuration set with vdmOptions not configured', () => {
 });
 
 describe('maxDeliveryDuration', () => {
-  test('invalid duration less than 1 second', () => {
+  test.each([Duration.millis(999), Duration.minutes(4)])('invalid duration less than 5 minutes %s', (maxDeliveryDuration) => {
     expect(() => {
       new ConfigurationSet(stack, 'ConfigurationSet', {
-        maxDeliveryDuration: Duration.millis(999),
+        maxDeliveryDuration,
       });
-    }).toThrow('The maximum delivery duration must be greater than or equal to 5 minutes (300 seconds), got: 999 milliseconds.');
-  });
-
-  test('invalid duration less than 5 minutes and greater than 1 second', () => {
-    expect(() => {
-      new ConfigurationSet(stack, 'ConfigurationSet', {
-        maxDeliveryDuration: Duration.minutes(4),
-      });
-    }).toThrow('The maximum delivery duration must be greater than or equal to 5 minutes (300 seconds), got: 240 seconds.');
+    }).toThrow(`The maximum delivery duration must be greater than or equal to 5 minutes (300_000 milliseconds), got: 240000 milliseconds, got: ${maxDeliveryDuration.toMilliseconds()} milliseconds.`);
   });
 
   test('invalid duration greater than 14 hours', () => {
