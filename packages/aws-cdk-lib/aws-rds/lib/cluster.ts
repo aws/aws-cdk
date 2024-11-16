@@ -249,19 +249,14 @@ interface DatabaseClusterBaseProps {
   readonly monitoringRole?: IRole;
 
   /**
-   * The interval between points when Amazon RDS collects enhanced
-   * monitoring metrics for the DB instances.
+   * Whether to enable enhanced monitoring at the cluster level.
    *
-   * @default - no enhanced monitoring
-   */
-  readonly monitoringIntervalForCluster?: Duration;
-
-  /**
-   * Role that will be used to manage DB instances monitoring.
+   * If set to true, `monitoringInterval` and `monitoringRole` are applied to not the instances, but the cluster.
+   * `monitoringInterval` is required to be set if `enableClusterLevelEnhancedMonitoring` is set to true.
    *
-   * @default - A role is automatically created for you
+   * @default - When the `monitoringInterval` is set, enhanced monitoring is enabled for each instance.
    */
-  readonly monitoringRoleForCluster?: IRole;
+  readonly enableClusterLevelEnhancedMonitoring?: boolean;
 
   /**
    * Role that will be associated with this DB cluster to enable S3 import.
@@ -662,6 +657,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 
   protected hasServerlessInstance?: boolean;
   protected enableDataApi?: boolean;
+  protected readonly monitoringRole?: iam.IRole;
 
   constructor(scope: Construct, id: string, props: DatabaseClusterBaseProps) {
     super(scope, id);
@@ -773,10 +769,10 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       : undefined;
     this.performanceInsightEncryptionKey = props.performanceInsightEncryptionKey;
 
-    // configure enhanced monitoring role for the cluster
-    let monitoringRoleForCluster = props.monitoringRoleForCluster;
-    if (!props.monitoringRoleForCluster && props.monitoringIntervalForCluster && props.monitoringIntervalForCluster.toSeconds()) {
-      monitoringRoleForCluster = new Role(this, 'MonitoringRoleForCluster', {
+    // configure enhanced monitoring role for the cluster or instance
+    this.monitoringRole = props.monitoringRole;
+    if (!props.monitoringRole && props.monitoringInterval && props.monitoringInterval.toSeconds()) {
+      this.monitoringRole = new Role(this, 'MonitoringRole', {
         assumedBy: new ServicePrincipal('monitoring.rds.amazonaws.com'),
         managedPolicies: [
           ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSEnhancedMonitoringRole'),
@@ -829,8 +825,8 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       performanceInsightsKmsKeyId: this.performanceInsightEncryptionKey?.keyArn,
       performanceInsightsRetentionPeriod: this.performanceInsightRetention,
       autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,
-      monitoringInterval: props.monitoringIntervalForCluster?.toSeconds(),
-      monitoringRoleArn: monitoringRoleForCluster?.roleArn,
+      monitoringInterval: props.enableClusterLevelEnhancedMonitoring ? props.monitoringInterval?.toSeconds() : undefined,
+      monitoringRoleArn: props.enableClusterLevelEnhancedMonitoring ? this.monitoringRole?.roleArn : undefined,
     };
   }
 
@@ -839,25 +835,15 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
    *
    * @internal
    */
-  protected _createInstances(cluster: DatabaseClusterNew, props: DatabaseClusterProps): InstanceConfig {
+  protected _createInstances(props: DatabaseClusterProps): InstanceConfig {
     const instanceEndpoints: Endpoint[] = [];
     const instanceIdentifiers: string[] = [];
     const readers: IAuroraClusterInstance[] = [];
 
-    let monitoringRole = props.monitoringRole;
-    if (!props.monitoringRole && props.monitoringInterval && props.monitoringInterval.toSeconds()) {
-      monitoringRole = new Role(cluster, 'MonitoringRole', {
-        assumedBy: new ServicePrincipal('monitoring.rds.amazonaws.com'),
-        managedPolicies: [
-          ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSEnhancedMonitoringRole'),
-        ],
-      });
-    }
-
     // need to create the writer first since writer is determined by what instance is first
     const writer = props.writer!.bind(this, this, {
-      monitoringInterval: props.monitoringInterval,
-      monitoringRole: monitoringRole,
+      monitoringInterval: props.enableClusterLevelEnhancedMonitoring ? undefined : props.monitoringInterval,
+      monitoringRole: props.enableClusterLevelEnhancedMonitoring ? undefined : this.monitoringRole,
       removalPolicy: props.removalPolicy ?? RemovalPolicy.SNAPSHOT,
       subnetGroup: this.subnetGroup,
       promotionTier: 0, // override the promotion tier so that writers are always 0
@@ -867,8 +853,8 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 
     (props.readers ?? []).forEach(instance => {
       const clusterInstance = instance.bind(this, this, {
-        monitoringInterval: props.monitoringInterval,
-        monitoringRole: monitoringRole,
+        monitoringInterval: props.enableClusterLevelEnhancedMonitoring ? undefined : props.monitoringInterval,
+        monitoringRole: props.enableClusterLevelEnhancedMonitoring ? undefined : this.monitoringRole,
         removalPolicy: props.removalPolicy ?? RemovalPolicy.SNAPSHOT,
         subnetGroup: this.subnetGroup,
       });
@@ -1235,7 +1221,7 @@ export class DatabaseCluster extends DatabaseClusterNew {
       throw new Error('writer must be provided');
     }
 
-    const createdInstances = props.writer ? this._createInstances(this, props) : legacyCreateInstances(this, props, this.subnetGroup);
+    const createdInstances = props.writer ? this._createInstances(props) : legacyCreateInstances(this, props, this.subnetGroup);
     this.instanceIdentifiers = createdInstances.instanceIdentifiers;
     this.instanceEndpoints = createdInstances.instanceEndpoints;
   }
@@ -1421,7 +1407,7 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
     if ((props.writer || props.readers) && (props.instances || props.instanceProps)) {
       throw new Error('Cannot provide clusterInstances if instances or instanceProps are provided');
     }
-    const createdInstances = props.writer ? this._createInstances(this, props) : legacyCreateInstances(this, props, this.subnetGroup);
+    const createdInstances = props.writer ? this._createInstances(props) : legacyCreateInstances(this, props, this.subnetGroup);
     this.instanceIdentifiers = createdInstances.instanceIdentifiers;
     this.instanceEndpoints = createdInstances.instanceEndpoints;
   }

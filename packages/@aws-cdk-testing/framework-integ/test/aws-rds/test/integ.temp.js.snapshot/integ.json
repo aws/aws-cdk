@@ -3,7 +3,7 @@
   "testCases": {
     "EnhancedMonitoringClusterInteg/DefaultTest": {
       "stacks": [
-        "EnhancedMonitoringClusterStack"
+        "EnhancedMonitoringClusterTestStack"
       ],
       "assertionStack": "EnhancedMonitoringClusterInteg/DefaultTest/DeployAssert",
       "assertionStackName": "EnhancedMonitoringClusterIntegDefaultTestDeployAssertBBA17BDD"

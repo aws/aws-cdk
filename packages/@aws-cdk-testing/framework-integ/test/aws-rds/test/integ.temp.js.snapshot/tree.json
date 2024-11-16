@@ -4,17 +4,17 @@
     "id": "App",
     "path": "",
     "children": {
-      "EnhancedMonitoringClusterStack": {
-        "id": "EnhancedMonitoringClusterStack",
-        "path": "EnhancedMonitoringClusterStack",
+      "EnhancedMonitoringClusterTestStack": {
+        "id": "EnhancedMonitoringClusterTestStack",
+        "path": "EnhancedMonitoringClusterTestStack",
         "children": {
           "Vpc": {
             "id": "Vpc",
-            "path": "EnhancedMonitoringClusterStack/Vpc",
+            "path": "EnhancedMonitoringClusterTestStack/Vpc",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "EnhancedMonitoringClusterStack/Vpc/Resource",
+                "path": "EnhancedMonitoringClusterTestStack/Vpc/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
                   "aws:cdk:cloudformation:props": {
@@ -25,7 +25,7 @@
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "EnhancedMonitoringClusterStack/Vpc"
+                        "value": "EnhancedMonitoringClusterTestStack/Vpc"
                       }
                     ]
                   }
@@ -37,11 +37,11 @@
               },
               "PublicSubnet1": {
                 "id": "PublicSubnet1",
-                "path": "EnhancedMonitoringClusterStack/Vpc/PublicSubnet1",
+                "path": "EnhancedMonitoringClusterTestStack/Vpc/PublicSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "EnhancedMonitoringClusterStack/Vpc/PublicSubnet1/Subnet",
+                    "path": "EnhancedMonitoringClusterTestStack/Vpc/PublicSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -66,7 +66,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "EnhancedMonitoringClusterStack/Vpc/PublicSubnet1"
+                            "value": "EnhancedMonitoringClusterTestStack/Vpc/PublicSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -81,7 +81,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "EnhancedMonitoringClusterStack/Vpc/PublicSubnet1/Acl",
+                    "path": "EnhancedMonitoringClusterTestStack/Vpc/PublicSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.4.2"
@@ -89,14 +89,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "EnhancedMonitoringClusterStack/Vpc/PublicSubnet1/RouteTable",
+                    "path": "EnhancedMonitoringClusterTestStack/Vpc/PublicSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "EnhancedMonitoringClusterStack/Vpc/PublicSubnet1"
+                            "value": "EnhancedMonitoringClusterTestStack/Vpc/PublicSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -111,7 +111,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "EnhancedMonitoringClusterStack/Vpc/PublicSubnet1/RouteTableAssociation",
+                    "path": "EnhancedMonitoringClusterTestStack/Vpc/PublicSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -130,7 +130,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "EnhancedMonitoringClusterStack/Vpc/PublicSubnet1/DefaultRoute",
+                    "path": "EnhancedMonitoringClusterTestStack/Vpc/PublicSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -150,7 +150,7 @@
                   },
                   "EIP": {
                     "id": "EIP",
-                    "path": "EnhancedMonitoringClusterStack/Vpc/PublicSubnet1/EIP",
+                    "path": "EnhancedMonitoringClusterTestStack/Vpc/PublicSubnet1/EIP",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                       "aws:cdk:cloudformation:props": {
@@ -158,7 +158,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "EnhancedMonitoringClusterStack/Vpc/PublicSubnet1"
+                            "value": "EnhancedMonitoringClusterTestStack/Vpc/PublicSubnet1"
                           }
                         ]
                       }
@@ -170,7 +170,7 @@
                   },
                   "NATGateway": {
                     "id": "NATGateway",
-                    "path": "EnhancedMonitoringClusterStack/Vpc/PublicSubnet1/NATGateway",
+                    "path": "EnhancedMonitoringClusterTestStack/Vpc/PublicSubnet1/NATGateway",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
@@ -186,7 +186,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "EnhancedMonitoringClusterStack/Vpc/PublicSubnet1"
+                            "value": "EnhancedMonitoringClusterTestStack/Vpc/PublicSubnet1"
                           }
                         ]
                       }
@@ -204,11 +204,11 @@
               },
               "PublicSubnet2": {
                 "id": "PublicSubnet2",
-                "path": "EnhancedMonitoringClusterStack/Vpc/PublicSubnet2",
+                "path": "EnhancedMonitoringClusterTestStack/Vpc/PublicSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "EnhancedMonitoringClusterStack/Vpc/PublicSubnet2/Subnet",
+                    "path": "EnhancedMonitoringClusterTestStack/Vpc/PublicSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -233,7 +233,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "EnhancedMonitoringClusterStack/Vpc/PublicSubnet2"
+                            "value": "EnhancedMonitoringClusterTestStack/Vpc/PublicSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -248,7 +248,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "EnhancedMonitoringClusterStack/Vpc/PublicSubnet2/Acl",
+                    "path": "EnhancedMonitoringClusterTestStack/Vpc/PublicSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.4.2"
@@ -256,14 +256,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "EnhancedMonitoringClusterStack/Vpc/PublicSubnet2/RouteTable",
+                    "path": "EnhancedMonitoringClusterTestStack/Vpc/PublicSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "EnhancedMonitoringClusterStack/Vpc/PublicSubnet2"
+                            "value": "EnhancedMonitoringClusterTestStack/Vpc/PublicSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -278,7 +278,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "EnhancedMonitoringClusterStack/Vpc/PublicSubnet2/RouteTableAssociation",
+                    "path": "EnhancedMonitoringClusterTestStack/Vpc/PublicSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -297,7 +297,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "EnhancedMonitoringClusterStack/Vpc/PublicSubnet2/DefaultRoute",
+                    "path": "EnhancedMonitoringClusterTestStack/Vpc/PublicSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -317,7 +317,7 @@
                   },
                   "EIP": {
                     "id": "EIP",
-                    "path": "EnhancedMonitoringClusterStack/Vpc/PublicSubnet2/EIP",
+                    "path": "EnhancedMonitoringClusterTestStack/Vpc/PublicSubnet2/EIP",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                       "aws:cdk:cloudformation:props": {
@@ -325,7 +325,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "EnhancedMonitoringClusterStack/Vpc/PublicSubnet2"
+                            "value": "EnhancedMonitoringClusterTestStack/Vpc/PublicSubnet2"
                           }
                         ]
                       }
@@ -337,7 +337,7 @@
                   },
                   "NATGateway": {
                     "id": "NATGateway",
-                    "path": "EnhancedMonitoringClusterStack/Vpc/PublicSubnet2/NATGateway",
+                    "path": "EnhancedMonitoringClusterTestStack/Vpc/PublicSubnet2/NATGateway",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
@@ -353,7 +353,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "EnhancedMonitoringClusterStack/Vpc/PublicSubnet2"
+                            "value": "EnhancedMonitoringClusterTestStack/Vpc/PublicSubnet2"
                           }
                         ]
                       }
@@ -371,11 +371,11 @@
               },
               "PrivateSubnet1": {
                 "id": "PrivateSubnet1",
-                "path": "EnhancedMonitoringClusterStack/Vpc/PrivateSubnet1",
+                "path": "EnhancedMonitoringClusterTestStack/Vpc/PrivateSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "EnhancedMonitoringClusterStack/Vpc/PrivateSubnet1/Subnet",
+                    "path": "EnhancedMonitoringClusterTestStack/Vpc/PrivateSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -400,7 +400,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "EnhancedMonitoringClusterStack/Vpc/PrivateSubnet1"
+                            "value": "EnhancedMonitoringClusterTestStack/Vpc/PrivateSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -415,7 +415,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "EnhancedMonitoringClusterStack/Vpc/PrivateSubnet1/Acl",
+                    "path": "EnhancedMonitoringClusterTestStack/Vpc/PrivateSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.4.2"
@@ -423,14 +423,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "EnhancedMonitoringClusterStack/Vpc/PrivateSubnet1/RouteTable",
+                    "path": "EnhancedMonitoringClusterTestStack/Vpc/PrivateSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "EnhancedMonitoringClusterStack/Vpc/PrivateSubnet1"
+                            "value": "EnhancedMonitoringClusterTestStack/Vpc/PrivateSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -445,7 +445,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "EnhancedMonitoringClusterStack/Vpc/PrivateSubnet1/RouteTableAssociation",
+                    "path": "EnhancedMonitoringClusterTestStack/Vpc/PrivateSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -464,7 +464,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "EnhancedMonitoringClusterStack/Vpc/PrivateSubnet1/DefaultRoute",
+                    "path": "EnhancedMonitoringClusterTestStack/Vpc/PrivateSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -490,11 +490,11 @@
               },
               "PrivateSubnet2": {
                 "id": "PrivateSubnet2",
-                "path": "EnhancedMonitoringClusterStack/Vpc/PrivateSubnet2",
+                "path": "EnhancedMonitoringClusterTestStack/Vpc/PrivateSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "EnhancedMonitoringClusterStack/Vpc/PrivateSubnet2/Subnet",
+                    "path": "EnhancedMonitoringClusterTestStack/Vpc/PrivateSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -519,7 +519,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "EnhancedMonitoringClusterStack/Vpc/PrivateSubnet2"
+                            "value": "EnhancedMonitoringClusterTestStack/Vpc/PrivateSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -534,7 +534,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "EnhancedMonitoringClusterStack/Vpc/PrivateSubnet2/Acl",
+                    "path": "EnhancedMonitoringClusterTestStack/Vpc/PrivateSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.4.2"
@@ -542,14 +542,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "EnhancedMonitoringClusterStack/Vpc/PrivateSubnet2/RouteTable",
+                    "path": "EnhancedMonitoringClusterTestStack/Vpc/PrivateSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "EnhancedMonitoringClusterStack/Vpc/PrivateSubnet2"
+                            "value": "EnhancedMonitoringClusterTestStack/Vpc/PrivateSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -564,7 +564,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "EnhancedMonitoringClusterStack/Vpc/PrivateSubnet2/RouteTableAssociation",
+                    "path": "EnhancedMonitoringClusterTestStack/Vpc/PrivateSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -583,7 +583,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "EnhancedMonitoringClusterStack/Vpc/PrivateSubnet2/DefaultRoute",
+                    "path": "EnhancedMonitoringClusterTestStack/Vpc/PrivateSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -609,14 +609,14 @@
               },
               "IGW": {
                 "id": "IGW",
-                "path": "EnhancedMonitoringClusterStack/Vpc/IGW",
+                "path": "EnhancedMonitoringClusterTestStack/Vpc/IGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::InternetGateway",
                   "aws:cdk:cloudformation:props": {
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "EnhancedMonitoringClusterStack/Vpc"
+                        "value": "EnhancedMonitoringClusterTestStack/Vpc"
                       }
                     ]
                   }
@@ -628,7 +628,7 @@
               },
               "VPCGW": {
                 "id": "VPCGW",
-                "path": "EnhancedMonitoringClusterStack/Vpc/VPCGW",
+                "path": "EnhancedMonitoringClusterTestStack/Vpc/VPCGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                   "aws:cdk:cloudformation:props": {
@@ -647,11 +647,11 @@
               },
               "RestrictDefaultSecurityGroupCustomResource": {
                 "id": "RestrictDefaultSecurityGroupCustomResource",
-                "path": "EnhancedMonitoringClusterStack/Vpc/RestrictDefaultSecurityGroupCustomResource",
+                "path": "EnhancedMonitoringClusterTestStack/Vpc/RestrictDefaultSecurityGroupCustomResource",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "EnhancedMonitoringClusterStack/Vpc/RestrictDefaultSecurityGroupCustomResource/Default",
+                    "path": "EnhancedMonitoringClusterTestStack/Vpc/RestrictDefaultSecurityGroupCustomResource/Default",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.4.2"
@@ -671,7 +671,7 @@
           },
           "LatestNodeRuntimeMap": {
             "id": "LatestNodeRuntimeMap",
-            "path": "EnhancedMonitoringClusterStack/LatestNodeRuntimeMap",
+            "path": "EnhancedMonitoringClusterTestStack/LatestNodeRuntimeMap",
             "constructInfo": {
               "fqn": "constructs.Construct",
               "version": "10.4.2"
@@ -679,11 +679,11 @@
           },
           "Custom::VpcRestrictDefaultSGCustomResourceProvider": {
             "id": "Custom::VpcRestrictDefaultSGCustomResourceProvider",
-            "path": "EnhancedMonitoringClusterStack/Custom::VpcRestrictDefaultSGCustomResourceProvider",
+            "path": "EnhancedMonitoringClusterTestStack/Custom::VpcRestrictDefaultSGCustomResourceProvider",
             "children": {
               "Staging": {
                 "id": "Staging",
-                "path": "EnhancedMonitoringClusterStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Staging",
+                "path": "EnhancedMonitoringClusterTestStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Staging",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.4.2"
@@ -691,7 +691,7 @@
               },
               "Role": {
                 "id": "Role",
-                "path": "EnhancedMonitoringClusterStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role",
+                "path": "EnhancedMonitoringClusterTestStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.4.2"
@@ -699,7 +699,7 @@
               },
               "Handler": {
                 "id": "Handler",
-                "path": "EnhancedMonitoringClusterStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler",
+                "path": "EnhancedMonitoringClusterTestStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.4.2"
@@ -713,15 +713,15 @@
           },
           "Database": {
             "id": "Database",
-            "path": "EnhancedMonitoringClusterStack/Database",
+            "path": "EnhancedMonitoringClusterTestStack/Database",
             "children": {
               "Subnets": {
                 "id": "Subnets",
-                "path": "EnhancedMonitoringClusterStack/Database/Subnets",
+                "path": "EnhancedMonitoringClusterTestStack/Database/Subnets",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "EnhancedMonitoringClusterStack/Database/Subnets/Default",
+                    "path": "EnhancedMonitoringClusterTestStack/Database/Subnets/Default",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::RDS::DBSubnetGroup",
                       "aws:cdk:cloudformation:props": {
@@ -749,11 +749,11 @@
               },
               "SecurityGroup": {
                 "id": "SecurityGroup",
-                "path": "EnhancedMonitoringClusterStack/Database/SecurityGroup",
+                "path": "EnhancedMonitoringClusterTestStack/Database/SecurityGroup",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "EnhancedMonitoringClusterStack/Database/SecurityGroup/Resource",
+                    "path": "EnhancedMonitoringClusterTestStack/Database/SecurityGroup/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                       "aws:cdk:cloudformation:props": {
@@ -783,7 +783,7 @@
               },
               "AuroraPostgreSqlDatabaseClusterEngineDefaultParameterGroup": {
                 "id": "AuroraPostgreSqlDatabaseClusterEngineDefaultParameterGroup",
-                "path": "EnhancedMonitoringClusterStack/Database/AuroraPostgreSqlDatabaseClusterEngineDefaultParameterGroup",
+                "path": "EnhancedMonitoringClusterTestStack/Database/AuroraPostgreSqlDatabaseClusterEngineDefaultParameterGroup",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.4.2"
@@ -791,11 +791,11 @@
               },
               "MonitoringRole": {
                 "id": "MonitoringRole",
-                "path": "EnhancedMonitoringClusterStack/Database/MonitoringRole",
+                "path": "EnhancedMonitoringClusterTestStack/Database/MonitoringRole",
                 "children": {
                   "ImportMonitoringRole": {
                     "id": "ImportMonitoringRole",
-                    "path": "EnhancedMonitoringClusterStack/Database/MonitoringRole/ImportMonitoringRole",
+                    "path": "EnhancedMonitoringClusterTestStack/Database/MonitoringRole/ImportMonitoringRole",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.4.2"
@@ -803,7 +803,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "EnhancedMonitoringClusterStack/Database/MonitoringRole/Resource",
+                    "path": "EnhancedMonitoringClusterTestStack/Database/MonitoringRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -848,11 +848,11 @@
               },
               "Secret": {
                 "id": "Secret",
-                "path": "EnhancedMonitoringClusterStack/Database/Secret",
+                "path": "EnhancedMonitoringClusterTestStack/Database/Secret",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "EnhancedMonitoringClusterStack/Database/Secret/Resource",
+                    "path": "EnhancedMonitoringClusterTestStack/Database/Secret/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
                       "aws:cdk:cloudformation:props": {
@@ -882,11 +882,11 @@
                   },
                   "Attachment": {
                     "id": "Attachment",
-                    "path": "EnhancedMonitoringClusterStack/Database/Secret/Attachment",
+                    "path": "EnhancedMonitoringClusterTestStack/Database/Secret/Attachment",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "EnhancedMonitoringClusterStack/Database/Secret/Attachment/Resource",
+                        "path": "EnhancedMonitoringClusterTestStack/Database/Secret/Attachment/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::SecretsManager::SecretTargetAttachment",
                           "aws:cdk:cloudformation:props": {
@@ -918,7 +918,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "EnhancedMonitoringClusterStack/Database/Resource",
+                "path": "EnhancedMonitoringClusterTestStack/Database/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::RDS::DBCluster",
                   "aws:cdk:cloudformation:props": {
@@ -982,11 +982,11 @@
               },
               "writerInstance": {
                 "id": "writerInstance",
-                "path": "EnhancedMonitoringClusterStack/Database/writerInstance",
+                "path": "EnhancedMonitoringClusterTestStack/Database/writerInstance",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "EnhancedMonitoringClusterStack/Database/writerInstance/Resource",
+                    "path": "EnhancedMonitoringClusterTestStack/Database/writerInstance/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::RDS::DBInstance",
                       "aws:cdk:cloudformation:props": {
@@ -995,6 +995,13 @@
                         },
                         "dbInstanceClass": "db.serverless",
                         "engine": "aurora-postgresql",
+                        "monitoringInterval": 5,
+                        "monitoringRoleArn": {
+                          "Fn::GetAtt": [
+                            "DatabaseMonitoringRole576991DA",
+                            "Arn"
+                          ]
+                        },
                         "promotionTier": 0
                       }
                     },
@@ -1017,7 +1024,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "EnhancedMonitoringClusterStack/BootstrapVersion",
+            "path": "EnhancedMonitoringClusterTestStack/BootstrapVersion",
             "constructInfo": {
               "fqn": "constructs.Construct",
               "version": "10.4.2"
@@ -1025,7 +1032,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "EnhancedMonitoringClusterStack/CheckBootstrapVersion",
+            "path": "EnhancedMonitoringClusterTestStack/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "constructs.Construct",
               "version": "10.4.2"

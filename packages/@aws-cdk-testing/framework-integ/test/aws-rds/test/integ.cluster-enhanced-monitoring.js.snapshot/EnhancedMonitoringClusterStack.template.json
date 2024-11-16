@@ -10,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "EnhancedMonitoringClusterTestStack/Vpc"
+      "Value": "EnhancedMonitoringClusterStack/Vpc"
      }
     ]
    }
@@ -39,7 +39,7 @@
      },
      {
       "Key": "Name",
-      "Value": "EnhancedMonitoringClusterTestStack/Vpc/PublicSubnet1"
+      "Value": "EnhancedMonitoringClusterStack/Vpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -53,7 +53,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "EnhancedMonitoringClusterTestStack/Vpc/PublicSubnet1"
+      "Value": "EnhancedMonitoringClusterStack/Vpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -94,7 +94,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "EnhancedMonitoringClusterTestStack/Vpc/PublicSubnet1"
+      "Value": "EnhancedMonitoringClusterStack/Vpc/PublicSubnet1"
      }
     ]
    }
@@ -114,7 +114,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "EnhancedMonitoringClusterTestStack/Vpc/PublicSubnet1"
+      "Value": "EnhancedMonitoringClusterStack/Vpc/PublicSubnet1"
      }
     ]
    },
@@ -147,7 +147,7 @@
      },
      {
       "Key": "Name",
-      "Value": "EnhancedMonitoringClusterTestStack/Vpc/PublicSubnet2"
+      "Value": "EnhancedMonitoringClusterStack/Vpc/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -161,7 +161,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "EnhancedMonitoringClusterTestStack/Vpc/PublicSubnet2"
+      "Value": "EnhancedMonitoringClusterStack/Vpc/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -202,7 +202,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "EnhancedMonitoringClusterTestStack/Vpc/PublicSubnet2"
+      "Value": "EnhancedMonitoringClusterStack/Vpc/PublicSubnet2"
      }
     ]
    }
@@ -222,7 +222,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "EnhancedMonitoringClusterTestStack/Vpc/PublicSubnet2"
+      "Value": "EnhancedMonitoringClusterStack/Vpc/PublicSubnet2"
      }
     ]
    },
@@ -255,7 +255,7 @@
      },
      {
       "Key": "Name",
-      "Value": "EnhancedMonitoringClusterTestStack/Vpc/PrivateSubnet1"
+      "Value": "EnhancedMonitoringClusterStack/Vpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -269,7 +269,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "EnhancedMonitoringClusterTestStack/Vpc/PrivateSubnet1"
+      "Value": "EnhancedMonitoringClusterStack/Vpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -324,7 +324,7 @@
      },
      {
       "Key": "Name",
-      "Value": "EnhancedMonitoringClusterTestStack/Vpc/PrivateSubnet2"
+      "Value": "EnhancedMonitoringClusterStack/Vpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -338,7 +338,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "EnhancedMonitoringClusterTestStack/Vpc/PrivateSubnet2"
+      "Value": "EnhancedMonitoringClusterStack/Vpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -375,7 +375,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "EnhancedMonitoringClusterTestStack/Vpc"
+      "Value": "EnhancedMonitoringClusterStack/Vpc"
      }
     ]
    }
@@ -545,7 +545,7 @@
     }
    }
   },
-  "DatabaseMonitoringRoleForCluster91F5067E": {
+  "DatabaseMonitoringRole576991DA": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -649,7 +649,7 @@
     "MonitoringInterval": 5,
     "MonitoringRoleArn": {
      "Fn::GetAtt": [
-      "DatabaseMonitoringRoleForCluster91F5067E",
+      "DatabaseMonitoringRole576991DA",
       "Arn"
      ]
     },
