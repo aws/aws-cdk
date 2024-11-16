@@ -98,7 +98,7 @@ describe('maxDeliveryDuration', () => {
       new ConfigurationSet(stack, 'ConfigurationSet', {
         maxDeliveryDuration,
       });
-    }).toThrow(`The maximum delivery duration must be greater than or equal to 5 minutes (300_000 milliseconds), got: 240000 milliseconds, got: ${maxDeliveryDuration.toMilliseconds()} milliseconds.`);
+    }).toThrow(`The maximum delivery duration must be greater than or equal to 5 minutes (300_000 milliseconds), got: ${maxDeliveryDuration.toMilliseconds()} milliseconds.`);
   });
 
   test('invalid duration greater than 14 hours', () => {
