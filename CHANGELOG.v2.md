@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.167.1](https://github.com/aws/aws-cdk/compare/v2.167.0...v2.167.1) (2024-11-14)
+
+
+### Bug Fixes
+
+* **cli:** failure to get credentials when session token is not set ([#32134](https://github.com/aws/aws-cdk/issues/32134)) ([425efbc](https://github.com/aws/aws-cdk/commit/425efbc3625d4512b83225dcb1d1c155d13b4b9e)), closes [#32120](https://github.com/aws/aws-cdk/issues/32120)
+* **cli:** region specified in `~/.aws/credentials` is ignored ([#32133](https://github.com/aws/aws-cdk/issues/32133)) ([9859f33](https://github.com/aws/aws-cdk/commit/9859f33a11fb385419c611945bd9bb171b458dad)), closes [#32130](https://github.com/aws/aws-cdk/issues/32130)
+
+## [2.167.0](https://github.com/aws/aws-cdk/compare/v2.166.0...v2.167.0) (2024-11-13)
+
+
+### Features
+
+* **cli:** upgrade aws-sdk to sdkv3 ([#31702](https://github.com/aws/aws-cdk/issues/31702)) ([5bc0662](https://github.com/aws/aws-cdk/commit/5bc0662bacf7eca814f09b7560d77a68e3f5ddea)), closes [#25870](https://github.com/aws/aws-cdk/issues/25870) [#26292](https://github.com/aws/aws-cdk/issues/26292) [#20956](https://github.com/aws/aws-cdk/issues/20956) [#24744](https://github.com/aws/aws-cdk/issues/24744) [#27265](https://github.com/aws/aws-cdk/issues/27265)
+* **elasticloadbalancingv2:** enable zonal shift for network load balancer ([#31990](https://github.com/aws/aws-cdk/issues/31990)) ([497abdc](https://github.com/aws/aws-cdk/commit/497abdc72482173c45a674ab24f2c18dbdcfaf93)), closes [#31983](https://github.com/aws/aws-cdk/issues/31983)
+* **kms:** support KEY_AGREEMENT for keyUsage ([#30993](https://github.com/aws/aws-cdk/issues/30993)) ([2323877](https://github.com/aws/aws-cdk/commit/23238774aa3ca9a80dd406a43e51c3a6bbb68d42)), closes [#30989](https://github.com/aws/aws-cdk/issues/30989)
+* **lambda:** add Python 3.13 runtime ([#32054](https://github.com/aws/aws-cdk/issues/32054)) ([e0ebcfe](https://github.com/aws/aws-cdk/commit/e0ebcfe8821d97788356798512a5c4e1e508cd7c))
+* **lambda:** add supportsSnapStart config to dotnet8 and python 3.12 ([#32112](https://github.com/aws/aws-cdk/issues/32112)) ([53f4713](https://github.com/aws/aws-cdk/commit/53f47133fd8ce1bfdd77eb81c197665006b35105))
+* **lambda:** support for customer managed encryption (CMCMK) ([#32072](https://github.com/aws/aws-cdk/issues/32072)) ([2f16415](https://github.com/aws/aws-cdk/commit/2f16415c45fcbd11103788ed0aece10e521c8e59))
+* update L1 CloudFormation resource definitions ([#32090](https://github.com/aws/aws-cdk/issues/32090)) ([6303b72](https://github.com/aws/aws-cdk/commit/6303b72580e0381dcbb291ad7f424cfd4b5de329))
+* **rds:** support minor engine versions for oracle ([#32058](https://github.com/aws/aws-cdk/issues/32058)) ([3d72b63](https://github.com/aws/aws-cdk/commit/3d72b63b0f2cf0649f5e1c5d0469faf51441db49))
+* **rds:** support minor versions for RDS for SQL Server ([#32055](https://github.com/aws/aws-cdk/issues/32055)) ([8c80bf8](https://github.com/aws/aws-cdk/commit/8c80bf8a6c0e8c1113135bb6c91b8432ad562c47))
+* **service-catalog:** allow Product Stack to override analytics reporting and stack descriptions ([#31985](https://github.com/aws/aws-cdk/issues/31985)) ([d8ad02a](https://github.com/aws/aws-cdk/commit/d8ad02a956a07e917919e2f4666f6488ca6592e6)), closes [#31924](https://github.com/aws/aws-cdk/issues/31924)
+
+
+### Bug Fixes
+
+* **ecr:** allow creating repository uri to use tokens like cfn params ([#32053](https://github.com/aws/aws-cdk/issues/32053)) ([5648199](https://github.com/aws/aws-cdk/commit/5648199440e4ff89d1f2869865752ed140c256db)), closes [#31860](https://github.com/aws/aws-cdk/issues/31860)
+
 ## [2.166.0](https://github.com/aws/aws-cdk/compare/v2.165.0...v2.166.0) (2024-11-06)
 
 
