@@ -51,7 +51,7 @@ interface DatabaseClusterBaseProps {
   /**
    * The instance to use for the cluster writer
    *
-   * @default required if instanceProps is not provided
+   * @default - required if instanceProps is not provided
    */
   readonly writer?: IClusterInstance;
 
@@ -102,7 +102,7 @@ interface DatabaseClusterBaseProps {
   /**
    * Security group.
    *
-   * @default a new security group is created.
+   * @default - a new security group is created.
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
 
