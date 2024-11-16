@@ -234,15 +234,20 @@ interface DatabaseClusterBaseProps {
   readonly cloudwatchLogsRetentionRole?: IRole;
 
   /**
-   * The interval between points when Amazon RDS collects enhanced
-   * monitoring metrics for the DB instances.
+   * The interval between points when Amazon RDS collects enhanced monitoring metrics.
+   *
+   * If you enable `enableClusterLevelEnhancedMonitoring`, this property is applied to the cluster,
+   * otherwise it is applied to the instances.
    *
    * @default - no enhanced monitoring
    */
   readonly monitoringInterval?: Duration;
 
   /**
-   * Role that will be used to manage DB instances monitoring.
+   * Role that will be used to manage DB monitoring.
+   *
+   * If you enable `enableClusterLevelEnhancedMonitoring`, this property is applied to the cluster,
+   * otherwise it is applied to the instances.
    *
    * @default - A role is automatically created for you
    */
@@ -778,6 +783,13 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
           ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSEnhancedMonitoringRole'),
         ],
       });
+    }
+
+    if (props.enableClusterLevelEnhancedMonitoring && !props.monitoringInterval) {
+      throw new Error('`monitoringInterval` must be set when `enableClusterLevelEnhancedMonitoring` is true.');
+    }
+    if (props.monitoringInterval && [0, 1, 5, 10, 15, 30, 60].indexOf(props.monitoringInterval.toSeconds()) === -1) {
+      throw new Error(`'monitoringInterval' must be one of 0, 1, 5, 10, 15, 30, or 60 seconds, got: ${props.monitoringInterval.toSeconds()} seconds.`);
     }
 
     this.newCfnProps = {
