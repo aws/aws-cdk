@@ -160,15 +160,12 @@ class LoadBalancerProvider {
     }
     return (await this.describeTags(loadBalancers.map((lb) => lb.LoadBalancerArn!)))
       .filter((tagDescription) => {
-        return (
-          tagDescription.Tags?.length === this.filter.loadBalancerTags?.length &&
-          tagDescription.Tags?.filter(
-            (tag) =>
-              !this.filter.loadBalancerTags!.some((filter) => {
-                return filter.key === tag.Key && filter.value === tag.Value;
-              }),
-          ).length === 0
-        );
+        // For every tag in the filter, there is some tag in the LB that matches it.
+        // In other words, the set of tags in the filter is a subset of the set of tags in the LB.
+        return this.filter.loadBalancerTags!.every((filter) => {
+          return tagDescription.Tags?.some((tag) =>
+            filter.key === tag.Key && filter.value === tag.Value);
+        });
       })
       .flatMap((tag) => loadBalancers.filter((loadBalancer) => tag.ResourceArn === loadBalancer.LoadBalancerArn));
   }
