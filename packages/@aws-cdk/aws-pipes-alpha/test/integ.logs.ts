@@ -1,21 +1,15 @@
 import { randomUUID } from 'crypto';
+import { DeliveryStream, DestinationBindOptions, DestinationConfig, IDestination } from '@aws-cdk/aws-kinesisfirehose-alpha';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
-import { Code } from 'aws-cdk-lib/aws-lambda';
-import { DynamicInput, EnrichmentParametersConfig, IEnrichment, IPipe, ISource, ITarget, InputTransformation, Pipe, SourceConfig, TargetConfig } from '../lib';
+import { Construct } from 'constructs';
+import { CloudwatchLogsLogDestination, FirehoseLogDestination, IPipe, ISource, ITarget, IncludeExecutionData, InputTransformation, LogLevel, Pipe, S3LogDestination, SourceConfig, TargetConfig } from '../lib';
 import { name } from '../package.json';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-pipes');
+const stack = new cdk.Stack(app, 'aws-cdk-pipes-logs');
 const sourceQueue = new cdk.aws_sqs.Queue(stack, 'SourceQueue');
 const targetQueue = new cdk.aws_sqs.Queue(stack, 'TargetQueue');
-
-const enrichmentHandlerCode = 'exports.handler = async (event) => { return event.map( record => ({...record, body: `${record.body}-${record.name}-${record.static}` }) ) };';
-const enrichmentLambda = new cdk.aws_lambda.Function(stack, 'EnrichmentLambda', {
-  code: Code.fromInline(enrichmentHandlerCode),
-  handler: 'index.handler',
-  runtime: cdk.aws_lambda.Runtime.NODEJS_LATEST,
-});
 
 // When this module is promoted from alpha, TestSource and TestTarget should
 // be replaced with SqsSource from @aws-cdk/aws-pipes-sources-alpha and
@@ -60,37 +54,58 @@ class TestTarget implements ITarget {
   }
 }
 
-class TestEnrichment implements IEnrichment {
-  enrichmentArn: string;
+const logGroup = new cdk.aws_logs.LogGroup(stack, 'LogGroup', {
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+});
 
-  inputTransformation: InputTransformation = InputTransformation.fromObject({
-    body: DynamicInput.fromEventPath('$.body'),
-    name: DynamicInput.pipeName,
-    static: 'static',
-  });
-  constructor(private readonly lambda: cdk.aws_lambda.Function) {
-    this.enrichmentArn = lambda.functionArn;
-  }
-  bind(pipe: IPipe): EnrichmentParametersConfig {
+const firehoseBucket = new cdk.aws_s3.Bucket(stack, 'FirehoseBucket', {
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+  autoDeleteObjects: true,
+});
+
+const role = new cdk.aws_iam.Role(stack, 'Role', {
+  assumedBy: new cdk.aws_iam.ServicePrincipal('firehose.amazonaws.com'),
+});
+
+const mockS3Destination: IDestination = {
+  bind(_scope: Construct, _options: DestinationBindOptions): DestinationConfig {
+    const bucketGrant = firehoseBucket.grantReadWrite(role);
     return {
-      enrichmentParameters: {
-        inputTemplate: this.inputTransformation.bind(pipe).inputTemplate,
+      extendedS3DestinationConfiguration: {
+        bucketArn: firehoseBucket.bucketArn,
+        roleArn: role.roleArn,
       },
+      dependables: [bucketGrant],
     };
-  }
-  grantInvoke(pipeRole: cdk.aws_iam.IRole): void {
-    this.lambda.grantInvoke(pipeRole);
-  }
-}
+  },
+};
 
-const pipe = new Pipe(stack, 'Pipe', {
+const deliveryStream = new DeliveryStream(stack, 'Delivery Stream', {
+  destination: mockS3Destination,
+});
+
+const logBucket = new cdk.aws_s3.Bucket(stack, 'LogBucket', {
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+  autoDeleteObjects: true,
+});
+
+new Pipe(stack, 'Pipe', {
   pipeName: 'BaseTestPipe',
   source: new TestSource(sourceQueue),
   target: new TestTarget(targetQueue),
-  enrichment: new TestEnrichment(enrichmentLambda),
+  logLevel: LogLevel.TRACE,
+  logIncludeExecutionData: [IncludeExecutionData.ALL],
+  logDestinations: [
+    new CloudwatchLogsLogDestination(logGroup),
+    new FirehoseLogDestination(deliveryStream),
+    new S3LogDestination({
+      bucket: logBucket,
+      prefix: 'aws-pipes',
+    }),
+  ],
 });
 
-const test = new IntegTest(app, 'integtest-pipe-sqs-to-sqs', {
+const test = new IntegTest(app, 'integtest-pipes-logs', {
   testCases: [stack],
 });
 
@@ -103,9 +118,9 @@ const putMessageOnQueue = test.assertions.awsApiCall('SQS', 'sendMessage', {
 putMessageOnQueue.next(test.assertions.awsApiCall('SQS', 'receiveMessage', {
   QueueUrl: targetQueue.queueUrl,
 })).expect(ExpectedResult.objectLike({
-  Messages: [{ Body: uniqueIdentifier+ '-' + pipe.pipeName + '-static' }],
+  Messages: [{ Body: uniqueIdentifier }],
 })).waitForAssertions({
-  totalTimeout: cdk.Duration.minutes(2),
+  totalTimeout: cdk.Duration.minutes(1),
   interval: cdk.Duration.seconds(15),
 });
 

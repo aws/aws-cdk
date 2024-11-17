@@ -56,15 +56,16 @@ Messages from the source are put into the body of the target message.
 
 ## Source
 
-A source is a AWS Service that is polled. The following Sources are
-possible:
+A source is a AWS Service that is polled. The following sources are possible:
 
 - [Amazon DynamoDB stream](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-dynamodb.html)
 - [Amazon Kinesis stream](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-kinesis.html)
 - [Amazon MQ broker](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-mq.html)
 - [Amazon MSK stream](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-msk.html)
-- [Self managed Apache Kafka stream](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-kafka.html)
 - [Amazon SQS queue](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-sqs.html)
+- [Apache Kafka stream](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-kafka.html)
+
+Currently, DynamoDB, Kinesis, and SQS are supported. Others will be added in the future.
 
 ### Example source
 
@@ -260,8 +261,7 @@ This transformation forwards the static text to the target.
 
 ## Enrichment
 
-In the enrichment step the (un)filtered payloads from the source can be used to
-invoke one of the following services
+In the enrichment step the (un)filtered payloads from the source can be used to invoke one of the following services:
 
 - API destination
 - Amazon API Gateway

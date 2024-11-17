@@ -85,7 +85,7 @@ export interface S3LogDestinationProps {
    * The format for the log records.
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-s3logdestination.html#cfn-pipes-pipe-s3logdestination-outputformat
-   * @default `S3OutputFormat.PLAIN`
+   * @default `S3OutputFormat.JSON`
    */
   readonly outputFormat?: S3OutputFormat;
   /**
@@ -228,6 +228,6 @@ export class S3LogDestination implements ILogDestination {
   }
 
   grantPush(pipeRole: IRole): void {
-    this.parameters.bucket.grantWrite(pipeRole);
+    this.parameters.bucket.grantPut(pipeRole);
   }
 }

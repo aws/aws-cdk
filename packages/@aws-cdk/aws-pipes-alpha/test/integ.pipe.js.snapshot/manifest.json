@@ -19,7 +19,7 @@
         "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a0882ca72ac00e81246a02b16d5f72dad7033ba50074410b210cc89ee0d67610.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/02491ca7780e5362a6aee7d3a330609411f89fb72c9c72174dcb83dfd162afe1.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -57,96 +57,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "EnrichmentLambda3D6CE785"
-          }
-        ],
-        "/aws-cdk-pipes/LogGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LogGroupF5B46931"
-          }
-        ],
-        "/aws-cdk-pipes/FirehoseBucket/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FirehoseBucket407758F1"
-          }
-        ],
-        "/aws-cdk-pipes/FirehoseBucket/Policy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FirehoseBucketPolicy005BD2F0"
-          }
-        ],
-        "/aws-cdk-pipes/FirehoseBucket/AutoDeleteObjectsCustomResource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FirehoseBucketAutoDeleteObjectsCustomResourceD3E44B23"
-          }
-        ],
-        "/aws-cdk-pipes/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
-          }
-        ],
-        "/aws-cdk-pipes/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
-          {
-            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
-            "data": true
-          }
-        ],
-        "/aws-cdk-pipes/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
-          }
-        ],
-        "/aws-cdk-pipes/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
-          }
-        ],
-        "/aws-cdk-pipes/Role/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Role1ABCC5F0"
-          }
-        ],
-        "/aws-cdk-pipes/Role/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "RoleDefaultPolicy5FFB7DAB"
-          }
-        ],
-        "/aws-cdk-pipes/Delivery Stream No Source Or Encryption Key/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DeliveryStreamNoSourceOrEncryptionKey0E4AAB82"
-          }
-        ],
-        "/aws-cdk-pipes/@aws-cdk--aws-kinesisfirehose.CidrBlocks": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "awscdkawskinesisfirehoseCidrBlocks"
-          }
-        ],
-        "/aws-cdk-pipes/LogBucket/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LogBucketCC3B17E8"
-          }
-        ],
-        "/aws-cdk-pipes/LogBucket/Policy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LogBucketPolicy900DBE48"
-          }
-        ],
-        "/aws-cdk-pipes/LogBucket/AutoDeleteObjectsCustomResource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LogBucketAutoDeleteObjectsCustomResource7762F42C"
           }
         ],
         "/aws-cdk-pipes/Pipe/Role/Resource": [
@@ -218,7 +128,7 @@
         "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/31e42f6a1c635a2bdd80416746d5c7cd464c315f5573bf8e57533fec1e804419.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1d614461dff125e359c0ddd9a03d2f5c5b68d9162b64c503468d92d7af629726.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -235,10 +145,10 @@
         "integtestpipesqstosqsDefaultTestDeployAssert94C62343.assets"
       ],
       "metadata": {
-        "/integtest-pipe-sqs-to-sqs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage54a649188d4edab8dcb47cfd83d6ca31/Default/Default": [
+        "/integtest-pipe-sqs-to-sqs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage55b156b050e90e27d33388579b0f7e00/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallSQSsendMessage54a649188d4edab8dcb47cfd83d6ca31"
+            "data": "AwsApiCallSQSsendMessage55b156b050e90e27d33388579b0f7e00"
           }
         ],
         "/integtest-pipe-sqs-to-sqs/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
