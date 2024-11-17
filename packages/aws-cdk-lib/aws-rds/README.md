@@ -1410,7 +1410,7 @@ declare const vpc: ec2.Vpc;
 declare const monitoringRole: iam.Role;
 
 new rds.DatabaseCluster(this, 'Cluster', {
-  engine: rds.DatabaseClusterEngine.auroraPostgres({ version: rds.AuroraPostgresEngineVersion.VER_16_1 }),,
+  engine: rds.DatabaseClusterEngine.auroraPostgres({ version: rds.AuroraPostgresEngineVersion.VER_16_1 }),
   writer: rds.ClusterInstance.serverlessV2('writerInstance'),
   vpc,
   monitoringInterval: Duration.seconds(5),
