@@ -147,6 +147,7 @@ export class Runtime {
 
   /**
    * The Python 3.8 runtime (python3.8)
+   * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest Python runtime.
    */
   public static readonly PYTHON_3_8 = new Runtime('python3.8', RuntimeFamily.PYTHON, {
     supportsInlineCode: true,
