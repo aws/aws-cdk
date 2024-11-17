@@ -199,6 +199,52 @@ describe('load balancer context provider plugin', () => {
     });
   });
 
+  test('looks up by tags - query by subset', async () => {
+    // GIVEN
+    mockElasticLoadBalancingV2Client
+      .on(DescribeLoadBalancersCommand)
+      .resolves({
+        LoadBalancers: [
+          {
+            IpAddressType: 'ipv4',
+            LoadBalancerArn: 'arn:load-balancer2',
+            DNSName: 'dns2.example.com',
+            CanonicalHostedZoneId: 'Z1234',
+            SecurityGroups: ['sg-1234'],
+            VpcId: 'vpc-1234',
+            Type: 'application',
+          },
+        ],
+      })
+      .on(DescribeTagsCommand)
+      .resolves({
+        TagDescriptions: [
+          {
+            ResourceArn: 'arn:load-balancer2',
+            Tags: [
+              // Load balancer has two tags...
+              { Key: 'some', Value: 'tag' },
+              { Key: 'second', Value: 'tag2' },
+            ],
+          },
+        ],
+      });
+    const provider = new LoadBalancerContextProviderPlugin(mockSDK);
+
+    // WHEN
+    const result = await provider.getValue({
+      account: '1234',
+      region: 'us-east-1',
+      loadBalancerType: LoadBalancerType.APPLICATION,
+      loadBalancerTags: [
+        // ...but we are querying for only one of them
+        { key: 'second', value: 'tag2' },
+      ],
+    });
+
+    expect(result.loadBalancerArn).toEqual('arn:load-balancer2');
+  });
+
   test('filters by type', async () => {
     // GIVEN
     mockElasticLoadBalancingV2Client
