@@ -749,7 +749,7 @@ class NotificationArnsStack extends cdk.Stack {
     super(parent, id, {
       ...props,
       // comma separated list of arns. 
-      // empty strings means empty list.
+      // empty string means empty list.
       // undefined means undefined
       notificationArns: arnsFromEnv == '' ? [] : (arnsFromEnv ? arnsFromEnv.split(',') : undefined)
     });
