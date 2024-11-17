@@ -1386,16 +1386,16 @@ If you want to enable enhanced monitoring at the cluster level, you can set the 
 declare const vpc: ec2.Vpc;
 // Enable Enhanced Monitoring for all of the instances in the cluster
 new rds.DatabaseCluster(this, 'Cluster', {
-  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_39 }),
-  instanceType: ec2.InstanceType.of(ec2.InstanceClass.R7G, ec2.InstanceSize.LARGE),
+  engine: rds.DatabaseClusterEngine.auroraPostgres({ version: rds.AuroraPostgresEngineVersion.VER_16_1 }),,
+  writer: rds.ClusterInstance.serverlessV2('writerInstance'),
   vpc,
   monitoringInterval: Duration.seconds(5),
 });
 
 // Enable Enhanced Monitoring at the cluster level
 new rds.DatabaseCluster(this, 'Cluster', {
-  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_39 }),
-  instanceType: ec2.InstanceType.of(ec2.InstanceClass.R7G, ec2.InstanceSize.LARGE),
+  engine: rds.DatabaseClusterEngine.auroraPostgres({ version: rds.AuroraPostgresEngineVersion.VER_16_1 }),,
+  writer: rds.ClusterInstance.serverlessV2('writerInstance'),
   vpc,
   monitoringInterval: Duration.seconds(5),
   enableClusterLevelEnhancedMonitoring: true,
@@ -1410,8 +1410,8 @@ declare const vpc: ec2.Vpc;
 declare const monitoringRole: iam.Role;
 
 new rds.DatabaseCluster(this, 'Cluster', {
-  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_39 }),
-  instanceType: ec2.InstanceType.of(ec2.InstanceClass.R7G, ec2.InstanceSize.LARGE),
+  engine: rds.DatabaseClusterEngine.auroraPostgres({ version: rds.AuroraPostgresEngineVersion.VER_16_1 }),,
+  writer: rds.ClusterInstance.serverlessV2('writerInstance'),
   vpc,
   monitoringInterval: Duration.seconds(5),
   monitoringRole,
