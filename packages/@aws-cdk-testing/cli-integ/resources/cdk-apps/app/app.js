@@ -30,6 +30,7 @@ if (process.env.PACKAGE_LAYOUT_VERSION === '1') {
     aws_lambda: lambda,
     aws_ecr_assets: docker,
     aws_appsync: appsync,
+    aws_cloudformation: cfn,
     Stack
   } = require('aws-cdk-lib');
 }
@@ -748,6 +749,16 @@ class NotificationArnPropStack extends cdk.Stack {
     new sns.Topic(this, 'topic');
   }
 }
+
+class EmptyStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    new cdk.CfnWaitConditionHandle(this, 'WaitConditionHandle');
+
+  }
+}
+
 class AppSyncHotswapStack extends cdk.Stack {
   constructor(parent, id, props) {
     super(parent, id, props);
@@ -812,6 +823,7 @@ switch (stackSet) {
     new MissingSSMParameterStack(app, `${stackPrefix}-missing-ssm-parameter`, { env: defaultEnv });
 
     new LambdaStack(app, `${stackPrefix}-lambda`);
+    new EmptyStack(app, `${stackPrefix}-empty`);
 
     // This stack is used to test diff with large templates by creating a role with a ton of metadata
     new IamRolesStack(app, `${stackPrefix}-iam-roles`);

@@ -370,15 +370,29 @@ export class CdkToolkit {
         }
       }
 
-      let notificationArns: string[] = [];
-      notificationArns = notificationArns.concat(options.notificationArns ?? []);
-      notificationArns = notificationArns.concat(stack.notificationArns);
+      // let notificationArns: string[] = [];
+      // notificationArns = notificationArns.concat(options.notificationArns ?? []);
+      // notificationArns = notificationArns.concat(stack.notificationArns ?? []);
 
-      notificationArns.map((arn) => {
-        if (!validateSnsTopicArn(arn)) {
-          throw new Error(`Notification arn ${arn} is not a valid arn for an SNS topic`);
+      // notificationArns.map((arn) => {
+      //   if (!validateSnsTopicArn(arn)) {
+      //     throw new Error(`Notification arn ${arn} is not a valid arn for an SNS topic`);
+      //   }
+      // });
+      // Following are the same semantics we apply with respect to Notification ARNs (dictated by the SDK)
+      //
+      //  - undefined  =>  cdk ignores it, as if it wasn't supported (allows external management).
+      //  - []:        =>  cdk manages it, and the user wants to wipe it out.
+      //  - ['arn-1']  =>  cdk manages it, and the user wants to set it to ['arn-1'].
+      const notificationArns = (!!options.notificationArns || !!stack.notificationArns)
+        ? (options.notificationArns ?? []).concat(stack.notificationArns ?? [])
+        : undefined;
+
+      for (const notificationArn of notificationArns ?? []) {
+        if (!validateSnsTopicArn(notificationArn)) {
+          throw new Error(`Notification arn ${notificationArn} is not a valid arn for an SNS topic`);
         }
-      });
+      }
 
       const stackIndex = stacks.indexOf(stack) + 1;
       print('%s: deploying... [%s/%s]', chalk.bold(stack.displayName), stackIndex, stackCollection.stackCount);

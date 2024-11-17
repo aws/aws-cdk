@@ -7,6 +7,7 @@ import {
   DescribeStacksCommand,
   GetTemplateCommand,
   ListChangeSetsCommand,
+  UpdateStackCommand,
 } from '@aws-sdk/client-cloudformation';
 import { DescribeServicesCommand } from '@aws-sdk/client-ecs';
 import {
@@ -667,6 +668,44 @@ integTest('deploy with notification ARN as prop', withDefaultFixture(async (fixt
     const describeResponse = await fixture.aws.cloudFormation.send(
       new DescribeStacksCommand({
         StackName: fixture.fullStackName('notification-arn-prop'),
+      }),
+    );
+    expect(describeResponse.Stacks?.[0].NotificationARNs).toEqual([topicArn]);
+  } finally {
+    await fixture.aws.sns.send(
+      new DeleteTopicCommand({
+        TopicArn: topicArn,
+      }),
+    );
+  }
+}));
+
+// https://github.com/aws/aws-cdk/issues/32153
+integTest('deploy preserves existing notification arns when not specified', withDefaultFixture(async (fixture) => {
+  const topicName = `${fixture.stackNamePrefix}-topic`;
+
+  const response = await fixture.aws.sns.send(new CreateTopicCommand({ Name: topicName }));
+  const topicArn = response.TopicArn!;
+
+  try {
+    await fixture.cdkDeploy('empty');
+
+    // add notification arns externally to cdk
+    await fixture.aws.cloudFormation.send(
+      new UpdateStackCommand({
+        StackName: fixture.fullStackName('empty'),
+        UsePreviousTemplate: true,
+        NotificationARNs: [topicArn],
+      }),
+    );
+
+    // deploy again
+    await fixture.cdkDeploy('empty');
+
+    // make sure the notification arn is preserved
+    const describeResponse = await fixture.aws.cloudFormation.send(
+      new DescribeStacksCommand({
+        StackName: fixture.fullStackName('empty'),
       }),
     );
     expect(describeResponse.Stacks?.[0].NotificationARNs).toEqual([topicArn]);
