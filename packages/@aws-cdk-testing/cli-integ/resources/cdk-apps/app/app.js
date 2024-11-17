@@ -30,7 +30,6 @@ if (process.env.PACKAGE_LAYOUT_VERSION === '1') {
     aws_lambda: lambda,
     aws_ecr_assets: docker,
     aws_appsync: appsync,
-    aws_cloudformation: cfn,
     Stack
   } = require('aws-cdk-lib');
 }
@@ -743,16 +742,17 @@ class BuiltinLambdaStack extends cdk.Stack {
   }
 }
 
-class NotificationArnPropStack extends cdk.Stack {
+class NotificationArnsStack extends cdk.Stack {
   constructor(parent, id, props) {
-    super(parent, id, props);
-    new sns.Topic(this, 'topic');
-  }
-}
 
-class EmptyStack extends cdk.Stack {
-  constructor(parent, id, props) {
-    super(parent, id, props);
+    const arnsFromEnv = process.env.INTEG_NOTIFICATION_ARNS;
+    super(parent, id, {
+      ...props,
+      // comma separated list of arns. 
+      // empty strings means empty list.
+      // undefined means undefined
+      notificationArns: arnsFromEnv == '' ? [] : (arnsFromEnv ? arnsFromEnv.split(',') : undefined)
+    });
 
     new cdk.CfnWaitConditionHandle(this, 'WaitConditionHandle');
 
@@ -823,7 +823,6 @@ switch (stackSet) {
     new MissingSSMParameterStack(app, `${stackPrefix}-missing-ssm-parameter`, { env: defaultEnv });
 
     new LambdaStack(app, `${stackPrefix}-lambda`);
-    new EmptyStack(app, `${stackPrefix}-empty`);
 
     // This stack is used to test diff with large templates by creating a role with a ton of metadata
     new IamRolesStack(app, `${stackPrefix}-iam-roles`);
@@ -842,9 +841,7 @@ switch (stackSet) {
     new DockerInUseStack(app, `${stackPrefix}-docker-in-use`);
     new DockerStackWithCustomFile(app, `${stackPrefix}-docker-with-custom-file`);
 
-    new NotificationArnPropStack(app, `${stackPrefix}-notification-arn-prop`, {
-      notificationArns: [`arn:aws:sns:${defaultEnv.region}:${defaultEnv.account}:${stackPrefix}-test-topic-prop`],
-    });
+    new NotificationArnsStack(app, `${stackPrefix}-notification-arns`);
 
     // SSO stacks
     new SsoInstanceAccessControlConfig(app, `${stackPrefix}-sso-access-control`);

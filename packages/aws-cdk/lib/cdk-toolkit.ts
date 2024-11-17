@@ -370,15 +370,6 @@ export class CdkToolkit {
         }
       }
 
-      // let notificationArns: string[] = [];
-      // notificationArns = notificationArns.concat(options.notificationArns ?? []);
-      // notificationArns = notificationArns.concat(stack.notificationArns ?? []);
-
-      // notificationArns.map((arn) => {
-      //   if (!validateSnsTopicArn(arn)) {
-      //     throw new Error(`Notification arn ${arn} is not a valid arn for an SNS topic`);
-      //   }
-      // });
       // Following are the same semantics we apply with respect to Notification ARNs (dictated by the SDK)
       //
       //  - undefined  =>  cdk ignores it, as if it wasn't supported (allows external management).
