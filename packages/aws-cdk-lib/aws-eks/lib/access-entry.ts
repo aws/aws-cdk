@@ -259,9 +259,26 @@ export enum AccessEntryType {
 }
 
 /**
+ * Represents the Properties that can be granted
+ */
+export interface AccessEntryGrants {
+  /**
+   * The access policies that define the permissions and scope for the access entry.
+   * @default - No access policies are provided
+   */
+  readonly accessPolicies?: IAccessPolicy[];
+  /**
+   * The kubernetes groups you want to associate with this access policy.
+   * Those groups can be used as subjects in (Cluster)RoleBindings.
+   * @default - No kubernetes groups are provided
+   */
+  readonly kubernetesGroups?: string[];
+}
+
+/**
  * Represents the properties required to create an Amazon EKS access entry.
  */
-export interface AccessEntryProps {
+export interface AccessEntryProps extends AccessEntryGrants {
   /**
    * The name of the AccessEntry.
    *
@@ -279,20 +296,9 @@ export interface AccessEntryProps {
    */
   readonly cluster: ICluster;
   /**
-   * The access policies that define the permissions and scope for the access entry.
-   * @default - No access policies are provided
-   */
-  readonly accessPolicies?: IAccessPolicy[];
-  /**
    * The Amazon Resource Name (ARN) of the principal (user or role) to associate the access entry with.
    */
   readonly principal: string;
-  /**
-   * The kubernetes groups you want to associate with this access policy.
-   * Those groups can be used as subjects in (Cluster)RoleBindings.
-   * @default - No kubernetes groups are provided
-   */
-  readonly kubernetesGroups?: string[];
 }
 
 /**
@@ -330,7 +336,7 @@ export class AccessEntry extends Resource implements IAccessEntry {
   private cluster: ICluster;
   private principal: string;
   private accessPolicies: IAccessPolicy[];
-  private kubernetesGroups?: string[];
+  private kubernetesGroups: string[];
 
   constructor(scope: Construct, id: string, props: AccessEntryProps ) {
     super(scope, id);
@@ -338,7 +344,7 @@ export class AccessEntry extends Resource implements IAccessEntry {
     this.cluster = props.cluster;
     this.principal = props.principal;
     this.accessPolicies = props.accessPolicies ?? [];
-    this.kubernetesGroups = props.kubernetesGroups;
+    this.kubernetesGroups = props.kubernetesGroups ?? [];
     const accessPolicies = Lazy.any({
       produce: () => {
         if (this.accessPolicies.length === 0) {
@@ -354,12 +360,21 @@ export class AccessEntry extends Resource implements IAccessEntry {
       },
     });
 
+    const kubernetesGroups = Lazy.list({
+      produce: () => {
+        if (this.kubernetesGroups.length === 0) {
+          return undefined;
+        }
+        return this.kubernetesGroups;
+      },
+    });
+
     const resource = new CfnAccessEntry(this, 'Resource', {
       clusterName: this.cluster.clusterName,
       principalArn: this.principal,
       type: props.accessEntryType,
       accessPolicies,
-      kubernetesGroups: this.kubernetesGroups,
+      kubernetesGroups,
     });
     this.accessEntryName = this.getResourceNameAttribute(resource.ref);
     this.accessEntryArn = this.getResourceArnAttribute(resource.attrAccessEntryArn, {
@@ -375,5 +390,13 @@ export class AccessEntry extends Resource implements IAccessEntry {
   public addAccessPolicies(newAccessPolicies: IAccessPolicy[]): void {
     // add newAccessPolicies to this.accessPolicies
     this.accessPolicies.push(...newAccessPolicies);
+  }
+  /**
+   * Add the access policies for this entry.
+   * @param newKubernetesGroups - The new kubernetes groups to add.
+   */
+  public addKubernetesGroups(newKubernetesGroups: string[]): void {
+    // add newKubernetesGroups to this.accessPolicies
+    this.kubernetesGroups.push(...newKubernetesGroups);
   }
 }
