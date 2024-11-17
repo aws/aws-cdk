@@ -10,6 +10,7 @@ class TestStack extends Stack {
     const versions = [
       opensearch.EngineVersion.OPENSEARCH_2_13,
       opensearch.EngineVersion.OPENSEARCH_2_15,
+      opensearch.EngineVersion.OPENSEARCH_2_17,
     ];
 
     // deploy opensearch domain with minimal configuration
