@@ -292,7 +292,7 @@ export class GarbageCollector {
         debug(`${untaggables.length} assets to untag`);
 
         if (this.permissionToDelete && deletables.length > 0) {
-          await this.confirmationPrompt(printer, deletables);
+          await this.confirmationPrompt(printer, deletables, 'image');
           await this.parallelDeleteEcr(ecr, repo, deletables, printer);
         }
 
@@ -370,7 +370,7 @@ export class GarbageCollector {
         debug(`${untaggables.length} assets to untag`);
 
         if (this.permissionToDelete && deletables.length > 0) {
-          await this.confirmationPrompt(printer, deletables);
+          await this.confirmationPrompt(printer, deletables, 'object');
           await this.parallelDeleteS3(s3, bucket, deletables, printer);
         }
 
@@ -722,12 +722,13 @@ export class GarbageCollector {
     } while (continuationToken);
   }
 
-  private async confirmationPrompt(printer: ProgressPrinter, deletables: GcAsset[]) {
+  private async confirmationPrompt(printer: ProgressPrinter, deletables: GcAsset[], type: string) {
     if (this.confirm) {
+      const typeName = `${type}${deletables.length === 1 ? '' : 's'}`;
       const message = [
-        `Found ${deletables.length} assets to delete based off of the following criteria:`,
-        `- assets have been isolated for > ${this.props.rollbackBufferDays} days`,
-        `- assets were created > ${this.props.createdBufferDays} days ago`,
+        `Found ${deletables.length} ${typeName} to delete based off of the following criteria:`,
+        `- ${typeName} have been isolated for > ${this.props.rollbackBufferDays} days`,
+        `- ${typeName} were created > ${this.props.createdBufferDays} days ago`,
         '',
         'Delete this batch (yes/no/delete-all)?',
       ].join('\n');
