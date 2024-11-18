@@ -270,7 +270,7 @@ export interface BucketDeploymentProps {
    *
    * @default - the Vpc default strategy if not specified
    */
-  readonly securityGroups?: ec2.SecurityGroup[];
+  readonly securityGroups?: ec2.ISecurityGroup[];
 
   /**
    * If set to true, uploads will precompute the value of `x-amz-content-sha256`
