@@ -19,7 +19,7 @@
         "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/18086832cdc4e400ef2ed8b1685720b0b9dfb2c42eebe9da6ca8dc097d530c06.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c593cb22174c1c4d68553e7d6feb8961dce6f29331738530e334d3595a58e935.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -50,13 +50,19 @@
         "/aws-cdk-appsync-alias-integ/api/DomainName": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "apiDomainNameBBFE36A4"
+            "data": "apiDomainNameBBFE36A4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-appsync-alias-integ/api/DomainAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "apiDomainAssociation1CF2F52A"
+            "data": "apiDomainAssociation1CF2F52A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-appsync-alias-integ/api/DefaultApiKey": [
@@ -68,7 +74,10 @@
         "/aws-cdk-appsync-alias-integ/Alias/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Alias325C5727"
+            "data": "Alias325C5727",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-appsync-alias-integ/AWSCloudFrontPartitionHostedZoneIdMap": [

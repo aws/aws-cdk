@@ -53,7 +53,7 @@ if (!hostedZoneId) throw new Error('For this test you must provide your own Host
 const app = new App();
 const testCase = new TestStack(app, 'aws-cdk-appsync-alias-integ', { certificateArn, domainName, hostedZoneId });
 new IntegTest(app, 'appsync-domain-name', {
-  enableLookups: false,
+  enableLookups: true,
   regions: ['us-east-1'],
   stackUpdateWorkflow: false,
   testCases: [testCase],

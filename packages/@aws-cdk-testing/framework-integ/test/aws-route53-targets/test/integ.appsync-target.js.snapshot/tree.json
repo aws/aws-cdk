@@ -61,7 +61,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::AppSync::DomainName",
                   "aws:cdk:cloudformation:props": {
-                    "certificateArn": "arn:aws:acm:us-east-1:123456789012:certificate/a1b2c3d4-efa5-6789-bc12-3456d789e123",
+                    "certificateArn": "arn:aws:acm:test-region:12345678:certificate/86468209-a272-595d-b831-0efb6421265z",
                     "description": {
                       "Fn::Join": [
                         "",
@@ -76,7 +76,7 @@
                         ]
                       ]
                     },
-                    "domainName": "my.sample.domain.name"
+                    "domainName": "*.example.com"
                   }
                 },
                 "constructInfo": {
@@ -96,7 +96,7 @@
                         "ApiId"
                       ]
                     },
-                    "domainName": "my.sample.domain.name"
+                    "domainName": "*.example.com"
                   }
                 },
                 "constructInfo": {
@@ -172,8 +172,8 @@
                         ]
                       }
                     },
-                    "hostedZoneId": "Z012345678A901BCD2EFG",
-                    "name": "my.sample.domain.name.",
+                    "hostedZoneId": "Z23ABC4XYZL05B",
+                    "name": "*.example.com.",
                     "type": "A"
                   }
                 },
