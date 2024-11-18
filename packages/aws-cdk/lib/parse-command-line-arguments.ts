@@ -355,7 +355,7 @@ export function parseCommandLineArguments(
         })
         .option('notification-arns', {
           type: 'array',
-          desc: 'ARNs of SNS topics that CloudFormation will notify with stack related events',
+          desc: "ARNs of SNS topics that CloudFormation will notify with stack related events. These will be added to ARNs specified with the 'notificationArns' stack property.",
           nargs: 1,
           requiresArg: true,
         })
