@@ -52,6 +52,15 @@ export interface IRepository extends IResource {
   readonly repositoryUri: string;
 
   /**
+   * The URI of this repository's registry:
+   *
+   *    ACCOUNT.dkr.ecr.REGION.amazonaws.com
+   *
+   * @attribute
+   */
+  readonly registryUri: string;
+
+  /**
    * Returns the URI of the repository for a certain tag. Can be used in `docker push/pull`.
    *
    *    ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY[:TAG]
@@ -196,6 +205,17 @@ export abstract class RepositoryBase extends Resource implements IRepository {
    */
   public get repositoryUri() {
     return this.repositoryUriForTag();
+  }
+
+  /**
+   * The URI of this repository's registry:
+   *
+   *    ACCOUNT.dkr.ecr.REGION.amazonaws.com
+   *
+   */
+  public get registryUri(): string {
+    const parts = this.stack.splitArn(this.repositoryArn, ArnFormat.SLASH_RESOURCE_NAME);
+    return `${parts.account}.dkr.ecr.${parts.region}.${this.stack.urlSuffix}`;
   }
 
   /**
