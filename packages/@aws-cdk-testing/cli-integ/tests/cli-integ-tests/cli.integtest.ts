@@ -7,6 +7,8 @@ import {
   DescribeStacksCommand,
   GetTemplateCommand,
   ListChangeSetsCommand,
+  UpdateStackCommand,
+  waitUntilStackUpdateComplete,
 } from '@aws-sdk/client-cloudformation';
 import { DescribeServicesCommand } from '@aws-sdk/client-ecs';
 import {
@@ -633,14 +635,14 @@ integTest(
     const topicArn = response.TopicArn!;
 
     try {
-      await fixture.cdkDeploy('test-2', {
+      await fixture.cdkDeploy('notification-arns', {
         options: ['--notification-arns', topicArn],
       });
 
       // verify that the stack we deployed has our notification ARN
       const describeResponse = await fixture.aws.cloudFormation.send(
         new DescribeStacksCommand({
-          StackName: fixture.fullStackName('test-2'),
+          StackName: fixture.fullStackName('notification-arns'),
         }),
       );
       expect(describeResponse.Stacks?.[0].NotificationARNs).toEqual([topicArn]);
@@ -661,12 +663,17 @@ integTest('deploy with notification ARN as prop', withDefaultFixture(async (fixt
   const topicArn = response.TopicArn!;
 
   try {
-    await fixture.cdkDeploy('notification-arn-prop');
+    await fixture.cdkDeploy('notification-arns', {
+      modEnv: {
+        INTEG_NOTIFICATION_ARNS: topicArn,
+
+      },
+    });
 
     // verify that the stack we deployed has our notification ARN
     const describeResponse = await fixture.aws.cloudFormation.send(
       new DescribeStacksCommand({
-        StackName: fixture.fullStackName('notification-arn-prop'),
+        StackName: fixture.fullStackName('notification-arns'),
       }),
     );
     expect(describeResponse.Stacks?.[0].NotificationARNs).toEqual([topicArn]);
@@ -674,6 +681,133 @@ integTest('deploy with notification ARN as prop', withDefaultFixture(async (fixt
     await fixture.aws.sns.send(
       new DeleteTopicCommand({
         TopicArn: topicArn,
+      }),
+    );
+  }
+}));
+
+// https://github.com/aws/aws-cdk/issues/32153
+integTest('deploy preserves existing notification arns when not specified', withDefaultFixture(async (fixture) => {
+  const topicName = `${fixture.stackNamePrefix}-topic`;
+
+  const response = await fixture.aws.sns.send(new CreateTopicCommand({ Name: topicName }));
+  const topicArn = response.TopicArn!;
+
+  try {
+    await fixture.cdkDeploy('notification-arns');
+
+    // add notification arns externally to cdk
+    await fixture.aws.cloudFormation.send(
+      new UpdateStackCommand({
+        StackName: fixture.fullStackName('notification-arns'),
+        UsePreviousTemplate: true,
+        NotificationARNs: [topicArn],
+      }),
+    );
+
+    await waitUntilStackUpdateComplete(
+      {
+        client: fixture.aws.cloudFormation,
+        maxWaitTime: 600,
+      },
+      { StackName: fixture.fullStackName('notification-arns') },
+    );
+
+    // deploy again
+    await fixture.cdkDeploy('notification-arns');
+
+    // make sure the notification arn is preserved
+    const describeResponse = await fixture.aws.cloudFormation.send(
+      new DescribeStacksCommand({
+        StackName: fixture.fullStackName('notification-arns'),
+      }),
+    );
+    expect(describeResponse.Stacks?.[0].NotificationARNs).toEqual([topicArn]);
+  } finally {
+    await fixture.aws.sns.send(
+      new DeleteTopicCommand({
+        TopicArn: topicArn,
+      }),
+    );
+  }
+}));
+
+integTest('deploy deletes ALL notification arns when empty array is passed', withDefaultFixture(async (fixture) => {
+  const topicName = `${fixture.stackNamePrefix}-topic`;
+
+  const response = await fixture.aws.sns.send(new CreateTopicCommand({ Name: topicName }));
+  const topicArn = response.TopicArn!;
+
+  try {
+    await fixture.cdkDeploy('notification-arns', {
+      modEnv: {
+        INTEG_NOTIFICATION_ARNS: topicArn,
+      },
+    });
+
+    // make sure the arn was added
+    let describeResponse = await fixture.aws.cloudFormation.send(
+      new DescribeStacksCommand({
+        StackName: fixture.fullStackName('notification-arns'),
+      }),
+    );
+    expect(describeResponse.Stacks?.[0].NotificationARNs).toEqual([topicArn]);
+
+    // deploy again with empty array
+    await fixture.cdkDeploy('notification-arns', {
+      modEnv: {
+        INTEG_NOTIFICATION_ARNS: '',
+      },
+    });
+
+    // make sure the arn was deleted
+    describeResponse = await fixture.aws.cloudFormation.send(
+      new DescribeStacksCommand({
+        StackName: fixture.fullStackName('notification-arns'),
+      }),
+    );
+    expect(describeResponse.Stacks?.[0].NotificationARNs).toEqual([]);
+  } finally {
+    await fixture.aws.sns.send(
+      new DeleteTopicCommand({
+        TopicArn: topicArn,
+      }),
+    );
+  }
+}));
+
+integTest('deploy with notification ARN as prop and flag', withDefaultFixture(async (fixture) => {
+  const topic1Name = `${fixture.stackNamePrefix}-topic1`;
+  const topic2Name = `${fixture.stackNamePrefix}-topic1`;
+
+  const topic1Arn = (await fixture.aws.sns.send(new CreateTopicCommand({ Name: topic1Name }))).TopicArn!;
+  const topic2Arn = (await fixture.aws.sns.send(new CreateTopicCommand({ Name: topic2Name }))).TopicArn!;
+
+  try {
+    await fixture.cdkDeploy('notification-arns', {
+      modEnv: {
+        INTEG_NOTIFICATION_ARNS: topic1Arn,
+
+      },
+      options: ['--notification-arns', topic2Arn],
+    });
+
+    // verify that the stack we deployed has our notification ARN
+    const describeResponse = await fixture.aws.cloudFormation.send(
+      new DescribeStacksCommand({
+        StackName: fixture.fullStackName('notification-arns'),
+      }),
+    );
+    expect(describeResponse.Stacks?.[0].NotificationARNs).toEqual([topic1Arn, topic2Arn]);
+  } finally {
+    await fixture.aws.sns.send(
+      new DeleteTopicCommand({
+        TopicArn: topic1Arn,
+      }),
+    );
+    await fixture.aws.sns.send(
+      new DeleteTopicCommand({
+        TopicArn: topic2Arn,
       }),
     );
   }
