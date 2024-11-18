@@ -138,7 +138,6 @@ declare const myPool: ses.IDedicatedIpPool;
 
 new ses.ConfigurationSet(this, 'ConfigurationSet', {
   customTrackingRedirectDomain: 'track.cdk.dev',
-  suppressionReasons: ses.SuppressionReasons.COMPLAINTS_ONLY,
   tlsPolicy: ses.ConfigurationSetTlsPolicy.REQUIRE,
   dedicatedIpPool: myPool,
 });
@@ -153,6 +152,42 @@ declare const myTopic: sns.Topic;
 myConfigurationSet.addEventDestination('ToSns', {
   destination: ses.EventDestination.snsTopic(myTopic),
 })
+```
+
+### Override account-level suppression list settings
+
+You can customize account-level suppression list separately for different configuration sets by overriding it
+with configuration set-level suppression.
+
+For details, see [Using configuration set-level suppression to override your account-level suppression list](https://docs.aws.amazon.com/ses/latest/dg/sending-email-suppression-list-config-level.html).
+
+By default, the configuration set uses your account-level suppression list settings.
+
+You can disable account-level suppression list by specifying `disableSuppressionList` to true. Email sent with this configuration set will not use any suppression settings at all.
+
+``` ts
+new ses.ConfigurationSet(this, 'ConfigurationSet', {
+  disableSuppressionList: true,
+});
+```
+
+You can also override account level settings with configuration set-level suppression enabled. Email sent with this configuration set will only use the suppression conditions you enabled for it (bounces, complaints, or bounces and complaints) - regardless of what your account-level suppression list settings are, it will override them.
+
+``` ts
+// Only bouncs will be suppressed.
+new ses.ConfigurationSet(this, 'ConfigurationSet', {
+  suppressionReasons: ses.SuppressionReasons.BOUNCES_ONLY,
+});
+
+// Only complaints will be suppressed.
+new ses.ConfigurationSet(this, 'ConfigurationSet', {
+  suppressionReasons: ses.SuppressionReasons.COMPLAINTS_ONLY,
+});
+
+// Both bounces and complaints will be suppressed.
+new ses.ConfigurationSet(this, 'ConfigurationSet', {
+  suppressionReasons: ses.SuppressionReasons.BOUNCES_AND_COMPLAINTS,
+});
 ```
 
 ### Email identity
