@@ -67,6 +67,14 @@ export interface ConfigurationSetProps {
   readonly suppressionReasons?: SuppressionReasons;
 
   /**
+   * If true, account-level suppression list is disabled; email sent with this configuration set
+   * will not use any suppression settings at all
+   *
+   * @default false
+   */
+  readonly disableSuppressionList?: boolean;
+
+  /**
    * The custom subdomain that is used to redirect email recipients to the
    * Amazon SES event tracking domain
    *
@@ -158,6 +166,10 @@ export class ConfigurationSet extends Resource implements IConfigurationSet {
       physicalName: props.configurationSetName,
     });
 
+    if (props.disableSuppressionList && props.suppressionReasons) {
+      throw new Error('When disableSuppressionList is true, suppressionReasons must not be specified.');
+    }
+
     const configurationSet = new CfnConfigurationSet(this, 'Resource', {
       deliveryOptions: undefinedIfNoKeys({
         sendingPoolName: props.dedicatedIpPool?.dedicatedIpPoolName,
@@ -171,7 +183,7 @@ export class ConfigurationSet extends Resource implements IConfigurationSet {
         sendingEnabled: props.sendingEnabled,
       }),
       suppressionOptions: undefinedIfNoKeys({
-        suppressedReasons: renderSuppressedReasons(props.suppressionReasons),
+        suppressedReasons: props.disableSuppressionList ? [] : renderSuppressedReasons(props.suppressionReasons),
       }),
       trackingOptions: undefinedIfNoKeys({
         customRedirectDomain: props.customTrackingRedirectDomain,
@@ -183,8 +195,7 @@ export class ConfigurationSet extends Resource implements IConfigurationSet {
         guardianOptions: props.vdmOptions?.optimizedSharedDelivery !== undefined ? {
           optimizedSharedDelivery: booleanToEnabledDisabled(props.vdmOptions?.optimizedSharedDelivery),
         } : undefined,
-      },
-      ),
+      }),
     });
 
     this.configurationSetName = configurationSet.ref;
