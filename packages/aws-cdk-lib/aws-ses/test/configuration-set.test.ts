@@ -125,6 +125,16 @@ describe('configuration set with account-level suppression list overrides', () =
     });
   });
 
+  test('enable account-level suppression list explicitly', () => {
+    new ConfigurationSet(stack, 'ConfigurationSet', {
+      disableSuppressionList: false,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::SES::ConfigurationSet', {
+      SuppressionOptions: Match.absent(),
+    });
+  });
+
   test('override suppressionReasons to BOUNCES only', () => {
     new ConfigurationSet(stack, 'ConfigurationSet', {
       suppressionReasons: SuppressionReasons.BOUNCES_ONLY,
