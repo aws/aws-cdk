@@ -1,7 +1,12 @@
 {
  "Resources": {
   "ConfigurationSet3DD38186": {
-   "Type": "AWS::SES::ConfigurationSet"
+   "Type": "AWS::SES::ConfigurationSet",
+   "Properties": {
+    "DeliveryOptions": {
+     "MaxDeliverySeconds": 600
+    }
+   }
   },
   "ConfigurationSetSns63B38980": {
    "Type": "AWS::SES::ConfigurationSetEventDestination",
