@@ -257,8 +257,8 @@ The code snippet below creates an event rule with a delivery stream as a target
 called every hour by EventBridge Scheduler with a custom payload.
 
 ```ts
-import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
-declare const deliveryStream: firehose.CfnDeliveryStream;
+import * as firehose from '@aws-cdk/aws-kinesisfirehose-alpha';
+declare const deliveryStream: firehose.IDeliveryStream;
 
 const payload = {
   Data: "record",
