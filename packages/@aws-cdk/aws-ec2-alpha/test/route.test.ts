@@ -516,13 +516,10 @@ describe('EC2 Routing', () => {
 
 describe('VPCPeeringConnection', () => {
 
-  let stack: cdk.Stack;
-  /*
-  // Uncomment when lookup is implemented
   let stackA: cdk.Stack;
   let stackB: cdk.Stack;
   let stackC: cdk.Stack;
-  */
+
   let vpcA: vpc.VpcV2;
   let vpcB: vpc.VpcV2;
   let vpcC: vpc.VpcV2;
@@ -534,23 +531,9 @@ describe('VPCPeeringConnection', () => {
       },
     });
 
-    stack = new cdk.Stack(app, 'VpcStack' );
-    vpcA = new vpc.VpcV2(stack, 'VpcA', {
-      primaryAddressBlock: vpc.IpAddresses.ipv4('10.0.0.0/16'),
-      secondaryAddressBlocks: [vpc.IpAddresses.ipv4('10.1.0.0/16', { cidrBlockName: 'TempSecondaryBlock' })],
-    });
-    vpcB = new vpc.VpcV2(stack, 'VpcB', {
-      primaryAddressBlock: vpc.IpAddresses.ipv4('10.2.0.0/16'),
-    });
-    vpcC = new vpc.VpcV2(stack, 'VpcC', {
-      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
-    });
-
-    /*
-    // Uncomment when lookup is implemented
     stackA = new cdk.Stack(app, 'VpcStackA', { env: { account: '234567890123', region: 'us-east-1' } });
     stackB = new cdk.Stack(app, 'VpcStackB', { env: { account: '123456789012', region: 'us-east-1' } });
-    stackC = new cdk.Stack(app, 'VpcStackC', { env: { account: '123456789012', region: 'us-west-2' } });
+    stackC = new cdk.Stack(app, 'VpcStackC', { env: { account: '123456789012', region: 'us-west-2' }, crossRegionReferences: true });
 
     vpcA = new vpc.VpcV2(stackA, 'VpcA', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.0.0.0/16'),
@@ -562,18 +545,21 @@ describe('VPCPeeringConnection', () => {
     vpcC = new vpc.VpcV2(stackC, 'VpcC', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
     });
-    */
+
   });
 
-  // eslint-disable-next-line jest/no-commented-out-tests
-  /*
-  // Test cases currently can't be used until the lookup function is implemented
-  // TODO: Lookup the acceptorVPC for the corresponding stack in each test case
-
   test('Creates a cross account VPC peering connection', () => {
+
+    const importedVpcB = vpc.VpcV2.fromVpcV2Attributes(stackA, 'VpcB', {
+      vpcId: 'mockVpcBId', //cross account stack references are not supported
+      vpcCidrBlock: '10.2.0.0/16',
+      region: vpcB.env.region,
+      ownerAccountId: '123456789012',
+    });
+
     new route.VPCPeeringConnection(stackA, 'TestPeeringConnection', {
       requestorVpc: vpcA,
-      acceptorVpc: vpcB,
+      acceptorVpc: importedVpcB,
       peerRoleArn: 'arn:aws:iam::012345678910:role/VpcPeeringRole',
     });
     const template = Template.fromStack(stackA);
@@ -582,45 +568,48 @@ describe('VPCPeeringConnection', () => {
       VpcId: {
         'Fn::GetAtt': ['VpcAAD85CA4C', 'VpcId'],
       },
-      PeerVpcId: {
-        'Fn::GetAtt': ['VpcB98A08B07', 'VpcId'],
-      },
-      PeerOwnerId: '012345678910',
+      PeerVpcId: 'mockVpcBId',
+      PeerOwnerId: '123456789012',
       PeerRegion: 'us-east-1',
     });
   });
 
   test('Creates a cross region VPC peering connection', () => {
+
+    const importedVpcC = vpc.VpcV2.fromVpcV2Attributes(stackA, 'VpcB', {
+      vpcId: 'mockVpcCId', //cross account stack references are not supported
+      vpcCidrBlock: '10.3.0.0/16',
+      region: vpcC.env.region,
+      ownerAccountId: '123456789012',
+    });
+
     new route.VPCPeeringConnection(stackB, 'TestCrossRegionPeeringConnection', {
       requestorVpc: vpcB,
-      acceptorVpc: vpcC,
+      acceptorVpc: importedVpcC,
     });
 
     Template.fromStack(stackB).hasResourceProperties('AWS::EC2::VPCPeeringConnection', {
       VpcId: {
         'Fn::GetAtt': ['VpcB98A08B07', 'VpcId'],
       },
-      PeerVpcId: {
-        'Fn::GetAtt': ['VpcC211819BA', 'VpcId'],
-      },
-      PeerOwnerId: '012345678910',
+      PeerVpcId: 'mockVpcCId',
+      PeerOwnerId: '123456789012',
       PeerRegion: 'us-west-2',
     });
   });
 
   test('Throws error when peerRoleArn is not provided for cross-account peering', () => {
     expect(() => {
-      new route.VPCPeeringConnection(stack, 'TestCrossAccountPeeringConnection', {
+      new route.VPCPeeringConnection(stackA, 'TestCrossAccountPeeringConnection', {
         requestorVpc: vpcA,
         acceptorVpc: vpcB,
       });
     }).toThrow(/Cross account VPC peering requires peerRoleArn/);
   });
-  */
 
   test('Throws error when peerRoleArn is provided for same account peering', () => {
     expect(() => {
-      new route.VPCPeeringConnection(stack, 'TestPeeringConnection', {
+      new route.VPCPeeringConnection(stackB, 'TestPeeringConnection', {
         requestorVpc: vpcB,
         acceptorVpc: vpcC,
         peerRoleArn: 'arn:aws:iam::123456789012:role/unnecessary-role',
@@ -630,21 +619,21 @@ describe('VPCPeeringConnection', () => {
 
   test('CIDR block overlap with secondary CIDR block should throw error', () => {
     expect(() => {
-      new route.VPCPeeringConnection(stack, 'TestPeering', {
+      new route.VPCPeeringConnection(stackA, 'TestPeering', {
         requestorVpc: vpcA,
         acceptorVpc: vpcC,
-        // peerRoleArn: 'arn:aws:iam::012345678910:role/VpcPeeringRole',
+        peerRoleArn: 'arn:aws:iam::012345678910:role/VpcPeeringRole',
       });
     }).toThrow(/CIDR block should not overlap with each other for establishing a peering connection/);
   });
 
   test('CIDR block overlap with primary CIDR block should throw error', () => {
-    const vpcD = new vpc.VpcV2(stack, 'VpcD', {
+    const vpcD = new vpc.VpcV2(stackA, 'VpcD', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.0.0.0/16'),
     });
 
     expect(() => {
-      new route.VPCPeeringConnection(stack, 'TestPeering', {
+      new route.VPCPeeringConnection(stackA, 'TestPeering', {
         requestorVpc: vpcA,
         acceptorVpc: vpcD,
       });
