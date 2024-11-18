@@ -723,12 +723,15 @@ export class GarbageCollector {
   }
 
   private async confirmationPrompt(printer: ProgressPrinter, deletables: GcAsset[], type: string) {
+    const pluralize = (name: string, count: number): string => {
+      return count === 1 ? name : `${name}s`;
+    } 
+
     if (this.confirm) {
-      const typeName = `${type}${deletables.length === 1 ? '' : 's'}`;
       const message = [
-        `Found ${deletables.length} ${typeName} to delete based off of the following criteria:`,
-        `- ${typeName} have been isolated for > ${this.props.rollbackBufferDays} days`,
-        `- ${typeName} were created > ${this.props.createdBufferDays} days ago`,
+        `Found ${deletables.length} ${pluralize(type, deletables.length)} to delete based off of the following criteria:`,
+        `- ${type}s have been isolated for > ${this.props.rollbackBufferDays} days`,
+        `- ${type}s were created > ${this.props.createdBufferDays} days ago`,
         '',
         'Delete this batch (yes/no/delete-all)?',
       ].join('\n');
