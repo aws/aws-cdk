@@ -124,7 +124,7 @@ export async function isHotswappableAppSyncChange(
                 ...sdkRequestObject,
                 functionId: functionId,
               }),
-            5,
+            1000,
             'ConcurrentModificationException',
           );
         } else if (isGraphQLSchema) {
