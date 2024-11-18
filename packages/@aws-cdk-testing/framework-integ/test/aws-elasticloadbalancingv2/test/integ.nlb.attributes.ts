@@ -16,10 +16,9 @@ new elbv2.NetworkLoadBalancer(stack, 'NLB', {
   crossZoneEnabled: true,
   deletionProtection: false,
   clientRoutingPolicy: elbv2.ClientRoutingPolicy.PARTIAL_AVAILABILITY_ZONE_AFFINITY,
+  zonalShift: true,
 });
 
 new integ.IntegTest(app, 'nlb-attlibutes-integ', {
   testCases: [stack],
 });
-
-app.synth();

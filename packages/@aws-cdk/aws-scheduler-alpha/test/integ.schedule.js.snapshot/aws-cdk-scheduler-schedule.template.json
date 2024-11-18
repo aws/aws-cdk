@@ -1,54 +1,9 @@
 {
  "Resources": {
-  "FunctionServiceRole675BB04A": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-       ]
-      ]
-     }
-    ]
-   }
-  },
-  "Function76856677": {
-   "Type": "AWS::Lambda::Function",
-   "Properties": {
-    "Code": {
-     "ZipFile": "foo"
-    },
-    "Handler": "index.handler",
-    "Role": {
-     "Fn::GetAtt": [
-      "FunctionServiceRole675BB04A",
-      "Arn"
-     ]
-    },
-    "Runtime": "nodejs18.x"
-   },
-   "DependsOn": [
-    "FunctionServiceRole675BB04A"
-   ]
+  "ScheduleTargetQueueFA42B954": {
+   "Type": "AWS::SQS::Queue",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "Role1ABCC5F0": {
    "Type": "AWS::IAM::Role",
@@ -74,11 +29,20 @@
      "Statement": [
       {
        "Action": [
-        "kms:Decrypt",
-        "kms:Encrypt",
-        "kms:GenerateDataKey*",
-        "kms:ReEncrypt*"
+        "sqs:GetQueueAttributes",
+        "sqs:GetQueueUrl",
+        "sqs:SendMessage"
        ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "ScheduleTargetQueueFA42B954",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "kms:Decrypt",
        "Effect": "Allow",
        "Resource": {
         "Fn::GetAtt": [
@@ -98,39 +62,34 @@
     ]
    }
   },
-  "NamedGroupA3ABC879": {
-   "Type": "AWS::Scheduler::ScheduleGroup",
-   "Properties": {
-    "Name": "TestGroup"
-   },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
-  },
-  "UnnamedGroupBE3E48EE": {
-   "Type": "AWS::Scheduler::ScheduleGroup",
-   "Properties": {
-    "Name": "awscdkschedulerschedule-UnnamedGroup-97DBE50D"
-   },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
-  },
-  "DefaultSchedule597B0B2C": {
+  "ScheduleToSendMessageToQueueF9F96D90": {
    "Type": "AWS::Scheduler::Schedule",
    "Properties": {
+    "Description": "test description from the ScheduleToSendMessageToQueue",
     "FlexibleTimeWindow": {
      "Mode": "OFF"
     },
-    "ScheduleExpression": "rate(12 hours)",
+    "ScheduleExpression": "rate(1 minute)",
     "ScheduleExpressionTimezone": "Etc/UTC",
     "State": "ENABLED",
     "Target": {
      "Arn": {
       "Fn::GetAtt": [
-       "Function76856677",
+       "ScheduleTargetQueueFA42B954",
        "Arn"
       ]
      },
-     "Input": "\"Input Text\"",
+     "Input": {
+      "Fn::Join": [
+       "",
+       [
+        "valueA-",
+        {
+         "Ref": "AWS::Region"
+        }
+       ]
+      ]
+     },
      "RetryPolicy": {
       "MaximumEventAgeInSeconds": 180,
       "MaximumRetryAttempts": 3
@@ -142,140 +101,6 @@
       ]
      }
     }
-   }
-  },
-  "NamedGroupScheduleD7EEFEBC": {
-   "Type": "AWS::Scheduler::Schedule",
-   "Properties": {
-    "FlexibleTimeWindow": {
-     "Mode": "OFF"
-    },
-    "GroupName": "TestGroup",
-    "ScheduleExpression": "rate(12 hours)",
-    "ScheduleExpressionTimezone": "Etc/UTC",
-    "State": "ENABLED",
-    "Target": {
-     "Arn": {
-      "Fn::GetAtt": [
-       "Function76856677",
-       "Arn"
-      ]
-     },
-     "Input": "\"Input Text\"",
-     "RetryPolicy": {
-      "MaximumEventAgeInSeconds": 180,
-      "MaximumRetryAttempts": 3
-     },
-     "RoleArn": {
-      "Fn::GetAtt": [
-       "Role1ABCC5F0",
-       "Arn"
-      ]
-     }
-    }
-   }
-  },
-  "UnnamedGroupSchedule19260E9B": {
-   "Type": "AWS::Scheduler::Schedule",
-   "Properties": {
-    "FlexibleTimeWindow": {
-     "Mode": "OFF"
-    },
-    "GroupName": "awscdkschedulerschedule-UnnamedGroup-97DBE50D",
-    "ScheduleExpression": "rate(12 hours)",
-    "ScheduleExpressionTimezone": "Etc/UTC",
-    "State": "ENABLED",
-    "Target": {
-     "Arn": {
-      "Fn::GetAtt": [
-       "Function76856677",
-       "Arn"
-      ]
-     },
-     "Input": "\"Input Text\"",
-     "RetryPolicy": {
-      "MaximumEventAgeInSeconds": 180,
-      "MaximumRetryAttempts": 3
-     },
-     "RoleArn": {
-      "Fn::GetAtt": [
-       "Role1ABCC5F0",
-       "Arn"
-      ]
-     }
-    }
-   }
-  },
-  "DisabledScheduleA1DF7F0F": {
-   "Type": "AWS::Scheduler::Schedule",
-   "Properties": {
-    "FlexibleTimeWindow": {
-     "Mode": "OFF"
-    },
-    "ScheduleExpression": "rate(12 hours)",
-    "ScheduleExpressionTimezone": "Etc/UTC",
-    "State": "DISABLED",
-    "Target": {
-     "Arn": {
-      "Fn::GetAtt": [
-       "Function76856677",
-       "Arn"
-      ]
-     },
-     "Input": "\"Input Text\"",
-     "RetryPolicy": {
-      "MaximumEventAgeInSeconds": 180,
-      "MaximumRetryAttempts": 3
-     },
-     "RoleArn": {
-      "Fn::GetAtt": [
-       "Role1ABCC5F0",
-       "Arn"
-      ]
-     }
-    }
-   }
-  },
-  "TargetOverrideScheduleFF8CB184": {
-   "Type": "AWS::Scheduler::Schedule",
-   "Properties": {
-    "FlexibleTimeWindow": {
-     "Mode": "OFF"
-    },
-    "ScheduleExpression": "rate(12 hours)",
-    "ScheduleExpressionTimezone": "Etc/UTC",
-    "State": "ENABLED",
-    "Target": {
-     "Arn": {
-      "Fn::GetAtt": [
-       "Function76856677",
-       "Arn"
-      ]
-     },
-     "Input": "\"Changed Text\"",
-     "RetryPolicy": {
-      "MaximumEventAgeInSeconds": 360,
-      "MaximumRetryAttempts": 5
-     },
-     "RoleArn": {
-      "Fn::GetAtt": [
-       "Role1ABCC5F0",
-       "Arn"
-      ]
-     }
-    }
-   }
-  },
-  "AllSchedulerErrorsAlarmA3246F8C": {
-   "Type": "AWS::CloudWatch::Alarm",
-   "Properties": {
-    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "EvaluationPeriods": 1,
-    "MetricName": "TargetErrorCount",
-    "Namespace": "AWS/Scheduler",
-    "Period": 300,
-    "Statistic": "Sum",
-    "Threshold": 1
    }
   },
   "ScheduleKey7E6B3A92": {
@@ -313,7 +138,7 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "CustomerKmsSchedule12B1FEFE": {
+  "ScheduleWithCMK206C3232": {
    "Type": "AWS::Scheduler::Schedule",
    "Properties": {
     "FlexibleTimeWindow": {
@@ -325,17 +150,132 @@
       "Arn"
      ]
     },
-    "ScheduleExpression": "rate(12 hours)",
+    "ScheduleExpression": "rate(1 minute)",
     "ScheduleExpressionTimezone": "Etc/UTC",
     "State": "ENABLED",
     "Target": {
      "Arn": {
       "Fn::GetAtt": [
-       "Function76856677",
+       "ScheduleTargetQueueFA42B954",
        "Arn"
       ]
      },
-     "Input": "\"Input Text\"",
+     "Input": {
+      "Fn::Join": [
+       "",
+       [
+        "valueB-",
+        {
+         "Ref": "AWS::Region"
+        }
+       ]
+      ]
+     },
+     "RetryPolicy": {
+      "MaximumEventAgeInSeconds": 180,
+      "MaximumRetryAttempts": 3
+     },
+     "RoleArn": {
+      "Fn::GetAtt": [
+       "Role1ABCC5F0",
+       "Arn"
+      ]
+     }
+    }
+   }
+  },
+  "NamedGroupA3ABC879": {
+   "Type": "AWS::Scheduler::ScheduleGroup",
+   "Properties": {
+    "Name": "TestGroup"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "UnnamedGroupBE3E48EE": {
+   "Type": "AWS::Scheduler::ScheduleGroup",
+   "Properties": {
+    "Name": "awscdkschedulerschedule-UnnamedGroup-97DBE50D"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ScheduleToTestWithNamedGroup9592E11F": {
+   "Type": "AWS::Scheduler::Schedule",
+   "Properties": {
+    "FlexibleTimeWindow": {
+     "Mode": "OFF"
+    },
+    "GroupName": "TestGroup",
+    "ScheduleExpression": "at(2060-04-15T06:30:00)",
+    "ScheduleExpressionTimezone": "Etc/UTC",
+    "State": "ENABLED",
+    "Target": {
+     "Arn": {
+      "Fn::GetAtt": [
+       "ScheduleTargetQueueFA42B954",
+       "Arn"
+      ]
+     },
+     "RetryPolicy": {
+      "MaximumEventAgeInSeconds": 180,
+      "MaximumRetryAttempts": 3
+     },
+     "RoleArn": {
+      "Fn::GetAtt": [
+       "Role1ABCC5F0",
+       "Arn"
+      ]
+     }
+    }
+   }
+  },
+  "ScheduleToTestWithUnnamedGroupF54DA10C": {
+   "Type": "AWS::Scheduler::Schedule",
+   "Properties": {
+    "FlexibleTimeWindow": {
+     "Mode": "OFF"
+    },
+    "GroupName": "awscdkschedulerschedule-UnnamedGroup-97DBE50D",
+    "ScheduleExpression": "at(2060-04-15T06:30:00)",
+    "ScheduleExpressionTimezone": "Etc/UTC",
+    "State": "ENABLED",
+    "Target": {
+     "Arn": {
+      "Fn::GetAtt": [
+       "ScheduleTargetQueueFA42B954",
+       "Arn"
+      ]
+     },
+     "RetryPolicy": {
+      "MaximumEventAgeInSeconds": 180,
+      "MaximumRetryAttempts": 3
+     },
+     "RoleArn": {
+      "Fn::GetAtt": [
+       "Role1ABCC5F0",
+       "Arn"
+      ]
+     }
+    }
+   }
+  },
+  "TestDisabledSchedule07B411BB": {
+   "Type": "AWS::Scheduler::Schedule",
+   "Properties": {
+    "FlexibleTimeWindow": {
+     "Mode": "OFF"
+    },
+    "ScheduleExpression": "at(2060-04-15T06:30:00)",
+    "ScheduleExpressionTimezone": "Etc/UTC",
+    "State": "DISABLED",
+    "Target": {
+     "Arn": {
+      "Fn::GetAtt": [
+       "ScheduleTargetQueueFA42B954",
+       "Arn"
+      ]
+     },
      "RetryPolicy": {
       "MaximumEventAgeInSeconds": 180,
       "MaximumRetryAttempts": 3
@@ -356,17 +296,16 @@
      "MaximumWindowInMinutes": 10,
      "Mode": "FLEXIBLE"
     },
-    "ScheduleExpression": "rate(12 hours)",
+    "ScheduleExpression": "at(2060-04-15T06:30:00)",
     "ScheduleExpressionTimezone": "Etc/UTC",
     "State": "ENABLED",
     "Target": {
      "Arn": {
       "Fn::GetAtt": [
-       "Function76856677",
+       "ScheduleTargetQueueFA42B954",
        "Arn"
       ]
      },
-     "Input": "\"Input Text\"",
      "RetryPolicy": {
       "MaximumEventAgeInSeconds": 180,
       "MaximumRetryAttempts": 3
@@ -383,22 +322,21 @@
   "ScheduleWithTimeFrameC1C8BDCC": {
    "Type": "AWS::Scheduler::Schedule",
    "Properties": {
-    "EndDate": "2026-10-01T00:00:00.000Z",
+    "EndDate": "2060-10-01T00:00:00.000Z",
     "FlexibleTimeWindow": {
      "Mode": "OFF"
     },
-    "ScheduleExpression": "rate(12 hours)",
+    "ScheduleExpression": "rate(1 minute)",
     "ScheduleExpressionTimezone": "Etc/UTC",
-    "StartDate": "2025-04-15T06:30:00.000Z",
+    "StartDate": "2060-04-15T06:30:00.000Z",
     "State": "ENABLED",
     "Target": {
      "Arn": {
       "Fn::GetAtt": [
-       "Function76856677",
+       "ScheduleTargetQueueFA42B954",
        "Arn"
       ]
      },
-     "Input": "\"Input Text\"",
      "RetryPolicy": {
       "MaximumEventAgeInSeconds": 180,
       "MaximumRetryAttempts": 3
@@ -412,35 +350,26 @@
     }
    }
   },
-  "UseDescription170B07AB": {
-   "Type": "AWS::Scheduler::Schedule",
+  "AllSchedulerErrorsAlarmA3246F8C": {
+   "Type": "AWS::CloudWatch::Alarm",
    "Properties": {
-    "Description": "test description",
-    "FlexibleTimeWindow": {
-     "Mode": "OFF"
-    },
-    "ScheduleExpression": "rate(12 hours)",
-    "ScheduleExpressionTimezone": "Etc/UTC",
-    "State": "ENABLED",
-    "Target": {
-     "Arn": {
-      "Fn::GetAtt": [
-       "Function76856677",
-       "Arn"
-      ]
-     },
-     "Input": "\"Input Text\"",
-     "RetryPolicy": {
-      "MaximumEventAgeInSeconds": 180,
-      "MaximumRetryAttempts": 3
-     },
-     "RoleArn": {
-      "Fn::GetAtt": [
-       "Role1ABCC5F0",
-       "Arn"
-      ]
-     }
-    }
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 1,
+    "MetricName": "TargetErrorCount",
+    "Namespace": "AWS/Scheduler",
+    "Period": 300,
+    "Statistic": "Sum",
+    "Threshold": 1
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefScheduleTargetQueueFA42B9547168FABC": {
+   "Value": {
+    "Ref": "ScheduleTargetQueueFA42B954"
+   },
+   "Export": {
+    "Name": "aws-cdk-scheduler-schedule:ExportsOutputRefScheduleTargetQueueFA42B9547168FABC"
    }
   }
  },

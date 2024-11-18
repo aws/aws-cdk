@@ -239,7 +239,7 @@ const detectLabels = new tasks.CallAwsService(this, 'DetectLabels', {
   additionalIamStatements: [
     new iam.PolicyStatement({
       actions: ['s3:getObject'],
-      resources: ['arn:aws:s3:::my-bucket/*'],
+      resources: ['arn:aws:s3:::amzn-s3-demo-bucket/*'],
     }),
   ],
 });
@@ -284,7 +284,7 @@ const startQueryExecutionJob = new tasks.AthenaStartQueryExecution(this, 'Start 
       encryptionOption: tasks.EncryptionOption.S3_MANAGED,
     },
     outputLocation: {
-      bucketName: 'query-results-bucket',
+      bucketName: 'amzn-s3-demo-bucket',
       objectKey: 'folder',
     },
   },
@@ -1287,6 +1287,61 @@ new tasks.EventBridgePutEvents(this, 'Send an event to EventBridge', {
 });
 ```
 
+## EventBridge Scheduler
+
+You can call EventBridge Scheduler APIs from a `Task` state.
+Read more about calling Scheduler APIs [here](https://docs.aws.amazon.com/scheduler/latest/APIReference/API_Operations.html)
+
+### Create Scheduler
+
+The [CreateSchedule](https://docs.aws.amazon.com/scheduler/latest/APIReference/API_CreateSchedule.html) API creates a new schedule.
+
+Here is an example of how to create a schedule that puts an event to SQS queue every 5 minutes:
+
+```ts
+import * as scheduler from 'aws-cdk-lib/aws-scheduler';
+import * as kms from 'aws-cdk-lib/aws-kms';
+
+declare const key: kms.Key;
+declare const scheduleGroup: scheduler.CfnScheduleGroup;
+declare const targetQueue: sqs.Queue;
+declare const deadLetterQueue: sqs.Queue;
+
+const schedulerRole = new iam.Role(this, 'SchedulerRole', {
+  assumedBy: new iam.ServicePrincipal('scheduler.amazonaws.com'),
+});
+// To send the message to the queue
+// This policy changes depending on the type of target.
+schedulerRole.addToPrincipalPolicy(new iam.PolicyStatement({
+  actions: ['sqs:SendMessage'],
+  resources: [targetQueue.queueArn],
+}));
+
+const createScheduleTask1 = new tasks.EventBridgeSchedulerCreateScheduleTask(this, 'createSchedule', {
+  scheduleName: 'TestSchedule',
+  actionAfterCompletion: tasks.ActionAfterCompletion.NONE,
+  clientToken: 'testToken',
+  description: 'TestDescription',
+  startDate: new Date(),
+  endDate: new Date(new Date().getTime() + 1000 * 60 * 60),
+  flexibleTimeWindow: Duration.minutes(5),
+  groupName: scheduleGroup.ref,
+  kmsKey: key,
+  schedule: tasks.Schedule.rate(Duration.minutes(5)),
+  timezone: 'UTC',
+  enabled: true,
+  target: new tasks.EventBridgeSchedulerTarget({
+    arn: targetQueue.queueArn,
+    role: schedulerRole,
+    retryPolicy: {
+      maximumRetryAttempts: 2,
+      maximumEventAge: Duration.minutes(5),
+    },
+    deadLetterQueue,
+  }),
+});
+```
+
 ## Glue
 
 Step Functions supports [AWS Glue](https://docs.aws.amazon.com/step-functions/latest/dg/connect-glue.html) through the service integration pattern.
@@ -1593,7 +1648,7 @@ new tasks.SageMakerCreateTrainingJob(this, 'TrainSagemaker', {
     },
   }],
   outputDataConfig: {
-    s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(this, 'Bucket', 'mybucket'), 'myoutputpath'),
+    s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(this, 'Bucket', 'amzn-s3-demo-bucket'), 'myoutputpath'),
   },
   resourceConfig: {
     instanceCount: 1,

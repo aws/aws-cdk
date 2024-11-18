@@ -1,13 +1,39 @@
-/* eslint-disable import/order */
-import { deployStack, DeployStackOptions } from '../../lib/api';
+import {
+  ChangeSetStatus,
+  ChangeSetType,
+  CreateChangeSetCommand,
+  type CreateChangeSetCommandInput,
+  CreateStackCommand,
+  DeleteChangeSetCommand,
+  DeleteStackCommand,
+  DescribeChangeSetCommand,
+  DescribeStacksCommand,
+  ExecuteChangeSetCommand,
+  type ExecuteChangeSetCommandInput,
+  GetTemplateCommand,
+  type Stack,
+  StackStatus,
+  UpdateStackCommand,
+  UpdateTerminationProtectionCommand,
+} from '@aws-sdk/client-cloudformation';
+import { assertIsSuccessfulDeployStackResult, deployStack, DeployStackOptions } from '../../lib/api';
+import { NoBootstrapStackEnvironmentResources } from '../../lib/api/environment-resources';
 import { HotswapMode } from '../../lib/api/hotswap/common';
 import { tryHotswapDeployment } from '../../lib/api/hotswap-deployments';
 import { setCI } from '../../lib/logging';
 import { DEFAULT_FAKE_TEMPLATE, testStack } from '../util';
-import { MockedObject, mockResolvedEnvironment, MockSdk, MockSdkProvider, SyncHandlerSubsetOf } from '../util/mock-sdk';
-import { NoBootstrapStackEnvironmentResources } from '../../lib/api/environment-resources';
+import {
+  mockCloudFormationClient,
+  mockResolvedEnvironment,
+  MockSdk,
+  MockSdkProvider,
+  restoreSdkMocksToDefault,
+} from '../util/mock-sdk';
 
 jest.mock('../../lib/api/hotswap-deployments');
+jest.mock('../../lib/api/util/checks', () => ({
+  determineAllowCrossAccountAssetPublishing: jest.fn().mockResolvedValue(true),
+}));
 
 const FAKE_STACK = testStack({
   stackName: 'withouterrors',
@@ -30,50 +56,52 @@ const FAKE_STACK_TERMINATION_PROTECTION = testStack({
   terminationProtection: true,
 });
 
+const baseResponse = {
+  StackName: 'mock-stack-name',
+  StackId: 'mock-stack-id',
+  CreationTime: new Date(),
+  StackStatus: StackStatus.CREATE_COMPLETE,
+  EnableTerminationProtection: false,
+};
+
 let sdk: MockSdk;
 let sdkProvider: MockSdkProvider;
-let cfnMocks: MockedObject<SyncHandlerSubsetOf<AWS.CloudFormation>>;
-let stderrMock: jest.SpyInstance;
-let stdoutMock: jest.SpyInstance;
 
 beforeEach(() => {
-  jest.resetAllMocks();
-  stderrMock = jest.spyOn(process.stderr, 'write').mockImplementation(() => { return true; });
-  stdoutMock = jest.spyOn(process.stdout, 'write').mockImplementation(() => { return true; });
-
   sdkProvider = new MockSdkProvider();
   sdk = new MockSdk();
+  sdk.getUrlSuffix = () => Promise.resolve('amazonaws.com');
+  jest.resetAllMocks();
 
-  cfnMocks = {
-    describeStackEvents: jest.fn().mockReturnValue({}),
-    describeStacks: jest.fn()
-      // First call, no stacks exist
-      .mockImplementationOnce(() => ({ Stacks: [] }))
-      // Second call, stack has been created
-      .mockImplementationOnce(() => ({
-        Stacks: [
-          {
-            StackStatus: 'CREATE_COMPLETE',
-            StackStatusReason: 'It is magic',
-            EnableTerminationProtection: false,
-          },
-        ],
-      })),
-    createChangeSet: jest.fn((_o) => ({})),
-    deleteChangeSet: jest.fn((_o) => ({})),
-    updateStack: jest.fn((_o) => ({})),
-    createStack: jest.fn((_o) => ({})),
-    describeChangeSet: jest.fn((_o) => ({
-      Status: 'CREATE_COMPLETE',
-      Changes: [],
-    })),
-    executeChangeSet: jest.fn((_o) => ({})),
-    deleteStack: jest.fn((_o) => ({})),
-    getTemplate: jest.fn((_o) => ({ TemplateBody: JSON.stringify(DEFAULT_FAKE_TEMPLATE) })),
-    updateTerminationProtection: jest.fn((_o) => ({ StackId: 'stack-id' })),
-  };
-  sdk.stubCloudFormation(cfnMocks as any);
-  sdk.stubGetEndpointSuffix(() => 'amazonaws.com');
+  restoreSdkMocksToDefault();
+  mockCloudFormationClient
+    .on(DescribeStacksCommand)
+    // First call, no stacks exis
+    .resolvesOnce({
+      Stacks: [],
+    })
+    // Second call, stack has been created
+    .resolves({
+      Stacks: [
+        {
+          StackStatus: StackStatus.CREATE_COMPLETE,
+          StackStatusReason: 'It is magic',
+          EnableTerminationProtection: false,
+          StackName: 'MagicalStack',
+          CreationTime: new Date(),
+        },
+      ],
+    });
+  mockCloudFormationClient.on(DescribeChangeSetCommand).resolves({
+    Status: StackStatus.CREATE_COMPLETE,
+    Changes: [],
+  });
+  mockCloudFormationClient.on(GetTemplateCommand).resolves({
+    TemplateBody: JSON.stringify(DEFAULT_FAKE_TEMPLATE),
+  });
+  mockCloudFormationClient.on(UpdateTerminationProtectionCommand).resolves({
+    StackId: 'stack-id',
+  });
 });
 
 function standardDeployStackArguments(): DeployStackOptions {
@@ -89,6 +117,7 @@ function standardDeployStackArguments(): DeployStackOptions {
 
 test("calls tryHotswapDeployment() if 'hotswap' is `HotswapMode.CLASSIC`", async () => {
   // WHEN
+  const spyOnSdk = jest.spyOn(sdk, 'appendCustomUserAgent');
   await deployStack({
     ...standardDeployStackArguments(),
     hotswap: HotswapMode.FALL_BACK,
@@ -98,25 +127,18 @@ test("calls tryHotswapDeployment() if 'hotswap' is `HotswapMode.CLASSIC`", async
   // THEN
   expect(tryHotswapDeployment).toHaveBeenCalled();
   // check that the extra User-Agent is honored
-  expect(sdk.appendCustomUserAgent).toHaveBeenCalledWith('extra-user-agent');
+  expect(spyOnSdk).toHaveBeenCalledWith('extra-user-agent');
   // check that the fallback has been called if hotswapping failed
-  expect(sdk.appendCustomUserAgent).toHaveBeenCalledWith('cdk-hotswap/fallback');
+  expect(spyOnSdk).toHaveBeenCalledWith('cdk-hotswap/fallback');
 });
 
 test("calls tryHotswapDeployment() if 'hotswap' is `HotswapMode.HOTSWAP_ONLY`", async () => {
-  cfnMocks.describeStacks = jest.fn()
-    // we need the first call to return something in the Stacks prop,
-    // otherwise the access to `stackId` will fail
-    .mockImplementation(() => ({
-      Stacks: [
-        {
-          StackStatus: 'CREATE_COMPLETE',
-          StackStatusReason: 'It is magic',
-          EnableTerminationProtection: false,
-        },
-      ],
-    }));
-  sdk.stubCloudFormation(cfnMocks as any);
+  // we need the first call to return something in the Stacks prop,
+  // otherwise the access to `stackId` will fail
+  mockCloudFormationClient.on(DescribeStacksCommand).resolves({
+    Stacks: [{ ...baseResponse }],
+  });
+  const spyOnSdk = jest.spyOn(sdk, 'appendCustomUserAgent');
   // WHEN
   const deployStackResult = await deployStack({
     ...standardDeployStackArguments(),
@@ -126,12 +148,12 @@ test("calls tryHotswapDeployment() if 'hotswap' is `HotswapMode.HOTSWAP_ONLY`", 
   });
 
   // THEN
-  expect(deployStackResult.noOp).toEqual(true);
+  expect(deployStackResult.type === 'did-deploy-stack' && deployStackResult.noOp).toEqual(true);
   expect(tryHotswapDeployment).toHaveBeenCalled();
   // check that the extra User-Agent is honored
-  expect(sdk.appendCustomUserAgent).toHaveBeenCalledWith('extra-user-agent');
+  expect(spyOnSdk).toHaveBeenCalledWith('extra-user-agent');
   // check that the fallback has not been called if hotswapping failed
-  expect(sdk.appendCustomUserAgent).not.toHaveBeenCalledWith('cdk-hotswap/fallback');
+  expect(spyOnSdk).not.toHaveBeenCalledWith('cdk-hotswap/fallback');
 });
 
 test('correctly passes CFN parameters when hotswapping', async () => {
@@ -148,14 +170,24 @@ test('correctly passes CFN parameters when hotswapping', async () => {
   });
 
   // THEN
-  expect(tryHotswapDeployment).toHaveBeenCalledWith(expect.anything(), { A: 'A-value', B: 'B=value' }, expect.anything(), expect.anything(), HotswapMode.FALL_BACK);
+  expect(tryHotswapDeployment).toHaveBeenCalledWith(
+    expect.anything(),
+    { A: 'A-value', B: 'B=value' },
+    expect.anything(),
+    expect.anything(),
+    HotswapMode.FALL_BACK,
+    expect.anything(),
+  );
 });
 
 test('correctly passes SSM parameters when hotswapping', async () => {
   // GIVEN
-  givenStackExists({
-    Parameters: [
-      { ParameterKey: 'SomeParameter', ParameterValue: 'ParameterName', ResolvedValue: 'SomeValue' },
+  mockCloudFormationClient.on(DescribeStacksCommand).resolves({
+    Stacks: [
+      {
+        ...baseResponse,
+        Parameters: [{ ParameterKey: 'SomeParameter', ParameterValue: 'ParameterName', ResolvedValue: 'SomeValue' }],
+      },
     ],
   });
 
@@ -178,7 +210,14 @@ test('correctly passes SSM parameters when hotswapping', async () => {
   });
 
   // THEN
-  expect(tryHotswapDeployment).toHaveBeenCalledWith(expect.anything(), { SomeParameter: 'SomeValue' }, expect.anything(), expect.anything(), HotswapMode.FALL_BACK);
+  expect(tryHotswapDeployment).toHaveBeenCalledWith(
+    expect.anything(),
+    { SomeParameter: 'SomeValue' },
+    expect.anything(),
+    expect.anything(),
+    HotswapMode.FALL_BACK,
+    expect.anything(),
+  );
 });
 
 test('call CreateStack when method=direct and the stack doesnt exist yet', async () => {
@@ -189,12 +228,14 @@ test('call CreateStack when method=direct and the stack doesnt exist yet', async
   });
 
   // THEN
-  expect(cfnMocks.createStack).toHaveBeenCalled();
+  expect(mockCloudFormationClient).toHaveReceivedCommand(CreateStackCommand);
 });
 
 test('call UpdateStack when method=direct and the stack exists already', async () => {
   // WHEN
-  givenStackExists();
+  mockCloudFormationClient.on(DescribeStacksCommand).resolves({
+    Stacks: [{ ...baseResponse }],
+  });
 
   await deployStack({
     ...standardDeployStackArguments(),
@@ -203,17 +244,18 @@ test('call UpdateStack when method=direct and the stack exists already', async (
   });
 
   // THEN
-  expect(cfnMocks.updateStack).toHaveBeenCalled();
+  expect(mockCloudFormationClient).toHaveReceivedCommand(UpdateStackCommand);
 });
 
 test('method=direct and no updates to be performed', async () => {
-  cfnMocks.updateStack?.mockRejectedValueOnce({
-    code: 'ValidationError',
-    message: 'No updates are to be performed.',
-  } as never);
+  const error = new Error('No updates are to be performed.');
+  error.name = 'ValidationError';
+  mockCloudFormationClient.on(UpdateStackCommand).rejectsOnce(error);
 
   // WHEN
-  givenStackExists();
+  mockCloudFormationClient.on(DescribeStacksCommand).resolves({
+    Stacks: [{ ...baseResponse }],
+  });
 
   const ret = await deployStack({
     ...standardDeployStackArguments(),
@@ -245,9 +287,12 @@ test("rollback still defaults to enabled even if 'hotswap' is enabled", async ()
   });
 
   // THEN
-  expect(cfnMocks.executeChangeSet).not.toHaveBeenCalledWith(expect.objectContaining({
-    DisableRollback: true,
-  }));
+  expect(mockCloudFormationClient).not.toHaveReceivedCommandWith(
+    ExecuteChangeSetCommand,
+    expect.objectContaining({
+      DisableRollback: true,
+    }),
+  );
 });
 
 test("rollback defaults to enabled if 'hotswap' is undefined", async () => {
@@ -259,10 +304,13 @@ test("rollback defaults to enabled if 'hotswap' is undefined", async () => {
   });
 
   // THEN
-  expect(cfnMocks.executeChangeSet).toHaveBeenCalledTimes(1);
-  expect(cfnMocks.executeChangeSet).not.toHaveBeenCalledWith(expect.objectContaining({
-    DisableRollback: expect.anything(),
-  }));
+  expect(mockCloudFormationClient).toHaveReceivedCommandTimes(ExecuteChangeSetCommand, 1);
+  expect(mockCloudFormationClient).not.toHaveReceivedCommandWith(
+    ExecuteChangeSetCommand,
+    expect.objectContaining({
+      DisableRollback: true,
+    }),
+  );
 });
 
 test('do deploy executable change set with 0 changes', async () => {
@@ -272,8 +320,8 @@ test('do deploy executable change set with 0 changes', async () => {
   });
 
   // THEN
-  expect(ret.noOp).toBeFalsy();
-  expect(cfnMocks.executeChangeSet).toHaveBeenCalled();
+  expect(ret.type === 'did-deploy-stack' && ret.noOp).toBeFalsy();
+  expect(mockCloudFormationClient).toHaveReceivedCommand(ExecuteChangeSetCommand);
 });
 
 test('correctly passes CFN parameters, ignoring ones with empty values', async () => {
@@ -289,20 +337,27 @@ test('correctly passes CFN parameters, ignoring ones with empty values', async (
   });
 
   // THEN
-  expect(cfnMocks.createChangeSet).toHaveBeenCalledWith(expect.objectContaining({
+  expect(mockCloudFormationClient).toHaveReceivedCommandWith(CreateChangeSetCommand, {
+    ...expect.anything,
     Parameters: [
       { ParameterKey: 'A', ParameterValue: 'A-value' },
       { ParameterKey: 'B', ParameterValue: 'B=value' },
     ],
-  }));
+    TemplateBody: expect.any(String),
+  } as CreateChangeSetCommandInput);
 });
 
 test('reuse previous parameters if requested', async () => {
   // GIVEN
-  givenStackExists({
-    Parameters: [
-      { ParameterKey: 'HasValue', ParameterValue: 'TheValue' },
-      { ParameterKey: 'HasDefault', ParameterValue: 'TheOldValue' },
+  mockCloudFormationClient.on(DescribeStacksCommand).resolves({
+    Stacks: [
+      {
+        ...baseResponse,
+        Parameters: [
+          { ParameterKey: 'HasValue', ParameterValue: 'TheValue' },
+          { ParameterKey: 'HasDefault', ParameterValue: 'TheOldValue' },
+        ],
+      },
     ],
   });
 
@@ -317,18 +372,28 @@ test('reuse previous parameters if requested', async () => {
   });
 
   // THEN
-  expect(cfnMocks.createChangeSet).toHaveBeenCalledWith(expect.objectContaining({
+  expect(mockCloudFormationClient).toHaveReceivedCommandWith(CreateChangeSetCommand, {
+    ...expect.anything,
     Parameters: [
       { ParameterKey: 'HasValue', UsePreviousValue: true },
       { ParameterKey: 'HasDefault', UsePreviousValue: true },
       { ParameterKey: 'OtherParameter', ParameterValue: 'SomeValue' },
     ],
-  }));
+  } as CreateChangeSetCommandInput);
 });
 
 describe('ci=true', () => {
+  let stderrMock: jest.SpyInstance;
+  let stdoutMock: jest.SpyInstance;
   beforeEach(() => {
     setCI(true);
+    jest.resetAllMocks();
+    stderrMock = jest.spyOn(process.stderr, 'write').mockImplementation(() => {
+      return true;
+    });
+    stdoutMock = jest.spyOn(process.stdout, 'write').mockImplementation(() => {
+      return true;
+    });
   });
   afterEach(() => {
     setCI(false);
@@ -348,10 +413,15 @@ describe('ci=true', () => {
 
 test('do not reuse previous parameters if not requested', async () => {
   // GIVEN
-  givenStackExists({
-    Parameters: [
-      { ParameterKey: 'HasValue', ParameterValue: 'TheValue' },
-      { ParameterKey: 'HasDefault', ParameterValue: 'TheOldValue' },
+  mockCloudFormationClient.on(DescribeStacksCommand).resolves({
+    Stacks: [
+      {
+        ...baseResponse,
+        Parameters: [
+          { ParameterKey: 'HasValue', ParameterValue: 'TheValue' },
+          { ParameterKey: 'HasDefault', ParameterValue: 'TheOldValue' },
+        ],
+      },
     ],
   });
 
@@ -366,36 +436,51 @@ test('do not reuse previous parameters if not requested', async () => {
   });
 
   // THEN
-  expect(cfnMocks.createChangeSet).toHaveBeenCalledWith(expect.objectContaining({
+  expect(mockCloudFormationClient).toHaveReceivedCommandWith(CreateChangeSetCommand, {
+    ...expect.anything,
+    ChangeSetType: ChangeSetType.UPDATE,
     Parameters: [
       { ParameterKey: 'HasValue', ParameterValue: 'SomeValue' },
       { ParameterKey: 'OtherParameter', ParameterValue: 'SomeValue' },
     ],
-  }));
+  } as CreateChangeSetCommandInput);
 });
 
 test('throw exception if not enough parameters supplied', async () => {
   // GIVEN
-  givenStackExists({
-    Parameters: [
-      { ParameterKey: 'HasValue', ParameterValue: 'TheValue' },
-      { ParameterKey: 'HasDefault', ParameterValue: 'TheOldValue' },
+  mockCloudFormationClient.on(DescribeStacksCommand).resolves({
+    Stacks: [
+      {
+        ...baseResponse,
+        Parameters: [
+          { ParameterKey: 'HasValue', ParameterValue: 'TheValue' },
+          { ParameterKey: 'HasDefault', ParameterValue: 'TheOldValue' },
+        ],
+      },
     ],
   });
 
   // WHEN
-  await expect(deployStack({
-    ...standardDeployStackArguments(),
-    stack: FAKE_STACK_WITH_PARAMETERS,
-    parameters: {
-      OtherParameter: 'SomeValue',
-    },
-  })).rejects.toThrow(/CloudFormation Parameters are missing a value/);
+  await expect(
+    deployStack({
+      ...standardDeployStackArguments(),
+      stack: FAKE_STACK_WITH_PARAMETERS,
+      parameters: {
+        OtherParameter: 'SomeValue',
+      },
+    }),
+  ).rejects.toThrow(/CloudFormation Parameters are missing a value/);
 });
 
 test('deploy is skipped if template did not change', async () => {
   // GIVEN
-  givenStackExists();
+  mockCloudFormationClient.on(DescribeStacksCommand).resolves({
+    Stacks: [
+      {
+        ...baseResponse,
+      },
+    ],
+  });
 
   // WHEN
   await deployStack({
@@ -403,17 +488,22 @@ test('deploy is skipped if template did not change', async () => {
   });
 
   // THEN
-  expect(cfnMocks.executeChangeSet).not.toBeCalled();
+  expect(mockCloudFormationClient).not.toHaveReceivedCommand(ExecuteChangeSetCommand);
 });
 
 test('deploy is skipped if parameters are the same', async () => {
   // GIVEN
   givenTemplateIs(FAKE_STACK_WITH_PARAMETERS.template);
-  givenStackExists({
-    Parameters: [
-      { ParameterKey: 'HasValue', ParameterValue: 'HasValue' },
-      { ParameterKey: 'HasDefault', ParameterValue: 'HasDefault' },
-      { ParameterKey: 'OtherParameter', ParameterValue: 'OtherParameter' },
+  mockCloudFormationClient.on(DescribeStacksCommand).resolves({
+    Stacks: [
+      {
+        ...baseResponse,
+        Parameters: [
+          { ParameterKey: 'HasValue', ParameterValue: 'TheValue' },
+          { ParameterKey: 'HasDefault', ParameterValue: 'TheOldValue' },
+          { ParameterKey: 'OtherParameter', ParameterValue: 'OtherParameter' },
+        ],
+      },
     ],
   });
 
@@ -426,17 +516,22 @@ test('deploy is skipped if parameters are the same', async () => {
   });
 
   // THEN
-  expect(cfnMocks.createChangeSet).not.toHaveBeenCalled();
+  expect(mockCloudFormationClient).not.toHaveReceivedCommand(CreateChangeSetCommand);
 });
 
 test('deploy is not skipped if parameters are different', async () => {
   // GIVEN
   givenTemplateIs(FAKE_STACK_WITH_PARAMETERS.template);
-  givenStackExists({
-    Parameters: [
-      { ParameterKey: 'HasValue', ParameterValue: 'HasValue' },
-      { ParameterKey: 'HasDefault', ParameterValue: 'HasDefault' },
-      { ParameterKey: 'OtherParameter', ParameterValue: 'OtherParameter' },
+  mockCloudFormationClient.on(DescribeStacksCommand).resolves({
+    Stacks: [
+      {
+        ...baseResponse,
+        Parameters: [
+          { ParameterKey: 'HasValue', ParameterValue: 'TheValue' },
+          { ParameterKey: 'HasDefault', ParameterValue: 'TheOldValue' },
+          { ParameterKey: 'OtherParameter', ParameterValue: 'OtherParameter' },
+        ],
+      },
     ],
   });
 
@@ -451,13 +546,15 @@ test('deploy is not skipped if parameters are different', async () => {
   });
 
   // THEN
-  expect(cfnMocks.createChangeSet).toHaveBeenCalledWith(expect.objectContaining({
+  expect(mockCloudFormationClient).toHaveReceivedCommandWith(CreateChangeSetCommand, {
+    ...expect.anything,
+    ChangeSetType: ChangeSetType.UPDATE,
     Parameters: [
       { ParameterKey: 'HasValue', ParameterValue: 'NewValue' },
       { ParameterKey: 'HasDefault', UsePreviousValue: true },
       { ParameterKey: 'OtherParameter', UsePreviousValue: true },
     ],
-  }));
+  } as CreateChangeSetCommandInput);
 });
 
 test('deploy is skipped if notificationArns are the same', async () => {
@@ -475,7 +572,7 @@ test('deploy is skipped if notificationArns are the same', async () => {
   });
 
   // THEN
-  expect(cfnMocks.createChangeSet).not.toHaveBeenCalled();
+  expect(mockCloudFormationClient).not.toHaveReceivedCommand(CreateChangeSetCommand);
 });
 
 test('deploy is not skipped if notificationArns are different', async () => {
@@ -493,16 +590,37 @@ test('deploy is not skipped if notificationArns are different', async () => {
   });
 
   // THEN
-  expect(cfnMocks.createChangeSet).toHaveBeenCalled();
+  expect(mockCloudFormationClient).toHaveReceivedCommand(CreateChangeSetCommand);
 });
 
 test('if existing stack failed to create, it is deleted and recreated', async () => {
   // GIVEN
-  givenStackExists(
-    { StackStatus: 'ROLLBACK_COMPLETE' }, // This is for the initial check
-    { StackStatus: 'DELETE_COMPLETE' }, // Poll the successful deletion
-    { StackStatus: 'CREATE_COMPLETE' }, // Poll the recreation
-  );
+  mockCloudFormationClient
+    .on(DescribeStacksCommand)
+    .resolvesOnce({
+      Stacks: [
+        {
+          ...baseResponse,
+          StackStatus: StackStatus.ROLLBACK_COMPLETE,
+        },
+      ],
+    })
+    .resolvesOnce({
+      Stacks: [
+        {
+          ...baseResponse,
+          StackStatus: StackStatus.DELETE_COMPLETE,
+        },
+      ],
+    })
+    .resolves({
+      Stacks: [
+        {
+          ...baseResponse,
+          StackStatus: StackStatus.CREATE_COMPLETE,
+        },
+      ],
+    });
   givenTemplateIs({
     DifferentThan: 'TheDefault',
   });
@@ -513,19 +631,41 @@ test('if existing stack failed to create, it is deleted and recreated', async ()
   });
 
   // THEN
-  expect(cfnMocks.deleteStack).toHaveBeenCalled();
-  expect(cfnMocks.createChangeSet).toHaveBeenCalledWith(expect.objectContaining({
-    ChangeSetType: 'CREATE',
-  }));
+  expect(mockCloudFormationClient).toHaveReceivedCommand(DeleteStackCommand);
+  expect(mockCloudFormationClient).toHaveReceivedCommandWith(CreateChangeSetCommand, {
+    ...expect.anything,
+    ChangeSetType: ChangeSetType.CREATE,
+  } as CreateChangeSetCommandInput);
 });
 
 test('if existing stack failed to create, it is deleted and recreated even if the template did not change', async () => {
   // GIVEN
-  givenStackExists(
-    { StackStatus: 'ROLLBACK_COMPLETE' }, // This is for the initial check
-    { StackStatus: 'DELETE_COMPLETE' }, // Poll the successful deletion
-    { StackStatus: 'CREATE_COMPLETE' }, // Poll the recreation
-  );
+  mockCloudFormationClient
+    .on(DescribeStacksCommand)
+    .resolvesOnce({
+      Stacks: [
+        {
+          ...baseResponse,
+          StackStatus: StackStatus.ROLLBACK_COMPLETE,
+        },
+      ],
+    })
+    .resolvesOnce({
+      Stacks: [
+        {
+          ...baseResponse,
+          StackStatus: StackStatus.DELETE_COMPLETE,
+        },
+      ],
+    })
+    .resolves({
+      Stacks: [
+        {
+          ...baseResponse,
+          StackStatus: StackStatus.CREATE_COMPLETE,
+        },
+      ],
+    });
 
   // WHEN
   await deployStack({
@@ -533,15 +673,18 @@ test('if existing stack failed to create, it is deleted and recreated even if th
   });
 
   // THEN
-  expect(cfnMocks.deleteStack).toHaveBeenCalled();
-  expect(cfnMocks.createChangeSet).toHaveBeenCalledWith(expect.objectContaining({
-    ChangeSetType: 'CREATE',
-  }));
+  expect(mockCloudFormationClient).toHaveReceivedCommand(DeleteStackCommand);
+  expect(mockCloudFormationClient).toHaveReceivedCommandWith(CreateChangeSetCommand, {
+    ...expect.anything,
+    ChangeSetType: ChangeSetType.CREATE,
+  } as CreateChangeSetCommandInput);
 });
 
 test('deploy not skipped if template did not change and --force is applied', async () => {
   // GIVEN
-  givenStackExists();
+  mockCloudFormationClient.on(DescribeStacksCommand).resolves({
+    Stacks: [{ ...baseResponse }],
+  });
 
   // WHEN
   await deployStack({
@@ -550,15 +693,20 @@ test('deploy not skipped if template did not change and --force is applied', asy
   });
 
   // THEN
-  expect(cfnMocks.executeChangeSet).toHaveBeenCalled();
+  expect(mockCloudFormationClient).toHaveReceivedCommandTimes(ExecuteChangeSetCommand, 1);
 });
 
 test('deploy is skipped if template and tags did not change', async () => {
   // GIVEN
-  givenStackExists({
-    Tags: [
-      { Key: 'Key1', Value: 'Value1' },
-      { Key: 'Key2', Value: 'Value2' },
+  mockCloudFormationClient.on(DescribeStacksCommand).resolves({
+    Stacks: [
+      {
+        ...baseResponse,
+        Tags: [
+          { Key: 'Key1', Value: 'Value1' },
+          { Key: 'Key2', Value: 'Value2' },
+        ],
+      },
     ],
   });
 
@@ -572,18 +720,21 @@ test('deploy is skipped if template and tags did not change', async () => {
   });
 
   // THEN
-  expect(cfnMocks.createChangeSet).not.toBeCalled();
-  expect(cfnMocks.executeChangeSet).not.toBeCalled();
-  expect(cfnMocks.describeStacks).toHaveBeenCalledWith({ StackName: 'withouterrors' });
-  expect(cfnMocks.getTemplate).toHaveBeenCalledWith({ StackName: 'withouterrors', TemplateStage: 'Original' });
+  expect(mockCloudFormationClient).not.toHaveReceivedCommand(CreateChangeSetCommand);
+  expect(mockCloudFormationClient).not.toHaveReceivedCommand(ExecuteChangeSetCommand);
+  expect(mockCloudFormationClient).toHaveReceivedCommandWith(DescribeStacksCommand, {
+    StackName: 'withouterrors',
+  });
+  expect(mockCloudFormationClient).toHaveReceivedCommandWith(GetTemplateCommand, {
+    StackName: 'withouterrors',
+    TemplateStage: 'Original',
+  });
 });
 
 test('deploy not skipped if template did not change but tags changed', async () => {
   // GIVEN
   givenStackExists({
-    Tags: [
-      { Key: 'Key', Value: 'Value' },
-    ],
+    Tags: [{ Key: 'Key', Value: 'Value' }],
   });
 
   // WHEN
@@ -603,18 +754,23 @@ test('deploy not skipped if template did not change but tags changed', async () 
   });
 
   // THEN
-  expect(cfnMocks.createChangeSet).toHaveBeenCalled();
-  expect(cfnMocks.executeChangeSet).toHaveBeenCalled();
-  expect(cfnMocks.describeChangeSet).toHaveBeenCalled();
-  expect(cfnMocks.describeStacks).toHaveBeenCalledWith({ StackName: 'withouterrors' });
-  expect(cfnMocks.getTemplate).toHaveBeenCalledWith({ StackName: 'withouterrors', TemplateStage: 'Original' });
+  expect(mockCloudFormationClient).toHaveReceivedCommand(CreateChangeSetCommand);
+  expect(mockCloudFormationClient).toHaveReceivedCommand(ExecuteChangeSetCommand);
+  expect(mockCloudFormationClient).toHaveReceivedCommand(DescribeChangeSetCommand);
+  expect(mockCloudFormationClient).toHaveReceivedCommandWith(DescribeStacksCommand, {
+    StackName: 'withouterrors',
+  });
+  expect(mockCloudFormationClient).toHaveReceivedCommandWith(GetTemplateCommand, {
+    StackName: 'withouterrors',
+    TemplateStage: 'Original',
+  });
 });
 
 test('deployStack reports no change if describeChangeSet returns specific error', async () => {
-  cfnMocks.describeChangeSet?.mockImplementation(() => ({
-    Status: 'FAILED',
+  mockCloudFormationClient.on(DescribeChangeSetCommand).resolvesOnce({
+    Status: ChangeSetStatus.FAILED,
     StatusReason: 'No updates are to be performed.',
-  }));
+  });
 
   // WHEN
   const deployResult = await deployStack({
@@ -622,56 +778,84 @@ test('deployStack reports no change if describeChangeSet returns specific error'
   });
 
   // THEN
-  expect(deployResult.noOp).toEqual(true);
+  expect(deployResult.type === 'did-deploy-stack' && deployResult.noOp).toEqual(true);
 });
 
 test('deploy not skipped if template did not change but one tag removed', async () => {
   // GIVEN
-  givenStackExists({
-    Tags: [
-      { Key: 'Key1', Value: 'Value1' },
-      { Key: 'Key2', Value: 'Value2' },
+  mockCloudFormationClient.on(DescribeStacksCommand).resolves({
+    Stacks: [
+      {
+        ...baseResponse,
+        Tags: [
+          { Key: 'Key1', Value: 'Value1' },
+          { Key: 'Key2', Value: 'Value2' },
+        ],
+      },
     ],
   });
 
   // WHEN
   await deployStack({
     ...standardDeployStackArguments(),
-    tags: [
-      { Key: 'Key1', Value: 'Value1' },
-    ],
+    tags: [{ Key: 'Key1', Value: 'Value1' }],
   });
 
   // THEN
-  expect(cfnMocks.createChangeSet).toHaveBeenCalled();
-  expect(cfnMocks.executeChangeSet).toHaveBeenCalled();
-  expect(cfnMocks.describeChangeSet).toHaveBeenCalled();
-  expect(cfnMocks.describeStacks).toHaveBeenCalledWith({ StackName: 'withouterrors' });
-  expect(cfnMocks.getTemplate).toHaveBeenCalledWith({ StackName: 'withouterrors', TemplateStage: 'Original' });
+  expect(mockCloudFormationClient).toHaveReceivedCommand(CreateChangeSetCommand);
+  expect(mockCloudFormationClient).toHaveReceivedCommand(ExecuteChangeSetCommand);
+  expect(mockCloudFormationClient).toHaveReceivedCommand(DescribeChangeSetCommand);
+  expect(mockCloudFormationClient).toHaveReceivedCommandWith(DescribeStacksCommand, {
+    StackName: 'withouterrors',
+  });
+  expect(mockCloudFormationClient).toHaveReceivedCommandWith(GetTemplateCommand, {
+    StackName: 'withouterrors',
+    TemplateStage: 'Original',
+  });
 });
 
 test('deploy is not skipped if stack is in a _FAILED state', async () => {
   // GIVEN
-  givenStackExists({
-    StackStatus: 'DELETE_FAILED',
+  mockCloudFormationClient.on(DescribeStacksCommand).resolves({
+    Stacks: [
+      {
+        ...baseResponse,
+        StackStatus: StackStatus.DELETE_FAILED,
+      },
+    ],
   });
 
   // WHEN
   await deployStack({
     ...standardDeployStackArguments(),
     usePreviousParameters: true,
-  }).catch(() => { });
+  }).catch(() => {});
 
   // THEN
-  expect(cfnMocks.createChangeSet).toHaveBeenCalled();
+  expect(mockCloudFormationClient).toHaveReceivedCommand(CreateChangeSetCommand);
+  expect(mockCloudFormationClient).toHaveReceivedCommand(ExecuteChangeSetCommand);
 });
 
 test('existing stack in UPDATE_ROLLBACK_COMPLETE state can be updated', async () => {
   // GIVEN
-  givenStackExists(
-    { StackStatus: 'UPDATE_ROLLBACK_COMPLETE' }, // This is for the initial check
-    { StackStatus: 'UPDATE_COMPLETE' }, // Poll the update
-  );
+  mockCloudFormationClient
+    .on(DescribeStacksCommand)
+    .resolvesOnce({
+      Stacks: [
+        {
+          ...baseResponse,
+          StackStatus: StackStatus.UPDATE_ROLLBACK_COMPLETE,
+        },
+      ],
+    })
+    .resolves({
+      Stacks: [
+        {
+          ...baseResponse,
+          StackStatus: StackStatus.UPDATE_COMPLETE,
+        },
+      ],
+    });
   givenTemplateIs({ changed: 123 });
 
   // WHEN
@@ -680,15 +864,18 @@ test('existing stack in UPDATE_ROLLBACK_COMPLETE state can be updated', async ()
   });
 
   // THEN
-  expect(cfnMocks.deleteStack).not.toHaveBeenCalled();
-  expect(cfnMocks.createChangeSet).toHaveBeenCalledWith(expect.objectContaining({
-    ChangeSetType: 'UPDATE',
-  }));
+  expect(mockCloudFormationClient).not.toHaveReceivedCommand(DeleteStackCommand);
+  expect(mockCloudFormationClient).toHaveReceivedCommandWith(CreateChangeSetCommand, {
+    ...expect.anything,
+    ChangeSetType: ChangeSetType.UPDATE,
+  } as CreateChangeSetCommandInput);
 });
 
 test('deploy not skipped if template changed', async () => {
   // GIVEN
-  givenStackExists();
+  mockCloudFormationClient.on(DescribeStacksCommand).resolves({
+    Stacks: [{ ...baseResponse }],
+  });
   givenTemplateIs({ changed: 123 });
 
   // WHEN
@@ -697,7 +884,8 @@ test('deploy not skipped if template changed', async () => {
   });
 
   // THEN
-  expect(cfnMocks.executeChangeSet).toHaveBeenCalled();
+  expect(mockCloudFormationClient).toHaveReceivedCommand(CreateChangeSetCommand);
+  expect(mockCloudFormationClient).toHaveReceivedCommand(ExecuteChangeSetCommand);
 });
 
 test('not executed and no error if --no-execute is given', async () => {
@@ -708,17 +896,19 @@ test('not executed and no error if --no-execute is given', async () => {
   });
 
   // THEN
-  expect(cfnMocks.executeChangeSet).not.toHaveBeenCalled();
+  expect(mockCloudFormationClient).not.toHaveReceivedCommand(ExecuteChangeSetCommand);
 });
 
 test('empty change set is deleted if --execute is given', async () => {
-  cfnMocks.describeChangeSet?.mockImplementation(() => ({
-    Status: 'FAILED',
+  mockCloudFormationClient.on(DescribeChangeSetCommand).resolvesOnce({
+    Status: ChangeSetStatus.FAILED,
     StatusReason: 'No updates are to be performed.',
-  }));
+  });
 
   // GIVEN
-  givenStackExists();
+  mockCloudFormationClient.on(DescribeStacksCommand).resolves({
+    Stacks: [{ ...baseResponse }],
+  });
 
   // WHEN
   await deployStack({
@@ -728,21 +918,23 @@ test('empty change set is deleted if --execute is given', async () => {
   });
 
   // THEN
-  expect(cfnMocks.createChangeSet).toHaveBeenCalled();
-  expect(cfnMocks.executeChangeSet).not.toHaveBeenCalled();
+  expect(mockCloudFormationClient).toHaveReceivedCommand(CreateChangeSetCommand);
+  expect(mockCloudFormationClient).not.toHaveReceivedCommand(ExecuteChangeSetCommand);
 
   //the first deletion is for any existing cdk change sets, the second is for the deleting the new empty change set
-  expect(cfnMocks.deleteChangeSet).toHaveBeenCalledTimes(2);
+  expect(mockCloudFormationClient).toHaveReceivedCommandTimes(DeleteChangeSetCommand, 2);
 });
 
 test('empty change set is not deleted if --no-execute is given', async () => {
-  cfnMocks.describeChangeSet?.mockImplementation(() => ({
-    Status: 'FAILED',
+  mockCloudFormationClient.on(DescribeChangeSetCommand).resolvesOnce({
+    Status: ChangeSetStatus.FAILED,
     StatusReason: 'No updates are to be performed.',
-  }));
+  });
 
   // GIVEN
-  givenStackExists();
+  mockCloudFormationClient.on(DescribeStacksCommand).resolves({
+    Stacks: [{ ...baseResponse }],
+  });
 
   // WHEN
   await deployStack({
@@ -751,11 +943,11 @@ test('empty change set is not deleted if --no-execute is given', async () => {
   });
 
   // THEN
-  expect(cfnMocks.createChangeSet).toHaveBeenCalled();
-  expect(cfnMocks.executeChangeSet).not.toHaveBeenCalled();
+  expect(mockCloudFormationClient).toHaveReceivedCommand(CreateChangeSetCommand);
+  expect(mockCloudFormationClient).not.toHaveReceivedCommand(ExecuteChangeSetCommand);
 
   //the first deletion is for any existing cdk change sets
-  expect(cfnMocks.deleteChangeSet).toHaveBeenCalledTimes(1);
+  expect(mockCloudFormationClient).toHaveReceivedCommandTimes(DeleteChangeSetCommand, 1);
 });
 
 test('use S3 url for stack deployment if present in Stack Artifact', async () => {
@@ -771,10 +963,11 @@ test('use S3 url for stack deployment if present in Stack Artifact', async () =>
   });
 
   // THEN
-  expect(cfnMocks.createChangeSet).toHaveBeenCalledWith(expect.objectContaining({
+  expect(mockCloudFormationClient).toHaveReceivedCommandWith(CreateChangeSetCommand, {
+    ...expect.anything,
     TemplateURL: 'https://use-me-use-me/',
-  }));
-  expect(cfnMocks.executeChangeSet).toHaveBeenCalled();
+  } as CreateChangeSetCommandInput);
+  expect(mockCloudFormationClient).toHaveReceivedCommand(ExecuteChangeSetCommand);
 });
 
 test('use REST API S3 url with substituted placeholders if manifest url starts with s3://', async () => {
@@ -790,19 +983,25 @@ test('use REST API S3 url with substituted placeholders if manifest url starts w
   });
 
   // THEN
-  expect(cfnMocks.createChangeSet).toHaveBeenCalledWith(expect.objectContaining({
+  expect(mockCloudFormationClient).toHaveReceivedCommandWith(CreateChangeSetCommand, {
+    ...expect.anything,
     TemplateURL: 'https://s3.bermuda-triangle-1337.amazonaws.com/use-me-use-me-123456789/object',
-  }));
-  expect(cfnMocks.executeChangeSet).toHaveBeenCalled();
+  } as CreateChangeSetCommandInput);
+  expect(mockCloudFormationClient).toHaveReceivedCommand(ExecuteChangeSetCommand);
 });
 
 test('changeset is created when stack exists in REVIEW_IN_PROGRESS status', async () => {
   // GIVEN
-  givenStackExists({
-    StackStatus: 'REVIEW_IN_PROGRESS',
-    Tags: [
-      { Key: 'Key1', Value: 'Value1' },
-      { Key: 'Key2', Value: 'Value2' },
+  mockCloudFormationClient.on(DescribeStacksCommand).resolves({
+    Stacks: [
+      {
+        ...baseResponse,
+        StackStatus: StackStatus.REVIEW_IN_PROGRESS,
+        Tags: [
+          { Key: 'Key1', Value: 'Value1' },
+          { Key: 'Key2', Value: 'Value2' },
+        ],
+      },
     ],
   });
 
@@ -813,21 +1012,25 @@ test('changeset is created when stack exists in REVIEW_IN_PROGRESS status', asyn
   });
 
   // THEN
-  expect(cfnMocks.createChangeSet).toHaveBeenCalledWith(
-    expect.objectContaining({
-      ChangeSetType: 'CREATE',
-      StackName: 'withouterrors',
-    }),
-  );
-  expect(cfnMocks.executeChangeSet).not.toHaveBeenCalled();
+  expect(mockCloudFormationClient).toHaveReceivedCommandWith(CreateChangeSetCommand, {
+    ...expect.anything,
+    ChangeSetType: ChangeSetType.CREATE,
+    StackName: 'withouterrors',
+  } as CreateChangeSetCommandInput);
+  expect(mockCloudFormationClient).not.toHaveReceivedCommand(ExecuteChangeSetCommand);
 });
 
 test('changeset is updated when stack exists in CREATE_COMPLETE status', async () => {
   // GIVEN
-  givenStackExists({
-    Tags: [
-      { Key: 'Key1', Value: 'Value1' },
-      { Key: 'Key2', Value: 'Value2' },
+  mockCloudFormationClient.on(DescribeStacksCommand).resolves({
+    Stacks: [
+      {
+        ...baseResponse,
+        Tags: [
+          { Key: 'Key1', Value: 'Value1' },
+          { Key: 'Key2', Value: 'Value2' },
+        ],
+      },
     ],
   });
 
@@ -838,13 +1041,12 @@ test('changeset is updated when stack exists in CREATE_COMPLETE status', async (
   });
 
   // THEN
-  expect(cfnMocks.createChangeSet).toHaveBeenCalledWith(
-    expect.objectContaining({
-      ChangeSetType: 'UPDATE',
-      StackName: 'withouterrors',
-    }),
-  );
-  expect(cfnMocks.executeChangeSet).not.toHaveBeenCalled();
+  expect(mockCloudFormationClient).toHaveReceivedCommandWith(CreateChangeSetCommand, {
+    ...expect.anything,
+    ChangeSetType: ChangeSetType.UPDATE,
+    StackName: 'withouterrors',
+  } as CreateChangeSetCommandInput);
+  expect(mockCloudFormationClient).not.toHaveReceivedCommand(ExecuteChangeSetCommand);
 });
 
 test('deploy with termination protection enabled', async () => {
@@ -855,9 +1057,10 @@ test('deploy with termination protection enabled', async () => {
   });
 
   // THEN
-  expect(cfnMocks.updateTerminationProtection).toHaveBeenCalledWith(expect.objectContaining({
+  expect(mockCloudFormationClient).toHaveReceivedCommandWith(UpdateTerminationProtectionCommand, {
+    StackName: 'termination-protection',
     EnableTerminationProtection: true,
-  }));
+  });
 });
 
 test('updateTerminationProtection not called when termination protection is undefined', async () => {
@@ -867,13 +1070,18 @@ test('updateTerminationProtection not called when termination protection is unde
   });
 
   // THEN
-  expect(cfnMocks.updateTerminationProtection).not.toHaveBeenCalled();
+  expect(mockCloudFormationClient).not.toHaveReceivedCommand(UpdateTerminationProtectionCommand);
 });
 
 test('updateTerminationProtection called when termination protection is undefined and stack has termination protection', async () => {
   // GIVEN
-  givenStackExists({
-    EnableTerminationProtection: true,
+  mockCloudFormationClient.on(DescribeStacksCommand).resolves({
+    Stacks: [
+      {
+        ...baseResponse,
+        EnableTerminationProtection: true,
+      },
+    ],
   });
 
   // WHEN
@@ -882,9 +1090,10 @@ test('updateTerminationProtection called when termination protection is undefine
   });
 
   // THEN
-  expect(cfnMocks.updateTerminationProtection).toHaveBeenCalledWith(expect.objectContaining({
+  expect(mockCloudFormationClient).toHaveReceivedCommandWith(UpdateTerminationProtectionCommand, {
+    StackName: 'withouterrors',
     EnableTerminationProtection: false,
-  }));
+  });
 });
 
 describe('disable rollback', () => {
@@ -895,10 +1104,11 @@ describe('disable rollback', () => {
     });
 
     // THEN
-    expect(cfnMocks.executeChangeSet).toHaveBeenCalledTimes(1);
-    expect(cfnMocks.executeChangeSet).not.toHaveBeenCalledWith(expect.objectContaining({
-      DisableRollback: expect.anything(),
-    }));
+    expect(mockCloudFormationClient).toHaveReceivedCommandTimes(ExecuteChangeSetCommand, 1);
+    expect(mockCloudFormationClient).not.toHaveReceivedCommandWith(ExecuteChangeSetCommand, {
+      DisableRollback: expect.anything,
+      ChangeSetName: expect.any(String),
+    });
   });
 
   test('rollback can be disabled by setting rollback: false', async () => {
@@ -909,46 +1119,92 @@ describe('disable rollback', () => {
     });
 
     // THEN
-    expect(cfnMocks.executeChangeSet).toHaveBeenCalledWith(expect.objectContaining({
+    expect(mockCloudFormationClient).toHaveReceivedCommandWith(ExecuteChangeSetCommand, {
+      ...expect.anything,
       DisableRollback: true,
-    }));
+    } as ExecuteChangeSetCommandInput);
   });
-
 });
 
+test.each([
+  [StackStatus.UPDATE_FAILED, 'failpaused-need-rollback-first'],
+  [StackStatus.CREATE_COMPLETE, 'replacement-requires-norollback'],
+])('no-rollback and replacement is disadvised: %p -> %p', async (stackStatus, expectedType) => {
+  // GIVEN
+  givenTemplateIs(FAKE_STACK.template);
+  givenStackExists({
+    NotificationARNs: ['arn:aws:sns:bermuda-triangle-1337:123456789012:TestTopic'],
+    StackStatus: stackStatus,
+  });
+  givenChangeSetContainsReplacement();
+
+  // WHEN
+  const result = await deployStack({
+    ...standardDeployStackArguments(),
+    stack: FAKE_STACK,
+    rollback: false,
+  });
+
+  // THEN
+  expect(result.type).toEqual(expectedType);
+});
+
+test('assertIsSuccessfulDeployStackResult does what it says', () => {
+  expect(() => assertIsSuccessfulDeployStackResult({ type: 'replacement-requires-norollback' })).toThrow();
+});
 /**
  * Set up the mocks so that it looks like the stack exists to start with
  *
  * The last element of this array will be continuously repeated.
  */
-function givenStackExists(...overrides: Array<Partial<AWS.CloudFormation.Stack>>) {
-  cfnMocks.describeStacks!.mockReset();
-
+function givenStackExists(...overrides: Array<Partial<Stack>>) {
   if (overrides.length === 0) {
     overrides = [{}];
   }
 
-  const baseResponse = {
-    StackName: 'mock-stack-name',
-    StackId: 'mock-stack-id',
-    CreationTime: new Date(),
-    StackStatus: 'CREATE_COMPLETE',
-    EnableTerminationProtection: false,
-  };
-
   for (const override of overrides.slice(0, overrides.length - 1)) {
-    cfnMocks.describeStacks!.mockImplementationOnce(() => ({
+    mockCloudFormationClient.on(DescribeStacksCommand).resolvesOnce({
       Stacks: [{ ...baseResponse, ...override }],
-    }));
+    });
   }
-  cfnMocks.describeStacks!.mockImplementation(() => ({
+  mockCloudFormationClient.on(DescribeStacksCommand).resolves({
     Stacks: [{ ...baseResponse, ...overrides[overrides.length - 1] }],
-  }));
+  });
 }
 
 function givenTemplateIs(template: any) {
-  cfnMocks.getTemplate!.mockReset();
-  cfnMocks.getTemplate!.mockReturnValue({
+  mockCloudFormationClient.on(GetTemplateCommand).resolves({
     TemplateBody: JSON.stringify(template),
+  });
+}
+
+function givenChangeSetContainsReplacement() {
+  mockCloudFormationClient.on(DescribeChangeSetCommand).resolves({
+    Status: 'CREATE_COMPLETE',
+    Changes: [
+      {
+        Type: 'Resource',
+        ResourceChange: {
+          PolicyAction: 'ReplaceAndDelete',
+          Action: 'Modify',
+          LogicalResourceId: 'Queue4A7E3555',
+          PhysicalResourceId: 'https://sqs.eu-west-1.amazonaws.com/111111111111/Queue4A7E3555-P9C8nK3uv8v6.fifo',
+          ResourceType: 'AWS::SQS::Queue',
+          Replacement: 'True',
+          Scope: ['Properties'],
+          Details: [
+            {
+              Target: {
+                Attribute: 'Properties',
+                Name: 'FifoQueue',
+                RequiresRecreation: 'Always',
+              },
+              Evaluation: 'Static',
+              ChangeSource: 'DirectModification',
+            },
+          ],
+        },
+      },
+    ],
   });
 }
