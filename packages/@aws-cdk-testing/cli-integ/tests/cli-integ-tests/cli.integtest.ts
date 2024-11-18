@@ -8,6 +8,7 @@ import {
   GetTemplateCommand,
   ListChangeSetsCommand,
   UpdateStackCommand,
+  waitUntilStackUpdateComplete,
 } from '@aws-sdk/client-cloudformation';
 import { DescribeServicesCommand } from '@aws-sdk/client-ecs';
 import {
@@ -702,6 +703,14 @@ integTest('deploy preserves existing notification arns when not specified', with
         UsePreviousTemplate: true,
         NotificationARNs: [topicArn],
       }),
+    );
+
+    await waitUntilStackUpdateComplete(
+      {
+        client: fixture.aws.cloudFormation,
+        maxWaitTime: 600,
+      },
+      { StackName: fixture.fullStackName('notification-arns') },
     );
 
     // deploy again
