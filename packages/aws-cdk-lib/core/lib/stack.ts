@@ -376,7 +376,7 @@ export class Stack extends Construct implements ITaggable {
    *
    * @internal
    */
-  public readonly _notificationArns: string[];
+  public readonly _notificationArns?: string[];
 
   /**
    * Logical ID generation strategy
@@ -471,7 +471,7 @@ export class Stack extends Construct implements ITaggable {
       }
     }
 
-    this._notificationArns = props.notificationArns ?? [];
+    this._notificationArns = props.notificationArns;
 
     if (!VALID_STACK_NAME_REGEX.test(this.stackName)) {
       throw new Error(`Stack name must match the regular expression: ${VALID_STACK_NAME_REGEX.toString()}, got '${this.stackName}'`);
