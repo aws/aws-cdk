@@ -217,7 +217,7 @@ function synthNestedAssemblies(root: IConstruct, options: StageSynthesisOptions)
 function invokeAspects(root: IConstruct) {
   const aspectsMap = collectAllAspectApplications(root);
 
-  const orderedPriorities = Array.from(aspectsMap.keys()).sort();
+  const orderedPriorities = Array.from(aspectsMap.keys()).sort((a, b) => a - b);
 
   for (const priority of orderedPriorities) {
     for (const aspectApplication of aspectsMap.get(priority)!) {
