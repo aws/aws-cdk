@@ -13,11 +13,12 @@
     "ApiId": {
      "Ref": "HttpApiF5A9A8A7"
     },
-    "StageName": "$default",
     "DefaultRouteSettings": {
      "ThrottlingBurstLimit": 1000,
      "ThrottlingRateLimit": 1000
-    }
+    },
+    "Description": "My Stage",
+    "StageName": "$default"
    }
   }
  },

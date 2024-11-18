@@ -1,39 +1,16 @@
-import {
-  CfnIdentityPool,
-  UserPool,
-  UserPoolClient,
-} from 'aws-cdk-lib/aws-cognito';
-import {
-  IOpenIdConnectProvider,
-  ISamlProvider,
-  Role,
-  FederatedPrincipal,
-  IRole,
-} from 'aws-cdk-lib/aws-iam';
-import {
-  Resource,
-  IResource,
-  Stack,
-  ArnFormat,
-  Lazy,
-} from 'aws-cdk-lib/core';
-import {
-  Construct,
-} from 'constructs';
-import {
-  IdentityPoolRoleAttachment,
-  IdentityPoolRoleMapping,
-} from './identitypool-role-attachment';
-import {
-  IUserPoolAuthenticationProvider,
-} from './identitypool-user-pool-authentication-provider';
+import { CfnIdentityPool, IUserPool, IUserPoolClient } from 'aws-cdk-lib/aws-cognito';
+import { IOpenIdConnectProvider, ISamlProvider, Role, FederatedPrincipal, IRole } from 'aws-cdk-lib/aws-iam';
+import { Resource, IResource, Stack, ArnFormat, Lazy, Token } from 'aws-cdk-lib/core';
+import { Construct } from 'constructs';
+import { IdentityPoolRoleAttachment, IdentityPoolRoleMapping } from './identitypool-role-attachment';
+import { IUserPoolAuthenticationProvider } from './identitypool-user-pool-authentication-provider';
 
 /**
- * Represents a Cognito IdentityPool
+ * Represents a Cognito Identity Pool
  */
 export interface IIdentityPool extends IResource {
   /**
-   * The id of the Identity Pool in the format REGION:GUID
+   * The ID of the Identity Pool in the format REGION:GUID
    * @attribute
    */
   readonly identityPoolId: string;
@@ -52,36 +29,36 @@ export interface IIdentityPool extends IResource {
 }
 
 /**
- * Props for the IdentityPool construct
+ * Props for the Identity Pool construct
  */
 export interface IdentityPoolProps {
   /**
    * The name of the Identity Pool
-   * @default - automatically generated name by CloudFormation at deploy time
+   * @default - Automatically generated name by CloudFormation at deploy time
    */
   readonly identityPoolName?: string;
 
   /**
-   * The Default Role to be assumed by Authenticated Users
-   * @default - A Default Authenticated Role will be added
+   * The default Role to be assumed by authenticated users
+   * @default - A default authenticated Role will be added
    */
   readonly authenticatedRole?: IRole;
 
   /**
-   * The Default Role to be assumed by Unauthenticated Users
-   * @default - A Default Unauthenticated Role will be added
+   * The default Role to be assumed by unauthenticated users
+   * @default - A default unauthenticated Role will be added
    */
   readonly unauthenticatedRole?: IRole;
 
   /**
-   * Wwhether the identity pool supports unauthenticated logins
+   * Whether the Identity Pool supports unauthenticated logins
    * @default - false
    */
   readonly allowUnauthenticatedIdentities?: boolean;
 
   /**
    * Rules for mapping roles to users
-   * @default - no Role Mappings
+   * @default - no role mappings
    */
   readonly roleMappings?: IdentityPoolRoleMapping[];
 
@@ -92,7 +69,7 @@ export interface IdentityPoolProps {
   readonly allowClassicFlow?: boolean;
 
   /**
-   * Authentication providers for using in identity pool.
+   * Authentication Providers for using in Identity Pool
    * @default - No Authentication Providers passed directly to Identity Pool
    */
   readonly authenticationProviders?: IdentityPoolAuthenticationProviders;
@@ -102,212 +79,202 @@ export interface IdentityPoolProps {
  * Types of Identity Pool Login Providers
  */
 export enum IdentityPoolProviderType {
-  /** Facebook Provider type */
+  /** Facebook provider type */
   FACEBOOK = 'Facebook',
-  /** Google Provider Type */
+  /** Google provider type */
   GOOGLE = 'Google',
-  /** Amazon Provider Type */
+  /** Amazon provider type */
   AMAZON = 'Amazon',
-  /** Apple Provider Type */
+  /** Apple provider type */
   APPLE = 'Apple',
-  /** Twitter Provider Type */
+  /** Twitter provider type */
   TWITTER = 'Twitter',
-  /** Digits Provider Type */
-  DIGITS = 'Digits',
-  /** Open Id Provider Type */
+  /** Open Id provider type */
   OPEN_ID = 'OpenId',
-  /** Saml Provider Type */
+  /** Saml provider type */
   SAML = 'Saml',
-  /** User Pool Provider Type */
+  /** User Pool provider type */
   USER_POOL = 'UserPool',
-  /** Custom Provider Type */
+  /** Custom provider type */
   CUSTOM = 'Custom',
 }
 
 /**
- * Keys for Login Providers - correspond to client id's of respective federation identity providers
+ * Keys for Login Providers - each correspond to the client IDs of their respective federation Identity Providers
  */
 export class IdentityPoolProviderUrl {
-  /** Facebook Provider Url */
+  /** Facebook Provider url */
   public static readonly FACEBOOK = new IdentityPoolProviderUrl(IdentityPoolProviderType.FACEBOOK, 'graph.facebook.com');
 
-  /** Google Provider Url */
+  /** Google Provider url */
   public static readonly GOOGLE = new IdentityPoolProviderUrl(IdentityPoolProviderType.GOOGLE, 'accounts.google.com');
 
-  /** Amazon Provider Url */
+  /** Amazon Provider url */
   public static readonly AMAZON = new IdentityPoolProviderUrl(IdentityPoolProviderType.AMAZON, 'www.amazon.com');
 
-  /** Apple Provider Url */
+  /** Apple Provider url */
   public static readonly APPLE = new IdentityPoolProviderUrl(IdentityPoolProviderType.APPLE, 'appleid.apple.com');
 
-  /** Twitter Provider Url */
+  /** Twitter Provider url */
   public static readonly TWITTER = new IdentityPoolProviderUrl(IdentityPoolProviderType.TWITTER, 'api.twitter.com');
 
-  /** Digits Provider Url */
-  public static readonly DIGITS = new IdentityPoolProviderUrl(IdentityPoolProviderType.DIGITS, 'www.digits.com');
-
-  /** OpenId Provider Url */
+  /** OpenId Provider url */
   public static openId(url: string): IdentityPoolProviderUrl {
     return new IdentityPoolProviderUrl(IdentityPoolProviderType.OPEN_ID, url);
   }
 
-  /** Saml Provider Url */
+  /** Saml Provider url */
   public static saml(url: string): IdentityPoolProviderUrl {
     return new IdentityPoolProviderUrl(IdentityPoolProviderType.SAML, url);
   }
 
   /** User Pool Provider Url */
-  public static userPool(userPool: UserPool, userPoolClient: UserPoolClient): IdentityPoolProviderUrl {
+  public static userPool(userPool: IUserPool, userPoolClient: IUserPoolClient): IdentityPoolProviderUrl {
     const url = `${userPool.userPoolProviderName}:${userPoolClient.userPoolClientId}`;
     return new IdentityPoolProviderUrl(IdentityPoolProviderType.USER_POOL, url);
   }
 
-  /** Custom Provider Url */
+  /** Custom Provider url */
   public static custom(url: string): IdentityPoolProviderUrl {
     return new IdentityPoolProviderUrl(IdentityPoolProviderType.CUSTOM, url);
   }
 
   constructor(
-    /** type of Provider Url */
+    /**
+     * The type of Identity Pool Provider
+     */
     public readonly type: IdentityPoolProviderType,
-    /** value of Provider Url */
+
+    /**
+     * The value of the Identity Pool Provider
+     */
     public readonly value: string,
   ) {}
 }
 
 /**
- * Login Provider for Identity Federation using Amazon Credentials
+ * Login Provider for identity federation using Amazon credentials
  */
 export interface IdentityPoolAmazonLoginProvider {
   /**
-   * App Id for Amazon Identity Federation
+   * App ID for Amazon identity federation
    */
   readonly appId: string;
 }
 
 /**
- * Login Provider for Identity Federation using Facebook Credentials
+ * Login Provider for identity federation using Facebook credentials
  */
 export interface IdentityPoolFacebookLoginProvider {
   /**
-   * App Id for Facebook Identity Federation
+   * App ID for Facebook identity federation
    */
   readonly appId: string;
 }
 
 /**
- * Login Provider for Identity Federation using Apple Credentials
+ * Login Provider for identity federation using Apple credentials
 */
 export interface IdentityPoolAppleLoginProvider {
   /**
-   * App Id for Apple Identity Federation
-  */
+   * Services ID for Apple identity federation
+   */
   readonly servicesId: string;
 }
 
 /**
- * Login Provider for Identity Federation using Google Credentials
+ * Login Provider for identity federation using Google credentials
  */
 export interface IdentityPoolGoogleLoginProvider {
   /**
-   * App Id for Google Identity Federation
+   * Client ID for Google identity federation
    */
   readonly clientId: string;
 }
 
 /**
- * Login Provider for Identity Federation using Twitter Credentials
+ * Login Provider for identity federation using Twitter credentials
  */
 export interface IdentityPoolTwitterLoginProvider {
   /**
-   * App Id for Twitter Identity Federation
+   * Consumer key for Twitter identity federation
    */
   readonly consumerKey: string;
 
   /**
-   * App Secret for Twitter Identity Federation
+   * Consumer secret for identity federation
    */
   readonly consumerSecret: string;
 }
 
 /**
- * Login Provider for Identity Federation using Digits Credentials
+ * External Authentication Providers for usage in Identity Pool.
+ * @see https://docs.aws.amazon.com/cognito/latest/developerguide/external-identity-providers.html
  */
-export interface IdentityPoolDigitsLoginProvider extends IdentityPoolTwitterLoginProvider {}
-
-/**
- * External Identity Providers To Connect to User Pools and Identity Pools
- */
-export interface IdentityPoolProviders {
-  /** App Id for Facebook Identity Federation
+export interface IdentityPoolAuthenticationProviders {
+  /**
+   * The Facebook Authentication Provider associated with this Identity Pool
    * @default - No Facebook Authentication Provider used without OpenIdConnect or a User Pool
    */
   readonly facebook?: IdentityPoolFacebookLoginProvider;
 
-  /** Client Id for Google Identity Federation
+  /**
+   * The Google Authentication Provider associated with this Identity Pool
    * @default - No Google Authentication Provider used without OpenIdConnect or a User Pool
    */
   readonly google?: IdentityPoolGoogleLoginProvider;
 
-  /** App Id for Amazon Identity Federation
+  /**
+   * The Amazon Authentication Provider associated with this Identity Pool
    * @default -  No Amazon Authentication Provider used without OpenIdConnect or a User Pool
    */
   readonly amazon?: IdentityPoolAmazonLoginProvider;
 
-  /** Services Id for Apple Identity Federation
+  /**
+   * The Apple Authentication Provider associated with this Identity Pool
    * @default - No Apple Authentication Provider used without OpenIdConnect or a User Pool
    */
   readonly apple?: IdentityPoolAppleLoginProvider;
 
-  /** Consumer Key and Secret for Twitter Identity Federation
+  /**
+   * The Twitter Authentication Provider associated with this Identity Pool
    * @default - No Twitter Authentication Provider used without OpenIdConnect or a User Pool
    */
   readonly twitter?: IdentityPoolTwitterLoginProvider;
 
-  /** Consumer Key and Secret for Digits Identity Federation
-   * @default - No Digits Authentication Provider used without OpenIdConnect or a User Pool
-   */
-  readonly digits?: IdentityPoolDigitsLoginProvider;
-}
-
-/**
-* Authentication providers for using in identity pool.
-* @see https://docs.aws.amazon.com/cognito/latest/developerguide/external-identity-providers.html
-*/
-export interface IdentityPoolAuthenticationProviders extends IdentityPoolProviders {
   /**
    * The User Pool Authentication Providers associated with this Identity Pool
-   * @default - no User Pools Associated
+   * @default - no User Pools associated
    */
   readonly userPools?: IUserPoolAuthenticationProvider[];
 
   /**
    * The OpenIdConnect Provider associated with this Identity Pool
    * @default - no OpenIdConnectProvider
-  */
+   */
   readonly openIdConnectProviders?: IOpenIdConnectProvider[];
 
   /**
-   * The Security Assertion Markup Language Provider associated with this Identity Pool
+   * The Security Assertion Markup Language provider associated with this Identity Pool
    * @default - no SamlProvider
-  */
+   */
   readonly samlProviders?: ISamlProvider[];
 
   /**
-   * The Developer Provider Name to associate with this Identity Pool
-   * @default - no Custom Provider
-  */
+   * The developer provider name to associate with this Identity Pool
+   * @default - no custom provider
+   */
   readonly customProvider?: string;
 }
 
 /**
  * Define a Cognito Identity Pool
  *
- *  @resource AWS::Cognito::IdentityPool
+ * @resource AWS::Cognito::IdentityPool
  */
 export class IdentityPool extends Resource implements IIdentityPool {
   /**
-   * Import an existing Identity Pool from its id
+   * Import an existing Identity Pool from its ID
    */
   public static fromIdentityPoolId(scope: Construct, id: string, identityPoolId: string): IIdentityPool {
     const identityPoolArn = Stack.of(scope).formatArn({
@@ -321,7 +288,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
   }
 
   /**
-   * Import an existing Identity Pool from its Arn
+   * Import an existing Identity Pool from its ARN
    */
   public static fromIdentityPoolArn(scope: Construct, id: string, identityPoolArn: string): IIdentityPool {
     const pool = Stack.of(scope).splitArn(identityPoolArn, ArnFormat.SLASH_RESOURCE_NAME);
@@ -329,9 +296,15 @@ export class IdentityPool extends Resource implements IIdentityPool {
     if (!res) {
       throw new Error('Invalid Identity Pool ARN');
     }
-    const idParts = res.split(':');
-    if (!(idParts.length === 2)) throw new Error('Invalid Identity Pool Id: Identity Pool Ids must follow the format <region>:<id>');
-    if (idParts[0] !== pool.region) throw new Error('Invalid Identity Pool Id: Region in Identity Pool Id must match stack region');
+    if (!Token.isUnresolved(res)) {
+      const idParts = res.split(':');
+      if (!(idParts.length === 2)) {
+        throw new Error('Invalid Identity Pool Id: Identity Pool Ids must follow the format <region>:<id>');
+      }
+      if (!Token.isUnresolved(pool.region) && idParts[0] !== pool.region) {
+        throw new Error('Invalid Identity Pool Id: Region in Identity Pool Id must match stack region');
+      }
+    }
     class ImportedIdentityPool extends Resource implements IIdentityPool {
       public readonly identityPoolId = res;
       public readonly identityPoolArn = identityPoolArn;
@@ -348,7 +321,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
   }
 
   /**
-   * The id of the Identity Pool in the format REGION:GUID
+   * The ID of the Identity Pool in the format REGION:GUID
    * @attribute
    */
   public readonly identityPoolId: string;
@@ -366,13 +339,13 @@ export class IdentityPool extends Resource implements IIdentityPool {
   public readonly identityPoolName: string;
 
   /**
-   * Default role for authenticated users
+   * Default Role for authenticated users
    */
   public readonly authenticatedRole: IRole;
 
   /**
-    * Default role for unauthenticated users
-    */
+   * Default Role for unauthenticated users
+   */
   public readonly unauthenticatedRole: IRole;
 
   /**
@@ -381,7 +354,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
   private cognitoIdentityProviders: CfnIdentityPool.CognitoIdentityProviderProperty[] = [];
 
   /**
-   * Running count of added role attachments
+   * Running count of added Role Attachments
    */
   private roleAttachmentCount: number = 0;
 
@@ -407,7 +380,6 @@ export class IdentityPool extends Resource implements IIdentityPool {
     if (authProviders.google) supportedLoginProviders[IdentityPoolProviderUrl.GOOGLE.value] = authProviders.google.clientId;
     if (authProviders.apple) supportedLoginProviders[IdentityPoolProviderUrl.APPLE.value] = authProviders.apple.servicesId;
     if (authProviders.twitter) supportedLoginProviders[IdentityPoolProviderUrl.TWITTER.value] = `${authProviders.twitter.consumerKey};${authProviders.twitter.consumerSecret}`;
-    if (authProviders.digits) supportedLoginProviders[IdentityPoolProviderUrl.DIGITS.value] = `${authProviders.digits.consumerKey};${authProviders.digits.consumerSecret}`;
     if (!Object.keys(supportedLoginProviders).length) supportedLoginProviders = undefined;
 
     const cfnIdentityPool = new CfnIdentityPool(this, 'Resource', {
@@ -437,15 +409,11 @@ export class IdentityPool extends Resource implements IIdentityPool {
       roleMappings: props.roleMappings,
     });
 
-    // This added by the original author, but it's causing cyclic dependencies.
-    // Don't know why this was added in the first place, but I'm disabling it for now and if
-    // no complaints come from this, we're probably safe to remove it altogether.
-    // attachment.node.addDependency(this);
     Array.isArray(attachment);
   }
 
   /**
-   * Add a User Pool to the IdentityPool and configure User Pool Client to handle identities
+   * Add a User Pool to the Identity Pool and configure the User Pool client to handle identities
    */
   public addUserPoolAuthentication(userPool: IUserPoolAuthenticationProvider): void {
     const providers = userPool.bind(this, this);
@@ -453,8 +421,8 @@ export class IdentityPool extends Resource implements IIdentityPool {
   }
 
   /**
-   * Adds Role Mappings to Identity Pool
-  */
+   * Add Role Mappings to the Identity Pool
+   */
   public addRoleMappings(...roleMappings: IdentityPoolRoleMapping[]): void {
     if (!roleMappings || !roleMappings.length) return;
     this.roleAttachmentCount++;
@@ -466,15 +434,11 @@ export class IdentityPool extends Resource implements IIdentityPool {
       roleMappings,
     });
 
-    // This added by the original author, but it's causing cyclic dependencies.
-    // Don't know why this was added in the first place, but I'm disabling it for now and if
-    // no complaints come from this, we're probably safe to remove it altogether.
-    // attachment.node.addDependency(this);
     Array.isArray(attachment);
   }
 
   /**
-   * Configure Default Roles For Identity Pool
+   * Configure default Roles for Identity Pool
    */
   private configureDefaultRole(type: string): IRole {
     const assumedBy = this.configureDefaultGrantPrincipal(type.toLowerCase());

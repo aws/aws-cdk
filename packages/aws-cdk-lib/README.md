@@ -147,7 +147,7 @@ a stack with a synthesizer, pass it as one of its properties:
 ```ts
 new MyStack(app, 'MyStack', {
   synthesizer: new DefaultStackSynthesizer({
-    fileAssetsBucketName: 'my-orgs-asset-bucket',
+    fileAssetsBucketName: 'amzn-s3-demo-bucket',
   }),
 });
 ```
@@ -1173,7 +1173,7 @@ The `CfnResource` class allows emitting arbitrary entries in the
 new CfnResource(this, 'ResourceId', {
   type: 'AWS::S3::Bucket',
   properties: {
-    BucketName: 'bucket-name'
+    BucketName: 'amzn-s3-demo-bucket'
   },
 });
 ```
@@ -1197,7 +1197,7 @@ new CfnInclude(this, 'ID', {
       Bucket: {
         Type: 'AWS::S3::Bucket',
         Properties: {
-          BucketName: 'my-shiny-bucket'
+          BucketName: 'amzn-s3-demo-bucket'
         }
       }
     }

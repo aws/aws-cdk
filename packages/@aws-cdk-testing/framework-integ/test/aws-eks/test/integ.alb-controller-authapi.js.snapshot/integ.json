@@ -1,0 +1,12 @@
+{
+  "version": "36.0.5",
+  "testCases": {
+    "integtest/DefaultTest": {
+      "stacks": [
+        "integ-eks-stack"
+      ],
+      "assertionStack": "integtest/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestDefaultTestDeployAssertF2657CF4"
+    }
+  }
+}

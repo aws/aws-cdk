@@ -26,7 +26,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1717875757896"
+    "salt": "1726169340194"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -133,7 +133,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "cfdb46b4f2c6702b4a1cc8e23ca426e8de43d13567e73a8453d01c1176393814.zip"
+     "S3Key": "38bcec258d35a1cc95292038cdecc3454e1fcfd2367f5cbf9a26c60df1f3e718.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -171,7 +171,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1717875757897"
+    "salt": "1726169340195"
    },
    "DependsOn": [
     "AwsApiCallSQSpurgeQueue9dee3c309fd35c8e9de6a283d5a45696"
@@ -207,7 +207,7 @@
      "Body": "\"Some content\""
     },
     "flattenResponse": "false",
-    "salt": "1717875757897"
+    "salt": "1726169340195"
    },
    "DependsOn": [
     "AwsApiCallSQSpurgeQueue3dbc33339559b3b0ad9846209312d812"
@@ -243,7 +243,7 @@
      "Body": "\"Some content\""
     },
     "flattenResponse": "false",
-    "salt": "1717875757898"
+    "salt": "1726169340195"
    },
    "DependsOn": [
     "AwsApiCallS3putObjectba38728e762569a855acb7c5fc7c4adf"
@@ -283,7 +283,7 @@
     "outputPaths": [
      "Messages.0.Body.Records.0.s3.object.key"
     ],
-    "salt": "1717875757898"
+    "salt": "1726169340196"
    },
    "DependsOn": [
     "AwsApiCallS3putObject6e450f6e95fe6d25da5bf5102c1ebad4"
@@ -323,7 +323,7 @@
     "outputPaths": [
      "Messages.0.Body.Records.0.s3.object.key"
     ],
-    "salt": "1717875757899"
+    "salt": "1726169340196"
    },
    "DependsOn": [
     "AwsApiCallSQSreceiveMessage63f5d3aa78e2eb58880b181aacc3c74a"
@@ -367,7 +367,16 @@
    "ap-southeast-4": {
     "value": "nodejs20.x"
    },
+   "ap-southeast-5": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-7": {
+    "value": "nodejs20.x"
+   },
    "ca-central-1": {
+    "value": "nodejs20.x"
+   },
+   "ca-west-1": {
     "value": "nodejs20.x"
    },
    "cn-north-1": {
@@ -381,6 +390,9 @@
    },
    "eu-central-2": {
     "value": "nodejs20.x"
+   },
+   "eu-isoe-west-1": {
+    "value": "nodejs18.x"
    },
    "eu-north-1": {
     "value": "nodejs20.x"
@@ -407,6 +419,9 @@
     "value": "nodejs20.x"
    },
    "me-south-1": {
+    "value": "nodejs20.x"
+   },
+   "mx-central-1": {
     "value": "nodejs20.x"
    },
    "sa-east-1": {

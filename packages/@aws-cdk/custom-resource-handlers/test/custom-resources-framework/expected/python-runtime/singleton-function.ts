@@ -9,8 +9,12 @@ export class TestSingletonFunction extends lambda.SingletonFunction {
       ...props,
       "code": lambda.Code.fromAsset(path.join(__dirname, 'my-handler')),
       "handler": "index.handler",
-      "runtime": lambda.Runtime.PYTHON_3_10
+      "runtime": lambda.Runtime.PYTHON_3_11
     });
+    this.addMetadata('aws:cdk:is-custom-resource-handler-singleton', true);
+    this.addMetadata('aws:cdk:is-custom-resource-handler-runtime-family', this.runtime.family);
+    if (props?.logGroup) { this.logGroup.node.addMetadata('aws:cdk:is-custom-resource-handler-logGroup', true) };
+    if (props?.logRetention) { ((this as any).lambdaFunction as lambda.Function)._logRetention?.node.addMetadata('aws:cdk:is-custom-resource-handler-logRetention', true) };
   }
 }
 

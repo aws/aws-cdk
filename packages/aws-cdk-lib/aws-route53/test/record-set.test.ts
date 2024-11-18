@@ -4,7 +4,7 @@ import * as cloudfront from '../../aws-cloudfront';
 import * as origins from '../../aws-cloudfront-origins';
 import * as iam from '../../aws-iam';
 import * as targets from '../../aws-route53-targets';
-import { Duration, RemovalPolicy, Stack } from '../../core';
+import { CfnParameter, Duration, RemovalPolicy, Stack } from '../../core';
 import * as route53 from '../lib';
 
 describe('record set', () => {
@@ -893,27 +893,6 @@ describe('record set', () => {
     });
   });
 
-  test('CrossAccountZoneDelegationRecord should throw if delegatedZone is imported', () => {
-    // GIVEN
-    const stack = new Stack();
-    const parentZone = new route53.PublicHostedZone(stack, 'ParentHostedZone', {
-      zoneName: 'myzone.com',
-    });
-
-    // WHEN
-    const childZone = route53.PublicHostedZone.fromPublicHostedZoneAttributes(stack, 'ChildHostedZone', {
-      hostedZoneId: 'fake-id',
-      zoneName: 'fake-name',
-    });
-
-    //THEN
-    expect(() => new route53.CrossAccountZoneDelegationRecord(stack, 'Delegation', {
-      delegatedZone: childZone,
-      parentHostedZoneId: parentZone.hostedZoneId,
-      delegationRole: parentZone.crossAccountZoneDelegationRole!,
-    })).toThrow(/Not able to retrieve Name Servers for fake-name due to it being imported./);
-  });
-
   testDeprecated('Cross account zone delegation record with parentHostedZoneName', () => {
     // GIVEN
     const stack = new Stack();
@@ -1266,6 +1245,66 @@ describe('record set', () => {
       TTL: '1800',
       Weight: 0,
       SetIdentifier: 'WEIGHT_0_ID_RecordSet',
+    });
+  });
+
+  test('with weight provided by CfnParameter', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+
+    const weightParameter = new CfnParameter(stack, 'RecordWeight', {
+      type: 'Number',
+      default: 0,
+      minValue: 0,
+      maxValue: 255,
+    });
+
+    // WHEN
+    new route53.RecordSet(stack, 'RecordSet', {
+      zone,
+      recordName: 'www',
+      recordType: route53.RecordType.CNAME,
+      target: route53.RecordTarget.fromValues('zzz'),
+      weight: weightParameter.valueAsNumber,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasParameter('RecordWeight', {
+      Type: 'Number',
+      Default: 0,
+      MinValue: 0,
+      MaxValue: 255,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      Name: 'www.myzone.',
+      Type: 'CNAME',
+      HostedZoneId: {
+        Ref: 'HostedZoneDB99F866',
+      },
+      ResourceRecords: [
+        'zzz',
+      ],
+      TTL: '1800',
+      Weight: {
+        Ref: 'RecordWeight',
+      },
+      SetIdentifier: {
+        'Fn::Join': [
+          '',
+          [
+            'WEIGHT_',
+            {
+              Ref: 'RecordWeight',
+            },
+            '_ID_RecordSet',
+          ],
+        ],
+      },
     });
   });
 

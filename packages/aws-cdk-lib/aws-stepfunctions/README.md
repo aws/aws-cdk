@@ -574,15 +574,134 @@ const distributedMap = new sfn.DistributedMap(this, 'Distributed Map State', {
 distributedMap.itemProcessor(new sfn.Pass(this, 'Pass State'));
 ```
 
-Map states in Distributed mode support multiple sources for an array to iterate:
+`DistributedMap` supports various input source types to determine a list of objects to iterate over:
 
-* JSON array from the state input payload
-* objects in an S3 bucket and optional prefix
+* JSON array from the JSON state input
+  * By default, `DistributedMap` assumes whole JSON state input is an JSON array and iterates over it:
+  ```ts
+  /**
+   * JSON state input:
+   *  [
+   *    "item1",
+   *    "item2"
+   *  ]
+   */
+  const distributedMap = new sfn.DistributedMap(this, 'DistributedMap');
+  distributedMap.itemProcessor(new sfn.Pass(this, 'Pass'));
+  ```
+  * When input source is present at a specific path in JSON state input, then `itemsPath` can be utilised to configure the iterator source.
+  ```ts
+  /**
+   * JSON state input:
+   *  {
+   *    "distributedMapItemList": [
+   *      "item1",
+   *      "item2"
+   *    ]
+   *  }
+   */
+  const distributedMap = new sfn.DistributedMap(this, 'DistributedMap', {
+    itemsPath: '$.distributedMapItemList',
+  });
+  distributedMap.itemProcessor(new sfn.Pass(this, 'Pass'));
+  ```
+* Objects in a S3 bucket with an optional prefix.
+  * When `DistributedMap` is required to iterate over objects stored in a S3 bucket, then an object of `S3ObjectsItemReader` can be passed to `itemReader` to configure the iterator source as follows:
+  ```ts
+  import * as s3 from 'aws-cdk-lib/aws-s3';
+
+  /**
+   * Tree view of bucket:
+   *  my-bucket
+   *  |
+   *  +--item1
+   *  |
+   *  +--otherItem
+   *  |
+   *  +--item2
+   *  |
+   *  ...
+   */
+  const bucket = new s3.Bucket(this, 'Bucket', {
+    bucketName: 'my-bucket',
+  });
+
+  const distributedMap = new sfn.DistributedMap(this, 'DistributedMap', {
+    itemReader: new sfn.S3ObjectsItemReader({
+      bucket,
+      prefix: 'item',
+    }),
+  });
+  distributedMap.itemProcessor(new sfn.Pass(this, 'Pass'));
+  ```
+  * If information about `bucket` is only known while starting execution of `StateMachine` (dynamically or at run-time) via JSON state input:
+  ```ts
+  /**
+   * JSON state input:
+   *  {
+   *    "bucketName": "my-bucket",
+   *    "prefix": "item"
+   *  }
+   */
+  const distributedMap = new sfn.DistributedMap(this, 'DistributedMap', {
+    itemReader: new sfn.S3ObjectsItemReader({
+      bucketNamePath: sfn.JsonPath.stringAt('$.bucketName'),
+      prefix: sfn.JsonPath.stringAt('$.prefix'),
+    }),
+  });
+  distributedMap.itemProcessor(new sfn.Pass(this, 'Pass'));
+  ```
+  * Both `bucket` and `bucketNamePath` are mutually exclusive.
 * JSON array in a JSON file stored in S3
+  * When `DistributedMap` is required to iterate over a JSON array stored in a JSON file in a S3 bucket, then an object of `S3JsonItemReader` can be passed to `itemReader` to configure the iterator source as follows:
+  ```ts
+  import * as s3 from 'aws-cdk-lib/aws-s3';
+
+  /**
+   * Tree view of bucket:
+   *  my-bucket
+   *  |
+   *  +--input.json
+   *  |
+   *  ...
+   *
+   * File content of input.json:
+   *  [
+   *    "item1",
+   *    "item2"
+   *  ]
+   */
+  const bucket = new s3.Bucket(this, 'Bucket', {
+    bucketName: 'my-bucket',
+  });
+
+  const distributedMap = new sfn.DistributedMap(this, 'DistributedMap', {
+    itemReader: new sfn.S3JsonItemReader({
+      bucket,
+      key: 'input.json',
+    }),
+  });
+  distributedMap.itemProcessor(new sfn.Pass(this, 'Pass'));
+  ```
+  * If information about `bucket` is only known while starting execution of `StateMachine` (dynamically or at run-time) via state input:
+  ```ts
+  /**
+   * JSON state input:
+   *  {
+   *    "bucketName": "my-bucket",
+   *    "key": "input.json"
+   *  }
+   */
+  const distributedMap = new sfn.DistributedMap(this, 'DistributedMap', {
+    itemReader: new sfn.S3JsonItemReader({
+      bucketNamePath: sfn.JsonPath.stringAt('$.bucketName'),
+      key: sfn.JsonPath.stringAt('$.key'),
+    }),
+  });
+  distributedMap.itemProcessor(new sfn.Pass(this, 'Pass'));
+  ```
 * CSV file stored in S3
 * S3 inventory manifest stored in S3
-
-There are multiple classes that implement `IItemReader` that can be used to configure the iterator source.  These can be provided via the optional `itemReader` property.  The default behavior if `itemReader` is omitted is to use the input payload.
 
 Map states in Distributed mode also support writing results of the iterator to an S3 bucket and optional prefix.  Use a `ResultWriter` object provided via the optional `resultWriter` property to configure which S3 location iterator results will be written. The default behavior id `resultWriter` is omitted is to use the state output payload. However, if the iterator results are larger than the 256 kb limit for Step Functions payloads then the State Machine will fail.
 
@@ -593,10 +712,6 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 const bucket = new s3.Bucket(this, 'Bucket');
 
 const distributedMap = new sfn.DistributedMap(this, 'Distributed Map State', {
-  itemReader: new sfn.S3JsonItemReader({
-    bucket: bucket,
-    key: 'my-key.json',
-  }),
   resultWriter: new sfn.ResultWriter({
     bucket: bucket,
     prefix: 'my-prefix',
@@ -972,6 +1087,118 @@ new sfn.StateMachine(this, 'MyStateMachine', {
     destination: logGroup,
     level: sfn.LogLevel.ALL,
   },
+});
+```
+
+## Encryption 
+You can encrypt your data using a customer managed key for AWS Step Functions state machines and activities. You can configure a symmetric AWS KMS key and data key reuse period when creating or updating a State Machine or when creating an Activity. The execution history and state machine definition will be encrypted with the key applied to the State Machine. Activity inputs will be encrypted with the key applied to the Activity.
+
+### Encrypting state machines 
+You can provide a symmetric KMS key to encrypt the state machine definition and execution history:
+```ts
+import * as kms from 'aws-cdk-lib/aws-kms';
+import * as cdk from 'aws-cdk-lib';
+
+const kmsKey = new kms.Key(this, 'Key');
+const stateMachine = new sfn.StateMachine(this, 'StateMachineWithCMKEncryptionConfiguration', {
+  stateMachineName: 'StateMachineWithCMKEncryptionConfiguration',
+  definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(this, 'Pass'))),
+  stateMachineType: sfn.StateMachineType.STANDARD,
+  encryptionConfiguration: new sfn.CustomerManagedEncryptionConfiguration(kmsKey, cdk.Duration.seconds(60)),
+});
+```
+
+### Encrypting state machine logs in Cloud Watch Logs
+If a state machine is encrypted with a customer managed key and has logging enabled, its decrypted execution history will be stored in CloudWatch Logs. If you want to encrypt the logs from the state machine using your own KMS key, you can do so by configuring the `LogGroup` associated with the state machine to use a KMS key.
+```ts
+import * as kms from 'aws-cdk-lib/aws-kms';
+import * as cdk from 'aws-cdk-lib';
+import * as logs from 'aws-cdk-lib/aws-logs';
+
+const stateMachineKmsKey = new kms.Key(this, 'StateMachine Key');
+const logGroupKey = new kms.Key(this, 'LogGroup Key');
+
+/*
+  Required KMS key policy which allows the CloudWatchLogs service principal to encrypt the entire log group using the
+  customer managed kms key. See: https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/encrypt-log-data-kms.html#cmk-permissions
+*/
+logGroupKey.addToResourcePolicy(new cdk.aws_iam.PolicyStatement({
+  resources: ['*'],
+  actions: ['kms:Encrypt*', 'kms:Decrypt*', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:Describe*'],
+  principals: [new cdk.aws_iam.ServicePrincipal(`logs.${cdk.Stack.of(this).region}.amazonaws.com`)],
+  conditions: {
+    ArnEquals: {
+      'kms:EncryptionContext:aws:logs:arn': cdk.Stack.of(this).formatArn({
+        service: 'logs',
+        resource: 'log-group',
+        sep: ':',
+        resourceName: '/aws/vendedlogs/states/MyLogGroup',
+      }),
+    },
+  },
+}));
+
+// Create logGroup and provding encryptionKey which will be used to encrypt the log group
+const logGroup = new logs.LogGroup(this, 'MyLogGroup', {
+  logGroupName: '/aws/vendedlogs/states/MyLogGroup',
+  encryptionKey: logGroupKey,
+});
+
+// Create state machine with CustomerManagedEncryptionConfiguration
+const stateMachine = new sfn.StateMachine(this, 'StateMachineWithCMKWithCWLEncryption', {
+  stateMachineName: 'StateMachineWithCMKWithCWLEncryption',
+  definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(this, 'PassState', {
+    result: sfn.Result.fromString('Hello World'),
+  }))),
+  stateMachineType: sfn.StateMachineType.STANDARD,
+  encryptionConfiguration: new sfn.CustomerManagedEncryptionConfiguration(stateMachineKmsKey),
+  logs: {
+    destination: logGroup,
+    level: sfn.LogLevel.ALL,
+    includeExecutionData: true,
+  },
+});
+```
+
+### Encrypting activity inputs
+When you provide a symmetric KMS key, all inputs from the Step Functions Activity will be encrypted using the provided KMS key:
+```ts
+import * as kms from 'aws-cdk-lib/aws-kms';
+import * as cdk from 'aws-cdk-lib';
+
+const kmsKey = new kms.Key(this, 'Key');
+const activity = new sfn.Activity(this, 'ActivityWithCMKEncryptionConfiguration', {
+  activityName: 'ActivityWithCMKEncryptionConfiguration',
+  encryptionConfiguration: new sfn.CustomerManagedEncryptionConfiguration(kmsKey, cdk.Duration.seconds(75))
+});
+```
+
+### Changing Encryption
+If you want to switch encryption from a customer provided key to a Step Functions owned key or vice-versa you must explicitly provide `encryptionConfiguration?`
+
+#### Example: Switching from a customer managed key to a Step Functions owned key for StateMachine
+
+#### Before
+```ts
+import * as kms from 'aws-cdk-lib/aws-kms';
+import * as cdk from 'aws-cdk-lib';
+
+const kmsKey = new kms.Key(this, 'Key');
+const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
+  stateMachineName: 'StateMachine',
+  definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(this, 'Pass'))),
+  stateMachineType: sfn.StateMachineType.STANDARD,
+  encryptionConfiguration: new sfn.CustomerManagedEncryptionConfiguration(kmsKey, cdk.Duration.seconds(60)),
+});
+```
+
+#### After
+```ts
+const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
+  stateMachineName: 'StateMachine',
+  definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(this, 'Pass'))),
+  stateMachineType: sfn.StateMachineType.STANDARD,
+  encryptionConfiguration: new sfn.AwsOwnedEncryptionConfiguration(),
 });
 ```
 

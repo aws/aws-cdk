@@ -1,5 +1,5 @@
-import * as cfn_diff from '@aws-cdk/cloudformation-diff';
-import { ISDK } from '../aws-auth';
+import type { PropertyDifference, Resource } from '@aws-cdk/cloudformation-diff';
+import type { SDK } from '../aws-auth';
 
 export const ICON = '✨';
 
@@ -18,7 +18,7 @@ export interface HotswappableChange {
    */
   readonly resourceNames: string[];
 
-  readonly apply: (sdk: ISDK) => Promise<void>;
+  readonly apply: (sdk: SDK) => Promise<void>;
 }
 
 export interface NonHotswappableChange {
@@ -76,19 +76,19 @@ export class HotswappableChangeCandidate {
   /**
    * The value the resource is being updated from
    */
-  public readonly oldValue: cfn_diff.Resource;
+  public readonly oldValue: Resource;
 
   /**
    * The value the resource is being updated to
    */
-  public readonly newValue: cfn_diff.Resource;
+  public readonly newValue: Resource;
 
   /**
    * The changes made to the resource properties
    */
   public readonly propertyUpdates: PropDiffs;
 
-  public constructor(logicalId: string, oldValue: cfn_diff.Resource, newValue: cfn_diff.Resource, propertyUpdates: PropDiffs) {
+  public constructor(logicalId: string, oldValue: Resource, newValue: Resource, propertyUpdates: PropDiffs) {
     this.logicalId = logicalId;
     this.oldValue = oldValue;
     this.newValue = newValue;
@@ -96,7 +96,53 @@ export class HotswappableChangeCandidate {
   }
 }
 
-type Exclude = { [key: string]: Exclude | true }
+type Exclude = { [key: string]: Exclude | true };
+
+/**
+ * Represents configuration property overrides for hotswap deployments
+ */
+export class HotswapPropertyOverrides {
+  // Each supported resource type will have its own properties. Currently this is ECS
+  ecsHotswapProperties?: EcsHotswapProperties;
+
+  public constructor (ecsHotswapProperties?: EcsHotswapProperties) {
+    this.ecsHotswapProperties = ecsHotswapProperties;
+  }
+}
+
+/**
+ * Represents configuration properties for ECS hotswap deployments
+ */
+export class EcsHotswapProperties {
+  // The lower limit on the number of your service's tasks that must remain in the RUNNING state during a deployment, as a percentage of the desiredCount
+  readonly minimumHealthyPercent?: number;
+  // The upper limit on the number of your service's tasks that are allowed in the RUNNING or PENDING state during a deployment, as a percentage of the desiredCount
+  readonly maximumHealthyPercent?: number;
+
+  public constructor (minimumHealthyPercent?: number, maximumHealthyPercent?: number) {
+    if (minimumHealthyPercent !== undefined && minimumHealthyPercent < 0 ) {
+      throw new Error('hotswap-ecs-minimum-healthy-percent can\'t be a negative number');
+    }
+    if (maximumHealthyPercent !== undefined && maximumHealthyPercent < 0 ) {
+      throw new Error('hotswap-ecs-maximum-healthy-percent can\'t be a negative number');
+    }
+    // In order to preserve the current behaviour, when minimumHealthyPercent is not defined, it will be set to the currently default value of 0
+    if (minimumHealthyPercent == undefined) {
+      this.minimumHealthyPercent = 0;
+    } else {
+      this.minimumHealthyPercent = minimumHealthyPercent;
+    }
+    this.maximumHealthyPercent = maximumHealthyPercent;
+  }
+
+  /**
+   * Check if any hotswap properties are defined
+   * @returns true if all properties are undefined, false otherwise
+  */
+  public isEmpty(): boolean {
+    return this.minimumHealthyPercent === 0 && this.maximumHealthyPercent === undefined;
+  }
+}
 
 /**
  * This function transforms all keys (recursively) in the provided `val` object.
@@ -135,16 +181,16 @@ export function lowerCaseFirstCharacter(str: string): string {
   return str.length > 0 ? `${str[0].toLowerCase()}${str.slice(1)}` : str;
 }
 
-export type PropDiffs = Record<string, cfn_diff.PropertyDifference<any>>;
+export type PropDiffs = Record<string, PropertyDifference<any>>;
 
 export class ClassifiedChanges {
   public constructor(
     public readonly change: HotswappableChangeCandidate,
     public readonly hotswappableProps: PropDiffs,
     public readonly nonHotswappableProps: PropDiffs,
-  ) { }
+  ) {}
 
-  public reportNonHotswappablePropertyChanges(ret: ChangeHotswapResult):void {
+  public reportNonHotswappablePropertyChanges(ret: ChangeHotswapResult): void {
     const nonHotswappablePropNames = Object.keys(this.nonHotswappableProps);
     if (nonHotswappablePropNames.length > 0) {
       const tagOnlyChange = nonHotswappablePropNames.length === 1 && nonHotswappablePropNames[0] === 'Tags';
@@ -152,7 +198,9 @@ export class ClassifiedChanges {
         ret,
         this.change,
         this.nonHotswappableProps,
-        tagOnlyChange ? 'Tags are not hotswappable' : `resource properties '${nonHotswappablePropNames}' are not hotswappable on this resource type`,
+        tagOnlyChange
+          ? 'Tags are not hotswappable'
+          : `resource properties '${nonHotswappablePropNames}' are not hotswappable on this resource type`,
       );
     }
   }
@@ -162,10 +210,7 @@ export class ClassifiedChanges {
   }
 }
 
-export function classifyChanges(
-  xs: HotswappableChangeCandidate,
-  hotswappablePropNames: string[],
-): ClassifiedChanges {
+export function classifyChanges(xs: HotswappableChangeCandidate, hotswappablePropNames: string[]): ClassifiedChanges {
   const hotswappableProps: PropDiffs = {};
   const nonHotswappableProps: PropDiffs = {};
 
@@ -205,11 +250,13 @@ export function reportNonHotswappableResource(
   change: HotswappableChangeCandidate,
   reason?: string,
 ): ChangeHotswapResult {
-  return [{
-    hotswappable: false,
-    rejectedChanges: Object.keys(change.propertyUpdates),
-    logicalId: change.logicalId,
-    resourceType: change.newValue.Type,
-    reason,
-  }];
+  return [
+    {
+      hotswappable: false,
+      rejectedChanges: Object.keys(change.propertyUpdates),
+      logicalId: change.logicalId,
+      resourceType: change.newValue.Type,
+      reason,
+    },
+  ];
 }

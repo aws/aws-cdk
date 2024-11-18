@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { BaseDeploymentConfig, BaseDeploymentConfigOptions, IBaseDeploymentConfig } from '../base-deployment-config';
+import { BaseDeploymentConfig, BaseDeploymentConfigOptions, IBaseDeploymentConfig, ZonalConfig } from '../base-deployment-config';
 import { MinimumHealthyHosts } from '../host-health-config';
 import { deploymentConfig } from '../private/utils';
 
@@ -21,6 +21,13 @@ export interface ServerDeploymentConfigProps extends BaseDeploymentConfigOptions
    * Minimum number of healthy hosts.
    */
   readonly minimumHealthyHosts: MinimumHealthyHosts;
+
+  /**
+   * Configure CodeDeploy to deploy your application to one Availability Zone at a time within an AWS Region.
+   *
+   * @default - deploy your application to a random selection of hosts across a Region
+   */
+  readonly zonalConfig?: ZonalConfig;
 }
 
 /**

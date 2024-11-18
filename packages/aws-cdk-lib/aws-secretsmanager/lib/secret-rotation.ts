@@ -131,7 +131,7 @@ export class SecretRotationApplication {
 
   constructor(applicationId: string, semanticVersion: string, options?: SecretRotationApplicationOptions) {
     // partitions are handled explicitly via applicationArnForPartition()
-    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    // eslint-disable-next-line @cdklabs/no-literal-partition
     this.applicationId = `arn:aws:serverlessrepo:us-east-1:297356227824:applications/${applicationId}`;
     this.semanticVersion = semanticVersion;
     this.applicationName = applicationId;
@@ -164,7 +164,7 @@ export class SecretRotationApplication {
     } else if (partition === 'aws-cn') {
       return '1.1.237';
     } else if (partition === 'aws-us-gov') {
-      return '1.1.93';
+      return '1.1.213';
     } else {
       throw new Error(`unsupported partition: ${partition}`);
     }

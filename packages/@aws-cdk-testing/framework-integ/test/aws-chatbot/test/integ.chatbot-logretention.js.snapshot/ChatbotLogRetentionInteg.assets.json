@@ -14,7 +14,7 @@
         }
       }
     },
-    "03bc95cbc8ef38ccb88d5825fcd559bc6059f53ddfcc94f4e1839782100e0b89": {
+    "8324608ef0537409fe3fe296266576f4b13f5eb34a2ccbd6b9d30fad2c575d02": {
       "source": {
         "path": "ChatbotLogRetentionInteg.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "03bc95cbc8ef38ccb88d5825fcd559bc6059f53ddfcc94f4e1839782100e0b89.json",
+          "objectKey": "8324608ef0537409fe3fe296266576f4b13f5eb34a2ccbd6b9d30fad2c575d02.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

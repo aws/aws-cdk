@@ -1,5 +1,22 @@
 {
  "Resources": {
+  "Service3InstanceRoleD40BEE82": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "tasks.apprunner.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
   "Service3AccessRole3ACBAAA0": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -31,6 +48,7 @@
        "Action": [
         "ecr:BatchCheckLayerAvailability",
         "ecr:BatchGetImage",
+        "ecr:DescribeImages",
         "ecr:GetDownloadUrlForLayer"
        ],
        "Effect": "Allow",
@@ -72,6 +90,19 @@
   "Service342D067F2": {
    "Type": "AWS::AppRunner::Service",
    "Properties": {
+    "InstanceConfiguration": {
+     "InstanceRoleArn": {
+      "Fn::GetAtt": [
+       "Service3InstanceRoleD40BEE82",
+       "Arn"
+      ]
+     }
+    },
+    "NetworkConfiguration": {
+     "EgressConfiguration": {
+      "EgressType": "DEFAULT"
+     }
+    },
     "SourceConfiguration": {
      "AuthenticationConfiguration": {
       "AccessRoleArn": {
@@ -91,19 +122,23 @@
       },
       "ImageRepositoryType": "ECR"
      }
-    },
-    "InstanceConfiguration": {
-      "InstanceRoleArn": {
-        "Fn::GetAtt": [
-          "Service3InstanceRoleD40BEE82",
-          "Arn"
-        ]
+    }
+   }
+  },
+  "Service2InstanceRole3F57F2AA": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "tasks.apprunner.amazonaws.com"
+       }
       }
-    },
-    "NetworkConfiguration": {
-     "EgressConfiguration": {
-      "EgressType": "DEFAULT"
-     }
+     ],
+     "Version": "2012-10-17"
     }
    }
   },
@@ -138,6 +173,7 @@
        "Action": [
         "ecr:BatchCheckLayerAvailability",
         "ecr:BatchGetImage",
+        "ecr:DescribeImages",
         "ecr:GetDownloadUrlForLayer"
        ],
        "Effect": "Allow",
@@ -179,6 +215,19 @@
   "Service2AB4D14D8": {
    "Type": "AWS::AppRunner::Service",
    "Properties": {
+    "InstanceConfiguration": {
+     "InstanceRoleArn": {
+      "Fn::GetAtt": [
+       "Service2InstanceRole3F57F2AA",
+       "Arn"
+      ]
+     }
+    },
+    "NetworkConfiguration": {
+     "EgressConfiguration": {
+      "EgressType": "DEFAULT"
+     }
+    },
     "SourceConfiguration": {
      "AuthenticationConfiguration": {
       "AccessRoleArn": {
@@ -217,56 +266,9 @@
       },
       "ImageRepositoryType": "ECR"
      }
-    },
-    "InstanceConfiguration": {
-      "InstanceRoleArn": {
-        "Fn::GetAtt": [
-          "Service2InstanceRole3F57F2AA",
-          "Arn"
-        ]
-      }
-    },
-    "NetworkConfiguration": {
-     "EgressConfiguration": {
-      "EgressType": "DEFAULT"
-     }
     }
    }
-  },
-  "Service3InstanceRoleD40BEE82": {
-    "Type": "AWS::IAM::Role",
-    "Properties": {
-     "AssumeRolePolicyDocument": {
-      "Statement": [
-       {
-        "Action": "sts:AssumeRole",
-        "Effect": "Allow",
-        "Principal": {
-         "Service": "tasks.apprunner.amazonaws.com"
-        }
-       }
-      ],
-      "Version": "2012-10-17"
-     }
-    }
-   },
-   "Service2InstanceRole3F57F2AA": {
-    "Type": "AWS::IAM::Role",
-    "Properties": {
-     "AssumeRolePolicyDocument": {
-      "Statement": [
-       {
-        "Action": "sts:AssumeRole",
-        "Effect": "Allow",
-        "Principal": {
-         "Service": "tasks.apprunner.amazonaws.com"
-        }
-       }
-      ],
-      "Version": "2012-10-17"
-     }
-    }
-   }
+  }
  },
  "Outputs": {
   "URL3": {

@@ -12,6 +12,7 @@ import { Configuration } from '../../lib/settings';
 import { testAssembly } from '../util';
 import { mockSpawn } from '../util/mock-child_process';
 import { MockSdkProvider } from '../util/mock-sdk';
+import { RWLock } from '../../lib/api/util/rwlock';
 
 let sdkProvider: MockSdkProvider;
 let config: Configuration;
@@ -76,7 +77,7 @@ test('cli throws when manifest version > schema version', async () => {
   }
 
   const expectedError = 'This CDK CLI is not compatible with the CDK library used by your application. Please upgrade the CLI to the latest version.'
-    + `\n(Cloud assembly schema version mismatch: Maximum schema version supported is ${currentSchemaVersion}, but found ${mockManifestVersion})`;
+    + `\n(Cloud assembly schema version mismatch: Maximum schema version supported is ${semver.major(currentSchemaVersion)}.x.x, but found ${mockManifestVersion})`;
 
   config.settings.set(['app'], 'cdk.out');
 
@@ -233,6 +234,25 @@ test('cli does not throw when the `build` script succeeds', async () => {
   const { lock } = await execProgram(sdkProvider, config);
   await lock.release();
 }, TEN_SECOND_TIMEOUT);
+
+test('cli releases the outdir lock when execProgram throws', async () => {
+  // GIVEN
+  config.settings.set(['app'], 'cloud-executable');
+  mockSpawn({
+    commandLine: 'fake-command',
+    exitCode: 127,
+  });
+
+  // WHEN
+  await expect(execProgram(sdkProvider, config)).rejects.toThrow();
+
+  const output = config.settings.get(['output']);
+  expect(output).toBeDefined();
+
+  // check that the lock is released
+  const lock = await new RWLock(output).acquireWrite();
+  await lock.release();
+});
 
 function writeOutputAssembly() {
   const asm = testAssembly({
