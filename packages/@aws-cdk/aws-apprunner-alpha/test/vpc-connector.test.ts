@@ -153,7 +153,7 @@ test('create a vpcConnector with an empty security group array should create one
 test.each([
   ['tes'],
   ['test-vpc-connector-name-over-limitation-apprunner'],
-])('vpcConnectorName length is invalide (name: %s)', (vpcConnectorName: string) => {
+])('vpcConnectorName length is invalid (name: %s)', (vpcConnectorName: string) => {
   // GIVEN
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'demo-stack');
