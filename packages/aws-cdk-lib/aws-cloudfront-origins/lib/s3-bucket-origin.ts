@@ -124,6 +124,13 @@ class S3BucketOriginWithOAC extends S3BucketOrigin {
 
     const distributionId = options.distributionId;
     const accessLevels = new Set(this.originAccessLevels ?? [cloudfront.AccessLevel.READ]);
+    if (accessLevels.has(AccessLevel.LIST)) {
+      Annotations.of(scope).addWarningV2('@aws-cdk/aws-cloudfront-origins:listBucketSecurityRisk',
+        'When the origin with AccessLevel.LIST is associated to the default behavior, '+
+        'it is strongly recommended to ensure the distribution\'s defaultRootObject is specified,\n'+
+        'See the "Setting up OAC with LIST permission" section of module\'s README for more info.');
+    }
+
     const bucketPolicyActions = this.getBucketPolicyActions(accessLevels);
     const bucketPolicyResult = this.grantDistributionAccessToBucket(distributionId!, bucketPolicyActions);
 

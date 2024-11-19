@@ -49,9 +49,6 @@ export enum AccessLevel {
   READ = 'READ',
   /**
    * Grants list permissions to CloudFront Distribution
-   *
-   * When you specify this access level, it is strongly recommended to set `defaultRootObject`
-   * for the distribution not to expose the list of S3 objects unexpectedly.
    */
   LIST = 'LIST',
   /**

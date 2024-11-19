@@ -360,7 +360,7 @@ new cloudfront.Distribution(this, 'distribution', {
 });
 ```
 
-It is highly recommended to specify `defaultRootObject` distribution property.
+The the origin is associated to the default behavior, it is highly recommended to specify `defaultRootObject` distribution property.
 Without it, the root path `https://xxxx.cloudfront.net/` will return the list of the S3 object keys.
 
 #### Setting up an OAI (legacy)

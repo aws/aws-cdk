@@ -892,6 +892,22 @@ describe('S3BucketOrigin', () => {
         },
       });
     });
+
+    it('should add the warning annotation', () => {
+      const stack = new Stack();
+      const bucket = new s3.Bucket(stack, 'MyBucket');
+      const origin = origins.S3BucketOrigin.withOriginAccessControl(bucket, {
+        originAccessLevels: [cloudfront.AccessLevel.READ, cloudfront.AccessLevel.LIST],
+      });
+      new cloudfront.Distribution(stack, 'MyDistribution', {
+        defaultBehavior: { origin },
+      });
+      Annotations.fromStack(stack).hasWarning('/Default/MyDistribution/Origin1',
+        'When the origin with AccessLevel.LIST is associated to the default behavior, '+
+        'it is strongly recommended to ensure the distribution\'s defaultRootObject is specified,\n'+
+        'See the "Setting up OAC with LIST permission" section of module\'s README for more info.'+
+        ' [ack: @aws-cdk/aws-cloudfront-origins:listBucketSecurityRisk]');
+    });
   });
 
   describe('withOriginAccessIdentity', () => {
