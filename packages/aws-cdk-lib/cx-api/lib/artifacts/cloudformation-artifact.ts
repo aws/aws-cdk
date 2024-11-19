@@ -56,7 +56,7 @@ export class CloudFormationStackArtifact extends CloudArtifact {
   /**
    * SNS Topics that will receive stack events.
    */
-  public readonly notificationArns: string[];
+  public readonly notificationArns?: string[];
 
   /**
    * The physical name of this stack.
@@ -174,7 +174,7 @@ export class CloudFormationStackArtifact extends CloudArtifact {
     // We get the tags from 'properties' if available (cloud assembly format >= 6.0.0), otherwise
     // from the stack metadata
     this.tags = properties.tags ?? this.tagsFromMetadata();
-    this.notificationArns = properties.notificationArns ?? [];
+    this.notificationArns = properties.notificationArns;
     this.assumeRoleArn = properties.assumeRoleArn;
     this.assumeRoleExternalId = properties.assumeRoleExternalId;
     this.assumeRoleAdditionalOptions = properties.assumeRoleAdditionalOptions;

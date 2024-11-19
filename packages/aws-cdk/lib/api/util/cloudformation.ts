@@ -400,7 +400,6 @@ async function uploadBodyParameterAndCreateChangeSet(
       env.resolvedEnvironment,
       new AssetManifestBuilder(),
       env.resources,
-      env.sdk,
     );
     const cfn = env.sdk.cloudFormation();
     const exists = (await CloudFormationStack.lookup(cfn, options.stack.stackName, false)).exists;
