@@ -260,13 +260,13 @@ const peeringConnection = vpcA.createPeeringConnection('sameAccountSameRegionPee
 
 **Case 2: Same Account and Cross Region Peering Connection**
 
-There is no difference from Case 1 when calling `createPeeringConnection`. The only change is that one of the VPCs are created in another stack with a different region.
+There is no difference from Case 1 when calling `createPeeringConnection`. The only change is that one of the VPCs are created in another stack with a different region. To establish cross region VPC peering connection, acceptorVpc needs to be imported to the requestor VPC stack using `fromVpcV2Attributes` method. 
 
 ```ts
 const app = new App();
 
 const stackA = new Stack(app, 'VpcStackA', { env: { account: '000000000000', region: 'us-east-1' } });
-const stackB = new Stack(app, 'VpcStackB', { env: { account: '111111111111', region: 'us-west-2' } });
+const stackB = new Stack(app, 'VpcStackB', { env: { account: '000000000000', region: 'us-west-2' } });
 
 const vpcA = new VpcV2(stackA, 'VpcA', {
   primaryAddressBlock: IpAddresses.ipv4('10.0.0.0/16'),
@@ -280,7 +280,7 @@ const vpcB = VpcV2.fromVpcV2Attributes(stackA, 'ImportedVpcB', {
       vpcId: 'MockVpcBid',
       vpcCidrBlock: '10.1.0.0/16',
       region: 'us-west-2',
-      ownerAccountId: '111111111111',
+      ownerAccountId: '000000000000',
     });
 
 
@@ -302,7 +302,7 @@ const acceptorVpc = new VpcV2(this, 'VpcA', {
   primaryAddressBlock: IpAddresses.ipv4('10.0.0.0/16'),
 });
 
-const acceptorRoleArn = acceptorVpc.createAcceptorVpcRole('000000000000') // Requestor account ID
+const acceptorRoleArn = acceptorVpc.createAcceptorVpcRole('000000000000'); // Requestor account ID
 ```
 
 After creating an IAM role in the acceptor account, we can initiate the peering connection request from the requestor VPC. Import accpeptorVpc to the stack using `fromVpcV2Attributes` method, it is recommended to specify owner account id of the acceptor VPC in case of cross account peering connection, if acceptor VPC is hosted in different region provide region value for import as well. 
