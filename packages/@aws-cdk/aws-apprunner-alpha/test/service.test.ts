@@ -1785,7 +1785,7 @@ test.each([true, false])('isPubliclyAccessible is set %s', (isPubliclyAccessible
 test.each([
   ['tes'],
   ['test-service-name-over-limitation-apprunner'],
-])('serviceName length is invalide (name: %s)', (serviceName: string) => {
+])('serviceName length is invalid (name: %s)', (serviceName: string) => {
   // GIVEN
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'demo-stack');
