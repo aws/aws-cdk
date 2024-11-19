@@ -1134,7 +1134,7 @@
    },
    "aws-us-gov": {
     "applicationId": "arn:aws-us-gov:serverlessrepo:us-gov-west-1:023102451235:applications/SecretsManagerRDSMySQLRotationSingleUser",
-    "semanticVersion": "1.1.93"
+    "semanticVersion": "1.1.213"
    }
   },
   "CustomRotationOptionsRotationSingleUserSARMapping635D6F45": {
@@ -1148,7 +1148,7 @@
    },
    "aws-us-gov": {
     "applicationId": "arn:aws-us-gov:serverlessrepo:us-gov-west-1:023102451235:applications/SecretsManagerRDSMySQLRotationSingleUser",
-    "semanticVersion": "1.1.93"
+    "semanticVersion": "1.1.213"
    }
   }
  },
