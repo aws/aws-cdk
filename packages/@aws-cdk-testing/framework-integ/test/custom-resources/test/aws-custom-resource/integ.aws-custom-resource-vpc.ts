@@ -14,6 +14,11 @@ import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-customresources-vpc');
 const vpc = new ec2.Vpc(stack, 'Vpc', { restrictDefaultSecurityGroup: false });
+const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+  vpc,
+  securityGroupName: 'custom security group',
+  disableInlineRules: true,
+});
 new AwsCustomResource(stack, 'DescribeVpcAttribute', {
   onUpdate: {
     service: 'EC2',
@@ -28,6 +33,7 @@ new AwsCustomResource(stack, 'DescribeVpcAttribute', {
   timeout: cdk.Duration.minutes(3),
   vpc: vpc,
   vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+  securityGroups: [securityGroup],
 });
 
 new IntegTest(app, 'CustomResourceVpc', {
