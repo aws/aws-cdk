@@ -1,3 +1,3 @@
-/packages/aws-cdk @mrgrain
-/packages/@aws-cdk-testing/cli-integ @mrgrain
-/packages/aws-cdk-lib/core @mrgrain
+/packages/aws-cdk @aws/aws-cdk-core-team-test
+/packages/@aws-cdk-testing/cli-integ @aws/aws-cdk-core-team-test
+/packages/aws-cdk-lib/core @aws/aws-cdk-core-team-test
