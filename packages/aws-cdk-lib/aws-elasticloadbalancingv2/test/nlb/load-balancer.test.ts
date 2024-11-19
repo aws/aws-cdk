@@ -1135,41 +1135,6 @@ describe('tests', () => {
         IpAddressType: 'dualstack',
       });
     });
-
-    test('Cannot add UDP or TCP_UDP listeners to a dualstack network load balancer', () => {
-      // GIVEN
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'Stack');
-
-      // WHEN
-      const loadBalancer = new elbv2.NetworkLoadBalancer(stack, 'LB', {
-        vpc,
-        internetFacing: true,
-        ipAddressType: elbv2.IpAddressType.DUAL_STACK,
-      });
-
-      const targetGroup = new elbv2.NetworkTargetGroup(stack, 'tg', {
-        vpc: loadBalancer.vpc,
-        port: 3000,
-      });
-
-      // THEN
-      expect(() => {
-        loadBalancer.addListener('listener', {
-          protocol: elbv2.Protocol.UDP,
-          port: 3000,
-          defaultAction: elbv2.NetworkListenerAction.forward([targetGroup]),
-        });
-      }).toThrow(/UDP or TCP_UDP listeners cannot be added to a dualstack network load balancer/);
-
-      expect(() => {
-        loadBalancer.addListener('listener', {
-          protocol: elbv2.Protocol.TCP_UDP,
-          port: 3000,
-          defaultAction: elbv2.NetworkListenerAction.forward([targetGroup]),
-        });
-      }).toThrow(/UDP or TCP_UDP listeners cannot be added to a dualstack network load balancer/);
-    });
   });
 
   describe('dualstack without public ipv4', () => {

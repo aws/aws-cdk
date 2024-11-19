@@ -195,13 +195,6 @@ export class NetworkListener extends BaseListener implements INetworkListener {
       throw new Error('Protocol must be TLS when alpnPolicy have been specified');
     }
 
-    if (
-      props.loadBalancer.ipAddressType === IpAddressType.DUAL_STACK &&
-      (props.protocol === Protocol.UDP || props.protocol === Protocol.TCP_UDP)
-    ) {
-      throw new Error('UDP or TCP_UDP listeners cannot be added to a dualstack network load balancer.');
-    }
-
     super(scope, id, {
       loadBalancerArn: props.loadBalancer.loadBalancerArn,
       protocol: proto,
