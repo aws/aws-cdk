@@ -786,7 +786,8 @@ var require_helpers_internal = __commonJS({
   "../../aws-cdk-lib/assertions/lib/helpers-internal/index.js"(exports2) {
     "use strict";
     var __createBinding2 = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0) k2 = k;
+      if (k2 === void 0)
+        k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
         desc = { enumerable: true, get: function() {
@@ -795,15 +796,23 @@ var require_helpers_internal = __commonJS({
       }
       Object.defineProperty(o, k2, desc);
     } : function(o, m, k, k2) {
-      if (k2 === void 0) k2 = k;
+      if (k2 === void 0)
+        k2 = k;
       o[k2] = m[k];
     });
     var __exportStar2 = exports2 && exports2.__exportStar || function(m, exports3) {
-      for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports3, p)) __createBinding2(exports3, m, p);
+      for (var p in m)
+        if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports3, p))
+          __createBinding2(exports3, m, p);
     };
     Object.defineProperty(exports2, "__esModule", { value: true });
-    __exportStar2((init_match(), __toCommonJS(match_exports)), exports2);
-    __exportStar2((init_matcher(), __toCommonJS(matcher_exports)), exports2);
+    var _noFold;
+    exports2.Match = void 0;
+    Object.defineProperty(exports2, _noFold = "Match", { enumerable: true, configurable: true, get: () => (init_match(), __toCommonJS(match_exports)).Match });
+    exports2.Matcher = void 0;
+    Object.defineProperty(exports2, _noFold = "Matcher", { enumerable: true, configurable: true, get: () => (init_matcher(), __toCommonJS(matcher_exports)).Matcher });
+    exports2.MatchResult = void 0;
+    Object.defineProperty(exports2, _noFold = "MatchResult", { enumerable: true, configurable: true, get: () => (init_matcher(), __toCommonJS(matcher_exports)).MatchResult });
   }
 });
 
@@ -2598,8 +2607,128 @@ var require_dist_cjs11 = __commonJS({
   }
 });
 
-// ../../../node_modules/@smithy/core/node_modules/@smithy/util-middleware/dist-cjs/index.js
+// ../../../node_modules/@smithy/core/node_modules/@smithy/types/dist-cjs/index.js
 var require_dist_cjs12 = __commonJS({
+  "../../../node_modules/@smithy/core/node_modules/@smithy/types/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      AlgorithmId: () => AlgorithmId,
+      EndpointURLScheme: () => EndpointURLScheme,
+      FieldPosition: () => FieldPosition,
+      HttpApiKeyAuthLocation: () => HttpApiKeyAuthLocation2,
+      HttpAuthLocation: () => HttpAuthLocation,
+      IniSectionType: () => IniSectionType,
+      RequestHandlerProtocol: () => RequestHandlerProtocol,
+      SMITHY_CONTEXT_KEY: () => SMITHY_CONTEXT_KEY4,
+      getDefaultClientConfiguration: () => getDefaultClientConfiguration,
+      resolveDefaultRuntimeConfig: () => resolveDefaultRuntimeConfig
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var HttpAuthLocation = /* @__PURE__ */ ((HttpAuthLocation2) => {
+      HttpAuthLocation2["HEADER"] = "header";
+      HttpAuthLocation2["QUERY"] = "query";
+      return HttpAuthLocation2;
+    })(HttpAuthLocation || {});
+    var HttpApiKeyAuthLocation2 = /* @__PURE__ */ ((HttpApiKeyAuthLocation22) => {
+      HttpApiKeyAuthLocation22["HEADER"] = "header";
+      HttpApiKeyAuthLocation22["QUERY"] = "query";
+      return HttpApiKeyAuthLocation22;
+    })(HttpApiKeyAuthLocation2 || {});
+    var EndpointURLScheme = /* @__PURE__ */ ((EndpointURLScheme2) => {
+      EndpointURLScheme2["HTTP"] = "http";
+      EndpointURLScheme2["HTTPS"] = "https";
+      return EndpointURLScheme2;
+    })(EndpointURLScheme || {});
+    var AlgorithmId = /* @__PURE__ */ ((AlgorithmId2) => {
+      AlgorithmId2["MD5"] = "md5";
+      AlgorithmId2["CRC32"] = "crc32";
+      AlgorithmId2["CRC32C"] = "crc32c";
+      AlgorithmId2["SHA1"] = "sha1";
+      AlgorithmId2["SHA256"] = "sha256";
+      return AlgorithmId2;
+    })(AlgorithmId || {});
+    var getChecksumConfiguration = /* @__PURE__ */ __name((runtimeConfig) => {
+      const checksumAlgorithms = [];
+      if (runtimeConfig.sha256 !== void 0) {
+        checksumAlgorithms.push({
+          algorithmId: () => "sha256",
+          checksumConstructor: () => runtimeConfig.sha256
+        });
+      }
+      if (runtimeConfig.md5 != void 0) {
+        checksumAlgorithms.push({
+          algorithmId: () => "md5",
+          checksumConstructor: () => runtimeConfig.md5
+        });
+      }
+      return {
+        _checksumAlgorithms: checksumAlgorithms,
+        addChecksumAlgorithm(algo) {
+          this._checksumAlgorithms.push(algo);
+        },
+        checksumAlgorithms() {
+          return this._checksumAlgorithms;
+        }
+      };
+    }, "getChecksumConfiguration");
+    var resolveChecksumRuntimeConfig = /* @__PURE__ */ __name((clientConfig) => {
+      const runtimeConfig = {};
+      clientConfig.checksumAlgorithms().forEach((checksumAlgorithm) => {
+        runtimeConfig[checksumAlgorithm.algorithmId()] = checksumAlgorithm.checksumConstructor();
+      });
+      return runtimeConfig;
+    }, "resolveChecksumRuntimeConfig");
+    var getDefaultClientConfiguration = /* @__PURE__ */ __name((runtimeConfig) => {
+      return {
+        ...getChecksumConfiguration(runtimeConfig)
+      };
+    }, "getDefaultClientConfiguration");
+    var resolveDefaultRuntimeConfig = /* @__PURE__ */ __name((config) => {
+      return {
+        ...resolveChecksumRuntimeConfig(config)
+      };
+    }, "resolveDefaultRuntimeConfig");
+    var FieldPosition = /* @__PURE__ */ ((FieldPosition2) => {
+      FieldPosition2[FieldPosition2["HEADER"] = 0] = "HEADER";
+      FieldPosition2[FieldPosition2["TRAILER"] = 1] = "TRAILER";
+      return FieldPosition2;
+    })(FieldPosition || {});
+    var SMITHY_CONTEXT_KEY4 = "__smithy_context";
+    var IniSectionType = /* @__PURE__ */ ((IniSectionType2) => {
+      IniSectionType2["PROFILE"] = "profile";
+      IniSectionType2["SSO_SESSION"] = "sso-session";
+      IniSectionType2["SERVICES"] = "services";
+      return IniSectionType2;
+    })(IniSectionType || {});
+    var RequestHandlerProtocol = /* @__PURE__ */ ((RequestHandlerProtocol2) => {
+      RequestHandlerProtocol2["HTTP_0_9"] = "http/0.9";
+      RequestHandlerProtocol2["HTTP_1_0"] = "http/1.0";
+      RequestHandlerProtocol2["TDS_8_0"] = "tds/8.0";
+      return RequestHandlerProtocol2;
+    })(RequestHandlerProtocol || {});
+  }
+});
+
+// ../../../node_modules/@smithy/core/node_modules/@smithy/util-middleware/dist-cjs/index.js
+var require_dist_cjs13 = __commonJS({
   "../../../node_modules/@smithy/core/node_modules/@smithy/util-middleware/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -2625,7 +2754,7 @@ var require_dist_cjs12 = __commonJS({
       normalizeProvider: () => normalizeProvider2
     });
     module2.exports = __toCommonJS2(src_exports);
-    var import_types5 = require_dist_cjs();
+    var import_types5 = require_dist_cjs12();
     var getSmithyContext4 = /* @__PURE__ */ __name((context) => context[import_types5.SMITHY_CONTEXT_KEY] || (context[import_types5.SMITHY_CONTEXT_KEY] = {}), "getSmithyContext");
     var normalizeProvider2 = /* @__PURE__ */ __name((input) => {
       if (typeof input === "function")
@@ -2647,8 +2776,8 @@ function convertHttpAuthSchemesToMap(httpAuthSchemes) {
 var import_types, import_util_middleware, httpAuthSchemeMiddleware;
 var init_httpAuthSchemeMiddleware = __esm({
   "../../../node_modules/@smithy/core/dist-es/middleware-http-auth-scheme/httpAuthSchemeMiddleware.js"() {
-    import_types = __toESM(require_dist_cjs());
-    import_util_middleware = __toESM(require_dist_cjs12());
+    import_types = __toESM(require_dist_cjs12());
+    import_util_middleware = __toESM(require_dist_cjs13());
     httpAuthSchemeMiddleware = (config, mwOptions) => (next, context) => async (args) => {
       const options = config.httpAuthSchemeProvider(await mwOptions.httpAuthSchemeParametersProvider(config, context, args.input));
       const authSchemes = convertHttpAuthSchemesToMap(config.httpAuthSchemes);
@@ -2684,7 +2813,7 @@ var init_httpAuthSchemeMiddleware = __esm({
 });
 
 // ../../../node_modules/@smithy/core/node_modules/@smithy/property-provider/dist-cjs/index.js
-var require_dist_cjs13 = __commonJS({
+var require_dist_cjs14 = __commonJS({
   "../../../node_modules/@smithy/core/node_modules/@smithy/property-provider/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -2920,7 +3049,7 @@ var require_slurpFile = __commonJS({
 });
 
 // ../../../node_modules/@smithy/core/node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js
-var require_dist_cjs14 = __commonJS({
+var require_dist_cjs15 = __commonJS({
   "../../../node_modules/@smithy/core/node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -2958,7 +3087,7 @@ var require_dist_cjs14 = __commonJS({
     var getProfileName = /* @__PURE__ */ __name((init) => init.profile || process.env[ENV_PROFILE] || DEFAULT_PROFILE, "getProfileName");
     __reExport(src_exports, require_getSSOTokenFilepath(), module2.exports);
     __reExport(src_exports, require_getSSOTokenFromFile(), module2.exports);
-    var import_types5 = require_dist_cjs();
+    var import_types5 = require_dist_cjs12();
     var getConfigData = /* @__PURE__ */ __name((data) => Object.entries(data).filter(([key]) => {
       const indexOfSeparator = key.indexOf(CONFIG_PREFIX_SEPARATOR);
       if (indexOfSeparator === -1) {
@@ -3085,7 +3214,7 @@ var require_dist_cjs14 = __commonJS({
 });
 
 // ../../../node_modules/@smithy/core/node_modules/@smithy/node-config-provider/dist-cjs/index.js
-var require_dist_cjs15 = __commonJS({
+var require_dist_cjs16 = __commonJS({
   "../../../node_modules/@smithy/core/node_modules/@smithy/node-config-provider/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -3110,7 +3239,7 @@ var require_dist_cjs15 = __commonJS({
       loadConfig: () => loadConfig
     });
     module2.exports = __toCommonJS2(src_exports);
-    var import_property_provider2 = require_dist_cjs13();
+    var import_property_provider2 = require_dist_cjs14();
     function getSelectorName(functionString) {
       try {
         const constants = new Set(Array.from(functionString.match(/([A-Z_]){3,}/g) ?? []));
@@ -3137,7 +3266,7 @@ var require_dist_cjs15 = __commonJS({
         );
       }
     }, "fromEnv");
-    var import_shared_ini_file_loader = require_dist_cjs14();
+    var import_shared_ini_file_loader = require_dist_cjs15();
     var fromSharedConfigFiles = /* @__PURE__ */ __name((configSelector, { preferredFile = "config", ...init } = {}) => async () => {
       const profile = (0, import_shared_ini_file_loader.getProfileName)(init);
       const { configFile, credentialsFile } = await (0, import_shared_ini_file_loader.loadSharedConfigFiles)(init);
@@ -3176,7 +3305,7 @@ var require_getEndpointUrlConfig = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.getEndpointUrlConfig = void 0;
-    var shared_ini_file_loader_1 = require_dist_cjs14();
+    var shared_ini_file_loader_1 = require_dist_cjs15();
     var ENV_ENDPOINT_URL = "AWS_ENDPOINT_URL";
     var CONFIG_ENDPOINT_URL = "endpoint_url";
     var getEndpointUrlConfig = (serviceId) => ({
@@ -3217,7 +3346,7 @@ var require_getEndpointFromConfig = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.getEndpointFromConfig = void 0;
-    var node_config_provider_1 = require_dist_cjs15();
+    var node_config_provider_1 = require_dist_cjs16();
     var getEndpointUrlConfig_1 = require_getEndpointUrlConfig();
     var getEndpointFromConfig = async (serviceId) => (0, node_config_provider_1.loadConfig)((0, getEndpointUrlConfig_1.getEndpointUrlConfig)(serviceId !== null && serviceId !== void 0 ? serviceId : ""))();
     exports2.getEndpointFromConfig = getEndpointFromConfig;
@@ -3225,7 +3354,7 @@ var require_getEndpointFromConfig = __commonJS({
 });
 
 // ../../../node_modules/@smithy/core/node_modules/@smithy/querystring-parser/dist-cjs/index.js
-var require_dist_cjs16 = __commonJS({
+var require_dist_cjs17 = __commonJS({
   "../../../node_modules/@smithy/core/node_modules/@smithy/querystring-parser/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -3276,7 +3405,7 @@ var require_dist_cjs16 = __commonJS({
 });
 
 // ../../../node_modules/@smithy/core/node_modules/@smithy/url-parser/dist-cjs/index.js
-var require_dist_cjs17 = __commonJS({
+var require_dist_cjs18 = __commonJS({
   "../../../node_modules/@smithy/core/node_modules/@smithy/url-parser/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -3301,7 +3430,7 @@ var require_dist_cjs17 = __commonJS({
       parseUrl: () => parseUrl
     });
     module2.exports = __toCommonJS2(src_exports);
-    var import_querystring_parser = require_dist_cjs16();
+    var import_querystring_parser = require_dist_cjs17();
     var parseUrl = /* @__PURE__ */ __name((url2) => {
       if (typeof url2 === "string") {
         return parseUrl(new URL(url2));
@@ -3323,7 +3452,7 @@ var require_dist_cjs17 = __commonJS({
 });
 
 // ../../../node_modules/@smithy/core/node_modules/@smithy/middleware-serde/dist-cjs/index.js
-var require_dist_cjs18 = __commonJS({
+var require_dist_cjs19 = __commonJS({
   "../../../node_modules/@smithy/core/node_modules/@smithy/middleware-serde/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -3413,7 +3542,7 @@ var require_dist_cjs18 = __commonJS({
 });
 
 // ../../../node_modules/@smithy/core/node_modules/@smithy/middleware-endpoint/dist-cjs/index.js
-var require_dist_cjs19 = __commonJS({
+var require_dist_cjs20 = __commonJS({
   "../../../node_modules/@smithy/core/node_modules/@smithy/middleware-endpoint/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -3515,7 +3644,7 @@ var require_dist_cjs19 = __commonJS({
       return configProvider;
     }, "createConfigValueProvider");
     var import_getEndpointFromConfig = require_getEndpointFromConfig();
-    var import_url_parser = require_dist_cjs17();
+    var import_url_parser = require_dist_cjs18();
     var toEndpointV1 = /* @__PURE__ */ __name((endpoint) => {
       if (typeof endpoint === "object") {
         if ("url" in endpoint) {
@@ -3572,7 +3701,7 @@ var require_dist_cjs19 = __commonJS({
       }
       return endpointParams;
     }, "resolveParams");
-    var import_util_middleware3 = require_dist_cjs12();
+    var import_util_middleware3 = require_dist_cjs13();
     var endpointMiddleware = /* @__PURE__ */ __name(({
       config,
       instructions
@@ -3616,7 +3745,7 @@ var require_dist_cjs19 = __commonJS({
         });
       };
     }, "endpointMiddleware");
-    var import_middleware_serde2 = require_dist_cjs18();
+    var import_middleware_serde2 = require_dist_cjs19();
     var endpointMiddlewareOptions2 = {
       step: "serialize",
       tags: ["ENDPOINT_PARAMETERS", "ENDPOINT_V2", "ENDPOINT"],
@@ -3666,7 +3795,7 @@ var require_dist_cjs19 = __commonJS({
 var import_middleware_endpoint, httpAuthSchemeEndpointRuleSetMiddlewareOptions, getHttpAuthSchemeEndpointRuleSetPlugin;
 var init_getHttpAuthSchemeEndpointRuleSetPlugin = __esm({
   "../../../node_modules/@smithy/core/dist-es/middleware-http-auth-scheme/getHttpAuthSchemeEndpointRuleSetPlugin.js"() {
-    import_middleware_endpoint = __toESM(require_dist_cjs19());
+    import_middleware_endpoint = __toESM(require_dist_cjs20());
     init_httpAuthSchemeMiddleware();
     httpAuthSchemeEndpointRuleSetMiddlewareOptions = {
       step: "serialize",
@@ -3691,7 +3820,7 @@ var init_getHttpAuthSchemeEndpointRuleSetPlugin = __esm({
 var import_middleware_serde, httpAuthSchemeMiddlewareOptions, getHttpAuthSchemePlugin;
 var init_getHttpAuthSchemePlugin = __esm({
   "../../../node_modules/@smithy/core/dist-es/middleware-http-auth-scheme/getHttpAuthSchemePlugin.js"() {
-    import_middleware_serde = __toESM(require_dist_cjs18());
+    import_middleware_serde = __toESM(require_dist_cjs19());
     init_httpAuthSchemeMiddleware();
     httpAuthSchemeMiddlewareOptions = {
       step: "serialize",
@@ -3722,7 +3851,7 @@ var init_middleware_http_auth_scheme = __esm({
 });
 
 // ../../../node_modules/@smithy/core/node_modules/@smithy/protocol-http/dist-cjs/index.js
-var require_dist_cjs20 = __commonJS({
+var require_dist_cjs21 = __commonJS({
   "../../../node_modules/@smithy/core/node_modules/@smithy/protocol-http/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -3776,7 +3905,7 @@ var require_dist_cjs20 = __commonJS({
         httpHandler: httpHandlerExtensionConfiguration.httpHandler()
       };
     }, "resolveHttpHandlerRuntimeConfig");
-    var import_types5 = require_dist_cjs();
+    var import_types5 = require_dist_cjs12();
     var _Field = class _Field {
       constructor({ name, kind = import_types5.FieldPosition.HEADER, values = [] }) {
         this.name = name;
@@ -3963,9 +4092,9 @@ var require_dist_cjs20 = __commonJS({
 var import_protocol_http, import_types2, import_util_middleware2, defaultErrorHandler, defaultSuccessHandler, httpSigningMiddleware;
 var init_httpSigningMiddleware = __esm({
   "../../../node_modules/@smithy/core/dist-es/middleware-http-signing/httpSigningMiddleware.js"() {
-    import_protocol_http = __toESM(require_dist_cjs20());
-    import_types2 = __toESM(require_dist_cjs());
-    import_util_middleware2 = __toESM(require_dist_cjs12());
+    import_protocol_http = __toESM(require_dist_cjs21());
+    import_types2 = __toESM(require_dist_cjs12());
+    import_util_middleware2 = __toESM(require_dist_cjs13());
     defaultErrorHandler = (signingProperties) => (error) => {
       throw error;
     };
@@ -3988,244 +4117,6 @@ var init_httpSigningMiddleware = __esm({
       (signer.successHandler || defaultSuccessHandler)(output.response, signingProperties);
       return output;
     };
-  }
-});
-
-// ../../../node_modules/@smithy/middleware-retry/node_modules/@smithy/protocol-http/dist-cjs/index.js
-var require_dist_cjs21 = __commonJS({
-  "../../../node_modules/@smithy/middleware-retry/node_modules/@smithy/protocol-http/dist-cjs/index.js"(exports2, module2) {
-    var __defProp2 = Object.defineProperty;
-    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
-    var __getOwnPropNames2 = Object.getOwnPropertyNames;
-    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
-    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
-    var __export2 = (target, all) => {
-      for (var name in all)
-        __defProp2(target, name, { get: all[name], enumerable: true });
-    };
-    var __copyProps2 = (to, from, except, desc) => {
-      if (from && typeof from === "object" || typeof from === "function") {
-        for (let key of __getOwnPropNames2(from))
-          if (!__hasOwnProp2.call(to, key) && key !== except)
-            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
-      }
-      return to;
-    };
-    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
-    var src_exports = {};
-    __export2(src_exports, {
-      Field: () => Field,
-      Fields: () => Fields,
-      HttpRequest: () => HttpRequest7,
-      HttpResponse: () => HttpResponse2,
-      IHttpRequest: () => import_types5.HttpRequest,
-      getHttpHandlerExtensionConfiguration: () => getHttpHandlerExtensionConfiguration,
-      isValidHostname: () => isValidHostname,
-      resolveHttpHandlerRuntimeConfig: () => resolveHttpHandlerRuntimeConfig
-    });
-    module2.exports = __toCommonJS2(src_exports);
-    var getHttpHandlerExtensionConfiguration = /* @__PURE__ */ __name((runtimeConfig) => {
-      let httpHandler = runtimeConfig.httpHandler;
-      return {
-        setHttpHandler(handler2) {
-          httpHandler = handler2;
-        },
-        httpHandler() {
-          return httpHandler;
-        },
-        updateHttpClientConfig(key, value) {
-          httpHandler.updateHttpClientConfig(key, value);
-        },
-        httpHandlerConfigs() {
-          return httpHandler.httpHandlerConfigs();
-        }
-      };
-    }, "getHttpHandlerExtensionConfiguration");
-    var resolveHttpHandlerRuntimeConfig = /* @__PURE__ */ __name((httpHandlerExtensionConfiguration) => {
-      return {
-        httpHandler: httpHandlerExtensionConfiguration.httpHandler()
-      };
-    }, "resolveHttpHandlerRuntimeConfig");
-    var import_types5 = require_dist_cjs();
-    var _Field = class _Field {
-      constructor({ name, kind = import_types5.FieldPosition.HEADER, values = [] }) {
-        this.name = name;
-        this.kind = kind;
-        this.values = values;
-      }
-      /**
-       * Appends a value to the field.
-       *
-       * @param value The value to append.
-       */
-      add(value) {
-        this.values.push(value);
-      }
-      /**
-       * Overwrite existing field values.
-       *
-       * @param values The new field values.
-       */
-      set(values) {
-        this.values = values;
-      }
-      /**
-       * Remove all matching entries from list.
-       *
-       * @param value Value to remove.
-       */
-      remove(value) {
-        this.values = this.values.filter((v) => v !== value);
-      }
-      /**
-       * Get comma-delimited string.
-       *
-       * @returns String representation of {@link Field}.
-       */
-      toString() {
-        return this.values.map((v) => v.includes(",") || v.includes(" ") ? `"${v}"` : v).join(", ");
-      }
-      /**
-       * Get string values as a list
-       *
-       * @returns Values in {@link Field} as a list.
-       */
-      get() {
-        return this.values;
-      }
-    };
-    __name(_Field, "Field");
-    var Field = _Field;
-    var _Fields = class _Fields {
-      constructor({ fields = [], encoding = "utf-8" }) {
-        this.entries = {};
-        fields.forEach(this.setField.bind(this));
-        this.encoding = encoding;
-      }
-      /**
-       * Set entry for a {@link Field} name. The `name`
-       * attribute will be used to key the collection.
-       *
-       * @param field The {@link Field} to set.
-       */
-      setField(field) {
-        this.entries[field.name.toLowerCase()] = field;
-      }
-      /**
-       *  Retrieve {@link Field} entry by name.
-       *
-       * @param name The name of the {@link Field} entry
-       *  to retrieve
-       * @returns The {@link Field} if it exists.
-       */
-      getField(name) {
-        return this.entries[name.toLowerCase()];
-      }
-      /**
-       * Delete entry from collection.
-       *
-       * @param name Name of the entry to delete.
-       */
-      removeField(name) {
-        delete this.entries[name.toLowerCase()];
-      }
-      /**
-       * Helper function for retrieving specific types of fields.
-       * Used to grab all headers or all trailers.
-       *
-       * @param kind {@link FieldPosition} of entries to retrieve.
-       * @returns The {@link Field} entries with the specified
-       *  {@link FieldPosition}.
-       */
-      getByType(kind) {
-        return Object.values(this.entries).filter((field) => field.kind === kind);
-      }
-    };
-    __name(_Fields, "Fields");
-    var Fields = _Fields;
-    var _HttpRequest = class _HttpRequest2 {
-      constructor(options) {
-        this.method = options.method || "GET";
-        this.hostname = options.hostname || "localhost";
-        this.port = options.port;
-        this.query = options.query || {};
-        this.headers = options.headers || {};
-        this.body = options.body;
-        this.protocol = options.protocol ? options.protocol.slice(-1) !== ":" ? `${options.protocol}:` : options.protocol : "https:";
-        this.path = options.path ? options.path.charAt(0) !== "/" ? `/${options.path}` : options.path : "/";
-        this.username = options.username;
-        this.password = options.password;
-        this.fragment = options.fragment;
-      }
-      /**
-       * Note: this does not deep-clone the body.
-       */
-      static clone(request2) {
-        const cloned = new _HttpRequest2({
-          ...request2,
-          headers: { ...request2.headers }
-        });
-        if (cloned.query) {
-          cloned.query = cloneQuery(cloned.query);
-        }
-        return cloned;
-      }
-      /**
-       * This method only actually asserts that request is the interface {@link IHttpRequest},
-       * and not necessarily this concrete class. Left in place for API stability.
-       *
-       * Do not call instance methods on the input of this function, and
-       * do not assume it has the HttpRequest prototype.
-       */
-      static isInstance(request2) {
-        if (!request2) {
-          return false;
-        }
-        const req = request2;
-        return "method" in req && "protocol" in req && "hostname" in req && "path" in req && typeof req["query"] === "object" && typeof req["headers"] === "object";
-      }
-      /**
-       * @deprecated use static HttpRequest.clone(request) instead. It's not safe to call
-       * this method because {@link HttpRequest.isInstance} incorrectly
-       * asserts that IHttpRequest (interface) objects are of type HttpRequest (class).
-       */
-      clone() {
-        return _HttpRequest2.clone(this);
-      }
-    };
-    __name(_HttpRequest, "HttpRequest");
-    var HttpRequest7 = _HttpRequest;
-    function cloneQuery(query) {
-      return Object.keys(query).reduce((carry, paramName) => {
-        const param = query[paramName];
-        return {
-          ...carry,
-          [paramName]: Array.isArray(param) ? [...param] : param
-        };
-      }, {});
-    }
-    __name(cloneQuery, "cloneQuery");
-    var _HttpResponse = class _HttpResponse {
-      constructor(options) {
-        this.statusCode = options.statusCode;
-        this.reason = options.reason;
-        this.headers = options.headers || {};
-        this.body = options.body;
-      }
-      static isInstance(response) {
-        if (!response)
-          return false;
-        const resp = response;
-        return typeof resp.statusCode === "number" && typeof resp.headers === "object";
-      }
-    };
-    __name(_HttpResponse, "HttpResponse");
-    var HttpResponse2 = _HttpResponse;
-    function isValidHostname(hostname) {
-      const hostPattern = /^[a-z0-9][a-z0-9\.\-]*[a-z0-9]$/;
-      return hostPattern.test(hostname);
-    }
-    __name(isValidHostname, "isValidHostname");
   }
 });
 
@@ -4581,9 +4472,9 @@ var init_esm_node = __esm({
   }
 });
 
-// ../../../node_modules/@smithy/service-error-classification/dist-cjs/index.js
+// ../../../node_modules/@smithy/core/node_modules/@smithy/service-error-classification/dist-cjs/index.js
 var require_dist_cjs22 = __commonJS({
-  "../../../node_modules/@smithy/service-error-classification/dist-cjs/index.js"(exports2, module2) {
+  "../../../node_modules/@smithy/core/node_modules/@smithy/service-error-classification/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
     var __getOwnPropNames2 = Object.getOwnPropertyNames;
@@ -4668,9 +4559,9 @@ var require_dist_cjs22 = __commonJS({
   }
 });
 
-// ../../../node_modules/@smithy/middleware-retry/node_modules/@smithy/util-retry/dist-cjs/index.js
+// ../../../node_modules/@smithy/core/node_modules/@smithy/util-retry/dist-cjs/index.js
 var require_dist_cjs23 = __commonJS({
-  "../../../node_modules/@smithy/middleware-retry/node_modules/@smithy/util-retry/dist-cjs/index.js"(exports2, module2) {
+  "../../../node_modules/@smithy/core/node_modules/@smithy/util-retry/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
     var __getOwnPropNames2 = Object.getOwnPropertyNames;
@@ -4982,47 +4873,9 @@ var require_dist_cjs23 = __commonJS({
   }
 });
 
-// ../../../node_modules/@smithy/middleware-retry/node_modules/@smithy/util-middleware/dist-cjs/index.js
+// ../../../node_modules/@smithy/core/node_modules/@smithy/middleware-stack/dist-cjs/index.js
 var require_dist_cjs24 = __commonJS({
-  "../../../node_modules/@smithy/middleware-retry/node_modules/@smithy/util-middleware/dist-cjs/index.js"(exports2, module2) {
-    var __defProp2 = Object.defineProperty;
-    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
-    var __getOwnPropNames2 = Object.getOwnPropertyNames;
-    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
-    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
-    var __export2 = (target, all) => {
-      for (var name in all)
-        __defProp2(target, name, { get: all[name], enumerable: true });
-    };
-    var __copyProps2 = (to, from, except, desc) => {
-      if (from && typeof from === "object" || typeof from === "function") {
-        for (let key of __getOwnPropNames2(from))
-          if (!__hasOwnProp2.call(to, key) && key !== except)
-            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
-      }
-      return to;
-    };
-    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
-    var src_exports = {};
-    __export2(src_exports, {
-      getSmithyContext: () => getSmithyContext4,
-      normalizeProvider: () => normalizeProvider2
-    });
-    module2.exports = __toCommonJS2(src_exports);
-    var import_types5 = require_dist_cjs();
-    var getSmithyContext4 = /* @__PURE__ */ __name((context) => context[import_types5.SMITHY_CONTEXT_KEY] || (context[import_types5.SMITHY_CONTEXT_KEY] = {}), "getSmithyContext");
-    var normalizeProvider2 = /* @__PURE__ */ __name((input) => {
-      if (typeof input === "function")
-        return input;
-      const promisified = Promise.resolve(input);
-      return () => promisified;
-    }, "normalizeProvider");
-  }
-});
-
-// ../../../node_modules/@smithy/smithy-client/node_modules/@smithy/middleware-stack/dist-cjs/index.js
-var require_dist_cjs25 = __commonJS({
-  "../../../node_modules/@smithy/smithy-client/node_modules/@smithy/middleware-stack/dist-cjs/index.js"(exports2, module2) {
+  "../../../node_modules/@smithy/core/node_modules/@smithy/middleware-stack/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
     var __getOwnPropNames2 = Object.getOwnPropertyNames;
@@ -5338,7 +5191,7 @@ var require_dist_cjs25 = __commonJS({
 });
 
 // ../../../node_modules/@smithy/is-array-buffer/dist-cjs/index.js
-var require_dist_cjs26 = __commonJS({
+var require_dist_cjs25 = __commonJS({
   "../../../node_modules/@smithy/is-array-buffer/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -5368,7 +5221,7 @@ var require_dist_cjs26 = __commonJS({
 });
 
 // ../../../node_modules/@smithy/util-buffer-from/dist-cjs/index.js
-var require_dist_cjs27 = __commonJS({
+var require_dist_cjs26 = __commonJS({
   "../../../node_modules/@smithy/util-buffer-from/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -5394,7 +5247,7 @@ var require_dist_cjs27 = __commonJS({
       fromString: () => fromString
     });
     module2.exports = __toCommonJS2(src_exports);
-    var import_is_array_buffer = require_dist_cjs26();
+    var import_is_array_buffer = require_dist_cjs25();
     var import_buffer = require("buffer");
     var fromArrayBuffer = /* @__PURE__ */ __name((input, offset = 0, length = input.byteLength - offset) => {
       if (!(0, import_is_array_buffer.isArrayBuffer)(input)) {
@@ -5417,7 +5270,7 @@ var require_fromBase64 = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.fromBase64 = void 0;
-    var util_buffer_from_1 = require_dist_cjs27();
+    var util_buffer_from_1 = require_dist_cjs26();
     var BASE64_REGEX = /^[A-Za-z0-9+/]*={0,2}$/;
     var fromBase642 = (input) => {
       if (input.length * 3 % 4 !== 0) {
@@ -5434,7 +5287,7 @@ var require_fromBase64 = __commonJS({
 });
 
 // ../../../node_modules/@smithy/util-utf8/dist-cjs/index.js
-var require_dist_cjs28 = __commonJS({
+var require_dist_cjs27 = __commonJS({
   "../../../node_modules/@smithy/util-utf8/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -5461,7 +5314,7 @@ var require_dist_cjs28 = __commonJS({
       toUtf8: () => toUtf8
     });
     module2.exports = __toCommonJS2(src_exports);
-    var import_util_buffer_from = require_dist_cjs27();
+    var import_util_buffer_from = require_dist_cjs26();
     var fromUtf8 = /* @__PURE__ */ __name((input) => {
       const buf = (0, import_util_buffer_from.fromString)(input, "utf8");
       return new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength / Uint8Array.BYTES_PER_ELEMENT);
@@ -5493,8 +5346,8 @@ var require_toBase64 = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.toBase64 = void 0;
-    var util_buffer_from_1 = require_dist_cjs27();
-    var util_utf8_1 = require_dist_cjs28();
+    var util_buffer_from_1 = require_dist_cjs26();
+    var util_utf8_1 = require_dist_cjs27();
     var toBase642 = (_input) => {
       let input;
       if (typeof _input === "string") {
@@ -5512,7 +5365,7 @@ var require_toBase64 = __commonJS({
 });
 
 // ../../../node_modules/@smithy/util-base64/dist-cjs/index.js
-var require_dist_cjs29 = __commonJS({
+var require_dist_cjs28 = __commonJS({
   "../../../node_modules/@smithy/util-base64/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -5535,8 +5388,5539 @@ var require_dist_cjs29 = __commonJS({
   }
 });
 
-// ../../../node_modules/@smithy/smithy-client/node_modules/@smithy/util-stream/dist-cjs/getAwsChunkedEncodingStream.js
+// ../../../node_modules/@smithy/util-stream/dist-cjs/getAwsChunkedEncodingStream.js
 var require_getAwsChunkedEncodingStream = __commonJS({
+  "../../../node_modules/@smithy/util-stream/dist-cjs/getAwsChunkedEncodingStream.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.getAwsChunkedEncodingStream = void 0;
+    var stream_1 = require("stream");
+    var getAwsChunkedEncodingStream2 = (readableStream, options) => {
+      const { base64Encoder, bodyLengthChecker, checksumAlgorithmFn, checksumLocationName, streamHasher } = options;
+      const checksumRequired = base64Encoder !== void 0 && checksumAlgorithmFn !== void 0 && checksumLocationName !== void 0 && streamHasher !== void 0;
+      const digest = checksumRequired ? streamHasher(checksumAlgorithmFn, readableStream) : void 0;
+      const awsChunkedEncodingStream = new stream_1.Readable({ read: () => {
+      } });
+      readableStream.on("data", (data) => {
+        const length = bodyLengthChecker(data) || 0;
+        awsChunkedEncodingStream.push(`${length.toString(16)}\r
+`);
+        awsChunkedEncodingStream.push(data);
+        awsChunkedEncodingStream.push("\r\n");
+      });
+      readableStream.on("end", async () => {
+        awsChunkedEncodingStream.push(`0\r
+`);
+        if (checksumRequired) {
+          const checksum = base64Encoder(await digest);
+          awsChunkedEncodingStream.push(`${checksumLocationName}:${checksum}\r
+`);
+          awsChunkedEncodingStream.push(`\r
+`);
+        }
+        awsChunkedEncodingStream.push(null);
+      });
+      return awsChunkedEncodingStream;
+    };
+    exports2.getAwsChunkedEncodingStream = getAwsChunkedEncodingStream2;
+  }
+});
+
+// ../../../node_modules/@smithy/util-uri-escape/dist-cjs/index.js
+var require_dist_cjs29 = __commonJS({
+  "../../../node_modules/@smithy/util-uri-escape/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      escapeUri: () => escapeUri,
+      escapeUriPath: () => escapeUriPath
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var escapeUri = /* @__PURE__ */ __name((uri) => (
+      // AWS percent-encodes some extra non-standard characters in a URI
+      encodeURIComponent(uri).replace(/[!'()*]/g, hexEncode)
+    ), "escapeUri");
+    var hexEncode = /* @__PURE__ */ __name((c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`, "hexEncode");
+    var escapeUriPath = /* @__PURE__ */ __name((uri) => uri.split("/").map(escapeUri).join("/"), "escapeUriPath");
+  }
+});
+
+// ../../../node_modules/@smithy/node-http-handler/node_modules/@smithy/querystring-builder/dist-cjs/index.js
+var require_dist_cjs30 = __commonJS({
+  "../../../node_modules/@smithy/node-http-handler/node_modules/@smithy/querystring-builder/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      buildQueryString: () => buildQueryString
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var import_util_uri_escape = require_dist_cjs29();
+    function buildQueryString(query) {
+      const parts = [];
+      for (let key of Object.keys(query).sort()) {
+        const value = query[key];
+        key = (0, import_util_uri_escape.escapeUri)(key);
+        if (Array.isArray(value)) {
+          for (let i = 0, iLen = value.length; i < iLen; i++) {
+            parts.push(`${key}=${(0, import_util_uri_escape.escapeUri)(value[i])}`);
+          }
+        } else {
+          let qsEntry = key;
+          if (value || typeof value === "string") {
+            qsEntry += `=${(0, import_util_uri_escape.escapeUri)(value)}`;
+          }
+          parts.push(qsEntry);
+        }
+      }
+      return parts.join("&");
+    }
+    __name(buildQueryString, "buildQueryString");
+  }
+});
+
+// ../../../node_modules/@smithy/node-http-handler/dist-cjs/index.js
+var require_dist_cjs31 = __commonJS({
+  "../../../node_modules/@smithy/node-http-handler/dist-cjs/index.js"(exports2, module2) {
+    var __create2 = Object.create;
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __getProtoOf2 = Object.getPrototypeOf;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toESM2 = (mod, isNodeMode, target) => (target = mod != null ? __create2(__getProtoOf2(mod)) : {}, __copyProps2(
+      // If the importer is in node compatibility mode or this is not an ESM
+      // file that has been converted to a CommonJS file using a Babel-
+      // compatible transform (i.e. "__esModule" has not been set), then set
+      // "default" to the CommonJS "module.exports" for node compatibility.
+      isNodeMode || !mod || !mod.__esModule ? __defProp2(target, "default", { value: mod, enumerable: true }) : target,
+      mod
+    ));
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      DEFAULT_REQUEST_TIMEOUT: () => DEFAULT_REQUEST_TIMEOUT,
+      NodeHttp2Handler: () => NodeHttp2Handler,
+      NodeHttpHandler: () => NodeHttpHandler,
+      streamCollector: () => streamCollector
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var import_protocol_http8 = require_dist_cjs2();
+    var import_querystring_builder = require_dist_cjs30();
+    var import_http2 = require("http");
+    var import_https = require("https");
+    var NODEJS_TIMEOUT_ERROR_CODES = ["ECONNRESET", "EPIPE", "ETIMEDOUT"];
+    var getTransformedHeaders = /* @__PURE__ */ __name((headers) => {
+      const transformedHeaders = {};
+      for (const name of Object.keys(headers)) {
+        const headerValues = headers[name];
+        transformedHeaders[name] = Array.isArray(headerValues) ? headerValues.join(",") : headerValues;
+      }
+      return transformedHeaders;
+    }, "getTransformedHeaders");
+    var DEFER_EVENT_LISTENER_TIME = 1e3;
+    var setConnectionTimeout = /* @__PURE__ */ __name((request2, reject, timeoutInMs = 0) => {
+      if (!timeoutInMs) {
+        return -1;
+      }
+      const registerTimeout = /* @__PURE__ */ __name((offset) => {
+        const timeoutId = setTimeout(() => {
+          request2.destroy();
+          reject(
+            Object.assign(new Error(`Socket timed out without establishing a connection within ${timeoutInMs} ms`), {
+              name: "TimeoutError"
+            })
+          );
+        }, timeoutInMs - offset);
+        const doWithSocket = /* @__PURE__ */ __name((socket) => {
+          if (socket == null ? void 0 : socket.connecting) {
+            socket.on("connect", () => {
+              clearTimeout(timeoutId);
+            });
+          } else {
+            clearTimeout(timeoutId);
+          }
+        }, "doWithSocket");
+        if (request2.socket) {
+          doWithSocket(request2.socket);
+        } else {
+          request2.on("socket", doWithSocket);
+        }
+      }, "registerTimeout");
+      if (timeoutInMs < 2e3) {
+        registerTimeout(0);
+        return 0;
+      }
+      return setTimeout(registerTimeout.bind(null, DEFER_EVENT_LISTENER_TIME), DEFER_EVENT_LISTENER_TIME);
+    }, "setConnectionTimeout");
+    var DEFER_EVENT_LISTENER_TIME2 = 3e3;
+    var setSocketKeepAlive = /* @__PURE__ */ __name((request2, { keepAlive, keepAliveMsecs }, deferTimeMs = DEFER_EVENT_LISTENER_TIME2) => {
+      if (keepAlive !== true) {
+        return -1;
+      }
+      const registerListener = /* @__PURE__ */ __name(() => {
+        if (request2.socket) {
+          request2.socket.setKeepAlive(keepAlive, keepAliveMsecs || 0);
+        } else {
+          request2.on("socket", (socket) => {
+            socket.setKeepAlive(keepAlive, keepAliveMsecs || 0);
+          });
+        }
+      }, "registerListener");
+      if (deferTimeMs === 0) {
+        registerListener();
+        return 0;
+      }
+      return setTimeout(registerListener, deferTimeMs);
+    }, "setSocketKeepAlive");
+    var DEFER_EVENT_LISTENER_TIME3 = 3e3;
+    var setSocketTimeout = /* @__PURE__ */ __name((request2, reject, timeoutInMs = 0) => {
+      const registerTimeout = /* @__PURE__ */ __name((offset) => {
+        request2.setTimeout(timeoutInMs - offset, () => {
+          request2.destroy();
+          reject(Object.assign(new Error(`Connection timed out after ${timeoutInMs} ms`), { name: "TimeoutError" }));
+        });
+      }, "registerTimeout");
+      if (0 < timeoutInMs && timeoutInMs < 6e3) {
+        registerTimeout(0);
+        return 0;
+      }
+      return setTimeout(
+        registerTimeout.bind(null, timeoutInMs === 0 ? 0 : DEFER_EVENT_LISTENER_TIME3),
+        DEFER_EVENT_LISTENER_TIME3
+      );
+    }, "setSocketTimeout");
+    var import_stream = require("stream");
+    var MIN_WAIT_TIME = 1e3;
+    async function writeRequestBody(httpRequest, request2, maxContinueTimeoutMs = MIN_WAIT_TIME) {
+      const headers = request2.headers ?? {};
+      const expect = headers["Expect"] || headers["expect"];
+      let timeoutId = -1;
+      let hasError = false;
+      if (expect === "100-continue") {
+        await Promise.race([
+          new Promise((resolve) => {
+            timeoutId = Number(setTimeout(resolve, Math.max(MIN_WAIT_TIME, maxContinueTimeoutMs)));
+          }),
+          new Promise((resolve) => {
+            httpRequest.on("continue", () => {
+              clearTimeout(timeoutId);
+              resolve();
+            });
+            httpRequest.on("error", () => {
+              hasError = true;
+              clearTimeout(timeoutId);
+              resolve();
+            });
+          })
+        ]);
+      }
+      if (!hasError) {
+        writeBody(httpRequest, request2.body);
+      }
+    }
+    __name(writeRequestBody, "writeRequestBody");
+    function writeBody(httpRequest, body) {
+      if (body instanceof import_stream.Readable) {
+        body.pipe(httpRequest);
+        return;
+      }
+      if (body) {
+        if (Buffer.isBuffer(body) || typeof body === "string") {
+          httpRequest.end(body);
+          return;
+        }
+        const uint8 = body;
+        if (typeof uint8 === "object" && uint8.buffer && typeof uint8.byteOffset === "number" && typeof uint8.byteLength === "number") {
+          httpRequest.end(Buffer.from(uint8.buffer, uint8.byteOffset, uint8.byteLength));
+          return;
+        }
+        httpRequest.end(Buffer.from(body));
+        return;
+      }
+      httpRequest.end();
+    }
+    __name(writeBody, "writeBody");
+    var DEFAULT_REQUEST_TIMEOUT = 0;
+    var _NodeHttpHandler = class _NodeHttpHandler2 {
+      constructor(options) {
+        this.socketWarningTimestamp = 0;
+        this.metadata = { handlerProtocol: "http/1.1" };
+        this.configProvider = new Promise((resolve, reject) => {
+          if (typeof options === "function") {
+            options().then((_options) => {
+              resolve(this.resolveDefaultConfig(_options));
+            }).catch(reject);
+          } else {
+            resolve(this.resolveDefaultConfig(options));
+          }
+        });
+      }
+      /**
+       * @returns the input if it is an HttpHandler of any class,
+       * or instantiates a new instance of this handler.
+       */
+      static create(instanceOrOptions) {
+        if (typeof (instanceOrOptions == null ? void 0 : instanceOrOptions.handle) === "function") {
+          return instanceOrOptions;
+        }
+        return new _NodeHttpHandler2(instanceOrOptions);
+      }
+      /**
+       * @internal
+       *
+       * @param agent - http(s) agent in use by the NodeHttpHandler instance.
+       * @param socketWarningTimestamp - last socket usage check timestamp.
+       * @param logger - channel for the warning.
+       * @returns timestamp of last emitted warning.
+       */
+      static checkSocketUsage(agent, socketWarningTimestamp, logger = console) {
+        var _a, _b, _c;
+        const { sockets, requests, maxSockets } = agent;
+        if (typeof maxSockets !== "number" || maxSockets === Infinity) {
+          return socketWarningTimestamp;
+        }
+        const interval = 15e3;
+        if (Date.now() - interval < socketWarningTimestamp) {
+          return socketWarningTimestamp;
+        }
+        if (sockets && requests) {
+          for (const origin in sockets) {
+            const socketsInUse = ((_a = sockets[origin]) == null ? void 0 : _a.length) ?? 0;
+            const requestsEnqueued = ((_b = requests[origin]) == null ? void 0 : _b.length) ?? 0;
+            if (socketsInUse >= maxSockets && requestsEnqueued >= 2 * maxSockets) {
+              (_c = logger == null ? void 0 : logger.warn) == null ? void 0 : _c.call(
+                logger,
+                `@smithy/node-http-handler:WARN - socket usage at capacity=${socketsInUse} and ${requestsEnqueued} additional requests are enqueued.
+See https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/node-configuring-maxsockets.html
+or increase socketAcquisitionWarningTimeout=(millis) in the NodeHttpHandler config.`
+              );
+              return Date.now();
+            }
+          }
+        }
+        return socketWarningTimestamp;
+      }
+      resolveDefaultConfig(options) {
+        const { requestTimeout, connectionTimeout, socketTimeout, httpAgent, httpsAgent } = options || {};
+        const keepAlive = true;
+        const maxSockets = 50;
+        return {
+          connectionTimeout,
+          requestTimeout: requestTimeout ?? socketTimeout,
+          httpAgent: (() => {
+            if (httpAgent instanceof import_http2.Agent || typeof (httpAgent == null ? void 0 : httpAgent.destroy) === "function") {
+              return httpAgent;
+            }
+            return new import_http2.Agent({ keepAlive, maxSockets, ...httpAgent });
+          })(),
+          httpsAgent: (() => {
+            if (httpsAgent instanceof import_https.Agent || typeof (httpsAgent == null ? void 0 : httpsAgent.destroy) === "function") {
+              return httpsAgent;
+            }
+            return new import_https.Agent({ keepAlive, maxSockets, ...httpsAgent });
+          })(),
+          logger: console
+        };
+      }
+      destroy() {
+        var _a, _b, _c, _d;
+        (_b = (_a = this.config) == null ? void 0 : _a.httpAgent) == null ? void 0 : _b.destroy();
+        (_d = (_c = this.config) == null ? void 0 : _c.httpsAgent) == null ? void 0 : _d.destroy();
+      }
+      async handle(request2, { abortSignal } = {}) {
+        if (!this.config) {
+          this.config = await this.configProvider;
+        }
+        return new Promise((_resolve, _reject) => {
+          let writeRequestBodyPromise = void 0;
+          const timeouts = [];
+          const resolve = /* @__PURE__ */ __name(async (arg) => {
+            await writeRequestBodyPromise;
+            timeouts.forEach(clearTimeout);
+            _resolve(arg);
+          }, "resolve");
+          const reject = /* @__PURE__ */ __name(async (arg) => {
+            await writeRequestBodyPromise;
+            timeouts.forEach(clearTimeout);
+            _reject(arg);
+          }, "reject");
+          if (!this.config) {
+            throw new Error("Node HTTP request handler config is not resolved");
+          }
+          if (abortSignal == null ? void 0 : abortSignal.aborted) {
+            const abortError = new Error("Request aborted");
+            abortError.name = "AbortError";
+            reject(abortError);
+            return;
+          }
+          const isSSL = request2.protocol === "https:";
+          const agent = isSSL ? this.config.httpsAgent : this.config.httpAgent;
+          timeouts.push(
+            setTimeout(
+              () => {
+                this.socketWarningTimestamp = _NodeHttpHandler2.checkSocketUsage(
+                  agent,
+                  this.socketWarningTimestamp,
+                  this.config.logger
+                );
+              },
+              this.config.socketAcquisitionWarningTimeout ?? (this.config.requestTimeout ?? 2e3) + (this.config.connectionTimeout ?? 1e3)
+            )
+          );
+          const queryString = (0, import_querystring_builder.buildQueryString)(request2.query || {});
+          let auth = void 0;
+          if (request2.username != null || request2.password != null) {
+            const username = request2.username ?? "";
+            const password = request2.password ?? "";
+            auth = `${username}:${password}`;
+          }
+          let path = request2.path;
+          if (queryString) {
+            path += `?${queryString}`;
+          }
+          if (request2.fragment) {
+            path += `#${request2.fragment}`;
+          }
+          const nodeHttpsOptions = {
+            headers: request2.headers,
+            host: request2.hostname,
+            method: request2.method,
+            path,
+            port: request2.port,
+            agent,
+            auth
+          };
+          const requestFunc = isSSL ? import_https.request : import_http2.request;
+          const req = requestFunc(nodeHttpsOptions, (res) => {
+            const httpResponse = new import_protocol_http8.HttpResponse({
+              statusCode: res.statusCode || -1,
+              reason: res.statusMessage,
+              headers: getTransformedHeaders(res.headers),
+              body: res
+            });
+            resolve({ response: httpResponse });
+          });
+          req.on("error", (err) => {
+            if (NODEJS_TIMEOUT_ERROR_CODES.includes(err.code)) {
+              reject(Object.assign(err, { name: "TimeoutError" }));
+            } else {
+              reject(err);
+            }
+          });
+          if (abortSignal) {
+            const onAbort = /* @__PURE__ */ __name(() => {
+              req.destroy();
+              const abortError = new Error("Request aborted");
+              abortError.name = "AbortError";
+              reject(abortError);
+            }, "onAbort");
+            if (typeof abortSignal.addEventListener === "function") {
+              const signal = abortSignal;
+              signal.addEventListener("abort", onAbort, { once: true });
+              req.once("close", () => signal.removeEventListener("abort", onAbort));
+            } else {
+              abortSignal.onabort = onAbort;
+            }
+          }
+          timeouts.push(setConnectionTimeout(req, reject, this.config.connectionTimeout));
+          timeouts.push(setSocketTimeout(req, reject, this.config.requestTimeout));
+          const httpAgent = nodeHttpsOptions.agent;
+          if (typeof httpAgent === "object" && "keepAlive" in httpAgent) {
+            timeouts.push(
+              setSocketKeepAlive(req, {
+                // @ts-expect-error keepAlive is not public on httpAgent.
+                keepAlive: httpAgent.keepAlive,
+                // @ts-expect-error keepAliveMsecs is not public on httpAgent.
+                keepAliveMsecs: httpAgent.keepAliveMsecs
+              })
+            );
+          }
+          writeRequestBodyPromise = writeRequestBody(req, request2, this.config.requestTimeout).catch((e) => {
+            timeouts.forEach(clearTimeout);
+            return _reject(e);
+          });
+        });
+      }
+      updateHttpClientConfig(key, value) {
+        this.config = void 0;
+        this.configProvider = this.configProvider.then((config) => {
+          return {
+            ...config,
+            [key]: value
+          };
+        });
+      }
+      httpHandlerConfigs() {
+        return this.config ?? {};
+      }
+    };
+    __name(_NodeHttpHandler, "NodeHttpHandler");
+    var NodeHttpHandler = _NodeHttpHandler;
+    var import_http22 = require("http2");
+    var import_http23 = __toESM2(require("http2"));
+    var _NodeHttp2ConnectionPool = class _NodeHttp2ConnectionPool {
+      constructor(sessions) {
+        this.sessions = [];
+        this.sessions = sessions ?? [];
+      }
+      poll() {
+        if (this.sessions.length > 0) {
+          return this.sessions.shift();
+        }
+      }
+      offerLast(session) {
+        this.sessions.push(session);
+      }
+      contains(session) {
+        return this.sessions.includes(session);
+      }
+      remove(session) {
+        this.sessions = this.sessions.filter((s) => s !== session);
+      }
+      [Symbol.iterator]() {
+        return this.sessions[Symbol.iterator]();
+      }
+      destroy(connection) {
+        for (const session of this.sessions) {
+          if (session === connection) {
+            if (!session.destroyed) {
+              session.destroy();
+            }
+          }
+        }
+      }
+    };
+    __name(_NodeHttp2ConnectionPool, "NodeHttp2ConnectionPool");
+    var NodeHttp2ConnectionPool = _NodeHttp2ConnectionPool;
+    var _NodeHttp2ConnectionManager = class _NodeHttp2ConnectionManager {
+      constructor(config) {
+        this.sessionCache = /* @__PURE__ */ new Map();
+        this.config = config;
+        if (this.config.maxConcurrency && this.config.maxConcurrency <= 0) {
+          throw new RangeError("maxConcurrency must be greater than zero.");
+        }
+      }
+      lease(requestContext, connectionConfiguration) {
+        const url2 = this.getUrlString(requestContext);
+        const existingPool = this.sessionCache.get(url2);
+        if (existingPool) {
+          const existingSession = existingPool.poll();
+          if (existingSession && !this.config.disableConcurrency) {
+            return existingSession;
+          }
+        }
+        const session = import_http23.default.connect(url2);
+        if (this.config.maxConcurrency) {
+          session.settings({ maxConcurrentStreams: this.config.maxConcurrency }, (err) => {
+            if (err) {
+              throw new Error(
+                "Fail to set maxConcurrentStreams to " + this.config.maxConcurrency + "when creating new session for " + requestContext.destination.toString()
+              );
+            }
+          });
+        }
+        session.unref();
+        const destroySessionCb = /* @__PURE__ */ __name(() => {
+          session.destroy();
+          this.deleteSession(url2, session);
+        }, "destroySessionCb");
+        session.on("goaway", destroySessionCb);
+        session.on("error", destroySessionCb);
+        session.on("frameError", destroySessionCb);
+        session.on("close", () => this.deleteSession(url2, session));
+        if (connectionConfiguration.requestTimeout) {
+          session.setTimeout(connectionConfiguration.requestTimeout, destroySessionCb);
+        }
+        const connectionPool = this.sessionCache.get(url2) || new NodeHttp2ConnectionPool();
+        connectionPool.offerLast(session);
+        this.sessionCache.set(url2, connectionPool);
+        return session;
+      }
+      /**
+       * Delete a session from the connection pool.
+       * @param authority The authority of the session to delete.
+       * @param session The session to delete.
+       */
+      deleteSession(authority, session) {
+        const existingConnectionPool = this.sessionCache.get(authority);
+        if (!existingConnectionPool) {
+          return;
+        }
+        if (!existingConnectionPool.contains(session)) {
+          return;
+        }
+        existingConnectionPool.remove(session);
+        this.sessionCache.set(authority, existingConnectionPool);
+      }
+      release(requestContext, session) {
+        var _a;
+        const cacheKey = this.getUrlString(requestContext);
+        (_a = this.sessionCache.get(cacheKey)) == null ? void 0 : _a.offerLast(session);
+      }
+      destroy() {
+        for (const [key, connectionPool] of this.sessionCache) {
+          for (const session of connectionPool) {
+            if (!session.destroyed) {
+              session.destroy();
+            }
+            connectionPool.remove(session);
+          }
+          this.sessionCache.delete(key);
+        }
+      }
+      setMaxConcurrentStreams(maxConcurrentStreams) {
+        if (this.config.maxConcurrency && this.config.maxConcurrency <= 0) {
+          throw new RangeError("maxConcurrentStreams must be greater than zero.");
+        }
+        this.config.maxConcurrency = maxConcurrentStreams;
+      }
+      setDisableConcurrentStreams(disableConcurrentStreams) {
+        this.config.disableConcurrency = disableConcurrentStreams;
+      }
+      getUrlString(request2) {
+        return request2.destination.toString();
+      }
+    };
+    __name(_NodeHttp2ConnectionManager, "NodeHttp2ConnectionManager");
+    var NodeHttp2ConnectionManager = _NodeHttp2ConnectionManager;
+    var _NodeHttp2Handler = class _NodeHttp2Handler2 {
+      constructor(options) {
+        this.metadata = { handlerProtocol: "h2" };
+        this.connectionManager = new NodeHttp2ConnectionManager({});
+        this.configProvider = new Promise((resolve, reject) => {
+          if (typeof options === "function") {
+            options().then((opts) => {
+              resolve(opts || {});
+            }).catch(reject);
+          } else {
+            resolve(options || {});
+          }
+        });
+      }
+      /**
+       * @returns the input if it is an HttpHandler of any class,
+       * or instantiates a new instance of this handler.
+       */
+      static create(instanceOrOptions) {
+        if (typeof (instanceOrOptions == null ? void 0 : instanceOrOptions.handle) === "function") {
+          return instanceOrOptions;
+        }
+        return new _NodeHttp2Handler2(instanceOrOptions);
+      }
+      destroy() {
+        this.connectionManager.destroy();
+      }
+      async handle(request2, { abortSignal } = {}) {
+        if (!this.config) {
+          this.config = await this.configProvider;
+          this.connectionManager.setDisableConcurrentStreams(this.config.disableConcurrentStreams || false);
+          if (this.config.maxConcurrentStreams) {
+            this.connectionManager.setMaxConcurrentStreams(this.config.maxConcurrentStreams);
+          }
+        }
+        const { requestTimeout, disableConcurrentStreams } = this.config;
+        return new Promise((_resolve, _reject) => {
+          var _a;
+          let fulfilled = false;
+          let writeRequestBodyPromise = void 0;
+          const resolve = /* @__PURE__ */ __name(async (arg) => {
+            await writeRequestBodyPromise;
+            _resolve(arg);
+          }, "resolve");
+          const reject = /* @__PURE__ */ __name(async (arg) => {
+            await writeRequestBodyPromise;
+            _reject(arg);
+          }, "reject");
+          if (abortSignal == null ? void 0 : abortSignal.aborted) {
+            fulfilled = true;
+            const abortError = new Error("Request aborted");
+            abortError.name = "AbortError";
+            reject(abortError);
+            return;
+          }
+          const { hostname, method, port, protocol, query } = request2;
+          let auth = "";
+          if (request2.username != null || request2.password != null) {
+            const username = request2.username ?? "";
+            const password = request2.password ?? "";
+            auth = `${username}:${password}@`;
+          }
+          const authority = `${protocol}//${auth}${hostname}${port ? `:${port}` : ""}`;
+          const requestContext = { destination: new URL(authority) };
+          const session = this.connectionManager.lease(requestContext, {
+            requestTimeout: (_a = this.config) == null ? void 0 : _a.sessionTimeout,
+            disableConcurrentStreams: disableConcurrentStreams || false
+          });
+          const rejectWithDestroy = /* @__PURE__ */ __name((err) => {
+            if (disableConcurrentStreams) {
+              this.destroySession(session);
+            }
+            fulfilled = true;
+            reject(err);
+          }, "rejectWithDestroy");
+          const queryString = (0, import_querystring_builder.buildQueryString)(query || {});
+          let path = request2.path;
+          if (queryString) {
+            path += `?${queryString}`;
+          }
+          if (request2.fragment) {
+            path += `#${request2.fragment}`;
+          }
+          const req = session.request({
+            ...request2.headers,
+            [import_http22.constants.HTTP2_HEADER_PATH]: path,
+            [import_http22.constants.HTTP2_HEADER_METHOD]: method
+          });
+          session.ref();
+          req.on("response", (headers) => {
+            const httpResponse = new import_protocol_http8.HttpResponse({
+              statusCode: headers[":status"] || -1,
+              headers: getTransformedHeaders(headers),
+              body: req
+            });
+            fulfilled = true;
+            resolve({ response: httpResponse });
+            if (disableConcurrentStreams) {
+              session.close();
+              this.connectionManager.deleteSession(authority, session);
+            }
+          });
+          if (requestTimeout) {
+            req.setTimeout(requestTimeout, () => {
+              req.close();
+              const timeoutError = new Error(`Stream timed out because of no activity for ${requestTimeout} ms`);
+              timeoutError.name = "TimeoutError";
+              rejectWithDestroy(timeoutError);
+            });
+          }
+          if (abortSignal) {
+            const onAbort = /* @__PURE__ */ __name(() => {
+              req.close();
+              const abortError = new Error("Request aborted");
+              abortError.name = "AbortError";
+              rejectWithDestroy(abortError);
+            }, "onAbort");
+            if (typeof abortSignal.addEventListener === "function") {
+              const signal = abortSignal;
+              signal.addEventListener("abort", onAbort, { once: true });
+              req.once("close", () => signal.removeEventListener("abort", onAbort));
+            } else {
+              abortSignal.onabort = onAbort;
+            }
+          }
+          req.on("frameError", (type, code, id) => {
+            rejectWithDestroy(new Error(`Frame type id ${type} in stream id ${id} has failed with code ${code}.`));
+          });
+          req.on("error", rejectWithDestroy);
+          req.on("aborted", () => {
+            rejectWithDestroy(
+              new Error(`HTTP/2 stream is abnormally aborted in mid-communication with result code ${req.rstCode}.`)
+            );
+          });
+          req.on("close", () => {
+            session.unref();
+            if (disableConcurrentStreams) {
+              session.destroy();
+            }
+            if (!fulfilled) {
+              rejectWithDestroy(new Error("Unexpected error: http2 request did not get a response"));
+            }
+          });
+          writeRequestBodyPromise = writeRequestBody(req, request2, requestTimeout);
+        });
+      }
+      updateHttpClientConfig(key, value) {
+        this.config = void 0;
+        this.configProvider = this.configProvider.then((config) => {
+          return {
+            ...config,
+            [key]: value
+          };
+        });
+      }
+      httpHandlerConfigs() {
+        return this.config ?? {};
+      }
+      /**
+       * Destroys a session.
+       * @param session The session to destroy.
+       */
+      destroySession(session) {
+        if (!session.destroyed) {
+          session.destroy();
+        }
+      }
+    };
+    __name(_NodeHttp2Handler, "NodeHttp2Handler");
+    var NodeHttp2Handler = _NodeHttp2Handler;
+    var _Collector = class _Collector extends import_stream.Writable {
+      constructor() {
+        super(...arguments);
+        this.bufferedBytes = [];
+      }
+      _write(chunk, encoding, callback) {
+        this.bufferedBytes.push(chunk);
+        callback();
+      }
+    };
+    __name(_Collector, "Collector");
+    var Collector = _Collector;
+    var streamCollector = /* @__PURE__ */ __name((stream) => {
+      if (isReadableStreamInstance(stream)) {
+        return collectReadableStream(stream);
+      }
+      return new Promise((resolve, reject) => {
+        const collector = new Collector();
+        stream.pipe(collector);
+        stream.on("error", (err) => {
+          collector.end();
+          reject(err);
+        });
+        collector.on("error", reject);
+        collector.on("finish", function() {
+          const bytes = new Uint8Array(Buffer.concat(this.bufferedBytes));
+          resolve(bytes);
+        });
+      });
+    }, "streamCollector");
+    var isReadableStreamInstance = /* @__PURE__ */ __name((stream) => typeof ReadableStream === "function" && stream instanceof ReadableStream, "isReadableStreamInstance");
+    async function collectReadableStream(stream) {
+      const chunks = [];
+      const reader = stream.getReader();
+      let isDone = false;
+      let length = 0;
+      while (!isDone) {
+        const { done, value } = await reader.read();
+        if (value) {
+          chunks.push(value);
+          length += value.length;
+        }
+        isDone = done;
+      }
+      const collected = new Uint8Array(length);
+      let offset = 0;
+      for (const chunk of chunks) {
+        collected.set(chunk, offset);
+        offset += chunk.length;
+      }
+      return collected;
+    }
+    __name(collectReadableStream, "collectReadableStream");
+  }
+});
+
+// ../../../node_modules/@smithy/fetch-http-handler/node_modules/@smithy/querystring-builder/dist-cjs/index.js
+var require_dist_cjs32 = __commonJS({
+  "../../../node_modules/@smithy/fetch-http-handler/node_modules/@smithy/querystring-builder/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      buildQueryString: () => buildQueryString
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var import_util_uri_escape = require_dist_cjs29();
+    function buildQueryString(query) {
+      const parts = [];
+      for (let key of Object.keys(query).sort()) {
+        const value = query[key];
+        key = (0, import_util_uri_escape.escapeUri)(key);
+        if (Array.isArray(value)) {
+          for (let i = 0, iLen = value.length; i < iLen; i++) {
+            parts.push(`${key}=${(0, import_util_uri_escape.escapeUri)(value[i])}`);
+          }
+        } else {
+          let qsEntry = key;
+          if (value || typeof value === "string") {
+            qsEntry += `=${(0, import_util_uri_escape.escapeUri)(value)}`;
+          }
+          parts.push(qsEntry);
+        }
+      }
+      return parts.join("&");
+    }
+    __name(buildQueryString, "buildQueryString");
+  }
+});
+
+// ../../../node_modules/@smithy/fetch-http-handler/dist-cjs/index.js
+var require_dist_cjs33 = __commonJS({
+  "../../../node_modules/@smithy/fetch-http-handler/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      FetchHttpHandler: () => FetchHttpHandler,
+      keepAliveSupport: () => keepAliveSupport,
+      streamCollector: () => streamCollector
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var import_protocol_http8 = require_dist_cjs2();
+    var import_querystring_builder = require_dist_cjs32();
+    function requestTimeout(timeoutInMs = 0) {
+      return new Promise((resolve, reject) => {
+        if (timeoutInMs) {
+          setTimeout(() => {
+            const timeoutError = new Error(`Request did not complete within ${timeoutInMs} ms`);
+            timeoutError.name = "TimeoutError";
+            reject(timeoutError);
+          }, timeoutInMs);
+        }
+      });
+    }
+    __name(requestTimeout, "requestTimeout");
+    var keepAliveSupport = {
+      supported: void 0
+    };
+    var _FetchHttpHandler = class _FetchHttpHandler2 {
+      /**
+       * @returns the input if it is an HttpHandler of any class,
+       * or instantiates a new instance of this handler.
+       */
+      static create(instanceOrOptions) {
+        if (typeof (instanceOrOptions == null ? void 0 : instanceOrOptions.handle) === "function") {
+          return instanceOrOptions;
+        }
+        return new _FetchHttpHandler2(instanceOrOptions);
+      }
+      constructor(options) {
+        if (typeof options === "function") {
+          this.configProvider = options().then((opts) => opts || {});
+        } else {
+          this.config = options ?? {};
+          this.configProvider = Promise.resolve(this.config);
+        }
+        if (keepAliveSupport.supported === void 0) {
+          keepAliveSupport.supported = Boolean(
+            typeof Request !== "undefined" && "keepalive" in new Request("https://[::1]")
+          );
+        }
+      }
+      destroy() {
+      }
+      async handle(request2, { abortSignal } = {}) {
+        if (!this.config) {
+          this.config = await this.configProvider;
+        }
+        const requestTimeoutInMs = this.config.requestTimeout;
+        const keepAlive = this.config.keepAlive === true;
+        const credentials = this.config.credentials;
+        if (abortSignal == null ? void 0 : abortSignal.aborted) {
+          const abortError = new Error("Request aborted");
+          abortError.name = "AbortError";
+          return Promise.reject(abortError);
+        }
+        let path = request2.path;
+        const queryString = (0, import_querystring_builder.buildQueryString)(request2.query || {});
+        if (queryString) {
+          path += `?${queryString}`;
+        }
+        if (request2.fragment) {
+          path += `#${request2.fragment}`;
+        }
+        let auth = "";
+        if (request2.username != null || request2.password != null) {
+          const username = request2.username ?? "";
+          const password = request2.password ?? "";
+          auth = `${username}:${password}@`;
+        }
+        const { port, method } = request2;
+        const url2 = `${request2.protocol}//${auth}${request2.hostname}${port ? `:${port}` : ""}${path}`;
+        const body = method === "GET" || method === "HEAD" ? void 0 : request2.body;
+        const requestOptions = {
+          body,
+          headers: new Headers(request2.headers),
+          method,
+          credentials
+        };
+        if (body) {
+          requestOptions.duplex = "half";
+        }
+        if (typeof AbortController !== "undefined") {
+          requestOptions.signal = abortSignal;
+        }
+        if (keepAliveSupport.supported) {
+          requestOptions.keepalive = keepAlive;
+        }
+        let removeSignalEventListener = /* @__PURE__ */ __name(() => {
+        }, "removeSignalEventListener");
+        const fetchRequest = new Request(url2, requestOptions);
+        const raceOfPromises = [
+          fetch(fetchRequest).then((response) => {
+            const fetchHeaders = response.headers;
+            const transformedHeaders = {};
+            for (const pair of fetchHeaders.entries()) {
+              transformedHeaders[pair[0]] = pair[1];
+            }
+            const hasReadableStream = response.body != void 0;
+            if (!hasReadableStream) {
+              return response.blob().then((body2) => ({
+                response: new import_protocol_http8.HttpResponse({
+                  headers: transformedHeaders,
+                  reason: response.statusText,
+                  statusCode: response.status,
+                  body: body2
+                })
+              }));
+            }
+            return {
+              response: new import_protocol_http8.HttpResponse({
+                headers: transformedHeaders,
+                reason: response.statusText,
+                statusCode: response.status,
+                body: response.body
+              })
+            };
+          }),
+          requestTimeout(requestTimeoutInMs)
+        ];
+        if (abortSignal) {
+          raceOfPromises.push(
+            new Promise((resolve, reject) => {
+              const onAbort = /* @__PURE__ */ __name(() => {
+                const abortError = new Error("Request aborted");
+                abortError.name = "AbortError";
+                reject(abortError);
+              }, "onAbort");
+              if (typeof abortSignal.addEventListener === "function") {
+                const signal = abortSignal;
+                signal.addEventListener("abort", onAbort, { once: true });
+                removeSignalEventListener = /* @__PURE__ */ __name(() => signal.removeEventListener("abort", onAbort), "removeSignalEventListener");
+              } else {
+                abortSignal.onabort = onAbort;
+              }
+            })
+          );
+        }
+        return Promise.race(raceOfPromises).finally(removeSignalEventListener);
+      }
+      updateHttpClientConfig(key, value) {
+        this.config = void 0;
+        this.configProvider = this.configProvider.then((config) => {
+          config[key] = value;
+          return config;
+        });
+      }
+      httpHandlerConfigs() {
+        return this.config ?? {};
+      }
+    };
+    __name(_FetchHttpHandler, "FetchHttpHandler");
+    var FetchHttpHandler = _FetchHttpHandler;
+    var import_util_base64 = require_dist_cjs28();
+    var streamCollector = /* @__PURE__ */ __name((stream) => {
+      if (typeof Blob === "function" && stream instanceof Blob) {
+        return collectBlob(stream);
+      }
+      return collectStream(stream);
+    }, "streamCollector");
+    async function collectBlob(blob) {
+      const base64 = await readToBase64(blob);
+      const arrayBuffer = (0, import_util_base64.fromBase64)(base64);
+      return new Uint8Array(arrayBuffer);
+    }
+    __name(collectBlob, "collectBlob");
+    async function collectStream(stream) {
+      const chunks = [];
+      const reader = stream.getReader();
+      let isDone = false;
+      let length = 0;
+      while (!isDone) {
+        const { done, value } = await reader.read();
+        if (value) {
+          chunks.push(value);
+          length += value.length;
+        }
+        isDone = done;
+      }
+      const collected = new Uint8Array(length);
+      let offset = 0;
+      for (const chunk of chunks) {
+        collected.set(chunk, offset);
+        offset += chunk.length;
+      }
+      return collected;
+    }
+    __name(collectStream, "collectStream");
+    function readToBase64(blob) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          if (reader.readyState !== 2) {
+            return reject(new Error("Reader aborted too early"));
+          }
+          const result = reader.result ?? "";
+          const commaIndex = result.indexOf(",");
+          const dataOffset = commaIndex > -1 ? commaIndex + 1 : result.length;
+          resolve(result.substring(dataOffset));
+        };
+        reader.onabort = () => reject(new Error("Read aborted"));
+        reader.onerror = () => reject(reader.error);
+        reader.readAsDataURL(blob);
+      });
+    }
+    __name(readToBase64, "readToBase64");
+  }
+});
+
+// ../../../node_modules/@smithy/util-hex-encoding/dist-cjs/index.js
+var require_dist_cjs34 = __commonJS({
+  "../../../node_modules/@smithy/util-hex-encoding/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      fromHex: () => fromHex,
+      toHex: () => toHex
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var SHORT_TO_HEX = {};
+    var HEX_TO_SHORT = {};
+    for (let i = 0; i < 256; i++) {
+      let encodedByte = i.toString(16).toLowerCase();
+      if (encodedByte.length === 1) {
+        encodedByte = `0${encodedByte}`;
+      }
+      SHORT_TO_HEX[i] = encodedByte;
+      HEX_TO_SHORT[encodedByte] = i;
+    }
+    function fromHex(encoded) {
+      if (encoded.length % 2 !== 0) {
+        throw new Error("Hex encoded strings must have an even number length");
+      }
+      const out = new Uint8Array(encoded.length / 2);
+      for (let i = 0; i < encoded.length; i += 2) {
+        const encodedByte = encoded.slice(i, i + 2).toLowerCase();
+        if (encodedByte in HEX_TO_SHORT) {
+          out[i / 2] = HEX_TO_SHORT[encodedByte];
+        } else {
+          throw new Error(`Cannot decode unrecognized sequence ${encodedByte} as hexadecimal`);
+        }
+      }
+      return out;
+    }
+    __name(fromHex, "fromHex");
+    function toHex(bytes) {
+      let out = "";
+      for (let i = 0; i < bytes.byteLength; i++) {
+        out += SHORT_TO_HEX[bytes[i]];
+      }
+      return out;
+    }
+    __name(toHex, "toHex");
+  }
+});
+
+// ../../../node_modules/@smithy/util-stream/dist-cjs/stream-type-check.js
+var require_stream_type_check = __commonJS({
+  "../../../node_modules/@smithy/util-stream/dist-cjs/stream-type-check.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.isReadableStream = void 0;
+    var isReadableStream2 = (stream) => {
+      var _a;
+      return typeof ReadableStream === "function" && (((_a = stream === null || stream === void 0 ? void 0 : stream.constructor) === null || _a === void 0 ? void 0 : _a.name) === ReadableStream.name || stream instanceof ReadableStream);
+    };
+    exports2.isReadableStream = isReadableStream2;
+  }
+});
+
+// ../../../node_modules/@smithy/util-stream/dist-cjs/sdk-stream-mixin.browser.js
+var require_sdk_stream_mixin_browser = __commonJS({
+  "../../../node_modules/@smithy/util-stream/dist-cjs/sdk-stream-mixin.browser.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.sdkStreamMixin = void 0;
+    var fetch_http_handler_1 = require_dist_cjs33();
+    var util_base64_1 = require_dist_cjs28();
+    var util_hex_encoding_1 = require_dist_cjs34();
+    var util_utf8_1 = require_dist_cjs27();
+    var stream_type_check_1 = require_stream_type_check();
+    var ERR_MSG_STREAM_HAS_BEEN_TRANSFORMED = "The stream has already been transformed.";
+    var sdkStreamMixin2 = (stream) => {
+      var _a, _b;
+      if (!isBlobInstance(stream) && !(0, stream_type_check_1.isReadableStream)(stream)) {
+        const name = ((_b = (_a = stream === null || stream === void 0 ? void 0 : stream.__proto__) === null || _a === void 0 ? void 0 : _a.constructor) === null || _b === void 0 ? void 0 : _b.name) || stream;
+        throw new Error(`Unexpected stream implementation, expect Blob or ReadableStream, got ${name}`);
+      }
+      let transformed = false;
+      const transformToByteArray = async () => {
+        if (transformed) {
+          throw new Error(ERR_MSG_STREAM_HAS_BEEN_TRANSFORMED);
+        }
+        transformed = true;
+        return await (0, fetch_http_handler_1.streamCollector)(stream);
+      };
+      const blobToWebStream = (blob) => {
+        if (typeof blob.stream !== "function") {
+          throw new Error("Cannot transform payload Blob to web stream. Please make sure the Blob.stream() is polyfilled.\nIf you are using React Native, this API is not yet supported, see: https://react-native.canny.io/feature-requests/p/fetch-streaming-body");
+        }
+        return blob.stream();
+      };
+      return Object.assign(stream, {
+        transformToByteArray,
+        transformToString: async (encoding) => {
+          const buf = await transformToByteArray();
+          if (encoding === "base64") {
+            return (0, util_base64_1.toBase64)(buf);
+          } else if (encoding === "hex") {
+            return (0, util_hex_encoding_1.toHex)(buf);
+          } else if (encoding === void 0 || encoding === "utf8" || encoding === "utf-8") {
+            return (0, util_utf8_1.toUtf8)(buf);
+          } else if (typeof TextDecoder === "function") {
+            return new TextDecoder(encoding).decode(buf);
+          } else {
+            throw new Error("TextDecoder is not available, please make sure polyfill is provided.");
+          }
+        },
+        transformToWebStream: () => {
+          if (transformed) {
+            throw new Error(ERR_MSG_STREAM_HAS_BEEN_TRANSFORMED);
+          }
+          transformed = true;
+          if (isBlobInstance(stream)) {
+            return blobToWebStream(stream);
+          } else if ((0, stream_type_check_1.isReadableStream)(stream)) {
+            return stream;
+          } else {
+            throw new Error(`Cannot transform payload to web stream, got ${stream}`);
+          }
+        }
+      });
+    };
+    exports2.sdkStreamMixin = sdkStreamMixin2;
+    var isBlobInstance = (stream) => typeof Blob === "function" && stream instanceof Blob;
+  }
+});
+
+// ../../../node_modules/@smithy/util-stream/dist-cjs/sdk-stream-mixin.js
+var require_sdk_stream_mixin = __commonJS({
+  "../../../node_modules/@smithy/util-stream/dist-cjs/sdk-stream-mixin.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.sdkStreamMixin = void 0;
+    var node_http_handler_1 = require_dist_cjs31();
+    var util_buffer_from_1 = require_dist_cjs26();
+    var stream_1 = require("stream");
+    var util_1 = require("util");
+    var sdk_stream_mixin_browser_1 = require_sdk_stream_mixin_browser();
+    var ERR_MSG_STREAM_HAS_BEEN_TRANSFORMED = "The stream has already been transformed.";
+    var sdkStreamMixin2 = (stream) => {
+      var _a, _b;
+      if (!(stream instanceof stream_1.Readable)) {
+        try {
+          return (0, sdk_stream_mixin_browser_1.sdkStreamMixin)(stream);
+        } catch (e) {
+          const name = ((_b = (_a = stream === null || stream === void 0 ? void 0 : stream.__proto__) === null || _a === void 0 ? void 0 : _a.constructor) === null || _b === void 0 ? void 0 : _b.name) || stream;
+          throw new Error(`Unexpected stream implementation, expect Stream.Readable instance, got ${name}`);
+        }
+      }
+      let transformed = false;
+      const transformToByteArray = async () => {
+        if (transformed) {
+          throw new Error(ERR_MSG_STREAM_HAS_BEEN_TRANSFORMED);
+        }
+        transformed = true;
+        return await (0, node_http_handler_1.streamCollector)(stream);
+      };
+      return Object.assign(stream, {
+        transformToByteArray,
+        transformToString: async (encoding) => {
+          const buf = await transformToByteArray();
+          if (encoding === void 0 || Buffer.isEncoding(encoding)) {
+            return (0, util_buffer_from_1.fromArrayBuffer)(buf.buffer, buf.byteOffset, buf.byteLength).toString(encoding);
+          } else {
+            const decoder2 = new util_1.TextDecoder(encoding);
+            return decoder2.decode(buf);
+          }
+        },
+        transformToWebStream: () => {
+          if (transformed) {
+            throw new Error(ERR_MSG_STREAM_HAS_BEEN_TRANSFORMED);
+          }
+          if (stream.readableFlowing !== null) {
+            throw new Error("The stream has been consumed by other callbacks.");
+          }
+          if (typeof stream_1.Readable.toWeb !== "function") {
+            throw new Error("Readable.toWeb() is not supported. Please make sure you are using Node.js >= 17.0.0, or polyfill is available.");
+          }
+          transformed = true;
+          return stream_1.Readable.toWeb(stream);
+        }
+      });
+    };
+    exports2.sdkStreamMixin = sdkStreamMixin2;
+  }
+});
+
+// ../../../node_modules/@smithy/util-stream/dist-cjs/splitStream.browser.js
+var require_splitStream_browser = __commonJS({
+  "../../../node_modules/@smithy/util-stream/dist-cjs/splitStream.browser.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.splitStream = void 0;
+    async function splitStream2(stream) {
+      if (typeof stream.stream === "function") {
+        stream = stream.stream();
+      }
+      const readableStream = stream;
+      return readableStream.tee();
+    }
+    exports2.splitStream = splitStream2;
+  }
+});
+
+// ../../../node_modules/@smithy/util-stream/dist-cjs/splitStream.js
+var require_splitStream = __commonJS({
+  "../../../node_modules/@smithy/util-stream/dist-cjs/splitStream.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.splitStream = void 0;
+    var stream_1 = require("stream");
+    var splitStream_browser_1 = require_splitStream_browser();
+    var stream_type_check_1 = require_stream_type_check();
+    async function splitStream2(stream) {
+      if ((0, stream_type_check_1.isReadableStream)(stream)) {
+        return (0, splitStream_browser_1.splitStream)(stream);
+      }
+      const stream1 = new stream_1.PassThrough();
+      const stream2 = new stream_1.PassThrough();
+      stream.pipe(stream1);
+      stream.pipe(stream2);
+      return [stream1, stream2];
+    }
+    exports2.splitStream = splitStream2;
+  }
+});
+
+// ../../../node_modules/@smithy/util-stream/dist-cjs/headStream.browser.js
+var require_headStream_browser = __commonJS({
+  "../../../node_modules/@smithy/util-stream/dist-cjs/headStream.browser.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.headStream = void 0;
+    async function headStream2(stream, bytes) {
+      var _a;
+      let byteLengthCounter = 0;
+      const chunks = [];
+      const reader = stream.getReader();
+      let isDone = false;
+      while (!isDone) {
+        const { done, value } = await reader.read();
+        if (value) {
+          chunks.push(value);
+          byteLengthCounter += (_a = value === null || value === void 0 ? void 0 : value.byteLength) !== null && _a !== void 0 ? _a : 0;
+        }
+        if (byteLengthCounter >= bytes) {
+          break;
+        }
+        isDone = done;
+      }
+      reader.releaseLock();
+      const collected = new Uint8Array(Math.min(bytes, byteLengthCounter));
+      let offset = 0;
+      for (const chunk of chunks) {
+        if (chunk.byteLength > collected.byteLength - offset) {
+          collected.set(chunk.subarray(0, collected.byteLength - offset), offset);
+          break;
+        } else {
+          collected.set(chunk, offset);
+        }
+        offset += chunk.length;
+      }
+      return collected;
+    }
+    exports2.headStream = headStream2;
+  }
+});
+
+// ../../../node_modules/@smithy/util-stream/dist-cjs/headStream.js
+var require_headStream = __commonJS({
+  "../../../node_modules/@smithy/util-stream/dist-cjs/headStream.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.headStream = void 0;
+    var stream_1 = require("stream");
+    var headStream_browser_1 = require_headStream_browser();
+    var stream_type_check_1 = require_stream_type_check();
+    var headStream2 = (stream, bytes) => {
+      if ((0, stream_type_check_1.isReadableStream)(stream)) {
+        return (0, headStream_browser_1.headStream)(stream, bytes);
+      }
+      return new Promise((resolve, reject) => {
+        const collector = new Collector();
+        collector.limit = bytes;
+        stream.pipe(collector);
+        stream.on("error", (err) => {
+          collector.end();
+          reject(err);
+        });
+        collector.on("error", reject);
+        collector.on("finish", function() {
+          const bytes2 = new Uint8Array(Buffer.concat(this.buffers));
+          resolve(bytes2);
+        });
+      });
+    };
+    exports2.headStream = headStream2;
+    var Collector = class extends stream_1.Writable {
+      constructor() {
+        super(...arguments);
+        this.buffers = [];
+        this.limit = Infinity;
+        this.bytesBuffered = 0;
+      }
+      _write(chunk, encoding, callback) {
+        var _a;
+        this.buffers.push(chunk);
+        this.bytesBuffered += (_a = chunk.byteLength) !== null && _a !== void 0 ? _a : 0;
+        if (this.bytesBuffered >= this.limit) {
+          const excess = this.bytesBuffered - this.limit;
+          const tailBuffer = this.buffers[this.buffers.length - 1];
+          this.buffers[this.buffers.length - 1] = tailBuffer.subarray(0, tailBuffer.byteLength - excess);
+          this.emit("finish");
+        }
+        callback();
+      }
+    };
+  }
+});
+
+// ../../../node_modules/@smithy/util-stream/dist-cjs/index.js
+var require_dist_cjs35 = __commonJS({
+  "../../../node_modules/@smithy/util-stream/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __reExport = (target, mod, secondTarget) => (__copyProps2(target, mod, "default"), secondTarget && __copyProps2(secondTarget, mod, "default"));
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      Uint8ArrayBlobAdapter: () => Uint8ArrayBlobAdapter
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var import_util_base64 = require_dist_cjs28();
+    var import_util_utf8 = require_dist_cjs27();
+    function transformToString(payload, encoding = "utf-8") {
+      if (encoding === "base64") {
+        return (0, import_util_base64.toBase64)(payload);
+      }
+      return (0, import_util_utf8.toUtf8)(payload);
+    }
+    __name(transformToString, "transformToString");
+    function transformFromString(str, encoding) {
+      if (encoding === "base64") {
+        return Uint8ArrayBlobAdapter.mutate((0, import_util_base64.fromBase64)(str));
+      }
+      return Uint8ArrayBlobAdapter.mutate((0, import_util_utf8.fromUtf8)(str));
+    }
+    __name(transformFromString, "transformFromString");
+    var _Uint8ArrayBlobAdapter = class _Uint8ArrayBlobAdapter2 extends Uint8Array {
+      /**
+       * @param source - such as a string or Stream.
+       * @returns a new Uint8ArrayBlobAdapter extending Uint8Array.
+       */
+      static fromString(source, encoding = "utf-8") {
+        switch (typeof source) {
+          case "string":
+            return transformFromString(source, encoding);
+          default:
+            throw new Error(`Unsupported conversion from ${typeof source} to Uint8ArrayBlobAdapter.`);
+        }
+      }
+      /**
+       * @param source - Uint8Array to be mutated.
+       * @returns the same Uint8Array but with prototype switched to Uint8ArrayBlobAdapter.
+       */
+      static mutate(source) {
+        Object.setPrototypeOf(source, _Uint8ArrayBlobAdapter2.prototype);
+        return source;
+      }
+      /**
+       * @param encoding - default 'utf-8'.
+       * @returns the blob as string.
+       */
+      transformToString(encoding = "utf-8") {
+        return transformToString(this, encoding);
+      }
+    };
+    __name(_Uint8ArrayBlobAdapter, "Uint8ArrayBlobAdapter");
+    var Uint8ArrayBlobAdapter = _Uint8ArrayBlobAdapter;
+    __reExport(src_exports, require_getAwsChunkedEncodingStream(), module2.exports);
+    __reExport(src_exports, require_sdk_stream_mixin(), module2.exports);
+    __reExport(src_exports, require_splitStream(), module2.exports);
+    __reExport(src_exports, require_headStream(), module2.exports);
+    __reExport(src_exports, require_stream_type_check(), module2.exports);
+  }
+});
+
+// ../../../node_modules/@smithy/core/node_modules/@smithy/smithy-client/dist-cjs/index.js
+var require_dist_cjs36 = __commonJS({
+  "../../../node_modules/@smithy/core/node_modules/@smithy/smithy-client/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      Client: () => Client,
+      Command: () => Command,
+      LazyJsonString: () => LazyJsonString,
+      NoOpLogger: () => NoOpLogger,
+      SENSITIVE_STRING: () => SENSITIVE_STRING,
+      ServiceException: () => ServiceException,
+      StringWrapper: () => StringWrapper,
+      _json: () => _json,
+      collectBody: () => collectBody2,
+      convertMap: () => convertMap,
+      createAggregatedClient: () => createAggregatedClient,
+      dateToUtcString: () => dateToUtcString,
+      decorateServiceException: () => decorateServiceException,
+      emitWarningIfUnsupportedVersion: () => emitWarningIfUnsupportedVersion2,
+      expectBoolean: () => expectBoolean,
+      expectByte: () => expectByte,
+      expectFloat32: () => expectFloat32,
+      expectInt: () => expectInt,
+      expectInt32: () => expectInt32,
+      expectLong: () => expectLong,
+      expectNonNull: () => expectNonNull,
+      expectNumber: () => expectNumber,
+      expectObject: () => expectObject,
+      expectShort: () => expectShort,
+      expectString: () => expectString,
+      expectUnion: () => expectUnion2,
+      extendedEncodeURIComponent: () => extendedEncodeURIComponent,
+      getArrayIfSingleItem: () => getArrayIfSingleItem,
+      getDefaultClientConfiguration: () => getDefaultClientConfiguration,
+      getDefaultExtensionConfiguration: () => getDefaultExtensionConfiguration,
+      getValueFromTextNode: () => getValueFromTextNode2,
+      handleFloat: () => handleFloat,
+      limitedParseDouble: () => limitedParseDouble,
+      limitedParseFloat: () => limitedParseFloat,
+      limitedParseFloat32: () => limitedParseFloat32,
+      loadConfigsForDefaultMode: () => loadConfigsForDefaultMode,
+      logger: () => logger,
+      map: () => map,
+      parseBoolean: () => parseBoolean,
+      parseEpochTimestamp: () => parseEpochTimestamp,
+      parseRfc3339DateTime: () => parseRfc3339DateTime,
+      parseRfc3339DateTimeWithOffset: () => parseRfc3339DateTimeWithOffset,
+      parseRfc7231DateTime: () => parseRfc7231DateTime,
+      resolveDefaultRuntimeConfig: () => resolveDefaultRuntimeConfig,
+      resolvedPath: () => resolvedPath2,
+      serializeDateTime: () => serializeDateTime,
+      serializeFloat: () => serializeFloat,
+      splitEvery: () => splitEvery,
+      strictParseByte: () => strictParseByte,
+      strictParseDouble: () => strictParseDouble,
+      strictParseFloat: () => strictParseFloat,
+      strictParseFloat32: () => strictParseFloat32,
+      strictParseInt: () => strictParseInt,
+      strictParseInt32: () => strictParseInt32,
+      strictParseLong: () => strictParseLong,
+      strictParseShort: () => strictParseShort,
+      take: () => take,
+      throwDefaultError: () => throwDefaultError,
+      withBaseException: () => withBaseException
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var _NoOpLogger = class _NoOpLogger {
+      trace() {
+      }
+      debug() {
+      }
+      info() {
+      }
+      warn() {
+      }
+      error() {
+      }
+    };
+    __name(_NoOpLogger, "NoOpLogger");
+    var NoOpLogger = _NoOpLogger;
+    var import_middleware_stack = require_dist_cjs24();
+    var _Client = class _Client {
+      constructor(config) {
+        this.config = config;
+        this.middlewareStack = (0, import_middleware_stack.constructStack)();
+      }
+      send(command, optionsOrCb, cb) {
+        const options = typeof optionsOrCb !== "function" ? optionsOrCb : void 0;
+        const callback = typeof optionsOrCb === "function" ? optionsOrCb : cb;
+        const useHandlerCache = options === void 0 && this.config.cacheMiddleware === true;
+        let handler2;
+        if (useHandlerCache) {
+          if (!this.handlers) {
+            this.handlers = /* @__PURE__ */ new WeakMap();
+          }
+          const handlers = this.handlers;
+          if (handlers.has(command.constructor)) {
+            handler2 = handlers.get(command.constructor);
+          } else {
+            handler2 = command.resolveMiddleware(this.middlewareStack, this.config, options);
+            handlers.set(command.constructor, handler2);
+          }
+        } else {
+          delete this.handlers;
+          handler2 = command.resolveMiddleware(this.middlewareStack, this.config, options);
+        }
+        if (callback) {
+          handler2(command).then(
+            (result) => callback(null, result.output),
+            (err) => callback(err)
+          ).catch(
+            // prevent any errors thrown in the callback from triggering an
+            // unhandled promise rejection
+            () => {
+            }
+          );
+        } else {
+          return handler2(command).then((result) => result.output);
+        }
+      }
+      destroy() {
+        var _a, _b, _c;
+        (_c = (_b = (_a = this.config) == null ? void 0 : _a.requestHandler) == null ? void 0 : _b.destroy) == null ? void 0 : _c.call(_b);
+        delete this.handlers;
+      }
+    };
+    __name(_Client, "Client");
+    var Client = _Client;
+    var import_util_stream = require_dist_cjs35();
+    var collectBody2 = /* @__PURE__ */ __name(async (streamBody = new Uint8Array(), context) => {
+      if (streamBody instanceof Uint8Array) {
+        return import_util_stream.Uint8ArrayBlobAdapter.mutate(streamBody);
+      }
+      if (!streamBody) {
+        return import_util_stream.Uint8ArrayBlobAdapter.mutate(new Uint8Array());
+      }
+      const fromContext = context.streamCollector(streamBody);
+      return import_util_stream.Uint8ArrayBlobAdapter.mutate(await fromContext);
+    }, "collectBody");
+    var import_types5 = require_dist_cjs12();
+    var _Command = class _Command {
+      constructor() {
+        this.middlewareStack = (0, import_middleware_stack.constructStack)();
+      }
+      /**
+       * Factory for Command ClassBuilder.
+       * @internal
+       */
+      static classBuilder() {
+        return new ClassBuilder();
+      }
+      /**
+       * @internal
+       */
+      resolveMiddlewareWithContext(clientStack, configuration, options, {
+        middlewareFn,
+        clientName,
+        commandName,
+        inputFilterSensitiveLog,
+        outputFilterSensitiveLog,
+        smithyContext,
+        additionalContext,
+        CommandCtor
+      }) {
+        for (const mw of middlewareFn.bind(this)(CommandCtor, clientStack, configuration, options)) {
+          this.middlewareStack.use(mw);
+        }
+        const stack = clientStack.concat(this.middlewareStack);
+        const { logger: logger2 } = configuration;
+        const handlerExecutionContext = {
+          logger: logger2,
+          clientName,
+          commandName,
+          inputFilterSensitiveLog,
+          outputFilterSensitiveLog,
+          [import_types5.SMITHY_CONTEXT_KEY]: {
+            commandInstance: this,
+            ...smithyContext
+          },
+          ...additionalContext
+        };
+        const { requestHandler } = configuration;
+        return stack.resolve(
+          (request2) => requestHandler.handle(request2.request, options || {}),
+          handlerExecutionContext
+        );
+      }
+    };
+    __name(_Command, "Command");
+    var Command = _Command;
+    var _ClassBuilder = class _ClassBuilder {
+      constructor() {
+        this._init = () => {
+        };
+        this._ep = {};
+        this._middlewareFn = () => [];
+        this._commandName = "";
+        this._clientName = "";
+        this._additionalContext = {};
+        this._smithyContext = {};
+        this._inputFilterSensitiveLog = (_) => _;
+        this._outputFilterSensitiveLog = (_) => _;
+        this._serializer = null;
+        this._deserializer = null;
+      }
+      /**
+       * Optional init callback.
+       */
+      init(cb) {
+        this._init = cb;
+      }
+      /**
+       * Set the endpoint parameter instructions.
+       */
+      ep(endpointParameterInstructions) {
+        this._ep = endpointParameterInstructions;
+        return this;
+      }
+      /**
+       * Add any number of middleware.
+       */
+      m(middlewareSupplier) {
+        this._middlewareFn = middlewareSupplier;
+        return this;
+      }
+      /**
+       * Set the initial handler execution context Smithy field.
+       */
+      s(service, operation, smithyContext = {}) {
+        this._smithyContext = {
+          service,
+          operation,
+          ...smithyContext
+        };
+        return this;
+      }
+      /**
+       * Set the initial handler execution context.
+       */
+      c(additionalContext = {}) {
+        this._additionalContext = additionalContext;
+        return this;
+      }
+      /**
+       * Set constant string identifiers for the operation.
+       */
+      n(clientName, commandName) {
+        this._clientName = clientName;
+        this._commandName = commandName;
+        return this;
+      }
+      /**
+       * Set the input and output sensistive log filters.
+       */
+      f(inputFilter = (_) => _, outputFilter = (_) => _) {
+        this._inputFilterSensitiveLog = inputFilter;
+        this._outputFilterSensitiveLog = outputFilter;
+        return this;
+      }
+      /**
+       * Sets the serializer.
+       */
+      ser(serializer) {
+        this._serializer = serializer;
+        return this;
+      }
+      /**
+       * Sets the deserializer.
+       */
+      de(deserializer) {
+        this._deserializer = deserializer;
+        return this;
+      }
+      /**
+       * @returns a Command class with the classBuilder properties.
+       */
+      build() {
+        var _a;
+        const closure = this;
+        let CommandRef;
+        return CommandRef = (_a = class extends Command {
+          /**
+           * @public
+           */
+          constructor(...[input]) {
+            super();
+            this.serialize = closure._serializer;
+            this.deserialize = closure._deserializer;
+            this.input = input ?? {};
+            closure._init(this);
+          }
+          /**
+           * @public
+           */
+          static getEndpointParameterInstructions() {
+            return closure._ep;
+          }
+          /**
+           * @internal
+           */
+          resolveMiddleware(stack, configuration, options) {
+            return this.resolveMiddlewareWithContext(stack, configuration, options, {
+              CommandCtor: CommandRef,
+              middlewareFn: closure._middlewareFn,
+              clientName: closure._clientName,
+              commandName: closure._commandName,
+              inputFilterSensitiveLog: closure._inputFilterSensitiveLog,
+              outputFilterSensitiveLog: closure._outputFilterSensitiveLog,
+              smithyContext: closure._smithyContext,
+              additionalContext: closure._additionalContext
+            });
+          }
+        }, __name(_a, "CommandRef"), _a);
+      }
+    };
+    __name(_ClassBuilder, "ClassBuilder");
+    var ClassBuilder = _ClassBuilder;
+    var SENSITIVE_STRING = "***SensitiveInformation***";
+    var createAggregatedClient = /* @__PURE__ */ __name((commands, Client2) => {
+      for (const command of Object.keys(commands)) {
+        const CommandCtor = commands[command];
+        const methodImpl = /* @__PURE__ */ __name(async function(args, optionsOrCb, cb) {
+          const command2 = new CommandCtor(args);
+          if (typeof optionsOrCb === "function") {
+            this.send(command2, optionsOrCb);
+          } else if (typeof cb === "function") {
+            if (typeof optionsOrCb !== "object")
+              throw new Error(`Expected http options but got ${typeof optionsOrCb}`);
+            this.send(command2, optionsOrCb || {}, cb);
+          } else {
+            return this.send(command2, optionsOrCb);
+          }
+        }, "methodImpl");
+        const methodName = (command[0].toLowerCase() + command.slice(1)).replace(/Command$/, "");
+        Client2.prototype[methodName] = methodImpl;
+      }
+    }, "createAggregatedClient");
+    var parseBoolean = /* @__PURE__ */ __name((value) => {
+      switch (value) {
+        case "true":
+          return true;
+        case "false":
+          return false;
+        default:
+          throw new Error(`Unable to parse boolean value "${value}"`);
+      }
+    }, "parseBoolean");
+    var expectBoolean = /* @__PURE__ */ __name((value) => {
+      if (value === null || value === void 0) {
+        return void 0;
+      }
+      if (typeof value === "number") {
+        if (value === 0 || value === 1) {
+          logger.warn(stackTraceWarning(`Expected boolean, got ${typeof value}: ${value}`));
+        }
+        if (value === 0) {
+          return false;
+        }
+        if (value === 1) {
+          return true;
+        }
+      }
+      if (typeof value === "string") {
+        const lower = value.toLowerCase();
+        if (lower === "false" || lower === "true") {
+          logger.warn(stackTraceWarning(`Expected boolean, got ${typeof value}: ${value}`));
+        }
+        if (lower === "false") {
+          return false;
+        }
+        if (lower === "true") {
+          return true;
+        }
+      }
+      if (typeof value === "boolean") {
+        return value;
+      }
+      throw new TypeError(`Expected boolean, got ${typeof value}: ${value}`);
+    }, "expectBoolean");
+    var expectNumber = /* @__PURE__ */ __name((value) => {
+      if (value === null || value === void 0) {
+        return void 0;
+      }
+      if (typeof value === "string") {
+        const parsed = parseFloat(value);
+        if (!Number.isNaN(parsed)) {
+          if (String(parsed) !== String(value)) {
+            logger.warn(stackTraceWarning(`Expected number but observed string: ${value}`));
+          }
+          return parsed;
+        }
+      }
+      if (typeof value === "number") {
+        return value;
+      }
+      throw new TypeError(`Expected number, got ${typeof value}: ${value}`);
+    }, "expectNumber");
+    var MAX_FLOAT = Math.ceil(2 ** 127 * (2 - 2 ** -23));
+    var expectFloat32 = /* @__PURE__ */ __name((value) => {
+      const expected = expectNumber(value);
+      if (expected !== void 0 && !Number.isNaN(expected) && expected !== Infinity && expected !== -Infinity) {
+        if (Math.abs(expected) > MAX_FLOAT) {
+          throw new TypeError(`Expected 32-bit float, got ${value}`);
+        }
+      }
+      return expected;
+    }, "expectFloat32");
+    var expectLong = /* @__PURE__ */ __name((value) => {
+      if (value === null || value === void 0) {
+        return void 0;
+      }
+      if (Number.isInteger(value) && !Number.isNaN(value)) {
+        return value;
+      }
+      throw new TypeError(`Expected integer, got ${typeof value}: ${value}`);
+    }, "expectLong");
+    var expectInt = expectLong;
+    var expectInt32 = /* @__PURE__ */ __name((value) => expectSizedInt(value, 32), "expectInt32");
+    var expectShort = /* @__PURE__ */ __name((value) => expectSizedInt(value, 16), "expectShort");
+    var expectByte = /* @__PURE__ */ __name((value) => expectSizedInt(value, 8), "expectByte");
+    var expectSizedInt = /* @__PURE__ */ __name((value, size) => {
+      const expected = expectLong(value);
+      if (expected !== void 0 && castInt(expected, size) !== expected) {
+        throw new TypeError(`Expected ${size}-bit integer, got ${value}`);
+      }
+      return expected;
+    }, "expectSizedInt");
+    var castInt = /* @__PURE__ */ __name((value, size) => {
+      switch (size) {
+        case 32:
+          return Int32Array.of(value)[0];
+        case 16:
+          return Int16Array.of(value)[0];
+        case 8:
+          return Int8Array.of(value)[0];
+      }
+    }, "castInt");
+    var expectNonNull = /* @__PURE__ */ __name((value, location) => {
+      if (value === null || value === void 0) {
+        if (location) {
+          throw new TypeError(`Expected a non-null value for ${location}`);
+        }
+        throw new TypeError("Expected a non-null value");
+      }
+      return value;
+    }, "expectNonNull");
+    var expectObject = /* @__PURE__ */ __name((value) => {
+      if (value === null || value === void 0) {
+        return void 0;
+      }
+      if (typeof value === "object" && !Array.isArray(value)) {
+        return value;
+      }
+      const receivedType = Array.isArray(value) ? "array" : typeof value;
+      throw new TypeError(`Expected object, got ${receivedType}: ${value}`);
+    }, "expectObject");
+    var expectString = /* @__PURE__ */ __name((value) => {
+      if (value === null || value === void 0) {
+        return void 0;
+      }
+      if (typeof value === "string") {
+        return value;
+      }
+      if (["boolean", "number", "bigint"].includes(typeof value)) {
+        logger.warn(stackTraceWarning(`Expected string, got ${typeof value}: ${value}`));
+        return String(value);
+      }
+      throw new TypeError(`Expected string, got ${typeof value}: ${value}`);
+    }, "expectString");
+    var expectUnion2 = /* @__PURE__ */ __name((value) => {
+      if (value === null || value === void 0) {
+        return void 0;
+      }
+      const asObject = expectObject(value);
+      const setKeys = Object.entries(asObject).filter(([, v]) => v != null).map(([k]) => k);
+      if (setKeys.length === 0) {
+        throw new TypeError(`Unions must have exactly one non-null member. None were found.`);
+      }
+      if (setKeys.length > 1) {
+        throw new TypeError(`Unions must have exactly one non-null member. Keys ${setKeys} were not null.`);
+      }
+      return asObject;
+    }, "expectUnion");
+    var strictParseDouble = /* @__PURE__ */ __name((value) => {
+      if (typeof value == "string") {
+        return expectNumber(parseNumber(value));
+      }
+      return expectNumber(value);
+    }, "strictParseDouble");
+    var strictParseFloat = strictParseDouble;
+    var strictParseFloat32 = /* @__PURE__ */ __name((value) => {
+      if (typeof value == "string") {
+        return expectFloat32(parseNumber(value));
+      }
+      return expectFloat32(value);
+    }, "strictParseFloat32");
+    var NUMBER_REGEX = /(-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?)|(-?Infinity)|(NaN)/g;
+    var parseNumber = /* @__PURE__ */ __name((value) => {
+      const matches = value.match(NUMBER_REGEX);
+      if (matches === null || matches[0].length !== value.length) {
+        throw new TypeError(`Expected real number, got implicit NaN`);
+      }
+      return parseFloat(value);
+    }, "parseNumber");
+    var limitedParseDouble = /* @__PURE__ */ __name((value) => {
+      if (typeof value == "string") {
+        return parseFloatString(value);
+      }
+      return expectNumber(value);
+    }, "limitedParseDouble");
+    var handleFloat = limitedParseDouble;
+    var limitedParseFloat = limitedParseDouble;
+    var limitedParseFloat32 = /* @__PURE__ */ __name((value) => {
+      if (typeof value == "string") {
+        return parseFloatString(value);
+      }
+      return expectFloat32(value);
+    }, "limitedParseFloat32");
+    var parseFloatString = /* @__PURE__ */ __name((value) => {
+      switch (value) {
+        case "NaN":
+          return NaN;
+        case "Infinity":
+          return Infinity;
+        case "-Infinity":
+          return -Infinity;
+        default:
+          throw new Error(`Unable to parse float value: ${value}`);
+      }
+    }, "parseFloatString");
+    var strictParseLong = /* @__PURE__ */ __name((value) => {
+      if (typeof value === "string") {
+        return expectLong(parseNumber(value));
+      }
+      return expectLong(value);
+    }, "strictParseLong");
+    var strictParseInt = strictParseLong;
+    var strictParseInt32 = /* @__PURE__ */ __name((value) => {
+      if (typeof value === "string") {
+        return expectInt32(parseNumber(value));
+      }
+      return expectInt32(value);
+    }, "strictParseInt32");
+    var strictParseShort = /* @__PURE__ */ __name((value) => {
+      if (typeof value === "string") {
+        return expectShort(parseNumber(value));
+      }
+      return expectShort(value);
+    }, "strictParseShort");
+    var strictParseByte = /* @__PURE__ */ __name((value) => {
+      if (typeof value === "string") {
+        return expectByte(parseNumber(value));
+      }
+      return expectByte(value);
+    }, "strictParseByte");
+    var stackTraceWarning = /* @__PURE__ */ __name((message) => {
+      return String(new TypeError(message).stack || message).split("\n").slice(0, 5).filter((s) => !s.includes("stackTraceWarning")).join("\n");
+    }, "stackTraceWarning");
+    var logger = {
+      warn: console.warn
+    };
+    var DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    var MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    function dateToUtcString(date) {
+      const year = date.getUTCFullYear();
+      const month = date.getUTCMonth();
+      const dayOfWeek = date.getUTCDay();
+      const dayOfMonthInt = date.getUTCDate();
+      const hoursInt = date.getUTCHours();
+      const minutesInt = date.getUTCMinutes();
+      const secondsInt = date.getUTCSeconds();
+      const dayOfMonthString = dayOfMonthInt < 10 ? `0${dayOfMonthInt}` : `${dayOfMonthInt}`;
+      const hoursString = hoursInt < 10 ? `0${hoursInt}` : `${hoursInt}`;
+      const minutesString = minutesInt < 10 ? `0${minutesInt}` : `${minutesInt}`;
+      const secondsString = secondsInt < 10 ? `0${secondsInt}` : `${secondsInt}`;
+      return `${DAYS[dayOfWeek]}, ${dayOfMonthString} ${MONTHS[month]} ${year} ${hoursString}:${minutesString}:${secondsString} GMT`;
+    }
+    __name(dateToUtcString, "dateToUtcString");
+    var RFC3339 = new RegExp(/^(\d{4})-(\d{2})-(\d{2})[tT](\d{2}):(\d{2}):(\d{2})(?:\.(\d+))?[zZ]$/);
+    var parseRfc3339DateTime = /* @__PURE__ */ __name((value) => {
+      if (value === null || value === void 0) {
+        return void 0;
+      }
+      if (typeof value !== "string") {
+        throw new TypeError("RFC-3339 date-times must be expressed as strings");
+      }
+      const match = RFC3339.exec(value);
+      if (!match) {
+        throw new TypeError("Invalid RFC-3339 date-time value");
+      }
+      const [_, yearStr, monthStr, dayStr, hours, minutes, seconds, fractionalMilliseconds] = match;
+      const year = strictParseShort(stripLeadingZeroes(yearStr));
+      const month = parseDateValue(monthStr, "month", 1, 12);
+      const day = parseDateValue(dayStr, "day", 1, 31);
+      return buildDate(year, month, day, { hours, minutes, seconds, fractionalMilliseconds });
+    }, "parseRfc3339DateTime");
+    var RFC3339_WITH_OFFSET = new RegExp(
+      /^(\d{4})-(\d{2})-(\d{2})[tT](\d{2}):(\d{2}):(\d{2})(?:\.(\d+))?(([-+]\d{2}\:\d{2})|[zZ])$/
+    );
+    var parseRfc3339DateTimeWithOffset = /* @__PURE__ */ __name((value) => {
+      if (value === null || value === void 0) {
+        return void 0;
+      }
+      if (typeof value !== "string") {
+        throw new TypeError("RFC-3339 date-times must be expressed as strings");
+      }
+      const match = RFC3339_WITH_OFFSET.exec(value);
+      if (!match) {
+        throw new TypeError("Invalid RFC-3339 date-time value");
+      }
+      const [_, yearStr, monthStr, dayStr, hours, minutes, seconds, fractionalMilliseconds, offsetStr] = match;
+      const year = strictParseShort(stripLeadingZeroes(yearStr));
+      const month = parseDateValue(monthStr, "month", 1, 12);
+      const day = parseDateValue(dayStr, "day", 1, 31);
+      const date = buildDate(year, month, day, { hours, minutes, seconds, fractionalMilliseconds });
+      if (offsetStr.toUpperCase() != "Z") {
+        date.setTime(date.getTime() - parseOffsetToMilliseconds(offsetStr));
+      }
+      return date;
+    }, "parseRfc3339DateTimeWithOffset");
+    var IMF_FIXDATE = new RegExp(
+      /^(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun), (\d{2}) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (\d{4}) (\d{1,2}):(\d{2}):(\d{2})(?:\.(\d+))? GMT$/
+    );
+    var RFC_850_DATE = new RegExp(
+      /^(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday), (\d{2})-(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-(\d{2}) (\d{1,2}):(\d{2}):(\d{2})(?:\.(\d+))? GMT$/
+    );
+    var ASC_TIME = new RegExp(
+      /^(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) ( [1-9]|\d{2}) (\d{1,2}):(\d{2}):(\d{2})(?:\.(\d+))? (\d{4})$/
+    );
+    var parseRfc7231DateTime = /* @__PURE__ */ __name((value) => {
+      if (value === null || value === void 0) {
+        return void 0;
+      }
+      if (typeof value !== "string") {
+        throw new TypeError("RFC-7231 date-times must be expressed as strings");
+      }
+      let match = IMF_FIXDATE.exec(value);
+      if (match) {
+        const [_, dayStr, monthStr, yearStr, hours, minutes, seconds, fractionalMilliseconds] = match;
+        return buildDate(
+          strictParseShort(stripLeadingZeroes(yearStr)),
+          parseMonthByShortName(monthStr),
+          parseDateValue(dayStr, "day", 1, 31),
+          { hours, minutes, seconds, fractionalMilliseconds }
+        );
+      }
+      match = RFC_850_DATE.exec(value);
+      if (match) {
+        const [_, dayStr, monthStr, yearStr, hours, minutes, seconds, fractionalMilliseconds] = match;
+        return adjustRfc850Year(
+          buildDate(parseTwoDigitYear(yearStr), parseMonthByShortName(monthStr), parseDateValue(dayStr, "day", 1, 31), {
+            hours,
+            minutes,
+            seconds,
+            fractionalMilliseconds
+          })
+        );
+      }
+      match = ASC_TIME.exec(value);
+      if (match) {
+        const [_, monthStr, dayStr, hours, minutes, seconds, fractionalMilliseconds, yearStr] = match;
+        return buildDate(
+          strictParseShort(stripLeadingZeroes(yearStr)),
+          parseMonthByShortName(monthStr),
+          parseDateValue(dayStr.trimLeft(), "day", 1, 31),
+          { hours, minutes, seconds, fractionalMilliseconds }
+        );
+      }
+      throw new TypeError("Invalid RFC-7231 date-time value");
+    }, "parseRfc7231DateTime");
+    var parseEpochTimestamp = /* @__PURE__ */ __name((value) => {
+      if (value === null || value === void 0) {
+        return void 0;
+      }
+      let valueAsDouble;
+      if (typeof value === "number") {
+        valueAsDouble = value;
+      } else if (typeof value === "string") {
+        valueAsDouble = strictParseDouble(value);
+      } else if (typeof value === "object" && value.tag === 1) {
+        valueAsDouble = value.value;
+      } else {
+        throw new TypeError("Epoch timestamps must be expressed as floating point numbers or their string representation");
+      }
+      if (Number.isNaN(valueAsDouble) || valueAsDouble === Infinity || valueAsDouble === -Infinity) {
+        throw new TypeError("Epoch timestamps must be valid, non-Infinite, non-NaN numerics");
+      }
+      return new Date(Math.round(valueAsDouble * 1e3));
+    }, "parseEpochTimestamp");
+    var buildDate = /* @__PURE__ */ __name((year, month, day, time) => {
+      const adjustedMonth = month - 1;
+      validateDayOfMonth(year, adjustedMonth, day);
+      return new Date(
+        Date.UTC(
+          year,
+          adjustedMonth,
+          day,
+          parseDateValue(time.hours, "hour", 0, 23),
+          parseDateValue(time.minutes, "minute", 0, 59),
+          // seconds can go up to 60 for leap seconds
+          parseDateValue(time.seconds, "seconds", 0, 60),
+          parseMilliseconds(time.fractionalMilliseconds)
+        )
+      );
+    }, "buildDate");
+    var parseTwoDigitYear = /* @__PURE__ */ __name((value) => {
+      const thisYear = (/* @__PURE__ */ new Date()).getUTCFullYear();
+      const valueInThisCentury = Math.floor(thisYear / 100) * 100 + strictParseShort(stripLeadingZeroes(value));
+      if (valueInThisCentury < thisYear) {
+        return valueInThisCentury + 100;
+      }
+      return valueInThisCentury;
+    }, "parseTwoDigitYear");
+    var FIFTY_YEARS_IN_MILLIS = 50 * 365 * 24 * 60 * 60 * 1e3;
+    var adjustRfc850Year = /* @__PURE__ */ __name((input) => {
+      if (input.getTime() - (/* @__PURE__ */ new Date()).getTime() > FIFTY_YEARS_IN_MILLIS) {
+        return new Date(
+          Date.UTC(
+            input.getUTCFullYear() - 100,
+            input.getUTCMonth(),
+            input.getUTCDate(),
+            input.getUTCHours(),
+            input.getUTCMinutes(),
+            input.getUTCSeconds(),
+            input.getUTCMilliseconds()
+          )
+        );
+      }
+      return input;
+    }, "adjustRfc850Year");
+    var parseMonthByShortName = /* @__PURE__ */ __name((value) => {
+      const monthIdx = MONTHS.indexOf(value);
+      if (monthIdx < 0) {
+        throw new TypeError(`Invalid month: ${value}`);
+      }
+      return monthIdx + 1;
+    }, "parseMonthByShortName");
+    var DAYS_IN_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    var validateDayOfMonth = /* @__PURE__ */ __name((year, month, day) => {
+      let maxDays = DAYS_IN_MONTH[month];
+      if (month === 1 && isLeapYear(year)) {
+        maxDays = 29;
+      }
+      if (day > maxDays) {
+        throw new TypeError(`Invalid day for ${MONTHS[month]} in ${year}: ${day}`);
+      }
+    }, "validateDayOfMonth");
+    var isLeapYear = /* @__PURE__ */ __name((year) => {
+      return year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+    }, "isLeapYear");
+    var parseDateValue = /* @__PURE__ */ __name((value, type, lower, upper) => {
+      const dateVal = strictParseByte(stripLeadingZeroes(value));
+      if (dateVal < lower || dateVal > upper) {
+        throw new TypeError(`${type} must be between ${lower} and ${upper}, inclusive`);
+      }
+      return dateVal;
+    }, "parseDateValue");
+    var parseMilliseconds = /* @__PURE__ */ __name((value) => {
+      if (value === null || value === void 0) {
+        return 0;
+      }
+      return strictParseFloat32("0." + value) * 1e3;
+    }, "parseMilliseconds");
+    var parseOffsetToMilliseconds = /* @__PURE__ */ __name((value) => {
+      const directionStr = value[0];
+      let direction = 1;
+      if (directionStr == "+") {
+        direction = 1;
+      } else if (directionStr == "-") {
+        direction = -1;
+      } else {
+        throw new TypeError(`Offset direction, ${directionStr}, must be "+" or "-"`);
+      }
+      const hour = Number(value.substring(1, 3));
+      const minute = Number(value.substring(4, 6));
+      return direction * (hour * 60 + minute) * 60 * 1e3;
+    }, "parseOffsetToMilliseconds");
+    var stripLeadingZeroes = /* @__PURE__ */ __name((value) => {
+      let idx = 0;
+      while (idx < value.length - 1 && value.charAt(idx) === "0") {
+        idx++;
+      }
+      if (idx === 0) {
+        return value;
+      }
+      return value.slice(idx);
+    }, "stripLeadingZeroes");
+    var _ServiceException = class _ServiceException2 extends Error {
+      constructor(options) {
+        super(options.message);
+        Object.setPrototypeOf(this, _ServiceException2.prototype);
+        this.name = options.name;
+        this.$fault = options.$fault;
+        this.$metadata = options.$metadata;
+      }
+    };
+    __name(_ServiceException, "ServiceException");
+    var ServiceException = _ServiceException;
+    var decorateServiceException = /* @__PURE__ */ __name((exception, additions = {}) => {
+      Object.entries(additions).filter(([, v]) => v !== void 0).forEach(([k, v]) => {
+        if (exception[k] == void 0 || exception[k] === "") {
+          exception[k] = v;
+        }
+      });
+      const message = exception.message || exception.Message || "UnknownError";
+      exception.message = message;
+      delete exception.Message;
+      return exception;
+    }, "decorateServiceException");
+    var throwDefaultError = /* @__PURE__ */ __name(({ output, parsedBody, exceptionCtor, errorCode }) => {
+      const $metadata = deserializeMetadata(output);
+      const statusCode = $metadata.httpStatusCode ? $metadata.httpStatusCode + "" : void 0;
+      const response = new exceptionCtor({
+        name: (parsedBody == null ? void 0 : parsedBody.code) || (parsedBody == null ? void 0 : parsedBody.Code) || errorCode || statusCode || "UnknownError",
+        $fault: "client",
+        $metadata
+      });
+      throw decorateServiceException(response, parsedBody);
+    }, "throwDefaultError");
+    var withBaseException = /* @__PURE__ */ __name((ExceptionCtor) => {
+      return ({ output, parsedBody, errorCode }) => {
+        throwDefaultError({ output, parsedBody, exceptionCtor: ExceptionCtor, errorCode });
+      };
+    }, "withBaseException");
+    var deserializeMetadata = /* @__PURE__ */ __name((output) => ({
+      httpStatusCode: output.statusCode,
+      requestId: output.headers["x-amzn-requestid"] ?? output.headers["x-amzn-request-id"] ?? output.headers["x-amz-request-id"],
+      extendedRequestId: output.headers["x-amz-id-2"],
+      cfId: output.headers["x-amz-cf-id"]
+    }), "deserializeMetadata");
+    var loadConfigsForDefaultMode = /* @__PURE__ */ __name((mode) => {
+      switch (mode) {
+        case "standard":
+          return {
+            retryMode: "standard",
+            connectionTimeout: 3100
+          };
+        case "in-region":
+          return {
+            retryMode: "standard",
+            connectionTimeout: 1100
+          };
+        case "cross-region":
+          return {
+            retryMode: "standard",
+            connectionTimeout: 3100
+          };
+        case "mobile":
+          return {
+            retryMode: "standard",
+            connectionTimeout: 3e4
+          };
+        default:
+          return {};
+      }
+    }, "loadConfigsForDefaultMode");
+    var warningEmitted2 = false;
+    var emitWarningIfUnsupportedVersion2 = /* @__PURE__ */ __name((version2) => {
+      if (version2 && !warningEmitted2 && parseInt(version2.substring(1, version2.indexOf("."))) < 16) {
+        warningEmitted2 = true;
+      }
+    }, "emitWarningIfUnsupportedVersion");
+    var getChecksumConfiguration = /* @__PURE__ */ __name((runtimeConfig) => {
+      const checksumAlgorithms = [];
+      for (const id in import_types5.AlgorithmId) {
+        const algorithmId = import_types5.AlgorithmId[id];
+        if (runtimeConfig[algorithmId] === void 0) {
+          continue;
+        }
+        checksumAlgorithms.push({
+          algorithmId: () => algorithmId,
+          checksumConstructor: () => runtimeConfig[algorithmId]
+        });
+      }
+      return {
+        _checksumAlgorithms: checksumAlgorithms,
+        addChecksumAlgorithm(algo) {
+          this._checksumAlgorithms.push(algo);
+        },
+        checksumAlgorithms() {
+          return this._checksumAlgorithms;
+        }
+      };
+    }, "getChecksumConfiguration");
+    var resolveChecksumRuntimeConfig = /* @__PURE__ */ __name((clientConfig) => {
+      const runtimeConfig = {};
+      clientConfig.checksumAlgorithms().forEach((checksumAlgorithm) => {
+        runtimeConfig[checksumAlgorithm.algorithmId()] = checksumAlgorithm.checksumConstructor();
+      });
+      return runtimeConfig;
+    }, "resolveChecksumRuntimeConfig");
+    var getRetryConfiguration = /* @__PURE__ */ __name((runtimeConfig) => {
+      let _retryStrategy = runtimeConfig.retryStrategy;
+      return {
+        setRetryStrategy(retryStrategy) {
+          _retryStrategy = retryStrategy;
+        },
+        retryStrategy() {
+          return _retryStrategy;
+        }
+      };
+    }, "getRetryConfiguration");
+    var resolveRetryRuntimeConfig = /* @__PURE__ */ __name((retryStrategyConfiguration) => {
+      const runtimeConfig = {};
+      runtimeConfig.retryStrategy = retryStrategyConfiguration.retryStrategy();
+      return runtimeConfig;
+    }, "resolveRetryRuntimeConfig");
+    var getDefaultExtensionConfiguration = /* @__PURE__ */ __name((runtimeConfig) => {
+      return {
+        ...getChecksumConfiguration(runtimeConfig),
+        ...getRetryConfiguration(runtimeConfig)
+      };
+    }, "getDefaultExtensionConfiguration");
+    var getDefaultClientConfiguration = getDefaultExtensionConfiguration;
+    var resolveDefaultRuntimeConfig = /* @__PURE__ */ __name((config) => {
+      return {
+        ...resolveChecksumRuntimeConfig(config),
+        ...resolveRetryRuntimeConfig(config)
+      };
+    }, "resolveDefaultRuntimeConfig");
+    function extendedEncodeURIComponent(str) {
+      return encodeURIComponent(str).replace(/[!'()*]/g, function(c) {
+        return "%" + c.charCodeAt(0).toString(16).toUpperCase();
+      });
+    }
+    __name(extendedEncodeURIComponent, "extendedEncodeURIComponent");
+    var getArrayIfSingleItem = /* @__PURE__ */ __name((mayBeArray) => Array.isArray(mayBeArray) ? mayBeArray : [mayBeArray], "getArrayIfSingleItem");
+    var getValueFromTextNode2 = /* @__PURE__ */ __name((obj) => {
+      const textNodeName = "#text";
+      for (const key in obj) {
+        if (obj.hasOwnProperty(key) && obj[key][textNodeName] !== void 0) {
+          obj[key] = obj[key][textNodeName];
+        } else if (typeof obj[key] === "object" && obj[key] !== null) {
+          obj[key] = getValueFromTextNode2(obj[key]);
+        }
+      }
+      return obj;
+    }, "getValueFromTextNode");
+    var StringWrapper = /* @__PURE__ */ __name(function() {
+      const Class = Object.getPrototypeOf(this).constructor;
+      const Constructor = Function.bind.apply(String, [null, ...arguments]);
+      const instance = new Constructor();
+      Object.setPrototypeOf(instance, Class.prototype);
+      return instance;
+    }, "StringWrapper");
+    StringWrapper.prototype = Object.create(String.prototype, {
+      constructor: {
+        value: StringWrapper,
+        enumerable: false,
+        writable: true,
+        configurable: true
+      }
+    });
+    Object.setPrototypeOf(StringWrapper, String);
+    var _LazyJsonString = class _LazyJsonString2 extends StringWrapper {
+      deserializeJSON() {
+        return JSON.parse(super.toString());
+      }
+      toJSON() {
+        return super.toString();
+      }
+      static fromObject(object) {
+        if (object instanceof _LazyJsonString2) {
+          return object;
+        } else if (object instanceof String || typeof object === "string") {
+          return new _LazyJsonString2(object);
+        }
+        return new _LazyJsonString2(JSON.stringify(object));
+      }
+    };
+    __name(_LazyJsonString, "LazyJsonString");
+    var LazyJsonString = _LazyJsonString;
+    function map(arg0, arg1, arg2) {
+      let target;
+      let filter;
+      let instructions;
+      if (typeof arg1 === "undefined" && typeof arg2 === "undefined") {
+        target = {};
+        instructions = arg0;
+      } else {
+        target = arg0;
+        if (typeof arg1 === "function") {
+          filter = arg1;
+          instructions = arg2;
+          return mapWithFilter(target, filter, instructions);
+        } else {
+          instructions = arg1;
+        }
+      }
+      for (const key of Object.keys(instructions)) {
+        if (!Array.isArray(instructions[key])) {
+          target[key] = instructions[key];
+          continue;
+        }
+        applyInstruction(target, null, instructions, key);
+      }
+      return target;
+    }
+    __name(map, "map");
+    var convertMap = /* @__PURE__ */ __name((target) => {
+      const output = {};
+      for (const [k, v] of Object.entries(target || {})) {
+        output[k] = [, v];
+      }
+      return output;
+    }, "convertMap");
+    var take = /* @__PURE__ */ __name((source, instructions) => {
+      const out = {};
+      for (const key in instructions) {
+        applyInstruction(out, source, instructions, key);
+      }
+      return out;
+    }, "take");
+    var mapWithFilter = /* @__PURE__ */ __name((target, filter, instructions) => {
+      return map(
+        target,
+        Object.entries(instructions).reduce(
+          (_instructions, [key, value]) => {
+            if (Array.isArray(value)) {
+              _instructions[key] = value;
+            } else {
+              if (typeof value === "function") {
+                _instructions[key] = [filter, value()];
+              } else {
+                _instructions[key] = [filter, value];
+              }
+            }
+            return _instructions;
+          },
+          {}
+        )
+      );
+    }, "mapWithFilter");
+    var applyInstruction = /* @__PURE__ */ __name((target, source, instructions, targetKey) => {
+      if (source !== null) {
+        let instruction = instructions[targetKey];
+        if (typeof instruction === "function") {
+          instruction = [, instruction];
+        }
+        const [filter2 = nonNullish, valueFn = pass, sourceKey = targetKey] = instruction;
+        if (typeof filter2 === "function" && filter2(source[sourceKey]) || typeof filter2 !== "function" && !!filter2) {
+          target[targetKey] = valueFn(source[sourceKey]);
+        }
+        return;
+      }
+      let [filter, value] = instructions[targetKey];
+      if (typeof value === "function") {
+        let _value;
+        const defaultFilterPassed = filter === void 0 && (_value = value()) != null;
+        const customFilterPassed = typeof filter === "function" && !!filter(void 0) || typeof filter !== "function" && !!filter;
+        if (defaultFilterPassed) {
+          target[targetKey] = _value;
+        } else if (customFilterPassed) {
+          target[targetKey] = value();
+        }
+      } else {
+        const defaultFilterPassed = filter === void 0 && value != null;
+        const customFilterPassed = typeof filter === "function" && !!filter(value) || typeof filter !== "function" && !!filter;
+        if (defaultFilterPassed || customFilterPassed) {
+          target[targetKey] = value;
+        }
+      }
+    }, "applyInstruction");
+    var nonNullish = /* @__PURE__ */ __name((_) => _ != null, "nonNullish");
+    var pass = /* @__PURE__ */ __name((_) => _, "pass");
+    var resolvedPath2 = /* @__PURE__ */ __name((resolvedPath22, input, memberName, labelValueProvider, uriLabel, isGreedyLabel) => {
+      if (input != null && input[memberName] !== void 0) {
+        const labelValue = labelValueProvider();
+        if (labelValue.length <= 0) {
+          throw new Error("Empty value provided for input HTTP label: " + memberName + ".");
+        }
+        resolvedPath22 = resolvedPath22.replace(
+          uriLabel,
+          isGreedyLabel ? labelValue.split("/").map((segment) => extendedEncodeURIComponent(segment)).join("/") : extendedEncodeURIComponent(labelValue)
+        );
+      } else {
+        throw new Error("No value provided for input HTTP label: " + memberName + ".");
+      }
+      return resolvedPath22;
+    }, "resolvedPath");
+    var serializeFloat = /* @__PURE__ */ __name((value) => {
+      if (value !== value) {
+        return "NaN";
+      }
+      switch (value) {
+        case Infinity:
+          return "Infinity";
+        case -Infinity:
+          return "-Infinity";
+        default:
+          return value;
+      }
+    }, "serializeFloat");
+    var serializeDateTime = /* @__PURE__ */ __name((date) => date.toISOString().replace(".000Z", "Z"), "serializeDateTime");
+    var _json = /* @__PURE__ */ __name((obj) => {
+      if (obj == null) {
+        return {};
+      }
+      if (Array.isArray(obj)) {
+        return obj.filter((_) => _ != null).map(_json);
+      }
+      if (typeof obj === "object") {
+        const target = {};
+        for (const key of Object.keys(obj)) {
+          if (obj[key] == null) {
+            continue;
+          }
+          target[key] = _json(obj[key]);
+        }
+        return target;
+      }
+      return obj;
+    }, "_json");
+    function splitEvery(value, delimiter, numDelimiters) {
+      if (numDelimiters <= 0 || !Number.isInteger(numDelimiters)) {
+        throw new Error("Invalid number of delimiters (" + numDelimiters + ") for splitEvery.");
+      }
+      const segments = value.split(delimiter);
+      if (numDelimiters === 1) {
+        return segments;
+      }
+      const compoundSegments = [];
+      let currentSegment = "";
+      for (let i = 0; i < segments.length; i++) {
+        if (currentSegment === "") {
+          currentSegment = segments[i];
+        } else {
+          currentSegment += delimiter + segments[i];
+        }
+        if ((i + 1) % numDelimiters === 0) {
+          compoundSegments.push(currentSegment);
+          currentSegment = "";
+        }
+      }
+      if (currentSegment !== "") {
+        compoundSegments.push(currentSegment);
+      }
+      return compoundSegments;
+    }
+    __name(splitEvery, "splitEvery");
+  }
+});
+
+// ../../../node_modules/@smithy/core/node_modules/@smithy/middleware-retry/dist-cjs/isStreamingPayload/isStreamingPayload.js
+var require_isStreamingPayload = __commonJS({
+  "../../../node_modules/@smithy/core/node_modules/@smithy/middleware-retry/dist-cjs/isStreamingPayload/isStreamingPayload.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.isStreamingPayload = void 0;
+    var stream_1 = require("stream");
+    var isStreamingPayload = (request2) => (request2 === null || request2 === void 0 ? void 0 : request2.body) instanceof stream_1.Readable || typeof ReadableStream !== "undefined" && (request2 === null || request2 === void 0 ? void 0 : request2.body) instanceof ReadableStream;
+    exports2.isStreamingPayload = isStreamingPayload;
+  }
+});
+
+// ../../../node_modules/@smithy/core/node_modules/@smithy/middleware-retry/dist-cjs/index.js
+var require_dist_cjs37 = __commonJS({
+  "../../../node_modules/@smithy/core/node_modules/@smithy/middleware-retry/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      AdaptiveRetryStrategy: () => AdaptiveRetryStrategy,
+      CONFIG_MAX_ATTEMPTS: () => CONFIG_MAX_ATTEMPTS,
+      CONFIG_RETRY_MODE: () => CONFIG_RETRY_MODE,
+      ENV_MAX_ATTEMPTS: () => ENV_MAX_ATTEMPTS,
+      ENV_RETRY_MODE: () => ENV_RETRY_MODE,
+      NODE_MAX_ATTEMPT_CONFIG_OPTIONS: () => NODE_MAX_ATTEMPT_CONFIG_OPTIONS,
+      NODE_RETRY_MODE_CONFIG_OPTIONS: () => NODE_RETRY_MODE_CONFIG_OPTIONS,
+      StandardRetryStrategy: () => StandardRetryStrategy,
+      defaultDelayDecider: () => defaultDelayDecider,
+      defaultRetryDecider: () => defaultRetryDecider,
+      getOmitRetryHeadersPlugin: () => getOmitRetryHeadersPlugin,
+      getRetryAfterHint: () => getRetryAfterHint,
+      getRetryPlugin: () => getRetryPlugin,
+      omitRetryHeadersMiddleware: () => omitRetryHeadersMiddleware,
+      omitRetryHeadersMiddlewareOptions: () => omitRetryHeadersMiddlewareOptions,
+      resolveRetryConfig: () => resolveRetryConfig,
+      retryMiddleware: () => retryMiddleware,
+      retryMiddlewareOptions: () => retryMiddlewareOptions2
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var import_protocol_http8 = require_dist_cjs21();
+    var import_uuid = (init_esm_node(), __toCommonJS(esm_node_exports));
+    var import_util_retry = require_dist_cjs23();
+    var getDefaultRetryQuota = /* @__PURE__ */ __name((initialRetryTokens, options) => {
+      const MAX_CAPACITY = initialRetryTokens;
+      const noRetryIncrement = (options == null ? void 0 : options.noRetryIncrement) ?? import_util_retry.NO_RETRY_INCREMENT;
+      const retryCost = (options == null ? void 0 : options.retryCost) ?? import_util_retry.RETRY_COST;
+      const timeoutRetryCost = (options == null ? void 0 : options.timeoutRetryCost) ?? import_util_retry.TIMEOUT_RETRY_COST;
+      let availableCapacity = initialRetryTokens;
+      const getCapacityAmount = /* @__PURE__ */ __name((error) => error.name === "TimeoutError" ? timeoutRetryCost : retryCost, "getCapacityAmount");
+      const hasRetryTokens = /* @__PURE__ */ __name((error) => getCapacityAmount(error) <= availableCapacity, "hasRetryTokens");
+      const retrieveRetryTokens = /* @__PURE__ */ __name((error) => {
+        if (!hasRetryTokens(error)) {
+          throw new Error("No retry token available");
+        }
+        const capacityAmount = getCapacityAmount(error);
+        availableCapacity -= capacityAmount;
+        return capacityAmount;
+      }, "retrieveRetryTokens");
+      const releaseRetryTokens = /* @__PURE__ */ __name((capacityReleaseAmount) => {
+        availableCapacity += capacityReleaseAmount ?? noRetryIncrement;
+        availableCapacity = Math.min(availableCapacity, MAX_CAPACITY);
+      }, "releaseRetryTokens");
+      return Object.freeze({
+        hasRetryTokens,
+        retrieveRetryTokens,
+        releaseRetryTokens
+      });
+    }, "getDefaultRetryQuota");
+    var defaultDelayDecider = /* @__PURE__ */ __name((delayBase, attempts) => Math.floor(Math.min(import_util_retry.MAXIMUM_RETRY_DELAY, Math.random() * 2 ** attempts * delayBase)), "defaultDelayDecider");
+    var import_service_error_classification = require_dist_cjs22();
+    var defaultRetryDecider = /* @__PURE__ */ __name((error) => {
+      if (!error) {
+        return false;
+      }
+      return (0, import_service_error_classification.isRetryableByTrait)(error) || (0, import_service_error_classification.isClockSkewError)(error) || (0, import_service_error_classification.isThrottlingError)(error) || (0, import_service_error_classification.isTransientError)(error);
+    }, "defaultRetryDecider");
+    var asSdkError = /* @__PURE__ */ __name((error) => {
+      if (error instanceof Error)
+        return error;
+      if (error instanceof Object)
+        return Object.assign(new Error(), error);
+      if (typeof error === "string")
+        return new Error(error);
+      return new Error(`AWS SDK error wrapper for ${error}`);
+    }, "asSdkError");
+    var _StandardRetryStrategy = class _StandardRetryStrategy {
+      constructor(maxAttemptsProvider, options) {
+        this.maxAttemptsProvider = maxAttemptsProvider;
+        this.mode = import_util_retry.RETRY_MODES.STANDARD;
+        this.retryDecider = (options == null ? void 0 : options.retryDecider) ?? defaultRetryDecider;
+        this.delayDecider = (options == null ? void 0 : options.delayDecider) ?? defaultDelayDecider;
+        this.retryQuota = (options == null ? void 0 : options.retryQuota) ?? getDefaultRetryQuota(import_util_retry.INITIAL_RETRY_TOKENS);
+      }
+      shouldRetry(error, attempts, maxAttempts) {
+        return attempts < maxAttempts && this.retryDecider(error) && this.retryQuota.hasRetryTokens(error);
+      }
+      async getMaxAttempts() {
+        let maxAttempts;
+        try {
+          maxAttempts = await this.maxAttemptsProvider();
+        } catch (error) {
+          maxAttempts = import_util_retry.DEFAULT_MAX_ATTEMPTS;
+        }
+        return maxAttempts;
+      }
+      async retry(next, args, options) {
+        let retryTokenAmount;
+        let attempts = 0;
+        let totalDelay = 0;
+        const maxAttempts = await this.getMaxAttempts();
+        const { request: request2 } = args;
+        if (import_protocol_http8.HttpRequest.isInstance(request2)) {
+          request2.headers[import_util_retry.INVOCATION_ID_HEADER] = (0, import_uuid.v4)();
+        }
+        while (true) {
+          try {
+            if (import_protocol_http8.HttpRequest.isInstance(request2)) {
+              request2.headers[import_util_retry.REQUEST_HEADER] = `attempt=${attempts + 1}; max=${maxAttempts}`;
+            }
+            if (options == null ? void 0 : options.beforeRequest) {
+              await options.beforeRequest();
+            }
+            const { response, output } = await next(args);
+            if (options == null ? void 0 : options.afterRequest) {
+              options.afterRequest(response);
+            }
+            this.retryQuota.releaseRetryTokens(retryTokenAmount);
+            output.$metadata.attempts = attempts + 1;
+            output.$metadata.totalRetryDelay = totalDelay;
+            return { response, output };
+          } catch (e) {
+            const err = asSdkError(e);
+            attempts++;
+            if (this.shouldRetry(err, attempts, maxAttempts)) {
+              retryTokenAmount = this.retryQuota.retrieveRetryTokens(err);
+              const delayFromDecider = this.delayDecider(
+                (0, import_service_error_classification.isThrottlingError)(err) ? import_util_retry.THROTTLING_RETRY_DELAY_BASE : import_util_retry.DEFAULT_RETRY_DELAY_BASE,
+                attempts
+              );
+              const delayFromResponse = getDelayFromRetryAfterHeader(err.$response);
+              const delay = Math.max(delayFromResponse || 0, delayFromDecider);
+              totalDelay += delay;
+              await new Promise((resolve) => setTimeout(resolve, delay));
+              continue;
+            }
+            if (!err.$metadata) {
+              err.$metadata = {};
+            }
+            err.$metadata.attempts = attempts;
+            err.$metadata.totalRetryDelay = totalDelay;
+            throw err;
+          }
+        }
+      }
+    };
+    __name(_StandardRetryStrategy, "StandardRetryStrategy");
+    var StandardRetryStrategy = _StandardRetryStrategy;
+    var getDelayFromRetryAfterHeader = /* @__PURE__ */ __name((response) => {
+      if (!import_protocol_http8.HttpResponse.isInstance(response))
+        return;
+      const retryAfterHeaderName = Object.keys(response.headers).find((key) => key.toLowerCase() === "retry-after");
+      if (!retryAfterHeaderName)
+        return;
+      const retryAfter = response.headers[retryAfterHeaderName];
+      const retryAfterSeconds = Number(retryAfter);
+      if (!Number.isNaN(retryAfterSeconds))
+        return retryAfterSeconds * 1e3;
+      const retryAfterDate = new Date(retryAfter);
+      return retryAfterDate.getTime() - Date.now();
+    }, "getDelayFromRetryAfterHeader");
+    var _AdaptiveRetryStrategy = class _AdaptiveRetryStrategy extends StandardRetryStrategy {
+      constructor(maxAttemptsProvider, options) {
+        const { rateLimiter, ...superOptions } = options ?? {};
+        super(maxAttemptsProvider, superOptions);
+        this.rateLimiter = rateLimiter ?? new import_util_retry.DefaultRateLimiter();
+        this.mode = import_util_retry.RETRY_MODES.ADAPTIVE;
+      }
+      async retry(next, args) {
+        return super.retry(next, args, {
+          beforeRequest: async () => {
+            return this.rateLimiter.getSendToken();
+          },
+          afterRequest: (response) => {
+            this.rateLimiter.updateClientSendingRate(response);
+          }
+        });
+      }
+    };
+    __name(_AdaptiveRetryStrategy, "AdaptiveRetryStrategy");
+    var AdaptiveRetryStrategy = _AdaptiveRetryStrategy;
+    var import_util_middleware3 = require_dist_cjs13();
+    var ENV_MAX_ATTEMPTS = "AWS_MAX_ATTEMPTS";
+    var CONFIG_MAX_ATTEMPTS = "max_attempts";
+    var NODE_MAX_ATTEMPT_CONFIG_OPTIONS = {
+      environmentVariableSelector: (env) => {
+        const value = env[ENV_MAX_ATTEMPTS];
+        if (!value)
+          return void 0;
+        const maxAttempt = parseInt(value);
+        if (Number.isNaN(maxAttempt)) {
+          throw new Error(`Environment variable ${ENV_MAX_ATTEMPTS} mast be a number, got "${value}"`);
+        }
+        return maxAttempt;
+      },
+      configFileSelector: (profile) => {
+        const value = profile[CONFIG_MAX_ATTEMPTS];
+        if (!value)
+          return void 0;
+        const maxAttempt = parseInt(value);
+        if (Number.isNaN(maxAttempt)) {
+          throw new Error(`Shared config file entry ${CONFIG_MAX_ATTEMPTS} mast be a number, got "${value}"`);
+        }
+        return maxAttempt;
+      },
+      default: import_util_retry.DEFAULT_MAX_ATTEMPTS
+    };
+    var resolveRetryConfig = /* @__PURE__ */ __name((input) => {
+      const { retryStrategy } = input;
+      const maxAttempts = (0, import_util_middleware3.normalizeProvider)(input.maxAttempts ?? import_util_retry.DEFAULT_MAX_ATTEMPTS);
+      return {
+        ...input,
+        maxAttempts,
+        retryStrategy: async () => {
+          if (retryStrategy) {
+            return retryStrategy;
+          }
+          const retryMode = await (0, import_util_middleware3.normalizeProvider)(input.retryMode)();
+          if (retryMode === import_util_retry.RETRY_MODES.ADAPTIVE) {
+            return new import_util_retry.AdaptiveRetryStrategy(maxAttempts);
+          }
+          return new import_util_retry.StandardRetryStrategy(maxAttempts);
+        }
+      };
+    }, "resolveRetryConfig");
+    var ENV_RETRY_MODE = "AWS_RETRY_MODE";
+    var CONFIG_RETRY_MODE = "retry_mode";
+    var NODE_RETRY_MODE_CONFIG_OPTIONS = {
+      environmentVariableSelector: (env) => env[ENV_RETRY_MODE],
+      configFileSelector: (profile) => profile[CONFIG_RETRY_MODE],
+      default: import_util_retry.DEFAULT_RETRY_MODE
+    };
+    var omitRetryHeadersMiddleware = /* @__PURE__ */ __name(() => (next) => async (args) => {
+      const { request: request2 } = args;
+      if (import_protocol_http8.HttpRequest.isInstance(request2)) {
+        delete request2.headers[import_util_retry.INVOCATION_ID_HEADER];
+        delete request2.headers[import_util_retry.REQUEST_HEADER];
+      }
+      return next(args);
+    }, "omitRetryHeadersMiddleware");
+    var omitRetryHeadersMiddlewareOptions = {
+      name: "omitRetryHeadersMiddleware",
+      tags: ["RETRY", "HEADERS", "OMIT_RETRY_HEADERS"],
+      relation: "before",
+      toMiddleware: "awsAuthMiddleware",
+      override: true
+    };
+    var getOmitRetryHeadersPlugin = /* @__PURE__ */ __name((options) => ({
+      applyToStack: (clientStack) => {
+        clientStack.addRelativeTo(omitRetryHeadersMiddleware(), omitRetryHeadersMiddlewareOptions);
+      }
+    }), "getOmitRetryHeadersPlugin");
+    var import_smithy_client5 = require_dist_cjs36();
+    var import_isStreamingPayload = require_isStreamingPayload();
+    var retryMiddleware = /* @__PURE__ */ __name((options) => (next, context) => async (args) => {
+      var _a;
+      let retryStrategy = await options.retryStrategy();
+      const maxAttempts = await options.maxAttempts();
+      if (isRetryStrategyV2(retryStrategy)) {
+        retryStrategy = retryStrategy;
+        let retryToken = await retryStrategy.acquireInitialRetryToken(context["partition_id"]);
+        let lastError = new Error();
+        let attempts = 0;
+        let totalRetryDelay = 0;
+        const { request: request2 } = args;
+        const isRequest = import_protocol_http8.HttpRequest.isInstance(request2);
+        if (isRequest) {
+          request2.headers[import_util_retry.INVOCATION_ID_HEADER] = (0, import_uuid.v4)();
+        }
+        while (true) {
+          try {
+            if (isRequest) {
+              request2.headers[import_util_retry.REQUEST_HEADER] = `attempt=${attempts + 1}; max=${maxAttempts}`;
+            }
+            const { response, output } = await next(args);
+            retryStrategy.recordSuccess(retryToken);
+            output.$metadata.attempts = attempts + 1;
+            output.$metadata.totalRetryDelay = totalRetryDelay;
+            return { response, output };
+          } catch (e) {
+            const retryErrorInfo = getRetryErrorInfo(e);
+            lastError = asSdkError(e);
+            if (isRequest && (0, import_isStreamingPayload.isStreamingPayload)(request2)) {
+              (_a = context.logger instanceof import_smithy_client5.NoOpLogger ? console : context.logger) == null ? void 0 : _a.warn(
+                "An error was encountered in a non-retryable streaming request."
+              );
+              throw lastError;
+            }
+            try {
+              retryToken = await retryStrategy.refreshRetryTokenForRetry(retryToken, retryErrorInfo);
+            } catch (refreshError) {
+              if (!lastError.$metadata) {
+                lastError.$metadata = {};
+              }
+              lastError.$metadata.attempts = attempts + 1;
+              lastError.$metadata.totalRetryDelay = totalRetryDelay;
+              throw lastError;
+            }
+            attempts = retryToken.getRetryCount();
+            const delay = retryToken.getRetryDelay();
+            totalRetryDelay += delay;
+            await new Promise((resolve) => setTimeout(resolve, delay));
+          }
+        }
+      } else {
+        retryStrategy = retryStrategy;
+        if (retryStrategy == null ? void 0 : retryStrategy.mode)
+          context.userAgent = [...context.userAgent || [], ["cfg/retry-mode", retryStrategy.mode]];
+        return retryStrategy.retry(next, args);
+      }
+    }, "retryMiddleware");
+    var isRetryStrategyV2 = /* @__PURE__ */ __name((retryStrategy) => typeof retryStrategy.acquireInitialRetryToken !== "undefined" && typeof retryStrategy.refreshRetryTokenForRetry !== "undefined" && typeof retryStrategy.recordSuccess !== "undefined", "isRetryStrategyV2");
+    var getRetryErrorInfo = /* @__PURE__ */ __name((error) => {
+      const errorInfo = {
+        error,
+        errorType: getRetryErrorType(error)
+      };
+      const retryAfterHint = getRetryAfterHint(error.$response);
+      if (retryAfterHint) {
+        errorInfo.retryAfterHint = retryAfterHint;
+      }
+      return errorInfo;
+    }, "getRetryErrorInfo");
+    var getRetryErrorType = /* @__PURE__ */ __name((error) => {
+      if ((0, import_service_error_classification.isThrottlingError)(error))
+        return "THROTTLING";
+      if ((0, import_service_error_classification.isTransientError)(error))
+        return "TRANSIENT";
+      if ((0, import_service_error_classification.isServerError)(error))
+        return "SERVER_ERROR";
+      return "CLIENT_ERROR";
+    }, "getRetryErrorType");
+    var retryMiddlewareOptions2 = {
+      name: "retryMiddleware",
+      tags: ["RETRY"],
+      step: "finalizeRequest",
+      priority: "high",
+      override: true
+    };
+    var getRetryPlugin = /* @__PURE__ */ __name((options) => ({
+      applyToStack: (clientStack) => {
+        clientStack.add(retryMiddleware(options), retryMiddlewareOptions2);
+      }
+    }), "getRetryPlugin");
+    var getRetryAfterHint = /* @__PURE__ */ __name((response) => {
+      if (!import_protocol_http8.HttpResponse.isInstance(response))
+        return;
+      const retryAfterHeaderName = Object.keys(response.headers).find((key) => key.toLowerCase() === "retry-after");
+      if (!retryAfterHeaderName)
+        return;
+      const retryAfter = response.headers[retryAfterHeaderName];
+      const retryAfterSeconds = Number(retryAfter);
+      if (!Number.isNaN(retryAfterSeconds))
+        return new Date(retryAfterSeconds * 1e3);
+      const retryAfterDate = new Date(retryAfter);
+      return retryAfterDate;
+    }, "getRetryAfterHint");
+  }
+});
+
+// ../../../node_modules/@smithy/core/dist-es/middleware-http-signing/getHttpSigningMiddleware.js
+var import_middleware_retry, httpSigningMiddlewareOptions, getHttpSigningPlugin;
+var init_getHttpSigningMiddleware = __esm({
+  "../../../node_modules/@smithy/core/dist-es/middleware-http-signing/getHttpSigningMiddleware.js"() {
+    import_middleware_retry = __toESM(require_dist_cjs37());
+    init_httpSigningMiddleware();
+    httpSigningMiddlewareOptions = {
+      step: "finalizeRequest",
+      tags: ["HTTP_SIGNING"],
+      name: "httpSigningMiddleware",
+      aliases: ["apiKeyMiddleware", "tokenMiddleware", "awsAuthMiddleware"],
+      override: true,
+      relation: "after",
+      toMiddleware: import_middleware_retry.retryMiddlewareOptions.name
+    };
+    getHttpSigningPlugin = (config) => ({
+      applyToStack: (clientStack) => {
+        clientStack.addRelativeTo(httpSigningMiddleware(config), httpSigningMiddlewareOptions);
+      }
+    });
+  }
+});
+
+// ../../../node_modules/@smithy/core/dist-es/middleware-http-signing/index.js
+var init_middleware_http_signing = __esm({
+  "../../../node_modules/@smithy/core/dist-es/middleware-http-signing/index.js"() {
+    init_httpSigningMiddleware();
+    init_getHttpSigningMiddleware();
+  }
+});
+
+// ../../../node_modules/@smithy/core/dist-es/util-identity-and-auth/DefaultIdentityProviderConfig.js
+var DefaultIdentityProviderConfig;
+var init_DefaultIdentityProviderConfig = __esm({
+  "../../../node_modules/@smithy/core/dist-es/util-identity-and-auth/DefaultIdentityProviderConfig.js"() {
+    DefaultIdentityProviderConfig = class {
+      constructor(config) {
+        this.authSchemes = /* @__PURE__ */ new Map();
+        for (const [key, value] of Object.entries(config)) {
+          if (value !== void 0) {
+            this.authSchemes.set(key, value);
+          }
+        }
+      }
+      getIdentityProvider(schemeId) {
+        return this.authSchemes.get(schemeId);
+      }
+    };
+  }
+});
+
+// ../../../node_modules/@smithy/core/dist-es/util-identity-and-auth/httpAuthSchemes/httpApiKeyAuth.js
+var import_protocol_http2, import_types3, HttpApiKeyAuthSigner;
+var init_httpApiKeyAuth = __esm({
+  "../../../node_modules/@smithy/core/dist-es/util-identity-and-auth/httpAuthSchemes/httpApiKeyAuth.js"() {
+    import_protocol_http2 = __toESM(require_dist_cjs21());
+    import_types3 = __toESM(require_dist_cjs12());
+    HttpApiKeyAuthSigner = class {
+      async sign(httpRequest, identity, signingProperties) {
+        if (!signingProperties) {
+          throw new Error("request could not be signed with `apiKey` since the `name` and `in` signer properties are missing");
+        }
+        if (!signingProperties.name) {
+          throw new Error("request could not be signed with `apiKey` since the `name` signer property is missing");
+        }
+        if (!signingProperties.in) {
+          throw new Error("request could not be signed with `apiKey` since the `in` signer property is missing");
+        }
+        if (!identity.apiKey) {
+          throw new Error("request could not be signed with `apiKey` since the `apiKey` is not defined");
+        }
+        const clonedRequest = import_protocol_http2.HttpRequest.clone(httpRequest);
+        if (signingProperties.in === import_types3.HttpApiKeyAuthLocation.QUERY) {
+          clonedRequest.query[signingProperties.name] = identity.apiKey;
+        } else if (signingProperties.in === import_types3.HttpApiKeyAuthLocation.HEADER) {
+          clonedRequest.headers[signingProperties.name] = signingProperties.scheme ? `${signingProperties.scheme} ${identity.apiKey}` : identity.apiKey;
+        } else {
+          throw new Error("request can only be signed with `apiKey` locations `query` or `header`, but found: `" + signingProperties.in + "`");
+        }
+        return clonedRequest;
+      }
+    };
+  }
+});
+
+// ../../../node_modules/@smithy/core/dist-es/util-identity-and-auth/httpAuthSchemes/httpBearerAuth.js
+var import_protocol_http3, HttpBearerAuthSigner;
+var init_httpBearerAuth = __esm({
+  "../../../node_modules/@smithy/core/dist-es/util-identity-and-auth/httpAuthSchemes/httpBearerAuth.js"() {
+    import_protocol_http3 = __toESM(require_dist_cjs21());
+    HttpBearerAuthSigner = class {
+      async sign(httpRequest, identity, signingProperties) {
+        const clonedRequest = import_protocol_http3.HttpRequest.clone(httpRequest);
+        if (!identity.token) {
+          throw new Error("request could not be signed with `token` since the `token` is not defined");
+        }
+        clonedRequest.headers["Authorization"] = `Bearer ${identity.token}`;
+        return clonedRequest;
+      }
+    };
+  }
+});
+
+// ../../../node_modules/@smithy/core/dist-es/util-identity-and-auth/httpAuthSchemes/noAuth.js
+var NoAuthSigner;
+var init_noAuth = __esm({
+  "../../../node_modules/@smithy/core/dist-es/util-identity-and-auth/httpAuthSchemes/noAuth.js"() {
+    NoAuthSigner = class {
+      async sign(httpRequest, identity, signingProperties) {
+        return httpRequest;
+      }
+    };
+  }
+});
+
+// ../../../node_modules/@smithy/core/dist-es/util-identity-and-auth/httpAuthSchemes/index.js
+var init_httpAuthSchemes = __esm({
+  "../../../node_modules/@smithy/core/dist-es/util-identity-and-auth/httpAuthSchemes/index.js"() {
+    init_httpApiKeyAuth();
+    init_httpBearerAuth();
+    init_noAuth();
+  }
+});
+
+// ../../../node_modules/@smithy/core/dist-es/util-identity-and-auth/memoizeIdentityProvider.js
+var createIsIdentityExpiredFunction, EXPIRATION_MS, isIdentityExpired, doesIdentityRequireRefresh, memoizeIdentityProvider;
+var init_memoizeIdentityProvider = __esm({
+  "../../../node_modules/@smithy/core/dist-es/util-identity-and-auth/memoizeIdentityProvider.js"() {
+    createIsIdentityExpiredFunction = (expirationMs) => (identity) => doesIdentityRequireRefresh(identity) && identity.expiration.getTime() - Date.now() < expirationMs;
+    EXPIRATION_MS = 3e5;
+    isIdentityExpired = createIsIdentityExpiredFunction(EXPIRATION_MS);
+    doesIdentityRequireRefresh = (identity) => identity.expiration !== void 0;
+    memoizeIdentityProvider = (provider, isExpired, requiresRefresh) => {
+      if (provider === void 0) {
+        return void 0;
+      }
+      const normalizedProvider = typeof provider !== "function" ? async () => Promise.resolve(provider) : provider;
+      let resolved;
+      let pending;
+      let hasResult;
+      let isConstant = false;
+      const coalesceProvider = async (options) => {
+        if (!pending) {
+          pending = normalizedProvider(options);
+        }
+        try {
+          resolved = await pending;
+          hasResult = true;
+          isConstant = false;
+        } finally {
+          pending = void 0;
+        }
+        return resolved;
+      };
+      if (isExpired === void 0) {
+        return async (options) => {
+          if (!hasResult || options?.forceRefresh) {
+            resolved = await coalesceProvider(options);
+          }
+          return resolved;
+        };
+      }
+      return async (options) => {
+        if (!hasResult || options?.forceRefresh) {
+          resolved = await coalesceProvider(options);
+        }
+        if (isConstant) {
+          return resolved;
+        }
+        if (!requiresRefresh(resolved)) {
+          isConstant = true;
+          return resolved;
+        }
+        if (isExpired(resolved)) {
+          await coalesceProvider(options);
+          return resolved;
+        }
+        return resolved;
+      };
+    };
+  }
+});
+
+// ../../../node_modules/@smithy/core/dist-es/util-identity-and-auth/index.js
+var init_util_identity_and_auth = __esm({
+  "../../../node_modules/@smithy/core/dist-es/util-identity-and-auth/index.js"() {
+    init_DefaultIdentityProviderConfig();
+    init_httpAuthSchemes();
+    init_memoizeIdentityProvider();
+  }
+});
+
+// ../../../node_modules/@smithy/core/dist-es/getSmithyContext.js
+var import_types4, getSmithyContext3;
+var init_getSmithyContext = __esm({
+  "../../../node_modules/@smithy/core/dist-es/getSmithyContext.js"() {
+    import_types4 = __toESM(require_dist_cjs12());
+    getSmithyContext3 = (context) => context[import_types4.SMITHY_CONTEXT_KEY] || (context[import_types4.SMITHY_CONTEXT_KEY] = {});
+  }
+});
+
+// ../../../node_modules/@smithy/core/dist-es/normalizeProvider.js
+var normalizeProvider;
+var init_normalizeProvider = __esm({
+  "../../../node_modules/@smithy/core/dist-es/normalizeProvider.js"() {
+    normalizeProvider = (input) => {
+      if (typeof input === "function")
+        return input;
+      const promisified = Promise.resolve(input);
+      return () => promisified;
+    };
+  }
+});
+
+// ../../../node_modules/@smithy/core/dist-es/protocols/requestBuilder.js
+function requestBuilder(input, context) {
+  return new RequestBuilder(input, context);
+}
+var import_protocol_http4, import_smithy_client, RequestBuilder;
+var init_requestBuilder = __esm({
+  "../../../node_modules/@smithy/core/dist-es/protocols/requestBuilder.js"() {
+    import_protocol_http4 = __toESM(require_dist_cjs21());
+    import_smithy_client = __toESM(require_dist_cjs36());
+    RequestBuilder = class {
+      constructor(input, context) {
+        this.input = input;
+        this.context = context;
+        this.query = {};
+        this.method = "";
+        this.headers = {};
+        this.path = "";
+        this.body = null;
+        this.hostname = "";
+        this.resolvePathStack = [];
+      }
+      async build() {
+        const { hostname, protocol = "https", port, path: basePath } = await this.context.endpoint();
+        this.path = basePath;
+        for (const resolvePath of this.resolvePathStack) {
+          resolvePath(this.path);
+        }
+        return new import_protocol_http4.HttpRequest({
+          protocol,
+          hostname: this.hostname || hostname,
+          port,
+          method: this.method,
+          path: this.path,
+          query: this.query,
+          body: this.body,
+          headers: this.headers
+        });
+      }
+      hn(hostname) {
+        this.hostname = hostname;
+        return this;
+      }
+      bp(uriLabel) {
+        this.resolvePathStack.push((basePath) => {
+          this.path = `${basePath?.endsWith("/") ? basePath.slice(0, -1) : basePath || ""}` + uriLabel;
+        });
+        return this;
+      }
+      p(memberName, labelValueProvider, uriLabel, isGreedyLabel) {
+        this.resolvePathStack.push((path) => {
+          this.path = (0, import_smithy_client.resolvedPath)(path, this.input, memberName, labelValueProvider, uriLabel, isGreedyLabel);
+        });
+        return this;
+      }
+      h(headers) {
+        this.headers = headers;
+        return this;
+      }
+      q(query) {
+        this.query = query;
+        return this;
+      }
+      b(body) {
+        this.body = body;
+        return this;
+      }
+      m(method) {
+        this.method = method;
+        return this;
+      }
+    };
+  }
+});
+
+// ../../../node_modules/@smithy/core/dist-es/pagination/createPaginator.js
+function createPaginator(ClientCtor, CommandCtor, inputTokenName, outputTokenName, pageSizeTokenName) {
+  return async function* paginateOperation(config, input, ...additionalArguments) {
+    let token = config.startingToken || void 0;
+    let hasNext = true;
+    let page;
+    while (hasNext) {
+      input[inputTokenName] = token;
+      if (pageSizeTokenName) {
+        input[pageSizeTokenName] = input[pageSizeTokenName] ?? config.pageSize;
+      }
+      if (config.client instanceof ClientCtor) {
+        page = await makePagedClientRequest(CommandCtor, config.client, input, ...additionalArguments);
+      } else {
+        throw new Error(`Invalid client, expected instance of ${ClientCtor.name}`);
+      }
+      yield page;
+      const prevToken = token;
+      token = get(page, outputTokenName);
+      hasNext = !!(token && (!config.stopOnSameToken || token !== prevToken));
+    }
+    return void 0;
+  };
+}
+var makePagedClientRequest, get;
+var init_createPaginator = __esm({
+  "../../../node_modules/@smithy/core/dist-es/pagination/createPaginator.js"() {
+    makePagedClientRequest = async (CommandCtor, client, input, ...args) => {
+      return await client.send(new CommandCtor(input), ...args);
+    };
+    get = (fromObject, path) => {
+      let cursor = fromObject;
+      const pathComponents = path.split(".");
+      for (const step of pathComponents) {
+        if (!cursor || typeof cursor !== "object") {
+          return void 0;
+        }
+        cursor = cursor[step];
+      }
+      return cursor;
+    };
+  }
+});
+
+// ../../../node_modules/@smithy/core/dist-es/index.js
+var dist_es_exports = {};
+__export(dist_es_exports, {
+  DefaultIdentityProviderConfig: () => DefaultIdentityProviderConfig,
+  EXPIRATION_MS: () => EXPIRATION_MS,
+  HttpApiKeyAuthSigner: () => HttpApiKeyAuthSigner,
+  HttpBearerAuthSigner: () => HttpBearerAuthSigner,
+  NoAuthSigner: () => NoAuthSigner,
+  RequestBuilder: () => RequestBuilder,
+  createIsIdentityExpiredFunction: () => createIsIdentityExpiredFunction,
+  createPaginator: () => createPaginator,
+  doesIdentityRequireRefresh: () => doesIdentityRequireRefresh,
+  getHttpAuthSchemeEndpointRuleSetPlugin: () => getHttpAuthSchemeEndpointRuleSetPlugin,
+  getHttpAuthSchemePlugin: () => getHttpAuthSchemePlugin,
+  getHttpSigningPlugin: () => getHttpSigningPlugin,
+  getSmithyContext: () => getSmithyContext3,
+  httpAuthSchemeEndpointRuleSetMiddlewareOptions: () => httpAuthSchemeEndpointRuleSetMiddlewareOptions,
+  httpAuthSchemeMiddleware: () => httpAuthSchemeMiddleware,
+  httpAuthSchemeMiddlewareOptions: () => httpAuthSchemeMiddlewareOptions,
+  httpSigningMiddleware: () => httpSigningMiddleware,
+  httpSigningMiddlewareOptions: () => httpSigningMiddlewareOptions,
+  isIdentityExpired: () => isIdentityExpired,
+  memoizeIdentityProvider: () => memoizeIdentityProvider,
+  normalizeProvider: () => normalizeProvider,
+  requestBuilder: () => requestBuilder
+});
+var init_dist_es = __esm({
+  "../../../node_modules/@smithy/core/dist-es/index.js"() {
+    init_middleware_http_auth_scheme();
+    init_middleware_http_signing();
+    init_util_identity_and_auth();
+    init_getSmithyContext();
+    init_normalizeProvider();
+    init_requestBuilder();
+    init_createPaginator();
+  }
+});
+
+// ../../../node_modules/@smithy/middleware-content-length/dist-cjs/index.js
+var require_dist_cjs38 = __commonJS({
+  "../../../node_modules/@smithy/middleware-content-length/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      contentLengthMiddleware: () => contentLengthMiddleware,
+      contentLengthMiddlewareOptions: () => contentLengthMiddlewareOptions,
+      getContentLengthPlugin: () => getContentLengthPlugin
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var import_protocol_http8 = require_dist_cjs2();
+    var CONTENT_LENGTH_HEADER = "content-length";
+    function contentLengthMiddleware(bodyLengthChecker) {
+      return (next) => async (args) => {
+        const request2 = args.request;
+        if (import_protocol_http8.HttpRequest.isInstance(request2)) {
+          const { body, headers } = request2;
+          if (body && Object.keys(headers).map((str) => str.toLowerCase()).indexOf(CONTENT_LENGTH_HEADER) === -1) {
+            try {
+              const length = bodyLengthChecker(body);
+              request2.headers = {
+                ...request2.headers,
+                [CONTENT_LENGTH_HEADER]: String(length)
+              };
+            } catch (error) {
+            }
+          }
+        }
+        return next({
+          ...args,
+          request: request2
+        });
+      };
+    }
+    __name(contentLengthMiddleware, "contentLengthMiddleware");
+    var contentLengthMiddlewareOptions = {
+      step: "build",
+      tags: ["SET_CONTENT_LENGTH", "CONTENT_LENGTH"],
+      name: "contentLengthMiddleware",
+      override: true
+    };
+    var getContentLengthPlugin = /* @__PURE__ */ __name((options) => ({
+      applyToStack: (clientStack) => {
+        clientStack.add(contentLengthMiddleware(options.bodyLengthChecker), contentLengthMiddlewareOptions);
+      }
+    }), "getContentLengthPlugin");
+  }
+});
+
+// ../../../node_modules/@smithy/property-provider/dist-cjs/index.js
+var require_dist_cjs39 = __commonJS({
+  "../../../node_modules/@smithy/property-provider/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      CredentialsProviderError: () => CredentialsProviderError,
+      ProviderError: () => ProviderError2,
+      TokenProviderError: () => TokenProviderError,
+      chain: () => chain,
+      fromStatic: () => fromStatic,
+      memoize: () => memoize
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var _ProviderError = class _ProviderError2 extends Error {
+      constructor(message, options = true) {
+        var _a;
+        let logger;
+        let tryNextLink = true;
+        if (typeof options === "boolean") {
+          logger = void 0;
+          tryNextLink = options;
+        } else if (options != null && typeof options === "object") {
+          logger = options.logger;
+          tryNextLink = options.tryNextLink ?? true;
+        }
+        super(message);
+        this.name = "ProviderError";
+        this.tryNextLink = tryNextLink;
+        Object.setPrototypeOf(this, _ProviderError2.prototype);
+        (_a = logger == null ? void 0 : logger.debug) == null ? void 0 : _a.call(logger, `@smithy/property-provider ${tryNextLink ? "->" : "(!)"} ${message}`);
+      }
+      /**
+       * @deprecated use new operator.
+       */
+      static from(error, options = true) {
+        return Object.assign(new this(error.message, options), error);
+      }
+    };
+    __name(_ProviderError, "ProviderError");
+    var ProviderError2 = _ProviderError;
+    var _CredentialsProviderError = class _CredentialsProviderError2 extends ProviderError2 {
+      /**
+       * @override
+       */
+      constructor(message, options = true) {
+        super(message, options);
+        this.name = "CredentialsProviderError";
+        Object.setPrototypeOf(this, _CredentialsProviderError2.prototype);
+      }
+    };
+    __name(_CredentialsProviderError, "CredentialsProviderError");
+    var CredentialsProviderError = _CredentialsProviderError;
+    var _TokenProviderError = class _TokenProviderError2 extends ProviderError2 {
+      /**
+       * @override
+       */
+      constructor(message, options = true) {
+        super(message, options);
+        this.name = "TokenProviderError";
+        Object.setPrototypeOf(this, _TokenProviderError2.prototype);
+      }
+    };
+    __name(_TokenProviderError, "TokenProviderError");
+    var TokenProviderError = _TokenProviderError;
+    var chain = /* @__PURE__ */ __name((...providers) => async () => {
+      if (providers.length === 0) {
+        throw new ProviderError2("No providers in chain");
+      }
+      let lastProviderError;
+      for (const provider of providers) {
+        try {
+          const credentials = await provider();
+          return credentials;
+        } catch (err) {
+          lastProviderError = err;
+          if (err == null ? void 0 : err.tryNextLink) {
+            continue;
+          }
+          throw err;
+        }
+      }
+      throw lastProviderError;
+    }, "chain");
+    var fromStatic = /* @__PURE__ */ __name((staticValue) => () => Promise.resolve(staticValue), "fromStatic");
+    var memoize = /* @__PURE__ */ __name((provider, isExpired, requiresRefresh) => {
+      let resolved;
+      let pending;
+      let hasResult;
+      let isConstant = false;
+      const coalesceProvider = /* @__PURE__ */ __name(async () => {
+        if (!pending) {
+          pending = provider();
+        }
+        try {
+          resolved = await pending;
+          hasResult = true;
+          isConstant = false;
+        } finally {
+          pending = void 0;
+        }
+        return resolved;
+      }, "coalesceProvider");
+      if (isExpired === void 0) {
+        return async (options) => {
+          if (!hasResult || (options == null ? void 0 : options.forceRefresh)) {
+            resolved = await coalesceProvider();
+          }
+          return resolved;
+        };
+      }
+      return async (options) => {
+        if (!hasResult || (options == null ? void 0 : options.forceRefresh)) {
+          resolved = await coalesceProvider();
+        }
+        if (isConstant) {
+          return resolved;
+        }
+        if (requiresRefresh && !requiresRefresh(resolved)) {
+          isConstant = true;
+          return resolved;
+        }
+        if (isExpired(resolved)) {
+          await coalesceProvider();
+          return resolved;
+        }
+        return resolved;
+      };
+    }, "memoize");
+  }
+});
+
+// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getHomeDir.js
+var require_getHomeDir2 = __commonJS({
+  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getHomeDir.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.getHomeDir = void 0;
+    var os_1 = require("os");
+    var path_1 = require("path");
+    var homeDirCache = {};
+    var getHomeDirCacheKey = () => {
+      if (process && process.geteuid) {
+        return `${process.geteuid()}`;
+      }
+      return "DEFAULT";
+    };
+    var getHomeDir2 = () => {
+      const { HOME, USERPROFILE, HOMEPATH, HOMEDRIVE = `C:${path_1.sep}` } = process.env;
+      if (HOME)
+        return HOME;
+      if (USERPROFILE)
+        return USERPROFILE;
+      if (HOMEPATH)
+        return `${HOMEDRIVE}${HOMEPATH}`;
+      const homeDirCacheKey = getHomeDirCacheKey();
+      if (!homeDirCache[homeDirCacheKey])
+        homeDirCache[homeDirCacheKey] = (0, os_1.homedir)();
+      return homeDirCache[homeDirCacheKey];
+    };
+    exports2.getHomeDir = getHomeDir2;
+  }
+});
+
+// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFilepath.js
+var require_getSSOTokenFilepath2 = __commonJS({
+  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFilepath.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.getSSOTokenFilepath = void 0;
+    var crypto_1 = require("crypto");
+    var path_1 = require("path");
+    var getHomeDir_1 = require_getHomeDir2();
+    var getSSOTokenFilepath2 = (id) => {
+      const hasher = (0, crypto_1.createHash)("sha1");
+      const cacheName = hasher.update(id).digest("hex");
+      return (0, path_1.join)((0, getHomeDir_1.getHomeDir)(), ".aws", "sso", "cache", `${cacheName}.json`);
+    };
+    exports2.getSSOTokenFilepath = getSSOTokenFilepath2;
+  }
+});
+
+// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFromFile.js
+var require_getSSOTokenFromFile2 = __commonJS({
+  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFromFile.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.getSSOTokenFromFile = void 0;
+    var fs_1 = require("fs");
+    var getSSOTokenFilepath_1 = require_getSSOTokenFilepath2();
+    var { readFile } = fs_1.promises;
+    var getSSOTokenFromFile2 = async (id) => {
+      const ssoTokenFilepath = (0, getSSOTokenFilepath_1.getSSOTokenFilepath)(id);
+      const ssoTokenText = await readFile(ssoTokenFilepath, "utf8");
+      return JSON.parse(ssoTokenText);
+    };
+    exports2.getSSOTokenFromFile = getSSOTokenFromFile2;
+  }
+});
+
+// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/slurpFile.js
+var require_slurpFile2 = __commonJS({
+  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/slurpFile.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.slurpFile = void 0;
+    var fs_1 = require("fs");
+    var { readFile } = fs_1.promises;
+    var filePromisesHash = {};
+    var slurpFile = (path, options) => {
+      if (!filePromisesHash[path] || (options === null || options === void 0 ? void 0 : options.ignoreCache)) {
+        filePromisesHash[path] = readFile(path, "utf8");
+      }
+      return filePromisesHash[path];
+    };
+    exports2.slurpFile = slurpFile;
+  }
+});
+
+// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js
+var require_dist_cjs40 = __commonJS({
+  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __reExport = (target, mod, secondTarget) => (__copyProps2(target, mod, "default"), secondTarget && __copyProps2(secondTarget, mod, "default"));
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      CONFIG_PREFIX_SEPARATOR: () => CONFIG_PREFIX_SEPARATOR,
+      DEFAULT_PROFILE: () => DEFAULT_PROFILE,
+      ENV_PROFILE: () => ENV_PROFILE,
+      getProfileName: () => getProfileName,
+      loadSharedConfigFiles: () => loadSharedConfigFiles,
+      loadSsoSessionData: () => loadSsoSessionData,
+      parseKnownFiles: () => parseKnownFiles
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    __reExport(src_exports, require_getHomeDir2(), module2.exports);
+    var ENV_PROFILE = "AWS_PROFILE";
+    var DEFAULT_PROFILE = "default";
+    var getProfileName = /* @__PURE__ */ __name((init) => init.profile || process.env[ENV_PROFILE] || DEFAULT_PROFILE, "getProfileName");
+    __reExport(src_exports, require_getSSOTokenFilepath2(), module2.exports);
+    __reExport(src_exports, require_getSSOTokenFromFile2(), module2.exports);
+    var import_types5 = require_dist_cjs();
+    var getConfigData = /* @__PURE__ */ __name((data) => Object.entries(data).filter(([key]) => {
+      const indexOfSeparator = key.indexOf(CONFIG_PREFIX_SEPARATOR);
+      if (indexOfSeparator === -1) {
+        return false;
+      }
+      return Object.values(import_types5.IniSectionType).includes(key.substring(0, indexOfSeparator));
+    }).reduce(
+      (acc, [key, value]) => {
+        const indexOfSeparator = key.indexOf(CONFIG_PREFIX_SEPARATOR);
+        const updatedKey = key.substring(0, indexOfSeparator) === import_types5.IniSectionType.PROFILE ? key.substring(indexOfSeparator + 1) : key;
+        acc[updatedKey] = value;
+        return acc;
+      },
+      {
+        // Populate default profile, if present.
+        ...data.default && { default: data.default }
+      }
+    ), "getConfigData");
+    var import_path = require("path");
+    var import_getHomeDir = require_getHomeDir2();
+    var ENV_CONFIG_PATH = "AWS_CONFIG_FILE";
+    var getConfigFilepath = /* @__PURE__ */ __name(() => process.env[ENV_CONFIG_PATH] || (0, import_path.join)((0, import_getHomeDir.getHomeDir)(), ".aws", "config"), "getConfigFilepath");
+    var import_getHomeDir2 = require_getHomeDir2();
+    var ENV_CREDENTIALS_PATH = "AWS_SHARED_CREDENTIALS_FILE";
+    var getCredentialsFilepath = /* @__PURE__ */ __name(() => process.env[ENV_CREDENTIALS_PATH] || (0, import_path.join)((0, import_getHomeDir2.getHomeDir)(), ".aws", "credentials"), "getCredentialsFilepath");
+    var import_getHomeDir3 = require_getHomeDir2();
+    var prefixKeyRegex = /^([\w-]+)\s(["'])?([\w-@\+\.%:/]+)\2$/;
+    var profileNameBlockList = ["__proto__", "profile __proto__"];
+    var parseIni = /* @__PURE__ */ __name((iniData) => {
+      const map = {};
+      let currentSection;
+      let currentSubSection;
+      for (const iniLine of iniData.split(/\r?\n/)) {
+        const trimmedLine = iniLine.split(/(^|\s)[;#]/)[0].trim();
+        const isSection = trimmedLine[0] === "[" && trimmedLine[trimmedLine.length - 1] === "]";
+        if (isSection) {
+          currentSection = void 0;
+          currentSubSection = void 0;
+          const sectionName = trimmedLine.substring(1, trimmedLine.length - 1);
+          const matches = prefixKeyRegex.exec(sectionName);
+          if (matches) {
+            const [, prefix, , name] = matches;
+            if (Object.values(import_types5.IniSectionType).includes(prefix)) {
+              currentSection = [prefix, name].join(CONFIG_PREFIX_SEPARATOR);
+            }
+          } else {
+            currentSection = sectionName;
+          }
+          if (profileNameBlockList.includes(sectionName)) {
+            throw new Error(`Found invalid profile name "${sectionName}"`);
+          }
+        } else if (currentSection) {
+          const indexOfEqualsSign = trimmedLine.indexOf("=");
+          if (![0, -1].includes(indexOfEqualsSign)) {
+            const [name, value] = [
+              trimmedLine.substring(0, indexOfEqualsSign).trim(),
+              trimmedLine.substring(indexOfEqualsSign + 1).trim()
+            ];
+            if (value === "") {
+              currentSubSection = name;
+            } else {
+              if (currentSubSection && iniLine.trimStart() === iniLine) {
+                currentSubSection = void 0;
+              }
+              map[currentSection] = map[currentSection] || {};
+              const key = currentSubSection ? [currentSubSection, name].join(CONFIG_PREFIX_SEPARATOR) : name;
+              map[currentSection][key] = value;
+            }
+          }
+        }
+      }
+      return map;
+    }, "parseIni");
+    var import_slurpFile = require_slurpFile2();
+    var swallowError = /* @__PURE__ */ __name(() => ({}), "swallowError");
+    var CONFIG_PREFIX_SEPARATOR = ".";
+    var loadSharedConfigFiles = /* @__PURE__ */ __name(async (init = {}) => {
+      const { filepath = getCredentialsFilepath(), configFilepath = getConfigFilepath() } = init;
+      const homeDir = (0, import_getHomeDir3.getHomeDir)();
+      const relativeHomeDirPrefix = "~/";
+      let resolvedFilepath = filepath;
+      if (filepath.startsWith(relativeHomeDirPrefix)) {
+        resolvedFilepath = (0, import_path.join)(homeDir, filepath.slice(2));
+      }
+      let resolvedConfigFilepath = configFilepath;
+      if (configFilepath.startsWith(relativeHomeDirPrefix)) {
+        resolvedConfigFilepath = (0, import_path.join)(homeDir, configFilepath.slice(2));
+      }
+      const parsedFiles = await Promise.all([
+        (0, import_slurpFile.slurpFile)(resolvedConfigFilepath, {
+          ignoreCache: init.ignoreCache
+        }).then(parseIni).then(getConfigData).catch(swallowError),
+        (0, import_slurpFile.slurpFile)(resolvedFilepath, {
+          ignoreCache: init.ignoreCache
+        }).then(parseIni).catch(swallowError)
+      ]);
+      return {
+        configFile: parsedFiles[0],
+        credentialsFile: parsedFiles[1]
+      };
+    }, "loadSharedConfigFiles");
+    var getSsoSessionData = /* @__PURE__ */ __name((data) => Object.entries(data).filter(([key]) => key.startsWith(import_types5.IniSectionType.SSO_SESSION + CONFIG_PREFIX_SEPARATOR)).reduce((acc, [key, value]) => ({ ...acc, [key.substring(key.indexOf(CONFIG_PREFIX_SEPARATOR) + 1)]: value }), {}), "getSsoSessionData");
+    var import_slurpFile2 = require_slurpFile2();
+    var swallowError2 = /* @__PURE__ */ __name(() => ({}), "swallowError");
+    var loadSsoSessionData = /* @__PURE__ */ __name(async (init = {}) => (0, import_slurpFile2.slurpFile)(init.configFilepath ?? getConfigFilepath()).then(parseIni).then(getSsoSessionData).catch(swallowError2), "loadSsoSessionData");
+    var mergeConfigFiles = /* @__PURE__ */ __name((...files) => {
+      const merged = {};
+      for (const file of files) {
+        for (const [key, values] of Object.entries(file)) {
+          if (merged[key] !== void 0) {
+            Object.assign(merged[key], values);
+          } else {
+            merged[key] = values;
+          }
+        }
+      }
+      return merged;
+    }, "mergeConfigFiles");
+    var parseKnownFiles = /* @__PURE__ */ __name(async (init) => {
+      const parsedFiles = await loadSharedConfigFiles(init);
+      return mergeConfigFiles(parsedFiles.configFile, parsedFiles.credentialsFile);
+    }, "parseKnownFiles");
+  }
+});
+
+// ../../../node_modules/@smithy/node-config-provider/dist-cjs/index.js
+var require_dist_cjs41 = __commonJS({
+  "../../../node_modules/@smithy/node-config-provider/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      loadConfig: () => loadConfig
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var import_property_provider2 = require_dist_cjs39();
+    function getSelectorName(functionString) {
+      try {
+        const constants = new Set(Array.from(functionString.match(/([A-Z_]){3,}/g) ?? []));
+        constants.delete("CONFIG");
+        constants.delete("CONFIG_PREFIX_SEPARATOR");
+        constants.delete("ENV");
+        return [...constants].join(", ");
+      } catch (e) {
+        return functionString;
+      }
+    }
+    __name(getSelectorName, "getSelectorName");
+    var fromEnv = /* @__PURE__ */ __name((envVarSelector, logger) => async () => {
+      try {
+        const config = envVarSelector(process.env);
+        if (config === void 0) {
+          throw new Error();
+        }
+        return config;
+      } catch (e) {
+        throw new import_property_provider2.CredentialsProviderError(
+          e.message || `Not found in ENV: ${getSelectorName(envVarSelector.toString())}`,
+          { logger }
+        );
+      }
+    }, "fromEnv");
+    var import_shared_ini_file_loader = require_dist_cjs40();
+    var fromSharedConfigFiles = /* @__PURE__ */ __name((configSelector, { preferredFile = "config", ...init } = {}) => async () => {
+      const profile = (0, import_shared_ini_file_loader.getProfileName)(init);
+      const { configFile, credentialsFile } = await (0, import_shared_ini_file_loader.loadSharedConfigFiles)(init);
+      const profileFromCredentials = credentialsFile[profile] || {};
+      const profileFromConfig = configFile[profile] || {};
+      const mergedProfile = preferredFile === "config" ? { ...profileFromCredentials, ...profileFromConfig } : { ...profileFromConfig, ...profileFromCredentials };
+      try {
+        const cfgFile = preferredFile === "config" ? configFile : credentialsFile;
+        const configValue = configSelector(mergedProfile, cfgFile);
+        if (configValue === void 0) {
+          throw new Error();
+        }
+        return configValue;
+      } catch (e) {
+        throw new import_property_provider2.CredentialsProviderError(
+          e.message || `Not found in config files w/ profile [${profile}]: ${getSelectorName(configSelector.toString())}`,
+          { logger: init.logger }
+        );
+      }
+    }, "fromSharedConfigFiles");
+    var isFunction = /* @__PURE__ */ __name((func) => typeof func === "function", "isFunction");
+    var fromStatic = /* @__PURE__ */ __name((defaultValue) => isFunction(defaultValue) ? async () => await defaultValue() : (0, import_property_provider2.fromStatic)(defaultValue), "fromStatic");
+    var loadConfig = /* @__PURE__ */ __name(({ environmentVariableSelector, configFileSelector, default: defaultValue }, configuration = {}) => (0, import_property_provider2.memoize)(
+      (0, import_property_provider2.chain)(
+        fromEnv(environmentVariableSelector),
+        fromSharedConfigFiles(configFileSelector, configuration),
+        fromStatic(defaultValue)
+      )
+    ), "loadConfig");
+  }
+});
+
+// ../../../node_modules/@smithy/middleware-endpoint/dist-cjs/adaptors/getEndpointUrlConfig.js
+var require_getEndpointUrlConfig2 = __commonJS({
+  "../../../node_modules/@smithy/middleware-endpoint/dist-cjs/adaptors/getEndpointUrlConfig.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.getEndpointUrlConfig = void 0;
+    var shared_ini_file_loader_1 = require_dist_cjs40();
+    var ENV_ENDPOINT_URL = "AWS_ENDPOINT_URL";
+    var CONFIG_ENDPOINT_URL = "endpoint_url";
+    var getEndpointUrlConfig = (serviceId) => ({
+      environmentVariableSelector: (env) => {
+        const serviceSuffixParts = serviceId.split(" ").map((w) => w.toUpperCase());
+        const serviceEndpointUrl = env[[ENV_ENDPOINT_URL, ...serviceSuffixParts].join("_")];
+        if (serviceEndpointUrl)
+          return serviceEndpointUrl;
+        const endpointUrl = env[ENV_ENDPOINT_URL];
+        if (endpointUrl)
+          return endpointUrl;
+        return void 0;
+      },
+      configFileSelector: (profile, config) => {
+        if (config && profile.services) {
+          const servicesSection = config[["services", profile.services].join(shared_ini_file_loader_1.CONFIG_PREFIX_SEPARATOR)];
+          if (servicesSection) {
+            const servicePrefixParts = serviceId.split(" ").map((w) => w.toLowerCase());
+            const endpointUrl2 = servicesSection[[servicePrefixParts.join("_"), CONFIG_ENDPOINT_URL].join(shared_ini_file_loader_1.CONFIG_PREFIX_SEPARATOR)];
+            if (endpointUrl2)
+              return endpointUrl2;
+          }
+        }
+        const endpointUrl = profile[CONFIG_ENDPOINT_URL];
+        if (endpointUrl)
+          return endpointUrl;
+        return void 0;
+      },
+      default: void 0
+    });
+    exports2.getEndpointUrlConfig = getEndpointUrlConfig;
+  }
+});
+
+// ../../../node_modules/@smithy/middleware-endpoint/dist-cjs/adaptors/getEndpointFromConfig.js
+var require_getEndpointFromConfig2 = __commonJS({
+  "../../../node_modules/@smithy/middleware-endpoint/dist-cjs/adaptors/getEndpointFromConfig.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.getEndpointFromConfig = void 0;
+    var node_config_provider_1 = require_dist_cjs41();
+    var getEndpointUrlConfig_1 = require_getEndpointUrlConfig2();
+    var getEndpointFromConfig = async (serviceId) => (0, node_config_provider_1.loadConfig)((0, getEndpointUrlConfig_1.getEndpointUrlConfig)(serviceId !== null && serviceId !== void 0 ? serviceId : ""))();
+    exports2.getEndpointFromConfig = getEndpointFromConfig;
+  }
+});
+
+// ../../../node_modules/@smithy/querystring-parser/dist-cjs/index.js
+var require_dist_cjs42 = __commonJS({
+  "../../../node_modules/@smithy/querystring-parser/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      parseQueryString: () => parseQueryString
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    function parseQueryString(querystring) {
+      const query = {};
+      querystring = querystring.replace(/^\?/, "");
+      if (querystring) {
+        for (const pair of querystring.split("&")) {
+          let [key, value = null] = pair.split("=");
+          key = decodeURIComponent(key);
+          if (value) {
+            value = decodeURIComponent(value);
+          }
+          if (!(key in query)) {
+            query[key] = value;
+          } else if (Array.isArray(query[key])) {
+            query[key].push(value);
+          } else {
+            query[key] = [query[key], value];
+          }
+        }
+      }
+      return query;
+    }
+    __name(parseQueryString, "parseQueryString");
+  }
+});
+
+// ../../../node_modules/@smithy/url-parser/dist-cjs/index.js
+var require_dist_cjs43 = __commonJS({
+  "../../../node_modules/@smithy/url-parser/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      parseUrl: () => parseUrl
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var import_querystring_parser = require_dist_cjs42();
+    var parseUrl = /* @__PURE__ */ __name((url2) => {
+      if (typeof url2 === "string") {
+        return parseUrl(new URL(url2));
+      }
+      const { hostname, pathname, port, protocol, search } = url2;
+      let query;
+      if (search) {
+        query = (0, import_querystring_parser.parseQueryString)(search);
+      }
+      return {
+        hostname,
+        port: port ? parseInt(port) : void 0,
+        protocol,
+        path: pathname,
+        query
+      };
+    }, "parseUrl");
+  }
+});
+
+// ../../../node_modules/@smithy/middleware-serde/dist-cjs/index.js
+var require_dist_cjs44 = __commonJS({
+  "../../../node_modules/@smithy/middleware-serde/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      deserializerMiddleware: () => deserializerMiddleware,
+      deserializerMiddlewareOption: () => deserializerMiddlewareOption,
+      getSerdePlugin: () => getSerdePlugin,
+      serializerMiddleware: () => serializerMiddleware,
+      serializerMiddlewareOption: () => serializerMiddlewareOption2
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var deserializerMiddleware = /* @__PURE__ */ __name((options, deserializer) => (next) => async (args) => {
+      const { response } = await next(args);
+      try {
+        const parsed = await deserializer(response, options);
+        return {
+          response,
+          output: parsed
+        };
+      } catch (error) {
+        Object.defineProperty(error, "$response", {
+          value: response
+        });
+        if (!("$metadata" in error)) {
+          const hint = `Deserialization error: to see the raw response, inspect the hidden field {error}.$response on this object.`;
+          error.message += "\n  " + hint;
+          if (typeof error.$responseBodyText !== "undefined") {
+            if (error.$response) {
+              error.$response.body = error.$responseBodyText;
+            }
+          }
+        }
+        throw error;
+      }
+    }, "deserializerMiddleware");
+    var serializerMiddleware = /* @__PURE__ */ __name((options, serializer) => (next, context) => async (args) => {
+      var _a;
+      const endpoint = ((_a = context.endpointV2) == null ? void 0 : _a.url) && options.urlParser ? async () => options.urlParser(context.endpointV2.url) : options.endpoint;
+      if (!endpoint) {
+        throw new Error("No valid endpoint provider available.");
+      }
+      const request2 = await serializer(args.input, { ...options, endpoint });
+      return next({
+        ...args,
+        request: request2
+      });
+    }, "serializerMiddleware");
+    var deserializerMiddlewareOption = {
+      name: "deserializerMiddleware",
+      step: "deserialize",
+      tags: ["DESERIALIZER"],
+      override: true
+    };
+    var serializerMiddlewareOption2 = {
+      name: "serializerMiddleware",
+      step: "serialize",
+      tags: ["SERIALIZER"],
+      override: true
+    };
+    function getSerdePlugin(config, serializer, deserializer) {
+      return {
+        applyToStack: (commandStack) => {
+          commandStack.add(deserializerMiddleware(config, deserializer), deserializerMiddlewareOption);
+          commandStack.add(serializerMiddleware(config, serializer), serializerMiddlewareOption2);
+        }
+      };
+    }
+    __name(getSerdePlugin, "getSerdePlugin");
+  }
+});
+
+// ../../../node_modules/@smithy/middleware-endpoint/dist-cjs/index.js
+var require_dist_cjs45 = __commonJS({
+  "../../../node_modules/@smithy/middleware-endpoint/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      endpointMiddleware: () => endpointMiddleware,
+      endpointMiddlewareOptions: () => endpointMiddlewareOptions2,
+      getEndpointFromInstructions: () => getEndpointFromInstructions,
+      getEndpointPlugin: () => getEndpointPlugin,
+      resolveEndpointConfig: () => resolveEndpointConfig,
+      resolveParams: () => resolveParams,
+      toEndpointV1: () => toEndpointV1
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var resolveParamsForS3 = /* @__PURE__ */ __name(async (endpointParams) => {
+      const bucket = (endpointParams == null ? void 0 : endpointParams.Bucket) || "";
+      if (typeof endpointParams.Bucket === "string") {
+        endpointParams.Bucket = bucket.replace(/#/g, encodeURIComponent("#")).replace(/\?/g, encodeURIComponent("?"));
+      }
+      if (isArnBucketName(bucket)) {
+        if (endpointParams.ForcePathStyle === true) {
+          throw new Error("Path-style addressing cannot be used with ARN buckets");
+        }
+      } else if (!isDnsCompatibleBucketName(bucket) || bucket.indexOf(".") !== -1 && !String(endpointParams.Endpoint).startsWith("http:") || bucket.toLowerCase() !== bucket || bucket.length < 3) {
+        endpointParams.ForcePathStyle = true;
+      }
+      if (endpointParams.DisableMultiRegionAccessPoints) {
+        endpointParams.disableMultiRegionAccessPoints = true;
+        endpointParams.DisableMRAP = true;
+      }
+      return endpointParams;
+    }, "resolveParamsForS3");
+    var DOMAIN_PATTERN = /^[a-z0-9][a-z0-9\.\-]{1,61}[a-z0-9]$/;
+    var IP_ADDRESS_PATTERN = /(\d+\.){3}\d+/;
+    var DOTS_PATTERN = /\.\./;
+    var isDnsCompatibleBucketName = /* @__PURE__ */ __name((bucketName) => DOMAIN_PATTERN.test(bucketName) && !IP_ADDRESS_PATTERN.test(bucketName) && !DOTS_PATTERN.test(bucketName), "isDnsCompatibleBucketName");
+    var isArnBucketName = /* @__PURE__ */ __name((bucketName) => {
+      const [arn, partition, service, , , bucket] = bucketName.split(":");
+      const isArn = arn === "arn" && bucketName.split(":").length >= 6;
+      const isValidArn = Boolean(isArn && partition && service && bucket);
+      if (isArn && !isValidArn) {
+        throw new Error(`Invalid ARN: ${bucketName} was an invalid ARN.`);
+      }
+      return isValidArn;
+    }, "isArnBucketName");
+    var createConfigValueProvider = /* @__PURE__ */ __name((configKey, canonicalEndpointParamKey, config) => {
+      const configProvider = /* @__PURE__ */ __name(async () => {
+        const configValue = config[configKey] ?? config[canonicalEndpointParamKey];
+        if (typeof configValue === "function") {
+          return configValue();
+        }
+        return configValue;
+      }, "configProvider");
+      if (configKey === "credentialScope" || canonicalEndpointParamKey === "CredentialScope") {
+        return async () => {
+          const credentials = typeof config.credentials === "function" ? await config.credentials() : config.credentials;
+          const configValue = (credentials == null ? void 0 : credentials.credentialScope) ?? (credentials == null ? void 0 : credentials.CredentialScope);
+          return configValue;
+        };
+      }
+      if (configKey === "accountId" || canonicalEndpointParamKey === "AccountId") {
+        return async () => {
+          const credentials = typeof config.credentials === "function" ? await config.credentials() : config.credentials;
+          const configValue = (credentials == null ? void 0 : credentials.accountId) ?? (credentials == null ? void 0 : credentials.AccountId);
+          return configValue;
+        };
+      }
+      if (configKey === "endpoint" || canonicalEndpointParamKey === "endpoint") {
+        return async () => {
+          const endpoint = await configProvider();
+          if (endpoint && typeof endpoint === "object") {
+            if ("url" in endpoint) {
+              return endpoint.url.href;
+            }
+            if ("hostname" in endpoint) {
+              const { protocol, hostname, port, path } = endpoint;
+              return `${protocol}//${hostname}${port ? ":" + port : ""}${path}`;
+            }
+          }
+          return endpoint;
+        };
+      }
+      return configProvider;
+    }, "createConfigValueProvider");
+    var import_getEndpointFromConfig = require_getEndpointFromConfig2();
+    var import_url_parser = require_dist_cjs43();
+    var toEndpointV1 = /* @__PURE__ */ __name((endpoint) => {
+      if (typeof endpoint === "object") {
+        if ("url" in endpoint) {
+          return (0, import_url_parser.parseUrl)(endpoint.url);
+        }
+        return endpoint;
+      }
+      return (0, import_url_parser.parseUrl)(endpoint);
+    }, "toEndpointV1");
+    var getEndpointFromInstructions = /* @__PURE__ */ __name(async (commandInput, instructionsSupplier, clientConfig, context) => {
+      if (!clientConfig.endpoint) {
+        let endpointFromConfig;
+        if (clientConfig.serviceConfiguredEndpoint) {
+          endpointFromConfig = await clientConfig.serviceConfiguredEndpoint();
+        } else {
+          endpointFromConfig = await (0, import_getEndpointFromConfig.getEndpointFromConfig)(clientConfig.serviceId);
+        }
+        if (endpointFromConfig) {
+          clientConfig.endpoint = () => Promise.resolve(toEndpointV1(endpointFromConfig));
+        }
+      }
+      const endpointParams = await resolveParams(commandInput, instructionsSupplier, clientConfig);
+      if (typeof clientConfig.endpointProvider !== "function") {
+        throw new Error("config.endpointProvider is not set.");
+      }
+      const endpoint = clientConfig.endpointProvider(endpointParams, context);
+      return endpoint;
+    }, "getEndpointFromInstructions");
+    var resolveParams = /* @__PURE__ */ __name(async (commandInput, instructionsSupplier, clientConfig) => {
+      var _a;
+      const endpointParams = {};
+      const instructions = ((_a = instructionsSupplier == null ? void 0 : instructionsSupplier.getEndpointParameterInstructions) == null ? void 0 : _a.call(instructionsSupplier)) || {};
+      for (const [name, instruction] of Object.entries(instructions)) {
+        switch (instruction.type) {
+          case "staticContextParams":
+            endpointParams[name] = instruction.value;
+            break;
+          case "contextParams":
+            endpointParams[name] = commandInput[instruction.name];
+            break;
+          case "clientContextParams":
+          case "builtInParams":
+            endpointParams[name] = await createConfigValueProvider(instruction.name, name, clientConfig)();
+            break;
+          default:
+            throw new Error("Unrecognized endpoint parameter instruction: " + JSON.stringify(instruction));
+        }
+      }
+      if (Object.keys(instructions).length === 0) {
+        Object.assign(endpointParams, clientConfig);
+      }
+      if (String(clientConfig.serviceId).toLowerCase() === "s3") {
+        await resolveParamsForS3(endpointParams);
+      }
+      return endpointParams;
+    }, "resolveParams");
+    var import_util_middleware3 = require_dist_cjs10();
+    var endpointMiddleware = /* @__PURE__ */ __name(({
+      config,
+      instructions
+    }) => {
+      return (next, context) => async (args) => {
+        var _a, _b, _c;
+        const endpoint = await getEndpointFromInstructions(
+          args.input,
+          {
+            getEndpointParameterInstructions() {
+              return instructions;
+            }
+          },
+          { ...config },
+          context
+        );
+        context.endpointV2 = endpoint;
+        context.authSchemes = (_a = endpoint.properties) == null ? void 0 : _a.authSchemes;
+        const authScheme = (_b = context.authSchemes) == null ? void 0 : _b[0];
+        if (authScheme) {
+          context["signing_region"] = authScheme.signingRegion;
+          context["signing_service"] = authScheme.signingName;
+          const smithyContext = (0, import_util_middleware3.getSmithyContext)(context);
+          const httpAuthOption = (_c = smithyContext == null ? void 0 : smithyContext.selectedHttpAuthScheme) == null ? void 0 : _c.httpAuthOption;
+          if (httpAuthOption) {
+            httpAuthOption.signingProperties = Object.assign(
+              httpAuthOption.signingProperties || {},
+              {
+                signing_region: authScheme.signingRegion,
+                signingRegion: authScheme.signingRegion,
+                signing_service: authScheme.signingName,
+                signingName: authScheme.signingName,
+                signingRegionSet: authScheme.signingRegionSet
+              },
+              authScheme.properties
+            );
+          }
+        }
+        return next({
+          ...args
+        });
+      };
+    }, "endpointMiddleware");
+    var import_middleware_serde2 = require_dist_cjs44();
+    var endpointMiddlewareOptions2 = {
+      step: "serialize",
+      tags: ["ENDPOINT_PARAMETERS", "ENDPOINT_V2", "ENDPOINT"],
+      name: "endpointV2Middleware",
+      override: true,
+      relation: "before",
+      toMiddleware: import_middleware_serde2.serializerMiddlewareOption.name
+    };
+    var getEndpointPlugin = /* @__PURE__ */ __name((config, instructions) => ({
+      applyToStack: (clientStack) => {
+        clientStack.addRelativeTo(
+          endpointMiddleware({
+            config,
+            instructions
+          }),
+          endpointMiddlewareOptions2
+        );
+      }
+    }), "getEndpointPlugin");
+    var import_getEndpointFromConfig2 = require_getEndpointFromConfig2();
+    var resolveEndpointConfig = /* @__PURE__ */ __name((input) => {
+      const tls = input.tls ?? true;
+      const { endpoint } = input;
+      const customEndpointProvider = endpoint != null ? async () => toEndpointV1(await (0, import_util_middleware3.normalizeProvider)(endpoint)()) : void 0;
+      const isCustomEndpoint = !!endpoint;
+      const resolvedConfig = {
+        ...input,
+        endpoint: customEndpointProvider,
+        tls,
+        isCustomEndpoint,
+        useDualstackEndpoint: (0, import_util_middleware3.normalizeProvider)(input.useDualstackEndpoint ?? false),
+        useFipsEndpoint: (0, import_util_middleware3.normalizeProvider)(input.useFipsEndpoint ?? false)
+      };
+      let configuredEndpointPromise = void 0;
+      resolvedConfig.serviceConfiguredEndpoint = async () => {
+        if (input.serviceId && !configuredEndpointPromise) {
+          configuredEndpointPromise = (0, import_getEndpointFromConfig2.getEndpointFromConfig)(input.serviceId);
+        }
+        return configuredEndpointPromise;
+      };
+      return resolvedConfig;
+    }, "resolveEndpointConfig");
+  }
+});
+
+// ../../../node_modules/@smithy/middleware-retry/node_modules/@smithy/protocol-http/dist-cjs/index.js
+var require_dist_cjs46 = __commonJS({
+  "../../../node_modules/@smithy/middleware-retry/node_modules/@smithy/protocol-http/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      Field: () => Field,
+      Fields: () => Fields,
+      HttpRequest: () => HttpRequest7,
+      HttpResponse: () => HttpResponse2,
+      IHttpRequest: () => import_types5.HttpRequest,
+      getHttpHandlerExtensionConfiguration: () => getHttpHandlerExtensionConfiguration,
+      isValidHostname: () => isValidHostname,
+      resolveHttpHandlerRuntimeConfig: () => resolveHttpHandlerRuntimeConfig
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var getHttpHandlerExtensionConfiguration = /* @__PURE__ */ __name((runtimeConfig) => {
+      let httpHandler = runtimeConfig.httpHandler;
+      return {
+        setHttpHandler(handler2) {
+          httpHandler = handler2;
+        },
+        httpHandler() {
+          return httpHandler;
+        },
+        updateHttpClientConfig(key, value) {
+          httpHandler.updateHttpClientConfig(key, value);
+        },
+        httpHandlerConfigs() {
+          return httpHandler.httpHandlerConfigs();
+        }
+      };
+    }, "getHttpHandlerExtensionConfiguration");
+    var resolveHttpHandlerRuntimeConfig = /* @__PURE__ */ __name((httpHandlerExtensionConfiguration) => {
+      return {
+        httpHandler: httpHandlerExtensionConfiguration.httpHandler()
+      };
+    }, "resolveHttpHandlerRuntimeConfig");
+    var import_types5 = require_dist_cjs();
+    var _Field = class _Field {
+      constructor({ name, kind = import_types5.FieldPosition.HEADER, values = [] }) {
+        this.name = name;
+        this.kind = kind;
+        this.values = values;
+      }
+      /**
+       * Appends a value to the field.
+       *
+       * @param value The value to append.
+       */
+      add(value) {
+        this.values.push(value);
+      }
+      /**
+       * Overwrite existing field values.
+       *
+       * @param values The new field values.
+       */
+      set(values) {
+        this.values = values;
+      }
+      /**
+       * Remove all matching entries from list.
+       *
+       * @param value Value to remove.
+       */
+      remove(value) {
+        this.values = this.values.filter((v) => v !== value);
+      }
+      /**
+       * Get comma-delimited string.
+       *
+       * @returns String representation of {@link Field}.
+       */
+      toString() {
+        return this.values.map((v) => v.includes(",") || v.includes(" ") ? `"${v}"` : v).join(", ");
+      }
+      /**
+       * Get string values as a list
+       *
+       * @returns Values in {@link Field} as a list.
+       */
+      get() {
+        return this.values;
+      }
+    };
+    __name(_Field, "Field");
+    var Field = _Field;
+    var _Fields = class _Fields {
+      constructor({ fields = [], encoding = "utf-8" }) {
+        this.entries = {};
+        fields.forEach(this.setField.bind(this));
+        this.encoding = encoding;
+      }
+      /**
+       * Set entry for a {@link Field} name. The `name`
+       * attribute will be used to key the collection.
+       *
+       * @param field The {@link Field} to set.
+       */
+      setField(field) {
+        this.entries[field.name.toLowerCase()] = field;
+      }
+      /**
+       *  Retrieve {@link Field} entry by name.
+       *
+       * @param name The name of the {@link Field} entry
+       *  to retrieve
+       * @returns The {@link Field} if it exists.
+       */
+      getField(name) {
+        return this.entries[name.toLowerCase()];
+      }
+      /**
+       * Delete entry from collection.
+       *
+       * @param name Name of the entry to delete.
+       */
+      removeField(name) {
+        delete this.entries[name.toLowerCase()];
+      }
+      /**
+       * Helper function for retrieving specific types of fields.
+       * Used to grab all headers or all trailers.
+       *
+       * @param kind {@link FieldPosition} of entries to retrieve.
+       * @returns The {@link Field} entries with the specified
+       *  {@link FieldPosition}.
+       */
+      getByType(kind) {
+        return Object.values(this.entries).filter((field) => field.kind === kind);
+      }
+    };
+    __name(_Fields, "Fields");
+    var Fields = _Fields;
+    var _HttpRequest = class _HttpRequest2 {
+      constructor(options) {
+        this.method = options.method || "GET";
+        this.hostname = options.hostname || "localhost";
+        this.port = options.port;
+        this.query = options.query || {};
+        this.headers = options.headers || {};
+        this.body = options.body;
+        this.protocol = options.protocol ? options.protocol.slice(-1) !== ":" ? `${options.protocol}:` : options.protocol : "https:";
+        this.path = options.path ? options.path.charAt(0) !== "/" ? `/${options.path}` : options.path : "/";
+        this.username = options.username;
+        this.password = options.password;
+        this.fragment = options.fragment;
+      }
+      /**
+       * Note: this does not deep-clone the body.
+       */
+      static clone(request2) {
+        const cloned = new _HttpRequest2({
+          ...request2,
+          headers: { ...request2.headers }
+        });
+        if (cloned.query) {
+          cloned.query = cloneQuery(cloned.query);
+        }
+        return cloned;
+      }
+      /**
+       * This method only actually asserts that request is the interface {@link IHttpRequest},
+       * and not necessarily this concrete class. Left in place for API stability.
+       *
+       * Do not call instance methods on the input of this function, and
+       * do not assume it has the HttpRequest prototype.
+       */
+      static isInstance(request2) {
+        if (!request2) {
+          return false;
+        }
+        const req = request2;
+        return "method" in req && "protocol" in req && "hostname" in req && "path" in req && typeof req["query"] === "object" && typeof req["headers"] === "object";
+      }
+      /**
+       * @deprecated use static HttpRequest.clone(request) instead. It's not safe to call
+       * this method because {@link HttpRequest.isInstance} incorrectly
+       * asserts that IHttpRequest (interface) objects are of type HttpRequest (class).
+       */
+      clone() {
+        return _HttpRequest2.clone(this);
+      }
+    };
+    __name(_HttpRequest, "HttpRequest");
+    var HttpRequest7 = _HttpRequest;
+    function cloneQuery(query) {
+      return Object.keys(query).reduce((carry, paramName) => {
+        const param = query[paramName];
+        return {
+          ...carry,
+          [paramName]: Array.isArray(param) ? [...param] : param
+        };
+      }, {});
+    }
+    __name(cloneQuery, "cloneQuery");
+    var _HttpResponse = class _HttpResponse {
+      constructor(options) {
+        this.statusCode = options.statusCode;
+        this.reason = options.reason;
+        this.headers = options.headers || {};
+        this.body = options.body;
+      }
+      static isInstance(response) {
+        if (!response)
+          return false;
+        const resp = response;
+        return typeof resp.statusCode === "number" && typeof resp.headers === "object";
+      }
+    };
+    __name(_HttpResponse, "HttpResponse");
+    var HttpResponse2 = _HttpResponse;
+    function isValidHostname(hostname) {
+      const hostPattern = /^[a-z0-9][a-z0-9\.\-]*[a-z0-9]$/;
+      return hostPattern.test(hostname);
+    }
+    __name(isValidHostname, "isValidHostname");
+  }
+});
+
+// ../../../node_modules/@smithy/service-error-classification/dist-cjs/index.js
+var require_dist_cjs47 = __commonJS({
+  "../../../node_modules/@smithy/service-error-classification/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      isClockSkewCorrectedError: () => isClockSkewCorrectedError,
+      isClockSkewError: () => isClockSkewError,
+      isRetryableByTrait: () => isRetryableByTrait,
+      isServerError: () => isServerError,
+      isThrottlingError: () => isThrottlingError,
+      isTransientError: () => isTransientError
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var CLOCK_SKEW_ERROR_CODES = [
+      "AuthFailure",
+      "InvalidSignatureException",
+      "RequestExpired",
+      "RequestInTheFuture",
+      "RequestTimeTooSkewed",
+      "SignatureDoesNotMatch"
+    ];
+    var THROTTLING_ERROR_CODES = [
+      "BandwidthLimitExceeded",
+      "EC2ThrottledException",
+      "LimitExceededException",
+      "PriorRequestNotComplete",
+      "ProvisionedThroughputExceededException",
+      "RequestLimitExceeded",
+      "RequestThrottled",
+      "RequestThrottledException",
+      "SlowDown",
+      "ThrottledException",
+      "Throttling",
+      "ThrottlingException",
+      "TooManyRequestsException",
+      "TransactionInProgressException"
+      // DynamoDB
+    ];
+    var TRANSIENT_ERROR_CODES = ["TimeoutError", "RequestTimeout", "RequestTimeoutException"];
+    var TRANSIENT_ERROR_STATUS_CODES = [500, 502, 503, 504];
+    var NODEJS_TIMEOUT_ERROR_CODES = ["ECONNRESET", "ECONNREFUSED", "EPIPE", "ETIMEDOUT"];
+    var isRetryableByTrait = /* @__PURE__ */ __name((error) => error.$retryable !== void 0, "isRetryableByTrait");
+    var isClockSkewError = /* @__PURE__ */ __name((error) => CLOCK_SKEW_ERROR_CODES.includes(error.name), "isClockSkewError");
+    var isClockSkewCorrectedError = /* @__PURE__ */ __name((error) => {
+      var _a;
+      return (_a = error.$metadata) == null ? void 0 : _a.clockSkewCorrected;
+    }, "isClockSkewCorrectedError");
+    var isThrottlingError = /* @__PURE__ */ __name((error) => {
+      var _a, _b;
+      return ((_a = error.$metadata) == null ? void 0 : _a.httpStatusCode) === 429 || THROTTLING_ERROR_CODES.includes(error.name) || ((_b = error.$retryable) == null ? void 0 : _b.throttling) == true;
+    }, "isThrottlingError");
+    var isTransientError = /* @__PURE__ */ __name((error) => {
+      var _a;
+      return isClockSkewCorrectedError(error) || TRANSIENT_ERROR_CODES.includes(error.name) || NODEJS_TIMEOUT_ERROR_CODES.includes((error == null ? void 0 : error.code) || "") || TRANSIENT_ERROR_STATUS_CODES.includes(((_a = error.$metadata) == null ? void 0 : _a.httpStatusCode) || 0);
+    }, "isTransientError");
+    var isServerError = /* @__PURE__ */ __name((error) => {
+      var _a;
+      if (((_a = error.$metadata) == null ? void 0 : _a.httpStatusCode) !== void 0) {
+        const statusCode = error.$metadata.httpStatusCode;
+        if (500 <= statusCode && statusCode <= 599 && !isTransientError(error)) {
+          return true;
+        }
+        return false;
+      }
+      return false;
+    }, "isServerError");
+  }
+});
+
+// ../../../node_modules/@smithy/middleware-retry/node_modules/@smithy/util-retry/dist-cjs/index.js
+var require_dist_cjs48 = __commonJS({
+  "../../../node_modules/@smithy/middleware-retry/node_modules/@smithy/util-retry/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      AdaptiveRetryStrategy: () => AdaptiveRetryStrategy,
+      ConfiguredRetryStrategy: () => ConfiguredRetryStrategy,
+      DEFAULT_MAX_ATTEMPTS: () => DEFAULT_MAX_ATTEMPTS,
+      DEFAULT_RETRY_DELAY_BASE: () => DEFAULT_RETRY_DELAY_BASE,
+      DEFAULT_RETRY_MODE: () => DEFAULT_RETRY_MODE,
+      DefaultRateLimiter: () => DefaultRateLimiter,
+      INITIAL_RETRY_TOKENS: () => INITIAL_RETRY_TOKENS,
+      INVOCATION_ID_HEADER: () => INVOCATION_ID_HEADER,
+      MAXIMUM_RETRY_DELAY: () => MAXIMUM_RETRY_DELAY,
+      NO_RETRY_INCREMENT: () => NO_RETRY_INCREMENT,
+      REQUEST_HEADER: () => REQUEST_HEADER,
+      RETRY_COST: () => RETRY_COST,
+      RETRY_MODES: () => RETRY_MODES,
+      StandardRetryStrategy: () => StandardRetryStrategy,
+      THROTTLING_RETRY_DELAY_BASE: () => THROTTLING_RETRY_DELAY_BASE,
+      TIMEOUT_RETRY_COST: () => TIMEOUT_RETRY_COST
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var RETRY_MODES = /* @__PURE__ */ ((RETRY_MODES2) => {
+      RETRY_MODES2["STANDARD"] = "standard";
+      RETRY_MODES2["ADAPTIVE"] = "adaptive";
+      return RETRY_MODES2;
+    })(RETRY_MODES || {});
+    var DEFAULT_MAX_ATTEMPTS = 3;
+    var DEFAULT_RETRY_MODE = "standard";
+    var import_service_error_classification = require_dist_cjs47();
+    var _DefaultRateLimiter = class _DefaultRateLimiter {
+      constructor(options) {
+        this.currentCapacity = 0;
+        this.enabled = false;
+        this.lastMaxRate = 0;
+        this.measuredTxRate = 0;
+        this.requestCount = 0;
+        this.lastTimestamp = 0;
+        this.timeWindow = 0;
+        this.beta = (options == null ? void 0 : options.beta) ?? 0.7;
+        this.minCapacity = (options == null ? void 0 : options.minCapacity) ?? 1;
+        this.minFillRate = (options == null ? void 0 : options.minFillRate) ?? 0.5;
+        this.scaleConstant = (options == null ? void 0 : options.scaleConstant) ?? 0.4;
+        this.smooth = (options == null ? void 0 : options.smooth) ?? 0.8;
+        const currentTimeInSeconds = this.getCurrentTimeInSeconds();
+        this.lastThrottleTime = currentTimeInSeconds;
+        this.lastTxRateBucket = Math.floor(this.getCurrentTimeInSeconds());
+        this.fillRate = this.minFillRate;
+        this.maxCapacity = this.minCapacity;
+      }
+      getCurrentTimeInSeconds() {
+        return Date.now() / 1e3;
+      }
+      async getSendToken() {
+        return this.acquireTokenBucket(1);
+      }
+      async acquireTokenBucket(amount) {
+        if (!this.enabled) {
+          return;
+        }
+        this.refillTokenBucket();
+        if (amount > this.currentCapacity) {
+          const delay = (amount - this.currentCapacity) / this.fillRate * 1e3;
+          await new Promise((resolve) => setTimeout(resolve, delay));
+        }
+        this.currentCapacity = this.currentCapacity - amount;
+      }
+      refillTokenBucket() {
+        const timestamp = this.getCurrentTimeInSeconds();
+        if (!this.lastTimestamp) {
+          this.lastTimestamp = timestamp;
+          return;
+        }
+        const fillAmount = (timestamp - this.lastTimestamp) * this.fillRate;
+        this.currentCapacity = Math.min(this.maxCapacity, this.currentCapacity + fillAmount);
+        this.lastTimestamp = timestamp;
+      }
+      updateClientSendingRate(response) {
+        let calculatedRate;
+        this.updateMeasuredRate();
+        if ((0, import_service_error_classification.isThrottlingError)(response)) {
+          const rateToUse = !this.enabled ? this.measuredTxRate : Math.min(this.measuredTxRate, this.fillRate);
+          this.lastMaxRate = rateToUse;
+          this.calculateTimeWindow();
+          this.lastThrottleTime = this.getCurrentTimeInSeconds();
+          calculatedRate = this.cubicThrottle(rateToUse);
+          this.enableTokenBucket();
+        } else {
+          this.calculateTimeWindow();
+          calculatedRate = this.cubicSuccess(this.getCurrentTimeInSeconds());
+        }
+        const newRate = Math.min(calculatedRate, 2 * this.measuredTxRate);
+        this.updateTokenBucketRate(newRate);
+      }
+      calculateTimeWindow() {
+        this.timeWindow = this.getPrecise(Math.pow(this.lastMaxRate * (1 - this.beta) / this.scaleConstant, 1 / 3));
+      }
+      cubicThrottle(rateToUse) {
+        return this.getPrecise(rateToUse * this.beta);
+      }
+      cubicSuccess(timestamp) {
+        return this.getPrecise(
+          this.scaleConstant * Math.pow(timestamp - this.lastThrottleTime - this.timeWindow, 3) + this.lastMaxRate
+        );
+      }
+      enableTokenBucket() {
+        this.enabled = true;
+      }
+      updateTokenBucketRate(newRate) {
+        this.refillTokenBucket();
+        this.fillRate = Math.max(newRate, this.minFillRate);
+        this.maxCapacity = Math.max(newRate, this.minCapacity);
+        this.currentCapacity = Math.min(this.currentCapacity, this.maxCapacity);
+      }
+      updateMeasuredRate() {
+        const t = this.getCurrentTimeInSeconds();
+        const timeBucket = Math.floor(t * 2) / 2;
+        this.requestCount++;
+        if (timeBucket > this.lastTxRateBucket) {
+          const currentRate = this.requestCount / (timeBucket - this.lastTxRateBucket);
+          this.measuredTxRate = this.getPrecise(currentRate * this.smooth + this.measuredTxRate * (1 - this.smooth));
+          this.requestCount = 0;
+          this.lastTxRateBucket = timeBucket;
+        }
+      }
+      getPrecise(num) {
+        return parseFloat(num.toFixed(8));
+      }
+    };
+    __name(_DefaultRateLimiter, "DefaultRateLimiter");
+    var DefaultRateLimiter = _DefaultRateLimiter;
+    var DEFAULT_RETRY_DELAY_BASE = 100;
+    var MAXIMUM_RETRY_DELAY = 20 * 1e3;
+    var THROTTLING_RETRY_DELAY_BASE = 500;
+    var INITIAL_RETRY_TOKENS = 500;
+    var RETRY_COST = 5;
+    var TIMEOUT_RETRY_COST = 10;
+    var NO_RETRY_INCREMENT = 1;
+    var INVOCATION_ID_HEADER = "amz-sdk-invocation-id";
+    var REQUEST_HEADER = "amz-sdk-request";
+    var getDefaultRetryBackoffStrategy = /* @__PURE__ */ __name(() => {
+      let delayBase = DEFAULT_RETRY_DELAY_BASE;
+      const computeNextBackoffDelay = /* @__PURE__ */ __name((attempts) => {
+        return Math.floor(Math.min(MAXIMUM_RETRY_DELAY, Math.random() * 2 ** attempts * delayBase));
+      }, "computeNextBackoffDelay");
+      const setDelayBase = /* @__PURE__ */ __name((delay) => {
+        delayBase = delay;
+      }, "setDelayBase");
+      return {
+        computeNextBackoffDelay,
+        setDelayBase
+      };
+    }, "getDefaultRetryBackoffStrategy");
+    var createDefaultRetryToken = /* @__PURE__ */ __name(({
+      retryDelay,
+      retryCount,
+      retryCost
+    }) => {
+      const getRetryCount = /* @__PURE__ */ __name(() => retryCount, "getRetryCount");
+      const getRetryDelay = /* @__PURE__ */ __name(() => Math.min(MAXIMUM_RETRY_DELAY, retryDelay), "getRetryDelay");
+      const getRetryCost = /* @__PURE__ */ __name(() => retryCost, "getRetryCost");
+      return {
+        getRetryCount,
+        getRetryDelay,
+        getRetryCost
+      };
+    }, "createDefaultRetryToken");
+    var _StandardRetryStrategy = class _StandardRetryStrategy {
+      constructor(maxAttempts) {
+        this.maxAttempts = maxAttempts;
+        this.mode = "standard";
+        this.capacity = INITIAL_RETRY_TOKENS;
+        this.retryBackoffStrategy = getDefaultRetryBackoffStrategy();
+        this.maxAttemptsProvider = typeof maxAttempts === "function" ? maxAttempts : async () => maxAttempts;
+      }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      async acquireInitialRetryToken(retryTokenScope) {
+        return createDefaultRetryToken({
+          retryDelay: DEFAULT_RETRY_DELAY_BASE,
+          retryCount: 0
+        });
+      }
+      async refreshRetryTokenForRetry(token, errorInfo) {
+        const maxAttempts = await this.getMaxAttempts();
+        if (this.shouldRetry(token, errorInfo, maxAttempts)) {
+          const errorType = errorInfo.errorType;
+          this.retryBackoffStrategy.setDelayBase(
+            errorType === "THROTTLING" ? THROTTLING_RETRY_DELAY_BASE : DEFAULT_RETRY_DELAY_BASE
+          );
+          const delayFromErrorType = this.retryBackoffStrategy.computeNextBackoffDelay(token.getRetryCount());
+          const retryDelay = errorInfo.retryAfterHint ? Math.max(errorInfo.retryAfterHint.getTime() - Date.now() || 0, delayFromErrorType) : delayFromErrorType;
+          const capacityCost = this.getCapacityCost(errorType);
+          this.capacity -= capacityCost;
+          return createDefaultRetryToken({
+            retryDelay,
+            retryCount: token.getRetryCount() + 1,
+            retryCost: capacityCost
+          });
+        }
+        throw new Error("No retry token available");
+      }
+      recordSuccess(token) {
+        this.capacity = Math.max(INITIAL_RETRY_TOKENS, this.capacity + (token.getRetryCost() ?? NO_RETRY_INCREMENT));
+      }
+      /**
+       * @returns the current available retry capacity.
+       *
+       * This number decreases when retries are executed and refills when requests or retries succeed.
+       */
+      getCapacity() {
+        return this.capacity;
+      }
+      async getMaxAttempts() {
+        try {
+          return await this.maxAttemptsProvider();
+        } catch (error) {
+          console.warn(`Max attempts provider could not resolve. Using default of ${DEFAULT_MAX_ATTEMPTS}`);
+          return DEFAULT_MAX_ATTEMPTS;
+        }
+      }
+      shouldRetry(tokenToRenew, errorInfo, maxAttempts) {
+        const attempts = tokenToRenew.getRetryCount() + 1;
+        return attempts < maxAttempts && this.capacity >= this.getCapacityCost(errorInfo.errorType) && this.isRetryableError(errorInfo.errorType);
+      }
+      getCapacityCost(errorType) {
+        return errorType === "TRANSIENT" ? TIMEOUT_RETRY_COST : RETRY_COST;
+      }
+      isRetryableError(errorType) {
+        return errorType === "THROTTLING" || errorType === "TRANSIENT";
+      }
+    };
+    __name(_StandardRetryStrategy, "StandardRetryStrategy");
+    var StandardRetryStrategy = _StandardRetryStrategy;
+    var _AdaptiveRetryStrategy = class _AdaptiveRetryStrategy {
+      constructor(maxAttemptsProvider, options) {
+        this.maxAttemptsProvider = maxAttemptsProvider;
+        this.mode = "adaptive";
+        const { rateLimiter } = options ?? {};
+        this.rateLimiter = rateLimiter ?? new DefaultRateLimiter();
+        this.standardRetryStrategy = new StandardRetryStrategy(maxAttemptsProvider);
+      }
+      async acquireInitialRetryToken(retryTokenScope) {
+        await this.rateLimiter.getSendToken();
+        return this.standardRetryStrategy.acquireInitialRetryToken(retryTokenScope);
+      }
+      async refreshRetryTokenForRetry(tokenToRenew, errorInfo) {
+        this.rateLimiter.updateClientSendingRate(errorInfo);
+        return this.standardRetryStrategy.refreshRetryTokenForRetry(tokenToRenew, errorInfo);
+      }
+      recordSuccess(token) {
+        this.rateLimiter.updateClientSendingRate({});
+        this.standardRetryStrategy.recordSuccess(token);
+      }
+    };
+    __name(_AdaptiveRetryStrategy, "AdaptiveRetryStrategy");
+    var AdaptiveRetryStrategy = _AdaptiveRetryStrategy;
+    var _ConfiguredRetryStrategy = class _ConfiguredRetryStrategy extends StandardRetryStrategy {
+      /**
+       * @param maxAttempts - the maximum number of retry attempts allowed.
+       *                      e.g., if set to 3, then 4 total requests are possible.
+       * @param computeNextBackoffDelay - a millisecond delay for each retry or a function that takes the retry attempt
+       *                                  and returns the delay.
+       *
+       * @example exponential backoff.
+       * ```js
+       * new Client({
+       *   retryStrategy: new ConfiguredRetryStrategy(3, (attempt) => attempt ** 2)
+       * });
+       * ```
+       * @example constant delay.
+       * ```js
+       * new Client({
+       *   retryStrategy: new ConfiguredRetryStrategy(3, 2000)
+       * });
+       * ```
+       */
+      constructor(maxAttempts, computeNextBackoffDelay = DEFAULT_RETRY_DELAY_BASE) {
+        super(typeof maxAttempts === "function" ? maxAttempts : async () => maxAttempts);
+        if (typeof computeNextBackoffDelay === "number") {
+          this.computeNextBackoffDelay = () => computeNextBackoffDelay;
+        } else {
+          this.computeNextBackoffDelay = computeNextBackoffDelay;
+        }
+      }
+      async refreshRetryTokenForRetry(tokenToRenew, errorInfo) {
+        const token = await super.refreshRetryTokenForRetry(tokenToRenew, errorInfo);
+        token.getRetryDelay = () => this.computeNextBackoffDelay(token.getRetryCount());
+        return token;
+      }
+    };
+    __name(_ConfiguredRetryStrategy, "ConfiguredRetryStrategy");
+    var ConfiguredRetryStrategy = _ConfiguredRetryStrategy;
+  }
+});
+
+// ../../../node_modules/@smithy/middleware-retry/node_modules/@smithy/util-middleware/dist-cjs/index.js
+var require_dist_cjs49 = __commonJS({
+  "../../../node_modules/@smithy/middleware-retry/node_modules/@smithy/util-middleware/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      getSmithyContext: () => getSmithyContext4,
+      normalizeProvider: () => normalizeProvider2
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var import_types5 = require_dist_cjs();
+    var getSmithyContext4 = /* @__PURE__ */ __name((context) => context[import_types5.SMITHY_CONTEXT_KEY] || (context[import_types5.SMITHY_CONTEXT_KEY] = {}), "getSmithyContext");
+    var normalizeProvider2 = /* @__PURE__ */ __name((input) => {
+      if (typeof input === "function")
+        return input;
+      const promisified = Promise.resolve(input);
+      return () => promisified;
+    }, "normalizeProvider");
+  }
+});
+
+// ../../../node_modules/@smithy/smithy-client/node_modules/@smithy/middleware-stack/dist-cjs/index.js
+var require_dist_cjs50 = __commonJS({
+  "../../../node_modules/@smithy/smithy-client/node_modules/@smithy/middleware-stack/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      constructStack: () => constructStack
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var getAllAliases = /* @__PURE__ */ __name((name, aliases) => {
+      const _aliases = [];
+      if (name) {
+        _aliases.push(name);
+      }
+      if (aliases) {
+        for (const alias of aliases) {
+          _aliases.push(alias);
+        }
+      }
+      return _aliases;
+    }, "getAllAliases");
+    var getMiddlewareNameWithAliases = /* @__PURE__ */ __name((name, aliases) => {
+      return `${name || "anonymous"}${aliases && aliases.length > 0 ? ` (a.k.a. ${aliases.join(",")})` : ""}`;
+    }, "getMiddlewareNameWithAliases");
+    var constructStack = /* @__PURE__ */ __name(() => {
+      let absoluteEntries = [];
+      let relativeEntries = [];
+      let identifyOnResolve = false;
+      const entriesNameSet = /* @__PURE__ */ new Set();
+      const sort = /* @__PURE__ */ __name((entries) => entries.sort(
+        (a, b) => stepWeights[b.step] - stepWeights[a.step] || priorityWeights[b.priority || "normal"] - priorityWeights[a.priority || "normal"]
+      ), "sort");
+      const removeByName = /* @__PURE__ */ __name((toRemove) => {
+        let isRemoved = false;
+        const filterCb = /* @__PURE__ */ __name((entry) => {
+          const aliases = getAllAliases(entry.name, entry.aliases);
+          if (aliases.includes(toRemove)) {
+            isRemoved = true;
+            for (const alias of aliases) {
+              entriesNameSet.delete(alias);
+            }
+            return false;
+          }
+          return true;
+        }, "filterCb");
+        absoluteEntries = absoluteEntries.filter(filterCb);
+        relativeEntries = relativeEntries.filter(filterCb);
+        return isRemoved;
+      }, "removeByName");
+      const removeByReference = /* @__PURE__ */ __name((toRemove) => {
+        let isRemoved = false;
+        const filterCb = /* @__PURE__ */ __name((entry) => {
+          if (entry.middleware === toRemove) {
+            isRemoved = true;
+            for (const alias of getAllAliases(entry.name, entry.aliases)) {
+              entriesNameSet.delete(alias);
+            }
+            return false;
+          }
+          return true;
+        }, "filterCb");
+        absoluteEntries = absoluteEntries.filter(filterCb);
+        relativeEntries = relativeEntries.filter(filterCb);
+        return isRemoved;
+      }, "removeByReference");
+      const cloneTo = /* @__PURE__ */ __name((toStack) => {
+        var _a;
+        absoluteEntries.forEach((entry) => {
+          toStack.add(entry.middleware, { ...entry });
+        });
+        relativeEntries.forEach((entry) => {
+          toStack.addRelativeTo(entry.middleware, { ...entry });
+        });
+        (_a = toStack.identifyOnResolve) == null ? void 0 : _a.call(toStack, stack.identifyOnResolve());
+        return toStack;
+      }, "cloneTo");
+      const expandRelativeMiddlewareList = /* @__PURE__ */ __name((from) => {
+        const expandedMiddlewareList = [];
+        from.before.forEach((entry) => {
+          if (entry.before.length === 0 && entry.after.length === 0) {
+            expandedMiddlewareList.push(entry);
+          } else {
+            expandedMiddlewareList.push(...expandRelativeMiddlewareList(entry));
+          }
+        });
+        expandedMiddlewareList.push(from);
+        from.after.reverse().forEach((entry) => {
+          if (entry.before.length === 0 && entry.after.length === 0) {
+            expandedMiddlewareList.push(entry);
+          } else {
+            expandedMiddlewareList.push(...expandRelativeMiddlewareList(entry));
+          }
+        });
+        return expandedMiddlewareList;
+      }, "expandRelativeMiddlewareList");
+      const getMiddlewareList = /* @__PURE__ */ __name((debug = false) => {
+        const normalizedAbsoluteEntries = [];
+        const normalizedRelativeEntries = [];
+        const normalizedEntriesNameMap = {};
+        absoluteEntries.forEach((entry) => {
+          const normalizedEntry = {
+            ...entry,
+            before: [],
+            after: []
+          };
+          for (const alias of getAllAliases(normalizedEntry.name, normalizedEntry.aliases)) {
+            normalizedEntriesNameMap[alias] = normalizedEntry;
+          }
+          normalizedAbsoluteEntries.push(normalizedEntry);
+        });
+        relativeEntries.forEach((entry) => {
+          const normalizedEntry = {
+            ...entry,
+            before: [],
+            after: []
+          };
+          for (const alias of getAllAliases(normalizedEntry.name, normalizedEntry.aliases)) {
+            normalizedEntriesNameMap[alias] = normalizedEntry;
+          }
+          normalizedRelativeEntries.push(normalizedEntry);
+        });
+        normalizedRelativeEntries.forEach((entry) => {
+          if (entry.toMiddleware) {
+            const toMiddleware = normalizedEntriesNameMap[entry.toMiddleware];
+            if (toMiddleware === void 0) {
+              if (debug) {
+                return;
+              }
+              throw new Error(
+                `${entry.toMiddleware} is not found when adding ${getMiddlewareNameWithAliases(entry.name, entry.aliases)} middleware ${entry.relation} ${entry.toMiddleware}`
+              );
+            }
+            if (entry.relation === "after") {
+              toMiddleware.after.push(entry);
+            }
+            if (entry.relation === "before") {
+              toMiddleware.before.push(entry);
+            }
+          }
+        });
+        const mainChain = sort(normalizedAbsoluteEntries).map(expandRelativeMiddlewareList).reduce(
+          (wholeList, expandedMiddlewareList) => {
+            wholeList.push(...expandedMiddlewareList);
+            return wholeList;
+          },
+          []
+        );
+        return mainChain;
+      }, "getMiddlewareList");
+      const stack = {
+        add: (middleware, options = {}) => {
+          const { name, override, aliases: _aliases } = options;
+          const entry = {
+            step: "initialize",
+            priority: "normal",
+            middleware,
+            ...options
+          };
+          const aliases = getAllAliases(name, _aliases);
+          if (aliases.length > 0) {
+            if (aliases.some((alias) => entriesNameSet.has(alias))) {
+              if (!override)
+                throw new Error(`Duplicate middleware name '${getMiddlewareNameWithAliases(name, _aliases)}'`);
+              for (const alias of aliases) {
+                const toOverrideIndex = absoluteEntries.findIndex(
+                  (entry2) => {
+                    var _a;
+                    return entry2.name === alias || ((_a = entry2.aliases) == null ? void 0 : _a.some((a) => a === alias));
+                  }
+                );
+                if (toOverrideIndex === -1) {
+                  continue;
+                }
+                const toOverride = absoluteEntries[toOverrideIndex];
+                if (toOverride.step !== entry.step || entry.priority !== toOverride.priority) {
+                  throw new Error(
+                    `"${getMiddlewareNameWithAliases(toOverride.name, toOverride.aliases)}" middleware with ${toOverride.priority} priority in ${toOverride.step} step cannot be overridden by "${getMiddlewareNameWithAliases(name, _aliases)}" middleware with ${entry.priority} priority in ${entry.step} step.`
+                  );
+                }
+                absoluteEntries.splice(toOverrideIndex, 1);
+              }
+            }
+            for (const alias of aliases) {
+              entriesNameSet.add(alias);
+            }
+          }
+          absoluteEntries.push(entry);
+        },
+        addRelativeTo: (middleware, options) => {
+          const { name, override, aliases: _aliases } = options;
+          const entry = {
+            middleware,
+            ...options
+          };
+          const aliases = getAllAliases(name, _aliases);
+          if (aliases.length > 0) {
+            if (aliases.some((alias) => entriesNameSet.has(alias))) {
+              if (!override)
+                throw new Error(`Duplicate middleware name '${getMiddlewareNameWithAliases(name, _aliases)}'`);
+              for (const alias of aliases) {
+                const toOverrideIndex = relativeEntries.findIndex(
+                  (entry2) => {
+                    var _a;
+                    return entry2.name === alias || ((_a = entry2.aliases) == null ? void 0 : _a.some((a) => a === alias));
+                  }
+                );
+                if (toOverrideIndex === -1) {
+                  continue;
+                }
+                const toOverride = relativeEntries[toOverrideIndex];
+                if (toOverride.toMiddleware !== entry.toMiddleware || toOverride.relation !== entry.relation) {
+                  throw new Error(
+                    `"${getMiddlewareNameWithAliases(toOverride.name, toOverride.aliases)}" middleware ${toOverride.relation} "${toOverride.toMiddleware}" middleware cannot be overridden by "${getMiddlewareNameWithAliases(name, _aliases)}" middleware ${entry.relation} "${entry.toMiddleware}" middleware.`
+                  );
+                }
+                relativeEntries.splice(toOverrideIndex, 1);
+              }
+            }
+            for (const alias of aliases) {
+              entriesNameSet.add(alias);
+            }
+          }
+          relativeEntries.push(entry);
+        },
+        clone: () => cloneTo(constructStack()),
+        use: (plugin) => {
+          plugin.applyToStack(stack);
+        },
+        remove: (toRemove) => {
+          if (typeof toRemove === "string")
+            return removeByName(toRemove);
+          else
+            return removeByReference(toRemove);
+        },
+        removeByTag: (toRemove) => {
+          let isRemoved = false;
+          const filterCb = /* @__PURE__ */ __name((entry) => {
+            const { tags, name, aliases: _aliases } = entry;
+            if (tags && tags.includes(toRemove)) {
+              const aliases = getAllAliases(name, _aliases);
+              for (const alias of aliases) {
+                entriesNameSet.delete(alias);
+              }
+              isRemoved = true;
+              return false;
+            }
+            return true;
+          }, "filterCb");
+          absoluteEntries = absoluteEntries.filter(filterCb);
+          relativeEntries = relativeEntries.filter(filterCb);
+          return isRemoved;
+        },
+        concat: (from) => {
+          var _a;
+          const cloned = cloneTo(constructStack());
+          cloned.use(from);
+          cloned.identifyOnResolve(
+            identifyOnResolve || cloned.identifyOnResolve() || (((_a = from.identifyOnResolve) == null ? void 0 : _a.call(from)) ?? false)
+          );
+          return cloned;
+        },
+        applyToStack: cloneTo,
+        identify: () => {
+          return getMiddlewareList(true).map((mw) => {
+            const step = mw.step ?? mw.relation + " " + mw.toMiddleware;
+            return getMiddlewareNameWithAliases(mw.name, mw.aliases) + " - " + step;
+          });
+        },
+        identifyOnResolve(toggle) {
+          if (typeof toggle === "boolean")
+            identifyOnResolve = toggle;
+          return identifyOnResolve;
+        },
+        resolve: (handler2, context) => {
+          for (const middleware of getMiddlewareList().map((entry) => entry.middleware).reverse()) {
+            handler2 = middleware(handler2, context);
+          }
+          if (identifyOnResolve) {
+            console.log(stack.identify());
+          }
+          return handler2;
+        }
+      };
+      return stack;
+    }, "constructStack");
+    var stepWeights = {
+      initialize: 5,
+      serialize: 4,
+      build: 3,
+      finalizeRequest: 2,
+      deserialize: 1
+    };
+    var priorityWeights = {
+      high: 3,
+      normal: 2,
+      low: 1
+    };
+  }
+});
+
+// ../../../node_modules/@smithy/smithy-client/node_modules/@smithy/util-stream/dist-cjs/getAwsChunkedEncodingStream.js
+var require_getAwsChunkedEncodingStream2 = __commonJS({
   "../../../node_modules/@smithy/smithy-client/node_modules/@smithy/util-stream/dist-cjs/getAwsChunkedEncodingStream.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -5574,7 +10958,7 @@ var require_getAwsChunkedEncodingStream = __commonJS({
 });
 
 // ../../../node_modules/@smithy/smithy-client/node_modules/@smithy/protocol-http/dist-cjs/index.js
-var require_dist_cjs30 = __commonJS({
+var require_dist_cjs51 = __commonJS({
   "../../../node_modules/@smithy/smithy-client/node_modules/@smithy/protocol-http/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -5811,44 +11195,8 @@ var require_dist_cjs30 = __commonJS({
   }
 });
 
-// ../../../node_modules/@smithy/util-uri-escape/dist-cjs/index.js
-var require_dist_cjs31 = __commonJS({
-  "../../../node_modules/@smithy/util-uri-escape/dist-cjs/index.js"(exports2, module2) {
-    var __defProp2 = Object.defineProperty;
-    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
-    var __getOwnPropNames2 = Object.getOwnPropertyNames;
-    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
-    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
-    var __export2 = (target, all) => {
-      for (var name in all)
-        __defProp2(target, name, { get: all[name], enumerable: true });
-    };
-    var __copyProps2 = (to, from, except, desc) => {
-      if (from && typeof from === "object" || typeof from === "function") {
-        for (let key of __getOwnPropNames2(from))
-          if (!__hasOwnProp2.call(to, key) && key !== except)
-            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
-      }
-      return to;
-    };
-    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
-    var src_exports = {};
-    __export2(src_exports, {
-      escapeUri: () => escapeUri,
-      escapeUriPath: () => escapeUriPath
-    });
-    module2.exports = __toCommonJS2(src_exports);
-    var escapeUri = /* @__PURE__ */ __name((uri) => (
-      // AWS percent-encodes some extra non-standard characters in a URI
-      encodeURIComponent(uri).replace(/[!'()*]/g, hexEncode)
-    ), "escapeUri");
-    var hexEncode = /* @__PURE__ */ __name((c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`, "hexEncode");
-    var escapeUriPath = /* @__PURE__ */ __name((uri) => uri.split("/").map(escapeUri).join("/"), "escapeUriPath");
-  }
-});
-
 // ../../../node_modules/@smithy/querystring-builder/dist-cjs/index.js
-var require_dist_cjs32 = __commonJS({
+var require_dist_cjs52 = __commonJS({
   "../../../node_modules/@smithy/querystring-builder/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -5873,7 +11221,7 @@ var require_dist_cjs32 = __commonJS({
       buildQueryString: () => buildQueryString
     });
     module2.exports = __toCommonJS2(src_exports);
-    var import_util_uri_escape = require_dist_cjs31();
+    var import_util_uri_escape = require_dist_cjs29();
     function buildQueryString(query) {
       const parts = [];
       for (let key of Object.keys(query).sort()) {
@@ -5898,7 +11246,7 @@ var require_dist_cjs32 = __commonJS({
 });
 
 // ../../../node_modules/@smithy/smithy-client/node_modules/@smithy/node-http-handler/dist-cjs/index.js
-var require_dist_cjs33 = __commonJS({
+var require_dist_cjs53 = __commonJS({
   "../../../node_modules/@smithy/smithy-client/node_modules/@smithy/node-http-handler/dist-cjs/index.js"(exports2, module2) {
     var __create2 = Object.create;
     var __defProp2 = Object.defineProperty;
@@ -5936,8 +11284,8 @@ var require_dist_cjs33 = __commonJS({
       streamCollector: () => streamCollector
     });
     module2.exports = __toCommonJS2(src_exports);
-    var import_protocol_http8 = require_dist_cjs30();
-    var import_querystring_builder = require_dist_cjs32();
+    var import_protocol_http8 = require_dist_cjs51();
+    var import_querystring_builder = require_dist_cjs52();
     var import_http2 = require("http");
     var import_https = require("https");
     var NODEJS_TIMEOUT_ERROR_CODES = ["ECONNRESET", "EPIPE", "ETIMEDOUT"];
@@ -6648,7 +11996,7 @@ or increase socketAcquisitionWarningTimeout=(millis) in the NodeHttpHandler conf
 });
 
 // ../../../node_modules/@smithy/smithy-client/node_modules/@smithy/fetch-http-handler/dist-cjs/index.js
-var require_dist_cjs34 = __commonJS({
+var require_dist_cjs54 = __commonJS({
   "../../../node_modules/@smithy/smithy-client/node_modules/@smithy/fetch-http-handler/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -6675,8 +12023,8 @@ var require_dist_cjs34 = __commonJS({
       streamCollector: () => streamCollector
     });
     module2.exports = __toCommonJS2(src_exports);
-    var import_protocol_http8 = require_dist_cjs30();
-    var import_querystring_builder = require_dist_cjs32();
+    var import_protocol_http8 = require_dist_cjs51();
+    var import_querystring_builder = require_dist_cjs52();
     function requestTimeout(timeoutInMs = 0) {
       return new Promise((resolve, reject) => {
         if (timeoutInMs) {
@@ -6834,7 +12182,7 @@ var require_dist_cjs34 = __commonJS({
     };
     __name(_FetchHttpHandler, "FetchHttpHandler");
     var FetchHttpHandler = _FetchHttpHandler;
-    var import_util_base64 = require_dist_cjs29();
+    var import_util_base64 = require_dist_cjs28();
     var streamCollector = /* @__PURE__ */ __name((stream) => {
       if (typeof Blob === "function" && stream instanceof Blob) {
         return collectBlob(stream);
@@ -6890,72 +12238,8 @@ var require_dist_cjs34 = __commonJS({
   }
 });
 
-// ../../../node_modules/@smithy/util-hex-encoding/dist-cjs/index.js
-var require_dist_cjs35 = __commonJS({
-  "../../../node_modules/@smithy/util-hex-encoding/dist-cjs/index.js"(exports2, module2) {
-    var __defProp2 = Object.defineProperty;
-    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
-    var __getOwnPropNames2 = Object.getOwnPropertyNames;
-    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
-    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
-    var __export2 = (target, all) => {
-      for (var name in all)
-        __defProp2(target, name, { get: all[name], enumerable: true });
-    };
-    var __copyProps2 = (to, from, except, desc) => {
-      if (from && typeof from === "object" || typeof from === "function") {
-        for (let key of __getOwnPropNames2(from))
-          if (!__hasOwnProp2.call(to, key) && key !== except)
-            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
-      }
-      return to;
-    };
-    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
-    var src_exports = {};
-    __export2(src_exports, {
-      fromHex: () => fromHex,
-      toHex: () => toHex
-    });
-    module2.exports = __toCommonJS2(src_exports);
-    var SHORT_TO_HEX = {};
-    var HEX_TO_SHORT = {};
-    for (let i = 0; i < 256; i++) {
-      let encodedByte = i.toString(16).toLowerCase();
-      if (encodedByte.length === 1) {
-        encodedByte = `0${encodedByte}`;
-      }
-      SHORT_TO_HEX[i] = encodedByte;
-      HEX_TO_SHORT[encodedByte] = i;
-    }
-    function fromHex(encoded) {
-      if (encoded.length % 2 !== 0) {
-        throw new Error("Hex encoded strings must have an even number length");
-      }
-      const out = new Uint8Array(encoded.length / 2);
-      for (let i = 0; i < encoded.length; i += 2) {
-        const encodedByte = encoded.slice(i, i + 2).toLowerCase();
-        if (encodedByte in HEX_TO_SHORT) {
-          out[i / 2] = HEX_TO_SHORT[encodedByte];
-        } else {
-          throw new Error(`Cannot decode unrecognized sequence ${encodedByte} as hexadecimal`);
-        }
-      }
-      return out;
-    }
-    __name(fromHex, "fromHex");
-    function toHex(bytes) {
-      let out = "";
-      for (let i = 0; i < bytes.byteLength; i++) {
-        out += SHORT_TO_HEX[bytes[i]];
-      }
-      return out;
-    }
-    __name(toHex, "toHex");
-  }
-});
-
 // ../../../node_modules/@smithy/smithy-client/node_modules/@smithy/util-stream/dist-cjs/stream-type-check.js
-var require_stream_type_check = __commonJS({
+var require_stream_type_check2 = __commonJS({
   "../../../node_modules/@smithy/smithy-client/node_modules/@smithy/util-stream/dist-cjs/stream-type-check.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -6969,16 +12253,16 @@ var require_stream_type_check = __commonJS({
 });
 
 // ../../../node_modules/@smithy/smithy-client/node_modules/@smithy/util-stream/dist-cjs/sdk-stream-mixin.browser.js
-var require_sdk_stream_mixin_browser = __commonJS({
+var require_sdk_stream_mixin_browser2 = __commonJS({
   "../../../node_modules/@smithy/smithy-client/node_modules/@smithy/util-stream/dist-cjs/sdk-stream-mixin.browser.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.sdkStreamMixin = void 0;
-    var fetch_http_handler_1 = require_dist_cjs34();
-    var util_base64_1 = require_dist_cjs29();
-    var util_hex_encoding_1 = require_dist_cjs35();
-    var util_utf8_1 = require_dist_cjs28();
-    var stream_type_check_1 = require_stream_type_check();
+    var fetch_http_handler_1 = require_dist_cjs54();
+    var util_base64_1 = require_dist_cjs28();
+    var util_hex_encoding_1 = require_dist_cjs34();
+    var util_utf8_1 = require_dist_cjs27();
+    var stream_type_check_1 = require_stream_type_check2();
     var ERR_MSG_STREAM_HAS_BEEN_TRANSFORMED = "The stream has already been transformed.";
     var sdkStreamMixin2 = (stream) => {
       var _a, _b;
@@ -7037,16 +12321,16 @@ var require_sdk_stream_mixin_browser = __commonJS({
 });
 
 // ../../../node_modules/@smithy/smithy-client/node_modules/@smithy/util-stream/dist-cjs/sdk-stream-mixin.js
-var require_sdk_stream_mixin = __commonJS({
+var require_sdk_stream_mixin2 = __commonJS({
   "../../../node_modules/@smithy/smithy-client/node_modules/@smithy/util-stream/dist-cjs/sdk-stream-mixin.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.sdkStreamMixin = void 0;
-    var node_http_handler_1 = require_dist_cjs33();
-    var util_buffer_from_1 = require_dist_cjs27();
+    var node_http_handler_1 = require_dist_cjs53();
+    var util_buffer_from_1 = require_dist_cjs26();
     var stream_1 = require("stream");
     var util_1 = require("util");
-    var sdk_stream_mixin_browser_1 = require_sdk_stream_mixin_browser();
+    var sdk_stream_mixin_browser_1 = require_sdk_stream_mixin_browser2();
     var ERR_MSG_STREAM_HAS_BEEN_TRANSFORMED = "The stream has already been transformed.";
     var sdkStreamMixin2 = (stream) => {
       var _a, _b;
@@ -7097,7 +12381,7 @@ var require_sdk_stream_mixin = __commonJS({
 });
 
 // ../../../node_modules/@smithy/smithy-client/node_modules/@smithy/util-stream/dist-cjs/splitStream.browser.js
-var require_splitStream_browser = __commonJS({
+var require_splitStream_browser2 = __commonJS({
   "../../../node_modules/@smithy/smithy-client/node_modules/@smithy/util-stream/dist-cjs/splitStream.browser.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -7114,14 +12398,14 @@ var require_splitStream_browser = __commonJS({
 });
 
 // ../../../node_modules/@smithy/smithy-client/node_modules/@smithy/util-stream/dist-cjs/splitStream.js
-var require_splitStream = __commonJS({
+var require_splitStream2 = __commonJS({
   "../../../node_modules/@smithy/smithy-client/node_modules/@smithy/util-stream/dist-cjs/splitStream.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.splitStream = void 0;
     var stream_1 = require("stream");
-    var splitStream_browser_1 = require_splitStream_browser();
-    var stream_type_check_1 = require_stream_type_check();
+    var splitStream_browser_1 = require_splitStream_browser2();
+    var stream_type_check_1 = require_stream_type_check2();
     async function splitStream2(stream) {
       if ((0, stream_type_check_1.isReadableStream)(stream)) {
         return (0, splitStream_browser_1.splitStream)(stream);
@@ -7137,7 +12421,7 @@ var require_splitStream = __commonJS({
 });
 
 // ../../../node_modules/@smithy/smithy-client/node_modules/@smithy/util-stream/dist-cjs/headStream.browser.js
-var require_headStream_browser = __commonJS({
+var require_headStream_browser2 = __commonJS({
   "../../../node_modules/@smithy/smithy-client/node_modules/@smithy/util-stream/dist-cjs/headStream.browser.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -7178,14 +12462,14 @@ var require_headStream_browser = __commonJS({
 });
 
 // ../../../node_modules/@smithy/smithy-client/node_modules/@smithy/util-stream/dist-cjs/headStream.js
-var require_headStream = __commonJS({
+var require_headStream2 = __commonJS({
   "../../../node_modules/@smithy/smithy-client/node_modules/@smithy/util-stream/dist-cjs/headStream.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.headStream = void 0;
     var stream_1 = require("stream");
-    var headStream_browser_1 = require_headStream_browser();
-    var stream_type_check_1 = require_stream_type_check();
+    var headStream_browser_1 = require_headStream_browser2();
+    var stream_type_check_1 = require_stream_type_check2();
     var headStream2 = (stream, bytes) => {
       if ((0, stream_type_check_1.isReadableStream)(stream)) {
         return (0, headStream_browser_1.headStream)(stream, bytes);
@@ -7230,7 +12514,7 @@ var require_headStream = __commonJS({
 });
 
 // ../../../node_modules/@smithy/smithy-client/node_modules/@smithy/util-stream/dist-cjs/index.js
-var require_dist_cjs36 = __commonJS({
+var require_dist_cjs55 = __commonJS({
   "../../../node_modules/@smithy/smithy-client/node_modules/@smithy/util-stream/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -7256,8 +12540,8 @@ var require_dist_cjs36 = __commonJS({
       Uint8ArrayBlobAdapter: () => Uint8ArrayBlobAdapter
     });
     module2.exports = __toCommonJS2(src_exports);
-    var import_util_base64 = require_dist_cjs29();
-    var import_util_utf8 = require_dist_cjs28();
+    var import_util_base64 = require_dist_cjs28();
+    var import_util_utf8 = require_dist_cjs27();
     function transformToString(payload, encoding = "utf-8") {
       if (encoding === "base64") {
         return (0, import_util_base64.toBase64)(payload);
@@ -7303,16 +12587,16 @@ var require_dist_cjs36 = __commonJS({
     };
     __name(_Uint8ArrayBlobAdapter, "Uint8ArrayBlobAdapter");
     var Uint8ArrayBlobAdapter = _Uint8ArrayBlobAdapter;
-    __reExport(src_exports, require_getAwsChunkedEncodingStream(), module2.exports);
-    __reExport(src_exports, require_sdk_stream_mixin(), module2.exports);
-    __reExport(src_exports, require_splitStream(), module2.exports);
-    __reExport(src_exports, require_headStream(), module2.exports);
-    __reExport(src_exports, require_stream_type_check(), module2.exports);
+    __reExport(src_exports, require_getAwsChunkedEncodingStream2(), module2.exports);
+    __reExport(src_exports, require_sdk_stream_mixin2(), module2.exports);
+    __reExport(src_exports, require_splitStream2(), module2.exports);
+    __reExport(src_exports, require_headStream2(), module2.exports);
+    __reExport(src_exports, require_stream_type_check2(), module2.exports);
   }
 });
 
 // ../../../node_modules/@smithy/smithy-client/dist-cjs/index.js
-var require_dist_cjs37 = __commonJS({
+var require_dist_cjs56 = __commonJS({
   "../../../node_modules/@smithy/smithy-client/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -7398,7 +12682,7 @@ var require_dist_cjs37 = __commonJS({
       withBaseException: () => withBaseException
     });
     module2.exports = __toCommonJS2(src_exports);
-    var import_middleware_stack = require_dist_cjs25();
+    var import_middleware_stack = require_dist_cjs50();
     var _Client = class _Client {
       constructor(config) {
         this.config = config;
@@ -7446,7 +12730,7 @@ var require_dist_cjs37 = __commonJS({
     };
     __name(_Client, "Client");
     var Client = _Client;
-    var import_util_stream = require_dist_cjs36();
+    var import_util_stream = require_dist_cjs55();
     var collectBody2 = /* @__PURE__ */ __name(async (streamBody = new Uint8Array(), context) => {
       if (streamBody instanceof Uint8Array) {
         return import_util_stream.Uint8ArrayBlobAdapter.mutate(streamBody);
@@ -8523,7 +13807,7 @@ var require_dist_cjs37 = __commonJS({
 });
 
 // ../../../node_modules/@smithy/middleware-retry/dist-cjs/isStreamingPayload/isStreamingPayload.js
-var require_isStreamingPayload = __commonJS({
+var require_isStreamingPayload2 = __commonJS({
   "../../../node_modules/@smithy/middleware-retry/dist-cjs/isStreamingPayload/isStreamingPayload.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -8535,7 +13819,7 @@ var require_isStreamingPayload = __commonJS({
 });
 
 // ../../../node_modules/@smithy/middleware-retry/dist-cjs/index.js
-var require_dist_cjs38 = __commonJS({
+var require_dist_cjs57 = __commonJS({
   "../../../node_modules/@smithy/middleware-retry/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -8577,9 +13861,9 @@ var require_dist_cjs38 = __commonJS({
       retryMiddlewareOptions: () => retryMiddlewareOptions2
     });
     module2.exports = __toCommonJS2(src_exports);
-    var import_protocol_http8 = require_dist_cjs21();
+    var import_protocol_http8 = require_dist_cjs46();
     var import_uuid = (init_esm_node(), __toCommonJS(esm_node_exports));
-    var import_util_retry = require_dist_cjs23();
+    var import_util_retry = require_dist_cjs48();
     var getDefaultRetryQuota = /* @__PURE__ */ __name((initialRetryTokens, options) => {
       const MAX_CAPACITY = initialRetryTokens;
       const noRetryIncrement = (options == null ? void 0 : options.noRetryIncrement) ?? import_util_retry.NO_RETRY_INCREMENT;
@@ -8607,7 +13891,7 @@ var require_dist_cjs38 = __commonJS({
       });
     }, "getDefaultRetryQuota");
     var defaultDelayDecider = /* @__PURE__ */ __name((delayBase, attempts) => Math.floor(Math.min(import_util_retry.MAXIMUM_RETRY_DELAY, Math.random() * 2 ** attempts * delayBase)), "defaultDelayDecider");
-    var import_service_error_classification = require_dist_cjs22();
+    var import_service_error_classification = require_dist_cjs47();
     var defaultRetryDecider = /* @__PURE__ */ __name((error) => {
       if (!error) {
         return false;
@@ -8728,7 +14012,7 @@ var require_dist_cjs38 = __commonJS({
     };
     __name(_AdaptiveRetryStrategy, "AdaptiveRetryStrategy");
     var AdaptiveRetryStrategy = _AdaptiveRetryStrategy;
-    var import_util_middleware3 = require_dist_cjs24();
+    var import_util_middleware3 = require_dist_cjs49();
     var ENV_MAX_ATTEMPTS = "AWS_MAX_ATTEMPTS";
     var CONFIG_MAX_ATTEMPTS = "max_attempts";
     var NODE_MAX_ATTEMPT_CONFIG_OPTIONS = {
@@ -8799,8 +14083,8 @@ var require_dist_cjs38 = __commonJS({
         clientStack.addRelativeTo(omitRetryHeadersMiddleware(), omitRetryHeadersMiddlewareOptions);
       }
     }), "getOmitRetryHeadersPlugin");
-    var import_smithy_client5 = require_dist_cjs37();
-    var import_isStreamingPayload = require_isStreamingPayload();
+    var import_smithy_client5 = require_dist_cjs56();
+    var import_isStreamingPayload = require_isStreamingPayload2();
     var retryMiddleware = /* @__PURE__ */ __name((options) => (next, context) => async (args) => {
       var _a;
       let retryStrategy = await options.retryStrategy();
@@ -8904,1422 +14188,6 @@ var require_dist_cjs38 = __commonJS({
       const retryAfterDate = new Date(retryAfter);
       return retryAfterDate;
     }, "getRetryAfterHint");
-  }
-});
-
-// ../../../node_modules/@smithy/core/dist-es/middleware-http-signing/getHttpSigningMiddleware.js
-var import_middleware_retry, httpSigningMiddlewareOptions, getHttpSigningPlugin;
-var init_getHttpSigningMiddleware = __esm({
-  "../../../node_modules/@smithy/core/dist-es/middleware-http-signing/getHttpSigningMiddleware.js"() {
-    import_middleware_retry = __toESM(require_dist_cjs38());
-    init_httpSigningMiddleware();
-    httpSigningMiddlewareOptions = {
-      step: "finalizeRequest",
-      tags: ["HTTP_SIGNING"],
-      name: "httpSigningMiddleware",
-      aliases: ["apiKeyMiddleware", "tokenMiddleware", "awsAuthMiddleware"],
-      override: true,
-      relation: "after",
-      toMiddleware: import_middleware_retry.retryMiddlewareOptions.name
-    };
-    getHttpSigningPlugin = (config) => ({
-      applyToStack: (clientStack) => {
-        clientStack.addRelativeTo(httpSigningMiddleware(config), httpSigningMiddlewareOptions);
-      }
-    });
-  }
-});
-
-// ../../../node_modules/@smithy/core/dist-es/middleware-http-signing/index.js
-var init_middleware_http_signing = __esm({
-  "../../../node_modules/@smithy/core/dist-es/middleware-http-signing/index.js"() {
-    init_httpSigningMiddleware();
-    init_getHttpSigningMiddleware();
-  }
-});
-
-// ../../../node_modules/@smithy/core/dist-es/util-identity-and-auth/DefaultIdentityProviderConfig.js
-var DefaultIdentityProviderConfig;
-var init_DefaultIdentityProviderConfig = __esm({
-  "../../../node_modules/@smithy/core/dist-es/util-identity-and-auth/DefaultIdentityProviderConfig.js"() {
-    DefaultIdentityProviderConfig = class {
-      constructor(config) {
-        this.authSchemes = /* @__PURE__ */ new Map();
-        for (const [key, value] of Object.entries(config)) {
-          if (value !== void 0) {
-            this.authSchemes.set(key, value);
-          }
-        }
-      }
-      getIdentityProvider(schemeId) {
-        return this.authSchemes.get(schemeId);
-      }
-    };
-  }
-});
-
-// ../../../node_modules/@smithy/core/dist-es/util-identity-and-auth/httpAuthSchemes/httpApiKeyAuth.js
-var import_protocol_http2, import_types3, HttpApiKeyAuthSigner;
-var init_httpApiKeyAuth = __esm({
-  "../../../node_modules/@smithy/core/dist-es/util-identity-and-auth/httpAuthSchemes/httpApiKeyAuth.js"() {
-    import_protocol_http2 = __toESM(require_dist_cjs20());
-    import_types3 = __toESM(require_dist_cjs());
-    HttpApiKeyAuthSigner = class {
-      async sign(httpRequest, identity, signingProperties) {
-        if (!signingProperties) {
-          throw new Error("request could not be signed with `apiKey` since the `name` and `in` signer properties are missing");
-        }
-        if (!signingProperties.name) {
-          throw new Error("request could not be signed with `apiKey` since the `name` signer property is missing");
-        }
-        if (!signingProperties.in) {
-          throw new Error("request could not be signed with `apiKey` since the `in` signer property is missing");
-        }
-        if (!identity.apiKey) {
-          throw new Error("request could not be signed with `apiKey` since the `apiKey` is not defined");
-        }
-        const clonedRequest = import_protocol_http2.HttpRequest.clone(httpRequest);
-        if (signingProperties.in === import_types3.HttpApiKeyAuthLocation.QUERY) {
-          clonedRequest.query[signingProperties.name] = identity.apiKey;
-        } else if (signingProperties.in === import_types3.HttpApiKeyAuthLocation.HEADER) {
-          clonedRequest.headers[signingProperties.name] = signingProperties.scheme ? `${signingProperties.scheme} ${identity.apiKey}` : identity.apiKey;
-        } else {
-          throw new Error("request can only be signed with `apiKey` locations `query` or `header`, but found: `" + signingProperties.in + "`");
-        }
-        return clonedRequest;
-      }
-    };
-  }
-});
-
-// ../../../node_modules/@smithy/core/dist-es/util-identity-and-auth/httpAuthSchemes/httpBearerAuth.js
-var import_protocol_http3, HttpBearerAuthSigner;
-var init_httpBearerAuth = __esm({
-  "../../../node_modules/@smithy/core/dist-es/util-identity-and-auth/httpAuthSchemes/httpBearerAuth.js"() {
-    import_protocol_http3 = __toESM(require_dist_cjs20());
-    HttpBearerAuthSigner = class {
-      async sign(httpRequest, identity, signingProperties) {
-        const clonedRequest = import_protocol_http3.HttpRequest.clone(httpRequest);
-        if (!identity.token) {
-          throw new Error("request could not be signed with `token` since the `token` is not defined");
-        }
-        clonedRequest.headers["Authorization"] = `Bearer ${identity.token}`;
-        return clonedRequest;
-      }
-    };
-  }
-});
-
-// ../../../node_modules/@smithy/core/dist-es/util-identity-and-auth/httpAuthSchemes/noAuth.js
-var NoAuthSigner;
-var init_noAuth = __esm({
-  "../../../node_modules/@smithy/core/dist-es/util-identity-and-auth/httpAuthSchemes/noAuth.js"() {
-    NoAuthSigner = class {
-      async sign(httpRequest, identity, signingProperties) {
-        return httpRequest;
-      }
-    };
-  }
-});
-
-// ../../../node_modules/@smithy/core/dist-es/util-identity-and-auth/httpAuthSchemes/index.js
-var init_httpAuthSchemes = __esm({
-  "../../../node_modules/@smithy/core/dist-es/util-identity-and-auth/httpAuthSchemes/index.js"() {
-    init_httpApiKeyAuth();
-    init_httpBearerAuth();
-    init_noAuth();
-  }
-});
-
-// ../../../node_modules/@smithy/core/dist-es/util-identity-and-auth/memoizeIdentityProvider.js
-var createIsIdentityExpiredFunction, EXPIRATION_MS, isIdentityExpired, doesIdentityRequireRefresh, memoizeIdentityProvider;
-var init_memoizeIdentityProvider = __esm({
-  "../../../node_modules/@smithy/core/dist-es/util-identity-and-auth/memoizeIdentityProvider.js"() {
-    createIsIdentityExpiredFunction = (expirationMs) => (identity) => doesIdentityRequireRefresh(identity) && identity.expiration.getTime() - Date.now() < expirationMs;
-    EXPIRATION_MS = 3e5;
-    isIdentityExpired = createIsIdentityExpiredFunction(EXPIRATION_MS);
-    doesIdentityRequireRefresh = (identity) => identity.expiration !== void 0;
-    memoizeIdentityProvider = (provider, isExpired, requiresRefresh) => {
-      if (provider === void 0) {
-        return void 0;
-      }
-      const normalizedProvider = typeof provider !== "function" ? async () => Promise.resolve(provider) : provider;
-      let resolved;
-      let pending;
-      let hasResult;
-      let isConstant = false;
-      const coalesceProvider = async (options) => {
-        if (!pending) {
-          pending = normalizedProvider(options);
-        }
-        try {
-          resolved = await pending;
-          hasResult = true;
-          isConstant = false;
-        } finally {
-          pending = void 0;
-        }
-        return resolved;
-      };
-      if (isExpired === void 0) {
-        return async (options) => {
-          if (!hasResult || options?.forceRefresh) {
-            resolved = await coalesceProvider(options);
-          }
-          return resolved;
-        };
-      }
-      return async (options) => {
-        if (!hasResult || options?.forceRefresh) {
-          resolved = await coalesceProvider(options);
-        }
-        if (isConstant) {
-          return resolved;
-        }
-        if (!requiresRefresh(resolved)) {
-          isConstant = true;
-          return resolved;
-        }
-        if (isExpired(resolved)) {
-          await coalesceProvider(options);
-          return resolved;
-        }
-        return resolved;
-      };
-    };
-  }
-});
-
-// ../../../node_modules/@smithy/core/dist-es/util-identity-and-auth/index.js
-var init_util_identity_and_auth = __esm({
-  "../../../node_modules/@smithy/core/dist-es/util-identity-and-auth/index.js"() {
-    init_DefaultIdentityProviderConfig();
-    init_httpAuthSchemes();
-    init_memoizeIdentityProvider();
-  }
-});
-
-// ../../../node_modules/@smithy/core/dist-es/getSmithyContext.js
-var import_types4, getSmithyContext3;
-var init_getSmithyContext = __esm({
-  "../../../node_modules/@smithy/core/dist-es/getSmithyContext.js"() {
-    import_types4 = __toESM(require_dist_cjs());
-    getSmithyContext3 = (context) => context[import_types4.SMITHY_CONTEXT_KEY] || (context[import_types4.SMITHY_CONTEXT_KEY] = {});
-  }
-});
-
-// ../../../node_modules/@smithy/core/dist-es/normalizeProvider.js
-var normalizeProvider;
-var init_normalizeProvider = __esm({
-  "../../../node_modules/@smithy/core/dist-es/normalizeProvider.js"() {
-    normalizeProvider = (input) => {
-      if (typeof input === "function")
-        return input;
-      const promisified = Promise.resolve(input);
-      return () => promisified;
-    };
-  }
-});
-
-// ../../../node_modules/@smithy/core/dist-es/protocols/requestBuilder.js
-function requestBuilder(input, context) {
-  return new RequestBuilder(input, context);
-}
-var import_protocol_http4, import_smithy_client, RequestBuilder;
-var init_requestBuilder = __esm({
-  "../../../node_modules/@smithy/core/dist-es/protocols/requestBuilder.js"() {
-    import_protocol_http4 = __toESM(require_dist_cjs20());
-    import_smithy_client = __toESM(require_dist_cjs37());
-    RequestBuilder = class {
-      constructor(input, context) {
-        this.input = input;
-        this.context = context;
-        this.query = {};
-        this.method = "";
-        this.headers = {};
-        this.path = "";
-        this.body = null;
-        this.hostname = "";
-        this.resolvePathStack = [];
-      }
-      async build() {
-        const { hostname, protocol = "https", port, path: basePath } = await this.context.endpoint();
-        this.path = basePath;
-        for (const resolvePath of this.resolvePathStack) {
-          resolvePath(this.path);
-        }
-        return new import_protocol_http4.HttpRequest({
-          protocol,
-          hostname: this.hostname || hostname,
-          port,
-          method: this.method,
-          path: this.path,
-          query: this.query,
-          body: this.body,
-          headers: this.headers
-        });
-      }
-      hn(hostname) {
-        this.hostname = hostname;
-        return this;
-      }
-      bp(uriLabel) {
-        this.resolvePathStack.push((basePath) => {
-          this.path = `${basePath?.endsWith("/") ? basePath.slice(0, -1) : basePath || ""}` + uriLabel;
-        });
-        return this;
-      }
-      p(memberName, labelValueProvider, uriLabel, isGreedyLabel) {
-        this.resolvePathStack.push((path) => {
-          this.path = (0, import_smithy_client.resolvedPath)(path, this.input, memberName, labelValueProvider, uriLabel, isGreedyLabel);
-        });
-        return this;
-      }
-      h(headers) {
-        this.headers = headers;
-        return this;
-      }
-      q(query) {
-        this.query = query;
-        return this;
-      }
-      b(body) {
-        this.body = body;
-        return this;
-      }
-      m(method) {
-        this.method = method;
-        return this;
-      }
-    };
-  }
-});
-
-// ../../../node_modules/@smithy/core/dist-es/pagination/createPaginator.js
-function createPaginator(ClientCtor, CommandCtor, inputTokenName, outputTokenName, pageSizeTokenName) {
-  return async function* paginateOperation(config, input, ...additionalArguments) {
-    let token = config.startingToken || void 0;
-    let hasNext = true;
-    let page;
-    while (hasNext) {
-      input[inputTokenName] = token;
-      if (pageSizeTokenName) {
-        input[pageSizeTokenName] = input[pageSizeTokenName] ?? config.pageSize;
-      }
-      if (config.client instanceof ClientCtor) {
-        page = await makePagedClientRequest(CommandCtor, config.client, input, ...additionalArguments);
-      } else {
-        throw new Error(`Invalid client, expected instance of ${ClientCtor.name}`);
-      }
-      yield page;
-      const prevToken = token;
-      token = get(page, outputTokenName);
-      hasNext = !!(token && (!config.stopOnSameToken || token !== prevToken));
-    }
-    return void 0;
-  };
-}
-var makePagedClientRequest, get;
-var init_createPaginator = __esm({
-  "../../../node_modules/@smithy/core/dist-es/pagination/createPaginator.js"() {
-    makePagedClientRequest = async (CommandCtor, client, input, ...args) => {
-      return await client.send(new CommandCtor(input), ...args);
-    };
-    get = (fromObject, path) => {
-      let cursor = fromObject;
-      const pathComponents = path.split(".");
-      for (const step of pathComponents) {
-        if (!cursor || typeof cursor !== "object") {
-          return void 0;
-        }
-        cursor = cursor[step];
-      }
-      return cursor;
-    };
-  }
-});
-
-// ../../../node_modules/@smithy/core/dist-es/index.js
-var dist_es_exports = {};
-__export(dist_es_exports, {
-  DefaultIdentityProviderConfig: () => DefaultIdentityProviderConfig,
-  EXPIRATION_MS: () => EXPIRATION_MS,
-  HttpApiKeyAuthSigner: () => HttpApiKeyAuthSigner,
-  HttpBearerAuthSigner: () => HttpBearerAuthSigner,
-  NoAuthSigner: () => NoAuthSigner,
-  RequestBuilder: () => RequestBuilder,
-  createIsIdentityExpiredFunction: () => createIsIdentityExpiredFunction,
-  createPaginator: () => createPaginator,
-  doesIdentityRequireRefresh: () => doesIdentityRequireRefresh,
-  getHttpAuthSchemeEndpointRuleSetPlugin: () => getHttpAuthSchemeEndpointRuleSetPlugin,
-  getHttpAuthSchemePlugin: () => getHttpAuthSchemePlugin,
-  getHttpSigningPlugin: () => getHttpSigningPlugin,
-  getSmithyContext: () => getSmithyContext3,
-  httpAuthSchemeEndpointRuleSetMiddlewareOptions: () => httpAuthSchemeEndpointRuleSetMiddlewareOptions,
-  httpAuthSchemeMiddleware: () => httpAuthSchemeMiddleware,
-  httpAuthSchemeMiddlewareOptions: () => httpAuthSchemeMiddlewareOptions,
-  httpSigningMiddleware: () => httpSigningMiddleware,
-  httpSigningMiddlewareOptions: () => httpSigningMiddlewareOptions,
-  isIdentityExpired: () => isIdentityExpired,
-  memoizeIdentityProvider: () => memoizeIdentityProvider,
-  normalizeProvider: () => normalizeProvider,
-  requestBuilder: () => requestBuilder
-});
-var init_dist_es = __esm({
-  "../../../node_modules/@smithy/core/dist-es/index.js"() {
-    init_middleware_http_auth_scheme();
-    init_middleware_http_signing();
-    init_util_identity_and_auth();
-    init_getSmithyContext();
-    init_normalizeProvider();
-    init_requestBuilder();
-    init_createPaginator();
-  }
-});
-
-// ../../../node_modules/@smithy/middleware-content-length/dist-cjs/index.js
-var require_dist_cjs39 = __commonJS({
-  "../../../node_modules/@smithy/middleware-content-length/dist-cjs/index.js"(exports2, module2) {
-    var __defProp2 = Object.defineProperty;
-    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
-    var __getOwnPropNames2 = Object.getOwnPropertyNames;
-    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
-    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
-    var __export2 = (target, all) => {
-      for (var name in all)
-        __defProp2(target, name, { get: all[name], enumerable: true });
-    };
-    var __copyProps2 = (to, from, except, desc) => {
-      if (from && typeof from === "object" || typeof from === "function") {
-        for (let key of __getOwnPropNames2(from))
-          if (!__hasOwnProp2.call(to, key) && key !== except)
-            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
-      }
-      return to;
-    };
-    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
-    var src_exports = {};
-    __export2(src_exports, {
-      contentLengthMiddleware: () => contentLengthMiddleware,
-      contentLengthMiddlewareOptions: () => contentLengthMiddlewareOptions,
-      getContentLengthPlugin: () => getContentLengthPlugin
-    });
-    module2.exports = __toCommonJS2(src_exports);
-    var import_protocol_http8 = require_dist_cjs2();
-    var CONTENT_LENGTH_HEADER = "content-length";
-    function contentLengthMiddleware(bodyLengthChecker) {
-      return (next) => async (args) => {
-        const request2 = args.request;
-        if (import_protocol_http8.HttpRequest.isInstance(request2)) {
-          const { body, headers } = request2;
-          if (body && Object.keys(headers).map((str) => str.toLowerCase()).indexOf(CONTENT_LENGTH_HEADER) === -1) {
-            try {
-              const length = bodyLengthChecker(body);
-              request2.headers = {
-                ...request2.headers,
-                [CONTENT_LENGTH_HEADER]: String(length)
-              };
-            } catch (error) {
-            }
-          }
-        }
-        return next({
-          ...args,
-          request: request2
-        });
-      };
-    }
-    __name(contentLengthMiddleware, "contentLengthMiddleware");
-    var contentLengthMiddlewareOptions = {
-      step: "build",
-      tags: ["SET_CONTENT_LENGTH", "CONTENT_LENGTH"],
-      name: "contentLengthMiddleware",
-      override: true
-    };
-    var getContentLengthPlugin = /* @__PURE__ */ __name((options) => ({
-      applyToStack: (clientStack) => {
-        clientStack.add(contentLengthMiddleware(options.bodyLengthChecker), contentLengthMiddlewareOptions);
-      }
-    }), "getContentLengthPlugin");
-  }
-});
-
-// ../../../node_modules/@smithy/property-provider/dist-cjs/index.js
-var require_dist_cjs40 = __commonJS({
-  "../../../node_modules/@smithy/property-provider/dist-cjs/index.js"(exports2, module2) {
-    var __defProp2 = Object.defineProperty;
-    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
-    var __getOwnPropNames2 = Object.getOwnPropertyNames;
-    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
-    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
-    var __export2 = (target, all) => {
-      for (var name in all)
-        __defProp2(target, name, { get: all[name], enumerable: true });
-    };
-    var __copyProps2 = (to, from, except, desc) => {
-      if (from && typeof from === "object" || typeof from === "function") {
-        for (let key of __getOwnPropNames2(from))
-          if (!__hasOwnProp2.call(to, key) && key !== except)
-            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
-      }
-      return to;
-    };
-    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
-    var src_exports = {};
-    __export2(src_exports, {
-      CredentialsProviderError: () => CredentialsProviderError,
-      ProviderError: () => ProviderError2,
-      TokenProviderError: () => TokenProviderError,
-      chain: () => chain,
-      fromStatic: () => fromStatic,
-      memoize: () => memoize
-    });
-    module2.exports = __toCommonJS2(src_exports);
-    var _ProviderError = class _ProviderError2 extends Error {
-      constructor(message, options = true) {
-        var _a;
-        let logger;
-        let tryNextLink = true;
-        if (typeof options === "boolean") {
-          logger = void 0;
-          tryNextLink = options;
-        } else if (options != null && typeof options === "object") {
-          logger = options.logger;
-          tryNextLink = options.tryNextLink ?? true;
-        }
-        super(message);
-        this.name = "ProviderError";
-        this.tryNextLink = tryNextLink;
-        Object.setPrototypeOf(this, _ProviderError2.prototype);
-        (_a = logger == null ? void 0 : logger.debug) == null ? void 0 : _a.call(logger, `@smithy/property-provider ${tryNextLink ? "->" : "(!)"} ${message}`);
-      }
-      /**
-       * @deprecated use new operator.
-       */
-      static from(error, options = true) {
-        return Object.assign(new this(error.message, options), error);
-      }
-    };
-    __name(_ProviderError, "ProviderError");
-    var ProviderError2 = _ProviderError;
-    var _CredentialsProviderError = class _CredentialsProviderError2 extends ProviderError2 {
-      /**
-       * @override
-       */
-      constructor(message, options = true) {
-        super(message, options);
-        this.name = "CredentialsProviderError";
-        Object.setPrototypeOf(this, _CredentialsProviderError2.prototype);
-      }
-    };
-    __name(_CredentialsProviderError, "CredentialsProviderError");
-    var CredentialsProviderError = _CredentialsProviderError;
-    var _TokenProviderError = class _TokenProviderError2 extends ProviderError2 {
-      /**
-       * @override
-       */
-      constructor(message, options = true) {
-        super(message, options);
-        this.name = "TokenProviderError";
-        Object.setPrototypeOf(this, _TokenProviderError2.prototype);
-      }
-    };
-    __name(_TokenProviderError, "TokenProviderError");
-    var TokenProviderError = _TokenProviderError;
-    var chain = /* @__PURE__ */ __name((...providers) => async () => {
-      if (providers.length === 0) {
-        throw new ProviderError2("No providers in chain");
-      }
-      let lastProviderError;
-      for (const provider of providers) {
-        try {
-          const credentials = await provider();
-          return credentials;
-        } catch (err) {
-          lastProviderError = err;
-          if (err == null ? void 0 : err.tryNextLink) {
-            continue;
-          }
-          throw err;
-        }
-      }
-      throw lastProviderError;
-    }, "chain");
-    var fromStatic = /* @__PURE__ */ __name((staticValue) => () => Promise.resolve(staticValue), "fromStatic");
-    var memoize = /* @__PURE__ */ __name((provider, isExpired, requiresRefresh) => {
-      let resolved;
-      let pending;
-      let hasResult;
-      let isConstant = false;
-      const coalesceProvider = /* @__PURE__ */ __name(async () => {
-        if (!pending) {
-          pending = provider();
-        }
-        try {
-          resolved = await pending;
-          hasResult = true;
-          isConstant = false;
-        } finally {
-          pending = void 0;
-        }
-        return resolved;
-      }, "coalesceProvider");
-      if (isExpired === void 0) {
-        return async (options) => {
-          if (!hasResult || (options == null ? void 0 : options.forceRefresh)) {
-            resolved = await coalesceProvider();
-          }
-          return resolved;
-        };
-      }
-      return async (options) => {
-        if (!hasResult || (options == null ? void 0 : options.forceRefresh)) {
-          resolved = await coalesceProvider();
-        }
-        if (isConstant) {
-          return resolved;
-        }
-        if (requiresRefresh && !requiresRefresh(resolved)) {
-          isConstant = true;
-          return resolved;
-        }
-        if (isExpired(resolved)) {
-          await coalesceProvider();
-          return resolved;
-        }
-        return resolved;
-      };
-    }, "memoize");
-  }
-});
-
-// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getHomeDir.js
-var require_getHomeDir2 = __commonJS({
-  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getHomeDir.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getHomeDir = void 0;
-    var os_1 = require("os");
-    var path_1 = require("path");
-    var homeDirCache = {};
-    var getHomeDirCacheKey = () => {
-      if (process && process.geteuid) {
-        return `${process.geteuid()}`;
-      }
-      return "DEFAULT";
-    };
-    var getHomeDir2 = () => {
-      const { HOME, USERPROFILE, HOMEPATH, HOMEDRIVE = `C:${path_1.sep}` } = process.env;
-      if (HOME)
-        return HOME;
-      if (USERPROFILE)
-        return USERPROFILE;
-      if (HOMEPATH)
-        return `${HOMEDRIVE}${HOMEPATH}`;
-      const homeDirCacheKey = getHomeDirCacheKey();
-      if (!homeDirCache[homeDirCacheKey])
-        homeDirCache[homeDirCacheKey] = (0, os_1.homedir)();
-      return homeDirCache[homeDirCacheKey];
-    };
-    exports2.getHomeDir = getHomeDir2;
-  }
-});
-
-// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFilepath.js
-var require_getSSOTokenFilepath2 = __commonJS({
-  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFilepath.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getSSOTokenFilepath = void 0;
-    var crypto_1 = require("crypto");
-    var path_1 = require("path");
-    var getHomeDir_1 = require_getHomeDir2();
-    var getSSOTokenFilepath2 = (id) => {
-      const hasher = (0, crypto_1.createHash)("sha1");
-      const cacheName = hasher.update(id).digest("hex");
-      return (0, path_1.join)((0, getHomeDir_1.getHomeDir)(), ".aws", "sso", "cache", `${cacheName}.json`);
-    };
-    exports2.getSSOTokenFilepath = getSSOTokenFilepath2;
-  }
-});
-
-// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFromFile.js
-var require_getSSOTokenFromFile2 = __commonJS({
-  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFromFile.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getSSOTokenFromFile = void 0;
-    var fs_1 = require("fs");
-    var getSSOTokenFilepath_1 = require_getSSOTokenFilepath2();
-    var { readFile } = fs_1.promises;
-    var getSSOTokenFromFile2 = async (id) => {
-      const ssoTokenFilepath = (0, getSSOTokenFilepath_1.getSSOTokenFilepath)(id);
-      const ssoTokenText = await readFile(ssoTokenFilepath, "utf8");
-      return JSON.parse(ssoTokenText);
-    };
-    exports2.getSSOTokenFromFile = getSSOTokenFromFile2;
-  }
-});
-
-// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/slurpFile.js
-var require_slurpFile2 = __commonJS({
-  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/slurpFile.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.slurpFile = void 0;
-    var fs_1 = require("fs");
-    var { readFile } = fs_1.promises;
-    var filePromisesHash = {};
-    var slurpFile = (path, options) => {
-      if (!filePromisesHash[path] || (options === null || options === void 0 ? void 0 : options.ignoreCache)) {
-        filePromisesHash[path] = readFile(path, "utf8");
-      }
-      return filePromisesHash[path];
-    };
-    exports2.slurpFile = slurpFile;
-  }
-});
-
-// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js
-var require_dist_cjs41 = __commonJS({
-  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js"(exports2, module2) {
-    var __defProp2 = Object.defineProperty;
-    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
-    var __getOwnPropNames2 = Object.getOwnPropertyNames;
-    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
-    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
-    var __export2 = (target, all) => {
-      for (var name in all)
-        __defProp2(target, name, { get: all[name], enumerable: true });
-    };
-    var __copyProps2 = (to, from, except, desc) => {
-      if (from && typeof from === "object" || typeof from === "function") {
-        for (let key of __getOwnPropNames2(from))
-          if (!__hasOwnProp2.call(to, key) && key !== except)
-            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
-      }
-      return to;
-    };
-    var __reExport = (target, mod, secondTarget) => (__copyProps2(target, mod, "default"), secondTarget && __copyProps2(secondTarget, mod, "default"));
-    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
-    var src_exports = {};
-    __export2(src_exports, {
-      CONFIG_PREFIX_SEPARATOR: () => CONFIG_PREFIX_SEPARATOR,
-      DEFAULT_PROFILE: () => DEFAULT_PROFILE,
-      ENV_PROFILE: () => ENV_PROFILE,
-      getProfileName: () => getProfileName,
-      loadSharedConfigFiles: () => loadSharedConfigFiles,
-      loadSsoSessionData: () => loadSsoSessionData,
-      parseKnownFiles: () => parseKnownFiles
-    });
-    module2.exports = __toCommonJS2(src_exports);
-    __reExport(src_exports, require_getHomeDir2(), module2.exports);
-    var ENV_PROFILE = "AWS_PROFILE";
-    var DEFAULT_PROFILE = "default";
-    var getProfileName = /* @__PURE__ */ __name((init) => init.profile || process.env[ENV_PROFILE] || DEFAULT_PROFILE, "getProfileName");
-    __reExport(src_exports, require_getSSOTokenFilepath2(), module2.exports);
-    __reExport(src_exports, require_getSSOTokenFromFile2(), module2.exports);
-    var import_types5 = require_dist_cjs();
-    var getConfigData = /* @__PURE__ */ __name((data) => Object.entries(data).filter(([key]) => {
-      const indexOfSeparator = key.indexOf(CONFIG_PREFIX_SEPARATOR);
-      if (indexOfSeparator === -1) {
-        return false;
-      }
-      return Object.values(import_types5.IniSectionType).includes(key.substring(0, indexOfSeparator));
-    }).reduce(
-      (acc, [key, value]) => {
-        const indexOfSeparator = key.indexOf(CONFIG_PREFIX_SEPARATOR);
-        const updatedKey = key.substring(0, indexOfSeparator) === import_types5.IniSectionType.PROFILE ? key.substring(indexOfSeparator + 1) : key;
-        acc[updatedKey] = value;
-        return acc;
-      },
-      {
-        // Populate default profile, if present.
-        ...data.default && { default: data.default }
-      }
-    ), "getConfigData");
-    var import_path = require("path");
-    var import_getHomeDir = require_getHomeDir2();
-    var ENV_CONFIG_PATH = "AWS_CONFIG_FILE";
-    var getConfigFilepath = /* @__PURE__ */ __name(() => process.env[ENV_CONFIG_PATH] || (0, import_path.join)((0, import_getHomeDir.getHomeDir)(), ".aws", "config"), "getConfigFilepath");
-    var import_getHomeDir2 = require_getHomeDir2();
-    var ENV_CREDENTIALS_PATH = "AWS_SHARED_CREDENTIALS_FILE";
-    var getCredentialsFilepath = /* @__PURE__ */ __name(() => process.env[ENV_CREDENTIALS_PATH] || (0, import_path.join)((0, import_getHomeDir2.getHomeDir)(), ".aws", "credentials"), "getCredentialsFilepath");
-    var import_getHomeDir3 = require_getHomeDir2();
-    var prefixKeyRegex = /^([\w-]+)\s(["'])?([\w-@\+\.%:/]+)\2$/;
-    var profileNameBlockList = ["__proto__", "profile __proto__"];
-    var parseIni = /* @__PURE__ */ __name((iniData) => {
-      const map = {};
-      let currentSection;
-      let currentSubSection;
-      for (const iniLine of iniData.split(/\r?\n/)) {
-        const trimmedLine = iniLine.split(/(^|\s)[;#]/)[0].trim();
-        const isSection = trimmedLine[0] === "[" && trimmedLine[trimmedLine.length - 1] === "]";
-        if (isSection) {
-          currentSection = void 0;
-          currentSubSection = void 0;
-          const sectionName = trimmedLine.substring(1, trimmedLine.length - 1);
-          const matches = prefixKeyRegex.exec(sectionName);
-          if (matches) {
-            const [, prefix, , name] = matches;
-            if (Object.values(import_types5.IniSectionType).includes(prefix)) {
-              currentSection = [prefix, name].join(CONFIG_PREFIX_SEPARATOR);
-            }
-          } else {
-            currentSection = sectionName;
-          }
-          if (profileNameBlockList.includes(sectionName)) {
-            throw new Error(`Found invalid profile name "${sectionName}"`);
-          }
-        } else if (currentSection) {
-          const indexOfEqualsSign = trimmedLine.indexOf("=");
-          if (![0, -1].includes(indexOfEqualsSign)) {
-            const [name, value] = [
-              trimmedLine.substring(0, indexOfEqualsSign).trim(),
-              trimmedLine.substring(indexOfEqualsSign + 1).trim()
-            ];
-            if (value === "") {
-              currentSubSection = name;
-            } else {
-              if (currentSubSection && iniLine.trimStart() === iniLine) {
-                currentSubSection = void 0;
-              }
-              map[currentSection] = map[currentSection] || {};
-              const key = currentSubSection ? [currentSubSection, name].join(CONFIG_PREFIX_SEPARATOR) : name;
-              map[currentSection][key] = value;
-            }
-          }
-        }
-      }
-      return map;
-    }, "parseIni");
-    var import_slurpFile = require_slurpFile2();
-    var swallowError = /* @__PURE__ */ __name(() => ({}), "swallowError");
-    var CONFIG_PREFIX_SEPARATOR = ".";
-    var loadSharedConfigFiles = /* @__PURE__ */ __name(async (init = {}) => {
-      const { filepath = getCredentialsFilepath(), configFilepath = getConfigFilepath() } = init;
-      const homeDir = (0, import_getHomeDir3.getHomeDir)();
-      const relativeHomeDirPrefix = "~/";
-      let resolvedFilepath = filepath;
-      if (filepath.startsWith(relativeHomeDirPrefix)) {
-        resolvedFilepath = (0, import_path.join)(homeDir, filepath.slice(2));
-      }
-      let resolvedConfigFilepath = configFilepath;
-      if (configFilepath.startsWith(relativeHomeDirPrefix)) {
-        resolvedConfigFilepath = (0, import_path.join)(homeDir, configFilepath.slice(2));
-      }
-      const parsedFiles = await Promise.all([
-        (0, import_slurpFile.slurpFile)(resolvedConfigFilepath, {
-          ignoreCache: init.ignoreCache
-        }).then(parseIni).then(getConfigData).catch(swallowError),
-        (0, import_slurpFile.slurpFile)(resolvedFilepath, {
-          ignoreCache: init.ignoreCache
-        }).then(parseIni).catch(swallowError)
-      ]);
-      return {
-        configFile: parsedFiles[0],
-        credentialsFile: parsedFiles[1]
-      };
-    }, "loadSharedConfigFiles");
-    var getSsoSessionData = /* @__PURE__ */ __name((data) => Object.entries(data).filter(([key]) => key.startsWith(import_types5.IniSectionType.SSO_SESSION + CONFIG_PREFIX_SEPARATOR)).reduce((acc, [key, value]) => ({ ...acc, [key.substring(key.indexOf(CONFIG_PREFIX_SEPARATOR) + 1)]: value }), {}), "getSsoSessionData");
-    var import_slurpFile2 = require_slurpFile2();
-    var swallowError2 = /* @__PURE__ */ __name(() => ({}), "swallowError");
-    var loadSsoSessionData = /* @__PURE__ */ __name(async (init = {}) => (0, import_slurpFile2.slurpFile)(init.configFilepath ?? getConfigFilepath()).then(parseIni).then(getSsoSessionData).catch(swallowError2), "loadSsoSessionData");
-    var mergeConfigFiles = /* @__PURE__ */ __name((...files) => {
-      const merged = {};
-      for (const file of files) {
-        for (const [key, values] of Object.entries(file)) {
-          if (merged[key] !== void 0) {
-            Object.assign(merged[key], values);
-          } else {
-            merged[key] = values;
-          }
-        }
-      }
-      return merged;
-    }, "mergeConfigFiles");
-    var parseKnownFiles = /* @__PURE__ */ __name(async (init) => {
-      const parsedFiles = await loadSharedConfigFiles(init);
-      return mergeConfigFiles(parsedFiles.configFile, parsedFiles.credentialsFile);
-    }, "parseKnownFiles");
-  }
-});
-
-// ../../../node_modules/@smithy/node-config-provider/dist-cjs/index.js
-var require_dist_cjs42 = __commonJS({
-  "../../../node_modules/@smithy/node-config-provider/dist-cjs/index.js"(exports2, module2) {
-    var __defProp2 = Object.defineProperty;
-    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
-    var __getOwnPropNames2 = Object.getOwnPropertyNames;
-    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
-    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
-    var __export2 = (target, all) => {
-      for (var name in all)
-        __defProp2(target, name, { get: all[name], enumerable: true });
-    };
-    var __copyProps2 = (to, from, except, desc) => {
-      if (from && typeof from === "object" || typeof from === "function") {
-        for (let key of __getOwnPropNames2(from))
-          if (!__hasOwnProp2.call(to, key) && key !== except)
-            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
-      }
-      return to;
-    };
-    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
-    var src_exports = {};
-    __export2(src_exports, {
-      loadConfig: () => loadConfig
-    });
-    module2.exports = __toCommonJS2(src_exports);
-    var import_property_provider2 = require_dist_cjs40();
-    function getSelectorName(functionString) {
-      try {
-        const constants = new Set(Array.from(functionString.match(/([A-Z_]){3,}/g) ?? []));
-        constants.delete("CONFIG");
-        constants.delete("CONFIG_PREFIX_SEPARATOR");
-        constants.delete("ENV");
-        return [...constants].join(", ");
-      } catch (e) {
-        return functionString;
-      }
-    }
-    __name(getSelectorName, "getSelectorName");
-    var fromEnv = /* @__PURE__ */ __name((envVarSelector, logger) => async () => {
-      try {
-        const config = envVarSelector(process.env);
-        if (config === void 0) {
-          throw new Error();
-        }
-        return config;
-      } catch (e) {
-        throw new import_property_provider2.CredentialsProviderError(
-          e.message || `Not found in ENV: ${getSelectorName(envVarSelector.toString())}`,
-          { logger }
-        );
-      }
-    }, "fromEnv");
-    var import_shared_ini_file_loader = require_dist_cjs41();
-    var fromSharedConfigFiles = /* @__PURE__ */ __name((configSelector, { preferredFile = "config", ...init } = {}) => async () => {
-      const profile = (0, import_shared_ini_file_loader.getProfileName)(init);
-      const { configFile, credentialsFile } = await (0, import_shared_ini_file_loader.loadSharedConfigFiles)(init);
-      const profileFromCredentials = credentialsFile[profile] || {};
-      const profileFromConfig = configFile[profile] || {};
-      const mergedProfile = preferredFile === "config" ? { ...profileFromCredentials, ...profileFromConfig } : { ...profileFromConfig, ...profileFromCredentials };
-      try {
-        const cfgFile = preferredFile === "config" ? configFile : credentialsFile;
-        const configValue = configSelector(mergedProfile, cfgFile);
-        if (configValue === void 0) {
-          throw new Error();
-        }
-        return configValue;
-      } catch (e) {
-        throw new import_property_provider2.CredentialsProviderError(
-          e.message || `Not found in config files w/ profile [${profile}]: ${getSelectorName(configSelector.toString())}`,
-          { logger: init.logger }
-        );
-      }
-    }, "fromSharedConfigFiles");
-    var isFunction = /* @__PURE__ */ __name((func) => typeof func === "function", "isFunction");
-    var fromStatic = /* @__PURE__ */ __name((defaultValue) => isFunction(defaultValue) ? async () => await defaultValue() : (0, import_property_provider2.fromStatic)(defaultValue), "fromStatic");
-    var loadConfig = /* @__PURE__ */ __name(({ environmentVariableSelector, configFileSelector, default: defaultValue }, configuration = {}) => (0, import_property_provider2.memoize)(
-      (0, import_property_provider2.chain)(
-        fromEnv(environmentVariableSelector),
-        fromSharedConfigFiles(configFileSelector, configuration),
-        fromStatic(defaultValue)
-      )
-    ), "loadConfig");
-  }
-});
-
-// ../../../node_modules/@smithy/middleware-endpoint/dist-cjs/adaptors/getEndpointUrlConfig.js
-var require_getEndpointUrlConfig2 = __commonJS({
-  "../../../node_modules/@smithy/middleware-endpoint/dist-cjs/adaptors/getEndpointUrlConfig.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getEndpointUrlConfig = void 0;
-    var shared_ini_file_loader_1 = require_dist_cjs41();
-    var ENV_ENDPOINT_URL = "AWS_ENDPOINT_URL";
-    var CONFIG_ENDPOINT_URL = "endpoint_url";
-    var getEndpointUrlConfig = (serviceId) => ({
-      environmentVariableSelector: (env) => {
-        const serviceSuffixParts = serviceId.split(" ").map((w) => w.toUpperCase());
-        const serviceEndpointUrl = env[[ENV_ENDPOINT_URL, ...serviceSuffixParts].join("_")];
-        if (serviceEndpointUrl)
-          return serviceEndpointUrl;
-        const endpointUrl = env[ENV_ENDPOINT_URL];
-        if (endpointUrl)
-          return endpointUrl;
-        return void 0;
-      },
-      configFileSelector: (profile, config) => {
-        if (config && profile.services) {
-          const servicesSection = config[["services", profile.services].join(shared_ini_file_loader_1.CONFIG_PREFIX_SEPARATOR)];
-          if (servicesSection) {
-            const servicePrefixParts = serviceId.split(" ").map((w) => w.toLowerCase());
-            const endpointUrl2 = servicesSection[[servicePrefixParts.join("_"), CONFIG_ENDPOINT_URL].join(shared_ini_file_loader_1.CONFIG_PREFIX_SEPARATOR)];
-            if (endpointUrl2)
-              return endpointUrl2;
-          }
-        }
-        const endpointUrl = profile[CONFIG_ENDPOINT_URL];
-        if (endpointUrl)
-          return endpointUrl;
-        return void 0;
-      },
-      default: void 0
-    });
-    exports2.getEndpointUrlConfig = getEndpointUrlConfig;
-  }
-});
-
-// ../../../node_modules/@smithy/middleware-endpoint/dist-cjs/adaptors/getEndpointFromConfig.js
-var require_getEndpointFromConfig2 = __commonJS({
-  "../../../node_modules/@smithy/middleware-endpoint/dist-cjs/adaptors/getEndpointFromConfig.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getEndpointFromConfig = void 0;
-    var node_config_provider_1 = require_dist_cjs42();
-    var getEndpointUrlConfig_1 = require_getEndpointUrlConfig2();
-    var getEndpointFromConfig = async (serviceId) => (0, node_config_provider_1.loadConfig)((0, getEndpointUrlConfig_1.getEndpointUrlConfig)(serviceId !== null && serviceId !== void 0 ? serviceId : ""))();
-    exports2.getEndpointFromConfig = getEndpointFromConfig;
-  }
-});
-
-// ../../../node_modules/@smithy/querystring-parser/dist-cjs/index.js
-var require_dist_cjs43 = __commonJS({
-  "../../../node_modules/@smithy/querystring-parser/dist-cjs/index.js"(exports2, module2) {
-    var __defProp2 = Object.defineProperty;
-    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
-    var __getOwnPropNames2 = Object.getOwnPropertyNames;
-    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
-    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
-    var __export2 = (target, all) => {
-      for (var name in all)
-        __defProp2(target, name, { get: all[name], enumerable: true });
-    };
-    var __copyProps2 = (to, from, except, desc) => {
-      if (from && typeof from === "object" || typeof from === "function") {
-        for (let key of __getOwnPropNames2(from))
-          if (!__hasOwnProp2.call(to, key) && key !== except)
-            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
-      }
-      return to;
-    };
-    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
-    var src_exports = {};
-    __export2(src_exports, {
-      parseQueryString: () => parseQueryString
-    });
-    module2.exports = __toCommonJS2(src_exports);
-    function parseQueryString(querystring) {
-      const query = {};
-      querystring = querystring.replace(/^\?/, "");
-      if (querystring) {
-        for (const pair of querystring.split("&")) {
-          let [key, value = null] = pair.split("=");
-          key = decodeURIComponent(key);
-          if (value) {
-            value = decodeURIComponent(value);
-          }
-          if (!(key in query)) {
-            query[key] = value;
-          } else if (Array.isArray(query[key])) {
-            query[key].push(value);
-          } else {
-            query[key] = [query[key], value];
-          }
-        }
-      }
-      return query;
-    }
-    __name(parseQueryString, "parseQueryString");
-  }
-});
-
-// ../../../node_modules/@smithy/url-parser/dist-cjs/index.js
-var require_dist_cjs44 = __commonJS({
-  "../../../node_modules/@smithy/url-parser/dist-cjs/index.js"(exports2, module2) {
-    var __defProp2 = Object.defineProperty;
-    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
-    var __getOwnPropNames2 = Object.getOwnPropertyNames;
-    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
-    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
-    var __export2 = (target, all) => {
-      for (var name in all)
-        __defProp2(target, name, { get: all[name], enumerable: true });
-    };
-    var __copyProps2 = (to, from, except, desc) => {
-      if (from && typeof from === "object" || typeof from === "function") {
-        for (let key of __getOwnPropNames2(from))
-          if (!__hasOwnProp2.call(to, key) && key !== except)
-            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
-      }
-      return to;
-    };
-    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
-    var src_exports = {};
-    __export2(src_exports, {
-      parseUrl: () => parseUrl
-    });
-    module2.exports = __toCommonJS2(src_exports);
-    var import_querystring_parser = require_dist_cjs43();
-    var parseUrl = /* @__PURE__ */ __name((url2) => {
-      if (typeof url2 === "string") {
-        return parseUrl(new URL(url2));
-      }
-      const { hostname, pathname, port, protocol, search } = url2;
-      let query;
-      if (search) {
-        query = (0, import_querystring_parser.parseQueryString)(search);
-      }
-      return {
-        hostname,
-        port: port ? parseInt(port) : void 0,
-        protocol,
-        path: pathname,
-        query
-      };
-    }, "parseUrl");
-  }
-});
-
-// ../../../node_modules/@smithy/middleware-serde/dist-cjs/index.js
-var require_dist_cjs45 = __commonJS({
-  "../../../node_modules/@smithy/middleware-serde/dist-cjs/index.js"(exports2, module2) {
-    var __defProp2 = Object.defineProperty;
-    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
-    var __getOwnPropNames2 = Object.getOwnPropertyNames;
-    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
-    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
-    var __export2 = (target, all) => {
-      for (var name in all)
-        __defProp2(target, name, { get: all[name], enumerable: true });
-    };
-    var __copyProps2 = (to, from, except, desc) => {
-      if (from && typeof from === "object" || typeof from === "function") {
-        for (let key of __getOwnPropNames2(from))
-          if (!__hasOwnProp2.call(to, key) && key !== except)
-            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
-      }
-      return to;
-    };
-    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
-    var src_exports = {};
-    __export2(src_exports, {
-      deserializerMiddleware: () => deserializerMiddleware,
-      deserializerMiddlewareOption: () => deserializerMiddlewareOption,
-      getSerdePlugin: () => getSerdePlugin,
-      serializerMiddleware: () => serializerMiddleware,
-      serializerMiddlewareOption: () => serializerMiddlewareOption2
-    });
-    module2.exports = __toCommonJS2(src_exports);
-    var deserializerMiddleware = /* @__PURE__ */ __name((options, deserializer) => (next) => async (args) => {
-      const { response } = await next(args);
-      try {
-        const parsed = await deserializer(response, options);
-        return {
-          response,
-          output: parsed
-        };
-      } catch (error) {
-        Object.defineProperty(error, "$response", {
-          value: response
-        });
-        if (!("$metadata" in error)) {
-          const hint = `Deserialization error: to see the raw response, inspect the hidden field {error}.$response on this object.`;
-          error.message += "\n  " + hint;
-          if (typeof error.$responseBodyText !== "undefined") {
-            if (error.$response) {
-              error.$response.body = error.$responseBodyText;
-            }
-          }
-        }
-        throw error;
-      }
-    }, "deserializerMiddleware");
-    var serializerMiddleware = /* @__PURE__ */ __name((options, serializer) => (next, context) => async (args) => {
-      var _a;
-      const endpoint = ((_a = context.endpointV2) == null ? void 0 : _a.url) && options.urlParser ? async () => options.urlParser(context.endpointV2.url) : options.endpoint;
-      if (!endpoint) {
-        throw new Error("No valid endpoint provider available.");
-      }
-      const request2 = await serializer(args.input, { ...options, endpoint });
-      return next({
-        ...args,
-        request: request2
-      });
-    }, "serializerMiddleware");
-    var deserializerMiddlewareOption = {
-      name: "deserializerMiddleware",
-      step: "deserialize",
-      tags: ["DESERIALIZER"],
-      override: true
-    };
-    var serializerMiddlewareOption2 = {
-      name: "serializerMiddleware",
-      step: "serialize",
-      tags: ["SERIALIZER"],
-      override: true
-    };
-    function getSerdePlugin(config, serializer, deserializer) {
-      return {
-        applyToStack: (commandStack) => {
-          commandStack.add(deserializerMiddleware(config, deserializer), deserializerMiddlewareOption);
-          commandStack.add(serializerMiddleware(config, serializer), serializerMiddlewareOption2);
-        }
-      };
-    }
-    __name(getSerdePlugin, "getSerdePlugin");
-  }
-});
-
-// ../../../node_modules/@smithy/middleware-endpoint/dist-cjs/index.js
-var require_dist_cjs46 = __commonJS({
-  "../../../node_modules/@smithy/middleware-endpoint/dist-cjs/index.js"(exports2, module2) {
-    var __defProp2 = Object.defineProperty;
-    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
-    var __getOwnPropNames2 = Object.getOwnPropertyNames;
-    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
-    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
-    var __export2 = (target, all) => {
-      for (var name in all)
-        __defProp2(target, name, { get: all[name], enumerable: true });
-    };
-    var __copyProps2 = (to, from, except, desc) => {
-      if (from && typeof from === "object" || typeof from === "function") {
-        for (let key of __getOwnPropNames2(from))
-          if (!__hasOwnProp2.call(to, key) && key !== except)
-            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
-      }
-      return to;
-    };
-    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
-    var src_exports = {};
-    __export2(src_exports, {
-      endpointMiddleware: () => endpointMiddleware,
-      endpointMiddlewareOptions: () => endpointMiddlewareOptions2,
-      getEndpointFromInstructions: () => getEndpointFromInstructions,
-      getEndpointPlugin: () => getEndpointPlugin,
-      resolveEndpointConfig: () => resolveEndpointConfig,
-      resolveParams: () => resolveParams,
-      toEndpointV1: () => toEndpointV1
-    });
-    module2.exports = __toCommonJS2(src_exports);
-    var resolveParamsForS3 = /* @__PURE__ */ __name(async (endpointParams) => {
-      const bucket = (endpointParams == null ? void 0 : endpointParams.Bucket) || "";
-      if (typeof endpointParams.Bucket === "string") {
-        endpointParams.Bucket = bucket.replace(/#/g, encodeURIComponent("#")).replace(/\?/g, encodeURIComponent("?"));
-      }
-      if (isArnBucketName(bucket)) {
-        if (endpointParams.ForcePathStyle === true) {
-          throw new Error("Path-style addressing cannot be used with ARN buckets");
-        }
-      } else if (!isDnsCompatibleBucketName(bucket) || bucket.indexOf(".") !== -1 && !String(endpointParams.Endpoint).startsWith("http:") || bucket.toLowerCase() !== bucket || bucket.length < 3) {
-        endpointParams.ForcePathStyle = true;
-      }
-      if (endpointParams.DisableMultiRegionAccessPoints) {
-        endpointParams.disableMultiRegionAccessPoints = true;
-        endpointParams.DisableMRAP = true;
-      }
-      return endpointParams;
-    }, "resolveParamsForS3");
-    var DOMAIN_PATTERN = /^[a-z0-9][a-z0-9\.\-]{1,61}[a-z0-9]$/;
-    var IP_ADDRESS_PATTERN = /(\d+\.){3}\d+/;
-    var DOTS_PATTERN = /\.\./;
-    var isDnsCompatibleBucketName = /* @__PURE__ */ __name((bucketName) => DOMAIN_PATTERN.test(bucketName) && !IP_ADDRESS_PATTERN.test(bucketName) && !DOTS_PATTERN.test(bucketName), "isDnsCompatibleBucketName");
-    var isArnBucketName = /* @__PURE__ */ __name((bucketName) => {
-      const [arn, partition, service, , , bucket] = bucketName.split(":");
-      const isArn = arn === "arn" && bucketName.split(":").length >= 6;
-      const isValidArn = Boolean(isArn && partition && service && bucket);
-      if (isArn && !isValidArn) {
-        throw new Error(`Invalid ARN: ${bucketName} was an invalid ARN.`);
-      }
-      return isValidArn;
-    }, "isArnBucketName");
-    var createConfigValueProvider = /* @__PURE__ */ __name((configKey, canonicalEndpointParamKey, config) => {
-      const configProvider = /* @__PURE__ */ __name(async () => {
-        const configValue = config[configKey] ?? config[canonicalEndpointParamKey];
-        if (typeof configValue === "function") {
-          return configValue();
-        }
-        return configValue;
-      }, "configProvider");
-      if (configKey === "credentialScope" || canonicalEndpointParamKey === "CredentialScope") {
-        return async () => {
-          const credentials = typeof config.credentials === "function" ? await config.credentials() : config.credentials;
-          const configValue = (credentials == null ? void 0 : credentials.credentialScope) ?? (credentials == null ? void 0 : credentials.CredentialScope);
-          return configValue;
-        };
-      }
-      if (configKey === "accountId" || canonicalEndpointParamKey === "AccountId") {
-        return async () => {
-          const credentials = typeof config.credentials === "function" ? await config.credentials() : config.credentials;
-          const configValue = (credentials == null ? void 0 : credentials.accountId) ?? (credentials == null ? void 0 : credentials.AccountId);
-          return configValue;
-        };
-      }
-      if (configKey === "endpoint" || canonicalEndpointParamKey === "endpoint") {
-        return async () => {
-          const endpoint = await configProvider();
-          if (endpoint && typeof endpoint === "object") {
-            if ("url" in endpoint) {
-              return endpoint.url.href;
-            }
-            if ("hostname" in endpoint) {
-              const { protocol, hostname, port, path } = endpoint;
-              return `${protocol}//${hostname}${port ? ":" + port : ""}${path}`;
-            }
-          }
-          return endpoint;
-        };
-      }
-      return configProvider;
-    }, "createConfigValueProvider");
-    var import_getEndpointFromConfig = require_getEndpointFromConfig2();
-    var import_url_parser = require_dist_cjs44();
-    var toEndpointV1 = /* @__PURE__ */ __name((endpoint) => {
-      if (typeof endpoint === "object") {
-        if ("url" in endpoint) {
-          return (0, import_url_parser.parseUrl)(endpoint.url);
-        }
-        return endpoint;
-      }
-      return (0, import_url_parser.parseUrl)(endpoint);
-    }, "toEndpointV1");
-    var getEndpointFromInstructions = /* @__PURE__ */ __name(async (commandInput, instructionsSupplier, clientConfig, context) => {
-      if (!clientConfig.endpoint) {
-        let endpointFromConfig;
-        if (clientConfig.serviceConfiguredEndpoint) {
-          endpointFromConfig = await clientConfig.serviceConfiguredEndpoint();
-        } else {
-          endpointFromConfig = await (0, import_getEndpointFromConfig.getEndpointFromConfig)(clientConfig.serviceId);
-        }
-        if (endpointFromConfig) {
-          clientConfig.endpoint = () => Promise.resolve(toEndpointV1(endpointFromConfig));
-        }
-      }
-      const endpointParams = await resolveParams(commandInput, instructionsSupplier, clientConfig);
-      if (typeof clientConfig.endpointProvider !== "function") {
-        throw new Error("config.endpointProvider is not set.");
-      }
-      const endpoint = clientConfig.endpointProvider(endpointParams, context);
-      return endpoint;
-    }, "getEndpointFromInstructions");
-    var resolveParams = /* @__PURE__ */ __name(async (commandInput, instructionsSupplier, clientConfig) => {
-      var _a;
-      const endpointParams = {};
-      const instructions = ((_a = instructionsSupplier == null ? void 0 : instructionsSupplier.getEndpointParameterInstructions) == null ? void 0 : _a.call(instructionsSupplier)) || {};
-      for (const [name, instruction] of Object.entries(instructions)) {
-        switch (instruction.type) {
-          case "staticContextParams":
-            endpointParams[name] = instruction.value;
-            break;
-          case "contextParams":
-            endpointParams[name] = commandInput[instruction.name];
-            break;
-          case "clientContextParams":
-          case "builtInParams":
-            endpointParams[name] = await createConfigValueProvider(instruction.name, name, clientConfig)();
-            break;
-          default:
-            throw new Error("Unrecognized endpoint parameter instruction: " + JSON.stringify(instruction));
-        }
-      }
-      if (Object.keys(instructions).length === 0) {
-        Object.assign(endpointParams, clientConfig);
-      }
-      if (String(clientConfig.serviceId).toLowerCase() === "s3") {
-        await resolveParamsForS3(endpointParams);
-      }
-      return endpointParams;
-    }, "resolveParams");
-    var import_util_middleware3 = require_dist_cjs10();
-    var endpointMiddleware = /* @__PURE__ */ __name(({
-      config,
-      instructions
-    }) => {
-      return (next, context) => async (args) => {
-        var _a, _b, _c;
-        const endpoint = await getEndpointFromInstructions(
-          args.input,
-          {
-            getEndpointParameterInstructions() {
-              return instructions;
-            }
-          },
-          { ...config },
-          context
-        );
-        context.endpointV2 = endpoint;
-        context.authSchemes = (_a = endpoint.properties) == null ? void 0 : _a.authSchemes;
-        const authScheme = (_b = context.authSchemes) == null ? void 0 : _b[0];
-        if (authScheme) {
-          context["signing_region"] = authScheme.signingRegion;
-          context["signing_service"] = authScheme.signingName;
-          const smithyContext = (0, import_util_middleware3.getSmithyContext)(context);
-          const httpAuthOption = (_c = smithyContext == null ? void 0 : smithyContext.selectedHttpAuthScheme) == null ? void 0 : _c.httpAuthOption;
-          if (httpAuthOption) {
-            httpAuthOption.signingProperties = Object.assign(
-              httpAuthOption.signingProperties || {},
-              {
-                signing_region: authScheme.signingRegion,
-                signingRegion: authScheme.signingRegion,
-                signing_service: authScheme.signingName,
-                signingName: authScheme.signingName,
-                signingRegionSet: authScheme.signingRegionSet
-              },
-              authScheme.properties
-            );
-          }
-        }
-        return next({
-          ...args
-        });
-      };
-    }, "endpointMiddleware");
-    var import_middleware_serde2 = require_dist_cjs45();
-    var endpointMiddlewareOptions2 = {
-      step: "serialize",
-      tags: ["ENDPOINT_PARAMETERS", "ENDPOINT_V2", "ENDPOINT"],
-      name: "endpointV2Middleware",
-      override: true,
-      relation: "before",
-      toMiddleware: import_middleware_serde2.serializerMiddlewareOption.name
-    };
-    var getEndpointPlugin = /* @__PURE__ */ __name((config, instructions) => ({
-      applyToStack: (clientStack) => {
-        clientStack.addRelativeTo(
-          endpointMiddleware({
-            config,
-            instructions
-          }),
-          endpointMiddlewareOptions2
-        );
-      }
-    }), "getEndpointPlugin");
-    var import_getEndpointFromConfig2 = require_getEndpointFromConfig2();
-    var resolveEndpointConfig = /* @__PURE__ */ __name((input) => {
-      const tls = input.tls ?? true;
-      const { endpoint } = input;
-      const customEndpointProvider = endpoint != null ? async () => toEndpointV1(await (0, import_util_middleware3.normalizeProvider)(endpoint)()) : void 0;
-      const isCustomEndpoint = !!endpoint;
-      const resolvedConfig = {
-        ...input,
-        endpoint: customEndpointProvider,
-        tls,
-        isCustomEndpoint,
-        useDualstackEndpoint: (0, import_util_middleware3.normalizeProvider)(input.useDualstackEndpoint ?? false),
-        useFipsEndpoint: (0, import_util_middleware3.normalizeProvider)(input.useFipsEndpoint ?? false)
-      };
-      let configuredEndpointPromise = void 0;
-      resolvedConfig.serviceConfiguredEndpoint = async () => {
-        if (input.serviceId && !configuredEndpointPromise) {
-          configuredEndpointPromise = (0, import_getEndpointFromConfig2.getEndpointFromConfig)(input.serviceId);
-        }
-        return configuredEndpointPromise;
-      };
-      return resolvedConfig;
-    }, "resolveEndpointConfig");
   }
 });
 
@@ -10510,7 +14378,7 @@ var import_property_provider, resolveAwsSdkSigV4AConfig, NODE_SIGV4A_CONFIG_OPTI
 var init_resolveAwsSdkSigV4AConfig = __esm({
   "../../../node_modules/@aws-sdk/core/dist-es/submodules/httpAuthSchemes/aws_sdk/resolveAwsSdkSigV4AConfig.js"() {
     init_dist_es();
-    import_property_provider = __toESM(require_dist_cjs40());
+    import_property_provider = __toESM(require_dist_cjs39());
     resolveAwsSdkSigV4AConfig = (config) => {
       config.sigv4aSigningRegionSet = normalizeProvider(config.sigv4aSigningRegionSet);
       return config;
@@ -10538,7 +14406,7 @@ var init_resolveAwsSdkSigV4AConfig = __esm({
 });
 
 // ../../../node_modules/@smithy/signature-v4/dist-cjs/index.js
-var require_dist_cjs47 = __commonJS({
+var require_dist_cjs58 = __commonJS({
   "../../../node_modules/@smithy/signature-v4/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -10572,7 +14440,7 @@ var require_dist_cjs47 = __commonJS({
     });
     module2.exports = __toCommonJS2(src_exports);
     var import_util_middleware3 = require_dist_cjs10();
-    var import_util_utf84 = require_dist_cjs28();
+    var import_util_utf84 = require_dist_cjs27();
     var ALGORITHM_QUERY_PARAM = "X-Amz-Algorithm";
     var CREDENTIAL_QUERY_PARAM = "X-Amz-Credential";
     var AMZ_DATE_QUERY_PARAM = "X-Amz-Date";
@@ -10612,8 +14480,8 @@ var require_dist_cjs47 = __commonJS({
     var MAX_CACHE_SIZE = 50;
     var KEY_TYPE_IDENTIFIER = "aws4_request";
     var MAX_PRESIGNED_TTL = 60 * 60 * 24 * 7;
-    var import_util_hex_encoding = require_dist_cjs35();
-    var import_util_utf8 = require_dist_cjs28();
+    var import_util_hex_encoding = require_dist_cjs34();
+    var import_util_utf8 = require_dist_cjs27();
     var signingKeyCache = {};
     var cacheQueue = [];
     var createScope = /* @__PURE__ */ __name((shortDate, region, service) => `${shortDate}/${region}/${service}/${KEY_TYPE_IDENTIFIER}`, "createScope");
@@ -10660,7 +14528,7 @@ var require_dist_cjs47 = __commonJS({
       }
       return canonical;
     }, "getCanonicalHeaders");
-    var import_util_uri_escape = require_dist_cjs31();
+    var import_util_uri_escape = require_dist_cjs29();
     var getCanonicalQuery = /* @__PURE__ */ __name(({ query = {} }) => {
       const keys = [];
       const serialized = {};
@@ -10681,8 +14549,8 @@ var require_dist_cjs47 = __commonJS({
       }
       return keys.map((key) => serialized[key]).filter((serialized2) => serialized2).join("&");
     }, "getCanonicalQuery");
-    var import_is_array_buffer = require_dist_cjs26();
-    var import_util_utf82 = require_dist_cjs28();
+    var import_is_array_buffer = require_dist_cjs25();
+    var import_util_utf82 = require_dist_cjs27();
     var getPayloadHash = /* @__PURE__ */ __name(async ({ headers, body }, hashConstructor) => {
       for (const headerName of Object.keys(headers)) {
         if (headerName.toLowerCase() === SHA256_HEADER) {
@@ -10698,7 +14566,7 @@ var require_dist_cjs47 = __commonJS({
       }
       return UNSIGNED_PAYLOAD;
     }, "getPayloadHash");
-    var import_util_utf83 = require_dist_cjs28();
+    var import_util_utf83 = require_dist_cjs27();
     var _HeaderFormatter = class _HeaderFormatter {
       format(headers) {
         const chunks = [];
@@ -11099,7 +14967,7 @@ var import_signature_v4, resolveAwsSdkSigV4Config, resolveAWSSDKSigV4Config;
 var init_resolveAwsSdkSigV4Config = __esm({
   "../../../node_modules/@aws-sdk/core/dist-es/submodules/httpAuthSchemes/aws_sdk/resolveAwsSdkSigV4Config.js"() {
     init_dist_es();
-    import_signature_v4 = __toESM(require_dist_cjs47());
+    import_signature_v4 = __toESM(require_dist_cjs58());
     resolveAwsSdkSigV4Config = (config) => {
       let normalizedCreds;
       if (config.credentials) {
@@ -11259,7 +15127,7 @@ var init_coercing_serializers = __esm({
 var import_smithy_client2, awsExpectUnion;
 var init_awsExpectUnion = __esm({
   "../../../node_modules/@aws-sdk/core/dist-es/submodules/protocols/json/awsExpectUnion.js"() {
-    import_smithy_client2 = __toESM(require_dist_cjs37());
+    import_smithy_client2 = __toESM(require_dist_cjs56());
     awsExpectUnion = (value) => {
       if (value == null) {
         return void 0;
@@ -11276,7 +15144,7 @@ var init_awsExpectUnion = __esm({
 var import_smithy_client3, collectBodyString;
 var init_common = __esm({
   "../../../node_modules/@aws-sdk/core/dist-es/submodules/protocols/common.js"() {
-    import_smithy_client3 = __toESM(require_dist_cjs37());
+    import_smithy_client3 = __toESM(require_dist_cjs56());
     collectBodyString = (streamBody, context) => (0, import_smithy_client3.collectBody)(streamBody, context).then((body) => context.utf8Encoder(body));
   }
 });
@@ -12986,7 +16854,7 @@ var require_fxp = __commonJS({
 var import_smithy_client4, import_fast_xml_parser, parseXmlBody, parseXmlErrorBody, loadRestXmlErrorCode;
 var init_parseXmlBody = __esm({
   "../../../node_modules/@aws-sdk/core/dist-es/submodules/protocols/xml/parseXmlBody.js"() {
-    import_smithy_client4 = __toESM(require_dist_cjs37());
+    import_smithy_client4 = __toESM(require_dist_cjs56());
     import_fast_xml_parser = __toESM(require_fxp());
     init_common();
     parseXmlBody = (streamBody, context) => collectBodyString(streamBody, context).then((encoded) => {
@@ -13751,7 +17619,7 @@ var require_package = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-env/dist-cjs/index.js
-var require_dist_cjs48 = __commonJS({
+var require_dist_cjs59 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-env/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -13783,7 +17651,7 @@ var require_dist_cjs48 = __commonJS({
       fromEnv: () => fromEnv
     });
     module2.exports = __toCommonJS2(src_exports);
-    var import_property_provider2 = require_dist_cjs40();
+    var import_property_provider2 = require_dist_cjs39();
     var ENV_KEY = "AWS_ACCESS_KEY_ID";
     var ENV_SECRET = "AWS_SECRET_ACCESS_KEY";
     var ENV_SESSION = "AWS_SESSION_TOKEN";
@@ -13815,7 +17683,7 @@ var require_dist_cjs48 = __commonJS({
 });
 
 // ../../../node_modules/@smithy/credential-provider-imds/dist-cjs/index.js
-var require_dist_cjs49 = __commonJS({
+var require_dist_cjs60 = __commonJS({
   "../../../node_modules/@smithy/credential-provider-imds/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -13851,7 +17719,7 @@ var require_dist_cjs49 = __commonJS({
     });
     module2.exports = __toCommonJS2(src_exports);
     var import_url = require("url");
-    var import_property_provider2 = require_dist_cjs40();
+    var import_property_provider2 = require_dist_cjs39();
     var import_buffer = require("buffer");
     var import_http2 = require("http");
     function httpRequest(options) {
@@ -13996,8 +17864,8 @@ var require_dist_cjs49 = __commonJS({
     };
     __name(_InstanceMetadataV1FallbackError, "InstanceMetadataV1FallbackError");
     var InstanceMetadataV1FallbackError = _InstanceMetadataV1FallbackError;
-    var import_node_config_provider = require_dist_cjs42();
-    var import_url_parser = require_dist_cjs44();
+    var import_node_config_provider = require_dist_cjs41();
+    var import_url_parser = require_dist_cjs43();
     var Endpoint = /* @__PURE__ */ ((Endpoint2) => {
       Endpoint2["IPv4"] = "http://169.254.169.254";
       Endpoint2["IPv6"] = "http://[fd00:ec2::254]";
@@ -14211,807 +18079,13 @@ For more information, please visit: ` + STATIC_STABILITY_DOC_URL
   }
 });
 
-// ../../../node_modules/@smithy/node-http-handler/node_modules/@smithy/querystring-builder/dist-cjs/index.js
-var require_dist_cjs50 = __commonJS({
-  "../../../node_modules/@smithy/node-http-handler/node_modules/@smithy/querystring-builder/dist-cjs/index.js"(exports2, module2) {
-    var __defProp2 = Object.defineProperty;
-    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
-    var __getOwnPropNames2 = Object.getOwnPropertyNames;
-    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
-    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
-    var __export2 = (target, all) => {
-      for (var name in all)
-        __defProp2(target, name, { get: all[name], enumerable: true });
-    };
-    var __copyProps2 = (to, from, except, desc) => {
-      if (from && typeof from === "object" || typeof from === "function") {
-        for (let key of __getOwnPropNames2(from))
-          if (!__hasOwnProp2.call(to, key) && key !== except)
-            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
-      }
-      return to;
-    };
-    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
-    var src_exports = {};
-    __export2(src_exports, {
-      buildQueryString: () => buildQueryString
-    });
-    module2.exports = __toCommonJS2(src_exports);
-    var import_util_uri_escape = require_dist_cjs31();
-    function buildQueryString(query) {
-      const parts = [];
-      for (let key of Object.keys(query).sort()) {
-        const value = query[key];
-        key = (0, import_util_uri_escape.escapeUri)(key);
-        if (Array.isArray(value)) {
-          for (let i = 0, iLen = value.length; i < iLen; i++) {
-            parts.push(`${key}=${(0, import_util_uri_escape.escapeUri)(value[i])}`);
-          }
-        } else {
-          let qsEntry = key;
-          if (value || typeof value === "string") {
-            qsEntry += `=${(0, import_util_uri_escape.escapeUri)(value)}`;
-          }
-          parts.push(qsEntry);
-        }
-      }
-      return parts.join("&");
-    }
-    __name(buildQueryString, "buildQueryString");
-  }
-});
-
-// ../../../node_modules/@smithy/node-http-handler/dist-cjs/index.js
-var require_dist_cjs51 = __commonJS({
-  "../../../node_modules/@smithy/node-http-handler/dist-cjs/index.js"(exports2, module2) {
-    var __create2 = Object.create;
-    var __defProp2 = Object.defineProperty;
-    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
-    var __getOwnPropNames2 = Object.getOwnPropertyNames;
-    var __getProtoOf2 = Object.getPrototypeOf;
-    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
-    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
-    var __export2 = (target, all) => {
-      for (var name in all)
-        __defProp2(target, name, { get: all[name], enumerable: true });
-    };
-    var __copyProps2 = (to, from, except, desc) => {
-      if (from && typeof from === "object" || typeof from === "function") {
-        for (let key of __getOwnPropNames2(from))
-          if (!__hasOwnProp2.call(to, key) && key !== except)
-            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
-      }
-      return to;
-    };
-    var __toESM2 = (mod, isNodeMode, target) => (target = mod != null ? __create2(__getProtoOf2(mod)) : {}, __copyProps2(
-      // If the importer is in node compatibility mode or this is not an ESM
-      // file that has been converted to a CommonJS file using a Babel-
-      // compatible transform (i.e. "__esModule" has not been set), then set
-      // "default" to the CommonJS "module.exports" for node compatibility.
-      isNodeMode || !mod || !mod.__esModule ? __defProp2(target, "default", { value: mod, enumerable: true }) : target,
-      mod
-    ));
-    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
-    var src_exports = {};
-    __export2(src_exports, {
-      DEFAULT_REQUEST_TIMEOUT: () => DEFAULT_REQUEST_TIMEOUT,
-      NodeHttp2Handler: () => NodeHttp2Handler,
-      NodeHttpHandler: () => NodeHttpHandler,
-      streamCollector: () => streamCollector
-    });
-    module2.exports = __toCommonJS2(src_exports);
-    var import_protocol_http8 = require_dist_cjs2();
-    var import_querystring_builder = require_dist_cjs50();
-    var import_http2 = require("http");
-    var import_https = require("https");
-    var NODEJS_TIMEOUT_ERROR_CODES = ["ECONNRESET", "EPIPE", "ETIMEDOUT"];
-    var getTransformedHeaders = /* @__PURE__ */ __name((headers) => {
-      const transformedHeaders = {};
-      for (const name of Object.keys(headers)) {
-        const headerValues = headers[name];
-        transformedHeaders[name] = Array.isArray(headerValues) ? headerValues.join(",") : headerValues;
-      }
-      return transformedHeaders;
-    }, "getTransformedHeaders");
-    var DEFER_EVENT_LISTENER_TIME = 1e3;
-    var setConnectionTimeout = /* @__PURE__ */ __name((request2, reject, timeoutInMs = 0) => {
-      if (!timeoutInMs) {
-        return -1;
-      }
-      const registerTimeout = /* @__PURE__ */ __name((offset) => {
-        const timeoutId = setTimeout(() => {
-          request2.destroy();
-          reject(
-            Object.assign(new Error(`Socket timed out without establishing a connection within ${timeoutInMs} ms`), {
-              name: "TimeoutError"
-            })
-          );
-        }, timeoutInMs - offset);
-        const doWithSocket = /* @__PURE__ */ __name((socket) => {
-          if (socket == null ? void 0 : socket.connecting) {
-            socket.on("connect", () => {
-              clearTimeout(timeoutId);
-            });
-          } else {
-            clearTimeout(timeoutId);
-          }
-        }, "doWithSocket");
-        if (request2.socket) {
-          doWithSocket(request2.socket);
-        } else {
-          request2.on("socket", doWithSocket);
-        }
-      }, "registerTimeout");
-      if (timeoutInMs < 2e3) {
-        registerTimeout(0);
-        return 0;
-      }
-      return setTimeout(registerTimeout.bind(null, DEFER_EVENT_LISTENER_TIME), DEFER_EVENT_LISTENER_TIME);
-    }, "setConnectionTimeout");
-    var DEFER_EVENT_LISTENER_TIME2 = 3e3;
-    var setSocketKeepAlive = /* @__PURE__ */ __name((request2, { keepAlive, keepAliveMsecs }, deferTimeMs = DEFER_EVENT_LISTENER_TIME2) => {
-      if (keepAlive !== true) {
-        return -1;
-      }
-      const registerListener = /* @__PURE__ */ __name(() => {
-        if (request2.socket) {
-          request2.socket.setKeepAlive(keepAlive, keepAliveMsecs || 0);
-        } else {
-          request2.on("socket", (socket) => {
-            socket.setKeepAlive(keepAlive, keepAliveMsecs || 0);
-          });
-        }
-      }, "registerListener");
-      if (deferTimeMs === 0) {
-        registerListener();
-        return 0;
-      }
-      return setTimeout(registerListener, deferTimeMs);
-    }, "setSocketKeepAlive");
-    var DEFER_EVENT_LISTENER_TIME3 = 3e3;
-    var setSocketTimeout = /* @__PURE__ */ __name((request2, reject, timeoutInMs = 0) => {
-      const registerTimeout = /* @__PURE__ */ __name((offset) => {
-        request2.setTimeout(timeoutInMs - offset, () => {
-          request2.destroy();
-          reject(Object.assign(new Error(`Connection timed out after ${timeoutInMs} ms`), { name: "TimeoutError" }));
-        });
-      }, "registerTimeout");
-      if (0 < timeoutInMs && timeoutInMs < 6e3) {
-        registerTimeout(0);
-        return 0;
-      }
-      return setTimeout(
-        registerTimeout.bind(null, timeoutInMs === 0 ? 0 : DEFER_EVENT_LISTENER_TIME3),
-        DEFER_EVENT_LISTENER_TIME3
-      );
-    }, "setSocketTimeout");
-    var import_stream = require("stream");
-    var MIN_WAIT_TIME = 1e3;
-    async function writeRequestBody(httpRequest, request2, maxContinueTimeoutMs = MIN_WAIT_TIME) {
-      const headers = request2.headers ?? {};
-      const expect = headers["Expect"] || headers["expect"];
-      let timeoutId = -1;
-      let hasError = false;
-      if (expect === "100-continue") {
-        await Promise.race([
-          new Promise((resolve) => {
-            timeoutId = Number(setTimeout(resolve, Math.max(MIN_WAIT_TIME, maxContinueTimeoutMs)));
-          }),
-          new Promise((resolve) => {
-            httpRequest.on("continue", () => {
-              clearTimeout(timeoutId);
-              resolve();
-            });
-            httpRequest.on("error", () => {
-              hasError = true;
-              clearTimeout(timeoutId);
-              resolve();
-            });
-          })
-        ]);
-      }
-      if (!hasError) {
-        writeBody(httpRequest, request2.body);
-      }
-    }
-    __name(writeRequestBody, "writeRequestBody");
-    function writeBody(httpRequest, body) {
-      if (body instanceof import_stream.Readable) {
-        body.pipe(httpRequest);
-        return;
-      }
-      if (body) {
-        if (Buffer.isBuffer(body) || typeof body === "string") {
-          httpRequest.end(body);
-          return;
-        }
-        const uint8 = body;
-        if (typeof uint8 === "object" && uint8.buffer && typeof uint8.byteOffset === "number" && typeof uint8.byteLength === "number") {
-          httpRequest.end(Buffer.from(uint8.buffer, uint8.byteOffset, uint8.byteLength));
-          return;
-        }
-        httpRequest.end(Buffer.from(body));
-        return;
-      }
-      httpRequest.end();
-    }
-    __name(writeBody, "writeBody");
-    var DEFAULT_REQUEST_TIMEOUT = 0;
-    var _NodeHttpHandler = class _NodeHttpHandler2 {
-      constructor(options) {
-        this.socketWarningTimestamp = 0;
-        this.metadata = { handlerProtocol: "http/1.1" };
-        this.configProvider = new Promise((resolve, reject) => {
-          if (typeof options === "function") {
-            options().then((_options) => {
-              resolve(this.resolveDefaultConfig(_options));
-            }).catch(reject);
-          } else {
-            resolve(this.resolveDefaultConfig(options));
-          }
-        });
-      }
-      /**
-       * @returns the input if it is an HttpHandler of any class,
-       * or instantiates a new instance of this handler.
-       */
-      static create(instanceOrOptions) {
-        if (typeof (instanceOrOptions == null ? void 0 : instanceOrOptions.handle) === "function") {
-          return instanceOrOptions;
-        }
-        return new _NodeHttpHandler2(instanceOrOptions);
-      }
-      /**
-       * @internal
-       *
-       * @param agent - http(s) agent in use by the NodeHttpHandler instance.
-       * @param socketWarningTimestamp - last socket usage check timestamp.
-       * @param logger - channel for the warning.
-       * @returns timestamp of last emitted warning.
-       */
-      static checkSocketUsage(agent, socketWarningTimestamp, logger = console) {
-        var _a, _b, _c;
-        const { sockets, requests, maxSockets } = agent;
-        if (typeof maxSockets !== "number" || maxSockets === Infinity) {
-          return socketWarningTimestamp;
-        }
-        const interval = 15e3;
-        if (Date.now() - interval < socketWarningTimestamp) {
-          return socketWarningTimestamp;
-        }
-        if (sockets && requests) {
-          for (const origin in sockets) {
-            const socketsInUse = ((_a = sockets[origin]) == null ? void 0 : _a.length) ?? 0;
-            const requestsEnqueued = ((_b = requests[origin]) == null ? void 0 : _b.length) ?? 0;
-            if (socketsInUse >= maxSockets && requestsEnqueued >= 2 * maxSockets) {
-              (_c = logger == null ? void 0 : logger.warn) == null ? void 0 : _c.call(
-                logger,
-                `@smithy/node-http-handler:WARN - socket usage at capacity=${socketsInUse} and ${requestsEnqueued} additional requests are enqueued.
-See https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/node-configuring-maxsockets.html
-or increase socketAcquisitionWarningTimeout=(millis) in the NodeHttpHandler config.`
-              );
-              return Date.now();
-            }
-          }
-        }
-        return socketWarningTimestamp;
-      }
-      resolveDefaultConfig(options) {
-        const { requestTimeout, connectionTimeout, socketTimeout, httpAgent, httpsAgent } = options || {};
-        const keepAlive = true;
-        const maxSockets = 50;
-        return {
-          connectionTimeout,
-          requestTimeout: requestTimeout ?? socketTimeout,
-          httpAgent: (() => {
-            if (httpAgent instanceof import_http2.Agent || typeof (httpAgent == null ? void 0 : httpAgent.destroy) === "function") {
-              return httpAgent;
-            }
-            return new import_http2.Agent({ keepAlive, maxSockets, ...httpAgent });
-          })(),
-          httpsAgent: (() => {
-            if (httpsAgent instanceof import_https.Agent || typeof (httpsAgent == null ? void 0 : httpsAgent.destroy) === "function") {
-              return httpsAgent;
-            }
-            return new import_https.Agent({ keepAlive, maxSockets, ...httpsAgent });
-          })(),
-          logger: console
-        };
-      }
-      destroy() {
-        var _a, _b, _c, _d;
-        (_b = (_a = this.config) == null ? void 0 : _a.httpAgent) == null ? void 0 : _b.destroy();
-        (_d = (_c = this.config) == null ? void 0 : _c.httpsAgent) == null ? void 0 : _d.destroy();
-      }
-      async handle(request2, { abortSignal } = {}) {
-        if (!this.config) {
-          this.config = await this.configProvider;
-        }
-        return new Promise((_resolve, _reject) => {
-          let writeRequestBodyPromise = void 0;
-          const timeouts = [];
-          const resolve = /* @__PURE__ */ __name(async (arg) => {
-            await writeRequestBodyPromise;
-            timeouts.forEach(clearTimeout);
-            _resolve(arg);
-          }, "resolve");
-          const reject = /* @__PURE__ */ __name(async (arg) => {
-            await writeRequestBodyPromise;
-            timeouts.forEach(clearTimeout);
-            _reject(arg);
-          }, "reject");
-          if (!this.config) {
-            throw new Error("Node HTTP request handler config is not resolved");
-          }
-          if (abortSignal == null ? void 0 : abortSignal.aborted) {
-            const abortError = new Error("Request aborted");
-            abortError.name = "AbortError";
-            reject(abortError);
-            return;
-          }
-          const isSSL = request2.protocol === "https:";
-          const agent = isSSL ? this.config.httpsAgent : this.config.httpAgent;
-          timeouts.push(
-            setTimeout(
-              () => {
-                this.socketWarningTimestamp = _NodeHttpHandler2.checkSocketUsage(
-                  agent,
-                  this.socketWarningTimestamp,
-                  this.config.logger
-                );
-              },
-              this.config.socketAcquisitionWarningTimeout ?? (this.config.requestTimeout ?? 2e3) + (this.config.connectionTimeout ?? 1e3)
-            )
-          );
-          const queryString = (0, import_querystring_builder.buildQueryString)(request2.query || {});
-          let auth = void 0;
-          if (request2.username != null || request2.password != null) {
-            const username = request2.username ?? "";
-            const password = request2.password ?? "";
-            auth = `${username}:${password}`;
-          }
-          let path = request2.path;
-          if (queryString) {
-            path += `?${queryString}`;
-          }
-          if (request2.fragment) {
-            path += `#${request2.fragment}`;
-          }
-          const nodeHttpsOptions = {
-            headers: request2.headers,
-            host: request2.hostname,
-            method: request2.method,
-            path,
-            port: request2.port,
-            agent,
-            auth
-          };
-          const requestFunc = isSSL ? import_https.request : import_http2.request;
-          const req = requestFunc(nodeHttpsOptions, (res) => {
-            const httpResponse = new import_protocol_http8.HttpResponse({
-              statusCode: res.statusCode || -1,
-              reason: res.statusMessage,
-              headers: getTransformedHeaders(res.headers),
-              body: res
-            });
-            resolve({ response: httpResponse });
-          });
-          req.on("error", (err) => {
-            if (NODEJS_TIMEOUT_ERROR_CODES.includes(err.code)) {
-              reject(Object.assign(err, { name: "TimeoutError" }));
-            } else {
-              reject(err);
-            }
-          });
-          if (abortSignal) {
-            const onAbort = /* @__PURE__ */ __name(() => {
-              req.destroy();
-              const abortError = new Error("Request aborted");
-              abortError.name = "AbortError";
-              reject(abortError);
-            }, "onAbort");
-            if (typeof abortSignal.addEventListener === "function") {
-              const signal = abortSignal;
-              signal.addEventListener("abort", onAbort, { once: true });
-              req.once("close", () => signal.removeEventListener("abort", onAbort));
-            } else {
-              abortSignal.onabort = onAbort;
-            }
-          }
-          timeouts.push(setConnectionTimeout(req, reject, this.config.connectionTimeout));
-          timeouts.push(setSocketTimeout(req, reject, this.config.requestTimeout));
-          const httpAgent = nodeHttpsOptions.agent;
-          if (typeof httpAgent === "object" && "keepAlive" in httpAgent) {
-            timeouts.push(
-              setSocketKeepAlive(req, {
-                // @ts-expect-error keepAlive is not public on httpAgent.
-                keepAlive: httpAgent.keepAlive,
-                // @ts-expect-error keepAliveMsecs is not public on httpAgent.
-                keepAliveMsecs: httpAgent.keepAliveMsecs
-              })
-            );
-          }
-          writeRequestBodyPromise = writeRequestBody(req, request2, this.config.requestTimeout).catch((e) => {
-            timeouts.forEach(clearTimeout);
-            return _reject(e);
-          });
-        });
-      }
-      updateHttpClientConfig(key, value) {
-        this.config = void 0;
-        this.configProvider = this.configProvider.then((config) => {
-          return {
-            ...config,
-            [key]: value
-          };
-        });
-      }
-      httpHandlerConfigs() {
-        return this.config ?? {};
-      }
-    };
-    __name(_NodeHttpHandler, "NodeHttpHandler");
-    var NodeHttpHandler = _NodeHttpHandler;
-    var import_http22 = require("http2");
-    var import_http23 = __toESM2(require("http2"));
-    var _NodeHttp2ConnectionPool = class _NodeHttp2ConnectionPool {
-      constructor(sessions) {
-        this.sessions = [];
-        this.sessions = sessions ?? [];
-      }
-      poll() {
-        if (this.sessions.length > 0) {
-          return this.sessions.shift();
-        }
-      }
-      offerLast(session) {
-        this.sessions.push(session);
-      }
-      contains(session) {
-        return this.sessions.includes(session);
-      }
-      remove(session) {
-        this.sessions = this.sessions.filter((s) => s !== session);
-      }
-      [Symbol.iterator]() {
-        return this.sessions[Symbol.iterator]();
-      }
-      destroy(connection) {
-        for (const session of this.sessions) {
-          if (session === connection) {
-            if (!session.destroyed) {
-              session.destroy();
-            }
-          }
-        }
-      }
-    };
-    __name(_NodeHttp2ConnectionPool, "NodeHttp2ConnectionPool");
-    var NodeHttp2ConnectionPool = _NodeHttp2ConnectionPool;
-    var _NodeHttp2ConnectionManager = class _NodeHttp2ConnectionManager {
-      constructor(config) {
-        this.sessionCache = /* @__PURE__ */ new Map();
-        this.config = config;
-        if (this.config.maxConcurrency && this.config.maxConcurrency <= 0) {
-          throw new RangeError("maxConcurrency must be greater than zero.");
-        }
-      }
-      lease(requestContext, connectionConfiguration) {
-        const url2 = this.getUrlString(requestContext);
-        const existingPool = this.sessionCache.get(url2);
-        if (existingPool) {
-          const existingSession = existingPool.poll();
-          if (existingSession && !this.config.disableConcurrency) {
-            return existingSession;
-          }
-        }
-        const session = import_http23.default.connect(url2);
-        if (this.config.maxConcurrency) {
-          session.settings({ maxConcurrentStreams: this.config.maxConcurrency }, (err) => {
-            if (err) {
-              throw new Error(
-                "Fail to set maxConcurrentStreams to " + this.config.maxConcurrency + "when creating new session for " + requestContext.destination.toString()
-              );
-            }
-          });
-        }
-        session.unref();
-        const destroySessionCb = /* @__PURE__ */ __name(() => {
-          session.destroy();
-          this.deleteSession(url2, session);
-        }, "destroySessionCb");
-        session.on("goaway", destroySessionCb);
-        session.on("error", destroySessionCb);
-        session.on("frameError", destroySessionCb);
-        session.on("close", () => this.deleteSession(url2, session));
-        if (connectionConfiguration.requestTimeout) {
-          session.setTimeout(connectionConfiguration.requestTimeout, destroySessionCb);
-        }
-        const connectionPool = this.sessionCache.get(url2) || new NodeHttp2ConnectionPool();
-        connectionPool.offerLast(session);
-        this.sessionCache.set(url2, connectionPool);
-        return session;
-      }
-      /**
-       * Delete a session from the connection pool.
-       * @param authority The authority of the session to delete.
-       * @param session The session to delete.
-       */
-      deleteSession(authority, session) {
-        const existingConnectionPool = this.sessionCache.get(authority);
-        if (!existingConnectionPool) {
-          return;
-        }
-        if (!existingConnectionPool.contains(session)) {
-          return;
-        }
-        existingConnectionPool.remove(session);
-        this.sessionCache.set(authority, existingConnectionPool);
-      }
-      release(requestContext, session) {
-        var _a;
-        const cacheKey = this.getUrlString(requestContext);
-        (_a = this.sessionCache.get(cacheKey)) == null ? void 0 : _a.offerLast(session);
-      }
-      destroy() {
-        for (const [key, connectionPool] of this.sessionCache) {
-          for (const session of connectionPool) {
-            if (!session.destroyed) {
-              session.destroy();
-            }
-            connectionPool.remove(session);
-          }
-          this.sessionCache.delete(key);
-        }
-      }
-      setMaxConcurrentStreams(maxConcurrentStreams) {
-        if (this.config.maxConcurrency && this.config.maxConcurrency <= 0) {
-          throw new RangeError("maxConcurrentStreams must be greater than zero.");
-        }
-        this.config.maxConcurrency = maxConcurrentStreams;
-      }
-      setDisableConcurrentStreams(disableConcurrentStreams) {
-        this.config.disableConcurrency = disableConcurrentStreams;
-      }
-      getUrlString(request2) {
-        return request2.destination.toString();
-      }
-    };
-    __name(_NodeHttp2ConnectionManager, "NodeHttp2ConnectionManager");
-    var NodeHttp2ConnectionManager = _NodeHttp2ConnectionManager;
-    var _NodeHttp2Handler = class _NodeHttp2Handler2 {
-      constructor(options) {
-        this.metadata = { handlerProtocol: "h2" };
-        this.connectionManager = new NodeHttp2ConnectionManager({});
-        this.configProvider = new Promise((resolve, reject) => {
-          if (typeof options === "function") {
-            options().then((opts) => {
-              resolve(opts || {});
-            }).catch(reject);
-          } else {
-            resolve(options || {});
-          }
-        });
-      }
-      /**
-       * @returns the input if it is an HttpHandler of any class,
-       * or instantiates a new instance of this handler.
-       */
-      static create(instanceOrOptions) {
-        if (typeof (instanceOrOptions == null ? void 0 : instanceOrOptions.handle) === "function") {
-          return instanceOrOptions;
-        }
-        return new _NodeHttp2Handler2(instanceOrOptions);
-      }
-      destroy() {
-        this.connectionManager.destroy();
-      }
-      async handle(request2, { abortSignal } = {}) {
-        if (!this.config) {
-          this.config = await this.configProvider;
-          this.connectionManager.setDisableConcurrentStreams(this.config.disableConcurrentStreams || false);
-          if (this.config.maxConcurrentStreams) {
-            this.connectionManager.setMaxConcurrentStreams(this.config.maxConcurrentStreams);
-          }
-        }
-        const { requestTimeout, disableConcurrentStreams } = this.config;
-        return new Promise((_resolve, _reject) => {
-          var _a;
-          let fulfilled = false;
-          let writeRequestBodyPromise = void 0;
-          const resolve = /* @__PURE__ */ __name(async (arg) => {
-            await writeRequestBodyPromise;
-            _resolve(arg);
-          }, "resolve");
-          const reject = /* @__PURE__ */ __name(async (arg) => {
-            await writeRequestBodyPromise;
-            _reject(arg);
-          }, "reject");
-          if (abortSignal == null ? void 0 : abortSignal.aborted) {
-            fulfilled = true;
-            const abortError = new Error("Request aborted");
-            abortError.name = "AbortError";
-            reject(abortError);
-            return;
-          }
-          const { hostname, method, port, protocol, query } = request2;
-          let auth = "";
-          if (request2.username != null || request2.password != null) {
-            const username = request2.username ?? "";
-            const password = request2.password ?? "";
-            auth = `${username}:${password}@`;
-          }
-          const authority = `${protocol}//${auth}${hostname}${port ? `:${port}` : ""}`;
-          const requestContext = { destination: new URL(authority) };
-          const session = this.connectionManager.lease(requestContext, {
-            requestTimeout: (_a = this.config) == null ? void 0 : _a.sessionTimeout,
-            disableConcurrentStreams: disableConcurrentStreams || false
-          });
-          const rejectWithDestroy = /* @__PURE__ */ __name((err) => {
-            if (disableConcurrentStreams) {
-              this.destroySession(session);
-            }
-            fulfilled = true;
-            reject(err);
-          }, "rejectWithDestroy");
-          const queryString = (0, import_querystring_builder.buildQueryString)(query || {});
-          let path = request2.path;
-          if (queryString) {
-            path += `?${queryString}`;
-          }
-          if (request2.fragment) {
-            path += `#${request2.fragment}`;
-          }
-          const req = session.request({
-            ...request2.headers,
-            [import_http22.constants.HTTP2_HEADER_PATH]: path,
-            [import_http22.constants.HTTP2_HEADER_METHOD]: method
-          });
-          session.ref();
-          req.on("response", (headers) => {
-            const httpResponse = new import_protocol_http8.HttpResponse({
-              statusCode: headers[":status"] || -1,
-              headers: getTransformedHeaders(headers),
-              body: req
-            });
-            fulfilled = true;
-            resolve({ response: httpResponse });
-            if (disableConcurrentStreams) {
-              session.close();
-              this.connectionManager.deleteSession(authority, session);
-            }
-          });
-          if (requestTimeout) {
-            req.setTimeout(requestTimeout, () => {
-              req.close();
-              const timeoutError = new Error(`Stream timed out because of no activity for ${requestTimeout} ms`);
-              timeoutError.name = "TimeoutError";
-              rejectWithDestroy(timeoutError);
-            });
-          }
-          if (abortSignal) {
-            const onAbort = /* @__PURE__ */ __name(() => {
-              req.close();
-              const abortError = new Error("Request aborted");
-              abortError.name = "AbortError";
-              rejectWithDestroy(abortError);
-            }, "onAbort");
-            if (typeof abortSignal.addEventListener === "function") {
-              const signal = abortSignal;
-              signal.addEventListener("abort", onAbort, { once: true });
-              req.once("close", () => signal.removeEventListener("abort", onAbort));
-            } else {
-              abortSignal.onabort = onAbort;
-            }
-          }
-          req.on("frameError", (type, code, id) => {
-            rejectWithDestroy(new Error(`Frame type id ${type} in stream id ${id} has failed with code ${code}.`));
-          });
-          req.on("error", rejectWithDestroy);
-          req.on("aborted", () => {
-            rejectWithDestroy(
-              new Error(`HTTP/2 stream is abnormally aborted in mid-communication with result code ${req.rstCode}.`)
-            );
-          });
-          req.on("close", () => {
-            session.unref();
-            if (disableConcurrentStreams) {
-              session.destroy();
-            }
-            if (!fulfilled) {
-              rejectWithDestroy(new Error("Unexpected error: http2 request did not get a response"));
-            }
-          });
-          writeRequestBodyPromise = writeRequestBody(req, request2, requestTimeout);
-        });
-      }
-      updateHttpClientConfig(key, value) {
-        this.config = void 0;
-        this.configProvider = this.configProvider.then((config) => {
-          return {
-            ...config,
-            [key]: value
-          };
-        });
-      }
-      httpHandlerConfigs() {
-        return this.config ?? {};
-      }
-      /**
-       * Destroys a session.
-       * @param session The session to destroy.
-       */
-      destroySession(session) {
-        if (!session.destroyed) {
-          session.destroy();
-        }
-      }
-    };
-    __name(_NodeHttp2Handler, "NodeHttp2Handler");
-    var NodeHttp2Handler = _NodeHttp2Handler;
-    var _Collector = class _Collector extends import_stream.Writable {
-      constructor() {
-        super(...arguments);
-        this.bufferedBytes = [];
-      }
-      _write(chunk, encoding, callback) {
-        this.bufferedBytes.push(chunk);
-        callback();
-      }
-    };
-    __name(_Collector, "Collector");
-    var Collector = _Collector;
-    var streamCollector = /* @__PURE__ */ __name((stream) => {
-      if (isReadableStreamInstance(stream)) {
-        return collectReadableStream(stream);
-      }
-      return new Promise((resolve, reject) => {
-        const collector = new Collector();
-        stream.pipe(collector);
-        stream.on("error", (err) => {
-          collector.end();
-          reject(err);
-        });
-        collector.on("error", reject);
-        collector.on("finish", function() {
-          const bytes = new Uint8Array(Buffer.concat(this.bufferedBytes));
-          resolve(bytes);
-        });
-      });
-    }, "streamCollector");
-    var isReadableStreamInstance = /* @__PURE__ */ __name((stream) => typeof ReadableStream === "function" && stream instanceof ReadableStream, "isReadableStreamInstance");
-    async function collectReadableStream(stream) {
-      const chunks = [];
-      const reader = stream.getReader();
-      let isDone = false;
-      let length = 0;
-      while (!isDone) {
-        const { done, value } = await reader.read();
-        if (value) {
-          chunks.push(value);
-          length += value.length;
-        }
-        isDone = done;
-      }
-      const collected = new Uint8Array(length);
-      let offset = 0;
-      for (const chunk of chunks) {
-        collected.set(chunk, offset);
-        offset += chunk.length;
-      }
-      return collected;
-    }
-    __name(collectReadableStream, "collectReadableStream");
-  }
-});
-
 // ../../../node_modules/@aws-sdk/credential-provider-http/dist-cjs/fromHttp/checkUrl.js
 var require_checkUrl = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-http/dist-cjs/fromHttp/checkUrl.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.checkUrl = void 0;
-    var property_provider_1 = require_dist_cjs40();
+    var property_provider_1 = require_dist_cjs39();
     var ECS_CONTAINER_HOST = "169.254.170.2";
     var EKS_CONTAINER_HOST_IPv4 = "169.254.170.23";
     var EKS_CONTAINER_HOST_IPv6 = "[fd00:ec2::23]";
@@ -15048,697 +18122,16 @@ var require_checkUrl = __commonJS({
   }
 });
 
-// ../../../node_modules/@smithy/util-stream/dist-cjs/getAwsChunkedEncodingStream.js
-var require_getAwsChunkedEncodingStream2 = __commonJS({
-  "../../../node_modules/@smithy/util-stream/dist-cjs/getAwsChunkedEncodingStream.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getAwsChunkedEncodingStream = void 0;
-    var stream_1 = require("stream");
-    var getAwsChunkedEncodingStream2 = (readableStream, options) => {
-      const { base64Encoder, bodyLengthChecker, checksumAlgorithmFn, checksumLocationName, streamHasher } = options;
-      const checksumRequired = base64Encoder !== void 0 && checksumAlgorithmFn !== void 0 && checksumLocationName !== void 0 && streamHasher !== void 0;
-      const digest = checksumRequired ? streamHasher(checksumAlgorithmFn, readableStream) : void 0;
-      const awsChunkedEncodingStream = new stream_1.Readable({ read: () => {
-      } });
-      readableStream.on("data", (data) => {
-        const length = bodyLengthChecker(data) || 0;
-        awsChunkedEncodingStream.push(`${length.toString(16)}\r
-`);
-        awsChunkedEncodingStream.push(data);
-        awsChunkedEncodingStream.push("\r\n");
-      });
-      readableStream.on("end", async () => {
-        awsChunkedEncodingStream.push(`0\r
-`);
-        if (checksumRequired) {
-          const checksum = base64Encoder(await digest);
-          awsChunkedEncodingStream.push(`${checksumLocationName}:${checksum}\r
-`);
-          awsChunkedEncodingStream.push(`\r
-`);
-        }
-        awsChunkedEncodingStream.push(null);
-      });
-      return awsChunkedEncodingStream;
-    };
-    exports2.getAwsChunkedEncodingStream = getAwsChunkedEncodingStream2;
-  }
-});
-
-// ../../../node_modules/@smithy/fetch-http-handler/node_modules/@smithy/querystring-builder/dist-cjs/index.js
-var require_dist_cjs52 = __commonJS({
-  "../../../node_modules/@smithy/fetch-http-handler/node_modules/@smithy/querystring-builder/dist-cjs/index.js"(exports2, module2) {
-    var __defProp2 = Object.defineProperty;
-    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
-    var __getOwnPropNames2 = Object.getOwnPropertyNames;
-    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
-    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
-    var __export2 = (target, all) => {
-      for (var name in all)
-        __defProp2(target, name, { get: all[name], enumerable: true });
-    };
-    var __copyProps2 = (to, from, except, desc) => {
-      if (from && typeof from === "object" || typeof from === "function") {
-        for (let key of __getOwnPropNames2(from))
-          if (!__hasOwnProp2.call(to, key) && key !== except)
-            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
-      }
-      return to;
-    };
-    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
-    var src_exports = {};
-    __export2(src_exports, {
-      buildQueryString: () => buildQueryString
-    });
-    module2.exports = __toCommonJS2(src_exports);
-    var import_util_uri_escape = require_dist_cjs31();
-    function buildQueryString(query) {
-      const parts = [];
-      for (let key of Object.keys(query).sort()) {
-        const value = query[key];
-        key = (0, import_util_uri_escape.escapeUri)(key);
-        if (Array.isArray(value)) {
-          for (let i = 0, iLen = value.length; i < iLen; i++) {
-            parts.push(`${key}=${(0, import_util_uri_escape.escapeUri)(value[i])}`);
-          }
-        } else {
-          let qsEntry = key;
-          if (value || typeof value === "string") {
-            qsEntry += `=${(0, import_util_uri_escape.escapeUri)(value)}`;
-          }
-          parts.push(qsEntry);
-        }
-      }
-      return parts.join("&");
-    }
-    __name(buildQueryString, "buildQueryString");
-  }
-});
-
-// ../../../node_modules/@smithy/fetch-http-handler/dist-cjs/index.js
-var require_dist_cjs53 = __commonJS({
-  "../../../node_modules/@smithy/fetch-http-handler/dist-cjs/index.js"(exports2, module2) {
-    var __defProp2 = Object.defineProperty;
-    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
-    var __getOwnPropNames2 = Object.getOwnPropertyNames;
-    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
-    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
-    var __export2 = (target, all) => {
-      for (var name in all)
-        __defProp2(target, name, { get: all[name], enumerable: true });
-    };
-    var __copyProps2 = (to, from, except, desc) => {
-      if (from && typeof from === "object" || typeof from === "function") {
-        for (let key of __getOwnPropNames2(from))
-          if (!__hasOwnProp2.call(to, key) && key !== except)
-            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
-      }
-      return to;
-    };
-    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
-    var src_exports = {};
-    __export2(src_exports, {
-      FetchHttpHandler: () => FetchHttpHandler,
-      keepAliveSupport: () => keepAliveSupport,
-      streamCollector: () => streamCollector
-    });
-    module2.exports = __toCommonJS2(src_exports);
-    var import_protocol_http8 = require_dist_cjs2();
-    var import_querystring_builder = require_dist_cjs52();
-    function requestTimeout(timeoutInMs = 0) {
-      return new Promise((resolve, reject) => {
-        if (timeoutInMs) {
-          setTimeout(() => {
-            const timeoutError = new Error(`Request did not complete within ${timeoutInMs} ms`);
-            timeoutError.name = "TimeoutError";
-            reject(timeoutError);
-          }, timeoutInMs);
-        }
-      });
-    }
-    __name(requestTimeout, "requestTimeout");
-    var keepAliveSupport = {
-      supported: void 0
-    };
-    var _FetchHttpHandler = class _FetchHttpHandler2 {
-      /**
-       * @returns the input if it is an HttpHandler of any class,
-       * or instantiates a new instance of this handler.
-       */
-      static create(instanceOrOptions) {
-        if (typeof (instanceOrOptions == null ? void 0 : instanceOrOptions.handle) === "function") {
-          return instanceOrOptions;
-        }
-        return new _FetchHttpHandler2(instanceOrOptions);
-      }
-      constructor(options) {
-        if (typeof options === "function") {
-          this.configProvider = options().then((opts) => opts || {});
-        } else {
-          this.config = options ?? {};
-          this.configProvider = Promise.resolve(this.config);
-        }
-        if (keepAliveSupport.supported === void 0) {
-          keepAliveSupport.supported = Boolean(
-            typeof Request !== "undefined" && "keepalive" in new Request("https://[::1]")
-          );
-        }
-      }
-      destroy() {
-      }
-      async handle(request2, { abortSignal } = {}) {
-        if (!this.config) {
-          this.config = await this.configProvider;
-        }
-        const requestTimeoutInMs = this.config.requestTimeout;
-        const keepAlive = this.config.keepAlive === true;
-        const credentials = this.config.credentials;
-        if (abortSignal == null ? void 0 : abortSignal.aborted) {
-          const abortError = new Error("Request aborted");
-          abortError.name = "AbortError";
-          return Promise.reject(abortError);
-        }
-        let path = request2.path;
-        const queryString = (0, import_querystring_builder.buildQueryString)(request2.query || {});
-        if (queryString) {
-          path += `?${queryString}`;
-        }
-        if (request2.fragment) {
-          path += `#${request2.fragment}`;
-        }
-        let auth = "";
-        if (request2.username != null || request2.password != null) {
-          const username = request2.username ?? "";
-          const password = request2.password ?? "";
-          auth = `${username}:${password}@`;
-        }
-        const { port, method } = request2;
-        const url2 = `${request2.protocol}//${auth}${request2.hostname}${port ? `:${port}` : ""}${path}`;
-        const body = method === "GET" || method === "HEAD" ? void 0 : request2.body;
-        const requestOptions = {
-          body,
-          headers: new Headers(request2.headers),
-          method,
-          credentials
-        };
-        if (body) {
-          requestOptions.duplex = "half";
-        }
-        if (typeof AbortController !== "undefined") {
-          requestOptions.signal = abortSignal;
-        }
-        if (keepAliveSupport.supported) {
-          requestOptions.keepalive = keepAlive;
-        }
-        let removeSignalEventListener = /* @__PURE__ */ __name(() => {
-        }, "removeSignalEventListener");
-        const fetchRequest = new Request(url2, requestOptions);
-        const raceOfPromises = [
-          fetch(fetchRequest).then((response) => {
-            const fetchHeaders = response.headers;
-            const transformedHeaders = {};
-            for (const pair of fetchHeaders.entries()) {
-              transformedHeaders[pair[0]] = pair[1];
-            }
-            const hasReadableStream = response.body != void 0;
-            if (!hasReadableStream) {
-              return response.blob().then((body2) => ({
-                response: new import_protocol_http8.HttpResponse({
-                  headers: transformedHeaders,
-                  reason: response.statusText,
-                  statusCode: response.status,
-                  body: body2
-                })
-              }));
-            }
-            return {
-              response: new import_protocol_http8.HttpResponse({
-                headers: transformedHeaders,
-                reason: response.statusText,
-                statusCode: response.status,
-                body: response.body
-              })
-            };
-          }),
-          requestTimeout(requestTimeoutInMs)
-        ];
-        if (abortSignal) {
-          raceOfPromises.push(
-            new Promise((resolve, reject) => {
-              const onAbort = /* @__PURE__ */ __name(() => {
-                const abortError = new Error("Request aborted");
-                abortError.name = "AbortError";
-                reject(abortError);
-              }, "onAbort");
-              if (typeof abortSignal.addEventListener === "function") {
-                const signal = abortSignal;
-                signal.addEventListener("abort", onAbort, { once: true });
-                removeSignalEventListener = /* @__PURE__ */ __name(() => signal.removeEventListener("abort", onAbort), "removeSignalEventListener");
-              } else {
-                abortSignal.onabort = onAbort;
-              }
-            })
-          );
-        }
-        return Promise.race(raceOfPromises).finally(removeSignalEventListener);
-      }
-      updateHttpClientConfig(key, value) {
-        this.config = void 0;
-        this.configProvider = this.configProvider.then((config) => {
-          config[key] = value;
-          return config;
-        });
-      }
-      httpHandlerConfigs() {
-        return this.config ?? {};
-      }
-    };
-    __name(_FetchHttpHandler, "FetchHttpHandler");
-    var FetchHttpHandler = _FetchHttpHandler;
-    var import_util_base64 = require_dist_cjs29();
-    var streamCollector = /* @__PURE__ */ __name((stream) => {
-      if (typeof Blob === "function" && stream instanceof Blob) {
-        return collectBlob(stream);
-      }
-      return collectStream(stream);
-    }, "streamCollector");
-    async function collectBlob(blob) {
-      const base64 = await readToBase64(blob);
-      const arrayBuffer = (0, import_util_base64.fromBase64)(base64);
-      return new Uint8Array(arrayBuffer);
-    }
-    __name(collectBlob, "collectBlob");
-    async function collectStream(stream) {
-      const chunks = [];
-      const reader = stream.getReader();
-      let isDone = false;
-      let length = 0;
-      while (!isDone) {
-        const { done, value } = await reader.read();
-        if (value) {
-          chunks.push(value);
-          length += value.length;
-        }
-        isDone = done;
-      }
-      const collected = new Uint8Array(length);
-      let offset = 0;
-      for (const chunk of chunks) {
-        collected.set(chunk, offset);
-        offset += chunk.length;
-      }
-      return collected;
-    }
-    __name(collectStream, "collectStream");
-    function readToBase64(blob) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          if (reader.readyState !== 2) {
-            return reject(new Error("Reader aborted too early"));
-          }
-          const result = reader.result ?? "";
-          const commaIndex = result.indexOf(",");
-          const dataOffset = commaIndex > -1 ? commaIndex + 1 : result.length;
-          resolve(result.substring(dataOffset));
-        };
-        reader.onabort = () => reject(new Error("Read aborted"));
-        reader.onerror = () => reject(reader.error);
-        reader.readAsDataURL(blob);
-      });
-    }
-    __name(readToBase64, "readToBase64");
-  }
-});
-
-// ../../../node_modules/@smithy/util-stream/dist-cjs/stream-type-check.js
-var require_stream_type_check2 = __commonJS({
-  "../../../node_modules/@smithy/util-stream/dist-cjs/stream-type-check.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.isReadableStream = void 0;
-    var isReadableStream2 = (stream) => {
-      var _a;
-      return typeof ReadableStream === "function" && (((_a = stream === null || stream === void 0 ? void 0 : stream.constructor) === null || _a === void 0 ? void 0 : _a.name) === ReadableStream.name || stream instanceof ReadableStream);
-    };
-    exports2.isReadableStream = isReadableStream2;
-  }
-});
-
-// ../../../node_modules/@smithy/util-stream/dist-cjs/sdk-stream-mixin.browser.js
-var require_sdk_stream_mixin_browser2 = __commonJS({
-  "../../../node_modules/@smithy/util-stream/dist-cjs/sdk-stream-mixin.browser.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.sdkStreamMixin = void 0;
-    var fetch_http_handler_1 = require_dist_cjs53();
-    var util_base64_1 = require_dist_cjs29();
-    var util_hex_encoding_1 = require_dist_cjs35();
-    var util_utf8_1 = require_dist_cjs28();
-    var stream_type_check_1 = require_stream_type_check2();
-    var ERR_MSG_STREAM_HAS_BEEN_TRANSFORMED = "The stream has already been transformed.";
-    var sdkStreamMixin2 = (stream) => {
-      var _a, _b;
-      if (!isBlobInstance(stream) && !(0, stream_type_check_1.isReadableStream)(stream)) {
-        const name = ((_b = (_a = stream === null || stream === void 0 ? void 0 : stream.__proto__) === null || _a === void 0 ? void 0 : _a.constructor) === null || _b === void 0 ? void 0 : _b.name) || stream;
-        throw new Error(`Unexpected stream implementation, expect Blob or ReadableStream, got ${name}`);
-      }
-      let transformed = false;
-      const transformToByteArray = async () => {
-        if (transformed) {
-          throw new Error(ERR_MSG_STREAM_HAS_BEEN_TRANSFORMED);
-        }
-        transformed = true;
-        return await (0, fetch_http_handler_1.streamCollector)(stream);
-      };
-      const blobToWebStream = (blob) => {
-        if (typeof blob.stream !== "function") {
-          throw new Error("Cannot transform payload Blob to web stream. Please make sure the Blob.stream() is polyfilled.\nIf you are using React Native, this API is not yet supported, see: https://react-native.canny.io/feature-requests/p/fetch-streaming-body");
-        }
-        return blob.stream();
-      };
-      return Object.assign(stream, {
-        transformToByteArray,
-        transformToString: async (encoding) => {
-          const buf = await transformToByteArray();
-          if (encoding === "base64") {
-            return (0, util_base64_1.toBase64)(buf);
-          } else if (encoding === "hex") {
-            return (0, util_hex_encoding_1.toHex)(buf);
-          } else if (encoding === void 0 || encoding === "utf8" || encoding === "utf-8") {
-            return (0, util_utf8_1.toUtf8)(buf);
-          } else if (typeof TextDecoder === "function") {
-            return new TextDecoder(encoding).decode(buf);
-          } else {
-            throw new Error("TextDecoder is not available, please make sure polyfill is provided.");
-          }
-        },
-        transformToWebStream: () => {
-          if (transformed) {
-            throw new Error(ERR_MSG_STREAM_HAS_BEEN_TRANSFORMED);
-          }
-          transformed = true;
-          if (isBlobInstance(stream)) {
-            return blobToWebStream(stream);
-          } else if ((0, stream_type_check_1.isReadableStream)(stream)) {
-            return stream;
-          } else {
-            throw new Error(`Cannot transform payload to web stream, got ${stream}`);
-          }
-        }
-      });
-    };
-    exports2.sdkStreamMixin = sdkStreamMixin2;
-    var isBlobInstance = (stream) => typeof Blob === "function" && stream instanceof Blob;
-  }
-});
-
-// ../../../node_modules/@smithy/util-stream/dist-cjs/sdk-stream-mixin.js
-var require_sdk_stream_mixin2 = __commonJS({
-  "../../../node_modules/@smithy/util-stream/dist-cjs/sdk-stream-mixin.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.sdkStreamMixin = void 0;
-    var node_http_handler_1 = require_dist_cjs51();
-    var util_buffer_from_1 = require_dist_cjs27();
-    var stream_1 = require("stream");
-    var util_1 = require("util");
-    var sdk_stream_mixin_browser_1 = require_sdk_stream_mixin_browser2();
-    var ERR_MSG_STREAM_HAS_BEEN_TRANSFORMED = "The stream has already been transformed.";
-    var sdkStreamMixin2 = (stream) => {
-      var _a, _b;
-      if (!(stream instanceof stream_1.Readable)) {
-        try {
-          return (0, sdk_stream_mixin_browser_1.sdkStreamMixin)(stream);
-        } catch (e) {
-          const name = ((_b = (_a = stream === null || stream === void 0 ? void 0 : stream.__proto__) === null || _a === void 0 ? void 0 : _a.constructor) === null || _b === void 0 ? void 0 : _b.name) || stream;
-          throw new Error(`Unexpected stream implementation, expect Stream.Readable instance, got ${name}`);
-        }
-      }
-      let transformed = false;
-      const transformToByteArray = async () => {
-        if (transformed) {
-          throw new Error(ERR_MSG_STREAM_HAS_BEEN_TRANSFORMED);
-        }
-        transformed = true;
-        return await (0, node_http_handler_1.streamCollector)(stream);
-      };
-      return Object.assign(stream, {
-        transformToByteArray,
-        transformToString: async (encoding) => {
-          const buf = await transformToByteArray();
-          if (encoding === void 0 || Buffer.isEncoding(encoding)) {
-            return (0, util_buffer_from_1.fromArrayBuffer)(buf.buffer, buf.byteOffset, buf.byteLength).toString(encoding);
-          } else {
-            const decoder2 = new util_1.TextDecoder(encoding);
-            return decoder2.decode(buf);
-          }
-        },
-        transformToWebStream: () => {
-          if (transformed) {
-            throw new Error(ERR_MSG_STREAM_HAS_BEEN_TRANSFORMED);
-          }
-          if (stream.readableFlowing !== null) {
-            throw new Error("The stream has been consumed by other callbacks.");
-          }
-          if (typeof stream_1.Readable.toWeb !== "function") {
-            throw new Error("Readable.toWeb() is not supported. Please make sure you are using Node.js >= 17.0.0, or polyfill is available.");
-          }
-          transformed = true;
-          return stream_1.Readable.toWeb(stream);
-        }
-      });
-    };
-    exports2.sdkStreamMixin = sdkStreamMixin2;
-  }
-});
-
-// ../../../node_modules/@smithy/util-stream/dist-cjs/splitStream.browser.js
-var require_splitStream_browser2 = __commonJS({
-  "../../../node_modules/@smithy/util-stream/dist-cjs/splitStream.browser.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.splitStream = void 0;
-    async function splitStream2(stream) {
-      if (typeof stream.stream === "function") {
-        stream = stream.stream();
-      }
-      const readableStream = stream;
-      return readableStream.tee();
-    }
-    exports2.splitStream = splitStream2;
-  }
-});
-
-// ../../../node_modules/@smithy/util-stream/dist-cjs/splitStream.js
-var require_splitStream2 = __commonJS({
-  "../../../node_modules/@smithy/util-stream/dist-cjs/splitStream.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.splitStream = void 0;
-    var stream_1 = require("stream");
-    var splitStream_browser_1 = require_splitStream_browser2();
-    var stream_type_check_1 = require_stream_type_check2();
-    async function splitStream2(stream) {
-      if ((0, stream_type_check_1.isReadableStream)(stream)) {
-        return (0, splitStream_browser_1.splitStream)(stream);
-      }
-      const stream1 = new stream_1.PassThrough();
-      const stream2 = new stream_1.PassThrough();
-      stream.pipe(stream1);
-      stream.pipe(stream2);
-      return [stream1, stream2];
-    }
-    exports2.splitStream = splitStream2;
-  }
-});
-
-// ../../../node_modules/@smithy/util-stream/dist-cjs/headStream.browser.js
-var require_headStream_browser2 = __commonJS({
-  "../../../node_modules/@smithy/util-stream/dist-cjs/headStream.browser.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.headStream = void 0;
-    async function headStream2(stream, bytes) {
-      var _a;
-      let byteLengthCounter = 0;
-      const chunks = [];
-      const reader = stream.getReader();
-      let isDone = false;
-      while (!isDone) {
-        const { done, value } = await reader.read();
-        if (value) {
-          chunks.push(value);
-          byteLengthCounter += (_a = value === null || value === void 0 ? void 0 : value.byteLength) !== null && _a !== void 0 ? _a : 0;
-        }
-        if (byteLengthCounter >= bytes) {
-          break;
-        }
-        isDone = done;
-      }
-      reader.releaseLock();
-      const collected = new Uint8Array(Math.min(bytes, byteLengthCounter));
-      let offset = 0;
-      for (const chunk of chunks) {
-        if (chunk.byteLength > collected.byteLength - offset) {
-          collected.set(chunk.subarray(0, collected.byteLength - offset), offset);
-          break;
-        } else {
-          collected.set(chunk, offset);
-        }
-        offset += chunk.length;
-      }
-      return collected;
-    }
-    exports2.headStream = headStream2;
-  }
-});
-
-// ../../../node_modules/@smithy/util-stream/dist-cjs/headStream.js
-var require_headStream2 = __commonJS({
-  "../../../node_modules/@smithy/util-stream/dist-cjs/headStream.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.headStream = void 0;
-    var stream_1 = require("stream");
-    var headStream_browser_1 = require_headStream_browser2();
-    var stream_type_check_1 = require_stream_type_check2();
-    var headStream2 = (stream, bytes) => {
-      if ((0, stream_type_check_1.isReadableStream)(stream)) {
-        return (0, headStream_browser_1.headStream)(stream, bytes);
-      }
-      return new Promise((resolve, reject) => {
-        const collector = new Collector();
-        collector.limit = bytes;
-        stream.pipe(collector);
-        stream.on("error", (err) => {
-          collector.end();
-          reject(err);
-        });
-        collector.on("error", reject);
-        collector.on("finish", function() {
-          const bytes2 = new Uint8Array(Buffer.concat(this.buffers));
-          resolve(bytes2);
-        });
-      });
-    };
-    exports2.headStream = headStream2;
-    var Collector = class extends stream_1.Writable {
-      constructor() {
-        super(...arguments);
-        this.buffers = [];
-        this.limit = Infinity;
-        this.bytesBuffered = 0;
-      }
-      _write(chunk, encoding, callback) {
-        var _a;
-        this.buffers.push(chunk);
-        this.bytesBuffered += (_a = chunk.byteLength) !== null && _a !== void 0 ? _a : 0;
-        if (this.bytesBuffered >= this.limit) {
-          const excess = this.bytesBuffered - this.limit;
-          const tailBuffer = this.buffers[this.buffers.length - 1];
-          this.buffers[this.buffers.length - 1] = tailBuffer.subarray(0, tailBuffer.byteLength - excess);
-          this.emit("finish");
-        }
-        callback();
-      }
-    };
-  }
-});
-
-// ../../../node_modules/@smithy/util-stream/dist-cjs/index.js
-var require_dist_cjs54 = __commonJS({
-  "../../../node_modules/@smithy/util-stream/dist-cjs/index.js"(exports2, module2) {
-    var __defProp2 = Object.defineProperty;
-    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
-    var __getOwnPropNames2 = Object.getOwnPropertyNames;
-    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
-    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
-    var __export2 = (target, all) => {
-      for (var name in all)
-        __defProp2(target, name, { get: all[name], enumerable: true });
-    };
-    var __copyProps2 = (to, from, except, desc) => {
-      if (from && typeof from === "object" || typeof from === "function") {
-        for (let key of __getOwnPropNames2(from))
-          if (!__hasOwnProp2.call(to, key) && key !== except)
-            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
-      }
-      return to;
-    };
-    var __reExport = (target, mod, secondTarget) => (__copyProps2(target, mod, "default"), secondTarget && __copyProps2(secondTarget, mod, "default"));
-    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
-    var src_exports = {};
-    __export2(src_exports, {
-      Uint8ArrayBlobAdapter: () => Uint8ArrayBlobAdapter
-    });
-    module2.exports = __toCommonJS2(src_exports);
-    var import_util_base64 = require_dist_cjs29();
-    var import_util_utf8 = require_dist_cjs28();
-    function transformToString(payload, encoding = "utf-8") {
-      if (encoding === "base64") {
-        return (0, import_util_base64.toBase64)(payload);
-      }
-      return (0, import_util_utf8.toUtf8)(payload);
-    }
-    __name(transformToString, "transformToString");
-    function transformFromString(str, encoding) {
-      if (encoding === "base64") {
-        return Uint8ArrayBlobAdapter.mutate((0, import_util_base64.fromBase64)(str));
-      }
-      return Uint8ArrayBlobAdapter.mutate((0, import_util_utf8.fromUtf8)(str));
-    }
-    __name(transformFromString, "transformFromString");
-    var _Uint8ArrayBlobAdapter = class _Uint8ArrayBlobAdapter2 extends Uint8Array {
-      /**
-       * @param source - such as a string or Stream.
-       * @returns a new Uint8ArrayBlobAdapter extending Uint8Array.
-       */
-      static fromString(source, encoding = "utf-8") {
-        switch (typeof source) {
-          case "string":
-            return transformFromString(source, encoding);
-          default:
-            throw new Error(`Unsupported conversion from ${typeof source} to Uint8ArrayBlobAdapter.`);
-        }
-      }
-      /**
-       * @param source - Uint8Array to be mutated.
-       * @returns the same Uint8Array but with prototype switched to Uint8ArrayBlobAdapter.
-       */
-      static mutate(source) {
-        Object.setPrototypeOf(source, _Uint8ArrayBlobAdapter2.prototype);
-        return source;
-      }
-      /**
-       * @param encoding - default 'utf-8'.
-       * @returns the blob as string.
-       */
-      transformToString(encoding = "utf-8") {
-        return transformToString(this, encoding);
-      }
-    };
-    __name(_Uint8ArrayBlobAdapter, "Uint8ArrayBlobAdapter");
-    var Uint8ArrayBlobAdapter = _Uint8ArrayBlobAdapter;
-    __reExport(src_exports, require_getAwsChunkedEncodingStream2(), module2.exports);
-    __reExport(src_exports, require_sdk_stream_mixin2(), module2.exports);
-    __reExport(src_exports, require_splitStream2(), module2.exports);
-    __reExport(src_exports, require_headStream2(), module2.exports);
-    __reExport(src_exports, require_stream_type_check2(), module2.exports);
-  }
-});
-
 // ../../../node_modules/@aws-sdk/credential-provider-http/dist-cjs/fromHttp/requestHelpers.js
 var require_requestHelpers = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-http/dist-cjs/fromHttp/requestHelpers.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.getCredentials = exports2.createGetRequest = void 0;
-    var property_provider_1 = require_dist_cjs40();
+    var property_provider_1 = require_dist_cjs39();
     var protocol_http_1 = require_dist_cjs2();
-    var smithy_client_1 = require_dist_cjs37();
-    var util_stream_1 = require_dist_cjs54();
+    var smithy_client_1 = require_dist_cjs56();
+    var util_stream_1 = require_dist_cjs35();
     function createGetRequest(url2) {
       return new protocol_http_1.HttpRequest({
         protocol: url2.protocol,
@@ -15814,8 +18207,8 @@ var require_fromHttp = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.fromHttp = void 0;
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    var node_http_handler_1 = require_dist_cjs51();
-    var property_provider_1 = require_dist_cjs40();
+    var node_http_handler_1 = require_dist_cjs31();
+    var property_provider_1 = require_dist_cjs39();
     var promises_1 = tslib_1.__importDefault(require("fs/promises"));
     var checkUrl_1 = require_checkUrl();
     var requestHelpers_1 = require_requestHelpers();
@@ -15875,7 +18268,7 @@ Set AWS_CONTAINER_CREDENTIALS_FULL_URI or AWS_CONTAINER_CREDENTIALS_RELATIVE_URI
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-http/dist-cjs/index.js
-var require_dist_cjs55 = __commonJS({
+var require_dist_cjs61 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-http/dist-cjs/index.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -16065,7 +18458,7 @@ var require_package2 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/util-user-agent-node/dist-cjs/index.js
-var require_dist_cjs56 = __commonJS({
+var require_dist_cjs62 = __commonJS({
   "../../../node_modules/@aws-sdk/util-user-agent-node/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -16094,7 +18487,7 @@ var require_dist_cjs56 = __commonJS({
       defaultUserAgent: () => defaultUserAgent
     });
     module2.exports = __toCommonJS2(src_exports);
-    var import_node_config_provider = require_dist_cjs42();
+    var import_node_config_provider = require_dist_cjs41();
     var import_os = require("os");
     var import_process = require("process");
     var crtAvailability = {
@@ -16149,7 +18542,7 @@ var require_dist_cjs56 = __commonJS({
 });
 
 // ../../../node_modules/@smithy/hash-node/dist-cjs/index.js
-var require_dist_cjs57 = __commonJS({
+var require_dist_cjs63 = __commonJS({
   "../../../node_modules/@smithy/hash-node/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -16174,8 +18567,8 @@ var require_dist_cjs57 = __commonJS({
       Hash: () => Hash
     });
     module2.exports = __toCommonJS2(src_exports);
-    var import_util_buffer_from = require_dist_cjs27();
-    var import_util_utf8 = require_dist_cjs28();
+    var import_util_buffer_from = require_dist_cjs26();
+    var import_util_utf8 = require_dist_cjs27();
     var import_buffer = require("buffer");
     var import_crypto5 = require("crypto");
     var _Hash = class _Hash {
@@ -16213,7 +18606,7 @@ var require_dist_cjs57 = __commonJS({
 });
 
 // ../../../node_modules/@smithy/util-body-length-node/dist-cjs/index.js
-var require_dist_cjs58 = __commonJS({
+var require_dist_cjs64 = __commonJS({
   "../../../node_modules/@smithy/util-body-length-node/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -16262,7 +18655,7 @@ var require_dist_cjs58 = __commonJS({
 });
 
 // ../../../node_modules/@smithy/util-retry/node_modules/@smithy/service-error-classification/dist-cjs/index.js
-var require_dist_cjs59 = __commonJS({
+var require_dist_cjs65 = __commonJS({
   "../../../node_modules/@smithy/util-retry/node_modules/@smithy/service-error-classification/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -16349,7 +18742,7 @@ var require_dist_cjs59 = __commonJS({
 });
 
 // ../../../node_modules/@smithy/util-retry/dist-cjs/index.js
-var require_dist_cjs60 = __commonJS({
+var require_dist_cjs66 = __commonJS({
   "../../../node_modules/@smithy/util-retry/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -16396,7 +18789,7 @@ var require_dist_cjs60 = __commonJS({
     })(RETRY_MODES || {});
     var DEFAULT_MAX_ATTEMPTS = 3;
     var DEFAULT_RETRY_MODE = "standard";
-    var import_service_error_classification = require_dist_cjs59();
+    var import_service_error_classification = require_dist_cjs65();
     var _DefaultRateLimiter = class _DefaultRateLimiter {
       constructor(options) {
         this.currentCapacity = 0;
@@ -16725,10 +19118,10 @@ var require_runtimeConfig_shared = __commonJS({
     exports2.getRuntimeConfig = void 0;
     var core_1 = (init_dist_es2(), __toCommonJS(dist_es_exports2));
     var core_2 = (init_dist_es(), __toCommonJS(dist_es_exports));
-    var smithy_client_1 = require_dist_cjs37();
-    var url_parser_1 = require_dist_cjs44();
-    var util_base64_1 = require_dist_cjs29();
-    var util_utf8_1 = require_dist_cjs28();
+    var smithy_client_1 = require_dist_cjs56();
+    var url_parser_1 = require_dist_cjs43();
+    var util_base64_1 = require_dist_cjs28();
+    var util_utf8_1 = require_dist_cjs27();
     var httpAuthSchemeProvider_1 = require_httpAuthSchemeProvider2();
     var endpointResolver_1 = require_endpointResolver();
     var getRuntimeConfig = (config) => {
@@ -16764,7 +19157,7 @@ var require_runtimeConfig_shared = __commonJS({
 });
 
 // ../../../node_modules/@smithy/util-defaults-mode-node/node_modules/@smithy/util-middleware/dist-cjs/index.js
-var require_dist_cjs61 = __commonJS({
+var require_dist_cjs67 = __commonJS({
   "../../../node_modules/@smithy/util-defaults-mode-node/node_modules/@smithy/util-middleware/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -16802,7 +19195,7 @@ var require_dist_cjs61 = __commonJS({
 });
 
 // ../../../node_modules/@smithy/util-defaults-mode-node/node_modules/@smithy/config-resolver/dist-cjs/index.js
-var require_dist_cjs62 = __commonJS({
+var require_dist_cjs68 = __commonJS({
   "../../../node_modules/@smithy/util-defaults-mode-node/node_modules/@smithy/config-resolver/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -16859,7 +19252,7 @@ var require_dist_cjs62 = __commonJS({
       configFileSelector: (profile) => (0, import_util_config_provider.booleanSelector)(profile, CONFIG_USE_FIPS_ENDPOINT, import_util_config_provider.SelectorType.CONFIG),
       default: false
     };
-    var import_util_middleware3 = require_dist_cjs61();
+    var import_util_middleware3 = require_dist_cjs67();
     var resolveCustomEndpointsConfig = /* @__PURE__ */ __name((input) => {
       const { endpoint, urlParser } = input;
       return {
@@ -16988,7 +19381,7 @@ var require_dist_cjs62 = __commonJS({
 });
 
 // ../../../node_modules/@smithy/util-defaults-mode-node/node_modules/@smithy/property-provider/dist-cjs/index.js
-var require_dist_cjs63 = __commonJS({
+var require_dist_cjs69 = __commonJS({
   "../../../node_modules/@smithy/util-defaults-mode-node/node_modules/@smithy/property-provider/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -17224,7 +19617,7 @@ var require_slurpFile3 = __commonJS({
 });
 
 // ../../../node_modules/@smithy/util-defaults-mode-node/node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js
-var require_dist_cjs64 = __commonJS({
+var require_dist_cjs70 = __commonJS({
   "../../../node_modules/@smithy/util-defaults-mode-node/node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -17389,7 +19782,7 @@ var require_dist_cjs64 = __commonJS({
 });
 
 // ../../../node_modules/@smithy/util-defaults-mode-node/node_modules/@smithy/node-config-provider/dist-cjs/index.js
-var require_dist_cjs65 = __commonJS({
+var require_dist_cjs71 = __commonJS({
   "../../../node_modules/@smithy/util-defaults-mode-node/node_modules/@smithy/node-config-provider/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -17414,7 +19807,7 @@ var require_dist_cjs65 = __commonJS({
       loadConfig: () => loadConfig
     });
     module2.exports = __toCommonJS2(src_exports);
-    var import_property_provider2 = require_dist_cjs63();
+    var import_property_provider2 = require_dist_cjs69();
     function getSelectorName(functionString) {
       try {
         const constants = new Set(Array.from(functionString.match(/([A-Z_]){3,}/g) ?? []));
@@ -17441,7 +19834,7 @@ var require_dist_cjs65 = __commonJS({
         );
       }
     }, "fromEnv");
-    var import_shared_ini_file_loader = require_dist_cjs64();
+    var import_shared_ini_file_loader = require_dist_cjs70();
     var fromSharedConfigFiles = /* @__PURE__ */ __name((configSelector, { preferredFile = "config", ...init } = {}) => async () => {
       const profile = (0, import_shared_ini_file_loader.getProfileName)(init);
       const { configFile, credentialsFile } = await (0, import_shared_ini_file_loader.loadSharedConfigFiles)(init);
@@ -17475,7 +19868,7 @@ var require_dist_cjs65 = __commonJS({
 });
 
 // ../../../node_modules/@smithy/util-defaults-mode-node/node_modules/@smithy/querystring-parser/dist-cjs/index.js
-var require_dist_cjs66 = __commonJS({
+var require_dist_cjs72 = __commonJS({
   "../../../node_modules/@smithy/util-defaults-mode-node/node_modules/@smithy/querystring-parser/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -17526,7 +19919,7 @@ var require_dist_cjs66 = __commonJS({
 });
 
 // ../../../node_modules/@smithy/util-defaults-mode-node/node_modules/@smithy/url-parser/dist-cjs/index.js
-var require_dist_cjs67 = __commonJS({
+var require_dist_cjs73 = __commonJS({
   "../../../node_modules/@smithy/util-defaults-mode-node/node_modules/@smithy/url-parser/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -17551,7 +19944,7 @@ var require_dist_cjs67 = __commonJS({
       parseUrl: () => parseUrl
     });
     module2.exports = __toCommonJS2(src_exports);
-    var import_querystring_parser = require_dist_cjs66();
+    var import_querystring_parser = require_dist_cjs72();
     var parseUrl = /* @__PURE__ */ __name((url2) => {
       if (typeof url2 === "string") {
         return parseUrl(new URL(url2));
@@ -17573,7 +19966,7 @@ var require_dist_cjs67 = __commonJS({
 });
 
 // ../../../node_modules/@smithy/util-defaults-mode-node/node_modules/@smithy/credential-provider-imds/dist-cjs/index.js
-var require_dist_cjs68 = __commonJS({
+var require_dist_cjs74 = __commonJS({
   "../../../node_modules/@smithy/util-defaults-mode-node/node_modules/@smithy/credential-provider-imds/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -17609,7 +20002,7 @@ var require_dist_cjs68 = __commonJS({
     });
     module2.exports = __toCommonJS2(src_exports);
     var import_url = require("url");
-    var import_property_provider2 = require_dist_cjs63();
+    var import_property_provider2 = require_dist_cjs69();
     var import_buffer = require("buffer");
     var import_http2 = require("http");
     function httpRequest(options) {
@@ -17754,8 +20147,8 @@ var require_dist_cjs68 = __commonJS({
     };
     __name(_InstanceMetadataV1FallbackError, "InstanceMetadataV1FallbackError");
     var InstanceMetadataV1FallbackError = _InstanceMetadataV1FallbackError;
-    var import_node_config_provider = require_dist_cjs65();
-    var import_url_parser = require_dist_cjs67();
+    var import_node_config_provider = require_dist_cjs71();
+    var import_url_parser = require_dist_cjs73();
     var Endpoint = /* @__PURE__ */ ((Endpoint2) => {
       Endpoint2["IPv4"] = "http://169.254.169.254";
       Endpoint2["IPv6"] = "http://[fd00:ec2::254]";
@@ -17970,7 +20363,7 @@ For more information, please visit: ` + STATIC_STABILITY_DOC_URL
 });
 
 // ../../../node_modules/@smithy/util-defaults-mode-node/dist-cjs/index.js
-var require_dist_cjs69 = __commonJS({
+var require_dist_cjs75 = __commonJS({
   "../../../node_modules/@smithy/util-defaults-mode-node/dist-cjs/index.js"(exports2, module2) {
     var __create2 = Object.create;
     var __defProp2 = Object.defineProperty;
@@ -18005,9 +20398,9 @@ var require_dist_cjs69 = __commonJS({
       resolveDefaultsModeConfig: () => resolveDefaultsModeConfig
     });
     module2.exports = __toCommonJS2(src_exports);
-    var import_config_resolver = require_dist_cjs62();
-    var import_node_config_provider = require_dist_cjs65();
-    var import_property_provider2 = require_dist_cjs63();
+    var import_config_resolver = require_dist_cjs68();
+    var import_node_config_provider = require_dist_cjs71();
+    var import_property_provider2 = require_dist_cjs69();
     var AWS_EXECUTION_ENV = "AWS_EXECUTION_ENV";
     var AWS_REGION_ENV = "AWS_REGION";
     var AWS_DEFAULT_REGION_ENV = "AWS_DEFAULT_REGION";
@@ -18068,7 +20461,7 @@ var require_dist_cjs69 = __commonJS({
       }
       if (!process.env[ENV_IMDS_DISABLED]) {
         try {
-          const { getInstanceMetadataEndpoint, httpRequest } = await Promise.resolve().then(() => __toESM2(require_dist_cjs68()));
+          const { getInstanceMetadataEndpoint, httpRequest } = await Promise.resolve().then(() => __toESM2(require_dist_cjs74()));
           const endpoint = await getInstanceMetadataEndpoint();
           return (await httpRequest({ ...endpoint, path: IMDS_REGION_PATH })).toString();
         } catch (e) {
@@ -18087,18 +20480,18 @@ var require_runtimeConfig = __commonJS({
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var package_json_1 = tslib_1.__importDefault(require_package2());
     var core_1 = (init_dist_es2(), __toCommonJS(dist_es_exports2));
-    var util_user_agent_node_1 = require_dist_cjs56();
+    var util_user_agent_node_1 = require_dist_cjs62();
     var config_resolver_1 = require_dist_cjs11();
-    var hash_node_1 = require_dist_cjs57();
-    var middleware_retry_1 = require_dist_cjs38();
-    var node_config_provider_1 = require_dist_cjs42();
-    var node_http_handler_1 = require_dist_cjs51();
-    var util_body_length_node_1 = require_dist_cjs58();
-    var util_retry_1 = require_dist_cjs60();
+    var hash_node_1 = require_dist_cjs63();
+    var middleware_retry_1 = require_dist_cjs57();
+    var node_config_provider_1 = require_dist_cjs41();
+    var node_http_handler_1 = require_dist_cjs31();
+    var util_body_length_node_1 = require_dist_cjs64();
+    var util_retry_1 = require_dist_cjs66();
     var runtimeConfig_shared_1 = require_runtimeConfig_shared();
-    var smithy_client_1 = require_dist_cjs37();
-    var util_defaults_mode_node_1 = require_dist_cjs69();
-    var smithy_client_2 = require_dist_cjs37();
+    var smithy_client_1 = require_dist_cjs56();
+    var util_defaults_mode_node_1 = require_dist_cjs75();
+    var smithy_client_2 = require_dist_cjs56();
     var getRuntimeConfig = (config) => {
       (0, smithy_client_2.emitWarningIfUnsupportedVersion)(process.version);
       const defaultsMode = (0, util_defaults_mode_node_1.resolveDefaultsModeConfig)(config);
@@ -18130,7 +20523,7 @@ var require_runtimeConfig = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/region-config-resolver/dist-cjs/index.js
-var require_dist_cjs70 = __commonJS({
+var require_dist_cjs76 = __commonJS({
   "../../../node_modules/@aws-sdk/region-config-resolver/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -18228,7 +20621,7 @@ var require_dist_cjs70 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/client-sso/dist-cjs/index.js
-var require_dist_cjs71 = __commonJS({
+var require_dist_cjs77 = __commonJS({
   "../../../node_modules/@aws-sdk/client-sso/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -18279,9 +20672,9 @@ var require_dist_cjs71 = __commonJS({
     var import_middleware_user_agent = require_dist_cjs8();
     var import_config_resolver = require_dist_cjs11();
     var import_core3 = (init_dist_es(), __toCommonJS(dist_es_exports));
-    var import_middleware_content_length = require_dist_cjs39();
-    var import_middleware_endpoint2 = require_dist_cjs46();
-    var import_middleware_retry2 = require_dist_cjs38();
+    var import_middleware_content_length = require_dist_cjs38();
+    var import_middleware_endpoint2 = require_dist_cjs45();
+    var import_middleware_retry2 = require_dist_cjs57();
     var import_httpAuthSchemeProvider = require_httpAuthSchemeProvider2();
     var resolveClientEndpointParameters = /* @__PURE__ */ __name((options) => {
       return {
@@ -18298,9 +20691,9 @@ var require_dist_cjs71 = __commonJS({
       UseDualStack: { type: "builtInParams", name: "useDualstackEndpoint" }
     };
     var import_runtimeConfig = require_runtimeConfig();
-    var import_region_config_resolver = require_dist_cjs70();
+    var import_region_config_resolver = require_dist_cjs76();
     var import_protocol_http8 = require_dist_cjs2();
-    var import_smithy_client5 = require_dist_cjs37();
+    var import_smithy_client5 = require_dist_cjs56();
     var getHttpAuthExtensionConfiguration = /* @__PURE__ */ __name((runtimeConfig) => {
       const _httpAuthSchemes = runtimeConfig.httpAuthSchemes;
       let _httpAuthSchemeProvider = runtimeConfig.httpAuthSchemeProvider;
@@ -18395,7 +20788,7 @@ var require_dist_cjs71 = __commonJS({
     };
     __name(_SSOClient, "SSOClient");
     var SSOClient = _SSOClient;
-    var import_middleware_serde2 = require_dist_cjs45();
+    var import_middleware_serde2 = require_dist_cjs44();
     var _SSOServiceException = class _SSOServiceException2 extends import_smithy_client5.ServiceException {
       /**
        * @internal
@@ -19006,10 +21399,10 @@ var require_runtimeConfig_shared2 = __commonJS({
     exports2.getRuntimeConfig = void 0;
     var core_1 = (init_dist_es2(), __toCommonJS(dist_es_exports2));
     var core_2 = (init_dist_es(), __toCommonJS(dist_es_exports));
-    var smithy_client_1 = require_dist_cjs37();
-    var url_parser_1 = require_dist_cjs44();
-    var util_base64_1 = require_dist_cjs29();
-    var util_utf8_1 = require_dist_cjs28();
+    var smithy_client_1 = require_dist_cjs56();
+    var url_parser_1 = require_dist_cjs43();
+    var util_base64_1 = require_dist_cjs28();
+    var util_utf8_1 = require_dist_cjs27();
     var httpAuthSchemeProvider_1 = require_httpAuthSchemeProvider3();
     var endpointResolver_1 = require_endpointResolver2();
     var getRuntimeConfig = (config) => {
@@ -19053,19 +21446,19 @@ var require_runtimeConfig2 = __commonJS({
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var package_json_1 = tslib_1.__importDefault(require_package3());
     var core_1 = (init_dist_es2(), __toCommonJS(dist_es_exports2));
-    var credential_provider_node_1 = require_dist_cjs79();
-    var util_user_agent_node_1 = require_dist_cjs56();
+    var credential_provider_node_1 = require_dist_cjs85();
+    var util_user_agent_node_1 = require_dist_cjs62();
     var config_resolver_1 = require_dist_cjs11();
-    var hash_node_1 = require_dist_cjs57();
-    var middleware_retry_1 = require_dist_cjs38();
-    var node_config_provider_1 = require_dist_cjs42();
-    var node_http_handler_1 = require_dist_cjs51();
-    var util_body_length_node_1 = require_dist_cjs58();
-    var util_retry_1 = require_dist_cjs60();
+    var hash_node_1 = require_dist_cjs63();
+    var middleware_retry_1 = require_dist_cjs57();
+    var node_config_provider_1 = require_dist_cjs41();
+    var node_http_handler_1 = require_dist_cjs31();
+    var util_body_length_node_1 = require_dist_cjs64();
+    var util_retry_1 = require_dist_cjs66();
     var runtimeConfig_shared_1 = require_runtimeConfig_shared2();
-    var smithy_client_1 = require_dist_cjs37();
-    var util_defaults_mode_node_1 = require_dist_cjs69();
-    var smithy_client_2 = require_dist_cjs37();
+    var smithy_client_1 = require_dist_cjs56();
+    var util_defaults_mode_node_1 = require_dist_cjs75();
+    var smithy_client_2 = require_dist_cjs56();
     var getRuntimeConfig = (config) => {
       (0, smithy_client_2.emitWarningIfUnsupportedVersion)(process.version);
       const defaultsMode = (0, util_defaults_mode_node_1.resolveDefaultsModeConfig)(config);
@@ -19098,7 +21491,7 @@ var require_runtimeConfig2 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/client-sso-oidc/dist-cjs/index.js
-var require_dist_cjs72 = __commonJS({
+var require_dist_cjs78 = __commonJS({
   "../../../node_modules/@aws-sdk/client-sso-oidc/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -19157,9 +21550,9 @@ var require_dist_cjs72 = __commonJS({
     var import_middleware_user_agent = require_dist_cjs8();
     var import_config_resolver = require_dist_cjs11();
     var import_core3 = (init_dist_es(), __toCommonJS(dist_es_exports));
-    var import_middleware_content_length = require_dist_cjs39();
-    var import_middleware_endpoint2 = require_dist_cjs46();
-    var import_middleware_retry2 = require_dist_cjs38();
+    var import_middleware_content_length = require_dist_cjs38();
+    var import_middleware_endpoint2 = require_dist_cjs45();
+    var import_middleware_retry2 = require_dist_cjs57();
     var import_httpAuthSchemeProvider = require_httpAuthSchemeProvider3();
     var resolveClientEndpointParameters = /* @__PURE__ */ __name((options) => {
       return {
@@ -19176,9 +21569,9 @@ var require_dist_cjs72 = __commonJS({
       UseDualStack: { type: "builtInParams", name: "useDualstackEndpoint" }
     };
     var import_runtimeConfig = require_runtimeConfig2();
-    var import_region_config_resolver = require_dist_cjs70();
+    var import_region_config_resolver = require_dist_cjs76();
     var import_protocol_http8 = require_dist_cjs2();
-    var import_smithy_client5 = require_dist_cjs37();
+    var import_smithy_client5 = require_dist_cjs56();
     var getHttpAuthExtensionConfiguration = /* @__PURE__ */ __name((runtimeConfig) => {
       const _httpAuthSchemes = runtimeConfig.httpAuthSchemes;
       let _httpAuthSchemeProvider = runtimeConfig.httpAuthSchemeProvider;
@@ -19273,7 +21666,7 @@ var require_dist_cjs72 = __commonJS({
     };
     __name(_SSOOIDCClient, "SSOOIDCClient");
     var SSOOIDCClient = _SSOOIDCClient;
-    var import_middleware_serde2 = require_dist_cjs45();
+    var import_middleware_serde2 = require_dist_cjs44();
     var _SSOOIDCServiceException = class _SSOOIDCServiceException2 extends import_smithy_client5.ServiceException {
       /**
        * @internal
@@ -20075,7 +22468,7 @@ var require_dist_cjs72 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/token-providers/dist-cjs/index.js
-var require_dist_cjs73 = __commonJS({
+var require_dist_cjs79 = __commonJS({
   "../../../node_modules/@aws-sdk/token-providers/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __create2 = Object.create;
@@ -20117,7 +22510,7 @@ var require_dist_cjs73 = __commonJS({
     var REFRESH_MESSAGE = `To refresh this SSO session run 'aws sso login' with the corresponding profile.`;
     var ssoOidcClientsHash = {};
     var getSsoOidcClient = /* @__PURE__ */ __name(async (ssoRegion) => {
-      const { SSOOIDCClient } = await Promise.resolve().then(() => __toESM2(require_dist_cjs72()));
+      const { SSOOIDCClient } = await Promise.resolve().then(() => __toESM2(require_dist_cjs78()));
       if (ssoOidcClientsHash[ssoRegion]) {
         return ssoOidcClientsHash[ssoRegion];
       }
@@ -20126,7 +22519,7 @@ var require_dist_cjs73 = __commonJS({
       return ssoOidcClient;
     }, "getSsoOidcClient");
     var getNewSsoOidcToken = /* @__PURE__ */ __name(async (ssoToken, ssoRegion) => {
-      const { CreateTokenCommand } = await Promise.resolve().then(() => __toESM2(require_dist_cjs72()));
+      const { CreateTokenCommand } = await Promise.resolve().then(() => __toESM2(require_dist_cjs78()));
       const ssoOidcClient = await getSsoOidcClient(ssoRegion);
       return ssoOidcClient.send(
         new CreateTokenCommand({
@@ -20137,7 +22530,7 @@ var require_dist_cjs73 = __commonJS({
         })
       );
     }, "getNewSsoOidcToken");
-    var import_property_provider2 = require_dist_cjs40();
+    var import_property_provider2 = require_dist_cjs39();
     var validateTokenExpiry = /* @__PURE__ */ __name((token) => {
       if (token.expiration && token.expiration.getTime() < Date.now()) {
         throw new import_property_provider2.TokenProviderError(`Token is expired. ${REFRESH_MESSAGE}`, false);
@@ -20151,7 +22544,7 @@ var require_dist_cjs73 = __commonJS({
         );
       }
     }, "validateTokenKey");
-    var import_shared_ini_file_loader = require_dist_cjs41();
+    var import_shared_ini_file_loader = require_dist_cjs40();
     var import_fs = require("fs");
     var { writeFile } = import_fs.promises;
     var writeSSOTokenToFile = /* @__PURE__ */ __name((id, ssoToken) => {
@@ -20255,7 +22648,7 @@ var require_dist_cjs73 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-sso/dist-cjs/index.js
-var require_dist_cjs74 = __commonJS({
+var require_dist_cjs80 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-sso/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -20288,7 +22681,7 @@ var require_dist_cjs74 = __commonJS({
     var init_loadSso = __esm2({
       "src/loadSso.ts"() {
         "use strict";
-        import_client_sso = require_dist_cjs71();
+        import_client_sso = require_dist_cjs77();
       }
     });
     var src_exports = {};
@@ -20299,9 +22692,9 @@ var require_dist_cjs74 = __commonJS({
     });
     module2.exports = __toCommonJS2(src_exports);
     var isSsoProfile = /* @__PURE__ */ __name((arg) => arg && (typeof arg.sso_start_url === "string" || typeof arg.sso_account_id === "string" || typeof arg.sso_session === "string" || typeof arg.sso_region === "string" || typeof arg.sso_role_name === "string"), "isSsoProfile");
-    var import_token_providers = require_dist_cjs73();
-    var import_property_provider2 = require_dist_cjs40();
-    var import_shared_ini_file_loader = require_dist_cjs41();
+    var import_token_providers = require_dist_cjs79();
+    var import_property_provider2 = require_dist_cjs39();
+    var import_shared_ini_file_loader = require_dist_cjs40();
     var SHOULD_FAIL_CREDENTIAL_CHAIN = false;
     var resolveSSOCredentials = /* @__PURE__ */ __name(async ({
       ssoStartUrl,
@@ -20750,10 +23143,10 @@ var require_runtimeConfig_shared3 = __commonJS({
     exports2.getRuntimeConfig = void 0;
     var core_1 = (init_dist_es2(), __toCommonJS(dist_es_exports2));
     var core_2 = (init_dist_es(), __toCommonJS(dist_es_exports));
-    var smithy_client_1 = require_dist_cjs37();
-    var url_parser_1 = require_dist_cjs44();
-    var util_base64_1 = require_dist_cjs29();
-    var util_utf8_1 = require_dist_cjs28();
+    var smithy_client_1 = require_dist_cjs56();
+    var url_parser_1 = require_dist_cjs43();
+    var util_base64_1 = require_dist_cjs28();
+    var util_utf8_1 = require_dist_cjs27();
     var httpAuthSchemeProvider_1 = require_httpAuthSchemeProvider4();
     var endpointResolver_1 = require_endpointResolver3();
     var getRuntimeConfig = (config) => {
@@ -20797,20 +23190,20 @@ var require_runtimeConfig3 = __commonJS({
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var package_json_1 = tslib_1.__importDefault(require_package4());
     var core_1 = (init_dist_es2(), __toCommonJS(dist_es_exports2));
-    var credential_provider_node_1 = require_dist_cjs79();
-    var util_user_agent_node_1 = require_dist_cjs56();
+    var credential_provider_node_1 = require_dist_cjs85();
+    var util_user_agent_node_1 = require_dist_cjs62();
     var config_resolver_1 = require_dist_cjs11();
     var core_2 = (init_dist_es(), __toCommonJS(dist_es_exports));
-    var hash_node_1 = require_dist_cjs57();
-    var middleware_retry_1 = require_dist_cjs38();
-    var node_config_provider_1 = require_dist_cjs42();
-    var node_http_handler_1 = require_dist_cjs51();
-    var util_body_length_node_1 = require_dist_cjs58();
-    var util_retry_1 = require_dist_cjs60();
+    var hash_node_1 = require_dist_cjs63();
+    var middleware_retry_1 = require_dist_cjs57();
+    var node_config_provider_1 = require_dist_cjs41();
+    var node_http_handler_1 = require_dist_cjs31();
+    var util_body_length_node_1 = require_dist_cjs64();
+    var util_retry_1 = require_dist_cjs66();
     var runtimeConfig_shared_1 = require_runtimeConfig_shared3();
-    var smithy_client_1 = require_dist_cjs37();
-    var util_defaults_mode_node_1 = require_dist_cjs69();
-    var smithy_client_2 = require_dist_cjs37();
+    var smithy_client_1 = require_dist_cjs56();
+    var util_defaults_mode_node_1 = require_dist_cjs75();
+    var smithy_client_2 = require_dist_cjs56();
     var getRuntimeConfig = (config) => {
       (0, smithy_client_2.emitWarningIfUnsupportedVersion)(process.version);
       const defaultsMode = (0, util_defaults_mode_node_1.resolveDefaultsModeConfig)(config);
@@ -20908,9 +23301,9 @@ var require_runtimeExtensions = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.resolveRuntimeExtensions = void 0;
-    var region_config_resolver_1 = require_dist_cjs70();
+    var region_config_resolver_1 = require_dist_cjs76();
     var protocol_http_1 = require_dist_cjs2();
-    var smithy_client_1 = require_dist_cjs37();
+    var smithy_client_1 = require_dist_cjs56();
     var httpAuthExtensionConfiguration_1 = require_httpAuthExtensionConfiguration();
     var asPartial = (t) => t;
     var resolveRuntimeExtensions = (runtimeConfig, extensions) => {
@@ -20945,10 +23338,10 @@ var require_STSClient = __commonJS({
     var middleware_user_agent_1 = require_dist_cjs8();
     var config_resolver_1 = require_dist_cjs11();
     var core_1 = (init_dist_es(), __toCommonJS(dist_es_exports));
-    var middleware_content_length_1 = require_dist_cjs39();
-    var middleware_endpoint_1 = require_dist_cjs46();
-    var middleware_retry_1 = require_dist_cjs38();
-    var smithy_client_1 = require_dist_cjs37();
+    var middleware_content_length_1 = require_dist_cjs38();
+    var middleware_endpoint_1 = require_dist_cjs45();
+    var middleware_retry_1 = require_dist_cjs57();
+    var smithy_client_1 = require_dist_cjs56();
     Object.defineProperty(exports2, "__Client", { enumerable: true, get: function() {
       return smithy_client_1.Client;
     } });
@@ -20992,7 +23385,7 @@ var require_STSClient = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/client-sts/dist-cjs/index.js
-var require_dist_cjs75 = __commonJS({
+var require_dist_cjs81 = __commonJS({
   "../../../node_modules/@aws-sdk/client-sts/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -21049,10 +23442,10 @@ var require_dist_cjs75 = __commonJS({
     });
     module2.exports = __toCommonJS2(src_exports);
     __reExport(src_exports, require_STSClient(), module2.exports);
-    var import_middleware_endpoint2 = require_dist_cjs46();
-    var import_middleware_serde2 = require_dist_cjs45();
+    var import_middleware_endpoint2 = require_dist_cjs45();
+    var import_middleware_serde2 = require_dist_cjs44();
     var import_EndpointParameters = require_EndpointParameters();
-    var import_smithy_client5 = require_dist_cjs37();
+    var import_smithy_client5 = require_dist_cjs56();
     var _STSServiceException = class _STSServiceException2 extends import_smithy_client5.ServiceException {
       /**
        * @internal
@@ -22364,7 +24757,7 @@ var require_dist_cjs75 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-process/dist-cjs/index.js
-var require_dist_cjs76 = __commonJS({
+var require_dist_cjs82 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-process/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -22390,8 +24783,8 @@ var require_dist_cjs76 = __commonJS({
       fromProcess: () => fromProcess
     });
     module2.exports = __toCommonJS2(src_exports);
-    var import_shared_ini_file_loader = require_dist_cjs41();
-    var import_property_provider2 = require_dist_cjs40();
+    var import_shared_ini_file_loader = require_dist_cjs40();
+    var import_property_provider2 = require_dist_cjs39();
     var import_child_process = require("child_process");
     var import_util = require("util");
     var getValidatedProcessCredentials = /* @__PURE__ */ __name((profileName, data, profiles) => {
@@ -22496,7 +24889,7 @@ var require_fromWebToken = __commonJS({
       const { roleArn, roleSessionName, webIdentityToken, providerId, policyArns, policy, durationSeconds } = init;
       let { roleAssumerWithWebIdentity } = init;
       if (!roleAssumerWithWebIdentity) {
-        const { getDefaultRoleAssumerWithWebIdentity } = await Promise.resolve().then(() => __importStar2(require_dist_cjs75()));
+        const { getDefaultRoleAssumerWithWebIdentity } = await Promise.resolve().then(() => __importStar2(require_dist_cjs81()));
         roleAssumerWithWebIdentity = getDefaultRoleAssumerWithWebIdentity({
           ...init.clientConfig,
           credentialProviderLogger: init.logger,
@@ -22523,7 +24916,7 @@ var require_fromTokenFile = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.fromTokenFile = void 0;
-    var property_provider_1 = require_dist_cjs40();
+    var property_provider_1 = require_dist_cjs39();
     var fs_1 = require("fs");
     var fromWebToken_1 = require_fromWebToken();
     var ENV_TOKEN_FILE = "AWS_WEB_IDENTITY_TOKEN_FILE";
@@ -22551,7 +24944,7 @@ var require_fromTokenFile = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-web-identity/dist-cjs/index.js
-var require_dist_cjs77 = __commonJS({
+var require_dist_cjs83 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-web-identity/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -22576,7 +24969,7 @@ var require_dist_cjs77 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-ini/dist-cjs/index.js
-var require_dist_cjs78 = __commonJS({
+var require_dist_cjs84 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-ini/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __create2 = Object.create;
@@ -22612,24 +25005,24 @@ var require_dist_cjs78 = __commonJS({
       fromIni: () => fromIni
     });
     module2.exports = __toCommonJS2(src_exports);
-    var import_shared_ini_file_loader = require_dist_cjs41();
-    var import_property_provider2 = require_dist_cjs40();
+    var import_shared_ini_file_loader = require_dist_cjs40();
+    var import_property_provider2 = require_dist_cjs39();
     var resolveCredentialSource = /* @__PURE__ */ __name((credentialSource, profileName, logger) => {
       const sourceProvidersMap = {
         EcsContainer: async (options) => {
-          const { fromHttp } = await Promise.resolve().then(() => __toESM2(require_dist_cjs55()));
-          const { fromContainerMetadata } = await Promise.resolve().then(() => __toESM2(require_dist_cjs49()));
+          const { fromHttp } = await Promise.resolve().then(() => __toESM2(require_dist_cjs61()));
+          const { fromContainerMetadata } = await Promise.resolve().then(() => __toESM2(require_dist_cjs60()));
           logger == null ? void 0 : logger.debug("@aws-sdk/credential-provider-ini - credential_source is EcsContainer");
           return (0, import_property_provider2.chain)(fromHttp(options ?? {}), fromContainerMetadata(options));
         },
         Ec2InstanceMetadata: async (options) => {
           logger == null ? void 0 : logger.debug("@aws-sdk/credential-provider-ini - credential_source is Ec2InstanceMetadata");
-          const { fromInstanceMetadata } = await Promise.resolve().then(() => __toESM2(require_dist_cjs49()));
+          const { fromInstanceMetadata } = await Promise.resolve().then(() => __toESM2(require_dist_cjs60()));
           return fromInstanceMetadata(options);
         },
         Environment: async (options) => {
           logger == null ? void 0 : logger.debug("@aws-sdk/credential-provider-ini - credential_source is Environment");
-          const { fromEnv } = await Promise.resolve().then(() => __toESM2(require_dist_cjs48()));
+          const { fromEnv } = await Promise.resolve().then(() => __toESM2(require_dist_cjs59()));
           return fromEnv(options);
         }
       };
@@ -22666,7 +25059,7 @@ var require_dist_cjs78 = __commonJS({
       (_a = options.logger) == null ? void 0 : _a.debug("@aws-sdk/credential-provider-ini - resolveAssumeRoleCredentials (STS)");
       const data = profiles[profileName];
       if (!options.roleAssumer) {
-        const { getDefaultRoleAssumer } = await Promise.resolve().then(() => __toESM2(require_dist_cjs75()));
+        const { getDefaultRoleAssumer } = await Promise.resolve().then(() => __toESM2(require_dist_cjs81()));
         options.roleAssumer = getDefaultRoleAssumer(
           {
             ...options.clientConfig,
@@ -22725,14 +25118,14 @@ var require_dist_cjs78 = __commonJS({
       return options.roleAssumer(sourceCreds, params);
     }, "resolveAssumeRoleCredentials");
     var isProcessProfile = /* @__PURE__ */ __name((arg) => Boolean(arg) && typeof arg === "object" && typeof arg.credential_process === "string", "isProcessProfile");
-    var resolveProcessCredentials = /* @__PURE__ */ __name(async (options, profile) => Promise.resolve().then(() => __toESM2(require_dist_cjs76())).then(
+    var resolveProcessCredentials = /* @__PURE__ */ __name(async (options, profile) => Promise.resolve().then(() => __toESM2(require_dist_cjs82())).then(
       ({ fromProcess }) => fromProcess({
         ...options,
         profile
       })()
     ), "resolveProcessCredentials");
     var resolveSsoCredentials = /* @__PURE__ */ __name(async (profile, options = {}) => {
-      const { fromSSO } = await Promise.resolve().then(() => __toESM2(require_dist_cjs74()));
+      const { fromSSO } = await Promise.resolve().then(() => __toESM2(require_dist_cjs80()));
       return fromSSO({
         profile,
         logger: options.logger
@@ -22752,7 +25145,7 @@ var require_dist_cjs78 = __commonJS({
       });
     }, "resolveStaticCredentials");
     var isWebIdentityProfile = /* @__PURE__ */ __name((arg) => Boolean(arg) && typeof arg === "object" && typeof arg.web_identity_token_file === "string" && typeof arg.role_arn === "string" && ["undefined", "string"].indexOf(typeof arg.role_session_name) > -1, "isWebIdentityProfile");
-    var resolveWebIdentityCredentials = /* @__PURE__ */ __name(async (profile, options) => Promise.resolve().then(() => __toESM2(require_dist_cjs77())).then(
+    var resolveWebIdentityCredentials = /* @__PURE__ */ __name(async (profile, options) => Promise.resolve().then(() => __toESM2(require_dist_cjs83())).then(
       ({ fromTokenFile: fromTokenFile2 }) => fromTokenFile2({
         webIdentityTokenFile: profile.web_identity_token_file,
         roleArn: profile.role_arn,
@@ -22797,7 +25190,7 @@ var require_dist_cjs78 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-node/dist-cjs/index.js
-var require_dist_cjs79 = __commonJS({
+var require_dist_cjs85 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-node/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __create2 = Object.create;
@@ -22835,16 +25228,16 @@ var require_dist_cjs79 = __commonJS({
       defaultProvider: () => defaultProvider
     });
     module2.exports = __toCommonJS2(src_exports);
-    var import_credential_provider_env = require_dist_cjs48();
-    var import_shared_ini_file_loader = require_dist_cjs41();
-    var import_property_provider2 = require_dist_cjs40();
+    var import_credential_provider_env = require_dist_cjs59();
+    var import_shared_ini_file_loader = require_dist_cjs40();
+    var import_property_provider2 = require_dist_cjs39();
     var ENV_IMDS_DISABLED = "AWS_EC2_METADATA_DISABLED";
     var remoteProvider = /* @__PURE__ */ __name(async (init) => {
       var _a, _b;
-      const { ENV_CMDS_FULL_URI, ENV_CMDS_RELATIVE_URI, fromContainerMetadata, fromInstanceMetadata } = await Promise.resolve().then(() => __toESM2(require_dist_cjs49()));
+      const { ENV_CMDS_FULL_URI, ENV_CMDS_RELATIVE_URI, fromContainerMetadata, fromInstanceMetadata } = await Promise.resolve().then(() => __toESM2(require_dist_cjs60()));
       if (process.env[ENV_CMDS_RELATIVE_URI] || process.env[ENV_CMDS_FULL_URI]) {
         (_a = init.logger) == null ? void 0 : _a.debug("@aws-sdk/credential-provider-node - remoteProvider::fromHttp/fromContainerMetadata");
-        const { fromHttp } = await Promise.resolve().then(() => __toESM2(require_dist_cjs55()));
+        const { fromHttp } = await Promise.resolve().then(() => __toESM2(require_dist_cjs61()));
         return (0, import_property_provider2.chain)(fromHttp(init), fromContainerMetadata(init));
       }
       if (process.env[ENV_IMDS_DISABLED]) {
@@ -22898,25 +25291,25 @@ var require_dist_cjs79 = __commonJS({
               { logger: init.logger }
             );
           }
-          const { fromSSO } = await Promise.resolve().then(() => __toESM2(require_dist_cjs74()));
+          const { fromSSO } = await Promise.resolve().then(() => __toESM2(require_dist_cjs80()));
           return fromSSO(init)();
         },
         async () => {
           var _a;
           (_a = init.logger) == null ? void 0 : _a.debug("@aws-sdk/credential-provider-node - defaultProvider::fromIni");
-          const { fromIni } = await Promise.resolve().then(() => __toESM2(require_dist_cjs78()));
+          const { fromIni } = await Promise.resolve().then(() => __toESM2(require_dist_cjs84()));
           return fromIni(init)();
         },
         async () => {
           var _a;
           (_a = init.logger) == null ? void 0 : _a.debug("@aws-sdk/credential-provider-node - defaultProvider::fromProcess");
-          const { fromProcess } = await Promise.resolve().then(() => __toESM2(require_dist_cjs76()));
+          const { fromProcess } = await Promise.resolve().then(() => __toESM2(require_dist_cjs82()));
           return fromProcess(init)();
         },
         async () => {
           var _a;
           (_a = init.logger) == null ? void 0 : _a.debug("@aws-sdk/credential-provider-node - defaultProvider::fromTokenFile");
-          const { fromTokenFile: fromTokenFile2 } = await Promise.resolve().then(() => __toESM2(require_dist_cjs77()));
+          const { fromTokenFile: fromTokenFile2 } = await Promise.resolve().then(() => __toESM2(require_dist_cjs83()));
           return fromTokenFile2(init)();
         },
         async () => {
@@ -23000,10 +25393,10 @@ var require_runtimeConfig_shared4 = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.getRuntimeConfig = void 0;
     var core_1 = (init_dist_es2(), __toCommonJS(dist_es_exports2));
-    var smithy_client_1 = require_dist_cjs37();
-    var url_parser_1 = require_dist_cjs44();
-    var util_base64_1 = require_dist_cjs29();
-    var util_utf8_1 = require_dist_cjs28();
+    var smithy_client_1 = require_dist_cjs56();
+    var url_parser_1 = require_dist_cjs43();
+    var util_base64_1 = require_dist_cjs28();
+    var util_utf8_1 = require_dist_cjs27();
     var httpAuthSchemeProvider_1 = require_httpAuthSchemeProvider();
     var endpointResolver_1 = require_endpointResolver4();
     var getRuntimeConfig = (config) => {
@@ -23042,19 +25435,19 @@ var require_runtimeConfig4 = __commonJS({
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var package_json_1 = tslib_1.__importDefault(require_package());
     var core_1 = (init_dist_es2(), __toCommonJS(dist_es_exports2));
-    var credential_provider_node_1 = require_dist_cjs79();
-    var util_user_agent_node_1 = require_dist_cjs56();
+    var credential_provider_node_1 = require_dist_cjs85();
+    var util_user_agent_node_1 = require_dist_cjs62();
     var config_resolver_1 = require_dist_cjs11();
-    var hash_node_1 = require_dist_cjs57();
-    var middleware_retry_1 = require_dist_cjs38();
-    var node_config_provider_1 = require_dist_cjs42();
-    var node_http_handler_1 = require_dist_cjs51();
-    var util_body_length_node_1 = require_dist_cjs58();
-    var util_retry_1 = require_dist_cjs60();
+    var hash_node_1 = require_dist_cjs63();
+    var middleware_retry_1 = require_dist_cjs57();
+    var node_config_provider_1 = require_dist_cjs41();
+    var node_http_handler_1 = require_dist_cjs31();
+    var util_body_length_node_1 = require_dist_cjs64();
+    var util_retry_1 = require_dist_cjs66();
     var runtimeConfig_shared_1 = require_runtimeConfig_shared4();
-    var smithy_client_1 = require_dist_cjs37();
-    var util_defaults_mode_node_1 = require_dist_cjs69();
-    var smithy_client_2 = require_dist_cjs37();
+    var smithy_client_1 = require_dist_cjs56();
+    var util_defaults_mode_node_1 = require_dist_cjs75();
+    var smithy_client_2 = require_dist_cjs56();
     var getRuntimeConfig = (config) => {
       (0, smithy_client_2.emitWarningIfUnsupportedVersion)(process.version);
       const defaultsMode = (0, util_defaults_mode_node_1.resolveDefaultsModeConfig)(config);
@@ -23087,7 +25480,7 @@ var require_runtimeConfig4 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/client-sfn/dist-cjs/index.js
-var require_dist_cjs80 = __commonJS({
+var require_dist_cjs86 = __commonJS({
   "../../../node_modules/@aws-sdk/client-sfn/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -23262,9 +25655,9 @@ var require_dist_cjs80 = __commonJS({
     var import_middleware_user_agent = require_dist_cjs8();
     var import_config_resolver = require_dist_cjs11();
     var import_core3 = (init_dist_es(), __toCommonJS(dist_es_exports));
-    var import_middleware_content_length = require_dist_cjs39();
-    var import_middleware_endpoint2 = require_dist_cjs46();
-    var import_middleware_retry2 = require_dist_cjs38();
+    var import_middleware_content_length = require_dist_cjs38();
+    var import_middleware_endpoint2 = require_dist_cjs45();
+    var import_middleware_retry2 = require_dist_cjs57();
     var import_httpAuthSchemeProvider = require_httpAuthSchemeProvider();
     var resolveClientEndpointParameters = /* @__PURE__ */ __name((options) => {
       return {
@@ -23281,9 +25674,9 @@ var require_dist_cjs80 = __commonJS({
       UseDualStack: { type: "builtInParams", name: "useDualstackEndpoint" }
     };
     var import_runtimeConfig = require_runtimeConfig4();
-    var import_region_config_resolver = require_dist_cjs70();
+    var import_region_config_resolver = require_dist_cjs76();
     var import_protocol_http8 = require_dist_cjs2();
-    var import_smithy_client5 = require_dist_cjs37();
+    var import_smithy_client5 = require_dist_cjs56();
     var getHttpAuthExtensionConfiguration = /* @__PURE__ */ __name((runtimeConfig) => {
       const _httpAuthSchemes = runtimeConfig.httpAuthSchemes;
       let _httpAuthSchemeProvider = runtimeConfig.httpAuthSchemeProvider;
@@ -23378,7 +25771,7 @@ var require_dist_cjs80 = __commonJS({
     };
     __name(_SFNClient, "SFNClient");
     var SFNClient = _SFNClient;
-    var import_middleware_serde2 = require_dist_cjs45();
+    var import_middleware_serde2 = require_dist_cjs44();
     var import_core22 = (init_dist_es2(), __toCommonJS(dist_es_exports2));
     var import_uuid = (init_esm_node(), __toCommonJS(esm_node_exports));
     var _SFNServiceException = class _SFNServiceException2 extends import_smithy_client5.ServiceException {
@@ -34732,7 +37125,7 @@ var import_helpers_internal = __toESM(require_helpers_internal());
 // lib/assertions/providers/lambda-handler/base.ts
 var https = __toESM(require("https"));
 var url = __toESM(require("url"));
-var import_client_sfn = __toESM(require_dist_cjs80());
+var import_client_sfn = __toESM(require_dist_cjs86());
 var CustomResourceHandler = class {
   constructor(event, context) {
     this.event = event;

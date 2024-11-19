@@ -135,5 +135,3 @@ integrationTest.assertions.awsApiCall('Sagemaker', 'listPipelineExecutions', {
   interval: cdk.Duration.seconds(30),
   totalTimeout: cdk.Duration.minutes(10),
 });
-
-app.synth();

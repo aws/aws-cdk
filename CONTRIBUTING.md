@@ -804,6 +804,11 @@ console.log('This cannot be covered')
 * Once approved and tested, one of our bots will squash-merge to main and will use your PR title/description as the
   commit message.
 
+> [!NOTE]
+> If your PR is failing one of the required checks (e.g Codecov), it will not be auto-merged. If you believe the PR should be merged
+> inspite of this, let a maintainer know. The maintainer may agree and merge the PR manually, or ask you to address the failing checks.
+
+
 ## Breaking Changes
 
 **_NOTE_**: _Starting with version 2.0.0 of the AWS CDK, **all modules and members vended as part of the main CDK library**_

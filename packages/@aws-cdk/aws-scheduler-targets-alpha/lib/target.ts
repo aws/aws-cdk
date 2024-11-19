@@ -16,10 +16,6 @@ export interface ScheduleTargetBaseProps {
    * permissions to interact with the templated target. If you wish you may specify your own IAM role, then the templated targets
    * will grant minimal required permissions.
    *
-   * Universal target automatically create an IAM role if you do not specify your own IAM role.
-   * However, in comparison with templated targets, for universal targets you must grant the required
-   * IAM permissions yourself.
-   *
    * @default - created by target
    */
   readonly role?: iam.IRole;
@@ -72,12 +68,12 @@ export abstract class ScheduleTargetBase {
   ) {
   }
 
-  protected abstract addTargetActionToRole(schedule: ISchedule, role: iam.IRole): void;
+  protected abstract addTargetActionToRole(role: iam.IRole): void;
 
   protected bindBaseTargetConfig(_schedule: ISchedule): ScheduleTargetConfig {
     const role: iam.IRole = this.baseProps.role ?? this.createOrGetScheduleTargetRole(_schedule, this.targetArn);
 
-    this.addTargetActionToRole(_schedule, role);
+    this.addTargetActionToRole(role);
 
     if (this.baseProps.deadLetterQueue) {
       this.addDeadLetterQueueActionToRole(role, this.baseProps.deadLetterQueue);

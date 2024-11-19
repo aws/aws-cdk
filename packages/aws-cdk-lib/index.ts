@@ -67,6 +67,7 @@ export * as aws_comprehend from './aws-comprehend';
 export * as aws_config from './aws-config';
 export * as aws_connect from './aws-connect';
 export * as aws_connectcampaigns from './aws-connectcampaigns';
+export * as aws_connectcampaignsv2 from './aws-connectcampaignsv2';
 export * as aws_controltower from './aws-controltower';
 export * as aws_cur from './aws-cur';
 export * as aws_customerprofiles from './aws-customerprofiles';
