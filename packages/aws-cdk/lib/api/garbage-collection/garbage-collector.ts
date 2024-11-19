@@ -725,7 +725,7 @@ export class GarbageCollector {
   private async confirmationPrompt(printer: ProgressPrinter, deletables: GcAsset[], type: string) {
     const pluralize = (name: string, count: number): string => {
       return count === 1 ? name : `${name}s`;
-    } 
+    };
 
     if (this.confirm) {
       const message = [
