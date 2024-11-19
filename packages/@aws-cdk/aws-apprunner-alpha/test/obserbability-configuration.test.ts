@@ -29,7 +29,7 @@ test.each([
 test.each([
   ['tes'],
   ['test-observability-configuration-name-over-limitation'],
-])('observabilityConfigurationName length is invalide (name: %s)', (observabilityConfigurationName: string) => {
+])('observabilityConfigurationName length is invalid (name: %s)', (observabilityConfigurationName: string) => {
   expect(() => {
     new ObservabilityConfiguration(stack, 'ObservabilityConfiguration', {
       observabilityConfigurationName,
