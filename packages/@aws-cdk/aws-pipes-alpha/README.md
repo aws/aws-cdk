@@ -65,7 +65,8 @@ A source is a AWS Service that is polled. The following sources are possible:
 - [Amazon SQS queue](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-sqs.html)
 - [Apache Kafka stream](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-kafka.html)
 
-Currently, DynamoDB, Kinesis, and SQS are supported. Others will be added in the future.
+Currently, DynamoDB, Kinesis, and SQS are supported. If you are interested in support for additional sources, 
+kindly let us know by opening a GitHub issue or raising a PR.
 
 ### Example source
 

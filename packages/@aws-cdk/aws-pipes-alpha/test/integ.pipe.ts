@@ -103,9 +103,9 @@ const putMessageOnQueue = test.assertions.awsApiCall('SQS', 'sendMessage', {
 putMessageOnQueue.next(test.assertions.awsApiCall('SQS', 'receiveMessage', {
   QueueUrl: targetQueue.queueUrl,
 })).expect(ExpectedResult.objectLike({
-  Messages: [{ Body: uniqueIdentifier+ '-' + pipe.pipeName + '-static' }],
+  Messages: [{ Body: uniqueIdentifier + '-' + pipe.pipeName + '-static' }],
 })).waitForAssertions({
-  totalTimeout: cdk.Duration.minutes(2),
+  totalTimeout: cdk.Duration.seconds(30),
   interval: cdk.Duration.seconds(15),
 });
 
