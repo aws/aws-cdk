@@ -1677,7 +1677,13 @@ class FakeCloudFormation extends Deployments {
       expect(options.tags).toEqual(this.expectedTags[options.stack.stackName]);
     }
 
-    expect(options.notificationArns).toEqual(this.expectedNotificationArns);
+    // In these tests, we don't make a distinction here between `undefined` and `[]`.
+    //
+    // In tests `deployStack` itself we do treat `undefined` and `[]` differently,
+    // and in `aws-cdk-lib` we emit them under different conditions. But this test
+    // without normalization depends on a version of `aws-cdk-lib` that hasn't been
+    // released yet.
+    expect(options.notificationArns ?? []).toEqual(this.expectedNotificationArns ?? []);
     return Promise.resolve({
       type: 'did-deploy-stack',
       stackArn: `arn:aws:cloudformation:::stack/${options.stack.stackName}/MockedOut`,

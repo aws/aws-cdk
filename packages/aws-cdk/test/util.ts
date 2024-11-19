@@ -9,6 +9,8 @@ import { cxapiAssemblyWithForcedVersion } from './api/assembly-versions';
 
 export const DEFAULT_FAKE_TEMPLATE = { No: 'Resources' };
 
+const SOME_RECENT_SCHEMA_VERSION = '30.0.0';
+
 export interface TestStackArtifact {
   stackName: string;
   template?: any;
@@ -31,6 +33,7 @@ export interface TestAssembly {
   stacks: TestStackArtifact[];
   missing?: MissingContext[];
   nestedAssemblies?: TestAssembly[];
+  schemaVersion?: string;
 }
 
 export class MockCloudExecutable extends CloudExecutable {
@@ -138,7 +141,7 @@ export function testAssembly(assembly: TestAssembly): CloudAssembly {
   }
 
   const asm = builder.buildAssembly();
-  return cxapiAssemblyWithForcedVersion(asm, '30.0.0');
+  return cxapiAssemblyWithForcedVersion(asm, assembly.schemaVersion ?? SOME_RECENT_SCHEMA_VERSION);
 }
 
 /**
