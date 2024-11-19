@@ -272,11 +272,18 @@ const vpcA = new VpcV2(stackA, 'VpcA', {
   primaryAddressBlock: IpAddresses.ipv4('10.0.0.0/16'),
 });
 
-const vpcB = new VpcV2(stackB, 'VpcB', {
+new VpcV2(stackB, 'VpcB', {
   primaryAddressBlock: IpAddresses.ipv4('10.1.0.0/16'),
 });
 
-// TODO: Lookup vpcB in stackA
+const vpcB = VpcV2.fromVpcV2Attributes(stackA, 'ImportedVpcB', {
+      vpcId: 'MockVpcBid',
+      vpcCidrBlock: '10.1.0.0/16',
+      region: 'us-west-2',
+      ownerAccountId: '111111111111',
+    });
+
+
 const peeringConnection = vpcA.createPeeringConnection('sameAccountCrossRegionPeering', {
   acceptorVpc: vpcB,
 });
@@ -305,7 +312,6 @@ The following code snippet demonstrates how to set up VPC peering between two VP
 const stack = new Stack();
 
 const acceptorVpc = VpcV2.fromVpcV2Attributes(this, 'acceptorVpc', {
-      //Replace VPC Id before running integ test again
       vpcId: 'vpc-XXXX',
       vpcCidrBlock: '10.0.0.0/16',
       region: 'us-east-2',
