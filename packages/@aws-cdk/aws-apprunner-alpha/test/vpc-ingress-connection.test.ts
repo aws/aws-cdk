@@ -111,7 +111,7 @@ test('create a vpcIngressConnection without a name', () => {
 test.each([
   ['tes'],
   ['test-vpc-ingress-connection-name-over-limitation'],
-])('vpcIngressConnectionName length is invalide (name: %s)', (vpcIngressConnectionName: string) => {
+])('vpcIngressConnectionName length is invalid (name: %s)', (vpcIngressConnectionName: string) => {
   // GIVEN
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'demo-stack');
