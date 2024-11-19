@@ -380,8 +380,6 @@ const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
 });
 ```
 
-You cannot add UDP or TCP_UDP listeners to a dualstack Network Load Balancer.
-
 ### Network Load Balancer attributes
 
 You can modify attributes of Network Load Balancers:
