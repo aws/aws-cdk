@@ -25,7 +25,6 @@ import {
   Token,
   Tokenization,
   Annotations,
-  PhysicalName,
 } from '../../core';
 import { CfnReference } from '../../core/lib/private/cfn-reference';
 import { AutoDeleteObjectsProvider } from '../../custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated';
@@ -95,6 +94,11 @@ export interface IBucket extends IResource {
    * first call to addToResourcePolicy(s).
    */
   policy?: BucketPolicy;
+
+  /**
+   * Role used to set up permissions on this bucket for replication
+   */
+  replicationRoleArn?: string;
 
   /**
    * Adds a statement to the resource policy for a principal (i.e.
@@ -385,6 +389,16 @@ export interface IBucket extends IResource {
    * - Object Tags Deleted
    */
   enableEventBridgeNotification(): void;
+
+  /**
+   * Function to add required permissions to the destination bucket for cross account
+   * replication. These permissions will be added as a resource based policy on the bucket.
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-walkthrough-2.html
+   * If owner of the bucket needs to be overriden, set accessControlTransition to true and provide
+   * account ID in which destination bucket is hosted. For more information on accessControlTransition
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-accesscontroltranslation.html
+   */
+  addReplicationPolicy(roleArn: string, accessControlTransition?: boolean, account?: string): void;
 }
 
 /**
@@ -522,6 +536,11 @@ export abstract class BucketBase extends Resource implements IBucket {
    * first call to addToResourcePolicy(s).
    */
   public abstract policy?: BucketPolicy;
+
+  /**
+   * Role used to set up permissions on this bucket for replication
+   */
+  public abstract replicationRoleArn?: string;
 
   /**
    * Indicates if a bucket resource policy should automatically created upon
@@ -939,6 +958,42 @@ export abstract class BucketBase extends Resource implements IBucket {
    */
   public enableEventBridgeNotification() {
     this.withNotifications(notifications => notifications.enableEventBridgeNotification());
+  }
+
+  /**
+   * Function to add required permissions to the destination bucket for cross account
+   * replication. These permissions will be added as a resource based policy on the bucket
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-walkthrough-2.html
+   * If owner of the bucket needs to be overriden, set accessControlTransition to true and provide
+   * account ID in which destination bucket is hosted. For more information on accessControlTransition
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-accesscontroltranslation.html
+   */
+  public addReplicationPolicy(roleArn: string, accessControlTransition?: boolean, account?: string) {
+    const results: boolean[] = [];
+    results.push(this.addToResourcePolicy(new iam.PolicyStatement({
+      actions: ['s3:GetBucketVersioning', 's3:PutBucketVersioning'],
+      resources: [this.bucketArn],
+      principals: [new iam.ArnPrincipal(roleArn)],
+    })).statementAdded);
+    results.push(this.addToResourcePolicy(new iam.PolicyStatement({
+      actions: ['s3:ReplicateObject', 's3:ReplicateDelete'],
+      resources: [this.arnForObjects('*')],
+      principals: [new iam.ArnPrincipal(roleArn)],
+    })).statementAdded);
+    if (accessControlTransition) {
+      if (!account) {
+        throw new Error('account must be specified to override ownership access control transition');
+      }
+      results.push(this.addToResourcePolicy(new iam.PolicyStatement({
+        actions: ['s3:ObjectOwnerOverrideToBucketOwner'],
+        resources: [this.arnForObjects('*')],
+        principals: [new iam.AccountPrincipal(account)],
+      })).statementAdded);
+    }
+
+    if (results.includes(false)) {
+      Annotations.of(this).addInfo(`Cross-account S3 replication for a referenced destination bucket is set up. In the destination bucket's bucket policy, please grant access permissions from ${this.stack.resolve(roleArn)}.`);
+    }
   }
 
   private get writeActions(): string[] {
@@ -1961,6 +2016,7 @@ export class Bucket extends BucketBase {
       public readonly encryptionKey = attrs.encryptionKey;
       public readonly isWebsite = attrs.isWebsite ?? false;
       public policy?: BucketPolicy = undefined;
+      public replicationRoleArn?: string = undefined;
       protected autoCreatePolicy = false;
       protected disallowPublicAccess = false;
       protected notificationsHandlerRole = attrs.notificationsHandlerRole;
@@ -2025,6 +2081,7 @@ export class Bucket extends BucketBase {
       public readonly encryptionKey = encryptionKey;
       public readonly isWebsite = cfnBucket.websiteConfiguration !== undefined;
       public policy = undefined;
+      public replicationRoleArn = undefined;
       protected autoCreatePolicy = true;
       protected disallowPublicAccess = cfnBucket.publicAccessBlockConfiguration &&
         (cfnBucket.publicAccessBlockConfiguration as any).blockPublicPolicy;
@@ -2109,6 +2166,8 @@ export class Bucket extends BucketBase {
   public readonly encryptionKey?: kms.IKey;
   public readonly isWebsite?: boolean;
   public policy?: BucketPolicy;
+
+  public replicationRoleArn?: string;
   protected autoCreatePolicy = true;
   protected disallowPublicAccess?: boolean;
   private accessControl?: BucketAccessControl;
@@ -2137,9 +2196,8 @@ export class Bucket extends BucketBase {
     this.isWebsite = (websiteConfiguration !== undefined);
 
     const objectLockConfiguration = this.parseObjectLockConfig(props);
-
     const replicationConfiguration = this.renderReplicationConfiguration(props);
-
+    this.replicationRoleArn = replicationConfiguration?.role;
     this.objectOwnership = props.objectOwnership;
     this.transitionDefaultMinimumObjectSize = props.transitionDefaultMinimumObjectSize;
     const resource = new CfnBucket(this, 'Resource', {
@@ -2698,6 +2756,7 @@ export class Bucket extends BucketBase {
   }
 
   private renderReplicationConfiguration(props: BucketProps): CfnBucket.ReplicationConfigurationProperty | undefined {
+
     if (!props.replicationRules || props.replicationRules.length === 0) {
       return undefined;
     }
@@ -2720,27 +2779,27 @@ export class Bucket extends BucketBase {
     const destinationBuckets = props.replicationRules.map(rule => rule.destination);
     const kmsKeys = props.replicationRules.map(rule => rule.kmsKey).filter(kmsKey => kmsKey !== undefined) as kms.IKey[];
 
-    const role = new iam.Role(this, 'ReplicationRole', {
+    const replicationRole = new iam.Role(this, 'ReplicationRole', {
       assumedBy: new iam.ServicePrincipal('s3.amazonaws.com'),
       // To avoid the error where the replication role cannot be used during cross-account replication,
-      // it is necessary to set `PhysicalName.GENERATE_IF_NEEDED` for the `roleName`.
-      roleName: PhysicalName.GENERATE_IF_NEEDED,
+      // it is necessary to set the `roleName`.
+      roleName: 'CDKReplicationRole',
     });
 
     // add permissions to the role
     // @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/setting-repl-config-perm-overview.html
-    role.addToPolicy(new iam.PolicyStatement({
+    replicationRole.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['s3:GetReplicationConfiguration', 's3:ListBucket'],
       resources: [Lazy.string({ produce: () => this.bucketArn })],
       effect: iam.Effect.ALLOW,
     }));
-    role.addToPolicy(new iam.PolicyStatement({
+    replicationRole.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['s3:GetObjectVersionForReplication', 's3:GetObjectVersionAcl', 's3:GetObjectVersionTagging'],
       resources: [Lazy.string({ produce: () => this.arnForObjects('*') })],
       effect: iam.Effect.ALLOW,
     }));
     if (destinationBuckets.length > 0) {
-      role.addToPolicy(new iam.PolicyStatement({
+      replicationRole.addToPrincipalPolicy(new iam.PolicyStatement({
         actions: ['s3:ReplicateObject', 's3:ReplicateDelete', 's3:ReplicateTags', 's3:ObjectOwnerOverrideToBucketOwner'],
         resources: destinationBuckets.map(bucket => bucket.arnForObjects('*')),
         effect: iam.Effect.ALLOW,
@@ -2748,13 +2807,14 @@ export class Bucket extends BucketBase {
     }
 
     kmsKeys.forEach(kmsKey => {
-      kmsKey.grantEncrypt(role);
+      kmsKey.grantEncrypt(replicationRole);
     });
+
     // If KMS key encryption is enabled on the source bucket, configure the decrypt permissions.
-    this.encryptionKey?.grantDecrypt(role);
+    this.encryptionKey?.grantDecrypt(replicationRole);
 
     return {
-      role: role.roleArn,
+      role: replicationRole.roleArn,
       rules: props.replicationRules.map((rule) => {
         const sourceSelectionCriteria = (rule.replicaModifications !== undefined || rule.sseKmsEncryptedObjects !== undefined) ? {
           replicaModifications: rule.replicaModifications !== undefined ? {
@@ -2784,32 +2844,7 @@ export class Bucket extends BucketBase {
         const isCrossAccount = sourceAccount !== destinationAccount;
 
         if (isCrossAccount) {
-          const results: boolean[] = [];
-          // Add permissions to the destination bucket for cross-account replication
-          // @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-walkthrough-2.html
-          results.push(rule.destination.addToResourcePolicy(new iam.PolicyStatement({
-            actions: ['s3:ReplicateObject', 's3:ReplicateDelete'],
-            resources: [rule.destination.arnForObjects('*')],
-            principals: [new iam.ArnPrincipal(role.roleArn)],
-          })).statementAdded);
-          results.push(rule.destination.addToResourcePolicy(new iam.PolicyStatement({
-            actions: ['s3:GetBucketVersioning', 's3:PutBucketVersioning'],
-            resources: [rule.destination.bucketArn],
-            principals: [new iam.ArnPrincipal(role.roleArn)],
-          })).statementAdded);
-          // Adding permission in the destination bucket policy to allow changing replica ownership
-          // @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-change-owner.html
-          if (rule.accessControlTransition) {
-            results.push(rule.destination.addToResourcePolicy(new iam.PolicyStatement({
-              actions: ['s3:ObjectOwnerOverrideToBucketOwner'],
-              resources: [rule.destination.arnForObjects('*')],
-              principals: [new iam.AccountPrincipal(sourceAccount)],
-            })).statementAdded);
-          }
-          // If the destination bucket is a referenced bucket, add a notification for configuring destination bucket policy.
-          if (results.includes(false)) {
-            Annotations.of(this).addInfo(`Cross-account S3 replication for a referenced destination bucket is set up. In the destination bucket's bucket policy, please grant access permissions from ${this.stack.resolve(role.roleArn)}.`);
-          }
+          Annotations.of(this).addInfo('For Cross-account S3 replication, ensure to set up permissions on source bucket using method addReplicationPolicy() ');
         } else if (rule.accessControlTransition) {
           throw new Error('accessControlTranslation is only supported for cross-account replication');
         }
