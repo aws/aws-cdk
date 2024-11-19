@@ -1,0 +1,107 @@
+<AWSServiceRoleForApplicationAutoScaling_DynamoDBTable> (cdk-table-with-customized-role/Table/ScalingRole)
+
+AssumeRole Policy:
+NONE
+
+Managed Policy ARNs:
+NONE
+
+Managed Policies Statements:
+NONE
+
+Identity Policy Statements:
+NONE
+
+<my-precreated-role-name> (cdk-table-with-customized-role/Role)
+
+AssumeRole Policy:
+[
+  {
+    "Action": "sts:AssumeRole",
+    "Effect": "Allow",
+    "Principal": {
+      "Service": "dynamodb.amazonaws.com"
+    }
+  }
+]
+
+Managed Policy ARNs:
+NONE
+
+Managed Policies Statements:
+NONE
+
+Identity Policy Statements:
+[
+  {
+    "Action": [
+      "dynamodb:BatchGetItem",
+      "dynamodb:GetRecords",
+      "dynamodb:GetShardIterator",
+      "dynamodb:Query",
+      "dynamodb:GetItem",
+      "dynamodb:Scan",
+      "dynamodb:ConditionCheckItem",
+      "dynamodb:DescribeTable"
+    ],
+    "Effect": "Allow",
+    "Resource": [
+      "(cdk-table-with-customized-role/Table/Resource.Arn)",
+      "(cdk-table-with-customized-role/Table/Resource.Arn)/index/*"
+    ]
+  }
+]
+
+<AWSServiceRoleForApplicationAutoScaling_DynamoDBTable> (cdk-table-with-customized-role2/Table/ScalingRole)
+
+AssumeRole Policy:
+NONE
+
+Managed Policy ARNs:
+NONE
+
+Managed Policies Statements:
+NONE
+
+Identity Policy Statements:
+NONE
+
+<my-precreated-role-name> (cdk-table-with-customized-role2/Role)
+
+AssumeRole Policy:
+[
+  {
+    "Action": "sts:AssumeRole",
+    "Effect": "Allow",
+    "Principal": {
+      "Service": "dynamodb.amazonaws.com"
+    }
+  }
+]
+
+Managed Policy ARNs:
+NONE
+
+Managed Policies Statements:
+NONE
+
+Identity Policy Statements:
+[
+  {
+    "Action": [
+      "dynamodb:BatchGetItem",
+      "dynamodb:GetRecords",
+      "dynamodb:GetShardIterator",
+      "dynamodb:Query",
+      "dynamodb:GetItem",
+      "dynamodb:Scan",
+      "dynamodb:ConditionCheckItem",
+      "dynamodb:DescribeTable"
+    ],
+    "Effect": "Allow",
+    "Resource": [
+      "(cdk-table-with-customized-role2/Table/Resource.Arn)",
+      "(NOVALUE)"
+    ]
+  }
+]

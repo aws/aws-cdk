@@ -3,6 +3,7 @@ import * as os from 'os';
 import * as path from 'path';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Construct } from 'constructs';
+import { Template } from '../../assertions';
 import * as cxschema from '../../cloud-assembly-schema';
 import * as cxapi from '../../cx-api';
 import * as cdk from '../lib';
@@ -362,6 +363,30 @@ describe('synthesis', () => {
 
   });
 
+  test('calling synth multiple times errors if construct tree is mutated', () => {
+    const app = new cdk.App();
+
+    const stages = [
+      {
+        stage: 'PROD',
+      },
+      {
+        stage: 'BETA',
+      },
+    ];
+
+    // THEN - no error the first time synth is called
+    let stack = new cdk.Stack(app, `${stages[0].stage}-Stack`, {});
+    expect(() => {
+      Template.fromStack(stack);
+    }).not.toThrow();
+
+    // THEN - error is thrown since synth was called with mutated stack name
+    stack = new cdk.Stack(app, `${stages[1].stage}-Stack`, {});
+    expect(() => {
+      Template.fromStack(stack);
+    }).toThrow('Synthesis has been called multiple times and the construct tree was modified after the first synthesis');
+  });
 });
 
 function list(outdir: string) {

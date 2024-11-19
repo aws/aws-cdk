@@ -1,9 +1,41 @@
 # See https://doc.mergify.io
 queue_rules:
-  - name: default
+  - name: default-merge
     update_method: merge
+    merge_method: merge
     conditions:
+      - -title~=(WIP|wip)
+      - -label~=(blocked|do-not-merge)
+      # Only if no-squash is set
+      - label~=no-squash
+      - -merged
+      - -closed
+      - "#approved-reviews-by>=1"
+      - -approved-reviews-by~=author
+      - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
+      - status-success=validate-pr
+    commit_message_template: |-
+      {{ title }} (#{{ number }})
+      {{ body }}
+
+  - name: default-squash
+    update_method: merge
+    merge_method: squash
+    conditions:
+      - base!=release
+      - -title~=(WIP|wip)
+      - -label~=(blocked|do-not-merge|no-squash)
+      - -merged
+      - -closed
+      - "#approved-reviews-by>=1"
+      - -approved-reviews-by~=author
+      - "#changes-requested-reviews-by=0"
+      - status-success~=AWS CodeBuild us-east-1
+      - status-success=validate-pr
+    commit_message_template: |-
+      {{ title }} (#{{ number }})
+      {{ body }}
 
 pull_request_rules:
   - name: label core
@@ -11,18 +43,14 @@ pull_request_rules:
       label:
         add: [ contribution/core ]
     conditions:
-      - author~=^(rix0rrr|iliapolo|otaviomacedo|kaizencc|comcalvi|TheRealAmazonKendra|vinayak-kukreja|mrgrain|pahud|ashishdhingra|cgarvis|kellertk|HBobertz|sumupitchayan|SankyRed|udaypant|colifran|scanlonp|mikewrighton|moelasmar|paulhcsun|awsmjs|evgenyka|GavinZZ|aaythapa|xazhao|ConnorRobertson|ssenchenko|gracelu0|jfuss|SimonCMoore|shikha372|kirtishrinkhala|godwingrs22|bergjaak|samson-keung|IanKonlog|Leo10Gama|scorbiere|michelle-wangg|jiayiwang7|1kaileychen)$
+      - author~=^(rix0rrr|iliapolo|otaviomacedo|kaizencc|comcalvi|TheRealAmazonKendra|mrgrain|pahud|ashishdhingra|kellertk|HBobertz|sumupitchayan|colifran|moelasmar|paulhcsun|GavinZZ|aaythapa|xazhao|gracelu0|jfuss|shikha372|kirtishrinkhala|godwingrs22|bergjaak|samson-keung|IanKonlog|Leo10Gama|scorbiere|michelle-wangg|jiayiwang7|1kaileychen|saiyush|5d)$
       - -label~="contribution/core"
   - name: automatic merge
     actions:
       comment:
         message: Thank you for contributing! Your pull request will be updated from main and then merged automatically (do not update manually, and be sure to [allow changes to be pushed to your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/allowing-changes-to-a-pull-request-branch-created-from-a-fork)).
       queue:
-        name: default
-        method: squash
-        commit_message_template: |-
-          {{ title }} (#{{ number }})
-          {{ body }}
+        name: default-squash
     conditions:
       - base!=release
       - -title~=(WIP|wip)
@@ -41,11 +69,7 @@ pull_request_rules:
       comment:
         message: Thank you for contributing! Your pull request will be automatically updated and merged (do not update manually, and be sure to [allow changes to be pushed to your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/allowing-changes-to-a-pull-request-branch-created-from-a-fork)).
       queue:
-        name: default
-        method: squash
-        commit_message_template: |-
-          {{ title }} (#{{ number }})
-          {{ body }}
+        name: default-squash
     conditions:
       - base!=release
       - -title~=(WIP|wip)
@@ -65,11 +89,7 @@ pull_request_rules:
       comment:
         message: Thank you for contributing! Your pull request will be automatically updated and merged without squashing (do not update manually, and be sure to [allow changes to be pushed to your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/allowing-changes-to-a-pull-request-branch-created-from-a-fork)).
       queue:
-        name: default
-        method: merge
-        commit_message_template: |-
-          {{ title }} (#{{ number }})
-          {{ body }}
+        name: default-merge
     conditions:
       - -title~=(WIP|wip)
       - -label~=(blocked|do-not-merge)
@@ -112,11 +132,7 @@ pull_request_rules:
       comment:
         message: Thanks Dependabot!
       queue:
-        name: default
-        method: squash
-        commit_message_template: |-
-          {{ title }} (#{{ number }})
-          {{ body }}
+        name: default-squash
     conditions:
       - -title~=(WIP|wip)
       - -label~=(blocked|do-not-merge)

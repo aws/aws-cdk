@@ -4,15 +4,31 @@ import { Capacity } from './capacity';
 import { CfnGlobalTable } from './dynamodb.generated';
 import { TableEncryptionV2 } from './encryption';
 import {
+  Attribute,
+  BillingMode,
+  LocalSecondaryIndexProps,
+  ProjectionType,
+  SecondaryIndexProps,
   StreamViewType,
-  Attribute, TableClass, LocalSecondaryIndexProps,
-  SecondaryIndexProps, BillingMode, ProjectionType,
+  TableClass,
 } from './shared';
-import { TableBaseV2, ITableV2 } from './table-v2-base';
+import { ITableV2, TableBaseV2 } from './table-v2-base';
 import { PolicyDocument } from '../../aws-iam';
 import { IStream } from '../../aws-kinesis';
 import { IKey, Key } from '../../aws-kms';
-import { ArnFormat, CfnTag, Lazy, PhysicalName, RemovalPolicy, Stack, Token } from '../../core';
+import {
+  ArnFormat,
+  CfnTag,
+  FeatureFlags,
+  Lazy,
+  PhysicalName,
+  RemovalPolicy,
+  Stack,
+  TagManager,
+  TagType,
+  Token,
+} from '../../core';
+import * as cxapi from '../../cx-api';
 
 const HASH_KEY_TYPE = 'HASH';
 const RANGE_KEY_TYPE = 'RANGE';
@@ -144,7 +160,7 @@ export interface TableOptionsV2 {
   readonly kinesisStream?: IStream;
 
   /**
-   * Tags to be applied to the table or replica table
+   * Tags to be applied to the primary table (default replica table).
    *
    * @default - no tags
    */
@@ -482,6 +498,8 @@ export class TableV2 extends TableBaseV2 {
 
   protected readonly region: string;
 
+  protected readonly tags: TagManager;
+
   private readonly billingMode: string;
   private readonly partitionKey: Attribute;
   private readonly hasSortKey: boolean;
@@ -515,6 +533,7 @@ export class TableV2 extends TableBaseV2 {
     this.partitionKey = props.partitionKey;
     this.hasSortKey = props.sortKey !== undefined;
     this.region = this.stack.region;
+    this.tags = new TagManager(TagType.STANDARD, CfnGlobalTable.CFN_RESOURCE_TYPE_NAME);
 
     this.encryption = props.encryption;
     this.encryptionKey = this.encryption?.tableKey;
@@ -664,7 +683,24 @@ export class TableV2 extends TableBaseV2 {
   private configureReplicaTable(props: ReplicaTableProps): CfnGlobalTable.ReplicaSpecificationProperty {
     const pointInTimeRecovery = props.pointInTimeRecovery ?? this.tableOptions.pointInTimeRecovery;
     const contributorInsights = props.contributorInsights ?? this.tableOptions.contributorInsights;
-    const resourcePolicy = props.resourcePolicy ?? this.tableOptions.resourcePolicy;
+
+    /*
+    * Feature flag set as the following may be a breaking change.
+    * @see https://github.com/aws/aws-cdk/pull/31097
+    * @see https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/cx-api/FEATURE_FLAGS.md
+    */
+    const resourcePolicy = FeatureFlags.of(this).isEnabled(cxapi.DYNAMODB_TABLEV2_RESOURCE_POLICY_PER_REPLICA)
+      ? (props.region === this.region ? this.tableOptions.resourcePolicy : props.resourcePolicy) || undefined
+      : props.resourcePolicy ?? this.tableOptions.resourcePolicy;
+
+    const propTags: Record<string, string> = (props.tags ?? []).reduce((p, item) =>
+      ({ ...p, [item.key]: item.value }), {},
+    );
+
+    const tags: CfnTag[] = Object.entries({
+      ...this.tags.tagValues(),
+      ...propTags,
+    }).map(([k, v]) => ({ key: k, value: v }));
 
     return {
       region: props.region,
@@ -684,7 +720,7 @@ export class TableV2 extends TableBaseV2 {
       readProvisionedThroughputSettings: props.readCapacity
         ? props.readCapacity._renderReadCapacity()
         : this.readProvisioning,
-      tags: props.tags,
+      tags: tags.length === 0 ? undefined : tags,
       readOnDemandThroughputSettings: props.maxReadRequestUnits
         ? { maxReadRequestUnits: props.maxReadRequestUnits }
         : this.maxReadRequestUnits
