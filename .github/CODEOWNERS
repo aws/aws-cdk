@@ -1,3 +1,3 @@
-/packages/aws-cdk @iliapolo 
-/packages/@aws-cdk-testing/cli-integ @iliapolo 
-/packages/aws-cdk-lib/core @iliapolo
+/packages/aws-cdk @aws/aws-cdk-core-team-test
+/packages/@aws-cdk-testing/cli-integ @aws/aws-cdk-core-team-test
+/packages/aws-cdk-lib/core @aws/aws-cdk-core-team-test
