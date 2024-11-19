@@ -7,7 +7,7 @@ import * as cxschema from '../../../cloud-assembly-schema';
 import { Duration, Resource, Lazy, Token } from '../../../core';
 import { BaseListener, BaseListenerLookupOptions, IListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
-import { AlpnPolicy, IpAddressType, Protocol, SslPolicy } from '../shared/enums';
+import { AlpnPolicy, Protocol, SslPolicy } from '../shared/enums';
 import { IListenerCertificate } from '../shared/listener-certificate';
 import { validateNetworkProtocol } from '../shared/util';
 
