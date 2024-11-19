@@ -1,26 +1,53 @@
+import * as firehose from '@aws-cdk/aws-kinesisfirehose-alpha';
 import { ScheduleExpression, Schedule, Group } from '@aws-cdk/aws-scheduler-alpha';
-import { App, Duration, Stack } from 'aws-cdk-lib';
+import { App, CfnResource, Duration, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { AccountRootPrincipal, Role } from 'aws-cdk-lib/aws-iam';
-import { CfnDeliveryStream } from 'aws-cdk-lib/aws-kinesisfirehose';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
+import { Construct } from 'constructs';
 import { KinesisDataFirehosePutRecord } from '../lib';
 
 describe('schedule target', () => {
   let app: App;
   let stack: Stack;
-  let firehose: CfnDeliveryStream;
+  let firehoseStream: firehose.DeliveryStream;
+  let dependable: Construct;
+  let mockS3Destination: firehose.IDestination;
+
+  const bucketArn = 'arn:aws:s3:::my-bucket';
+  const roleArn = 'arn:aws:iam::111122223333:role/my-role';
+
   const expr = ScheduleExpression.at(new Date(Date.UTC(1969, 10, 20, 0, 0, 0)));
-  const roleId = 'SchedulerRoleForTarget380bba149146B2';
+  const firehoseStreamId = 'MyFirehoseFCA2F9D3';
+  const roleId = 'SchedulerRoleForTarget047201570CF076';
 
   beforeEach(() => {
     app = new App({ context: { '@aws-cdk/aws-iam:minimizePolicies': true } });
     stack = new Stack(app, 'Stack', { env: { region: 'us-east-1', account: '123456789012' } });
-    firehose = new CfnDeliveryStream(stack, 'MyFirehose');
+    mockS3Destination = {
+      bind(scope: Construct, _options: firehose.DestinationBindOptions): firehose.DestinationConfig {
+        dependable = new class extends Construct {
+          constructor(depScope: Construct, id: string) {
+            super(depScope, id);
+            new CfnResource(this, 'Resource', { type: 'CDK::Dummy' });
+          }
+        }(scope, 'Dummy Dep');
+        return {
+          extendedS3DestinationConfiguration: {
+            bucketArn: bucketArn,
+            roleArn: roleArn,
+          },
+          dependables: [dependable],
+        };
+      },
+    };
+    firehoseStream = new firehose.DeliveryStream(stack, 'MyFirehose', {
+      destination: mockS3Destination,
+    });
   });
 
   test('creates IAM role and IAM policy for kinesis data firehose target in the same account', () => {
-    const firehoseTarget = new KinesisDataFirehosePutRecord(firehose);
+    const firehoseTarget = new KinesisDataFirehosePutRecord(firehoseStream);
 
     new Schedule(stack, 'MyScheduleDummy', {
       schedule: expr,
@@ -31,7 +58,7 @@ describe('schedule target', () => {
       Properties: {
         Target: {
           Arn: {
-            'Fn::GetAtt': ['MyFirehose', 'Arn'],
+            'Fn::GetAtt': [firehoseStreamId, 'Arn'],
           },
           RoleArn: { 'Fn::GetAtt': [roleId, 'Arn'] },
           RetryPolicy: {},
@@ -46,7 +73,7 @@ describe('schedule target', () => {
             Action: 'firehose:PutRecord',
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': ['MyFirehose', 'Arn'],
+              'Fn::GetAtt': [firehoseStreamId, 'Arn'],
             },
           },
         ],
@@ -92,7 +119,7 @@ describe('schedule target', () => {
       assumedBy: new AccountRootPrincipal(),
     });
 
-    const firehoseTarget = new KinesisDataFirehosePutRecord(firehose, {
+    const firehoseTarget = new KinesisDataFirehosePutRecord(firehoseStream, {
       role: targetExecutionRole,
     });
 
@@ -105,7 +132,7 @@ describe('schedule target', () => {
       Properties: {
         Target: {
           Arn: {
-            'Fn::GetAtt': ['MyFirehose', 'Arn'],
+            'Fn::GetAtt': [firehoseStreamId, 'Arn'],
           },
           RoleArn: { 'Fn::GetAtt': ['ProvidedTargetRole8CFDD54A', 'Arn'] },
           RetryPolicy: {},
@@ -120,7 +147,7 @@ describe('schedule target', () => {
             Action: 'firehose:PutRecord',
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': ['MyFirehose', 'Arn'],
+              'Fn::GetAtt': [firehoseStreamId, 'Arn'],
             },
           },
         ],
@@ -130,7 +157,7 @@ describe('schedule target', () => {
   });
 
   test('reuses IAM role and IAM policy for two schedules with the same target from the same account', () => {
-    const firehoseTarget = new KinesisDataFirehosePutRecord(firehose);
+    const firehoseTarget = new KinesisDataFirehosePutRecord(firehoseStream);
 
     new Schedule(stack, 'MyScheduleDummy1', {
       schedule: expr,
@@ -181,7 +208,7 @@ describe('schedule target', () => {
             Action: 'firehose:PutRecord',
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': ['MyFirehose', 'Arn'],
+              'Fn::GetAtt': [firehoseStreamId, 'Arn'],
             },
           },
         ],
@@ -191,7 +218,7 @@ describe('schedule target', () => {
   });
 
   test('creates IAM role and IAM policy for two schedules with the same target but different groups', () => {
-    const firehoseTarget = new KinesisDataFirehosePutRecord(firehose);
+    const firehoseTarget = new KinesisDataFirehosePutRecord(firehoseStream);
     const group = new Group(stack, 'Group', {
       groupName: 'mygroup',
     });
@@ -264,7 +291,7 @@ describe('schedule target', () => {
             Action: 'firehose:PutRecord',
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': ['MyFirehose', 'Arn'],
+              'Fn::GetAtt': [firehoseStreamId, 'Arn'],
             },
           },
         ],
@@ -273,14 +300,16 @@ describe('schedule target', () => {
     }, 1);
   });
 
-  test('creates IAM policy for firehose in the another stack with the same account', () => {
+  test('creates IAM policy for firehose in another stack with the same account', () => {
     const stack2 = new Stack(app, 'Stack2', {
       env: {
         region: 'us-east-1',
         account: '123456789012',
       },
     });
-    const anotherFirehose = new CfnDeliveryStream(stack2, 'AnotherFirehose');
+    const anotherFirehose = new firehose.DeliveryStream(stack2, 'AnotherFirehose', {
+      destination: mockS3Destination,
+    });
 
     const firehoseTarget = new KinesisDataFirehosePutRecord(anotherFirehose);
 
@@ -293,9 +322,9 @@ describe('schedule target', () => {
       Properties: {
         Target: {
           Arn: {
-            'Fn::ImportValue': 'Stack2:ExportsOutputFnGetAttAnotherFirehoseArn24CBF54A',
+            'Fn::ImportValue': 'Stack2:ExportsOutputFnGetAttAnotherFirehose028A8805Arn2409390E',
           },
-          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget4b70ebDC2428DE', 'Arn'] },
+          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTargetd57ce0DB208927', 'Arn'] },
           RetryPolicy: {},
         },
       },
@@ -308,19 +337,19 @@ describe('schedule target', () => {
             Action: 'firehose:PutRecord',
             Effect: 'Allow',
             Resource: {
-              'Fn::ImportValue': 'Stack2:ExportsOutputFnGetAttAnotherFirehoseArn24CBF54A',
+              'Fn::ImportValue': 'Stack2:ExportsOutputFnGetAttAnotherFirehose028A8805Arn2409390E',
             },
           },
         ],
       },
-      Roles: [{ Ref: 'SchedulerRoleForTarget4b70ebDC2428DE' }],
+      Roles: [{ Ref: 'SchedulerRoleForTargetd57ce0DB208927' }],
     });
   });
 
   test('creates IAM policy for imported role for firehose in the same account', () => {
     const importedRole = Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/someRole');
 
-    const firehoseTarget = new KinesisDataFirehosePutRecord(firehose, {
+    const firehoseTarget = new KinesisDataFirehosePutRecord(firehoseStream, {
       role: importedRole,
     });
 
@@ -333,7 +362,7 @@ describe('schedule target', () => {
       Properties: {
         Target: {
           Arn: {
-            'Fn::GetAtt': ['MyFirehose', 'Arn'],
+            'Fn::GetAtt': [firehoseStreamId, 'Arn'],
           },
           RoleArn: 'arn:aws:iam::123456789012:role/someRole',
           RetryPolicy: {},
@@ -348,7 +377,7 @@ describe('schedule target', () => {
             Action: 'firehose:PutRecord',
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': ['MyFirehose', 'Arn'],
+              'Fn::GetAtt': [firehoseStreamId, 'Arn'],
             },
           },
         ],
@@ -357,14 +386,16 @@ describe('schedule target', () => {
     });
   });
 
-  test('creates IAM policy for firehose in the another stack with imported IAM role in the same account', () => {
+  test('creates IAM policy for firehose in another stack with imported IAM role in the same account', () => {
     const stack2 = new Stack(app, 'Stack2', {
       env: {
         region: 'us-east-1',
         account: '123456789012',
       },
     });
-    const anotherFirehose = new CfnDeliveryStream(stack2, 'AnotherFirehose');
+    const anotherFirehose = new firehose.DeliveryStream(stack2, 'AnotherFirehose', {
+      destination: mockS3Destination,
+    });
     const importedRole = Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/someRole');
 
     const firehoseTarget = new KinesisDataFirehosePutRecord(anotherFirehose, {
@@ -380,7 +411,7 @@ describe('schedule target', () => {
       Properties: {
         Target: {
           Arn: {
-            'Fn::ImportValue': 'Stack2:ExportsOutputFnGetAttAnotherFirehoseArn24CBF54A',
+            'Fn::ImportValue': 'Stack2:ExportsOutputFnGetAttAnotherFirehose028A8805Arn2409390E',
           },
           RoleArn: 'arn:aws:iam::123456789012:role/someRole',
           RetryPolicy: {},
@@ -395,7 +426,7 @@ describe('schedule target', () => {
             Action: 'firehose:PutRecord',
             Effect: 'Allow',
             Resource: {
-              'Fn::ImportValue': 'Stack2:ExportsOutputFnGetAttAnotherFirehoseArn24CBF54A',
+              'Fn::ImportValue': 'Stack2:ExportsOutputFnGetAttAnotherFirehose028A8805Arn2409390E',
             },
           },
         ],
@@ -404,59 +435,10 @@ describe('schedule target', () => {
     });
   });
 
-  test('throws when firehose is in the another stack with different account', () => {
-    const stack2 = new Stack(app, 'Stack2', {
-      env: {
-        region: 'us-east-1',
-        account: '234567890123',
-      },
-    });
-    const anotherFirehose = new CfnDeliveryStream(stack2, 'AnotherFirehose');
-    const firehoseTarget = new KinesisDataFirehosePutRecord(anotherFirehose);
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: firehoseTarget,
-      })).toThrow(/Both the schedule and the Firehose delivery stream must be in the same account/);
-  });
-
-  test('throws when firehose is in the another stack with different region', () => {
-    const stack2 = new Stack(app, 'Stack2', {
-      env: {
-        region: 'us-west-2',
-        account: '123456789012',
-      },
-    });
-    const anotherFirehose = new CfnDeliveryStream(stack2, 'AnotherFirehose');
-
-    const firehoseTarget = new KinesisDataFirehosePutRecord(anotherFirehose);
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: firehoseTarget,
-      })).toThrow(/Both the schedule and the Firehose delivery stream must be in the same region/);
-  });
-
-  test('throws when IAM role is imported from different account', () => {
-    const importedRole = Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::234567890123:role/someRole');
-
-    const firehoseTarget = new KinesisDataFirehosePutRecord(firehose, {
-      role: importedRole,
-    });
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: firehoseTarget,
-      })).toThrow(/Both the target and the execution role must be in the same account/);
-  });
-
-  test('adds permissions to DLQ', () => {
+  test('adds permissions to execution role for sending messages to DLQ', () => {
     const dlq = new sqs.Queue(stack, 'DummyDeadLetterQueue');
 
-    const firehoseTarget = new KinesisDataFirehosePutRecord(firehose, {
+    const firehoseTarget = new KinesisDataFirehosePutRecord(firehoseStream, {
       deadLetterQueue: dlq,
     });
 
@@ -465,14 +447,18 @@ describe('schedule target', () => {
       target: firehoseTarget,
     });
 
-    Template.fromStack(stack).hasResourceProperties('AWS::SQS::QueuePolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
-            Action: 'sqs:SendMessage',
-            Principal: {
-              Service: 'scheduler.amazonaws.com',
+            Action: 'firehose:PutRecord',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [firehoseStreamId, 'Arn'],
             },
+          },
+          {
+            Action: 'sqs:SendMessage',
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': ['DummyDeadLetterQueueCEBF3463', 'Arn'],
@@ -480,37 +466,14 @@ describe('schedule target', () => {
           },
         ],
       },
-      Queues: [
-        {
-          Ref: 'DummyDeadLetterQueueCEBF3463',
-        },
-      ],
+      Roles: [{ Ref: roleId }],
     });
   });
 
-  test('throws when adding permissions to DLQ from a different region', () => {
-    const stack2 = new Stack(app, 'Stack2', {
-      env: {
-        region: 'eu-west-2',
-      },
-    });
-    const queue = new sqs.Queue(stack2, 'DummyDeadLetterQueue');
-
-    const firehoseTarget = new KinesisDataFirehosePutRecord(firehose, {
-      deadLetterQueue: queue,
-    });
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: firehoseTarget,
-      })).toThrow(/Both the queue and the schedule must be in the same region./);
-  });
-
-  test('does not create a queue policy when DLQ is imported', () => {
+  test('adds permission to execution role when imported DLQ is in same account', () => {
     const importedQueue = sqs.Queue.fromQueueArn(stack, 'ImportedQueue', 'arn:aws:sqs:us-east-1:123456789012:queue1');
 
-    const firehoseTarget = new KinesisDataFirehosePutRecord(firehose, {
+    const firehoseTarget = new KinesisDataFirehosePutRecord(firehoseStream, {
       deadLetterQueue: importedQueue,
     });
 
@@ -519,35 +482,29 @@ describe('schedule target', () => {
       target: firehoseTarget,
     });
 
-    Template.fromStack(stack).resourceCountIs('AWS::SQS::QueuePolicy', 0);
-  });
-
-  test('does not create a queue policy when DLQ is created in a different account', () => {
-    const stack2 = new Stack(app, 'Stack2', {
-      env: {
-        region: 'us-east-1',
-        account: '234567890123',
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'firehose:PutRecord',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [firehoseStreamId, 'Arn'],
+            },
+          },
+          {
+            Action: 'sqs:SendMessage',
+            Effect: 'Allow',
+            Resource: importedQueue.queueArn,
+          },
+        ],
       },
+      Roles: [{ Ref: roleId }],
     });
-
-    const queue = new sqs.Queue(stack2, 'DummyDeadLetterQueue', {
-      queueName: 'DummyDeadLetterQueue',
-    });
-
-    const firehoseTarget = new KinesisDataFirehosePutRecord(firehose, {
-      deadLetterQueue: queue,
-    });
-
-    new Schedule(stack, 'MyScheduleDummy', {
-      schedule: expr,
-      target: firehoseTarget,
-    });
-
-    Template.fromStack(stack).resourceCountIs('AWS::SQS::QueuePolicy', 0);
   });
 
   test('renders expected retry policy', () => {
-    const firehoseTarget = new KinesisDataFirehosePutRecord(firehose, {
+    const firehoseTarget = new KinesisDataFirehosePutRecord(firehoseStream, {
       retryAttempts: 5,
       maxEventAge: Duration.hours(3),
     });
@@ -561,7 +518,7 @@ describe('schedule target', () => {
       Properties: {
         Target: {
           Arn: {
-            'Fn::GetAtt': ['MyFirehose', 'Arn'],
+            'Fn::GetAtt': [firehoseStreamId, 'Arn'],
           },
           RoleArn: { 'Fn::GetAtt': [roleId, 'Arn'] },
           RetryPolicy: {
@@ -574,7 +531,7 @@ describe('schedule target', () => {
   });
 
   test('throws when retry policy max age is more than 1 day', () => {
-    const firehoseTarget = new KinesisDataFirehosePutRecord(firehose, {
+    const firehoseTarget = new KinesisDataFirehosePutRecord(firehoseStream, {
       maxEventAge: Duration.days(3),
     });
 
@@ -586,7 +543,7 @@ describe('schedule target', () => {
   });
 
   test('throws when retry policy max age is less than 15 minutes', () => {
-    const firehoseTarget = new KinesisDataFirehosePutRecord(firehose, {
+    const firehoseTarget = new KinesisDataFirehosePutRecord(firehoseStream, {
       maxEventAge: Duration.minutes(5),
     });
 
@@ -598,7 +555,7 @@ describe('schedule target', () => {
   });
 
   test('throws when retry policy max retry attempts is out of the allowed limits', () => {
-    const firehoseTarget = new KinesisDataFirehosePutRecord(firehose, {
+    const firehoseTarget = new KinesisDataFirehosePutRecord(firehoseStream, {
       retryAttempts: 200,
     });
 
