@@ -215,13 +215,27 @@ function synthNestedAssemblies(root: IConstruct, options: StageSynthesisOptions)
  * twice for the same construct.
  */
 function invokeAspects(root: IConstruct) {
-  const aspectsMap = collectAllAspectApplications(root);
+  const aspectsSet = getAllAspectApplications(root);
 
-  const orderedPriorities = Array.from(aspectsMap.keys()).sort((a, b) => a - b);
+  const aspectsPQ = new PriorityQueue<AspectApplication>();
+  for (const aspectApplication of aspectsSet) {
+    aspectsPQ.enqueue(aspectApplication, aspectApplication.priority);
+  }
 
-  for (const priority of orderedPriorities) {
-    for (const aspectApplication of aspectsMap.get(priority)!) {
-      invokeAspect(aspectApplication.construct, aspectApplication.aspect, false);
+  let nestedAspectWarning = { value: false };;
+
+  while (!aspectsPQ.isEmpty()) {
+    // eslint-disable-next-line no-console
+    console.log(`PQ size: ${aspectsPQ.size()}`);
+    const aspectApplication = aspectsPQ.dequeue()!;
+    invokeAspect(aspectApplication.construct, aspectApplication.aspect, nestedAspectWarning, aspectsPQ);
+
+    const updatedAspectApplications = getAllAspectApplications(root);
+    for (const app of updatedAspectApplications) {
+      // if (aspectsSet.has(aspectApplication)) continue;
+      if (!aspectsSet.has(app) && app != aspectApplication) {
+        aspectsPQ.enqueue(app, aspectApplication.priority);
+      }
     }
   }
 }
@@ -231,47 +245,40 @@ function invokeAspects(root: IConstruct) {
  *
  * nestedAspectWarning argument is used to prevent the nested Aspect warning from being emitted for every child
  */
-function invokeAspect(construct: IConstruct, aspect: IAspect, nestedAspectWarning: boolean) {
+function invokeAspect(construct: IConstruct, aspect: IAspect, nestedAspectWarning: {value: boolean}, pq: PriorityQueue<AspectApplication>) {
   const aspectsCount = Aspects.of(construct).all.length;
   aspect.visit(construct);
   const aspectsCount2 = Aspects.of(construct).all.length;
+
   // if an aspect was added to the node while invoking another aspect it will not be invoked, emit a warning
-  if ((aspectsCount != aspectsCount2) && !nestedAspectWarning) {
-    nestedAspectWarning = true;
+  if ((aspectsCount != aspectsCount2) && !nestedAspectWarning.value) {
     Annotations.of(construct).addWarningV2('@aws-cdk/core:ignoredAspect', 'We detected an Aspect was added via another Aspect, and will not be applied');
+    nestedAspectWarning.value = true;
   }
   for (const child of construct.node.children) {
     // Do not cross the Stage boundary
     if (!Stage.isStage(child)) {
-      invokeAspect(child, aspect, nestedAspectWarning);
+      invokeAspect(child, aspect, nestedAspectWarning, pq);
     }
   }
 }
 
 /**
- * Returns a Map of AspectApplications organized by Priority value.
+ * Gets all AspectApplications.
  *
- * Returns a Map where the keys are Priority (number) and the values are Set<AspectApplication>
+ * Returns a Set<AspectApplication> of all Aspect Applications from a node and all its children.
  */
-function collectAllAspectApplications(root: IConstruct): Map<number, Set<AspectApplication>> {
-  let aspectsMap = new Map<number, Set<AspectApplication>>();
+function getAllAspectApplications(root: IConstruct): Set<AspectApplication> {
+  let aspectsSet = new Set<AspectApplication>();
 
   recurse(root);
 
-  return aspectsMap;
+  return aspectsSet;
 
   // Helper function recurses tree to collect Aspects from every node.
   function recurse(node: IConstruct) {
     for (const aspectApplication of Aspects.of(node).list) {
-      const curPriority = aspectApplication.priority;
-      if (!aspectsMap.has(curPriority)) {
-        aspectsMap.set(curPriority, new Set());
-      }
-
-      let aspectsSet = aspectsMap.get(curPriority)!;
       aspectsSet.add(aspectApplication);
-
-      aspectsMap.set(curPriority, aspectsSet);
     }
 
     for (const child of node.node.children) {
@@ -409,5 +416,122 @@ function visit(root: IConstruct, order: 'pre' | 'post', cb: (x: IConstruct) => v
 
   if (order === 'post') {
     cb(root);
+  }
+}
+
+/**
+ * Ordered Priority Queue to be used in Aspect invocation algorithm.
+ *
+ * Counter keeps track of insertion order so that Aspects of the same priority are applied
+ * in the order in which they were added.
+ */
+class PriorityQueue<T> {
+  private heap: { value: T; priority: number; order: number }[] = [];
+  private set: Set<T> = new Set();
+  private counter = 0; // Tracks insertion order
+
+  private getParentIndex(index: number): number {
+    return Math.floor((index - 1) / 2);
+  }
+
+  private getLeftChildIndex(index: number): number {
+    return 2 * index + 1;
+  }
+
+  private getRightChildIndex(index: number): number {
+    return 2 * index + 2;
+  }
+
+  private swap(index1: number, index2: number): void {
+    [this.heap[index1], this.heap[index2]] = [this.heap[index2], this.heap[index1]];
+  }
+
+  private bubbleUp(index: number): void {
+    const parentIndex = this.getParentIndex(index);
+
+    if (
+      parentIndex >= 0 &&
+      (
+        this.heap[parentIndex].priority > this.heap[index].priority ||
+        (
+          this.heap[parentIndex].priority === this.heap[index].priority &&
+          this.heap[parentIndex].order > this.heap[index].order
+        )
+      )
+    ) {
+      this.swap(parentIndex, index);
+      this.bubbleUp(parentIndex);
+    }
+  }
+
+  private bubbleDown(index: number): void {
+    const leftChildIndex = this.getLeftChildIndex(index);
+    const rightChildIndex = this.getRightChildIndex(index);
+    let smallest = index;
+
+    if (
+      leftChildIndex < this.heap.length &&
+      (
+        this.heap[leftChildIndex].priority < this.heap[smallest].priority ||
+        (
+          this.heap[leftChildIndex].priority === this.heap[smallest].priority &&
+          this.heap[leftChildIndex].order < this.heap[smallest].order
+        )
+      )
+    ) {
+      smallest = leftChildIndex;
+    }
+
+    if (
+      rightChildIndex < this.heap.length &&
+      (
+        this.heap[rightChildIndex].priority < this.heap[smallest].priority ||
+        (
+          this.heap[rightChildIndex].priority === this.heap[smallest].priority &&
+          this.heap[rightChildIndex].order < this.heap[smallest].order
+        )
+      )
+    ) {
+      smallest = rightChildIndex;
+    }
+
+    if (smallest !== index) {
+      this.swap(index, smallest);
+      this.bubbleDown(smallest);
+    }
+  }
+
+  enqueue(value: T, priority: number): void {
+    // Prevent duplicate entries
+    if (this.set.has(value)) return;
+    this.set.add(value);
+
+    // Add the new element with priority and order
+    this.heap.push({ value, priority, order: this.counter++ });
+    this.bubbleUp(this.heap.length - 1);
+  }
+
+  dequeue(): T | undefined {
+    if (this.heap.length === 0) return undefined;
+    if (this.heap.length === 1) return this.heap.pop()?.value;
+
+    const root = this.heap[0];
+    this.heap[0] = this.heap.pop()!;
+    this.bubbleDown(0);
+
+    // this.set.delete(root.value);
+    return root.value;
+  }
+
+  peek(): T | undefined {
+    return this.heap[0]?.value;
+  }
+
+  isEmpty(): boolean {
+    return this.heap.length === 0;
+  }
+
+  size(): number {
+    return this.set.size;
   }
 }
