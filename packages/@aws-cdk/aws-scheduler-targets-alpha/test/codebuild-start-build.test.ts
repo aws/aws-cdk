@@ -25,7 +25,7 @@ describe('codebuild start build', () => {
   });
 
   test('creates IAM role and IAM policy for codebuild target in the same account', () => {
-    const codeBuildTarget = new CodeBuildStartBuild(codebuildProject, {});
+    const codeBuildTarget = new CodeBuildStartBuild(codebuildProject);
 
     new Schedule(stack, 'MyScheduleDummy', {
       schedule: expr,
@@ -131,7 +131,7 @@ describe('codebuild start build', () => {
   });
 
   test('reuses IAM role and IAM policy for two schedules with the same target from the same account', () => {
-    const codeBuildTarget = new CodeBuildStartBuild(codebuildProject, {});
+    const codeBuildTarget = new CodeBuildStartBuild(codebuildProject);
 
     new Schedule(stack, 'MyScheduleDummy1', {
       schedule: expr,
@@ -192,7 +192,7 @@ describe('codebuild start build', () => {
   });
 
   test('creates IAM role and IAM policy for two schedules with the same target but different groups', () => {
-    const codeBuildTarget = new CodeBuildStartBuild(codebuildProject, {});
+    const codeBuildTarget = new CodeBuildStartBuild(codebuildProject);
     const group = new Group(stack, 'Group', {
       groupName: 'mygroup',
     });
@@ -278,7 +278,7 @@ describe('codebuild start build', () => {
     const importedCodeBuildArn = 'arn:aws:codebuild:us-east-1:123456789012:project/myproject';
     const importedCodeBuild = Project.fromProjectArn(stack, 'ImportedProject', importedCodeBuildArn);
 
-    const codeBuildTarget = new CodeBuildStartBuild(importedCodeBuild, {});
+    const codeBuildTarget = new CodeBuildStartBuild(importedCodeBuild);
 
     new Schedule(stack, 'MyScheduleDummy', {
       schedule: expr,
@@ -390,36 +390,7 @@ describe('codebuild start build', () => {
     });
   });
 
-  test.each([
-    ['account', 'arn:aws:codebuild:us-east-1:999999999999:project/myproject', /Both the schedule and the project must be in the same account./],
-    ['region', 'arn:aws:codebuild:eu-central-1:123456789012:project/myproject', /Both the schedule and the project must be in the same region./],
-  ])('throws when codebuild project is imported from different %s', (_, arn: string, expectedError: RegExp) => {
-    const importedProject = Project.fromProjectArn(stack, 'ImportedProject', arn);
-    const codeBuildTarget = new CodeBuildStartBuild(importedProject, {});
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: codeBuildTarget,
-      })).toThrow(expectedError);
-  });
-
-  test('throws when IAM role is imported from different account', () => {
-    const anotherAccountId = '123456789015';
-    const importedRole = Role.fromRoleArn(stack, 'ImportedRole', `arn:aws:iam::${anotherAccountId}:role/someRole`);
-
-    const codebuildProjectTarget = new CodeBuildStartBuild(codebuildProject, {
-      role: importedRole,
-    });
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: codebuildProjectTarget,
-      })).toThrow(/Both the target and the execution role must be in the same account/);
-  });
-
-  test('adds permissions to DLQ', () => {
+  test('adds permissions to execution role for sending messages to DLQ', () => {
     const dlq = new Queue(stack, 'DummyDeadLetterQueue');
 
     const codebuildProjectTarget = new CodeBuildStartBuild(codebuildProject, {
@@ -431,14 +402,18 @@ describe('codebuild start build', () => {
       target: codebuildProjectTarget,
     });
 
-    Template.fromStack(stack).hasResourceProperties('AWS::SQS::QueuePolicy', {
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
+            Action: codebuildAction,
+            Effect: 'Allow',
+            Resource: codebuildArnRef,
+          },
+          {
             Action: 'sqs:SendMessage',
-            Principal: {
-              Service: 'scheduler.amazonaws.com',
-            },
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': ['DummyDeadLetterQueueCEBF3463', 'Arn'],
@@ -446,34 +421,11 @@ describe('codebuild start build', () => {
           },
         ],
       },
-      Queues: [
-        {
-          Ref: 'DummyDeadLetterQueueCEBF3463',
-        },
-      ],
+      Roles: [{ Ref: roleId }],
     });
   });
 
-  test('throws when adding permissions to DLQ from a different region', () => {
-    const stack2 = new Stack(app, 'Stack2', {
-      env: {
-        region: 'eu-west-2',
-      },
-    });
-    const queue = new Queue(stack2, 'DummyDeadLetterQueue');
-
-    const codebuildProjectTarget = new CodeBuildStartBuild(codebuildProject, {
-      deadLetterQueue: queue,
-    });
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: codebuildProjectTarget,
-      })).toThrow(/Both the queue and the schedule must be in the same region./);
-  });
-
-  test('does not create a queue policy when DLQ is imported', () => {
+  test('adds permission to execution role when imported DLQ is in same account', () => {
     const importedQueue = Queue.fromQueueArn(stack, 'ImportedQueue', 'arn:aws:sqs:us-east-1:123456789012:queue1');
 
     const codebuildProjectTarget = new CodeBuildStartBuild(codebuildProject, {
@@ -485,31 +437,23 @@ describe('codebuild start build', () => {
       target: codebuildProjectTarget,
     });
 
-    Template.fromStack(stack).resourceCountIs('AWS::SQS::QueuePolicy', 0);
-  });
-
-  test('does not create a queue policy when DLQ is created in a different account', () => {
-    const stack2 = new Stack(app, 'Stack2', {
-      env: {
-        region: 'us-east-1',
-        account: '234567890123',
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: codebuildAction,
+            Effect: 'Allow',
+            Resource: codebuildArnRef,
+          },
+          {
+            Action: 'sqs:SendMessage',
+            Effect: 'Allow',
+            Resource: importedQueue.queueArn,
+          },
+        ],
       },
+      Roles: [{ Ref: roleId }],
     });
-
-    const queue = new Queue(stack2, 'DummyDeadLetterQueue', {
-      queueName: 'DummyDeadLetterQueue',
-    });
-
-    const codebuildProjectTarget = new CodeBuildStartBuild(codebuildProject, {
-      deadLetterQueue: queue,
-    });
-
-    new Schedule(stack, 'MyScheduleDummy', {
-      schedule: expr,
-      target: codebuildProjectTarget,
-    });
-
-    Template.fromStack(stack).resourceCountIs('AWS::SQS::QueuePolicy', 0);
   });
 
   test('renders expected retry policy', () => {
