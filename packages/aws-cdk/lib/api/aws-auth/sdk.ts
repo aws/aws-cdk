@@ -52,6 +52,7 @@ import {
   type DescribeResourceScanCommandInput,
   type DescribeResourceScanCommandOutput,
   type DescribeStackEventsCommandInput,
+  DescribeStackEventsCommandOutput,
   DescribeStackResourcesCommand,
   DescribeStackResourcesCommandInput,
   DescribeStackResourcesCommandOutput,
@@ -91,7 +92,6 @@ import {
   RollbackStackCommand,
   RollbackStackCommandInput,
   RollbackStackCommandOutput,
-  StackEvent,
   StackResourceSummary,
   StartResourceScanCommand,
   type StartResourceScanCommandInput,
@@ -311,7 +311,7 @@ import { GetCallerIdentityCommand, STSClient } from '@aws-sdk/client-sts';
 import { Upload } from '@aws-sdk/lib-storage';
 import { getEndpointFromInstructions } from '@smithy/middleware-endpoint';
 import type { NodeHttpHandlerOptions } from '@smithy/node-http-handler';
-import { AwsCredentialIdentity, Logger } from '@smithy/types';
+import { AwsCredentialIdentity, Logger, Paginator } from '@smithy/types';
 import { ConfiguredRetryStrategy } from '@smithy/util-retry';
 import { WaiterResult } from '@smithy/util-waiter';
 import { AccountAccessKeyCache } from './account-cache';
@@ -365,8 +365,7 @@ export interface IAppSyncClient {
   updateApiKey(input: UpdateApiKeyCommandInput): Promise<UpdateApiKeyCommandOutput>;
   updateFunction(input: UpdateFunctionCommandInput): Promise<UpdateFunctionCommandOutput>;
   updateResolver(input: UpdateResolverCommandInput): Promise<UpdateResolverCommandOutput>;
-  // Pagination functions
-  listFunctions(input: ListFunctionsCommandInput): Promise<FunctionConfiguration[]>;
+  listAllFunctions(input: ListFunctionsCommandInput): Promise<FunctionConfiguration[]>;
 }
 
 export interface ICloudFormationClient {
@@ -403,9 +402,8 @@ export interface ICloudFormationClient {
   updateTerminationProtection(
     input: UpdateTerminationProtectionCommandInput,
   ): Promise<UpdateTerminationProtectionCommandOutput>;
-  // Pagination functions
-  describeStackEvents(input: DescribeStackEventsCommandInput): Promise<StackEvent[]>;
-  listStackResources(input: ListStackResourcesCommandInput): Promise<StackResourceSummary[]>;
+  describeStackEventsPaginated(input: DescribeStackEventsCommandInput): Paginator<DescribeStackEventsCommandOutput>;
+  listAllStackResources(input: ListStackResourcesCommandInput): Promise<StackResourceSummary[]>;
 }
 
 export interface ICloudWatchLogsClient {
@@ -455,12 +453,19 @@ export interface IECSClient {
 }
 
 export interface IElasticLoadBalancingV2Client {
+  /**
+   * Returns only the first page. Use `.NextMarker` on the result to query for the next page.
+   * To retrieve all results, use `describeAllListeners`.
+   */
   describeListeners(input: DescribeListenersCommandInput): Promise<DescribeListenersCommandOutput>;
+  /**
+   * Returns only the first page. Use `.NextMarker` on the result to query for the next page.
+   * To retrieve all results, use `describeAllLoadBalancers`.
+   */
   describeLoadBalancers(input: DescribeLoadBalancersCommandInput): Promise<DescribeLoadBalancersCommandOutput>;
   describeTags(input: DescribeTagsCommandInput): Promise<DescribeTagsCommandOutput>;
-  // Pagination
-  paginateDescribeListeners(input: DescribeListenersCommandInput): Promise<Listener[]>;
-  paginateDescribeLoadBalancers(input: DescribeLoadBalancersCommandInput): Promise<LoadBalancer[]>;
+  describeAllListeners(input: DescribeListenersCommandInput): Promise<Listener[]>;
+  describeAllLoadBalancers(input: DescribeLoadBalancersCommandInput): Promise<LoadBalancer[]>;
 }
 
 export interface IIAMClient {
@@ -587,8 +592,7 @@ export class SDK {
       updateResolver: (input: UpdateResolverCommandInput): Promise<UpdateResolverCommandOutput> =>
         client.send(new UpdateResolverCommand(input)),
 
-      // Pagination Functions
-      listFunctions: async (input: ListFunctionsCommandInput): Promise<FunctionConfiguration[]> => {
+      listAllFunctions: async (input: ListFunctionsCommandInput): Promise<FunctionConfiguration[]> => {
         const functions = Array<FunctionConfiguration>();
         const paginator = paginateListFunctions({ client }, input);
         for await (const page of paginator) {
@@ -664,15 +668,10 @@ export class SDK {
         input: UpdateTerminationProtectionCommandInput,
       ): Promise<UpdateTerminationProtectionCommandOutput> =>
         client.send(new UpdateTerminationProtectionCommand(input)),
-      describeStackEvents: async (input: DescribeStackEventsCommandInput): Promise<StackEvent[]> => {
-        const stackEvents = Array<StackEvent>();
-        const paginator = paginateDescribeStackEvents({ client }, input);
-        for await (const page of paginator) {
-          stackEvents.push(...(page?.StackEvents || []));
-        }
-        return stackEvents;
+      describeStackEventsPaginated: (input: DescribeStackEventsCommandInput): Paginator<DescribeStackEventsCommandOutput> => {
+        return paginateDescribeStackEvents({ client }, input);
       },
-      listStackResources: async (input: ListStackResourcesCommandInput): Promise<StackResourceSummary[]> => {
+      listAllStackResources: async (input: ListStackResourcesCommandInput): Promise<StackResourceSummary[]> => {
         const stackResources = Array<StackResourceSummary>();
         const paginator = paginateListStackResources({ client }, input);
         for await (const page of paginator) {
@@ -789,8 +788,7 @@ export class SDK {
         client.send(new DescribeLoadBalancersCommand(input)),
       describeTags: (input: DescribeTagsCommandInput): Promise<DescribeTagsCommandOutput> =>
         client.send(new DescribeTagsCommand(input)),
-      // Pagination Functions
-      paginateDescribeListeners: async (input: DescribeListenersCommandInput): Promise<Listener[]> => {
+      describeAllListeners: async (input: DescribeListenersCommandInput): Promise<Listener[]> => {
         const listeners = Array<Listener>();
         const paginator = paginateDescribeListeners({ client }, input);
         for await (const page of paginator) {
@@ -798,7 +796,7 @@ export class SDK {
         }
         return listeners;
       },
-      paginateDescribeLoadBalancers: async (input: DescribeLoadBalancersCommandInput): Promise<LoadBalancer[]> => {
+      describeAllLoadBalancers: async (input: DescribeLoadBalancersCommandInput): Promise<LoadBalancer[]> => {
         const loadBalancers = Array<LoadBalancer>();
         const paginator = paginateDescribeLoadBalancers({ client }, input);
         for await (const page of paginator) {

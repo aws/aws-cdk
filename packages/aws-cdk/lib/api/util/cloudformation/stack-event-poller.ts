@@ -86,49 +86,53 @@ export class StackEventPoller {
   }
 
   private async doPoll(): Promise<ResourceEvent[]> {
+    // eslint-disable-next-line no-console
+    console.error('Polling for events');
     const events: ResourceEvent[] = [];
     try {
-      const eventList = await this.cfn.describeStackEvents({
+      const paginator = this.cfn.describeStackEventsPaginated({
         StackName: this.props.stackName,
       });
-      for (const event of eventList) {
-        // Event from before we were interested in 'em
-        if (this.props.startTime !== undefined && event.Timestamp!.valueOf() < this.props.startTime) {
-          return events;
-        }
+      for await (const page of paginator) {
+        for (const event of page.StackEvents ?? []) {
+          // Event from before we were interested in 'em
+          if (this.props.startTime !== undefined && event.Timestamp!.valueOf() < this.props.startTime) {
+            return events;
+          }
 
-        // Already seen this one
-        if (this.eventIds.has(event.EventId!)) {
-          return events;
-        }
-        this.eventIds.add(event.EventId!);
+          // Already seen this one
+          if (this.eventIds.has(event.EventId!)) {
+            return events;
+          }
+          this.eventIds.add(event.EventId!);
 
-        // The events for the stack itself are also included next to events about resources; we can test for them in this way.
-        const isParentStackEvent = event.PhysicalResourceId === event.StackId;
+          // The events for the stack itself are also included next to events about resources; we can test for them in this way.
+          const isParentStackEvent = event.PhysicalResourceId === event.StackId;
 
-        if (isParentStackEvent && this.props.stackStatuses?.includes(event.ResourceStatus ?? '')) {
-          return events;
-        }
+          if (isParentStackEvent && this.props.stackStatuses?.includes(event.ResourceStatus ?? '')) {
+            return events;
+          }
 
-        // Fresh event
-        const resEvent: ResourceEvent = {
-          event: event,
-          parentStackLogicalIds: this.props.parentStackLogicalIds ?? [],
-          isStackEvent: isParentStackEvent,
-        };
-        events.push(resEvent);
+          // Fresh event
+          const resEvent: ResourceEvent = {
+            event: event,
+            parentStackLogicalIds: this.props.parentStackLogicalIds ?? [],
+            isStackEvent: isParentStackEvent,
+          };
+          events.push(resEvent);
 
-        if (
-          !isParentStackEvent &&
-          event.ResourceType === 'AWS::CloudFormation::Stack' &&
-          isStackBeginOperationState(event.ResourceStatus)
-        ) {
-          // If the event is not for `this` stack and has a physical resource Id, recursively call for events in the nested stack
-          this.trackNestedStack(event, [...(this.props.parentStackLogicalIds ?? []), event.LogicalResourceId ?? '']);
-        }
+          if (
+            !isParentStackEvent &&
+            event.ResourceType === 'AWS::CloudFormation::Stack' &&
+            isStackBeginOperationState(event.ResourceStatus)
+          ) {
+            // If the event is not for `this` stack and has a physical resource Id, recursively call for events in the nested stack
+            this.trackNestedStack(event, [...(this.props.parentStackLogicalIds ?? []), event.LogicalResourceId ?? '']);
+          }
 
-        if (isParentStackEvent && isStackTerminalState(event.ResourceStatus)) {
-          this.complete = true;
+          if (isParentStackEvent && isStackTerminalState(event.ResourceStatus)) {
+            this.complete = true;
+          }
         }
       }
     } catch (e: any) {
@@ -136,17 +140,7 @@ export class StackEventPoller {
         throw e;
       }
     }
-    // // Also poll all nested stacks we're currently tracking
-    // for (const [logicalId, poller] of Object.entries(this.nestedStackPollers)) {
-    //   events.push(...(await poller.poll()));
-    //   if (poller.complete) {
-    //     delete this.nestedStackPollers[logicalId];
-    //   }
-    // }
 
-    // // Return what we have so far
-    // events.sort((a, b) => a.event.Timestamp!.valueOf() - b.event.Timestamp!.valueOf());
-    // this.events.push(...events);
     return events;
   }
 

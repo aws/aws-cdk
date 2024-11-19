@@ -16,7 +16,7 @@ export class LazyListStackResources implements ListStackResources {
 
   public async listStackResources(): Promise<StackResourceSummary[]> {
     if (this.stackResources === undefined) {
-      this.stackResources = this.sdk.cloudFormation().listStackResources({
+      this.stackResources = this.sdk.cloudFormation().listAllStackResources({
         StackName: this.stackName,
       });
     }
