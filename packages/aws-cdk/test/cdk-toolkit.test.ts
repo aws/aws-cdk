@@ -1062,7 +1062,7 @@ describe('watch', () => {
     });
     fakeChokidarWatcherOn.readyCallback();
 
-    expect(cdkDeployMock).toBeCalledWith(expect.objectContaining({ concurrency: 3 }));
+    expect(cdkDeployMock).toHaveBeenCalledWith(expect.objectContaining({ concurrency: 3 }));
   });
 
   describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotswapMode) => {
@@ -1078,7 +1078,7 @@ describe('watch', () => {
       });
       fakeChokidarWatcherOn.readyCallback();
 
-      expect(cdkDeployMock).toBeCalledWith(expect.objectContaining({ hotswap: hotswapMode }));
+      expect(cdkDeployMock).toHaveBeenCalledWith(expect.objectContaining({ hotswap: hotswapMode }));
     });
   });
 
@@ -1094,7 +1094,7 @@ describe('watch', () => {
     });
     fakeChokidarWatcherOn.readyCallback();
 
-    expect(cdkDeployMock).toBeCalledWith(expect.objectContaining({ hotswap: HotswapMode.HOTSWAP_ONLY }));
+    expect(cdkDeployMock).toHaveBeenCalledWith(expect.objectContaining({ hotswap: HotswapMode.HOTSWAP_ONLY }));
   });
 
   test('respects HotswapMode.FALL_BACK', async () => {
@@ -1109,7 +1109,7 @@ describe('watch', () => {
     });
     fakeChokidarWatcherOn.readyCallback();
 
-    expect(cdkDeployMock).toBeCalledWith(expect.objectContaining({ hotswap: HotswapMode.FALL_BACK }));
+    expect(cdkDeployMock).toHaveBeenCalledWith(expect.objectContaining({ hotswap: HotswapMode.FALL_BACK }));
   });
 
   test('respects HotswapMode.FULL_DEPLOYMENT', async () => {
@@ -1124,7 +1124,7 @@ describe('watch', () => {
     });
     fakeChokidarWatcherOn.readyCallback();
 
-    expect(cdkDeployMock).toBeCalledWith(expect.objectContaining({ hotswap: HotswapMode.FULL_DEPLOYMENT }));
+    expect(cdkDeployMock).toHaveBeenCalledWith(expect.objectContaining({ hotswap: HotswapMode.FULL_DEPLOYMENT }));
   });
 
   describe('with file change events', () => {

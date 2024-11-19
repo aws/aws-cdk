@@ -5,6 +5,7 @@ import { type CloudAssembly, CloudAssemblyBuilder, type CloudFormationStackArtif
 import { MockSdkProvider } from './util/mock-sdk';
 import { CloudExecutable } from '../lib/api/cxapp/cloud-executable';
 import { Configuration } from '../lib/settings';
+import { cxapiAssemblyWithForcedVersion } from './api/assembly-versions';
 
 export const DEFAULT_FAKE_TEMPLATE = { No: 'Resources' };
 
@@ -136,7 +137,8 @@ export function testAssembly(assembly: TestAssembly): CloudAssembly {
     });
   }
 
-  return builder.buildAssembly();
+  const asm = builder.buildAssembly();
+  return cxapiAssemblyWithForcedVersion(asm, '30.0.0');
 }
 
 /**
