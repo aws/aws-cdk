@@ -1339,6 +1339,9 @@ describe('WAF protection', () => {
   test('default one-click security rendered correctly', () => {
     const origin = defaultOrigin();
     const nameMatcher = Match.stringLikeRegexp('CreatedByCloudFront-');
+    stack = new Stack(app, 'UsEast1Stack', {
+      env: { account: '1234', region: 'us-east-1' },
+    });
 
     new Distribution(stack, 'MyDist', {
       defaultBehavior: { origin },
@@ -1425,5 +1428,16 @@ describe('WAF protection', () => {
         webAclId: 'dummy',
       });
     }).toThrow(/Cannot specify both webAclId and enableWafCoreProtections/);
+  });
+
+  test('throws error if used outside us-east-1', () => {
+    const origin = defaultOrigin();
+
+    expect(() => {
+      new Distribution(stack, 'MyDist', {
+        defaultBehavior: { origin },
+        enableWafCoreProtections: true,
+      });
+    }).toThrow(/To enable WAF core protection, the stack must be in the us-east-1 region but you are in/);
   });
 });

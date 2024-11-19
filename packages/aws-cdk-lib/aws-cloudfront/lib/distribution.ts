@@ -227,7 +227,10 @@ export interface DistributionProps {
 
   /**
    * Enable or disable WAF one-click security protections.
-   * Cannot be used with webAclId
+   *
+   * Can only be used in US East (N. Virginia) Region (us-east-1).
+   *
+   * Cannot be used with webAclId.
    *
    * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/distribution-web-awswaf.html
    *
@@ -352,6 +355,10 @@ export class Distribution extends Resource implements IDistribution {
     }
 
     if (props.enableWafCoreProtections) {
+      const regionIsUsEast1 = !Token.isUnresolved(this.env.region) && this.env.region === 'us-east-1';
+      if (!regionIsUsEast1) {
+        throw new Error(`To enable WAF core protection, the stack must be in the us-east-1 region but you are in ${this.env.region}.`);
+      }
       this.addWafCoreProtection();
     }
 

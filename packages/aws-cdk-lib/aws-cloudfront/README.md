@@ -1204,7 +1204,9 @@ new cloudfront.Distribution(this, 'MyCfWebDistribution', {
 });
 ```
 
-Note: cannot be used if webAclId already specified
+Note: 
+- Can only be used in US East (N. Virginia) Region (us-east-1) as WebACL for CloudFront must stay in `us-east-1` region.
+- Cannot be used if webAclId already specified.
 
 See:
 
