@@ -1,6 +1,7 @@
 import { Template } from '../../assertions';
 import * as events from '../../aws-events';
 import * as lambda from '../../aws-lambda';
+import * as s3 from '../../aws-s3';
 import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
 import { Stack } from '../../core';
@@ -349,6 +350,95 @@ test('sqs as destination', () => {
             'Fn::GetAtt': [
               'Queue4A7E3555',
               'Arn',
+            ],
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});
+
+test('s3 as destination', () => {
+  // GIVEN
+  const bucket = new s3.Bucket(stack, 'Bucket');
+
+  // WHEN
+  new lambda.Function(stack, 'Function', {
+    ...lambdaProps,
+    onSuccess: new destinations.S3Destination(bucket),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventInvokeConfig', {
+    DestinationConfig: {
+      OnSuccess: {
+        Destination: {
+          'Fn::GetAtt': [
+            'Bucket83908E77',
+            'Arn',
+          ],
+        },
+      },
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: [
+            's3:GetObject*',
+            's3:GetBucket*',
+            's3:List*',
+          ],
+          Effect: 'Allow',
+          Resource: [
+            {
+              'Fn::GetAtt': [
+                'Bucket83908E77',
+                'Arn',
+              ],
+            },
+            {
+              'Fn::Join': [
+                '',
+                [
+                  {
+                    'Fn::GetAtt': [
+                      'Bucket83908E77',
+                      'Arn',
+                    ],
+                  },
+                  '/*',
+                ],
+              ],
+            },
+          ],
+        },
+        {
+          Action: [
+            's3:PutObject',
+            's3:PutObjectLegalHold',
+            's3:PutObjectRetention',
+            's3:PutObjectTagging',
+            's3:PutObjectVersionTagging',
+            's3:Abort*',
+          ],
+          Effect: 'Allow',
+          Resource:
+          {
+            'Fn::Join': [
+              '',
+              [
+                {
+                  'Fn::GetAtt': [
+                    'Bucket83908E77',
+                    'Arn',
+                  ],
+                },
+                '/*',
+              ],
             ],
           },
         },
