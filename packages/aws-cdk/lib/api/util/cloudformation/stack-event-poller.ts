@@ -107,8 +107,8 @@ export class StackEventPoller {
           // The events for the stack itself are also included next to events about resources; we can test for them in this way.
           const isParentStackEvent = event.PhysicalResourceId === event.StackId;
 
-          /* istanbul ignore next */
           if (isParentStackEvent && this.props.stackStatuses?.includes(event.ResourceStatus ?? '')) {
+            /* istanbul ignore next */
             return events;
           }
 
@@ -129,8 +129,8 @@ export class StackEventPoller {
             this.trackNestedStack(event, [...(this.props.parentStackLogicalIds ?? []), event.LogicalResourceId ?? '']);
           }
 
-          /* istanbul ignore next */
           if (isParentStackEvent && isStackTerminalState(event.ResourceStatus)) {
+            /* istanbul ignore next */
             this.complete = true;
           }
         }
