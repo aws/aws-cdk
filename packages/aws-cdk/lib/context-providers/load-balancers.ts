@@ -146,7 +146,7 @@ class LoadBalancerProvider {
   private async getLoadBalancers() {
     const loadBalancerArns = this.filter.loadBalancerArn ? [this.filter.loadBalancerArn] : undefined;
     const loadBalancers = (
-      await this.client.describeAllLoadBalancers({
+      await this.client.paginateDescribeLoadBalancers({
         LoadBalancerArns: loadBalancerArns,
       })
     ).filter((lb) => lb.Type === this.filter.loadBalancerType);
@@ -193,7 +193,7 @@ class LoadBalancerProvider {
   private async getListenersForLoadBalancers(loadBalancers: LoadBalancer[]): Promise<Listener[]> {
     const listeners: Listener[] = [];
     for (const loadBalancer of loadBalancers.map((lb) => lb.LoadBalancerArn)) {
-      listeners.push(...(await this.client.describeAllListeners({ LoadBalancerArn: loadBalancer })));
+      listeners.push(...(await this.client.paginateDescribeListeners({ LoadBalancerArn: loadBalancer })));
     }
     return listeners;
   }

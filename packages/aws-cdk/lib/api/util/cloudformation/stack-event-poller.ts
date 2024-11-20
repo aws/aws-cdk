@@ -86,8 +86,6 @@ export class StackEventPoller {
   }
 
   private async doPoll(): Promise<ResourceEvent[]> {
-    // eslint-disable-next-line no-console
-    console.error('Polling for events');
     const events: ResourceEvent[] = [];
     try {
       const paginator = this.cfn.describeStackEventsPaginated({
