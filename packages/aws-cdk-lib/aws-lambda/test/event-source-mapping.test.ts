@@ -1,6 +1,5 @@
 import { Match, Template } from '../../assertions';
 import { Key } from '../../aws-kms';
-import { MetricType } from '../../aws-lambda-event-sources';
 import * as cdk from '../../core';
 import * as lambda from '../lib';
 import { Code, EventSourceMapping, Function, Runtime, Alias, StartingPosition, FilterRule, FilterCriteria } from '../lib';
@@ -521,7 +520,7 @@ describe('event source mapping', () => {
       startingPosition: StartingPosition.AT_TIMESTAMP,
       startingPositionTimestamp: 1640995200,
       metricsConfig: {
-        metrics: [MetricType.EVENT_COUNT],
+        metrics: [lambda.MetricType.EVENT_COUNT],
       },
     });
 

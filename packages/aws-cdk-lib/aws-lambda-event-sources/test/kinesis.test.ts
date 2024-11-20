@@ -364,7 +364,7 @@ describe('KinesisEventSource', () => {
       startingPosition: lambda.StartingPosition.LATEST,
       enabled: false,
       metricsConfig: {
-        metrics: [sources.MetricType.EVENT_COUNT],
+        metrics: [lambda.MetricType.EVENT_COUNT],
       },
     });
 

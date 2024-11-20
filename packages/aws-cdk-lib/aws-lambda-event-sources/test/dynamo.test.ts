@@ -7,7 +7,6 @@ import { Bucket } from '../../aws-s3';
 import * as sqs from '../../aws-sqs';
 import * as cdk from '../../core';
 import * as sources from '../lib';
-import { MetricType } from '../lib';
 
 /* eslint-disable quote-props */
 
@@ -1047,7 +1046,7 @@ describe('DynamoEventSource', () => {
       startingPosition: lambda.StartingPosition.LATEST,
       enabled: false,
       metricsConfig: {
-        metrics: [MetricType.EVENT_COUNT],
+        metrics: [lambda.MetricType.EVENT_COUNT],
       },
     }));
 

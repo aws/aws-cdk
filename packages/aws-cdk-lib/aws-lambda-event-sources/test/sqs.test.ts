@@ -599,7 +599,7 @@ describe('SQSEventSource', () => {
     fn.addEventSource(new sources.SqsEventSource(q, {
       maxConcurrency: 5,
       metricsConfig: {
-        metrics: [sources.MetricType.EVENT_COUNT],
+        metrics: [lambda.MetricType.EVENT_COUNT],
       },
     }));
 
