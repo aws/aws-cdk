@@ -19,7 +19,7 @@
         "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0d74b5a40240d8fe0a138cb28488a1136484e5a20037fc9a6f57fd6f4426bd7b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b223922b760df92bbe6af9e57188ae1e68bacb7d7db1c238410c9f14b59bc627.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -159,6 +159,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "NODEJS20XfunctionName"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_22_X/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NODEJS22XServiceRole8FE2F7A5"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_22_X/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NODEJS22X911196A1"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_22_X-functionName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NODEJS22XfunctionName"
           }
         ],
         "/aws-cdk-lambda-runtime-inlinecode/BootstrapVersion": [
