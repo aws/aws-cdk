@@ -225,8 +225,6 @@ function invokeAspects(root: IConstruct) {
   let nestedAspectWarning = { value: false };;
 
   while (!aspectsPQ.isEmpty()) {
-    // eslint-disable-next-line no-console
-    console.log(`PQ size: ${aspectsPQ.size()}`);
     const aspectApplication = aspectsPQ.dequeue()!;
     invokeAspect(aspectApplication.construct, aspectApplication.aspect, nestedAspectWarning, aspectsPQ);
 
