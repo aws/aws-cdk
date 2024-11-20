@@ -948,6 +948,8 @@ export class MysqlEngineVersion {
   public static readonly VER_8_0_37 = MysqlEngineVersion.of('8.0.37', '8.0');
   /** Version "8.0.39". */
   public static readonly VER_8_0_39 = MysqlEngineVersion.of('8.0.39', '8.0');
+  /** Version "8.0.40". */
+  public static readonly VER_8_0_40 = MysqlEngineVersion.of('8.0.40', '8.0');
 
   /**
    * Create a new MysqlEngineVersion with an arbitrary version.
@@ -1543,6 +1545,8 @@ export class PostgresEngineVersion {
   public static readonly VER_12_19 = PostgresEngineVersion.of('12.19', '12', { s3Import: true, s3Export: true });
   /** Version "12.20". */
   public static readonly VER_12_20 = PostgresEngineVersion.of('12.20', '12', { s3Import: true, s3Export: true });
+  /** Version "12.21". */
+  public static readonly VER_12_21 = PostgresEngineVersion.of('12.21', '12', { s3Import: true, s3Export: true });
 
   /** Version "13" (only a major version, without a specific minor version). */
   public static readonly VER_13 = PostgresEngineVersion.of('13', '13', { s3Import: true, s3Export: true });
@@ -1608,6 +1612,8 @@ export class PostgresEngineVersion {
   public static readonly VER_13_15 = PostgresEngineVersion.of('13.15', '13', { s3Import: true, s3Export: true });
   /** Version "13.16". */
   public static readonly VER_13_16 = PostgresEngineVersion.of('13.16', '13', { s3Import: true, s3Export: true });
+  /** Version "13.17". */
+  public static readonly VER_13_17 = PostgresEngineVersion.of('13.17', '13', { s3Import: true, s3Export: true });
 
   /** Version "14" (only a major version, without a specific minor version). */
   public static readonly VER_14 = PostgresEngineVersion.of('14', '14', { s3Import: true, s3Export: true });
@@ -1661,6 +1667,8 @@ export class PostgresEngineVersion {
   public static readonly VER_14_12 = PostgresEngineVersion.of('14.12', '14', { s3Import: true, s3Export: true });
   /** Version "14.13". */
   public static readonly VER_14_13 = PostgresEngineVersion.of('14.13', '14', { s3Import: true, s3Export: true });
+  /** Version "14.14". */
+  public static readonly VER_14_14 = PostgresEngineVersion.of('14.14', '14', { s3Import: true, s3Export: true });
 
   /** Version "15" (only a major version, without a specific minor version). */
   public static readonly VER_15 = PostgresEngineVersion.of('15', '15', { s3Import: true, s3Export: true });
@@ -1684,6 +1692,8 @@ export class PostgresEngineVersion {
   public static readonly VER_15_7 = PostgresEngineVersion.of('15.7', '15', { s3Import: true, s3Export: true });
   /** Version "15.8". */
   public static readonly VER_15_8 = PostgresEngineVersion.of('15.8', '15', { s3Import: true, s3Export: true });
+  /** Version "15.9". */
+  public static readonly VER_15_9 = PostgresEngineVersion.of('15.9', '15', { s3Import: true, s3Export: true });
 
   /** Version "16" (only a major version, without a specific minor version). */
   public static readonly VER_16 = PostgresEngineVersion.of('16', '16', { s3Import: true, s3Export: true });
@@ -1695,6 +1705,13 @@ export class PostgresEngineVersion {
   public static readonly VER_16_3 = PostgresEngineVersion.of('16.3', '16', { s3Import: true, s3Export: true });
   /** Version "16.4". */
   public static readonly VER_16_4 = PostgresEngineVersion.of('16.4', '16', { s3Import: true, s3Export: true });
+  /** Version "16.5". */
+  public static readonly VER_16_5 = PostgresEngineVersion.of('16.5', '16', { s3Import: true, s3Export: true });
+
+  /** Version "17" (only a major version, without a specific minor version). */
+  public static readonly VER_17 = PostgresEngineVersion.of('17', '17', { s3Import: true, s3Export: true });
+  /** Version "17.1". */
+  public static readonly VER_17_1 = PostgresEngineVersion.of('17.1', '17', { s3Import: true, s3Export: true });
 
   /**
    * Create a new PostgresEngineVersion with an arbitrary version.
@@ -2166,6 +2183,10 @@ export class OracleEngineVersion {
   public static readonly VER_19_0_0_0_2024_01_R1 = OracleEngineVersion.of('19.0.0.0.ru-2024-01.rur-2024-01.r1', '19');
   /** Version "19.0.0.0.ru-2024-04.rur-2024-04.r1". */
   public static readonly VER_19_0_0_0_2024_04_R1 = OracleEngineVersion.of('19.0.0.0.ru-2024-04.rur-2024-04.r1', '19');
+  /** Version "19.0.0.0.ru-2024-07.rur-2024-07.r1". */
+  public static readonly VER_19_0_0_0_2024_07_R1 = OracleEngineVersion.of('19.0.0.0.ru-2024-07.rur-2024-07.r1', '19');
+  /** Version "19.0.0.0.ru-2024-10.rur-2024-10.r1". */
+  public static readonly VER_19_0_0_0_2024_10_R1 = OracleEngineVersion.of('19.0.0.0.ru-2024-10.rur-2024-10.r1', '19');
 
   /** Version "21" (only a major version, without a specific minor version). */
   public static readonly VER_21 = OracleEngineVersion.of('21', '21');
@@ -2191,6 +2212,10 @@ export class OracleEngineVersion {
   public static readonly VER_21_0_0_0_2024_01_R1 = OracleEngineVersion.of('21.0.0.0.ru-2024-01.rur-2024-01.r1', '21');
   /** Version "21.0.0.0.ru-2024-04.rur-2024-04.r1". */
   public static readonly VER_21_0_0_0_2024_04_R1 = OracleEngineVersion.of('21.0.0.0.ru-2024-04.rur-2024-04.r1', '21');
+  /** Version "21.0.0.0.ru-2024-07.rur-2024-07.r1". */
+  public static readonly VER_21_0_0_0_2024_07_R1 = OracleEngineVersion.of('21.0.0.0.ru-2024-07.rur-2024-07.r1', '21');
+  /** Version "21.0.0.0.ru-2024-10.rur-2024-10.r1". */
+  public static readonly VER_21_0_0_0_2024_10_R1 = OracleEngineVersion.of('21.0.0.0.ru-2024-10.rur-2024-10.r1', '21');
 
   /**
    * Creates a new OracleEngineVersion with an arbitrary version.
@@ -2577,6 +2602,8 @@ export class SqlServerEngineVersion {
   public static readonly VER_13_00_6441_1_V1 = SqlServerEngineVersion.of('13.00.6441.1.v1', '13.00');
   /** Version "13.00.6445.1.v1". */
   public static readonly VER_13_00_6445_1_V1 = SqlServerEngineVersion.of('13.00.6445.1.v1', '13.00');
+  /** Version "13.00.6450.1.v1". */
+  public static readonly VER_13_00_6450_1_V1 = SqlServerEngineVersion.of('13.00.6450.1.v1', '13.00');
 
   /** Version "14.00" (only a major version, without a specific minor version). */
   public static readonly VER_14 = SqlServerEngineVersion.of('14.00', '14.00');
@@ -2632,6 +2659,8 @@ export class SqlServerEngineVersion {
   public static readonly VER_14_00_3471_2_V1 = SqlServerEngineVersion.of('14.00.3471.2.v1 ', '14.00');
   /** Version "14.00.3475.1.v1 ". */
   public static readonly VER_14_00_3475_1_V1 = SqlServerEngineVersion.of('14.00.3475.1.v1 ', '14.00');
+  /** Version "14.00.3480.1.v1 ". */
+  public static readonly VER_14_00_3480_1_V1 = SqlServerEngineVersion.of('14.00.3480.1.v1 ', '14.00');
 
   /** Version "15.00" (only a major version, without a specific minor version). */
   public static readonly VER_15 = SqlServerEngineVersion.of('15.00', '15.00');
@@ -2672,6 +2701,8 @@ export class SqlServerEngineVersion {
   public static readonly VER_15_00_4385_2_V1 = SqlServerEngineVersion.of('15.00.4385.2.v1', '15.00');
   /** Version "15.00.4390.2.v1". */
   public static readonly VER_15_00_4390_2_V1 = SqlServerEngineVersion.of('15.00.4390.2.v1', '15.00');
+  /** Version "15.00.4395.2.v1". */
+  public static readonly VER_15_00_4395_2_V1 = SqlServerEngineVersion.of('15.00.4395.2.v1', '15.00');
 
   /** Version "16.00" (only a major version, without a specific minor version). */
   public static readonly VER_16 = SqlServerEngineVersion.of('16.00', '16.00');
@@ -2693,6 +2724,8 @@ export class SqlServerEngineVersion {
   public static readonly VER_16_00_4135_4_V1 = SqlServerEngineVersion.of('16.00.4135.4.v1', '16.00');
   /** Version "16.00.4140.3.v1". */
   public static readonly VER_16_00_4140_3_V1 = SqlServerEngineVersion.of('16.00.4140.3.v1', '16.00');
+  /** Version "16.00.4150.1.v1". */
+  public static readonly VER_16_00_4150_1_V1 = SqlServerEngineVersion.of('16.00.4150.1.v1', '16.00');
 
   /**
    * Create a new SqlServerEngineVersion with an arbitrary version.

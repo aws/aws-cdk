@@ -742,12 +742,23 @@ class BuiltinLambdaStack extends cdk.Stack {
   }
 }
 
-class NotificationArnPropStack extends cdk.Stack {
+class NotificationArnsStack extends cdk.Stack {
   constructor(parent, id, props) {
-    super(parent, id, props);
-    new sns.Topic(this, 'topic');
+
+    const arnsFromEnv = process.env.INTEG_NOTIFICATION_ARNS;
+    super(parent, id, {
+      ...props,
+      // comma separated list of arns. 
+      // empty string means empty list.
+      // undefined means undefined
+      notificationArns: arnsFromEnv == '' ? [] : (arnsFromEnv ? arnsFromEnv.split(',') : undefined)
+    });
+
+    new cdk.CfnWaitConditionHandle(this, 'WaitConditionHandle');
+
   }
 }
+
 class AppSyncHotswapStack extends cdk.Stack {
   constructor(parent, id, props) {
     super(parent, id, props);
@@ -774,6 +785,15 @@ class AppSyncHotswapStack extends cdk.Stack {
       });
     }
   }
+}
+
+class MetadataStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+    const handle = new cdk.CfnWaitConditionHandle(this, 'WaitConditionHandle');
+    handle.addMetadata('Key', process.env.INTEG_METADATA_VALUE ?? 'default')
+
+  }  
 }
 
 const app = new cdk.App({
@@ -830,9 +850,7 @@ switch (stackSet) {
     new DockerInUseStack(app, `${stackPrefix}-docker-in-use`);
     new DockerStackWithCustomFile(app, `${stackPrefix}-docker-with-custom-file`);
 
-    new NotificationArnPropStack(app, `${stackPrefix}-notification-arn-prop`, {
-      notificationArns: [`arn:aws:sns:${defaultEnv.region}:${defaultEnv.account}:${stackPrefix}-test-topic-prop`],
-    });
+    new NotificationArnsStack(app, `${stackPrefix}-notification-arns`);
 
     // SSO stacks
     new SsoInstanceAccessControlConfig(app, `${stackPrefix}-sso-access-control`);
@@ -877,6 +895,8 @@ switch (stackSet) {
     new ExportValueStack(app, `${stackPrefix}-export-value-stack`);
 
     new BundlingStage(app, `${stackPrefix}-bundling-stage`);
+
+    new MetadataStack(app, `${stackPrefix}-metadata`);
     break;
 
   case 'stage-using-context':

@@ -1576,8 +1576,8 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
 
     // Validate against instance type restrictions, per
     // https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-instance-types.html
-    if (isSomeInstanceType('i3', 'r6gd', 'im4gn') && ebsEnabled) {
-      throw new Error('I3, R6GD, and IM4GN instance types do not support EBS storage volumes.');
+    if (isSomeInstanceType('i3', 'r6gd', 'i4g', 'im4gn') && ebsEnabled) {
+      throw new Error('I3, R6GD, I4G, and IM4GN instance types do not support EBS storage volumes.');
     }
 
     if (isSomeInstanceType('m3', 'r3', 't2') && encryptionAtRestEnabled) {
@@ -1592,10 +1592,10 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       throw new Error('T2 and T3 instance types do not support UltraWarm storage.');
     }
 
-    // Only R3, I3, R6GD, and IM4GN support instance storage, per
+    // Only R3, I3, R6GD, I4G and IM4GN support instance storage, per
     // https://aws.amazon.com/opensearch-service/pricing/
-    if (!ebsEnabled && !isEveryDatanodeInstanceType('r3', 'i3', 'r6gd', 'im4gn')) {
-      throw new Error('EBS volumes are required when using instance types other than R3, I3, R6GD, or IM4GN.');
+    if (!ebsEnabled && !isEveryDatanodeInstanceType('r3', 'i3', 'r6gd', 'i4g', 'im4gn')) {
+      throw new Error('EBS volumes are required when using instance types other than R3, I3, R6GD, I4G, or IM4GN.');
     }
 
     // Only for a valid ebs volume configuration, per

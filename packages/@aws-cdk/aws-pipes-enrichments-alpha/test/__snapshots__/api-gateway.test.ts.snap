@@ -1,0 +1,109 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`api-destination should grant pipe role invoke access 1`] = `
+{
+  "MyPipeRoleCBC8E9AB": {
+    "Properties": {
+      "AssumeRolePolicyDocument": {
+        "Statement": [
+          {
+            "Action": "sts:AssumeRole",
+            "Effect": "Allow",
+            "Principal": {
+              "Service": "pipes.amazonaws.com",
+            },
+          },
+        ],
+        "Version": "2012-10-17",
+      },
+    },
+    "Type": "AWS::IAM::Role",
+  },
+  "RestApiCloudWatchRoleE3ED6605": {
+    "DeletionPolicy": "Retain",
+    "Properties": {
+      "AssumeRolePolicyDocument": {
+        "Statement": [
+          {
+            "Action": "sts:AssumeRole",
+            "Effect": "Allow",
+            "Principal": {
+              "Service": "apigateway.amazonaws.com",
+            },
+          },
+        ],
+        "Version": "2012-10-17",
+      },
+      "ManagedPolicyArns": [
+        {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
+            ],
+          ],
+        },
+      ],
+    },
+    "Type": "AWS::IAM::Role",
+    "UpdateReplacePolicy": "Retain",
+  },
+}
+`;
+
+exports[`api-destination should grant pipe role invoke access 2`] = `
+{
+  "MyPipeRoleDefaultPolicy31387C20": {
+    "Properties": {
+      "PolicyDocument": {
+        "Statement": [
+          {
+            "Action": "execute-api:Invoke",
+            "Effect": "Allow",
+            "Resource": {
+              "Fn::Join": [
+                "",
+                [
+                  "arn:",
+                  {
+                    "Ref": "AWS::Partition",
+                  },
+                  ":execute-api:",
+                  {
+                    "Ref": "AWS::Region",
+                  },
+                  ":",
+                  {
+                    "Ref": "AWS::AccountId",
+                  },
+                  ":",
+                  {
+                    "Ref": "RestApi0C43BF4B",
+                  },
+                  "/",
+                  {
+                    "Ref": "RestApiDeploymentStageprod3855DE66",
+                  },
+                  "/*/",
+                ],
+              ],
+            },
+          },
+        ],
+        "Version": "2012-10-17",
+      },
+      "PolicyName": "MyPipeRoleDefaultPolicy31387C20",
+      "Roles": [
+        {
+          "Ref": "MyPipeRoleCBC8E9AB",
+        },
+      ],
+    },
+    "Type": "AWS::IAM::Policy",
+  },
+}
+`;
