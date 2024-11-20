@@ -137,6 +137,13 @@ export interface StreamEventSourceProps extends BaseStreamEventSourceProps {
    */
   readonly filterEncryption?: IKey;
 
+  /**
+   * Configuration for enhanced monitoring metrics collection
+   * When specified, enables collection of additional metrics for the stream event source
+   *
+   * @default - Enhanced monitoring is disabled
+   */
+  readonly metricsConfig?: lambda.MetricsConfig;
 }
 
 /**
