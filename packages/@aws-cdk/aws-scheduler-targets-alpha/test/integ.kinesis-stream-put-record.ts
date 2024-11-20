@@ -21,6 +21,7 @@ const partitionKey = 'key';
 const stream = new Stream(stack, 'MyStream', {
   streamName,
   shardCount: 1,
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
 new scheduler.Schedule(stack, 'Schedule', {
@@ -58,4 +59,3 @@ getRecords.assertAtPath(
   totalTimeout: cdk.Duration.minutes(10),
 });
 
-app.synth();

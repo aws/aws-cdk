@@ -5,64 +5,76 @@ import { DefaultSelection } from '../../lib/api/cxapp/cloud-assembly';
 import { registerContextProvider } from '../../lib/context-providers';
 import { MockCloudExecutable } from '../util';
 
+// Apps on this version of the cxschema don't emit their own metadata resources
+// yet, so rely on the CLI to add the Metadata resource in.
+const SCHEMA_VERSION_THAT_DOESNT_INCLUDE_METADATA_ITSELF = '2.0.0';
+
 describe('AWS::CDK::Metadata', () => {
   test('is generated for relocatable stacks from old frameworks', async () => {
-    await withFakeCurrentCxVersion('2.0.0', async () => {
-      const cx = await testCloudExecutable({ env: `aws://${cxapi.UNKNOWN_ACCOUNT}/${cxapi.UNKNOWN_REGION}`, versionReporting: true });
-      const cxasm = await cx.synthesize();
-
-      const result = cxasm.stackById('withouterrors').firstStack;
-      const metadata = result.template.Resources && result.template.Resources.CDKMetadata;
-      expect(metadata).toEqual({
-        Type: 'AWS::CDK::Metadata',
-        Properties: {
-          // eslint-disable-next-line @typescript-eslint/no-require-imports
-          Modules: `${require('../../package.json').name}=${require('../../package.json').version}`,
-        },
-        Condition: 'CDKMetadataAvailable',
-      });
-
-      expect(result.template.Conditions?.CDKMetadataAvailable).toBeDefined();
+    const cx = await testCloudExecutable({
+      env: `aws://${cxapi.UNKNOWN_ACCOUNT}/${cxapi.UNKNOWN_REGION}`,
+      versionReporting: true,
+      schemaVersion: SCHEMA_VERSION_THAT_DOESNT_INCLUDE_METADATA_ITSELF,
     });
+    const cxasm = await cx.synthesize();
+
+    const result = cxasm.stackById('withouterrors').firstStack;
+    const metadata = result.template.Resources && result.template.Resources.CDKMetadata;
+    expect(metadata).toEqual({
+      Type: 'AWS::CDK::Metadata',
+      Properties: {
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        Modules: `${require('../../package.json').name}=${require('../../package.json').version}`,
+      },
+      Condition: 'CDKMetadataAvailable',
+    });
+
+    expect(result.template.Conditions?.CDKMetadataAvailable).toBeDefined();
   });
 
   test('is generated for stacks in supported regions from old frameworks', async () => {
-    await withFakeCurrentCxVersion('2.0.0', async () => {
-      const cx = await testCloudExecutable({ env: 'aws://012345678912/us-east-1', versionReporting: true });
-      const cxasm = await cx.synthesize();
+    const cx = await testCloudExecutable({
+      env: 'aws://012345678912/us-east-1',
+      versionReporting: true,
+      schemaVersion: SCHEMA_VERSION_THAT_DOESNT_INCLUDE_METADATA_ITSELF,
+    });
+    const cxasm = await cx.synthesize();
 
-      const result = cxasm.stackById('withouterrors').firstStack;
-      const metadata = result.template.Resources && result.template.Resources.CDKMetadata;
-      expect(metadata).toEqual({
-        Type: 'AWS::CDK::Metadata',
-        Properties: {
-          // eslint-disable-next-line @typescript-eslint/no-require-imports
-          Modules: `${require('../../package.json').name}=${require('../../package.json').version}`,
-        },
-      });
+    const result = cxasm.stackById('withouterrors').firstStack;
+    const metadata = result.template.Resources && result.template.Resources.CDKMetadata;
+    expect(metadata).toEqual({
+      Type: 'AWS::CDK::Metadata',
+      Properties: {
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        Modules: `${require('../../package.json').name}=${require('../../package.json').version}`,
+      },
     });
   });
 
   test('is not generated for stacks in unsupported regions from old frameworks', async () => {
-    await withFakeCurrentCxVersion('2.0.0', async () => {
-      const cx = await testCloudExecutable({ env: 'aws://012345678912/bermuda-triangle-1337', versionReporting: true });
-      const cxasm = await cx.synthesize();
-
-      const result = cxasm.stackById('withouterrors').firstStack;
-      const metadata = result.template.Resources && result.template.Resources.CDKMetadata;
-      expect(metadata).toBeUndefined();
+    const cx = await testCloudExecutable({
+      env: 'aws://012345678912/bermuda-triangle-1337',
+      versionReporting: true,
+      schemaVersion: SCHEMA_VERSION_THAT_DOESNT_INCLUDE_METADATA_ITSELF,
     });
+    const cxasm = await cx.synthesize();
+
+    const result = cxasm.stackById('withouterrors').firstStack;
+    const metadata = result.template.Resources && result.template.Resources.CDKMetadata;
+    expect(metadata).toBeUndefined();
   });
 
   test('is not generated for new frameworks', async () => {
-    await withFakeCurrentCxVersion('8.0.0', async () => {
-      const cx = await testCloudExecutable({ env: 'aws://012345678912/us-east-1', versionReporting: true });
-      const cxasm = await cx.synthesize();
-
-      const result = cxasm.stackById('withouterrors').firstStack;
-      const metadata = result.template.Resources && result.template.Resources.CDKMetadata;
-      expect(metadata).toBeUndefined();
+    const cx = await testCloudExecutable({
+      env: 'aws://012345678912/us-east-1',
+      versionReporting: true,
+      schemaVersion: '8.0.0',
     });
+    const cxasm = await cx.synthesize();
+
+    const result = cxasm.stackById('withouterrors').firstStack;
+    const metadata = result.template.Resources && result.template.Resources.CDKMetadata;
+    expect(metadata).toBeUndefined();
   });
 });
 
@@ -109,7 +121,10 @@ test('fails if lookups are disabled and missing context is synthesized', async (
   await expect(cloudExecutable.synthesize()).rejects.toThrow(/Context lookups have been disabled/);
 });
 
-async function testCloudExecutable({ env, versionReporting = true }: { env?: string; versionReporting?: boolean } = {}) {
+async function testCloudExecutable(
+  { env, versionReporting = true, schemaVersion }:
+  { env?: string; versionReporting?: boolean; schemaVersion?: string } = {},
+) {
   const cloudExec = new MockCloudExecutable({
     stacks: [{
       stackName: 'withouterrors',
@@ -129,18 +144,9 @@ async function testCloudExecutable({ env, versionReporting = true }: { env?: str
         ],
       },
     }],
+    schemaVersion,
   });
   cloudExec.configuration.settings.set(['versionReporting'], versionReporting);
 
   return cloudExec;
-}
-
-async function withFakeCurrentCxVersion<A>(version: string, block: () => Promise<A>): Promise<A> {
-  const currentVersionFn = cxschema.Manifest.version;
-  cxschema.Manifest.version = () => version;
-  try {
-    return await block();
-  } finally {
-    cxschema.Manifest.version = currentVersionFn;
-  }
 }

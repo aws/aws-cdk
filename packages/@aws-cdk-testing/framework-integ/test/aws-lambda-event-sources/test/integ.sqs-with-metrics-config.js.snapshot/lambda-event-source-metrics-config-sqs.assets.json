@@ -1,0 +1,19 @@
+{
+  "version": "38.0.1",
+  "files": {
+    "5d4025b6edf3c156b92b7e7cb9903ece5091d3b6ad4ddd4b70d00a4817b044a2": {
+      "source": {
+        "path": "lambda-event-source-metrics-config-sqs.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "5d4025b6edf3c156b92b7e7cb9903ece5091d3b6ad4ddd4b70d00a4817b044a2.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

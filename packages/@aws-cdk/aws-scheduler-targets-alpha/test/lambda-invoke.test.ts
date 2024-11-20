@@ -226,7 +226,7 @@ describe('schedule target', () => {
   });
 
   test('reuses IAM role and IAM policy for two schedules with the same target from the same account', () => {
-    const lambdaTarget = new LambdaInvoke(func, {});
+    const lambdaTarget = new LambdaInvoke(func);
 
     new Schedule(stack, 'MyScheduleDummy1', {
       schedule: expr,
@@ -296,7 +296,7 @@ describe('schedule target', () => {
   });
 
   test('creates IAM role and IAM policy for two schedules with the same target but different groups', () => {
-    const lambdaTarget = new LambdaInvoke(func, {});
+    const lambdaTarget = new LambdaInvoke(func);
     const group = new Group(stack, 'Group', {
       groupName: 'mygroup',
     });

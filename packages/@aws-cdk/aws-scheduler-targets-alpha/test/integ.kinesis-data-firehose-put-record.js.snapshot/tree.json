@@ -252,6 +252,19 @@
                                   ]
                                 }
                               ]
+                            },
+                            {
+                              "Action": [
+                                "logs:CreateLogStream",
+                                "logs:PutLogEvents"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "MyFirehoseStreamLogGroup5DE95CF8",
+                                  "Arn"
+                                ]
+                              }
                             }
                           ],
                           "Version": "2012-10-17"
@@ -281,33 +294,112 @@
               "version": "0.0.0"
             }
           },
-          "MyFirehose": {
-            "id": "MyFirehose",
-            "path": "aws-cdk-scheduler-targets-firehose-put-record/MyFirehose",
-            "attributes": {
-              "aws:cdk:cloudformation:type": "AWS::KinesisFirehose::DeliveryStream",
-              "aws:cdk:cloudformation:props": {
-                "s3DestinationConfiguration": {
-                  "bucketArn": {
-                    "Fn::GetAtt": [
-                      "DestinationBucket4BECDB47",
-                      "Arn"
-                    ]
+          "MyFirehoseStream": {
+            "id": "MyFirehoseStream",
+            "path": "aws-cdk-scheduler-targets-firehose-put-record/MyFirehoseStream",
+            "children": {
+              "LogGroup": {
+                "id": "LogGroup",
+                "path": "aws-cdk-scheduler-targets-firehose-put-record/MyFirehoseStream/LogGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-scheduler-targets-firehose-put-record/MyFirehoseStream/LogGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "retentionInDays": 731
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                      "version": "0.0.0"
+                    }
                   },
-                  "roleArn": {
-                    "Fn::GetAtt": [
-                      "deliveryStreamRoleB4288E26",
-                      "Arn"
-                    ]
-                  },
-                  "bufferingHints": {
-                    "intervalInSeconds": 60
+                  "S3Destination": {
+                    "id": "S3Destination",
+                    "path": "aws-cdk-scheduler-targets-firehose-put-record/MyFirehoseStream/LogGroup/S3Destination",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-scheduler-targets-firehose-put-record/MyFirehoseStream/LogGroup/S3Destination/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::Logs::LogStream",
+                          "aws:cdk:cloudformation:props": {
+                            "logGroupName": {
+                              "Ref": "MyFirehoseStreamLogGroup5DE95CF8"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_logs.CfnLogStream",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_logs.LogStream",
+                      "version": "0.0.0"
+                    }
                   }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.LogGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-scheduler-targets-firehose-put-record/MyFirehoseStream/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::KinesisFirehose::DeliveryStream",
+                  "aws:cdk:cloudformation:props": {
+                    "deliveryStreamType": "DirectPut",
+                    "extendedS3DestinationConfiguration": {
+                      "cloudWatchLoggingOptions": {
+                        "enabled": true,
+                        "logGroupName": {
+                          "Ref": "MyFirehoseStreamLogGroup5DE95CF8"
+                        },
+                        "logStreamName": {
+                          "Ref": "MyFirehoseStreamLogGroupS3DestinationB2F1AD1D"
+                        }
+                      },
+                      "roleArn": {
+                        "Fn::GetAtt": [
+                          "deliveryStreamRoleB4288E26",
+                          "Arn"
+                        ]
+                      },
+                      "bufferingHints": {
+                        "intervalInSeconds": 60,
+                        "sizeInMBs": 5
+                      },
+                      "bucketArn": {
+                        "Fn::GetAtt": [
+                          "DestinationBucket4BECDB47",
+                          "Arn"
+                        ]
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_kinesisfirehose.CfnDeliveryStream",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_kinesisfirehose.CfnDeliveryStream",
+              "fqn": "@aws-cdk/aws-kinesisfirehose-alpha.DeliveryStream",
+              "version": "0.0.0"
+            }
+          },
+          "@aws-cdk--aws-kinesisfirehose.CidrBlocks": {
+            "id": "@aws-cdk--aws-kinesisfirehose.CidrBlocks",
+            "path": "aws-cdk-scheduler-targets-firehose-put-record/@aws-cdk--aws-kinesisfirehose.CidrBlocks",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
               "version": "0.0.0"
             }
           },
@@ -330,13 +422,13 @@
                     "target": {
                       "arn": {
                         "Fn::GetAtt": [
-                          "MyFirehose",
+                          "MyFirehoseStream2282904B",
                           "Arn"
                         ]
                       },
                       "roleArn": {
                         "Fn::GetAtt": [
-                          "SchedulerRoleForTarget380bba149146B2",
+                          "SchedulerRoleForTarget5bddb4D77D7575",
                           "Arn"
                         ]
                       },
@@ -355,17 +447,17 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "@aws-cdk/aws-scheduler-alpha.Schedule",
               "version": "0.0.0"
             }
           },
-          "SchedulerRoleForTarget-380bba": {
-            "id": "SchedulerRoleForTarget-380bba",
-            "path": "aws-cdk-scheduler-targets-firehose-put-record/SchedulerRoleForTarget-380bba",
+          "SchedulerRoleForTarget-5bddb4": {
+            "id": "SchedulerRoleForTarget-5bddb4",
+            "path": "aws-cdk-scheduler-targets-firehose-put-record/SchedulerRoleForTarget-5bddb4",
             "children": {
-              "ImportSchedulerRoleForTarget-380bba": {
-                "id": "ImportSchedulerRoleForTarget-380bba",
-                "path": "aws-cdk-scheduler-targets-firehose-put-record/SchedulerRoleForTarget-380bba/ImportSchedulerRoleForTarget-380bba",
+              "ImportSchedulerRoleForTarget-5bddb4": {
+                "id": "ImportSchedulerRoleForTarget-5bddb4",
+                "path": "aws-cdk-scheduler-targets-firehose-put-record/SchedulerRoleForTarget-5bddb4/ImportSchedulerRoleForTarget-5bddb4",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
@@ -373,7 +465,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-scheduler-targets-firehose-put-record/SchedulerRoleForTarget-380bba/Resource",
+                "path": "aws-cdk-scheduler-targets-firehose-put-record/SchedulerRoleForTarget-5bddb4/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                   "aws:cdk:cloudformation:props": {
@@ -425,11 +517,11 @@
               },
               "DefaultPolicy": {
                 "id": "DefaultPolicy",
-                "path": "aws-cdk-scheduler-targets-firehose-put-record/SchedulerRoleForTarget-380bba/DefaultPolicy",
+                "path": "aws-cdk-scheduler-targets-firehose-put-record/SchedulerRoleForTarget-5bddb4/DefaultPolicy",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-scheduler-targets-firehose-put-record/SchedulerRoleForTarget-380bba/DefaultPolicy/Resource",
+                    "path": "aws-cdk-scheduler-targets-firehose-put-record/SchedulerRoleForTarget-5bddb4/DefaultPolicy/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                       "aws:cdk:cloudformation:props": {
@@ -440,7 +532,7 @@
                               "Effect": "Allow",
                               "Resource": {
                                 "Fn::GetAtt": [
-                                  "MyFirehose",
+                                  "MyFirehoseStream2282904B",
                                   "Arn"
                                 ]
                               }
@@ -448,10 +540,10 @@
                           ],
                           "Version": "2012-10-17"
                         },
-                        "policyName": "SchedulerRoleForTarget380bbaDefaultPolicy076E1FE7",
+                        "policyName": "SchedulerRoleForTarget5bddb4DefaultPolicy95F55636",
                         "roles": [
                           {
-                            "Ref": "SchedulerRoleForTarget380bba149146B2"
+                            "Ref": "SchedulerRoleForTarget5bddb4D77D7575"
                           }
                         ]
                       }
@@ -488,7 +580,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "BootstrapVersion": {
@@ -526,7 +618,7 @@
                 "path": "integrationtest-firehose-put-record/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -546,7 +638,7 @@
                             "path": "integrationtest-firehose-put-record/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV282e20e13f84521e63643504ea8e737e5/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -586,7 +678,7 @@
                                 "path": "integrationtest-firehose-put-record/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV282e20e13f84521e63643504ea8e737e5/WaitFor/IsCompleteProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.3.0"
+                                  "version": "10.4.2"
                                 }
                               },
                               "Invoke": {
@@ -612,7 +704,7 @@
                                 "path": "integrationtest-firehose-put-record/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV282e20e13f84521e63643504ea8e737e5/WaitFor/TimeoutProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.3.0"
+                                  "version": "10.4.2"
                                 }
                               },
                               "Invoke": {
@@ -696,7 +788,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "LatestNodeRuntimeMap": {
@@ -738,7 +830,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a": {
@@ -772,7 +864,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "BootstrapVersion": {
@@ -814,7 +906,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },

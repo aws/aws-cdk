@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
 import { %name.PascalCased%Stack } from '../lib/%name%-stack';
 

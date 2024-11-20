@@ -1,7 +1,6 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import '@jsii/check-node/run';
 import * as chalk from 'chalk';
-import { install as enableSourceMapSupport } from 'source-map-support';
 
 import { DeploymentMethod } from './api';
 import { HotswapMode } from './api/hotswap/common';
@@ -51,10 +50,6 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
   if (argv.verbose) {
     setLogLevel(argv.verbose);
-  }
-
-  if (argv.debug) {
-    enableSourceMapSupport();
   }
 
   // Debug should always imply tracing

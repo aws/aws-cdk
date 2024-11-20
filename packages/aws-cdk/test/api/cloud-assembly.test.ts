@@ -2,6 +2,7 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { DefaultSelection } from '../../lib/api/cxapp/cloud-assembly';
 import { MockCloudExecutable } from '../util';
+import { cliAssemblyWithForcedVersion } from './assembly-versions';
 
 // behave like v2
 process.env.CXAPI_DISABLE_SELECT_BY_ID = '1';
@@ -261,5 +262,6 @@ async function testNestedCloudAssembly({ env }: { env?: string; versionReporting
     }],
   });
 
-  return cloudExec.synthesize();
+  const asm = await cloudExec.synthesize();
+  return cliAssemblyWithForcedVersion(asm, '30.0.0');
 }

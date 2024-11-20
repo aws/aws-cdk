@@ -567,4 +567,46 @@ describe('SQSEventSource', () => {
       maxConcurrency: 1,
     }))).toThrow(/maxConcurrency must be between 2 and 1000 concurrent instances/);
   });
+
+  test('adding maxConcurrency of 5', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const q = new sqs.Queue(stack, 'Q');
+
+    // WHEN
+    fn.addEventSource(new sources.SqsEventSource(q, {
+      maxConcurrency: 5,
+      metricsConfig: {
+        metrics: [],
+      },
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      ScalingConfig: { MaximumConcurrency: 5 },
+      MetricsConfig: { Metrics: [] },
+    });
+  });
+
+  test('adding maxConcurrency of 5', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const q = new sqs.Queue(stack, 'Q');
+
+    // WHEN
+    fn.addEventSource(new sources.SqsEventSource(q, {
+      maxConcurrency: 5,
+      metricsConfig: {
+        metrics: [lambda.MetricType.EVENT_COUNT],
+      },
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      ScalingConfig: { MaximumConcurrency: 5 },
+      MetricsConfig: { Metrics: ['EventCount'] },
+    });
+  });
 });
