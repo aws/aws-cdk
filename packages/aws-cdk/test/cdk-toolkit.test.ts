@@ -1062,7 +1062,7 @@ describe('watch', () => {
     });
     fakeChokidarWatcherOn.readyCallback();
 
-    expect(cdkDeployMock).toBeCalledWith(expect.objectContaining({ concurrency: 3 }));
+    expect(cdkDeployMock).toHaveBeenCalledWith(expect.objectContaining({ concurrency: 3 }));
   });
 
   describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotswapMode) => {
@@ -1078,7 +1078,7 @@ describe('watch', () => {
       });
       fakeChokidarWatcherOn.readyCallback();
 
-      expect(cdkDeployMock).toBeCalledWith(expect.objectContaining({ hotswap: hotswapMode }));
+      expect(cdkDeployMock).toHaveBeenCalledWith(expect.objectContaining({ hotswap: hotswapMode }));
     });
   });
 
@@ -1094,7 +1094,7 @@ describe('watch', () => {
     });
     fakeChokidarWatcherOn.readyCallback();
 
-    expect(cdkDeployMock).toBeCalledWith(expect.objectContaining({ hotswap: HotswapMode.HOTSWAP_ONLY }));
+    expect(cdkDeployMock).toHaveBeenCalledWith(expect.objectContaining({ hotswap: HotswapMode.HOTSWAP_ONLY }));
   });
 
   test('respects HotswapMode.FALL_BACK', async () => {
@@ -1109,7 +1109,7 @@ describe('watch', () => {
     });
     fakeChokidarWatcherOn.readyCallback();
 
-    expect(cdkDeployMock).toBeCalledWith(expect.objectContaining({ hotswap: HotswapMode.FALL_BACK }));
+    expect(cdkDeployMock).toHaveBeenCalledWith(expect.objectContaining({ hotswap: HotswapMode.FALL_BACK }));
   });
 
   test('respects HotswapMode.FULL_DEPLOYMENT', async () => {
@@ -1124,7 +1124,7 @@ describe('watch', () => {
     });
     fakeChokidarWatcherOn.readyCallback();
 
-    expect(cdkDeployMock).toBeCalledWith(expect.objectContaining({ hotswap: HotswapMode.FULL_DEPLOYMENT }));
+    expect(cdkDeployMock).toHaveBeenCalledWith(expect.objectContaining({ hotswap: HotswapMode.FULL_DEPLOYMENT }));
   });
 
   describe('with file change events', () => {
@@ -1658,7 +1658,7 @@ class FakeCloudFormation extends Deployments {
         .map(([Key, Value]) => ({ Key, Value }))
         .sort((l, r) => l.Key.localeCompare(r.Key));
     }
-    this.expectedNotificationArns = expectedNotificationArns ?? [];
+    this.expectedNotificationArns = expectedNotificationArns;
   }
 
   public deployStack(options: DeployStackOptions): Promise<SuccessfulDeployStackResult> {
@@ -1677,7 +1677,13 @@ class FakeCloudFormation extends Deployments {
       expect(options.tags).toEqual(this.expectedTags[options.stack.stackName]);
     }
 
-    expect(options.notificationArns).toEqual(this.expectedNotificationArns);
+    // In these tests, we don't make a distinction here between `undefined` and `[]`.
+    //
+    // In tests `deployStack` itself we do treat `undefined` and `[]` differently,
+    // and in `aws-cdk-lib` we emit them under different conditions. But this test
+    // without normalization depends on a version of `aws-cdk-lib` that hasn't been
+    // released yet.
+    expect(options.notificationArns ?? []).toEqual(this.expectedNotificationArns ?? []);
     return Promise.resolve({
       type: 'did-deploy-stack',
       stackArn: `arn:aws:cloudformation:::stack/${options.stack.stackName}/MockedOut`,
