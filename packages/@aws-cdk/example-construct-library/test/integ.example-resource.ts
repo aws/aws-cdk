@@ -15,7 +15,6 @@ import * as er from '../lib';
 
 const app = new core.App();
 
-/// !cdk-integ ExampleResourceIntegTestStack
 const stack = new core.Stack(app, 'ExampleResourceIntegTestStack');
 
 new er.ExampleResource(stack, 'ExampleResource', {
