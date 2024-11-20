@@ -493,6 +493,46 @@ describe('event source mapping', () => {
     })).toThrow(/startingPositionTimestamp can only be used when startingPosition is AT_TIMESTAMP/);
   });
 
+  test('adding metrics config', () => {
+    new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: '',
+      startingPosition: StartingPosition.AT_TIMESTAMP,
+      startingPositionTimestamp: 1640995200,
+      metricsConfig: {
+        metrics: [],
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      StartingPosition: 'AT_TIMESTAMP',
+      StartingPositionTimestamp: 1640995200,
+      MetricsConfig: {
+        Metrics: [],
+      },
+    });
+  });
+
+  test('adding metrics config', () => {
+    new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: '',
+      startingPosition: StartingPosition.AT_TIMESTAMP,
+      startingPositionTimestamp: 1640995200,
+      metricsConfig: {
+        metrics: [lambda.MetricType.EVENT_COUNT],
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      StartingPosition: 'AT_TIMESTAMP',
+      StartingPositionTimestamp: 1640995200,
+      MetricsConfig: {
+        Metrics: ['EventCount'],
+      },
+    });
+  });
+
   test('provisioned pollers is set', () => {
     new EventSourceMapping(stack, 'test', {
       target: fn,

@@ -292,6 +292,33 @@ export interface EventSourceMappingOptions {
    * @default - no provisioned pollers
    */
   readonly provisionedPollerConfig?: ProvisionedPollerConfig;
+
+  /**
+   * Configuration for enhanced monitoring metrics collection
+   * When specified, enables collection of additional metrics for the stream event source
+   *
+   * @default - Enhanced monitoring is disabled
+   */
+  readonly metricsConfig?: MetricsConfig;
+}
+
+export enum MetricType {
+  /**
+   * Event Count metrics provide insights into the processing behavior of your event source mapping,
+   * including the number of events successfully processed, filtered out, or dropped.
+   * These metrics help you monitor the flow and status of events through your event source mapping.
+   */
+  EVENT_COUNT = 'EventCount',
+}
+
+/**
+ * Configuration for collecting metrics from the event source
+ */
+export interface MetricsConfig {
+  /**
+  * List of metric types to enable for this event source
+  */
+  readonly metrics: MetricType[];
 }
 
 /**
@@ -498,6 +525,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       selfManagedKafkaEventSourceConfig: props.kafkaBootstrapServers ? consumerGroupConfig : undefined,
       amazonManagedKafkaEventSourceConfig: props.eventSourceArn ? consumerGroupConfig : undefined,
       provisionedPollerConfig: props.provisionedPollerConfig,
+      metricsConfig: props.metricsConfig,
     });
     this.eventSourceMappingId = cfnEventSourceMapping.ref;
     this.eventSourceMappingArn = EventSourceMapping.formatArn(this, this.eventSourceMappingId);

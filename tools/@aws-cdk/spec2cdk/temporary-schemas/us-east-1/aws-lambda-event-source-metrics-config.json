@@ -184,7 +184,7 @@
             "$ref": "#/definitions/ProvisionedPollerConfig"
         },
         "MetricsConfig": {
-            "description": "Metrics config for enhanced observability.",
+            "description": "Metrics config for Event Source Mapping Metrics.",
             "$ref": "#/definitions/MetricsConfig"
         }
     },
@@ -419,7 +419,7 @@
             }
         },
         "MetricsConfig": {
-            "description": "Metrics config for enhanced observability.",
+            "description": "Metrics config for Event Source Mapping Metrics.",
             "type": "object",
             "additionalProperties": false,
             "properties": {
@@ -439,6 +439,12 @@
             }
         }
     },
+    "nonPublicProperties": [
+        "/properties/ProvisionedPollerConfig"
+    ],
+    "nonPublicDefinitions": [
+        "/definitions/ProvisionedPollerConfig"
+    ],
     "required" : [ "FunctionName" ],
     "createOnlyProperties" : [
         "/properties/EventSourceArn",
