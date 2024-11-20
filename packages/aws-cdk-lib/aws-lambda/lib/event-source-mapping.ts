@@ -289,7 +289,7 @@ export interface EventSourceMappingOptions {
    * Configuration for provisioned pollers that read from the event source.
    * When specified, allows control over the minimum and maximum number of pollers
    * that can be provisioned to process events from the source.
-   *
+   * @default - no provisioned pollers
    */
   readonly provisionedPollerConfig?: ProvisionedPollerConfig;
 }
