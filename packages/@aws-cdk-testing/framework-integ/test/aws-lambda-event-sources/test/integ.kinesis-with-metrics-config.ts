@@ -3,7 +3,7 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { TestFunction } from './test-function';
-import { KinesisEventSource, MetricType } from 'aws-cdk-lib/aws-lambda-event-sources';
+import { KinesisEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 
 const app = new cdk.App();
 
@@ -25,7 +25,7 @@ fn2.addEventSource(new KinesisEventSource(stream, {
   startingPosition: lambda.StartingPosition.TRIM_HORIZON,
   tumblingWindow: cdk.Duration.seconds(60),
   metricsConfig: {
-    metrics: [MetricType.EVENT_COUNT],
+    metrics: [lambda.MetricType.EVENT_COUNT],
   },
 }));
 

@@ -3,7 +3,7 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { TestFunction } from './test-function';
-import { DynamoEventSource, MetricType } from 'aws-cdk-lib/aws-lambda-event-sources';
+import { DynamoEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 
 const app = new cdk.App();
 
@@ -33,7 +33,7 @@ fn2.addEventSource(new DynamoEventSource(table, {
   batchSize: 5,
   startingPosition: lambda.StartingPosition.LATEST,
   metricsConfig: {
-    metrics: [MetricType.EVENT_COUNT],
+    metrics: [lambda.MetricType.EVENT_COUNT],
   },
 }));
 

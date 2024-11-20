@@ -1,8 +1,9 @@
 import * as sqs from 'aws-cdk-lib/aws-sqs';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
 import { TestFunction } from './test-function';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { MetricType, SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
+import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 
 const app = new cdk.App();
 
@@ -23,7 +24,7 @@ const fn2 = new TestFunction(stack, 'F2');
 const eventSource2 = new SqsEventSource(queue, {
   batchSize: 5,
   metricsConfig: {
-    metrics: [MetricType.EVENT_COUNT],
+    metrics: [lambda.MetricType.EVENT_COUNT],
   },
 });
 
