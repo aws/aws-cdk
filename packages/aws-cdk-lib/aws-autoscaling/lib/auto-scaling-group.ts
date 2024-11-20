@@ -1758,6 +1758,9 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     if (props.blockDevices) {
       throw new Error('Setting \'blockDevices\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
     }
+    if (props.requireImdsv2) {
+      throw new Error('Setting \'requireImdsv2\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
+    }
   }
 
   /**
