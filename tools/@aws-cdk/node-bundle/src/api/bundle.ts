@@ -327,7 +327,7 @@ export class Bundle {
 
       if (this.test) {
         const command = `${path.join(bundleDir, this.test)}`;
-        console.log(`Running santiy test: ${command}`);
+        console.log(`Running sanity test: ${command}`);
         shell(command, { cwd: bundleDir });
       }
 
@@ -414,7 +414,7 @@ export class Bundle {
       throw new Error(`Multiple versions detected for external dependency: ${name} (${Array.from(versions).join(',')})`);
     }
 
-    return versions.values().next().value;
+    return versions.values().next().value!;
   }
 
   private closestPackagePath(fdp: string): string {

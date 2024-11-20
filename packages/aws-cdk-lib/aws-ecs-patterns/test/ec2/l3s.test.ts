@@ -40,10 +40,16 @@ describe('ApplicationLoadBalancedEc2Service', () => {
         command: ['/bin/bash'],
       },
       desiredCount: 2,
+      ipAddressType: IpAddressType.DUAL_STACK,
     });
 
     // THEN - stack contains a load balancer and a service
     Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::LoadBalancer', 1);
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Scheme: 'internet-facing',
+      Type: 'application',
+      IpAddressType: 'dualstack',
+    });
 
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
       DesiredCount: 2,
@@ -871,6 +877,79 @@ describe('NetworkLoadBalancedEc2Service', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       IpAddressType: 'dualstack',
+    });
+  });
+
+  test('setting listenerCertificate create ELB listener with port 443, TLS protocal and certificate, Target group with port 443 and TLS protocol', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const certificate = Certificate.fromCertificateArn(stack, 'Cert', 'helloworld');
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'AutoScalingGroupProvider1', {
+      autoScalingGroup: new AutoScalingGroup(stack, 'AutoScalingGroup1', {
+        vpc,
+        instanceType: new ec2.InstanceType('t2.micro'),
+        machineImage: MachineImage.latestAmazonLinux(),
+      }),
+    }));
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedEc2Service(stack, 'Service', {
+      cluster,
+      listenerCertificate: certificate,
+      memoryLimitMiB: 1024,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
+      Port: 443,
+      Protocol: 'TLS',
+      Certificates: [{
+        CertificateArn: 'helloworld',
+      }],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      Port: 443,
+      Protocol: 'TLS',
+    });
+  });
+
+  test('not setting listenerCertificate create ELB listener with port 80 and TCP protocal, Target group with port 80 and TCP protocol', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'AutoScalingGroupProvider1', {
+      autoScalingGroup: new AutoScalingGroup(stack, 'AutoScalingGroup1', {
+        vpc,
+        instanceType: new ec2.InstanceType('t2.micro'),
+        machineImage: MachineImage.latestAmazonLinux(),
+      }),
+    }));
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedEc2Service(stack, 'Service', {
+      cluster,
+      memoryLimitMiB: 1024,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
+      Port: 80,
+      Protocol: 'TCP',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      Port: 80,
+      Protocol: 'TCP',
     });
   });
 });

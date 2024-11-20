@@ -95,6 +95,13 @@ export interface OriginOptions {
    * @default - an originid will be generated for you
    */
   readonly originId?: string;
+
+  /**
+   * The unique identifier of an origin access control for this origin.
+   *
+   * @default - no origin access control
+   */
+  readonly originAccessControlId?: string;
 }
 
 /**
@@ -119,6 +126,14 @@ export interface OriginBindOptions {
    * as assigned by the Distribution this Origin has been used added to.
    */
   readonly originId: string;
+
+  /**
+   * The identifier of the Distribution this Origin is used for.
+   * This is used to grant origin access permissions to the distribution for origin access control.
+   *
+   * @default - no distribution id
+   */
+  readonly distributionId?: string;
 }
 
 /**

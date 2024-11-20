@@ -1,43 +1,6 @@
 {
  "Resources": {
-  "Ipam50346F82": {
-   "Type": "AWS::EC2::IPAM",
-   "Properties": {
-    "OperatingRegions": [
-     {
-      "RegionName": "eu-west-2"
-     }
-    ]
-   }
-  },
-  "IpamPublicPool050D6AA6C": {
-   "Type": "AWS::EC2::IPAMPool",
-   "Properties": {
-    "AddressFamily": "ipv6",
-    "AwsService": "ec2",
-    "IpamScopeId": {
-     "Fn::GetAtt": [
-      "Ipam50346F82",
-      "PublicDefaultScopeId"
-     ]
-    },
-    "Locale": "eu-west-2",
-    "PublicIpSource": "amazon"
-   }
-  },
-  "IpamPublicPool0PublicPool0CidrAC7F711E": {
-   "Type": "AWS::EC2::IPAMPoolCidr",
-   "Properties": {
-    "IpamPoolId": {
-     "Fn::GetAtt": [
-      "IpamPublicPool050D6AA6C",
-      "IpamPoolId"
-     ]
-    },
-    "NetmaskLength": 52
-   }
-  },
-  "VPCTestFB735C86": {
+  "SubnetTest3296A161": {
    "Type": "AWS::EC2::VPC",
    "Properties": {
     "CidrBlock": "10.0.0.0/16",
@@ -46,106 +9,64 @@
     "InstanceTenancy": "default"
    }
   },
-  "VPCTestIpv6IpamCidrD5C271DD": {
+  "SubnetTestSecondaryTest2AB12223": {
    "Type": "AWS::EC2::VPCCidrBlock",
    "Properties": {
-    "Ipv6IpamPoolId": {
-     "Fn::GetAtt": [
-      "IpamPublicPool050D6AA6C",
-      "IpamPoolId"
-     ]
-    },
-    "Ipv6NetmaskLength": 56,
+    "AmazonProvidedIpv6CidrBlock": true,
     "VpcId": {
      "Fn::GetAtt": [
-      "VPCTestFB735C86",
+      "SubnetTest3296A161",
       "VpcId"
      ]
     }
-   },
-   "DependsOn": [
-    "IpamPublicPool0PublicPool0CidrAC7F711E"
-   ]
-  },
-  "VPCTestVpnGateway51EEED38": {
-   "Type": "AWS::EC2::VPNGateway",
-   "Properties": {
-    "Type": "ipsec.1"
    }
   },
-  "VPCTestVPCVPNGW0A869280": {
-   "Type": "AWS::EC2::VPCGatewayAttachment",
-   "Properties": {
-    "VpcId": {
-     "Fn::GetAtt": [
-      "VPCTestFB735C86",
-      "VpcId"
-     ]
-    },
-    "VpnGatewayId": {
-     "Ref": "VPCTestVpnGateway51EEED38"
-    }
-   }
-  },
-  "VPCTestRoutePropagationFEA3011A": {
-   "Type": "AWS::EC2::VPNGatewayRoutePropagation",
-   "Properties": {
-    "RouteTableIds": [
-     {
-      "Ref": "testsbubnetRouteTableF40F025B"
-     }
-    ],
-    "VpnGatewayId": {
-     "Ref": "VPCTestVpnGateway51EEED38"
-    }
-   },
-   "DependsOn": [
-    "VPCTestVPCVPNGW0A869280"
-   ]
-  },
-  "testsbubnetSubnet77337845": {
+  "testSubnet1Subnet72087287": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
     "AssignIpv6AddressOnCreation": false,
-    "AvailabilityZone": "eu-west-2a",
+    "AvailabilityZone": "us-west-2a",
     "CidrBlock": "10.0.0.0/24",
     "VpcId": {
      "Fn::GetAtt": [
-      "VPCTestFB735C86",
+      "SubnetTest3296A161",
       "VpcId"
      ]
     }
    },
    "DependsOn": [
-    "VPCTestIpv6IpamCidrD5C271DD"
+    "SubnetTestSecondaryTest2AB12223"
    ]
   },
-  "testsbubnetRouteTableF40F025B": {
+  "testSubnet1RouteTableB5FDDF81": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
     "VpcId": {
      "Fn::GetAtt": [
-      "VPCTestFB735C86",
+      "SubnetTest3296A161",
       "VpcId"
      ]
     }
    },
    "DependsOn": [
-    "VPCTestIpv6IpamCidrD5C271DD"
+    "SubnetTestSecondaryTest2AB12223"
    ]
   },
-  "testsbubnetRouteTableAssociationD6D083FA": {
+  "testSubnet1RouteTableAssociation1DA9E185": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
    "Properties": {
     "RouteTableId": {
-     "Ref": "testsbubnetRouteTableF40F025B"
+     "Fn::GetAtt": [
+      "testSubnet1RouteTableB5FDDF81",
+      "RouteTableId"
+     ]
     },
     "SubnetId": {
-     "Ref": "testsbubnetSubnet77337845"
+     "Ref": "testSubnet1Subnet72087287"
     }
    },
    "DependsOn": [
-    "VPCTestIpv6IpamCidrD5C271DD"
+    "SubnetTestSecondaryTest2AB12223"
    ]
   },
   "InstanceInstanceSecurityGroupF0E2D5BE": {
@@ -167,7 +88,7 @@
     ],
     "VpcId": {
      "Fn::GetAtt": [
-      "VPCTestFB735C86",
+      "SubnetTest3296A161",
       "VpcId"
      ]
     }
@@ -209,7 +130,7 @@
   "InstanceC1063A87": {
    "Type": "AWS::EC2::Instance",
    "Properties": {
-    "AvailabilityZone": "eu-west-2a",
+    "AvailabilityZone": "us-west-2a",
     "IamInstanceProfile": {
      "Ref": "InstanceInstanceProfileAB5AEF02"
     },
@@ -226,7 +147,7 @@
      }
     ],
     "SubnetId": {
-     "Ref": "testsbubnetSubnet77337845"
+     "Ref": "testSubnet1Subnet72087287"
     },
     "Tags": [
      {
@@ -240,6 +161,93 @@
    },
    "DependsOn": [
     "InstanceInstanceRoleE9785DE5"
+   ]
+  },
+  "testIGW8D947AF2": {
+   "Type": "AWS::EC2::InternetGateway"
+  },
+  "testIGWGWAttachment682A6782": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "InternetGatewayId": {
+     "Fn::GetAtt": [
+      "testIGW8D947AF2",
+      "InternetGatewayId"
+     ]
+    },
+    "VpcId": {
+     "Fn::GetAtt": [
+      "SubnetTest3296A161",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "TestRoutetableRouteTable7B7B907D": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Fn::GetAtt": [
+      "SubnetTest3296A161",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "TestRoutetableeigwRouteCDE8BBAF": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Fn::GetAtt": [
+      "testIGW8D947AF2",
+      "InternetGatewayId"
+     ]
+    },
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "TestRoutetableRouteTable7B7B907D",
+      "RouteTableId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "testIGWGWAttachment682A6782",
+    "testIGW8D947AF2"
+   ]
+  },
+  "testSubnet2Subnet4681911A": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AssignIpv6AddressOnCreation": false,
+    "AvailabilityZone": "us-west-2a",
+    "CidrBlock": "10.0.1.0/24",
+    "VpcId": {
+     "Fn::GetAtt": [
+      "SubnetTest3296A161",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "SubnetTestSecondaryTest2AB12223"
+   ]
+  },
+  "testSubnet2RouteTableAssociation40DCE4CD": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "TestRoutetableRouteTable7B7B907D",
+      "RouteTableId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "testSubnet2Subnet4681911A"
+    }
+   },
+   "DependsOn": [
+    "SubnetTestSecondaryTest2AB12223"
    ]
   }
  },

@@ -9,7 +9,7 @@
     "InstanceTenancy": "default"
    }
   },
-  "igwAmazonIpv64026617C": {
+  "igwAmazonIpv6476278C6": {
    "Type": "AWS::EC2::VPCCidrBlock",
    "Properties": {
     "AmazonProvidedIpv6CidrBlock": true,
@@ -32,11 +32,33 @@
     }
    }
   },
+  "TestRoottableigwRouteC52EF731": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Fn::GetAtt": [
+      "testIGW8D947AF2",
+      "InternetGatewayId"
+     ]
+    },
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "TestRoottableRouteTableFA28AA38",
+      "RouteTableId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "testIGWGWAttachment682A6782",
+    "testIGW8D947AF2"
+   ]
+  },
   "igwSubnetF238E402": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
     "AssignIpv6AddressOnCreation": false,
-    "AvailabilityZone": "us-west-1a",
+    "AvailabilityZone": "us-east-1a",
     "CidrBlock": "10.0.0.0/24",
     "Ipv6CidrBlock": {
      "Fn::Select": [
@@ -57,7 +79,7 @@
     }
    },
    "DependsOn": [
-    "igwAmazonIpv64026617C"
+    "igwAmazonIpv6476278C6"
    ]
   },
   "igwSubnetRouteTableAssociationA48C27F3": {
@@ -74,32 +96,13 @@
     }
    },
    "DependsOn": [
-    "igwAmazonIpv64026617C"
+    "igwAmazonIpv6476278C6"
    ]
   },
   "testIGW8D947AF2": {
    "Type": "AWS::EC2::InternetGateway"
   },
-  "testIGWRoute7696715B": {
-   "Type": "AWS::EC2::Route",
-   "Properties": {
-    "DestinationCidrBlock": "0.0.0.0/0",
-    "DestinationIpv6CidrBlock": "0.0.0.0/0",
-    "GatewayId": {
-     "Fn::GetAtt": [
-      "testIGW8D947AF2",
-      "InternetGatewayId"
-     ]
-    },
-    "RouteTableId": {
-     "Fn::GetAtt": [
-      "TestRoottableRouteTableFA28AA38",
-      "RouteTableId"
-     ]
-    }
-   }
-  },
-  "testIGWRouteGWAttachmentB0836D42": {
+  "testIGWGWAttachment682A6782": {
    "Type": "AWS::EC2::VPCGatewayAttachment",
    "Properties": {
     "InternetGatewayId": {

@@ -1,43 +1,50 @@
-/* eslint-disable import/order */
 jest.mock('../../lib/api/deploy-stack');
 jest.mock('../../lib/util/asset-publishing');
 
-import { CloudFormation } from 'aws-sdk';
+import {
+  DescribeStacksCommand,
+  ListStackResourcesCommand,
+  StackStatus,
+  type StackResourceSummary,
+  RollbackStackCommand,
+  ContinueUpdateRollbackCommand,
+  DescribeStackEventsCommand,
+} from '@aws-sdk/client-cloudformation';
+import { GetParameterCommand } from '@aws-sdk/client-ssm';
 import { FakeCloudformationStack } from './fake-cloudformation-stack';
-import { Deployments } from '../../lib/api/deployments';
 import { deployStack } from '../../lib/api/deploy-stack';
+import { Deployments } from '../../lib/api/deployments';
 import { HotswapMode } from '../../lib/api/hotswap/common';
 import { ToolkitInfo } from '../../lib/api/toolkit-info';
 import { CloudFormationStack } from '../../lib/api/util/cloudformation';
 import { testStack } from '../util';
-import { mockBootstrapStack, MockSdkProvider } from '../util/mock-sdk';
+import {
+  mockBootstrapStack,
+  mockCloudFormationClient,
+  MockSdk,
+  MockSdkProvider,
+  mockSSMClient,
+  restoreSdkMocksToDefault,
+  setDefaultSTSMocks,
+} from '../util/mock-sdk';
 
 let sdkProvider: MockSdkProvider;
+let sdk: MockSdk;
 let deployments: Deployments;
 let mockToolkitInfoLookup: jest.Mock;
-let currentCfnStackResources: { [key: string]: CloudFormation.StackResourceSummary[] };
-let numberOfTimesListStackResourcesWasCalled: number;
+let currentCfnStackResources: { [key: string]: StackResourceSummary[] };
 beforeEach(() => {
   jest.resetAllMocks();
   sdkProvider = new MockSdkProvider();
+  sdk = new MockSdk();
   deployments = new Deployments({ sdkProvider });
 
-  numberOfTimesListStackResourcesWasCalled = 0;
   currentCfnStackResources = {};
-  sdkProvider.stubCloudFormation({
-    listStackResources: ({ StackName: stackName }) => {
-      numberOfTimesListStackResourcesWasCalled++;
-      const stackResources = currentCfnStackResources[stackName];
-      if (!stackResources) {
-        throw new Error(`Stack with id ${stackName} does not exist`);
-      }
-      return {
-        StackResourceSummaries: stackResources,
-      };
-    },
-  });
-
-  ToolkitInfo.lookup = mockToolkitInfoLookup = jest.fn().mockResolvedValue(ToolkitInfo.bootstrapStackNotFoundInfo('TestBootstrapStack'));
+  restoreSdkMocksToDefault();
+  ToolkitInfo.lookup = mockToolkitInfoLookup = jest
+    .fn()
+    .mockResolvedValue(ToolkitInfo.bootstrapStackNotFoundInfo('TestBootstrapStack'));
+  setDefaultSTSMocks();
 });
 
 function mockSuccessfulBootstrapStackLookup(props?: Record<string, any>) {
@@ -48,7 +55,7 @@ function mockSuccessfulBootstrapStackLookup(props?: Record<string, any>) {
     ...props,
   };
 
-  const fakeStack = mockBootstrapStack(sdkProvider.sdk, {
+  const fakeStack = mockBootstrapStack({
     Outputs: Object.entries(outputs).map(([k, v]) => ({
       OutputKey: k,
       OutputValue: `${v}`,
@@ -68,9 +75,11 @@ test('passes through hotswap=true to deployStack()', async () => {
   });
 
   // THEN
-  expect(deployStack).toHaveBeenCalledWith(expect.objectContaining({
-    hotswap: HotswapMode.FALL_BACK,
-  }));
+  expect(deployStack).toHaveBeenCalledWith(
+    expect.objectContaining({
+      hotswap: HotswapMode.FALL_BACK,
+    }),
+  );
 });
 
 test('placeholders are substituted in CloudFormation execution role', async () => {
@@ -83,13 +92,17 @@ test('placeholders are substituted in CloudFormation execution role', async () =
     }),
   });
 
-  expect(deployStack).toHaveBeenCalledWith(expect.objectContaining({
-    roleArn: 'bloop:here:123456789012',
-  }));
+  expect(deployStack).toHaveBeenCalledWith(
+    expect.objectContaining({
+      roleArn: 'bloop:here:123456789012',
+    }),
+  );
 });
 
 test('role with placeholders is assumed if assumerole is given', async () => {
-  const mockForEnvironment = jest.fn().mockImplementation(() => { return { sdk: sdkProvider.sdk }; });
+  const mockForEnvironment = jest.fn().mockImplementation(() => {
+    return { sdk: new MockSdk() };
+  });
   sdkProvider.forEnvironment = mockForEnvironment;
 
   await deployments.deployStack({
@@ -101,78 +114,109 @@ test('role with placeholders is assumed if assumerole is given', async () => {
     }),
   });
 
-  expect(mockForEnvironment).toHaveBeenCalledWith(expect.anything(), expect.anything(), expect.objectContaining({
-    assumeRoleArn: 'bloop:here:123456789012',
-  }));
+  expect(mockForEnvironment).toHaveBeenCalledWith(
+    expect.anything(),
+    expect.anything(),
+    expect.objectContaining({
+      assumeRoleArn: 'bloop:here:123456789012',
+    }),
+  );
 });
 
 test('deployment fails if bootstrap stack is missing', async () => {
-  await expect(deployments.deployStack({
-    stack: testStack({
-      stackName: 'boop',
-      properties: {
-        assumeRoleArn: 'bloop:${AWS::Region}:${AWS::AccountId}',
-        requiresBootstrapStackVersion: 99,
-      },
+  await expect(
+    deployments.deployStack({
+      stack: testStack({
+        stackName: 'boop',
+        properties: {
+          assumeRoleArn: 'bloop:${AWS::Region}:${AWS::AccountId}',
+          requiresBootstrapStackVersion: 99,
+        },
+      }),
     }),
-  })).rejects.toThrow(/requires a bootstrap stack/);
+  ).rejects.toThrow(/requires a bootstrap stack/);
 });
 
 test('deployment fails if bootstrap stack is too old', async () => {
   mockSuccessfulBootstrapStackLookup({
     BootstrapVersion: 5,
   });
+  setDefaultSTSMocks();
 
-  await expect(deployments.deployStack({
-    stack: testStack({
-      stackName: 'boop',
-      properties: {
-        assumeRoleArn: 'bloop:${AWS::Region}:${AWS::AccountId}',
-        requiresBootstrapStackVersion: 99,
-      },
-    }),
-  })).rejects.toThrow(/requires bootstrap stack version '99', found '5'/);
-});
-
-test.each([false, true])('if toolkit stack be found: %p but SSM parameter name is present deployment succeeds', async (canLookup) => {
-  if (canLookup) {
-    mockSuccessfulBootstrapStackLookup({
-      BootstrapVersion: 2,
-    });
-  }
-
-  let requestedParameterName: string;
-  sdkProvider.stubSSM({
-    getParameter(request) {
-      requestedParameterName = request.Name;
-      return {
-        Parameter: {
-          Value: '99',
+  await expect(
+    deployments.deployStack({
+      stack: testStack({
+        stackName: 'boop',
+        properties: {
+          assumeRoleArn: 'bloop:${AWS::Region}:${AWS::AccountId}',
+          requiresBootstrapStackVersion: 99,
         },
-      };
-    },
-  });
-
-  await deployments.deployStack({
-    stack: testStack({
-      stackName: 'boop',
-      properties: {
-        assumeRoleArn: 'bloop:${AWS::Region}:${AWS::AccountId}',
-        requiresBootstrapStackVersion: 99,
-        bootstrapStackVersionSsmParameter: '/some/parameter',
-      },
+      }),
     }),
-  });
-
-  expect(requestedParameterName!).toEqual('/some/parameter');
+  ).rejects.toThrow(/requires bootstrap stack version '99', found '5'/);
 });
+
+test.each([false, true])(
+  'if toolkit stack be found: %p but SSM parameter name is present deployment succeeds',
+  async (canLookup) => {
+    if (canLookup) {
+      mockSuccessfulBootstrapStackLookup({
+        BootstrapVersion: 2,
+      });
+    }
+    setDefaultSTSMocks();
+
+    mockSSMClient.on(GetParameterCommand).resolves({
+      Parameter: {
+        Value: '99',
+      },
+    });
+
+    await deployments.deployStack({
+      stack: testStack({
+        stackName: 'boop',
+        properties: {
+          assumeRoleArn: 'bloop:${AWS::Region}:${AWS::AccountId}',
+          requiresBootstrapStackVersion: 99,
+          bootstrapStackVersionSsmParameter: '/some/parameter',
+        },
+      }),
+    });
+
+    expect(mockSSMClient).toHaveReceivedCommandWith(GetParameterCommand, {
+      Name: '/some/parameter',
+    });
+  },
+);
 
 test('readCurrentTemplateWithNestedStacks() can handle non-Resources in the template', async () => {
+  const stackSummary = stackSummaryOf(
+    'NestedStack',
+    'AWS::CloudFormation::Stack',
+    'arn:aws:cloudformation:bermuda-triangle-1337:123456789012:stack/NestedStack/abcd',
+  );
+
+  pushStackResourceSummaries('ParentOfStackWithOutputAndParameter', stackSummary);
+
+  mockCloudFormationClient.on(ListStackResourcesCommand).resolvesOnce({
+    StackResourceSummaries: [stackSummary],
+  });
+  mockCloudFormationClient.on(DescribeStacksCommand).resolvesOnce({
+    Stacks: [
+      {
+        StackName: 'NestedStack',
+        RootId: 'StackId',
+        CreationTime: new Date(),
+        StackStatus: StackStatus.CREATE_COMPLETE,
+      },
+    ],
+  });
+
   const cfnStack = new FakeCloudformationStack({
     stackName: 'ParentOfStackWithOutputAndParameter',
     stackId: 'StackId',
   });
-  CloudFormationStack.lookup = (async (_, stackName: string) => {
+  CloudFormationStack.lookup = async (_, stackName: string) => {
     switch (stackName) {
       case 'ParentOfStackWithOutputAndParameter':
         cfnStack.template = async () => ({
@@ -220,7 +264,7 @@ test('readCurrentTemplateWithNestedStacks() can handle non-Resources in the temp
     }
 
     return cfnStack;
-  });
+  };
 
   const rootStack = testStack({
     stackName: 'ParentOfStackWithOutputAndParameter',
@@ -239,15 +283,10 @@ test('readCurrentTemplateWithNestedStacks() can handle non-Resources in the temp
     },
   });
 
-  pushStackResourceSummaries('ParentOfStackWithOutputAndParameter',
-    stackSummaryOf('NestedStack', 'AWS::CloudFormation::Stack',
-      'arn:aws:cloudformation:bermuda-triangle-1337:123456789012:stack/NestedStack/abcd',
-    ),
-  );
-
   // WHEN
-  const deployedTemplate = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).deployedRootTemplate;
-  const nestedStacks = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).nestedStacks;
+  const rootTemplate = await deployments.readCurrentTemplateWithNestedStacks(rootStack);
+  const deployedTemplate = rootTemplate.deployedRootTemplate;
+  const nestedStacks = rootTemplate.nestedStacks;
 
   // THEN
   expect(deployedTemplate).toEqual({
@@ -331,90 +370,161 @@ test('readCurrentTemplateWithNestedStacks() can handle non-Resources in the temp
 });
 
 test('readCurrentTemplateWithNestedStacks() with a 3-level nested + sibling structure works', async () => {
-  const cfnStack = new FakeCloudformationStack({
-    stackName: 'MultiLevelRoot',
-    stackId: 'StackId',
-  });
-  CloudFormationStack.lookup = (async (_, stackName: string) => {
-    switch (stackName) {
-      case 'MultiLevelRoot':
-        cfnStack.template = async () => ({
-          Resources: {
-            NestedStack: {
-              Type: 'AWS::CloudFormation::Stack',
-              Properties: {
-                TemplateURL: 'https://www.magic-url.com',
-              },
-              Metadata: {
-                'aws:asset:path': 'one-resource-two-stacks-stack.nested.template.json',
-              },
+  const rootSummary = stackSummaryOf(
+    'NestedStack',
+    'AWS::CloudFormation::Stack',
+    'arn:aws:cloudformation:bermuda-triangle-1337:123456789012:stack/NestedStack/abcd',
+  );
+
+  const nestedStackSummary = [
+    stackSummaryOf(
+      'GrandChildStackA',
+      'AWS::CloudFormation::Stack',
+      'arn:aws:cloudformation:bermuda-triangle-1337:123456789012:stack/GrandChildStackA/abcd',
+    ),
+    stackSummaryOf(
+      'GrandChildStackB',
+      'AWS::CloudFormation::Stack',
+      'arn:aws:cloudformation:bermuda-triangle-1337:123456789012:stack/GrandChildStackB/abcd',
+    ),
+  ];
+
+  const grandChildAStackSummary = stackSummaryOf(
+    'GrandChildA',
+    'AWS::CloudFormation::Stack',
+    'arn:aws:cloudformation:bermuda-triangle-1337:123456789012:stack/GrandChildA/abcd',
+  );
+
+  const grandchildBStackSummary = stackSummaryOf(
+    'GrandChildB',
+    'AWS::CloudFormation::Stack',
+    'arn:aws:cloudformation:bermuda-triangle-1337:123456789012:stack/GrandChildB/abcd',
+  );
+
+  pushStackResourceSummaries('MultiLevelRoot', rootSummary);
+  pushStackResourceSummaries('NestedStack', ...nestedStackSummary);
+  pushStackResourceSummaries('GrandChildStackA', grandChildAStackSummary);
+  pushStackResourceSummaries('GrandChildStackB', grandchildBStackSummary);
+
+  mockCloudFormationClient
+    .on(ListStackResourcesCommand)
+    .resolvesOnce({
+      StackResourceSummaries: [rootSummary],
+    })
+    .resolvesOnce({
+      StackResourceSummaries: nestedStackSummary,
+    })
+    .resolvesOnce({
+      StackResourceSummaries: [grandChildAStackSummary],
+    })
+    .resolvesOnce({
+      StackResourceSummaries: [grandchildBStackSummary],
+    });
+
+  mockCloudFormationClient
+    .on(DescribeStacksCommand)
+    .resolvesOnce({
+      Stacks: [
+        {
+          StackName: 'NestedStack',
+          RootId: 'StackId',
+          CreationTime: new Date(),
+          StackStatus: StackStatus.CREATE_COMPLETE,
+        },
+      ],
+    })
+    .resolvesOnce({
+      Stacks: [
+        {
+          StackName: 'GrandChildStackA',
+          RootId: 'StackId',
+          ParentId: 'NestedStack',
+          CreationTime: new Date(),
+          StackStatus: StackStatus.CREATE_COMPLETE,
+        },
+      ],
+    })
+    .resolvesOnce({
+      Stacks: [
+        {
+          StackName: 'GrandChildStackB',
+          RootId: 'StackId',
+          ParentId: 'NestedStack',
+          CreationTime: new Date(),
+          StackStatus: StackStatus.CREATE_COMPLETE,
+        },
+      ],
+    });
+  givenStacks({
+    MultiLevelRoot: {
+      template: {
+        Resources: {
+          NestedStack: {
+            Type: 'AWS::CloudFormation::Stack',
+            Properties: {
+              TemplateURL: 'https://www.magic-url.com',
+            },
+            Metadata: {
+              'aws:asset:path': 'one-resource-two-stacks-stack.nested.template.json',
             },
           },
-        });
-        break;
-
-      case 'NestedStack':
-        cfnStack.template = async () => ({
-          Resources: {
-            SomeResource: {
-              Type: 'AWS::Something',
-              Properties: {
-                Property: 'old-value',
-              },
-            },
-            GrandChildStackA: {
-              Type: 'AWS::CloudFormation::Stack',
-              Properties: {
-                TemplateURL: 'https://www.magic-url.com',
-              },
-              Metadata: {
-                'aws:asset:path': 'one-resource-stack.nested.template.json',
-              },
-            },
-            GrandChildStackB: {
-              Type: 'AWS::CloudFormation::Stack',
-              Properties: {
-                TemplateURL: 'https://www.magic-url.com',
-              },
-              Metadata: {
-                'aws:asset:path': 'one-resource-stack.nested.template.json',
-              },
+        },
+      },
+    },
+    NestedStack: {
+      template: {
+        Resources: {
+          SomeResource: {
+            Type: 'AWS::Something',
+            Properties: {
+              Property: 'old-value',
             },
           },
-        });
-        break;
-
-      case 'GrandChildStackA':
-        cfnStack.template = async () => ({
-          Resources: {
-            SomeResource: {
-              Type: 'AWS::Something',
-              Properties: {
-                Property: 'old-value',
-              },
+          GrandChildStackA: {
+            Type: 'AWS::CloudFormation::Stack',
+            Properties: {
+              TemplateURL: 'https://www.magic-url.com',
+            },
+            Metadata: {
+              'aws:asset:path': 'one-resource-stack.nested.template.json',
             },
           },
-        });
-        break;
-
-      case 'GrandChildStackB':
-        cfnStack.template = async () => ({
-          Resources: {
-            SomeResource: {
-              Type: 'AWS::Something',
-              Properties: {
-                Property: 'old-value',
-              },
+          GrandChildStackB: {
+            Type: 'AWS::CloudFormation::Stack',
+            Properties: {
+              TemplateURL: 'https://www.magic-url.com',
+            },
+            Metadata: {
+              'aws:asset:path': 'one-resource-stack.nested.template.json',
             },
           },
-        });
-        break;
-
-      default:
-        throw new Error('unknown stack name ' + stackName + ' found in deployments.test.ts');
-    }
-
-    return cfnStack;
+        },
+      },
+    },
+    GrandChildStackA: {
+      template: {
+        Resources: {
+          SomeResource: {
+            Type: 'AWS::Something',
+            Properties: {
+              Property: 'old-value',
+            },
+          },
+        },
+      },
+    },
+    GrandChildStackB: {
+      template: {
+        Resources: {
+          SomeResource: {
+            Type: 'AWS::Something',
+            Properties: {
+              Property: 'old-value',
+            },
+          },
+        },
+      },
+    },
   });
 
   const rootStack = testStack({
@@ -434,33 +544,10 @@ test('readCurrentTemplateWithNestedStacks() with a 3-level nested + sibling stru
     },
   });
 
-  pushStackResourceSummaries('MultiLevelRoot',
-    stackSummaryOf('NestedStack', 'AWS::CloudFormation::Stack',
-      'arn:aws:cloudformation:bermuda-triangle-1337:123456789012:stack/NestedStack/abcd',
-    ),
-  );
-  pushStackResourceSummaries('NestedStack',
-    stackSummaryOf('GrandChildStackA', 'AWS::CloudFormation::Stack',
-      'arn:aws:cloudformation:bermuda-triangle-1337:123456789012:stack/GrandChildStackA/abcd',
-    ),
-    stackSummaryOf('GrandChildStackB', 'AWS::CloudFormation::Stack',
-      'arn:aws:cloudformation:bermuda-triangle-1337:123456789012:stack/GrandChildStackB/abcd',
-    ),
-  );
-  pushStackResourceSummaries('GrandChildStackA',
-    stackSummaryOf('NestedStack', 'AWS::CloudFormation::Stack',
-      'arn:aws:cloudformation:bermuda-triangle-1337:123456789012:stack/GrandChildA/abcd',
-    ),
-  );
-  pushStackResourceSummaries('GrandChildStackB',
-    stackSummaryOf('NestedStack', 'AWS::CloudFormation::Stack',
-      'arn:aws:cloudformation:bermuda-triangle-1337:123456789012:stack/GrandChildB/abcd',
-    ),
-  );
-
   // WHEN
-  const deployedTemplate = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).deployedRootTemplate;
-  const nestedStacks = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).nestedStacks;
+  const rootTemplate = await deployments.readCurrentTemplateWithNestedStacks(rootStack);
+  const deployedTemplate = rootTemplate.deployedRootTemplate;
+  const nestedStacks = rootTemplate.nestedStacks;
 
   // THEN
   expect(deployedTemplate).toEqual({
@@ -610,11 +697,11 @@ test('readCurrentTemplateWithNestedStacks() on an undeployed parent stack with a
     stackName: 'UndeployedParent',
     stackId: 'StackId',
   });
-  CloudFormationStack.lookup = (async (_cfn, _stackName: string) => {
+  CloudFormationStack.lookup = async (_cfn, _stackName: string) => {
     cfnStack.template = async () => ({});
 
     return cfnStack;
-  });
+  };
   const rootStack = testStack({
     stackName: 'UndeployedParent',
     template: {
@@ -682,36 +769,31 @@ test('readCurrentTemplateWithNestedStacks() on an undeployed parent stack with a
 
 test('readCurrentTemplateWithNestedStacks() caches calls to listStackResources()', async () => {
   // GIVEN
-  const cfnStack = new FakeCloudformationStack({
-    stackName: 'CachingRoot',
-    stackId: 'StackId',
-  });
-  CloudFormationStack.lookup = (async (_cfn, _stackName: string) => {
-    cfnStack.template = async () => ({
-      Resources:
-      {
-        NestedStackA: {
-          Type: 'AWS::CloudFormation::Stack',
-          Properties: {
-            TemplateURL: 'https://www.magic-url.com',
+  givenStacks({
+    '*': {
+      template: {
+        Resources: {
+          NestedStackA: {
+            Type: 'AWS::CloudFormation::Stack',
+            Properties: {
+              TemplateURL: 'https://www.magic-url.com',
+            },
+            Metadata: {
+              'aws:asset:path': 'one-resource-stack.nested.template.json',
+            },
           },
-          Metadata: {
-            'aws:asset:path': 'one-resource-stack.nested.template.json',
-          },
-        },
-        NestedStackB: {
-          Type: 'AWS::CloudFormation::Stack',
-          Properties: {
-            TemplateURL: 'https://www.magic-url.com',
-          },
-          Metadata: {
-            'aws:asset:path': 'one-resource-stack.nested.template.json',
+          NestedStackB: {
+            Type: 'AWS::CloudFormation::Stack',
+            Properties: {
+              TemplateURL: 'https://www.magic-url.com',
+            },
+            Metadata: {
+              'aws:asset:path': 'one-resource-stack.nested.template.json',
+            },
           },
         },
       },
-    });
-
-    return cfnStack;
+    },
   });
 
   const rootStack = testStack({
@@ -740,11 +822,16 @@ test('readCurrentTemplateWithNestedStacks() caches calls to listStackResources()
     },
   });
 
-  pushStackResourceSummaries('CachingRoot',
-    stackSummaryOf('NestedStackA', 'AWS::CloudFormation::Stack',
+  pushStackResourceSummaries(
+    'CachingRoot',
+    stackSummaryOf(
+      'NestedStackA',
+      'AWS::CloudFormation::Stack',
       'arn:aws:cloudformation:bermuda-triangle-1337:123456789012:stack/one-resource-stack/abcd',
     ),
-    stackSummaryOf('NestedStackB', 'AWS::CloudFormation::Stack',
+    stackSummaryOf(
+      'NestedStackB',
+      'AWS::CloudFormation::Stack',
       'arn:aws:cloudformation:bermuda-triangle-1337:123456789012:stack/one-resource-stack/abcd',
     ),
   );
@@ -753,18 +840,134 @@ test('readCurrentTemplateWithNestedStacks() caches calls to listStackResources()
   await deployments.readCurrentTemplateWithNestedStacks(rootStack);
 
   // THEN
-  expect(numberOfTimesListStackResourcesWasCalled).toEqual(1);
+  expect(mockCloudFormationClient).toHaveReceivedCommandTimes(ListStackResourcesCommand, 1);
 });
 
-test('readCurrentTemplateWithNestedStacks() succesfully ignores stacks without metadata', async () => {
-  // GIVEN
-  const cfnStack = new FakeCloudformationStack({
-    stackName: 'MetadataRoot',
-    stackId: 'StackId',
+test('rollback stack assumes role if necessary', async () => {
+  const mockForEnvironment = jest.fn().mockImplementation(() => {
+    return { sdk };
   });
-  CloudFormationStack.lookup = (async (_, stackName: string) => {
-    if (stackName === 'MetadataRoot') {
-      cfnStack.template = async () => ({
+  sdkProvider.forEnvironment = mockForEnvironment;
+  givenStacks({
+    '*': { template: {} },
+  });
+
+  await deployments.rollbackStack({
+    stack: testStack({
+      stackName: 'boop',
+      properties: {
+        assumeRoleArn: 'bloop:${AWS::Region}:${AWS::AccountId}',
+      },
+    }),
+    validateBootstrapStackVersion: false,
+  });
+
+  expect(mockForEnvironment).toHaveBeenCalledWith(
+    expect.anything(),
+    expect.anything(),
+    expect.objectContaining({
+      assumeRoleArn: 'bloop:here:123456789012',
+    }),
+  );
+});
+
+test('rollback stack allows rolling back from UPDATE_FAILED', async () => {
+  // GIVEN
+  givenStacks({
+    '*': { template: {}, stackStatus: 'UPDATE_FAILED' },
+  });
+
+  // WHEN
+  await deployments.rollbackStack({
+    stack: testStack({ stackName: 'boop' }),
+    validateBootstrapStackVersion: false,
+  });
+
+  // THEN
+  expect(mockCloudFormationClient).toHaveReceivedCommand(RollbackStackCommand);
+});
+
+test('rollback stack allows continue rollback from UPDATE_ROLLBACK_FAILED', async () => {
+  // GIVEN
+  givenStacks({
+    '*': { template: {}, stackStatus: 'UPDATE_ROLLBACK_FAILED' },
+  });
+
+  // WHEN
+  await deployments.rollbackStack({
+    stack: testStack({ stackName: 'boop' }),
+    validateBootstrapStackVersion: false,
+  });
+
+  // THEN
+  expect(mockCloudFormationClient).toHaveReceivedCommand(ContinueUpdateRollbackCommand);
+});
+
+test('rollback stack fails in UPDATE_COMPLETE state', async () => {
+  // GIVEN
+  givenStacks({
+    '*': { template: {}, stackStatus: 'UPDATE_COMPLETE' },
+  });
+
+  // WHEN
+  const response = await deployments.rollbackStack({
+    stack: testStack({ stackName: 'boop' }),
+    validateBootstrapStackVersion: false,
+  });
+
+  // THEN
+  expect(response.notInRollbackableState).toBe(true);
+});
+
+test('continue rollback stack with force ignores any failed resources', async () => {
+  // GIVEN
+  givenStacks({
+    '*': { template: {}, stackStatus: 'UPDATE_ROLLBACK_FAILED' },
+  });
+  mockCloudFormationClient.on(DescribeStackEventsCommand).resolves({
+    StackEvents: [
+      {
+        EventId: 'asdf',
+        StackId: 'stack/MyStack',
+        StackName: 'MyStack',
+        Timestamp: new Date(),
+        LogicalResourceId: 'Xyz',
+        ResourceStatus: 'UPDATE_FAILED',
+      },
+    ],
+  });
+
+  // WHEN
+  await deployments.rollbackStack({
+    stack: testStack({ stackName: 'boop' }),
+    validateBootstrapStackVersion: false,
+    force: true,
+  });
+
+  // THEN
+  expect(mockCloudFormationClient).toHaveReceivedCommandWith(ContinueUpdateRollbackCommand, {
+    ResourcesToSkip: ['Xyz'],
+    StackName: 'boop',
+    ClientRequestToken: expect.anything(),
+  });
+});
+
+test('readCurrentTemplateWithNestedStacks() successfully ignores stacks without metadata', async () => {
+  // GIVEN
+  const rootSummary = stackSummaryOf(
+    'WithMetadata',
+    'AWS::CloudFormation::Stack',
+    'arn:aws:cloudformation:bermuda-triangle-1337:123456789012:stack/one-resource-stack/abcd',
+  );
+
+  pushStackResourceSummaries('MetadataRoot', rootSummary);
+  mockCloudFormationClient.on(ListStackResourcesCommand).resolves({
+    StackResourceSummaries: [rootSummary],
+  });
+
+  givenStacks({
+    'MetadataRoot': {
+      template: {
         Resources: {
           WithMetadata: {
             Type: 'AWS::CloudFormation::Stack',
@@ -776,10 +979,10 @@ test('readCurrentTemplateWithNestedStacks() succesfully ignores stacks without m
             },
           },
         },
-      });
-
-    } else {
-      cfnStack.template = async () => ({
+      },
+    },
+    '*': {
+      template: {
         Resources: {
           SomeResource: {
             Type: 'AWS::Something',
@@ -788,10 +991,8 @@ test('readCurrentTemplateWithNestedStacks() succesfully ignores stacks without m
             },
           },
         },
-      });
-    }
-
-    return cfnStack;
+      },
+    },
   });
 
   const rootStack = testStack({
@@ -824,10 +1025,6 @@ test('readCurrentTemplateWithNestedStacks() succesfully ignores stacks without m
     },
   });
 
-  pushStackResourceSummaries('MetadataRoot', stackSummaryOf('WithMetadata', 'AWS::CloudFormation::Stack',
-    'arn:aws:cloudformation:bermuda-triangle-1337:123456789012:stack/one-resource-stack/abcd',
-  ));
-
   // WHEN
   const deployedTemplate = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).deployedRootTemplate;
   const nestedStacks = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).nestedStacks;
@@ -849,20 +1046,23 @@ test('readCurrentTemplateWithNestedStacks() succesfully ignores stacks without m
 
   expect(rootStack.template).toEqual({
     Resources: {
-      WithoutMetadata: { // Unchanged
+      WithoutMetadata: {
+        // Unchanged
         Type: 'AWS::CloudFormation::Stack',
         Properties: {
           TemplateURL: 'https://www.magic-url.com',
         },
       },
-      WithEmptyMetadata: { // Unchanged
+      WithEmptyMetadata: {
+        // Unchanged
         Type: 'AWS::CloudFormation::Stack',
         Properties: {
           TemplateURL: 'https://www.magic-url.com',
         },
         Metadata: {},
       },
-      WithMetadata: { // Changed
+      WithMetadata: {
+        // Changed
         Type: 'AWS::CloudFormation::Stack',
         Properties: {
           TemplateURL: 'https://www.magic-url.com',
@@ -873,6 +1073,7 @@ test('readCurrentTemplateWithNestedStacks() succesfully ignores stacks without m
       },
     },
   });
+
   expect(nestedStacks).toEqual({
     WithMetadata: {
       deployedTemplate: {
@@ -901,7 +1102,38 @@ test('readCurrentTemplateWithNestedStacks() succesfully ignores stacks without m
   });
 });
 
-function pushStackResourceSummaries(stackName: string, ...items: CloudFormation.StackResourceSummary[]) {
+describe('stackExists', () => {
+  test.each([
+    [false, 'deploy:here:123456789012'],
+    [true, 'lookup:here:123456789012'],
+  ])('uses lookup role if requested: %p', async (tryLookupRole, expectedRoleArn) => {
+    const mockForEnvironment = jest.fn().mockImplementation(() => { return { sdk: new MockSdk() }; });
+    sdkProvider.forEnvironment = mockForEnvironment;
+    givenStacks({
+      '*': { template: {} },
+    });
+
+    const result = await deployments.stackExists({
+      stack: testStack({
+        stackName: 'boop',
+        properties: {
+          assumeRoleArn: 'deploy:${AWS::Region}:${AWS::AccountId}',
+          lookupRole: {
+            arn: 'lookup:${AWS::Region}:${AWS::AccountId}',
+          },
+        },
+      }),
+      tryLookupRole,
+    });
+
+    expect(result).toBeTruthy();
+    expect(mockForEnvironment).toHaveBeenCalledWith(expect.anything(), expect.anything(), expect.objectContaining({
+      assumeRoleArn: expectedRoleArn,
+    }));
+  });
+});
+
+function pushStackResourceSummaries(stackName: string, ...items: StackResourceSummary[]) {
   if (!currentCfnStackResources[stackName]) {
     currentCfnStackResources[stackName] = [];
   }
@@ -909,12 +1141,32 @@ function pushStackResourceSummaries(stackName: string, ...items: CloudFormation.
   currentCfnStackResources[stackName].push(...items);
 }
 
-function stackSummaryOf(logicalId: string, resourceType: string, physicalResourceId: string): CloudFormation.StackResourceSummary {
+function stackSummaryOf(logicalId: string, resourceType: string, physicalResourceId: string): StackResourceSummary {
   return {
     LogicalResourceId: logicalId,
     PhysicalResourceId: physicalResourceId,
     ResourceType: resourceType,
-    ResourceStatus: 'CREATE_COMPLETE',
+    ResourceStatus: StackStatus.CREATE_COMPLETE,
     LastUpdatedTimestamp: new Date(),
   };
+}
+
+function givenStacks(stacks: Record<string, { template: any; stackStatus?: string }>) {
+  jest.spyOn(CloudFormationStack, 'lookup').mockImplementation(async (_, stackName) => {
+    let stack = stacks[stackName];
+    if (!stack) {
+      stack = stacks['*'];
+    }
+    if (stack) {
+      const cfnStack = new FakeCloudformationStack({
+        stackName,
+        stackId: `stack/${stackName}`,
+        stackStatus: stack.stackStatus,
+      });
+      cfnStack.setTemplate(stack.template);
+      return cfnStack;
+    } else {
+      return new FakeCloudformationStack({ stackName });
+    }
+  });
 }

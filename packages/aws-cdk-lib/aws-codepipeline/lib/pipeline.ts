@@ -1029,8 +1029,13 @@ export class Pipeline extends PipelineBase {
           ? action.actionProperties.resource.env.region
           : action.actionProperties.region;
         const pipelineStack = Stack.of(this);
+
+        // If the token is unresolved, we let Stack construct to generate the stack name for us.
+        const stackName = Token.isUnresolved(pipelineStack.stackName)
+          ? undefined
+          : `${pipelineStack.stackName}-support-${targetAccount}`;
         targetAccountStack = new Stack(app, stackId, {
-          stackName: `${pipelineStack.stackName}-support-${targetAccount}`,
+          stackName: stackName,
           env: {
             account: targetAccount,
             region: actionRegion ?? pipelineStack.region,

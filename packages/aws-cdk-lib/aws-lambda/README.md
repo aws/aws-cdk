@@ -16,8 +16,29 @@ const fn = new lambda.Function(this, 'MyFunction', {
 The `lambda.Code` class includes static convenience methods for various types of
 runtime code.
 
- * `lambda.Code.fromBucket(bucket, key[, objectVersion])` - specify an S3 object
+ * `lambda.Code.fromBucket(bucket, key, objectVersion)` - specify an S3 object
    that contains the archive of your runtime code.
+ * `lambda.Code.fromBucketV2(bucket, key, {objectVersion: version, sourceKMSKey: key})` - specify an S3 object
+  that contains the archive of your runtime code.
+
+  ```ts
+
+  import { Key } from 'aws-cdk-lib/aws-kms';
+  import * as s3 from 'aws-cdk-lib/aws-s3';
+
+  const bucket = new s3.Bucket(this, 'Bucket');
+  declare const key: Key;
+  
+  const options = {
+      sourceKMSKey: key,
+  };
+  const fnBucket = new lambda.Function(this, 'myFunction2', {
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      handler: 'index.handler',
+      code: lambda.Code.fromBucketV2(bucket, 'python-lambda-handler.zip', options),
+  });
+
+  ```
  * `lambda.Code.fromInline(code)` - inline the handle code as a string. This is
    limited to supported runtimes.
  * `lambda.Code.fromAsset(path)` - specify a directory or a .zip file in the local
@@ -77,6 +98,10 @@ configurations as well as choosing a specific tag or digest. See their docs for 
 
 To deploy a `DockerImageFunction` on Lambda `arm64` architecture, specify `Architecture.ARM_64` in `architecture`.
 This will bundle docker image assets for `arm64` architecture with `--platform linux/arm64` even if build within an `x86_64` host.
+
+With that being said, if you are bundling `DockerImageFunction` for Lambda `amd64` architecture from a `arm64` machine like a Macbook with `arm64` CPU, you would 
+need to specify `architecture: lambda.Architecture.X86_64` as well. This ensures the `--platform` argument is passed to the image assets
+bundling process so you can bundle up `X86_64` images from the `arm64` machine.
 
 ```ts
 new lambda.DockerImageFunction(this, 'AssetFunction', {
@@ -284,7 +309,7 @@ resource policy.
 ```ts
 declare const fn: lambda.Function;
 const servicePrincipal = new iam.ServicePrincipal('my-service');
-const sourceArn = 'arn:aws:s3:::my-bucket';
+const sourceArn = 'arn:aws:s3:::amzn-s3-demo-bucket';
 const sourceAccount = '111122223333';
 const servicePrincipalWithConditions = servicePrincipal.withConditions({
   ArnLike: {
@@ -1013,7 +1038,7 @@ https://docs.aws.amazon.com/lambda/latest/dg/invocation-recursion.html
 
 ## Lambda with SnapStart
 
-SnapStart is currently supported only on Java 11 and later [Java managed runtimes](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html). SnapStart does not support provisioned concurrency, Amazon Elastic File System (Amazon EFS), or ephemeral storage greater than 512 MB. After you enable Lambda SnapStart for a particular Lambda function, publishing a new version of the function will trigger an optimization process.
+SnapStart is currently supported on Python 3.12, Python 3.13, .NET 8, and Java 11 and later [Java managed runtimes](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html). SnapStart does not support provisioned concurrency, Amazon Elastic File System (Amazon EFS), or ephemeral storage greater than 512 MB. After you enable Lambda SnapStart for a particular Lambda function, publishing a new version of the function will trigger an optimization process.
 
 See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/snapstart.html) to learn more about AWS Lambda SnapStart
 
@@ -1209,6 +1234,26 @@ const fn = new lambda.Function(this, 'Lambda_with_IPv6_VPC', {
 });
 ```
 
+## Outbound traffic
+By default, when creating a Lambda function, it would add a security group outbound rule to allow sending all network traffic (except IPv6). This is controlled by `allowAllOutbound` in function properties, which has a default value of `true`.
+
+To allow outbound IPv6 traffic by default, explicitly set `allowAllIpv6Outbound` to `true` in function properties as shown below (the default value for `allowAllIpv6Outbound` is `false`):
+```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+
+const vpc = new ec2.Vpc(this, 'Vpc');
+
+const fn = new lambda.Function(this, 'LambdaWithIpv6Outbound', {
+  code: new lambda.InlineCode('def main(event, context): pass'),
+  handler: 'index.main',
+  runtime: lambda.Runtime.PYTHON_3_9,
+  vpc: vpc,
+  allowAllIpv6Outbound: true,
+});
+```
+
+Do not specify `allowAllOutbound` or `allowAllIpv6Outbound` property if the `securityGroups` or `securityGroup` property is set. Instead, configure these properties directly on the security group.
+
 ## Ephemeral Storage
 
 You can configure ephemeral storage on a function to control the amount of storage it gets for reading
@@ -1301,6 +1346,8 @@ Code signing for AWS Lambda helps to ensure that only trusted code runs in your 
 When enabled, AWS Lambda checks every code deployment and verifies that the code package is signed by a trusted source.
 For more information, see [Configuring code signing for AWS Lambda](https://docs.aws.amazon.com/lambda/latest/dg/configuration-codesigning.html).
 The following code configures a function with code signing.
+
+Please note the code will not be automatically signed before deployment. To ensure your code is properly signed, you'll need to conduct the code signing process either through the AWS CLI (Command Line Interface) [start-signing-job](https://awscli.amazonaws.com/v2/documentation/api/latest/reference/signer/start-signing-job.html) or by accessing the AWS Signer console.
 
 ```ts
 import * as signer from 'aws-cdk-lib/aws-signer';

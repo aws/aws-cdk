@@ -1,14 +1,12 @@
 {
-  "version": "31.0.0",
+  "version": "36.0.5",
   "testCases": {
-    "integ.cluster-s3": {
+    "test-rds-cluster-s3/DefaultTest": {
       "stacks": [
         "aws-cdk-rds-s3-integ"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "test-rds-cluster-s3/DefaultTest/DeployAssert",
+      "assertionStackName": "testrdsclusters3DefaultTestDeployAssert4BF11861"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }
