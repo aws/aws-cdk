@@ -64,7 +64,7 @@ export interface ProvisionedPollerConfig {
   /**
    * The maximum number of pollers that can be provisioned.
    *
-   * @default - 200
+   * @default 200
    */
   readonly maximumPollers: number;
 }
