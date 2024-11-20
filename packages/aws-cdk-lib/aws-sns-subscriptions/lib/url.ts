@@ -21,6 +21,13 @@ export interface UrlSubscriptionProps extends SubscriptionProps {
    * @default - Protocol is derived from url
    */
   readonly protocol?: sns.SubscriptionProtocol;
+
+  /**
+   * The delivery policy.
+   *
+   * @default - if the initial delivery of the message fails, three retries with a delay between failed attempts set at 20 seconds
+   */
+  readonly deliveryPolicy?: sns.DeliveryPolicy;
 }
 
 /**
@@ -63,6 +70,7 @@ export class UrlSubscription implements sns.ITopicSubscription {
       filterPolicy: this.props.filterPolicy,
       filterPolicyWithMessageBody: this.props.filterPolicyWithMessageBody,
       deadLetterQueue: this.props.deadLetterQueue,
+      deliveryPolicy: this.props.deliveryPolicy,
     };
   }
 }
