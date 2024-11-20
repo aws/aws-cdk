@@ -93,7 +93,7 @@
    "Properties": {
     "Command": {
      "Name": "glueetl",
-     "PythonVersion": "3",
+     "PythonVersion": "3.9",
      "ScriptLocation": {
       "Fn::Join": [
        "",
