@@ -36,6 +36,7 @@ export class KinesisEventSource extends StreamEventSource {
       this.enrichMappingOptions({
         eventSourceArn: this.stream.streamArn,
         startingPositionTimestamp: this.startingPositionTimestamp,
+        metricsConfig: this.props.metricsConfig,
       }),
     );
     this._eventSourceMappingId = eventSourceMapping.eventSourceMappingId;
