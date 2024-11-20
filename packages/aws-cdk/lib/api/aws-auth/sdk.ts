@@ -403,8 +403,8 @@ export interface ICloudFormationClient {
   updateTerminationProtection(
     input: UpdateTerminationProtectionCommandInput,
   ): Promise<UpdateTerminationProtectionCommandOutput>;
-  describeStackEventsPaginated(input: DescribeStackEventsCommandInput): Paginator<DescribeStackEventsCommandOutput>;
   // Pagination functions
+  describeStackEventsPaginated(input: DescribeStackEventsCommandInput): Paginator<DescribeStackEventsCommandOutput>;
   listStackResources(input: ListStackResourcesCommandInput): Promise<StackResourceSummary[]>;
 }
 
@@ -455,15 +455,7 @@ export interface IECSClient {
 }
 
 export interface IElasticLoadBalancingV2Client {
-  /**
-   * Returns only the first page. Use `.NextMarker` on the result to query for the next page.
-   * To retrieve all results, use `describeAllListeners`.
-   */
   describeListeners(input: DescribeListenersCommandInput): Promise<DescribeListenersCommandOutput>;
-  /**
-   * Returns only the first page. Use `.NextMarker` on the result to query for the next page.
-   * To retrieve all results, use `describeAllLoadBalancers`.
-   */
   describeLoadBalancers(input: DescribeLoadBalancersCommandInput): Promise<DescribeLoadBalancersCommandOutput>;
   describeTags(input: DescribeTagsCommandInput): Promise<DescribeTagsCommandOutput>;
   // Pagination
