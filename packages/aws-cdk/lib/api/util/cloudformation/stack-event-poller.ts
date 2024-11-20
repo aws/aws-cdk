@@ -92,7 +92,7 @@ export class StackEventPoller {
         StackName: this.props.stackName,
       });
       for await (const page of paginator) {
-        for (const event of page.StackEvents ?? []) {
+        for (const event of page?.StackEvents ?? []) {
           // Event from before we were interested in 'em
           if (this.props.startTime !== undefined && event.Timestamp!.valueOf() < this.props.startTime) {
             return events;
