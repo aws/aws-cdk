@@ -117,7 +117,7 @@ export class AutoScalingConfiguration extends cdk.Resource implements IAutoScali
     const resourceParts = cdk.Fn.split('/', autoScalingConfigurationArn);
 
     if (!resourceParts || resourceParts.length < 3) {
-      throw new Error(`Unexpected ARN format: ${autoScalingConfigurationArn}`);
+      throw new Error(`Unexpected ARN format: ${autoScalingConfigurationArn}.`);
     }
 
     const autoScalingConfigurationName = cdk.Fn.select(0, resourceParts);
@@ -170,12 +170,19 @@ export class AutoScalingConfiguration extends cdk.Resource implements IAutoScali
   }
 
   private validateAutoScalingConfiguration(props: AutoScalingConfigurationProps) {
-    if (
-      props.autoScalingConfigurationName !== undefined &&
-      !cdk.Token.isUnresolved(props.autoScalingConfigurationName) &&
-      !/^[A-Za-z0-9][A-Za-z0-9\-_]{3,31}$/.test(props.autoScalingConfigurationName)
-    ) {
-      throw new Error(`autoScalingConfigurationName must match the ^[A-Za-z0-9][A-Za-z0-9\-_]{3,31}$ pattern, got ${props.autoScalingConfigurationName}`);
+    if (props.autoScalingConfigurationName !== undefined && !cdk.Token.isUnresolved(props.autoScalingConfigurationName)) {
+
+      if (props.autoScalingConfigurationName.length < 4 || props.autoScalingConfigurationName.length > 32) {
+        throw new Error(
+          `\`autoScalingConfigurationName\` must be between 4 and 32 characters, got: ${props.autoScalingConfigurationName.length} characters.`,
+        );
+      }
+
+      if (!/^[A-Za-z0-9][A-Za-z0-9\-_]*$/.test(props.autoScalingConfigurationName)) {
+        throw new Error(
+          `\`autoScalingConfigurationName\` must start with an alphanumeric character and contain only alphanumeric characters, hyphens, or underscores after that, got: ${props.autoScalingConfigurationName}.`,
+        );
+      }
     }
 
     const isMinSizeDefined = typeof props.minSize === 'number';
@@ -183,19 +190,19 @@ export class AutoScalingConfiguration extends cdk.Resource implements IAutoScali
     const isMaxConcurrencyDefined = typeof props.maxConcurrency === 'number';
 
     if (isMinSizeDefined && (props.minSize < 1 || props.minSize > 25)) {
-      throw new Error(`minSize must be between 1 and 25, got ${props.minSize}`);
+      throw new Error(`minSize must be between 1 and 25, got ${props.minSize}.`);
     }
 
     if (isMaxSizeDefined && (props.maxSize < 1 || props.maxSize > 25)) {
-      throw new Error(`maxSize must be between 1 and 25, got ${props.maxSize}`);
+      throw new Error(`maxSize must be between 1 and 25, got ${props.maxSize}.`);
     }
 
     if (isMinSizeDefined && isMaxSizeDefined && !(props.minSize < props.maxSize)) {
-      throw new Error('maxSize must be greater than minSize');
+      throw new Error('maxSize must be greater than minSize.');
     }
 
     if (isMaxConcurrencyDefined && (props.maxConcurrency < 1 || props.maxConcurrency > 200)) {
-      throw new Error(`maxConcurrency must be between 1 and 200, got ${props.maxConcurrency}`);
+      throw new Error(`maxConcurrency must be between 1 and 200, got ${props.maxConcurrency}.`);
     }
   }
 
