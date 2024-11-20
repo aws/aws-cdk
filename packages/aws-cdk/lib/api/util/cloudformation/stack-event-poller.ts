@@ -88,10 +88,11 @@ export class StackEventPoller {
   private async doPoll(): Promise<ResourceEvent[]> {
     const events: ResourceEvent[] = [];
     try {
-      const paginator = this.cfn.describeStackEventsPaginated({
-        StackName: this.props.stackName,
-      });
-      for await (const page of paginator) {
+      let nextToken: string | undefined;
+      let finished = false;
+
+      while (!finished) {
+        const page = await this.cfn.describeStackEvents({ StackName: this.props.stackName, NextToken: nextToken });
         for (const event of page?.StackEvents ?? []) {
           // Event from before we were interested in 'em
           if (this.props.startTime !== undefined && event.Timestamp!.valueOf() < this.props.startTime) {
@@ -107,7 +108,6 @@ export class StackEventPoller {
           // The events for the stack itself are also included next to events about resources; we can test for them in this way.
           const isParentStackEvent = event.PhysicalResourceId === event.StackId;
 
-          /* istanbul ignore next */
           if (isParentStackEvent && this.props.stackStatuses?.includes(event.ResourceStatus ?? '')) {
             return events;
           }
@@ -122,22 +122,25 @@ export class StackEventPoller {
 
           if (
             !isParentStackEvent &&
-            event.ResourceType === 'AWS::CloudFormation::Stack' &&
-            isStackBeginOperationState(event.ResourceStatus)
+              event.ResourceType === 'AWS::CloudFormation::Stack' &&
+              isStackBeginOperationState(event.ResourceStatus)
           ) {
-            /* istanbul ignore next */
             // If the event is not for `this` stack and has a physical resource Id, recursively call for events in the nested stack
             this.trackNestedStack(event, [...(this.props.parentStackLogicalIds ?? []), event.LogicalResourceId ?? '']);
           }
 
-          /* istanbul ignore next */
           if (isParentStackEvent && isStackTerminalState(event.ResourceStatus)) {
             this.complete = true;
           }
         }
+
+        nextToken = page?.NextToken;
+        if (nextToken === undefined) {
+          finished = true;
+        }
+
       }
     } catch (e: any) {
-      /* istanbul ignore next */
       if (!(e.name === 'ValidationError' && e.message === `Stack [${this.props.stackName}] does not exist`)) {
         throw e;
       }

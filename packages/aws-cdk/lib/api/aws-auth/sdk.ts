@@ -51,6 +51,7 @@ import {
   DescribeResourceScanCommand,
   type DescribeResourceScanCommandInput,
   type DescribeResourceScanCommandOutput,
+  DescribeStackEventsCommand,
   type DescribeStackEventsCommandInput,
   DescribeStackEventsCommandOutput,
   DescribeStackResourcesCommand,
@@ -87,7 +88,6 @@ import {
   ListStacksCommand,
   ListStacksCommandInput,
   ListStacksCommandOutput,
-  paginateDescribeStackEvents,
   paginateListStackResources,
   RollbackStackCommand,
   RollbackStackCommandInput,
@@ -311,7 +311,7 @@ import { GetCallerIdentityCommand, STSClient } from '@aws-sdk/client-sts';
 import { Upload } from '@aws-sdk/lib-storage';
 import { getEndpointFromInstructions } from '@smithy/middleware-endpoint';
 import type { NodeHttpHandlerOptions } from '@smithy/node-http-handler';
-import { AwsCredentialIdentity, Logger, Paginator } from '@smithy/types';
+import { AwsCredentialIdentity, Logger } from '@smithy/types';
 import { ConfiguredRetryStrategy } from '@smithy/util-retry';
 import { WaiterResult } from '@smithy/util-waiter';
 import { AccountAccessKeyCache } from './account-cache';
@@ -404,7 +404,7 @@ export interface ICloudFormationClient {
     input: UpdateTerminationProtectionCommandInput,
   ): Promise<UpdateTerminationProtectionCommandOutput>;
   // Pagination functions
-  describeStackEventsPaginated(input: DescribeStackEventsCommandInput): Paginator<DescribeStackEventsCommandOutput>;
+  describeStackEvents(input: DescribeStackEventsCommandInput): Promise<DescribeStackEventsCommandOutput>;
   listStackResources(input: ListStackResourcesCommandInput): Promise<StackResourceSummary[]>;
 }
 
@@ -664,8 +664,8 @@ export class SDK {
         input: UpdateTerminationProtectionCommandInput,
       ): Promise<UpdateTerminationProtectionCommandOutput> =>
         client.send(new UpdateTerminationProtectionCommand(input)),
-      describeStackEventsPaginated: (input: DescribeStackEventsCommandInput): Paginator<DescribeStackEventsCommandOutput> => {
-        return paginateDescribeStackEvents({ client }, input);
+      describeStackEvents: (input: DescribeStackEventsCommandInput): Promise<DescribeStackEventsCommandOutput> => {
+        return client.send(new DescribeStackEventsCommand(input));
       },
       listStackResources: async (input: ListStackResourcesCommandInput): Promise<StackResourceSummary[]> => {
         const stackResources = Array<StackResourceSummary>();

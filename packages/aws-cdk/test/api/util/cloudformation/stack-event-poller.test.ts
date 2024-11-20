@@ -29,8 +29,8 @@ describe('poll', () => {
     const sdk = new MockSdk();
     mockCloudFormationClient.on(DescribeStackEventsCommand).callsFake((input: DescribeStackEventsCommandInput) => {
       const result = {
-        StackEvents: input.NextToken ? [postDeployEvent2] : [postDeployEvent1],
-        NextToken: input.NextToken ? undefined : 'token', // simulate a two page event stream.
+        StackEvents: input.NextToken === 'token' ? [postDeployEvent2] : [postDeployEvent1],
+        NextToken: input.NextToken === 'token' ? undefined : 'token', // simulate a two page event stream.
       };
 
       return result;
@@ -66,7 +66,7 @@ describe('poll', () => {
 
       return {
         StackEvents: [preDeployTimeEvent],
-        NextToken: input.NextToken ? undefined : 'token', // simulate a two page event stream.
+        NextToken: input.NextToken === 'token' ? undefined : 'token', // simulate a two page event stream.
       };
 
     });
