@@ -4,10 +4,10 @@ import type { NodeHttpHandlerOptions } from '@smithy/node-http-handler';
 import { loadSharedConfigFiles } from '@smithy/shared-ini-file-loader';
 import { AwsCredentialIdentityProvider, Logger } from '@smithy/types';
 import * as promptly from 'promptly';
+import { ProxyAgent } from 'proxy-agent';
 import type { SdkHttpOptions } from './sdk-provider';
 import { readIfPossible } from './util';
 import { debug } from '../../logging';
-import { ProxyAgent } from 'proxy-agent';
 
 const DEFAULT_CONNECTION_TIMEOUT = 10000;
 const DEFAULT_TIMEOUT = 300000;
