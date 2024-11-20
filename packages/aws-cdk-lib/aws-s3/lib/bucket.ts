@@ -892,7 +892,7 @@ export abstract class BucketBase extends Resource implements IBucket {
       this.notifications = new BucketNotifications(this, 'Notifications', {
         bucket: this,
         handlerRole: this.notificationsHandlerRole,
-        skipDestinationValidation: this.notificationsSkipDestinationValidation ?? false,
+        skipDestinationValidation: this.notificationsSkipDestinationValidation,
       });
     }
     cb(this.notifications);
