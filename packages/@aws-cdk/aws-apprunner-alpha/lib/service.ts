@@ -1293,6 +1293,21 @@ export class Service extends cdk.Resource implements iam.IGrantable {
       throw new Error('configurationValues cannot be provided if the ConfigurationSource is Repository');
     }
 
+    if (props.serviceName !== undefined && !cdk.Token.isUnresolved(props.serviceName)) {
+
+      if (props.serviceName.length < 4 || props.serviceName.length > 40) {
+        throw new Error(
+          `\`serviceName\` must be between 4 and 40 characters, got: ${props.serviceName.length} characters.`,
+        );
+      }
+
+      if (!/^[A-Za-z0-9][A-Za-z0-9\-_]*$/.test(props.serviceName)) {
+        throw new Error(
+          `\`serviceName\` must start with an alphanumeric character and contain only alphanumeric characters, hyphens, or underscores after that, got: ${props.serviceName}.`,
+        );
+      }
+    }
+
     const resource = new CfnService(this, 'Resource', {
       serviceName: this.props.serviceName,
       instanceConfiguration: {
