@@ -15,7 +15,7 @@
 
 import { CfnJob } from 'aws-cdk-lib/aws-glue';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { Bucket } from 'aws-cdk-lib/aws-s3';
+import { Bucket, BucketEncryption } from 'aws-cdk-lib/aws-s3';
 import { Job, JobProperties } from './job';
 import { Construct } from 'constructs';
 import { JobType, GlueVersion, JobLanguage, PythonVersion, WorkerType } from '../constants';
@@ -164,7 +164,7 @@ export class PySparkStreamingJob extends Job {
   private setupSparkUI(role: iam.IRole, sparkUiProps: SparkUIProps) {
 
     validateSparkUiPrefix(sparkUiProps.prefix);
-    const bucket = sparkUiProps.bucket ?? new Bucket(this, 'SparkUIBucket');
+    const bucket = sparkUiProps.bucket ?? new Bucket(this, 'SparkUIBucket', { enforceSSL: true, encryption: BucketEncryption.S3_MANAGED });
     bucket.grantReadWrite(role, cleanSparkUiPrefixForGrant(sparkUiProps.prefix));
     const args = {
       '--enable-spark-ui': 'true',
