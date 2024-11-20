@@ -95,6 +95,9 @@
     },
     "FunctionName": {
      "Ref": "F1EAD92DBE"
+    },
+    "MetricsConfig": {
+     "Metrics": []
     }
    }
   },
@@ -198,6 +201,11 @@
     },
     "FunctionName": {
      "Ref": "F23BAC7B9C"
+    },
+    "MetricsConfig": {
+     "Metrics": [
+      "EventCount"
+     ]
     }
    }
   }

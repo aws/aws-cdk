@@ -162,6 +162,9 @@
                         },
                         "functionName": {
                           "Ref": "F1EAD92DBE"
+                        },
+                        "metricsConfig": {
+                          "metrics": []
                         }
                       }
                     },
@@ -178,7 +181,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "fqn": "aws-cdk-lib.aws_lambda.FunctionBase",
               "version": "0.0.0"
             }
           },
@@ -358,6 +361,11 @@
                         },
                         "functionName": {
                           "Ref": "F23BAC7B9C"
+                        },
+                        "metricsConfig": {
+                          "metrics": [
+                            "EventCount"
+                          ]
                         }
                       }
                     },
@@ -374,7 +382,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "fqn": "aws-cdk-lib.aws_lambda.FunctionBase",
               "version": "0.0.0"
             }
           },
