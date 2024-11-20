@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { CfnFleet } from './codebuild.generated';
 import { ComputeType } from './compute-type';
 import { EnvironmentType } from './environment-type';
-import { Arn, ArnFormat, IResource, Resource, Token } from '../../core';
+import { Arn, ArnFormat, IResource, Resource, Size, Token } from '../../core';
 
 /**
  * Construction properties of a CodeBuild {@link Fleet}.
@@ -35,6 +35,62 @@ export interface FleetProps {
    * made available to projects using this fleet
    */
   readonly environmentType: EnvironmentType;
+
+  /**
+   * The compute configuration of the compute fleet.
+   *
+   * This is only required if `computeType` is set to ATTRIBUTE_BASED_COMPUTE.
+   *
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html#environment-reserved-capacity.types
+   */
+  readonly computeConfiguration?: ComputeConfiguration;
+}
+
+/**
+ * The compute type of the fleet.
+ */
+export enum MachineType {
+  /**
+   * General purpose compute type.
+   */
+  GENERAL = 'GENERAL',
+  /**
+   * Non-Volatile Memory Express (NVMe) storage optimized compute type.
+   */
+  NVME = 'NVME',
+}
+
+/**
+ * The compute configuration for the fleet.
+ */
+export interface ComputeConfiguration {
+  /**
+   * The amount of disk space of the instance type included in your fleet.
+   *
+   * @default - do not specify a disk size
+   */
+  disk?: Size;
+
+  /**
+   * The machine type of the instance type included in your fleet.
+   *
+   * @default - do not specify a machine type
+   */
+  machineType?: MachineType;
+
+  /**
+   * The amount of memory of the instance type included in your fleet.
+   *
+   * @default - do not specify memory
+   */
+  memory?: Size;
+
+  /**
+   * The number of vCPUs of the instance type included in your fleet.
+   *
+   * @default - do not specify vCPUs
+   */
+  vCpu?: number;
 }
 
 /**
@@ -138,6 +194,24 @@ export class Fleet extends Resource implements IFleet {
       throw new Error('baseCapacity must be greater than or equal to 1');
     }
 
+    if (props.computeConfiguration) {
+      if (props.computeType !== FleetComputeType.ATTRIBUTE_BASED_COMPUTE) {
+        throw new Error(`'computeConfiguration' can only be specified if 'computeType' is 'ATTRIBUTE_BASED_COMPUTE', got: ${props.computeType}`);
+      }
+      const diskGiB = props.computeConfiguration.disk?.toGibibytes();
+      if (diskGiB && (diskGiB < 1 || !Number.isInteger(diskGiB))) {
+        throw new Error(`disk size must be greater than 1 GiB and an integer, got: ${diskGiB} GiB`);
+      }
+      const memoryGiB = props.computeConfiguration.memory?.toGibibytes();
+      if (memoryGiB && (memoryGiB < 1 || !Number.isInteger(memoryGiB))) {
+        throw new Error(`memory size must be greater than 1 GiB and an integer, got: ${memoryGiB} GiB`);
+      }
+      const vCpu = props.computeConfiguration.vCpu;
+      if (vCpu && !Number.isInteger(vCpu)) {
+        throw new Error(`vCPU count must be an integer, got: ${vCpu}`);
+      }
+    }
+
     super(scope, id, { physicalName: props.fleetName });
 
     const resource = new CfnFleet(this, 'Resource', {
@@ -145,6 +219,12 @@ export class Fleet extends Resource implements IFleet {
       baseCapacity: props.baseCapacity,
       computeType: props.computeType,
       environmentType: props.environmentType,
+      computeConfiguration: props.computeConfiguration ? {
+        disk: props.computeConfiguration.disk?.toGibibytes(),
+        machineType: props.computeConfiguration.machineType,
+        memory: props.computeConfiguration.memory?.toGibibytes(),
+        vCpu: props.computeConfiguration.vCpu,
+      } : undefined,
     });
 
     this.fleetArn = this.getResourceArnAttribute(resource.attrArn, {
@@ -203,4 +283,13 @@ export enum FleetComputeType {
    * for more information.
    **/
   X2_LARGE = ComputeType.X2_LARGE,
+
+  /**
+   * Specify the amount of vCPUs, memory, disk space, and the type of machine.
+   *
+   * AWS CodeBuild will select the cheapest instance that satisfies your specified attributes from `computeConfiguration`.
+   *
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html#environment-reserved-capacity.types
+   */
+  ATTRIBUTE_BASED_COMPUTE = ComputeType.ATTRIBUTE_BASED_COMPUTE,
 }
