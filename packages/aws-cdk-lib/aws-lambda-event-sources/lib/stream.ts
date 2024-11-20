@@ -58,7 +58,7 @@ export interface ProvisionedPollerConfig {
   /**
    * The minimum number of pollers that should be provisioned.
    *
-   * @default - 1
+   * @default 1
    */
   readonly minimumPollers: number;
   /**
