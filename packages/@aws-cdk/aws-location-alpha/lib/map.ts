@@ -18,7 +18,7 @@ export interface IMap extends IResource {
   /**
    * The Amazon Resource Name (ARN) of the Map
    *
-   * @attribute Arn,MapArn
+   * @attribute Arn, MapArn
    */
   readonly mapArn: string;
 }
