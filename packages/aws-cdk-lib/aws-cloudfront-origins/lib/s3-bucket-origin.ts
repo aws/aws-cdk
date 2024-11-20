@@ -8,12 +8,12 @@ import { Annotations, Aws, Names, Stack } from '../../core';
 
 interface BucketPolicyAction {
   readonly action: string;
-  readonly bucketArn?: boolean;
+  readonly needsBucketArn?: boolean;
 }
 
 const BUCKET_ACTIONS: Record<string, BucketPolicyAction[]> = {
   READ: [{ action: 's3:GetObject' }],
-  LIST: [{ action: 's3:ListBucket', bucketArn: true }],
+  LIST: [{ action: 's3:ListBucket', needsBucketArn: true }],
   WRITE: [{ action: 's3:PutObject' }],
   DELETE: [{ action: 's3:DeleteObject' }],
 };
@@ -172,16 +172,16 @@ class S3BucketOriginWithOAC extends S3BucketOrigin {
     return [...accessLevels].flatMap((accessLevel) => KEY_ACTIONS[accessLevel] ?? []);
   }
 
-  private grantDistributionAccessToBucket(distributionId: string, actions: BucketPolicyAction[]): iam.AddToResourcePolicyResult {
+  private grantDistributionAccessToBucket(distributionId: string, policyActions: BucketPolicyAction[]): iam.AddToResourcePolicyResult {
     const resources = [this.bucket.arnForObjects('*')];
-    if (actions.some(({ bucketArn }) => bucketArn)) {
+    if (policyActions.some((pa) => pa.needsBucketArn)) {
       resources.push(this.bucket.bucketArn);
     }
     const oacBucketPolicyStatement = new iam.PolicyStatement(
       {
         effect: iam.Effect.ALLOW,
         principals: [new iam.ServicePrincipal('cloudfront.amazonaws.com')],
-        actions: actions.map(({ action }) => action),
+        actions: policyActions.map((pa) => pa.action),
         resources,
         conditions: {
           StringEquals: {
