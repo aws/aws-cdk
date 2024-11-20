@@ -103,7 +103,7 @@ export class ObservabilityConfiguration extends cdk.Resource implements IObserva
     const resourceParts = cdk.Fn.split('/', observabilityConfigurationArn);
 
     if (!resourceParts || resourceParts.length < 3) {
-      throw new Error(`Unexpected ARN format: ${observabilityConfigurationArn}`);
+      throw new Error(`Unexpected ARN format: ${observabilityConfigurationArn}.`);
     }
 
     const observabilityConfigurationName = cdk.Fn.select(0, resourceParts);
@@ -141,12 +141,19 @@ export class ObservabilityConfiguration extends cdk.Resource implements IObserva
       physicalName: props.observabilityConfigurationName,
     });
 
-    if (
-      props.observabilityConfigurationName !== undefined &&
-      !cdk.Token.isUnresolved(props.observabilityConfigurationName) &&
-      !/^[A-Za-z0-9][A-Za-z0-9\-_]{3,31}$/.test(props.observabilityConfigurationName)
-    ) {
-      throw new Error(`observabilityConfigurationName must match the \`^[A-Za-z0-9][A-Za-z0-9\-_]{3,31}$\` pattern, got ${props.observabilityConfigurationName}`);
+    if (props.observabilityConfigurationName !== undefined && !cdk.Token.isUnresolved(props.observabilityConfigurationName)) {
+
+      if (props.observabilityConfigurationName.length < 4 || props.observabilityConfigurationName.length > 32) {
+        throw new Error(
+          `\`observabilityConfigurationName\` must be between 4 and 32 characters, got: ${props.observabilityConfigurationName.length} characters.`,
+        );
+      }
+
+      if (!/^[A-Za-z0-9][A-Za-z0-9\-_]*$/.test(props.observabilityConfigurationName)) {
+        throw new Error(
+          `\`observabilityConfigurationName\` must start with an alphanumeric character and contain only alphanumeric characters, hyphens, or underscores after that, got: ${props.observabilityConfigurationName}.`,
+        );
+      }
     }
 
     const resource = new CfnObservabilityConfiguration(this, 'Resource', {
