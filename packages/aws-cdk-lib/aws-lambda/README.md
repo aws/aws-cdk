@@ -861,7 +861,6 @@ The following code shows how to opt in for the enhanced metrics.
 ```ts
 import * as eventsources from 'aws-cdk-lib/aws-lambda-event-sources';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
-import { MetricType } from 'aws-cdk-lib/aws-lambda-event-sources/lib';
 
 declare const fn: lambda.Function;
 const table = new dynamodb.Table(this, 'Table', {
@@ -875,7 +874,7 @@ const table = new dynamodb.Table(this, 'Table', {
 fn.addEventSource(new eventsources.DynamoEventSource(table, {
   startingPosition: lambda.StartingPosition.LATEST,
   metricsConfig: {
-    metrics: [MetricType.EVENT_COUNT],
+    metrics: [lambda.MetricType.EVENT_COUNT],
   }
 }));
 ```
