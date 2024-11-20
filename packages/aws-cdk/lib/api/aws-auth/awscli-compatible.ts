@@ -7,6 +7,7 @@ import * as promptly from 'promptly';
 import type { SdkHttpOptions } from './sdk-provider';
 import { readIfPossible } from './util';
 import { debug } from '../../logging';
+import { ProxyAgent } from 'proxy-agent';
 
 const DEFAULT_CONNECTION_TIMEOUT = 10000;
 const DEFAULT_TIMEOUT = 300000;
@@ -89,18 +90,23 @@ export class AwsCliCompatible {
   }
 
   public static requestHandlerBuilder(options: SdkHttpOptions = {}): NodeHttpHandlerOptions {
-    const config: NodeHttpHandlerOptions = {
+    // Force it to use the proxy provided through the command line.
+    // Otherwise, let the ProxyAgent auto-detect the proxy using environment variables.
+    const getProxyForUrl = options.proxyAddress != null
+      ? () => Promise.resolve(options.proxyAddress!)
+      : undefined;
+
+    const agent = new ProxyAgent({
+      ca: tryGetCACert(options.caBundlePath),
+      getProxyForUrl: getProxyForUrl,
+    });
+
+    return {
       connectionTimeout: DEFAULT_CONNECTION_TIMEOUT,
       requestTimeout: DEFAULT_TIMEOUT,
-      httpsAgent: {
-        ca: tryGetCACert(options.caBundlePath),
-        localAddress: options.proxyAddress,
-      },
-      httpAgent: {
-        localAddress: options.proxyAddress,
-      },
+      httpsAgent: agent,
+      httpAgent: agent,
     };
-    return config;
   }
 
   /**

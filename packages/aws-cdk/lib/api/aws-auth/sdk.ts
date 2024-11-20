@@ -553,7 +553,7 @@ export class SDK {
       region,
       credentials: _credentials,
       requestHandler,
-      retryStrategy: new ConfiguredRetryStrategy(7, (attempt) => attempt ** 300),
+      retryStrategy: new ConfiguredRetryStrategy(7, (attempt) => 300 * (2 ** attempt)),
       customUserAgent: defaultCliUserAgent(),
     };
     this.currentRegion = region;
