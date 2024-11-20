@@ -1,0 +1,19 @@
+{
+  "version": "38.0.1",
+  "files": {
+    "9120ee36b9682319f9ed5de63284660b20f3b32efa59df7674ce97b8499f19ec": {
+      "source": {
+        "path": "lambda-event-source-metrics-config-kinesis.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "9120ee36b9682319f9ed5de63284660b20f3b32efa59df7674ce97b8499f19ec.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

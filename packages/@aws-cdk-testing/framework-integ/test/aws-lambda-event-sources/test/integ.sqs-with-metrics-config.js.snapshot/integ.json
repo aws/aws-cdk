@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "lambda-event-source-sqs-with-metrics/DefaultTest": {
+      "stacks": [
+        "lambda-event-source-metrics-config-sqs"
+      ],
+      "assertionStack": "lambda-event-source-sqs-with-metrics/DefaultTest/DeployAssert",
+      "assertionStackName": "lambdaeventsourcesqswithmetricsDefaultTestDeployAssert9B567B16"
+    }
+  }
+}

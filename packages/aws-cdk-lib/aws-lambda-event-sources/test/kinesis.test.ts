@@ -331,4 +331,51 @@ describe('KinesisEventSource', () => {
 
   });
 
+  test('metrics config', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const stream = new kinesis.Stream(stack, 'S');
+    const eventSource = new sources.KinesisEventSource(stream, {
+      startingPosition: lambda.StartingPosition.LATEST,
+      enabled: false,
+      metricsConfig: {
+        metrics: [],
+      },
+    });
+
+    // WHEN
+    fn.addEventSource(eventSource);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      MetricsConfig: {
+        Metrics: [],
+      },
+    });
+  });
+
+  test('metrics config', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const stream = new kinesis.Stream(stack, 'S');
+    const eventSource = new sources.KinesisEventSource(stream, {
+      startingPosition: lambda.StartingPosition.LATEST,
+      enabled: false,
+      metricsConfig: {
+        metrics: [lambda.MetricType.EVENT_COUNT],
+      },
+    });
+
+    // WHEN
+    fn.addEventSource(eventSource);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      MetricsConfig: {
+        Metrics: ['EventCount'],
+      },
+    });
+  });
 });
