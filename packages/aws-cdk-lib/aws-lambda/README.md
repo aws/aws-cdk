@@ -852,6 +852,33 @@ fn.addEventSource(new eventsources.DynamoEventSource(table, {
 }
 ```
 
+### Observability
+
+Customers can now opt-in to get enhanced metrics for their event source mapping that capture each stage of processing using the `MetrcisConfig` property.
+
+The following code shows how to opt in for the enhanced metrics. 
+
+```ts
+import * as eventsources from 'aws-cdk-lib/aws-lambda-event-sources';
+import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
+
+declare const fn: lambda.Function;
+const table = new dynamodb.Table(this, 'Table', {
+  partitionKey: {
+    name: 'id',
+    type: dynamodb.AttributeType.STRING,
+  },
+  stream: dynamodb.StreamViewType.NEW_IMAGE,
+});
+
+fn.addEventSource(new eventsources.DynamoEventSource(table, {
+  startingPosition: lambda.StartingPosition.LATEST,
+  metricsConfig: {
+    metrics: [lambda.MetricType.EVENT_COUNT],
+  }
+}));
+```
+
 See the documentation for the __@aws-cdk/aws-lambda-event-sources__ module for more details.
 
 ## Imported Lambdas
