@@ -570,6 +570,9 @@
   "aws-ram": [
     "AWS::RAM"
   ],
+  "aws-rbin": [
+    "AWS::Rbin"
+  ],
   "aws-rds": [
     "AWS::RDS"
   ],
