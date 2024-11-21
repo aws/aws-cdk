@@ -79,7 +79,10 @@ interface DatabaseClusterBaseProps {
    * You can specify ACU values in half-step increments, such as 8, 8.5, 9, and so on.
    * The smallest value that you can use is 0.
    *
-   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.setting-capacity.html#aurora-serverless-v2.max_capacity_considerations
+   * For Aurora versions that support the Aurora Serverless v2 auto-pause feature, the smallest value that you can use is 0.
+   * For versions that don't support Aurora Serverless v2 auto-pause, the smallest value that you can use is 0.5.
+   *
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.setting-capacity.html#aurora-serverless-v2.min_capacity_considerations
    *
    * @default 0.5
    */
