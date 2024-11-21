@@ -2,7 +2,7 @@ import { Construct, IConstruct } from 'constructs';
 import { Template } from '../../assertions';
 import { Bucket, CfnBucket } from '../../aws-s3';
 import * as cxschema from '../../cloud-assembly-schema';
-import { App, CfnResource, Stack, Tags } from '../lib';
+import { App, CfnResource, Stack, Tag, Tags } from '../lib';
 import { IAspect, Aspects, AspectPriority } from '../lib/aspect';
 class MyConstruct extends Construct {
   public static IsMyConstruct(x: any): x is MyConstruct {
@@ -36,14 +36,29 @@ class EnableBucketVersioningAspect implements IAspect {
 }
 
 class AddLoggingBucketAspect implements IAspect {
+  private processed = false;
   public visit(node: IConstruct): void {
     // Check if the node is an S3 Bucket
-    if (node instanceof CfnBucket) {
+    if (node instanceof CfnBucket && !this.processed) {
       // Add a new logging bucket Bucket to the stack this bucket belongs to.
       const stack = Stack.of(node);
       new Bucket(stack, 'my-new-logging-bucket-from-aspect', {
         bucketName: 'my-new-logging-bucket-from-aspect',
       });
+      this.processed = true;
+    }
+  }
+}
+
+class AddSingletonBucketAspect implements IAspect {
+  private processed = false;
+  public visit(node: IConstruct): void {
+    if (Stack.isStack(node) && !this.processed) {
+      // Add a new logging bucket Bucket to the stack this bucket belongs to.
+      new Bucket(node, 'my-new-logging-bucket-from-aspect', {
+        bucketName: 'my-new-logging-bucket-from-aspect',
+      });
+      this.processed = true;
     }
   }
 }
@@ -76,7 +91,7 @@ describe('aspect', () => {
     expect(root.node.metadata[0].type).toEqual(cxschema.ArtifactMetadataEntryType.WARN);
     expect(root.node.metadata[0].data).toEqual('We detected an Aspect was added via another Aspect, and will not be applied [ack: @aws-cdk/core:ignoredAspect]');
     // warning is not added to child construct
-    // expect(child.node.metadata.length).toEqual(0);
+    expect(child.node.metadata.length).toEqual(0);
   });
 
   test('Do not warn if an Aspect is added directly (not by another aspect)', () => {
@@ -211,4 +226,43 @@ describe('aspect', () => {
       }],
     });
   });
+
+  test('Newly created node inherits Aspect that was already invoked on its parent node.', () => {
+    const app = new App();
+    const root = new Stack(app, 'My-Stack');
+
+    // GIVEN - 3 Aspects with increasing priority
+    Aspects.of(root).add(new Tag('AspectA', 'Visited'), { priority: 10 });
+    // This Aspect is applied after Aspect A, but creates a child of the root which should still
+    // inherit Aspect A.
+    Aspects.of(root).add(new AddSingletonBucketAspect(), { priority: 20 });
+    Aspects.of(root).add(new Tag('AspectC', 'Visited'), { priority: 30 });
+
+    // THEN - both Aspects A and C are invoked on the new node created by Aspect B as a child of the root.
+    Template.fromStack(root).hasResourceProperties('AWS::S3::Bucket', {
+      BucketName: 'my-new-logging-bucket-from-aspect',
+      Tags: [{
+        Key: 'AspectA',
+        Value: 'Visited',
+      },
+      {
+        Key: 'AspectC',
+        Value: 'Visited',
+      }],
+    });
+  });
+
+  class InfiniteAspect implements IAspect {
+    visit(node: IConstruct): void {
+      // Add another instance of InfiniteAspect to this node
+      Aspects.of(node).add(new InfiniteAspect());
+
+      // Optionally create a new resource to make the problem even worse
+      if (Construct.isConstruct(node)) {
+        new CfnResource(node, `InfiniteResource-${Date.now()}`, {
+          type: 'AWS::CDK::Broken',
+        });
+      }
+    }
+  }
 });

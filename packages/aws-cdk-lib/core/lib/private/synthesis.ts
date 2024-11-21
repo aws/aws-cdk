@@ -8,7 +8,7 @@ import { CloudAssembly } from '../../../cx-api';
 import * as cxapi from '../../../cx-api';
 import { Annotations } from '../annotations';
 import { App } from '../app';
-import { AspectApplication, Aspects, IAspect } from '../aspect';
+import { AspectApplication, Aspects } from '../aspect';
 import { FileSystem } from '../fs';
 import { Stack } from '../stack';
 import { ISynthesisSession } from '../stack-synthesizers/types';
@@ -215,76 +215,68 @@ function synthNestedAssemblies(root: IConstruct, options: StageSynthesisOptions)
  * twice for the same construct.
  */
 function invokeAspects(root: IConstruct) {
-  const aspectsSet = getAllAspectApplications(root);
+  const invokedByPath: { [nodePath: string]: AspectApplication[] } = { };
 
-  const aspectsPQ = new PriorityQueue<AspectApplication>();
-  for (const aspectApplication of aspectsSet) {
-    aspectsPQ.enqueue(aspectApplication, aspectApplication.priority);
+  recurse(root, []);
+
+  for (let i = 0; i <= 100; i++) {
+    const didAnythingToTree = recurse(root, []);
+
+    if (!didAnythingToTree) {
+      return;
+    }
   }
 
-  let nestedAspectWarning = { value: false };;
+  throw new Error('Maximum iterations reached while invoking Aspects.');
 
-  while (!aspectsPQ.isEmpty()) {
-    const aspectApplication = aspectsPQ.dequeue()!;
-    invokeAspect(aspectApplication.construct, aspectApplication.aspect, nestedAspectWarning, aspectsPQ);
+  function recurse(construct: IConstruct, inheritedAspects: AspectApplication[]): boolean {
+    const node = construct.node;
+    const aspects = Aspects.of(construct);
 
-    const updatedAspectApplications = getAllAspectApplications(root);
-    for (const app of updatedAspectApplications) {
-      // if (aspectsSet.has(aspectApplication)) continue;
-      if (!aspectsSet.has(app) && app != aspectApplication) {
-        aspectsPQ.enqueue(app, aspectApplication.priority);
+    let didSomething = false;
+
+    let localAspects = aspects.list;
+
+    // Sorts all inherited and local Aspects of this node in priority order, where inheried Aspects have preference.
+    const allAspectsHere = [...inheritedAspects, ...localAspects].sort((a, b) => {
+      // Compare by priority first
+      if (a.priority !== b.priority) {
+        return a.priority - b.priority; // Ascending order by priority
       }
-    }
-  }
-}
+      // If priorities are equal, give preference to inheritedAspects
+      const isAInherited = inheritedAspects.includes(a);
+      const isBInherited = inheritedAspects.includes(b);
+      if (isAInherited && !isBInherited) return -1; // a comes first
+      if (!isAInherited && isBInherited) return 1; // b comes first
+      return 0; // Otherwise, maintain original order
+    });
 
-/**
- * Invokes an individual Aspect on a construct and all of its children in the construct tree.
- *
- * nestedAspectWarning argument is used to prevent the nested Aspect warning from being emitted for every child
- */
-function invokeAspect(construct: IConstruct, aspect: IAspect, nestedAspectWarning: {value: boolean}, pq: PriorityQueue<AspectApplication>) {
-  const aspectsCount = Aspects.of(construct).all.length;
-  aspect.visit(construct);
-  const aspectsCount2 = Aspects.of(construct).all.length;
+    // let numIterations = 0;
+    for (const aspect of allAspectsHere) {
 
-  // if an aspect was added to the node while invoking another aspect it will not be invoked, emit a warning
-  if ((aspectsCount != aspectsCount2) && !nestedAspectWarning.value) {
-    Annotations.of(construct).addWarningV2('@aws-cdk/core:ignoredAspect', 'We detected an Aspect was added via another Aspect, and will not be applied');
-    nestedAspectWarning.value = true;
-  }
-  for (const child of construct.node.children) {
-    // Do not cross the Stage boundary
-    if (!Stage.isStage(child)) {
-      invokeAspect(child, aspect, nestedAspectWarning, pq);
-    }
-  }
-}
+      let invoked = invokedByPath[node.path];
+      if (!invoked) {
+        invoked = invokedByPath[node.path] = [];
+      }
 
-/**
- * Gets all AspectApplications.
- *
- * Returns a Set<AspectApplication> of all Aspect Applications from a node and all its children.
- */
-function getAllAspectApplications(root: IConstruct): Set<AspectApplication> {
-  let aspectsSet = new Set<AspectApplication>();
+      if (invoked.includes(aspect)) { continue; }
 
-  recurse(root);
+      // const originalCount = aspects.list.length;
+      aspect.aspect.visit(construct);
 
-  return aspectsSet;
+      didSomething = true;
 
-  // Helper function recurses tree to collect Aspects from every node.
-  function recurse(node: IConstruct) {
-    for (const aspectApplication of Aspects.of(node).list) {
-      aspectsSet.add(aspectApplication);
+      // mark as invoked for this node
+      invoked.push(aspect);
     }
 
-    for (const child of node.node.children) {
-      // Do not cross the stage boundary
+    let childDidSomething = false;
+    for (const child of construct.node.children) {
       if (!Stage.isStage(child)) {
-        recurse(child);
+        childDidSomething = recurse(child, allAspectsHere) || childDidSomething;
       }
     }
+    return didSomething || childDidSomething;
   }
 }
 
@@ -414,122 +406,5 @@ function visit(root: IConstruct, order: 'pre' | 'post', cb: (x: IConstruct) => v
 
   if (order === 'post') {
     cb(root);
-  }
-}
-
-/**
- * Ordered Priority Queue to be used in Aspect invocation algorithm.
- *
- * Counter keeps track of insertion order so that Aspects of the same priority are applied
- * in the order in which they were added.
- */
-class PriorityQueue<T> {
-  private heap: { value: T; priority: number; order: number }[] = [];
-  private set: Set<T> = new Set();
-  private counter = 0; // Tracks insertion order
-
-  private getParentIndex(index: number): number {
-    return Math.floor((index - 1) / 2);
-  }
-
-  private getLeftChildIndex(index: number): number {
-    return 2 * index + 1;
-  }
-
-  private getRightChildIndex(index: number): number {
-    return 2 * index + 2;
-  }
-
-  private swap(index1: number, index2: number): void {
-    [this.heap[index1], this.heap[index2]] = [this.heap[index2], this.heap[index1]];
-  }
-
-  private bubbleUp(index: number): void {
-    const parentIndex = this.getParentIndex(index);
-
-    if (
-      parentIndex >= 0 &&
-      (
-        this.heap[parentIndex].priority > this.heap[index].priority ||
-        (
-          this.heap[parentIndex].priority === this.heap[index].priority &&
-          this.heap[parentIndex].order > this.heap[index].order
-        )
-      )
-    ) {
-      this.swap(parentIndex, index);
-      this.bubbleUp(parentIndex);
-    }
-  }
-
-  private bubbleDown(index: number): void {
-    const leftChildIndex = this.getLeftChildIndex(index);
-    const rightChildIndex = this.getRightChildIndex(index);
-    let smallest = index;
-
-    if (
-      leftChildIndex < this.heap.length &&
-      (
-        this.heap[leftChildIndex].priority < this.heap[smallest].priority ||
-        (
-          this.heap[leftChildIndex].priority === this.heap[smallest].priority &&
-          this.heap[leftChildIndex].order < this.heap[smallest].order
-        )
-      )
-    ) {
-      smallest = leftChildIndex;
-    }
-
-    if (
-      rightChildIndex < this.heap.length &&
-      (
-        this.heap[rightChildIndex].priority < this.heap[smallest].priority ||
-        (
-          this.heap[rightChildIndex].priority === this.heap[smallest].priority &&
-          this.heap[rightChildIndex].order < this.heap[smallest].order
-        )
-      )
-    ) {
-      smallest = rightChildIndex;
-    }
-
-    if (smallest !== index) {
-      this.swap(index, smallest);
-      this.bubbleDown(smallest);
-    }
-  }
-
-  enqueue(value: T, priority: number): void {
-    // Prevent duplicate entries
-    if (this.set.has(value)) return;
-    this.set.add(value);
-
-    // Add the new element with priority and order
-    this.heap.push({ value, priority, order: this.counter++ });
-    this.bubbleUp(this.heap.length - 1);
-  }
-
-  dequeue(): T | undefined {
-    if (this.heap.length === 0) return undefined;
-    if (this.heap.length === 1) return this.heap.pop()?.value;
-
-    const root = this.heap[0];
-    this.heap[0] = this.heap.pop()!;
-    this.bubbleDown(0);
-
-    // this.set.delete(root.value);
-    return root.value;
-  }
-
-  peek(): T | undefined {
-    return this.heap[0]?.value;
-  }
-
-  isEmpty(): boolean {
-    return this.heap.length === 0;
-  }
-
-  size(): number {
-    return this.set.size;
   }
 }
