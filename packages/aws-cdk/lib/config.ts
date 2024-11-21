@@ -1,4 +1,4 @@
-import { CliConfig, DynamicValue } from '@aws-cdk/yargs-gen';
+import type { CliConfig, DynamicResult } from '@aws-cdk/yargs-gen';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
 import { RequireApproval } from './diff';
 
@@ -112,7 +112,7 @@ export function makeConfig(): CliConfig {
           'build-exclude': { type: 'array', alias: 'E', nargs: 1, desc: 'Do not rebuild asset with the given ID. Can be specified multiple times', default: [] },
           'exclusively': { type: 'boolean', alias: 'e', desc: 'Only deploy requested stacks, don\'t include dependencies' },
           'require-approval': { type: 'string', choices: [RequireApproval.Never, RequireApproval.AnyChange, RequireApproval.Broadening], desc: 'What security-sensitive changes need manual approval' },
-          'notification-arns': { type: 'array', desc: 'ARNs of SNS topics that CloudFormation will notify with stack related events', nargs: 1, requiresArg: true },
+          'notification-arns': { type: 'array', desc: 'ARNs of SNS topics that CloudFormation will notify with stack related events. These will be added to ARNs specified with the \'notificationArns\' stack property.', nargs: 1, requiresArg: true },
           // @deprecated(v2) -- tags are part of the Cloud Assembly and tags specified here will be overwritten on the next deployment
           'tags': { type: 'array', alias: 't', desc: 'Tags to add to the stack (KEY=VALUE), overrides tags from Cloud Assembly (deprecated)', nargs: 1, requiresArg: true },
           'execute': { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet) (deprecated)', deprecated: true },
@@ -416,4 +416,27 @@ export function makeConfig(): CliConfig {
       },
     },
   };
+}
+
+/**
+ * Informs the code library, `@aws-cdk/yargs-gen`, that
+ * this value references an entity not defined in this configuration file.
+ */
+export class DynamicValue {
+  /**
+   * Instructs `yargs-gen` to retrieve this value from the parameter with passed name.
+   */
+  public static fromParameter(parameterName: string): DynamicResult {
+    return {
+      dynamicType: 'parameter',
+      dynamicValue: parameterName,
+    };
+  }
+
+  public static fromInline(f: () => any): DynamicResult {
+    return {
+      dynamicType: 'function',
+      dynamicValue: f,
+    };
+  }
 }
