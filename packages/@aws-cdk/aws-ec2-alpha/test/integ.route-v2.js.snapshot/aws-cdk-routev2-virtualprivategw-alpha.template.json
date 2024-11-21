@@ -9,7 +9,7 @@
     "InstanceTenancy": "default"
    }
   },
-  "vpgwAmazonIpv6C872FF1E": {
+  "vpgwAmazonIpv6D24D8752": {
    "Type": "AWS::EC2::VPCCidrBlock",
    "Properties": {
     "AmazonProvidedIpv6CidrBlock": true,
@@ -32,11 +32,34 @@
     }
    }
   },
+  "TestRoottablevpgwRouteAD510A2A": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Fn::GetAtt": [
+      "testVPGWIGW816C7C4F",
+      "VPNGatewayId"
+     ]
+    },
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "TestRoottableRouteTableFA28AA38",
+      "RouteTableId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "testVPGWIGW816C7C4F",
+    "testVPGWRoutePropagationD01C7942",
+    "testVPGWVPCVPNGWF1D3DC88"
+   ]
+  },
   "vpgwSubnet5E7F36AD": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
     "AssignIpv6AddressOnCreation": false,
-    "AvailabilityZone": "us-west-1a",
+    "AvailabilityZone": "us-east-1a",
     "CidrBlock": "10.0.0.0/24",
     "Ipv6CidrBlock": {
      "Fn::Select": [
@@ -57,7 +80,7 @@
     }
    },
    "DependsOn": [
-    "vpgwAmazonIpv6C872FF1E"
+    "vpgwAmazonIpv6D24D8752"
    ]
   },
   "vpgwSubnetRouteTableAssociation49921F90": {
@@ -74,7 +97,7 @@
     }
    },
    "DependsOn": [
-    "vpgwAmazonIpv6C872FF1E"
+    "vpgwAmazonIpv6D24D8752"
    ]
   },
   "testVPGWIGW816C7C4F": {
@@ -83,26 +106,7 @@
     "Type": "ipsec.1"
    }
   },
-  "testVPGWRouteA169B1AA": {
-   "Type": "AWS::EC2::Route",
-   "Properties": {
-    "DestinationCidrBlock": "0.0.0.0/0",
-    "DestinationIpv6CidrBlock": "0.0.0.0/0",
-    "GatewayId": {
-     "Fn::GetAtt": [
-      "testVPGWIGW816C7C4F",
-      "VPNGatewayId"
-     ]
-    },
-    "RouteTableId": {
-     "Fn::GetAtt": [
-      "TestRoottableRouteTableFA28AA38",
-      "RouteTableId"
-     ]
-    }
-   }
-  },
-  "testVPGWRouteGWAttachment01E74575": {
+  "testVPGWVPCVPNGWF1D3DC88": {
    "Type": "AWS::EC2::VPCGatewayAttachment",
    "Properties": {
     "VpcId": {
@@ -118,6 +122,21 @@
      ]
     }
    }
+  },
+  "testVPGWRoutePropagationD01C7942": {
+   "Type": "AWS::EC2::VPNGatewayRoutePropagation",
+   "Properties": {
+    "RouteTableIds": [],
+    "VpnGatewayId": {
+     "Fn::GetAtt": [
+      "testVPGWIGW816C7C4F",
+      "VPNGatewayId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "testVPGWVPCVPNGWF1D3DC88"
+   ]
   }
  },
  "Parameters": {

@@ -404,6 +404,11 @@ export enum KeyUsage {
    * Generating and verifying MACs
    */
   GENERATE_VERIFY_MAC = 'GENERATE_VERIFY_MAC',
+
+  /**
+   * Deriving shared secrets
+   */
+  KEY_AGREEMENT = 'KEY_AGREEMENT',
 }
 
 /**
@@ -555,6 +560,14 @@ export interface KeyProps {
  */
 export class Key extends KeyBase {
   /**
+   * The default key id of the dummy key.
+   *
+   * This value is used as a dummy key id if the key was not found
+   * by the `Key.fromLookup()` method.
+   */
+  public static readonly DEFAULT_DUMMY_KEY_ID = '1234abcd-12ab-34cd-56ef-1234567890ab';
+
+  /**
    * Import an externally defined KMS Key using its ARN.
    *
    * @param scope  the construct that will "own" the imported key.
@@ -651,6 +664,12 @@ export class Key extends KeyBase {
    * You can therefore not use any values that will only be available at
    * CloudFormation execution time (i.e., Tokens).
    *
+   * If you set `returnDummyKeyOnMissing` to `true` in `options` and the key was not found,
+   * this method will return a dummy key with a key id '1234abcd-12ab-34cd-56ef-1234567890ab'.
+   * The value of the dummy key id can also be referenced using the `Key.DEFAULT_DUMMY_KEY_ID`
+   * variable, and you can check if the key is a dummy key by using the `Key.isLookupDummy()`
+   * method.
+   *
    * The Key information will be cached in `cdk.context.json` and the same Key
    * will be used on future runs. To refresh the lookup, you will have to
    * evict the value from the cache using the `cdk context` command. See
@@ -683,12 +702,24 @@ export class Key extends KeyBase {
         aliasName: options.aliasName,
       } as cxschema.KeyContextQuery,
       dummyValue: {
-        keyId: '1234abcd-12ab-34cd-56ef-1234567890ab',
+        keyId: Key.DEFAULT_DUMMY_KEY_ID,
       },
+      ignoreErrorOnMissingContext: options.returnDummyKeyOnMissing,
     }).value;
 
     return new Import(attributes.keyId,
       Arn.format({ resource: 'key', service: 'kms', resourceName: attributes.keyId }, Stack.of(scope)));
+  }
+
+  /**
+   * Checks if the key returned by the `Key.fromLookup()` method is a dummy key,
+   * i.e., a key that was not found.
+   *
+   * This method can only be used if the `returnDummyKeyOnMissing` option
+   * is set to `true` in the `options` for the `Key.fromLookup()` method.
+   */
+  public static isLookupDummy(key: IKey): boolean {
+    return key.keyId === Key.DEFAULT_DUMMY_KEY_ID;
   }
 
   public readonly keyArn: string;
@@ -728,6 +759,17 @@ export class Key extends KeyBase {
         KeySpec.ECC_SECG_P256K1,
         KeySpec.SYMMETRIC_DEFAULT,
         KeySpec.SM2,
+      ],
+      [KeyUsage.KEY_AGREEMENT]: [
+        KeySpec.SYMMETRIC_DEFAULT,
+        KeySpec.RSA_2048,
+        KeySpec.RSA_3072,
+        KeySpec.RSA_4096,
+        KeySpec.ECC_SECG_P256K1,
+        KeySpec.HMAC_224,
+        KeySpec.HMAC_256,
+        KeySpec.HMAC_384,
+        KeySpec.HMAC_512,
       ],
     };
     const keySpec = props.keySpec ?? KeySpec.SYMMETRIC_DEFAULT;
