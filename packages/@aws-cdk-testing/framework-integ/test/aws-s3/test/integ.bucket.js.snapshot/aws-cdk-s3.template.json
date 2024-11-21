@@ -3,6 +3,8 @@
   "MyBucketKeyC17130CF": {
    "Type": "AWS::KMS::Key",
    "Properties": {
+    "Description": "Created by aws-cdk-s3/MyBucket",
+    "EnableKeyRotation": true,
     "KeyPolicy": {
      "Statement": [
       {
@@ -30,11 +32,10 @@
       }
      ],
      "Version": "2012-10-17"
-    },
-    "Description": "Created by aws-cdk-s3/MyBucket"
+    }
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "MyBucketF68F3FF0": {
    "Type": "AWS::S3::Bucket",
