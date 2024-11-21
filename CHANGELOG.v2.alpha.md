@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.169.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.168.0-alpha.0...v2.169.0-alpha.0) (2024-11-21)
+
+
+### Features
+
+* **location:** support Map ([#30648](https://github.com/aws/aws-cdk/issues/30648)) ([98b801c](https://github.com/aws/aws-cdk/commit/98b801cae9c7a957469ef61121878d81a09f4cfe)), closes [#30647](https://github.com/aws/aws-cdk/issues/30647)
+* **scheduler:** `scheduler` and `scheduler-targets` modules are now in Developer Preview ([#32207](https://github.com/aws/aws-cdk/issues/32207)) ([8776832](https://github.com/aws/aws-cdk/commit/877683233f1af9674cd2e715411eed6ebc4e3e11)), closes [#31785](https://github.com/aws/aws-cdk/issues/31785)
+
+
+### Bug Fixes
+
+* **location:** underscores are not allowed in the name ([#32046](https://github.com/aws/aws-cdk/issues/32046)) ([f6ad9c9](https://github.com/aws/aws-cdk/commit/f6ad9c99db902064ab62e236fec3d7fbfcca828a))
+
 ## [2.168.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.167.2-alpha.0...v2.168.0-alpha.0) (2024-11-20)
 
 
