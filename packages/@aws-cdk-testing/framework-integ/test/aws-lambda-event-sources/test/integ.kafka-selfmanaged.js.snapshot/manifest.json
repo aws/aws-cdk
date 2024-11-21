@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "38.0.1",
   "artifacts": {
     "lambda-event-source-kafka-self-managed.assets": {
       "type": "cdk:asset-manifest",
@@ -16,9 +16,10 @@
         "templateFile": "lambda-event-source-kafka-self-managed.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4bf07b5cad381e52a796b0a42748934cce430e155ffe31f0366eef200d40356f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cb2d7d48eaf634edd0acc6e6475e904f57e491fce9fa3ac839e93cba823616c1.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -100,6 +101,30 @@
             "data": "F2KafkaEventSource838c4d5ff3c99c1a617120adfca83e5bmytesttopic20A678189"
           }
         ],
+        "/lambda-event-source-kafka-self-managed/F3/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "F3ServiceRole2F65FFC0"
+          }
+        ],
+        "/lambda-event-source-kafka-self-managed/F3/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "F3ServiceRoleDefaultPolicy1C0463D1"
+          }
+        ],
+        "/lambda-event-source-kafka-self-managed/F3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "F38FF9B13A"
+          }
+        ],
+        "/lambda-event-source-kafka-self-managed/F3/KafkaEventSource:838c4d5ff3c99c1a617120adfca83e5b:my-test-topic3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "F3KafkaEventSource838c4d5ff3c99c1a617120adfca83e5bmytesttopic3ED015F25"
+          }
+        ],
         "/lambda-event-source-kafka-self-managed/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -130,6 +155,7 @@
         "templateFile": "LambdaEventSourceKafkaSelfManagedTestDefaultTestDeployAssertAF78BD0F.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",

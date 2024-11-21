@@ -396,6 +396,29 @@ myFunction.addEventSource(new ManagedKafkaEventSource({
 }));
 ```
 
+Set configuration for provisioned pollers that read from the event source.
+
+```ts
+import { ManagedKafkaEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
+
+// Your MSK cluster arn
+declare const clusterArn: string
+
+// The Kafka topic you want to subscribe to
+const topic = 'some-cool-topic';
+
+declare const myFunction: lambda.Function;
+myFunction.addEventSource(new ManagedKafkaEventSource({
+  clusterArn,
+  topic,
+  startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+  provisionedPollerConfig: {
+    minimumPollers: 1,
+    maximumPollers: 3,
+  },
+}));
+```
+
 ## Roadmap
 
 Eventually, this module will support all the event sources described under
