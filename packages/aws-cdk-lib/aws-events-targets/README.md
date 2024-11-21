@@ -147,7 +147,7 @@ declare const rule: events.Rule;
 rule.addTarget(new targets.CloudWatchLogGroup(logGroup, {
   installLatestAwsSdk: false,
 }));
-``` 
+```
 
 ## Start a CodeBuild build
 
