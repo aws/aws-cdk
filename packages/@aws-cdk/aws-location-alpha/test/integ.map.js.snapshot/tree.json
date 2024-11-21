@@ -4,38 +4,45 @@
     "id": "App",
     "path": "",
     "children": {
-      "cdk-integ-location-route-calculator": {
-        "id": "cdk-integ-location-route-calculator",
-        "path": "cdk-integ-location-route-calculator",
+      "cdk-integ-location-map": {
+        "id": "cdk-integ-location-map",
+        "path": "cdk-integ-location-map",
         "children": {
-          "RouteCalculator": {
-            "id": "RouteCalculator",
-            "path": "cdk-integ-location-route-calculator/RouteCalculator",
+          "Map": {
+            "id": "Map",
+            "path": "cdk-integ-location-map/Map",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "cdk-integ-location-route-calculator/RouteCalculator/Resource",
+                "path": "cdk-integ-location-map/Map/Resource",
                 "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Location::RouteCalculator",
+                  "aws:cdk:cloudformation:type": "AWS::Location::Map",
                   "aws:cdk:cloudformation:props": {
-                    "calculatorName": "my_route_calculator",
-                    "dataSource": "Esri"
+                    "configuration": {
+                      "style": "VectorEsriNavigation",
+                      "customLayers": [
+                        "POI"
+                      ],
+                      "politicalView": "IND"
+                    },
+                    "description": "my map for test",
+                    "mapName": "my-map"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_location.CfnRouteCalculator",
+                  "fqn": "aws-cdk-lib.aws_location.CfnMap",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-location-alpha.RouteCalculator",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "cdk-integ-location-route-calculator/BootstrapVersion",
+            "path": "cdk-integ-location-map/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -43,7 +50,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "cdk-integ-location-route-calculator/CheckBootstrapVersion",
+            "path": "cdk-integ-location-map/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
@@ -55,29 +62,29 @@
           "version": "0.0.0"
         }
       },
-      "RouteCalculatorTest": {
-        "id": "RouteCalculatorTest",
-        "path": "RouteCalculatorTest",
+      "MapTest": {
+        "id": "MapTest",
+        "path": "MapTest",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "RouteCalculatorTest/DefaultTest",
+            "path": "MapTest/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "RouteCalculatorTest/DefaultTest/Default",
+                "path": "MapTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.4.2"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "RouteCalculatorTest/DefaultTest/DeployAssert",
+                "path": "MapTest/DefaultTest/DeployAssert",
                 "children": {
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
-                    "path": "RouteCalculatorTest/DefaultTest/DeployAssert/BootstrapVersion",
+                    "path": "MapTest/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
@@ -85,7 +92,7 @@
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
-                    "path": "RouteCalculatorTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "path": "MapTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"
@@ -114,7 +121,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.4.2"
+          "version": "10.3.0"
         }
       }
     },

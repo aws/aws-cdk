@@ -1,13 +1,4 @@
 {
- "Resources": {
-  "RouteCalculator0F2D109D": {
-   "Type": "AWS::Location::RouteCalculator",
-   "Properties": {
-    "CalculatorName": "my_route_calculator",
-    "DataSource": "Esri"
-   }
-  }
- },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

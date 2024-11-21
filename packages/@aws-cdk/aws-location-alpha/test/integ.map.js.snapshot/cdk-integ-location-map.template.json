@@ -1,10 +1,17 @@
 {
  "Resources": {
-  "RouteCalculator0F2D109D": {
-   "Type": "AWS::Location::RouteCalculator",
+  "Map207736EC": {
+   "Type": "AWS::Location::Map",
    "Properties": {
-    "CalculatorName": "my_route_calculator",
-    "DataSource": "Esri"
+    "Configuration": {
+     "CustomLayers": [
+      "POI"
+     ],
+     "PoliticalView": "IND",
+     "Style": "VectorEsriNavigation"
+    },
+    "Description": "my map for test",
+    "MapName": "my-map"
    }
   }
  },
