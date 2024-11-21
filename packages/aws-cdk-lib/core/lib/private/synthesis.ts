@@ -261,7 +261,14 @@ function invokeAspects(root: IConstruct) {
 
       if (invoked.includes(aspect)) { continue; }
 
-      // const originalCount = aspects.list.length;
+      // If the last invoked Aspect has a higher priority than the current one, throw an error:
+      const lastInvokedAspect = invoked[invoked.length - 1];
+      if (lastInvokedAspect && lastInvokedAspect.priority > aspect.priority) {
+        throw new Error(
+          `Aspect ${aspect.aspect.constructor.name} with priority ${aspect.priority} invoked after ${lastInvokedAspect.aspect.constructor.name} with priority ${lastInvokedAspect.priority} at ${node.path}.`,
+        );
+      };
+
       aspect.aspect.visit(construct);
 
       didSomething = true;

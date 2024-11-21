@@ -252,6 +252,37 @@ describe('aspect', () => {
     });
   });
 
+  class WeirdAspect implements IAspect {
+    private processed = false;
+    public visit(node: IConstruct): void {
+      // Check if the node is an S3 Bucket
+      if (node instanceof CfnBucket && !this.processed) {
+        const stack = Stack.of(node);
+
+        // Adds a new Tag to the parent of this bucket
+        Aspects.of(stack).add(new Tag('AspectB', 'Visited'), { priority: 0 });
+
+        this.processed = true;
+      }
+    }
+  }
+
+  test('Error is thrown if Aspect adds an Aspect to a node with a lower priority than the last invoked Aspect of a node.', () => {
+    const app = new App();
+    const root = new Stack(app, 'My-Stack');
+    const child = new Bucket(root, 'my-bucket', {
+      bucketName: 'my-bucket',
+    });
+
+    // GIVEN - 2 Aspects where the second one applied an Aspect with a lower priority to the root:
+    Aspects.of(root).add(new Tag('AspectA', 'Visited'), { priority: 10 });
+    Aspects.of(child).add(new WeirdAspect(), { priority: 20 });
+
+    expect(() => {
+      app.synth();
+    }).toThrow('Aspect Tag with priority 0 invoked after Tag with priority 10 at My-Stack');
+  });
+
   class InfiniteAspect implements IAspect {
     visit(node: IConstruct): void {
       // Add another instance of InfiniteAspect to this node
