@@ -193,8 +193,8 @@ describe('bucket', () => {
       `Invalid S3 bucket name (value: ${bucket})`,
       'Bucket name must be at least 3 and no more than 63 characters',
       'Bucket name must only contain lowercase characters and the symbols, period (.) and dash (-) (offset: 5)',
-      'Bucket name must start and end with a lowercase character or number (offset: 0)',
-      `Bucket name must start and end with a lowercase character or number (offset: ${bucket.length - 1})`,
+      'Bucket name must start with a lowercase character or number (offset: 0)',
+      `Bucket name must end with a lowercase character or number (offset: ${bucket.length - 1})`,
       'Bucket name must not have dash next to period, or period next to dash, or consecutive periods (offset: 7)',
     ].join(EOL);
 
@@ -215,9 +215,27 @@ describe('bucket', () => {
     }).toThrow(/Bucket name must only contain lowercase characters and the symbols, period \(\.\) and dash \(-\)/);
   });
 
+  test('validateBucketName allows uppercase characters when allowLegacyBucketNaming=true', () => {
+    expect(() => {
+      s3.Bucket.validateBucketName('Test_Bucket_Name', true);
+    }).not.toThrow();
+  });
+
+  test('validateBucketName does not allow uppercase characters when allowLegacyBucketNaming=false', () => {
+    expect(() => {
+      s3.Bucket.validateBucketName('Test_Bucket_Name', false);
+    }).toThrow(/Bucket name must only contain lowercase characters and the symbols, period \(\.\) and dash \(-\)/);
+  });
+
   test('validateBucketName does not allow underscore by default', () => {
     expect(() => {
       s3.Bucket.validateBucketName('test_bucket_name');
+    }).toThrow(/Bucket name must only contain lowercase characters and the symbols, period \(\.\) and dash \(-\)/);
+  });
+
+  test('validateBucketName does not allow uppercase characters by default', () => {
+    expect(() => {
+      s3.Bucket.validateBucketName('TestBucketName');
     }).toThrow(/Bucket name must only contain lowercase characters and the symbols, period \(\.\) and dash \(-\)/);
   });
 
@@ -404,6 +422,7 @@ describe('bucket', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
       'Description': 'Created by Default/MyBucket',
+      'EnableKeyRotation': true,
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
@@ -1781,6 +1800,7 @@ describe('bucket', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+        'EnableKeyRotation': true,
         'KeyPolicy': {
           'Statement': Match.arrayWith([
             {
@@ -3852,5 +3872,28 @@ describe('bucket', () => {
       },
     });
   });
-});
 
+  test.each([
+    [s3.TransitionDefaultMinimumObjectSize.ALL_STORAGE_CLASSES_128_K, 'all_storage_classes_128K'],
+    [s3.TransitionDefaultMinimumObjectSize.VARIES_BY_STORAGE_CLASS, 'varies_by_storage_class'],
+  ])('transitionDefaultMinimumObjectSize %s can be specified', (key, value) => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'MyBucket', {
+      transitionDefaultMinimumObjectSize: key,
+      lifecycleRules: [
+        {
+          expiration: cdk.Duration.days(365),
+        },
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      LifecycleConfiguration: {
+        TransitionDefaultMinimumObjectSize: value,
+        Rules: [{
+          ExpirationInDays: 365,
+        }],
+      },
+    });
+  });
+});

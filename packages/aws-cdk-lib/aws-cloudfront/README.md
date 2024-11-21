@@ -1155,7 +1155,7 @@ new cloudfront.CloudFrontWebDistribution(this, 'ADistribution', {
   originConfigs: [
     {
       s3OriginSource: {
-        s3BucketSource: s3.Bucket.fromBucketName(this, 'aBucket', 'myoriginbucket'),
+        s3BucketSource: s3.Bucket.fromBucketName(this, 'aBucket', 'amzn-s3-demo-bucket'),
         originPath: '/',
         originHeaders: {
           'myHeader': '42',
@@ -1163,7 +1163,7 @@ new cloudfront.CloudFrontWebDistribution(this, 'ADistribution', {
         originShieldRegion: 'us-west-2',
       },
       failoverS3OriginSource: {
-        s3BucketSource: s3.Bucket.fromBucketName(this, 'aBucketFallback', 'myoriginbucketfallback'),
+        s3BucketSource: s3.Bucket.fromBucketName(this, 'aBucketFallback', 'amzn-s3-demo-bucket1'),
         originPath: '/somewhere',
         originHeaders: {
           'myHeader2': '21',
