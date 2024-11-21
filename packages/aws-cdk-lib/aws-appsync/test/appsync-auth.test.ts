@@ -49,6 +49,32 @@ describe('AppSync API Key Authorization', () => {
     Template.fromStack(stack).resourceCountIs('AWS::AppSync::ApiKey', 1);
   });
 
+  test('AppSync Event API key authorization', () => {
+    // WHEN
+    new appsync.EventApi(stack, 'api', {
+      name: 'api'
+    });
+
+    // THEN
+    Template.fromStack(stack).resourceCountIs('AWS::AppSync::ApiKey', 1);
+  });
+
+  test('AppSync Event API creates API key from secondary auth provider', () => {
+    // WHEN
+    new appsync.EventApi(stack, 'api', {
+      name: 'api',
+      authorizationConfig: {
+        authProviders: [
+          { authorizationType: appsync.AuthorizationType.IAM },
+          { authorizationType: appsync.AuthorizationType.API_KEY },
+        ],
+      }
+    });
+
+    // THEN
+    Template.fromStack(stack).resourceCountIs('AWS::AppSync::ApiKey', 1);
+  });
+
   test('AppSync does not create unspecified api key from additionalAuthorizationModes', () => {
     // WHEN
     new appsync.GraphqlApi(stack, 'api', {
@@ -57,6 +83,21 @@ describe('AppSync API Key Authorization', () => {
       authorizationConfig: {
         defaultAuthorization: { authorizationType: appsync.AuthorizationType.IAM },
       },
+    });
+
+    // THEN
+    Template.fromStack(stack).resourceCountIs('AWS::AppSync::ApiKey', 0);
+  });
+
+  test('AppSync does not create unspecified API key when API key is not included as an auth provider', () => {
+    // WHEN
+    new appsync.EventApi(stack, 'api', {
+      name: 'api',
+      authorizationConfig: {
+        authProviders: [
+          { authorizationType: appsync.AuthorizationType.IAM },
+        ],
+      }
     });
 
     // THEN

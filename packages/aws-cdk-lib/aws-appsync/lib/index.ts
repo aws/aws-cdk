@@ -13,3 +13,7 @@ export * from './graphqlapi-base';
 export * from './code';
 export * from './runtime';
 export * from './source-api-association';
+export * from './appsync-common';
+export * from './auth-config';
+export * from './eventapi';
+export * from './channel-namespace';
