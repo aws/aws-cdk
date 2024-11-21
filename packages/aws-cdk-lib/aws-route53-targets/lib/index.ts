@@ -1,3 +1,4 @@
+export * from './props';
 export * from './api-gateway-domain-name';
 export * from './api-gatewayv2-domain-name';
 export * from './bucket-website-target';
