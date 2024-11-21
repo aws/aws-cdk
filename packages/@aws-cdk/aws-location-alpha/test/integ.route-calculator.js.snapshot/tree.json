@@ -18,7 +18,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Location::RouteCalculator",
                   "aws:cdk:cloudformation:props": {
-                    "calculatorName": "cdkinteglocationroutecalculatorRouteCalculator916939B5",
+                    "calculatorName": "my_route_calculator",
                     "dataSource": "Esri"
                   }
                 },
@@ -29,7 +29,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "@aws-cdk/aws-location-alpha.RouteCalculator",
               "version": "0.0.0"
             }
           },
@@ -68,7 +68,7 @@
                 "path": "RouteCalculatorTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -114,7 +114,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },

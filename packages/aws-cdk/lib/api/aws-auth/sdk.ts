@@ -51,7 +51,9 @@ import {
   DescribeResourceScanCommand,
   type DescribeResourceScanCommandInput,
   type DescribeResourceScanCommandOutput,
+  DescribeStackEventsCommand,
   type DescribeStackEventsCommandInput,
+  DescribeStackEventsCommandOutput,
   DescribeStackResourcesCommand,
   DescribeStackResourcesCommandInput,
   DescribeStackResourcesCommandOutput,
@@ -86,12 +88,10 @@ import {
   ListStacksCommand,
   ListStacksCommandInput,
   ListStacksCommandOutput,
-  paginateDescribeStackEvents,
   paginateListStackResources,
   RollbackStackCommand,
   RollbackStackCommandInput,
   RollbackStackCommandOutput,
-  StackEvent,
   StackResourceSummary,
   StartResourceScanCommand,
   type StartResourceScanCommandInput,
@@ -404,7 +404,7 @@ export interface ICloudFormationClient {
     input: UpdateTerminationProtectionCommandInput,
   ): Promise<UpdateTerminationProtectionCommandOutput>;
   // Pagination functions
-  describeStackEvents(input: DescribeStackEventsCommandInput): Promise<StackEvent[]>;
+  describeStackEvents(input: DescribeStackEventsCommandInput): Promise<DescribeStackEventsCommandOutput>;
   listStackResources(input: ListStackResourcesCommandInput): Promise<StackResourceSummary[]>;
 }
 
@@ -553,7 +553,7 @@ export class SDK {
       region,
       credentials: _credentials,
       requestHandler,
-      retryStrategy: new ConfiguredRetryStrategy(7, (attempt) => attempt ** 300),
+      retryStrategy: new ConfiguredRetryStrategy(7, (attempt) => 300 * (2 ** attempt)),
       customUserAgent: defaultCliUserAgent(),
     };
     this.currentRegion = region;
@@ -664,13 +664,8 @@ export class SDK {
         input: UpdateTerminationProtectionCommandInput,
       ): Promise<UpdateTerminationProtectionCommandOutput> =>
         client.send(new UpdateTerminationProtectionCommand(input)),
-      describeStackEvents: async (input: DescribeStackEventsCommandInput): Promise<StackEvent[]> => {
-        const stackEvents = Array<StackEvent>();
-        const paginator = paginateDescribeStackEvents({ client }, input);
-        for await (const page of paginator) {
-          stackEvents.push(...(page?.StackEvents || []));
-        }
-        return stackEvents;
+      describeStackEvents: (input: DescribeStackEventsCommandInput): Promise<DescribeStackEventsCommandOutput> => {
+        return client.send(new DescribeStackEventsCommand(input));
       },
       listStackResources: async (input: ListStackResourcesCommandInput): Promise<StackResourceSummary[]> => {
         const stackResources = Array<StackResourceSummary>();
