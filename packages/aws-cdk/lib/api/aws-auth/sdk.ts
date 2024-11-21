@@ -530,7 +530,7 @@ export class SDK {
   /**
    * STS is used to check credential validity, don't do too many retries.
    */
-  private readonly stsRetryStrategy = new ConfiguredRetryStrategy(3, (attempt) => 100 * 1000 * (2 ** attempt));
+  private readonly stsRetryStrategy = new ConfiguredRetryStrategy(3, (attempt) => 100 * (2 ** attempt));
 
   /**
    * Whether we have proof that the credentials have not expired
@@ -550,7 +550,7 @@ export class SDK {
       region,
       credentials: _credentials,
       requestHandler,
-      retryStrategy: new ConfiguredRetryStrategy(7, (attempt) => 300 * 1000 * (2 ** attempt)),
+      retryStrategy: new ConfiguredRetryStrategy(7, (attempt) => 300 * (2 ** attempt)),
       customUserAgent: defaultCliUserAgent(),
     };
     this.currentRegion = region;
