@@ -1,6 +1,7 @@
 import * as route53 from '../../aws-route53';
 import * as cdk from '../../core';
 import { RegionInfo } from '../../region-info';
+import { IAliasRecordTargetProps } from './props';
 
 /**
  * Use an Elastic Beanstalk environment URL as an alias record target.
@@ -10,7 +11,7 @@ import { RegionInfo } from '../../region-info';
  * Only supports Elastic Beanstalk environments created after 2016 that have a regional endpoint.
  */
 export class ElasticBeanstalkEnvironmentEndpointTarget implements route53.IAliasRecordTarget {
-  constructor( private readonly environmentEndpoint: string, private readonly props?: ElasticBeanstalkEnvironmentEndpointTargetProps) {}
+  constructor( private readonly environmentEndpoint: string, private readonly props?: IAliasRecordTargetProps) {}
 
   public bind(_record: route53.IRecordSet, _zone?: route53.IHostedZone): route53.AliasRecordTargetConfig {
     if (cdk.Token.isUnresolved(this.environmentEndpoint)) {
@@ -33,16 +34,4 @@ export class ElasticBeanstalkEnvironmentEndpointTarget implements route53.IAlias
       evaluateTargetHealth: this.props?.evaluateTargetHealth,
     };
   }
-}
-
-/**
- * Properties for an Elastic Beanstalk environment URL target
- */
-export interface ElasticBeanstalkEnvironmentEndpointTargetProps {
-  /**
-   * Evaluate target health
-   *
-   * @default - no health check configuration
-   */
-  readonly evaluateTargetHealth?: boolean;
 }

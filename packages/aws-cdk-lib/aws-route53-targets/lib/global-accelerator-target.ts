@@ -1,5 +1,6 @@
 import * as globalaccelerator from '../../aws-globalaccelerator';
 import * as route53 from '../../aws-route53';
+import { IAliasRecordTargetProps } from './props';
 
 /**
  * Use a Global Accelerator domain name as an alias record target.
@@ -15,7 +16,7 @@ export class GlobalAcceleratorDomainTarget implements route53.IAliasRecordTarget
   /**
    * Create an Alias Target for a Global Accelerator domain name.
    */
-  constructor(private readonly acceleratorDomainName: string, private readonly props?: GlobalAcceleratorDomainTargetProps) {}
+  constructor(private readonly acceleratorDomainName: string, private readonly props?: IAliasRecordTargetProps) {}
 
   bind(_record: route53.IRecordSet, _zone?: route53.IHostedZone): route53.AliasRecordTargetConfig {
     return {
@@ -33,19 +34,7 @@ export class GlobalAcceleratorTarget extends GlobalAcceleratorDomainTarget {
   /**
    * Create an Alias Target for a Global Accelerator instance.
    */
-  constructor(accelerator: globalaccelerator.IAccelerator, props?: GlobalAcceleratorDomainTargetProps) {
+  constructor(accelerator: globalaccelerator.IAccelerator, props?: IAliasRecordTargetProps) {
     super(accelerator.dnsName, props);
   }
-}
-
-/**
- * Properties for a Global Accelerator domain name target
- */
-export interface GlobalAcceleratorDomainTargetProps {
-  /**
-   * Evaluate target health
-   *
-   * @default - no health check configuration
-   */
-  readonly evaluateTargetHealth?: boolean;
 }

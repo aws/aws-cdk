@@ -2,12 +2,13 @@ import * as route53 from '../../aws-route53';
 import * as s3 from '../../aws-s3';
 import { Stack, Token } from '../../core';
 import { RegionInfo } from '../../region-info';
+import { IAliasRecordTargetProps } from './props';
 
 /**
  * Use a S3 as an alias record target
  */
 export class BucketWebsiteTarget implements route53.IAliasRecordTarget {
-  constructor(private readonly bucket: s3.IBucket, private readonly props?: BucketWebsiteTargetProps) {}
+  constructor(private readonly bucket: s3.IBucket, private readonly props?: IAliasRecordTargetProps) {}
 
   public bind(_record: route53.IRecordSet, _zone?: route53.IHostedZone): route53.AliasRecordTargetConfig {
     const { region } = Stack.of(this.bucket.stack);
@@ -28,16 +29,4 @@ export class BucketWebsiteTarget implements route53.IAliasRecordTarget {
 
     return { hostedZoneId, dnsName, evaluateTargetHealth: this.props?.evaluateTargetHealth };
   }
-}
-
-/**
- * Properties for a bucket website target
- */
-export interface BucketWebsiteTargetProps {
-  /**
-   * Evaluate target health
-   *
-   * @default - no health check configuration
-   */
-  readonly evaluateTargetHealth?: boolean;
 }
