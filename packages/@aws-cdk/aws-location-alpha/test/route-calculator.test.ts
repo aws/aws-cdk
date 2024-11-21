@@ -38,11 +38,30 @@ test('throws with invalid description', () => {
   })).toThrow('`description` must be between 0 and 1000 characters. Received: 1001 characters');
 });
 
+test('create a route calculator with name', () => {
+  new RouteCalculator(stack, 'RouteCalculator', {
+    dataSource: DataSource.ESRI,
+    routeCalculatorName: 'my_route_calculator',
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Location::RouteCalculator', {
+    DataSource: 'Esri',
+    CalculatorName: 'my_route_calculator',
+  });
+});
+
+test.each(['', 'a'.repeat(101)])('throws with invalid name, got: %s', (routeCalculatorName) => {
+  expect(() => new RouteCalculator(stack, 'RouteCalculator', {
+    routeCalculatorName,
+    dataSource: DataSource.ESRI,
+  })).toThrow(`\`routeCalculatorName\` must be between 1 and 100 characters, got: ${routeCalculatorName.length} characters.`);
+});
+
 test('throws with invalid name', () => {
   expect(() => new RouteCalculator(stack, 'RouteCalculator', {
     routeCalculatorName: 'inv@lid',
     dataSource: DataSource.ESRI,
-  })).toThrow(/Invalid route calculator name/);
+  })).toThrow('`routeCalculatorName` must contain only alphanumeric characters, hyphens, periods and underscores, got: inv@lid.');
 });
 
 test('grant read actions', () => {

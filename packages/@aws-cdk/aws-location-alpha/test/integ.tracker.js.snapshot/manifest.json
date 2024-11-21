@@ -1,5 +1,5 @@
 {
-  "version": "36.0.5",
+  "version": "38.0.1",
   "artifacts": {
     "cdk-integ-location-tracker.assets": {
       "type": "cdk:asset-manifest",
@@ -16,9 +16,10 @@
         "templateFile": "cdk-integ-location-tracker.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/64f73a43fedda97f4395b127e8b4c34fd8f36bc9e207b945a89f8361a57e9d85.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3579bb2ed6eb011bbf73d554c0934bdf3fc22da9300cd7b45f8779bf72667670.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -67,31 +68,46 @@
         "/cdk-integ-location-tracker/Tracker/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TrackerAF5FC55F"
+            "data": "TrackerAF5FC55F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/cdk-integ-location-tracker/Tracker/TrackerConsumerGeofenceCollection1": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TrackerTrackerConsumerGeofenceCollection106C790AE"
+            "data": "TrackerTrackerConsumerGeofenceCollection106C790AE",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/cdk-integ-location-tracker/Tracker/TrackerConsumerGeofenceCollection2": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TrackerTrackerConsumerGeofenceCollection2BA7E93DE"
+            "data": "TrackerTrackerConsumerGeofenceCollection2BA7E93DE",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/cdk-integ-location-tracker/Tracker/TrackerConsumerGeofenceCollectionForAdd1": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TrackerTrackerConsumerGeofenceCollectionForAdd1BAA19E05"
+            "data": "TrackerTrackerConsumerGeofenceCollectionForAdd1BAA19E05",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/cdk-integ-location-tracker/Tracker/TrackerConsumerGeofenceCollectionForAdd2": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TrackerTrackerConsumerGeofenceCollectionForAdd268D815CE"
+            "data": "TrackerTrackerConsumerGeofenceCollectionForAdd268D815CE",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/cdk-integ-location-tracker/Exports/Output{\"Fn::GetAtt\":[\"GeofenceCollection1D36FEE6D\",\"Arn\"]}": [
@@ -154,9 +170,10 @@
         "templateFile": "TrackerTestDefaultTestDeployAssert0E17BB8B.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/05edf9cf851db3d91ff6f6339d171c89dc9907910575256f36b26a7af27f9874.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9525d4f5681bf0e14b3434f2416a232f9cd18f46b0e79291a601f5aac313153b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
