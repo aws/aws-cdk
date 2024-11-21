@@ -207,6 +207,7 @@ export * as aws_qbusiness from './aws-qbusiness';
 export * as aws_qldb from './aws-qldb';
 export * as aws_quicksight from './aws-quicksight';
 export * as aws_ram from './aws-ram';
+export * as aws_rbin from './aws-rbin';
 export * as aws_rds from './aws-rds';
 export * as aws_redshift from './aws-redshift';
 export * as aws_redshiftserverless from './aws-redshiftserverless';

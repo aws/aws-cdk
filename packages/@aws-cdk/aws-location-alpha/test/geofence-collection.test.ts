@@ -32,10 +32,26 @@ test('throws with invalid description', () => {
   })).toThrow('`description` must be between 0 and 1000 characters. Received: 1001 characters');
 });
 
+test('create a geofence collection with name', () => {
+  new GeofenceCollection(stack, 'GeofenceCollection', {
+    geofenceCollectionName: 'my_geofence_collection',
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Location::GeofenceCollection', {
+    CollectionName: 'my_geofence_collection',
+  });
+});
+
+test.each(['', 'a'.repeat(101)])('throws with invalid name, got: %s', (geofenceCollectionName) => {
+  expect(() => new GeofenceCollection(stack, 'GeofenceCollection', {
+    geofenceCollectionName,
+  })).toThrow(`\`geofenceCollectionName\` must be between 1 and 100 characters, got: ${geofenceCollectionName.length} characters.`);
+});
+
 test('throws with invalid name', () => {
   expect(() => new GeofenceCollection(stack, 'GeofenceCollection', {
     geofenceCollectionName: 'inv@lid',
-  })).toThrow('Invalid geofence collection name. The geofence collection name must be between 1 and 100 characters and contain only alphanumeric characters, hyphens, periods and underscores. Received: inv@lid');
+  })).toThrow('`geofenceCollectionName` must contain only alphanumeric characters, hyphens, periods and underscores, got: inv@lid.');
 });
 
 test('grant read actions', () => {

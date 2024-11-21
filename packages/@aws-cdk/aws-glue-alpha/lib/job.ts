@@ -738,6 +738,17 @@ export class Job extends JobBase {
       }
     }
 
+    // Validate Ray job properties
+    // See https://github.com/aws/aws-cdk/issues/29612
+    if (executable.type.name === JobType.RAY.name) {
+      if (props.workerType !== WorkerType.Z_2X) {
+        throw new Error(`WorkerType must be Z_2X for Ray jobs, got: ${props.workerType}`);
+      }
+      if (props.timeout !== undefined) {
+        throw new Error('Timeout cannot be set for Ray jobs');
+      }
+    }
+
     let maxCapacity = props.maxCapacity;
     if (maxCapacity !== undefined && (props.workerType && props.workerCount !== undefined)) {
       throw new Error('maxCapacity cannot be used when setting workerType and workerCount');

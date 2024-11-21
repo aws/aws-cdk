@@ -4,7 +4,7 @@
    "Type": "AWS::Location::PlaceIndex",
    "Properties": {
     "DataSource": "Esri",
-    "IndexName": "cdkinteglocationplaceindexPlaceIndex21A03EAC"
+    "IndexName": "my_place_index"
    }
   }
  },

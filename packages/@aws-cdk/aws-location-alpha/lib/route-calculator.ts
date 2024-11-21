@@ -114,8 +114,14 @@ export class RouteCalculator extends Resource implements IRouteCalculator {
       throw new Error(`\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`);
     }
 
-    if (props.routeCalculatorName && !Token.isUnresolved(props.routeCalculatorName) && !/^[-.\w]{1,100}$/.test(props.routeCalculatorName)) {
-      throw new Error(`Invalid route calculator name. The route calculator name must be between 1 and 100 characters and contain only alphanumeric characters, hyphens, periods and underscores. Received: ${props.routeCalculatorName}`);
+    if (props.routeCalculatorName !== undefined && !Token.isUnresolved(props.routeCalculatorName)) {
+      if (props.routeCalculatorName.length < 1 || props.routeCalculatorName.length > 100) {
+        throw new Error(`\`routeCalculatorName\` must be between 1 and 100 characters, got: ${props.routeCalculatorName.length} characters.`);
+      }
+
+      if (!/^[-._\w]+$/.test(props.routeCalculatorName)) {
+        throw new Error(`\`routeCalculatorName\` must contain only alphanumeric characters, hyphens, periods and underscores, got: ${props.routeCalculatorName}.`);
+      }
     }
 
     super(scope, id, {

@@ -422,6 +422,7 @@ describe('bucket', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
       'Description': 'Created by Default/MyBucket',
+      'EnableKeyRotation': true,
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
@@ -1799,6 +1800,7 @@ describe('bucket', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+        'EnableKeyRotation': true,
         'KeyPolicy': {
           'Statement': Match.arrayWith([
             {
