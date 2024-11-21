@@ -77,7 +77,7 @@ interface DatabaseClusterBaseProps {
   /**
    * The minimum number of Aurora capacity units (ACUs) for a DB instance in an Aurora Serverless v2 cluster.
    * You can specify ACU values in half-step increments, such as 8, 8.5, 9, and so on.
-   * The smallest value that you can use is 0.5.
+   * The smallest value that you can use is 0.
    *
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.setting-capacity.html#aurora-serverless-v2.max_capacity_considerations
    *
@@ -989,8 +989,8 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       throw new Error('serverlessV2MaxCapacity must be >= 0.5 & <= 256');
     }
 
-    if (this.serverlessV2MinCapacity > 256 || this.serverlessV2MinCapacity < 0.5) {
-      throw new Error('serverlessV2MinCapacity must be >= 0.5 & <= 256');
+    if (this.serverlessV2MinCapacity > 256 || this.serverlessV2MinCapacity < 0) {
+      throw new Error('serverlessV2MinCapacity must be >= 0 & <= 256');
     }
 
     if (this.serverlessV2MaxCapacity < this.serverlessV2MinCapacity) {
