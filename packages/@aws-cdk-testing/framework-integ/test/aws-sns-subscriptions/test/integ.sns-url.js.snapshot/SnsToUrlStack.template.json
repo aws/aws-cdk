@@ -1,10 +1,29 @@
 {
  "Resources": {
-  "RouteCalculator0F2D109D": {
-   "Type": "AWS::Location::RouteCalculator",
+  "MyTopic86869434": {
+   "Type": "AWS::SNS::Topic"
+  },
+  "MyTopichttpsfoobarcomDEA92AB5": {
+   "Type": "AWS::SNS::Subscription",
    "Properties": {
-    "CalculatorName": "my_route_calculator",
-    "DataSource": "Esri"
+    "DeliveryPolicy": {
+     "healthyRetryPolicy": {
+      "minDelayTarget": 20,
+      "maxDelayTarget": 21,
+      "numRetries": 10
+     },
+     "throttlePolicy": {
+      "maxReceivesPerSecond": 10
+     },
+     "requestPolicy": {
+      "headerContentType": "application/json"
+     }
+    },
+    "Endpoint": "https://foobar.com/",
+    "Protocol": "https",
+    "TopicArn": {
+     "Ref": "MyTopic86869434"
+    }
    }
   }
  },

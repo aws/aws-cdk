@@ -23,7 +23,7 @@ class TestStack extends Stack {
     const key = new kms.Key(this, 'Key', { removalPolicy: RemovalPolicy.DESTROY });
 
     const tracker = new Tracker(this, 'Tracker', {
-      trackerName: 'MyTracker',
+      trackerName: 'My_Tracker',
       description: 'test tracker',
       eventBridgeEnabled: true,
       kmsKeyEnableGeospatialQueries: true,
