@@ -28,7 +28,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "@aws-cdk/aws-location-alpha.GeofenceCollection",
               "version": "0.0.0"
             }
           },
@@ -52,7 +52,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "@aws-cdk/aws-location-alpha.GeofenceCollection",
               "version": "0.0.0"
             }
           },
@@ -76,7 +76,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "@aws-cdk/aws-location-alpha.GeofenceCollection",
               "version": "0.0.0"
             }
           },
@@ -100,7 +100,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "@aws-cdk/aws-location-alpha.GeofenceCollection",
               "version": "0.0.0"
             }
           },
@@ -175,7 +175,7 @@
                       ]
                     },
                     "positionFiltering": "AccuracyBased",
-                    "trackerName": "MyTracker"
+                    "trackerName": "My_Tracker"
                   }
                 },
                 "constructInfo": {
@@ -273,7 +273,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "@aws-cdk/aws-location-alpha.Tracker",
               "version": "0.0.0"
             }
           },
@@ -324,7 +324,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "BootstrapVersion": {
@@ -362,7 +362,7 @@
                 "path": "TrackerTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -382,7 +382,7 @@
                             "path": "TrackerTest/DefaultTest/DeployAssert/AwsApiCalllocationListTrackerConsumersCommanddd31e2f13fe32cd839d96d5ae9059bcf/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -454,7 +454,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "LatestNodeRuntimeMap": {
@@ -504,7 +504,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },

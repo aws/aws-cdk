@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.169.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.168.0-alpha.0...v2.169.0-alpha.0) (2024-11-21)
+
+
+### Features
+
+* **location:** support Map ([#30648](https://github.com/aws/aws-cdk/issues/30648)) ([98b801c](https://github.com/aws/aws-cdk/commit/98b801cae9c7a957469ef61121878d81a09f4cfe)), closes [#30647](https://github.com/aws/aws-cdk/issues/30647)
+* **scheduler:** `scheduler` and `scheduler-targets` modules are now in Developer Preview ([#32207](https://github.com/aws/aws-cdk/issues/32207)) ([8776832](https://github.com/aws/aws-cdk/commit/877683233f1af9674cd2e715411eed6ebc4e3e11)), closes [#31785](https://github.com/aws/aws-cdk/issues/31785)
+
+
+### Bug Fixes
+
+* **location:** underscores are not allowed in the name ([#32046](https://github.com/aws/aws-cdk/issues/32046)) ([f6ad9c9](https://github.com/aws/aws-cdk/commit/f6ad9c99db902064ab62e236fec3d7fbfcca828a))
+
+## [2.168.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.167.2-alpha.0...v2.168.0-alpha.0) (2024-11-20)
+
+
+### Bug Fixes
+
+* **scheduler-targets-alpha:** imported target resources as schedule target throws synth error ([#32105](https://github.com/aws/aws-cdk/issues/32105)) ([1a8306f](https://github.com/aws/aws-cdk/commit/1a8306fab7d746fb66019979e8f353e17499cfbf)), closes [#31785](https://github.com/aws/aws-cdk/issues/31785) [/github.com/aws/aws-cdk/pull/29615#issuecomment-2417858246](https://github.com/aws//github.com/aws/aws-cdk/pull/29615/issues/issuecomment-2417858246)
+* **scheduler-targets-alpha:** kinesis data firehose target uses l1 instead of l2 ([#32150](https://github.com/aws/aws-cdk/issues/32150)) ([11384f0](https://github.com/aws/aws-cdk/commit/11384f0718947aebe519e346ffe31429289a9a63)), closes [#31785](https://github.com/aws/aws-cdk/issues/31785)
+* **scheduler-targets-alpha:** scope down permissions for sqs and kinesis stream targets ([#32122](https://github.com/aws/aws-cdk/issues/32122)) ([6bb142e](https://github.com/aws/aws-cdk/commit/6bb142e805fdd754755cc54c31c0e6e7970be7f9)), closes [#31785](https://github.com/aws/aws-cdk/issues/31785)
+
 ## [2.167.2-alpha.0](https://github.com/aws/aws-cdk/compare/v2.167.1-alpha.0...v2.167.2-alpha.0) (2024-11-18)
 
 ## [2.167.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.167.0-alpha.0...v2.167.1-alpha.0) (2024-11-14)
