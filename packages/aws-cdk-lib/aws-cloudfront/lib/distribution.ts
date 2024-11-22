@@ -615,9 +615,9 @@ export class Distribution extends Resource implements IDistribution {
       throw new Error('A WebACL has already been attached to this distribution');
     }
     if (webAclId.startsWith('arn:')) {
-      const arnParts = Stack.of(this).splitArn(webAclId, ArnFormat.SLASH_RESOURCE_NAME);
-      if (!Token.isUnresolved(arnParts.region) && arnParts.region !== 'us-east-1') {
-        throw new Error(`WebACL for CloudFront distributions must be created in the us-east-1 region; received ${arnParts.region}`);
+      const webAclRegion = Stack.of(this).splitArn(webAclId, ArnFormat.SLASH_RESOURCE_NAME).region;
+      if (!Token.isUnresolved(webAclRegion) && webAclRegion !== 'us-east-1') {
+        throw new Error(`WebACL for CloudFront distributions must be created in the us-east-1 region; received ${webAclRegion}`);
       }
     }
     this.webAclId = webAclId;
