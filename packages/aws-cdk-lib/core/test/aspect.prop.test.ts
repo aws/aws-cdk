@@ -233,9 +233,10 @@ type AspectVisitLog = AspectVisit[];
  * Add arbitrary aspects to the given tree
  */
 function arbAddAspects(appFac: AppFactory): fc.Arbitrary<[App, AspectVisitLog]> {
-  // Just to get construct paths
+  // Synthesize the tree, but just to get the construct paths to apply aspects to.
+  // We won't hold on to the instances, because we will clone the tree later (or
+  // regenerate it, which is easier), and attach the aspects in the clone.
   const baseTree = appFac();
-
   const constructs = baseTree.node.findAll();
 
   const applications = fc.array(arbAspectApplication(constructs), {
@@ -244,9 +245,9 @@ function arbAddAspects(appFac: AppFactory): fc.Arbitrary<[App, AspectVisitLog]> 
   });
 
   return applications.map((appls) => {
-
-    // A fresh tree copy for every tree with aspects. If we mutate the tree in place,
-    // we mess everything up. Also a fresh VisitLog for every tree.
+    // A fresh tree copy for every tree with aspects. `fast-check` may re-use old values
+    // when generating variants, so if we mutate the tree in place different runs will
+    // interfere with each other. Also a different aspect invocation log for every tree.
     const tree = appFac();
     const log: AspectVisitLog = [];
     tree[VISITLOG_SYM] = tree; // Stick this somewhere the aspects can find it
@@ -315,6 +316,9 @@ type ConstructFactory = (loc: ConstructLoc) => Construct;
 
 type AppFactory = () => App;
 
+/**
+ * A unique symbol for the root construct to hold the visit log of all aspects
+ */
 const VISITLOG_SYM = Symbol();
 
 function constructFromPath(root: IConstruct, path: string) {
