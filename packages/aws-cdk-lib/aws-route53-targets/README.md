@@ -44,6 +44,7 @@ This library contains Route53 Alias Record targets for:
     zone,
     target: route53.RecordTarget.fromAlias(new targets.AppSync(graphqlApi))
   });
+  ```
 
 * CloudFront distributions
 
