@@ -8,15 +8,26 @@ import { App, AppProps, Aspects, IAspect } from '../lib';
 
 test('aspects only get invoked at most once on every construct', () => fc.assert(
   fc.property(appWithAspects(), afterSynth((app) => {
-    for (let i = 0; i < app.visitLog.length; i++) {
-      for (let j = 0; j < app.visitLog.length; j++) {
-        if (i === j) { continue; }
-
-        if (sameConstruct(app.visitLog[i], app.visitLog[j]) && sameAspect(app.visitLog[i], app.visitLog[j])) {
-          throw new Error(`Duplicate visit: ${i} and ${j}`);
-        }
+    forEveryVisitPair(app.visitLog, (a, b) => {
+      if (sameConstruct(a, b) && sameAspect(a, b)) {
+        throw new Error(`Duplicate visit: ${a.index} and ${b.index}`);
       }
-    }
+    });
+  })),
+));
+
+test.todo('inherited aspects get invoked before locally defined aspects, if both have the same priority');
+
+test('for every construct, lower priorities go before higher priorities', () => fc.assert(
+  fc.property(appWithAspects(), afterSynth((app) => {
+    forEveryVisitPair(app.visitLog, (a, b) => {
+      if (!sameConstruct(a, b)) { return; }
+
+      // a.prio < b.prio => a.index < b.index
+      if (!implies(a.aspect.firstVisitPriority < b.aspect.firstVisitPriority, a.index < b.index)) {
+        throw new Error(`Aspect ${a.aspect}@${a.aspect.firstVisitPriority} at ${a.index} should have been before ${b.aspect}@${b.aspect.firstVisitPriority} at ${b.index}, but was after`);
+      }
+    });
   })),
 ));
 
@@ -32,6 +43,33 @@ function afterSynth(block: (x: PrettyApp) => void) {
       fs.rmSync(asm.directory, { recursive: true, force: true });
     }
   };
+}
+
+/**
+ * Implication operator, for readability
+ */
+function implies(a: boolean, b: boolean) {
+  return !a || b;
+}
+
+interface AspectVisitWithIndex extends AspectVisit {
+  index: number;
+}
+
+/**
+ * Check a property for every pair of visits in the log
+ *
+ * This is humongously inefficient at large scale, so we might need more clever
+ * algorithms to keep this tractable.
+ */
+function forEveryVisitPair(log: AspectVisitLog, block: (a: AspectVisitWithIndex, b: AspectVisitWithIndex) => void) {
+  for (let i = 0; i < log.length; i++) {
+    for (let j = 0; j < log.length; j++) {
+      if (i === j) { continue; }
+
+      block({ ...log[i], index: i }, { ...log[j], index: j });
+    }
+  }
 }
 
 function sameConstruct(a: AspectVisit, b: AspectVisit) {
@@ -119,7 +157,7 @@ class PrettyApp {
       const aspects = Aspects.of(construct).list.map(a => `${a.aspect}@${a.priority}`);
       line([
         '+-',
-        construct.node.path || '(root)',
+        construct.node.id || '(root)',
         ...aspects.length > 0 ? [` <-- ${aspects.join(', ')}`] : [],
       ].join(' '));
 
@@ -134,7 +172,7 @@ class PrettyApp {
 
 interface AspectVisit {
   construct: IConstruct;
-  aspect: IAspect;
+  aspect: TracingAspect;
 }
 
 type AspectVisitLog = AspectVisit[];
@@ -256,12 +294,33 @@ let UUID = 1000;
  */
 abstract class TracingAspect implements IAspect {
   public readonly id: number;
+  private _firstVisitPriority: number | undefined;
 
   constructor(private readonly log: AspectVisitLog) {
     this.id = UUID++;
   }
 
+  /**
+   * Unfortunately we can't get the priority of an invocation, because that
+   * information isn't in the API anywhere. What we'll do is find the lowest
+   * priority in the very first list where this construct is applied, as its
+   * most probable priority.
+   */
+  public get firstVisitPriority(): number {
+    if (!this._firstVisitPriority) {
+      throw new Error(`${this} was never invoked, so we don\'t know its priority`);
+    }
+    return this._firstVisitPriority;
+  }
+
   visit(node: IConstruct): void {
+    if (this._firstVisitPriority === undefined) {
+      const candidates = Aspects.of(node).list.filter((a) => a.aspect === this);
+      candidates.sort((a, b) => a.priority - b.priority);
+      process.stderr.write(`${candidates}`);
+      this._firstVisitPriority = candidates[0].priority;
+    }
+
     this.log.push({
       aspect: this,
       construct: node,
