@@ -237,18 +237,20 @@ function arbAddAspects(appFac: AppFactory): fc.Arbitrary<[App, AspectVisitLog]> 
   const baseTree = appFac();
 
   const constructs = baseTree.node.findAll();
-  const log: AspectVisitLog = [];
 
-  const applications = fc.array(arbAspectApplication(constructs, log), {
+  const applications = fc.array(arbAspectApplication(constructs), {
     size: 'small',
     maxLength: 5,
   });
 
   return applications.map((appls) => {
-    // A fresh tree copy for every tree with aspects. If we mutate the tree in place,
-    // we mess everything up.
 
+    // A fresh tree copy for every tree with aspects. If we mutate the tree in place,
+    // we mess everything up. Also a fresh VisitLog for every tree.
     const tree = appFac();
+    const log: AspectVisitLog = [];
+    tree[VISITLOG_SYM] = tree; // Stick this somewhere the aspects can find it
+
     for (const app of appls) {
       const ctrs = app.constructPaths.map((p) => constructFromPath(tree, p));
       for (const ctr of ctrs) {
@@ -260,27 +262,27 @@ function arbAddAspects(appFac: AppFactory): fc.Arbitrary<[App, AspectVisitLog]> 
   });
 }
 
-function arbAspectApplication(constructs: Construct[], log: AspectVisitLog): fc.Arbitrary<TestAspectApplication> {
+function arbAspectApplication(constructs: Construct[]): fc.Arbitrary<TestAspectApplication> {
   return fc.record({
     constructPaths: fc.shuffledSubarray(constructs, { minLength: 1, maxLength: Math.min(3, constructs.length) })
       .map((cs) => cs.map((c) => c.node.path)),
-    aspect: arbAspect(constructs, log),
+    aspect: arbAspect(constructs),
     priority: fc.nat({ max: 1000 }),
   });
 }
 
-function arbAspect(constructs: Construct[], log: AspectVisitLog): fc.Arbitrary<IAspect> {
+function arbAspect(constructs: Construct[]): fc.Arbitrary<IAspect> {
   return (fc.oneof(
     {
       depthIdentifier: 'aspects',
     },
-    fc.constant(() => fc.constant(new InspectingAspect(log))),
-    fc.constant(() => fc.constant(new MutatingAspect(log))),
+    fc.constant(() => fc.constant(new InspectingAspect())),
+    fc.constant(() => fc.constant(new MutatingAspect())),
     fc.constant(() => fc.record({
       constructLoc: arbConstructLoc(constructs),
-      newAspects: fc.array(arbAspectApplication(constructs, log), { size: '-1', maxLength: 2 }),
+      newAspects: fc.array(arbAspectApplication(constructs), { size: '-1', maxLength: 2 }),
     }).map(({ constructLoc, newAspects }) => {
-      return new NodeAddingAspect(log, constructLoc, newAspects);
+      return new NodeAddingAspect(constructLoc, newAspects);
     })),
   ) satisfies fc.Arbitrary<() => fc.Arbitrary<IAspect>>).chain((fact) => fact());
 }
@@ -312,6 +314,8 @@ interface ConstructLoc {
 type ConstructFactory = (loc: ConstructLoc) => Construct;
 
 type AppFactory = () => App;
+
+const VISITLOG_SYM = Symbol();
 
 function constructFromPath(root: IConstruct, path: string) {
   if (path === '') {
@@ -371,12 +375,16 @@ let UUID = 1000;
 abstract class TracingAspect implements IAspect {
   public readonly id: number;
 
-  constructor(private readonly log: AspectVisitLog) {
+  constructor() {
     this.id = UUID++;
   }
 
+  private log(node: IConstruct): AspectVisitLog {
+    return node.node.root[VISITLOG_SYM];
+  }
+
   visit(node: IConstruct): void {
-    this.log.push({
+    this.log(node).push({
       aspect: this,
       construct: node,
     });
@@ -429,8 +437,8 @@ interface TestAspectApplication extends PartialTestAspectApplication {
  * An aspect that adds a new node, if one doesn't exist yet
  */
 class NodeAddingAspect extends TracingAspect {
-  constructor(log: AspectVisitLog, private readonly loc: ConstructLoc, private readonly newAspects: PartialTestAspectApplication[]) {
-    super(log);
+  constructor(private readonly loc: ConstructLoc, private readonly newAspects: PartialTestAspectApplication[]) {
+    super();
   }
 
   visit(node: IConstruct): void {
@@ -454,8 +462,8 @@ class NodeAddingAspect extends TracingAspect {
 }
 
 class AspectAddingAspect extends TracingAspect {
-  constructor(log: AspectVisitLog, private readonly newAspect: TestAspectApplication) {
-    super(log);
+  constructor(private readonly newAspect: TestAspectApplication) {
+    super();
   }
 
   visit(node: IConstruct): void {
