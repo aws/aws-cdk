@@ -1,6 +1,6 @@
+import { IAliasRecordTargetProps } from './props';
 import * as globalaccelerator from '../../aws-globalaccelerator';
 import * as route53 from '../../aws-route53';
-import { IAliasRecordTargetProps } from './props';
 
 /**
  * Use a Global Accelerator domain name as an alias record target.

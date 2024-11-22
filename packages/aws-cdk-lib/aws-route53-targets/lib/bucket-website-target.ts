@@ -1,8 +1,8 @@
+import { IAliasRecordTargetProps } from './props';
 import * as route53 from '../../aws-route53';
 import * as s3 from '../../aws-s3';
 import { Stack, Token } from '../../core';
 import { RegionInfo } from '../../region-info';
-import { IAliasRecordTargetProps } from './props';
 
 /**
  * Use a S3 as an alias record target

@@ -1,6 +1,6 @@
+import { IAliasRecordTargetProps } from './props';
 import * as elbv2 from '../../aws-elasticloadbalancingv2';
 import * as route53 from '../../aws-route53';
-import { IAliasRecordTargetProps } from './props';
 
 /**
  * Use an ELBv2 as an alias record target

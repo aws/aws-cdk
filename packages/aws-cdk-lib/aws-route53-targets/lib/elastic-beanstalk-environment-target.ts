@@ -1,7 +1,7 @@
+import { IAliasRecordTargetProps } from './props';
 import * as route53 from '../../aws-route53';
 import * as cdk from '../../core';
 import { RegionInfo } from '../../region-info';
-import { IAliasRecordTargetProps } from './props';
 
 /**
  * Use an Elastic Beanstalk environment URL as an alias record target.
