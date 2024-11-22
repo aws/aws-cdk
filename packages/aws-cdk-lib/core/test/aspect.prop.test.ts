@@ -23,14 +23,8 @@ test('for every construct, lower priorities go before higher priorities', () => 
     forEveryVisitPair(app.visitLog, (a, b) => {
       if (!sameConstruct(a, b)) { return; }
 
-      const aPrio = lowestPriority(a.aspect, allAspectApplicationsInScope(a.construct));
-      const bPrio = lowestPriority(b.aspect, allAspectApplicationsInScope(b.construct));
-      if (aPrio === undefined) {
-        throw new Error(`Got an invocation of ${a.aspect} on ${a.construct} with no priority`);
-      }
-      if (bPrio === undefined) {
-        throw new Error(`Got an invocation of ${b.aspect} on ${b.construct} with no priority`);
-      }
+      const aPrio = lowestAspectPrioFor(a.aspect, a.construct);
+      const bPrio = lowestAspectPrioFor(b.aspect, b.construct);
 
       // a.prio < b.prio => a.index < b.index
       if (!implies(aPrio < bPrio, a.index < b.index)) {
@@ -121,6 +115,14 @@ function lowestPriority(a: IAspect, as: AspectApplication[]): number | undefined
   const filtered = as.filter((x) => x.aspect === a);
   filtered.sort((x, y) => x.priority - y.priority);
   return filtered[0]?.priority;
+}
+
+function lowestAspectPrioFor(a: IAspect, c: IConstruct) {
+  const ret = lowestPriority(a, allAspectApplicationsInScope(c));
+  if (ret === undefined) {
+    throw new Error(`Got an invocation of ${a} on ${c} with no priority`);
+  }
+  return ret;
 }
 
 //////////////////////////////////////////////////////////////////////
