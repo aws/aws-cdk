@@ -1,7 +1,7 @@
 import { Construct, IConstruct } from 'constructs';
 import * as fc from 'fast-check';
 import * as fs from 'fs-extra';
-import { App, AppProps, Aspects, IAspect } from '../lib';
+import { App, AppProps, AspectApplication, Aspects, IAspect } from '../lib';
 
 //////////////////////////////////////////////////////////////////////
 //  Tests
@@ -23,13 +23,24 @@ test('for every construct, lower priorities go before higher priorities', () => 
     forEveryVisitPair(app.visitLog, (a, b) => {
       if (!sameConstruct(a, b)) { return; }
 
+      const aPrio = lowestPriority(a.aspect, allAspectApplicationsInScope(a.construct));
+      const bPrio = lowestPriority(b.aspect, allAspectApplicationsInScope(b.construct));
+      if (aPrio === undefined) {
+        throw new Error(`Got an invocation of ${a.aspect} on ${a.construct} with no priority`);
+      }
+      if (bPrio === undefined) {
+        throw new Error(`Got an invocation of ${b.aspect} on ${b.construct} with no priority`);
+      }
+
       // a.prio < b.prio => a.index < b.index
-      if (!implies(a.aspect.firstVisitPriority < b.aspect.firstVisitPriority, a.index < b.index)) {
-        throw new Error(`Aspect ${a.aspect}@${a.aspect.firstVisitPriority} at ${a.index} should have been before ${b.aspect}@${b.aspect.firstVisitPriority} at ${b.index}, but was after`);
+      if (!implies(aPrio < bPrio, a.index < b.index)) {
+        throw new Error(`Aspect ${a.aspect}@${aPrio} at ${a.index} should have been before ${b.aspect}@${bPrio} at ${b.index}, but was after`);
       }
     });
   })),
 ));
+
+test.todo('for every construct, if a invokes before b that must mean it is of equal or lower priority');
 
 //////////////////////////////////////////////////////////////////////
 //  Test Helpers
@@ -80,11 +91,45 @@ function sameAspect(a: AspectVisit, b: AspectVisit) {
   return a.aspect === b.aspect;
 }
 
+/**
+ * Returns whether `a` is an ancestor of `b` (or if they are the same construct)
+ */
+function ancestorOf(a: Construct, b: Construct) {
+  return b.node.path.startsWith(a.node.path);
+}
+
+/**
+ * Returns the ancestors of `a`, including `a` itself
+ *
+ * The first element is `a` itself, and the last element is its root.
+ */
+function ancestors(a: Construct): IConstruct[] {
+  return a.node.scopes.reverse();
+}
+
+/**
+ * Returns all aspect applications in scope for the given construct
+ */
+function allAspectApplicationsInScope(a: Construct): AspectApplication[] {
+  return ancestors(a).flatMap((c) => Aspects.of(c).list);
+}
+
+/**
+ * Return the lowest priority of Aspect `a` inside the given list of applications
+ */
+function lowestPriority(a: IAspect, as: AspectApplication[]): number | undefined {
+  const filtered = as.filter((x) => x.aspect === a);
+  filtered.sort((x, y) => x.priority - y.priority);
+  return filtered[0]?.priority;
+}
+
 //////////////////////////////////////////////////////////////////////
 //  Arbitraries
 
 function appWithAspects() {
-  return arbCdkApp().chain(arbAddAspects).map(([a, l]) => new PrettyApp(a, l));
+  return arbCdkApp().chain(arbAddAspects).map(([a, l]) => {
+    return new PrettyApp(a, l);
+  });
 }
 
 /**
@@ -128,9 +173,15 @@ function arbConstructTreeFactory(): fc.Arbitrary<ConstructFactory> {
  * Also holds the aspect visit log because why not.
  */
 class PrettyApp {
-  constructor(public readonly cdkApp: App, public readonly visitLog: AspectVisitLog) { }
+  private readonly initialTree: Set<string>;
+
+  constructor(public readonly cdkApp: App, public readonly visitLog: AspectVisitLog) {
+    this.initialTree = new Set(cdkApp.node.findAll().map(c => c.node.path));
+  }
 
   public toString() {
+    const self = this;
+
     const lines: string[] = [];
     const prefixes: string[] = [];
 
@@ -157,6 +208,7 @@ class PrettyApp {
       const aspects = Aspects.of(construct).list.map(a => `${a.aspect}@${a.priority}`);
       line([
         '+-',
+        ...self.initialTree.has(construct.node.path) ? [] : ['(added)'],
         construct.node.id || '(root)',
         ...aspects.length > 0 ? [` <-- ${aspects.join(', ')}`] : [],
       ].join(' '));
@@ -195,11 +247,17 @@ function arbAddAspects<T extends Construct>(tree: T): fc.Arbitrary<[T, AspectVis
         Aspects.of(ctr).add(app.aspect, { priority: app.priority });
       }
     }
+
+    const paths = tree.node.findAll().map(c => c.node.path);
+    if (paths.includes('Tree')) {
+      // debugger;
+    }
+
     return [tree, log];
   });
 }
 
-function arbAspectApplication(constructs: Construct[], log: AspectVisitLog): fc.Arbitrary<AspectApplication> {
+function arbAspectApplication(constructs: Construct[], log: AspectVisitLog): fc.Arbitrary<TestAspectApplication> {
   return fc.record({
     constructs: fc.shuffledSubarray(constructs, { minLength: 1, maxLength: Math.min(3, constructs.length) }),
     aspect: arbAspect(constructs, log),
@@ -294,33 +352,12 @@ let UUID = 1000;
  */
 abstract class TracingAspect implements IAspect {
   public readonly id: number;
-  private _firstVisitPriority: number | undefined;
 
   constructor(private readonly log: AspectVisitLog) {
     this.id = UUID++;
   }
 
-  /**
-   * Unfortunately we can't get the priority of an invocation, because that
-   * information isn't in the API anywhere. What we'll do is find the lowest
-   * priority in the very first list where this construct is applied, as its
-   * most probable priority.
-   */
-  public get firstVisitPriority(): number {
-    if (!this._firstVisitPriority) {
-      throw new Error(`${this} was never invoked, so we don\'t know its priority`);
-    }
-    return this._firstVisitPriority;
-  }
-
   visit(node: IConstruct): void {
-    if (this._firstVisitPriority === undefined) {
-      const candidates = Aspects.of(node).list.filter((a) => a.aspect === this);
-      candidates.sort((a, b) => a.priority - b.priority);
-      process.stderr.write(`${candidates}`);
-      this._firstVisitPriority = candidates[0].priority;
-    }
-
     this.log.push({
       aspect: this,
       construct: node,
@@ -358,12 +395,12 @@ class MutatingAspect extends TracingAspect {
  *
  * Contains just the aspect and priority
  */
-interface PartialAspectApplication {
+interface PartialTestAspectApplication {
   aspect: IAspect;
   priority?: number;
 }
 
-interface AspectApplication extends PartialAspectApplication {
+interface TestAspectApplication extends PartialTestAspectApplication {
   constructs: Construct[];
 }
 
@@ -371,7 +408,7 @@ interface AspectApplication extends PartialAspectApplication {
  * An aspect that adds a new node, if one doesn't exist yet
  */
 class NodeAddingAspect extends TracingAspect {
-  constructor(log: AspectVisitLog, private readonly loc: ConstructLoc, private readonly newAspects: PartialAspectApplication[]) {
+  constructor(log: AspectVisitLog, private readonly loc: ConstructLoc, private readonly newAspects: PartialTestAspectApplication[]) {
     super(log);
   }
 
@@ -396,7 +433,7 @@ class NodeAddingAspect extends TracingAspect {
 }
 
 class AspectAddingAspect extends TracingAspect {
-  constructor(log: AspectVisitLog, private readonly newAspect: AspectApplication) {
+  constructor(log: AspectVisitLog, private readonly newAspect: TestAspectApplication) {
     super(log);
   }
 
