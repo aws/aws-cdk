@@ -1384,7 +1384,7 @@ If you want to enable enhanced monitoring at the cluster level, you can set the 
 
 ```ts
 declare const vpc: ec2.Vpc;
-// Enable Enhanced Monitoring for all of the instances in the cluster
+// Enable Enhanced Monitoring at instance level to all instances in the cluster
 new rds.DatabaseCluster(this, 'Cluster', {
   engine: rds.DatabaseClusterEngine.auroraPostgres({ version: rds.AuroraPostgresEngineVersion.VER_16_1 }),
   writer: rds.ClusterInstance.serverlessV2('writerInstance'),

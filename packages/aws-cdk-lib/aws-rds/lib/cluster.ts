@@ -858,6 +858,8 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 
     // need to create the writer first since writer is determined by what instance is first
     const writer = props.writer!.bind(this, this, {
+      // When `enableClusterLevelEnhancedMonitoring` is enabled,
+      // both `monitoringInterval` and `monitoringRole` are set at cluster level so no need to re-set it in instance level.
       monitoringInterval: props.enableClusterLevelEnhancedMonitoring ? undefined : props.monitoringInterval,
       monitoringRole: props.enableClusterLevelEnhancedMonitoring ? undefined : this.monitoringRole,
       removalPolicy: props.removalPolicy ?? RemovalPolicy.SNAPSHOT,
@@ -869,6 +871,8 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 
     (props.readers ?? []).forEach(instance => {
       const clusterInstance = instance.bind(this, this, {
+      // When `enableClusterLevelEnhancedMonitoring` is enabled,
+      // both `monitoringInterval` and `monitoringRole` are set at cluster level so no need to re-set it in instance level.
         monitoringInterval: props.enableClusterLevelEnhancedMonitoring ? undefined : props.monitoringInterval,
         monitoringRole: props.enableClusterLevelEnhancedMonitoring ? undefined : this.monitoringRole,
         removalPolicy: props.removalPolicy ?? RemovalPolicy.SNAPSHOT,
@@ -1539,6 +1543,8 @@ function legacyCreateInstances(cluster: DatabaseClusterNew, props: DatabaseClust
       // This is already set on the Cluster. Unclear to me whether it should be repeated or not. Better yes.
       dbSubnetGroupName: subnetGroup.subnetGroupName,
       dbParameterGroupName: instanceParameterGroupConfig?.parameterGroupName,
+      // When `enableClusterLevelEnhancedMonitoring` is enabled,
+      // both `monitoringInterval` and `monitoringRole` are set at cluster level so no need to re-set it in instance level.
       monitoringInterval: props.enableClusterLevelEnhancedMonitoring ? undefined : props.monitoringInterval?.toSeconds(),
       monitoringRoleArn: props.enableClusterLevelEnhancedMonitoring ? undefined : cluster.monitoringRole?.roleArn,
       autoMinorVersionUpgrade: instanceProps.autoMinorVersionUpgrade,
