@@ -1,0 +1,94 @@
+{
+ "Resources": {
+  "requestorVpcCrossAccount6372A252": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.2.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default"
+   }
+  },
+  "requestorVpcCrossAccountacceptorAccountCrossRegionPeeringVPCPeeringConnection3605B6B0": {
+   "Type": "AWS::EC2::VPCPeeringConnection",
+   "Properties": {
+    "PeerOwnerId": "234567890123",
+    "PeerRegion": "us-east-1",
+    "PeerRoleArn": "arn:aws:iam::916743627080:role/VpcPeeringRole",
+    "PeerVpcId": "vpc-09b9235d8a3195ba3",
+    "VpcId": {
+     "Fn::GetAtt": [
+      "requestorVpcCrossAccount6372A252",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "RouteTableE1378006": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Fn::GetAtt": [
+      "requestorVpcCrossAccount6372A252",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "RouteTablevpcPeeringRoute2C93DAB3": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "10.0.0.0/16",
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "RouteTableE1378006",
+      "RouteTableId"
+     ]
+    },
+    "VpcPeeringConnectionId": {
+     "Fn::GetAtt": [
+      "requestorVpcCrossAccountacceptorAccountCrossRegionPeeringVPCPeeringConnection3605B6B0",
+      "Id"
+     ]
+    }
+   },
+   "DependsOn": [
+    "requestorVpcCrossAccountacceptorAccountCrossRegionPeeringVPCPeeringConnection3605B6B0"
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

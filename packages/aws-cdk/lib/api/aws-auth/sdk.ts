@@ -530,10 +530,7 @@ export class SDK {
   /**
    * STS is used to check credential validity, don't do too many retries.
    */
-  private readonly stsRetryOptions = {
-    maxRetries: 3,
-    retryDelayOptions: { base: 100 },
-  };
+  private readonly stsRetryStrategy = new ConfiguredRetryStrategy(3, (attempt) => 100 * (2 ** attempt));
 
   /**
    * Whether we have proof that the credentials have not expired
@@ -553,7 +550,7 @@ export class SDK {
       region,
       credentials: _credentials,
       requestHandler,
-      retryStrategy: new ConfiguredRetryStrategy(7, (attempt) => attempt ** 300),
+      retryStrategy: new ConfiguredRetryStrategy(7, (attempt) => 300 * (2 ** attempt)),
       customUserAgent: defaultCliUserAgent(),
     };
     this.currentRegion = region;
@@ -950,7 +947,7 @@ export class SDK {
         debug('Looking up default account ID from STS');
         const client = new STSClient({
           ...this.config,
-          ...this.stsRetryOptions,
+          retryStrategy: this.stsRetryStrategy,
         });
         const command = new GetCallerIdentityCommand({});
         const result = await client.send(command);
@@ -977,7 +974,7 @@ export class SDK {
       return;
     }
 
-    const client = new STSClient({ ...this.config, ...this.stsRetryOptions });
+    const client = new STSClient({ ...this.config, retryStrategy: this.stsRetryStrategy });
     await client.send(new GetCallerIdentityCommand({}));
     this._credentialsValidated = true;
   }
