@@ -1378,7 +1378,7 @@ For more information about Performance Insights, see [Monitoring DB load with Pe
 With [Enhanced Monitoring](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Monitoring.OS.html#USER_Monitoring.OS.Enabling), you can monitor the operating system of your DB instance in real time.
 
 To enable Enhanced Monitoring for a clustered database, set the `monitoringInterval` property.
-This value is applied to all instances in the cluster by default.
+This value is applied at instance level to all instances in the cluster by default.
 
 If you want to enable enhanced monitoring at the cluster level, you can set the `enableClusterLevelEnhancedMonitoring` property to `true`.
 
