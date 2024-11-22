@@ -497,7 +497,7 @@ This allows you to specify the attributes in `computeConfiguration` such as vCPU
 After specifying one or some of the available attributes, CodeBuild will choose a compute type from the available supported instance types as the finalized `computeConfiguration`.
 
 ```ts
-const fleet = new codebuild.Fleet(stack, 'MyFleet', {
+const fleet = new codebuild.Fleet(this, 'MyFleet', {
   baseCapacity: 1,
   computeType: codebuild.FleetComputeType.ATTRIBUTE_BASED_COMPUTE,
   environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
