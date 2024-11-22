@@ -43,7 +43,7 @@ By default, executing `integ-runner` will do the following for each file (app):
 2. Compare the snapshot to the previous version (i.e. files in `*.snapshot/**`), and fail on any differences.\
    For new tests this will always fail.
 
-To accept a snapshot update, the integreation test has to be deployed and assertions have to pass.\
+To accept a snapshot update, the integration test has to be deployed and assertions have to pass.\
 Execute the runner again, this time with `integ-runner --update-on-fail` and the following will happen for each file:
 
 1. Deploy the previous snapshot
