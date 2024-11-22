@@ -1372,7 +1372,6 @@ describe('attachWebAclId', () => {
       defaultBehavior: { origin },
     });
 
-    // ap-northeast-1リージョンのWebACL ARNを指定
     expect(() => {
       distribution.attachWebAclId('arn:aws:wafv2:ap-northeast-1:123456789012:global/web-acl/MyWebAcl/473e64fd-f30b-4765-81a0-62ad96dd167a');
     }).toThrow(/WebACL for CloudFront distributions must be created in the us-east-1 region; received ap-northeast-1/);
