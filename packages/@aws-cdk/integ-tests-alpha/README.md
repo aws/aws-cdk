@@ -345,6 +345,23 @@ apiCall.provider.addToRolePolicy({
 });
 ```
 
+When executing `waitForAssertion()`, it is necessary to add an IAM policy using `waiterProvider.addToRolePolicy()`.
+Because `IApiCall` does not have a `waiterProvider` property, you need to cast it to `AwsApiCall`.
+
+```ts
+declare const integ: IntegTest;
+
+const apiCall = integ.assertions.awsApiCall('S3', 'listObjectsV2', {
+  Bucket: 'mybucket',
+}).waitForAssertions() as AwsApiCall;
+
+apiCall.waiterProvider?.addToRolePolicy({
+  Effect: 'Allow',
+  Action: ['s3:GetObject', 's3:ListBucket'],
+  Resource: ['*'],
+});
+```
+
 Note that addToRolePolicy() uses direct IAM JSON policy blobs, not a iam.PolicyStatement
 object like you will see in the rest of the CDK.
 
