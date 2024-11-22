@@ -1,17 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
-/**
- * Deployment notice:
- *
- * The fleet allocation might take >10 minutes to complete,
- * which can cause the integ test to timeout and fail.
- *
- * You can try deploying to a different region, or
- * or Deploying the stack without integ tests first, with the --no-clean flag,
- * waiting for the fleet allocation to reach its capacity,
- * and then running the integ test was the workaround used.
- */
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'AttributeBasedComputeFleetIntegStack');
