@@ -606,11 +606,16 @@ export class Distribution extends Resource implements IDistribution {
   /**
    * Attach WAF WebACL to this CloudFront distribution
    *
+   * WebACL must be in us-east-1 region
    * @param webAclId The WAF WebACL to associate with this distribution
    */
   public attachWebAclId(webAclId: string) {
     if (this.webAclId) {
       throw new Error('A WebACL has already been attached to this distribution');
+    }
+    const arnParts = Stack.of(this).splitArn(webAclId, ArnFormat.SLASH_RESOURCE_NAME);
+    if (!Token.isUnresolved(arnParts.region) && arnParts.region !== 'us-east-1') {
+      throw new Error(`WebACL for CloudFront distributions must be created in the us-east-1 region; received ${arnParts.region}`);
     }
     this.webAclId = webAclId;
   }

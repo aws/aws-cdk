@@ -1343,11 +1343,11 @@ describe('attachWebAclId', () => {
       defaultBehavior: { origin },
     });
 
-    distribution.attachWebAclId('473e64fd-f30b-4765-81a0-62ad96dd167a');
+    distribution.attachWebAclId('arn:aws:wafv2:us-east-1:123456789012:global/web-acl/MyWebAcl/473e64fd-f30b-4765-81a0-62ad96dd167a');
 
     Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
       DistributionConfig: {
-        WebACLId: '473e64fd-f30b-4765-81a0-62ad96dd167a',
+        WebACLId: 'arn:aws:wafv2:us-east-1:123456789012:global/web-acl/MyWebAcl/473e64fd-f30b-4765-81a0-62ad96dd167a',
       },
     });
   });
@@ -1357,11 +1357,25 @@ describe('attachWebAclId', () => {
 
     const distribution = new Distribution(stack, 'MyDist', {
       defaultBehavior: { origin },
-      webAclId: '473e64fd-f30b-4765-81a0-62ad96dd167a',
+      webAclId: 'arn:aws:wafv2:us-east-1:123456789012:global/web-acl/MyWebAcl/473e64fd-f30b-4765-81a0-62ad96dd167a',
     });
 
     expect(() => {
-      distribution.attachWebAclId('473e64fd-f30b-4765-81a0-62ad96dd167b');
+      distribution.attachWebAclId('arn:aws:wafv2:us-east-1:123456789012:global/web-acl/MyWebAcl/473e64fd-f30b-4765-81a0-62ad96dd167b');
     }).toThrow(/A WebACL has already been attached to this distribution/);
   });
+
+  test('throws if the WebAcl is not in us-east-1 region', () => {
+    const origin = defaultOrigin();
+
+    const distribution = new Distribution(stack, 'MyDist', {
+      defaultBehavior: { origin },
+    });
+
+    // ap-northeast-1リージョンのWebACL ARNを指定
+    expect(() => {
+      distribution.attachWebAclId('arn:aws:wafv2:ap-northeast-1:123456789012:global/web-acl/MyWebAcl/473e64fd-f30b-4765-81a0-62ad96dd167a');
+    }).toThrow(/WebACL for CloudFront distributions must be created in the us-east-1 region; received ap-northeast-1/);
+  });
+
 });
