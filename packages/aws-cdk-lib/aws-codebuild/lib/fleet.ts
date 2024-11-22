@@ -42,6 +42,8 @@ export interface FleetProps {
    * This is only required if `computeType` is set to ATTRIBUTE_BASED_COMPUTE.
    *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html#environment-reserved-capacity.types
+   *
+   * @default - do not specify compute configuration
    */
   readonly computeConfiguration?: ComputeConfiguration;
 }
@@ -69,28 +71,28 @@ export interface ComputeConfiguration {
    *
    * @default - do not specify a disk size
    */
-  disk?: Size;
+  readonly disk?: Size;
 
   /**
    * The machine type of the instance type included in your fleet.
    *
    * @default - do not specify a machine type
    */
-  machineType?: MachineType;
+  readonly machineType?: MachineType;
 
   /**
    * The amount of memory of the instance type included in your fleet.
    *
    * @default - do not specify memory
    */
-  memory?: Size;
+  readonly memory?: Size;
 
   /**
    * The number of vCPUs of the instance type included in your fleet.
    *
    * @default - do not specify vCPUs
    */
-  vCpu?: number;
+  readonly vCpu?: number;
 }
 
 /**
