@@ -6,7 +6,6 @@ import { prepareApp } from './prepare-app';
 import { TreeMetadata } from './tree-metadata';
 import { CloudAssembly } from '../../../cx-api';
 import * as cxapi from '../../../cx-api';
-import { Annotations } from '../annotations';
 import { App } from '../app';
 import { AspectApplication, Aspects } from '../aspect';
 import { FileSystem } from '../fs';
