@@ -18,6 +18,10 @@ const logGroup2 = new logs.LogGroup(stack, 'log-group2', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
+const logGroup3 = new logs.LogGroup(stack, 'log-group3', {
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+});
+
 new logs.LogGroup(stack, 'log-group-imported', {
   logGroupName: 'MyLogGroupNameToBeImported',
   removalPolicy: cdk.RemovalPolicy.DESTROY,
@@ -43,6 +47,13 @@ customRule.addTarget(new targets.CloudWatchLogGroup(logGroup2, {
 }));
 
 const queue = new sqs.Queue(stack, 'dlq');
+
+const timer2 = new events.Rule(stack, 'Timer2', {
+  schedule: events.Schedule.rate(cdk.Duration.hours(1)),
+});
+timer2.addTarget(new targets.CloudWatchLogGroup(logGroup3, {
+  createLogGroupResourcePolicy: false,
+}));
 
 const timer3 = new events.Rule(stack, 'Timer3', {
   schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
