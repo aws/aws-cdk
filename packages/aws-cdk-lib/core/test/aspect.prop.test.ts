@@ -127,7 +127,7 @@ function lowestPriority(a: IAspect, as: AspectApplication[]): number | undefined
 //  Arbitraries
 
 function appWithAspects() {
-  return arbCdkApp().chain(arbAddAspects).map(([a, l]) => {
+  return arbCdkAppFactory().chain(arbAddAspects).map(([a, l]) => {
     return new PrettyApp(a, l);
   });
 }
@@ -140,8 +140,8 @@ function appWithAspects() {
  * Returns a wrapper class for `App` with a `toString()` method, so
  * that if we find a counterexample `fast-check` will pretty-print it nicely.
  */
-function arbCdkApp(props?: AppProps): fc.Arbitrary<App> {
-  return arbConstructTreeFactory().map((fac) => {
+function arbCdkAppFactory(props?: AppProps): fc.Arbitrary<AppFactory> {
+  return arbConstructTreeFactory().map((fac) => () => {
     const app = new App(props);
     fac({ scope: app, id: 'First' });
     return app;
@@ -232,8 +232,11 @@ type AspectVisitLog = AspectVisit[];
 /**
  * Add arbitrary aspects to the given tree
  */
-function arbAddAspects<T extends Construct>(tree: T): fc.Arbitrary<[T, AspectVisitLog]> {
-  const constructs = tree.node.findAll();
+function arbAddAspects(appFac: AppFactory): fc.Arbitrary<[App, AspectVisitLog]> {
+  // Just to get construct paths
+  const baseTree = appFac();
+
+  const constructs = baseTree.node.findAll();
   const log: AspectVisitLog = [];
 
   const applications = fc.array(arbAspectApplication(constructs, log), {
@@ -242,24 +245,25 @@ function arbAddAspects<T extends Construct>(tree: T): fc.Arbitrary<[T, AspectVis
   });
 
   return applications.map((appls) => {
+    // A fresh tree copy for every tree with aspects. If we mutate the tree in place,
+    // we mess everything up.
+
+    const tree = appFac();
     for (const app of appls) {
-      for (const ctr of app.constructs) {
+      const ctrs = app.constructPaths.map((p) => constructFromPath(tree, p));
+      for (const ctr of ctrs) {
         Aspects.of(ctr).add(app.aspect, { priority: app.priority });
       }
     }
 
-    const paths = tree.node.findAll().map(c => c.node.path);
-    if (paths.includes('Tree')) {
-      // debugger;
-    }
-
-    return [tree, log];
+    return [baseTree, log];
   });
 }
 
 function arbAspectApplication(constructs: Construct[], log: AspectVisitLog): fc.Arbitrary<TestAspectApplication> {
   return fc.record({
-    constructs: fc.shuffledSubarray(constructs, { minLength: 1, maxLength: Math.min(3, constructs.length) }),
+    constructPaths: fc.shuffledSubarray(constructs, { minLength: 1, maxLength: Math.min(3, constructs.length) })
+      .map((cs) => cs.map((c) => c.node.path)),
     aspect: arbAspect(constructs, log),
     priority: fc.nat({ max: 1000 }),
   });
@@ -306,6 +310,20 @@ interface ConstructLoc {
  * with conflicting names.
  */
 type ConstructFactory = (loc: ConstructLoc) => Construct;
+
+type AppFactory = () => App;
+
+function constructFromPath(root: IConstruct, path: string) {
+  if (path === '') {
+    return root;
+  }
+  const parts = path.split('/');
+  let ctr: IConstruct = root;
+  for (const part of parts) {
+    ctr = ctr.node.findChild(part);
+  }
+  return ctr;
+}
 
 function identifierString() {
   return fc.string({ minLength: 1, maxLength: 3, unit: fc.constantFrom('Da', 'Fu', 'Glo', 'Ba', 'Ro', 'ni', 'za', 'go', 'moo', 'flub', 'bu', 'vin', 'e', 'be') });
@@ -401,7 +419,10 @@ interface PartialTestAspectApplication {
 }
 
 interface TestAspectApplication extends PartialTestAspectApplication {
-  constructs: Construct[];
+  /**
+   * Need to go by path because the constructs themselves are mutable and these paths remain valid in multiple trees
+   */
+  constructPaths: string[];
 }
 
 /**
@@ -440,7 +461,8 @@ class AspectAddingAspect extends TracingAspect {
   visit(node: IConstruct): void {
     super.visit(node);
 
-    for (const construct of this.newAspect.constructs) {
+    const constructs = this.newAspect.constructPaths.map((p) => constructFromPath(node.node.root, p));
+    for (const construct of constructs) {
       Aspects.of(construct).add(this.newAspect.aspect, { priority: this.newAspect.priority });
     }
   }
