@@ -1306,7 +1306,7 @@ test('with origin access control id', () => {
         CustomOriginConfig: {
           OriginProtocolPolicy: 'https-only',
         },
-        OriginAccessControlId: "test-origin-access-control-id"
+        OriginAccessControlId: 'test-origin-access-control-id',
       }],
     },
   });

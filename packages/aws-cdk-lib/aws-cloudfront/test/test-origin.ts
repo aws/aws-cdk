@@ -1,4 +1,4 @@
-import { Construct } from "constructs";
+import { Construct } from 'constructs';
 import {
   CfnDistribution,
   IOrigin,
@@ -7,7 +7,7 @@ import {
   OriginBindOptions,
   OriginProps,
   OriginProtocolPolicy,
-} from "../lib";
+} from '../lib';
 
 /** Used for testing common Origin functionality */
 export class TestOrigin extends OriginBase {
@@ -15,8 +15,8 @@ export class TestOrigin extends OriginBase {
     super(domainName, props);
   }
   protected renderCustomOriginConfig():
-    | CfnDistribution.CustomOriginConfigProperty
-    | undefined {
+  | CfnDistribution.CustomOriginConfigProperty
+  | undefined {
     return { originProtocolPolicy: OriginProtocolPolicy.HTTPS_ONLY };
   }
 }
@@ -24,7 +24,7 @@ export class TestOrigin extends OriginBase {
 export class TestOriginGroup implements IOrigin {
   constructor(
     private readonly primaryDomainName: string,
-    private readonly secondaryDomainName: string
+    private readonly secondaryDomainName: string,
   ) {}
   /* eslint-disable @cdklabs/no-core-construct */
   public bind(scope: Construct, options: OriginBindOptions): OriginBindConfig {
@@ -42,23 +42,23 @@ export class TestOriginGroup implements IOrigin {
 }
 
 export function defaultOrigin(domainName?: string, originId?: string): IOrigin {
-  return new TestOrigin(domainName ?? "www.example.com", {
+  return new TestOrigin(domainName ?? 'www.example.com', {
     originId,
   });
 }
 
 export function defaultOriginGroup(): IOrigin {
-  return new TestOriginGroup("www.example.com", "foo.example.com");
+  return new TestOriginGroup('www.example.com', 'foo.example.com');
 }
 
 export function defaultOriginWithOriginAccessControl(
   domainName?: string,
   originId?: string,
-  originAccessControlId?: string
+  originAccessControlId?: string,
 ): IOrigin {
-  return new TestOrigin(domainName ?? "www.example.com", {
+  return new TestOrigin(domainName ?? 'www.example.com', {
     originId,
     originAccessControlId:
-      originAccessControlId ?? "test-origin-access-control-id",
+      originAccessControlId ?? 'test-origin-access-control-id',
   });
 }
