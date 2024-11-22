@@ -2487,148 +2487,305 @@ describe('cluster', () => {
     });
   });
 
-  test('cluster with enabled monitoring (legacy)', () => {
-    // GIVEN
-    const stack = testStack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
+  describe('enhanced monitoring', () => {
+    test('cluster with enabled monitoring (legacy)', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
 
-    // WHEN
-    new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA_MYSQL,
-      instances: 1,
-      credentials: {
-        username: 'admin',
-      },
-      instanceProps: {
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
-        vpc,
-      },
-      monitoringInterval: cdk.Duration.minutes(1),
-    });
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        instances: 1,
+        credentials: {
+          username: 'admin',
+        },
+        instanceProps: {
+          instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+          vpc,
+        },
+        monitoringInterval: cdk.Duration.minutes(1),
+      });
 
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
-      MonitoringInterval: 60,
-      MonitoringRoleArn: {
-        'Fn::GetAtt': ['DatabaseMonitoringRole576991DA', 'Arn'],
-      },
-    });
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+        MonitoringInterval: 60,
+        MonitoringRoleArn: {
+          'Fn::GetAtt': ['DatabaseMonitoringRole576991DA', 'Arn'],
+        },
+      });
 
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
-      AssumeRolePolicyDocument: {
-        Statement: [
-          {
-            Action: 'sts:AssumeRole',
-            Effect: 'Allow',
-            Principal: {
-              Service: 'monitoring.rds.amazonaws.com',
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+        AssumeRolePolicyDocument: {
+          Statement: [
+            {
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: {
+                Service: 'monitoring.rds.amazonaws.com',
+              },
             },
+          ],
+          Version: '2012-10-17',
+        },
+        ManagedPolicyArns: [
+          {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole',
+              ],
+            ],
           },
         ],
-        Version: '2012-10-17',
-      },
-      ManagedPolicyArns: [
-        {
-          'Fn::Join': [
-            '',
-            [
-              'arn:',
-              {
-                Ref: 'AWS::Partition',
-              },
-              ':iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole',
-            ],
-          ],
+      });
+    });
+
+    test('cluster with enabled monitoring should create default role with new api', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+        iamAuthentication: true,
+        monitoringInterval: cdk.Duration.minutes(1),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+        MonitoringInterval: 60,
+        MonitoringRoleArn: {
+          'Fn::GetAtt': ['DatabaseMonitoringRole576991DA', 'Arn'],
         },
-      ],
-    });
-  });
+      });
 
-  test('cluster with enabled monitoring should create default role with new api', () => {
-    // GIVEN
-    const stack = testStack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
-
-    // WHEN
-    new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA_MYSQL,
-      vpc,
-      writer: ClusterInstance.serverlessV2('writer'),
-      iamAuthentication: true,
-      monitoringInterval: cdk.Duration.minutes(1),
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
-      MonitoringInterval: 60,
-      MonitoringRoleArn: {
-        'Fn::GetAtt': ['DatabaseMonitoringRole576991DA', 'Arn'],
-      },
-    });
-
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
-      AssumeRolePolicyDocument: {
-        Statement: [
-          {
-            Action: 'sts:AssumeRole',
-            Effect: 'Allow',
-            Principal: {
-              Service: 'monitoring.rds.amazonaws.com',
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+        AssumeRolePolicyDocument: {
+          Statement: [
+            {
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: {
+                Service: 'monitoring.rds.amazonaws.com',
+              },
             },
+          ],
+          Version: '2012-10-17',
+        },
+        ManagedPolicyArns: [
+          {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole',
+              ],
+            ],
           },
         ],
-        Version: '2012-10-17',
-      },
-      ManagedPolicyArns: [
-        {
-          'Fn::Join': [
-            '',
-            [
-              'arn:',
-              {
-                Ref: 'AWS::Partition',
-              },
-              ':iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole',
-            ],
-          ],
+      });
+    });
+
+    test('create a cluster with imported monitoring role', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      const monitoringRole = new Role(stack, 'MonitoringRole', {
+        assumedBy: new ServicePrincipal('monitoring.rds.amazonaws.com'),
+        managedPolicies: [
+          ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSEnhancedMonitoringRole'),
+        ],
+      });
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        instances: 1,
+        credentials: {
+          username: 'admin',
         },
-      ],
+        instanceProps: {
+          instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+          vpc,
+        },
+        monitoringInterval: cdk.Duration.minutes(1),
+        monitoringRole,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+        MonitoringInterval: 60,
+        MonitoringRoleArn: {
+          'Fn::GetAtt': ['MonitoringRole90457BF9', 'Arn'],
+        },
+      });
     });
-  });
 
-  test('create a cluster with imported monitoring role', () => {
-    // GIVEN
-    const stack = testStack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
+    test('enable enhanced monitoring at the cluster level', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
 
-    const monitoringRole = new Role(stack, 'MonitoringRole', {
-      assumedBy: new ServicePrincipal('monitoring.rds.amazonaws.com'),
-      managedPolicies: [
-        ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSEnhancedMonitoringRole'),
-      ],
-    });
-
-    // WHEN
-    new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA_MYSQL,
-      instances: 1,
-      credentials: {
-        username: 'admin',
-      },
-      instanceProps: {
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_07_1 }),
+        credentials: {
+          username: 'admin',
+          password: cdk.SecretValue.unsafePlainText('tooshort'),
+        },
         vpc,
-      },
-      monitoringInterval: cdk.Duration.minutes(1),
-      monitoringRole,
+        writer: ClusterInstance.serverlessV2('writer'),
+        monitoringInterval: cdk.Duration.minutes(1),
+        enableClusterLevelEnhancedMonitoring: true,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+        MonitoringInterval: 60,
+        MonitoringRoleArn: {
+          'Fn::GetAtt': ['DatabaseMonitoringRole576991DA', 'Arn'],
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+        AssumeRolePolicyDocument: {
+          Statement: [
+            {
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: {
+                Service: 'monitoring.rds.amazonaws.com',
+              },
+            },
+          ],
+          Version: '2012-10-17',
+        },
+        ManagedPolicyArns: [
+          {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole',
+              ],
+            ],
+          },
+        ],
+      });
     });
 
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
-      MonitoringInterval: 60,
-      MonitoringRoleArn: {
-        'Fn::GetAtt': ['MonitoringRole90457BF9', 'Arn'],
-      },
+    test('enable enhanced monitoring at the cluster level (legacy)', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        instances: 1,
+        credentials: {
+          username: 'admin',
+        },
+        instanceProps: {
+          instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+          vpc,
+        },
+        monitoringInterval: cdk.Duration.minutes(1),
+        enableClusterLevelEnhancedMonitoring: true,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+        MonitoringInterval: 60,
+        MonitoringRoleArn: {
+          'Fn::GetAtt': ['DatabaseMonitoringRole576991DA', 'Arn'],
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+        AssumeRolePolicyDocument: {
+          Statement: [
+            {
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: {
+                Service: 'monitoring.rds.amazonaws.com',
+              },
+            },
+          ],
+          Version: '2012-10-17',
+        },
+        ManagedPolicyArns: [
+          {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole',
+              ],
+            ],
+          },
+        ],
+      });
+    });
+
+    test('throw error for not setting monitoring interval when enabling enhanced monitoring at the cluster level', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_07_1 }),
+          credentials: {
+            username: 'admin',
+            password: cdk.SecretValue.unsafePlainText('tooshort'),
+          },
+          vpc,
+          writer: ClusterInstance.serverlessV2('writer'),
+          enableClusterLevelEnhancedMonitoring: true,
+        });
+      }).toThrow('`monitoringInterval` must be set when `enableClusterLevelEnhancedMonitoring` is true.');
+    });
+
+    test.each([
+      cdk.Duration.seconds(2),
+      cdk.Duration.minutes(2),
+    ])('throw error for invalid monitoring interval %s', (monitoringInterval) => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_07_1 }),
+          credentials: {
+            username: 'admin',
+            password: cdk.SecretValue.unsafePlainText('tooshort'),
+          },
+          vpc,
+          writer: ClusterInstance.serverlessV2('writer'),
+          monitoringInterval,
+        });
+      }).toThrow(`'monitoringInterval' must be one of 0, 1, 5, 10, 15, 30, or 60 seconds, got: ${monitoringInterval.toSeconds()} seconds.`);
     });
   });
 
