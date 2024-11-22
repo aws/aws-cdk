@@ -606,7 +606,7 @@ export class Distribution extends Resource implements IDistribution {
   /**
    * Attach WAF WebACL to this CloudFront distribution
    *
-   * WebACL must be in the us-east-1 region.
+   * WebACL must be in the us-east-1 region
    *
    * @param webAclId The WAF WebACL to associate with this distribution
    */
