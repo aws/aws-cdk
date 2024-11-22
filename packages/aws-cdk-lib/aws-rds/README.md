@@ -1380,7 +1380,7 @@ With [Enhanced Monitoring](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuid
 To enable Enhanced Monitoring for a clustered database, set the `monitoringInterval` property.
 This value is applied at instance level to all instances in the cluster by default.
 
-If you want to enable enhanced monitoring at the cluster level, you can set the `enableClusterLevelEnhancedMonitoring` property to `true`.
+If you want to enable enhanced monitoring at the cluster level, you can set the `enableClusterLevelEnhancedMonitoring` property to `true`. Note that you must set `monitoringInterval` when using `enableClusterLevelEnhancedMonitoring`
 
 ```ts
 declare const vpc: ec2.Vpc;
