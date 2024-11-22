@@ -14,7 +14,7 @@ import * as codebuild from 'aws-cdk-lib/aws-codebuild';
  */
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-project-fleet');
+const stack = new cdk.Stack(app, 'AttributeBasedComputeFleetIntegStack');
 
 const fleet = new codebuild.Fleet(stack, 'MyFleet', {
   fleetName: 'MyFleet',
@@ -24,7 +24,7 @@ const fleet = new codebuild.Fleet(stack, 'MyFleet', {
   computeConfiguration: {
     vCpu: 2,
     memory: cdk.Size.gibibytes(4),
-    disk: cdk.Size.gibibytes(30),
+    disk: cdk.Size.gibibytes(10),
     machineType: codebuild.MachineType.GENERAL,
   },
 });
@@ -42,7 +42,7 @@ const project = new codebuild.Project(stack, 'MyProject', {
   },
 });
 
-const test = new integ.IntegTest(app, 'FleetIntegTest', {
+const test = new integ.IntegTest(app, 'AttributeBasedComputeFleetIntegTest', {
   testCases: [stack],
 });
 
