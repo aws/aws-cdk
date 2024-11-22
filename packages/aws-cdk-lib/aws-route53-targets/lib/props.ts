@@ -1,3 +1,6 @@
+/**
+ * Properties the alias record target
+ */
 export interface IAliasRecordTargetProps {
   /**
    * Evaluate target health
