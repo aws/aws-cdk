@@ -497,14 +497,16 @@ This allows you to specify the attributes in `computeConfiguration` such as vCPU
 After specifying one or some of the available attributes, CodeBuild will choose a compute type from the available supported instance types as the finalized `computeConfiguration`.
 
 ```ts
+import { Size } from 'aws-cdk-lib';
+
 const fleet = new codebuild.Fleet(this, 'MyFleet', {
   baseCapacity: 1,
   computeType: codebuild.FleetComputeType.ATTRIBUTE_BASED_COMPUTE,
   environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
   computeConfiguration: {
     vCpu: 2,
-    memory: cdk.Size.gibibytes(4),
-    disk: cdk.Size.gibibytes(10),
+    memory: Size.gibibytes(4),
+    disk: Size.gibibytes(10),
     machineType: codebuild.MachineType.GENERAL,
   },
 });
