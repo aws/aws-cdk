@@ -87,6 +87,29 @@ zp2mwJn2NYB7AZ7+imp0azDZb+8YG2aUCiyqb6PnnA==
       ],
       filterEncryption: myKey,
     }));
+
+    const fn3 = new TestFunction(this, 'F3');
+    rootCASecret.grantRead(fn3);
+    clientCertificatesSecret.grantRead(fn3);
+
+    fn3.addEventSource(new SelfManagedKafkaEventSource({
+      bootstrapServers,
+      topic: 'my-test-topic3',
+      consumerGroupId: 'myTestConsumerGroup3',
+      secret: clientCertificatesSecret,
+      authenticationMethod: AuthenticationMethod.CLIENT_CERTIFICATE_TLS_AUTH,
+      rootCACertificate: rootCASecret,
+      startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+      filters: [
+        lambda.FilterCriteria.filter({
+          numericEquals: lambda.FilterRule.isEqual(1),
+        }),
+      ],
+      provisionedPollerConfig: {
+        minimumPollers: 1,
+        maximumPollers: 3,
+      },
+    }));
   }
 }
 

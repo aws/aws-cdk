@@ -574,66 +574,12 @@
           "version": "0.0.0"
         }
       },
-      "TestLambdaFunctionTesting": {
-        "id": "TestLambdaFunctionTesting",
-        "path": "TestLambdaFunctionTesting",
-        "children": {
-          "DefaultTest": {
-            "id": "DefaultTest",
-            "path": "TestLambdaFunctionTesting/DefaultTest",
-            "children": {
-              "Default": {
-                "id": "Default",
-                "path": "TestLambdaFunctionTesting/DefaultTest/Default",
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.4.2"
-                }
-              },
-              "DeployAssert": {
-                "id": "DeployAssert",
-                "path": "TestLambdaFunctionTesting/DefaultTest/DeployAssert",
-                "children": {
-                  "BootstrapVersion": {
-                    "id": "BootstrapVersion",
-                    "path": "TestLambdaFunctionTesting/DefaultTest/DeployAssert/BootstrapVersion",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "CheckBootstrapVersion": {
-                    "id": "CheckBootstrapVersion",
-                    "path": "TestLambdaFunctionTesting/DefaultTest/DeployAssert/CheckBootstrapVersion",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnRule",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.Stack",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
-              "version": "0.0.0"
-            }
-          }
-        },
-        "constructInfo": {
-          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
-          "version": "0.0.0"
-        }
-      },
       "Tree": {
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.4.2"
+          "version": "10.3.0"
         }
       }
     },

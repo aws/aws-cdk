@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "36.0.0",
   "artifacts": {
     "aws-cdk-lambda-1.assets": {
       "type": "cdk:asset-manifest",
@@ -16,7 +16,6 @@
         "templateFile": "aws-cdk-lambda-1.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d5186e951f469ea8e615892ba5e275c8d10861c611945ad7f91447b00da5ad60.json",
@@ -139,55 +138,6 @@
         ]
       },
       "displayName": "aws-cdk-lambda-1"
-    },
-    "TestLambdaFunctionTestingDefaultTestDeployAssertE49CDD88.assets": {
-      "type": "cdk:asset-manifest",
-      "properties": {
-        "file": "TestLambdaFunctionTestingDefaultTestDeployAssertE49CDD88.assets.json",
-        "requiresBootstrapStackVersion": 6,
-        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-      }
-    },
-    "TestLambdaFunctionTestingDefaultTestDeployAssertE49CDD88": {
-      "type": "aws:cloudformation:stack",
-      "environment": "aws://unknown-account/unknown-region",
-      "properties": {
-        "templateFile": "TestLambdaFunctionTestingDefaultTestDeployAssertE49CDD88.template.json",
-        "terminationProtection": false,
-        "validateOnSynth": false,
-        "notificationArns": [],
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
-        "requiresBootstrapStackVersion": 6,
-        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
-        "additionalDependencies": [
-          "TestLambdaFunctionTestingDefaultTestDeployAssertE49CDD88.assets"
-        ],
-        "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
-          "requiresBootstrapStackVersion": 8,
-          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-        }
-      },
-      "dependencies": [
-        "TestLambdaFunctionTestingDefaultTestDeployAssertE49CDD88.assets"
-      ],
-      "metadata": {
-        "/TestLambdaFunctionTesting/DefaultTest/DeployAssert/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/TestLambdaFunctionTesting/DefaultTest/DeployAssert/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
-      "displayName": "TestLambdaFunctionTesting/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
