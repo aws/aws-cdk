@@ -124,6 +124,9 @@ export class CloudWatchLogEventMonitor {
   }
 
   private async tick(): Promise<void> {
+    // excluding from codecoverage because this
+    // doesn't always run (depends on timing)
+    /* istanbul ignore next */
     if (!this.active) {
       return;
     }
