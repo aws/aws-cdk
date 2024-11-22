@@ -300,6 +300,9 @@ describe('User Pool', () => {
     const pool = UserPool.fromUserPoolArn(stack, 'userpool', userPoolArn);
     expect(pool.userPoolId).toEqual('test-user-pool');
     expect(stack.resolve(pool.userPoolArn)).toEqual('arn:aws:cognito-idp:us-east-1:0123456789012:userpool/test-user-pool');
+    expect(stack.resolve(pool.userPoolProviderName)).toEqual(
+      { 'Fn::Join': ['', ['cognito-idp.us-east-1.', { Ref: 'AWS::URLSuffix' }, '/test-user-pool']] },
+    );
   });
 
   test('import using arn without resourceName fails', () => {
@@ -2217,6 +2220,86 @@ test('advanced security is not present if option is not provided', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
     UserPoolAddOns: Match.absent(),
+  });
+});
+
+describe('email MFA test', () => {
+  test('email MFA enabled', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'myuserpool', {
+      email: UserPoolEmail.withSES({
+        sesRegion: 'us-east-1',
+        fromEmail: 'noreply@example.com',
+        fromName: 'myname@mycompany.com',
+        replyTo: 'support@example.com',
+        sesVerifiedDomain: 'example.com',
+      }),
+      mfa: Mfa.REQUIRED,
+      mfaSecondFactor: {
+        sms: true,
+        otp: false,
+        email: true,
+      },
+      advancedSecurityMode: AdvancedSecurityMode.ENFORCED,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+      EnabledMfas: ['SMS_MFA', 'EMAIL_OTP'],
+    });
+  });
+
+  test('throws when email MFA is enabled with no email settings.', () => {
+    const stack = new Stack();
+
+    expect(() => new UserPool(stack, 'Pool1', {
+      mfa: Mfa.REQUIRED,
+      mfaSecondFactor: {
+        sms: true,
+        otp: false,
+        email: true,
+      },
+      advancedSecurityMode: AdvancedSecurityMode.ENFORCED,
+    })).toThrow('To enable email-based MFA, set `email` property to the Amazon SES email-sending configuration.');
+  });
+
+  test('throws when email MFA is enabled with not SES email settings.', () => {
+    const stack = new Stack();
+
+    expect(() => new UserPool(stack, 'Pool1', {
+      mfa: Mfa.REQUIRED,
+      email: UserPoolEmail.withCognito(),
+      mfaSecondFactor: {
+        sms: true,
+        otp: false,
+        email: true,
+      },
+      advancedSecurityMode: AdvancedSecurityMode.ENFORCED,
+    })).toThrow('To enable email-based MFA, set `email` property to the Amazon SES email-sending configuration.');
+  });
+
+  test('set Email MFA', () => {
+    const stack = new Stack();
+
+    expect(() => new UserPool(stack, 'Pool1', {
+      email: UserPoolEmail.withSES({
+        sesRegion: 'us-east-1',
+        fromEmail: 'noreply@example.com',
+        fromName: 'myname@mycompany.com',
+        replyTo: 'support@example.com',
+        sesVerifiedDomain: 'example.com',
+      }),
+      mfa: Mfa.REQUIRED,
+      mfaSecondFactor: {
+        sms: true,
+        otp: false,
+        email: true,
+      },
+      advancedSecurityMode: AdvancedSecurityMode.OFF,
+    })).toThrow('To enable email-based MFA, set `advancedSecurityMode` to `AdvancedSecurity.ENFORCED` or `AdvancedSecurity.AUDIT`.');
   });
 });
 

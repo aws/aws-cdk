@@ -108,7 +108,7 @@ export enum ApplicationLogLevel {
  * This field takes in 2 values either Text or JSON. By setting this value to Text,
  * will result in the current structure of logs format, whereas, by setting this value to JSON,
  * Lambda will print the logs as Structured JSON Logs, with the corresponding timestamp and log level
- * of each event. Selecting ‘JSON’ format will only allow customer’s to have different log level
+ * of each event. Selecting ‘JSON’ format will only allow customers to have different log level
  * Application log level and the System log level.
  */
 export enum LogFormat {
@@ -126,7 +126,7 @@ export enum LogFormat {
  * This field takes in 2 values either Text or JSON. By setting this value to Text,
  * will result in the current structure of logs format, whereas, by setting this value to JSON,
  * Lambda will print the logs as Structured JSON Logs, with the corresponding timestamp and log level
- * of each event. Selecting ‘JSON’ format will only allow customer’s to have different log level
+ * of each event. Selecting ‘JSON’ format will only allow customers to have different log level
  * Application log level and the System log level.
  */
 export enum LoggingFormat {
@@ -138,6 +138,17 @@ export enum LoggingFormat {
    * Lambda structured logging in Json format.
    */
   JSON = 'JSON',
+}
+
+export enum RecursiveLoop {
+  /**
+   * Allows the recursive loop to happen and does not terminate it.
+  */
+  ALLOW = 'Allow',
+  /**
+   * Terminates the recursive loop.
+   */
+  TERMINATE = 'Terminate',
 }
 
 /**
@@ -283,7 +294,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   readonly securityGroups?: ec2.ISecurityGroup[];
 
   /**
-   * Whether to allow the Lambda to send all network traffic
+   * Whether to allow the Lambda to send all network traffic (except ipv6)
    *
    * If set to false, you must individually add traffic rules to allow the
    * Lambda to connect to network targets.
@@ -294,6 +305,20 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default true
    */
   readonly allowAllOutbound?: boolean;
+
+  /**
+   * Whether to allow the Lambda to send all ipv6 network traffic
+   *
+   * If set to true, there will only be a single egress rule which allows all
+   * outbound ipv6 traffic. If set to false, you must individually add traffic rules to allow the
+   * Lambda to connect to network targets using ipv6.
+   *
+   * Do not specify this property if the `securityGroups` or `securityGroup` property is set.
+   * Instead, configure `allowAllIpv6Outbound` directly on the security group.
+   *
+   * @default false
+   */
+  readonly allowAllIpv6Outbound?: boolean;
 
   /**
    * Enabled DLQ. If `deadLetterQueue` is undefined,
@@ -329,7 +354,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
 
   /**
   * Enable SnapStart for Lambda Function.
-  * SnapStart is currently supported only for Java 11, 17 runtime
+  * SnapStart is currently supported for Java 11, Java 17, Python 3.12, Python 3.13, and .NET 8 runtime
   *
   * @default - No snapstart
   */
@@ -534,6 +559,14 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default LoggingFormat.TEXT
    */
   readonly loggingFormat?: LoggingFormat;
+
+  /**
+  * Sets the Recursive Loop Protection for Lambda Function.
+  * It lets Lambda detect and terminate unintended recursive loops.
+  *
+  * @default RecursiveLoop.Terminate
+  */
+  readonly recursiveLoop?: RecursiveLoop;
 
   /**
    * Sets the application log level for the function.
@@ -861,6 +894,9 @@ export class Function extends FunctionBase {
   /** @internal */
   public readonly _layers: ILayerVersion[] = [];
 
+  /** @internal */
+  public _logRetention?: logs.LogRetention;
+
   private _logGroup?: logs.ILogGroup;
 
   /**
@@ -913,6 +949,14 @@ export class Function extends FunctionBase {
     // add additional managed policies when necessary
     if (props.filesystem) {
       const config = props.filesystem.config;
+      if (!Token.isUnresolved(config.localMountPath)) {
+        if (!/^\/mnt\/[a-zA-Z0-9-_.]+$/.test(config.localMountPath)) {
+          throw new Error(`Local mount path should match with ^/mnt/[a-zA-Z0-9-_.]+$ but given ${config.localMountPath}.`);
+        }
+        if (config.localMountPath.length > 160) {
+          throw new Error(`Local mount path can not be longer than 160 characters but has ${config.localMountPath.length} characters.`);
+        }
+      }
       if (config.policies) {
         config.policies.forEach(p => {
           this.role?.addToPrincipalPolicy(p);
@@ -996,6 +1040,7 @@ export class Function extends FunctionBase {
         s3ObjectVersion: code.s3Location && code.s3Location.objectVersion,
         zipFile: code.inlineCode,
         imageUri: code.image?.imageUri,
+        sourceKmsKeyArn: code.sourceKMSKeyArn,
       },
       layers: Lazy.list({ produce: () => this.renderLayers() }), // Evaluated on synthesis
       handler: props.handler === Handler.FROM_IMAGE ? undefined : props.handler,
@@ -1025,6 +1070,7 @@ export class Function extends FunctionBase {
       runtimeManagementConfig: props.runtimeManagementMode?.runtimeManagementConfig,
       snapStart: this.configureSnapStart(props),
       loggingConfig: this.getLoggingConfig(props),
+      recursiveLoop: props.recursiveLoop,
     });
 
     if ((props.tracing !== undefined) || (props.adotInstrumentation !== undefined)) {
@@ -1072,6 +1118,7 @@ export class Function extends FunctionBase {
         logRetentionRetryOptions: props.logRetentionRetryOptions as logs.LogRetentionRetryOptions,
       });
       this._logGroup = logs.LogGroup.fromLogGroupArn(this, 'LogGroup', logRetention.logGroupArn);
+      this._logRetention = logRetention;
     }
 
     props.code.bindToResource(resource);
@@ -1161,7 +1208,7 @@ export class Function extends FunctionBase {
   }
 
   /**
-   * Get Logging Config propety for the function.
+   * Get Logging Config property for the function.
    * This method returns the function LoggingConfig Property if the property is set on the
    * function and undefined if not.
    */
@@ -1359,7 +1406,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
   }
 
   /**
-   * Configured lambda insights on the function if specified. This is acheived by adding an imported layer which is added to the
+   * Configured lambda insights on the function if specified. This is achieved by adding an imported layer which is added to the
    * list of lambda layers on synthesis.
    *
    * https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights-extension-versions.html
@@ -1483,6 +1530,9 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       if (props.ipv6AllowedForDualStack) {
         throw new Error('Cannot configure \'ipv6AllowedForDualStack\' without configuring a VPC');
       }
+      if (props.allowAllIpv6Outbound !== undefined) {
+        throw new Error('Cannot configure \'allowAllIpv6Outbound\' without configuring a VPC');
+      }
       return undefined;
     }
 
@@ -1495,6 +1545,15 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       }
     }
 
+    if (props.allowAllIpv6Outbound !== undefined) {
+      if (props.securityGroup) {
+        throw new Error('Configure \'allowAllIpv6Outbound\' directly on the supplied SecurityGroup.');
+      }
+      if (hasSecurityGroups) {
+        throw new Error('Configure \'allowAllIpv6Outbound\' directly on the supplied SecurityGroups.');
+      }
+    }
+
     let securityGroups: ec2.ISecurityGroup[];
 
     if (hasSecurityGroups) {
@@ -1504,6 +1563,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
         vpc: props.vpc,
         description: 'Automatic security group for Lambda Function ' + Names.uniqueId(this),
         allowAllOutbound: props.allowAllOutbound,
+        allowAllIpv6Outbound: props.allowAllIpv6Outbound,
       });
       securityGroups = [securityGroup];
     }

@@ -3,6 +3,7 @@ import { Archive, BaseArchiveProps } from './archive';
 import { CfnEventBus, CfnEventBusPolicy } from './events.generated';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
+import * as sqs from '../../aws-sqs';
 import { ArnFormat, IResource, Lazy, Names, Resource, Stack, Token } from '../../core';
 
 /**
@@ -79,6 +80,26 @@ export interface EventBusProps {
    * @default - no partner event source
    */
   readonly eventSourceName?: string;
+
+  /**
+   * Dead-letter queue for the event bus
+   *
+   * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-rule-event-delivery.html#eb-rule-dlq
+   *
+   * @default - no dead-letter queue
+   */
+  readonly deadLetterQueue?: sqs.IQueue;
+
+  /**
+   * The event bus description.
+   *
+   * The description can be up to 512 characters long.
+   *
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-eventbus.html#cfn-events-eventbus-description
+   *
+   * @default - no description
+   */
+  readonly description?: string;
 
   /**
   * The customer managed key that encrypt events on this event bus.
@@ -325,9 +346,17 @@ export class EventBus extends EventBusBase {
 
     super(scope, id, { physicalName: eventBusName });
 
+    if (props?.description && !Token.isUnresolved(props.description) && props.description.length > 512) {
+      throw new Error(`description must be less than or equal to 512 characters, got ${props.description.length}`);
+    }
+
     const eventBus = new CfnEventBus(this, 'Resource', {
       name: this.physicalName,
       eventSourceName,
+      deadLetterConfig: props?.deadLetterQueue ? {
+        arn: props.deadLetterQueue.queueArn,
+      } : undefined,
+      description: props?.description,
       kmsKeyIdentifier: props?.kmsKey?.keyArn,
     });
 
@@ -337,8 +366,11 @@ export class EventBus extends EventBusBase {
       resourceName: eventBus.name,
     });
 
-    // Allow EventBridge to use customer managed key
-    // See https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-encryption-event-bus-key-policy.html
+    /**
+     * Allow EventBridge to use customer managed key
+     *
+     * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-encryption-key-policy.html#eb-encryption-key-policy-bus
+     */
     if (props?.kmsKey) {
       props?.kmsKey.addToResourcePolicy(new iam.PolicyStatement({
         resources: ['*'],

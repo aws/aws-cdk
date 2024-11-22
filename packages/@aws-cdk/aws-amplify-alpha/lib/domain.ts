@@ -1,5 +1,6 @@
+import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { Lazy, Resource, IResolvable } from 'aws-cdk-lib/core';
+import { Lazy, Resource, IResolvable, Token } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnDomain } from 'aws-cdk-lib/aws-amplify';
 import { IApp } from './app';
@@ -36,6 +37,13 @@ export interface DomainOptions {
    * @default - all repository branches ['*', 'pr*']
    */
   readonly autoSubdomainCreationPatterns?: string[];
+
+  /**
+   * The type of SSL/TLS certificate to use for your custom domain
+   *
+   * @default - Amplify uses the default certificate that it provisions and manages for you
+   */
+  readonly customCertificate?: acm.ICertificate;
 }
 
 /**
@@ -123,6 +131,13 @@ export class Domain extends Resource {
     this.subDomains = props.subDomains || [];
 
     const domainName = props.domainName || id;
+    if (!Token.isUnresolved(domainName) && domainName.length > 255) {
+      throw new Error(`Domain name must be 255 characters or less, got: ${domainName.length} characters.`);
+    }
+    if (!Token.isUnresolved(domainName) && !/^(((?!-)[A-Za-z0-9-]{0,62}[A-Za-z0-9])\.)+((?!-)[A-Za-z0-9-]{1,62}[A-Za-z0-9])(\.)?$/.test(domainName)) {
+      throw new Error(`Domain name must be a valid hostname, got: ${domainName}.`);
+    }
+
     const domain = new CfnDomain(this, 'Resource', {
       appId: props.app.appId,
       domainName,
@@ -130,6 +145,10 @@ export class Domain extends Resource {
       enableAutoSubDomain: !!props.enableAutoSubdomain,
       autoSubDomainCreationPatterns: props.autoSubdomainCreationPatterns || ['*', 'pr*'],
       autoSubDomainIamRole: props.autoSubDomainIamRole?.roleArn,
+      certificateSettings: props.customCertificate ? {
+        certificateType: 'CUSTOM',
+        customCertificateArn: props.customCertificate.certificateArn,
+      } : undefined,
     });
 
     this.arn = domain.attrArn;

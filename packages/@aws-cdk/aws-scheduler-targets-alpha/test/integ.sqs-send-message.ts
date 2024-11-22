@@ -41,5 +41,5 @@ message.assertAtPath(
   ExpectedResult.stringLikeRegexp(payload),
 ).waitForAssertions({
   totalTimeout: cdk.Duration.minutes(3),
-  interval: cdk.Duration.seconds(5),
+  interval: cdk.Duration.seconds(10),
 });

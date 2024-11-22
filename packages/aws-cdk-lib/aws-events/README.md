@@ -208,7 +208,8 @@ It is possible to archive all or some events sent to an event bus. It is then po
 
 ```ts
 const bus = new events.EventBus(this, 'bus', {
-  eventBusName: 'MyCustomEventBus'
+  eventBusName: 'MyCustomEventBus',
+  description: 'MyCustomEventBus',
 });
 
 bus.archive('MyArchive', {
@@ -218,6 +219,22 @@ bus.archive('MyArchive', {
     account: [Stack.of(this).account],
   },
   retention: Duration.days(365),
+});
+```
+
+## Dead-Letter Queue for EventBus
+
+It is possible to configure a [Dead Letter Queue for an EventBus](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-rule-event-delivery.html#eb-rule-dlq). This is useful when you want to capture events that could not be delivered to any of the targets.
+
+To configure a Dead Letter Queue for an EventBus, you can use the `deadLetterQueue` property of the `EventBus` construct.
+
+```ts
+import * as sqs from 'aws-cdk-lib/aws-sqs';
+
+const dlq = new sqs.Queue(this, 'DLQ');
+
+const bus = new events.EventBus(this, 'Bus', {
+  deadLetterQueue: dlq,
 });
 ```
 
