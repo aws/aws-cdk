@@ -201,15 +201,15 @@ export class Fleet extends Resource implements IFleet {
         throw new Error(`'computeConfiguration' can only be specified if 'computeType' is 'ATTRIBUTE_BASED_COMPUTE', got: ${props.computeType}`);
       }
       const diskGiB = props.computeConfiguration.disk?.toGibibytes();
-      if (diskGiB && (diskGiB < 1 || !Number.isInteger(diskGiB))) {
+      if (diskGiB !== undefined && (diskGiB < 1 || !Number.isInteger(diskGiB))) {
         throw new Error(`disk size must be greater than 1 GiB and an integer, got: ${diskGiB} GiB`);
       }
       const memoryGiB = props.computeConfiguration.memory?.toGibibytes();
-      if (memoryGiB && (memoryGiB < 1 || !Number.isInteger(memoryGiB))) {
+      if (memoryGiB !== undefined && (memoryGiB < 1 || !Number.isInteger(memoryGiB))) {
         throw new Error(`memory size must be greater than 1 GiB and an integer, got: ${memoryGiB} GiB`);
       }
       const vCpu = props.computeConfiguration.vCpu;
-      if (vCpu && !Number.isInteger(vCpu)) {
+      if (vCpu !== undefined && !Token.isUnresolved(vCpu) && !Number.isInteger(vCpu)) {
         throw new Error(`vCPU count must be an integer, got: ${vCpu}`);
       }
     }
