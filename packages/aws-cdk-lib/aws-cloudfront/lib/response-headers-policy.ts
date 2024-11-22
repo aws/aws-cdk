@@ -134,9 +134,16 @@ export class ResponseHeadersPolicy extends Resource implements IResponseHeadersP
       if (headers.length === 0) {
         // Invalid request provided: AWS::CloudFront::ResponseHeadersPolicy: The parameter Allow Headers  needs to have at least one item.
         throw new Error('accessControlAllowHeaders needs to have at least one item');
-      } else if (headers.some((header) => !Token.isUnresolved(header) && containsMultipleStars(header))) {
-        // Invalid request provided: AWS::CloudFront::ResponseHeadersPolicy
-        throw new Error("accessControlAllowHeaders contains multiple '*' chars; only 1 is allowed");
+      }
+      for (const header of headers) {
+        if (Token.isUnresolved(header)) continue;
+        if (containsMultipleStars(header)) {
+          // Invalid request provided: AWS::CloudFront::ResponseHeadersPolicy
+          throw new Error("accessControlAllowHeaders contains multiple '*' chars; only 1 is allowed");
+        } else if (!isValidHeaderName(header)) {
+          // Invalid request provided: AWS::CloudFront::ResponseHeadersPolicy
+          throw new Error('accessControlAllowHeaders contains illegal character');
+        }
       }
     });
     withResolved(behavior.accessControlAllowMethods, (methods) => {
@@ -156,6 +163,16 @@ export class ResponseHeadersPolicy extends Resource implements IResponseHeadersP
       if (origins.length === 0) {
         // Invalid request provided: AWS::CloudFront::ResponseHeadersPolicy: The parameter Allow Origin  needs to have at least one item.
         throw new Error('accessControlAllowOrigins needs to have at least one item');
+      }
+    });
+    withResolved(behavior.accessControlExposeHeaders, (headers) => {
+      if (!headers) return;
+      for (const header of headers) {
+        if (Token.isUnresolved(header)) continue;
+        if (!isValidHeaderName(header)) {
+          // Invalid request provided: AWS::CloudFront::ResponseHeadersPolicy
+          throw new Error('accessControlExposeHeaders contains illegal character');
+        }
       }
     });
 
@@ -544,4 +561,10 @@ function hasMaxDecimalPlaces(num: number, decimals: number): boolean {
 
 function containsMultipleStars(value: string) {
   return Array.from(value.matchAll(/\*/g)).length > 1;
+}
+
+function isValidHeaderName(value: string) {
+  // the valid characters are defined in RFC 9110 section 5.6.2.
+  // https://httpwg.org/specs/rfc9110.html#rule.token.separators
+  return /^[!#$%&'*+\-.^_`|~0-9A-Za-z]+$/.test(value);
 }

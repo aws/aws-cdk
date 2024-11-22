@@ -206,6 +206,30 @@ describe('ResponseHeadersPolicy', () => {
       })).toThrow("accessControlAllowHeaders contains multiple '*' chars; only 1 is allowed");
     });
 
+    test('throws if accessControlAllowHeaders contains space', () => {
+      expect(() => new ResponseHeadersPolicy(stack, 'ResponseHeadersPolicy', {
+        corsBehavior: {
+          accessControlAllowCredentials: false,
+          accessControlAllowHeaders: ['foo bar'],
+          accessControlAllowMethods: ['ALL'],
+          accessControlAllowOrigins: ['*'],
+          originOverride: true,
+        },
+      })).toThrow('accessControlAllowHeaders contains illegal character');
+    });
+
+    test.each('"(),/:;<=>?@[\\]{}'.split(''))('throws if accessControlAllowHeaders contains illegal char: %s', (char) => {
+      expect(() => new ResponseHeadersPolicy(stack, 'ResponseHeadersPolicy', {
+        corsBehavior: {
+          accessControlAllowCredentials: false,
+          accessControlAllowHeaders: [char],
+          accessControlAllowMethods: ['ALL'],
+          accessControlAllowOrigins: ['*'],
+          originOverride: true,
+        },
+      })).toThrow('accessControlAllowHeaders contains illegal character');
+    });
+
     test('throws if accessControlAllowMethods is empty', () => {
       expect(() => new ResponseHeadersPolicy(stack, 'ResponseHeadersPolicy', {
         corsBehavior: {
@@ -252,6 +276,32 @@ describe('ResponseHeadersPolicy', () => {
           originOverride: true,
         },
       })).toThrow('accessControlAllowOrigins needs to have at least one item');
+    });
+
+    test('throws if accessControlExposeHeaders contains space', () => {
+      expect(() => new ResponseHeadersPolicy(stack, 'ResponseHeadersPolicy', {
+        corsBehavior: {
+          accessControlAllowCredentials: false,
+          accessControlAllowHeaders: ['*'],
+          accessControlAllowMethods: ['ALL'],
+          accessControlAllowOrigins: ['*'],
+          accessControlExposeHeaders: ['foo bar'],
+          originOverride: true,
+        },
+      })).toThrow('accessControlExposeHeaders contains illegal character');
+    });
+
+    test.each('"(),/:;<=>?@[\\]{}'.split(''))('throws if accessControlExposeHeaders contains illegal char: %s', (char) => {
+      expect(() => new ResponseHeadersPolicy(stack, 'ResponseHeadersPolicy', {
+        corsBehavior: {
+          accessControlAllowCredentials: false,
+          accessControlAllowHeaders: ['*'],
+          accessControlAllowMethods: ['ALL'],
+          accessControlAllowOrigins: ['*'],
+          accessControlExposeHeaders: [char],
+          originOverride: true,
+        },
+      })).toThrow('accessControlExposeHeaders contains illegal character');
     });
   });
 });
