@@ -16,6 +16,8 @@ test('aspects only get invoked at most once on every construct', () => fc.assert
   })),
 ));
 
+test.todo('every aspect applied on the tree eventually executes on all of its nodes in scope');
+
 test.todo('inherited aspects get invoked before locally defined aspects, if both have the same priority');
 
 test('for every construct, lower priorities go before higher priorities', () => fc.assert(
