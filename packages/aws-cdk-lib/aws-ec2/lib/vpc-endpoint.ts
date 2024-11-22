@@ -305,6 +305,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly BEDROCK_AGENT = new InterfaceVpcEndpointAwsService('bedrock-agent');
   public static readonly BEDROCK_AGENT_RUNTIME = new InterfaceVpcEndpointAwsService('bedrock-agent-runtime');
   public static readonly BEDROCK_RUNTIME = new InterfaceVpcEndpointAwsService('bedrock-runtime');
+  public static readonly BILLING = new InterfaceVpcEndpointAwsService('billing');
   public static readonly BILLING_AND_COST_MANAGEMENT_FREETIER = new InterfaceVpcEndpointAwsService('freetier', 'aws.api');
   public static readonly BILLING_AND_COST_MANAGEMENT_TAX = new InterfaceVpcEndpointAwsService('tax');
   public static readonly BILLING_CONDUCTOR = new InterfaceVpcEndpointAwsService('billingconductor');
@@ -365,6 +366,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly CONNECT_WISDOM = new InterfaceVpcEndpointAwsService('wisdom');
   public static readonly CONTROL_CATALOG = new InterfaceVpcEndpointAwsService('controlcatalog');
   public static readonly COST_EXPLORER = new InterfaceVpcEndpointAwsService('ce');
+  public static readonly COST_OPTIMIZATION_HUB = new InterfaceVpcEndpointAwsService('cost-optimization-hub');
   public static readonly DATA_EXCHANGE = new InterfaceVpcEndpointAwsService('dataexchange');
   public static readonly DATA_EXPORTS = new InterfaceVpcEndpointAwsService('bcm-data-exports', 'aws.api');
   public static readonly DATASYNC = new InterfaceVpcEndpointAwsService('datasync');
@@ -517,7 +519,6 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly PIPES_FIPS = new InterfaceVpcEndpointAwsService('pipes-fips');
   public static readonly PRICE_LIST = new InterfaceVpcEndpointAwsService('pricing.api');
   public static readonly POLLY = new InterfaceVpcEndpointAwsService('polly');
-  public static readonly PRICING_API = new InterfaceVpcEndpointAwsService('pricing.api');
   public static readonly PRIVATE_5G = new InterfaceVpcEndpointAwsService('private-networks');
   public static readonly PRIVATE_CERTIFICATE_AUTHORITY = new InterfaceVpcEndpointAwsService('acm-pca');
   public static readonly PRIVATE_CERTIFICATE_AUTHORITY_CONNECTOR_AD = new InterfaceVpcEndpointAwsService('pca-connector-ad');

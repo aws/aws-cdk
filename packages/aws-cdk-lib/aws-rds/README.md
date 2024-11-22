@@ -118,6 +118,20 @@ new rds.DatabaseClusterFromSnapshot(this, 'Database', {
 });
 ```
 
+By default, automatic minor version upgrades for the engine type are enabled in a cluster, but you can also disable this.
+To do so, set `autoMinorVersionUpgrade` to `false`.
+
+```ts
+declare const vpc: ec2.IVpc;
+
+new rds.DatabaseCluster(this, 'DatabaseCluster', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_07_0 }),
+  writer: rds.ClusterInstance.serverlessV2('writerInstance'),
+  vpc,
+  autoMinorVersionUpgrade: false,
+});
+```
+
 ### Updating the database instances in a cluster
 
 Database cluster instances may be updated in bulk or on a rolling basis.
@@ -1358,3 +1372,48 @@ To see Amazon RDS DB engines that support Performance Insights, see [Amazon RDS 
 To see Amazon Aurora DB engines that support Performance Insights, see [Amazon Aurora DB engine, Region, and instance class support for Performance Insights](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_PerfInsights.Overview.Engines.html).
 
 For more information about Performance Insights, see [Monitoring DB load with Performance Insights on Amazon RDS](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PerfInsights.html).
+
+## Enhanced Monitoring
+
+With [Enhanced Monitoring](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Monitoring.OS.html#USER_Monitoring.OS.Enabling), you can monitor the operating system of your DB instance in real time.
+
+To enable Enhanced Monitoring for a clustered database, set the `monitoringInterval` property.
+This value is applied at instance level to all instances in the cluster by default.
+
+If you want to enable enhanced monitoring at the cluster level, you can set the `enableClusterLevelEnhancedMonitoring` property to `true`. Note that you must set `monitoringInterval` when using `enableClusterLevelEnhancedMonitoring`
+
+```ts
+declare const vpc: ec2.Vpc;
+// Enable Enhanced Monitoring at instance level to all instances in the cluster
+new rds.DatabaseCluster(this, 'Cluster', {
+  engine: rds.DatabaseClusterEngine.auroraPostgres({ version: rds.AuroraPostgresEngineVersion.VER_16_1 }),
+  writer: rds.ClusterInstance.serverlessV2('writerInstance'),
+  vpc,
+  monitoringInterval: Duration.seconds(5),
+});
+
+// Enable Enhanced Monitoring at the cluster level
+new rds.DatabaseCluster(this, 'Cluster', {
+  engine: rds.DatabaseClusterEngine.auroraPostgres({ version: rds.AuroraPostgresEngineVersion.VER_16_1 }),
+  writer: rds.ClusterInstance.serverlessV2('writerInstance'),
+  vpc,
+  monitoringInterval: Duration.seconds(5),
+  enableClusterLevelEnhancedMonitoring: true,
+});
+```
+
+AWS CDK automatically generate the IAM role for Enhanced Monitoring.
+If you want to create the IAM role manually, you can use the `monitoringRole` property.
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const monitoringRole: iam.Role;
+
+new rds.DatabaseCluster(this, 'Cluster', {
+  engine: rds.DatabaseClusterEngine.auroraPostgres({ version: rds.AuroraPostgresEngineVersion.VER_16_1 }),
+  writer: rds.ClusterInstance.serverlessV2('writerInstance'),
+  vpc,
+  monitoringInterval: Duration.seconds(5),
+  monitoringRole,
+});
+```

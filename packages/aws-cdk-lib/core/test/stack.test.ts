@@ -2075,7 +2075,7 @@ describe('stack', () => {
     expect(asm.getStackArtifact(stack2.artifactId).tags).toEqual(expected);
   });
 
-  test('stack tags may not contain tokens', () => {
+  test('warning when stack tags contain tokens', () => {
     // GIVEN
     const app = new App({
       stackTraces: false,
@@ -2087,7 +2087,29 @@ describe('stack', () => {
       },
     });
 
-    expect(() => app.synth()).toThrow(/Stack tags may not contain deploy-time values/);
+    const asm = app.synth();
+    const stackArtifact = asm.stacks[0];
+    expect(stackArtifact.manifest.metadata?.['/stack1']).toEqual([
+      {
+        type: 'aws:cdk:warning',
+        data: expect.stringContaining('Ignoring stack tags that contain deploy-time values'),
+      },
+    ]);
+  });
+
+  test('stack notification arns defaults to undefined', () => {
+
+    const app = new App({ stackTraces: false });
+    const stack1 = new Stack(app, 'stack1', {});
+
+    const asm = app.synth();
+
+    // It must be undefined and not [] because:
+    //
+    //  - undefined  =>  cdk ignores it entirely, as if it wasn't supported (allows external management).
+    //  - []:        =>  cdk manages it, and the user wants to wipe it out.
+    //  - ['arn-1']  =>  cdk manages it, and the user wants to set it to ['arn-1'].
+    expect(asm.getStackArtifact(stack1.artifactId).notificationArns).toBeUndefined();
   });
 
   test('stack notification arns are reflected in the stack artifact properties', () => {

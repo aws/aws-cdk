@@ -2366,6 +2366,7 @@ export class Bucket extends BucketBase {
     if (encryptionType === BucketEncryption.KMS) {
       const encryptionKey = props.encryptionKey || new kms.Key(this, 'Key', {
         description: `Created by ${this.node.path}`,
+        enableKeyRotation: true,
       });
 
       const bucketEncryption = {
