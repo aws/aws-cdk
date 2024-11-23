@@ -1335,7 +1335,16 @@ const stack = new Stack(app, 'StackName', {
 });
 ```
 
-Stack events will be sent to any SNS Topics in this list.
+Stack events will be sent to any SNS Topics in this list. These ARNs are added to those specified using
+the `--notification-arns` command line option.
+
+Note that in order to do delete notification ARNs entirely, you must pass an empty array ([]) instead of omitting it.
+If you omit the property, no action on existing ARNs will take place.
+
+> [!NOTICE]
+> Adding the `notificationArns` property (or using the `--notification-arns` CLI options) will **override**
+> any existing ARNs configured on the stack. If you have an external system managing notification ARNs,
+> either migrate to use this mechanism, or avoid specfying notification ARNs with the CDK.
 
 ### CfnJson
 
