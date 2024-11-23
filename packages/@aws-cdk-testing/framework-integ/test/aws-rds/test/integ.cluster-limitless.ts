@@ -17,7 +17,8 @@ class TestStack extends cdk.Stack {
       clusterScailabilityType: ClusterScailabilityType.LIMITLESS,
       enablePerformanceInsights: true,
       performanceInsightRetention: PerformanceInsightRetention.MONTHS_1,
-      monitoringInterval: cdk.Duration.days(1),
+      monitoringInterval: cdk.Duration.minutes(1),
+      enableClusterLevelEnhancedMonitoring: true,
       storageType: DBClusterStorageType.AURORA_IOPT1,
       cloudwatchLogsExports: ['postgresql'],
     });

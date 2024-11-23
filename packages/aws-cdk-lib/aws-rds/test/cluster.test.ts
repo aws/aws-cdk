@@ -18,6 +18,7 @@ import {
   DatabaseInstanceEngine, SqlServerEngineVersion, SnapshotCredentials, InstanceUpdateBehaviour, NetworkType, ClusterInstance, CaCertificate,
   IClusterEngine,
   ClusterScailabilityType,
+  DBClusterStorageType,
 } from '../lib';
 
 describe('cluster new api', () => {
@@ -182,6 +183,240 @@ describe('cluster new api', () => {
       const template = Template.fromStack(stack);
       template.hasResourceProperties('AWS::RDS::DBCluster', {
         ClusterScalabilityType: 'standard',
+      });
+    });
+
+    describe('limitless database', () => {
+      test('with default options', () => {
+        // GIVEN
+        const stack = testStack();
+        const vpc = new ec2.Vpc(stack, 'VPC');
+
+        // WHEN
+        new DatabaseCluster(stack, 'Cluster', {
+          engine: DatabaseClusterEngine.auroraPostgres({
+            version: AuroraPostgresEngineVersion.VER_16_4_LIMITLESS,
+          }),
+          vpc,
+          clusterScailabilityType: ClusterScailabilityType.LIMITLESS,
+          enablePerformanceInsights: true,
+          performanceInsightRetention: PerformanceInsightRetention.MONTHS_1,
+          monitoringInterval: cdk.Duration.minutes(1),
+          enableClusterLevelEnhancedMonitoring: true,
+          storageType: DBClusterStorageType.AURORA_IOPT1,
+          cloudwatchLogsExports: ['postgresql'],
+        });
+
+        // THEN
+        const template = Template.fromStack(stack);
+        template.hasResourceProperties('AWS::RDS::DBCluster', {
+          ClusterScalabilityType: 'limitless',
+          EnableCloudwatchLogsExports: ['postgresql'],
+          Engine: 'aurora-postgresql',
+          EngineVersion: '16.4-limitless',
+          MonitoringInterval: 60,
+          PerformanceInsightsEnabled: true,
+          PerformanceInsightsRetentionPeriod: 31,
+          StorageType: 'aurora-iopt1',
+        });
+      });
+
+      test.each([false, undefined])('throw error for disabling performance insights', (enablePerformanceInsights) => {
+        // GIVEN
+        const stack = testStack();
+        const vpc = new ec2.Vpc(stack, 'VPC');
+
+        // THEN
+        expect(() => {
+          // WHEN
+          new DatabaseCluster(stack, 'Cluster', {
+            engine: DatabaseClusterEngine.auroraPostgres({
+              version: AuroraPostgresEngineVersion.VER_16_4_LIMITLESS,
+            }),
+            vpc,
+            clusterScailabilityType: ClusterScailabilityType.LIMITLESS,
+            enablePerformanceInsights,
+            monitoringInterval: cdk.Duration.minutes(1),
+            enableClusterLevelEnhancedMonitoring: true,
+            storageType: DBClusterStorageType.AURORA_IOPT1,
+            cloudwatchLogsExports: ['postgresql'],
+          });
+        }).toThrow('Performance Insights must be enabled for Aurora Limitless Database.');
+      });
+
+      test('throw error for invalid performance insights retention period', () => {
+        // GIVEN
+        const stack = testStack();
+        const vpc = new ec2.Vpc(stack, 'VPC');
+
+        // THEN
+        expect(() => {
+          // WHEN
+          new DatabaseCluster(stack, 'Cluster', {
+            engine: DatabaseClusterEngine.auroraPostgres({
+              version: AuroraPostgresEngineVersion.VER_16_4_LIMITLESS,
+            }),
+            vpc,
+            clusterScailabilityType: ClusterScailabilityType.LIMITLESS,
+            enablePerformanceInsights: true,
+            performanceInsightRetention: PerformanceInsightRetention.DEFAULT,
+            monitoringInterval: cdk.Duration.minutes(1),
+            enableClusterLevelEnhancedMonitoring: true,
+            storageType: DBClusterStorageType.AURORA_IOPT1,
+            cloudwatchLogsExports: ['postgresql'],
+          });
+        }).toThrow('Performance Insights retention period must be set at least 31 days for Aurora Limitless Database.');
+      });
+
+      test('throw error for not specifying monitoring interval', () => {
+        // GIVEN
+        const stack = testStack();
+        const vpc = new ec2.Vpc(stack, 'VPC');
+
+        // THEN
+        expect(() => {
+          // WHEN
+          new DatabaseCluster(stack, 'Cluster', {
+            engine: DatabaseClusterEngine.auroraPostgres({
+              version: AuroraPostgresEngineVersion.VER_16_4_LIMITLESS,
+            }),
+            vpc,
+            clusterScailabilityType: ClusterScailabilityType.LIMITLESS,
+            enablePerformanceInsights: true,
+            performanceInsightRetention: PerformanceInsightRetention.MONTHS_1,
+            monitoringInterval: undefined,
+            enableClusterLevelEnhancedMonitoring: true,
+            storageType: DBClusterStorageType.AURORA_IOPT1,
+            cloudwatchLogsExports: ['postgresql'],
+          });
+        }).toThrow('Cluster level enhanced monitoring must be set for Aurora Limitless Database. Please set \'monitoringInterval\' and enable \'enableClusterLevelEnhancedMonitoring\'.');
+      });
+
+      test.each([false, undefined])('throw error for configuring enhanced monitoring at the instance level', (enableClusterLevelEnhancedMonitoring) => {
+        // GIVEN
+        const stack = testStack();
+        const vpc = new ec2.Vpc(stack, 'VPC');
+
+        // THEN
+        expect(() => {
+          // WHEN
+          new DatabaseCluster(stack, 'Cluster', {
+            engine: DatabaseClusterEngine.auroraPostgres({
+              version: AuroraPostgresEngineVersion.VER_16_4_LIMITLESS,
+            }),
+            vpc,
+            clusterScailabilityType: ClusterScailabilityType.LIMITLESS,
+            enablePerformanceInsights: true,
+            performanceInsightRetention: PerformanceInsightRetention.MONTHS_1,
+            monitoringInterval: cdk.Duration.minutes(1),
+            enableClusterLevelEnhancedMonitoring,
+            storageType: DBClusterStorageType.AURORA_IOPT1,
+            cloudwatchLogsExports: ['postgresql'],
+            instances: 1,
+          });
+        }).toThrow('Cluster level enhanced monitoring must be set for Aurora Limitless Database. Please set \'monitoringInterval\' and enable \'enableClusterLevelEnhancedMonitoring\'.');
+      });
+
+      test('throw error for specifying writer instance', () => {
+        // GIVEN
+        const stack = testStack();
+        const vpc = new ec2.Vpc(stack, 'VPC');
+
+        // THEN
+        expect(() => {
+          // WHEN
+          new DatabaseCluster(stack, 'Cluster', {
+            engine: DatabaseClusterEngine.auroraPostgres({
+              version: AuroraPostgresEngineVersion.VER_16_4_LIMITLESS,
+            }),
+            vpc,
+            clusterScailabilityType: ClusterScailabilityType.LIMITLESS,
+            enablePerformanceInsights: true,
+            performanceInsightRetention: PerformanceInsightRetention.MONTHS_1,
+            monitoringInterval: cdk.Duration.minutes(1),
+            enableClusterLevelEnhancedMonitoring: true,
+            storageType: DBClusterStorageType.AURORA_IOPT1,
+            cloudwatchLogsExports: ['postgresql'],
+            writer: ClusterInstance.serverlessV2('writer'),
+          });
+        }).toThrow('Aurora Limitless Database does not support readers or writer instances.');
+      });
+
+      test.each([
+        DatabaseClusterEngine.auroraMysql({
+          version: AuroraMysqlEngineVersion.VER_3_08_0,
+        }),
+        DatabaseClusterEngine.auroraPostgres({
+          version: AuroraPostgresEngineVersion.VER_16_4,
+        }),
+      ])('throw error for invalid engine', (engine) => {
+        // GIVEN
+        const stack = testStack();
+        const vpc = new ec2.Vpc(stack, 'VPC');
+
+        // THEN
+        expect(() => {
+          // WHEN
+          new DatabaseCluster(stack, 'Cluster', {
+            engine,
+            vpc,
+            clusterScailabilityType: ClusterScailabilityType.LIMITLESS,
+            enablePerformanceInsights: true,
+            performanceInsightRetention: PerformanceInsightRetention.MONTHS_1,
+            monitoringInterval: cdk.Duration.minutes(1),
+            enableClusterLevelEnhancedMonitoring: true,
+            storageType: DBClusterStorageType.AURORA_IOPT1,
+            cloudwatchLogsExports: ['postgresql'],
+          });
+        }).toThrow(`Aurora Limitless Database requires an engine version that supports it, got ${engine.engineVersion?.fullVersion}`);
+      });
+
+      test('throw error for invalid storage type', () => {
+        // GIVEN
+        const stack = testStack();
+        const vpc = new ec2.Vpc(stack, 'VPC');
+
+        // THEN
+        expect(() => {
+          // WHEN
+          new DatabaseCluster(stack, 'Cluster', {
+            engine: DatabaseClusterEngine.auroraPostgres({
+              version: AuroraPostgresEngineVersion.VER_16_4_LIMITLESS,
+            }),
+            vpc,
+            clusterScailabilityType: ClusterScailabilityType.LIMITLESS,
+            enablePerformanceInsights: true,
+            performanceInsightRetention: PerformanceInsightRetention.MONTHS_1,
+            monitoringInterval: cdk.Duration.minutes(1),
+            enableClusterLevelEnhancedMonitoring: true,
+            storageType: DBClusterStorageType.AURORA,
+            cloudwatchLogsExports: ['postgresql'],
+          });
+        }).toThrow('Aurora Limitless Database requires I/O optimized storage type, got: aurora');
+      });
+
+      test.each([[], undefined])('throw error for invalid cloudwatch log exports', (cloudwatchLogsExports) => {
+        // GIVEN
+        const stack = testStack();
+        const vpc = new ec2.Vpc(stack, 'VPC');
+
+        // THEN
+        expect(() => {
+          // WHEN
+          new DatabaseCluster(stack, 'Cluster', {
+            engine: DatabaseClusterEngine.auroraPostgres({
+              version: AuroraPostgresEngineVersion.VER_16_4_LIMITLESS,
+            }),
+            vpc,
+            clusterScailabilityType: ClusterScailabilityType.LIMITLESS,
+            enablePerformanceInsights: true,
+            performanceInsightRetention: PerformanceInsightRetention.MONTHS_1,
+            monitoringInterval: cdk.Duration.minutes(1),
+            enableClusterLevelEnhancedMonitoring: true,
+            storageType: DBClusterStorageType.AURORA_IOPT1,
+            cloudwatchLogsExports,
+          });
+        }).toThrow('Aurora Limitless Database requires CloudWatch Logs exports to be set.');
       });
     });
 

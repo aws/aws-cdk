@@ -806,14 +806,14 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       if (!props.performanceInsightRetention || props.performanceInsightRetention < PerformanceInsightRetention.MONTHS_1) {
         throw new Error('Performance Insights retention period must be set at least 31 days for Aurora Limitless Database.');
       }
-      if (!props.monitoringInterval) {
-        throw new Error('Enhanced monitoring must be set for Aurora Limitless Database. Please set `monitoringInterval`.');
+      if (!props.monitoringInterval || !props.enableClusterLevelEnhancedMonitoring) {
+        throw new Error('Cluster level enhanced monitoring must be set for Aurora Limitless Database. Please set \'monitoringInterval\' and enable \'enableClusterLevelEnhancedMonitoring\'.');
       }
       if (props.writer || props.readers) {
         throw new Error('Aurora Limitless Database does not support readers or writer instances.');
       }
       if (!props.engine.engineVersion?.fullVersion?.endsWith('limitless')) {
-        throw new Error(`Aurora Limitless Database requires an engine version that supports it., got ${props.engine.engineVersion?.fullVersion}`);
+        throw new Error(`Aurora Limitless Database requires an engine version that supports it, got ${props.engine.engineVersion?.fullVersion}`);
       }
       if (props.storageType !== DBClusterStorageType.AURORA_IOPT1) {
         throw new Error(`Aurora Limitless Database requires I/O optimized storage type, got: ${props.storageType}`);
