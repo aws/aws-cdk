@@ -1,4 +1,4 @@
-import { IAliasRecordTargetProps } from './props';
+import { IAliasRecordTargetProps } from './shared';
 import * as globalaccelerator from '../../aws-globalaccelerator';
 import * as route53 from '../../aws-route53';
 

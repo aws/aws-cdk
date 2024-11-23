@@ -1,4 +1,4 @@
-import { IAliasRecordTargetProps } from './props';
+import { IAliasRecordTargetProps } from './shared';
 import * as elbv2 from '../../aws-elasticloadbalancingv2';
 import * as route53 from '../../aws-route53';
 

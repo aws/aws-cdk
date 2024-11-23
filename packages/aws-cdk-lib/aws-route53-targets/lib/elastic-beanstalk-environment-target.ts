@@ -1,4 +1,4 @@
-import { IAliasRecordTargetProps } from './props';
+import { IAliasRecordTargetProps } from './shared';
 import * as route53 from '../../aws-route53';
 import * as cdk from '../../core';
 import { RegionInfo } from '../../region-info';
