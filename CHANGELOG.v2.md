@@ -2,6 +2,40 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.170.0](https://github.com/aws/aws-cdk/compare/v2.169.0...v2.170.0) (2024-11-22)
+
+
+### Features
+
+* **lambda:** support for Provisioned Pollers ([#32205](https://github.com/aws/aws-cdk/issues/32205)) ([68b969e](https://github.com/aws/aws-cdk/commit/68b969e6006212b2930844226f7817c81cfd8e18))
+* **vpcv2:** vpc peering connection construct ([#31645](https://github.com/aws/aws-cdk/issues/31645)) ([e1195f9](https://github.com/aws/aws-cdk/commit/e1195f93f9ee12b86d38bc7a64b2118ba204ef9e)), closes [RFC#507](https://github.com/aws/RFC/issues/507) [1#L252](https://github.com/aws/1/issues/L252)
+
+
+### Bug Fixes
+
+* **cli:** sts retry options are ignored ([#32227](https://github.com/aws/aws-cdk/issues/32227)) ([193ab8c](https://github.com/aws/aws-cdk/commit/193ab8cf892a3d2a3dbafc6db9f7a1d246fab2ec))
+
+
+### Reverts
+
+* "fix(ecr): allow creating repository uri to use tokens like cfn params" ([#32241](https://github.com/aws/aws-cdk/issues/32241)) ([b3e39a9](https://github.com/aws/aws-cdk/commit/b3e39a9a264511475ebb2bc8889325a096780d93)), closes [#32238](https://github.com/aws/aws-cdk/issues/32238)
+
+## [2.169.0](https://github.com/aws/aws-cdk/compare/v2.168.0...v2.169.0) (2024-11-21)
+
+
+### Features
+
+* **cloudfront:** add `attachWebAclId` method for Distribution ([#30567](https://github.com/aws/aws-cdk/issues/30567)) ([cbe2bec](https://github.com/aws/aws-cdk/commit/cbe2bec488ff9b9823eacf6de14dff1dcb3033a1))
+* update L1 CloudFormation resource definitions ([#32223](https://github.com/aws/aws-cdk/issues/32223)) ([5d61a1b](https://github.com/aws/aws-cdk/commit/5d61a1bdc69ce6578e42c6915cc5ccf206fd0c58))
+* **sns:** add delivery policy to sns subscriptions ([#30830](https://github.com/aws/aws-cdk/issues/30830)) ([27babe6](https://github.com/aws/aws-cdk/commit/27babe66d750454a82bbcca9bd4b584e88e2ace8)), closes [#17576](https://github.com/aws/aws-cdk/issues/17576)
+
+
+### Bug Fixes
+
+* **cli:** cannot assume a doubly-chained role ([#32216](https://github.com/aws/aws-cdk/issues/32216)) ([8746e44](https://github.com/aws/aws-cdk/commit/8746e44c0ac57035308cc401f70012f735b047b5))
+* **cli:** proxy is not configured correctly ([#32213](https://github.com/aws/aws-cdk/issues/32213)) ([ec58c77](https://github.com/aws/aws-cdk/commit/ec58c77b4d24c21f799a9ab259ec46cc0f47989b))
+* **s3:** key rotation is not enabled while creating KMS encrypted S3 buckets ([#32064](https://github.com/aws/aws-cdk/issues/32064)) ([e3024fc](https://github.com/aws/aws-cdk/commit/e3024fcda91ccb2760248839a91572f991dc1f63)), closes [#31982](https://github.com/aws/aws-cdk/issues/31982)
+
 ## [2.168.0](https://github.com/aws/aws-cdk/compare/v2.167.2...v2.168.0) (2024-11-20)
 
 
