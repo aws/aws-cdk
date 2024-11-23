@@ -354,6 +354,11 @@ export class Distribution extends Resource implements IDistribution {
       });
     }
 
+    this.certificate = props.certificate;
+    this.errorResponses = props.errorResponses ?? [];
+    this.publishAdditionalMetrics = props.publishAdditionalMetrics;
+    this.webAclId = props.webAclId;
+
     if (props.enableWafCoreProtections) {
       const regionIsUsEast1 = !Token.isUnresolved(this.env.region) && this.env.region === 'us-east-1';
       if (!regionIsUsEast1) {
@@ -361,11 +366,6 @@ export class Distribution extends Resource implements IDistribution {
       }
       this.addWafCoreProtection();
     }
-
-    this.certificate = props.certificate;
-    this.errorResponses = props.errorResponses ?? [];
-    this.publishAdditionalMetrics = props.publishAdditionalMetrics;
-    this.webAclId = props.webAclId;
 
     // Comments have an undocumented limit of 128 characters
     const trimmedComment =
@@ -391,7 +391,7 @@ export class Distribution extends Resource implements IDistribution {
         restrictions: this.renderRestrictions(props.geoRestriction),
         viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate,
           props.minimumProtocolVersion, props.sslSupportMethod) : undefined,
-        webAclId: Lazy.string({ produce: () => this.webAclId }),
+        webAclId: props.enableWafCoreProtections ? this.webAclId : Lazy.string({ produce: () => this.webAclId }),
       },
     });
 
