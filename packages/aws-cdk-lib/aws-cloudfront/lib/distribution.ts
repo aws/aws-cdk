@@ -317,7 +317,6 @@ export class Distribution extends Resource implements IDistribution {
   public readonly domainName: string;
   public readonly distributionDomainName: string;
   public readonly distributionId: string;
-  private _webAclId?: string;
 
   private readonly defaultBehavior: CacheBehavior;
   private readonly additionalBehaviors: CacheBehavior[] = [];
@@ -327,6 +326,7 @@ export class Distribution extends Resource implements IDistribution {
   private readonly errorResponses: ErrorResponse[];
   private readonly certificate?: acm.ICertificate;
   private readonly publishAdditionalMetrics?: boolean;
+  private webAclId?: string;
 
   constructor(scope: Construct, id: string, props: DistributionProps) {
     super(scope, id);
@@ -362,13 +362,10 @@ export class Distribution extends Resource implements IDistribution {
       this.addWafCoreProtection();
     }
 
-    if (props.webAclId) {
-      this._webAclId = props.webAclId;
-    }
-
     this.certificate = props.certificate;
     this.errorResponses = props.errorResponses ?? [];
     this.publishAdditionalMetrics = props.publishAdditionalMetrics;
+    this.webAclId = props.webAclId;
 
     // Comments have an undocumented limit of 128 characters
     const trimmedComment =
@@ -394,7 +391,7 @@ export class Distribution extends Resource implements IDistribution {
         restrictions: this.renderRestrictions(props.geoRestriction),
         viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate,
           props.minimumProtocolVersion, props.sslSupportMethod) : undefined,
-        webAclId: this._webAclId,
+        webAclId: Lazy.string({ produce: () => this.webAclId }),
       },
     });
 
@@ -633,19 +630,12 @@ export class Distribution extends Resource implements IDistribution {
   }
 
   /**
-   * Associated WAF WebAcl id of Distribution.
-   */
-  public get webAclId(): string | undefined {
-    return this._webAclId;
-  }
-
-  /**
    * Adds WAF security protection.
    *
    * @param props WAF WebAcl options
    */
   private addWafCoreProtection(props?: aws_wafv2.CfnWebACLProps) {
-    if (this._webAclId) {
+    if (this.webAclId) {
       throw new Error('This distribution already had WAF WebAcl attached');
     }
 
@@ -653,7 +643,19 @@ export class Distribution extends Resource implements IDistribution {
 
     const webAcl = new aws_wafv2.CfnWebACL(this, 'WebAcl', props ?? getDefaultWAFWebAclProps(webAclName));
 
-    this._webAclId = webAcl.attrArn;
+    this.attachWebAclId(webAcl.attrArn);
+  }
+
+  /**
+   * Attach WAF WebACL to this CloudFront distribution
+   *
+   * @param webAclId The WAF WebACL to associate with this distribution
+   */
+  public attachWebAclId(webAclId: string) {
+    if (this.webAclId) {
+      throw new Error('A WebACL has already been attached to this distribution');
+    }
+    this.webAclId = webAclId;
   }
 
   private addOrigin(origin: IOrigin, isFailoverOrigin: boolean = false): string {

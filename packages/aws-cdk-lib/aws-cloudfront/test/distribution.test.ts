@@ -1441,3 +1441,34 @@ describe('WAF protection', () => {
     }).toThrow(/To enable WAF core protection, the stack must be in the us-east-1 region but you are in/);
   });
 });
+
+describe('attachWebAclId', () => {
+  test('can attach WebAcl to the distribution by the method', () => {
+    const origin = defaultOrigin();
+
+    const distribution = new Distribution(stack, 'MyDist', {
+      defaultBehavior: { origin },
+    });
+
+    distribution.attachWebAclId('473e64fd-f30b-4765-81a0-62ad96dd167a');
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        WebACLId: '473e64fd-f30b-4765-81a0-62ad96dd167a',
+      },
+    });
+  });
+
+  test('throws if a WebAcl is already attached to the distribution', () => {
+    const origin = defaultOrigin();
+
+    const distribution = new Distribution(stack, 'MyDist', {
+      defaultBehavior: { origin },
+      webAclId: '473e64fd-f30b-4765-81a0-62ad96dd167a',
+    });
+
+    expect(() => {
+      distribution.attachWebAclId('473e64fd-f30b-4765-81a0-62ad96dd167b');
+    }).toThrow(/A WebACL has already been attached to this distribution/);
+  });
+});
