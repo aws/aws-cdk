@@ -1,9 +1,10 @@
-import { Resource, Annotations } from 'aws-cdk-lib';
+import { Aws, Resource, Annotations } from 'aws-cdk-lib';
 import { IVpc, ISubnet, SubnetSelection, SelectedSubnets, EnableVpnGatewayOptions, VpnGateway, VpnConnectionType, CfnVPCGatewayAttachment, CfnVPNGatewayRoutePropagation, VpnConnectionOptions, VpnConnection, ClientVpnEndpointOptions, ClientVpnEndpoint, InterfaceVpcEndpointOptions, InterfaceVpcEndpoint, GatewayVpcEndpointOptions, GatewayVpcEndpoint, FlowLogOptions, FlowLog, FlowLogResourceType, SubnetType, SubnetFilter } from 'aws-cdk-lib/aws-ec2';
 import { allRouteTableIds, flatten, subnetGroupNameFromConstructId } from './util';
 import { IDependable, Dependable, IConstruct, DependencyGroup } from 'constructs';
-import { EgressOnlyInternetGateway, InternetGateway, NatConnectivityType, NatGateway, NatGatewayOptions, Route, VPNGatewayV2 } from './route';
+import { EgressOnlyInternetGateway, InternetGateway, NatConnectivityType, NatGateway, NatGatewayOptions, Route, VPCPeeringConnection, VPCPeeringConnectionOptions, VPNGatewayV2 } from './route';
 import { ISubnetV2 } from './subnet-v2';
+import { AccountPrincipal, Effect, PolicyStatement, Role } from 'aws-cdk-lib/aws-iam';
 import { IVPCCidrBlock } from './vpc-v2';
 
 /**
@@ -150,6 +151,19 @@ export interface IVpcV2 extends IVpc {
    */
   addNatGateway(options: NatGatewayOptions): NatGateway;
 
+  /**
+   * Adds a new role to acceptor VPC account
+   * A cross account role is required for the VPC to peer with another account.
+   * For more information, see the {@link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/peer-with-vpc-in-another-account.html}.
+   */
+  createAcceptorVpcRole(requestorAccountId: string): Role;
+
+  /**
+   * Creates a new peering connection
+   * A peering connection is a private virtual network established between two VPCs.
+   * For more information, see the {@link https://docs.aws.amazon.com/vpc/latest/peering/what-is-vpc-peering.html}.
+   */
+  createPeeringConnection(id: string, options: VPCPeeringConnectionOptions): VPCPeeringConnection;
 }
 
 /**
@@ -483,6 +497,46 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
   public addFlowLog(id: string, options?: FlowLogOptions): FlowLog {
     return new FlowLog(this, id, {
       resourceType: FlowLogResourceType.fromVpc(this),
+      ...options,
+    });
+  }
+
+  /**
+  * Creates peering connection role for acceptor VPC
+  */
+  public createAcceptorVpcRole(requestorAccountId: string): Role {
+    const peeringRole = new Role(this, 'VpcPeeringRole', {
+      assumedBy: new AccountPrincipal(requestorAccountId),
+      roleName: 'VpcPeeringRole',
+      description: 'Restrictive role for VPC peering',
+    });
+
+    peeringRole.addToPolicy(new PolicyStatement({
+      effect: Effect.ALLOW,
+      actions: ['ec2:AcceptVpcPeeringConnection'],
+      resources: [`arn:${Aws.PARTITION}:ec2:${this.region}:${this.ownerAccountId}:vpc/${this.vpcId}`],
+    }));
+
+    peeringRole.addToPolicy(new PolicyStatement({
+      actions: ['ec2:AcceptVpcPeeringConnection'],
+      effect: Effect.ALLOW,
+      resources: [`arn:${Aws.PARTITION}:ec2:${this.region}:${this.ownerAccountId}:vpc-peering-connection/*`],
+      conditions: {
+        StringEquals: {
+          'ec2:AccepterVpc': `arn:${Aws.PARTITION}:ec2:${this.region}:${this.ownerAccountId}:vpc/${this.vpcId}`,
+        },
+      },
+    }));
+
+    return peeringRole;
+  }
+
+  /**
+  * Creates a peering connection
+  */
+  public createPeeringConnection(id: string, options: VPCPeeringConnectionOptions): VPCPeeringConnection {
+    return new VPCPeeringConnection(this, id, {
+      requestorVpc: this,
       ...options,
     });
   }
