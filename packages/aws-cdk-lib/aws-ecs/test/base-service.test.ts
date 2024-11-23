@@ -79,6 +79,32 @@ describe('When import an ECS Service', () => {
       ],
     });
   });
+
+  test('can specify availabilityZoneRebalancing', () => {
+    // GIVEN
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+    taskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+    });
+    taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+      actions: ['test:SpecialName'],
+      resources: ['*'],
+    }));
+
+    // WHEN
+    new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      availabilityZoneRebalancing: ecs.AvailabilityZoneRebalancing.ENABLED,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      AvailabilityZoneRebalancing: 'ENABLED',
+    });
+  });
 });
 
 describe('For alarm-based rollbacks', () => {

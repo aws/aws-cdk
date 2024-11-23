@@ -1106,6 +1106,36 @@ const service = ecs.FargateService.fromFargateServiceAttributes(this, 'EcsServic
 const service = ecs.FargateService.fromFargateServiceArn(this, 'EcsService', 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service');
 ```
 
+### Availability Zone Rebalancing
+
+To achieve high application availability, it is recommended that ECS service tasks be distributed across multiple availability zones. However, AZ failures and other factors can cause an imbalance in the number of tasks.
+
+With Availability Zone Rebalancing enabled, ECS continuously monitors the task distribution for each service and automatically takes corrective action when imbalances are detected. This allows task distribution to be maintained without manual intervention.
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
+const service = new ecs.FargateService(stack, 'FargateService', {
+  cluster,
+  taskDefinition,
+  availabilityZoneRebalancing: ecs.AvailabilityZoneRebalancing.ENABLED,
+});
+```
+
+This rebalancing feature is available for the following configurations
+
+- Services that use the `Replica` strategy
+- Services that specify Availability Zone spread as the first task placement strategy, or do not specify a placement strategy.
+
+Not available for the following:
+
+- Use the `Daemon` strategy
+- Use the `EXTERNAL` boot type (ECS Anywhere)
+- Uses 100% for the `maximumPercent` value.
+- Uses a Classic Load Balancer
+- Uses the `attribute:ecs.availability-zone` as a task placement constraint
+
 ## Task Auto-Scaling
 
 You can configure the task count of a service to match demand. Task auto-scaling is

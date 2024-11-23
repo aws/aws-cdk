@@ -257,6 +257,20 @@ export interface ServiceConnectService {
 }
 
 /**
+ * Indicates whether to use Availability Zone rebalancing for the service.
+ */
+export enum AvailabilityZoneRebalancing {
+  /**
+   * Enables Availability Zone rebalancing for the service.
+   */
+  ENABLED = 'ENABLED',
+  /**
+   * Disables Availability Zone rebalancing for the service.
+   */
+  DISABLED = 'DISABLED',
+}
+
+/**
  * The properties for the base Ec2Service or FargateService service.
  */
 export interface BaseServiceOptions {
@@ -400,6 +414,14 @@ export interface BaseServiceOptions {
    * @default - undefined
    */
   readonly volumeConfigurations?: ServiceManagedVolume[];
+
+  /**
+   * Indicates whether to use Availability Zone rebalancing for the service
+   *
+   * For more information, see [Amazon ECS Service Rebalancing](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-rebalancing.html)
+   * @default - DISABLED
+   */
+  readonly availabilityZoneRebalancing?: AvailabilityZoneRebalancing;
 }
 
 /**
@@ -656,6 +678,7 @@ export abstract class BaseService extends Resource
     const deploymentController = this.getDeploymentController(props);
     this.resource = new CfnService(this, 'Service', {
       desiredCount: props.desiredCount,
+      availabilityZoneRebalancing: props.availabilityZoneRebalancing ?? AvailabilityZoneRebalancing.DISABLED,
       serviceName: this.physicalName,
       loadBalancers: Lazy.any({ produce: () => this.loadBalancers }, { omitEmptyArray: true }),
       deploymentConfiguration: {
