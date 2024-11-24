@@ -25,7 +25,7 @@ jobs:
       - name: Update Lambda Runtime Tests
         run: |
           cd tools/@aws-cdk/lambda-integration-test-updater
-          ./bin/lambda-integration-test-updater
+          ./bin/update-lambda-runtimestes-integ-testing
 
       - name: Check for changes
         id: git-check
