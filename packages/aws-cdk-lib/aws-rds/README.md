@@ -1425,22 +1425,24 @@ Amazon Aurora [PostgreSQL Limitless Database](https://docs.aws.amazon.com/Amazon
 The following example shows creating an Aurora PostgreSQL Limitless Database cluster:
 
 ```ts
+import { Duration } from 'aws-cdk-lib';
+
 declare const vpc: ec2.IVpc;
 
-new DatabaseCluster(this, 'LimitlessDatabaseCluster', {
-  engine: DatabaseClusterEngine.auroraPostgres({
-    version: AuroraPostgresEngineVersion.VER_16_4_LIMITLESS,
+new rds.DatabaseCluster(this, 'LimitlessDatabaseCluster', {
+  engine: rds.DatabaseClusterEngine.auroraPostgres({
+    version: rds.AuroraPostgresEngineVersion.VER_16_4_LIMITLESS,
   }),
   vpc,
-  clusterScailabilityType: ClusterScailabilityType.LIMITLESS,
+  clusterScailabilityType: rds.ClusterScailabilityType.LIMITLESS,
   // Requires enabling Performance Insights
   enablePerformanceInsights: true,
-  performanceInsightRetention: PerformanceInsightRetention.MONTHS_1,
+  performanceInsightRetention: rds.PerformanceInsightRetention.MONTHS_1,
   // Requires enabling Enhanced Monitoring at the cluster level
-  monitoringInterval: cdk.Duration.minutes(1),
+  monitoringInterval: Duration.minutes(1),
   enableClusterLevelEnhancedMonitoring: true,
   // Requires I/O optimized storage type
-  storageType: DBClusterStorageType.AURORA_IOPT1,
+  storageType: rds.DBClusterStorageType.AURORA_IOPT1,
   // Requires exporting the PostgreSQL log to Amazon CloudWatch Logs.
   cloudwatchLogsExports: ['postgresql'],
 });
