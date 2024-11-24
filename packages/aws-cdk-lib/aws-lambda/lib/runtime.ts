@@ -124,6 +124,11 @@ export class Runtime {
   public static readonly NODEJS_22_X = new Runtime('nodejs22.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
   /**
+   * The NodeJS 23.x runtime (nodejs23.x)
+   */
+  public static readonly NODEJS_23_X = new Runtime('nodejs23.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
+
+  /**
    * The Python 2.7 runtime (python2.7)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest Python runtime.
    */
