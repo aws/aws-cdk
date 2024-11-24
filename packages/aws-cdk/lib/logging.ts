@@ -16,6 +16,7 @@ export interface LogEntry {
   timestamp?: boolean;
   prefix?: string;
   style?: ((str: string) => string);
+  forceStdout?: boolean;
 }
 
 const { stdout, stderr } = process;
@@ -35,7 +36,11 @@ const styleMap: Record<LogLevel, (str: string) => string> = {
 
 // Stream selection
 let CI = false;
-const getStream = (level: LogLevel): Writable => {
+const getStream = (level: LogLevel, forceStdout?: boolean): Writable => {
+  // Special case - data() calls should always go to stdout
+  if (forceStdout) {
+    return stdout;
+  }
   if (level === LogLevel.ERROR) return stderr;
   return CI ? stdout : stderr;
 };
@@ -107,8 +112,8 @@ export function log(levelOrEntry: LogLevel | LogEntry, fmt?: string, ...args: un
   const style = entry.style || styleMap[entry.level];
   finalMessage = style(finalMessage);
 
-  // Get appropriate stream
-  const stream = getStream(entry.level);
+  // Get appropriate stream - pass through forceStdout flag
+  const stream = getStream(entry.level, entry.forceStdout);
 
   // Handle corking
   if (CORK_COUNTER > 0) {
@@ -125,11 +130,15 @@ export const error = (fmt: string, ...args: unknown[]) => log(LogLevel.ERROR, fm
 export const warning = (fmt: string, ...args: unknown[]) => log(LogLevel.WARN, fmt, ...args);
 export const info = (fmt: string, ...args: unknown[]) => log(LogLevel.INFO, fmt, ...args);
 export const print = (fmt: string, ...args: unknown[]) => log(LogLevel.INFO, fmt, ...args);
-export const data = (fmt: string, ...args: unknown[]) => log(LogLevel.INFO, fmt, ...args);
+export const data = (fmt: string, ...args: unknown[]) => log({
+  level: LogLevel.INFO,
+  message: util.format(fmt, ...args),
+  forceStdout: true, // Force stdout for data() calls
+});
 export const debug = (fmt: string, ...args: unknown[]) => log(LogLevel.DEBUG, fmt, ...args);
 export const trace = (fmt: string, ...args: unknown[]) => log(LogLevel.TRACE, fmt, ...args);
 
-// New convenience methods using custom styles
+// onvenience methods using custom styles
 export const success = (fmt: string, ...args: unknown[]) => log({
   level: LogLevel.INFO,
   message: util.format(fmt, ...args),
