@@ -219,7 +219,7 @@ function synthNestedAssemblies(root: IConstruct, options: StageSynthesisOptions)
  * twice for the same construct.
  */
 function invokeAspects(root: IConstruct) {
-  const invokedByPath: { [nodePath: string]: IAspect[] } = { };
+  const invokedByPath: { [nodePath: string]: AspectApplication[] } = { };
 
   let nestedAspectWarning = false;
   recurse(root, []);
@@ -238,7 +238,9 @@ function invokeAspects(root: IConstruct) {
         invoked = invokedByPath[node.path] = [];
       }
 
-      if (invoked.includes(aspectApplication.aspect)) { continue; }
+      if (invoked.some(invokedApp => invokedApp.aspect === aspectApplication.aspect)) {
+        continue;
+      }
 
       aspectApplication.aspect.visit(construct);
 
@@ -250,7 +252,7 @@ function invokeAspects(root: IConstruct) {
       }
 
       // mark as invoked for this node
-      invoked.push(aspectApplication.aspect);
+      invoked.push(aspectApplication);
     }
 
     for (const child of construct.node.children) {
@@ -267,7 +269,7 @@ function invokeAspects(root: IConstruct) {
  * '@aws-cdk/core:aspectStabilization' is enabled.
  */
 function invokeAspectsV2(root: IConstruct) {
-  const invokedByPath: { [nodePath: string]: IAspect[] } = { };
+  const invokedByPath: { [nodePath: string]: AspectApplication[] } = { };
 
   recurse(root, []);
 
@@ -297,22 +299,24 @@ function invokeAspectsV2(root: IConstruct) {
         invoked = invokedByPath[node.path] = [];
       }
 
-      if (invoked.includes(aspectApplication.aspect)) { continue; }
+      if (invoked.some(invokedApp => invokedApp.aspect === aspectApplication.aspect)) {
+        continue;
+      }
 
       // If the last invoked Aspect has a higher priority than the current one, throw an error:
-      // const lastInvokedAspect = invoked[invoked.length - 1];
-      // if (lastInvokedAspect && lastInvokedAspect.priority > aspectApplication.priority) {
-      //   throw new Error(
-      //     `Aspect ${aspectApplication.aspect.constructor.name} with priority ${aspectApplication.priority} invoked after ${lastInvokedAspect.aspect.constructor.name} with priority ${lastInvokedAspect.priority} at ${node.path}.`,
-      //   );
-      // };
+      const lastInvokedAspect = invoked[invoked.length - 1];
+      if (lastInvokedAspect && lastInvokedAspect.priority > aspectApplication.priority) {
+        throw new Error(
+          `Aspect ${aspectApplication.aspect.constructor.name} with priority ${aspectApplication.priority} invoked after ${lastInvokedAspect.aspect.constructor.name} with priority ${lastInvokedAspect.priority} at ${node.path}.`,
+        );
+      };
 
       aspectApplication.aspect.visit(construct);
 
       didSomething = true;
 
       // mark as invoked for this node
-      invoked.push(aspectApplication.aspect);
+      invoked.push(aspectApplication);
     }
 
     let childDidSomething = false;
