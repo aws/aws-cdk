@@ -326,11 +326,7 @@ async function initializeProject(
   }
   if (await fs.pathExists('README.md')) {
     const readme = await fs.readFile('README.md', { encoding: 'utf-8' });
-    // Save the logs!
-    // Without this statement, the readme of the CLI is printed in every init test
-    if (!readme.startsWith('# AWS CDK Toolkit')) {
-      print(chalk.green(readme));
-    }
+    print(chalk.green(readme));
   }
 
   if (!generateOnly) {
