@@ -205,11 +205,14 @@ $ cdk deploy -R
 ```
 
 If a deployment fails you can update your code and immediately retry the
-deployment from the point of failure. If you would like to explicitly roll back a failed, paused deployment,
-use `cdk rollback`.
+deployment from the point of failure. If you would like to explicitly roll back
+a failed, paused deployment, use `cdk rollback`.
 
-NOTE: you cannot use `--no-rollback` for any updates that would cause a resource replacement, only for updates
-and creations of new resources.
+`--no-rollback` deployments cannot contain resource replacements. If the CLI
+detects that a resource is being replaced, it will prompt you to perform
+a regular replacement instead. If the stack rollback is currently paused
+and you are trying to perform an deployment that contains a replacement, you
+will be prompted to roll back first.
 
 #### Deploying multiple stacks
 
@@ -801,7 +804,7 @@ In practice this means for any resource in the provided template, for example,
     }
 ```
 
-There must not exist a resource of that type with the same identifier in the desired region. In this example that identfier 
+There must not exist a resource of that type with the same identifier in the desired region. In this example that identfier
 would be "amzn-s3-demo-bucket"
 
 ##### **The provided template is not deployed to CloudFormation in the account/region, and there *is* overlap with existing resources in the account/region**
@@ -895,29 +898,41 @@ cdk bootstrap --no-previous-parameters
 CDK Garbage Collection.
 
 > [!CAUTION]
-> CDK Garbage Collection is under development and therefore must be opted in via the `--unstable` flag: `cdk gc --unstable=gc`.
->
-> [!WARNING]
-> `cdk gc` currently only supports garbage collecting S3 Assets. You must specify `cdk gc --unstable=gc --type=s3` as ECR asset garbage collection has not yet been implemented.
+> CDK Garbage Collection is under development and therefore must be opted in via the 
+>`--unstable` flag: `cdk gc --unstable=gc`. `--unstable` indicates that the scope and 
+> API of feature might still change. Otherwise the feature is generally production 
+> ready and fully supported.
 
-`cdk gc` garbage collects unused S3 assets from your bootstrap bucket via the following mechanism: 
+`cdk gc` garbage collects unused assets from your bootstrap bucket via the following mechanism:
 
 - for each object in the bootstrap S3 Bucket, check to see if it is referenced in any existing CloudFormation templates
 - if not, it is treated as unused and gc will either tag it or delete it, depending on your configuration.
 
+The high-level mechanism works identically for unused assets in bootstrapped ECR Repositories.
+
 The most basic usage looks like this:
+
+```console
+cdk gc --unstable=gc
+```
+
+This will garbage collect all unused assets in all environments of the existing CDK App.
+
+To specify one type of asset, use the `type` option (options are `all`, `s3`, `ecr`):
 
 ```console
 cdk gc --unstable=gc --type=s3
 ```
 
-This will garbage collect S3 assets from the current bootstrapped environment(s) and immediately delete them. Note that, since the default bootstrap S3 Bucket is versioned, object deletion will be handled by the lifecycle
+Otherwise `cdk gc` defaults to collecting assets in both the bootstrapped S3 Bucket and ECR Repository.
+
+`cdk gc` will garbage collect S3 and ECR assets from the current bootstrapped environment(s) and immediately delete them. Note that, since the default bootstrap S3 Bucket is versioned, object deletion will be handled by the lifecycle
 policy on the bucket.
 
 Before we begin to delete your assets, you will be prompted:
 
 ```console
-cdk gc --unstable=gc --type=s3
+cdk gc --unstable=gc
 
 Found X objects to delete based off of the following criteria:
 - objects have been isolated for > 0 days
@@ -926,17 +941,17 @@ Found X objects to delete based off of the following criteria:
 Delete this batch (yes/no/delete-all)?
 ```
 
-Since it's quite possible that the bootstrap bucket has many objects, we work in batches of 1000 objects. To skip the
-prompt either reply with `delete-all`, or use the `--confirm=false` option.
+Since it's quite possible that the bootstrap bucket has many objects, we work in batches of 1000 objects or 100 images.
+To skip the prompt either reply with `delete-all`, or use the `--confirm=false` option.
 
 ```console
-cdk gc --unstable=gc --type=s3 --confirm=false
+cdk gc --unstable=gc --confirm=false
 ```
 
 If you are concerned about deleting assets too aggressively, there are multiple levers you can configure:
 
 - rollback-buffer-days: this is the amount of days an asset has to be marked as isolated before it is elligible for deletion.
-- created-buffer-days: this is the amount of days an asset must live before it is elligible for deletion. 
+- created-buffer-days: this is the amount of days an asset must live before it is elligible for deletion.
 
 When using `rollback-buffer-days`, instead of deleting unused objects, `cdk gc` will tag them with
 today's date instead. It will also check if any objects have been tagged by previous runs of `cdk gc`
@@ -946,7 +961,7 @@ When using `created-buffer-days`, we simply filter out any assets that have not 
 of days.
 
 ```console
-cdk gc --unstable=gc --type=s3 --rollback-buffer-days=30 --created-buffer-days=1
+cdk gc --unstable=gc --rollback-buffer-days=30 --created-buffer-days=1
 ```
 
 You can also configure the scope that `cdk gc` performs via the `--action` option. By default, all actions
@@ -957,10 +972,30 @@ are performed, but you can specify `print`, `tag`, or `delete-tagged`.
 - `delete-tagged` deletes assets that have been tagged for longer than the buffer days, but does not tag newly unused assets.
 
 ```console
-cdk gc --unstable=gc --type=s3 --action=delete-tagged --rollback-buffer-days=30
+cdk gc --unstable=gc --action=delete-tagged --rollback-buffer-days=30
 ```
 
 This will delete assets that have been unused for >30 days, but will not tag additional assets.
+
+Here is a diagram that shows the algorithm of garbage collection:
+
+![Diagram of Garbage Collection algorithm](images/garbage-collection.png)
+
+#### Theoretical Race Condition with `REVIEW_IN_PROGRESS` stacks
+
+When gathering stack templates, we are currently ignoring `REVIEW_IN_PROGRESS` stacks as no template
+is available during the time the stack is in that state. However, stacks in `REVIEW_IN_PROGRESS` have already
+passed through the asset uploading step, where it either uploads new assets or ensures that the asset exists.
+Therefore it is possible the assets it references are marked as isolated and garbage collected before the stack
+template is available.
+
+Our recommendation is to not deploy stacks and run garbage collection at the same time. If that is unavoidable,
+setting `--created-buffer-days` will help as garbage collection will avoid deleting assets that are recently
+created. Finally, if you do result in a failed deployment, the mitigation is to redeploy, as the asset upload step
+will be able to reupload the missing asset.
+
+In practice, this race condition is only for a specific edge case and unlikely to happen but please open an
+issue if you think that this has happened to your stack.
 
 ### `cdk doctor`
 

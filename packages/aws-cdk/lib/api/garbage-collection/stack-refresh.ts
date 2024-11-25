@@ -1,6 +1,6 @@
-import { CloudFormation } from 'aws-sdk';
-import { sleep } from '../../../test/util';
+import { ParameterDeclaration } from '@aws-sdk/client-cloudformation';
 import { debug } from '../../logging';
+import { ICloudFormationClient } from '../aws-auth';
 
 export class ActiveAssetCache {
   private readonly stacks: Set<string> = new Set();
@@ -30,45 +30,22 @@ async function paginateSdkCall(cb: (nextToken?: string) => Promise<string | unde
   }
 }
 
-/** We cannot operate on REVIEW_IN_PROGRESS stacks because we do not know what the template looks like in this case
- * If we encounter this status, we will wait up to the maxWaitTime before erroring out
- */
-async function listStacksNotBeingReviewed(cfn: CloudFormation, maxWaitTime: number, nextToken: string | undefined) {
-  let sleepMs = 500;
-  const deadline = Date.now() + maxWaitTime;
-
-  while (Date.now() <= deadline) {
-    let stacks = await cfn.listStacks({ NextToken: nextToken }).promise();
-    if (!stacks.StackSummaries?.some(s => s.StackStatus == 'REVIEW_IN_PROGRESS')) {
-      return stacks;
-    }
-    await sleep(Math.floor(Math.random() * sleepMs));
-    sleepMs = sleepMs * 2;
-  }
-
-  throw new Error(`Stacks still in REVIEW_IN_PROGRESS state after waiting for ${maxWaitTime} ms.`);
-}
-
 /**
  * Fetches all relevant stack templates from CloudFormation. It ignores the following stacks:
  * - stacks in DELETE_COMPLETE or DELETE_IN_PROGRESS stage
  * - stacks that are using a different bootstrap qualifier
- *
- * It fails on the following stacks because we cannot get the template and therefore have an imcomplete
- * understanding of what assets are being used.
- * - stacks in REVIEW_IN_PROGRESS stage
  */
-async function fetchAllStackTemplates(cfn: CloudFormation, maxWaitTime: number, qualifier?: string) {
+async function fetchAllStackTemplates(cfn: ICloudFormationClient, qualifier?: string) {
   const stackNames: string[] = [];
   await paginateSdkCall(async (nextToken) => {
-    const stacks = await listStacksNotBeingReviewed(cfn, maxWaitTime, nextToken);
+    const stacks = await cfn.listStacks({ NextToken: nextToken });
 
     // We ignore stacks with these statuses because their assets are no longer live
-    const ignoredStatues = ['CREATE_FAILED', 'DELETE_COMPLETE', 'DELETE_IN_PROGRESS', 'DELETE_FAILED'];
+    const ignoredStatues = ['CREATE_FAILED', 'DELETE_COMPLETE', 'DELETE_IN_PROGRESS', 'DELETE_FAILED', 'REVIEW_IN_PROGRESS'];
     stackNames.push(
       ...(stacks.StackSummaries ?? [])
-        .filter(s => !ignoredStatues.includes(s.StackStatus))
-        .map(s => s.StackId ?? s.StackName),
+        .filter((s: any) => !ignoredStatues.includes(s.StackStatus))
+        .map((s: any) => s.StackId ?? s.StackName),
     );
 
     return stacks.NextToken;
@@ -81,7 +58,7 @@ async function fetchAllStackTemplates(cfn: CloudFormation, maxWaitTime: number, 
     let summary;
     summary = await cfn.getTemplateSummary({
       StackName: stack,
-    }).promise();
+    });
 
     if (bootstrapFilter(summary.Parameters, qualifier)) {
       // This stack is definitely bootstrapped to a different qualifier so we can safely ignore it
@@ -89,7 +66,7 @@ async function fetchAllStackTemplates(cfn: CloudFormation, maxWaitTime: number, 
     } else {
       const template = await cfn.getTemplate({
         StackName: stack,
-      }).promise();
+      });
 
       templates.push((template.TemplateBody ?? '') + JSON.stringify(summary?.Parameters));
     }
@@ -109,7 +86,7 @@ async function fetchAllStackTemplates(cfn: CloudFormation, maxWaitTime: number, 
  * This is intentionally done in a way where we ONLY filter out stacks that are meant for a different qualifier
  * because we are okay with false positives.
  */
-function bootstrapFilter(parameters?: CloudFormation.ParameterDeclarations, qualifier?: string) {
+function bootstrapFilter(parameters?: ParameterDeclaration[], qualifier?: string) {
   const bootstrapVersion = parameters?.find((p) => p.ParameterKey === 'BootstrapVersion');
   const splitBootstrapVersion = bootstrapVersion?.DefaultValue?.split('/');
   // We find the qualifier in a specific part of the bootstrap version parameter
@@ -119,9 +96,9 @@ function bootstrapFilter(parameters?: CloudFormation.ParameterDeclarations, qual
           splitBootstrapVersion[2] != qualifier);
 }
 
-export async function refreshStacks(cfn: CloudFormation, activeAssets: ActiveAssetCache, maxWaitTime: number, qualifier?: string) {
+export async function refreshStacks(cfn: ICloudFormationClient, activeAssets: ActiveAssetCache, qualifier?: string) {
   try {
-    const stacks = await fetchAllStackTemplates(cfn, maxWaitTime, qualifier);
+    const stacks = await fetchAllStackTemplates(cfn, qualifier);
     for (const stack of stacks) {
       activeAssets.rememberStack(stack);
     }
@@ -137,7 +114,7 @@ export interface BackgroundStackRefreshProps {
   /**
    * The CFN SDK handler
    */
-  readonly cfn: CloudFormation;
+  readonly cfn: ICloudFormationClient;
 
   /**
    * Active Asset storage
@@ -148,13 +125,6 @@ export interface BackgroundStackRefreshProps {
    * Stack bootstrap qualifier
    */
   readonly qualifier?: string;
-
-  /**
-   * Maximum wait time when waiting for stacks to leave REVIEW_IN_PROGRESS stage.
-   *
-   * @default 60000
-   */
-  readonly maxWaitTime?: number;
 }
 
 /**
@@ -178,7 +148,7 @@ export class BackgroundStackRefresh {
   private async refresh() {
     const startTime = Date.now();
 
-    await refreshStacks(this.props.cfn, this.props.activeAssets, this.props.maxWaitTime ?? 60000, this.props.qualifier);
+    await refreshStacks(this.props.cfn, this.props.activeAssets, this.props.qualifier);
     this.justRefreshedStacks();
 
     // If the last invocation of refreshStacks takes <5 minutes, the next invocation starts 5 minutes after the last one started.

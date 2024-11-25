@@ -2,6 +2,88 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.170.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.169.0-alpha.0...v2.170.0-alpha.0) (2024-11-22)
+
+## [2.169.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.168.0-alpha.0...v2.169.0-alpha.0) (2024-11-21)
+
+
+### Features
+
+* **location:** support Map ([#30648](https://github.com/aws/aws-cdk/issues/30648)) ([98b801c](https://github.com/aws/aws-cdk/commit/98b801cae9c7a957469ef61121878d81a09f4cfe)), closes [#30647](https://github.com/aws/aws-cdk/issues/30647)
+* **scheduler:** `scheduler` and `scheduler-targets` modules are now in Developer Preview ([#32207](https://github.com/aws/aws-cdk/issues/32207)) ([8776832](https://github.com/aws/aws-cdk/commit/877683233f1af9674cd2e715411eed6ebc4e3e11)), closes [#31785](https://github.com/aws/aws-cdk/issues/31785)
+
+
+### Bug Fixes
+
+* **location:** underscores are not allowed in the name ([#32046](https://github.com/aws/aws-cdk/issues/32046)) ([f6ad9c9](https://github.com/aws/aws-cdk/commit/f6ad9c99db902064ab62e236fec3d7fbfcca828a))
+
+## [2.168.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.167.2-alpha.0...v2.168.0-alpha.0) (2024-11-20)
+
+
+### Bug Fixes
+
+* **scheduler-targets-alpha:** imported target resources as schedule target throws synth error ([#32105](https://github.com/aws/aws-cdk/issues/32105)) ([1a8306f](https://github.com/aws/aws-cdk/commit/1a8306fab7d746fb66019979e8f353e17499cfbf)), closes [#31785](https://github.com/aws/aws-cdk/issues/31785) [/github.com/aws/aws-cdk/pull/29615#issuecomment-2417858246](https://github.com/aws//github.com/aws/aws-cdk/pull/29615/issues/issuecomment-2417858246)
+* **scheduler-targets-alpha:** kinesis data firehose target uses l1 instead of l2 ([#32150](https://github.com/aws/aws-cdk/issues/32150)) ([11384f0](https://github.com/aws/aws-cdk/commit/11384f0718947aebe519e346ffe31429289a9a63)), closes [#31785](https://github.com/aws/aws-cdk/issues/31785)
+* **scheduler-targets-alpha:** scope down permissions for sqs and kinesis stream targets ([#32122](https://github.com/aws/aws-cdk/issues/32122)) ([6bb142e](https://github.com/aws/aws-cdk/commit/6bb142e805fdd754755cc54c31c0e6e7970be7f9)), closes [#31785](https://github.com/aws/aws-cdk/issues/31785)
+
+## [2.167.2-alpha.0](https://github.com/aws/aws-cdk/compare/v2.167.1-alpha.0...v2.167.2-alpha.0) (2024-11-18)
+
+## [2.167.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.167.0-alpha.0...v2.167.1-alpha.0) (2024-11-14)
+
+## [2.167.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.166.0-alpha.0...v2.167.0-alpha.0) (2024-11-13)
+
+
+### Features
+
+* **ivs:** support recording configuration for channel ([#31899](https://github.com/aws/aws-cdk/issues/31899)) ([8a3734d](https://github.com/aws/aws-cdk/commit/8a3734d25ce36460b6fee583a7e2049b17f79d87)), closes [#31780](https://github.com/aws/aws-cdk/issues/31780)
+* **redshift:** relocating a cluster ([#31993](https://github.com/aws/aws-cdk/issues/31993)) ([b763d86](https://github.com/aws/aws-cdk/commit/b763d866d660f72bf70c1cf37dadd58769642746))
+
+
+### Bug Fixes
+
+* **scheduler-targets-alpha:** add dlq policy to execution role instead of queue policy ([#32032](https://github.com/aws/aws-cdk/issues/32032)) ([b953b2a](https://github.com/aws/aws-cdk/commit/b953b2a3f01a1e75baf6426bbff5f63e49d3e626)), closes [#31785](https://github.com/aws/aws-cdk/issues/31785)
+
+## [2.166.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.165.0-alpha.0...v2.166.0-alpha.0) (2024-11-06)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **scheduler-targets-alpha:** Schedule Target will reuse role if target is re-used across schedules. This change triggered replacement of existing roles for Schedule as logical ID of the roles are changed.
+
+### Features
+
+* **glue-alpha:** add job run queuing to Glue job ([#31830](https://github.com/aws/aws-cdk/issues/31830)) ([5fca268](https://github.com/aws/aws-cdk/commit/5fca268e455c1ae7c424a4dec01c0c08bec3c16c)), closes [#31826](https://github.com/aws/aws-cdk/issues/31826)
+
+
+### Bug Fixes
+
+* **scheduler-targets-alpha:** create a role per target instead of singleton schedule target role ([#31895](https://github.com/aws/aws-cdk/issues/31895)) ([aee1b30](https://github.com/aws/aws-cdk/commit/aee1b30adabebe1712720d0d7d27ed4704ac9719)), closes [#31785](https://github.com/aws/aws-cdk/issues/31785)
+
+## [2.165.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.164.1-alpha.0...v2.165.0-alpha.0) (2024-10-31)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **ec2-alpha:** The new `VpcCidrBlock` L2 construct replaces `CfnVPCCidrBlock`. This change alters the logical ID of `AWS::EC2::VPCCidrBlock` resources in CloudFormation templates. Existing deployments will see errors like `CIDR range conflicts with x.xx.xx.xx/xx with association ID vpc-cidr-assoc-ABCD`. To resolve this, you must recreate your existing stacks to use the new module.
+
+### Features
+
+* **apprunner:** support vpc ingress connection ([#30623](https://github.com/aws/aws-cdk/issues/30623)) ([048e753](https://github.com/aws/aws-cdk/commit/048e7538dd71d69c2add28ff454b6d9c69b4f256)), closes [#22850](https://github.com/aws/aws-cdk/issues/22850)
+* **ec2-alpha:** adding imports for SubnetV2 and VpcV2 ([#31765](https://github.com/aws/aws-cdk/issues/31765)) ([d108a80](https://github.com/aws/aws-cdk/commit/d108a8003e463301acea15076501cd815b0eda4a))
+* **location:** support Tracker and TrackerConsumer ([#31268](https://github.com/aws/aws-cdk/issues/31268)) ([046f041](https://github.com/aws/aws-cdk/commit/046f0418a3de08a59c940a7a3d93148cb5f0659b)), closes [#30712](https://github.com/aws/aws-cdk/issues/30712)
+* **pipes-enrichments:** support API Gateway enrichment ([#31794](https://github.com/aws/aws-cdk/issues/31794)) ([09052c2](https://github.com/aws/aws-cdk/commit/09052c2060c410028896fd54e76a857b2141c8a4)), closes [#29384](https://github.com/aws/aws-cdk/issues/29384)
+* **pipes-targets:** add SageMaker ([#30696](https://github.com/aws/aws-cdk/issues/30696)) ([a5fdf57](https://github.com/aws/aws-cdk/commit/a5fdf570beb1456b1307276f56d90fd1ba0b46d8))
+* **redshift-alpha:** query execution timeout setting during table creation ([#31818](https://github.com/aws/aws-cdk/issues/31818)) ([40f07ae](https://github.com/aws/aws-cdk/commit/40f07ae330d074cfa7861e24a0427da7ec427f68)), closes [#31329](https://github.com/aws/aws-cdk/issues/31329)
+* **kinesisfirehose-alpha:** kinesis firehose and kinesis firehose destinations modules are now in Developer Preview ([#31952](https://github.com/aws/aws-cdk/pull/31952))
+
+### Bug Fixes
+
+* **location:** remove base class from PlaceIndex class ([#31287](https://github.com/aws/aws-cdk/issues/31287)) ([bc67866](https://github.com/aws/aws-cdk/commit/bc67866f579c401556d427eb150bcd118d69bd17)), closes [#30711](https://github.com/aws/aws-cdk/issues/30711) [#30682](https://github.com/aws/aws-cdk/issues/30682) 
+* **scheduler-alpha:** scheduler input always get transformed to string with extra double quotes ([#31894](https://github.com/aws/aws-cdk/issues/31894)) ([186b8ab](https://github.com/aws/aws-cdk/commit/186b8abfab8452b31cba13b56998242f63c43159))
+* **scheduler-alpha:** too many KMS permissions granted ([#31923](https://github.com/aws/aws-cdk/issues/31923)) ([06678a3](https://github.com/aws/aws-cdk/commit/06678a39e029582af14c8b021f946b9ce9cac9be)), closes [#31785](https://github.com/aws/aws-cdk/issues/31785)
+
+## [2.164.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.164.0-alpha.0...v2.164.1-alpha.0) (2024-10-25)
+
 ## [2.164.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.163.1-alpha.0...v2.164.0-alpha.0) (2024-10-24)
 
 
