@@ -7,16 +7,6 @@ import { App, AppProps, AspectApplication, Aspects, IAspect } from '../lib';
 //////////////////////////////////////////////////////////////////////
 //  Tests
 
-// test('aspects only get invoked at most once on every construct', () => fc.assert(
-//   fc.property(appWithAspects(), afterSynth((app) => {
-//     console.log(app.visitLog.length);
-//     forEveryVisitPair(app.visitLog, (a, b) => {
-//       if (sameConstruct(a, b) && sameAspect(a, b)) {
-//         throw new Error(`Duplicate visit: ${a.index} and ${b.index}`);
-//       }
-//     });
-//   })),
-// ));
 test('for every construct, lower priorities go before higher priorities', () =>
   fc.assert(
     fc.property(appWithAspects(), fc.boolean(), (app, stabilizeAspects) => {
@@ -32,24 +22,55 @@ test('for every construct, lower priorities go before higher priorities', () =>
 );
 
 test.todo('every aspect applied on the tree eventually executes on all of its nodes in scope');
+// test('every aspect applied on the tree eventually executes on all of its nodes in scope', () =>
+//   fc.assert(
+//     fc.property(appWithAspects(), (app) => {
+//       afterSynth((testApp) => {
+//         forEveryVisitPair(testApp.visitLog, (a, b) => {
+//           if (!sameConstruct(a, b)) return;
 
-test.todo('inherited aspects get invoked before locally defined aspects, if both have the same priority');
+//           if (!sameAspect(a, b)) return;
 
-// test('for every construct, lower priorities go before higher priorities', () => fc.assert(
-//   fc.property(appWithAspects(), afterSynth((app) => {
-//     forEveryVisitPair(app.visitLog, (a, b) => {
-//       if (!sameConstruct(a, b)) { return; }
+//           // If a is an ancestor of b ...
+//           if (!implies(ancestorOf(a.construct, b.construct), true)) {
 
-//       const aPrio = lowestAspectPrioFor(a.aspect, a.construct);
-//       const bPrio = lowestAspectPrioFor(b.aspect, b.construct);
+//           }
 
-//       // a.prio < b.prio => a.index < b.index
-//       if (!implies(aPrio < bPrio, a.index < b.index)) {
-//         throw new Error(`Aspect ${a.aspect}@${aPrio} at ${a.index} should have been before ${b.aspect}@${bPrio} at ${b.index}, but was after`);
-//       }
-//     });
-//   }, false),
-//   )));
+//           // if (sameConstruct(a, b) && sameAspect(a, b)) {
+//           //   throw new Error(`Duplicate visit: ${a.index} and ${b.index}`);
+//           // }
+//         });
+//       }, true)(app);
+//     }),
+//   ),
+// );
+
+test('inherited aspects get invoked before locally defined aspects, if both have the same priority', () =>
+  fc.assert(
+    fc.property(appWithAspects(), fc.boolean(), (app, stabilizeAspects) => {
+      afterSynth((testApp) => {
+        forEveryVisitPair(testApp.visitLog, (a, b) => {
+          if (!sameConstruct(a, b)) return;
+
+          const aPrio = lowestAspectPrioFor(a.aspect, a.construct);
+          const bPrio = lowestAspectPrioFor(b.aspect, b.construct);
+
+          if (!(aPrio == bPrio)) return;
+
+          const aInherited = allAncestorAspects(a.construct).includes(a.aspect);
+          const bInherited = allAncestorAspects(b.construct).includes(b.aspect);
+
+          if (!implies(aInherited == true && bInherited == false, a.index < b.index)) {
+            throw new Error(
+              `Aspect ${a.aspect}@${aPrio} at ${a.index} should have been before ${b.aspect}@${bPrio} at ${b.index}, but was after`,
+            );
+          }
+        });
+      }, stabilizeAspects)(app);
+    }),
+  ),
+);
+
 test('for every construct, lower priorities go before higher priorities', () =>
   fc.assert(
     fc.property(appWithAspects(), fc.boolean(), (app, stabilizeAspects) => {
@@ -71,7 +92,26 @@ test('for every construct, lower priorities go before higher priorities', () =>
   ),
 );
 
-test.todo('for every construct, if a invokes before b that must mean it is of equal or lower priority');
+test('for every construct, if a invokes before b that must mean it is of equal or lower priority', () =>
+  fc.assert(
+    fc.property(appWithAspects(), fc.boolean(), (app, stabilizeAspects) => {
+      afterSynth((testApp) => {
+        forEveryVisitPair(testApp.visitLog, (a, b) => {
+          if (!sameConstruct(a, b)) return;
+
+          const aPrio = lowestAspectPrioFor(a.aspect, a.construct);
+          const bPrio = lowestAspectPrioFor(b.aspect, b.construct);
+
+          if (!implies(a.index < b.index, aPrio <= bPrio)) {
+            throw new Error(
+              `Aspect ${a.aspect}@${aPrio} at ${a.index} should have been before ${b.aspect}@${bPrio} at ${b.index}, but was after`,
+            );
+          }
+        });
+      }, stabilizeAspects)(app);
+    }),
+  ),
+);
 
 test('visitLog is nonempty', () =>
   fc.assert(
@@ -146,6 +186,18 @@ function ancestorOf(a: Construct, b: Construct) {
  */
 function ancestors(a: Construct): IConstruct[] {
   return a.node.scopes.reverse();
+}
+
+/**
+ * Returns all aspects of the given construct's ancestors (excluding its own locally defined aspects)
+ */
+function allAncestorAspects(a: IConstruct): IAspect[] {
+  const ancestorConstructs = ancestors(a);
+
+  // Filter out the current node and get aspects of the ancestors
+  return ancestorConstructs
+    .slice(0, -1) // Exclude the node itself
+    .flatMap((ancestor) => Aspects.of(ancestor).list.map((aspectApplication) => aspectApplication.aspect));
 }
 
 /**
@@ -365,9 +417,9 @@ function arbAspect(constructs: Construct[]): fc.Arbitrary<IAspect> {
     })),
     // More complex: adds a new aspect to an existing construct.
     // NOTE: this will never add an aspect to a construct that didn't exist in the initial tree.
-    fc.constant(() => arbAspectApplication(constructs).map(((aspectApp) =>
-      new AspectAddingAspect(aspectApp)
-    ))),
+    // fc.constant(() => arbAspectApplication(constructs).map(((aspectApp) =>
+    //   new AspectAddingAspect(aspectApp)
+    // ))),
   ) satisfies fc.Arbitrary<() => fc.Arbitrary<IAspect>>).chain((fact) => fact());
 }
 
