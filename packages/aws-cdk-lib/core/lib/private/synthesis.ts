@@ -7,7 +7,7 @@ import { TreeMetadata } from './tree-metadata';
 import { CloudAssembly } from '../../../cx-api';
 import * as cxapi from '../../../cx-api';
 import { App } from '../app';
-import { AspectApplication, Aspects, IAspect } from '../aspect';
+import { AspectApplication, Aspects } from '../aspect';
 import { FileSystem } from '../fs';
 import { Stack } from '../stack';
 import { ISynthesisSession } from '../stack-synthesizers/types';
