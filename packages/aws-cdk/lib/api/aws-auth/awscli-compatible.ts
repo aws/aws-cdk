@@ -4,6 +4,7 @@ import type { NodeHttpHandlerOptions } from '@smithy/node-http-handler';
 import { loadSharedConfigFiles } from '@smithy/shared-ini-file-loader';
 import { AwsCredentialIdentityProvider, Logger } from '@smithy/types';
 import * as promptly from 'promptly';
+import { ProxyAgent } from 'proxy-agent';
 import type { SdkHttpOptions } from './sdk-provider';
 import { readIfPossible } from './util';
 import { debug } from '../../logging';
@@ -89,18 +90,23 @@ export class AwsCliCompatible {
   }
 
   public static requestHandlerBuilder(options: SdkHttpOptions = {}): NodeHttpHandlerOptions {
-    const config: NodeHttpHandlerOptions = {
+    // Force it to use the proxy provided through the command line.
+    // Otherwise, let the ProxyAgent auto-detect the proxy using environment variables.
+    const getProxyForUrl = options.proxyAddress != null
+      ? () => Promise.resolve(options.proxyAddress!)
+      : undefined;
+
+    const agent = new ProxyAgent({
+      ca: tryGetCACert(options.caBundlePath),
+      getProxyForUrl: getProxyForUrl,
+    });
+
+    return {
       connectionTimeout: DEFAULT_CONNECTION_TIMEOUT,
       requestTimeout: DEFAULT_TIMEOUT,
-      httpsAgent: {
-        ca: tryGetCACert(options.caBundlePath),
-        localAddress: options.proxyAddress,
-      },
-      httpAgent: {
-        localAddress: options.proxyAddress,
-      },
+      httpsAgent: agent,
+      httpAgent: agent,
     };
-    return config;
   }
 
   /**
@@ -149,13 +155,31 @@ export class AwsCliCompatible {
  */
 async function getRegionFromIni(profile: string): Promise<string | undefined> {
   const sharedFiles = await loadSharedConfigFiles({ ignoreCache: true });
-  return sharedFiles?.configFile?.[profile]?.region || sharedFiles?.configFile?.default?.region;
+
+  // Priority:
+  //
+  // credentials come before config because aws-cli v1 behaves like that.
+  //
+  // 1. profile-region-in-credentials
+  // 2. profile-region-in-config
+  // 3. default-region-in-credentials
+  // 4. default-region-in-config
+
+  return getRegionFromIniFile(profile, sharedFiles.credentialsFile)
+    ?? getRegionFromIniFile(profile, sharedFiles.configFile)
+    ?? getRegionFromIniFile('default', sharedFiles.credentialsFile)
+    ?? getRegionFromIniFile('default', sharedFiles.configFile);
+
+}
+
+function getRegionFromIniFile(profile: string, data?: any) {
+  return data?.[profile]?.region;
 }
 
 function tryGetCACert(bundlePath?: string) {
   const path = bundlePath || caBundlePathFromEnvironment();
   if (path) {
-    debug('Using CA bundle path: %s', bundlePath);
+    debug('Using CA bundle path: %s', path);
     return readIfPossible(path);
   }
   return undefined;
@@ -182,11 +206,16 @@ function caBundlePathFromEnvironment(): string | undefined {
 function shouldPrioritizeEnv() {
   const id = process.env.AWS_ACCESS_KEY_ID || process.env.AMAZON_ACCESS_KEY_ID;
   const key = process.env.AWS_SECRET_ACCESS_KEY || process.env.AMAZON_SECRET_ACCESS_KEY;
-  process.env.AWS_SESSION_TOKEN = process.env.AWS_SESSION_TOKEN || process.env.AMAZON_SESSION_TOKEN;
 
   if (!!id && !!key) {
     process.env.AWS_ACCESS_KEY_ID = id;
     process.env.AWS_SECRET_ACCESS_KEY = key;
+
+    const sessionToken = process.env.AWS_SESSION_TOKEN ?? process.env.AMAZON_SESSION_TOKEN;
+    if (sessionToken) {
+      process.env.AWS_SESSION_TOKEN = sessionToken;
+    }
+
     return true;
   }
 
