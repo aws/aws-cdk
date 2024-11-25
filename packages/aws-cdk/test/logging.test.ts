@@ -14,7 +14,7 @@ describe('logging', () => {
     mockStdout = jest.fn();
     mockStderr = jest.fn();
 
-    // Just mock the write methods directly
+    // Mock the write methods directly
     jest.spyOn(process.stdout, 'write').mockImplementation((chunk: any) => {
       mockStdout(chunk.toString());
       return true;
@@ -155,7 +155,6 @@ describe('logging', () => {
         timestamp: true,
         prefix: 'PREFIX',
       });
-      // Updated regex to match actual output order: PREFIX [timestamp] message
       expect(mockStderr).toHaveBeenCalledWith(
         expect.stringMatching(/PREFIX \[\d{2}:\d{2}:\d{2}\] test message\n/),
       );
