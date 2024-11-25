@@ -76,7 +76,7 @@ abstract class KinesisEventSourceBase extends StreamEventSource {
  * Use an Amazon Kinesis stream as an event source for AWS Lambda.
  */
 export class KinesisEventSource extends KinesisEventSourceBase {
-  constructor(stream: kinesis.IStream, props: KinesisEventSourceProps) {
+  constructor(readonly stream: kinesis.IStream, props: KinesisEventSourceProps) {
     super({ ...stream, eventSourceName: 'KinesisEventSource', sourceArn: stream.streamArn, grantRead: stream.grantRead.bind(stream) }, props);
   }
 }
@@ -85,7 +85,7 @@ export class KinesisEventSource extends KinesisEventSourceBase {
  * Use an Amazon Kinesis stream consumer as an event source for AWS Lambda.
  */
 export class KinesisConsumerEventSource extends KinesisEventSourceBase {
-  constructor(streamConsumer: kinesis.IStreamConsumer, props: KinesisEventSourceProps) {
+  constructor(readonly streamConsumer: kinesis.IStreamConsumer, props: KinesisEventSourceProps) {
     super({ ...streamConsumer, eventSourceName: 'KinesisConsumerEventSource', sourceArn: streamConsumer.streamConsumerArn, grantRead: streamConsumer.grantRead.bind(streamConsumer) }, props);
   }
 }
