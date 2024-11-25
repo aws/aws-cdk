@@ -52,6 +52,11 @@ export interface AwsCredentials {
   readonly accountId?: string;
 
   /**
+   *   A Date when the identity or credential will no longer be accepted.
+   */
+  readonly expiration?:	Date;
+
+  /**
    * Refreshes the current credentials. This function only exists for
    * legacy reasons, to be compatible with the `AWS.Credentials` class.
    * Plugins that use the AWS SDK v3 don't need this.
