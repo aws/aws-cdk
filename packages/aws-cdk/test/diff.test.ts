@@ -1,4 +1,6 @@
 import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
 import { Writable } from 'stream';
 import { StringDecoder } from 'string_decoder';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
@@ -12,6 +14,22 @@ import { CdkToolkit } from '../lib/cdk-toolkit';
 let cloudExecutable: MockCloudExecutable;
 let cloudFormation: jest.Mocked<Deployments>;
 let toolkit: CdkToolkit;
+let oldDir: string;
+let tmpDir: string;
+
+beforeAll(() => {
+  // The toolkit writes and checks for temporary files in the current directory,
+  // so run these tests in a tempdir so they don't interfere with each other
+  // and other tests.
+  oldDir = process.cwd();
+  tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'aws-cdk-test'));
+  process.chdir(tmpDir);
+});
+
+afterAll(() => {
+  process.chdir(oldDir);
+  fs.rmSync(tmpDir, { recursive: true, force: true });
+});
 
 describe('fixed template', () => {
   const templatePath = 'oldTemplate.json';
