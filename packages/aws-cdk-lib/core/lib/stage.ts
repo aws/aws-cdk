@@ -4,6 +4,7 @@ import { PermissionsBoundary } from './permissions-boundary';
 import { synthesize } from './private/synthesis';
 import { IPolicyValidationPluginBeta1 } from './validation';
 import * as cxapi from '../../cx-api';
+import { FeatureFlags } from './feature-flags';
 
 const STAGE_SYMBOL = Symbol.for('@aws-cdk/core.Stage');
 
@@ -224,6 +225,7 @@ export class Stage extends Construct {
       this.assembly = synthesize(this, {
         skipValidation: options.skipValidation,
         validateOnSynthesis: options.validateOnSynthesis,
+        aspectStabilization: options.aspectStabilization ?? FeatureFlags.of(this).isEnabled(cxapi.ASPECT_STABILIZATION),
       });
       newConstructPaths = this.listAllConstructPaths(this);
       this.constructPathsCache = newConstructPaths;
@@ -318,4 +320,10 @@ export interface StageSynthesisOptions {
    * @default true
    */
   readonly errorOnDuplicateSynth?: boolean;
+
+  /**
+   * Whether or not run the stabilization loop while invoking Aspects.
+   * @default false
+   */
+  readonly aspectStabilization?: boolean;
 }

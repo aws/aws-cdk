@@ -137,7 +137,7 @@ describe('aspect', () => {
   });
 
   test('In-place mutating Aspect gets applied', () => {
-    const app = new App();
+    const app = new App({ context: { '@aws-cdk/core:aspectStabilization': true } });
     const stack = new Stack(app, 'My-Stack');
 
     // GIVEN - Bucket with versioning disabled
@@ -157,7 +157,7 @@ describe('aspect', () => {
   });
 
   test('mutating Aspect that creates a node gets applied', () => {
-    const app = new App();
+    const app = new App({ context: { '@aws-cdk/core:aspectStabilization': true } });
     const stack = new Stack(app, 'My-Stack');
 
     // GIVEN - Bucket with versioning disabled
@@ -176,7 +176,7 @@ describe('aspect', () => {
   });
 
   test('can set mutating Aspects in specified orcder and visit newly created node', () => {
-    const app = new App();
+    const app = new App({ context: { '@aws-cdk/core:aspectStabilization': true } });
     const stack = new Stack(app, 'My-Stack');
 
     // GIVEN - Bucket with versioning disabled
@@ -199,7 +199,7 @@ describe('aspect', () => {
   });
 
   test('Tags are applied to newly created node from the LoggingBucket Aspect', () => {
-    const app = new App();
+    const app = new App({ context: { '@aws-cdk/core:aspectStabilization': true } });
     const stack = new Stack(app, 'My-Stack');
 
     // GIVEN - Bucket with versioning disabled
@@ -228,7 +228,7 @@ describe('aspect', () => {
   });
 
   test('Newly created node inherits Aspect that was already invoked on its parent node.', () => {
-    const app = new App();
+    const app = new App({ context: { '@aws-cdk/core:aspectStabilization': true } });
     const root = new Stack(app, 'My-Stack');
 
     // GIVEN - 3 Aspects with increasing priority
@@ -268,7 +268,7 @@ describe('aspect', () => {
   }
 
   test('Error is thrown if Aspect adds an Aspect to a node with a lower priority than the last invoked Aspect of a node.', () => {
-    const app = new App();
+    const app = new App({ context: { '@aws-cdk/core:aspectStabilization': true } });
     const root = new Stack(app, 'My-Stack');
     const child = new Bucket(root, 'my-bucket', {
       bucketName: 'my-bucket',
