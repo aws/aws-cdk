@@ -56,8 +56,19 @@ const levelPriority: Record<LogLevel, number> = {
 
 let currentLogLevel: LogLevel = LogLevel.INFO;
 
-export function setLogLevel(level: LogLevel) {
-  currentLogLevel = level;
+const OLD_TO_NEW_LEVEL: { [key: number]: LogLevel } = {
+  0: LogLevel.INFO,
+  1: LogLevel.DEBUG,
+  2: LogLevel.TRACE,
+};
+
+export function setLogLevel(level: LogLevel | number) {
+  if (typeof level === 'number') {
+    // Handle old numeric levels
+    currentLogLevel = OLD_TO_NEW_LEVEL[level] || LogLevel.INFO;
+  } else {
+    currentLogLevel = level;
+  }
 }
 
 export function setCI(newCI: boolean) {
