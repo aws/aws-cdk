@@ -31,10 +31,8 @@ let oldDir: string;
 
 beforeAll(() => {
   tmpDir = path.join(os.tmpdir(), 'cdk-nonwritable');
-  if (!fs.existsSync(tmpDir)) {
-    fs.mkdirSync(tmpDir);
-    fs.chmodSync(tmpDir, 0o500);
-  }
+  fs.mkdirSync(tmpDir, { recursive: true });
+  fs.chmodSync(tmpDir, 0o500);
   oldDir = process.cwd();
   process.chdir(tmpDir);
   tmpDir = process.cwd(); // This will have resolved symlinks
