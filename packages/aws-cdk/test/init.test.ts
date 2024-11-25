@@ -17,12 +17,19 @@ describe('constructs version', () => {
     expect(await fs.pathExists(path.join(workDir, 'lib'))).toBeTruthy();
   });
 
-  cliTest('asking for a nonexistent combination of language and template fails', async (workDir) => {
+  cliTest('asking for a nonexistent template fails', async (workDir) => {
     await expect(cliInit({
       type: 'banana',
       language: 'typescript',
       workDir,
-    })).rejects.toThrow(/is not supported/);
+    })).rejects.toThrow(/Unknown init template/);
+  });
+
+  cliTest('asking for a template but no language prints and throws', async (workDir) => {
+    await expect(cliInit({
+      type: 'app',
+      workDir,
+    })).rejects.toThrow(/No language/);
   });
 
   cliTest('create a TypeScript app project', async (workDir) => {
