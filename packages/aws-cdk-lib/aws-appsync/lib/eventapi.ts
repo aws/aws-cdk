@@ -42,11 +42,11 @@ export interface EventApiAuthConfig {
  */
 export interface IEventApi extends IResource {
   /**
- * an unique AWS AppSync Event API identifier
- * i.e. 'lxz775lwdrgcndgz3nurvac7oa'
- *
- * @attribute
- */
+   * an unique AWS AppSync Event API identifier
+   * i.e. 'lxz775lwdrgcndgz3nurvac7oa'
+   *
+   * @attribute
+   */
   readonly apiId: string;
 
   /**
@@ -181,7 +181,7 @@ export interface EventApiProps {
   /**
    * the name of the Event API
    */
-  readonly apiName: string;
+  readonly name: string;
 
   /**
    * Optional authorization configuration
@@ -211,6 +211,12 @@ export interface EventApiProps {
  * Attributes for Event API imports
  */
 export interface EventApiAttributes {
+
+  /**
+   * the name of the Event API
+   */
+  readonly apiName: string;
+
   /**
    * an unique AWS AppSync Event API identifier
    * i.e. 'lxz775lwdrgcndgz3nurvac7oa'
@@ -341,7 +347,7 @@ export class EventApi extends EventApiBase {
     };
 
     this.api = new CfnApi(this, 'Resource', {
-      name: props.apiName,
+      name: props.name,
       eventConfig: this.eventConfig,
       ownerContact: props.ownerContact,
     });
