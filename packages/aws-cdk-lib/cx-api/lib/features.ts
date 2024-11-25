@@ -115,6 +115,7 @@ export const USE_CORRECT_VALUE_FOR_INSTANCE_RESOURCE_ID_PROPERTY = '@aws-cdk/aws
 export const CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS = '@aws-cdk/core:cfnIncludeRejectComplexResourceUpdateCreatePolicyIntrinsics';
 export const LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES = '@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages';
 export const STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY = '@aws-cdk/aws-stepfunctions-tasks:fixRunEcsTaskPolicy';
+export const ECS_PATTERNS_FARGATE_SERVICE_BASE_HAS_PUBLIC_LB_BY_DEFAULT = '@aws-cdk/ecs-patterns:fargateServiceBaseHasPublicLBDefault';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1249,6 +1250,22 @@ export const FLAGS: Record<string, FlagInfo> = {
     `,
     introducedIn: { v2: '2.163.0' },
     recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [ECS_PATTERNS_FARGATE_SERVICE_BASE_HAS_PUBLIC_LB_BY_DEFAULT]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, the load balancers created will be public by default',
+    detailsMd: `
+      By default, the load balancers created by ECS Patterns Fargate Service Base construct are public. 
+      This is not ideal for cases where you need everything to be private.
+      
+      When this feature flag is enabled (default True for compatability), the load balancers will be public by default.
+      However, if you want to make them private by default, you can set this property to false.
+    `,
+    introducedIn: { v2: '2.172.0' },
+    defaults: { v2: true },
+    recommendedValue: false,
   },
 };
 

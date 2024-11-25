@@ -7,6 +7,7 @@ import { ApplicationProtocol, IpAddressType, SslPolicy } from '../../../aws-elas
 import { CompositePrincipal, Role, ServicePrincipal } from '../../../aws-iam';
 import { PublicHostedZone } from '../../../aws-route53';
 import { Duration, Stack } from '../../../core';
+import * as cxapi from '../../../cx-api';
 import { ApplicationLoadBalancedFargateService, ApplicationMultipleTargetGroupsFargateService, NetworkLoadBalancedFargateService, NetworkMultipleTargetGroupsFargateService } from '../../lib';
 
 const enableExecuteCommandPermissions = {
@@ -135,6 +136,33 @@ describe('Application Load Balancer', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
         Scheme: 'internet-facing',
+        Type: 'application',
+        IpAddressType: 'dualstack',
+      });
+    });
+
+    test('dualstack application load balancer with feature flag override for private lb', () => {
+      // GIVEN
+      const stack = new Stack();
+      stack.node.setContext(cxapi.ECS_PATTERNS_FARGATE_SERVICE_BASE_HAS_PUBLIC_LB_BY_DEFAULT, false);
+
+      const vpc = new Vpc(stack, 'VPC', {
+        ipProtocol: IpProtocol.DUAL_STACK,
+      });
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+      // WHEN
+      new ApplicationLoadBalancedFargateService(stack, 'Service', {
+        cluster,
+        taskImageOptions: {
+          image: ecs.ContainerImage.fromRegistry('test'),
+        },
+        ipAddressType: IpAddressType.DUAL_STACK,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        Scheme: 'internal',
         Type: 'application',
         IpAddressType: 'dualstack',
       });

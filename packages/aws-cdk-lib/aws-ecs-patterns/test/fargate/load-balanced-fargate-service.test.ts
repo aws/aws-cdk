@@ -10,6 +10,7 @@ import * as iam from '../../../aws-iam';
 import * as route53 from '../../../aws-route53';
 import * as cloudmap from '../../../aws-servicediscovery';
 import * as cdk from '../../../core';
+import * as cxapi from '../../../cx-api';
 import * as ecsPatterns from '../../lib';
 
 describe('ApplicationLoadBalancedFargateService', () => {
@@ -1454,6 +1455,28 @@ describe('NetworkLoadBalancedFargateService', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       Type: 'network',
       Scheme: 'internet-facing',
+    });
+  });
+
+  test('setting loadBalancerType to Network with feature flag override creates an NLB private', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    stack.node.setContext(cxapi.ECS_PATTERNS_FARGATE_SERVICE_BASE_HAS_PUBLIC_LB_BY_DEFAULT, false);
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Type: 'network',
+      Scheme: 'internal',
     });
   });
 

@@ -9,6 +9,8 @@ import { IRole } from '../../../aws-iam';
 import { ARecord, CnameRecord, IHostedZone, RecordTarget } from '../../../aws-route53';
 import { LoadBalancerTarget } from '../../../aws-route53-targets';
 import * as cdk from '../../../core';
+import { FeatureFlags } from '../../../core';
+import * as cxapi from '../../../cx-api/index';
 
 /**
  * Describes the type of DNS record the service should create
@@ -368,11 +370,12 @@ export abstract class NetworkLoadBalancedServiceBase extends Construct {
     this.desiredCount = props.desiredCount || 1;
     this.internalDesiredCount = props.desiredCount;
 
-    const internetFacing = props.publicLoadBalancer ?? true;
+    const internetFacing = props.publicLoadBalancer ??
+        FeatureFlags.of(this).isEnabled(cxapi.ECS_PATTERNS_FARGATE_SERVICE_BASE_HAS_PUBLIC_LB_BY_DEFAULT);
 
     const lbProps: NetworkLoadBalancerProps = {
       vpc: this.cluster.vpc,
-      internetFacing,
+      internetFacing: internetFacing,
       ipAddressType: props.ipAddressType,
     };
 

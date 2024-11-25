@@ -15,7 +15,8 @@ import { IRole } from '../../../aws-iam';
 import { ARecord, IHostedZone, RecordTarget, CnameRecord } from '../../../aws-route53';
 import { LoadBalancerTarget } from '../../../aws-route53-targets';
 import * as cdk from '../../../core';
-import { Duration } from '../../../core';
+import { Duration, FeatureFlags } from '../../../core';
+import * as cxapi from '../../../cx-api';
 
 /**
  * Describes the type of DNS record the service should create
@@ -474,7 +475,8 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
     this.desiredCount = props.desiredCount || 1;
     this.internalDesiredCount = props.desiredCount;
 
-    const internetFacing = props.publicLoadBalancer ?? true;
+    const internetFacing = props.publicLoadBalancer ??
+        FeatureFlags.of(this).isEnabled(cxapi.ECS_PATTERNS_FARGATE_SERVICE_BASE_HAS_PUBLIC_LB_BY_DEFAULT);
 
     if (props.idleTimeout) {
       const idleTimeout = props.idleTimeout.toSeconds();
@@ -486,7 +488,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
     const lbProps: ApplicationLoadBalancerProps = {
       vpc: this.cluster.vpc,
       loadBalancerName: props.loadBalancerName,
-      internetFacing,
+      internetFacing: internetFacing,
       idleTimeout: props.idleTimeout,
       ipAddressType: props.ipAddressType,
     };

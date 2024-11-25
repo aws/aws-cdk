@@ -66,6 +66,10 @@ Fargate services will use the `LATEST` platform version by default, but you can 
 
 Fargate services use the default VPC Security Group unless one or more are provided using the `securityGroups` property in the constructor.
 
+Fargate services will be created with a public load balancer by default. If you wish to override this behavior,
+you can set the `publicLoadBalancer` property to `false` 
+or change the `@aws-cdk/aws-ecs-patterns:fargateServiceBaseHasPublicLBDefault` feature flag to false.
+
 By setting `redirectHTTP` to true, CDK will automatically create a listener on port 80 that redirects HTTP traffic to the HTTPS port.
 
 If you specify the option `recordType` you can decide if you want the construct to use CNAME or Route53-Aliases as record sets.

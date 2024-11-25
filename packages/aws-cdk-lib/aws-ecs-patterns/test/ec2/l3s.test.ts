@@ -9,6 +9,7 @@ import { ApplicationLoadBalancer, ApplicationProtocol, ApplicationProtocolVersio
 import { PublicHostedZone } from '../../../aws-route53';
 import * as cloudmap from '../../../aws-servicediscovery';
 import * as cdk from '../../../core';
+import * as cxapi from '../../../cx-api';
 import * as ecsPatterns from '../../lib';
 
 describe('ApplicationLoadBalancedEc2Service', () => {
@@ -47,6 +48,76 @@ describe('ApplicationLoadBalancedEc2Service', () => {
     Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::LoadBalancer', 1);
     Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       Scheme: 'internet-facing',
+      Type: 'application',
+      IpAddressType: 'dualstack',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      DesiredCount: 2,
+      LaunchType: 'EC2',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        Match.objectLike({
+          Environment: [
+            {
+              Name: 'TEST_ENVIRONMENT_VARIABLE1',
+              Value: 'test environment variable 1 value',
+            },
+            {
+              Name: 'TEST_ENVIRONMENT_VARIABLE2',
+              Value: 'test environment variable 2 value',
+            },
+          ],
+          Memory: 1024,
+          DockerLabels: {
+            label1: 'labelValue1',
+            label2: 'labelValue2',
+          },
+          EntryPoint: ['echo', 'ecs-is-awesome'],
+          Command: ['/bin/bash'],
+        }),
+      ],
+    });
+  });
+
+  test('ECS loadbalanced construct with feature flag private lb override', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    stack.node.setContext(cxapi.ECS_PATTERNS_FARGATE_SERVICE_BASE_HAS_PUBLIC_LB_BY_DEFAULT, false);
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+        vpc,
+        instanceType: new ec2.InstanceType('t2.micro'),
+        machineImage: MachineImage.latestAmazonLinux(),
+      }),
+    }));
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
+      cluster,
+      memoryLimitMiB: 1024,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        environment: {
+          TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
+          TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
+        },
+        dockerLabels: { label1: 'labelValue1', label2: 'labelValue2' },
+        entryPoint: ['echo', 'ecs-is-awesome'],
+        command: ['/bin/bash'],
+      },
+      desiredCount: 2,
+      ipAddressType: IpAddressType.DUAL_STACK,
+    });
+
+    // THEN - stack contains a load balancer and a service
+    Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::LoadBalancer', 1);
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Scheme: 'internal',
       Type: 'application',
       IpAddressType: 'dualstack',
     });
