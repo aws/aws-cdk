@@ -61,11 +61,14 @@ export interface AwsCredentials {
   readonly expiration?:	Date;
 
   /**
-   * Refreshes the current credentials. This function only exists for
-   * legacy reasons, to be compatible with the `AWS.Credentials` class.
-   * Plugins that use the AWS SDK v3 don't need this.
+   * Refreshes the current credentials.
    */
   getPromise?: () => Promise<void>;
+
+  /**
+   * Returns a Promise of AwsCredentials.
+   */
+  resolvePromise?: () => Promise<AwsCredentials>;
 }
 
 export enum Mode {

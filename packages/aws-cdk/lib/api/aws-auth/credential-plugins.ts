@@ -64,8 +64,8 @@ export class CredentialPlugins {
 
       // Backwards compatibility: if the plugin returns a ProviderChain, resolve that chain.
       // Otherwise it must have returned credentials.
-      const credentials = (providerOrCreds as any).resolvePromise
-        ? await (providerOrCreds as any).resolvePromise()
+      const credentials = providerOrCreds.resolvePromise
+        ? await providerOrCreds.resolvePromise()
         : providerOrCreds as AwsCredentials;
 
       // Another layer of backwards compatibility: in SDK v2, the credentials object
