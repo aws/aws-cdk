@@ -2,7 +2,7 @@ import * as os from 'os';
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
-import { availableInitTemplates, cliInit } from '../lib/init';
+import { availableInitLanguages, availableInitTemplates, cliInit, printAvailableTemplates } from '../lib/init';
 
 describe('constructs version', () => {
   cliTest('create a TypeScript library project', async (workDir) => {
@@ -15,6 +15,14 @@ describe('constructs version', () => {
     // Check that package.json and lib/ got created in the current directory
     expect(await fs.pathExists(path.join(workDir, 'package.json'))).toBeTruthy();
     expect(await fs.pathExists(path.join(workDir, 'lib'))).toBeTruthy();
+  });
+
+  cliTest('asking for a nonexistent combination of language and template fails', async (workDir) => {
+    await expect(cliInit({
+      type: 'banana',
+      language: 'typescript',
+      workDir,
+    })).rejects.toThrow(/is not supported/);
   });
 
   cliTest('create a TypeScript app project', async (workDir) => {
@@ -235,6 +243,16 @@ describe('constructs version', () => {
 
 test('when no version number is present (e.g., local development), the v2 templates are chosen by default', async () => {
   expect((await availableInitTemplates()).length).toBeGreaterThan(0);
+});
+
+test('check available init languages', async () => {
+  const langs = await availableInitLanguages();
+  expect(langs.length).toBeGreaterThan(0);
+  expect(langs).toContain('typescript');
+});
+
+test('exercise printing available templates', async () => {
+  await printAvailableTemplates();
 });
 
 function cliTest(name: string, handler: (dir: string) => void | Promise<any>): void {
