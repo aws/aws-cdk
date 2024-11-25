@@ -1789,6 +1789,15 @@ In all scenarios, application authors can use priority values to ensure their as
 those are their own or from third-party libraries. The standard priority ranges (200 for mutating, 600 default, 1000 for readonly) provide
 guidance while still allowing full flexibility through custom priority values.
 
+### Aspect Stabilization
+
+By default, Aspect invocation runs once on the construct tree. This means that nested Aspects (Aspects that create
+new Aspects) are not invoked and nodes created by Aspects at a higher level of the construct tree will not be visited.
+
+Using the `@aws-cdk/core:aspectStabilization` feature flag (or passing in `{aspectStabilization: true}` when calling
+`synth()`) will run a stabilization loop when invoking aspects to allow Aspects created by other Aspects to be invoked
+and to ensure that all new nodes created on the construct tree are visited and invoke their inherited Aspects.
+
 ### Acknowledging Warnings
 
 If you would like to run with `--strict` mode enabled (warnings will throw
