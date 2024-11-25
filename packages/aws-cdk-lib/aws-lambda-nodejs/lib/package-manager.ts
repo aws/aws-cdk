@@ -50,7 +50,7 @@ export class PackageManager {
       case LockFile.BUN:
         return new PackageManager({
           lockFile: LockFile.BUN,
-          installCommand: logLevel && logLevel !== LogLevel.INFO ? ['bun', 'install', '--frozen-lockfile', '--silent'] : ['bun', 'install', '--frozen-lockfile'],
+          installCommand: logLevel && logLevel !== LogLevel.INFO ? ['bun', 'install', '--frozen-lockfile', '--backend', 'copyfile', '--silent'] : ['bun', 'install', '--frozen-lockfile', '--backend', 'copyfile'],
           runCommand: ['bun', 'run'],
         });
       default:

@@ -45,6 +45,6 @@ RUN /sbin/useradd -u 1000 user && chmod 711 /
 # Ensure all users can write to bun cache
 RUN mkdir /tmp/bun-cache && \
     chmod -R 777 /tmp/bun-cache && \
-    echo -e "[install.cache]\ndir = \"/tmp/bun-cache\"" >> /home/user/.bunfig.toml
+    echo -e "[install.cache]\ndir = \"/tmp/bun-cache\"\ndisable = true" >> /home/user/.bunfig.toml
 
 CMD [ "esbuild" ]
