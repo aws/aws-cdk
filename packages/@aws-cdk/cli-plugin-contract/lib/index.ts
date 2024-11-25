@@ -57,7 +57,7 @@ export interface AwsCredentials {
   getPromise?: () => Promise<void>;
 }
 
-export const enum Mode {
+export enum Mode {
   ForReading,
   ForWriting,
 }
