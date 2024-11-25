@@ -30,7 +30,7 @@ let tmpDir: string;
 let oldDir: string;
 
 beforeAll(() => {
-  tmpDir = path.join(os.tmpdir(), 'cdk-nonwritable');
+  tmpDir = path.join(os.tmpdir(), 'cdk-nonwritable-on-purpose');
   fs.mkdirSync(tmpDir, { recursive: true });
   fs.chmodSync(tmpDir, 0o500);
   oldDir = process.cwd();
