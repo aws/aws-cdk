@@ -1,10 +1,10 @@
 import { IConstruct, Construct, Node } from 'constructs';
 import { Environment } from './environment';
+import { FeatureFlags } from './feature-flags';
 import { PermissionsBoundary } from './permissions-boundary';
 import { synthesize } from './private/synthesis';
 import { IPolicyValidationPluginBeta1 } from './validation';
 import * as cxapi from '../../cx-api';
-import { FeatureFlags } from './feature-flags';
 
 const STAGE_SYMBOL = Symbol.for('@aws-cdk/core.Stage');
 
