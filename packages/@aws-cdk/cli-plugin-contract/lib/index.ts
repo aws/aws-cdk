@@ -52,7 +52,9 @@ export interface AwsCredentials {
   readonly accountId?: string;
 
   /**
-   * Refreshes the current credentials.
+   * Refreshes the current credentials. This function only exists for
+   * legacy reasons, to be compatible with the `AWS.Credentials` class.
+   * Plugins that use the AWS SDK v3 don't need this.
    */
   getPromise?: () => Promise<void>;
 }
