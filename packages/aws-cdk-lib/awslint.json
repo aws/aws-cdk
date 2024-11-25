@@ -402,6 +402,7 @@
     "docs-public-apis:aws-cdk-lib.aws_s3_assets.AssetOptions.sourceKMSKey",
     "props-default-doc:aws-cdk-lib.aws_s3_assets.AssetOptions.sourceKMSKey",
     "docs-public-apis:aws-cdk-lib.aws_lambda_event_sources.ApiEventSource",
+    "docs-public-apis:aws-cdk-lib.aws_lambda_event_sources.KinesisConsumerEventSource.streamConsumer",
     "docs-public-apis:aws-cdk-lib.aws_lambda_event_sources.KinesisEventSource.stream",
     "docs-public-apis:aws-cdk-lib.aws_lambda_event_sources.S3EventSource.bucket",
     "docs-public-apis:aws-cdk-lib.aws_lambda_event_sources.SnsEventSource.topic",
