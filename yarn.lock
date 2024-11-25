@@ -12279,6 +12279,11 @@ ip-address@^9.0.5:
     jsbn "1.1.0"
     sprintf-js "^1.1.3"
 
+ip-num@^1.5.1:
+  version "1.5.1"
+  resolved "https://registry.npmjs.org/ip-num/-/ip-num-1.5.1.tgz#a6b798f616fa51b7c80f42c6de26389abd3f0faf"
+  integrity sha512-QziFxgxq3mjIf5CuwlzXFYscHxgLqdEdJKRo2UJ5GurL5zrSRMzT/O+nK0ABimoFH8MWF8YwIiwECYsHc1LpUQ==
+
 ip-regex@^4.1.0:
   version "4.3.0"
   resolved "https://registry.npmjs.org/ip-regex/-/ip-regex-4.3.0.tgz#687275ab0f57fa76978ff8f4dddc8a23d5990db5"
