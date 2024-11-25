@@ -1629,6 +1629,166 @@ scenarios are (non-exhaustive list):
   valid)
 - Warn if the user is using a deprecated API
 
+## Aspects
+
+[Aspects](https://docs.aws.amazon.com/cdk/v2/guide/aspects.html) is a feature in CDK that allows you to apply operations or transformations across all
+constructs in a construct tree. Common use cases include tagging resources, enforcing encryption on S3 Buckets, or applying specific security or
+compliance rules to all resources in a stack.
+
+Conceptually, there are two types of Aspects:
+
+* **Read-only aspects** scan the construct tree but do not make changes to the tree. Common use cases of read-only aspects include performing validations
+(for example, enforcing that all S3 Buckets have versioning enabled) and logging (for example, collecting information about all deployed resources for
+audits or compliance).
+* **Mutating aspects** either (1.) add new nodes or (2.) mutate existing nodes of the tree in-place. One commonly used mutating Aspect is adding Tags to
+resources. An example of an Aspect that adds a node is one that automatically adds a security group to every EC2 instance in the construct tree if
+no default is specified.
+
+Here is a simple example of creating and applying an Aspect on a Stack to enable versioning on all S3 Buckets:
+
+```ts
+import { IAspect, IConstruct, Tags, Stack } from 'aws-cdk-lib';
+
+class EnableBucketVersioning implements IAspect {
+  visit(node: IConstruct) {
+    if (node instanceof CfnBucket) {
+      node.versioningConfiguration = {
+        status: 'Enabled'
+      };
+    }
+  }
+}
+
+const app = new App();
+const stack = new MyStack(app, 'MyStack');
+
+// Apply the aspect to enable versioning on all S3 Buckets
+Aspects.of(stack).add(new EnableBucketVersioning());
+```
+
+Users can specify the order in which Aspects are applied on a construct by using the optional priority parameter when applying an Aspect. Priority
+values must be non-negative integers, where a higher number means the Aspect will be applied later, and a lower number means it will be applied sooner.
+
+CDK provides standard priority values for mutating and readonly aspects to help ensure consistency across different construct libraries:
+
+```ts
+const MUTATING_PRIORITY = 200;
+const READONLY_PRIORITY = 1000;
+const DEFAULT_PRIORITY = 600;
+```
+
+If no priority is provided, the default value will be 600. This ensures that aspects without a specified priority run after mutating aspects but before
+any readonly aspects.
+
+Correctly applying Aspects with priority values ensures that mutating aspects (such as adding tags or resources) run before validation aspects, and new
+nodes created by mutating aspects inherit aspects from their parent constructs. This allows users to avoid misconfigurations and ensure that the final
+construct tree is fully validated before being synthesized.
+
+### Applying Aspects with Priority
+
+```ts
+import { Aspects, Stack, IAspect, Tags } from 'aws-cdk-lib';
+import { Bucket } from 'aws-cdk-lib/aws-s3';
+
+class MyAspect implements IAspect {
+  visit(node: IConstruct) {
+    // Modifies a resource in some way
+  }
+}
+
+class ValidationAspect implements IAspect {
+  visit(node: IConstruct) {
+    // Perform some readonly validation on the cosntruct tree
+  }
+}
+
+const stack = new Stack();
+
+Aspects.of(stack).add(new MyAspect(), { priority: AspectPriority.MUTATING } );  // Run first (mutating aspects)
+Aspects.of(stack).add(new ValidationAspect(), { priority: AspectPriority.READONLY } );  // Run later (readonly aspects)
+```
+
+We also give customers the ability to view all of their applied aspects and override the priority on these aspects.
+The `AspectApplication` class to represents an Aspect that is applied to a node of the construct tree with a priority:
+
+```ts
+/**
+ * Object respresenting an Aspect application. Stores the Aspect, the pointer to the construct it was applied
+ * to, and the priority value of that Aspect.
+ */
+export class AspectApplication {
+  /**
+   * The construct that the Aspect was applied to.
+   */
+  public readonly construct: IConstruct;
+
+  /**
+   * The Aspect that was applied.
+   */
+  public readonly aspect: IAspect;
+
+  /**
+   * The priority value of this Aspect. Must be non-negative integer.
+   */
+  private priority: number;
+}
+```
+
+Users can access AspectApplications on a node by calling `list` from the Aspects class as follows:
+
+```ts
+const app = new App();
+const stack = new MyStack(app, 'MyStack');
+
+Aspects.of(stack).add(new MyAspect());
+
+let aspectApplications: AspectApplication[] = Aspects.of(root).list;
+```
+
+#### Aspects with Third-Party Constructs
+
+When a third-party construct adds and applies its own aspect, we can override that Aspect priority like so:
+
+```ts
+// Import third-party aspect
+import { ThirdPartyConstruct } from 'some-library';
+
+const stack: Stack;
+const construct = new ThirdPartyConstruct(stack, 'third-party-construct');
+
+// Author's aspect - adding to the stack
+const validationAspect = new ValidationAspect();
+Aspects.of(stack).add(validationAspect, { priority: AspectPriority.READONLY } );  // Run later (validation)
+
+// Getting the Aspect from the ThirdPartyConstruct
+const thirdPartyAspectApplication: AspectApplication = Aspects.of(construct).list[0];
+// Overriding the Aspect Priority from the ThirdPartyConstruct to run first
+thirdPartyAspectApplication.priority = 0;
+```
+
+An important thing to note about the `list` function is that it will not return Aspects that are applied to a node by another
+Aspect - these Aspects are only added to the construct tree when `invokeAspects` is called during synthesis.
+
+When using aspects from a library but controlling their application:
+
+```ts
+// Import third-party aspect
+import { SecurityAspect } from 'some-library';
+
+const stack: Stack;
+
+// Application author has full control of ordering
+const securityAspect = new SecurityAspect();
+Aspects.of(stack).add(securityAspect, { priority: 50 } );
+
+// Add own aspects in relation to third-party one
+Aspects.of(stack).add(new MyOtherAspect(), { priority: 75 } );
+```
+
+In all scenarios, application authors can use priority values to ensure their aspects run in the desired order relative to other aspects, whether
+those are their own or from third-party libraries. The standard priority ranges (200 for mutating, 600 default, 1000 for readonly) provide
+guidance while still allowing full flexibility through custom priority values.
+
 ### Acknowledging Warnings
 
 If you would like to run with `--strict` mode enabled (warnings will throw
