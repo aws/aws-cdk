@@ -257,7 +257,7 @@ import * as kinesis from 'aws-cdk-lib/aws-kinesis';
 import { KinesisConsumerEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 
 const stream = new kinesis.Stream(this, 'MyStream');
-const streamConsumer = new kinesis.Stream(this, 'MyStreamConsumer', {
+const streamConsumer = new kinesis.StreamConsumer(this, 'MyStreamConsumer', {
   stream,
   streamConsumerName: 'MyStreamConsumer',
 });
