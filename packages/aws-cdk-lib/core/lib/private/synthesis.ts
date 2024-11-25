@@ -265,8 +265,13 @@ function invokeAspects(root: IConstruct) {
 
 /**
  * Invoke aspects V2 runs a stabilization loop and allows Aspects to invoke other Aspects.
- * This function also does not emit a warning for nested Aspects. Runs if the feature flag
- * '@aws-cdk/core:aspectStabilization' is enabled.
+ * Runs if the feature flag '@aws-cdk/core:aspectStabilization' is enabled.
+ *
+ * Unlike the original function, this function does not emit a warning for ignored aspects, since this
+ * function invokes Aspects that are created by other Aspects.
+ *
+ * Throws an error if the function attempts to invoke an Aspect on a node that has a lower priority value
+ * than the most recently invoked Aspect on that node.
  */
 function invokeAspectsV2(root: IConstruct) {
   const invokedByPath: { [nodePath: string]: AspectApplication[] } = { };
@@ -281,7 +286,7 @@ function invokeAspectsV2(root: IConstruct) {
     }
   }
 
-  throw new Error('Maximum iterations reached while invoking Aspects.');
+  throw new Error('We have detected a possible infinite loop while invoking Aspects. Please check your Aspects and verify there is no configuration that would cause infinite Aspect or Node creation.');
 
   function recurse(construct: IConstruct, inheritedAspects: AspectApplication[]): boolean {
     const node = construct.node;
@@ -307,7 +312,7 @@ function invokeAspectsV2(root: IConstruct) {
       const lastInvokedAspect = invoked[invoked.length - 1];
       if (lastInvokedAspect && lastInvokedAspect.priority > aspectApplication.priority) {
         throw new Error(
-          `Aspect ${aspectApplication.aspect.constructor.name} with priority ${aspectApplication.priority} invoked after ${lastInvokedAspect.aspect.constructor.name} with priority ${lastInvokedAspect.priority} at ${node.path}.`,
+          `Can not invoke Aspect ${aspectApplication.aspect.constructor.name} with priority ${aspectApplication.priority} after Aspect ${lastInvokedAspect.aspect.constructor.name} with priority ${lastInvokedAspect.priority} at ${node.path}.`,
         );
       };
 
