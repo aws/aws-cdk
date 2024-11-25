@@ -62,7 +62,7 @@ test('for every construct, lower priorities go before higher priorities', () =>
 
           if (!implies(aPrio < bPrio, a.index < b.index)) {
             throw new Error(
-              `Aspect ${a.aspect}@${aPrio} at ${a.index} should have been before ${b.aspect}@${bPrio} at ${b.index}, but was after`
+              `Aspect ${a.aspect}@${aPrio} at ${a.index} should have been before ${b.aspect}@${bPrio} at ${b.index}, but was after`,
             );
           }
         });
