@@ -85,6 +85,17 @@ const cluster = new ecs.Cluster(this, 'Cluster', {
 });
 ```
 
+To encrypt the fargate ephemeral storage configure a KMS key. 
+```ts
+declare const key: kms.Key;
+
+const cluster = new ecs.Cluster(this, 'Cluster', { 
+  managedStorageConfiguration: { 
+    fargateEphemeralStorageKmsKey: key,
+  },
+});
+```
+
 The following code imports an existing cluster using the ARN which can be used to
 import an Amazon ECS service either EC2 or Fargate.
 
@@ -372,12 +383,13 @@ const fargateTaskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef', {
   },
   memoryLimitMiB: 512,
   cpu: 256,
-  pidMode: ecs.PidMode.HOST,
+  pidMode: ecs.PidMode.TASK,
 });
 ```
 
 **Note:** `pidMode` is only supported for tasks that are hosted on AWS Fargate if the tasks are using platform version 1.4.0
-or later (Linux). This isn't supported for Windows containers on Fargate.
+or later (Linux). Only the `task` option is supported for Linux containers. `pidMode` isn't supported for Windows containers on Fargate.
+If `pidMode` is specified for a Fargate task, then `runtimePlatform.operatingSystemFamily` must also be specified.
 
 To add containers to a task definition, call `addContainer()`:
 
@@ -615,6 +627,22 @@ taskDefinition.addContainer('container', {
       value: '1',
     },
   ],
+});
+```
+
+### Restart policy
+
+To enable a restart policy for the container, set `enableRestartPolicy` to true and also specify
+`restartIgnoredExitCodes` and `restartAttemptPeriod` if necessary.
+
+```ts
+declare const taskDefinition: ecs.TaskDefinition;
+
+taskDefinition.addContainer('container', {
+  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  enableRestartPolicy: true,
+  restartIgnoredExitCodes: [0, 127],
+  restartAttemptPeriod: Duration.seconds(360),
 });
 ```
 
@@ -1157,10 +1185,10 @@ const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
 taskDefinition.addContainer('TheContainer', {
   image: ecs.ContainerImage.fromRegistry('example-image'),
   memoryLimitMiB: 256,
-  logging: ecs.LogDrivers.awsLogs({ 
+  logging: ecs.LogDrivers.awsLogs({
     streamPrefix: 'EventDemo',
     mode: ecs.AwsLogDriverMode.NON_BLOCKING,
-    maxBufferSize: Size.mebibytes(25), 
+    maxBufferSize: Size.mebibytes(25),
   }),
 });
 ```
@@ -1589,7 +1617,7 @@ to work, you need to have the SSM plugin for the AWS CLI installed locally. For 
 [Install Session Manager plugin for AWS CLI](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html).
 
 To enable the ECS Exec feature for your containers, set the boolean flag `enableExecuteCommand` to `true` in
-your `Ec2Service` or `FargateService`.
+your `Ec2Service`, `FargateService` or `ExternalService`.
 
 ```ts
 declare const cluster: ecs.Cluster;
@@ -1754,9 +1782,9 @@ const service = new ecs.FargateService(this, 'Service', {
 ## ServiceManagedVolume
 
 Amazon ECS now supports the attachment of Amazon Elastic Block Store (EBS) volumes to ECS tasks,
-allowing you to utilize persistent, high-performance block storage with your ECS services. 
-This feature supports various use cases, such as using EBS volumes as extended ephemeral storage or 
-loading data from EBS snapshots. 
+allowing you to utilize persistent, high-performance block storage with your ECS services.
+This feature supports various use cases, such as using EBS volumes as extended ephemeral storage or
+loading data from EBS snapshots.
 You can also specify `encrypted: true` so that ECS will manage the KMS key. If you want to use your own KMS key, you may do so by providing both `encrypted: true` and `kmsKeyId`.
 
 You can only attach a single volume for each task in the ECS Service.

@@ -4,28 +4,26 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
-      "cloudfront-custom-s3-integ": {
-        "id": "cloudfront-custom-s3-integ",
-        "path": "cloudfront-custom-s3-integ",
+      "cloudfront-custom-s3-stack": {
+        "id": "cloudfront-custom-s3-stack",
+        "path": "cloudfront-custom-s3-stack",
         "children": {
           "Bucket": {
             "id": "Bucket",
-            "path": "cloudfront-custom-s3-integ/Bucket",
+            "path": "cloudfront-custom-s3-stack/Bucket",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "cloudfront-custom-s3-integ/Bucket/Resource",
+                "path": "cloudfront-custom-s3-stack/Bucket/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                   "aws:cdk:cloudformation:props": {
+                    "publicAccessBlockConfiguration": {
+                      "blockPublicPolicy": false,
+                      "blockPublicAcls": false,
+                      "ignorePublicAcls": false,
+                      "restrictPublicBuckets": false
+                    },
                     "websiteConfiguration": {
                       "indexDocument": "index.html",
                       "errorDocument": "404.html"
@@ -33,17 +31,17 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-s3.CfnBucket",
+                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
                   "version": "0.0.0"
                 }
               },
               "Policy": {
                 "id": "Policy",
-                "path": "cloudfront-custom-s3-integ/Bucket/Policy",
+                "path": "cloudfront-custom-s3-stack/Bucket/Policy",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "cloudfront-custom-s3-integ/Bucket/Policy/Resource",
+                    "path": "cloudfront-custom-s3-stack/Bucket/Policy/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
                       "aws:cdk:cloudformation:props": {
@@ -79,29 +77,29 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-s3.CfnBucketPolicy",
+                      "fqn": "aws-cdk-lib.aws_s3.CfnBucketPolicy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-s3.BucketPolicy",
+                  "fqn": "aws-cdk-lib.aws_s3.BucketPolicy",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-s3.Bucket",
+              "fqn": "aws-cdk-lib.aws_s3.Bucket",
               "version": "0.0.0"
             }
           },
           "Distribution": {
             "id": "Distribution",
-            "path": "cloudfront-custom-s3-integ/Distribution",
+            "path": "cloudfront-custom-s3-stack/Distribution",
             "children": {
               "CFDistribution": {
                 "id": "CFDistribution",
-                "path": "cloudfront-custom-s3-integ/Distribution/CFDistribution",
+                "path": "cloudfront-custom-s3-stack/Distribution/CFDistribution",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::CloudFront::Distribution",
                   "aws:cdk:cloudformation:props": {
@@ -170,26 +168,104 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-cloudfront.CfnDistribution",
+                  "fqn": "aws-cdk-lib.aws_cloudfront.CfnDistribution",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-cloudfront.CloudFrontWebDistribution",
+              "fqn": "aws-cdk-lib.aws_cloudfront.CloudFrontWebDistribution",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "cloudfront-custom-s3-stack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "cloudfront-custom-s3-stack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "integ-cloudfront-custom-s3": {
+        "id": "integ-cloudfront-custom-s3",
+        "path": "integ-cloudfront-custom-s3",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "integ-cloudfront-custom-s3/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "integ-cloudfront-custom-s3/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "integ-cloudfront-custom-s3/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "integ-cloudfront-custom-s3/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "integ-cloudfront-custom-s3/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.3.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
     }
   }
 }

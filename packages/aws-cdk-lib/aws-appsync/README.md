@@ -1,6 +1,5 @@
 # AWS AppSync Construct Library
 
-
 The `aws-cdk-lib/aws-appsync` package contains constructs for building flexible
 APIs that use GraphQL.
 
@@ -85,8 +84,6 @@ demoDS.createResolver('QueryGetDemosConsistentResolver', {
   responseMappingTemplate: appsync.MappingTemplate.dynamoDbResultList(),
 });
 ```
-
-
 
 ### Aurora Serverless
 
@@ -303,6 +300,7 @@ httpDs.createResolver('MutationCallStepFunctionResolver', {
 ```
 
 ### EventBridge
+
 Integrating AppSync with EventBridge enables developers to use EventBridge rules to route commands for GraphQL mutations
 that need to perform any one of a variety of asynchronous tasks. More broadly, it enables teams to expose an event bus
 as a part of a GraphQL schema.
@@ -437,6 +435,7 @@ ds.createResolver('QueryGetTestsResolver', {
 ```
 
 ## Merged APIs
+
 AppSync supports [Merged APIs](https://docs.aws.amazon.com/appsync/latest/devguide/merged-api.html) which can be used to merge multiple source APIs into a single API.
 
 ```ts
@@ -545,21 +544,24 @@ new route53.CnameRecord(this, `CnameApiRecord`, {
 AppSync automatically create a log group with the name `/aws/appsync/apis/<graphql_api_id>` upon deployment with
 log data set to never expire. If you want to set a different expiration period, use the `logConfig.retention` property.
 
+Also you can choose the log level by setting the `logConfig.fieldLogLevel` property.
+
+For more information, see [CloudWatch logs](https://docs.aws.amazon.com/en_us/appsync/latest/devguide/monitoring.html#cwl).
+
 To obtain the GraphQL API's log group as a `logs.ILogGroup` use the `logGroup` property of the
 `GraphqlApi` construct.
 
 ```ts
 import * as logs from 'aws-cdk-lib/aws-logs';
 
-const logConfig: appsync.LogConfig = {
-  retention: logs.RetentionDays.ONE_WEEK,
-};
-
 new appsync.GraphqlApi(this, 'api', {
   authorizationConfig: {},
   name: 'myApi',
   definition: appsync.Definition.fromFile(path.join(__dirname, 'myApi.graphql')),
-  logConfig,
+  logConfig: {
+    fieldLogLevel: appsync.FieldLogLevel.INFO,
+    retention: logs.RetentionDays.ONE_WEEK,
+  },
 });
 ```
 
@@ -602,9 +604,9 @@ sources and resolvers, an `apiId` is sufficient.
 
 ## Private APIs
 
-By default all AppSync GraphQL APIs are public and can be accessed from the internet. 
-For customers that want to limit access to be from their VPC, the optional API `visibility` property can be set to `Visibility.PRIVATE` 
-at creation time. To explicitly create a public API, the `visibility` property should be set to `Visibility.GLOBAL`. 
+By default all AppSync GraphQL APIs are public and can be accessed from the internet.
+For customers that want to limit access to be from their VPC, the optional API `visibility` property can be set to `Visibility.PRIVATE`
+at creation time. To explicitly create a public API, the `visibility` property should be set to `Visibility.GLOBAL`.
 If visibility is not set, the service will default to `GLOBAL`.
 
 CDK stack file `app-stack.ts`:
@@ -617,8 +619,8 @@ const api = new appsync.GraphqlApi(this, 'api', {
 });
 ```
 
-See [documentation](https://docs.aws.amazon.com/appsync/latest/devguide/using-private-apis.html) 
-for more details about Private APIs 
+See [documentation](https://docs.aws.amazon.com/appsync/latest/devguide/using-private-apis.html)
+for more details about Private APIs
 
 ## Authorization
 
@@ -756,6 +758,22 @@ const appsyncFunction = new appsync.AppsyncFunction(this, 'function', {
 });
 ```
 
+When using the `LambdaDataSource`, you can control the maximum number of resolver request
+inputs that will be sent to a single AWS Lambda function in a BatchInvoke operation
+by setting the `maxBatchSize` property.
+
+```ts
+declare const api: appsync.GraphqlApi;
+declare const lambdaDataSource: appsync.LambdaDataSource;
+
+const appsyncFunction = new appsync.AppsyncFunction(this, 'function', {
+  name: 'appsync_function',
+  api,
+  dataSource: lambdaDataSource,
+  maxBatchSize: 10,
+});
+```
+
 AppSync Functions are used in tandem with pipeline resolvers to compose multiple
 operations.
 
@@ -842,8 +860,8 @@ const api = new appsync.GraphqlApi(this, 'api', {
 
 ## Resolver Count Limits
 
-You can control how many resolvers each query can process. 
-By default, each query can process up to 10000 resolvers. 
+You can control how many resolvers each query can process.
+By default, each query can process up to 10000 resolvers.
 By setting a limit AppSync will not handle any resolvers past a certain number limit.
 
 ```ts
@@ -865,8 +883,45 @@ const api = new appsync.GraphqlApi(this, 'api', {
   definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.schema.graphql')),
   environmentVariables: {
     EnvKey1: 'non-empty-1',
-  },  
+  },
 });
 
 api.addEnvironmentVariable('EnvKey2', 'non-empty-2');
+```
+
+## Configure an EventBridge target that invokes an AppSync GraphQL API
+
+Configuring the target relies on the `graphQLEndpointArn` property.
+
+Use the `AppSync` event target to trigger an AppSync GraphQL API. You need to
+create an `AppSync.GraphqlApi` configured with `AWS_IAM` authorization mode.
+
+The code snippet below creates a AppSync GraphQL API target that is invoked, calling the `publish` mutation.
+
+```ts
+import * as events from 'aws-cdk-lib/aws-events';
+import * as targets from 'aws-cdk-lib/aws-events-targets';
+
+declare const rule: events.Rule;
+declare const api: appsync.GraphqlApi;
+
+rule.addTarget(new targets.AppSync(api, {
+  graphQLOperation: 'mutation Publish($message: String!){ publish(message: $message) { message } }',
+  variables: events.RuleTargetInput.fromObject({
+    message: 'hello world',
+  }),
+}));
+```
+
+## Owner Contact
+
+You can set the owner contact information for an API resource.
+This field accepts any string input with a length of 0 - 256 characters.
+
+```ts
+const api = new appsync.GraphqlApi(this, 'OwnerContact', {
+    name: 'OwnerContact',
+    definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
+    ownerContact: 'test-owner-contact',
+});
 ```

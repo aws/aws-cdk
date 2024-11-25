@@ -438,7 +438,7 @@
        {
         "Ref": "VPCES3AE7D565"
        },
-       "\",\"PrivateDnsName\":\"my-stuff.aws-cdk.dev\"},\"physicalResourceId\":{\"id\":\"awscdkvpcendpointdnsintegVPCES2D7BC258\"},\"logApiResponseData\":true}"
+       "\",\"PrivateDnsName\":\"my-stuff.aws-cdk.dev\"},\"physicalResourceId\":{\"id\":\"awscdkvpcendpointdnsintegVPCES2D7BC258\"}}"
       ]
      ]
     },
@@ -450,7 +450,7 @@
        {
         "Ref": "VPCES3AE7D565"
        },
-       "\",\"PrivateDnsName\":\"my-stuff.aws-cdk.dev\"},\"physicalResourceId\":{\"id\":\"awscdkvpcendpointdnsintegVPCES2D7BC258\"},\"logApiResponseData\":true}"
+       "\",\"PrivateDnsName\":\"my-stuff.aws-cdk.dev\"},\"physicalResourceId\":{\"id\":\"awscdkvpcendpointdnsintegVPCES2D7BC258\"}}"
       ]
      ]
     },
@@ -462,7 +462,7 @@
        {
         "Ref": "VPCES3AE7D565"
        },
-       "\",\"RemovePrivateDnsName\":true},\"logApiResponseData\":true}"
+       "\",\"RemovePrivateDnsName\":true}}"
       ]
      ]
     },
@@ -544,7 +544,7 @@
        {
         "Ref": "VPCES3AE7D565"
        },
-       "\"]},\"physicalResourceId\":{\"id\":\"0b26ca4969ad06c279e229b1b55b9bc2\"},\"logApiResponseData\":true}"
+       "\"]},\"physicalResourceId\":{\"id\":\"0b26ca4969ad06c279e229b1b55b9bc2\"}}"
       ]
      ]
     },
@@ -556,7 +556,7 @@
        {
         "Ref": "VPCES3AE7D565"
        },
-       "\"]},\"physicalResourceId\":{\"id\":\"0b26ca4969ad06c279e229b1b55b9bc2\"},\"logApiResponseData\":true}"
+       "\"]},\"physicalResourceId\":{\"id\":\"0b26ca4969ad06c279e229b1b55b9bc2\"}}"
       ]
      ]
     },
@@ -678,7 +678,7 @@
          ]
         ]
        },
-       "\"},\"logApiResponseData\":true}"
+       "\"}}"
       ]
      ]
     },
@@ -710,7 +710,7 @@
          ]
         ]
        },
-       "\"},\"logApiResponseData\":true}"
+       "\"}}"
       ]
      ]
     },
@@ -815,7 +815,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "746da84b10e215c552e68b6d2061024e4429f0386f43a35ef5e4d2940655692e.zip"
+     "S3Key": "9e8936ba1db43e0919ba2fc8265d50686eeaca82830c471ff8b7b0672c5970ec.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -824,12 +824,144 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x",
+    "Runtime": {
+     "Fn::FindInMap": [
+      "LatestNodeRuntimeMap",
+      {
+       "Ref": "AWS::Region"
+      },
+      "value"
+     ]
+    },
     "Timeout": 120
    },
    "DependsOn": [
     "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
    ]
+  }
+ },
+ "Mappings": {
+  "LatestNodeRuntimeMap": {
+   "af-south-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-east-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-3": {
+    "value": "nodejs20.x"
+   },
+   "ap-south-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-south-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-3": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-4": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-5": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-7": {
+    "value": "nodejs20.x"
+   },
+   "ca-central-1": {
+    "value": "nodejs20.x"
+   },
+   "ca-west-1": {
+    "value": "nodejs20.x"
+   },
+   "cn-north-1": {
+    "value": "nodejs18.x"
+   },
+   "cn-northwest-1": {
+    "value": "nodejs18.x"
+   },
+   "eu-central-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-central-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-isoe-west-1": {
+    "value": "nodejs18.x"
+   },
+   "eu-north-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-south-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-south-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-3": {
+    "value": "nodejs20.x"
+   },
+   "il-central-1": {
+    "value": "nodejs20.x"
+   },
+   "me-central-1": {
+    "value": "nodejs20.x"
+   },
+   "me-south-1": {
+    "value": "nodejs20.x"
+   },
+   "mx-central-1": {
+    "value": "nodejs20.x"
+   },
+   "sa-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-east-2": {
+    "value": "nodejs20.x"
+   },
+   "us-gov-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-gov-west-1": {
+    "value": "nodejs18.x"
+   },
+   "us-iso-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-iso-west-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-west-1": {
+    "value": "nodejs20.x"
+   },
+   "us-west-2": {
+    "value": "nodejs20.x"
+   }
   }
  },
  "Outputs": {

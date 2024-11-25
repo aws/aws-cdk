@@ -32,6 +32,32 @@ export interface ProductStackProps {
    * @default - No KMS KeyId and SSE_KMS encryption cannot be used
    */
   readonly serverSideEncryptionAwsKmsKeyId? : string;
+
+  /**
+   * The amount of memory (in MiB) to allocate to the AWS Lambda function which
+   * replicates the files from the CDK bucket to the destination bucket.
+   *
+   * If you are deploying large files, you will need to increase this number
+   * accordingly.
+   *
+   * @default 128
+   */
+  readonly memoryLimit?: number;
+
+  /**
+   * A description of the stack.
+   *
+   * @default - No description.
+   */
+  readonly description?: string;
+
+  /**
+   * Include runtime versioning information in this Stack
+   *
+   * @default - `analyticsReporting` setting of containing `App`, or value of
+   * 'aws:cdk:version-reporting' context key
+   */
+  readonly analyticsReporting?: boolean;
 }
 
 /**
@@ -53,11 +79,14 @@ export class ProductStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: ProductStackProps = {}) {
     const parentStack = findParentStack(scope);
     super(scope, id, {
+      analyticsReporting: props.analyticsReporting,
+      description: props.description,
       synthesizer: new ProductStackSynthesizer({
         parentStack,
         assetBucket: props.assetBucket,
         serverSideEncryption: props.serverSideEncryption,
         serverSideEncryptionAwsKmsKeyId: props.serverSideEncryptionAwsKmsKeyId,
+        memoryLimit: props.memoryLimit,
       }),
     });
 

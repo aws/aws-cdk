@@ -9,7 +9,7 @@
       "Arn"
      ]
     },
-    "Create": "{\"assumedRoleArn\":\"arn:aws:iam::12345678:role/MyUniqueRole\",\"region\":\"us-west-1\",\"service\":\"@aws-sdk/client-sts\",\"action\":\"GetCallerIdentityCommand\",\"physicalResourceId\":{\"id\":\"id\"},\"logApiResponseData\":true}",
+    "Create": "{\"assumedRoleArn\":\"arn:aws:iam::12345678:role/MyUniqueRole\",\"region\":\"us-west-1\",\"service\":\"@aws-sdk/client-sts\",\"action\":\"GetCallerIdentityCommand\",\"physicalResourceId\":{\"id\":\"id\"}}",
     "InstallLatestAwsSdk": false
    },
    "DependsOn": [
@@ -84,7 +84,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x",
+    "Runtime": "nodejs20.x",
     "Timeout": 120
    },
    "DependsOn": [

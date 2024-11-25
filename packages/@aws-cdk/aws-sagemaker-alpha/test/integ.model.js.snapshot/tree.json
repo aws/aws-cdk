@@ -97,9 +97,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             0,
@@ -123,7 +120,10 @@
                             "key": "Name",
                             "value": "aws-cdk-sagemaker-model/VPC/PublicSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -145,15 +145,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "aws-cdk-sagemaker-model/VPC/PublicSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -186,12 +186,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "gatewayId": {
                           "Ref": "VPCIGWB7E252D3"
+                        },
+                        "routeTableId": {
+                          "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
                         }
                       }
                     },
@@ -226,14 +226,14 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
-                        "subnetId": {
-                          "Ref": "VPCPublicSubnet1SubnetB4246D30"
-                        },
                         "allocationId": {
                           "Fn::GetAtt": [
                             "VPCPublicSubnet1EIP6AD938E8",
                             "AllocationId"
                           ]
+                        },
+                        "subnetId": {
+                          "Ref": "VPCPublicSubnet1SubnetB4246D30"
                         },
                         "tags": [
                           {
@@ -264,9 +264,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             1,
@@ -290,7 +287,10 @@
                             "key": "Name",
                             "value": "aws-cdk-sagemaker-model/VPC/PublicSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -312,15 +312,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "aws-cdk-sagemaker-model/VPC/PublicSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -353,12 +353,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "gatewayId": {
                           "Ref": "VPCIGWB7E252D3"
+                        },
+                        "routeTableId": {
+                          "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
                         }
                       }
                     },
@@ -393,14 +393,14 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
-                        "subnetId": {
-                          "Ref": "VPCPublicSubnet2Subnet74179F39"
-                        },
                         "allocationId": {
                           "Fn::GetAtt": [
                             "VPCPublicSubnet2EIP4947BC00",
                             "AllocationId"
                           ]
+                        },
+                        "subnetId": {
+                          "Ref": "VPCPublicSubnet2Subnet74179F39"
                         },
                         "tags": [
                           {
@@ -431,9 +431,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             0,
@@ -457,7 +454,10 @@
                             "key": "Name",
                             "value": "aws-cdk-sagemaker-model/VPC/PrivateSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -479,15 +479,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "aws-cdk-sagemaker-model/VPC/PrivateSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -520,12 +520,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "natGatewayId": {
                           "Ref": "VPCPublicSubnet1NATGatewayE0556630"
+                        },
+                        "routeTableId": {
+                          "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
                         }
                       }
                     },
@@ -550,9 +550,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             1,
@@ -576,7 +573,10 @@
                             "key": "Name",
                             "value": "aws-cdk-sagemaker-model/VPC/PrivateSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -598,15 +598,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "aws-cdk-sagemaker-model/VPC/PrivateSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -639,12 +639,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "natGatewayId": {
                           "Ref": "VPCPublicSubnet2NATGateway3C070193"
+                        },
+                        "routeTableId": {
+                          "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
                         }
                       }
                     },
@@ -684,11 +684,11 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                   "aws:cdk:cloudformation:props": {
-                    "vpcId": {
-                      "Ref": "VPCB9E5F0B4"
-                    },
                     "internetGatewayId": {
                       "Ref": "VPCIGWB7E252D3"
+                    },
+                    "vpcId": {
+                      "Ref": "VPCB9E5F0B4"
                     }
                   }
                 },
@@ -1169,13 +1169,13 @@
                   "version": "0.0.0"
                 }
               },
-              "ModelImage633a6e898c0256cb2deaf7e22053a66b": {
-                "id": "ModelImage633a6e898c0256cb2deaf7e22053a66b",
-                "path": "aws-cdk-sagemaker-model/InferencePipelineModel/ModelImage633a6e898c0256cb2deaf7e22053a66b",
+              "ModelImage1df1fb2d6963bb25c0be68fe5b4e5a62": {
+                "id": "ModelImage1df1fb2d6963bb25c0be68fe5b4e5a62",
+                "path": "aws-cdk-sagemaker-model/InferencePipelineModel/ModelImage1df1fb2d6963bb25c0be68fe5b4e5a62",
                 "children": {
                   "Staging": {
                     "id": "Staging",
-                    "path": "aws-cdk-sagemaker-model/InferencePipelineModel/ModelImage633a6e898c0256cb2deaf7e22053a66b/Staging",
+                    "path": "aws-cdk-sagemaker-model/InferencePipelineModel/ModelImage1df1fb2d6963bb25c0be68fe5b4e5a62/Staging",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -1183,7 +1183,7 @@
                   },
                   "Repository": {
                     "id": "Repository",
-                    "path": "aws-cdk-sagemaker-model/InferencePipelineModel/ModelImage633a6e898c0256cb2deaf7e22053a66b/Repository",
+                    "path": "aws-cdk-sagemaker-model/InferencePipelineModel/ModelImage1df1fb2d6963bb25c0be68fe5b4e5a62/Repository",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_ecr.RepositoryBase",
                       "version": "0.0.0"
@@ -1195,13 +1195,13 @@
                   "version": "0.0.0"
                 }
               },
-              "ModelDatab5852dea925d702939eb0aa28d4cf14d": {
-                "id": "ModelDatab5852dea925d702939eb0aa28d4cf14d",
-                "path": "aws-cdk-sagemaker-model/InferencePipelineModel/ModelDatab5852dea925d702939eb0aa28d4cf14d",
+              "ModelDataac735c034334b02fb2f240145313a846": {
+                "id": "ModelDataac735c034334b02fb2f240145313a846",
+                "path": "aws-cdk-sagemaker-model/InferencePipelineModel/ModelDataac735c034334b02fb2f240145313a846",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "aws-cdk-sagemaker-model/InferencePipelineModel/ModelDatab5852dea925d702939eb0aa28d4cf14d/Stage",
+                    "path": "aws-cdk-sagemaker-model/InferencePipelineModel/ModelDataac735c034334b02fb2f240145313a846/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -1209,7 +1209,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "aws-cdk-sagemaker-model/InferencePipelineModel/ModelDatab5852dea925d702939eb0aa28d4cf14d/AssetBucket",
+                    "path": "aws-cdk-sagemaker-model/InferencePipelineModel/ModelDataac735c034334b02fb2f240145313a846/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
@@ -1227,12 +1227,6 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::SageMaker::Model",
                   "aws:cdk:cloudformation:props": {
-                    "executionRoleArn": {
-                      "Fn::GetAtt": [
-                        "InferencePipelineModelRole6A99C5B3",
-                        "Arn"
-                      ]
-                    },
                     "containers": [
                       {
                         "image": {
@@ -1255,7 +1249,13 @@
                           "Fn::Sub": "https://s3.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/126d48fa0e32fbef5078b9d88658b35ad29d4291eb86675a64c75fa4f1338916.gz"
                         }
                       }
-                    ]
+                    ],
+                    "executionRoleArn": {
+                      "Fn::GetAtt": [
+                        "InferencePipelineModelRole6A99C5B3",
+                        "Arn"
+                      ]
+                    }
                   }
                 },
                 "constructInfo": {
@@ -1471,6 +1471,227 @@
               "version": "0.0.0"
             }
           },
+          "NetworkIsolationModel": {
+            "id": "NetworkIsolationModel",
+            "path": "aws-cdk-sagemaker-model/NetworkIsolationModel",
+            "children": {
+              "Role": {
+                "id": "Role",
+                "path": "aws-cdk-sagemaker-model/NetworkIsolationModel/Role",
+                "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "aws-cdk-sagemaker-model/NetworkIsolationModel/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-sagemaker-model/NetworkIsolationModel/Role/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "sagemaker.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/AmazonSageMakerFullAccess"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-cdk-sagemaker-model/NetworkIsolationModel/Role/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-sagemaker-model/NetworkIsolationModel/Role/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "ecr:BatchCheckLayerAvailability",
+                                    "ecr:BatchGetImage",
+                                    "ecr:GetDownloadUrlForLayer"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":ecr:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":repository/",
+                                        {
+                                          "Fn::Sub": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}"
+                                        }
+                                      ]
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "ecr:GetAuthorizationToken",
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                },
+                                {
+                                  "Action": [
+                                    "s3:GetBucket*",
+                                    "s3:GetObject*",
+                                    "s3:List*"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":s3:::",
+                                          {
+                                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                          },
+                                          "/*"
+                                        ]
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":s3:::",
+                                          {
+                                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                          }
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "NetworkIsolationModelRoleDefaultPolicy84ACFE88",
+                            "roles": [
+                              {
+                                "Ref": "NetworkIsolationModelRole562D6C7F"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Model": {
+                "id": "Model",
+                "path": "aws-cdk-sagemaker-model/NetworkIsolationModel/Model",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SageMaker::Model",
+                  "aws:cdk:cloudformation:props": {
+                    "containers": [
+                      {
+                        "image": {
+                          "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:442a71de95281cb26bd41da567c79060206108b97bdde93cb4ce5f213f50013a"
+                        }
+                      },
+                      {
+                        "image": {
+                          "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:442a71de95281cb26bd41da567c79060206108b97bdde93cb4ce5f213f50013a"
+                        },
+                        "modelDataUrl": {
+                          "Fn::Sub": "https://s3.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/126d48fa0e32fbef5078b9d88658b35ad29d4291eb86675a64c75fa4f1338916.gz"
+                        }
+                      },
+                      {
+                        "image": {
+                          "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:442a71de95281cb26bd41da567c79060206108b97bdde93cb4ce5f213f50013a"
+                        },
+                        "modelDataUrl": {
+                          "Fn::Sub": "https://s3.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/126d48fa0e32fbef5078b9d88658b35ad29d4291eb86675a64c75fa4f1338916.gz"
+                        }
+                      }
+                    ],
+                    "enableNetworkIsolation": true,
+                    "executionRoleArn": {
+                      "Fn::GetAtt": [
+                        "NetworkIsolationModelRole562D6C7F",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sagemaker.CfnModel",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-sagemaker-alpha.Model",
+              "version": "0.0.0"
+            }
+          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "aws-cdk-sagemaker-model/BootstrapVersion",
@@ -1506,7 +1727,7 @@
                 "path": "integtest-model/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -1552,7 +1773,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.3.0"
         }
       }
     },

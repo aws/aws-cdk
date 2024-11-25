@@ -1,5 +1,15 @@
 import * as path from 'path';
-import { Duration, CfnResource, AssetStaging, Stack, FileAssetPackaging, Token, Lazy, Reference } from 'aws-cdk-lib/core';
+import {
+  Duration,
+  CfnResource,
+  AssetStaging,
+  Stack,
+  FileAssetPackaging,
+  Token,
+  Lazy,
+  Reference,
+  determineLatestNodeRuntimeName,
+} from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { awsSdkToIamAction } from 'aws-cdk-lib/custom-resources/lib/helpers-internal';
 import { RetentionDays } from 'aws-cdk-lib/aws-logs';
@@ -84,7 +94,7 @@ class LambdaFunctionProvider extends Construct {
     });
 
     const functionProperties: any = {
-      Runtime: 'nodejs18.x',
+      Runtime: determineLatestNodeRuntimeName(this),
       Code: {
         S3Bucket: asset.bucketName,
         S3Key: asset.objectKey,

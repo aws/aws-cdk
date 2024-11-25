@@ -84,6 +84,32 @@ export interface ILogGroup extends iam.IResourceWithPolicy {
    * Public method to get the physical name of this log group
    */
   logGroupPhysicalName(): string;
+
+  /**
+   * Return the given named metric for this Log Group
+   *
+   * @param metricName The name of the metric
+   * @param props Properties for the metric
+   */
+  metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The number of log events uploaded to CloudWatch Logs.
+   * When used with the LogGroupName dimension, this is the number of
+   * log events uploaded to the log group.
+   *
+   * @param props Properties for the Cloudwatch metric
+   */
+  metricIncomingLogEvents(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The volume of log events in uncompressed bytes uploaded to CloudWatch Logs.
+   * When used with the LogGroupName dimension, this is the volume of log events
+   * in uncompressed bytes uploaded to the log group.
+   *
+   * @param props Properties for the Cloudwatch metric
+   */
+  metricIncomingBytes(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 }
 
 /**
@@ -245,6 +271,78 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
 
     return principal;
   }
+
+  /**
+   * Creates a CloudWatch metric for the number of incoming log events to this log group.
+   *
+   * @param props - Optional. Configuration options for the metric.
+   * @returns A CloudWatch Metric object representing the IncomingLogEvents metric.
+   *
+   * This method allows you to monitor the rate at which log events are being ingested
+   * into the log group. It's useful for understanding the volume of logging activity
+   * and can help in capacity planning or detecting unusual spikes in logging.
+   *
+   * Example usage:
+   * ```
+   * const logGroup = new logs.LogGroup(this, 'MyLogGroup');
+   * logGroup.metricIncomingLogEvents().createAlarm(stack, 'IncomingEventsPerInstanceAlarm', {
+   * threshold: 1,
+   * evaluationPeriods: 1,
+   * });
+   * ```
+   */
+  public metricIncomingLogEvents(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('IncomingLogs', props);
+  }
+
+  /**
+   * Creates a CloudWatch metric for the volume of incoming log data in bytes to this log group.
+   *
+   * @param props - Optional. Configuration options for the metric.
+   * @returns A CloudWatch Metric object representing the IncomingBytes metric.
+   *
+   * This method allows you to monitor the volume of data being ingested into the log group.
+   * It's useful for understanding the size of your logs, which can impact storage costs
+   * and help in identifying unexpectedly large log entries.
+   *
+   * Example usage:
+   * ```
+   * const logGroup = new logs.LogGroup(this, 'MyLogGroup');
+   * logGroup.metricIncomingBytes().createAlarm(stack, 'IncomingBytesPerInstanceAlarm', {
+   *   threshold: 1,
+   *   evaluationPeriods: 1,
+   * });
+   * ```
+  */
+  public metricIncomingBytes(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('IncomingBytes', props);
+  }
+
+  /**
+ * Creates a CloudWatch metric for this log group.
+ *
+ * @param metricName - The name of the metric to create.
+ * @param props - Optional. Additional properties to configure the metric.
+ * @returns A CloudWatch Metric object representing the specified metric for this log group.
+ *
+ * This method creates a CloudWatch Metric object with predefined settings for the log group.
+ * It sets the namespace to 'AWS/Logs' and the statistic to 'Sum' by default.
+ *
+ * The created metric is automatically associated with this log group using the `attachTo` method.
+ *
+ * Common metric names for log groups include:
+ * - 'IncomingBytes': The volume of log data in bytes ingested into the log group.
+ * - 'IncomingLogEvents': The number of log events ingested into the log group.
+ * ```
+ */
+  public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      namespace: 'AWS/Logs',
+      metricName,
+      statistic: 'Sum',
+      ...props,
+    }).attachTo(this);
+  }
 }
 
 /**
@@ -389,7 +487,7 @@ export interface LogGroupProps {
   /**
    * The KMS customer managed key to encrypt the log group with.
    *
-   * @default Server-side encrpytion managed by the CloudWatch Logs service
+   * @default Server-side encryption managed by the CloudWatch Logs service
    */
   readonly encryptionKey?: kms.IKey;
 
@@ -438,6 +536,21 @@ export interface LogGroupProps {
    * @default RemovalPolicy.Retain
    */
   readonly removalPolicy?: RemovalPolicy;
+}
+
+/**
+ * The method used to distribute log data to the destination.
+ */
+export enum Distribution {
+  /**
+   * Log events from the same log stream are kept together and sent to the same destination.
+   */
+  BY_LOG_STREAM = 'ByLogStream',
+
+  /**
+   * Log events are distributed across the log destinations randomly.
+   */
+  RANDOM = 'Random',
 }
 
 /**
@@ -505,13 +618,9 @@ export class LogGroup extends LogGroupBase {
     let logGroupClass = props.logGroupClass;
     const stack = Stack.of(scope);
     const logGroupClassUnsupportedRegions = [
-      'cn-north-1', // BJS
-      'cn-northwest-1', // ZHY
       'us-iso-west-1', // APA
       'us-iso-east-1', // DCA
       'us-isob-east-1', // LCK
-      'us-gov-west-1', // PDT
-      'us-gov-east-1', // OSU
     ];
     if (logGroupClass !== undefined && !Token.isUnresolved(stack.region) && logGroupClassUnsupportedRegions.includes(stack.region)) {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-logs:propertyNotSupported', `The LogGroupClass property is not supported in the following regions: ${logGroupClassUnsupportedRegions}`);
@@ -573,6 +682,14 @@ export interface SubscriptionFilterOptions {
    * @default Automatically generated
    */
   readonly filterName?: string;
+
+  /**
+   * The method used to distribute log data to the destination.
+   * This property can only be used with KinesisDestination.
+   *
+   * @default Distribution.BY_LOG_STREAM
+   */
+  readonly distribution?: Distribution;
 }
 
 /**

@@ -1,5 +1,7 @@
 /**
  * Build machine compute type.
+ *
+ * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html#environment.types
  */
 export enum ComputeType {
   SMALL = 'BUILD_GENERAL1_SMALL',

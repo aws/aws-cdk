@@ -1,5 +1,4 @@
 import { IReceiptRule } from './receipt-rule';
-import { IReceiptRuleSet } from './receipt-rule-set';
 
 /**
  * An abstract action for a receipt rule.
@@ -10,13 +9,6 @@ export interface IReceiptRuleAction {
    */
   bind(receiptRule: IReceiptRule): ReceiptRuleActionConfig;
 
-  /**
-   * Generate and apply the receipt rule action statement
-   *
-   * @param ruleSet The rule set the rule is being added to
-   * @internal
-   */
-  _applyPolicyStatement?(ruleSet: IReceiptRuleSet): void;
 }
 
 /**

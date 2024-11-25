@@ -646,6 +646,17 @@ test('fails if key policy has no IAM principals', () => {
   expect(() => app.synth()).toThrow(/A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
 });
 
+test('multi-region primary key', () => {
+  const stack = new cdk.Stack();
+  new kms.Key(stack, 'MyKey', {
+    multiRegion: true,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+    MultiRegion: true,
+  });
+});
+
 describe('imported keys', () => {
   test('throw an error when providing something that is not a valid key ARN', () => {
     const stack = new cdk.Stack();
@@ -1320,6 +1331,17 @@ function generateInvalidKeySpecKeyUsageCombinations() {
       KeySpec.ECC_SECG_P256K1,
       KeySpec.SYMMETRIC_DEFAULT,
       KeySpec.SM2,
+    ],
+    [KeyUsage.KEY_AGREEMENT]: [
+      KeySpec.SYMMETRIC_DEFAULT,
+      KeySpec.RSA_2048,
+      KeySpec.RSA_3072,
+      KeySpec.RSA_4096,
+      KeySpec.ECC_SECG_P256K1,
+      KeySpec.HMAC_224,
+      KeySpec.HMAC_256,
+      KeySpec.HMAC_384,
+      KeySpec.HMAC_512,
     ],
   };
   const testCases: { keySpec: KeySpec; keyUsage: KeyUsage; toString: () => string }[] = [];

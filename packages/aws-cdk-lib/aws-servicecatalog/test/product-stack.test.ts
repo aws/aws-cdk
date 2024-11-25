@@ -69,6 +69,26 @@ describe('ProductStack', () => {
     expect(assembly.directory).toBe('/tmp/foobar');
   });
 
+  test.each([true, false])('Can enable or disable anlaytics reporting in product stack', (enabled) => {
+    // GIVEN
+    const app = new cdk.App();
+    const mainStack = new cdk.Stack(app, 'MyStackAbsolutePath');
+    const testAssetBucket = new s3.Bucket(mainStack, 'TestAssetBucket', {
+      bucketName: 'test-asset-bucket',
+    });
+    const productStack = new ProductWithAnAsset(mainStack, 'MyProductStackAbsolutePath', {
+      assetBucket: testAssetBucket,
+      analyticsReporting: enabled,
+      description: 'foo bar',
+    });
+
+    // THEN
+    const assembly = app.synth();
+    const stackTemplate = JSON.parse(fs.readFileSync(path.join(assembly.directory, productStack.templateFile), 'utf-8'));
+    Template.fromJSON(stackTemplate).resourceCountIs('AWS::CDK::Metadata', enabled ? 1 : 0);
+    expect(Template.fromJSON(stackTemplate).toJSON().Description).toEqual('foo bar');
+  });
+
   test('Used defined Asset bucket in product stack with nested assets', () => {
     // GIVEN
     const app = new cdk.App(
@@ -382,6 +402,35 @@ describe('ProductStack', () => {
       SystemMetadata: {
         sse: 'AES256',
       },
+    });
+  });
+
+  test('BucketDeployment with custom memoryLimit', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const mainStack = new cdk.Stack(app, 'MyStack');
+    const testAssetBucket = new s3.Bucket(mainStack, 'TestAssetBucket', {
+      bucketName: 'test-asset-bucket',
+    });
+    const productStack = new servicecatalog.ProductStack(mainStack, 'MyProductStack', {
+      assetBucket: testAssetBucket,
+      memoryLimit: 256,
+    });
+
+    new lambda.Function(productStack, 'HelloHandler', {
+      runtime: lambda.Runtime.PYTHON_3_9,
+      code: lambda.Code.fromAsset(path.join(__dirname, 'assets')),
+      handler: 'index.handler',
+    });
+
+    // WHEN
+    const assembly = app.synth();
+
+    // THEN
+    expect(productStack._getAssetBucket()).toBeDefined();
+    const mainStackTemplate = JSON.parse(fs.readFileSync(path.join(assembly.directory, mainStack.templateFile), 'utf-8'));
+    Template.fromJSON(mainStackTemplate).hasResourceProperties('AWS::Lambda::Function', {
+      MemorySize: 256,
     });
   });
 

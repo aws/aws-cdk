@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "38.0.1",
   "artifacts": {
     "FlowLogsTestStack.assets": {
       "type": "cdk:asset-manifest",
@@ -16,9 +16,10 @@
         "templateFile": "FlowLogsTestStack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e72b469f3f6e217cace4389fd16922c0495d1816fce11e56cf987d498a39cdbe.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c22551462d92065888506a45879e5ac69b0c5f5c29110a6c00f410666dcd4ace.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -172,6 +173,18 @@
             "data": "VPCFlowLogsKinesisDataFirehoseFlowLog41C8928A"
           }
         ],
+        "/FlowLogsTestStack/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/FlowLogsTestStack/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
         "/FlowLogsTestStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
           {
             "type": "aws:cdk:logicalId",
@@ -224,6 +237,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "BucketAutoDeleteObjectsCustomResourceBAFD23C2"
+          }
+        ],
+        "/FlowLogsTestStack/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
           }
         ],
         "/FlowLogsTestStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
@@ -286,6 +305,7 @@
         "templateFile": "FlowLogsDefaultTestDeployAssert6AFD1854.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",

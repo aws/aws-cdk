@@ -79,7 +79,7 @@ Users can either be signed up by the app's administrators or can sign themselves
 account needs to be confirmed. Cognito provides several ways to sign users up and confirm their accounts. Learn more
 about [user sign up here](https://docs.aws.amazon.com/cognito/latest/developerguide/signing-up-users-in-your-app.html).
 
-To verify the email address of a user in your user pool with Amazon Cognito, you can send the user an email message 
+To verify the email address of a user in your user pool with Amazon Cognito, you can send the user an email message
 with a link that they can select, or you can send them a code that they can enter.
 
 #### Code Verification
@@ -119,7 +119,7 @@ new cognito.UserPool(this, 'myuserpool', {
 ```
 
 #### Link Verification
-Alternatively, users can use link as a verification method. The following code snippet configures a user pool with 
+Alternatively, users can use link as a verification method. The following code snippet configures a user pool with
 properties relevant to these verification messages and link verification method.
 
 ```ts
@@ -306,6 +306,9 @@ configure an MFA token and use it for sign in. It also allows for the users to u
 [time-based one time password
 (TOTP)](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-mfa-totp.html).
 
+If you want to enable email-based MFA, set `email` propety to the Amazon SES email-sending configuration and set `advancedSecurityMode` to `AdvancedSecurity.ENFORCED` or `AdvancedSecurity.AUDIT`.
+For more information, see [Email MFA](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-advanced-security-email-mfa.html).
+
 ```ts
 new cognito.UserPool(this, 'myuserpool', {
   // ...
@@ -313,6 +316,7 @@ new cognito.UserPool(this, 'myuserpool', {
   mfaSecondFactor: {
     sms: true,
     otp: true,
+    email: false, // email-based MFA
   },
 });
 ```
@@ -717,6 +721,24 @@ pool.addClient('app-client', {
 });
 ```
 
+To set a default redirect URI, use the `defaultRedirectUri` property.
+Its value must be present in the `callbackUrls` list.
+
+```ts
+const pool = new cognito.UserPool(this, 'Pool');
+pool.addClient('app-client', {
+  oAuth: {
+    flows: {
+      authorizationCodeGrant: true,
+    },
+    scopes: [ cognito.OAuthScope.OPENID ],
+    defaultRedirectUri: 'https://my-app-domain.com/welcome',
+    callbackUrls: [ 'https://my-app-domain.com/welcome', 'https://my-app-domain.com/hello' ],
+    logoutUrls: [ 'https://my-app-domain.com/signin' ],
+  },
+});
+```
+
 An app client can be configured to prevent user existence errors. This
 instructs the Cognito authentication API to return generic authentication
 failure responses instead of an UserNotFoundException. By default, the flag
@@ -847,6 +869,23 @@ const userPoolClient = new cognito.UserPoolClient(this, 'UserPoolClient', {
 const secret = userPoolClient.userPoolClientSecret;
 ```
 
+If you set `enablePropagateAdditionalUserContextData: true`, you can collect and pass
+information about your user's session to Amazon Cognito advanced security
+when you use the API to sign them up, sign them in, and reset their password.
+
+
+```ts
+declare const importedPool: cognito.UserPool;
+
+const userPoolClient = new cognito.UserPoolClient(this, 'UserPoolClient', {
+  userPool: importedPool,
+  generateSecret: true,
+  enablePropagateAdditionalUserContextData: true,
+});
+```
+
+See [Adding user device and session data to API requests](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-adaptive-authentication.html#user-pool-settings-adaptive-authentication-device-fingerprint) for more information.
+
 ### Resource Servers
 
 A resource server is a server for access-protected resources. It handles authenticated requests from an app that has an
@@ -967,3 +1006,46 @@ const userpool = new cognito.UserPool(this, 'UserPool', {
 ```
 
 By default deletion protection is disabled.
+
+### `email_verified` Attribute Mapping
+
+If you use a third-party identity provider, you can specify the `email_verified` attribute in attributeMapping.
+
+```typescript
+const userpool = new cognito.UserPool(this, 'Pool');
+
+new cognito.UserPoolIdentityProviderGoogle(this, 'google', {
+  userPool: userpool,
+  clientId: 'google-client-id',
+  attributeMapping: {
+    email: cognito.ProviderAttribute.GOOGLE_EMAIL,
+    emailVerified: cognito.ProviderAttribute.GOOGLE_EMAIL_VERIFIED, // you can mapping the `email_verified` attribute.
+  },
+});
+```
+
+### User Pool Group
+
+Support for groups in Amazon Cognito user pools enables you to create and manage groups and add users to groups.
+Use groups to create collections of users to manage their permissions or to represent different types of users.
+
+You can assign an AWS Identity and Access Management (IAM) role to a group to define the permissions for members of a group.
+
+For more information, see [Adding groups to a user pool](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-user-groups.html).
+
+```ts
+declare const userPool: cognito.UserPool;
+declare const role: iam.Role;
+
+new cognito.UserPoolGroup(this, 'UserPoolGroup', {
+  userPool,
+  groupName: 'my-group-name',
+  precedence: 1,
+  role,  // assign IAM Role
+});
+
+// You can also add a group by using addGroup method.
+userPool.addGroup('AnotherUserPoolGroup', {
+  groupName: 'another-group-name'
+});
+```

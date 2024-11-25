@@ -4,7 +4,11 @@ import * as ecs from 'aws-cdk-lib/aws-ecs';
 import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 import * as logs from 'aws-cdk-lib/aws-logs';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm': false,
+  },
+});
 
 const stack = new cdk.Stack(app, 'aws-ecs-integ');
 

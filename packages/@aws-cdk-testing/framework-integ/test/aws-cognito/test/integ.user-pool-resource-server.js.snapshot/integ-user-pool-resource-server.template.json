@@ -37,23 +37,20 @@
    "Properties": {
     "Identifier": "users",
     "Name": "users",
-    "UserPoolId": {
-     "Ref": "myuserpool01998219"
-    },
     "Scopes": [
      {
       "ScopeDescription": "read only",
       "ScopeName": "read"
      }
-    ]
+    ],
+    "UserPoolId": {
+     "Ref": "myuserpool01998219"
+    }
    }
   },
   "myuserpoolclientC5FA41EC": {
    "Type": "AWS::Cognito::UserPoolClient",
    "Properties": {
-    "UserPoolId": {
-     "Ref": "myuserpool01998219"
-    },
     "AllowedOAuthFlows": [
      "client_credentials"
     ],
@@ -75,7 +72,10 @@
     "GenerateSecret": true,
     "SupportedIdentityProviders": [
      "COGNITO"
-    ]
+    ],
+    "UserPoolId": {
+     "Ref": "myuserpool01998219"
+    }
    }
   }
  },

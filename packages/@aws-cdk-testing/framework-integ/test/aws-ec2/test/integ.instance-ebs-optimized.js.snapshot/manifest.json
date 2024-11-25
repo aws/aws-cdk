@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/83a1718c397c41599166aa315ff763be626d295e33e66ac6c4a1ed782648be7d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/530aa55e0c4e33ab32a6d77c0d9e5e14bf51df688665f5d0c508d8000f8af76c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -176,6 +176,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCRestrictDefaultSecurityGroupCustomResource59474679"
+          }
+        ],
+        "/integ-ec2-instance-ebs-optimized/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/integ-ec2-instance-ebs-optimized/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [

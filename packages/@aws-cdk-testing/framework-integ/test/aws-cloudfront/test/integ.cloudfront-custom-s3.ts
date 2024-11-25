@@ -2,6 +2,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import { App, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string) {
@@ -9,6 +10,12 @@ class TestStack extends Stack {
 
     const bucket = new s3.Bucket(this, 'Bucket', {
       publicReadAccess: true,
+      blockPublicAccess: {
+        blockPublicPolicy: false,
+        blockPublicAcls: false,
+        ignorePublicAcls: false,
+        restrictPublicBuckets: false,
+      },
       websiteIndexDocument: 'index.html',
       websiteErrorDocument: '404.html',
     });
@@ -31,5 +38,8 @@ class TestStack extends Stack {
 }
 
 const app = new App();
-new TestStack(app, 'cloudfront-custom-s3-integ');
-app.synth();
+new IntegTest(app, 'integ-cloudfront-custom-s3', {
+  testCases: [new TestStack(app, 'cloudfront-custom-s3-stack')],
+  diffAssets: true,
+  enableLookups: true,
+});

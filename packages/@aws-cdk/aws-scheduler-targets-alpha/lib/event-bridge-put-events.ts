@@ -1,10 +1,7 @@
 import { IScheduleTarget, ISchedule, ScheduleTargetInput, ScheduleTargetConfig } from '@aws-cdk/aws-scheduler-alpha';
-import { Names } from 'aws-cdk-lib';
 import * as events from 'aws-cdk-lib/aws-events';
 import { IRole } from 'aws-cdk-lib/aws-iam';
 import { ScheduleTargetBase, ScheduleTargetBaseProps } from './target';
-import { sameEnvDimension } from './util';
-
 /**
  * An entry to be sent to EventBridge
  *
@@ -52,7 +49,7 @@ export interface EventBridgePutEventsEntry {
 export class EventBridgePutEvents extends ScheduleTargetBase implements IScheduleTarget {
   constructor(
     private readonly entry: EventBridgePutEventsEntry,
-    private readonly props: ScheduleTargetBaseProps,
+    private readonly props: ScheduleTargetBaseProps = {},
   ) {
     super(props, entry.eventBus.eventBusArn);
     if (this.props.input) {
@@ -60,20 +57,8 @@ export class EventBridgePutEvents extends ScheduleTargetBase implements ISchedul
     }
   }
 
-  protected addTargetActionToRole(schedule: ISchedule, role: IRole): void {
+  protected addTargetActionToRole(role: IRole): void {
     const eventBus = this.entry.eventBus;
-    const eventBusEnv = eventBus.env;
-    if (!sameEnvDimension(eventBusEnv.region, schedule.env.region)) {
-      throw new Error(`Cannot assign eventBus in region ${eventBusEnv.region} to the schedule ${Names.nodeUniqueId(schedule.node)} in region ${schedule.env.region}. Both the schedule and the eventBus must be in the same region.`);
-    }
-
-    if (!sameEnvDimension(eventBusEnv.account, schedule.env.account)) {
-      throw new Error(`Cannot assign eventBus in account ${eventBusEnv.account} to the schedule ${Names.nodeUniqueId(schedule.node)} in account ${schedule.env.region}. Both the schedule and the eventBus must be in the same account.`);
-    }
-
-    if (this.props.role && !sameEnvDimension(this.props.role.env.account, eventBusEnv.account)) {
-      throw new Error(`Cannot grant permission to execution role in account ${this.props.role.env.account} to invoke target ${Names.nodeUniqueId(eventBus.node)} in account ${eventBusEnv.account}. Both the target and the execution role must be in the same account.`);
-    }
 
     eventBus.grantPutEventsTo(role);
   }

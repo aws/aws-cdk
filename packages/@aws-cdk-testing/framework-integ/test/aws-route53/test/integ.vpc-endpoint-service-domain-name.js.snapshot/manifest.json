@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "36.0.5",
   "artifacts": {
     "aws-cdk-vpc-endpoint-dns-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/792e90e2cad12b71b977a7fe151f12006b7cd36edbbae45859487f52ebf51e0b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bc19d0a68d0fb38911a86393f365908d71c92f2f476859292e4afb6935ed39a3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -232,6 +232,38 @@
             "data": "EndpointDomainStartVerificationCustomResourcePolicyD2BAC9A6"
           }
         ],
+        "/aws-cdk-vpc-endpoint-dns-integ/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/aws-cdk-vpc-endpoint-dns-integ/AWS679f53fac002430cb0da5b7982bd2287": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-singleton",
+            "data": true
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+            "data": 0
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-singleton",
+            "data": true
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+            "data": 0
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-singleton",
+            "data": true
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+            "data": 0
+          }
+        ],
         "/aws-cdk-vpc-endpoint-dns-integ/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -282,7 +314,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e3a68aa65c02b388f754047c61ffb75d0e8b875533b558f130b9754fe47bf6d8.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/257e9d84619ae20d458be02b9c9dc0960590df5f1d4ef1d3569e217239fd41d1.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -321,6 +353,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/AwsCdkVpcEndpointDnsIntegTest/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/AwsCdkVpcEndpointDnsIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [

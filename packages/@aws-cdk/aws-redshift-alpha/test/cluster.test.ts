@@ -4,7 +4,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
-import { Cluster, ClusterParameterGroup, ClusterSubnetGroup, ClusterType } from '../lib';
+import { Cluster, ClusterParameterGroup, ClusterSubnetGroup, ClusterType, NodeType } from '../lib';
 import { CfnCluster } from 'aws-cdk-lib/aws-redshift';
 
 let stack: cdk.Stack;
@@ -125,6 +125,54 @@ test('creates a secret when master credentials are not specified', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
     GenerateSecretString: {
       ExcludeCharacters: '"@/\\\ \'',
+      GenerateStringKey: 'password',
+      PasswordLength: 30,
+      SecretStringTemplate: '{"username":"admin"}',
+    },
+  });
+});
+
+test('creates a secret with a custom excludeCharacters', () => {
+  // WHEN
+  new Cluster(stack, 'Redshift', {
+    masterUser: {
+      masterUsername: 'admin',
+      excludeCharacters: '"@/\\\ \'`',
+    },
+    vpc,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
+    MasterUsername: {
+      'Fn::Join': [
+        '',
+        [
+          '{{resolve:secretsmanager:',
+          {
+            Ref: 'RedshiftSecretA08D42D6',
+          },
+          ':SecretString:username::}}',
+        ],
+      ],
+    },
+    MasterUserPassword: {
+      'Fn::Join': [
+        '',
+        [
+          '{{resolve:secretsmanager:',
+          {
+            Ref: 'RedshiftSecretA08D42D6',
+          },
+          ':SecretString:password::}}',
+        ],
+      ],
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
+    GenerateSecretString: {
+      ExcludeCharacters: '"@/\\\ \'`',
       GenerateStringKey: 'password',
       PasswordLength: 30,
       SecretStringTemplate: '{"username":"admin"}',
@@ -384,6 +432,39 @@ test('publicly accessible cluster', () => {
   });
 });
 
+test('availability zone relocation enabled', () => {
+  // WHEN
+  new Cluster(stack, 'Redshift', {
+    masterUser: {
+      masterUsername: 'admin',
+    },
+    vpc,
+    availabilityZoneRelocation: true,
+    nodeType: NodeType.RA3_XLPLUS,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
+    AvailabilityZoneRelocation: true,
+  });
+});
+
+test.each([
+  NodeType.DC1_8XLARGE,
+  NodeType.DC2_LARGE,
+])('throw error when availability zone relocation is enabled for invalid node type %s', (nodeType) => {
+  expect(() => {
+    new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      availabilityZoneRelocation: true,
+      nodeType,
+    });
+  }).toThrow(`Availability zone relocation is supported for only RA3 node types, got: ${nodeType}`);
+});
+
 test('imported cluster with imported security group honors allowAllOutbound', () => {
   // GIVEN
   const cluster = Cluster.fromClusterAttributes(stack, 'Database', {
@@ -611,6 +692,67 @@ test('elastic ip address', () => {
     },
     DeletionPolicy: 'Retain',
     UpdateReplacePolicy: 'Retain',
+  });
+});
+
+describe('multi AZ cluster', () => {
+  test('create a multi AZ cluster', () => {
+    // WHEN
+    new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+        masterPassword: cdk.SecretValue.unsafePlainText('tooshort'),
+      },
+      vpc,
+      nodeType: NodeType.RA3_XLPLUS,
+      multiAz: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
+      AllowVersionUpgrade: true,
+      MasterUsername: 'admin',
+      MasterUserPassword: 'tooshort',
+      ClusterType: 'multi-node',
+      AutomatedSnapshotRetentionPeriod: 1,
+      Encrypted: true,
+      NumberOfNodes: 2,
+      NodeType: 'ra3.xlplus',
+      DBName: 'default_db',
+      PubliclyAccessible: false,
+      ClusterSubnetGroupName: { Ref: 'RedshiftSubnetsDFE70E0A' },
+      VpcSecurityGroupIds: [
+        { 'Fn::GetAtt': ['RedshiftSecurityGroup796D74A7', 'GroupId'] },
+      ],
+      MultiAZ: true,
+    });
+  });
+
+  test('throw error for invalid node type', () => {
+    expect(() => {
+      new Cluster(stack, 'Redshift', {
+        masterUser: {
+          masterUsername: 'admin',
+        },
+        vpc,
+        nodeType: NodeType.DS2_XLARGE,
+        multiAz: true,
+      });
+    }).toThrow('Multi-AZ cluster is only supported for RA3 node types, got: ds2.xlarge');
+  });
+
+  test('throw error for single node cluster', () => {
+    expect(() => {
+      new Cluster(stack, 'Redshift', {
+        masterUser: {
+          masterUsername: 'admin',
+        },
+        vpc,
+        nodeType: NodeType.RA3_XLPLUS,
+        multiAz: true,
+        clusterType: ClusterType.SINGLE_NODE,
+      });
+    }).toThrow('Multi-AZ cluster is not supported for `clusterType` single-node');
   });
 });
 

@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ca2ed65791b73fc811ec9fde0decd8143d09a6a557ab9cdfe42c12de95191462.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8eef82b2770d7e5ac94e3de1723fc445f18560c57661a003d65b20e05f206840.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -176,6 +176,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "IntegVPCRestrictDefaultSecurityGroupCustomResource42DF8AB1"
+          }
+        ],
+        "/appsync-rds-serverlessV2/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/appsync-rds-serverlessV2/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [

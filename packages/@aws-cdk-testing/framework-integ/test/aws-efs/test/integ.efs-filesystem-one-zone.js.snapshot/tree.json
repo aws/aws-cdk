@@ -669,6 +669,14 @@
               "version": "0.0.0"
             }
           },
+          "LatestNodeRuntimeMap": {
+            "id": "LatestNodeRuntimeMap",
+            "path": "test-efs-one-zone-integ/LatestNodeRuntimeMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "0.0.0"
+            }
+          },
           "Custom::VpcRestrictDefaultSGCustomResourceProvider": {
             "id": "Custom::VpcRestrictDefaultSGCustomResourceProvider",
             "path": "test-efs-one-zone-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider",
@@ -814,6 +822,131 @@
                     ],
                     "subnetId": {
                       "Ref": "VpcPrivateSubnet1Subnet536B997A"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_efs.CfnMountTarget",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_efs.FileSystem",
+              "version": "0.0.0"
+            }
+          },
+          "FileSystem2": {
+            "id": "FileSystem2",
+            "path": "test-efs-one-zone-integ/FileSystem2",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "test-efs-one-zone-integ/FileSystem2/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EFS::FileSystem",
+                  "aws:cdk:cloudformation:props": {
+                    "availabilityZoneName": {
+                      "Fn::Select": [
+                        1,
+                        {
+                          "Fn::GetAZs": ""
+                        }
+                      ]
+                    },
+                    "encrypted": true,
+                    "fileSystemPolicy": {
+                      "Statement": [
+                        {
+                          "Action": [
+                            "elasticfilesystem:ClientRootAccess",
+                            "elasticfilesystem:ClientWrite"
+                          ],
+                          "Condition": {
+                            "Bool": {
+                              "elasticfilesystem:AccessedViaMountTarget": "true"
+                            }
+                          },
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": "*"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "fileSystemTags": [
+                      {
+                        "key": "Name",
+                        "value": "test-efs-one-zone-integ/FileSystem2"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_efs.CfnFileSystem",
+                  "version": "0.0.0"
+                }
+              },
+              "EfsSecurityGroup": {
+                "id": "EfsSecurityGroup",
+                "path": "test-efs-one-zone-integ/FileSystem2/EfsSecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "test-efs-one-zone-integ/FileSystem2/EfsSecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "test-efs-one-zone-integ/FileSystem2/EfsSecurityGroup",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "description": "Allow all outbound traffic by default",
+                            "ipProtocol": "-1"
+                          }
+                        ],
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "test-efs-one-zone-integ/FileSystem2"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "EfsMountTarget-PrivateSubnet2": {
+                "id": "EfsMountTarget-PrivateSubnet2",
+                "path": "test-efs-one-zone-integ/FileSystem2/EfsMountTarget-PrivateSubnet2",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EFS::MountTarget",
+                  "aws:cdk:cloudformation:props": {
+                    "fileSystemId": {
+                      "Ref": "FileSystem2C84D7800"
+                    },
+                    "securityGroups": [
+                      {
+                        "Fn::GetAtt": [
+                          "FileSystem2EfsSecurityGroup2AF8F758",
+                          "GroupId"
+                        ]
+                      }
+                    ],
+                    "subnetId": {
+                      "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
                     }
                   }
                 },

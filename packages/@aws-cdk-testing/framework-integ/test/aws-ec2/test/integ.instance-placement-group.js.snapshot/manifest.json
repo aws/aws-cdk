@@ -1,0 +1,233 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "ec2-instance-placementgroup-stack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "ec2-instance-placementgroup-stack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "ec2-instance-placementgroup-stack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "ec2-instance-placementgroup-stack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/eef4ecb0e717db3b754f8b788087d5df6b4fd101c56552e877ae5378420d678e.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "ec2-instance-placementgroup-stack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "ec2-instance-placementgroup-stack.assets"
+      ],
+      "metadata": {
+        "/ec2-instance-placementgroup-stack/test-pg/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "testpgC328A9B8"
+          }
+        ],
+        "/ec2-instance-placementgroup-stack/VPC/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCB9E5F0B4"
+          }
+        ],
+        "/ec2-instance-placementgroup-stack/VPC/publicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCpublicSubnet1Subnet325F50B2"
+          }
+        ],
+        "/ec2-instance-placementgroup-stack/VPC/publicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCpublicSubnet1RouteTableF591E248"
+          }
+        ],
+        "/ec2-instance-placementgroup-stack/VPC/publicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCpublicSubnet1RouteTableAssociationBFFA43B7"
+          }
+        ],
+        "/ec2-instance-placementgroup-stack/VPC/publicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCpublicSubnet1DefaultRoute19059ECD"
+          }
+        ],
+        "/ec2-instance-placementgroup-stack/VPC/publicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCpublicSubnet2Subnet2B2DFF71"
+          }
+        ],
+        "/ec2-instance-placementgroup-stack/VPC/publicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCpublicSubnet2RouteTable55DAB1BB"
+          }
+        ],
+        "/ec2-instance-placementgroup-stack/VPC/publicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCpublicSubnet2RouteTableAssociation0849466B"
+          }
+        ],
+        "/ec2-instance-placementgroup-stack/VPC/publicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCpublicSubnet2DefaultRoute9ED4D6BC"
+          }
+        ],
+        "/ec2-instance-placementgroup-stack/VPC/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCIGWB7E252D3"
+          }
+        ],
+        "/ec2-instance-placementgroup-stack/VPC/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCVPCGW99B986DC"
+          }
+        ],
+        "/ec2-instance-placementgroup-stack/VPC/RestrictDefaultSecurityGroupCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCRestrictDefaultSecurityGroupCustomResource59474679"
+          }
+        ],
+        "/ec2-instance-placementgroup-stack/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/ec2-instance-placementgroup-stack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+          }
+        ],
+        "/ec2-instance-placementgroup-stack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+          }
+        ],
+        "/ec2-instance-placementgroup-stack/Instance/InstanceSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InstanceInstanceSecurityGroupF0E2D5BE"
+          }
+        ],
+        "/ec2-instance-placementgroup-stack/Instance/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InstanceInstanceRoleE9785DE5"
+          }
+        ],
+        "/ec2-instance-placementgroup-stack/Instance/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InstanceInstanceProfileAB5AEF02"
+          }
+        ],
+        "/ec2-instance-placementgroup-stack/Instance/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InstanceC1063A87"
+          }
+        ],
+        "/ec2-instance-placementgroup-stack/SsmParameterValue:--aws--service--ami-amazon-linux-latest--al2023-ami-kernel-6.1-x86_64:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ],
+        "/ec2-instance-placementgroup-stack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/ec2-instance-placementgroup-stack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "ec2-instance-placementgroup-stack"
+    },
+    "Ec2InstancePlacementGroupDefaultTestDeployAssertCBC801E8.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "Ec2InstancePlacementGroupDefaultTestDeployAssertCBC801E8.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "Ec2InstancePlacementGroupDefaultTestDeployAssertCBC801E8": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "Ec2InstancePlacementGroupDefaultTestDeployAssertCBC801E8.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "Ec2InstancePlacementGroupDefaultTestDeployAssertCBC801E8.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "Ec2InstancePlacementGroupDefaultTestDeployAssertCBC801E8.assets"
+      ],
+      "metadata": {
+        "/Ec2InstancePlacementGroup/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/Ec2InstancePlacementGroup/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "Ec2InstancePlacementGroup/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

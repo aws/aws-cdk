@@ -18,9 +18,6 @@
   "VPCPublicSubnet1SubnetB4246D30": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -44,21 +41,24 @@
       "Key": "Name",
       "Value": "aws-ecs-patterns-queue-isolated/VPC/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    }
   },
   "VPCPublicSubnet1RouteTableFEE4B781": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "aws-ecs-patterns-queue-isolated/VPC/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    }
   },
   "VPCPublicSubnet1RouteTableAssociation0B0896DC": {
@@ -75,12 +75,12 @@
   "VPCPublicSubnet1DefaultRoute91CEF279": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "VPCIGWB7E252D3"
+    },
+    "RouteTableId": {
+     "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
     }
    },
    "DependsOn": [
@@ -90,9 +90,6 @@
   "VPCPublicSubnet2Subnet74179F39": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -116,21 +113,24 @@
       "Key": "Name",
       "Value": "aws-ecs-patterns-queue-isolated/VPC/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    }
   },
   "VPCPublicSubnet2RouteTable6F1A15F1": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "aws-ecs-patterns-queue-isolated/VPC/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    }
   },
   "VPCPublicSubnet2RouteTableAssociation5A808732": {
@@ -147,12 +147,12 @@
   "VPCPublicSubnet2DefaultRouteB7481BBA": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "VPCIGWB7E252D3"
+    },
+    "RouteTableId": {
+     "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
     }
    },
    "DependsOn": [
@@ -162,9 +162,6 @@
   "VPCIsolatedSubnet1SubnetEBD00FC6": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -188,21 +185,24 @@
       "Key": "Name",
       "Value": "aws-ecs-patterns-queue-isolated/VPC/IsolatedSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    }
   },
   "VPCIsolatedSubnet1RouteTableEB156210": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "aws-ecs-patterns-queue-isolated/VPC/IsolatedSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    }
   },
   "VPCIsolatedSubnet1RouteTableAssociationA2D18F7C": {
@@ -219,9 +219,6 @@
   "VPCIsolatedSubnet2Subnet4B1C8CAA": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -245,21 +242,24 @@
       "Key": "Name",
       "Value": "aws-ecs-patterns-queue-isolated/VPC/IsolatedSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    }
   },
   "VPCIsolatedSubnet2RouteTable9B4F78DC": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "aws-ecs-patterns-queue-isolated/VPC/IsolatedSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    }
   },
   "VPCIsolatedSubnet2RouteTableAssociation7BF8E0EB": {
@@ -287,17 +287,25 @@
   "VPCVPCGW99B986DC": {
    "Type": "AWS::EC2::VPCGatewayAttachment",
    "Properties": {
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
     "InternetGatewayId": {
      "Ref": "VPCIGWB7E252D3"
+    },
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
     }
    }
   },
   "VPCS3Endpoint18C9C7CA": {
    "Type": "AWS::EC2::VPCEndpoint",
    "Properties": {
+    "RouteTableIds": [
+     {
+      "Ref": "VPCIsolatedSubnet1RouteTableEB156210"
+     },
+     {
+      "Ref": "VPCIsolatedSubnet2RouteTable9B4F78DC"
+     }
+    ],
     "ServiceName": {
      "Fn::Join": [
       "",
@@ -310,18 +318,10 @@
       ]
      ]
     },
+    "VpcEndpointType": "Gateway",
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
-    },
-    "RouteTableIds": [
-     {
-      "Ref": "VPCIsolatedSubnet1RouteTableEB156210"
-     },
-     {
-      "Ref": "VPCIsolatedSubnet2RouteTable9B4F78DC"
-     }
-    ],
-    "VpcEndpointType": "Gateway"
+    }
    }
   },
   "VPCSqsEndpointSecurityGroupAE06A78D": {
@@ -377,6 +377,15 @@
   "VPCSqsEndpoint9A40D77F": {
    "Type": "AWS::EC2::VPCEndpoint",
    "Properties": {
+    "PrivateDnsEnabled": true,
+    "SecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "VPCSqsEndpointSecurityGroupAE06A78D",
+       "GroupId"
+      ]
+     }
+    ],
     "ServiceName": {
      "Fn::Join": [
       "",
@@ -389,18 +398,6 @@
       ]
      ]
     },
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
-    "PrivateDnsEnabled": true,
-    "SecurityGroupIds": [
-     {
-      "Fn::GetAtt": [
-       "VPCSqsEndpointSecurityGroupAE06A78D",
-       "GroupId"
-      ]
-     }
-    ],
     "SubnetIds": [
      {
       "Ref": "VPCIsolatedSubnet1SubnetEBD00FC6"
@@ -409,7 +406,10 @@
       "Ref": "VPCIsolatedSubnet2Subnet4B1C8CAA"
      }
     ],
-    "VpcEndpointType": "Interface"
+    "VpcEndpointType": "Interface",
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    }
   },
   "VPCEcrEndpointSecurityGroup50ED8BA4": {
@@ -465,6 +465,15 @@
   "VPCEcrEndpointB4F98F37": {
    "Type": "AWS::EC2::VPCEndpoint",
    "Properties": {
+    "PrivateDnsEnabled": true,
+    "SecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "VPCEcrEndpointSecurityGroup50ED8BA4",
+       "GroupId"
+      ]
+     }
+    ],
     "ServiceName": {
      "Fn::Join": [
       "",
@@ -477,18 +486,6 @@
       ]
      ]
     },
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
-    "PrivateDnsEnabled": true,
-    "SecurityGroupIds": [
-     {
-      "Fn::GetAtt": [
-       "VPCEcrEndpointSecurityGroup50ED8BA4",
-       "GroupId"
-      ]
-     }
-    ],
     "SubnetIds": [
      {
       "Ref": "VPCIsolatedSubnet1SubnetEBD00FC6"
@@ -497,7 +494,10 @@
       "Ref": "VPCIsolatedSubnet2Subnet4B1C8CAA"
      }
     ],
-    "VpcEndpointType": "Interface"
+    "VpcEndpointType": "Interface",
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    }
   },
   "VPCEcrImageEndpointSecurityGroup83621638": {
@@ -553,6 +553,15 @@
   "VPCEcrImageEndpointD55381DC": {
    "Type": "AWS::EC2::VPCEndpoint",
    "Properties": {
+    "PrivateDnsEnabled": true,
+    "SecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "VPCEcrImageEndpointSecurityGroup83621638",
+       "GroupId"
+      ]
+     }
+    ],
     "ServiceName": {
      "Fn::Join": [
       "",
@@ -565,18 +574,6 @@
       ]
      ]
     },
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
-    "PrivateDnsEnabled": true,
-    "SecurityGroupIds": [
-     {
-      "Fn::GetAtt": [
-       "VPCEcrImageEndpointSecurityGroup83621638",
-       "GroupId"
-      ]
-     }
-    ],
     "SubnetIds": [
      {
       "Ref": "VPCIsolatedSubnet1SubnetEBD00FC6"
@@ -585,7 +582,10 @@
       "Ref": "VPCIsolatedSubnet2Subnet4B1C8CAA"
      }
     ],
-    "VpcEndpointType": "Interface"
+    "VpcEndpointType": "Interface",
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    }
   },
   "VPCCloudWatchLogsEndpointSecurityGroup967DBC94": {
@@ -641,6 +641,15 @@
   "VPCCloudWatchLogsEndpointE175AF65": {
    "Type": "AWS::EC2::VPCEndpoint",
    "Properties": {
+    "PrivateDnsEnabled": true,
+    "SecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "VPCCloudWatchLogsEndpointSecurityGroup967DBC94",
+       "GroupId"
+      ]
+     }
+    ],
     "ServiceName": {
      "Fn::Join": [
       "",
@@ -653,18 +662,6 @@
       ]
      ]
     },
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
-    "PrivateDnsEnabled": true,
-    "SecurityGroupIds": [
-     {
-      "Fn::GetAtt": [
-       "VPCCloudWatchLogsEndpointSecurityGroup967DBC94",
-       "GroupId"
-      ]
-     }
-    ],
     "SubnetIds": [
      {
       "Ref": "VPCIsolatedSubnet1SubnetEBD00FC6"
@@ -673,7 +670,10 @@
       "Ref": "VPCIsolatedSubnet2Subnet4B1C8CAA"
      }
     ],
-    "VpcEndpointType": "Interface"
+    "VpcEndpointType": "Interface",
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    }
   },
   "MyCustomSGDE27C661": {
@@ -915,11 +915,6 @@
      "Ref": "EcsDefaultClusterMnL3mNNYNVPC9C1EC7A3"
     },
     "DeploymentConfiguration": {
-     "Alarms": {
-      "AlarmNames": [],
-      "Enable": false,
-      "Rollback": false
-     },
      "MaximumPercent": 200,
      "MinimumHealthyPercent": 50
     },
@@ -986,8 +981,6 @@
       ]
      ]
     },
-    "ScalableDimension": "ecs:service:DesiredCount",
-    "ServiceNamespace": "ecs",
     "RoleARN": {
      "Fn::Join": [
       "",
@@ -1003,7 +996,9 @@
        ":role/aws-service-role/ecs.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_ECSService"
       ]
      ]
-    }
+    },
+    "ScalableDimension": "ecs:service:DesiredCount",
+    "ServiceNamespace": "ecs"
    },
    "DependsOn": [
     "IsolatedQueueServiceQueueProcessingTaskDefTaskRoleDefaultPolicyD52E156B",
@@ -1081,14 +1076,13 @@
   "IsolatedQueueServiceQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingLowerAlarm88D1A0F9": {
    "Type": "AWS::CloudWatch::Alarm",
    "Properties": {
-    "ComparisonOperator": "LessThanOrEqualToThreshold",
-    "EvaluationPeriods": 1,
     "AlarmActions": [
      {
       "Ref": "IsolatedQueueServiceQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingLowerPolicy960D4BA1"
      }
     ],
     "AlarmDescription": "Lower threshold scaling alarm",
+    "ComparisonOperator": "LessThanOrEqualToThreshold",
     "Dimensions": [
      {
       "Name": "QueueName",
@@ -1100,6 +1094,7 @@
       }
      }
     ],
+    "EvaluationPeriods": 1,
     "MetricName": "ApproximateNumberOfMessagesVisible",
     "Namespace": "AWS/SQS",
     "Period": 300,
@@ -1159,14 +1154,13 @@
   "IsolatedQueueServiceQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingUpperAlarm351987F5": {
    "Type": "AWS::CloudWatch::Alarm",
    "Properties": {
-    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "EvaluationPeriods": 1,
     "AlarmActions": [
      {
       "Ref": "IsolatedQueueServiceQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingUpperPolicyFAB35025"
      }
     ],
     "AlarmDescription": "Upper threshold scaling alarm",
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
     "Dimensions": [
      {
       "Name": "QueueName",
@@ -1178,6 +1172,7 @@
       }
      }
     ],
+    "EvaluationPeriods": 1,
     "MetricName": "ApproximateNumberOfMessagesVisible",
     "Namespace": "AWS/SQS",
     "Period": 300,

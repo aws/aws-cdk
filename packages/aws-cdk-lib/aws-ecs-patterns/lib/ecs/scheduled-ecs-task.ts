@@ -103,9 +103,11 @@ export class ScheduledEc2Task extends ScheduledTaskBase {
       this.taskDefinition = props.scheduledEc2TaskDefinitionOptions.taskDefinition;
     } else if (props.scheduledEc2TaskImageOptions) {
       const taskImageOptions = props.scheduledEc2TaskImageOptions;
+      const containerName = taskImageOptions.containerName ?? 'ScheduledContainer';
       // Create a Task Definition for the container to start, also creates a log driver
       this.taskDefinition = new Ec2TaskDefinition(this, 'ScheduledTaskDef');
-      this.taskDefinition.addContainer('ScheduledContainer', {
+
+      this.taskDefinition.addContainer(containerName, {
         image: taskImageOptions.image,
         memoryLimitMiB: taskImageOptions.memoryLimitMiB,
         memoryReservationMiB: taskImageOptions.memoryReservationMiB,

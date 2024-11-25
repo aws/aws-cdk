@@ -22,7 +22,7 @@
     "EncryptionAtRestOptions": {
      "Enabled": false
     },
-    "EngineVersion": "OpenSearch_2.11",
+    "EngineVersion": "OpenSearch_2.13",
     "LogPublishingOptions": {
      "ES_APPLICATION_LOGS": {
       "CloudWatchLogsLogGroupArn": {

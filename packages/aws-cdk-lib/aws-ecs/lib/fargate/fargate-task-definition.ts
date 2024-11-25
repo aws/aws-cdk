@@ -83,8 +83,11 @@ export interface FargateTaskDefinitionProps extends CommonTaskDefinitionProps {
    * The process namespace to use for the containers in the task.
    *
    * Only supported for tasks that are hosted on AWS Fargate if the tasks
-   * are using platform version 1.4.0 or later (Linux).
-   * Not supported in Windows containers.
+   * are using platform version 1.4.0 or later (Linux).  Only the TASK option
+   * is supported for Linux-based Fargate containers. Not supported in
+   * Windows containers. If pidMode is specified for a Fargate task, then
+   * runtimePlatform.operatingSystemFamily must also be specified.  For more
+   * information, see [Task Definition Parameters](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#task_definition_pidmode).
    *
    * @default - PidMode used by the task is not specified
    */
@@ -168,11 +171,16 @@ export class FargateTaskDefinition extends TaskDefinition implements IFargateTas
     }
 
     if (props.pidMode) {
+      if (!props.runtimePlatform?.operatingSystemFamily) {
+        throw new Error('Specifying \'pidMode\' requires that operating system family also be provided.');
+      }
       if (props.runtimePlatform?.operatingSystemFamily?.isWindows()) {
         throw new Error('\'pidMode\' is not supported for Windows containers.');
       }
-      if (!Token.isUnresolved(props.pidMode) && props.pidMode !== PidMode.HOST) {
-        throw new Error(`\'pidMode\' can only be set to \'${PidMode.HOST}\' for Fargate containers, got: \'${props.pidMode}\'.`);
+      if (!Token.isUnresolved(props.pidMode)
+          && props.runtimePlatform?.operatingSystemFamily?.isLinux()
+          && props.pidMode !== PidMode.TASK) {
+        throw new Error(`\'pidMode\' can only be set to \'${PidMode.TASK}\' for Linux Fargate containers, got: \'${props.pidMode}\'.`);
       }
     }
 

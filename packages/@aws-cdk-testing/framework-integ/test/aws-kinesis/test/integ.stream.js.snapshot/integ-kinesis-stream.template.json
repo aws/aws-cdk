@@ -86,7 +86,9 @@
       }
      ]
     }
-   }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   }
  },
  "Conditions": {

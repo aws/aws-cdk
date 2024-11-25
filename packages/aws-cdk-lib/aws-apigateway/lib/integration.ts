@@ -82,7 +82,13 @@ export interface IntegrationOptions {
 
   /**
    * The maximum amount of time an integration will run before it returns without a response.
-   * Must be between 50 milliseconds and 29 seconds.
+   *
+   * By default, the value must be between 50 milliseconds and 29 seconds.
+   * The upper bound can be increased for regional and private Rest APIs only,
+   * via a quota increase request for your acccount.
+   * This increase might require a reduction in your account-level throttle quota limit.
+   *
+   * See {@link https://docs.aws.amazon.com/apigateway/latest/developerguide/limits.html Amazon API Gateway quotas} for more details.
    *
    * @default Duration.seconds(29)
    */
@@ -204,8 +210,8 @@ export class Integration {
       throw new Error('cannot set \'vpcLink\' where \'connectionType\' is INTERNET');
     }
 
-    if (options.timeout && !options.timeout.isUnresolved() && (options.timeout.toMilliseconds() < 50 || options.timeout.toMilliseconds() > 29000)) {
-      throw new Error('Integration timeout must be between 50 milliseconds and 29 seconds.');
+    if (options.timeout && !options.timeout.isUnresolved() && options.timeout.toMilliseconds() < 50) {
+      throw new Error('Integration timeout must be greater than 50 milliseconds.');
     }
 
     if (props.type !== IntegrationType.MOCK && !props.integrationHttpMethod) {

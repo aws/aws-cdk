@@ -9,8 +9,26 @@ import * as ec2 from '../../aws-ec2';
 import { IRole } from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
+import { CaCertificate } from '../../aws-rds';
 import * as secretsmanager from '../../aws-secretsmanager';
 import { CfnResource, Duration, RemovalPolicy, Resource, Token } from '../../core';
+
+const MIN_ENGINE_VERSION_FOR_IO_OPTIMIZED_STORAGE = 5;
+
+/**
+ * The storage type of the DocDB cluster
+ */
+export enum StorageType {
+  /**
+   * Standard storage
+   */
+  STANDARD = 'standard',
+
+  /**
+   * I/O-optimized storage
+   */
+  IOPT1 = 'iopt1',
+}
 
 /**
  * Properties for a new database cluster
@@ -19,7 +37,7 @@ export interface DatabaseClusterProps {
   /**
    * What version of the database to start
    *
-   * @default - The default engine version.
+   * @default -  the latest major version
    */
   readonly engineVersion?: string;
 
@@ -89,31 +107,42 @@ export interface DatabaseClusterProps {
   readonly instanceType: ec2.InstanceType;
 
   /**
-    * What subnets to run the DocumentDB instances in.
-    *
-    * Must be at least 2 subnets in two different AZs.
-    */
+   * The identifier of the CA certificate used for the instances.
+   *
+   * Specifying or updating this property triggers a reboot.
+   *
+   * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/ca_cert_rotation.html
+   *
+   * @default - DocumentDB will choose a certificate authority
+   */
+  readonly caCertificate?: CaCertificate;
+
+  /**
+   * What subnets to run the DocumentDB instances in.
+   *
+   * Must be at least 2 subnets in two different AZs.
+   */
   readonly vpc: ec2.IVpc;
 
   /**
-    * Where to place the instances within the VPC
-    *
-    * @default private subnets
-    */
+   * Where to place the instances within the VPC
+   *
+   * @default private subnets
+   */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
-    * Security group.
-    *
-    * @default a new security group is created.
-    */
+   * Security group.
+   *
+   * @default a new security group is created.
+   */
   readonly securityGroup?: ec2.ISecurityGroup;
 
   /**
-    * The DB parameter group to associate with the instance.
-    *
-    * @default no parameter group
-    */
+   * The DB parameter group to associate with the instance.
+   *
+   * @default no parameter group
+   */
   readonly parameterGroup?: IClusterParameterGroup;
 
   /**
@@ -182,11 +211,11 @@ export interface DatabaseClusterProps {
   readonly cloudWatchLogsRetention?: logs.RetentionDays;
 
   /**
-    * The IAM role for the Lambda function associated with the custom resource
-    * that sets the retention policy.
-    *
-    * @default - a new role is created.
-    */
+   * The IAM role for the Lambda function associated with the custom resource
+   * that sets the retention policy.
+   *
+   * @default - a new role is created.
+   */
   readonly cloudWatchLogsRetentionRole?: IRole;
 
   /**
@@ -217,6 +246,24 @@ export interface DatabaseClusterProps {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-deletionpolicy.html
    */
   readonly securityGroupRemovalPolicy?: RemovalPolicy;
+
+  /**
+   * Whether to copy tags to the snapshot when a snapshot is created.
+   *
+   * @default - false
+   */
+  readonly copyTagsToSnapshot?: boolean;
+
+  /**
+   * The storage type of the DocDB cluster.
+   *
+   * I/O-optimized storage is supported starting with engine version 5.0.0.
+   * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/db-cluster-storage-configs.html
+   * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/release-notes.html#release-notes.11-21-2023
+   *
+   * @default StorageType.STANDARD
+   */
+  readonly storageType?: StorageType;
 }
 
 /**
@@ -483,6 +530,19 @@ export class DatabaseCluster extends DatabaseClusterBase {
       throw new Error('KMS key supplied but storageEncrypted is false');
     }
 
+    const validEngineVersionRegex = /^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$/;
+    if (props.engineVersion !== undefined && !validEngineVersionRegex.test(props.engineVersion)) {
+      throw new Error(`Invalid engine version: '${props.engineVersion}'. Engine version must be in the format x.y.z`);
+    }
+
+    if (
+      props.storageType === StorageType.IOPT1
+      && props.engineVersion !== undefined
+      && Number(props.engineVersion.split('.')[0]) < MIN_ENGINE_VERSION_FOR_IO_OPTIMIZED_STORAGE
+    ) {
+      throw new Error(`I/O-optimized storage is supported starting with engine version 5.0.0, got '${props.engineVersion}'`);
+    }
+
     // Create the DocDB cluster
     this.cluster = new CfnDBCluster(this, 'Resource', {
       // Basic
@@ -507,6 +567,9 @@ export class DatabaseCluster extends DatabaseClusterBase {
       // Encryption
       kmsKeyId: props.kmsKey?.keyArn,
       storageEncrypted,
+      // Tags
+      copyTagsToSnapshot: props.copyTagsToSnapshot,
+      storageType: props.storageType,
     });
 
     this.cluster.applyRemovalPolicy(props.removalPolicy, {
@@ -533,6 +596,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
     }
 
     const instanceRemovalPolicy = this.getInstanceRemovalPolicy(props);
+    const caCertificateIdentifier = props.caCertificate ? props.caCertificate.toString() : undefined;
 
     for (let i = 0; i < instanceCount; i++) {
       const instanceIndex = i + 1;
@@ -547,6 +611,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
         // Instance properties
         dbInstanceClass: databaseInstanceType(props.instanceType),
         enablePerformanceInsights: props.enablePerformanceInsights,
+        caCertificateIdentifier: caCertificateIdentifier,
       });
 
       instance.applyRemovalPolicy(instanceRemovalPolicy, {

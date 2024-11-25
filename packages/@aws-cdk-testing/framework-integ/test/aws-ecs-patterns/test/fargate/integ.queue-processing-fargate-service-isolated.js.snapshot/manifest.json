@@ -1,5 +1,5 @@
 {
-  "version": "32.0.0",
+  "version": "35.0.0",
   "artifacts": {
     "aws-ecs-patterns-queue-isolated.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-ecs-patterns-queue-isolated.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d32f9798024acecd18b6acbb9577d0c7b0aa7aa7291f4b00fd4fe0956e966765.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6e54973d15db3422dde963488dfcf83c577f25fc531327bd0f919741feae8720.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -343,6 +344,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "isolatedQueueProcessingFargateServiceTestDefaultTestDeployAssert0132317A.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",

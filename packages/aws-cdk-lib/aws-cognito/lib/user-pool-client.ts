@@ -3,7 +3,7 @@ import { CfnUserPoolClient } from './cognito.generated';
 import { IUserPool } from './user-pool';
 import { ClientAttributes } from './user-pool-attr';
 import { IUserPoolResourceServer, ResourceServerScope } from './user-pool-resource-server';
-import { IResource, Resource, Duration, Stack, SecretValue } from '../../core';
+import { IResource, Resource, Duration, Stack, SecretValue, Token } from '../../core';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../custom-resources';
 
 /**
@@ -66,6 +66,25 @@ export interface OAuthSettings {
    * @default [OAuthScope.PHONE,OAuthScope.EMAIL,OAuthScope.OPENID,OAuthScope.PROFILE,OAuthScope.COGNITO_ADMIN]
    */
   readonly scopes?: OAuthScope[];
+
+  /**
+   * The default redirect URI.
+   * Must be in the `callbackUrls` list.
+   *
+   * A redirect URI must:
+   * * Be an absolute URI
+   * * Be registered with the authorization server.
+   * * Not include a fragment component.
+   *
+   * @see https://tools.ietf.org/html/rfc6749#section-3.1.2
+   *
+   * Amazon Cognito requires HTTPS over HTTP except for http://localhost for testing purposes only.
+   *
+   * App callback URLs such as myapp://example are also supported.
+   *
+   * @default - no default redirect URI
+   */
+  readonly defaultRedirectUri?: string;
 }
 
 /**
@@ -310,6 +329,14 @@ export interface UserPoolClientOptions {
    * @default true for new user pool clients
    */
   readonly enableTokenRevocation?: boolean;
+
+  /**
+   * Enable the propagation of additional user context data.
+   * You can only activate enablePropagateAdditionalUserContextData in an app client that has a client secret.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-adaptive-authentication.html#user-pool-settings-adaptive-authentication-device-fingerprint
+   * @default false for new user pool clients
+   */
+  readonly enablePropagateAdditionalUserContextData?: boolean;
 }
 
 /**
@@ -399,6 +426,21 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       }
     }
 
+    if (props.oAuth?.defaultRedirectUri && !Token.isUnresolved(props.oAuth.defaultRedirectUri)) {
+      if (callbackUrls && !callbackUrls.includes(props.oAuth.defaultRedirectUri)) {
+        throw new Error('defaultRedirectUri must be included in callbackUrls.');
+      }
+
+      const defaultRedirectUriPattern = /^(?=.{1,1024}$)[\p{L}\p{M}\p{S}\p{N}\p{P}]+$/u;
+      if (!defaultRedirectUriPattern.test(props.oAuth.defaultRedirectUri)) {
+        throw new Error(`defaultRedirectUri must match the \`^(?=.{1,1024}$)[\p{L}\p{M}\p{S}\p{N}\p{P}]+$\` pattern, got ${props.oAuth.defaultRedirectUri}`);
+      }
+    }
+
+    if (!props.generateSecret && props.enablePropagateAdditionalUserContextData) {
+      throw new Error('Cannot activate enablePropagateAdditionalUserContextData in an app client without a client secret.');
+    }
+
     this._generateSecret = props.generateSecret;
     this.userPool = props.userPool;
 
@@ -409,6 +451,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       explicitAuthFlows: this.configureAuthFlows(props),
       allowedOAuthFlows: props.disableOAuth ? undefined : this.configureOAuthFlows(),
       allowedOAuthScopes: props.disableOAuth ? undefined : this.configureOAuthScopes(props.oAuth),
+      defaultRedirectUri: props.oAuth?.defaultRedirectUri,
       callbackUrLs: callbackUrls && callbackUrls.length > 0 && !props.disableOAuth ? callbackUrls : undefined,
       logoutUrLs: props.oAuth?.logoutUrls,
       allowedOAuthFlowsUserPoolClient: !props.disableOAuth,
@@ -417,6 +460,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       readAttributes: props.readAttributes?.attributes(),
       writeAttributes: props.writeAttributes?.attributes(),
       enableTokenRevocation: props.enableTokenRevocation,
+      enablePropagateAdditionalUserContextData: props.enablePropagateAdditionalUserContextData,
     });
     this.configureAuthSessionValidity(resource, props);
     this.configureTokenValidity(resource, props);

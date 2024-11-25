@@ -31,6 +31,17 @@ export interface ProductStackSynthesizerProps {
    * @default - No KMS KeyId and SSE_KMS encryption cannot be used
    */
   readonly serverSideEncryptionAwsKmsKeyId? : string;
+
+  /**
+   * The amount of memory (in MiB) to allocate to the AWS Lambda function which
+   * replicates the files from the CDK bucket to the destination bucket.
+   *
+   * If you are deploying large files, you will need to increase this number
+   * accordingly.
+   *
+   * @default 128
+   */
+  readonly memoryLimit?: number;
 }
 
 /**
@@ -43,6 +54,7 @@ export class ProductStackSynthesizer extends cdk.StackSynthesizer {
   private readonly assetBucket?: IBucket;
   private readonly serverSideEncryption? : ServerSideEncryption;
   private readonly serverSideEncryptionAwsKmsKeyId? : string;
+  private readonly memoryLimit?: number;
   private parentAssetBucket?: IBucket;
 
   constructor(props: ProductStackSynthesizerProps) {
@@ -51,6 +63,7 @@ export class ProductStackSynthesizer extends cdk.StackSynthesizer {
     this.assetBucket = props.assetBucket;
     this.serverSideEncryption = props.serverSideEncryption;
     this.serverSideEncryptionAwsKmsKeyId = props.serverSideEncryptionAwsKmsKeyId;
+    this.memoryLimit = props.memoryLimit;
 
     if (this.assetBucket && !cdk.Resource.isOwnedResource(this.assetBucket)) {
       cdk.Annotations.of(this.parentStack).addWarningV2('@aws-cdk/aws-servicecatalog:assetsManuallyAddBucketPermissions', '[WARNING] Bucket Policy Permissions cannot be added to' +
@@ -90,6 +103,8 @@ export class ProductStackSynthesizer extends cdk.StackSynthesizer {
         retainOnDelete: true,
         serverSideEncryption: this.serverSideEncryption,
         serverSideEncryptionAwsKmsKeyId: this.serverSideEncryptionAwsKmsKeyId,
+        memoryLimit: this.memoryLimit,
+        outputObjectKeys: false,
       });
     bucketDeployment.addSource(source);
 

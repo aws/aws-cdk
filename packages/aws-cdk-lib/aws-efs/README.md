@@ -69,12 +69,25 @@ new efs.FileSystem(this, 'OneZoneFileSystem', {
 ⚠️ One Zone file systems are not compatible with the MAX_IO performance mode.
 
 ⚠️ When `oneZone` is enabled, the file system is automatically placed in the first availability zone of the VPC.
-It is not currently possible to specify a different availability zone.
+To specify a different availability zone:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+new efs.FileSystem(this, 'OneZoneFileSystem', {
+  vpc,
+  oneZone: true,
+  vpcSubnets: {
+    availabilityZones: ['us-east-1b'],
+  },
+})
+```
 
 ⚠️ When `oneZone` is enabled, mount targets will be created only in the specified availability zone.
 This is to prevent deployment failures due to cross-AZ configurations.
 
-⚠️ When `oneZone` is enabled, `vpcSubnets` cannot be specified.
+⚠️ When `oneZone` is enabled, `vpcSubnets` can be specified with
+`availabilityZones` that contains exactly one single zone.
 
 ### Replicating file systems
 
@@ -204,7 +217,10 @@ the access point can only access data in its own directory and below. To learn m
 Use the `addAccessPoint` API to create an access point from a fileSystem.
 
 ```ts fixture=with-filesystem-instance
-fileSystem.addAccessPoint('AccessPoint');
+fileSystem.addAccessPoint('MyAccessPoint', {
+  // create a unique access point via an optional client token
+  clientToken: 'client-token',
+});
 ```
 
 By default, when you create an access point, the root(`/`) directory is exposed to the client

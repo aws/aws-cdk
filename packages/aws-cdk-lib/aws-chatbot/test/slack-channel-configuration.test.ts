@@ -175,6 +175,19 @@ describe('SlackChannelConfiguration', () => {
     });
   });
 
+  test('specifying user role required', () => {
+    new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
+      slackWorkspaceId: 'ABC123',
+      slackChannelId: 'DEF456',
+      slackChannelConfigurationName: 'ConfigurationName',
+      userRoleRequired: true,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Chatbot::SlackChannelConfiguration', {
+      UserRoleRequired: true,
+    });
+  });
+
   test('getting configuration metric', () => {
     const slackChannel = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
       slackWorkspaceId: 'ABC123',

@@ -15,11 +15,9 @@ describe('lambda version', () => {
     // WHEN
     const version = lambda.Version.fromVersionArn(stack, 'Version', 'arn:aws:lambda:region:account-id:function:function-name:version');
 
-    expect(version.version).toStrictEqual('version');
-    expect(version.lambda.functionArn).toStrictEqual('arn:aws:lambda:region:account-id:function:function-name');
-
     new cdk.CfnOutput(stack, 'ARN', { value: version.functionArn });
     new cdk.CfnOutput(stack, 'Name', { value: version.functionName });
+    new cdk.CfnOutput(stack, 'FunctionArn', { value: version.lambda.functionArn });
 
     // THEN
     Template.fromStack(stack).templateMatches({
@@ -30,8 +28,30 @@ describe('lambda version', () => {
         Name: {
           Value: 'function-name:version',
         },
+        FunctionArn: {
+          Value: 'arn:aws:lambda:region:account-id:function:function-name',
+        },
       },
     });
+  });
+
+  test('can import an imported Lambda version by ARN', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const func = new lambda.Function(stack, 'Fn', {
+      runtime: THE_RUNTIME,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('foo'),
+    });
+    const version = new lambda.Version(stack, 'Version', {
+      lambda: func,
+      maxEventAge: cdk.Duration.hours(1),
+      retryAttempts: 0,
+    });
+    const importedVersion = lambda.Version.fromVersionArn(stack, 'ImportedVersion', version.functionArn);
+    expect(importedVersion.functionArn).toBe(version.functionArn);
   });
 
   test('create a version with event invoke config', () => {

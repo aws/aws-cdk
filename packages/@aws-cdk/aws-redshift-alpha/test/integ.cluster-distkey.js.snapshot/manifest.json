@@ -1,5 +1,5 @@
 {
-  "version": "33.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "aws-cdk-redshift-distkey-create.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-cdk-redshift-distkey-create.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/eb47b5477029fcb632fd7321d9e49e555755ddf5de0aff32fca72fdf28081319.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/eb60dddf95282c06c6ca67f0bb0445a0882f636a9b9f78ec9055f1e912b6bfa2.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -237,6 +238,12 @@
             "data": "Table7ABB320E"
           }
         ],
+        "/aws-cdk-redshift-distkey-create/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
         "/aws-cdk-redshift-distkey-create/Query Redshift Database3de5bea727da479686625efb56431b5f/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -283,10 +290,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-cdk-redshift-distkey-update.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/65747181e631ebd4dcb64c9875500b198110a0ab7ccec1fce9d85799b12403af.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9b39ed6cdd94ad2926a5a4b9711c70b93e1d6c3c990b1f000853c221590f9ebc.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -507,6 +515,12 @@
             "data": "Table7ABB320E"
           }
         ],
+        "/aws-cdk-redshift-distkey-update/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
         "/aws-cdk-redshift-distkey-update/Query Redshift Database3de5bea727da479686625efb56431b5f/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -553,6 +567,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "awscdkredshiftdistkeytestDefaultTestDeployAssert61A36BE8.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",

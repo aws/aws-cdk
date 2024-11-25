@@ -651,7 +651,7 @@
      "Ref": "DatabaseSubnets56F17B9A"
     },
     "Engine": "aurora-mysql",
-    "EngineVersion": "8.0.mysql_aurora.3.03.0",
+    "EngineVersion": "8.0.mysql_aurora.3.07.1",
     "MasterUserPassword": {
      "Fn::Join": [
       "",
@@ -972,7 +972,7 @@
      "Ref": "CustomRotationOptionsSubnets52AEBCED"
     },
     "Engine": "aurora-mysql",
-    "EngineVersion": "8.0.mysql_aurora.3.03.0",
+    "EngineVersion": "8.0.mysql_aurora.3.07.1",
     "MasterUserPassword": {
      "Fn::Join": [
       "",
@@ -1130,11 +1130,11 @@
    },
    "aws-cn": {
     "applicationId": "arn:aws-cn:serverlessrepo:cn-north-1:193023089310:applications/SecretsManagerRDSMySQLRotationSingleUser",
-    "semanticVersion": "1.1.212"
+    "semanticVersion": "1.1.237"
    },
    "aws-us-gov": {
     "applicationId": "arn:aws-us-gov:serverlessrepo:us-gov-west-1:023102451235:applications/SecretsManagerRDSMySQLRotationSingleUser",
-    "semanticVersion": "1.1.93"
+    "semanticVersion": "1.1.213"
    }
   },
   "CustomRotationOptionsRotationSingleUserSARMapping635D6F45": {
@@ -1144,11 +1144,11 @@
    },
    "aws-cn": {
     "applicationId": "arn:aws-cn:serverlessrepo:cn-north-1:193023089310:applications/SecretsManagerRDSMySQLRotationSingleUser",
-    "semanticVersion": "1.1.212"
+    "semanticVersion": "1.1.237"
    },
    "aws-us-gov": {
     "applicationId": "arn:aws-us-gov:serverlessrepo:us-gov-west-1:023102451235:applications/SecretsManagerRDSMySQLRotationSingleUser",
-    "semanticVersion": "1.1.93"
+    "semanticVersion": "1.1.213"
    }
   }
  },

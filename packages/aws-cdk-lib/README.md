@@ -147,7 +147,7 @@ a stack with a synthesizer, pass it as one of its properties:
 ```ts
 new MyStack(app, 'MyStack', {
   synthesizer: new DefaultStackSynthesizer({
-    fileAssetsBucketName: 'my-orgs-asset-bucket',
+    fileAssetsBucketName: 'amzn-s3-demo-bucket',
   }),
 });
 ```
@@ -268,7 +268,15 @@ In order to mimic strong references, a Custom Resource is also created in the co
 stack which marks the SSM parameters as being "imported". When a parameter has been successfully
 imported, the producing stack cannot update the value.
 
-See the [adr](https://github.com/aws/aws-cdk/blob/main/packages/@aws-cdk/core/adr/cross-region-stack-references)
+> [!NOTE]
+> As a consequence of this feature being built on a Custom Resource, we are restricted to a
+> CloudFormation response body size limitation of [4096 bytes](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/crpg-ref-responses.html).
+> To prevent deployment errors related to the Custom Resource Provider response body being too
+> large, we recommend limiting the use of nested stacks and minimizing the length of stack names.
+> Doing this will prevent SSM parameter names from becoming too long which will reduce the size of the
+> response body.
+
+See the [adr](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/core/adr/cross-region-stack-references.md)
 for more details on this feature.
 
 ### Removing automatic cross-stack references
@@ -1165,7 +1173,7 @@ The `CfnResource` class allows emitting arbitrary entries in the
 new CfnResource(this, 'ResourceId', {
   type: 'AWS::S3::Bucket',
   properties: {
-    BucketName: 'bucket-name'
+    BucketName: 'amzn-s3-demo-bucket'
   },
 });
 ```
@@ -1189,7 +1197,7 @@ new CfnInclude(this, 'ID', {
       Bucket: {
         Type: 'AWS::S3::Bucket',
         Properties: {
-          BucketName: 'my-shiny-bucket'
+          BucketName: 'amzn-s3-demo-bucket'
         }
       }
     }

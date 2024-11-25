@@ -125,6 +125,14 @@
               "version": "0.0.0"
             }
           },
+          "LatestNodeRuntimeMap": {
+            "id": "LatestNodeRuntimeMap",
+            "path": "cdk-s3-bucket-auto-delete-objects/LatestNodeRuntimeMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "0.0.0"
+            }
+          },
           "Custom::S3AutoDeleteObjectsCustomResourceProvider": {
             "id": "Custom::S3AutoDeleteObjectsCustomResourceProvider",
             "path": "cdk-s3-bucket-auto-delete-objects/Custom::S3AutoDeleteObjectsCustomResourceProvider",
@@ -505,7 +513,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "746da84b10e215c552e68b6d2061024e4429f0386f43a35ef5e4d2940655692e.zip"
+                      "s3Key": "9e8936ba1db43e0919ba2fc8265d50686eeaca82830c471ff8b7b0672c5970ec.zip"
                     },
                     "handler": "index.handler",
                     "role": {
@@ -514,7 +522,15 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs18.x",
+                    "runtime": {
+                      "Fn::FindInMap": [
+                        "LatestNodeRuntimeMap",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        "value"
+                      ]
+                    },
                     "timeout": 120
                   }
                 },
@@ -564,7 +580,7 @@
                 "path": "cdk-integ-s3-bucket-auto-delete-objects/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -610,7 +626,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },

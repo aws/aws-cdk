@@ -59,6 +59,14 @@
               "version": "0.0.0"
             }
           },
+          "LatestNodeRuntimeMap": {
+            "id": "LatestNodeRuntimeMap",
+            "path": "aws-cdk-ec2-lt-metadata-1/LatestNodeRuntimeMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "0.0.0"
+            }
+          },
           "Custom::VpcRestrictDefaultSGCustomResourceProvider": {
             "id": "Custom::VpcRestrictDefaultSGCustomResourceProvider",
             "path": "aws-cdk-ec2-lt-metadata-1/Custom::VpcRestrictDefaultSGCustomResourceProvider",
@@ -138,6 +146,16 @@
                   "aws:cdk:cloudformation:type": "AWS::EC2::LaunchTemplate",
                   "aws:cdk:cloudformation:props": {
                     "launchTemplateData": {
+                      "blockDeviceMappings": [
+                        {
+                          "deviceName": "/dev/xvda",
+                          "ebs": {
+                            "volumeSize": 15,
+                            "throughput": 250,
+                            "volumeType": "gp3"
+                          }
+                        }
+                      ],
                       "securityGroupIds": [
                         {
                           "Fn::GetAtt": [
@@ -190,7 +208,8 @@
                           }
                         ]
                       }
-                    ]
+                    ],
+                    "versionDescription": "test template v1"
                   }
                 },
                 "constructInfo": {
@@ -441,7 +460,7 @@
                 "path": "LambdaTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -487,7 +506,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },

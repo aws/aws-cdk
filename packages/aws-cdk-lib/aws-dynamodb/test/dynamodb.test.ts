@@ -52,7 +52,7 @@ const GSI_NAME = 'MyGSI';
 const GSI_PARTITION_KEY: Attribute = { name: 'gsiHashKey', type: AttributeType.STRING };
 const GSI_SORT_KEY: Attribute = { name: 'gsiSortKey', type: AttributeType.BINARY };
 const GSI_NON_KEY = 'gsiNonKey';
-function * GSI_GENERATOR(): Generator<GlobalSecondaryIndexProps, never> {
+function* GSI_GENERATOR(): Generator<GlobalSecondaryIndexProps, never> {
   let n = 0;
   while (true) {
     const globalSecondaryIndexProps: GlobalSecondaryIndexProps = {
@@ -63,7 +63,7 @@ function * GSI_GENERATOR(): Generator<GlobalSecondaryIndexProps, never> {
     n++;
   }
 }
-function * NON_KEY_ATTRIBUTE_GENERATOR(nonKeyPrefix: string): Generator<string, never> {
+function* NON_KEY_ATTRIBUTE_GENERATOR(nonKeyPrefix: string): Generator<string, never> {
   let n = 0;
   while (true) {
     yield `${nonKeyPrefix}${n}`;
@@ -75,7 +75,7 @@ function * NON_KEY_ATTRIBUTE_GENERATOR(nonKeyPrefix: string): Generator<string, 
 const LSI_NAME = 'MyLSI';
 const LSI_SORT_KEY: Attribute = { name: 'lsiSortKey', type: AttributeType.NUMBER };
 const LSI_NON_KEY = 'lsiNonKey';
-function * LSI_GENERATOR(): Generator<LocalSecondaryIndexProps, never> {
+function* LSI_GENERATOR(): Generator<LocalSecondaryIndexProps, never> {
   let n = 0;
   while (true) {
     const localSecondaryIndexProps: LocalSecondaryIndexProps = {
@@ -466,7 +466,7 @@ test('fails if encryption key is used with AWS managed CMK', () => {
     partitionKey: TABLE_PARTITION_KEY,
     encryption: TableEncryption.AWS_MANAGED,
     encryptionKey,
-  })).toThrow('`encryptionKey cannot be specified unless encryption is set to TableEncryption.CUSTOMER_MANAGED (it was set to ${encryptionType})`');
+  })).toThrow(`encryptionKey cannot be specified unless encryption is set to TableEncryption.CUSTOMER_MANAGED (it was set to ${TableEncryption.AWS_MANAGED})`);
 });
 
 test('fails if encryption key is used with default encryption', () => {
@@ -479,7 +479,7 @@ test('fails if encryption key is used with default encryption', () => {
     partitionKey: TABLE_PARTITION_KEY,
     encryption: TableEncryption.DEFAULT,
     encryptionKey,
-  })).toThrow('`encryptionKey cannot be specified unless encryption is set to TableEncryption.CUSTOMER_MANAGED (it was set to ${encryptionType})`');
+  })).toThrow(`encryptionKey cannot be specified unless encryption is set to TableEncryption.CUSTOMER_MANAGED (it was set to ${TableEncryption.DEFAULT})`);
 });
 
 testDeprecated('fails if encryption key is used with serverSideEncryption', () => {
@@ -761,6 +761,75 @@ describe('when billing mode is PAY_PER_REQUEST', () => {
       readCapacity: 1,
       writeCapacity: 1,
     })).toThrow(/PAY_PER_REQUEST/);
+  });
+
+  test('when specifying maximum throughput for on-demand', () => {
+    stack = new Stack();
+    new Table(stack, CONSTRUCT_NAME, {
+      tableName: TABLE_NAME,
+      billingMode: BillingMode.PAY_PER_REQUEST,
+      partitionKey: TABLE_PARTITION_KEY,
+      maxReadRequestUnits: 10,
+      maxWriteRequestUnits: 5,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table',
+      {
+        KeySchema: [
+          { AttributeName: 'hashKey', KeyType: 'HASH' },
+        ],
+        BillingMode: 'PAY_PER_REQUEST',
+        AttributeDefinitions: [
+          { AttributeName: 'hashKey', AttributeType: 'S' },
+        ],
+        TableName: 'MyTable',
+        OnDemandThroughput: {
+          MaxReadRequestUnits: 10,
+          MaxWriteRequestUnits: 5,
+        },
+      },
+    );
+  });
+
+  test('when specifying maximum throughput for on-demand-indexes', () => {
+    stack = new Stack();
+    const table = new Table(stack, CONSTRUCT_NAME, {
+      tableName: TABLE_NAME,
+      billingMode: BillingMode.PAY_PER_REQUEST,
+      partitionKey: TABLE_PARTITION_KEY,
+      maxReadRequestUnits: 10,
+      maxWriteRequestUnits: 5,
+    });
+    table.addGlobalSecondaryIndex({
+      maxReadRequestUnits: 10,
+      maxWriteRequestUnits: 20,
+      indexName: 'gsi1',
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table',
+      {
+        KeySchema: [{ AttributeName: 'hashKey', KeyType: 'HASH' }],
+        BillingMode: 'PAY_PER_REQUEST',
+        AttributeDefinitions: [
+          { AttributeName: 'hashKey', AttributeType: 'S' },
+          { AttributeName: 'pk', AttributeType: 'S' },
+        ],
+        TableName: 'MyTable',
+        OnDemandThroughput: {
+          MaxReadRequestUnits: 10,
+          MaxWriteRequestUnits: 5,
+        },
+        GlobalSecondaryIndexes: [{
+          IndexName: 'gsi1',
+          KeySchema: [{ AttributeName: 'pk', KeyType: 'HASH' }],
+          OnDemandThroughput: {
+            MaxReadRequestUnits: 10,
+            MaxWriteRequestUnits: 20,
+          },
+        }],
+      },
+    );
   });
 });
 
@@ -1248,6 +1317,47 @@ test('when adding a global secondary index without specifying read and write cap
           ],
           Projection: { ProjectionType: 'ALL' },
           ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+        },
+      ],
+    },
+  );
+});
+
+test.each([true, false])('when adding a global secondary index with contributoreIngishtsEnabled %s', (contributorInsightsEnabled: boolean) => {
+  const stack = new Stack();
+  const table = new Table(stack, CONSTRUCT_NAME, {
+    partitionKey: TABLE_PARTITION_KEY,
+    sortKey: TABLE_SORT_KEY,
+  });
+
+  table.addGlobalSecondaryIndex({
+    contributorInsightsEnabled,
+    indexName: GSI_NAME,
+    partitionKey: GSI_PARTITION_KEY,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table',
+    {
+      AttributeDefinitions: [
+        { AttributeName: 'hashKey', AttributeType: 'S' },
+        { AttributeName: 'sortKey', AttributeType: 'N' },
+        { AttributeName: 'gsiHashKey', AttributeType: 'S' },
+      ],
+      KeySchema: [
+        { AttributeName: 'hashKey', KeyType: 'HASH' },
+        { AttributeName: 'sortKey', KeyType: 'RANGE' },
+      ],
+      ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+      GlobalSecondaryIndexes: [
+        {
+          ContributorInsightsSpecification: {
+            Enabled: contributorInsightsEnabled,
+          },
+          IndexName: 'MyGSI',
+          KeySchema: [
+            { AttributeName: 'gsiHashKey', KeyType: 'HASH' },
+          ],
+          Projection: { ProjectionType: 'ALL' },
         },
       ],
     },
@@ -3480,5 +3590,55 @@ describe('import source', () => {
         },
       });
     }).toThrow(`Delimiter must be a single character and one of the following: comma (,), tab (\\t), colon (:), semicolon (;), pipe (|), space ( ), got '${delimiter}'`);
+  });
+});
+
+test('Resource policy test', () => {
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'Stack');
+
+  const doc = new iam.PolicyDocument({
+    statements: [
+      new iam.PolicyStatement({
+        actions: ['dynamodb:GetItem'],
+        principals: [new iam.ArnPrincipal('arn:aws:iam::111122223333:user/foobar')],
+        resources: ['*'],
+      }),
+    ],
+  });
+
+  // WHEN
+  const table = new Table(stack, 'Table', {
+    partitionKey: { name: 'id', type: AttributeType.STRING },
+    resourcePolicy: doc,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+    KeySchema: [
+      { AttributeName: 'id', KeyType: 'HASH' },
+    ],
+    AttributeDefinitions: [
+      { AttributeName: 'id', AttributeType: 'S' },
+    ],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+    'ResourcePolicy': {
+      'PolicyDocument': {
+        'Version': '2012-10-17',
+        'Statement': [
+          {
+            'Principal': {
+              'AWS': 'arn:aws:iam::111122223333:user/foobar',
+            },
+            'Effect': 'Allow',
+            'Action': 'dynamodb:GetItem',
+            'Resource': '*',
+          },
+        ],
+      },
+    },
   });
 });

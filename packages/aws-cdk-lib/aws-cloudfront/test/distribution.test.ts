@@ -1,5 +1,5 @@
 import { defaultOrigin, defaultOriginGroup } from './test-origin';
-import { Match, Template } from '../../assertions';
+import { Annotations, Match, Template } from '../../assertions';
 import * as acm from '../../aws-certificatemanager';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
@@ -457,23 +457,23 @@ describe('certificates', () => {
     }).toThrow(/Distribution certificates must be in the us-east-1 region and the certificate you provided is in eu-west-1./);
   });
 
-  test('adding a certificate without a domain name throws', () => {
+  test('adding a certificate without a domain name', () => {
     const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
 
-    expect(() => {
-      new Distribution(stack, 'Dist1', {
-        defaultBehavior: { origin: defaultOrigin() },
-        certificate,
-      });
-    }).toThrow(/Must specify at least one domain name/);
+    new Distribution(stack, 'Dist1', {
+      defaultBehavior: { origin: defaultOrigin() },
+      certificate,
+    });
 
-    expect(() => {
-      new Distribution(stack, 'Dist2', {
-        defaultBehavior: { origin: defaultOrigin() },
-        domainNames: [],
-        certificate,
-      });
-    }).toThrow(/Must specify at least one domain name/);
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        Aliases: Match.absent(),
+        ViewerCertificate: {
+          AcmCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
+        },
+      },
+    });
+    Annotations.fromStack(stack).hasWarning('/Stack/Dist1', 'No domain names are specified. You will need to specify it after running associate-alias CLI command manually. See the "Moving an alternate domain name to a different distribution" section of module\'s README for more info. [ack: @aws-cdk/aws-cloudfront:emptyDomainNames]');
   });
 
   test('use the TLSv1.2_2021 security policy by default', () => {
@@ -1332,5 +1332,36 @@ describe('Distribution metrics tests', () => {
     expect(() => {
       dist[metric.method]();
     }).toThrow(new RegExp(`${metric.errorMetricName} metric is only available if 'publishAdditionalMetrics' is set 'true'`));
+  });
+});
+
+describe('attachWebAclId', () => {
+  test('can attach WebAcl to the distribution by the method', () => {
+    const origin = defaultOrigin();
+
+    const distribution = new Distribution(stack, 'MyDist', {
+      defaultBehavior: { origin },
+    });
+
+    distribution.attachWebAclId('473e64fd-f30b-4765-81a0-62ad96dd167a');
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        WebACLId: '473e64fd-f30b-4765-81a0-62ad96dd167a',
+      },
+    });
+  });
+
+  test('throws if a WebAcl is already attached to the distribution', () => {
+    const origin = defaultOrigin();
+
+    const distribution = new Distribution(stack, 'MyDist', {
+      defaultBehavior: { origin },
+      webAclId: '473e64fd-f30b-4765-81a0-62ad96dd167a',
+    });
+
+    expect(() => {
+      distribution.attachWebAclId('473e64fd-f30b-4765-81a0-62ad96dd167b');
+    }).toThrow(/A WebACL has already been attached to this distribution/);
   });
 });
