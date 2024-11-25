@@ -5,12 +5,14 @@ import * as events from 'aws-cdk-lib/aws-events';
 import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { ScheduledFargateTask } from 'aws-cdk-lib/aws-ecs-patterns';
+import { ECS_PATTERNS_FARGATE_SERVICE_BASE_HAS_PUBLIC_LB_BY_DEFAULT } from 'aws-cdk-lib/cx-api';
 
 const app = new cdk.App();
 
 class EventStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {
     super(scope, id);
+    this.node.setContext(ECS_PATTERNS_FARGATE_SERVICE_BASE_HAS_PUBLIC_LB_BY_DEFAULT, true);
 
     const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 1, restrictDefaultSecurityGroup: false });
     const cluster = new ecs.Cluster(this, 'FargateCluster', { vpc });

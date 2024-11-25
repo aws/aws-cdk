@@ -4,6 +4,7 @@ import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { NetworkLoadBalancedFargateService } from 'aws-cdk-lib/aws-ecs-patterns';
 import { Certificate } from 'aws-cdk-lib/aws-certificatemanager';
+import { ECS_PATTERNS_FARGATE_SERVICE_BASE_HAS_PUBLIC_LB_BY_DEFAULT } from 'aws-cdk-lib/cx-api';
 
 /**
  * In order to test this you need prepare a certificate.
@@ -13,6 +14,8 @@ if (!certArn) throw new Error('For this test you must provide your own Certifica
 
 const app = new App();
 const stack = new Stack(app, 'tls-network-load-balanced-fargate-service');
+stack.node.setContext(ECS_PATTERNS_FARGATE_SERVICE_BASE_HAS_PUBLIC_LB_BY_DEFAULT, true);
+
 const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2 });
 const cluster = new Cluster(stack, 'Cluster', { vpc });
 

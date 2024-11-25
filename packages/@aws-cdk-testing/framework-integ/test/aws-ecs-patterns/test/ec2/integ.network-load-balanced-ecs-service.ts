@@ -5,9 +5,11 @@ import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { NetworkLoadBalancedEc2Service } from 'aws-cdk-lib/aws-ecs-patterns';
 import { IpAddressType } from 'aws-cdk-lib/aws-elasticloadbalancingv2';
+import { ECS_PATTERNS_FARGATE_SERVICE_BASE_HAS_PUBLIC_LB_BY_DEFAULT } from 'aws-cdk-lib/cx-api';
 
 const app = new App();
 const stack = new Stack(app, 'aws-ecs-integ-nlb');
+stack.node.setContext(ECS_PATTERNS_FARGATE_SERVICE_BASE_HAS_PUBLIC_LB_BY_DEFAULT, true);
 const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 const cluster = new Cluster(stack, 'Cluster', { vpc });
 const securityGroup = new SecurityGroup(stack, 'SecurityGroup', {
