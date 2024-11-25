@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.171.0](https://github.com/aws/aws-cdk/compare/v2.170.0...v2.171.0) (2024-11-25)
+
+
+### Features
+
+* **rds:** enhanced monitoring configuration at the cluster level ([#32157](https://github.com/aws/aws-cdk/issues/32157)) ([01f2dcd](https://github.com/aws/aws-cdk/commit/01f2dcd6fb892905afae735c791ddbb3e6adbcb1)), closes [#32151](https://github.com/aws/aws-cdk/issues/32151)
+* **rds:** support zero ACU for Aurora Serverless V2 ([#32231](https://github.com/aws/aws-cdk/issues/32231)) ([d1b07d9](https://github.com/aws/aws-cdk/commit/d1b07d9aeadab65db5672272050e64672e7d6beb))
+
+
+### Bug Fixes
+
+* **cli:** sso with proxy fails  ([#32261](https://github.com/aws/aws-cdk/issues/32261)) ([bedcf16](https://github.com/aws/aws-cdk/commit/bedcf164a2b7cbd613ac645d477302c93ddfa4b6))
+
 ## [2.170.0](https://github.com/aws/aws-cdk/compare/v2.169.0...v2.170.0) (2024-11-22)
 
 
