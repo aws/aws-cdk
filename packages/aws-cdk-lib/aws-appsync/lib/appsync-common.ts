@@ -1,5 +1,5 @@
-import { GraphqlApiBase } from "./graphqlapi-base";
-import { EventApiBase } from "./eventapi";
+import { EventApiBase } from './eventapi';
+import { GraphqlApiBase } from './graphqlapi-base';
 import { Stack, ArnFormat } from '../../core';
 
 /**

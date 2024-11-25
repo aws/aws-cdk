@@ -1,3 +1,5 @@
+import { IamResource } from './appsync-common';
+import { AuthorizationType } from './auth-config';
 import {
   DynamoDbDataSource,
   HttpDataSource,
@@ -11,7 +13,6 @@ import {
 } from './data-source';
 import { Resolver, ExtendedResolverProps } from './resolver';
 import { ITable } from '../../aws-dynamodb';
-import { AuthorizationType } from './auth-config';
 import { IDomain as IElasticsearchDomain } from '../../aws-elasticsearch';
 import { IEventBus } from '../../aws-events';
 import { Grant, IGrantable } from '../../aws-iam';
@@ -19,7 +20,6 @@ import { IFunction } from '../../aws-lambda';
 import { IDomain as IOpenSearchDomain } from '../../aws-opensearchservice';
 import { IDatabaseCluster, IServerlessCluster } from '../../aws-rds';
 import { ISecret } from '../../aws-secretsmanager';
-import { IamResource } from './appsync-common';
 import { CfnResource, IResource, Resource } from '../../core';
 
 /**

@@ -1,8 +1,8 @@
 import { Construct } from 'constructs';
+import { CfnChannelNamespace } from './appsync.generated';
+import { AuthorizationType } from './auth-config';
 import { Code } from './code';
 import { IEventApi } from './eventapi';
-import { AuthorizationType } from './auth-config';
-import { CfnChannelNamespace } from './appsync.generated';
 
 /**
  * Authorization configuration for the Channel Namespace
@@ -39,7 +39,7 @@ export interface BaseChannelNamespaceProps {
 
   /**
    * Authorization config for channel namespace
-   * 
+   *
    * @default - defaults to Event API default auth config
    */
   readonly authorizationConfig?: NamespaceAuthConfig;
@@ -68,7 +68,7 @@ export interface ChannelNamespaceOptions {
 
   /**
    * Authorization config for channel namespace
-   * 
+   *
    * @default - defaults to Event API default auth config
    */
   readonly authorizationConfig?: NamespaceAuthConfig;
@@ -93,7 +93,7 @@ export class ChannelNamespace extends Construct {
       name: props.name,
       apiId: props.api.apiId,
       codeHandlers: code?.inlineCode,
-      codeS3Location: code?.s3Location
+      codeS3Location: code?.s3Location,
     });
 
     this.arn = this.channelNamespace.attrChannelNamespaceArn;

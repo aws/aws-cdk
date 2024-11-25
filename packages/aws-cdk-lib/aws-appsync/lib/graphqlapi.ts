@@ -1,15 +1,14 @@
 import { Construct } from 'constructs';
 import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema, CfnDomainName, CfnDomainNameApiAssociation, CfnSourceApiAssociation } from './appsync.generated';
+import { AuthorizationMode, AuthorizationType, AuthorizationConfig, ApiKeyConfig, UserPoolConfig, OpenIdConnectConfig, LambdaAuthorizerConfig, UserPoolDefaultAction } from './auth-config';
 import { IGraphqlApi, GraphqlApiBase, Visibility } from './graphqlapi-base';
 import { ISchema, SchemaFile } from './schema';
-import { AuthorizationMode, AuthorizationType, AuthorizationConfig, ApiKeyConfig, UserPoolConfig, OpenIdConnectConfig, LambdaAuthorizerConfig, UserPoolDefaultAction } from './auth-config';
 import { MergeType, addSourceApiAutoMergePermission, addSourceGraphQLPermission } from './source-api-association';
 import { ICertificate } from '../../aws-certificatemanager';
 import { ManagedPolicy, Role, IRole, ServicePrincipal } from '../../aws-iam';
 import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '../../aws-logs';
 import { CfnResource, Duration, FeatureFlags, IResolvable, Lazy, Stack, Token } from '../../core';
 import * as cxapi from '../../cx-api';
-
 
 /**
  * log-level for fields in AppSync

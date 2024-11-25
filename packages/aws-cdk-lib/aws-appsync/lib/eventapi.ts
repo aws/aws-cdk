@@ -1,13 +1,12 @@
 import { Construct } from 'constructs';
-import { IResolvable, IResource, RemovalPolicy, Resource, Stack } from "../../core";
-import { AuthorizationMode, AuthorizationType, ApiKeyConfig, UserPoolConfig, UserPoolDefaultAction, LambdaAuthorizerConfig, OpenIdConnectConfig } from "./auth-config";
-import { LogConfig, FieldLogLevel } from "./graphqlapi";
+import { IamResource } from './appsync-common';
+import { CfnApi, CfnApiKey } from './appsync.generated';
+import { AuthorizationMode, AuthorizationType, ApiKeyConfig, UserPoolConfig, UserPoolDefaultAction, LambdaAuthorizerConfig, OpenIdConnectConfig } from './auth-config';
+import { ChannelNamespace, ChannelNamespaceOptions } from './channel-namespace';
+import { LogConfig, FieldLogLevel } from './graphqlapi';
 import { Grant, IGrantable, ManagedPolicy, ServicePrincipal, Role } from '../../aws-iam';
 import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '../../aws-logs';
-import { Token, Duration } from '../../core';
-import { CfnApi, CfnApiKey } from "./appsync.generated";
-import { IamResource } from './appsync-common';
-import { ChannelNamespace, ChannelNamespaceOptions } from './channel-namespace';
+import { IResolvable, IResource, RemovalPolicy, Resource, Stack, Token, Duration } from '../../core';
 
 /**
  * Authorization configuration for the Event API
@@ -68,12 +67,12 @@ export interface IEventApi extends IResource {
    * @param options the options for the channel namespace
    * @returns the channel namespace
    */
-  //addChannelNamespace(name: string, options?: ChannelNamespaceOptions): ChannelNamespace;
+  addChannelNamespace(id: string, name: string, options?: ChannelNamespaceOptions): ChannelNamespace;
 
   /**
    * Adds an IAM policy statement associated with this Event API to an IAM
    * principal's policy.
-   * 
+   *
    * @param grantee The principal
    * @param resources The set of resources to allow (i.e. ...:[region]:[accountId]:apis/EventApiId/...)
    * @param actions The actions that should be granted to the principal (i.e. appsync:EventPublish )
@@ -131,49 +130,49 @@ export abstract class EventApiBase extends Resource implements IEventApi {
     return new ChannelNamespace(this, id, {
       api: this,
       name: name,
-      ...options
+      ...options,
     });
   }
 
-    /**
+  /**
    * Adds an IAM policy statement associated with this Event API to an IAM
    * principal's policy.
-   * 
+   *
    * @param grantee The principal
    * @param resources The set of resources to allow (i.e. ...:[region]:[accountId]:apis/EventApiId/...)
    * @param actions The actions that should be granted to the principal (i.e. appsync:EventPublish )
    */
-    public grant(grantee: IGrantable, resources: IamResource, ...actions: string[]): Grant {
-      return Grant.addToPrincipal({
-        grantee,
-        actions,
-        resourceArns: resources.resourceArns(this),
-        scope: this,
-      });
-    }
+  public grant(grantee: IGrantable, resources: IamResource, ...actions: string[]): Grant {
+    return Grant.addToPrincipal({
+      grantee,
+      actions,
+      resourceArns: resources.resourceArns(this),
+      scope: this,
+    });
+  }
 
-    /**
-     * Adds an IAM policy statement for EventPublish access to this EventApi to an IAM
-     * principal's policy.
-     *
-     * @param grantee The principal
-     * @param channelNamespace The channel namespaces to grant access to for Event Publish operations. Wild card supported.
-     */
-    public grantPublish(grantee: IGrantable, ...channelNamespace: string[]): Grant {
-      return this.grant(grantee, IamResource.custom(...channelNamespace), 'appsync:EventPublish');
-    }
-  
-    /**
-     * Adds an IAM policy statement for EventSubscribe access to this EventApi to an IAM
-     * principal's policy.
-     *
-     * @param grantee The principal
-     * @param channelNamespace The channel namespaces to grant access to for Event Subscribe operations. Wild card supported.
-     */
-    public grantSubscribe(grantee: IGrantable, ...channelNamespace: string[]): Grant {
-      return this.grant(grantee, IamResource.custom(...channelNamespace), 'appsync:EventSubscribe')
-    }
-}
+  /**
+   * Adds an IAM policy statement for EventPublish access to this EventApi to an IAM
+   * principal's policy.
+   *
+   * @param grantee The principal
+   * @param channelNamespace The channel namespaces to grant access to for Event Publish operations. Wild card supported.
+   */
+  public grantPublish(grantee: IGrantable, ...channelNamespace: string[]): Grant {
+    return this.grant(grantee, IamResource.custom(...channelNamespace), 'appsync:EventPublish');
+  }
+
+  /**
+   * Adds an IAM policy statement for EventSubscribe access to this EventApi to an IAM
+   * principal's policy.
+   *
+   * @param grantee The principal
+   * @param channelNamespace The channel namespaces to grant access to for Event Subscribe operations. Wild card supported.
+   */
+  public grantSubscribe(grantee: IGrantable, ...channelNamespace: string[]): Grant {
+    return this.grant(grantee, IamResource.custom(...channelNamespace), 'appsync:EventSubscribe');
+  }
+};
 
 /**
  * Properties for an AppSync Event API
@@ -182,7 +181,7 @@ export interface EventApiProps {
   /**
    * the name of the Event API
    */
-  readonly name: string;
+  readonly apiName: string;
 
   /**
    * Optional authorization configuration
@@ -221,12 +220,12 @@ export interface EventApiAttributes {
   /**
    * the ARN of the Event API
    */
-  readonly arn: string;
+  readonly apiArn: string;
 
   /**
    * the domain name of the API
    */
-  readonly endpointDns: IResolvable;
+  readonly apiDns: IResolvable;
 
   /**
    * The Authorization Types for this Event Api
@@ -238,7 +237,7 @@ export interface EventApiAttributes {
 /**
  * An AppSync Event API
  *
- * @resource AWS::AppSync::EventApi
+ * @resource AWS::AppSync::Api
  */
 export class EventApi extends EventApiBase {
   /**
@@ -249,14 +248,14 @@ export class EventApi extends EventApiBase {
    * @param attrs Event API Attributes of an API
    */
   public static fromEventApiAttributes(scope: Construct, id: string, attrs: EventApiAttributes): IEventApi {
-    const arn = attrs.arn ?? Stack.of(scope).formatArn({
+    const arn = attrs.apiArn ?? Stack.of(scope).formatArn({
       service: 'appsync',
       resource: `apis/${attrs.apiId}`,
     });
     class Import extends EventApiBase {
       public readonly apiId = attrs.apiId;
       public readonly arn = arn;
-      public readonly endpointDns = attrs.endpointDns;
+      public readonly endpointDns = attrs.apiDns;
       public readonly authProviders = attrs.authProviders ?? []
 
       constructor(s: Construct, i: string) {
@@ -265,6 +264,11 @@ export class EventApi extends EventApiBase {
     }
     return new Import(scope, id);
   }
+
+  /**
+   * the name of the Event Api
+   */
+  public readonly name: string;
 
   /**
    * an unique AWS AppSync Event API identifier
@@ -279,6 +283,7 @@ export class EventApi extends EventApiBase {
 
   /**
    * the domain name of the API
+   *
    */
   public readonly endpointDns: IResolvable;
 
@@ -291,6 +296,7 @@ export class EventApi extends EventApiBase {
    * the configured API key, if present
    *
    * @default - no api key
+   * @attribute ApiKey
    */
   public readonly apiKey?: string;
 
@@ -317,7 +323,7 @@ export class EventApi extends EventApiBase {
       [AuthorizationType.API_KEY];
     const defaultSubscribeAuthModes = props.authorizationConfig?.defaultSubscribeAuthModes ??
       [AuthorizationType.API_KEY];
-    
+
     this.validateAuthorizationConfig(authConfig, connectionAuthMode);
     this.validateAuthorizationConfig(authConfig, defaultPublishAuthModes);
     this.validateAuthorizationConfig(authConfig, defaultSubscribeAuthModes);
@@ -331,21 +337,22 @@ export class EventApi extends EventApiBase {
       connectionAuthModes: this.mapAuthorizationConfig(authConfig, connectionAuthMode),
       defaultPublishAuthModes: this.mapAuthorizationConfig(authConfig, defaultPublishAuthModes),
       defaultSubscribeAuthModes: this.mapAuthorizationConfig(authConfig, defaultSubscribeAuthModes),
-      logConfig: this.setupLogConfig(props.logConfig)
+      logConfig: this.setupLogConfig(props.logConfig),
     };
 
     this.api = new CfnApi(this, 'Resource', {
-      name: props.name,
+      name: props.apiName,
       eventConfig: this.eventConfig,
       ownerContact: props.ownerContact,
     });
 
     this.api.applyRemovalPolicy(RemovalPolicy.DESTROY);
 
+    this.name = this.api.name;
     this.apiId = this.api.attrApiId;
     this.arn = this.api.attrApiArn;
     this.endpointDns = this.api.attrDns;
-  
+
     if (authConfig.some((mode) => mode.authorizationType === AuthorizationType.API_KEY)) {
       const config = authConfig.find((mode: AuthorizationMode) => {
         return mode.authorizationType === AuthorizationType.API_KEY && mode.apiKeyConfig;
@@ -424,7 +431,7 @@ export class EventApi extends EventApiBase {
   }
 
   private setupAuthorizationProviders(authProviders?: AuthorizationMode[]) {
-    if (!authProviders || authProviders.length === 0) return [ AuthorizationType.API_KEY ];
+    if (!authProviders || authProviders.length === 0) return [AuthorizationType.API_KEY];
     const modes = authProviders.map((mode) => mode.authorizationType);
     return modes;
   }
