@@ -224,8 +224,29 @@ function arbConstructTreeFactory(): fc.Arbitrary<ConstructFactory> {
 class PrettyApp {
   private readonly initialTree: Set<string>;
 
-  constructor(public readonly cdkApp: App, public readonly visitLog: AspectVisitLog) {
+  constructor(public readonly cdkApp: App, public readonly executionState: ExecutionState) {
     this.initialTree = new Set(cdkApp.node.findAll().map(c => c.node.path));
+  }
+
+  /**
+   * Return the log of all aspect visits
+   */
+  public get visitLog() {
+    return this.executionState.visitLog;
+  }
+
+  /**
+   * Return a list of all constructs added by aspects
+   */
+  public get addedConstructs() {
+    return this.executionState.addedConstructs;
+  }
+
+  /**
+   * Return a list of all aspects added by other aspects
+   */
+  public get addedAspects() {
+    return this.executionState.addedAspects;
   }
 
   public toString() {
@@ -281,7 +302,7 @@ type AspectVisitLog = AspectVisit[];
 /**
  * Add arbitrary aspects to the given tree
  */
-function arbAddAspects(appFac: AppFactory): fc.Arbitrary<[App, AspectVisitLog]> {
+function arbAddAspects(appFac: AppFactory): fc.Arbitrary<[App, ExecutionState]> {
   // Synthesize the tree, but just to get the construct paths to apply aspects to.
   // We won't hold on to the instances, because we will clone the tree later (or
   // regenerate it, which is easier), and attach the aspects in the clone.
@@ -299,8 +320,12 @@ function arbAddAspects(appFac: AppFactory): fc.Arbitrary<[App, AspectVisitLog]> 
     // when generating variants, so if we mutate the tree in place different runs will
     // interfere with each other. Also a different aspect invocation log for every tree.
     const tree = appFac();
-    const log: AspectVisitLog = [];
-    tree[VISITLOG_SYM] = log; // Stick this somewhere the aspects can find it
+    const state: ExecutionState = {
+      visitLog: [],
+      addedConstructs: [],
+      addedAspects: [],
+    };
+    tree[EXECUTIONSTATE_SYM] = state; // Stick this somewhere the aspects can find it
 
     for (const app of appls) {
       const ctrs = app.constructPaths.map((p) => findConstructDeep(tree, p));
@@ -309,7 +334,7 @@ function arbAddAspects(appFac: AppFactory): fc.Arbitrary<[App, AspectVisitLog]> 
       }
     }
 
-    return [tree, log];
+    return [tree, state];
   });
 }
 
@@ -327,14 +352,22 @@ function arbAspect(constructs: Construct[]): fc.Arbitrary<IAspect> {
     {
       depthIdentifier: 'aspects',
     },
+    // Simple: inspecting aspect
     fc.constant(() => fc.constant(new InspectingAspect())),
+    // Simple: mutating aspect
     fc.constant(() => fc.constant(new MutatingAspect())),
+    // More complex: adds a new construct, optionally immediately adds an aspect to it
     fc.constant(() => fc.record({
       constructLoc: arbConstructLoc(constructs),
       newAspects: fc.array(arbAspectApplication(constructs), { size: '-1', maxLength: 2 }),
     }).map(({ constructLoc, newAspects }) => {
       return new NodeAddingAspect(constructLoc, newAspects);
     })),
+    // More complex: adds a new aspect to an existing construct.
+    // NOTE: this will never add an aspect to a construct that didn't exist in the initial tree.
+    fc.constant(() => arbAspectApplication(constructs).map(((aspectApp) =>
+      new AspectAddingAspect(aspectApp)
+    ))),
   ) satisfies fc.Arbitrary<() => fc.Arbitrary<IAspect>>).chain((fact) => fact());
 }
 
@@ -366,10 +399,27 @@ type ConstructFactory = (loc: ConstructLoc) => Construct;
 
 type AppFactory = () => App;
 
+interface ExecutionState {
+  /**
+   * Visit log of all aspects
+   */
+  visitLog: AspectVisitLog;
+
+  /**
+   * Constructs that were added by aspects
+   */
+  addedConstructs: Construct[];
+
+  /**
+   * Record where we added an aspect
+   */
+  addedAspects: RecordedAspectApplication[];
+}
+
 /**
- * A unique symbol for the root construct to hold the visit log of all aspects
+ * A unique symbol for the root construct to hold dynamic information
  */
-const VISITLOG_SYM = Symbol();
+const EXECUTIONSTATE_SYM = Symbol();
 
 function findConstructDeep(root: IConstruct, path: string) {
   if (path === '') {
@@ -433,12 +483,12 @@ abstract class TracingAspect implements IAspect {
     this.id = UUID++;
   }
 
-  private log(node: IConstruct): AspectVisitLog {
-    return node.node.root[VISITLOG_SYM];
+  protected executionState(node: IConstruct): ExecutionState {
+    return node.node.root[EXECUTIONSTATE_SYM];
   }
 
   visit(node: IConstruct): void {
-    this.log(node).push({
+    this.executionState(node).visitLog.push({
       aspect: this,
       construct: node,
     });
@@ -488,6 +538,13 @@ interface TestAspectApplication extends PartialTestAspectApplication {
 }
 
 /**
+ * An aspect application added by another aspect, during execution
+ */
+interface RecordedAspectApplication extends PartialTestAspectApplication {
+  construct: Construct;
+}
+
+/**
  * An aspect that adds a new node, if one doesn't exist yet
  */
 class NodeAddingAspect extends TracingAspect {
@@ -504,7 +561,14 @@ class NodeAddingAspect extends TracingAspect {
     const newConstruct = new ArbConstruct(this.loc.scope, this.loc.id);
     for (const { aspect, priority } of this.newAspects) {
       Aspects.of(newConstruct).add(aspect, { priority });
+      this.executionState(node).addedAspects.push({
+        construct: newConstruct,
+        aspect,
+        priority,
+      });
     }
+    // Log that we added this construct
+    this.executionState(node).addedConstructs.push(newConstruct);
   }
 
   public toString() {
@@ -526,6 +590,11 @@ class AspectAddingAspect extends TracingAspect {
     const constructs = this.newAspect.constructPaths.map((p) => findConstructDeep(node.node.root, p));
     for (const construct of constructs) {
       Aspects.of(construct).add(this.newAspect.aspect, { priority: this.newAspect.priority });
+      this.executionState(node).addedAspects.push({
+        construct,
+        aspect: this.newAspect.aspect,
+        priority: this.newAspect.priority,
+      });
     }
   }
 
