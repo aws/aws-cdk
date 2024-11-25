@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { Construct, IConstruct } from 'constructs';
 import * as fc from 'fast-check';
 import * as fs from 'fs-extra';
@@ -6,50 +7,88 @@ import { App, AppProps, AspectApplication, Aspects, IAspect } from '../lib';
 //////////////////////////////////////////////////////////////////////
 //  Tests
 
-test('aspects only get invoked at most once on every construct', () => fc.assert(
-  fc.property(appWithAspects(), afterSynth((app) => {
-    forEveryVisitPair(app.visitLog, (a, b) => {
-      if (sameConstruct(a, b) && sameAspect(a, b)) {
-        throw new Error(`Duplicate visit: ${a.index} and ${b.index}`);
-      }
-    });
-  })),
-));
+// test('aspects only get invoked at most once on every construct', () => fc.assert(
+//   fc.property(appWithAspects(), afterSynth((app) => {
+//     console.log(app.visitLog.length);
+//     forEveryVisitPair(app.visitLog, (a, b) => {
+//       if (sameConstruct(a, b) && sameAspect(a, b)) {
+//         throw new Error(`Duplicate visit: ${a.index} and ${b.index}`);
+//       }
+//     });
+//   })),
+// ));
+test('for every construct, lower priorities go before higher priorities', () =>
+  fc.assert(
+    fc.property(appWithAspects(), fc.boolean(), (app, stabilizeAspects) => {
+      afterSynth((testApp) => {
+        forEveryVisitPair(testApp.visitLog, (a, b) => {
+          if (sameConstruct(a, b) && sameAspect(a, b)) {
+            throw new Error(`Duplicate visit: ${a.index} and ${b.index}`);
+          }
+        });
+      }, stabilizeAspects)(app);
+    }),
+  ),
+);
 
 test.todo('every aspect applied on the tree eventually executes on all of its nodes in scope');
 
 test.todo('inherited aspects get invoked before locally defined aspects, if both have the same priority');
 
-test('for every construct, lower priorities go before higher priorities', () => fc.assert(
-  fc.property(appWithAspects(), afterSynth((app) => {
-    forEveryVisitPair(app.visitLog, (a, b) => {
-      if (!sameConstruct(a, b)) { return; }
+// test('for every construct, lower priorities go before higher priorities', () => fc.assert(
+//   fc.property(appWithAspects(), afterSynth((app) => {
+//     forEveryVisitPair(app.visitLog, (a, b) => {
+//       if (!sameConstruct(a, b)) { return; }
 
-      const aPrio = lowestAspectPrioFor(a.aspect, a.construct);
-      const bPrio = lowestAspectPrioFor(b.aspect, b.construct);
+//       const aPrio = lowestAspectPrioFor(a.aspect, a.construct);
+//       const bPrio = lowestAspectPrioFor(b.aspect, b.construct);
 
-      // a.prio < b.prio => a.index < b.index
-      if (!implies(aPrio < bPrio, a.index < b.index)) {
-        throw new Error(`Aspect ${a.aspect}@${aPrio} at ${a.index} should have been before ${b.aspect}@${bPrio} at ${b.index}, but was after`);
-      }
-    });
-  })),
-));
+//       // a.prio < b.prio => a.index < b.index
+//       if (!implies(aPrio < bPrio, a.index < b.index)) {
+//         throw new Error(`Aspect ${a.aspect}@${aPrio} at ${a.index} should have been before ${b.aspect}@${bPrio} at ${b.index}, but was after`);
+//       }
+//     });
+//   }, false),
+//   )));
+test('for every construct, lower priorities go before higher priorities', () =>
+  fc.assert(
+    fc.property(appWithAspects(), fc.boolean(), (app, stabilizeAspects) => {
+      afterSynth((testApp) => {
+        forEveryVisitPair(testApp.visitLog, (a, b) => {
+          if (!sameConstruct(a, b)) return;
+
+          const aPrio = lowestAspectPrioFor(a.aspect, a.construct);
+          const bPrio = lowestAspectPrioFor(b.aspect, b.construct);
+
+          if (!implies(aPrio < bPrio, a.index < b.index)) {
+            throw new Error(
+              `Aspect ${a.aspect}@${aPrio} at ${a.index} should have been before ${b.aspect}@${bPrio} at ${b.index}, but was after`
+            );
+          }
+        });
+      }, stabilizeAspects)(app);
+    }),
+  ),
+);
 
 test.todo('for every construct, if a invokes before b that must mean it is of equal or lower priority');
 
-test('visitLog is nonempty', () => fc.assert(
-  fc.property(appWithAspects(), afterSynth((app) => {
-    expect(app.visitLog).not.toEqual([]);
-  })),
-));
+test('visitLog is nonempty', () =>
+  fc.assert(
+    fc.property(appWithAspects(), fc.boolean(), (app, stabilizeAspects) => {
+      afterSynth((testApp) => {
+        expect(testApp.visitLog).not.toEqual([]);
+      }, stabilizeAspects)(app);
+    }),
+  ),
+);
 
 //////////////////////////////////////////////////////////////////////
 //  Test Helpers
 
-function afterSynth(block: (x: PrettyApp) => void) {
+function afterSynth(block: (x: PrettyApp) => void, stabilizeAspects: boolean) {
   return (app) => {
-    const asm = app.cdkApp.synth();
+    const asm = app.cdkApp.synth({ aspectStabilization: stabilizeAspects });
     try {
       block(app);
     } finally {
