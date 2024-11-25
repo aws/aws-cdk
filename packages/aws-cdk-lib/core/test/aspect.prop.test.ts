@@ -38,6 +38,12 @@ test('for every construct, lower priorities go before higher priorities', () => 
 
 test.todo('for every construct, if a invokes before b that must mean it is of equal or lower priority');
 
+test('visitLog is nonempty', () => fc.assert(
+  fc.property(appWithAspects(), afterSynth((app) => {
+    expect(app.visitLog).not.toEqual([]);
+  })),
+));
+
 //////////////////////////////////////////////////////////////////////
 //  Test Helpers
 
@@ -245,6 +251,7 @@ function arbAddAspects(appFac: AppFactory): fc.Arbitrary<[App, AspectVisitLog]> 
 
   const applications = fc.array(arbAspectApplication(constructs), {
     size: 'small',
+    minLength: 1,
     maxLength: 5,
   });
 
@@ -254,16 +261,16 @@ function arbAddAspects(appFac: AppFactory): fc.Arbitrary<[App, AspectVisitLog]> 
     // interfere with each other. Also a different aspect invocation log for every tree.
     const tree = appFac();
     const log: AspectVisitLog = [];
-    tree[VISITLOG_SYM] = tree; // Stick this somewhere the aspects can find it
+    tree[VISITLOG_SYM] = log; // Stick this somewhere the aspects can find it
 
     for (const app of appls) {
-      const ctrs = app.constructPaths.map((p) => constructFromPath(tree, p));
+      const ctrs = app.constructPaths.map((p) => findConstructDeep(tree, p));
       for (const ctr of ctrs) {
         Aspects.of(ctr).add(app.aspect, { priority: app.priority });
       }
     }
 
-    return [baseTree, log];
+    return [tree, log];
   });
 }
 
@@ -325,7 +332,7 @@ type AppFactory = () => App;
  */
 const VISITLOG_SYM = Symbol();
 
-function constructFromPath(root: IConstruct, path: string) {
+function findConstructDeep(root: IConstruct, path: string) {
   if (path === '') {
     return root;
   }
@@ -477,7 +484,7 @@ class AspectAddingAspect extends TracingAspect {
   visit(node: IConstruct): void {
     super.visit(node);
 
-    const constructs = this.newAspect.constructPaths.map((p) => constructFromPath(node.node.root, p));
+    const constructs = this.newAspect.constructPaths.map((p) => findConstructDeep(node.node.root, p));
     for (const construct of constructs) {
       Aspects.of(construct).add(this.newAspect.aspect, { priority: this.newAspect.priority });
     }
