@@ -51,7 +51,7 @@ interface DatabaseClusterBaseProps {
   /**
    * The instance to use for the cluster writer
    *
-   * @default required if instanceProps is not provided
+   * @default - required if instanceProps is not provided
    */
   readonly writer?: IClusterInstance;
 
@@ -77,9 +77,12 @@ interface DatabaseClusterBaseProps {
   /**
    * The minimum number of Aurora capacity units (ACUs) for a DB instance in an Aurora Serverless v2 cluster.
    * You can specify ACU values in half-step increments, such as 8, 8.5, 9, and so on.
-   * The smallest value that you can use is 0.5.
+   * The smallest value that you can use is 0.
    *
-   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.setting-capacity.html#aurora-serverless-v2.max_capacity_considerations
+   * For Aurora versions that support the Aurora Serverless v2 auto-pause feature, the smallest value that you can use is 0.
+   * For versions that don't support Aurora Serverless v2 auto-pause, the smallest value that you can use is 0.5.
+   *
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.setting-capacity.html#aurora-serverless-v2.min_capacity_considerations
    *
    * @default 0.5
    */
@@ -102,7 +105,7 @@ interface DatabaseClusterBaseProps {
   /**
    * Security group.
    *
-   * @default a new security group is created.
+   * @default - a new security group is created.
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
 
@@ -234,19 +237,34 @@ interface DatabaseClusterBaseProps {
   readonly cloudwatchLogsRetentionRole?: IRole;
 
   /**
-   * The interval, in seconds, between points when Amazon RDS collects enhanced
-   * monitoring metrics for the DB instances.
+   * The interval between points when Amazon RDS collects enhanced monitoring metrics.
    *
-   * @default no enhanced monitoring
+   * If you enable `enableClusterLevelEnhancedMonitoring`, this property is applied to the cluster,
+   * otherwise it is applied to the instances.
+   *
+   * @default - no enhanced monitoring
    */
   readonly monitoringInterval?: Duration;
 
   /**
-   * Role that will be used to manage DB instances monitoring.
+   * Role that will be used to manage DB monitoring.
+   *
+   * If you enable `enableClusterLevelEnhancedMonitoring`, this property is applied to the cluster,
+   * otherwise it is applied to the instances.
    *
    * @default - A role is automatically created for you
    */
   readonly monitoringRole?: IRole;
+
+  /**
+   * Whether to enable enhanced monitoring at the cluster level.
+   *
+   * If set to true, `monitoringInterval` and `monitoringRole` are applied to not the instances, but the cluster.
+   * `monitoringInterval` is required to be set if `enableClusterLevelEnhancedMonitoring` is set to true.
+   *
+   * @default - When the `monitoringInterval` is set, enhanced monitoring is enabled for each instance.
+   */
+  readonly enableClusterLevelEnhancedMonitoring?: boolean;
 
   /**
    * Role that will be associated with this DB cluster to enable S3 import.
@@ -642,6 +660,11 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
    */
   public readonly performanceInsightEncryptionKey?: kms.IKey;
 
+  /**
+   * The IAM role for the enhanced monitoring.
+   */
+  public readonly monitoringRole?: iam.IRole;
+
   protected readonly serverlessV2MinCapacity: number;
   protected readonly serverlessV2MaxCapacity: number;
 
@@ -758,6 +781,24 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       : undefined;
     this.performanceInsightEncryptionKey = props.performanceInsightEncryptionKey;
 
+    // configure enhanced monitoring role for the cluster or instance
+    this.monitoringRole = props.monitoringRole;
+    if (!props.monitoringRole && props.monitoringInterval && props.monitoringInterval.toSeconds()) {
+      this.monitoringRole = new Role(this, 'MonitoringRole', {
+        assumedBy: new ServicePrincipal('monitoring.rds.amazonaws.com'),
+        managedPolicies: [
+          ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSEnhancedMonitoringRole'),
+        ],
+      });
+    }
+
+    if (props.enableClusterLevelEnhancedMonitoring && !props.monitoringInterval) {
+      throw new Error('`monitoringInterval` must be set when `enableClusterLevelEnhancedMonitoring` is true.');
+    }
+    if (props.monitoringInterval && [0, 1, 5, 10, 15, 30, 60].indexOf(props.monitoringInterval.toSeconds()) === -1) {
+      throw new Error(`'monitoringInterval' must be one of 0, 1, 5, 10, 15, 30, or 60 seconds, got: ${props.monitoringInterval.toSeconds()} seconds.`);
+    }
+
     this.newCfnProps = {
       // Basic
       engine: props.engine.engineType,
@@ -803,6 +844,8 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       performanceInsightsKmsKeyId: this.performanceInsightEncryptionKey?.keyArn,
       performanceInsightsRetentionPeriod: this.performanceInsightRetention,
       autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,
+      monitoringInterval: props.enableClusterLevelEnhancedMonitoring ? props.monitoringInterval?.toSeconds() : undefined,
+      monitoringRoleArn: props.enableClusterLevelEnhancedMonitoring ? this.monitoringRole?.roleArn : undefined,
     };
   }
 
@@ -811,25 +854,17 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
    *
    * @internal
    */
-  protected _createInstances(cluster: DatabaseClusterNew, props: DatabaseClusterProps): InstanceConfig {
+  protected _createInstances(props: DatabaseClusterProps): InstanceConfig {
     const instanceEndpoints: Endpoint[] = [];
     const instanceIdentifiers: string[] = [];
     const readers: IAuroraClusterInstance[] = [];
 
-    let monitoringRole = props.monitoringRole;
-    if (!props.monitoringRole && props.monitoringInterval && props.monitoringInterval.toSeconds()) {
-      monitoringRole = new Role(cluster, 'MonitoringRole', {
-        assumedBy: new ServicePrincipal('monitoring.rds.amazonaws.com'),
-        managedPolicies: [
-          ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSEnhancedMonitoringRole'),
-        ],
-      });
-    }
-
     // need to create the writer first since writer is determined by what instance is first
     const writer = props.writer!.bind(this, this, {
-      monitoringInterval: props.monitoringInterval,
-      monitoringRole: monitoringRole,
+      // When `enableClusterLevelEnhancedMonitoring` is enabled,
+      // both `monitoringInterval` and `monitoringRole` are set at cluster level so no need to re-set it in instance level.
+      monitoringInterval: props.enableClusterLevelEnhancedMonitoring ? undefined : props.monitoringInterval,
+      monitoringRole: props.enableClusterLevelEnhancedMonitoring ? undefined : this.monitoringRole,
       removalPolicy: props.removalPolicy ?? RemovalPolicy.SNAPSHOT,
       subnetGroup: this.subnetGroup,
       promotionTier: 0, // override the promotion tier so that writers are always 0
@@ -839,8 +874,10 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 
     (props.readers ?? []).forEach(instance => {
       const clusterInstance = instance.bind(this, this, {
-        monitoringInterval: props.monitoringInterval,
-        monitoringRole: monitoringRole,
+      // When `enableClusterLevelEnhancedMonitoring` is enabled,
+      // both `monitoringInterval` and `monitoringRole` are set at cluster level so no need to re-set it in instance level.
+        monitoringInterval: props.enableClusterLevelEnhancedMonitoring ? undefined : props.monitoringInterval,
+        monitoringRole: props.enableClusterLevelEnhancedMonitoring ? undefined : this.monitoringRole,
         removalPolicy: props.removalPolicy ?? RemovalPolicy.SNAPSHOT,
         subnetGroup: this.subnetGroup,
       });
@@ -989,8 +1026,8 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       throw new Error('serverlessV2MaxCapacity must be >= 0.5 & <= 256');
     }
 
-    if (this.serverlessV2MinCapacity > 256 || this.serverlessV2MinCapacity < 0.5) {
-      throw new Error('serverlessV2MinCapacity must be >= 0.5 & <= 256');
+    if (this.serverlessV2MinCapacity > 256 || this.serverlessV2MinCapacity < 0) {
+      throw new Error('serverlessV2MinCapacity must be >= 0 & <= 256');
     }
 
     if (this.serverlessV2MaxCapacity < this.serverlessV2MinCapacity) {
@@ -1207,7 +1244,7 @@ export class DatabaseCluster extends DatabaseClusterNew {
       throw new Error('writer must be provided');
     }
 
-    const createdInstances = props.writer ? this._createInstances(this, props) : legacyCreateInstances(this, props, this.subnetGroup);
+    const createdInstances = props.writer ? this._createInstances(props) : legacyCreateInstances(this, props, this.subnetGroup);
     this.instanceIdentifiers = createdInstances.instanceIdentifiers;
     this.instanceEndpoints = createdInstances.instanceEndpoints;
   }
@@ -1393,7 +1430,7 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
     if ((props.writer || props.readers) && (props.instances || props.instanceProps)) {
       throw new Error('Cannot provide clusterInstances if instances or instanceProps are provided');
     }
-    const createdInstances = props.writer ? this._createInstances(this, props) : legacyCreateInstances(this, props, this.subnetGroup);
+    const createdInstances = props.writer ? this._createInstances(props) : legacyCreateInstances(this, props, this.subnetGroup);
     this.instanceIdentifiers = createdInstances.instanceIdentifiers;
     this.instanceEndpoints = createdInstances.instanceEndpoints;
   }
@@ -1453,16 +1490,6 @@ function legacyCreateInstances(cluster: DatabaseClusterNew, props: DatabaseClust
   // Get the actual subnet objects so we can depend on internet connectivity.
   const internetConnected = instanceProps.vpc.selectSubnets(instanceProps.vpcSubnets).internetConnectivityEstablished;
 
-  let monitoringRole;
-  if (props.monitoringInterval && props.monitoringInterval.toSeconds()) {
-    monitoringRole = props.monitoringRole || new Role(cluster, 'MonitoringRole', {
-      assumedBy: new ServicePrincipal('monitoring.rds.amazonaws.com'),
-      managedPolicies: [
-        ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSEnhancedMonitoringRole'),
-      ],
-    });
-  }
-
   const enablePerformanceInsights = instanceProps.enablePerformanceInsights
     || instanceProps.performanceInsightRetention !== undefined || instanceProps.performanceInsightEncryptionKey !== undefined;
   if (enablePerformanceInsights && instanceProps.enablePerformanceInsights === false) {
@@ -1519,8 +1546,10 @@ function legacyCreateInstances(cluster: DatabaseClusterNew, props: DatabaseClust
       // This is already set on the Cluster. Unclear to me whether it should be repeated or not. Better yes.
       dbSubnetGroupName: subnetGroup.subnetGroupName,
       dbParameterGroupName: instanceParameterGroupConfig?.parameterGroupName,
-      monitoringInterval: props.monitoringInterval && props.monitoringInterval.toSeconds(),
-      monitoringRoleArn: monitoringRole && monitoringRole.roleArn,
+      // When `enableClusterLevelEnhancedMonitoring` is enabled,
+      // both `monitoringInterval` and `monitoringRole` are set at cluster level so no need to re-set it in instance level.
+      monitoringInterval: props.enableClusterLevelEnhancedMonitoring ? undefined : props.monitoringInterval?.toSeconds(),
+      monitoringRoleArn: props.enableClusterLevelEnhancedMonitoring ? undefined : cluster.monitoringRole?.roleArn,
       autoMinorVersionUpgrade: instanceProps.autoMinorVersionUpgrade,
       allowMajorVersionUpgrade: instanceProps.allowMajorVersionUpgrade,
       deleteAutomatedBackups: instanceProps.deleteAutomatedBackups,
