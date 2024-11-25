@@ -225,7 +225,7 @@ export class Stage extends Construct {
       this.assembly = synthesize(this, {
         skipValidation: options.skipValidation,
         validateOnSynthesis: options.validateOnSynthesis,
-        aspectStabilization: options.aspectStabilization ?? FeatureFlags.of(this).isEnabled(cxapi.ASPECT_STABILIZATION),
+        aspectStabilization: options.aspectStabilization ?? FeatureFlags.of(this).isEnabled(cxapi.ASPECT_STABILIZATION) ?? false,
       });
       newConstructPaths = this.listAllConstructPaths(this);
       this.constructPathsCache = newConstructPaths;
