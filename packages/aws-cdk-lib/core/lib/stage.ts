@@ -323,6 +323,11 @@ export interface StageSynthesisOptions {
 
   /**
    * Whether or not run the stabilization loop while invoking Aspects.
+   *
+   * The stabilization loop runs multiple passes of the construct tree when invoking
+   * Aspects. Without the stabilization loop, Aspects that are created by other Aspects
+   * are not run and new nodes that are created at higher points on the construct tree by
+   * an Aspect will not inherit their parent aspects.
    * @default false
    */
   readonly aspectStabilization?: boolean;
