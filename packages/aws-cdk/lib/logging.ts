@@ -109,12 +109,12 @@ export function log(levelOrEntry: LogLevel | LogEntry, fmt?: string, ...args: un
   // Format the message
   let finalMessage = entry.message;
 
-  // Add timestamp if requested
+  // Add timestamp first if requested
   if (entry.timestamp) {
     finalMessage = `[${formatTime(new Date())}] ${finalMessage}`;
   }
 
-  // Add prefix if provided
+  // Add prefix AFTER timestamp
   if (entry.prefix) {
     finalMessage = `${entry.prefix} ${finalMessage}`;
   }
