@@ -179,7 +179,7 @@ function getRegionFromIniFile(profile: string, data?: any) {
 function tryGetCACert(bundlePath?: string) {
   const path = bundlePath || caBundlePathFromEnvironment();
   if (path) {
-    debug('Using CA bundle path: %s', bundlePath);
+    debug('Using CA bundle path: %s', path);
     return readIfPossible(path);
   }
   return undefined;
