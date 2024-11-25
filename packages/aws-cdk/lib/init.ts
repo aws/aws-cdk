@@ -324,8 +324,8 @@ async function initializeProject(
   if (migrate) {
     await template.addMigrateContext(workDir);
   }
-  if (await fs.pathExists('README.md')) {
-    const readme = await fs.readFile('README.md', { encoding: 'utf-8' });
+  if (await fs.pathExists(`${workDir}/README.md`)) {
+    const readme = await fs.readFile(`${workDir}/README.md`, { encoding: 'utf-8' });
     print(chalk.green(readme));
   }
 
