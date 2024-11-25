@@ -1429,8 +1429,6 @@ Amazon Aurora [PostgreSQL Limitless Database](https://docs.aws.amazon.com/Amazon
 The following example shows creating an Aurora PostgreSQL Limitless Database cluster:
 
 ```ts
-import { Duration } from 'aws-cdk-lib';
-
 declare const vpc: ec2.IVpc;
 
 new rds.DatabaseCluster(this, 'LimitlessDatabaseCluster', {
