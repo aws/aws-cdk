@@ -283,14 +283,27 @@ describe('aspect', () => {
     }).toThrow('Cannot invoke Aspect Tag with priority 0 after Aspect Tag with priority 10 at My-Stack.');
   });
 
-  class InfiniteAspect implements IAspect {
-    visit(node: IConstruct): void {
-      // Add another instance of InfiniteAspect to this node
-      Aspects.of(node).add(new InfiniteAspect());
+  test('Infinitely recursing Aspect is caught with error', () => {
+    const app = new App({ context: { '@aws-cdk/core:aspectStabilization': true } });
+    const root = new Stack(app, 'My-Stack');
+    const child = new MyConstruct(root, 'MyConstruct');
 
-      // Optionally create a new resource to make the problem even worse
-      if (Construct.isConstruct(node)) {
-        new CfnResource(node, `InfiniteResource-${Date.now()}`, {
+    Aspects.of(root).add(new InfiniteAspect());
+
+    expect(() => {
+      app.synth();
+    }).toThrow('We have detected a possible infinite loop while invoking Aspects.');
+  });
+
+  class InfiniteAspect implements IAspect {
+    private static counter = 0;
+
+    visit(node: IConstruct): void {
+      // Adds a new resource as a child of the stack.
+      if (!(node instanceof Stack)) {
+        const stack = Stack.of(node);
+        const uniqueId = `InfiniteResource-${InfiniteAspect.counter++}`;
+        new CfnResource(stack, uniqueId, {
           type: 'AWS::CDK::Broken',
         });
       }
