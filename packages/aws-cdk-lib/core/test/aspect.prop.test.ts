@@ -21,29 +21,30 @@ test('for every construct, lower priorities go before higher priorities', () =>
   ),
 );
 
-test.todo('every aspect applied on the tree eventually executes on all of its nodes in scope');
-// test('every aspect applied on the tree eventually executes on all of its nodes in scope', () =>
-//   fc.assert(
-//     fc.property(appWithAspects(), (app) => {
-//       afterSynth((testApp) => {
-//         forEveryVisitPair(testApp.visitLog, (a, b) => {
-//           if (!sameConstruct(a, b)) return;
+// WIP - this test does not work yet
+// test.todo('every aspect applied on the tree eventually executes on all of its nodes in scope');
+test('every aspect applied on the tree eventually executes on all of its nodes in scope', () =>
+  fc.assert(
+    fc.property(appWithAspects(), (app) => {
+      afterSynth((testApp) => {
 
-//           if (!sameAspect(a, b)) return;
+        const aspectMap = convertToAspectMap(testApp.visitLog);
 
-//           // If a is an ancestor of b ...
-//           if (!implies(ancestorOf(a.construct, b.construct), true)) {
+        for (const [aspect, constructList] of aspectMap) {
+          const lastAppliedConstruct = constructList[constructList.length -1];
 
-//           }
+          // console.log(constructList);
+          // console.log('-------');
+          // console.log(ancestors(lastAppliedConstruct));
 
-//           // if (sameConstruct(a, b) && sameAspect(a, b)) {
-//           //   throw new Error(`Duplicate visit: ${a.index} and ${b.index}`);
-//           // }
-//         });
-//       }, true)(app);
-//     }),
-//   ),
-// );
+          if (!arraysEqualUnordered(constructList, ancestors(lastAppliedConstruct))) {
+            throw new Error(`Aspect ${aspect} did not apply to all constructs in scope.`);
+          }
+        }
+      }, true)(app);
+    }),
+  ),
+);
 
 test('inherited aspects get invoked before locally defined aspects, if both have the same priority', () =>
   fc.assert(
@@ -162,6 +163,35 @@ function forEveryVisitPair(log: AspectVisitLog, block: (a: AspectVisitWithIndex,
       block({ ...log[i], index: i }, { ...log[j], index: j });
     }
   }
+}
+
+function arraysEqual<T>(arr1: T[], arr2: T[]): boolean {
+  if (arr1.length !== arr2.length) {
+    return false;
+  }
+
+  return arr1.every((value, index) => value === arr2[index]);
+}
+
+function arraysEqualUnordered<T>(arr1: T[], arr2: T[]): boolean {
+  return arr1.length === arr2.length && new Set(arr1).size === new Set(arr2).size;
+}
+
+/**
+ * Converts a visit Log to a Map of Aspect: IConstruct[] - listing all constructs an Aspect
+ * has visited.
+ */
+function convertToAspectMap(log: AspectVisitLog): Map<TracingAspect, IConstruct[]> {
+  const aspectMap = new Map<TracingAspect, IConstruct[]>();
+
+  log.forEach(({ construct, aspect }) => {
+    if (!aspectMap.has(aspect)) {
+      aspectMap.set(aspect, []);
+    }
+    aspectMap.get(aspect)!.push(construct);
+  });
+
+  return aspectMap;
 }
 
 function sameConstruct(a: AspectVisit, b: AspectVisit) {
