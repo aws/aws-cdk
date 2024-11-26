@@ -144,7 +144,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "7f6fc8a416807b6be0ca2397479cd45d43dfe989a95bc81708f269e993296d34.zip"
+                      "s3Key": "67412d7336becb4f3cc171ba3cf4ad59c7a45c7f2371ad1745ff38de715411f2.zip"
                     },
                     "environment": {
                       "variables": {
@@ -270,7 +270,7 @@
                           "Arn"
                         ]
                       },
-                      "input": "\"importedLambdaTagValue\"",
+                      "input": "{\"tagValue\":\"importedLambdaTagValue\"}",
                       "retryPolicy": {
                         "maximumEventAgeInSeconds": 86400,
                         "maximumRetryAttempts": 185
@@ -285,7 +285,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "@aws-cdk/aws-scheduler-alpha.Schedule",
               "version": "0.0.0"
             }
           },
@@ -575,7 +575,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "7f6fc8a416807b6be0ca2397479cd45d43dfe989a95bc81708f269e993296d34.zip"
+                      "s3Key": "67412d7336becb4f3cc171ba3cf4ad59c7a45c7f2371ad1745ff38de715411f2.zip"
                     },
                     "environment": {
                       "variables": {
@@ -653,7 +653,7 @@
                           "Arn"
                         ]
                       },
-                      "input": "\"sameStackLambdaTagValue\"",
+                      "input": "{\"tagValue\":\"sameStackLambdaTagValue\"}",
                       "retryPolicy": {
                         "maximumEventAgeInSeconds": 86400,
                         "maximumRetryAttempts": 185
@@ -668,7 +668,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "@aws-cdk/aws-scheduler-alpha.Schedule",
               "version": "0.0.0"
             }
           },
@@ -832,8 +832,8 @@
                         ]
                       },
                       "retryPolicy": {
-                        "maximumEventAgeInSeconds": 86400,
-                        "maximumRetryAttempts": 0
+                        "maximumEventAgeInSeconds": 60,
+                        "maximumRetryAttempts": 1
                       }
                     }
                   }
@@ -845,7 +845,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "@aws-cdk/aws-scheduler-alpha.Schedule",
               "version": "0.0.0"
             }
           },
@@ -884,7 +884,7 @@
                 "path": "integtest-lambda-invoke/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -904,7 +904,7 @@
                             "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTagsfa577ce284ecabe6c15ac48d4f4b77f5/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -944,7 +944,7 @@
                                 "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTagsfa577ce284ecabe6c15ac48d4f4b77f5/WaitFor/IsCompleteProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.3.0"
+                                  "version": "10.4.2"
                                 }
                               },
                               "Invoke": {
@@ -970,7 +970,7 @@
                                 "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTagsfa577ce284ecabe6c15ac48d4f4b77f5/WaitFor/TimeoutProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.3.0"
+                                  "version": "10.4.2"
                                 }
                               },
                               "Invoke": {
@@ -1054,7 +1054,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "LatestNodeRuntimeMap": {
@@ -1096,7 +1096,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a": {
@@ -1130,7 +1130,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "AwsApiCallLambdalistTagsc9aff8891471a47d011153d8741b2276": {
@@ -1146,7 +1146,7 @@
                             "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTagsc9aff8891471a47d011153d8741b2276/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -1186,7 +1186,7 @@
                                 "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTagsc9aff8891471a47d011153d8741b2276/WaitFor/IsCompleteProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.3.0"
+                                  "version": "10.4.2"
                                 }
                               },
                               "Invoke": {
@@ -1212,7 +1212,7 @@
                                 "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTagsc9aff8891471a47d011153d8741b2276/WaitFor/TimeoutProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.3.0"
+                                  "version": "10.4.2"
                                 }
                               },
                               "Invoke": {
@@ -1304,7 +1304,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },
