@@ -436,7 +436,7 @@ function toTarget(runtime: Runtime): string {
   return `node${match[1]}`;
 }
 
-function toCliArgs(esbuildArgs: { [key: string]: string | boolean }): string {
+function toCliArgs(esbuildArgs: { [key: string]: string | boolean | string[]}): string {
   const args = new Array<string>();
   const reSpecifiedKeys = ['--alias', '--drop', '--pure', '--log-override', '--out-extension'];
 
@@ -444,8 +444,13 @@ function toCliArgs(esbuildArgs: { [key: string]: string | boolean }): string {
     if (value === true || value === '') {
       args.push(key);
     } else if (reSpecifiedKeys.includes(key)) {
-      args.push(`${key}:"${value}"`);
+      const reSpecifiedValues = Array.isArray(value) ? value : [value];
+      args.push(...reSpecifiedValues.map(reSpecifiedValue => `${key}:"${reSpecifiedValue}"`));
     } else if (value) {
+      if (Array.isArray(value)) {
+        const reSpecifiedKeysFormattedList = reSpecifiedKeys.map(reSpecifiedKey => `'${reSpecifiedKey}'`).join(', ');
+        throw new Error(`Can only specify an array of values for keys which can be re-specified. These are: ${reSpecifiedKeysFormattedList}.`);
+      }
       args.push(`${key}="${value}"`);
     }
   }

@@ -239,9 +239,11 @@ new nodejs.NodejsFunction(this, 'my-handler', {
     format: nodejs.OutputFormat.ESM, // ECMAScript module output format, defaults to OutputFormat.CJS (OutputFormat.ESM requires Node.js >= 14)
     mainFields: ['module', 'main'], // prefer ECMAScript versions of dependencies
     inject: ['./my-shim.js', './other-shim.js'], // allows to automatically replace a global variable with an import from another file
-    esbuildArgs: { // Pass additional arguments to esbuild
+    esbuildArgs: { // pass additional arguments to esbuild
       "--log-limit": "0",
       "--splitting": true,
+      // some args can be re-specified multiple times by providing an array
+      "--alias": ['@layer1=/opt/nodejs/layer1', '@layer2=/opt/nodejs/layer2']
     },
   },
 });

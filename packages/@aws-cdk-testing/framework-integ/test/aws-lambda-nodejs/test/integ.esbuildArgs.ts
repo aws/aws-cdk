@@ -19,6 +19,7 @@ class TestStack extends Stack {
         esbuildArgs: {
           '--log-limit': '0',
           '--out-extension': '.js=.mjs',
+          '--alias': ['@layer1=/opt/nodejs/layer1', '@layer2=/opt/nodejs/layer2'],
         },
       },
     });
