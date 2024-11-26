@@ -89,13 +89,32 @@ export class ChannelNamespace extends Construct {
     super(scope, id);
 
     const code = props.code?.bind(this);
+
+    this.validateAuthorizationConfig(props.api.authProviders, props.authorizationConfig?.publishAuthModes ?? []);
+    this.validateAuthorizationConfig(props.api.authProviders, props.authorizationConfig?.subscribeAuthModes ?? []);
+
     this.channelNamespace = new CfnChannelNamespace(this, 'Resource', {
       name: props.name,
       apiId: props.api.apiId,
       codeHandlers: code?.inlineCode,
       codeS3Location: code?.s3Location,
+      publishAuthModes: props.authorizationConfig?.publishAuthModes?.map((mode) => {
+        return { authType: mode };
+      }),
+      subscribeAuthModes: props.authorizationConfig?.subscribeAuthModes?.map((mode) => {
+        return { authType: mode };
+      }),
     });
 
     this.arn = this.channelNamespace.attrChannelNamespaceArn;
   }
+
+  private validateAuthorizationConfig(authProviders: AuthorizationType[], authModes: AuthorizationType[]) {
+    authModes.forEach((mode) => {
+      if (!authProviders.find((authProvider) => authProvider === mode)) {
+        throw new Error(`Missing authorization configuration for ${mode}`);
+      }
+    });
+  }
+
 }

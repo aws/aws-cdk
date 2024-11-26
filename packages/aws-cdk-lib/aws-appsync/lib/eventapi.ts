@@ -181,7 +181,7 @@ export interface EventApiProps {
   /**
    * the name of the Event API
    */
-  readonly name: string;
+  readonly apiName: string;
 
   /**
    * Optional authorization configuration
@@ -273,8 +273,9 @@ export class EventApi extends EventApiBase {
 
   /**
    * the name of the Event Api
+   * @attribute ApiName
    */
-  public readonly name: string;
+  public readonly apiName: string;
 
   /**
    * an unique AWS AppSync Event API identifier
@@ -289,7 +290,6 @@ export class EventApi extends EventApiBase {
 
   /**
    * the domain name of the API
-   *
    */
   public readonly endpointDns: IResolvable;
 
@@ -297,6 +297,16 @@ export class EventApi extends EventApiBase {
    * The Authorization Types for this Event Api
   */
   public readonly authProviders: AuthorizationType[];
+
+  /**
+  * The default publish auth modes for this Event Api
+  */
+  public readonly defaultPublishModes: AuthorizationType[];
+
+  /**
+  * The default subscribe auth modes for this Event Api
+  */
+  public readonly defaultSubscribeModes: AuthorizationType[];
 
   /**
    * the configured API key, if present
@@ -323,16 +333,19 @@ export class EventApi extends EventApiBase {
     const authConfig = props.authorizationConfig?.authProviders ?? [{ authorizationType: AuthorizationType.API_KEY }];
     this.validateAuthorizationProps(authConfig);
 
-    const connectionAuthMode = props.authorizationConfig?.connectionAuthModes ??
-      [AuthorizationType.API_KEY];
-    const defaultPublishAuthModes = props.authorizationConfig?.defaultPublishAuthModes ??
-      [AuthorizationType.API_KEY];
-    const defaultSubscribeAuthModes = props.authorizationConfig?.defaultSubscribeAuthModes ??
-      [AuthorizationType.API_KEY];
+    const connectionAuthMode = props.authorizationConfig?.connectionAuthModes ?? (this.authProviders ??
+      [AuthorizationType.API_KEY]);
+    const defaultPublishAuthModes = props.authorizationConfig?.defaultPublishAuthModes ?? (this.authProviders ??
+      [AuthorizationType.API_KEY]);
+    const defaultSubscribeAuthModes = props.authorizationConfig?.defaultSubscribeAuthModes ?? (this.authProviders ??
+      [AuthorizationType.API_KEY]);
 
     this.validateAuthorizationConfig(authConfig, connectionAuthMode);
     this.validateAuthorizationConfig(authConfig, defaultPublishAuthModes);
     this.validateAuthorizationConfig(authConfig, defaultSubscribeAuthModes);
+
+    this.defaultPublishModes = defaultPublishAuthModes;
+    this.defaultSubscribeModes = defaultSubscribeAuthModes;
 
     if (!Token.isUnresolved(props.ownerContact) && props.ownerContact !== undefined && (props.ownerContact.length > 256)) {
       throw new Error('You must specify `ownerContact` as a string of 256 characters or less.');
@@ -347,14 +360,14 @@ export class EventApi extends EventApiBase {
     };
 
     this.api = new CfnApi(this, 'Resource', {
-      name: props.name,
+      name: props.apiName,
       eventConfig: this.eventConfig,
       ownerContact: props.ownerContact,
     });
 
     this.api.applyRemovalPolicy(RemovalPolicy.DESTROY);
 
-    this.name = this.api.name;
+    this.apiName = this.api.name;
     this.apiId = this.api.attrApiId;
     this.arn = this.api.attrApiArn;
     this.endpointDns = this.api.attrDns;
