@@ -1641,13 +1641,13 @@ const latencyMethodMetric = method.metricLatency(stage);
 
 ## APIGateway v2
 
-APIGateway v2 APIs are now moved to its own package named `aws-apigatewayv2`. The deprecated usage of APIGateway v2
-APIs within this package has now been removed from the codebase. Previously, these APIs were marked deprecated but
-retained for backwards compatibility, including CloudFormation resources such as CfnApi.
+APIGateway v2 APIs are now moved to its own package named `aws-apigatewayv2`. Previously, these APIs were marked
+deprecated but retained for backwards compatibility. The deprecated usage of APIGateway v2 APIs within this module
+`aws-apigateway` has now been removed from the codebase.
 
 The reason for the removal of these deprecated Constructs is that CloudFormation team is releasing AWS resources
 like `AWS::APIGateway::DomainNameV2` and this would cause compatibility issue with the deprecated `CfnDomainNameV2`
-resource defined in `apigatewayv2.ts` file.
+resource defined in `apigatewayv2.ts` file during the L1 generation.
 
 Move to using `aws-apigatewayv2` to get the latest APIs and updates.
 
