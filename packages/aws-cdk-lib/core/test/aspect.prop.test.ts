@@ -582,7 +582,7 @@ abstract class TracingAspect implements IAspect {
  */
 class InspectingAspect extends TracingAspect {
   public toString() {
-    return `Inspecting_${this.id}`;
+    return `Inspect_${this.id}`;
   }
 }
 
@@ -598,7 +598,7 @@ class MutatingAspect extends TracingAspect {
   }
 
   public toString() {
-    return `Mutating_${this.id}`;
+    return `Mutate_${this.id}`;
   }
 }
 
@@ -659,7 +659,7 @@ class NodeAddingAspect extends TracingAspect {
     const childId = `${this.loc.scope}/${this.loc.id}`;
     const newAspects = this.newAspects.map((a) => `${a.aspect}@${a.priority}`);
 
-    return `Adding_${this.id}(${childId}, [${newAspects.join('\n')}])`;
+    return `AddConstruct_${this.id}(${childId}, [${newAspects.join('\n')}])`;
   }
 }
 
