@@ -681,6 +681,6 @@ class AspectAddingAspect extends TracingAspect {
   }
 
   public toString() {
-    return `AddAspect_${this.id}(${JSON.stringify(this.newAspect)})`;
+    return `AddAspect_${this.id}([${this.newAspect.constructPaths.join(',')}], ${this.newAspect.aspect}@${this.newAspect.priority})`;
   }
 }
