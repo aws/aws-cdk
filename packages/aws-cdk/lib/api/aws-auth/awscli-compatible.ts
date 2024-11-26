@@ -4,6 +4,7 @@ import type { NodeHttpHandlerOptions } from '@smithy/node-http-handler';
 import { loadSharedConfigFiles } from '@smithy/shared-ini-file-loader';
 import { AwsCredentialIdentityProvider, Logger } from '@smithy/types';
 import * as promptly from 'promptly';
+import { ProxyAgent } from 'proxy-agent';
 import type { SdkHttpOptions } from './sdk-provider';
 import { readIfPossible } from './util';
 import { debug } from '../../logging';
@@ -89,18 +90,23 @@ export class AwsCliCompatible {
   }
 
   public static requestHandlerBuilder(options: SdkHttpOptions = {}): NodeHttpHandlerOptions {
-    const config: NodeHttpHandlerOptions = {
+    // Force it to use the proxy provided through the command line.
+    // Otherwise, let the ProxyAgent auto-detect the proxy using environment variables.
+    const getProxyForUrl = options.proxyAddress != null
+      ? () => Promise.resolve(options.proxyAddress!)
+      : undefined;
+
+    const agent = new ProxyAgent({
+      ca: tryGetCACert(options.caBundlePath),
+      getProxyForUrl: getProxyForUrl,
+    });
+
+    return {
       connectionTimeout: DEFAULT_CONNECTION_TIMEOUT,
       requestTimeout: DEFAULT_TIMEOUT,
-      httpsAgent: {
-        ca: tryGetCACert(options.caBundlePath),
-        localAddress: options.proxyAddress,
-      },
-      httpAgent: {
-        localAddress: options.proxyAddress,
-      },
+      httpsAgent: agent,
+      httpAgent: agent,
     };
-    return config;
   }
 
   /**
@@ -173,7 +179,7 @@ function getRegionFromIniFile(profile: string, data?: any) {
 function tryGetCACert(bundlePath?: string) {
   const path = bundlePath || caBundlePathFromEnvironment();
   if (path) {
-    debug('Using CA bundle path: %s', bundlePath);
+    debug('Using CA bundle path: %s', path);
     return readIfPossible(path);
   }
   return undefined;
