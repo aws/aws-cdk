@@ -274,7 +274,7 @@ function appWithAspects() {
 function arbCdkAppFactory(props?: AppProps): fc.Arbitrary<AppFactory> {
   return arbConstructTreeFactory().map((fac) => () => {
     const app = new App(props);
-    fac({ scope: app, id: 'First' });
+    fac(app, 'First');
     return app;
   });
 }
@@ -455,7 +455,7 @@ function arbAspect(constructs: Construct[]): fc.Arbitrary<IAspect> {
 
 function arbConstructLoc(constructs: Construct[]): fc.Arbitrary<ConstructLoc> {
   return fc.record({
-    scope: fc.constantFrom(...constructs),
+    scope: fc.constantFrom(...constructs.map(c => c.node.path)),
     id: identifierString(),
   });
 }
@@ -464,7 +464,7 @@ function arbConstructLoc(constructs: Construct[]): fc.Arbitrary<ConstructLoc> {
  * A location for a construct (scope and id)
  */
 interface ConstructLoc {
-  scope: Construct;
+  scope: string;
   id: string;
 }
 
@@ -477,7 +477,7 @@ interface ConstructLoc {
  * We also have the parent control the `id`, so that we can avoid accidentally generating constructs
  * with conflicting names.
  */
-type ConstructFactory = (loc: ConstructLoc) => Construct;
+type ConstructFactory = (scope: Construct, id: string) => Construct;
 
 type AppFactory = () => App;
 
@@ -523,10 +523,10 @@ function identifierString() {
  * Create a construct factory
  */
 function constructFactory(childGenerators: Record<string, ConstructFactory>): ConstructFactory {
-  return ({ scope, id }) => {
+  return (scope, id) => {
     const construct = new ArbConstruct(scope, id);
     for (const [childId, generator] of Object.entries(childGenerators)) {
-      generator({ scope: construct, id: childId });
+      generator(construct, childId);
     }
     return construct;
   };
@@ -636,11 +636,13 @@ class NodeAddingAspect extends TracingAspect {
 
   visit(node: IConstruct): void {
     super.visit(node);
-    if (this.loc.scope.node.tryFindChild(this.loc.id)) {
+    const scope = findConstructDeep(node.node.root, this.loc.scope);
+
+    if (scope.node.tryFindChild(this.loc.id)) {
       return;
     }
 
-    const newConstruct = new ArbConstruct(this.loc.scope, this.loc.id);
+    const newConstruct = new ArbConstruct(scope, this.loc.id);
     for (const { aspect, priority } of this.newAspects) {
       Aspects.of(newConstruct).add(aspect, { priority });
       this.executionState(node).addedAspects.push({
@@ -654,7 +656,7 @@ class NodeAddingAspect extends TracingAspect {
   }
 
   public toString() {
-    const childId = `${this.loc.scope.node.path}/${this.loc.id}`;
+    const childId = `${this.loc.scope}/${this.loc.id}`;
     const newAspects = this.newAspects.map((a) => `${a.aspect}@${a.priority}`);
 
     return `Adding_${this.id}(${childId}, [${newAspects.join('\n')}])`;
