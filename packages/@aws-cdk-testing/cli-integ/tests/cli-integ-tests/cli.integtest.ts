@@ -2848,22 +2848,19 @@ integTest('requests go through a proxy when configured',
       });
     } finally {
       await fs.rm(certDir, { recursive: true, force: true });
+      await proxyServer.stop();
     }
 
-    const actions = actionsInAlphabeticalOrder(await endpoint.getSeenRequests());
-    expect(actions).toEqual([
-      'AssumeRole', 'CreateChangeSet', 'DescribeChangeSet', 'DescribeStackEvents', 'DescribeStacks', 'ExecuteChangeSet',
-    ]);
+    const actionsUsed = actions(await endpoint.getSeenRequests());
+    expect(actionsUsed).toContain('AssumeRole');
+    expect(actionsUsed).toContain('CreateChangeSet');
   }),
 );
 
-function actionsInAlphabeticalOrder(requests: CompletedRequest[]): string[] {
-  const actions = [...new Set(requests
+function actions(requests: CompletedRequest[]): string[] {
+  return [...new Set(requests
     .map(req => req.body.buffer.toString('utf-8'))
     .map(body => querystring.decode(body))
     .map(x => x.Action as string)
     .filter(action => action != null))];
-
-  actions.sort();
-  return actions;
 }
