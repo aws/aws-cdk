@@ -280,7 +280,7 @@ describe('aspect', () => {
 
     expect(() => {
       app.synth();
-    }).toThrow('Aspect Tag with priority 0 invoked after Tag with priority 10 at My-Stack');
+    }).toThrow('Cannot invoke Aspect Tag with priority 0 after Aspect Tag with priority 10 at My-Stack.');
   });
 
   class InfiniteAspect implements IAspect {

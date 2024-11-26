@@ -312,7 +312,7 @@ function invokeAspectsV2(root: IConstruct) {
       const lastInvokedAspect = invoked[invoked.length - 1];
       if (lastInvokedAspect && lastInvokedAspect.priority > aspectApplication.priority) {
         throw new Error(
-          `Can not invoke Aspect ${aspectApplication.aspect.constructor.name} with priority ${aspectApplication.priority} after Aspect ${lastInvokedAspect.aspect.constructor.name} with priority ${lastInvokedAspect.priority} at ${node.path}.`,
+          `Cannot invoke Aspect ${aspectApplication.aspect.constructor.name} with priority ${aspectApplication.priority} after Aspect ${lastInvokedAspect.aspect.constructor.name} with priority ${lastInvokedAspect.priority} at ${node.path}.`,
         );
       };
 
