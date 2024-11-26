@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "LambdaInvokec4688b687151901cd5c67c2304486b07": {
+  "LambdaInvokef3b58fd2af78e934527e05bc469d07dc": {
    "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
    "Properties": {
     "ServiceToken": {
@@ -19,7 +19,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "cdk-integ-lambda-golang-provided-al2023:ExportsOutputRefgohandlerdockerAE04F1B886D55427"
+         "Fn::ImportValue": "cdk-integ-lambda-golang-provided-al2023:ExportsOutputRefgohandlerprovidedal20A3EC5933F5EA8606"
         },
         "\""
        ]
@@ -27,17 +27,17 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1729121392640"
+    "salt": "1732467508037"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "LambdaInvokec4688b687151901cd5c67c2304486b07Invoke6DCC0555": {
+  "LambdaInvokef3b58fd2af78e934527e05bc469d07dcInvokeFB39F386": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
-     "Fn::ImportValue": "cdk-integ-lambda-golang-provided-al2023:ExportsOutputRefgohandlerdockerAE04F1B886D55427"
+     "Fn::ImportValue": "cdk-integ-lambda-golang-provided-al2023:ExportsOutputRefgohandlerprovidedal20A3EC5933F5EA8606"
     },
     "Principal": {
      "Fn::GetAtt": [
@@ -106,7 +106,47 @@
              },
              ":function:",
              {
-              "Fn::ImportValue": "cdk-integ-lambda-golang-provided-al2023:ExportsOutputRefgohandlerdockerAE04F1B886D55427"
+              "Fn::ImportValue": "cdk-integ-lambda-golang-provided-al2023:ExportsOutputRefgohandlerprovidedal20A3EC5933F5EA8606"
+             }
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Action": [
+          "lambda:Invoke"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "lambda:InvokeFunction"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":lambda:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":function:",
+             {
+              "Fn::ImportValue": "cdk-integ-lambda-golang-provided-al2023:ExportsOutputRefgohandlerprovidedal2023182E754E4D088A80B"
              }
             ]
            ]
@@ -135,7 +175,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "e77649078c9dea5bbb707b7fe68014cfa5d919a38d31b467f6a205b51ea63a83.zip"
+     "S3Key": "b98abee59e034ed29eeb601684dc34752baa86509a7d457d72305d4e19ecc80b.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -146,13 +186,68 @@
      ]
     }
    }
+  },
+  "LambdaInvokee64be71dc9e61c18c827e4067293abf7": {
+   "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Lambda",
+    "api": "invoke",
+    "expected": "{\"$ObjectLike\":{\"StatusCode\":200,\"ExecutedVersion\":\"$LATEST\",\"Payload\":\"256\"}}",
+    "parameters": {
+     "FunctionName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "cdk-integ-lambda-golang-provided-al2023:ExportsOutputRefgohandlerprovidedal2023182E754E4D088A80B"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1732467508039"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "LambdaInvokee64be71dc9e61c18c827e4067293abf7Invoke6B51EA75": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::ImportValue": "cdk-integ-lambda-golang-provided-al2023:ExportsOutputRefgohandlerprovidedal2023182E754E4D088A80B"
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
   }
  },
  "Outputs": {
-  "AssertionResultsLambdaInvokec4688b687151901cd5c67c2304486b07": {
+  "AssertionResultsLambdaInvokef3b58fd2af78e934527e05bc469d07dc": {
    "Value": {
     "Fn::GetAtt": [
-     "LambdaInvokec4688b687151901cd5c67c2304486b07",
+     "LambdaInvokef3b58fd2af78e934527e05bc469d07dc",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsLambdaInvokee64be71dc9e61c18c827e4067293abf7": {
+   "Value": {
+    "Fn::GetAtt": [
+     "LambdaInvokee64be71dc9e61c18c827e4067293abf7",
      "assertion"
     ]
    }
