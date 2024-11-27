@@ -1,6 +1,9 @@
 import { exec } from '../lib/cli';
 import { LogLevel, setLogLevel } from '../lib/logging';
 
+// Store original version module exports so we don't conflict with other tests
+const originalVersion = jest.requireActual('../lib/version');
+
 // Mock the dependencies
 jest.mock('../lib/logging', () => ({
   LogLevel: {
@@ -18,19 +21,6 @@ jest.mock('@aws-cdk/cx-api');
 jest.mock('@jsii/check-node/run');
 jest.mock('../lib/platform-warnings', () => ({
   checkForPlatformWarnings: jest.fn().mockResolvedValue(undefined),
-}));
-jest.mock('../lib/version', () => ({
-  DISPLAY_VERSION: 'test-version',
-  displayVersionMessage: jest.fn().mockResolvedValue(undefined),
-}));
-jest.mock('../lib/init', () => ({
-  availableInitLanguages: jest.fn().mockResolvedValue([]),
-}));
-
-jest.mock('../lib/cdk-toolkit', () => ({
-  CdkToolkit: jest.fn().mockImplementation(() => ({
-    synth: jest.fn().mockResolvedValue(undefined),
-  })),
 }));
 
 jest.mock('../lib/settings', () => ({
@@ -56,7 +46,7 @@ jest.mock('../lib/notices', () => ({
 
 jest.mock('../lib/parse-command-line-arguments', () => ({
   parseCommandLineArguments: jest.fn().mockImplementation((args) => Promise.resolve({
-    _: ['synth'], // Changed to 'synth' command
+    _: ['version'],
     verbose: args.includes('-v') ? (
       args.filter((arg: string) => arg === '-v').length
     ) : args.includes('--verbose') ? (
@@ -68,35 +58,47 @@ jest.mock('../lib/parse-command-line-arguments', () => ({
 describe('exec verbose flag tests', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    // Set up version module for our tests
+    jest.mock('../lib/version', () => ({
+      ...originalVersion,
+      DISPLAY_VERSION: 'test-version',
+      displayVersionMessage: jest.fn().mockResolvedValue(undefined),
+    }));
+  });
+
+  afterEach(() => {
+    // Restore the version module to its original state
+    jest.resetModules();
+    jest.setMock('../lib/version', originalVersion);
   });
 
   test('should not set log level when no verbose flag is present', async () => {
-    await exec(['synth']);
+    await exec(['version']);
     expect(setLogLevel).not.toHaveBeenCalled();
   });
 
   test('should set DEBUG level with single -v flag', async () => {
-    await exec(['-v', 'synth']);
+    await exec(['-v', 'version']);
     expect(setLogLevel).toHaveBeenCalledWith(LogLevel.DEBUG);
   });
 
   test('should set TRACE level with double -v flag', async () => {
-    await exec(['-v', '-v', 'synth']);
+    await exec(['-v', '-v', 'version']);
     expect(setLogLevel).toHaveBeenCalledWith(LogLevel.TRACE);
   });
 
   test('should set DEBUG level with --verbose=1', async () => {
-    await exec(['--verbose', '1', 'synth']);
+    await exec(['--verbose', '1', 'version']);
     expect(setLogLevel).toHaveBeenCalledWith(LogLevel.DEBUG);
   });
 
   test('should set TRACE level with --verbose=2', async () => {
-    await exec(['--verbose', '2', 'synth']);
+    await exec(['--verbose', '2', 'version']);
     expect(setLogLevel).toHaveBeenCalledWith(LogLevel.TRACE);
   });
 
   test('should set TRACE level with verbose level > 2', async () => {
-    await exec(['--verbose', '3', 'synth']);
+    await exec(['--verbose', '3', 'version']);
     expect(setLogLevel).toHaveBeenCalledWith(LogLevel.TRACE);
   });
 });
