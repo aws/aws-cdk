@@ -10,7 +10,6 @@ import { silentTest } from '../../util/silent';
 
 jest.mock('@aws-sdk/client-lambda', () => {
   const original = jest.requireActual('@aws-sdk/client-lambda');
-
   return {
     ...original,
     waitUntilFunctionUpdatedV2: jest.fn(),
