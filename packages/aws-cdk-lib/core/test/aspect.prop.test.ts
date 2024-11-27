@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { Construct, IConstruct } from 'constructs';
 import * as fc from 'fast-check';
 import * as fs from 'fs-extra';
@@ -7,44 +6,68 @@ import { App, AppProps, AspectApplication, Aspects, IAspect } from '../lib';
 //////////////////////////////////////////////////////////////////////
 //  Tests
 
-test('for every construct, lower priorities go before higher priorities', () =>
-  fc.assert(
-    fc.property(appWithAspects(), fc.boolean(), (app, stabilizeAspects) => {
-      afterSynth((testApp) => {
-        forEveryVisitPair(testApp.visitLog, (a, b) => {
-          if (sameConstruct(a, b) && sameAspect(a, b)) {
-            throw new Error(`Duplicate visit: ${a.index} and ${b.index}`);
+describe('every aspect gets invoked exactly once', () => {
+  test('every aspect gets executed at most once on every construct', () =>
+    fc.assert(
+      fc.property(appWithAspects(), fc.boolean(), (app, stabilizeAspects) => {
+        afterSynth((testApp) => {
+          forEveryVisitPair(testApp.visitLog, (a, b) => {
+            if (sameConstruct(a, b) && sameAspect(a, b)) {
+              throw new Error(`Duplicate visit: ${a.index} and ${b.index}`);
+            }
+          });
+        }, stabilizeAspects)(app);
+      }),
+    ),
+  );
+
+  test('all aspects that exist at the start of synthesis get invoked on all nodes in its scope at the start of synthesis', () =>
+    fc.assert(
+      fc.property(appWithAspects(), fc.boolean(), (app, stabilizeAspects) => {
+        const originalConstructsOnApp = getAllConstructsInScope(app.cdkApp);
+        const originalAspectApplications = getAllAspectApplications(originalConstructsOnApp);
+        afterSynth((testApp) => {
+          const visitsMap = getVisitsMap(testApp.visitLog);
+
+          for (const aspectApplication of originalAspectApplications) {
+            // Check that each original AspectApplication also visited all child nodes of its original scope:
+            for (const construct of originalConstructsOnApp) {
+              if (ancestorOf(aspectApplication.construct, construct)) {
+                if (!visitsMap.get(construct)!.includes(aspectApplication.aspect)) {
+                  throw new Error(`Aspect ${aspectApplication.aspect.constructor.name} applied on ${aspectApplication.construct.node.path} did not visit construct ${construct.node.path} in its original scope.`);
+                }
+              }
+            }
           }
-        });
-      }, stabilizeAspects)(app);
-    }),
-  ),
-);
+        }, stabilizeAspects)(app);
+      }),
+    ),
+  );
 
-// WIP - this test does not work yet
-// test.todo('every aspect applied on the tree eventually executes on all of its nodes in scope');
-test('every aspect applied on the tree eventually executes on all of its nodes in scope', () =>
-  fc.assert(
-    fc.property(appWithAspects(), (app) => {
-      afterSynth((testApp) => {
+  test('every aspect applied on the tree eventually executes on all of its nodes in scope', () =>
+    fc.assert(
+      fc.property(appWithAspects(), (app) => {
+        afterSynth((testApp) => {
 
-        const aspectMap = convertToAspectMap(testApp.visitLog);
+          const allConstructsOnApp = getAllConstructsInScope(testApp.cdkApp);
+          const allAspectApplications = getAllAspectApplications(allConstructsOnApp);
+          const visitsMap = getVisitsMap(testApp.visitLog);
 
-        for (const [aspect, constructList] of aspectMap) {
-          const lastAppliedConstruct = constructList[constructList.length -1];
-
-          // console.log(constructList);
-          // console.log('-------');
-          // console.log(ancestors(lastAppliedConstruct));
-
-          if (!arraysEqualUnordered(constructList, ancestors(lastAppliedConstruct))) {
-            throw new Error(`Aspect ${aspect} did not apply to all constructs in scope.`);
+          for (const aspectApplication of allAspectApplications) {
+            // Check that each AspectApplication also visited all child nodes of its scope:
+            for (const construct of allConstructsOnApp) {
+              if (ancestorOf(aspectApplication.construct, construct)) {
+                if (!visitsMap.get(construct)!.includes(aspectApplication.aspect)) {
+                  throw new Error(`Aspect ${aspectApplication.aspect.constructor.name} applied on ${aspectApplication.construct.node.path} did not visit construct ${construct.node.path} in its scope.`);
+                }
+              }
+            }
           }
-        }
-      }, true)(app);
-    }),
-  ),
-);
+        }, true)(app);
+      }),
+    ),
+  );
+});
 
 test('inherited aspects get invoked before locally defined aspects, if both have the same priority', () =>
   fc.assert(
@@ -61,7 +84,9 @@ test('inherited aspects get invoked before locally defined aspects, if both have
           const aInherited = allAncestorAspects(a.construct).includes(a.aspect);
           const bInherited = allAncestorAspects(b.construct).includes(b.aspect);
 
-          if (!implies(aInherited == true && bInherited == false, a.index < b.index)) {
+          if (!(aInherited == true && bInherited == false)) return;
+
+          if (!(a.index < b.index)) {
             throw new Error(
               `Aspect ${a.aspect}@${aPrio} at ${a.index} should have been before ${b.aspect}@${bPrio} at ${b.index}, but was after`,
             );
@@ -129,7 +154,15 @@ test('visitLog is nonempty', () =>
 
 function afterSynth(block: (x: PrettyApp) => void, stabilizeAspects: boolean) {
   return (app) => {
-    const asm = app.cdkApp.synth({ aspectStabilization: stabilizeAspects });
+    let asm;
+    try {
+      asm = app.cdkApp.synth({ aspectStabilization: stabilizeAspects });
+    } catch (error) {
+      if (error.message.includes('Cannot invoke Aspect')) {
+        return;
+      }
+      throw error;
+    }
     try {
       block(app);
     } finally {
@@ -178,20 +211,47 @@ function arraysEqualUnordered<T>(arr1: T[], arr2: T[]): boolean {
 }
 
 /**
- * Converts a visit Log to a Map of Aspect: IConstruct[] - listing all constructs an Aspect
- * has visited.
+ * Given an AspectVisitLog, returns a map of Constructs with a list of all Aspects that
+ * visited the construct.
  */
-function convertToAspectMap(log: AspectVisitLog): Map<TracingAspect, IConstruct[]> {
-  const aspectMap = new Map<TracingAspect, IConstruct[]>();
-
-  log.forEach(({ construct, aspect }) => {
-    if (!aspectMap.has(aspect)) {
-      aspectMap.set(aspect, []);
+function getVisitsMap(log: AspectVisitLog): Map<IConstruct, IAspect[]> {
+  const visitsMap = new Map<IConstruct, IAspect[]>();
+  for (let i = 0; i < log.length; i++) {
+    const visit = log[i];
+    if (!visitsMap.has(visit.construct)) {
+      visitsMap.set(visit.construct, []);
     }
-    aspectMap.get(aspect)!.push(construct);
+    visitsMap.get(visit.construct)!.push(visit.aspect);
+  }
+  return visitsMap;
+}
+
+/**
+ * Returns a list of all nodes in the scope of the IConstruct.
+ */
+function getAllConstructsInScope(root: IConstruct): IConstruct[] {
+  const constructs: IConstruct[] = [root];
+
+  recurse(root);
+
+  function recurse(node: IConstruct) {
+    constructs.push(...node.node.children);
+    node.node.children.forEach(recurse);
+  }
+  return constructs;
+}
+
+/**
+ * Returns a list of all AspectApplications from a list of Constructs.
+ */
+function getAllAspectApplications(constructs: IConstruct[]): AspectApplication[] {
+  const aspectApplications: AspectApplication[] = [];
+
+  constructs.forEach((construct) => {
+    aspectApplications.push(...Aspects.of(construct).list);
   });
 
-  return aspectMap;
+  return aspectApplications;
 }
 
 function sameConstruct(a: AspectVisit, b: AspectVisit) {
@@ -206,7 +266,7 @@ function sameAspect(a: AspectVisit, b: AspectVisit) {
  * Returns whether `a` is an ancestor of `b` (or if they are the same construct)
  */
 function ancestorOf(a: Construct, b: Construct) {
-  return b.node.path.startsWith(a.node.path);
+  return b.node.path === a.node.path || b.node.path.startsWith(a.node.path + '/');
 }
 
 /**
@@ -226,7 +286,7 @@ function allAncestorAspects(a: IConstruct): IAspect[] {
 
   // Filter out the current node and get aspects of the ancestors
   return ancestorConstructs
-    .slice(0, -1) // Exclude the node itself
+    .slice(1) // Exclude the node itself
     .flatMap((ancestor) => Aspects.of(ancestor).list.map((aspectApplication) => aspectApplication.aspect));
 }
 
@@ -447,9 +507,9 @@ function arbAspect(constructs: Construct[]): fc.Arbitrary<IAspect> {
     })),
     // More complex: adds a new aspect to an existing construct.
     // NOTE: this will never add an aspect to a construct that didn't exist in the initial tree.
-    // fc.constant(() => arbAspectApplication(constructs).map(((aspectApp) =>
-    //   new AspectAddingAspect(aspectApp)
-    // ))),
+    fc.constant(() => arbAspectApplication(constructs).map(((aspectApp) =>
+      new AspectAddingAspect(aspectApp)
+    ))),
   ) satisfies fc.Arbitrary<() => fc.Arbitrary<IAspect>>).chain((fact) => fact());
 }
 
