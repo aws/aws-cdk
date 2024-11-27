@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.171.1](https://github.com/aws/aws-cdk/compare/v2.171.0...v2.171.1) (2024-11-27)
+
+
+### Bug Fixes
+
+* **cli:** lambda hotswap fails if `lambda:GetFunctionConfiguration` action is not allowed  ([#32301](https://github.com/aws/aws-cdk/issues/32301)) ([a073e93](https://github.com/aws/aws-cdk/commit/a073e9302dbd4213275e99c86476ab8152af7caf)), closes [/github.com/aws/aws-sdk-js-v3/blob/main/clients/client-lambda/src/waiters/waitForFunctionUpdatedV2.ts#L10](https://github.com/aws//github.com/aws/aws-sdk-js-v3/blob/main/clients/client-lambda/src/waiters/waitForFunctionUpdatedV2.ts/issues/L10) [/github.com/aws/aws-sdk-js-v3/blob/main/clients/client-lambda/src/waiters/waitForFunctionUpdated.ts#L13](https://github.com/aws//github.com/aws/aws-sdk-js-v3/blob/main/clients/client-lambda/src/waiters/waitForFunctionUpdated.ts/issues/L13)
+
 ## [2.171.0](https://github.com/aws/aws-cdk/compare/v2.170.0...v2.171.0) (2024-11-25)
 
 
