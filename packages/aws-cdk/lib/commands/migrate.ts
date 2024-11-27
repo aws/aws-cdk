@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import * as fs from 'fs';
 import * as path from 'path';
+import { Mode } from '@aws-cdk/cli-plugin-contract';
 import { Environment, UNKNOWN_ACCOUNT, UNKNOWN_REGION } from '@aws-cdk/cx-api';
 import type {
   DescribeGeneratedTemplateCommandOutput,
@@ -20,7 +21,6 @@ import * as chalk from 'chalk';
 import { cliInit } from '../../lib/init';
 import { print } from '../../lib/logging';
 import type { ICloudFormationClient, SdkProvider } from '../api/aws-auth';
-import { Mode } from '../api/plugin';
 import { CloudFormationStack } from '../api/util/cloudformation';
 import { zipDirectory } from '../util/archive';
 const camelCase = require('camelcase');

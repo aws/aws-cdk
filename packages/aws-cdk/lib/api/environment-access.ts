@@ -1,9 +1,9 @@
+import { Mode } from '@aws-cdk/cli-plugin-contract';
 import * as cxapi from '@aws-cdk/cx-api';
 import { SDK } from './aws-auth';
 import { warning } from '../logging';
 import { CredentialsOptions, SdkForEnvironment, SdkProvider } from './aws-auth/sdk-provider';
 import { EnvironmentResources, EnvironmentResourcesRegistry } from './environment-resources';
-import { Mode } from './plugin';
 import { replaceEnvPlaceholders, StringWithoutPlaceholders } from './util/placeholders';
 
 /**
