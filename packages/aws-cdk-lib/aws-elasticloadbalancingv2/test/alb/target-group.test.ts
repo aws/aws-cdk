@@ -147,6 +147,23 @@ describe('tests', () => {
     });
   });
 
+  test.each([
+    elbv2.TargetGroupIpAddressType.IPV4,
+    elbv2.TargetGroupIpAddressType.IPV6,
+  ])('configure IP address type %s', (ipAddressType) => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    new elbv2.ApplicationTargetGroup(stack, 'Group', {
+      vpc,
+      ipAddressType,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      IpAddressType: ipAddressType,
+    });
+  });
+
   test('Load balancer duration cookie stickiness', () => {
     // GIVEN
     const app = new cdk.App();
