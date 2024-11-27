@@ -246,7 +246,7 @@ import {
   UpdateFunctionConfigurationCommand,
   type UpdateFunctionConfigurationCommandInput,
   type UpdateFunctionConfigurationCommandOutput,
-  waitUntilFunctionUpdated,
+  waitUntilFunctionUpdatedV2,
 } from '@aws-sdk/client-lambda';
 import {
   GetHostedZoneCommand,
@@ -841,7 +841,7 @@ export class SDK {
         delaySeconds: number,
         input: UpdateFunctionConfigurationCommandInput,
       ): Promise<WaiterResult> => {
-        return waitUntilFunctionUpdated(
+        return waitUntilFunctionUpdatedV2(
           {
             client,
             maxDelay: delaySeconds,
