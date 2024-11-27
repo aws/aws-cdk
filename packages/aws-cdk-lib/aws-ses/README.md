@@ -180,7 +180,7 @@ new ses.ConfigurationSet(this, 'ConfigurationSet', {
 You can also override account level settings with configuration set-level suppression enabled. Email sent with this configuration set will only use the suppression conditions you enabled for it (bounces, complaints, or bounces and complaints) - regardless of what your account-level suppression list settings are, it will override them.
 
 ``` ts
-// Only bouncs will be suppressed.
+// Only bounces will be suppressed.
 new ses.ConfigurationSet(this, 'ConfigurationSet', {
   suppressionReasons: ses.SuppressionReasons.BOUNCES_ONLY,
 });
