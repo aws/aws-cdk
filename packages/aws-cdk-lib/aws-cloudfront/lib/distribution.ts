@@ -336,10 +336,14 @@ export class Distribution extends Resource implements IDistribution {
       });
     }
 
+    if (props.webAclId) {
+      this.validateWebAclId(props.webAclId);
+      this.webAclId = props.webAclId;
+    }
+
     this.certificate = props.certificate;
     this.errorResponses = props.errorResponses ?? [];
     this.publishAdditionalMetrics = props.publishAdditionalMetrics;
-    this.webAclId = props.webAclId;
 
     // Comments have an undocumented limit of 128 characters
     const trimmedComment =
@@ -614,13 +618,17 @@ export class Distribution extends Resource implements IDistribution {
     if (this.webAclId) {
       throw new Error('A WebACL has already been attached to this distribution');
     }
+    this.validateWebAclId(webAclId);
+    this.webAclId = webAclId;
+  }
+
+  private validateWebAclId(webAclId: string) {
     if (webAclId.startsWith('arn:')) {
       const webAclRegion = Stack.of(this).splitArn(webAclId, ArnFormat.SLASH_RESOURCE_NAME).region;
       if (!Token.isUnresolved(webAclRegion) && webAclRegion !== 'us-east-1') {
         throw new Error(`WebACL for CloudFront distributions must be created in the us-east-1 region; received ${webAclRegion}`);
       }
     }
-    this.webAclId = webAclId;
   }
 
   private addOrigin(origin: IOrigin, isFailoverOrigin: boolean = false): string {
