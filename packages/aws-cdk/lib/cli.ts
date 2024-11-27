@@ -22,7 +22,7 @@ import { realHandler as docs } from '../lib/commands/docs';
 import { realHandler as doctor } from '../lib/commands/doctor';
 import { MIGRATE_SUPPORTED_LANGUAGES, getMigrateScanType } from '../lib/commands/migrate';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
-import { data, debug, error, print, setLogLevel, setCI } from '../lib/logging';
+import { data, debug, error, print, setCI, setLogLevelByValue } from '../lib/logging';
 import { Notices } from '../lib/notices';
 import { Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
@@ -49,7 +49,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
   const argv = await parseCommandLineArguments(args, makeBrowserDefault(), await availableInitLanguages(), MIGRATE_SUPPORTED_LANGUAGES as string[], version.DISPLAY_VERSION, yargsNegativeAlias);
 
   if (argv.verbose) {
-    setLogLevel(argv.verbose);
+    setLogLevelByValue(argv.verbose+2);
   }
 
   // Debug should always imply tracing

@@ -1,4 +1,4 @@
-import { LogLevel, log, setLogLevel, setCI, data, print, error, warning, success, debug, trace, prefix, withCorkedLogging } from '../lib/logging';
+import { LogLevel, log, setLogLevel, setCI, data, print, error, warning, success, debug, trace, prefix, withCorkedLogging, setLogLevelByValue } from '../lib/logging';
 
 describe('logging', () => {
   // Mock streams to capture output
@@ -136,9 +136,9 @@ describe('logging', () => {
     });
   });
 
-  describe('backward compatibility', () => {
-    test('handles old numeric log levels', () => {
-      setLogLevel(0); // Old DEFAULT level
+  describe('set log level numerically', () => {
+    test('handles numeric log levels', () => {
+      setLogLevelByValue(2);
       print('info message');
       debug('debug message');
 

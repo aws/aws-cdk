@@ -2,6 +2,9 @@ import { Writable } from 'stream';
 import * as util from 'util';
 import * as chalk from 'chalk';
 
+/**
+ * Available log levels in order of increasing verbosity.
+ */
 export enum LogLevel {
   ERROR = 'error',
   WARN = 'warn',
@@ -10,6 +13,9 @@ export enum LogLevel {
   TRACE = 'trace',
 }
 
+/**
+ * Configuration options for a log entry.
+ */
 export interface LogEntry {
   level: LogLevel;
   message: string;
@@ -36,6 +42,13 @@ const styleMap: Record<LogLevel, (str: string) => string> = {
 
 // Stream selection
 let CI = false;
+
+/**
+ * Determines which output stream to use based on log level and configuration.
+ * @param level - The log level to determine stream for
+ * @param forceStdout - Whether to force stdout regardless of level
+ * @returns The appropriate Writable stream
+ */
 const getStream = (level: LogLevel, forceStdout?: boolean): Writable => {
   // Special case - data() calls should always go to stdout
   if (forceStdout) {
@@ -45,7 +58,6 @@ const getStream = (level: LogLevel, forceStdout?: boolean): Writable => {
   return CI ? stdout : stderr;
 };
 
-// Level control
 const levelPriority: Record<LogLevel, number> = {
   [LogLevel.ERROR]: 0,
   [LogLevel.WARN]: 1,
@@ -56,30 +68,53 @@ const levelPriority: Record<LogLevel, number> = {
 
 let currentLogLevel: LogLevel = LogLevel.INFO;
 
-const OLD_TO_NEW_LEVEL: { [key: number]: LogLevel } = {
-  0: LogLevel.INFO,
-  1: LogLevel.DEBUG,
-  2: LogLevel.TRACE,
-};
+/**
+ * Sets the current log level. Messages with a lower priority level will be filtered out.
+ * @param level - The new log level to set
+ */
+export function setLogLevel(level: LogLevel) {
+  currentLogLevel = level;
+}
 
-export function setLogLevel(level: LogLevel | number) {
-  if (typeof level === 'number') {
-    // Handle old numeric levels
-    currentLogLevel = OLD_TO_NEW_LEVEL[level] || LogLevel.INFO;
-  } else {
-    currentLogLevel = level;
+/**
+ * Convenience Function which sets the log level based on a numeric value.
+ * @param verbosity - Numeric value (0-4) corresponding to log levels
+ */
+export function setLogLevelByValue(verbosity: number) {
+  switch (verbosity) {
+    case 0: setLogLevel(LogLevel.ERROR); break;
+    case 1: setLogLevel(LogLevel.WARN); break;
+    case 2: setLogLevel(LogLevel.INFO); break;
+    case 3: setLogLevel(LogLevel.DEBUG); break;
+    case 4: setLogLevel(LogLevel.TRACE); break;
   }
 }
 
+/**
+ * Sets whether the logger is running in CI mode.
+ * In CI mode, all non-error output goes to stdout instead of stderr.
+ * @param newCI - Whether CI mode should be enabled
+ */
 export function setCI(newCI: boolean) {
   CI = newCI;
 }
 
+/**
+ * Formats a date object into a timestamp string (HH:MM:SS).
+ * @param d - Date object to format
+ * @returns Formatted time string
+ */
 function formatTime(d: Date): string {
   const pad = (n: number): string => n.toString().padStart(2, '0');
   return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
 }
 
+/**
+ * Executes a block of code with corked logging. All log messages during execution
+ * are buffered and only written after the block completes.
+ * @param block - Async function to execute with corked logging
+ * @returns Promise that resolves with the block's return value
+ */
 export async function withCorkedLogging<T>(block: () => Promise<T>): Promise<T> {
   CORK_COUNTER++;
   try {
@@ -93,6 +128,12 @@ export async function withCorkedLogging<T>(block: () => Promise<T>): Promise<T> 
   }
 }
 
+/**
+ * Core logging function that handles all log output.
+ * @param entry - LogEntry object or log level
+ * @param fmt - Format string (when using with log level)
+ * @param args - Format arguments (when using with log level)
+ */
 export function log(entry: LogEntry): void;
 export function log(level: LogLevel, fmt: string, ...args: unknown[]): void;
 export function log(levelOrEntry: LogLevel | LogEntry, fmt?: string, ...args: unknown[]): void {
@@ -136,7 +177,7 @@ export function log(levelOrEntry: LogLevel | LogEntry, fmt?: string, ...args: un
   stream.write(finalMessage + '\n');
 }
 
-// Convenience methods that match the original API
+// Convenience logging methods
 export const error = (fmt: string, ...args: unknown[]) => log(LogLevel.ERROR, fmt, ...args);
 export const warning = (fmt: string, ...args: unknown[]) => log(LogLevel.WARN, fmt, ...args);
 export const info = (fmt: string, ...args: unknown[]) => log(LogLevel.INFO, fmt, ...args);
@@ -144,12 +185,11 @@ export const print = (fmt: string, ...args: unknown[]) => log(LogLevel.INFO, fmt
 export const data = (fmt: string, ...args: unknown[]) => log({
   level: LogLevel.INFO,
   message: util.format(fmt, ...args),
-  forceStdout: true, // Force stdout for data() calls
+  forceStdout: true,
 });
 export const debug = (fmt: string, ...args: unknown[]) => log(LogLevel.DEBUG, fmt, ...args);
 export const trace = (fmt: string, ...args: unknown[]) => log(LogLevel.TRACE, fmt, ...args);
 
-// onvenience methods using custom styles
 export const success = (fmt: string, ...args: unknown[]) => log({
   level: LogLevel.INFO,
   message: util.format(fmt, ...args),
@@ -162,7 +202,12 @@ export const highlight = (fmt: string, ...args: unknown[]) => log({
   style: chalk.bold,
 });
 
-// Helper for creating prefixed loggers
+/**
+ * Creates a logging function that prepends a prefix to all messages.
+ * @param prefixString - String to prepend to all messages
+ * @param level - Log level to use (defaults to INFO)
+ * @returns Logging function that accepts format string and arguments
+ */
 export function prefix(prefixString: string, level: LogLevel = LogLevel.INFO): (fmt: string, ...args: unknown[]) => void {
   return (fmt: string, ...args: unknown[]) => log({
     level,
