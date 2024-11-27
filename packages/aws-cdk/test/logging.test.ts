@@ -1,4 +1,4 @@
-import { LogLevel, log, setLogLevel, setCI, data, print, error, warning, success, debug, trace, prefix, withCorkedLogging, setLogLevelByValue } from '../lib/logging';
+import { LogLevel, log, setLogLevel, setCI, data, print, error, warning, success, debug, trace, prefix, withCorkedLogging } from '../lib/logging';
 
 describe('logging', () => {
   // Mock streams to capture output
@@ -133,17 +133,6 @@ describe('logging', () => {
       expect(mockStderr).toHaveBeenCalledWith(expect.stringContaining('outer 1\n'));
       expect(mockStderr).toHaveBeenCalledWith(expect.stringContaining('inner\n'));
       expect(mockStderr).toHaveBeenCalledWith(expect.stringContaining('outer 2\n'));
-    });
-  });
-
-  describe('set log level numerically', () => {
-    test('handles numeric log levels', () => {
-      setLogLevelByValue(2);
-      print('info message');
-      debug('debug message');
-
-      expect(mockStderr).toHaveBeenCalledWith(expect.stringContaining('info message\n'));
-      expect(mockStderr).not.toHaveBeenCalledWith(expect.stringContaining('debug message\n'));
     });
   });
 

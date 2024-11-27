@@ -77,20 +77,6 @@ export function setLogLevel(level: LogLevel) {
 }
 
 /**
- * Convenience Function which sets the log level based on a numeric value.
- * @param verbosity - Numeric value (0-4) corresponding to log levels
- */
-export function setLogLevelByValue(verbosity: number) {
-  switch (verbosity) {
-    case 0: setLogLevel(LogLevel.ERROR); break;
-    case 1: setLogLevel(LogLevel.WARN); break;
-    case 2: setLogLevel(LogLevel.INFO); break;
-    case 3: setLogLevel(LogLevel.DEBUG); break;
-    case 4: setLogLevel(LogLevel.TRACE); break;
-  }
-}
-
-/**
  * Sets whether the logger is running in CI mode.
  * In CI mode, all non-error output goes to stdout instead of stderr.
  * @param newCI - Whether CI mode should be enabled
