@@ -1,18 +1,35 @@
-/* eslint-disable import/order */
+import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
 import { Writable } from 'stream';
 import { StringDecoder } from 'string_decoder';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
 import { instanceMockFrom, MockCloudExecutable } from './util';
 import { Deployments } from '../lib/api/deployments';
-import { CdkToolkit } from '../lib/cdk-toolkit';
-import * as cfn from '../lib/api/util/cloudformation';
 import { NestedStackTemplates } from '../lib/api/nested-stack-helpers';
-import * as fs from 'fs';
+import * as cfn from '../lib/api/util/cloudformation';
+import { CdkToolkit } from '../lib/cdk-toolkit';
 
 let cloudExecutable: MockCloudExecutable;
 let cloudFormation: jest.Mocked<Deployments>;
 let toolkit: CdkToolkit;
+let oldDir: string;
+let tmpDir: string;
+
+beforeAll(() => {
+  // The toolkit writes and checks for temporary files in the current directory,
+  // so run these tests in a tempdir so they don't interfere with each other
+  // and other tests.
+  oldDir = process.cwd();
+  tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'aws-cdk-test'));
+  process.chdir(tmpDir);
+});
+
+afterAll(() => {
+  process.chdir(oldDir);
+  fs.rmSync(tmpDir, { recursive: true, force: true });
+});
 
 describe('fixed template', () => {
   const templatePath = 'oldTemplate.json';
@@ -29,19 +46,21 @@ describe('fixed template', () => {
     };
 
     cloudExecutable = new MockCloudExecutable({
-      stacks: [{
-        stackName: 'A',
-        template: {
-          Resources: {
-            SomeResource: {
-              Type: 'AWS::SomeService::SomeResource',
-              Properties: {
-                Something: 'new-value',
+      stacks: [
+        {
+          stackName: 'A',
+          template: {
+            Resources: {
+              SomeResource: {
+                Type: 'AWS::SomeService::SomeResource',
+                Properties: {
+                  Something: 'new-value',
+                },
               },
             },
           },
         },
-      }],
+      ],
     });
 
     toolkit = new CdkToolkit({
@@ -72,7 +91,7 @@ describe('fixed template', () => {
     const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '');
     expect(exitCode).toBe(0);
     expect(plainTextOutput.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '')).toContain(`Resources
-[~] AWS::SomeService::SomeResource SomeResource 
+[~] AWS::SomeService::SomeResource SomeResource
  └─ [~] Something
      ├─ [-] old-value
      └─ [+] new-value
@@ -91,9 +110,9 @@ describe('imports', () => {
       'Resources': [],
     };
     fs.writeFileSync('migrate.json', JSON.stringify(outputToJson, null, 2));
-
     jest.spyOn(cfn, 'createDiffChangeSet').mockImplementationOnce(async () => {
       return {
+        $metadata: {},
         Changes: [
           {
             ResourceChange: {
@@ -117,22 +136,24 @@ describe('imports', () => {
       };
     });
     cloudExecutable = new MockCloudExecutable({
-      stacks: [{
-        stackName: 'A',
-        template: {
-          Resources: {
-            Queue: {
-              Type: 'AWS::SQS::Queue',
-            },
-            Queue2: {
-              Type: 'AWS::SQS::Queue',
-            },
-            Bucket: {
-              Type: 'AWS::S3::Bucket',
+      stacks: [
+        {
+          stackName: 'A',
+          template: {
+            Resources: {
+              Queue: {
+                Type: 'AWS::SQS::Queue',
+              },
+              Queue2: {
+                Type: 'AWS::SQS::Queue',
+              },
+              Bucket: {
+                Type: 'AWS::S3::Bucket',
+              },
             },
           },
         },
-      }],
+      ],
     });
 
     cloudFormation = instanceMockFrom(Deployments);
@@ -145,18 +166,23 @@ describe('imports', () => {
     });
 
     // Default implementations
-    cloudFormation.readCurrentTemplateWithNestedStacks.mockImplementation((_stackArtifact: CloudFormationStackArtifact) => {
-      return Promise.resolve({
-        deployedRootTemplate: {},
-        nestedStacks: {},
-      });
-    });
-    cloudFormation.deployStack.mockImplementation((options) => Promise.resolve({
-      noOp: true,
-      outputs: {},
-      stackArn: '',
-      stackArtifact: options.stack,
-    }));
+    cloudFormation.readCurrentTemplateWithNestedStacks.mockImplementation(
+      (_stackArtifact: CloudFormationStackArtifact) => {
+        return Promise.resolve({
+          deployedRootTemplate: {},
+          nestedStacks: {},
+        });
+      },
+    );
+    cloudFormation.deployStack.mockImplementation((options) =>
+      Promise.resolve({
+        type: 'did-deploy-stack',
+        noOp: true,
+        outputs: {},
+        stackArn: '',
+        stackArtifact: options.stack,
+      }),
+    );
   });
 
   afterEach(() => {
@@ -221,32 +247,34 @@ Resources
 describe('non-nested stacks', () => {
   beforeEach(() => {
     cloudExecutable = new MockCloudExecutable({
-      stacks: [{
-        stackName: 'A',
-        template: { resource: 'A' },
-      },
-      {
-        stackName: 'B',
-        depends: ['A'],
-        template: { resource: 'B' },
-      },
-      {
-        stackName: 'C',
-        depends: ['A'],
-        template: { resource: 'C' },
-        metadata: {
-          '/resource': [
-            {
-              type: cxschema.ArtifactMetadataEntryType.ERROR,
-              data: 'this is an error',
-            },
-          ],
+      stacks: [
+        {
+          stackName: 'A',
+          template: { resource: 'A' },
         },
-      },
-      {
-        stackName: 'D',
-        template: { resource: 'D' },
-      }],
+        {
+          stackName: 'B',
+          depends: ['A'],
+          template: { resource: 'B' },
+        },
+        {
+          stackName: 'C',
+          depends: ['A'],
+          template: { resource: 'C' },
+          metadata: {
+            '/resource': [
+              {
+                type: cxschema.ArtifactMetadataEntryType.ERROR,
+                data: 'this is an error',
+              },
+            ],
+          },
+        },
+        {
+          stackName: 'D',
+          template: { resource: 'D' },
+        },
+      ],
     });
 
     cloudFormation = instanceMockFrom(Deployments);
@@ -259,24 +287,29 @@ describe('non-nested stacks', () => {
     });
 
     // Default implementations
-    cloudFormation.readCurrentTemplateWithNestedStacks.mockImplementation((stackArtifact: CloudFormationStackArtifact) => {
-      if (stackArtifact.stackName === 'D') {
+    cloudFormation.readCurrentTemplateWithNestedStacks.mockImplementation(
+      (stackArtifact: CloudFormationStackArtifact) => {
+        if (stackArtifact.stackName === 'D') {
+          return Promise.resolve({
+            deployedRootTemplate: { resource: 'D' },
+            nestedStacks: {},
+          });
+        }
         return Promise.resolve({
-          deployedRootTemplate: { resource: 'D' },
+          deployedRootTemplate: {},
           nestedStacks: {},
         });
-      }
-      return Promise.resolve({
-        deployedRootTemplate: {},
-        nestedStacks: {},
-      });
-    });
-    cloudFormation.deployStack.mockImplementation((options) => Promise.resolve({
-      noOp: true,
-      outputs: {},
-      stackArn: '',
-      stackArtifact: options.stack,
-    }));
+      },
+    );
+    cloudFormation.deployStack.mockImplementation((options) =>
+      Promise.resolve({
+        type: 'did-deploy-stack',
+        noOp: true,
+        outputs: {},
+        stackArn: '',
+        stackArtifact: options.stack,
+      }),
+    );
   });
 
   test('diff can diff multiple stacks', async () => {
@@ -301,14 +334,16 @@ describe('non-nested stacks', () => {
   test('diff number of stack diffs, not resource diffs', async () => {
     // GIVEN
     cloudExecutable = new MockCloudExecutable({
-      stacks: [{
-        stackName: 'A',
-        template: { resourceA: 'A', resourceB: 'B' },
-      },
-      {
-        stackName: 'B',
-        template: { resourceC: 'C' },
-      }],
+      stacks: [
+        {
+          stackName: 'A',
+          template: { resourceA: 'A', resourceB: 'B' },
+        },
+        {
+          stackName: 'B',
+          template: { resourceC: 'C' },
+        },
+      ],
     });
 
     toolkit = new CdkToolkit({
@@ -355,10 +390,12 @@ describe('non-nested stacks', () => {
     const buffer = new StringWritable();
 
     // WHEN
-    await expect(() => toolkit.diff({
-      stackNames: ['X', 'Y', 'Z'],
-      stream: buffer,
-    })).rejects.toThrow('No stacks match the name(s) X,Y,Z');
+    await expect(() =>
+      toolkit.diff({
+        stackNames: ['X', 'Y', 'Z'],
+        stream: buffer,
+      }),
+    ).rejects.toThrow('No stacks match the name(s) X,Y,Z');
   });
 
   test('exits with 1 with diff in first stack, but not in second stack and fail set to true', async () => {
@@ -381,10 +418,12 @@ describe('non-nested stacks', () => {
     const buffer = new StringWritable();
 
     // WHEN
-    await expect(() => toolkit.diff({
-      stackNames: ['C'],
-      stream: buffer,
-    })).rejects.toThrow(/Found errors/);
+    await expect(() =>
+      toolkit.diff({
+        stackNames: ['C'],
+        stream: buffer,
+      }),
+    ).rejects.toThrow(/Found errors/);
   });
 
   test('when quiet mode is enabled, stacks with no diffs should not print stack name & no differences to stdout', async () => {
@@ -430,36 +469,37 @@ describe('non-nested stacks', () => {
 
 describe('stack exists checks', () => {
   beforeEach(() => {
-
     jest.resetAllMocks();
 
     cloudExecutable = new MockCloudExecutable({
-      stacks: [{
-        stackName: 'A',
-        template: { resource: 'A' },
-      },
-      {
-        stackName: 'B',
-        depends: ['A'],
-        template: { resource: 'B' },
-      },
-      {
-        stackName: 'C',
-        depends: ['A'],
-        template: { resource: 'C' },
-        metadata: {
-          '/resource': [
-            {
-              type: cxschema.ArtifactMetadataEntryType.ERROR,
-              data: 'this is an error',
-            },
-          ],
+      stacks: [
+        {
+          stackName: 'A',
+          template: { resource: 'A' },
         },
-      },
-      {
-        stackName: 'D',
-        template: { resource: 'D' },
-      }],
+        {
+          stackName: 'B',
+          depends: ['A'],
+          template: { resource: 'B' },
+        },
+        {
+          stackName: 'C',
+          depends: ['A'],
+          template: { resource: 'C' },
+          metadata: {
+            '/resource': [
+              {
+                type: cxschema.ArtifactMetadataEntryType.ERROR,
+                data: 'this is an error',
+              },
+            ],
+          },
+        },
+        {
+          stackName: 'D',
+          template: { resource: 'D' },
+        },
+      ],
     });
 
     cloudFormation = instanceMockFrom(Deployments);
@@ -472,37 +512,29 @@ describe('stack exists checks', () => {
     });
 
     // Default implementations
-    cloudFormation.readCurrentTemplateWithNestedStacks.mockImplementation((stackArtifact: CloudFormationStackArtifact) => {
-      if (stackArtifact.stackName === 'D') {
+    cloudFormation.readCurrentTemplateWithNestedStacks.mockImplementation(
+      (stackArtifact: CloudFormationStackArtifact) => {
+        if (stackArtifact.stackName === 'D') {
+          return Promise.resolve({
+            deployedRootTemplate: { resource: 'D' },
+            nestedStacks: {},
+          });
+        }
         return Promise.resolve({
-          deployedRootTemplate: { resource: 'D' },
+          deployedRootTemplate: {},
           nestedStacks: {},
         });
-      }
-      return Promise.resolve({
-        deployedRootTemplate: {},
-        nestedStacks: {},
-      });
-    });
-    cloudFormation.deployStack.mockImplementation((options) => Promise.resolve({
-      noOp: true,
-      outputs: {},
-      stackArn: '',
-      stackArtifact: options.stack,
-    }));
-
-    jest.spyOn(cfn, 'createDiffChangeSet').mockImplementationOnce(async () => {
-      return {
-        Changes: [
-          {
-            ResourceChange: {
-              Action: 'Add',
-              LogicalResourceId: 'Object',
-            },
-          },
-        ],
-      };
-    });
+      },
+    );
+    cloudFormation.deployStack.mockImplementation((options) =>
+      Promise.resolve({
+        type: 'did-deploy-stack',
+        noOp: true,
+        outputs: {},
+        stackArn: '',
+        stackArtifact: options.stack,
+      }),
+    );
   });
 
   test('diff does not check for stack existence when --no-change-set is passed', async () => {
@@ -591,241 +623,243 @@ describe('nested stacks', () => {
       sdkProvider: cloudExecutable.sdkProvider,
     });
 
-    cloudFormation.readCurrentTemplateWithNestedStacks.mockImplementation((stackArtifact: CloudFormationStackArtifact) => {
-      if (stackArtifact.stackName === 'Parent') {
-        stackArtifact.template.Resources = {
-          AdditionChild: {
-            Type: 'AWS::CloudFormation::Stack',
-            Properties: {
-              TemplateURL: 'addition-child-url-old',
-            },
-          },
-          DeletionChild: {
-            Type: 'AWS::CloudFormation::Stack',
-            Properties: {
-              TemplateURL: 'deletion-child-url-old',
-            },
-          },
-          ChangedChild: {
-            Type: 'AWS::CloudFormation::Stack',
-            Properties: {
-              TemplateURL: 'changed-child-url-old',
-            },
-          },
-          UnchangedChild: {
-            Type: 'AWS::CloudFormation::Stack',
-            Properties: {
-              TemplateURL: 'changed-child-url-constant',
-            },
-          },
-        };
-        return Promise.resolve({
-          deployedRootTemplate: {
-            Resources: {
-              AdditionChild: {
-                Type: 'AWS::CloudFormation::Stack',
-                Properties: {
-                  TemplateURL: 'addition-child-url-new',
-                },
-              },
-              DeletionChild: {
-                Type: 'AWS::CloudFormation::Stack',
-                Properties: {
-                  TemplateURL: 'deletion-child-url-new',
-                },
-              },
-              ChangedChild: {
-                Type: 'AWS::CloudFormation::Stack',
-                Properties: {
-                  TemplateURL: 'changed-child-url-new',
-                },
-              },
-              UnchangedChild: {
-                Type: 'AWS::CloudFormation::Stack',
-                Properties: {
-                  TemplateURL: 'changed-child-url-constant',
-                },
-              },
-            },
-          },
-          nestedStacks: {
+    cloudFormation.readCurrentTemplateWithNestedStacks.mockImplementation(
+      (stackArtifact: CloudFormationStackArtifact) => {
+        if (stackArtifact.stackName === 'Parent') {
+          stackArtifact.template.Resources = {
             AdditionChild: {
-              deployedTemplate: {
-                Resources: {
-                  SomeResource: {
-                    Type: 'AWS::Something',
-                  },
-                },
+              Type: 'AWS::CloudFormation::Stack',
+              Properties: {
+                TemplateURL: 'addition-child-url-old',
               },
-              generatedTemplate: {
-                Resources: {
-                  SomeResource: {
-                    Type: 'AWS::Something',
-                    Properties: {
-                      Prop: 'added-value',
-                    },
-                  },
-                },
-              },
-              nestedStackTemplates: {},
-              physicalName: 'AdditionChild',
             },
             DeletionChild: {
-              deployedTemplate: {
-                Resources: {
-                  SomeResource: {
-                    Type: 'AWS::Something',
-                    Properties: {
-                      Prop: 'value-to-be-removed',
-                    },
-                  },
-                },
+              Type: 'AWS::CloudFormation::Stack',
+              Properties: {
+                TemplateURL: 'deletion-child-url-old',
               },
-              generatedTemplate: {
-                Resources: {
-                  SomeResource: {
-                    Type: 'AWS::Something',
-                  },
-                },
-              },
-              nestedStackTemplates: {},
-              physicalName: 'DeletionChild',
             },
             ChangedChild: {
-              deployedTemplate: {
-                Resources: {
-                  SomeResource: {
-                    Type: 'AWS::Something',
-                    Properties: {
-                      Prop: 'old-value',
-                    },
-                  },
-                },
+              Type: 'AWS::CloudFormation::Stack',
+              Properties: {
+                TemplateURL: 'changed-child-url-old',
               },
-              generatedTemplate: {
-                Resources: {
-                  SomeResource: {
-                    Type: 'AWS::Something',
-                    Properties: {
-                      Prop: 'new-value',
-                    },
-                  },
-                },
-              },
-              nestedStackTemplates: {},
-              physicalName: 'ChangedChild',
             },
-            newChild: {
-              deployedTemplate: {},
-              generatedTemplate: {
-                Resources: {
-                  SomeResource: {
-                    Type: 'AWS::Something',
-                    Properties: {
-                      Prop: 'new-value',
-                    },
+            UnchangedChild: {
+              Type: 'AWS::CloudFormation::Stack',
+              Properties: {
+                TemplateURL: 'changed-child-url-constant',
+              },
+            },
+          };
+          return Promise.resolve({
+            deployedRootTemplate: {
+              Resources: {
+                AdditionChild: {
+                  Type: 'AWS::CloudFormation::Stack',
+                  Properties: {
+                    TemplateURL: 'addition-child-url-new',
+                  },
+                },
+                DeletionChild: {
+                  Type: 'AWS::CloudFormation::Stack',
+                  Properties: {
+                    TemplateURL: 'deletion-child-url-new',
+                  },
+                },
+                ChangedChild: {
+                  Type: 'AWS::CloudFormation::Stack',
+                  Properties: {
+                    TemplateURL: 'changed-child-url-new',
+                  },
+                },
+                UnchangedChild: {
+                  Type: 'AWS::CloudFormation::Stack',
+                  Properties: {
+                    TemplateURL: 'changed-child-url-constant',
                   },
                 },
               },
-              nestedStackTemplates: {
-                newGrandChild: {
-                  deployedTemplate: {},
-                  generatedTemplate: {
-                    Resources: {
-                      SomeResource: {
-                        Type: 'AWS::Something',
-                        Properties: {
-                          Prop: 'new-value',
-                        },
+            },
+            nestedStacks: {
+              AdditionChild: {
+                deployedTemplate: {
+                  Resources: {
+                    SomeResource: {
+                      Type: 'AWS::Something',
+                    },
+                  },
+                },
+                generatedTemplate: {
+                  Resources: {
+                    SomeResource: {
+                      Type: 'AWS::Something',
+                      Properties: {
+                        Prop: 'added-value',
                       },
                     },
                   },
-                  physicalName: undefined,
-                  nestedStackTemplates: {},
-                } as NestedStackTemplates,
+                },
+                nestedStackTemplates: {},
+                physicalName: 'AdditionChild',
               },
-              physicalName: undefined,
-            },
-            UnChangedChild: {
-              deployedTemplate: {
-                Resources: {
-                  SomeResource: {
-                    Type: 'AWS::Something',
-                    Properties: {
-                      Prop: 'unchanged',
+              DeletionChild: {
+                deployedTemplate: {
+                  Resources: {
+                    SomeResource: {
+                      Type: 'AWS::Something',
+                      Properties: {
+                        Prop: 'value-to-be-removed',
+                      },
                     },
                   },
                 },
-              },
-              generatedTemplate: {
-                Resources: {
-                  SomeResource: {
-                    Type: 'AWS::Something',
-                    Properties: {
-                      Prop: 'unchanged',
+                generatedTemplate: {
+                  Resources: {
+                    SomeResource: {
+                      Type: 'AWS::Something',
                     },
                   },
                 },
+                nestedStackTemplates: {},
+                physicalName: 'DeletionChild',
               },
-              nestedStackTemplates: {},
-              physicalName: 'UnChangedChild',
-            },
-          },
-        });
-      }
-      if (stackArtifact.stackName === 'UnchangedParent') {
-        stackArtifact.template.Resources = {
-          UnchangedChild: {
-            Type: 'AWS::CloudFormation::Stack',
-            Properties: {
-              TemplateURL: 'child-url',
-            },
-          },
-        };
-        return Promise.resolve({
-          deployedRootTemplate: {
-            Resources: {
-              UnchangedChild: {
-                Type: 'AWS::CloudFormation::Stack',
-                Properties: {
-                  TemplateURL: 'child-url',
+              ChangedChild: {
+                deployedTemplate: {
+                  Resources: {
+                    SomeResource: {
+                      Type: 'AWS::Something',
+                      Properties: {
+                        Prop: 'old-value',
+                      },
+                    },
+                  },
                 },
+                generatedTemplate: {
+                  Resources: {
+                    SomeResource: {
+                      Type: 'AWS::Something',
+                      Properties: {
+                        Prop: 'new-value',
+                      },
+                    },
+                  },
+                },
+                nestedStackTemplates: {},
+                physicalName: 'ChangedChild',
+              },
+              newChild: {
+                deployedTemplate: {},
+                generatedTemplate: {
+                  Resources: {
+                    SomeResource: {
+                      Type: 'AWS::Something',
+                      Properties: {
+                        Prop: 'new-value',
+                      },
+                    },
+                  },
+                },
+                nestedStackTemplates: {
+                  newGrandChild: {
+                    deployedTemplate: {},
+                    generatedTemplate: {
+                      Resources: {
+                        SomeResource: {
+                          Type: 'AWS::Something',
+                          Properties: {
+                            Prop: 'new-value',
+                          },
+                        },
+                      },
+                    },
+                    physicalName: undefined,
+                    nestedStackTemplates: {},
+                  } as NestedStackTemplates,
+                },
+                physicalName: undefined,
+              },
+              UnChangedChild: {
+                deployedTemplate: {
+                  Resources: {
+                    SomeResource: {
+                      Type: 'AWS::Something',
+                      Properties: {
+                        Prop: 'unchanged',
+                      },
+                    },
+                  },
+                },
+                generatedTemplate: {
+                  Resources: {
+                    SomeResource: {
+                      Type: 'AWS::Something',
+                      Properties: {
+                        Prop: 'unchanged',
+                      },
+                    },
+                  },
+                },
+                nestedStackTemplates: {},
+                physicalName: 'UnChangedChild',
               },
             },
-          },
-          nestedStacks: {
+          });
+        }
+        if (stackArtifact.stackName === 'UnchangedParent') {
+          stackArtifact.template.Resources = {
             UnchangedChild: {
-              deployedTemplate: {
-                Resources: {
-                  SomeResource: {
-                    Type: 'AWS::Something',
-                    Properties: {
-                      Prop: 'unchanged',
-                    },
-                  },
-                },
+              Type: 'AWS::CloudFormation::Stack',
+              Properties: {
+                TemplateURL: 'child-url',
               },
-              generatedTemplate: {
-                Resources: {
-                  SomeResource: {
-                    Type: 'AWS::Something',
-                    Properties: {
-                      Prop: 'unchanged',
-                    },
-                  },
-                },
-              },
-              nestedStackTemplates: {},
-              physicalName: 'UnchangedChild',
             },
-          },
+          };
+          return Promise.resolve({
+            deployedRootTemplate: {
+              Resources: {
+                UnchangedChild: {
+                  Type: 'AWS::CloudFormation::Stack',
+                  Properties: {
+                    TemplateURL: 'child-url',
+                  },
+                },
+              },
+            },
+            nestedStacks: {
+              UnchangedChild: {
+                deployedTemplate: {
+                  Resources: {
+                    SomeResource: {
+                      Type: 'AWS::Something',
+                      Properties: {
+                        Prop: 'unchanged',
+                      },
+                    },
+                  },
+                },
+                generatedTemplate: {
+                  Resources: {
+                    SomeResource: {
+                      Type: 'AWS::Something',
+                      Properties: {
+                        Prop: 'unchanged',
+                      },
+                    },
+                  },
+                },
+                nestedStackTemplates: {},
+                physicalName: 'UnchangedChild',
+              },
+            },
+          });
+        }
+        return Promise.resolve({
+          deployedRootTemplate: {},
+          nestedStacks: {},
         });
-      }
-      return Promise.resolve({
-        deployedRootTemplate: {},
-        nestedStacks: {},
-      });
-    });
+      },
+    );
   });
 
   test('diff can diff nested stacks and display the nested stack logical ID if has not been deployed or otherwise has no physical name', async () => {
@@ -840,8 +874,7 @@ describe('nested stacks', () => {
     });
 
     // THEN
-    const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '')
-      .replace(/[ \t]+$/mg, '');
+    const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '').replace(/[ \t]+$/gm, '');
     expect(plainTextOutput.trim()).toEqual(`Stack Parent
 Resources
 [~] AWS::CloudFormation::Stack AdditionChild
@@ -904,8 +937,7 @@ Stack UnChangedChild
     });
 
     // THEN
-    const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '')
-      .replace(/[ \t]+$/mg, '');
+    const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '').replace(/[ \t]+$/gm, '');
     expect(plainTextOutput.trim()).toEqual(`Stack Parent
 Resources
 [~] AWS::CloudFormation::Stack AdditionChild
@@ -969,7 +1001,7 @@ Stack UnChangedChild
     });
 
     // THEN
-    const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '').replace(/[ \t]+$/mg, '');
+    const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '').replace(/[ \t]+$/gm, '');
     expect(plainTextOutput).not.toContain('Stack UnchangedParent');
     expect(plainTextOutput).not.toContain('There were no differences');
     expect(buffer.data.trim()).toContain('✨  Number of stacks with differences: 0');
@@ -989,7 +1021,7 @@ Stack UnChangedChild
     });
 
     // THEN
-    const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '').replace(/[ \t]+$/mg, '');
+    const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '').replace(/[ \t]+$/gm, '');
     expect(plainTextOutput).toContain(`Stack Parent
 Resources
 [~] AWS::CloudFormation::Stack AdditionChild
@@ -1044,28 +1076,38 @@ describe('--strict', () => {
   beforeEach(() => {
     const oldTemplate = {};
 
+    cloudFormation = instanceMockFrom(Deployments);
+    cloudFormation.readCurrentTemplateWithNestedStacks.mockImplementation((_stackArtifact: CloudFormationStackArtifact) => {
+      return Promise.resolve({
+        deployedRootTemplate: {},
+        nestedStacks: {},
+      });
+    });
+
     cloudExecutable = new MockCloudExecutable({
-      stacks: [{
-        stackName: 'A',
-        template: {
-          Resources: {
-            MetadataResource: {
-              Type: 'AWS::CDK::Metadata',
-              Properties: {
-                newMeta: 'newData',
+      stacks: [
+        {
+          stackName: 'A',
+          template: {
+            Resources: {
+              MetadataResource: {
+                Type: 'AWS::CDK::Metadata',
+                Properties: {
+                  newMeta: 'newData',
+                },
+              },
+              SomeOtherResource: {
+                Type: 'AWS::Something::Amazing',
               },
             },
-            SomeOtherResource: {
-              Type: 'AWS::Something::Amazing',
-            },
-          },
-          Rules: {
-            CheckBootstrapVersion: {
-              newCheck: 'newBootstrapVersion',
+            Rules: {
+              CheckBootstrapVersion: {
+                newCheck: 'newBootstrapVersion',
+              },
             },
           },
         },
-      }],
+      ],
     });
 
     toolkit = new CdkToolkit({
@@ -1095,8 +1137,8 @@ describe('--strict', () => {
     const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '');
     expect(plainTextOutput.trim()).toEqual(`Stack A
 Resources
-[+] AWS::CDK::Metadata MetadataResource 
-[+] AWS::Something::Amazing SomeOtherResource 
+[+] AWS::CDK::Metadata MetadataResource
+[+] AWS::Something::Amazing SomeOtherResource
 
 Other Changes
 [+] Unknown Rules: {\"CheckBootstrapVersion\":{\"newCheck\":\"newBootstrapVersion\"}}
@@ -1120,7 +1162,7 @@ Other Changes
     const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '');
     expect(plainTextOutput.trim()).toEqual(`Stack A
 Resources
-[+] AWS::Something::Amazing SomeOtherResource 
+[+] AWS::Something::Amazing SomeOtherResource
 
 
 ✨  Number of stacks with differences: 1`);
