@@ -19,6 +19,8 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [Table of Contents](#table-of-contents)
   - [User Pools](#user-pools)
     - [Sign Up](#sign-up)
+      - [Code Verification](#code-verification)
+      - [Link Verification](#link-verification)
     - [Sign In](#sign-in)
     - [Attributes](#attributes)
     - [Attribute verification](#attribute-verification)
@@ -925,7 +927,6 @@ const fullAccessClient = pool.addClient('full-access-client', {
 });
 ```
 
-
 ### Domains
 
 After setting up an [app client](#app-clients), the address for the user pool's sign-up and sign-in webpages can be
@@ -994,6 +995,21 @@ Existing domains can be imported into CDK apps using `UserPoolDomain.fromDomainN
 const myUserPoolDomain = cognito.UserPoolDomain.fromDomainName(this, 'my-user-pool-domain', 'domain-name');
 ```
 
+To get the domain name of the CloudFront distribution associated with the user pool domain, use `cloudFrontEndpoint` method.
+
+```ts
+const userpool = new cognito.UserPool(this, 'UserPool');
+const domain = userpool.addDomain('Domain', {
+  cognitoDomain: {
+    domainPrefix: 'my-awesome-app',
+  },
+});
+
+new CfnOutput(this, 'CloudFrontEndpoint', {
+  value: domain.cloudFrontEndpoint,
+});
+```
+
 ### Deletion protection
 
 Deletion protection can be enabled on a user pool to prevent accidental deletion:
@@ -1006,7 +1022,6 @@ const userpool = new cognito.UserPool(this, 'UserPool', {
 ```
 
 By default deletion protection is disabled.
-
 
 ### `email_verified` Attribute Mapping
 
@@ -1022,5 +1037,31 @@ new cognito.UserPoolIdentityProviderGoogle(this, 'google', {
     email: cognito.ProviderAttribute.GOOGLE_EMAIL,
     emailVerified: cognito.ProviderAttribute.GOOGLE_EMAIL_VERIFIED, // you can mapping the `email_verified` attribute.
   },
+});
+```
+
+### User Pool Group
+
+Support for groups in Amazon Cognito user pools enables you to create and manage groups and add users to groups.
+Use groups to create collections of users to manage their permissions or to represent different types of users.
+
+You can assign an AWS Identity and Access Management (IAM) role to a group to define the permissions for members of a group.
+
+For more information, see [Adding groups to a user pool](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-user-groups.html).
+
+```ts
+declare const userPool: cognito.UserPool;
+declare const role: iam.Role;
+
+new cognito.UserPoolGroup(this, 'UserPoolGroup', {
+  userPool,
+  groupName: 'my-group-name',
+  precedence: 1,
+  role,  // assign IAM Role
+});
+
+// You can also add a group by using addGroup method.
+userPool.addGroup('AnotherUserPoolGroup', {
+  groupName: 'another-group-name'
 });
 ```

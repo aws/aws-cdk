@@ -455,23 +455,20 @@ describe(CachedDataSource, () => {
   });
 
   test('retrieves data from the delegate when the file cannot be read', async () => {
-    const debugSpy = jest.spyOn(logging, 'debug');
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-test'));
+    try {
+      const debugSpy = jest.spyOn(logging, 'debug');
 
-    if (fs.existsSync('does-not-exist.json')) {
-      fs.unlinkSync('does-not-exist.json');
-    }
+      const dataSource = dataSourceWithDelegateReturning(freshData, `${tmpDir}/does-not-exist.json`);
 
-    const dataSource = dataSourceWithDelegateReturning(freshData, 'does-not-exist.json');
+      const notices = await dataSource.fetch();
 
-    const notices = await dataSource.fetch();
+      expect(notices).toEqual(freshData);
+      expect(debugSpy).not.toHaveBeenCalled();
 
-    expect(notices).toEqual(freshData);
-    expect(debugSpy).not.toHaveBeenCalled();
-
-    debugSpy.mockRestore();
-
-    if (fs.existsSync('does-not-exist.json')) {
-      fs.unlinkSync('does-not-exist.json');
+      debugSpy.mockRestore();
+    } finally {
+      fs.rmSync(tmpDir, { recursive: true, force: true });
     }
   });
 
@@ -679,7 +676,7 @@ describe(Notices, () => {
       const configuration = new Configuration();
       (configuration.context as any) = { get: (key: string) => context[key] };
 
-      const notices = Notices.create({ configuration, includeAcknowlegded: true });
+      const notices = Notices.create({ configuration, includeAcknowledged: true });
       await notices.refresh({
         dataSource: { fetch: async () => [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE] },
       });
@@ -849,7 +846,7 @@ describe(Notices, () => {
       const configuration = new Configuration();
       (configuration.context as any) = { get: (key: string) => context[key] };
 
-      const notices = Notices.create({ configuration, includeAcknowlegded: true });
+      const notices = Notices.create({ configuration, includeAcknowledged: true });
       await notices.refresh({
         dataSource: { fetch: async () => [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE] },
       });
