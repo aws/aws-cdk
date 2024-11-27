@@ -951,7 +951,6 @@ export class SDK {
         });
         const command = new GetCallerIdentityCommand({});
         const result = await client.send(command);
-        debug(result.Account!, result.Arn, result.UserId);
         const accountId = result.Account;
         const partition = result.Arn!.split(':')[1];
         if (!accountId) {

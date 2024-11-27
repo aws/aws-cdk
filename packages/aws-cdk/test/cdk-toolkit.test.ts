@@ -1464,9 +1464,9 @@ describe('synth', () => {
   });
 
   test.each([
-    [{ type: 'failpaused-need-rollback-first', reason: 'replacement' }, false],
-    [{ type: 'failpaused-need-rollback-first', reason: 'replacement' }, true],
-    [{ type: 'failpaused-need-rollback-first', reason: 'not-norollback' }, false],
+    [{ type: 'failpaused-need-rollback-first', reason: 'replacement', status: 'OOPS' }, false],
+    [{ type: 'failpaused-need-rollback-first', reason: 'replacement', status: 'OOPS' }, true],
+    [{ type: 'failpaused-need-rollback-first', reason: 'not-norollback', status: 'OOPS' }, false],
     [{ type: 'replacement-requires-norollback' }, false],
     [{ type: 'replacement-requires-norollback' }, true],
   ] satisfies Array<[DeployStackResult, boolean]>)('no-rollback deployment that cant proceed will be called with rollback on retry: %p (using force: %p)', async (firstResult, useForce) => {
