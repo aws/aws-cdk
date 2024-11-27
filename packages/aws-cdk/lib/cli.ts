@@ -51,9 +51,8 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
   // if one -v, log at a DEBUG level
   // if 2 -v, log at a TRACE level
   if (argv.verbose) {
-    const verboseLevel = typeof argv.verbose === 'boolean' ? 1 : argv.verbose;
     let logLevel: LogLevel;
-    switch (verboseLevel) {
+    switch (argv.verbose) {
       case 1:
         logLevel = LogLevel.DEBUG;
         break;
