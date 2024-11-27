@@ -179,6 +179,9 @@
   "aws-connectcampaigns": [
     "AWS::ConnectCampaigns"
   ],
+  "aws-connectcampaignsv2": [
+    "AWS::ConnectCampaignsV2"
+  ],
   "aws-controltower": [
     "AWS::ControlTower"
   ],
@@ -566,6 +569,9 @@
   ],
   "aws-ram": [
     "AWS::RAM"
+  ],
+  "aws-rbin": [
+    "AWS::Rbin"
   ],
   "aws-rds": [
     "AWS::RDS"
