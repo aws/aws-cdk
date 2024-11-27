@@ -37,7 +37,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  setLogLevel(LogLevel.DEFAULT);
+  setLogLevel(LogLevel.INFO);
 
   sinon.restore();
   bockfs.restore();
