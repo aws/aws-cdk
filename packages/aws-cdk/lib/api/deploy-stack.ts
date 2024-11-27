@@ -55,7 +55,7 @@ export interface NeedRollbackFirstDeployStackResult {
   readonly status: string;
 }
 
-/** The upcoming change has a replacement, which requires deploying wit --rollback */
+/** The upcoming change has a replacement, which requires deploying with --rollback */
 export interface ReplacementRequiresRollbackStackResult {
   readonly type: 'replacement-requires-rollback';
 }
