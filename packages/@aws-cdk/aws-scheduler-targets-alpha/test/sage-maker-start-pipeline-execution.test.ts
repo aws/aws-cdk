@@ -1,4 +1,4 @@
-import { ScheduleExpression, Schedule } from '@aws-cdk/aws-scheduler-alpha';
+import { ScheduleExpression, Schedule, Group } from '@aws-cdk/aws-scheduler-alpha';
 import { App, Duration, Resource, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { AccountRootPrincipal, Grant, IGrantable, Role } from 'aws-cdk-lib/aws-iam';
@@ -67,7 +67,23 @@ describe('schedule target', () => {
         Statement: [
           {
             Effect: 'Allow',
-            Condition: { StringEquals: { 'aws:SourceAccount': '123456789012' } },
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': '123456789012',
+                'aws:SourceArn': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':scheduler:us-east-1:123456789012:schedule-group/default',
+                    ],
+                  ],
+                },
+              },
+            },
             Principal: {
               Service: 'scheduler.amazonaws.com',
             },
@@ -123,7 +139,7 @@ describe('schedule target', () => {
     });
   });
 
-  test('reuses IAM role and IAM policy for two schedules from the same account', () => {
+  test('reuses IAM role and IAM policy for two schedules with the same target from the same account', () => {
     const pipelineTarget = new SageMakerStartPipelineExecution(pipeline, {
       pipelineParameterList,
     });
@@ -144,7 +160,106 @@ describe('schedule target', () => {
         Statement: [
           {
             Effect: 'Allow',
-            Condition: { StringEquals: { 'aws:SourceAccount': '123456789012' } },
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': '123456789012',
+                'aws:SourceArn': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':scheduler:us-east-1:123456789012:schedule-group/default',
+                    ],
+                  ],
+                },
+              },
+            },
+            Principal: {
+              Service: 'scheduler.amazonaws.com',
+            },
+            Action: 'sts:AssumeRole',
+          },
+        ],
+      },
+    }, 1);
+
+    Template.fromStack(stack).resourcePropertiesCountIs('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'sagemaker:StartPipelineExecution',
+            Effect: 'Allow',
+            Resource: 'MyPipeline1',
+          },
+        ],
+      },
+      Roles: [{ Ref: 'SchedulerRoleForTargetd15d6b89C69AEC' }],
+    }, 1);
+  });
+
+  test('creates IAM role and IAM policy for two schedules with the same target but different groups', () => {
+    const pipelineTarget = new SageMakerStartPipelineExecution(pipeline, {
+      pipelineParameterList,
+    });
+    const group = new Group(stack, 'Group', {
+      groupName: 'mygroup',
+    });
+
+    new Schedule(stack, 'MyScheduleDummy1', {
+      schedule: expr,
+      target: pipelineTarget,
+    });
+
+    new Schedule(stack, 'MyScheduleDummy2', {
+      schedule: expr,
+      target: pipelineTarget,
+      group,
+    });
+
+    Template.fromStack(stack).resourcePropertiesCountIs('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Effect: 'Allow',
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': '123456789012',
+                'aws:SourceArn': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':scheduler:us-east-1:123456789012:schedule-group/default',
+                    ],
+                  ],
+                },
+              },
+            },
+            Principal: {
+              Service: 'scheduler.amazonaws.com',
+            },
+            Action: 'sts:AssumeRole',
+          },
+          {
+            Effect: 'Allow',
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': '123456789012',
+                'aws:SourceArn': {
+                  'Fn::GetAtt': [
+                    'GroupC77FDACD',
+                    'Arn',
+                  ],
+                },
+              },
+            },
             Principal: {
               Service: 'scheduler.amazonaws.com',
             },
@@ -309,62 +424,7 @@ describe('schedule target', () => {
     });
   });
 
-  test('throws when pipeline is in the another stack with different account', () => {
-    const stack2 = new Stack(app, 'Stack2', {
-      env: {
-        region: 'us-east-1',
-        account: '234567890123',
-      },
-    });
-    const anotherTemplate = new FakePipeline(stack2, 'AnotherTemplate', { pipelineName: 'MyPipeline2' });
-
-    const pipelineTarget = new SageMakerStartPipelineExecution(anotherTemplate, {
-      pipelineParameterList,
-    });
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: pipelineTarget,
-      })).toThrow(/Both the schedule and the pipeline must be in the same account/);
-  });
-
-  test('throws when pipeline is in the another stack with different region', () => {
-    const stack2 = new Stack(app, 'Stack2', {
-      env: {
-        region: 'us-west-2',
-        account: '123456789012',
-      },
-    });
-    const anotherTemplate = new FakePipeline(stack2, 'AnotherTemplate', { pipelineName: 'MyPipeline2' });
-
-    const pipelineTarget = new SageMakerStartPipelineExecution(anotherTemplate, {
-      pipelineParameterList,
-    });
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: pipelineTarget,
-      })).toThrow(/Both the schedule and the pipeline must be in the same region/);
-  });
-
-  test('throws when IAM role is imported from different account', () => {
-    const importedRole = Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::234567890123:role/someRole');
-
-    const pipelineTarget = new SageMakerStartPipelineExecution(pipeline, {
-      role: importedRole,
-      pipelineParameterList,
-    });
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: pipelineTarget,
-      })).toThrow(/Both the target and the execution role must be in the same account/);
-  });
-
-  test('adds permissions to DLQ', () => {
+  test('adds permissions to execution role for sending messages to DLQ', () => {
     const dlq = new sqs.Queue(stack, 'DummyDeadLetterQueue');
 
     const pipelineTarget = new SageMakerStartPipelineExecution(pipeline, {
@@ -377,14 +437,16 @@ describe('schedule target', () => {
       target: pipelineTarget,
     });
 
-    Template.fromStack(stack).hasResourceProperties('AWS::SQS::QueuePolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
+            Action: 'sagemaker:StartPipelineExecution',
+            Effect: 'Allow',
+            Resource: 'MyPipeline1',
+          },
+          {
             Action: 'sqs:SendMessage',
-            Principal: {
-              Service: 'scheduler.amazonaws.com',
-            },
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': ['DummyDeadLetterQueueCEBF3463', 'Arn'],
@@ -392,35 +454,11 @@ describe('schedule target', () => {
           },
         ],
       },
-      Queues: [
-        {
-          Ref: 'DummyDeadLetterQueueCEBF3463',
-        },
-      ],
+      Roles: [{ Ref: 'SchedulerRoleForTargetd15d6b89C69AEC' }],
     });
   });
 
-  test('throws when adding permissions to DLQ from a different region', () => {
-    const stack2 = new Stack(app, 'Stack2', {
-      env: {
-        region: 'eu-west-2',
-      },
-    });
-    const queue = new sqs.Queue(stack2, 'DummyDeadLetterQueue');
-
-    const pipelineTarget = new SageMakerStartPipelineExecution(pipeline, {
-      deadLetterQueue: queue,
-      pipelineParameterList,
-    });
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: pipelineTarget,
-      })).toThrow(/Both the queue and the schedule must be in the same region./);
-  });
-
-  test('does not create a queue policy when DLQ is imported', () => {
+  test('adds permission to execution role when imported DLQ is in same account', () => {
     const importedQueue = sqs.Queue.fromQueueArn(stack, 'ImportedQueue', 'arn:aws:sqs:us-east-1:123456789012:queue1');
 
     const pipelineTarget = new SageMakerStartPipelineExecution(pipeline, {
@@ -433,32 +471,23 @@ describe('schedule target', () => {
       target: pipelineTarget,
     });
 
-    Template.fromStack(stack).resourceCountIs('AWS::SQS::QueuePolicy', 0);
-  });
-
-  test('does not create a queue policy when DLQ is created in a different account', () => {
-    const stack2 = new Stack(app, 'Stack2', {
-      env: {
-        region: 'us-east-1',
-        account: '234567890123',
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'sagemaker:StartPipelineExecution',
+            Effect: 'Allow',
+            Resource: 'MyPipeline1',
+          },
+          {
+            Action: 'sqs:SendMessage',
+            Effect: 'Allow',
+            Resource: importedQueue.queueArn,
+          },
+        ],
       },
+      Roles: [{ Ref: 'SchedulerRoleForTargetd15d6b89C69AEC' }],
     });
-
-    const queue = new sqs.Queue(stack2, 'DummyDeadLetterQueue', {
-      queueName: 'DummyDeadLetterQueue',
-    });
-
-    const pipelineTarget = new SageMakerStartPipelineExecution(pipeline, {
-      deadLetterQueue: queue,
-      pipelineParameterList,
-    });
-
-    new Schedule(stack, 'MyScheduleDummy', {
-      schedule: expr,
-      target: pipelineTarget,
-    });
-
-    Template.fromStack(stack).resourceCountIs('AWS::SQS::QueuePolicy', 0);
   });
 
   test('renders expected retry policy', () => {
@@ -506,9 +535,9 @@ describe('schedule target', () => {
       })).toThrow(/Maximum event age is 1 day/);
   });
 
-  test('throws when retry policy max age is less than 15 minutes', () => {
+  test('throws when retry policy max age is less than 1 minute', () => {
     const pipelineTarget = new SageMakerStartPipelineExecution(pipeline, {
-      maxEventAge: Duration.minutes(5),
+      maxEventAge: Duration.seconds(59),
       pipelineParameterList,
     });
 
@@ -516,7 +545,7 @@ describe('schedule target', () => {
       new Schedule(stack, 'MyScheduleDummy', {
         schedule: expr,
         target: pipelineTarget,
-      })).toThrow(/Minimum event age is 15 minutes/);
+      })).toThrow(/Minimum event age is 1 minute/);
   });
 
   test('throws when retry policy max retry attempts is out of the allowed limits', () => {

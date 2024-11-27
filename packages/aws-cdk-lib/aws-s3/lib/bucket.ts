@@ -1897,24 +1897,37 @@ export class Bucket extends BucketBase {
     if (bucketName.length < 3 || bucketName.length > 63) {
       errors.push('Bucket name must be at least 3 and no more than 63 characters');
     }
-    const charsetRegex = allowLegacyBucketNaming ? /[^a-z0-9._-]/ : /[^a-z0-9.-]/;
-    const charsetMatch = bucketName.match(charsetRegex);
-    if (charsetMatch) {
-      errors.push(`Bucket name must only contain lowercase characters and the symbols, period (.)${allowLegacyBucketNaming ? ', underscore (_), ' : ' '}and dash (-) `
-        + `(offset: ${charsetMatch.index})`);
+
+    const illegalCharsetRegEx = allowLegacyBucketNaming ? /[^A-Za-z0-9._-]/ : /[^a-z0-9.-]/;
+    const allowedEdgeCharsetRegEx = allowLegacyBucketNaming ? /[A-Za-z0-9]/ : /[a-z0-9]/;
+
+    const illegalCharMatch = bucketName.match(illegalCharsetRegEx);
+    if (illegalCharMatch) {
+      errors.push(allowLegacyBucketNaming
+        ? 'Bucket name must only contain uppercase or lowercase characters and the symbols, period (.), underscore (_), and dash (-)'
+        : 'Bucket name must only contain lowercase characters and the symbols, period (.) and dash (-)'
+        + ` (offset: ${illegalCharMatch.index})`,
+      );
     }
-    if (!/[a-z0-9]/.test(bucketName.charAt(0))) {
-      errors.push('Bucket name must start and end with a lowercase character or number '
-        + '(offset: 0)');
+    if (!allowedEdgeCharsetRegEx.test(bucketName.charAt(0))) {
+      errors.push(allowLegacyBucketNaming
+        ? 'Bucket name must start with an uppercase, lowercase character or number'
+        : 'Bucket name must start with a lowercase character or number'
+        + ' (offset: 0)',
+      );
     }
-    if (!/[a-z0-9]/.test(bucketName.charAt(bucketName.length - 1))) {
-      errors.push('Bucket name must start and end with a lowercase character or number '
-        + `(offset: ${bucketName.length - 1})`);
+    if (!allowedEdgeCharsetRegEx.test(bucketName.charAt(bucketName.length - 1))) {
+      errors.push(allowLegacyBucketNaming
+        ? 'Bucket name must end with an uppercase, lowercase character or number'
+        : 'Bucket name must end with a lowercase character or number'
+        + ` (offset: ${bucketName.length - 1})`,
+      );
     }
+
     const consecSymbolMatch = bucketName.match(/\.-|-\.|\.\./);
     if (consecSymbolMatch) {
-      errors.push('Bucket name must not have dash next to period, or period next to dash, or consecutive periods '
-        + `(offset: ${consecSymbolMatch.index})`);
+      errors.push('Bucket name must not have dash next to period, or period next to dash, or consecutive periods'
+        + ` (offset: ${consecSymbolMatch.index})`);
     }
     if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(bucketName)) {
       errors.push('Bucket name must not resemble an IP address');
@@ -2190,6 +2203,7 @@ export class Bucket extends BucketBase {
     if (encryptionType === BucketEncryption.KMS) {
       const encryptionKey = props.encryptionKey || new kms.Key(this, 'Key', {
         description: `Created by ${this.node.path}`,
+        enableKeyRotation: true,
       });
 
       const bucketEncryption = {

@@ -1,0 +1,329 @@
+{
+ "Resources": {
+  "Key961B73FD": {
+   "Type": "AWS::KMS::Key",
+   "Properties": {
+    "KeyPolicy": {
+     "Statement": [
+      {
+       "Action": "kms:*",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ScheduleGroup": {
+   "Type": "AWS::Scheduler::ScheduleGroup",
+   "Properties": {
+    "Name": "TestGroup"
+   }
+  },
+  "TargetQueue08AD2B3C": {
+   "Type": "AWS::SQS::Queue",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "DeadLetterQueue9F481546": {
+   "Type": "AWS::SQS::Queue",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SchedulerRole59E73443": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "scheduler.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "SchedulerRoleDefaultPolicy66F774B8": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sqs:SendMessage",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "TargetQueue08AD2B3C",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:Encrypt",
+        "kms:GenerateDataKey*",
+        "kms:ReEncrypt*"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "Key961B73FD",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "SchedulerRoleDefaultPolicy66F774B8",
+    "Roles": [
+     {
+      "Ref": "SchedulerRole59E73443"
+     }
+    ]
+   }
+  },
+  "stateMachineRole64DF9B42": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "stateMachineRoleDefaultPolicy9579E9AD": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "scheduler:CreateSchedule",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":scheduler:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":schedule/",
+           {
+            "Ref": "ScheduleGroup"
+           },
+           "/TestScheduleA"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":scheduler:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":schedule/default/TestScheduleB"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "iam:PassRole",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "SchedulerRole59E73443",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "stateMachineRoleDefaultPolicy9579E9AD",
+    "Roles": [
+     {
+      "Ref": "stateMachineRole64DF9B42"
+     }
+    ]
+   }
+  },
+  "stateMachineE926C166": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"Start Task\",\"States\":{\"Start Task\":{\"Type\":\"Pass\",\"Next\":\"createSchedule1\"},\"createSchedule1\":{\"Next\":\"createSchedule2\",\"Type\":\"Task\",\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::aws-sdk:scheduler:createSchedule\",\"Parameters\":{\"ActionAfterCompletion\":\"NONE\",\"ClientToken\":\"testToken\",\"Description\":\"Testdescription\",\"EndDate\":\"2030-01-01T01:00:00.000Z\",\"FlexibleTimeWindow\":{\"Mode\":\"FLEXIBLE\",\"MaximumWindowInMinutes\":5},\"GroupName\":\"",
+       {
+        "Ref": "ScheduleGroup"
+       },
+       "\",\"KmsKeyArn\":\"",
+       {
+        "Fn::GetAtt": [
+         "Key961B73FD",
+         "Arn"
+        ]
+       },
+       "\",\"Name\":\"TestScheduleA\",\"ScheduleExpression\":\"rate(1 minutes)\",\"ScheduleExpressionTimezone\":\"UTC\",\"StartDate\":\"2030-01-01T00:00:00.000Z\",\"State\":\"ENABLED\",\"Target\":{\"Arn\":\"",
+       {
+        "Fn::GetAtt": [
+         "TargetQueue08AD2B3C",
+         "Arn"
+        ]
+       },
+       "\",\"RoleArn\":\"",
+       {
+        "Fn::GetAtt": [
+         "SchedulerRole59E73443",
+         "Arn"
+        ]
+       },
+       "\",\"RetryPolicy\":{\"MaximumEventAgeInSeconds\":300,\"MaximumRetryAttempts\":2},\"DeadLetterConfig\":{\"Arn\":\"",
+       {
+        "Fn::GetAtt": [
+         "DeadLetterQueue9F481546",
+         "Arn"
+        ]
+       },
+       "\"}}}},\"createSchedule2\":{\"Next\":\"End Task\",\"Type\":\"Task\",\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::aws-sdk:scheduler:createSchedule\",\"Parameters\":{\"ActionAfterCompletion\":\"NONE\",\"FlexibleTimeWindow\":{\"Mode\":\"OFF\"},\"Name\":\"TestScheduleB\",\"ScheduleExpression\":\"rate(1 minutes)\",\"State\":\"ENABLED\",\"Target\":{\"Arn\":\"",
+       {
+        "Fn::GetAtt": [
+         "TargetQueue08AD2B3C",
+         "Arn"
+        ]
+       },
+       "\",\"RoleArn\":\"",
+       {
+        "Fn::GetAtt": [
+         "SchedulerRole59E73443",
+         "Arn"
+        ]
+       },
+       "\"}}},\"End Task\":{\"Type\":\"Pass\",\"End\":true}}}"
+      ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "stateMachineRole64DF9B42",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "stateMachineRoleDefaultPolicy9579E9AD",
+    "stateMachineRole64DF9B42"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefstateMachineE926C166F9564C73": {
+   "Value": {
+    "Ref": "stateMachineE926C166"
+   },
+   "Export": {
+    "Name": "createScheduleInteg:ExportsOutputRefstateMachineE926C166F9564C73"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

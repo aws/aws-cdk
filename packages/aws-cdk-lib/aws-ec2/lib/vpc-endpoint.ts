@@ -290,6 +290,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly APPCONFIG = new InterfaceVpcEndpointAwsService('appconfig');
   public static readonly APPCONFIGDATA = new InterfaceVpcEndpointAwsService('appconfigdata');
   public static readonly APPLICATION_AUTOSCALING = new InterfaceVpcEndpointAwsService('application-autoscaling');
+  public static readonly APPLICATION_DISCOVERY_ARSENAL = new InterfaceVpcEndpointAwsService('arsenal-discovery');
+  public static readonly APPLICATION_DISCOVERY_SERVICE = new InterfaceVpcEndpointAwsService('discovery');
   public static readonly APPLICATION_MIGRATION_SERVICE = new InterfaceVpcEndpointAwsService('mgn');
   public static readonly APPSTREAM_API = new InterfaceVpcEndpointAwsService('appstream.api');
   public static readonly APPSTREAM_STREAMING = new InterfaceVpcEndpointAwsService('appstream.streaming');
@@ -305,6 +307,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly BEDROCK_AGENT = new InterfaceVpcEndpointAwsService('bedrock-agent');
   public static readonly BEDROCK_AGENT_RUNTIME = new InterfaceVpcEndpointAwsService('bedrock-agent-runtime');
   public static readonly BEDROCK_RUNTIME = new InterfaceVpcEndpointAwsService('bedrock-runtime');
+  public static readonly BILLING = new InterfaceVpcEndpointAwsService('billing');
   public static readonly BILLING_AND_COST_MANAGEMENT_FREETIER = new InterfaceVpcEndpointAwsService('freetier', 'aws.api');
   public static readonly BILLING_AND_COST_MANAGEMENT_TAX = new InterfaceVpcEndpointAwsService('tax');
   public static readonly BILLING_CONDUCTOR = new InterfaceVpcEndpointAwsService('billingconductor');
@@ -337,6 +340,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly CLOUDWATCH_RUM = new InterfaceVpcEndpointAwsService('rum');
   public static readonly CLOUDWATCH_RUM_DATAPLANE = new InterfaceVpcEndpointAwsService('rum-dataplane');
   public static readonly CLOUDWATCH_SYNTHETICS = new InterfaceVpcEndpointAwsService('synthetics');
+  public static readonly CLOUDWATCH_SYNTHETICS_FIPS = new InterfaceVpcEndpointAwsService('synthetics-fips');
   public static readonly CODEARTIFACT_API = new InterfaceVpcEndpointAwsService('codeartifact.api');
   public static readonly CODEARTIFACT_REPOSITORIES = new InterfaceVpcEndpointAwsService('codeartifact.repositories');
   public static readonly CODEBUILD = new InterfaceVpcEndpointAwsService('codebuild');
@@ -365,6 +369,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly CONNECT_WISDOM = new InterfaceVpcEndpointAwsService('wisdom');
   public static readonly CONTROL_CATALOG = new InterfaceVpcEndpointAwsService('controlcatalog');
   public static readonly COST_EXPLORER = new InterfaceVpcEndpointAwsService('ce');
+  public static readonly COST_OPTIMIZATION_HUB = new InterfaceVpcEndpointAwsService('cost-optimization-hub');
   public static readonly DATA_EXCHANGE = new InterfaceVpcEndpointAwsService('dataexchange');
   public static readonly DATA_EXPORTS = new InterfaceVpcEndpointAwsService('bcm-data-exports', 'aws.api');
   public static readonly DATASYNC = new InterfaceVpcEndpointAwsService('datasync');
@@ -402,6 +407,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly EMR_SERVERLESS = new InterfaceVpcEndpointAwsService('emr-serverless');
   public static readonly EMR_SERVERLESS_LIVY = new InterfaceVpcEndpointAwsService('emr-serverless-services.livy');
   public static readonly EMR_WAL = new InterfaceVpcEndpointAwsService('emrwal.prod');
+  public static readonly END_USER_MESSAGING_SOCIAL = new InterfaceVpcEndpointAwsService('social-messaging');
   public static readonly ENTITY_RESOLUTION = new InterfaceVpcEndpointAwsService('entityresolution');
   public static readonly EVENTBRIDGE = new InterfaceVpcEndpointAwsService('events');
   public static readonly EVENTBRIDGE_SCHEMA_REGISTRY = new InterfaceVpcEndpointAwsService('schemas');
@@ -488,6 +494,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly MIGRATIONHUB_REFACTOR_SPACES = new InterfaceVpcEndpointAwsService('refactor-spaces');
   public static readonly MIGRATIONHUB_STRATEGY = new InterfaceVpcEndpointAwsService('migrationhub-strategy');
   public static readonly NEPTUNE_ANALYTICS = new InterfaceVpcEndpointAwsService('neptune-graph');
+  public static readonly NEPTUNE_ANALYTICS_DATA = new InterfaceVpcEndpointAwsService('neptune-graph-data');
+  public static readonly NEPTUNE_ANALYTICS_FIPS = new InterfaceVpcEndpointAwsService('neptune-graph-fips');
   public static readonly NETWORK_FIREWALL = new InterfaceVpcEndpointAwsService('network-firewall');
   public static readonly NETWORK_FIREWALL_FIPS = new InterfaceVpcEndpointAwsService('network-firewall-fips');
   public static readonly NIMBLE_STUDIO = new InterfaceVpcEndpointAwsService('nimble');
@@ -514,6 +522,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly PIPES = new InterfaceVpcEndpointAwsService('pipes');
   public static readonly PIPES_DATA = new InterfaceVpcEndpointAwsService('pipes-data');
   public static readonly PIPES_FIPS = new InterfaceVpcEndpointAwsService('pipes-fips');
+  public static readonly PRICE_LIST = new InterfaceVpcEndpointAwsService('pricing.api');
+  public static readonly PRICING_CALCULATOR = new InterfaceVpcEndpointAwsService('bcm-pricing-calculator');
   public static readonly POLLY = new InterfaceVpcEndpointAwsService('polly');
   public static readonly PRIVATE_5G = new InterfaceVpcEndpointAwsService('private-networks');
   public static readonly PRIVATE_CERTIFICATE_AUTHORITY = new InterfaceVpcEndpointAwsService('acm-pca');
@@ -545,6 +555,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly REKOGNITION_STREAMING_FIPS = new InterfaceVpcEndpointAwsService('streaming-rekognition-fips');
   public static readonly REPOST_SPACE = new InterfaceVpcEndpointAwsService('repostspace');
   public static readonly RESOURCE_ACCESS_MANAGER = new InterfaceVpcEndpointAwsService('ram');
+  public static readonly RESOURCE_GROUPS = new InterfaceVpcEndpointAwsService('resource-groups');
+  public static readonly RESOURCE_GROUPS_FIPS = new InterfaceVpcEndpointAwsService('resource-groups-fips');
   public static readonly ROBOMAKER = new InterfaceVpcEndpointAwsService('robomaker');
   public static readonly RECYCLE_BIN = new InterfaceVpcEndpointAwsService('rbin');
   public static readonly S3 = new InterfaceVpcEndpointAwsService('s3');
@@ -586,6 +598,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly SUPPLY_CHAIN = new InterfaceVpcEndpointAwsService('scn');
   public static readonly SWF = new InterfaceVpcEndpointAwsService('swf');
   public static readonly SWF_FIPS = new InterfaceVpcEndpointAwsService('swf-fips');
+  public static readonly TAGGING = new InterfaceVpcEndpointAwsService('tagging');
   public static readonly TELCO_NETWORK_BUILDER = new InterfaceVpcEndpointAwsService('tnb');
   public static readonly TEXTRACT = new InterfaceVpcEndpointAwsService('textract');
   public static readonly TEXTRACT_FIPS = new InterfaceVpcEndpointAwsService('textract-fips');
@@ -598,6 +611,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly TRANSLATE = new InterfaceVpcEndpointAwsService('translate');
   public static readonly TRUSTED_ADVISOR = new InterfaceVpcEndpointAwsService('trustedadvisor');
   public static readonly WELL_ARCHITECTED_TOOL = new InterfaceVpcEndpointAwsService('wellarchitected');
+  public static readonly WORKMAIL = new InterfaceVpcEndpointAwsService('workmail');
   public static readonly WORKSPACES = new InterfaceVpcEndpointAwsService('workspaces');
   public static readonly WORKSPACES_THIN_CLIENT = new InterfaceVpcEndpointAwsService('thinclient.api');
   public static readonly XRAY = new InterfaceVpcEndpointAwsService('xray');

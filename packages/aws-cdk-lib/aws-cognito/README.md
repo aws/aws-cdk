@@ -306,6 +306,9 @@ configure an MFA token and use it for sign in. It also allows for the users to u
 [time-based one time password
 (TOTP)](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-mfa-totp.html).
 
+If you want to enable email-based MFA, set `email` propety to the Amazon SES email-sending configuration and set `advancedSecurityMode` to `AdvancedSecurity.ENFORCED` or `AdvancedSecurity.AUDIT`.
+For more information, see [Email MFA](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-advanced-security-email-mfa.html).
+
 ```ts
 new cognito.UserPool(this, 'myuserpool', {
   // ...
@@ -313,6 +316,7 @@ new cognito.UserPool(this, 'myuserpool', {
   mfaSecondFactor: {
     sms: true,
     otp: true,
+    email: false, // email-based MFA
   },
 });
 ```
@@ -1003,7 +1007,6 @@ const userpool = new cognito.UserPool(this, 'UserPool', {
 
 By default deletion protection is disabled.
 
-
 ### `email_verified` Attribute Mapping
 
 If you use a third-party identity provider, you can specify the `email_verified` attribute in attributeMapping.
@@ -1018,5 +1021,31 @@ new cognito.UserPoolIdentityProviderGoogle(this, 'google', {
     email: cognito.ProviderAttribute.GOOGLE_EMAIL,
     emailVerified: cognito.ProviderAttribute.GOOGLE_EMAIL_VERIFIED, // you can mapping the `email_verified` attribute.
   },
+});
+```
+
+### User Pool Group
+
+Support for groups in Amazon Cognito user pools enables you to create and manage groups and add users to groups.
+Use groups to create collections of users to manage their permissions or to represent different types of users.
+
+You can assign an AWS Identity and Access Management (IAM) role to a group to define the permissions for members of a group.
+
+For more information, see [Adding groups to a user pool](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-user-groups.html).
+
+```ts
+declare const userPool: cognito.UserPool;
+declare const role: iam.Role;
+
+new cognito.UserPoolGroup(this, 'UserPoolGroup', {
+  userPool,
+  groupName: 'my-group-name',
+  precedence: 1,
+  role,  // assign IAM Role
+});
+
+// You can also add a group by using addGroup method.
+userPool.addGroup('AnotherUserPoolGroup', {
+  groupName: 'another-group-name'
 });
 ```
