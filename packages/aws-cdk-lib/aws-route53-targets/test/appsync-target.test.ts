@@ -6,7 +6,7 @@ import * as route53 from '../../aws-route53';
 import { Stack } from '../../core';
 import * as targets from '../lib';
 
-test('targets.AppSync can be used to the default domain of an AppSync GraphqlApi', () => {
+test('targets.AppSyncTarget can be used to the default domain of an AppSync GraphqlApi', () => {
   // GIVEN
   const stack = new Stack();
   const cert = new acm.Certificate(stack, 'cert', { domainName: 'example.com' });
@@ -25,7 +25,7 @@ test('targets.AppSync can be used to the default domain of an AppSync GraphqlApi
   // WHEN
   new route53.ARecord(stack, 'A', {
     zone,
-    target: route53.RecordTarget.fromAlias(new targets.AppSync(api)),
+    target: route53.RecordTarget.fromAlias(new targets.AppSyncTarget(api)),
   });
 
   // THEN

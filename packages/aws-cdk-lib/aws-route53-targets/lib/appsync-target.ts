@@ -11,7 +11,7 @@ import {
  * Defines an AppSync Graphql API as the alias target. Requires that the domain
  * name will be defined through `GraphqlApiProps.domainName`.
  */
-export class AppSync implements IAliasRecordTarget {
+export class AppSyncTarget implements IAliasRecordTarget {
   constructor(private readonly graphqlApi: GraphqlApi) {}
 
   public bind(_record: IRecordSet, _zone?: IHostedZone): AliasRecordTargetConfig {

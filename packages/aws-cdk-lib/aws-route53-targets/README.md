@@ -42,7 +42,7 @@ This library contains Route53 Alias Record targets for:
 
   new route53.ARecord(this, 'AliasRecord', {
     zone,
-    target: route53.RecordTarget.fromAlias(new targets.AppSync(graphqlApi))
+    target: route53.RecordTarget.fromAlias(new targets.AppSyncTarget(graphqlApi))
   });
   ```
 
