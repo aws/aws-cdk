@@ -37,7 +37,7 @@ import { StringWithoutPlaceholders } from './util/placeholders';
 export type DeployStackResult =
   | SuccessfulDeployStackResult
   | NeedRollbackFirstDeployStackResult
-  | ReplacementRequiresNoRollbackStackResult
+  | ReplacementRequiresRollbackStackResult
   ;
 
 /** Successfully deployed a stack */
@@ -55,9 +55,9 @@ export interface NeedRollbackFirstDeployStackResult {
   readonly status: string;
 }
 
-/** The upcoming change has a replacement, which requires deploying without --no-rollback */
-export interface ReplacementRequiresNoRollbackStackResult {
-  readonly type: 'replacement-requires-norollback';
+/** The upcoming change has a replacement, which requires deploying wit --rollback */
+export interface ReplacementRequiresRollbackStackResult {
+  readonly type: 'replacement-requires-rollback';
 }
 
 export function assertIsSuccessfulDeployStackResult(x: DeployStackResult): asserts x is SuccessfulDeployStackResult {
@@ -519,7 +519,7 @@ class FullCloudFormationDeployment {
       return { type: 'failpaused-need-rollback-first', reason: 'not-norollback', status: this.cloudFormationStack.stackStatus.name };
     }
     if (!rollback && replacement) {
-      return { type: 'replacement-requires-norollback' };
+      return { type: 'replacement-requires-rollback' };
     }
 
     return this.executeChangeSet(changeSetDescription);

@@ -461,7 +461,7 @@ export class CdkToolkit {
               break;
             }
 
-            case 'replacement-requires-norollback': {
+            case 'replacement-requires-rollback': {
               const motivation = 'Change includes a replacement which cannot be deployed with "--no-rollback"';
 
               if (options.force) {
