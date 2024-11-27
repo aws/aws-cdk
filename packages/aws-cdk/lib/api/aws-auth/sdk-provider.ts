@@ -375,7 +375,7 @@ export class SdkProvider {
         },
         clientConfig: {
           region,
-          ...this.requestHandler,
+          requestHandler: this.requestHandler,
         },
       })();
 

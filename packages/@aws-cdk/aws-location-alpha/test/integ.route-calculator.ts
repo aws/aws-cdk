@@ -10,6 +10,7 @@ class TestStack extends Stack {
 
     new RouteCalculator(this, 'RouteCalculator', {
       dataSource: DataSource.ESRI,
+      routeCalculatorName: 'my_route_calculator',
     });
   }
 }

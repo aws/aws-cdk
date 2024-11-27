@@ -51,7 +51,9 @@ import {
   DescribeResourceScanCommand,
   type DescribeResourceScanCommandInput,
   type DescribeResourceScanCommandOutput,
+  DescribeStackEventsCommand,
   type DescribeStackEventsCommandInput,
+  DescribeStackEventsCommandOutput,
   DescribeStackResourcesCommand,
   DescribeStackResourcesCommandInput,
   DescribeStackResourcesCommandOutput,
@@ -86,12 +88,10 @@ import {
   ListStacksCommand,
   ListStacksCommandInput,
   ListStacksCommandOutput,
-  paginateDescribeStackEvents,
   paginateListStackResources,
   RollbackStackCommand,
   RollbackStackCommandInput,
   RollbackStackCommandOutput,
-  StackEvent,
   StackResourceSummary,
   StartResourceScanCommand,
   type StartResourceScanCommandInput,
@@ -246,7 +246,7 @@ import {
   UpdateFunctionConfigurationCommand,
   type UpdateFunctionConfigurationCommandInput,
   type UpdateFunctionConfigurationCommandOutput,
-  waitUntilFunctionUpdated,
+  waitUntilFunctionUpdatedV2,
 } from '@aws-sdk/client-lambda';
 import {
   GetHostedZoneCommand,
@@ -404,7 +404,7 @@ export interface ICloudFormationClient {
     input: UpdateTerminationProtectionCommandInput,
   ): Promise<UpdateTerminationProtectionCommandOutput>;
   // Pagination functions
-  describeStackEvents(input: DescribeStackEventsCommandInput): Promise<StackEvent[]>;
+  describeStackEvents(input: DescribeStackEventsCommandInput): Promise<DescribeStackEventsCommandOutput>;
   listStackResources(input: ListStackResourcesCommandInput): Promise<StackResourceSummary[]>;
 }
 
@@ -530,10 +530,7 @@ export class SDK {
   /**
    * STS is used to check credential validity, don't do too many retries.
    */
-  private readonly stsRetryOptions = {
-    maxRetries: 3,
-    retryDelayOptions: { base: 100 },
-  };
+  private readonly stsRetryStrategy = new ConfiguredRetryStrategy(3, (attempt) => 100 * (2 ** attempt));
 
   /**
    * Whether we have proof that the credentials have not expired
@@ -553,7 +550,7 @@ export class SDK {
       region,
       credentials: _credentials,
       requestHandler,
-      retryStrategy: new ConfiguredRetryStrategy(7, (attempt) => attempt ** 300),
+      retryStrategy: new ConfiguredRetryStrategy(7, (attempt) => 300 * (2 ** attempt)),
       customUserAgent: defaultCliUserAgent(),
     };
     this.currentRegion = region;
@@ -664,13 +661,8 @@ export class SDK {
         input: UpdateTerminationProtectionCommandInput,
       ): Promise<UpdateTerminationProtectionCommandOutput> =>
         client.send(new UpdateTerminationProtectionCommand(input)),
-      describeStackEvents: async (input: DescribeStackEventsCommandInput): Promise<StackEvent[]> => {
-        const stackEvents = Array<StackEvent>();
-        const paginator = paginateDescribeStackEvents({ client }, input);
-        for await (const page of paginator) {
-          stackEvents.push(...(page?.StackEvents || []));
-        }
-        return stackEvents;
+      describeStackEvents: (input: DescribeStackEventsCommandInput): Promise<DescribeStackEventsCommandOutput> => {
+        return client.send(new DescribeStackEventsCommand(input));
       },
       listStackResources: async (input: ListStackResourcesCommandInput): Promise<StackResourceSummary[]> => {
         const stackResources = Array<StackResourceSummary>();
@@ -849,7 +841,7 @@ export class SDK {
         delaySeconds: number,
         input: UpdateFunctionConfigurationCommandInput,
       ): Promise<WaiterResult> => {
-        return waitUntilFunctionUpdated(
+        return waitUntilFunctionUpdatedV2(
           {
             client,
             maxDelay: delaySeconds,
@@ -955,7 +947,7 @@ export class SDK {
         debug('Looking up default account ID from STS');
         const client = new STSClient({
           ...this.config,
-          ...this.stsRetryOptions,
+          retryStrategy: this.stsRetryStrategy,
         });
         const command = new GetCallerIdentityCommand({});
         const result = await client.send(command);
@@ -982,7 +974,7 @@ export class SDK {
       return;
     }
 
-    const client = new STSClient({ ...this.config, ...this.stsRetryOptions });
+    const client = new STSClient({ ...this.config, retryStrategy: this.stsRetryStrategy });
     await client.send(new GetCallerIdentityCommand({}));
     this._credentialsValidated = true;
   }
