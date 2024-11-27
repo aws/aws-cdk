@@ -19,6 +19,8 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [Table of Contents](#table-of-contents)
   - [User Pools](#user-pools)
     - [Sign Up](#sign-up)
+      - [Code Verification](#code-verification)
+      - [Link Verification](#link-verification)
     - [Sign In](#sign-in)
     - [Attributes](#attributes)
     - [Attribute verification](#attribute-verification)
@@ -925,7 +927,6 @@ const fullAccessClient = pool.addClient('full-access-client', {
 });
 ```
 
-
 ### Domains
 
 After setting up an [app client](#app-clients), the address for the user pool's sign-up and sign-in webpages can be
@@ -992,6 +993,21 @@ Existing domains can be imported into CDK apps using `UserPoolDomain.fromDomainN
 
 ```ts
 const myUserPoolDomain = cognito.UserPoolDomain.fromDomainName(this, 'my-user-pool-domain', 'domain-name');
+```
+
+To get the domain name of the CloudFront distribution associated with the user pool domain, use `cloudFrontEndpoint` method.
+
+```ts
+const userpool = new cognito.UserPool(this, 'UserPool');
+const domain = userpool.addDomain('Domain', {
+  cognitoDomain: {
+    domainPrefix: 'my-awesome-app',
+  },
+});
+
+new CfnOutput(this, 'CloudFrontEndpoint', {
+  value: domain.cloudFrontEndpoint,
+});
 ```
 
 ### Deletion protection
