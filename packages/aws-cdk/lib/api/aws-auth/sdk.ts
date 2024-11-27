@@ -1,3 +1,4 @@
+import { inspect } from 'util';
 import {
   AppSyncClient,
   FunctionConfiguration,
@@ -318,7 +319,7 @@ import { AccountAccessKeyCache } from './account-cache';
 import { cached } from './cached';
 import { Account } from './sdk-provider';
 import { defaultCliUserAgent } from './user-agent';
-import { debug } from '../../logging';
+import { debug, trace } from '../../logging';
 import { traceMethods } from '../../util/tracing';
 
 export interface S3ClientOptions {
@@ -545,6 +546,7 @@ export class SDK {
     private readonly _credentials: AwsCredentialIdentity,
     region: string,
     requestHandler: NodeHttpHandlerOptions,
+    logger?: Logger,
   ) {
     this.config = {
       region,
@@ -552,6 +554,7 @@ export class SDK {
       requestHandler,
       retryStrategy: new ConfiguredRetryStrategy(7, (attempt) => 300 * (2 ** attempt)),
       customUserAgent: defaultCliUserAgent(),
+      logger,
     };
     this.currentRegion = region;
   }
@@ -981,3 +984,90 @@ export class SDK {
 }
 
 const CURRENT_ACCOUNT_KEY = Symbol('current_account_key');
+
+export class SdkToCliLogger implements Logger {
+  public trace(...content: any[]) {
+    // This is too much detail for our logs
+    // trace('[SDK trace] %s', this.fmtContent(content));
+    Array.isArray(content);
+  }
+
+  public debug(...content: any[]) {
+    // This is too much detail for our logs
+    // trace('[SDK debug] %s', this.fmtContent(content));
+    Array.isArray(content);
+  }
+
+  /**
+   * Info is called mostly (exclusively?) for successful API calls
+   *
+   * Payload:
+   *
+   * (Note the input contains entire CFN templates, for example)
+   *
+   * ```
+   * {
+   *   clientName: 'S3Client',
+   *   commandName: 'GetBucketLocationCommand',
+   *   input: {
+   *     Bucket: '.....',
+   *     ExpectedBucketOwner: undefined
+   *   },
+   *   output: { LocationConstraint: 'eu-central-1' },
+   *   metadata: {
+   *     httpStatusCode: 200,
+   *     requestId: '....',
+   *     extendedRequestId: '...',
+   *     cfId: undefined,
+   *     attempts: 1,
+   *     totalRetryDelay: 0
+   *   }
+   * }
+   * ```
+   */
+  public info(...content: any[]) {
+    // This is called
+    trace('[SDK info] %s', this.fmtContent(content));
+  }
+
+  public warn(...content: any[]) {
+    trace('[SDK warn] %s', this.fmtContent(content));
+  }
+
+  /**
+   * Error is called mostly (exclusively?) for failing API calls
+   *
+   * Payload (input would be the entire API call arguments).
+   *
+   * ```
+   * {
+   *   clientName: 'STSClient',
+   *   commandName: 'GetCallerIdentityCommand',
+   *   input: {},
+   *   error: AggregateError [ECONNREFUSED]:
+   *       at internalConnectMultiple (node:net:1121:18)
+   *       at afterConnectMultiple (node:net:1688:7) {
+   *     code: 'ECONNREFUSED',
+   *     '$metadata': { attempts: 3, totalRetryDelay: 600 },
+   *     [errors]: [ [Error], [Error] ]
+   *   },
+   *   metadata: { attempts: 3, totalRetryDelay: 600 }
+   * }
+   * ```
+   */
+  public error(...content: any[]) {
+    trace('[SDK error] %s', this.fmtContent(content));
+  }
+
+  /**
+   * This can be anything.
+   *
+   * For debug, it seems to be mostly strings.
+   * For info, it seems to be objects.
+   *
+   * Stringify and join without separator.
+   */
+  private fmtContent(content: any[]) {
+    return content.map((x) => typeof x === 'string' ? x : inspect(x)).join('');
+  }
+}
