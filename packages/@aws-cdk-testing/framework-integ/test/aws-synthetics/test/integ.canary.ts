@@ -87,7 +87,7 @@ const createCanaryByRuntimes = (runtime: Runtime) =>
   new Canary(stack, kebabToPascal(runtime.name).replace('.', ''), {
     test: Test.custom({
       handler: 'canary.handler',
-      code: Code.fromAsset(path.join(__dirname, 'canaries')),
+      code: Code.fromAsset(path.join(__dirname, runtime.name.includes('playwright') ? 'playwright-canary' : 'canaries')),
     }),
     environmentVariables: {
       URL: api.url,
@@ -100,10 +100,12 @@ const puppeteer52 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PUPPETEER_5
 const puppeteer62 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_2);
 const puppeteer70 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0);
 const puppeteer80 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PUPPETEER_8_0);
+const playwright10 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT_1_0);
 
 const selenium21 = createCanaryByRuntimes(Runtime.SYNTHETICS_PYTHON_SELENIUM_2_1);
 const selenium30 = createCanaryByRuntimes(Runtime.SYNTHETICS_PYTHON_SELENIUM_3_0);
 const selenium40 = createCanaryByRuntimes(Runtime.SYNTHETICS_PYTHON_SELENIUM_4_0);
+const selenium41 = createCanaryByRuntimes(Runtime.SYNTHETICS_PYTHON_SELENIUM_4_1);
 
 const test = new IntegTest(app, 'IntegCanaryTest', {
   testCases: [stack],
@@ -119,14 +121,14 @@ const test = new IntegTest(app, 'IntegCanaryTest', {
   puppeteer62,
   puppeteer70,
   puppeteer80,
+  playwright10,
   selenium21,
   selenium30,
   selenium40,
+  selenium41,
 ].forEach((canary) => test.assertions
   .awsApiCall('Synthetics', 'getCanaryRuns', {
     Name: canary.canaryName,
   })
   .assertAtPath('CanaryRuns.0.Status.State', ExpectedResult.stringLikeRegexp('PASSED'))
   .waitForAssertions({ totalTimeout: cdk.Duration.minutes(5) }));
-
-app.synth();

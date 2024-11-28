@@ -216,7 +216,8 @@ new synthetics.Canary(this, 'Bucket Canary', {
 });
 ```
 
-> **Note:** Synthetics have a specified folder structure for canaries. For Node scripts supplied via `code.fromAsset()` or `code.fromBucket()`, the canary resource requires the following folder structure:
+> **Note:** Synthetics have a specified folder structure for canaries.
+> For Node with puppeteer scripts supplied via `code.fromAsset()` or `code.fromBucket()`, the canary resource requires the following folder structure:
 >
 > ```plaintext
 > canary/
@@ -225,7 +226,12 @@ new synthetics.Canary(this, 'Bucket Canary', {
 >         ├── <filename>.js
 > ```
 >
+> For Node with playwright scripts supplied via `code.fromAsset()` or `code.fromBucket()`, the canary resource requires the following folder structure:
 >
+>
+> ```plaintext
+> canary/
+> ├── <filename>.js
 > For Python scripts supplied via `code.fromAsset()` or `code.fromBucket()`, the canary resource requires the following folder structure:
 >
 > ```plaintext
