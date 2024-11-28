@@ -22,7 +22,7 @@ import { realHandler as docs } from '../lib/commands/docs';
 import { realHandler as doctor } from '../lib/commands/doctor';
 import { MIGRATE_SUPPORTED_LANGUAGES, getMigrateScanType } from '../lib/commands/migrate';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
-import { data, debug, error, print, setLogLevel, setCI } from '../lib/logging';
+import { data, debug, error, print, setCI, setLogLevel, LogLevel } from '../lib/logging';
 import { Notices } from '../lib/notices';
 import { Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
@@ -48,8 +48,20 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
   const argv = await parseCommandLineArguments(args, makeBrowserDefault(), await availableInitLanguages(), MIGRATE_SUPPORTED_LANGUAGES as string[], version.DISPLAY_VERSION, yargsNegativeAlias);
 
+  // if one -v, log at a DEBUG level
+  // if 2 -v, log at a TRACE level
   if (argv.verbose) {
-    setLogLevel(argv.verbose);
+    let logLevel: LogLevel;
+    switch (argv.verbose) {
+      case 1:
+        logLevel = LogLevel.DEBUG;
+        break;
+      case 2:
+      default:
+        logLevel = LogLevel.TRACE;
+        break;
+    }
+    setLogLevel(logLevel);
   }
 
   // Debug should always imply tracing
@@ -547,6 +559,7 @@ function determineHotswapMode(hotswap?: boolean, hotswapFallback?: boolean, watc
   return hotswapMode;
 }
 
+/* istanbul ignore next: we never call this in unit tests */
 export function cli(args: string[] = process.argv.slice(2)) {
   exec(args)
     .then(async (value) => {
@@ -556,7 +569,10 @@ export function cli(args: string[] = process.argv.slice(2)) {
     })
     .catch((err) => {
       error(err.message);
-      if (err.stack) {
+
+      // Log the stack trace if we're on a developer workstation. Otherwise this will be into a minified
+      // file and the printed code line and stack trace are huge and useless.
+      if (err.stack && version.isDeveloperBuild()) {
         debug(err.stack);
       }
       process.exitCode = 1;

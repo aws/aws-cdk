@@ -27,6 +27,12 @@ export class AwsCliCompatible {
   public static async credentialChainBuilder(
     options: CredentialChainOptions = {},
   ): Promise<AwsCredentialIdentityProvider> {
+    const clientConfig = {
+      requestHandler: AwsCliCompatible.requestHandlerBuilder(options.httpOptions),
+      customUserAgent: 'aws-cdk',
+      logger: options.logger,
+    };
+
     /**
      * The previous implementation matched AWS CLI behavior:
      *
@@ -41,16 +47,12 @@ export class AwsCliCompatible {
         profile: options.profile,
         ignoreCache: true,
         mfaCodeProvider: tokenCodeFn,
-        clientConfig: {
-          requestHandler: AwsCliCompatible.requestHandlerBuilder(options.httpOptions),
-          customUserAgent: 'aws-cdk',
-          logger: options.logger,
-        },
+        clientConfig,
         logger: options.logger,
       });
     }
 
-    const profile = options.profile || process.env.AWS_PROFILE || process.env.AWS_DEFAULT_PROFILE;
+    const envProfile = process.env.AWS_PROFILE || process.env.AWS_DEFAULT_PROFILE;
 
     /**
      * Env AWS - EnvironmentCredentials with string AWS
@@ -74,13 +76,10 @@ export class AwsCliCompatible {
      * fromInstanceMetadata()
      */
     const nodeProviderChain = fromNodeProviderChain({
-      profile: profile,
-      clientConfig: {
-        requestHandler: AwsCliCompatible.requestHandlerBuilder(options.httpOptions),
-        customUserAgent: 'aws-cdk',
-        logger: options.logger,
-      },
+      profile: envProfile,
+      clientConfig,
       logger: options.logger,
+      mfaCodeProvider: tokenCodeFn,
       ignoreCache: true,
     });
 
