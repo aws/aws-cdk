@@ -26,6 +26,7 @@ import { data, debug, error, print, setCI, setLogLevel, LogLevel } from '../lib/
 import { Notices } from '../lib/notices';
 import { Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
+import { SdkToCliLogger } from './api/aws-auth/sdk-logger';
 
 /* eslint-disable max-len */
 /* eslint-disable @typescript-eslint/no-shadow */ // yargs
@@ -101,6 +102,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
       proxyAddress: argv.proxy,
       caBundlePath: argv['ca-bundle-path'],
     },
+    logger: new SdkToCliLogger(),
   });
 
   let outDirLock: ILock | undefined;
