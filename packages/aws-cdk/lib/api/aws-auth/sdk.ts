@@ -545,6 +545,7 @@ export class SDK {
     private readonly _credentials: AwsCredentialIdentity,
     region: string,
     requestHandler: NodeHttpHandlerOptions,
+    logger?: Logger,
   ) {
     this.config = {
       region,
@@ -552,6 +553,7 @@ export class SDK {
       requestHandler,
       retryStrategy: new ConfiguredRetryStrategy(7, (attempt) => 300 * (2 ** attempt)),
       customUserAgent: defaultCliUserAgent(),
+      logger,
     };
     this.currentRegion = region;
   }
@@ -951,7 +953,6 @@ export class SDK {
         });
         const command = new GetCallerIdentityCommand({});
         const result = await client.send(command);
-        debug(result.Account!, result.Arn, result.UserId);
         const accountId = result.Account;
         const partition = result.Arn!.split(':')[1];
         if (!accountId) {

@@ -17,7 +17,13 @@ export function cdkHomeDir() {
   const tmpDir = fs.realpathSync(os.tmpdir());
   let home;
   try {
-    home = path.join((os.userInfo().homedir ?? os.homedir()).trim(), '.cdk');
+    let userInfoHome: string | undefined = os.userInfo().homedir;
+    // Node returns this if the user doesn't have a home directory
+    /* istanbul ignore if: will not happen in normal setups */
+    if (userInfoHome == '/var/empty') {
+      userInfoHome = undefined;
+    }
+    home = path.join((userInfoHome ?? os.homedir()).trim(), '.cdk');
   } catch {}
   return process.env.CDK_HOME
     ? path.resolve(process.env.CDK_HOME)

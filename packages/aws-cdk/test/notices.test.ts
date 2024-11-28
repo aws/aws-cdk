@@ -455,23 +455,20 @@ describe(CachedDataSource, () => {
   });
 
   test('retrieves data from the delegate when the file cannot be read', async () => {
-    const debugSpy = jest.spyOn(logging, 'debug');
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-test'));
+    try {
+      const debugSpy = jest.spyOn(logging, 'debug');
 
-    if (fs.existsSync('does-not-exist.json')) {
-      fs.unlinkSync('does-not-exist.json');
-    }
+      const dataSource = dataSourceWithDelegateReturning(freshData, `${tmpDir}/does-not-exist.json`);
 
-    const dataSource = dataSourceWithDelegateReturning(freshData, 'does-not-exist.json');
+      const notices = await dataSource.fetch();
 
-    const notices = await dataSource.fetch();
+      expect(notices).toEqual(freshData);
+      expect(debugSpy).not.toHaveBeenCalled();
 
-    expect(notices).toEqual(freshData);
-    expect(debugSpy).not.toHaveBeenCalled();
-
-    debugSpy.mockRestore();
-
-    if (fs.existsSync('does-not-exist.json')) {
-      fs.unlinkSync('does-not-exist.json');
+      debugSpy.mockRestore();
+    } finally {
+      fs.rmSync(tmpDir, { recursive: true, force: true });
     }
   });
 
@@ -517,11 +514,10 @@ describe(Notices, () => {
     // disable caching
     jest.spyOn(CachedDataSource.prototype as any, 'save').mockImplementation((_: any) => Promise.resolve());
     jest.spyOn(CachedDataSource.prototype as any, 'load').mockImplementation(() => Promise.resolve({ expiration: 0, notices: [] }));
-
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    jest.restoreAllMocks();
   });
 
   describe('addBootstrapVersion', () => {
@@ -540,7 +536,6 @@ describe(Notices, () => {
       notices.display();
       expect(print).toHaveBeenCalledWith(new FilteredNotice(BOOTSTRAP_NOTICE_V10).format());
       expect(print).toHaveBeenCalledWith(new FilteredNotice(BOOTSTRAP_NOTICE_V11).format());
-
     });
 
     test('deduplicates', async () => {

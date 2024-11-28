@@ -131,7 +131,6 @@ export class MockSdkProvider extends SdkProvider {
  */
 export class MockSdk extends SDK {
   constructor() {
-    restoreSdkMocksToDefault();
     super(FAKE_CREDENTIALS, 'bermuda-triangle-1337', {});
   }
 }

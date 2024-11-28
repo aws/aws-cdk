@@ -2,7 +2,8 @@ import { randomUUID } from 'crypto';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { Code } from 'aws-cdk-lib/aws-lambda';
-import { DynamicInput, EnrichmentParametersConfig, IEnrichment, ILogDestination, IPipe, ISource, ITarget, IncludeExecutionData, InputTransformation, LogDestinationConfig, LogDestinationParameters, LogLevel, Pipe, SourceConfig, TargetConfig } from '../lib';
+import { DynamicInput, EnrichmentParametersConfig, IEnrichment, IPipe, ISource, ITarget, InputTransformation, Pipe, SourceConfig, TargetConfig } from '../lib';
+import { name } from '../package.json';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-pipes');
@@ -16,7 +17,12 @@ const enrichmentLambda = new cdk.aws_lambda.Function(stack, 'EnrichmentLambda', 
   runtime: cdk.aws_lambda.Runtime.NODEJS_LATEST,
 });
 
-const loggroup = new cdk.aws_logs.LogGroup(stack, 'LogGroup');
+// When this module is promoted from alpha, TestSource and TestTarget should
+// be replaced with SqsSource from @aws-cdk/aws-pipes-sources-alpha and
+// SqsTarget from @aws-cdk/aws-pipes-targets-alpha
+if (!name.endsWith('-alpha')) {
+  throw new Error('aws-pipes has exited alpha, TestSource and TestTarget should now be replaced with SqsSource and SqsTarget');
+}
 
 class TestSource implements ISource {
   sourceArn: string;
@@ -38,12 +44,10 @@ class TestSource implements ISource {
 class TestTarget implements ITarget {
   targetArn: string;
   inputTransformation: InputTransformation = InputTransformation.fromEventPath('$.body');
-
   constructor(private readonly queue: cdk.aws_sqs.Queue) {
     this.queue = queue;
     this.targetArn = queue.queueArn;
   }
-
   bind(_pipe: Pipe): TargetConfig {
     return {
       targetParameters: {
@@ -51,7 +55,6 @@ class TestTarget implements ITarget {
       },
     };
   }
-
   grantPush(pipeRole: cdk.aws_iam.IRole): void {
     this.queue.grantSendMessages(pipeRole);
   }
@@ -80,39 +83,11 @@ class TestEnrichment implements IEnrichment {
   }
 }
 
-class TestLogDestination implements ILogDestination {
-  parameters: LogDestinationParameters;
-  constructor(private readonly logGroup: cdk.aws_logs.LogGroup) {
-    this.logGroup = logGroup;
-    this.parameters = {
-      cloudwatchLogsLogDestination: {
-        logGroupArn: logGroup.logGroupArn,
-      },
-    };
-  }
-  bind(_pipe: IPipe): LogDestinationConfig {
-    return {
-      parameters: this.parameters,
-    };
-  }
-
-  grantPush(pipeRole: cdk.aws_iam.IRole): void {
-    this.logGroup.grantWrite(pipeRole);
-  }
-
-}
-
 const pipe = new Pipe(stack, 'Pipe', {
   pipeName: 'BaseTestPipe',
   source: new TestSource(sourceQueue),
   target: new TestTarget(targetQueue),
   enrichment: new TestEnrichment(enrichmentLambda),
-  logLevel: LogLevel.TRACE,
-  logIncludeExecutionData: [IncludeExecutionData.ALL],
-
-  logDestinations: [
-    new TestLogDestination(loggroup),
-  ],
 });
 
 const test = new IntegTest(app, 'integtest-pipe-sqs-to-sqs', {
@@ -125,17 +100,13 @@ const putMessageOnQueue = test.assertions.awsApiCall('SQS', 'sendMessage', {
   MessageBody: uniqueIdentifier,
 });
 
-putMessageOnQueue.next(test.assertions.awsApiCall('SQS', 'receiveMessage',
-  {
-    QueueUrl: targetQueue.queueUrl,
-  })).expect(ExpectedResult.objectLike({
-  Messages: [
-    {
-      Body: uniqueIdentifier+ '-' + pipe.pipeName + '-static',
-    },
-  ],
+putMessageOnQueue.next(test.assertions.awsApiCall('SQS', 'receiveMessage', {
+  QueueUrl: targetQueue.queueUrl,
+})).expect(ExpectedResult.objectLike({
+  Messages: [{ Body: uniqueIdentifier + '-' + pipe.pipeName + '-static' }],
 })).waitForAssertions({
   totalTimeout: cdk.Duration.seconds(30),
+  interval: cdk.Duration.seconds(15),
 });
 
 app.synth();
