@@ -401,8 +401,8 @@ export class CfnParser {
     const self = this;
 
     const creaPol = new ObjectParser<CfnCreationPolicy>(this.parseValue(policy));
-    creaPol.parse('autoScalingCreationPolicy', 'AutoScalingCreationPolicy', parseAutoScalingCreationPolicy);
-    creaPol.parse('resourceSignal', 'ResourceSignal', parseResourceSignal);
+    creaPol.parseCase('autoScalingCreationPolicy', parseAutoScalingCreationPolicy);
+    creaPol.parseCase('resourceSignal', parseResourceSignal);
     return creaPol.toResult();
 
     function parseAutoScalingCreationPolicy(p: any): FromCloudFormationResult<CfnResourceAutoScalingCreationPolicy | undefined> {
@@ -410,7 +410,7 @@ export class CfnParser {
       if (typeof p !== 'object') { return new FromCloudFormationResult(undefined); }
 
       const autoPol = new ObjectParser<CfnResourceAutoScalingCreationPolicy>(p);
-      autoPol.parse('minSuccessfulInstancesPercent', 'MinSuccessfulInstancesPercent', FromCloudFormation.getNumber);
+      autoPol.parseCase('minSuccessfulInstancesPercent', FromCloudFormation.getNumber);
       return autoPol.toResult();
     }
 
@@ -419,8 +419,8 @@ export class CfnParser {
       self.throwIfIsIntrinsic(p, logicalId);
 
       const sig = new ObjectParser<CfnResourceSignal>(p);
-      sig.parse('count', 'Count', FromCloudFormation.getNumber);
-      sig.parse('timeout', 'Tiemout', FromCloudFormation.getString);
+      sig.parseCase('count', FromCloudFormation.getNumber);
+      sig.parseCase('timeout', FromCloudFormation.getString);
       return sig.toResult();
     }
   }
@@ -432,12 +432,12 @@ export class CfnParser {
 
     // change simple JS values to their CDK equivalents
     const uppol = new ObjectParser<CfnUpdatePolicy>(this.parseValue(policy));
-    uppol.parse('autoScalingReplacingUpdate', 'AutoScalingReplacingUpdate', parseAutoScalingReplacingUpdate);
-    uppol.parse('autoScalingRollingUpdate', 'AutoScalingRollingUpdate', parseAutoScalingRollingUpdate);
-    uppol.parse('autoScalingScheduledAction', 'AutoScalingScheduledAction', parseAutoScalingScheduledAction);
-    uppol.parse('codeDeployLambdaAliasUpdate', 'CodeDeployLambdaAliasUpdate', parseCodeDeployLambdaAliasUpdate);
-    uppol.parse('enableVersionUpgrade', 'EnableVersionUpgrade', (x) => FromCloudFormation.getBoolean(x) as any);
-    uppol.parse('useOnlineResharding', 'UseOnlineResharding', (x) => FromCloudFormation.getBoolean(x) as any);
+    uppol.parseCase('autoScalingReplacingUpdate', parseAutoScalingReplacingUpdate);
+    uppol.parseCase('autoScalingRollingUpdate', parseAutoScalingRollingUpdate);
+    uppol.parseCase('autoScalingScheduledAction', parseAutoScalingScheduledAction);
+    uppol.parseCase('codeDeployLambdaAliasUpdate', parseCodeDeployLambdaAliasUpdate);
+    uppol.parseCase('enableVersionUpgrade', (x) => FromCloudFormation.getBoolean(x) as any);
+    uppol.parseCase('useOnlineResharding', (x) => FromCloudFormation.getBoolean(x) as any);
     return uppol.toResult();
 
     function parseAutoScalingReplacingUpdate(p: any): FromCloudFormationResult<CfnAutoScalingReplacingUpdate | undefined> {
@@ -445,7 +445,7 @@ export class CfnParser {
       self.throwIfIsIntrinsic(p, logicalId);
 
       const repUp = new ObjectParser<CfnAutoScalingReplacingUpdate>(p);
-      repUp.parse('willReplace', 'WillReplace', (x) => x);
+      repUp.parseCase('willReplace', (x) => x);
       return repUp.toResult();
     }
 
@@ -454,12 +454,12 @@ export class CfnParser {
       self.throwIfIsIntrinsic(p, logicalId);
 
       const rollUp = new ObjectParser<CfnAutoScalingRollingUpdate>(p);
-      rollUp.parse('maxBatchSize', 'MaxBatchSize', FromCloudFormation.getNumber);
-      rollUp.parse('minInstancesInService', 'MinInstancesInService', FromCloudFormation.getNumber);
-      rollUp.parse('minSuccessfulInstancesPercent', 'MinSuccessfulInstancesPercent', FromCloudFormation.getNumber);
-      rollUp.parse('pauseTime', 'PauseTime', FromCloudFormation.getString);
-      rollUp.parse('suspendProcesses', 'SuspendProcesses', FromCloudFormation.getStringArray);
-      rollUp.parse('waitOnResourceSignals', 'WaitOnResourceSignals', FromCloudFormation.getBoolean);
+      rollUp.parseCase('maxBatchSize', FromCloudFormation.getNumber);
+      rollUp.parseCase('minInstancesInService', FromCloudFormation.getNumber);
+      rollUp.parseCase('minSuccessfulInstancesPercent', FromCloudFormation.getNumber);
+      rollUp.parseCase('pauseTime', FromCloudFormation.getString);
+      rollUp.parseCase('suspendProcesses', FromCloudFormation.getStringArray);
+      rollUp.parseCase('waitOnResourceSignals', FromCloudFormation.getBoolean);
       return rollUp.toResult();
     }
 
@@ -468,10 +468,10 @@ export class CfnParser {
       self.throwIfIsIntrinsic(p, logicalId);
 
       const cdUp = new ObjectParser<CfnCodeDeployLambdaAliasUpdate>(p);
-      cdUp.parse('beforeAllowTrafficHook', 'BeforeAllowTrafficHook', FromCloudFormation.getString);
-      cdUp.parse('afterAllowTrafficHook', 'AfterAllowTrafficHook', FromCloudFormation.getString);
-      cdUp.parse('applicationName', 'ApplicationName', FromCloudFormation.getString);
-      cdUp.parse('deploymentGroupName', 'DeploymentGroupName', FromCloudFormation.getString);
+      cdUp.parseCase('beforeAllowTrafficHook', FromCloudFormation.getString);
+      cdUp.parseCase('afterAllowTrafficHook', FromCloudFormation.getString);
+      cdUp.parseCase('applicationName', FromCloudFormation.getString);
+      cdUp.parseCase('deploymentGroupName', FromCloudFormation.getString);
       return cdUp.toResult();
     }
 
@@ -480,7 +480,7 @@ export class CfnParser {
       self.throwIfIsIntrinsic(p, logicalId);
 
       const schedUp = new ObjectParser<CfnAutoScalingScheduledAction>(p);
-      schedUp.parse('ignoreUnmodifiedGroupSizeProperties', 'IgnoreUnmodifiedGroupSizeProperties', FromCloudFormation.getBoolean);
+      schedUp.parseCase('ignoreUnmodifiedGroupSizeProperties', FromCloudFormation.getBoolean);
       return schedUp.toResult();
     }
   }
@@ -866,18 +866,28 @@ class ObjectParser<T extends object> {
     this.unparsed = { ...input };
   }
 
-  // eslint-disable-next-line max-len
-  public parse<K extends keyof T>(targetKey: K, key: string, parser: (x: any) => T[K] | FromCloudFormationResult<T[K] | IResolvable>) {
-    if (!(key in this.unparsed)) {
+  /**
+   * Parse a single field from the object into the target object
+   *
+   * The source key will be assumed to be the exact same as the
+   * target key, but with an uppercase first letter.
+   */
+  public parseCase<K extends keyof T>(targetKey: K, parser: (x: any) => T[K] | FromCloudFormationResult<T[K] | IResolvable>) {
+    const sourceKey = ucfirst(String(targetKey));
+    this.parse(targetKey, sourceKey, parser);
+  }
+
+  public parse<K extends keyof T>(targetKey: K, sourceKey: string, parser: (x: any) => T[K] | FromCloudFormationResult<T[K] | IResolvable>) {
+    if (!(sourceKey in this.unparsed)) {
       return;
     }
 
-    const value = parser(this.unparsed[key]);
-    delete this.unparsed[key];
+    const value = parser(this.unparsed[sourceKey]);
+    delete this.unparsed[sourceKey];
 
     if (value instanceof FromCloudFormationResult) {
       for (const [k, v] of Object.entries(value.extraProperties ?? {})) {
-        this.unparsed[`${key}.${k}`] = v;
+        this.unparsed[`${sourceKey}.${k}`] = v;
       }
       this.parsed[targetKey as any] = value.value;
     } else {
@@ -908,4 +918,8 @@ class ObjectParser<T extends object> {
 
     return unparsed;
   }
+}
+
+function ucfirst(x: string) {
+  return x.slice(0, 1).toUpperCase() + x.slice(1);
 }
