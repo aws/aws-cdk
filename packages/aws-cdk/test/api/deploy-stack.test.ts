@@ -1127,9 +1127,13 @@ describe('disable rollback', () => {
 });
 
 test.each([
+  // From a failed state, a --no-rollback is possible as long as there is not a replacement
   [StackStatus.UPDATE_FAILED, 'no-rollback', 'no-replacement', 'did-deploy-stack'],
   [StackStatus.UPDATE_FAILED, 'no-rollback', 'replacement', 'failpaused-need-rollback-first'],
+  // Any combination of UPDATE_FAILED & rollback always requires a rollback first
   [StackStatus.UPDATE_FAILED, 'rollback', 'replacement', 'failpaused-need-rollback-first'],
+  [StackStatus.UPDATE_FAILED, 'rollback', 'no-replacement', 'failpaused-need-rollback-first'],
+  // From a stable state, any deployment containing a replacement requires a regular deployment (--rollback)
   [StackStatus.UPDATE_COMPLETE, 'no-rollback', 'replacement', 'replacement-requires-rollback'],
 ] satisfies Array<[StackStatus, 'rollback' | 'no-rollback', 'replacement' | 'no-replacement', string]>)
 ('no-rollback and replacement is disadvised: %s %s %s -> %s', async (stackStatus, rollback, replacement, expectedType) => {
