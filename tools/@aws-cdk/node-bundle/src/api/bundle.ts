@@ -443,7 +443,7 @@ export class Bundle {
       bundle: true,
       target: 'node14',
       platform: 'node',
-      sourcemap: this.sourcemap ?? 'inline',
+      sourcemap: this.sourcemap,
       metafile: true,
       minify: this.minify,
       minifyWhitespace: this.minifyWhitespace,
