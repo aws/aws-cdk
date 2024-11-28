@@ -2,6 +2,15 @@ FROM jsii/superchain:1-bookworm-slim-node20
 
 USER root
 
+# Setup oh-my-zsh
+RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
+    && apt-get -y install --no-install-recommends zsh vim \
+    && rm -rf /var/lib/apt/lists/* \
+    && chsh -s $(which zsh) superchain
+
+# Required, otherwise shell is extermly slow due the size of the aws-cdk
+RUN sh -c 'echo "[oh-my-zsh]\n        hide-dirty = 1" > /etc/gitconfig'
+
 # Change uid/guid of superchain so it can work with the docker-in-docker feature
 RUN groupmod --gid 1000 superchain \
     && usermod --uid 1000 --gid 1000 superchain \
@@ -10,10 +19,4 @@ RUN groupmod --gid 1000 superchain \
 USER superchain
 
 # Setup oh-my-zsh
-RUN sudo apt-get update && export DEBIAN_FRONTEND=noninteractive \
-    && sudo apt-get -y install --no-install-recommends zsh vim \
-    && sudo rm -rf /var/lib/apt/lists/* \
-    && sudo chsh -s $(which zsh) $(whoami)
-RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended \
-    # Required, otherwise shell is extermly slow due the size of the aws-cdk
-    && sudo sh -c 'echo "[oh-my-zsh]\n        hide-dirty = 1" > /etc/gitconfig'
+RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended

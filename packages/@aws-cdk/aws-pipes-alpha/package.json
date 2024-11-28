@@ -88,12 +88,14 @@
     "jest": "^29",
     "aws-cdk-lib": "0.0.0",
     "constructs": "^10.0.0",
-    "@aws-cdk/integ-tests-alpha": "0.0.0"
+    "@aws-cdk/integ-tests-alpha": "0.0.0",
+    "@aws-cdk/aws-kinesisfirehose-alpha": "0.0.0"
   },
   "dependencies": {},
   "peerDependencies": {
     "aws-cdk-lib": "^0.0.0",
-    "constructs": "^10.0.0"
+    "constructs": "^10.0.0",
+    "@aws-cdk/aws-kinesisfirehose-alpha": "0.0.0"
   },
   "engines": {
     "node": ">= 14.15.0"

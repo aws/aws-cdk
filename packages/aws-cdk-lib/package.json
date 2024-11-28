@@ -136,7 +136,7 @@
     "mime-types": "^2.1.35"
   },
   "devDependencies": {
-    "@aws-cdk/aws-service-spec": "^0.1.32",
+    "@aws-cdk/aws-service-spec": "^0.1.35",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/custom-resource-handlers": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
@@ -280,6 +280,7 @@
     "./aws-config": "./aws-config/index.js",
     "./aws-connect": "./aws-connect/index.js",
     "./aws-connectcampaigns": "./aws-connectcampaigns/index.js",
+    "./aws-connectcampaignsv2": "./aws-connectcampaignsv2/index.js",
     "./aws-controltower": "./aws-controltower/index.js",
     "./aws-cur": "./aws-cur/index.js",
     "./aws-customerprofiles": "./aws-customerprofiles/index.js",
@@ -421,6 +422,7 @@
     "./aws-qldb": "./aws-qldb/index.js",
     "./aws-quicksight": "./aws-quicksight/index.js",
     "./aws-ram": "./aws-ram/index.js",
+    "./aws-rbin": "./aws-rbin/index.js",
     "./aws-rds": "./aws-rds/index.js",
     "./aws-redshift": "./aws-redshift/index.js",
     "./aws-redshiftserverless": "./aws-redshiftserverless/index.js",
