@@ -3,16 +3,14 @@ import { Logger } from '@smithy/types';
 import { trace } from '../../logging';
 
 export class SdkToCliLogger implements Logger {
-  public trace(...content: any[]) {
+  public trace(..._content: any[]) {
     // This is too much detail for our logs
-    // trace('[SDK trace] %s', this.fmtContent(content));
-    Array.isArray(content);
+    // trace('[SDK trace] %s', fmtContent(content));
   }
 
-  public debug(...content: any[]) {
+  public debug(..._content: any[]) {
     // This is too much detail for our logs
-    // trace('[SDK debug] %s', this.fmtContent(content));
-    Array.isArray(content);
+    // trace('[SDK debug] %s', fmtContent(content));
   }
 
   /**
@@ -43,11 +41,11 @@ export class SdkToCliLogger implements Logger {
    * ```
    */
   public info(...content: any[]) {
-    trace('[sdk info] %s', this.fmtContent(content));
+    trace('[sdk info] %s', formatSdkLoggerContent(content));
   }
 
   public warn(...content: any[]) {
-    trace('[sdk warn] %s', this.fmtContent(content));
+    trace('[sdk warn] %s', formatSdkLoggerContent(content));
   }
 
   /**
@@ -72,29 +70,29 @@ export class SdkToCliLogger implements Logger {
    * ```
    */
   public error(...content: any[]) {
-    trace('[sdk error] %s', this.fmtContent(content));
-  }
-
-  /**
-   * This can be anything.
-   *
-   * For debug, it seems to be mostly strings.
-   * For info, it seems to be objects.
-   *
-   * Stringify and join without separator.
-   */
-  private fmtContent(content: any[]) {
-    if (content.length === 1) {
-      const apiFmt = formatApiCall(content[0]);
-      if (apiFmt) {
-        return apiFmt;
-      }
-    }
-    return content.map((x) => typeof x === 'string' ? x : inspect(x)).join('');
+    trace('[sdk error] %s', formatSdkLoggerContent(content));
   }
 }
 
-export function formatApiCall(content: any): string | undefined {
+/**
+ * This can be anything.
+ *
+ * For debug, it seems to be mostly strings.
+ * For info, it seems to be objects.
+ *
+ * Stringify and join without separator.
+ */
+export function formatSdkLoggerContent(content: any[]) {
+  if (content.length === 1) {
+    const apiFmt = formatApiCall(content[0]);
+    if (apiFmt) {
+      return apiFmt;
+    }
+  }
+  return content.map((x) => typeof x === 'string' ? x : inspect(x)).join('');
+}
+
+function formatApiCall(content: any): string | undefined {
   if (!isSdkApiCallSuccess(content) && !isSdkApiCallError(content)) {
     return undefined;
   }
@@ -103,8 +101,8 @@ export function formatApiCall(content: any): string | undefined {
   const api = content.commandName.replace(/Command$/, '');
 
   const parts = [];
-  if (content.metadata.attempts > 1) {
-    parts.push(`[${content.metadata.attempts} attempts, ${content.metadata.totalRetryDelay}ms retry]`);
+  if ((content.metadata?.attempts ?? 0) > 1) {
+    parts.push(`[${content.metadata?.attempts} attempts, ${content.metadata?.totalRetryDelay}ms retry]`);
   }
 
   parts.push(`${service}.${api}(${JSON.stringify(content.input)})`);
@@ -122,13 +120,13 @@ interface SdkApiCallBase {
   clientName: string;
   commandName: string;
   input: Record<string, unknown>;
-  metadata: {
+  metadata?: {
     httpStatusCode?: number;
     requestId?: string;
     extendedRequestId?: string;
     cfId?: string;
-    attempts: number;
-    totalRetryDelay: number;
+    attempts?: number;
+    totalRetryDelay?: number;
   };
 }
 

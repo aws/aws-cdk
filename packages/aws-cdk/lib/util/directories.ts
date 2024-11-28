@@ -19,6 +19,7 @@ export function cdkHomeDir() {
   try {
     let userInfoHome: string | undefined = os.userInfo().homedir;
     // Node returns this if the user doesn't have a home directory
+    /* istanbul ignore if: will not happen in normal setups */
     if (userInfoHome == '/var/empty') {
       userInfoHome = undefined;
     }
