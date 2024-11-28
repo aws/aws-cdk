@@ -568,7 +568,10 @@ export function cli(args: string[] = process.argv.slice(2)) {
     })
     .catch((err) => {
       error(err.message);
-      if (err.stack) {
+
+      // Log the stack trace if we're on a developer workstation. Otherwise this will be into a minified
+      // file and the printed code line and stack trace are huge and useless.
+      if (err.stack && version.isDeveloperBuild()) {
         debug(err.stack);
       }
       process.exitCode = 1;
