@@ -29,7 +29,7 @@ import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
-import { Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn, IAspect, IResolvable, Lazy, Names, Size, Stack, Token } from '../../core';
+import { Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn, IAspect, Lazy, Names, Size, Stack, Token } from '../../core';
 import { LAMBDA_RECOGNIZE_LAYER_VERSION } from '../../cx-api';
 
 /**
