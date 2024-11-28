@@ -186,6 +186,7 @@ export interface InstanceProps {
    * An IAM role to associate with the instance profile assigned to this Auto Scaling Group.
    *
    * The role must be assumable by the service principal `ec2.amazonaws.com`:
+   * Note: You can provide an instanceProfile or a role, but not both.
    *
    * @example
    * const role = new iam.Role(this, 'MyRole', {
@@ -195,6 +196,15 @@ export interface InstanceProps {
    * @default - A role will automatically be created, it can be accessed via the `role` property
    */
   readonly role?: iam.IRole;
+
+  /**
+   * The instance profile used to pass role information to EC2 instances.
+   *
+   * Note: You can provide an instanceProfile or a role, but not both.
+   *
+   * @default - No instance profile
+   */
+  readonly instanceProfile?: iam.IInstanceProfile;
 
   /**
    * The name of the instance
@@ -479,18 +489,30 @@ export class Instance extends Resource implements IInstance {
     this.securityGroups.push(this.securityGroup);
     Tags.of(this).add(NAME_TAG, props.instanceName || this.node.path);
 
-    this.role = props.role || new iam.Role(this, 'InstanceRole', {
-      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
-    });
+    if (props.instanceProfile && props.role) {
+      throw new Error('You cannot provide both instanceProfile and role');
+    }
+
+    let iamInstanceProfile: string | undefined = undefined;
+    if (props.instanceProfile?.role) {
+      this.role = props.instanceProfile.role;
+      iamInstanceProfile = props.instanceProfile.instanceProfileName;
+    } else {
+      this.role = props.role || new iam.Role(this, 'InstanceRole', {
+        assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+      });
+
+      const iamProfile = new iam.CfnInstanceProfile(this, 'InstanceProfile', {
+        roles: [this.role.roleName],
+      });
+      iamInstanceProfile = iamProfile.ref;
+    }
+
     this.grantPrincipal = this.role;
 
     if (props.ssmSessionPermissions) {
       this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore'));
     }
-
-    const iamProfile = new iam.CfnInstanceProfile(this, 'InstanceProfile', {
-      roles: [this.role.roleName],
-    });
 
     // use delayed evaluation
     const imageConfig = props.machineImage.getImage(this);
@@ -565,7 +587,7 @@ export class Instance extends Resource implements IInstance {
       subnetId: networkInterfaces ? undefined : subnet.subnetId,
       securityGroupIds: networkInterfaces ? undefined : securityGroupsToken,
       networkInterfaces,
-      iamInstanceProfile: iamProfile.ref,
+      iamInstanceProfile,
       userData: userDataToken,
       availabilityZone: subnet.availabilityZone,
       sourceDestCheck: props.sourceDestCheck,
