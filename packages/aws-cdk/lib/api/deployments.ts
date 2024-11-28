@@ -3,23 +3,41 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as cdk_assets from 'cdk-assets';
 import { AssetManifest, IManifestEntry } from 'cdk-assets';
 import * as chalk from 'chalk';
-import { Tag } from '../cdk-toolkit';
+import type { SdkProvider } from './aws-auth/sdk-provider';
+import { type DeploymentMethod, deployStack, DeployStackResult, destroyStack } from './deploy-stack';
+import { type EnvironmentResources } from './environment-resources';
+import type { Tag } from '../cdk-toolkit';
 import { debug, warning } from '../logging';
-import { SdkProvider } from './aws-auth/sdk-provider';
-import { deployStack, DeployStackResult, destroyStack, DeploymentMethod } from './deploy-stack';
 import { EnvironmentAccess } from './environment-access';
-import { EnvironmentResources } from './environment-resources';
 import { HotswapMode, HotswapPropertyOverrides } from './hotswap/common';
-import { loadCurrentTemplateWithNestedStacks, loadCurrentTemplate, RootTemplateWithNestedStacks } from './nested-stack-helpers';
+import {
+  loadCurrentTemplate,
+  loadCurrentTemplateWithNestedStacks,
+  type RootTemplateWithNestedStacks,
+} from './nested-stack-helpers';
 import { DEFAULT_TOOLKIT_STACK_NAME } from './toolkit-info';
 import { determineAllowCrossAccountAssetPublishing } from './util/checks';
-import { CloudFormationStack, Template, ResourcesToImport, ResourceIdentifierSummaries, stabilizeStack, uploadStackTemplateAssets } from './util/cloudformation';
+import {
+  CloudFormationStack,
+  type ResourceIdentifierSummaries,
+  ResourcesToImport,
+  stabilizeStack,
+  Template,
+  uploadStackTemplateAssets,
+} from './util/cloudformation';
 import { StackActivityMonitor, StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
 import { StackEventPoller } from './util/cloudformation/stack-event-poller';
 import { RollbackChoice } from './util/cloudformation/stack-status';
 import { makeBodyParameter } from './util/template-body-parameter';
 import { AssetManifestBuilder } from '../util/asset-manifest-builder';
-import { buildAssets, publishAssets, BuildAssetsOptions, PublishAssetsOptions, PublishingAws, EVENT_TO_LOGGER } from '../util/asset-publishing';
+import {
+  buildAssets,
+  type BuildAssetsOptions,
+  EVENT_TO_LOGGER,
+  publishAssets,
+  type PublishAssetsOptions,
+  PublishingAws,
+} from '../util/asset-publishing';
 
 const BOOTSTRAP_STACK_VERSION_FOR_ROLLBACK = 23;
 
@@ -395,8 +413,7 @@ export class Deployments {
       stackArtifact,
       env.resolvedEnvironment,
       builder,
-      env.resources,
-      env.sdk);
+      env.resources);
 
     // If the `makeBodyParameter` before this added assets, make sure to publish them before
     // calling the API.
@@ -410,7 +427,7 @@ export class Deployments {
       });
     }
 
-    const response = await cfn.getTemplateSummary(cfnParam).promise();
+    const response = await cfn.getTemplateSummary(cfnParam);
     if (!response.ResourceIdentifierSummaries) {
       debug('GetTemplateSummary API call did not return "ResourceIdentifierSummaries"');
     }
@@ -421,7 +438,9 @@ export class Deployments {
     let deploymentMethod = options.deploymentMethod;
     if (options.changeSetName || options.execute !== undefined) {
       if (deploymentMethod) {
-        throw new Error('You cannot supply both \'deploymentMethod\' and \'changeSetName/execute\'. Supply one or the other.');
+        throw new Error(
+          "You cannot supply both 'deploymentMethod' and 'changeSetName/execute'. Supply one or the other.",
+        );
       }
       deploymentMethod = {
         method: 'change-set',
@@ -509,7 +528,7 @@ export class Deployments {
             ClientRequestToken: randomUUID(),
             // Enabling this is just the better overall default, the only reason it isn't the upstream default is backwards compatibility
             RetainExceptOnCreate: true,
-          }).promise();
+          });
           break;
 
         case RollbackChoice.CONTINUE_UPDATE_ROLLBACK:
@@ -523,33 +542,35 @@ export class Deployments {
             });
             await poller.poll();
             resourcesToSkip = poller.resourceErrors
-              .filter(r => !r.isStackEvent && r.parentStackLogicalIds.length === 0)
-              .map(r => r.event.LogicalResourceId ?? '');
+              .filter((r) => !r.isStackEvent && r.parentStackLogicalIds.length === 0)
+              .map((r) => r.event.LogicalResourceId ?? '');
           }
 
-          const skipDescription = resourcesToSkip.length > 0
-            ? ` (orphaning: ${resourcesToSkip.join(', ')})`
-            : '';
+          const skipDescription = resourcesToSkip.length > 0 ? ` (orphaning: ${resourcesToSkip.join(', ')})` : '';
           warning(`Continuing rollback of stack ${deployName}${skipDescription}`);
           await cfn.continueUpdateRollback({
             StackName: deployName,
             ClientRequestToken: randomUUID(),
             RoleARN: executionRoleArn,
             ResourcesToSkip: resourcesToSkip,
-          }).promise();
+          });
           break;
 
         case RollbackChoice.ROLLBACK_FAILED:
-          warning(`Stack ${deployName} failed creation and rollback. This state cannot be rolled back. You can recreate this stack by running 'cdk deploy'.`);
+          warning(
+            `Stack ${deployName} failed creation and rollback. This state cannot be rolled back. You can recreate this stack by running 'cdk deploy'.`,
+          );
           return { notInRollbackableState: true };
 
         default:
           throw new Error(`Unexpected rollback choice: ${cloudFormationStack.stackStatus.rollbackChoice}`);
       }
 
-      const monitor = options.quiet ? undefined : StackActivityMonitor.withDefaultPrinter(cfn, deployName, options.stack, {
-        ci: options.ci,
-      }).start();
+      const monitor = options.quiet
+        ? undefined
+        : StackActivityMonitor.withDefaultPrinter(cfn, deployName, options.stack, {
+          ci: options.ci,
+        }).start();
 
       let stackErrorMessage: string | undefined = undefined;
       let finalStackState = cloudFormationStack;
@@ -557,7 +578,9 @@ export class Deployments {
         const successStack = await stabilizeStack(cfn, deployName);
 
         // This shouldn't really happen, but catch it anyway. You never know.
-        if (!successStack) { throw new Error('Stack deploy failed (the stack disappeared while we were rolling it back)'); }
+        if (!successStack) {
+          throw new Error('Stack deploy failed (the stack disappeared while we were rolling it back)');
+        }
         finalStackState = successStack;
 
         const errors = monitor?.errors?.join(', ');
@@ -580,9 +603,13 @@ export class Deployments {
         continue;
       }
 
-      throw new Error(`${stackErrorMessage} (fix problem and retry, or orphan these resources using --orphan or --force)`);;
+      throw new Error(
+        `${stackErrorMessage} (fix problem and retry, or orphan these resources using --orphan or --force)`,
+      );
     }
-    throw new Error('Rollback did not finish after a large number of iterations; stopping because it looks like we\'re not making progress anymore. You can retry if rollback was progressing as expected.');
+    throw new Error(
+      "Rollback did not finish after a large number of iterations; stopping because it looks like we're not making progress anymore. You can retry if rollback was progressing as expected.",
+    );
   }
 
   public async destroyStack(options: DestroyStackOptions): Promise<void> {
@@ -678,7 +705,11 @@ export class Deployments {
    * Publish a single asset from an asset manifest
    */
   // eslint-disable-next-line max-len
-  public async publishSingleAsset(assetManifest: AssetManifest, asset: IManifestEntry, options: PublishStackAssetsOptions) {
+  public async publishSingleAsset(
+    assetManifest: AssetManifest,
+    asset: IManifestEntry,
+    options: PublishStackAssetsOptions,
+  ) {
     const stackEnv = await this.envs.resolveStackEnvironment(options.stack);
 
     // No need to validate anymore, we already did that during build
@@ -701,9 +732,12 @@ export class Deployments {
   /**
    * Return whether a single asset has been published already
    */
-  public async isSingleAssetPublished(assetManifest: AssetManifest, asset: IManifestEntry, options: PublishStackAssetsOptions) {
+  public async isSingleAssetPublished(
+    assetManifest: AssetManifest,
+    asset: IManifestEntry,
+    options: PublishStackAssetsOptions,
+  ) {
     const stackEnv = await this.envs.resolveStackEnvironment(options.stack);
-
     const publisher = this.cachedPublisher(assetManifest, stackEnv, options.stackName);
     return publisher.isEntryPublished(asset);
   }
@@ -717,8 +751,8 @@ export class Deployments {
     stackName: string,
     requiresBootstrapStackVersion: number | undefined,
     bootstrapStackVersionSsmParameter: string | undefined,
-    envResources: EnvironmentResources) {
-
+    envResources: EnvironmentResources,
+  ) {
     try {
       await envResources.validateVersion(requiresBootstrapStackVersion, bootstrapStackVersionSsmParameter);
     } catch (e: any) {
@@ -747,8 +781,10 @@ export class Deployments {
  * Asset progress that doesn't do anything with percentages (currently)
  */
 class ParallelSafeAssetProgress implements cdk_assets.IPublishProgressListener {
-  constructor(private readonly prefix: string, private readonly quiet: boolean) {
-  }
+  constructor(
+    private readonly prefix: string,
+    private readonly quiet: boolean,
+  ) {}
 
   public onPublishEvent(type: cdk_assets.EventType, event: cdk_assets.IPublishProgress): void {
     const handler = this.quiet && type !== 'fail' ? debug : EVENT_TO_LOGGER[type];
@@ -756,14 +792,6 @@ class ParallelSafeAssetProgress implements cdk_assets.IPublishProgressListener {
   }
 }
 
-/**
- * @deprecated Use 'Deployments' instead
- */
-export class CloudFormationDeployments extends Deployments {
-}
-
 function suffixWithErrors(msg: string, errors?: string[]) {
-  return errors && errors.length > 0
-    ? `${msg}: ${errors.join(', ')}`
-    : msg;
+  return errors && errors.length > 0 ? `${msg}: ${errors.join(', ')}` : msg;
 }

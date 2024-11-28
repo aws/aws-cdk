@@ -8,7 +8,7 @@ echo '    "__comment__": "This file is necessary to make transitive Project Refe
 echo '    "files": [],'
 echo '    "references": ['
 comma='  '
-for package in $(node_modules/.bin/lerna ls -ap); do
+for package in $(node_modules/.bin/lerna ls -ap 2>/dev/null); do
     if [[ -f ${package}/tsconfig.json ]]; then
         relpath=${package#"$prefix"}
         echo '        '"$comma"'{ "path": "'"$relpath"'" }'
