@@ -29,7 +29,7 @@ import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
-import { Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn, IAspect, Lazy, Names, Size, Stack, Token } from '../../core';
+import { Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn, IAspect, IResolvable, Lazy, Names, Size, Stack, Token } from '../../core';
 import { LAMBDA_RECOGNIZE_LAYER_VERSION } from '../../cx-api';
 
 /**
@@ -149,6 +149,33 @@ export enum RecursiveLoop {
    * Terminates the recursive loop.
    */
   TERMINATE = 'Terminate',
+}
+
+/**
+ * The tracing mode.
+ */
+export enum TracingMode {
+  /**
+   * Sets the X-Ray tracing mode to active.
+   */
+  ACTIVE = 'Active',
+
+  /**
+   * Sets the X-Ray tracing mode to pass-through.
+   */
+  PASS_THROUGH = 'PassThrough',
+}
+
+/**
+ * The function's [AWS X-Ray](https://docs.aws.amazon.com/lambda/latest/dg/services-xray.html) tracing configuration.
+ */
+export interface TracingConfig {
+  /**
+   * The tracing mode.
+   *
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-tracingconfig.html#cfn-lambda-function-tracingconfig-mode
+   */
+  mode: TracingMode;
 }
 
 /**
@@ -625,6 +652,13 @@ export interface FunctionProps extends FunctionOptions {
    * the handler.
    */
   readonly handler: string;
+
+  /**
+   * The function's [AWS X-Ray](https://docs.aws.amazon.com/lambda/latest/dg/services-xray.html) tracing configuration. To sample and record incoming requests, set Mode to Active
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-tracingconfig.html#cfn-lambda-function-tracingconfig-mode
+   */
+  readonly tracingConfig?: TracingConfig;
 }
 
 /**
@@ -1071,6 +1105,7 @@ export class Function extends FunctionBase {
       snapStart: this.configureSnapStart(props),
       loggingConfig: this.getLoggingConfig(props),
       recursiveLoop: props.recursiveLoop,
+      tracingConfig: props.tracingConfig,
     });
 
     if ((props.tracing !== undefined) || (props.adotInstrumentation !== undefined)) {

@@ -4741,6 +4741,29 @@ describe('CMCMK', () => {
     });
     bockfs.restore();
   });
+
+  test('can specify tracing mode', () => {
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromInline('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_20_X,
+      tracingConfig: {
+        mode: lambda.TracingMode.ACTIVE,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        TracingConfig: {
+          Mode: 'Active',
+        },
+      },
+    });
+  });
 });
 
 function newTestLambda(scope: constructs.Construct) {
