@@ -117,7 +117,7 @@ describe('aspect', () => {
     // WHEN - adding an Aspect without priority specified
     Aspects.of(root).add(new MyAspect());
 
-    // THEN - the priority is set to default (600)
+    // THEN - the priority is set to default
     let aspectApplication = Aspects.of(root).list[0];
     expect(aspectApplication.priority).toEqual(AspectPriority.DEFAULT);
   });
@@ -280,7 +280,7 @@ describe('aspect', () => {
 
     expect(() => {
       app.synth();
-    }).toThrow('Cannot invoke Aspect Tag with priority 0 after Aspect Tag with priority 10 at My-Stack.');
+    }).toThrow('Cannot invoke Aspect Tag with priority 0 on node My-Stack: an Aspect Tag with a lower priority (10) was already invoked on this node.');
   });
 
   test('Infinitely recursing Aspect is caught with error', () => {
