@@ -26,6 +26,7 @@ import { data, debug, error, print, setCI, setLogLevel, LogLevel } from '../lib/
 import { Notices } from '../lib/notices';
 import { Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
+import { SdkToCliLogger } from './api/aws-auth/sdk-logger';
 
 /* eslint-disable max-len */
 /* eslint-disable @typescript-eslint/no-shadow */ // yargs
@@ -101,6 +102,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
       proxyAddress: argv.proxy,
       caBundlePath: argv['ca-bundle-path'],
     },
+    logger: new SdkToCliLogger(),
   });
 
   let outDirLock: ILock | undefined;
@@ -559,6 +561,7 @@ function determineHotswapMode(hotswap?: boolean, hotswapFallback?: boolean, watc
   return hotswapMode;
 }
 
+/* istanbul ignore next: we never call this in unit tests */
 export function cli(args: string[] = process.argv.slice(2)) {
   exec(args)
     .then(async (value) => {
@@ -568,7 +571,10 @@ export function cli(args: string[] = process.argv.slice(2)) {
     })
     .catch((err) => {
       error(err.message);
-      if (err.stack) {
+
+      // Log the stack trace if we're on a developer workstation. Otherwise this will be into a minified
+      // file and the printed code line and stack trace are huge and useless.
+      if (err.stack && version.isDeveloperBuild()) {
         debug(err.stack);
       }
       process.exitCode = 1;
