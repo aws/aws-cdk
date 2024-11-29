@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "InvokeModel/DefaultTest": {
+      "stacks": [
+        "aws-bedrock-cross-region-inference-profile-integ"
+      ],
+      "assertionStack": "InvokeModel/DefaultTest/DeployAssert",
+      "assertionStackName": "InvokeModelDefaultTestDeployAssert9C0D2DFC"
+    }
+  }
+}
