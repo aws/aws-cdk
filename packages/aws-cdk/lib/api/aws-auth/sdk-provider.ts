@@ -126,7 +126,7 @@ export class SdkProvider {
 
     const region = await AwsCliCompatible.region(options.profile);
     const requestHandler = AwsCliCompatible.requestHandlerBuilder(options.httpOptions);
-    return new SdkProvider(credentialProvider, region, requestHandler);
+    return new SdkProvider(credentialProvider, region, requestHandler, options.logger);
   }
 
   private readonly plugins = new CredentialPlugins();
@@ -138,6 +138,7 @@ export class SdkProvider {
      */
     public readonly defaultRegion: string,
     private readonly requestHandler: NodeHttpHandlerOptions = {},
+    private readonly logger?: Logger,
   ) {}
 
   /**
@@ -169,7 +170,7 @@ export class SdkProvider {
 
       // Our current credentials must be valid and not expired. Confirm that before we get into doing
       // actual CloudFormation calls, which might take a long time to hang.
-      const sdk = new SDK(baseCreds.credentials, env.region, this.requestHandler);
+      const sdk = new SDK(baseCreds.credentials, env.region, this.requestHandler, this.logger);
       await sdk.validateCredentials();
       return { sdk, didAssumeRole: false };
     }
@@ -201,7 +202,7 @@ export class SdkProvider {
           `${fmtObtainedCredentials(baseCreds)} could not be used to assume '${options.assumeRoleArn}', but are for the right account. Proceeding anyway.`,
         );
         return {
-          sdk: new SDK(baseCreds.credentials, env.region, this.requestHandler),
+          sdk: new SDK(baseCreds.credentials, env.region, this.requestHandler, this.logger),
           didAssumeRole: false,
         };
       }
@@ -221,7 +222,7 @@ export class SdkProvider {
     if (baseCreds.source === 'none') {
       return undefined;
     }
-    return (await new SDK(baseCreds.credentials, env.region, this.requestHandler).currentAccount()).partition;
+    return (await new SDK(baseCreds.credentials, env.region, this.requestHandler, this.logger).currentAccount()).partition;
   }
 
   /**
@@ -273,7 +274,7 @@ export class SdkProvider {
           throw new Error('Unable to resolve AWS credentials (setup with "aws configure")');
         }
 
-        return await new SDK(credentials, this.defaultRegion, this.requestHandler).currentAccount();
+        return await new SDK(credentials, this.defaultRegion, this.requestHandler, this.logger).currentAccount();
       } catch (e: any) {
         // Treat 'ExpiredToken' specially. This is a common situation that people may find themselves in, and
         // they are complaining about if we fail 'cdk synth' on them. We loudly complain in order to show that
@@ -376,10 +377,12 @@ export class SdkProvider {
         clientConfig: {
           region,
           requestHandler: this.requestHandler,
+          customUserAgent: 'aws-cdk',
+          logger: this.logger,
         },
       })();
 
-      return new SDK(credentials, region, this.requestHandler);
+      return new SDK(credentials, region, this.requestHandler, this.logger);
     } catch (err: any) {
       if (err.name === 'ExpiredToken') {
         throw err;
