@@ -233,7 +233,7 @@ function getAllAspectApplications(constructs: IConstruct[]): AspectApplication[]
   const aspectApplications: AspectApplication[] = [];
 
   constructs.forEach((construct) => {
-    aspectApplications.push(...Aspects.of(construct).list);
+    aspectApplications.push(...Aspects.of(construct).applied);
   });
 
   return aspectApplications;
@@ -272,14 +272,14 @@ function allAncestorAspects(a: IConstruct): IAspect[] {
   // Filter out the current node and get aspects of the ancestors
   return ancestorConstructs
     .slice(1) // Exclude the node itself
-    .flatMap((ancestor) => Aspects.of(ancestor).list.map((aspectApplication) => aspectApplication.aspect));
+    .flatMap((ancestor) => Aspects.of(ancestor).applied.map((aspectApplication) => aspectApplication.aspect));
 }
 
 /**
  * Returns all aspect applications in scope for the given construct
  */
 function allAspectApplicationsInScope(a: Construct): AspectApplication[] {
-  return ancestors(a).flatMap((c) => Aspects.of(c).list);
+  return ancestors(a).flatMap((c) => Aspects.of(c).applied);
 }
 
 /**
@@ -402,7 +402,7 @@ class PrettyApp {
     }
 
     function recurse(construct: Construct) {
-      const aspects = Aspects.of(construct).list.map(a => `${a.aspect}@${a.priority}`);
+      const aspects = Aspects.of(construct).applied.map(a => `${a.aspect}@${a.priority}`);
       line([
         '+-',
         ...self.initialTree.has(construct.node.path) ? [] : ['(added)'],

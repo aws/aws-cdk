@@ -29,7 +29,7 @@ export class AspectPriority {
   /**
    * Default priority for Aspects that are applied without a priority.
    */
-  static readonly DEFAULT: number = 600;
+  static readonly DEFAULT: number = 500;
 }
 
 /**
@@ -97,7 +97,7 @@ export class Aspects {
    *
    * Also returns inherited Aspects of this node.
    */
-  public get list(): AspectApplication[] {
+  public get applied(): AspectApplication[] {
     return [...this._appliedAspects];
   }
 }

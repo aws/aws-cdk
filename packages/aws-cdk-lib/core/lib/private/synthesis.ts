@@ -228,7 +228,7 @@ function invokeAspects(root: IConstruct) {
     const node = construct.node;
     const aspects = Aspects.of(construct);
 
-    let localAspects = aspects.list;
+    let localAspects = aspects.applied;
     const allAspectsHere = sortAspectsByPriority(inheritedAspects, localAspects);
 
     const nodeAspectsCount = aspects.all.length;
@@ -294,7 +294,7 @@ function invokeAspectsV2(root: IConstruct) {
 
     let didSomething = false;
 
-    let localAspects = aspects.list;
+    let localAspects = aspects.applied;
     const allAspectsHere = sortAspectsByPriority(inheritedAspects, localAspects);
 
     for (const aspectApplication of allAspectsHere) {

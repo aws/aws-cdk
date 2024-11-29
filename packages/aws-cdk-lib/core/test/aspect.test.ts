@@ -74,8 +74,8 @@ describe('aspect', () => {
     expect(root.visitCounter).toEqual(1);
   });
 
-  test('Warn if an Aspect is added via another Aspect', () => {
-    const app = new App();
+  test('if stabilization is disabled, warn if an Aspect is added via another Aspect', () => {
+    const app = new App({ context: { '@aws-cdk/core:aspectStabilization': false } });
     const root = new MyConstruct(app, 'MyConstruct');
     const child = new MyConstruct(root, 'ChildConstruct');
     Aspects.of(root).add({
@@ -118,7 +118,7 @@ describe('aspect', () => {
     Aspects.of(root).add(new MyAspect());
 
     // THEN - the priority is set to default
-    let aspectApplication = Aspects.of(root).list[0];
+    let aspectApplication = Aspects.of(root).applied[0];
     expect(aspectApplication.priority).toEqual(AspectPriority.DEFAULT);
   });
 
@@ -129,11 +129,11 @@ describe('aspect', () => {
 
     // WHEN - adding an Aspect without priority specified and resetting it.
     Aspects.of(root).add(new MyAspect());
-    let aspectApplication = Aspects.of(root).list[0];
+    let aspectApplication = Aspects.of(root).applied[0];
 
     // THEN - we can reset the priority of an Aspect
     aspectApplication.priority = 0;
-    expect(Aspects.of(root).list[0].priority).toEqual(0);
+    expect(Aspects.of(root).applied[0].priority).toEqual(0);
   });
 
   test('In-place mutating Aspect gets applied', () => {
@@ -213,7 +213,7 @@ describe('aspect', () => {
     Tags.of(stack).add('TestKey', 'TestValue');
 
     // THEN - check that Tags Aspect is applied to stack with default priority
-    let aspectApplications = Aspects.of(stack).list;
+    let aspectApplications = Aspects.of(stack).applied;
     expect(aspectApplications.length).toEqual(2);
     expect(aspectApplications[1].priority).toEqual(AspectPriority.DEFAULT);
 

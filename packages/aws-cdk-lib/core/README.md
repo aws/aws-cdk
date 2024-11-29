@@ -1748,7 +1748,7 @@ Aspects.of(stack).add(new ValidationAspect(), { priority: AspectPriority.READONL
 We also give customers the ability to view all of their applied aspects and override the priority on these aspects.
 The `AspectApplication` class represents an Aspect that is applied to a node of the construct tree with a priority.
 
-Users can access AspectApplications on a node by calling `list` from the Aspects class as follows:
+Users can access AspectApplications on a node by calling `applied` from the Aspects class as follows:
 
 ```ts
 const app = new App();
@@ -1756,7 +1756,7 @@ const stack = new MyStack(app, 'MyStack');
 
 Aspects.of(stack).add(new MyAspect());
 
-let aspectApplications: AspectApplication[] = Aspects.of(root).list;
+let aspectApplications: AspectApplication[] = Aspects.of(root).applied;
 
 for (const aspectApplication of aspectApplications) {
   // The aspect we are applying
