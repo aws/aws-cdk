@@ -1771,50 +1771,6 @@ for (const aspectApplication of aspectApplications) {
 }
 ```
 
-#### Aspects with Third-Party Constructs
-
-When a third-party construct adds and applies its own aspect, we can override that Aspect priority like so:
-
-```ts
-// Import third-party aspect
-import { ThirdPartyConstruct } from 'some-library';
-
-const stack: Stack;
-const construct = new ThirdPartyConstruct(stack, 'third-party-construct');
-
-// Author's aspect - adding to the stack
-const validationAspect = new ValidationAspect();
-Aspects.of(stack).add(validationAspect, { priority: AspectPriority.READONLY } );  // Run later (validation)
-
-// Getting the Aspect from the ThirdPartyConstruct
-const thirdPartyAspectApplication: AspectApplication = Aspects.of(construct).list[0];
-// Overriding the Aspect Priority from the ThirdPartyConstruct to run first
-thirdPartyAspectApplication.priority = 0;
-```
-
-An important thing to note about the `list` function is that it will not return Aspects that are applied to a node by another
-Aspect - these Aspects are only added to the construct tree when `invokeAspects` is called during synthesis.
-
-When using aspects from a library but controlling their application:
-
-```ts
-// Import third-party aspect
-import { SecurityAspect } from 'some-library';
-
-const stack: Stack;
-
-// Application author has full control of ordering
-const securityAspect = new SecurityAspect();
-Aspects.of(stack).add(securityAspect, { priority: 50 } );
-
-// Add own aspects in relation to third-party one
-Aspects.of(stack).add(new MyOtherAspect(), { priority: 75 } );
-```
-
-In all scenarios, application authors can use priority values to ensure their aspects run in the desired order relative to other aspects, whether
-those are their own or from third-party libraries. The standard priority ranges (200 for mutating, 500 default, 1000 for readonly) provide
-guidance while still allowing full flexibility through custom priority values.
-
 ### Acknowledging Warnings
 
 If you would like to run with `--strict` mode enabled (warnings will throw
