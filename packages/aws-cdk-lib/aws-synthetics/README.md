@@ -228,10 +228,11 @@ new synthetics.Canary(this, 'Bucket Canary', {
 >
 > For Node with playwright scripts supplied via `code.fromAsset()` or `code.fromBucket()`, the canary resource requires the following folder structure:
 >
->
 > ```plaintext
 > canary/
-> ├── <filename>.js
+> ├── <filename>.js,.mjs,.cjs
+> ```
+>
 > For Python scripts supplied via `code.fromAsset()` or `code.fromBucket()`, the canary resource requires the following folder structure:
 >
 > ```plaintext

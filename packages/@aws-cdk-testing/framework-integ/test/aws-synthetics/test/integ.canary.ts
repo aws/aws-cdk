@@ -87,7 +87,7 @@ const createCanaryByRuntimes = (runtime: Runtime) =>
   new Canary(stack, kebabToPascal(runtime.name).replace('.', ''), {
     test: Test.custom({
       handler: 'canary.handler',
-      code: Code.fromAsset(path.join(__dirname, runtime.name.includes('playwright') ? 'playwright-canary' : 'canaries')),
+      code: Code.fromAsset(path.join(__dirname, 'canaries')),
     }),
     environmentVariables: {
       URL: api.url,
