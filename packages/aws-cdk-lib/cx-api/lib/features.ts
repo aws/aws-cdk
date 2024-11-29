@@ -1262,7 +1262,8 @@ export const FLAGS: Record<string, FlagInfo> = {
 
       When this feature flag is enabled, a stabilization loop is run to recurse the construct tree multiple times when invoking Aspects.
     `,
-    introducedIn: { v2: '2.TBD.0' },
+    defaults: { v2: true },
+    introducedIn: { v2: '2.172.0' },
     recommendedValue: true,
   },
 };
