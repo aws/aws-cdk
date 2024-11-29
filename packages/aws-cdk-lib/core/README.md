@@ -1637,10 +1637,10 @@ compliance rules to all resources in a stack.
 
 Conceptually, there are two types of Aspects:
 
-* **Read-only aspects** scan the construct tree but do not make changes to the tree. Common use cases of read-only aspects include performing validations
+- **Read-only aspects** scan the construct tree but do not make changes to the tree. Common use cases of read-only aspects include performing validations
 (for example, enforcing that all S3 Buckets have versioning enabled) and logging (for example, collecting information about all deployed resources for
 audits or compliance).
-* **Mutating aspects** either (1.) add new nodes or (2.) mutate existing nodes of the tree in-place. One commonly used mutating Aspect is adding Tags to
+- **Mutating aspects** either (1.) add new nodes or (2.) mutate existing nodes of the tree in-place. One commonly used mutating Aspect is adding Tags to
 resources. An example of an Aspect that adds a node is one that automatically adds a security group to every EC2 instance in the construct tree if
 no default is specified.
 
@@ -1666,22 +1666,57 @@ const stack = new MyStack(app, 'MyStack');
 Aspects.of(stack).add(new EnableBucketVersioning());
 ```
 
+### Aspect Stabilization
+
+The modern behavior is that Aspects automatically run on newly added nodes to the construct tree. This is controlled by the
+flag `@aws-cdk/core:aspectStabilization`, which is default for new projects (since version 2.172.0).
+
+The old behavior of Aspects (without stabilization) was that Aspect invocation runs once on the entire construct
+tree. This meant that nested Aspects (Aspects that create new Aspects) are not invoked and nodes created by Aspects at a higher level of the construct tree are not visited.
+
+To enable the stabilization behavior for older versions, use this feature by putting the following into your `cdk.context.json`:
+
+```json
+{
+  "@aws-cdk/core:aspectStabilization": true
+}
+```
+
+### Aspect Priorities
+
 Users can specify the order in which Aspects are applied on a construct by using the optional priority parameter when applying an Aspect. Priority
 values must be non-negative integers, where a higher number means the Aspect will be applied later, and a lower number means it will be applied sooner.
+
+By default, newly created nodes always inherit aspects. Priorities are mainly for ordering between mutating aspects on the construct tree.
 
 CDK provides standard priority values for mutating and readonly aspects to help ensure consistency across different construct libraries:
 
 ```ts
-const MUTATING_PRIORITY = 200;
-const READONLY_PRIORITY = 1000;
-const DEFAULT_PRIORITY = 600;
+/**
+ * Default Priority values for Aspects.
+ */
+export class AspectPriority {
+  /**
+   * Suggested priority for Aspects that mutate the construct tree.
+   */
+  static readonly MUTATING: number = 200;
+
+  /**
+   * Suggested priority for Aspects that only read the construct tree.
+   */
+  static readonly READONLY: number = 1000;
+
+  /**
+   * Default priority for Aspects that are applied without a priority.
+   */
+  static readonly DEFAULT: number = 500;
+}
 ```
 
-If no priority is provided, the default value will be 600. This ensures that aspects without a specified priority run after mutating aspects but before
+If no priority is provided, the default value will be 500. This ensures that aspects without a specified priority run after mutating aspects but before
 any readonly aspects.
 
-Correctly applying Aspects with priority values ensures that mutating aspects (such as adding tags or resources) run before validation aspects, and new
-nodes created by mutating aspects inherit aspects from their parent constructs. This allows users to avoid misconfigurations and ensure that the final
+Correctly applying Aspects with priority values ensures that mutating aspects (such as adding tags or resources) run before validation aspects. This allows users to avoid misconfigurations and ensure that the final
 construct tree is fully validated before being synthesized.
 
 ### Applying Aspects with Priority
@@ -1708,31 +1743,10 @@ Aspects.of(stack).add(new MyAspect(), { priority: AspectPriority.MUTATING } );  
 Aspects.of(stack).add(new ValidationAspect(), { priority: AspectPriority.READONLY } );  // Run later (readonly aspects)
 ```
 
+### Inspecting applied aspects and changing priorities
+
 We also give customers the ability to view all of their applied aspects and override the priority on these aspects.
-The `AspectApplication` class to represents an Aspect that is applied to a node of the construct tree with a priority:
-
-```ts
-/**
- * Object respresenting an Aspect application. Stores the Aspect, the pointer to the construct it was applied
- * to, and the priority value of that Aspect.
- */
-export class AspectApplication {
-  /**
-   * The construct that the Aspect was applied to.
-   */
-  public readonly construct: IConstruct;
-
-  /**
-   * The Aspect that was applied.
-   */
-  public readonly aspect: IAspect;
-
-  /**
-   * The priority value of this Aspect. Must be non-negative integer.
-   */
-  private priority: number;
-}
-```
+The `AspectApplication` class represents an Aspect that is applied to a node of the construct tree with a priority.
 
 Users can access AspectApplications on a node by calling `list` from the Aspects class as follows:
 
@@ -1743,6 +1757,18 @@ const stack = new MyStack(app, 'MyStack');
 Aspects.of(stack).add(new MyAspect());
 
 let aspectApplications: AspectApplication[] = Aspects.of(root).list;
+
+for (const aspectApplication of aspectApplications) {
+  // The aspect we are applying
+  console.log(aspectApplication.aspect);
+  // The construct we are applying the aspect to
+  console.log(aspectApplication.construct);
+  // The priority it was applied with
+  console.log(aspectApplication.priority);
+
+  // Change the priority
+  aspectApplication.priority = 700;
+}
 ```
 
 #### Aspects with Third-Party Constructs
@@ -1786,17 +1812,8 @@ Aspects.of(stack).add(new MyOtherAspect(), { priority: 75 } );
 ```
 
 In all scenarios, application authors can use priority values to ensure their aspects run in the desired order relative to other aspects, whether
-those are their own or from third-party libraries. The standard priority ranges (200 for mutating, 600 default, 1000 for readonly) provide
+those are their own or from third-party libraries. The standard priority ranges (200 for mutating, 500 default, 1000 for readonly) provide
 guidance while still allowing full flexibility through custom priority values.
-
-### Aspect Stabilization
-
-By default, Aspect invocation runs once on the construct tree. This means that nested Aspects (Aspects that create
-new Aspects) are not invoked and nodes created by Aspects at a higher level of the construct tree will not be visited.
-
-Using the `@aws-cdk/core:aspectStabilization` feature flag (or passing in `{aspectStabilization: true}` when calling
-`synth()`) will run a stabilization loop when invoking aspects to allow Aspects created by other Aspects to be invoked
-and to ensure that all new nodes created on the construct tree are visited and invoke their inherited Aspects.
 
 ### Acknowledging Warnings
 
