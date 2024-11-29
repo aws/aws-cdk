@@ -47,6 +47,9 @@ module.exports = {
     '@cdklabs/no-invalid-path': [ 'error' ],
     '@cdklabs/promiseall-no-unbounded-parallelism': [ 'error' ],
 
+    // Error handling
+    'no-throw-literal': [ 'error' ],
+
     // Require use of the `import { foo } from 'bar';` form instead of `import foo = require('bar');`
     '@typescript-eslint/no-require-imports': ['error'],
     '@typescript-eslint/indent': ['error', 2],
