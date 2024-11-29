@@ -31,5 +31,3 @@ const app = new App();
 new integ.IntegTest(app, 'RA3LargeNodeIntegTest', {
   testCases: [new RedshiftRA3LargeTestStack(app, 'redshift-ra3-large-integ')],
 });
-
-app.synth();
