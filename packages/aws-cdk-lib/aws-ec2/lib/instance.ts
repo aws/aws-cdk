@@ -15,7 +15,7 @@ import { UserData } from './user-data';
 import { BlockDevice } from './volume';
 import { IVpc, Subnet, SubnetSelection } from './vpc';
 import * as iam from '../../aws-iam';
-import { Annotations, Aspects, Duration, FeatureFlags, Fn, IResource, Lazy, Resource, Stack, Tags, Token } from '../../core';
+import { Annotations, AspectPriority, Aspects, Duration, FeatureFlags, Fn, IResource, Lazy, Resource, Stack, Tags, Token } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
 import * as cxapi from '../../cx-api';
 
@@ -647,7 +647,7 @@ export class Instance extends Resource implements IInstance {
     }));
 
     if (props.requireImdsv2) {
-      Aspects.of(this).add(new InstanceRequireImdsv2Aspect());
+      Aspects.of(this).add(new InstanceRequireImdsv2Aspect(), { priority: AspectPriority.MUTATING });
     }
   }
 

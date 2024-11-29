@@ -1573,7 +1573,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     this.spotPrice = props.spotPrice;
 
     if (props.requireImdsv2) {
-      Aspects.of(this).add(new AutoScalingGroupRequireImdsv2Aspect());
+      Aspects.of(this).add(new AutoScalingGroupRequireImdsv2Aspect(), { priority: AspectPriority.MUTATING });
     }
 
     this.node.addValidation({ validate: () => this.validateTargetGroup() });
