@@ -44,7 +44,7 @@ describe('every aspect gets invoked exactly once', () => {
     ),
   );
 
-  test('every aspect applied on the tree eventually executes on all of its nodes in scope', () =>
+  test('with stabilization, every aspect applied on the tree eventually executes on all of its nodes in scope', () =>
     fc.assert(
       fc.property(appWithAspects(), (app) => {
         afterSynth((testApp) => {
