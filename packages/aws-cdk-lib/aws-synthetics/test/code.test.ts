@@ -205,7 +205,7 @@ describe(synthetics.Code.fromAsset, () => {
     const stack = new Stack(new App(), 'canaries');
 
     // THEN
-    const assetPath = path.join(__dirname, 'canaries', 'nodejs', 'node_modules');
+    const assetPath = path.join(__dirname, 'canaries', 'nodejs');
     expect(() => synthetics.Code.fromAsset(assetPath).bind(stack, 'canary.handler', synthetics.Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT_1_0))
       .toThrow(`The canary resource requires that the handler is present at one of the following extensions: .cjs, .mjs, .js but not found at ${assetPath}`);
   });
