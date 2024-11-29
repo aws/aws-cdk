@@ -998,4 +998,64 @@ describe('DynamoEventSource', () => {
       'StartingPosition': 'LATEST',
     });
   });
+
+  test('event source disabled', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING,
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE,
+    });
+
+    // WHEN
+    fn.addEventSource(new sources.DynamoEventSource(table, {
+      startingPosition: lambda.StartingPosition.LATEST,
+      enabled: false,
+      metricsConfig: {
+        metrics: [],
+      },
+    }));
+
+    //THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      'Enabled': false,
+      MetricsConfig: {
+        Metrics: [],
+      },
+    });
+  });
+
+  test('event source disabled', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING,
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE,
+    });
+
+    // WHEN
+    fn.addEventSource(new sources.DynamoEventSource(table, {
+      startingPosition: lambda.StartingPosition.LATEST,
+      enabled: false,
+      metricsConfig: {
+        metrics: [lambda.MetricType.EVENT_COUNT],
+      },
+    }));
+
+    //THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      'Enabled': false,
+      MetricsConfig: {
+        Metrics: ['EventCount'],
+      },
+    });
+  });
 });

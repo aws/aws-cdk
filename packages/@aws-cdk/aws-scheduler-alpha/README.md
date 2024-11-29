@@ -3,21 +3,20 @@
 
 ---
 
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
+![cdk-constructs: Developer Preview](https://img.shields.io/badge/cdk--constructs-developer--preview-informational.svg?style=for-the-badge)
 
-> The APIs of higher level constructs in this module are experimental and under active development.
-> They are subject to non-backward compatible changes or removal in any future version. These are
-> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
-> announced in the release notes. This means that while you may use them, you may need to update
-> your source code when upgrading to a newer version of this package.
+> The APIs of higher level constructs in this module are in **developer preview** before they
+> become stable. We will only make breaking changes to address unforeseen API issues. Therefore,
+> these APIs are not subject to [Semantic Versioning](https://semver.org/), and breaking changes
+> will be announced in release notes. This means that while you may use them, you may need to
+> update your source code when upgrading to a newer version of this package.
 
 ---
 
 <!--END STABILITY BANNER-->
 
 [Amazon EventBridge Scheduler](https://aws.amazon.com/blogs/compute/introducing-amazon-eventbridge-scheduler/) is a feature from Amazon EventBridge
-that allows you to create, run, and manage scheduled tasks at scale. With EventBridge Scheduler, you can schedule one-time or recurrently tens
-of millions of tasks across many AWS services without provisioning or managing underlying infrastructure.
+that allows you to create, run, and manage scheduled tasks at scale. With EventBridge Scheduler, you can schedule millions of one-time or recurring tasks across various AWS services without provisioning or managing underlying infrastructure.
 
 1. **Schedule**: A schedule is the main resource you create, configure, and manage using Amazon EventBridge Scheduler. Every schedule has a schedule expression that determines when, and with what frequency, the schedule runs. EventBridge Scheduler supports three types of schedules: rate, cron, and one-time schedules. When you create a schedule, you configure a target for the schedule to invoke.
 2. **Target**: A target is an API operation that EventBridge Scheduler calls on your behalf every time your schedule runs. EventBridge Scheduler
@@ -28,12 +27,8 @@ more than 6,000 API operations across over 270 AWS services.
 3. **Schedule Group**: A schedule group is an Amazon EventBridge Scheduler resource that you use to organize your schedules. Your AWS account comes
 with a default scheduler group. A new schedule will always be added to a scheduling group. If you do not provide a scheduling group to add to, it
 will be added to the default scheduling group. You can create up to 500 schedule groups in your AWS account. Groups can be used to organize the
-schedules logically, access the schedule metrics and manage permissions at group granularity (see details below). Scheduling groups support tagging:
-with EventBridge Scheduler, you apply tags to schedule groups, not to individual schedules to organize your resources.
-
-This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project. It allows you to define Event Bridge Schedules.
-
-> This module is in active development. Some features may not be implemented yet.
+schedules logically, access the schedule metrics and manage permissions at group granularity (see details below). Schedule groups support tagging.
+With EventBridge Scheduler, you apply tags to schedule groups, not to individual schedules to organize your resources.
 
 ## Defining a schedule
 
@@ -49,7 +44,7 @@ const target = new targets.LambdaInvoke(fn, {
 const schedule = new Schedule(this, 'Schedule', {
     schedule: ScheduleExpression.rate(Duration.minutes(10)),
     target,
-    description: 'This is a test schedule that invokes lambda function every 10 minutes.',
+    description: 'This is a test schedule that invokes a lambda function every 10 minutes.',
 });
 ```
 
@@ -167,7 +162,7 @@ A list of supported targets can be found at `@aws-cdk/aws-scheduler-targets-alph
 
 ### Input
 
-Targets can be invoked with a custom input. The `ScheduleTargetInput`class supports free-form text input and JSON-formatted object input:
+Targets can be invoked with a custom input. The `ScheduleTargetInput` class supports free-form text input and JSON-formatted object input:
 
 ```ts
 const input = ScheduleTargetInput.fromObject({
@@ -180,9 +175,9 @@ its respective value and deliver it to the target. See
 [full list of supported context attributes](https://docs.aws.amazon.com/scheduler/latest/UserGuide/managing-schedule-context-attributes.html):
 
 1. `ContextAttribute.scheduleArn()` – The ARN of the schedule.
-2. `ContextAttribute.scheduledTime()` – The time you specified for the schedule to invoke its target, for example, 2022-03-22T18:59:43Z.
-3. `ContextAttribute.executionId()` – The unique ID that EventBridge Scheduler assigns for each attempted invocation of a target, for example, d32c5kddcf5bb8c3.
-4. `ContextAttribute.attemptNumber()` – A counter that identifies the attempt number for the current invocation, for example, 1.
+2. `ContextAttribute.scheduledTime()` – The time you specified for the schedule to invoke its target, e.g., 2022-03-22T18:59:43Z.
+3. `ContextAttribute.executionId()` – The unique ID that EventBridge Scheduler assigns for each attempted invocation of a target, e.g., d32c5kddcf5bb8c3.
+4. `ContextAttribute.attemptNumber()` – A counter that identifies the attempt number for the current invocation, e.g., 1.
 
 ```ts
 const text = `Attempt number: ${ContextAttribute.attemptNumber}`;
@@ -195,7 +190,7 @@ An execution role is an IAM role that EventBridge Scheduler assumes in order to 
 
 The classes for templated schedule targets automatically create an IAM role with all the minimum necessary
 permissions to interact with the templated target. If you wish you may specify your own IAM role, then the templated targets
-will grant minimal required permissions. For example, the target `LambdaInvoke` will grant the
+will grant minimal required permissions. For example, the `LambdaInvoke` target will grant the
 IAM execution role `lambda:InvokeFunction` permission to invoke the Lambda function.
 
 ```ts
@@ -239,12 +234,12 @@ const schedule = new Schedule(this, 'Schedule', {
 });
 ```
 
-> Visit [Data protection in Amazon EventBridge Scheduler](https://docs.aws.amazon.com/scheduler/latest/UserGuide/data-protection.html) for more details.
+> See [Data protection in Amazon EventBridge Scheduler](https://docs.aws.amazon.com/scheduler/latest/UserGuide/data-protection.html) for more details.
 
 ## Configuring flexible time windows
 
 You can configure flexible time windows by specifying the `timeWindow` property.
-Flexible time windows is disabled by default.
+Flexible time windows are disabled by default.
 
 ```ts
 declare const target: targets.LambdaInvoke;
@@ -256,7 +251,7 @@ const schedule = new Schedule(this, 'Schedule', {
 });
 ```
 
-> Visit [Configuring flexible time windows](https://docs.aws.amazon.com/scheduler/latest/UserGuide/managing-schedule-flexible-time-windows.html) for more details.
+> See [Configuring flexible time windows](https://docs.aws.amazon.com/scheduler/latest/UserGuide/managing-schedule-flexible-time-windows.html) for more details.
 
 ## Error-handling
 
@@ -295,8 +290,7 @@ EventBridge Scheduler publishes additional metrics when your schedule exhausts i
 
 ### Metrics for all schedules
 
-Class `Schedule` provides static methods for accessing all schedules metrics with default configuration,
- such as `metricAllErrors` for viewing errors when executing targets.
+The `Schedule` class provides static methods for accessing all schedules metrics with default configuration, such as `metricAllErrors` for viewing errors when executing targets.
 
  ```ts
 new cloudwatch.Alarm(this, 'SchedulesErrorAlarm', {
@@ -332,4 +326,4 @@ new cloudwatch.Alarm(this, 'DefaultGroupErrorAlarm', {
 
 See full list of metrics and their description at
 [Monitoring Using CloudWatch Metrics](https://docs.aws.amazon.com/scheduler/latest/UserGuide/monitoring-cloudwatch.html)
-in the *AWS Event Bridge Scheduler User Guide*.
+in the *AWS EventBridge Scheduler User Guide*.

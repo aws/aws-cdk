@@ -143,12 +143,19 @@ export class VpcIngressConnection extends cdk.Resource implements IVpcIngressCon
       physicalName: props.vpcIngressConnectionName,
     });
 
-    if (
-      props.vpcIngressConnectionName !== undefined &&
-      !cdk.Token.isUnresolved(props.vpcIngressConnectionName) &&
-      !/^[A-Za-z0-9][A-Za-z0-9\-_]{3,39}$/.test(props.vpcIngressConnectionName)
-    ) {
-      throw new Error(`vpcIngressConnectionName must match the \`^[A-Za-z0-9][A-Za-z0-9\-_]{3,39}\` pattern, got ${props.vpcIngressConnectionName}`);
+    if (props.vpcIngressConnectionName !== undefined && !cdk.Token.isUnresolved(props.vpcIngressConnectionName)) {
+
+      if (props.vpcIngressConnectionName.length < 4 || props.vpcIngressConnectionName.length > 40) {
+        throw new Error(
+          `\`vpcIngressConnectionName\` must be between 4 and 40 characters, got: ${props.vpcIngressConnectionName.length} characters.`,
+        );
+      }
+
+      if (!/^[A-Za-z0-9][A-Za-z0-9\-_]*$/.test(props.vpcIngressConnectionName)) {
+        throw new Error(
+          `\`vpcIngressConnectionName\` must start with an alphanumeric character and contain only alphanumeric characters, hyphens, or underscores after that, got: ${props.vpcIngressConnectionName}.`,
+        );
+      }
     }
 
     const resource = new CfnVpcIngressConnection(this, 'Resource', {

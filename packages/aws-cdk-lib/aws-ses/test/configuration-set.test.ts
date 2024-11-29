@@ -1,5 +1,5 @@
 import { Template, Match } from '../../assertions';
-import { Stack } from '../../core';
+import { Duration, Stack } from '../../core';
 import { ConfigurationSet, ConfigurationSetTlsPolicy, DedicatedIpPool, SuppressionReasons } from '../lib';
 
 let stack: Stack;
@@ -21,6 +21,7 @@ test('configuration set with options', () => {
     suppressionReasons: SuppressionReasons.COMPLAINTS_ONLY,
     tlsPolicy: ConfigurationSetTlsPolicy.REQUIRE,
     dedicatedIpPool: new DedicatedIpPool(stack, 'Pool'),
+    maxDeliveryDuration: Duration.seconds(300),
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::SES::ConfigurationSet', {
@@ -29,6 +30,7 @@ test('configuration set with options', () => {
         Ref: 'PoolD3F588B8',
       },
       TlsPolicy: 'REQUIRE',
+      MaxDeliverySeconds: 300,
     },
     SuppressionOptions: {
       SuppressedReasons: [
@@ -87,5 +89,23 @@ test('configuration set with vdmOptions not configured', () => {
 
   Template.fromStack(stack).hasResourceProperties('AWS::SES::ConfigurationSet', {
     VdmOptions: Match.absent(),
+  });
+});
+
+describe('maxDeliveryDuration', () => {
+  test.each([Duration.millis(999), Duration.minutes(4)])('invalid duration less than 5 minutes %s', (maxDeliveryDuration) => {
+    expect(() => {
+      new ConfigurationSet(stack, 'ConfigurationSet', {
+        maxDeliveryDuration,
+      });
+    }).toThrow(`The maximum delivery duration must be greater than or equal to 5 minutes (300_000 milliseconds), got: ${maxDeliveryDuration.toMilliseconds()} milliseconds.`);
+  });
+
+  test('invalid duration greater than 14 hours', () => {
+    expect(() => {
+      new ConfigurationSet(stack, 'ConfigurationSet', {
+        maxDeliveryDuration: Duration.hours(14).plus(Duration.seconds(1)),
+      });
+    }).toThrow('The maximum delivery duration must be less than or equal to 14 hours (50400 seconds), got: 50401 seconds.');
   });
 });

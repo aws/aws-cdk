@@ -557,6 +557,67 @@ const tg = new elbv2.ApplicationTargetGroup(this, 'TargetGroup', {
 });
 ```
 
+### Target Group level cross-zone load balancing setting for Application Load Balancers and Network Load Balancers
+
+You can set cross-zone load balancing setting at the target group level by setting `crossZone` property.
+
+If not specified, it will use the load balancer's configuration.
+
+For more infomation, see [How Elastic Load Balancing works](https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/how-elastic-load-balancing-works.html).
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const targetGroup = new elbv2.ApplicationTargetGroup(this, 'TargetGroup', {
+  vpc,
+  port: 80,
+  targetType: elbv2.TargetType.INSTANCE,
+
+  // Whether cross zone load balancing is enabled.
+  crossZoneEnabled: true,
+});
+```
+
+### IP Address Type for Target Groups
+
+You can set the IP address type for the target group by setting the `ipAddressType` property for both Application and Network target groups.
+
+If you set the `ipAddressType` property to `IPV6`, the VPC for the target group must have an associated IPv6 CIDR block.
+
+For more information, see IP address type for [Network Load Balancers](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html#target-group-ip-address-type) and [Application Load Balancers](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#target-group-ip-address-type).
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const ipv4ApplicationTargetGroup = new elbv2.ApplicationTargetGroup(this, 'IPv4ApplicationTargetGroup', {
+  vpc,
+  port: 80,
+  targetType: elbv2.TargetType.INSTANCE,
+  ipAddressType: elbv2.TargetGroupIpAddressType.IPV4,
+});
+
+const ipv6ApplicationTargetGroup = new elbv2.ApplicationTargetGroup(this, 'Ipv6ApplicationTargetGroup', {
+  vpc,
+  port: 80,
+  targetType: elbv2.TargetType.INSTANCE,
+  ipAddressType: elbv2.TargetGroupIpAddressType.IPV6,
+});
+
+const ipv4NetworkTargetGroup = new elbv2.NetworkTargetGroup(this, 'IPv4NetworkTargetGroup', {
+  vpc,
+  port: 80,
+  targetType: elbv2.TargetType.INSTANCE,
+  ipAddressType: elbv2.TargetGroupIpAddressType.IPV4,
+});
+
+const ipv6NetworkTargetGroup = new elbv2.NetworkTargetGroup(this, 'Ipv6NetworkTargetGroup', {
+  vpc,
+  port: 80,
+  targetType: elbv2.TargetType.INSTANCE,
+  ipAddressType: elbv2.TargetGroupIpAddressType.IPV6,
+});
+```
+
 ## Using Lambda Targets
 
 To use a Lambda Function as a target, use the integration class in the

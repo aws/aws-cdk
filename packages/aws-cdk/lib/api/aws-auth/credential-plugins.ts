@@ -1,7 +1,6 @@
-import { debug } from './_env';
-import { Mode } from './credentials';
-import { warning } from '../../logging';
-import { CredentialProviderSource, PluginHost } from '../plugin';
+import type { AwsCredentialIdentity } from '@smithy/types';
+import { debug, warning } from '../../logging';
+import { CredentialProviderSource, Mode, PluginHost } from '../plugin';
 
 /**
  * Cache for credential providers.
@@ -16,7 +15,7 @@ import { CredentialProviderSource, PluginHost } from '../plugin';
  * for the given account.
  */
 export class CredentialPlugins {
-  private readonly cache: {[key: string]: PluginCredentials | undefined} = {};
+  private readonly cache: { [key: string]: PluginCredentials | undefined } = {};
 
   public async fetchCredentialsFor(awsAccountId: string, mode: Mode): Promise<PluginCredentials | undefined> {
     const key = `${awsAccountId}-${mode}`;
@@ -27,7 +26,7 @@ export class CredentialPlugins {
   }
 
   public get availablePluginNames(): string[] {
-    return PluginHost.instance.credentialProviderSources.map(s => s.name);
+    return PluginHost.instance.credentialProviderSources.map((s) => s.name);
   }
 
   private async lookupCredentials(awsAccountId: string, mode: Mode): Promise<PluginCredentials | undefined> {
@@ -56,13 +55,24 @@ export class CredentialPlugins {
         warning(`Uncaught exception in ${source.name}: ${e.message}`);
         canProvide = false;
       }
-      if (!canProvide) { continue; }
+      if (!canProvide) {
+        continue;
+      }
       debug(`Using ${source.name} credentials for account ${awsAccountId}`);
       const providerOrCreds = await source.getProvider(awsAccountId, mode);
 
       // Backwards compatibility: if the plugin returns a ProviderChain, resolve that chain.
       // Otherwise it must have returned credentials.
-      const credentials = (providerOrCreds as any).resolvePromise ? await (providerOrCreds as any).resolvePromise() : providerOrCreds;
+      const credentials = (providerOrCreds as any).resolvePromise
+        ? await (providerOrCreds as any).resolvePromise()
+        : providerOrCreds;
+
+      // Another layer of backwards compatibility: in SDK v2, the credentials object
+      // is both a container and a provider. So we need to force the refresh using getPromise.
+      // In SDK v3, these two responsibilities are separate, and the getPromise doesn't exist.
+      if ((credentials as any).getPromise) {
+        await (credentials as any).getPromise();
+      }
 
       return { credentials, pluginName: source.name };
     }
@@ -71,6 +81,6 @@ export class CredentialPlugins {
 }
 
 export interface PluginCredentials {
-  readonly credentials: AWS.Credentials;
+  readonly credentials: AwsCredentialIdentity;
   readonly pluginName: string;
 }
