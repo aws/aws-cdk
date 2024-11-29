@@ -33,6 +33,8 @@ export interface ScheduleTargetBaseProps {
   /**
    * Input passed to the target.
    *
+   * If you specify well-formed JSON, parameter names must be in PascalCase.
+   *
    * @default - no input.
    */
   readonly input?: ScheduleTargetInput;
