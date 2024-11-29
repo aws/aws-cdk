@@ -24,7 +24,7 @@ describe('every aspect gets invoked exactly once', () => {
   test('all aspects that exist at the start of synthesis get invoked on all nodes in its scope at the start of synthesis', () =>
     fc.assert(
       fc.property(appWithAspects(), fc.boolean(), (app, stabilizeAspects) => {
-        const originalConstructsOnApp = getAllConstructsInScope(app.cdkApp);
+        const originalConstructsOnApp = app.cdkApp.node.findAll();
         const originalAspectApplications = getAllAspectApplications(originalConstructsOnApp);
         afterSynth((testApp) => {
           const visitsMap = getVisitsMap(testApp.visitLog);
@@ -49,7 +49,7 @@ describe('every aspect gets invoked exactly once', () => {
       fc.property(appWithAspects(), (app) => {
         afterSynth((testApp) => {
 
-          const allConstructsOnApp = getAllConstructsInScope(testApp.cdkApp);
+          const allConstructsOnApp = testApp.cdkApp.node.findAll();
           const allAspectApplications = getAllAspectApplications(allConstructsOnApp);
           const visitsMap = getVisitsMap(testApp.visitLog);
 
@@ -224,21 +224,6 @@ function getVisitsMap(log: AspectVisitLog): Map<IConstruct, IAspect[]> {
     visitsMap.get(visit.construct)!.push(visit.aspect);
   }
   return visitsMap;
-}
-
-/**
- * Returns a list of all nodes in the scope of the IConstruct.
- */
-function getAllConstructsInScope(root: IConstruct): IConstruct[] {
-  const constructs: IConstruct[] = [root];
-
-  recurse(root);
-
-  function recurse(node: IConstruct) {
-    constructs.push(...node.node.children);
-    node.node.children.forEach(recurse);
-  }
-  return constructs;
 }
 
 /**
