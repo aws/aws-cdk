@@ -937,3 +937,9 @@ removed:aws-cdk-lib.aws_ec2.WindowsVersion.WINDOWS_SERVER_2022_TURKISH_FULL_BASE
 # null() return a [] which is invalid filter rule. It should return [null].
 # Hence the return type changes from string[] to any
 change-return-type:aws-cdk-lib.aws_lambda.FilterRule.null
+
+
+# output property was mistakenly marked as required even though it should have allowed
+# for undefined, i.e optional
+changed-type:@aws-cdk/cx-api.CloudFormationStackArtifact.notificationArns
+changed-type:aws-cdk-lib.cx_api.CloudFormationStackArtifact.notificationArns
