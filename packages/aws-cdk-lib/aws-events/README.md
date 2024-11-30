@@ -145,7 +145,7 @@ const rule = new events.Rule(this, 'rule', {
 });
 ```
 
-The "anything but" matchers also support rest parameters. For example:
+The "anything but" matchers allow you to specify multiple arguments. For example:
 
 ```ts
 const rule = new events.Rule(this, 'rule', {
