@@ -270,27 +270,12 @@ export class EcsTask implements events.IRuleTarget {
   public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
     const arn = this.cluster.clusterArn;
     const role = this.role;
-    const containerOverrides = this.props.containerOverrides && this.props.containerOverrides
-      .map(({ containerName, ...overrides }) => ({ name: containerName, ...overrides }));
-
-    // See https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_TaskOverride.html
-    const input = {
-      // In prior versions, containerOverrides was passed even when undefined, so we always set it for backward compatibility.
-      containerOverrides,
-
-      ...(this.props.cpu && { cpu: this.props.cpu }),
-      ...(this.props.ephemeralStorage && { ephemeralStorage: this.props.ephemeralStorage }),
-      ...(this.props.executionRole?.roleArn && { executionRole: this.props.executionRole.roleArn }),
-      ...(this.props.inferenceAcceleratorOverrides && { inferenceAcceleratorOverrides: this.props.inferenceAcceleratorOverrides }),
-      ...(this.props.memory && { memory: this.props.memory }),
-      ...(this.props.taskRole?.roleArn && { taskRole: this.props.taskRole.roleArn }),
-    };
-
     const taskCount = this.taskCount;
     const taskDefinitionArn = this.taskDefinition.taskDefinitionArn;
     const propagateTags = this.propagateTags;
     const tagList = this.tags;
     const enableExecuteCommand = this.enableExecuteCommand;
+    const input = this.createInput();
 
     const subnetSelection = this.props.subnetSelection || { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS };
 
@@ -334,6 +319,31 @@ export class EcsTask implements events.IRuleTarget {
       ecsParameters,
       input: events.RuleTargetInput.fromObject(input),
       targetResource: this.taskDefinition,
+    };
+  }
+
+  private createInput(): Record<string, any> {
+    const containerOverrides = this.props.containerOverrides && this.props.containerOverrides
+      .map(({ containerName, ...overrides }) => ({ name: containerName, ...overrides }));
+
+    if (this.props.ephemeralStorage) {
+      const ephemeralStorage = this.props.ephemeralStorage;
+      if (ephemeralStorage.sizeInGiB < 20 || ephemeralStorage.sizeInGiB > 200) {
+        throw new Error('Ephemeral storage size must be between 20 GiB and 200 GiB.');
+      }
+    }
+
+    // See https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_TaskOverride.html
+    return {
+      // In prior versions, containerOverrides was passed even when undefined, so we always set it for backward compatibility.
+      containerOverrides,
+
+      ...(this.props.cpu && { cpu: this.props.cpu }),
+      ...(this.props.ephemeralStorage && { ephemeralStorage: this.props.ephemeralStorage }),
+      ...(this.props.executionRole?.roleArn && { executionRole: this.props.executionRole.roleArn }),
+      ...(this.props.inferenceAcceleratorOverrides && { inferenceAcceleratorOverrides: this.props.inferenceAcceleratorOverrides }),
+      ...(this.props.memory && { memory: this.props.memory }),
+      ...(this.props.taskRole?.roleArn && { taskRole: this.props.taskRole.roleArn }),
     };
   }
 
