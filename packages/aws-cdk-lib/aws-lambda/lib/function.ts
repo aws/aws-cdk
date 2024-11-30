@@ -175,7 +175,7 @@ export interface TracingConfig {
    *
    * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-tracingconfig.html#cfn-lambda-function-tracingconfig-mode
    */
-  mode: TracingMode;
+  mode?: TracingMode;
 }
 
 /**
