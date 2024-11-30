@@ -32,7 +32,7 @@ jest.mock('promptly', () => ({
 }));
 
 let uid: string;
-let pluginQueried = false;
+let pluginQueried: boolean;
 
 beforeEach(() => {
   // Cache busters!
@@ -41,6 +41,7 @@ beforeEach(() => {
   // - We have a cache from account# -> credentials
   // - We have a cache from access key -> account
   uid = `(${uuid.v4()})`;
+  pluginQueried = false;
 
   logging.setLogLevel(logging.LogLevel.TRACE);
 
@@ -568,6 +569,20 @@ describe('with intercepted network calls', () => {
 
     test('plugins are still queried even if current credentials are expired (or otherwise invalid)', async () => {
       // GIVEN
+      // WHEN
+      const account = uniq('11111');
+      mockSTSClient.on(GetCallerIdentityCommand).resolves({
+        Account: account,
+        Arn: 'arn:aws-here',
+      });
+      prepareCreds({
+        credentials: {
+          default: { aws_access_key_id: `${uid}akid`, $account: '11111', $fakeStsOptions: { partition: 'aws-here' } },
+        },
+        config: {
+          default: { region: 'eu-bla-5' },
+        },
+      });
       process.env.AWS_ACCESS_KEY_ID = `${uid}akid`;
       process.env.AWS_SECRET_ACCESS_KEY = 'sekrit';
       const provider = await providerFromProfile(undefined);
