@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`formatting a failing SDK call looks broadly reasonable 1`] = `"[2 attempts, 30ms retry] S3.GetBucketLocation({"Bucket":"....."}) -> Error: it failed"`;
+
+exports[`formatting a successful SDK call looks broadly reasonable 1`] = `"[2 attempts, 30ms retry] S3.GetBucketLocation({"Bucket":"....."}) -> OK"`;
