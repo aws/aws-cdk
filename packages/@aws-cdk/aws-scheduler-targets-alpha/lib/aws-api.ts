@@ -1,4 +1,4 @@
-import { IScheduleTarget, ISchedule, ScheduleTargetInput, ScheduleTargetConfig } from '@aws-cdk/aws-scheduler-alpha';
+import { IScheduleTarget } from '@aws-cdk/aws-scheduler-alpha';
 import { Aws, Token } from 'aws-cdk-lib';
 import { IRole, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { awsSdkToIamAction } from 'aws-cdk-lib/custom-resources/lib/helpers-internal';
@@ -43,6 +43,8 @@ const NOT_SUPPORTED_ACTION_PREFIX = [
 export interface AwsApiProps extends ScheduleTargetBaseProps {
   /**
    * The AWS service to call.
+   *
+   * This must be in lowercase.
    */
   readonly service: string;
 
@@ -60,7 +62,7 @@ export interface AwsApiProps extends ScheduleTargetBaseProps {
    * The resource ARNs for the IAM statement that will be added to
    * the execution role's policy to allow the scheduler to make the API call.
    *
-   * @default ['*']
+   * @default - ['*']
    */
   readonly iamResources?: string[];
 
@@ -86,6 +88,9 @@ export class AwsApi extends ScheduleTargetBase implements IScheduleTarget {
     const service = props.service;
     const action = props.action;
 
+    if (!Token.isUnresolved(service) && service !== service.toLowerCase()) {
+      throw new Error(`API service must be lowercase, got: ${service}`);
+    }
     if (!Token.isUnresolved(action) && !action.startsWith(action[0]?.toLowerCase())) {
       throw new Error(`API action must be camelCase, got: ${action}`);
     }

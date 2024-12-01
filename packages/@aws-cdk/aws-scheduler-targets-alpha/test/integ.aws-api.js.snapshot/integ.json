@@ -1,0 +1,13 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "IntegTestAwsApi/DefaultTest": {
+      "stacks": [
+        "AwsSchedulerTargetsAwsApi"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "IntegTestAwsApi/DefaultTest/DeployAssert",
+      "assertionStackName": "IntegTestAwsApiDefaultTestDeployAssert2752E768"
+    }
+  }
+}
