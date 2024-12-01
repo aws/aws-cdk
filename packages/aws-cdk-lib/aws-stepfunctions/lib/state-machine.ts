@@ -5,7 +5,7 @@ import { buildEncryptionConfiguration } from './private/util';
 import { StateGraph } from './state-graph';
 import { StatesMetrics } from './stepfunctions-canned-metrics.generated';
 import { CfnStateMachine } from './stepfunctions.generated';
-import { IChainable } from './types';
+import { IChainable, QueryLanguage } from './types';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
@@ -128,6 +128,15 @@ export interface StateMachineProps {
    * @default - No comment
    */
   readonly comment?: string;
+
+  /**
+   * The name of the query language used by the state machine.
+   * If the state does not contain a `queryLanguage` field,
+   * then it will use the query language specified in the top-level `queryLanguage` field.
+   *
+   * @default - JSONPATH
+   */
+  readonly queryLanguage?: QueryLanguage;
 
   /**
    * Type of the state machine
@@ -786,9 +795,13 @@ export class ChainDefinitionBody extends DefinitionBody {
   }
 
   public bind(scope: Construct, _sfnPrincipal: iam.IPrincipal, sfnProps: StateMachineProps, graph?: StateGraph): DefinitionConfig {
-    const graphJson = graph!.toGraphJson();
+    const graphJson = graph!.toGraphJson(sfnProps.queryLanguage);
     return {
-      definitionString: Stack.of(scope).toJsonString({ ...graphJson, Comment: sfnProps.comment }),
+      definitionString: Stack.of(scope).toJsonString({
+        ...graphJson,
+        Comment: sfnProps.comment,
+        QueryLanguage: sfnProps.queryLanguage,
+      }),
     };
   }
 }

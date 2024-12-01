@@ -339,6 +339,13 @@ export abstract class Condition {
   }
 
   /**
+   * JSONata expression condition
+   */
+  public static jsonata(conditon: string): Condition {
+    return new JsonataCondition(conditon);
+  }
+
+  /**
    * Render Amazon States Language JSON for the condition
    */
   public abstract renderCondition(): any;
@@ -449,6 +456,24 @@ class NotCondition extends Condition {
   public renderCondition(): any {
     return {
       Not: this.comparisonOperation.renderCondition(),
+    };
+  }
+}
+
+/**
+ * JSONata for Condition
+ */
+class JsonataCondition extends Condition {
+  constructor(private readonly condition: string) {
+    super();
+    if (!/^{%(.*)%}$/.test(condition)) {
+      throw new Error(`Variable reference must be '$', start with '$.', or start with '$[', got '${condition}'`);
+    }
+  }
+
+  public renderCondition(): any {
+    return {
+      Condition: this.condition,
     };
   }
 }

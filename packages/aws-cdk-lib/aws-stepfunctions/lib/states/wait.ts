@@ -1,9 +1,9 @@
 import { Construct } from 'constructs';
 import { StateType } from './private/state-type';
-import { State } from './state';
+import { JsonataCommonOptions, JsonPathCommonOptions, State, StateBaseProps } from './state';
 import * as cdk from '../../../core';
 import { Chain } from '../chain';
-import { IChainable, INextable } from '../types';
+import { IChainable, INextable, QueryLanguage } from '../types';
 
 /**
  * Represents the Wait state which delays a state machine from continuing for a specified time
@@ -16,7 +16,18 @@ export class WaitTime {
   public static duration(duration: cdk.Duration) { return new WaitTime({ Seconds: duration.toSeconds() }); }
 
   /**
-   * Wait until the given ISO8601 timestamp
+   * Wait for a number of seconds stored in the state object from string.
+   * This method can use JSONata expression.
+   *
+   * If you want to use fixed value, we recommend using `WaitTime.duration()`
+   *
+   * Example value: `{% $waitSeconds %}`
+   */
+  public static seconds(seconds: string) { return new WaitTime({ Seconds: seconds }); }
+
+  /**
+   * Wait until the given ISO8601 timestamp.
+   * This method can use JSONata expression.
    *
    * Example value: `2016-03-14T01:59:00Z`
    */
@@ -46,29 +57,27 @@ export class WaitTime {
   }
 }
 
-/**
- * Properties for defining a Wait state
- */
-export interface WaitProps {
-  /**
-   * Optional name for this state
-   *
-   * @default - The construct ID will be used as state name
-   */
-  readonly stateName?: string;
-
-  /**
-   * An optional description for this state
-   *
-   * @default No comment
-   */
-  readonly comment?: string;
-
+interface WaitBaseProps extends StateBaseProps {
   /**
    * Wait duration.
    */
   readonly time: WaitTime;
 }
+interface WaitJsonPathOptions extends JsonPathCommonOptions {}
+interface WaitJsonataOptions extends JsonataCommonOptions {}
+
+/**
+ * Properties for defining a Wait state that using JSONPath
+ */
+export interface WaitJsonPathProps extends WaitBaseProps, WaitJsonPathOptions {}
+/**
+ * Properties for defining a Wait state that using JSONata
+ */
+export interface WaitJsonataProps extends WaitBaseProps, WaitJsonataOptions {}
+/**
+ * Properties for defining a Wait state
+ */
+export interface WaitProps extends WaitBaseProps {}
 
 /**
  * Define a Wait state in the state machine
@@ -76,6 +85,25 @@ export interface WaitProps {
  * A Wait state can be used to delay execution of the state machine for a while.
  */
 export class Wait extends State implements INextable {
+  /**
+   * Define a Wait state using JSONPath in the state machine
+   *
+   * A Wait state can be used to delay execution of the state machine for a while.
+   */
+  public static jsonPath(scope: Construct, id: string, props: WaitJsonPathProps) {
+    return new Wait(scope, id, props);
+  }
+  /**
+   * Define a Wait state using JSONata in the state machine
+   *
+   * A Wait state can be used to delay execution of the state machine for a while.
+   */
+  public static jsonata(scope: Construct, id: string, props: WaitJsonataProps) {
+    return new Wait(scope, id, {
+      ...props,
+      queryLanguage: QueryLanguage.JSONATA,
+    });
+  }
   public readonly endStates: INextable[];
 
   private readonly time: WaitTime;
@@ -98,9 +126,10 @@ export class Wait extends State implements INextable {
   /**
    * Return the Amazon States Language object for this state
    */
-  public toStateJson(): object {
+  public toStateJson(queryLanguage?: QueryLanguage): object {
     return {
       Type: StateType.WAIT,
+      ...this.renderQueryLanguage(queryLanguage),
       Comment: this.comment,
       ...this.time._json,
       ...this.renderNextEnd(),
