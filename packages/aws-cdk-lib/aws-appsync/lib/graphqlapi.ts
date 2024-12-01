@@ -1,8 +1,9 @@
 import { Construct } from 'constructs';
 import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema, CfnDomainName, CfnDomainNameApiAssociation, CfnSourceApiAssociation } from './appsync.generated';
-import { IGraphqlApi, GraphqlApiBase, Visibility, AuthorizationType } from './graphqlapi-base';
+import { IGraphqlApi, GraphqlApiBase, Visibility } from './graphqlapi-base';
 import { ISchema, SchemaFile } from './schema';
 import { MergeType, addSourceApiAutoMergePermission, addSourceGraphQLPermission } from './source-api-association';
+import { AuthorizationType, FieldLogLevel } from './util';
 import { ICertificate } from '../../aws-certificatemanager';
 import { IUserPool } from '../../aws-cognito';
 import { ManagedPolicy, Role, IRole, ServicePrincipal } from '../../aws-iam';
@@ -179,32 +180,6 @@ export interface AuthorizationConfig {
    * @default - No other modes
    */
   readonly additionalAuthorizationModes?: AuthorizationMode[];
-}
-
-/**
- * log-level for fields in AppSync
- */
-export enum FieldLogLevel {
-  /**
-   * Resolver logging is disabled
-   */
-  NONE = 'NONE',
-  /**
-   * Only Error messages appear in logs
-   */
-  ERROR = 'ERROR',
-  /**
-   * Info and Error messages appear in logs
-   */
-  INFO = 'INFO',
-  /**
-   * Debug, Info, and Error messages, appear in logs
-   */
-  DEBUG = 'DEBUG',
-  /**
-   * All messages (Debug, Error, Info, and Trace) appear in logs
-   */
-  ALL = 'ALL',
 }
 
 /**
