@@ -330,7 +330,7 @@ new Schedule(this, 'Schedule', {
   target: new targets.AwsApi({
     service: 'rds',
     action: 'stopDBCluster',
-    input: scheduler.ScheduleTargetInput.fromObject({
+    input: ScheduleTargetInput.fromObject({
       DbClusterIdentifier: 'my-db',
     }),
   }),
