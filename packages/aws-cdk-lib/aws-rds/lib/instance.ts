@@ -17,7 +17,8 @@ import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as secretsmanager from '../../aws-secretsmanager';
-import { ArnComponents, ArnFormat, Duration, FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, Stack, Token, Tokenization } from '../../core';
+import * as cxschema from '../../cloud-assembly-schema';
+import { ArnComponents, ArnFormat, ContextProvider, Duration, FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, Stack, Token, Tokenization } from '../../core';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -132,6 +133,47 @@ export interface DatabaseInstanceAttributes {
  * A new or imported database instance.
  */
 export abstract class DatabaseInstanceBase extends Resource implements IDatabaseInstance {
+  /**
+   * Lookup an existing DatabaseInstance using instanceIdentifier.
+   */
+  public static fromLookup(scope: Construct, id: string, options: DatabaseInstanceLookupOptions): IDatabaseInstance {
+    interface DatabaseInstanceContextResponse {
+      instanceIdentifier: string;
+      instanceArn: string;
+      dbInstanceEndpointAddress: string;
+      dbInstanceEndpointPort: number;
+      instanceResourceId?: string;
+      dbSecurityGroupIds: string[];
+    }
+
+    const response: DatabaseInstanceContextResponse = ContextProvider.getValue(scope, {
+      provider: cxschema.ContextProvider.RDS_DATABASE_INSTANCE_PROVIDER,
+      props: {
+        instanceIdentifier: options.instanceIdentifier,
+      } as cxschema.DatabaseInstanceContextQuery,
+      dummyValue: {},
+    }).value;
+
+    // Get ISecurityGroup from securityGroupId
+    const securityGroups: ec2.ISecurityGroup[] = [];
+    for (const securityGroupId of response.dbSecurityGroupIds) {
+      const securityGroup = ec2.SecurityGroup.fromSecurityGroupId(
+        scope,
+        `LSG-${securityGroupId}`,
+        securityGroupId,
+      );
+      securityGroups.push(securityGroup);
+    }
+
+    return this.fromDatabaseInstanceAttributes(scope, id, {
+      instanceEndpointAddress: response.dbInstanceEndpointAddress,
+      port: response.dbInstanceEndpointPort,
+      instanceIdentifier: response.instanceIdentifier,
+      securityGroups: securityGroups,
+      instanceResourceId: response.instanceResourceId,
+    });
+  }
+
   /**
    * Import an existing database instance.
    */
@@ -1157,6 +1199,16 @@ export interface DatabaseInstanceProps extends DatabaseInstanceSourceProps {
    * @default - default master key if storageEncrypted is true, no key otherwise
    */
   readonly storageEncryptionKey?: kms.IKey;
+}
+
+/**
+ * Properties for looking up an existing DatabaseInstance.
+ */
+export interface DatabaseInstanceLookupOptions {
+  /**
+   * The instance identifier of the DatabaseInstance
+   */
+  readonly instanceIdentifier: string;
 }
 
 /**

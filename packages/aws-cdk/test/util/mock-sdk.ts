@@ -11,6 +11,7 @@ import { ElasticLoadBalancingV2Client } from '@aws-sdk/client-elastic-load-balan
 import { IAMClient } from '@aws-sdk/client-iam';
 import { KMSClient } from '@aws-sdk/client-kms';
 import { LambdaClient } from '@aws-sdk/client-lambda';
+import { RDSClient } from '@aws-sdk/client-rds';
 import { Route53Client } from '@aws-sdk/client-route-53';
 import { S3Client } from '@aws-sdk/client-s3';
 import { SecretsManagerClient } from '@aws-sdk/client-secrets-manager';
@@ -44,6 +45,7 @@ export const mockElasticLoadBalancingV2Client = mockClient(ElasticLoadBalancingV
 export const mockIAMClient = mockClient(IAMClient);
 export const mockKMSClient = mockClient(KMSClient);
 export const mockLambdaClient = mockClient(LambdaClient);
+export const mockRDSClient = mockClient(RDSClient);
 export const mockRoute53Client = mockClient(Route53Client);
 export const mockS3Client = mockClient(S3Client);
 export const mockSecretsManagerClient = mockClient(SecretsManagerClient);
@@ -78,6 +80,8 @@ export const restoreSdkMocksToDefault = () => {
   mockKMSClient.onAnyCommand().resolves({});
   mockLambdaClient.reset();
   mockLambdaClient.onAnyCommand().resolves({});
+  mockRDSClient.reset();
+  mockRDSClient.onAnyCommand().resolves({});
   mockRoute53Client.reset();
   mockRoute53Client.onAnyCommand().resolves({});
   mockS3Client.reset();

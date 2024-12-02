@@ -249,6 +249,12 @@ import {
   waitUntilFunctionUpdatedV2,
 } from '@aws-sdk/client-lambda';
 import {
+  type DescribeDBInstancesCommandInput,
+  type DescribeDBInstancesCommandOutput,
+  DescribeDBInstancesCommand,
+  RDSClient,
+} from '@aws-sdk/client-rds';
+import {
   GetHostedZoneCommand,
   type GetHostedZoneCommandInput,
   type GetHostedZoneCommandOutput,
@@ -484,6 +490,10 @@ export interface ILambdaClient {
   ): Promise<UpdateFunctionConfigurationCommandOutput>;
   // Waiters
   waitUntilFunctionUpdated(delaySeconds: number, input: UpdateFunctionConfigurationCommandInput): Promise<WaiterResult>;
+}
+
+export interface IRdsClient {
+  describeDbInstances(input: DescribeDBInstancesCommandInput): Promise<DescribeDBInstancesCommandOutput>;
 }
 
 export interface IRoute53Client {
@@ -853,6 +863,14 @@ export class SDK {
           input,
         );
       },
+    };
+  }
+
+  public rds(): IRdsClient {
+    const client = new RDSClient(this.config);
+    return {
+      describeDbInstances: (input: DescribeDBInstancesCommandInput): Promise<DescribeDBInstancesCommandOutput> =>
+        client.send(new DescribeDBInstancesCommand(input)),
     };
   }
 
