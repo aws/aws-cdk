@@ -17,6 +17,11 @@ import { CredentialProviderSource, PluginProviderResult, Mode, PluginHost, SDKv2
  */
 export class CredentialPlugins {
   private readonly cache: { [key: string]: PluginCredentialsFetchResult | undefined } = {};
+  private readonly host: PluginHost;
+
+  constructor(host?: PluginHost) {
+    this.host = host ?? PluginHost.instance;
+  }
 
   public async fetchCredentialsFor(awsAccountId: string, mode: Mode): Promise<PluginCredentialsFetchResult | undefined> {
     const key = `${awsAccountId}-${mode}`;
@@ -27,13 +32,13 @@ export class CredentialPlugins {
   }
 
   public get availablePluginNames(): string[] {
-    return PluginHost.instance.credentialProviderSources.map((s) => s.name);
+    return this.host.credentialProviderSources.map((s) => s.name);
   }
 
   private async lookupCredentials(awsAccountId: string, mode: Mode): Promise<PluginCredentialsFetchResult | undefined> {
     const triedSources: CredentialProviderSource[] = [];
     // Otherwise, inspect the various credential sources we have
-    for (const source of PluginHost.instance.credentialProviderSources) {
+    for (const source of this.host.credentialProviderSources) {
       let available: boolean;
       try {
         available = await source.isAvailable();
