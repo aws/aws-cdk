@@ -268,13 +268,7 @@ export class SdkProvider {
   public async defaultAccount(): Promise<Account | undefined> {
     return cached(this, CACHED_ACCOUNT, async () => {
       try {
-        const credentials = await this.defaultCredentials();
-        const accessKeyId = credentials.accessKeyId;
-        if (!accessKeyId) {
-          throw new Error('Unable to resolve AWS credentials (setup with "aws configure")');
-        }
-
-        return await new SDK(this.defaultCredentials, this.defaultRegion, this.requestHandler, this.logger).currentAccount();
+        return await new SDK(this.defaultCredentialProvider, this.defaultRegion, this.requestHandler, this.logger).currentAccount();
       } catch (e: any) {
         // Treat 'ExpiredToken' specially. This is a common situation that people may find themselves in, and
         // they are complaining about if we fail 'cdk synth' on them. We loudly complain in order to show that
