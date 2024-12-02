@@ -44,6 +44,32 @@ export interface BaseStreamEventSourceProps{
    * @default true
    */
   readonly enabled?: boolean;
+
+  /**
+   * Configuration for provisioned pollers that read from the event source.
+   * When specified, allows control over the minimum and maximum number of pollers
+   * that can be provisioned to process events from the source.
+   * @default - no provisioned pollers
+   */
+  readonly provisionedPollerConfig?: ProvisionedPollerConfig;
+}
+
+/**
+ * (Amazon MSK and self-managed Apache Kafka only) The provisioned mode configuration for the event source.
+ */
+export interface ProvisionedPollerConfig {
+  /**
+   * The minimum number of pollers that should be provisioned.
+   *
+   * @default 1
+   */
+  readonly minimumPollers: number;
+  /**
+   * The maximum number of pollers that can be provisioned.
+   *
+   * @default 200
+   */
+  readonly maximumPollers: number;
 }
 
 /**
@@ -137,6 +163,13 @@ export interface StreamEventSourceProps extends BaseStreamEventSourceProps {
    */
   readonly filterEncryption?: IKey;
 
+  /**
+   * Configuration for enhanced monitoring metrics collection
+   * When specified, enables collection of additional metrics for the stream event source
+   *
+   * @default - Enhanced monitoring is disabled
+   */
+  readonly metricsConfig?: lambda.MetricsConfig;
 }
 
 /**
@@ -144,6 +177,24 @@ export interface StreamEventSourceProps extends BaseStreamEventSourceProps {
  */
 export abstract class StreamEventSource implements lambda.IEventSource {
   protected constructor(protected readonly props: StreamEventSourceProps) {
+    if (props.provisionedPollerConfig) {
+      const { minimumPollers, maximumPollers } = props.provisionedPollerConfig;
+      if (minimumPollers != undefined) {
+        if (minimumPollers < 1 || minimumPollers > 200) {
+          throw new Error('Minimum provisioned pollers must be between 1 and 200 inclusive');
+        }
+      }
+      if (maximumPollers != undefined) {
+        if (maximumPollers < 1 || maximumPollers > 2000) {
+          throw new Error('Maximum provisioned pollers must be between 1 and 2000 inclusive');
+        }
+      }
+      if (minimumPollers != undefined && maximumPollers != undefined) {
+        if (minimumPollers > maximumPollers) {
+          throw new Error('Minimum provisioned pollers must be less than or equal to maximum provisioned pollers');
+        }
+      }
+    }
   }
 
   public abstract bind(_target: lambda.IFunction): void;

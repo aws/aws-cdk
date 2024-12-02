@@ -1,7 +1,6 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import '@jsii/check-node/run';
 import * as chalk from 'chalk';
-import { install as enableSourceMapSupport } from 'source-map-support';
 
 import { DeploymentMethod } from './api';
 import { HotswapMode } from './api/hotswap/common';
@@ -23,10 +22,11 @@ import { realHandler as docs } from '../lib/commands/docs';
 import { realHandler as doctor } from '../lib/commands/doctor';
 import { MIGRATE_SUPPORTED_LANGUAGES, getMigrateScanType } from '../lib/commands/migrate';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
-import { data, debug, error, print, setLogLevel, setCI } from '../lib/logging';
+import { data, debug, error, print, setCI, setLogLevel, LogLevel } from '../lib/logging';
 import { Notices } from '../lib/notices';
 import { Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
+import { SdkToCliLogger } from './api/aws-auth/sdk-logger';
 
 /* eslint-disable max-len */
 /* eslint-disable @typescript-eslint/no-shadow */ // yargs
@@ -49,12 +49,20 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
   const argv = await parseCommandLineArguments(args, makeBrowserDefault(), await availableInitLanguages(), MIGRATE_SUPPORTED_LANGUAGES as string[], version.DISPLAY_VERSION, yargsNegativeAlias);
 
+  // if one -v, log at a DEBUG level
+  // if 2 -v, log at a TRACE level
   if (argv.verbose) {
-    setLogLevel(argv.verbose);
-  }
-
-  if (argv.debug) {
-    enableSourceMapSupport();
+    let logLevel: LogLevel;
+    switch (argv.verbose) {
+      case 1:
+        logLevel = LogLevel.DEBUG;
+        break;
+      case 2:
+      default:
+        logLevel = LogLevel.TRACE;
+        break;
+    }
+    setLogLevel(logLevel);
   }
 
   // Debug should always imply tracing
@@ -90,26 +98,28 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
   const sdkProvider = await SdkProvider.withAwsCliCompatibleDefaults({
     profile: configuration.settings.get(['profile']),
-    ec2creds: argv.ec2creds,
     httpOptions: {
       proxyAddress: argv.proxy,
       caBundlePath: argv['ca-bundle-path'],
     },
+    logger: new SdkToCliLogger(),
   });
 
   let outDirLock: ILock | undefined;
   const cloudExecutable = new CloudExecutable({
     configuration,
     sdkProvider,
-    synthesizer: synthesizer ?? (async (aws, config) => {
-      // Invoke 'execProgram', and copy the lock for the directory in the global
-      // variable here. It will be released when the CLI exits. Locks are not re-entrant
-      // so release it if we have to synthesize more than once (because of context lookups).
-      await outDirLock?.release();
-      const { assembly, lock } = await execProgram(aws, config);
-      outDirLock = lock;
-      return assembly;
-    }),
+    synthesizer:
+      synthesizer ??
+      (async (aws, config) => {
+        // Invoke 'execProgram', and copy the lock for the directory in the global
+        // variable here. It will be released when the CLI exits. Locks are not re-entrant
+        // so release it if we have to synthesize more than once (because of context lookups).
+        await outDirLock?.release();
+        const { assembly, lock } = await execProgram(aws, config);
+        outDirLock = lock;
+        return assembly;
+      }),
   });
 
   /** Function to load plug-ins, using configurations additively. */
@@ -119,7 +129,9 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
       const plugins: string[] = source.get(['plugin']) || [];
       for (const plugin of plugins) {
         const resolved = tryResolve(plugin);
-        if (loaded.has(resolved)) { continue; }
+        if (loaded.has(resolved)) {
+          continue;
+        }
         debug(`Loading plug-in: ${chalk.green(plugin)} from ${chalk.blue(resolved)}`);
         PluginHost.instance.load(plugin);
         loaded.add(resolved);
@@ -205,7 +217,11 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
       case 'ls':
       case 'list':
-        return cli.list(args.STACKS, { long: args.long, json: argv.json, showDeps: args.showDependencies });
+        return cli.list(args.STACKS, {
+          long: args.long,
+          json: argv.json,
+          showDeps: args.showDependencies,
+        });
 
       case 'diff':
         const enableDiffNoFail = isFeatureEnabled(configuration, cxapi.ENABLE_DIFF_NO_FAIL_CONTEXT);
@@ -277,13 +293,25 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
             deploymentMethod = { method: 'direct' };
             break;
           case 'change-set':
-            deploymentMethod = { method: 'change-set', execute: true, changeSetName: args.changeSetName };
+            deploymentMethod = {
+              method: 'change-set',
+              execute: true,
+              changeSetName: args.changeSetName,
+            };
             break;
           case 'prepare-change-set':
-            deploymentMethod = { method: 'change-set', execute: false, changeSetName: args.changeSetName };
+            deploymentMethod = {
+              method: 'change-set',
+              execute: false,
+              changeSetName: args.changeSetName,
+            };
             break;
           case undefined:
-            deploymentMethod = { method: 'change-set', execute: args.execute ?? true, changeSetName: args.changeSetName };
+            deploymentMethod = {
+              method: 'change-set',
+              execute: args.execute ?? true,
+              changeSetName: args.changeSetName,
+            };
             break;
         }
 
@@ -309,7 +337,9 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           traceLogs: args.logs,
           concurrency: args.concurrency,
           assetParallelism: configuration.settings.get(['assetParallelism']),
-          assetBuildTime: configuration.settings.get(['assetPrebuild']) ? AssetBuildTime.ALL_BEFORE_DEPLOY : AssetBuildTime.JUST_IN_TIME,
+          assetBuildTime: configuration.settings.get(['assetPrebuild'])
+            ? AssetBuildTime.ALL_BEFORE_DEPLOY
+            : AssetBuildTime.JUST_IN_TIME,
           ignoreNoStacks: args.ignoreNoStacks,
         });
 
@@ -343,11 +373,6 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
       case 'watch':
         return cli.watch({
           selector,
-          // parameters: parameterMap,
-          // usePreviousParameters: args['previous-parameters'],
-          // outputsFile: configuration.settings.get(['outputsFile']),
-          // requireApproval: configuration.settings.get(['requireApproval']),
-          // notificationArns: args.notificationArns,
           exclusively: args.exclusively,
           toolkitStackName,
           roleArn: args.roleArn,
@@ -496,11 +521,16 @@ function isFeatureEnabled(configuration: Configuration, featureFlag: string) {
  *   take to mean they passed an empty array.
  */
 function arrayFromYargs(xs: string[]): string[] | undefined {
-  if (xs.length === 0) { return undefined; }
-  return xs.filter(x => x !== '');
+  if (xs.length === 0) {
+    return undefined;
+  }
+  return xs.filter((x) => x !== '');
 }
 
-function yargsNegativeAlias<T extends { [x in S | L ]: boolean | undefined }, S extends string, L extends string>(shortName: S, longName: L): (argv: T) => T {
+function yargsNegativeAlias<T extends { [x in S | L]: boolean | undefined }, S extends string, L extends string>(
+  shortName: S,
+  longName: L,
+): (argv: T) => T {
   return (argv: T) => {
     if (shortName in argv && argv[shortName]) {
       (argv as any)[longName] = false;
@@ -523,13 +553,15 @@ function determineHotswapMode(hotswap?: boolean, hotswapFallback?: boolean, watc
   let hotswapMode: HotswapMode;
   if (hotswap) {
     hotswapMode = HotswapMode.HOTSWAP_ONLY;
-  } else /*if (hotswapFallback)*/ {
+  /*if (hotswapFallback)*/
+  } else {
     hotswapMode = HotswapMode.FALL_BACK;
   }
 
   return hotswapMode;
 }
 
+/* istanbul ignore next: we never call this in unit tests */
 export function cli(args: string[] = process.argv.slice(2)) {
   exec(args)
     .then(async (value) => {
@@ -537,12 +569,14 @@ export function cli(args: string[] = process.argv.slice(2)) {
         process.exitCode = value;
       }
     })
-    .catch(err => {
+    .catch((err) => {
       error(err.message);
-      if (err.stack) {
+
+      // Log the stack trace if we're on a developer workstation. Otherwise this will be into a minified
+      // file and the printed code line and stack trace are huge and useless.
+      if (err.stack && version.isDeveloperBuild()) {
         debug(err.stack);
       }
       process.exitCode = 1;
     });
-
 }

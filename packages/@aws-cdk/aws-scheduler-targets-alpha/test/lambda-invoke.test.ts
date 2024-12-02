@@ -226,7 +226,7 @@ describe('schedule target', () => {
   });
 
   test('reuses IAM role and IAM policy for two schedules with the same target from the same account', () => {
-    const lambdaTarget = new LambdaInvoke(func, {});
+    const lambdaTarget = new LambdaInvoke(func);
 
     new Schedule(stack, 'MyScheduleDummy1', {
       schedule: expr,
@@ -296,7 +296,7 @@ describe('schedule target', () => {
   });
 
   test('creates IAM role and IAM policy for two schedules with the same target but different groups', () => {
-    const lambdaTarget = new LambdaInvoke(func, {});
+    const lambdaTarget = new LambdaInvoke(func);
     const group = new Group(stack, 'Group', {
       groupName: 'mygroup',
     });
@@ -751,16 +751,16 @@ describe('schedule target', () => {
       })).toThrow(/Maximum event age is 1 day/);
   });
 
-  test('throws when retry policy max age is less than 15 minutes', () => {
+  test('throws when retry policy max age is less than 1 minute', () => {
     const lambdaTarget = new LambdaInvoke(func, {
-      maxEventAge: Duration.minutes(5),
+      maxEventAge: Duration.seconds(59),
     });
 
     expect(() =>
       new Schedule(stack, 'MyScheduleDummy', {
         schedule: expr,
         target: lambdaTarget,
-      })).toThrow(/Minimum event age is 15 minutes/);
+      })).toThrow(/Minimum event age is 1 minute/);
   });
 
   test('throws when retry policy max retry attempts is out of the allowed limits', () => {

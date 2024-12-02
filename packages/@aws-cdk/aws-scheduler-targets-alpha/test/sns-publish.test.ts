@@ -430,33 +430,6 @@ describe('sns topic schedule target', () => {
     });
   });
 
-  test.each([
-    ['account', 'arn:aws:sns:us-east-1:999999999999:topic', /Both the schedule and the topic must be in the same account./],
-    ['region', 'arn:aws:sns:eu-central-1:123456789012:topic', /Both the schedule and the topic must be in the same region./],
-  ])('throws when SNS topic is imported from different %s', (_, arn: string, expectedError: RegExp) => {
-    const importedSnsTopic = sns.Topic.fromTopicArn(stack, 'ImportedTopic', arn);
-    const target = new SnsPublish(importedSnsTopic);
-    expect(() =>
-      new scheduler.Schedule(stack, 'MyScheduleDummy', {
-        schedule: scheduleExpression,
-        target: target,
-      })).toThrow(expectedError);
-  });
-
-  test('throws when IAM role is imported from different account', () => {
-    const importedRole = iam.Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::234567890123:role/my-role');
-
-    const target = new SnsPublish(topic, {
-      role: importedRole,
-    });
-
-    expect(() =>
-      new scheduler.Schedule(stack, 'Schedule', {
-        schedule: scheduleExpression,
-        target,
-      })).toThrow(/Both the target and the execution role must be in the same account/);
-  });
-
   test('adds permissions to execution role for sending messages to DLQ', () => {
     const dlq = new sqs.Queue(stack, 'DeadLetterQueue');
 
@@ -571,16 +544,16 @@ describe('sns topic schedule target', () => {
       })).toThrow(/Maximum event age is 1 day/);
   });
 
-  test('throws when retry policy max age is less than 15 minutes', () => {
+  test('throws when retry policy max age is less than 1 minute', () => {
     const target = new SnsPublish(topic, {
-      maxEventAge: Duration.minutes(5),
+      maxEventAge: Duration.seconds(59),
     });
 
     expect(() =>
       new scheduler.Schedule(stack, 'Schedule', {
         schedule: scheduleExpression,
         target,
-      })).toThrow(/Minimum event age is 15 minutes/);
+      })).toThrow(/Minimum event age is 1 minute/);
   });
 
   test('throws when retry policy max retry attempts is out of the allowed limits', () => {

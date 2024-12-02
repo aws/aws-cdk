@@ -1,17 +1,17 @@
-import * as cxapi from '@aws-cdk/cx-api';
+import { type Environment, EnvironmentPlaceholders } from '@aws-cdk/cx-api';
 import { Branded } from '../../util/type-brands';
-import { Mode } from '../aws-auth/credentials';
-import { SdkProvider } from '../aws-auth/sdk-provider';
+import type { SdkProvider } from '../aws-auth/sdk-provider';
+import { Mode } from '../plugin/credential-provider-source';
 
 /**
  * Replace the {ACCOUNT} and {REGION} placeholders in all strings found in a complex object.
  */
 export async function replaceEnvPlaceholders<A extends Record<string, string | undefined>>(
   object: A,
-  env: cxapi.Environment,
+  env: Environment,
   sdkProvider: SdkProvider,
 ): Promise<{[k in keyof A]: StringWithoutPlaceholders | undefined}> {
-  return cxapi.EnvironmentPlaceholders.replaceAsync(object, {
+  return EnvironmentPlaceholders.replaceAsync(object, {
     accountId: () => Promise.resolve(env.account),
     region: () => Promise.resolve(env.region),
     partition: async () => {

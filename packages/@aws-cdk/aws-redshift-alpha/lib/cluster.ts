@@ -428,6 +428,15 @@ export interface ClusterProps {
    * @default - no operation
    */
   readonly resourceAction?: ResourceAction;
+
+  /**
+   * Whether to enable relocation for an Amazon Redshift cluster between Availability Zones after the cluster is created.
+   *
+   * @see https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-recovery.html
+   *
+   * @default - false
+   */
+  readonly availabilityZoneRelocation?: boolean;
 }
 
 /**
@@ -615,6 +624,9 @@ export class Cluster extends ClusterBase {
 
     if (props.resourceAction === ResourceAction.FAILOVER_PRIMARY_COMPUTE && !props.multiAz) {
       throw new Error('ResourceAction.FAILOVER_PRIMARY_COMPUTE can only be used with multi-AZ clusters.');
+    };
+    if (props.availabilityZoneRelocation && !nodeType.startsWith('ra3')) {
+      throw new Error(`Availability zone relocation is supported for only RA3 node types, got: ${props.nodeType}`);
     }
 
     this.cluster = new CfnCluster(this, 'Resource', {
@@ -647,6 +659,7 @@ export class Cluster extends ClusterBase {
       enhancedVpcRouting: props.enhancedVpcRouting,
       multiAz: props.multiAz,
       resourceAction: props.resourceAction,
+      availabilityZoneRelocation: props.availabilityZoneRelocation,
     });
 
     this.cluster.applyRemovalPolicy(removalPolicy, {
