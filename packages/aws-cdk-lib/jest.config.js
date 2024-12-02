@@ -9,6 +9,9 @@ module.exports = {
     '<rootDir>/**/test/**/?(*.)+(test).ts',
   ],
 
+  // Massive parallellism leads to common timeouts
+  testTimeout: 60_000,
+
   coverageThreshold: {
     global: {
       branches: 35,
