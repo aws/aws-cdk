@@ -81,6 +81,28 @@ export enum ClusterType {
 }
 
 /**
+ * The Amazon Redshift operation
+ */
+export enum ResourceAction {
+  /**
+   * Pause the cluster
+   */
+  PAUSE_CLUSTER = 'pause-cluster',
+
+  /**
+   * Resume the cluster
+   */
+  RESUME_CLUSTER = 'resume-cluster',
+
+  /**
+   * Failing over to the other availability zone
+   *
+   * @see https://docs.aws.amazon.com/redshift/latest/mgmt/test-cluster-multi-az.html
+   */
+  FAILOVER_PRIMARY_COMPUTE = 'failover-primary-compute',
+}
+
+/**
  * Username and password combination
  */
 export interface Login {
@@ -401,6 +423,13 @@ export interface ClusterProps {
   readonly multiAz?: boolean;
 
   /**
+   * The Amazon Redshift operation to be performed.
+   *
+   * @default - no operation
+   */
+  readonly resourceAction?: ResourceAction;
+
+  /**
    * Whether to enable relocation for an Amazon Redshift cluster between Availability Zones after the cluster is created.
    *
    * @see https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-recovery.html
@@ -593,6 +622,9 @@ export class Cluster extends ClusterBase {
       }
     }
 
+    if (props.resourceAction === ResourceAction.FAILOVER_PRIMARY_COMPUTE && !props.multiAz) {
+      throw new Error('ResourceAction.FAILOVER_PRIMARY_COMPUTE can only be used with multi-AZ clusters.');
+    };
     if (props.availabilityZoneRelocation && !nodeType.startsWith('ra3')) {
       throw new Error(`Availability zone relocation is supported for only RA3 node types, got: ${props.nodeType}`);
     }
@@ -626,6 +658,7 @@ export class Cluster extends ClusterBase {
       elasticIp: props.elasticIp,
       enhancedVpcRouting: props.enhancedVpcRouting,
       multiAz: props.multiAz,
+      resourceAction: props.resourceAction,
       availabilityZoneRelocation: props.availabilityZoneRelocation,
     });
 
