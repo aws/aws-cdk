@@ -1,6 +1,6 @@
 import { CfnIPAM, CfnIPAMPool, CfnIPAMPoolCidr, CfnIPAMScope } from 'aws-cdk-lib/aws-ec2';
 import { Construct } from 'constructs';
-import { Lazy, Names, Resource, Stack } from 'aws-cdk-lib';
+import { Lazy, Names, Resource, Stack, Tags } from 'aws-cdk-lib';
 
 /**
  * Represents the address family for IP addresses in an IPAM pool.
@@ -137,6 +137,9 @@ export interface PoolOptions {
   */
   readonly awsService?: AwsServiceName;
 }
+
+const NAME_TAG: string = 'NAME';
+//const IPAM_TAG: string = 'IPAM';
 
 /**
  * Properties for creating an IPAM pool.
@@ -343,6 +346,11 @@ class IpamPool extends Resource implements IIpamPool {
       throw new Error('awsService is required when addressFamily is set to ipv6');
     }
 
+    //Add tags to the IPAM Pool if name is provided
+    if (props.ipamPoolName) {
+      Tags.of(this).add(NAME_TAG, props.ipamPoolName);
+    }
+
     this._ipamPool = new CfnIPAMPool(this, id, {
       addressFamily: props.addressFamily,
       provisionedCidrs: props.ipv4ProvisionedCidrs?.map(cidr => ({ cidr })),
@@ -413,6 +421,7 @@ class IpamScope extends Resource implements IIpamScopeBase {
     this._ipamScope = new CfnIPAMScope(scope, 'IpamScope', {
       ipamId: props.ipamId,
     });
+    Tags.of(this._ipamScope).add(NAME_TAG, props.ipamScopeName ?? 'CustomIpamScope');
     this.scopeId = this._ipamScope.attrIpamScopeId;
     this.scopeType = IpamScopeType.CUSTOM;
     this.scope = scope;
@@ -440,6 +449,7 @@ class IpamScopeBase implements IIpamScopeBase {
     readonly scopeType?: IpamScopeType,
   ) {
     this.scopeType = IpamScopeType.DEFAULT;
+    //Tags.of(this).add(NAME_TAG, 'DefaultIpamScope');
     if (!props.ipamScopeId) {
       throw new Error('ipamScopeId is required');
     } else {
@@ -494,14 +504,24 @@ export class Ipam extends Resource {
    */
   public readonly scopes: IIpamScopeBase[] = [];
 
+  /**
+   * IPAM name to be used for tagging
+   * @default no tag specified
+   * @attribute IpamName
+   */
+  public readonly ipamName?: string;
+
   constructor(scope: Construct, id: string, props?: IpamProps) {
     super(scope, id);
-
+    if (props?.ipamName) {
+      Tags.of(this).add(NAME_TAG, props.ipamName);
+    }
     if (!props?.operatingRegion && !Stack.of(this).region) {
       throw new Error('Please provide at least one operating region');
     }
 
     this.operatingRegions = props?.operatingRegion ?? [Stack.of(this).region];
+    this.ipamName = props?.ipamName;
 
     this._ipam = new CfnIPAM(this, 'Ipam', {
       operatingRegions: this.operatingRegions ? this.operatingRegions.map(region => ({ regionName: region })) : [],
@@ -531,6 +551,7 @@ export class Ipam extends Resource {
   public addScope(scope: Construct, id: string, options: IpamScopeOptions): IIpamScopeBase {
     const ipamScope = new IpamScope(scope, id, {
       ...options,
+      ipamScopeName: options.ipamScopeName,
       ipamId: this.ipamId,
       ipamOperatingRegions: this.operatingRegions,
     });

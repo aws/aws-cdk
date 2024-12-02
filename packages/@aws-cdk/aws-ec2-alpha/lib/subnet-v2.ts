@@ -1,4 +1,4 @@
-import { Resource, Names, Lazy } from 'aws-cdk-lib';
+import { Resource, Names, Lazy, Tags } from 'aws-cdk-lib';
 import { CfnSubnet, CfnSubnetRouteTableAssociation, INetworkAcl, IRouteTable, ISubnet, NetworkAcl, SubnetNetworkAclAssociation, SubnetType } from 'aws-cdk-lib/aws-ec2';
 import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { IVpcV2 } from './vpc-v2-base';
@@ -26,6 +26,16 @@ export class IpCidr implements ICidr {
     this.cidr = props;
   }
 }
+
+/**
+ * Name tag constant
+ */
+const NAME_TAG: string = 'Name';
+
+/**
+ * VPC Name tag constant
+ */
+const VPCNAME_TAG: string = 'VpcName';
 
 /**
  * Properties to define subnet for VPC.
@@ -282,12 +292,21 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
 
     this._networkAcl = NetworkAcl.fromNetworkAclId(this, 'Acl', subnet.attrNetworkAclAssociationId);
 
+    if (props.subnetName) {
+      Tags.of(this).add(NAME_TAG, props.subnetName);
+    }
+
+    if (props.vpc.vpcName) {
+      Tags.of(this).add(VPCNAME_TAG, props.vpc.vpcName);
+    }
+
     if (props.routeTable) {
       this._routeTable = props.routeTable;
     } else {
       // Assigning a default route table
       this._routeTable = new RouteTable(this, 'RouteTable', {
         vpc: props.vpc,
+        routeTableName: 'DefaultCDKRouteTable',
       });
     }
 

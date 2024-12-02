@@ -1,0 +1,224 @@
+{
+ "Resources": {
+  "VPCintegtesttag58C3A45F": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.1.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "CDKintegTestVPC"
+     }
+    ]
+   }
+  },
+  "VPCintegtesttagSecondaryAddress2475BE474": {
+   "Type": "AWS::EC2::VPCCidrBlock",
+   "Properties": {
+    "CidrBlock": "10.2.0.0/16",
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VPCintegtesttag58C3A45F",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "VPCintegtesttagAmazonProvided3931207E": {
+   "Type": "AWS::EC2::VPCCidrBlock",
+   "Properties": {
+    "AmazonProvidedIpv6CidrBlock": true,
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VPCintegtesttag58C3A45F",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "VPCintegtesttagTestGWendpoint9E9D53AD": {
+   "Type": "AWS::EC2::VPCEndpoint",
+   "Properties": {
+    "RouteTableIds": [
+     {
+      "Fn::GetAtt": [
+       "testsubnetRouteTable682580B2",
+       "RouteTableId"
+      ]
+     }
+    ],
+    "ServiceName": {
+     "Fn::Join": [
+      "",
+      [
+       "com.amazonaws.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".s3"
+      ]
+     ]
+    },
+    "VpcEndpointType": "Gateway",
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VPCintegtesttag58C3A45F",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "VPCintegtesttagAmazonProvided3931207E",
+    "VPCintegtesttagEgressOnlyGWEIGW161299BF",
+    "VPCintegtesttag58C3A45F",
+    "VPCintegtesttagSecondaryAddress2475BE474"
+   ]
+  },
+  "VPCintegtesttagEgressOnlyGWEIGW161299BF": {
+   "Type": "AWS::EC2::EgressOnlyInternetGateway",
+   "Properties": {
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VPCintegtesttag58C3A45F",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "testsubnetSubnetDD417829": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AssignIpv6AddressOnCreation": false,
+    "AvailabilityZone": "us-west-2b",
+    "CidrBlock": "10.2.0.0/24",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "CDKIntegTestSubnet"
+     },
+     {
+      "Key": "VpcName",
+      "Value": "CDKintegTestVPC"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VPCintegtesttag58C3A45F",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "VPCintegtesttagAmazonProvided3931207E",
+    "VPCintegtesttagSecondaryAddress2475BE474"
+   ]
+  },
+  "testsubnetRouteTable682580B2": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "CDKIntegTestSubnet"
+     },
+     {
+      "Key": "VpcName",
+      "Value": "CDKintegTestVPC"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VPCintegtesttag58C3A45F",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "VPCintegtesttagAmazonProvided3931207E",
+    "VPCintegtesttagSecondaryAddress2475BE474"
+   ]
+  },
+  "testsubnetRouteTableAssociationC106676D": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "testsubnetRouteTable682580B2",
+      "RouteTableId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "testsubnetSubnetDD417829"
+    }
+   },
+   "DependsOn": [
+    "VPCintegtesttagAmazonProvided3931207E",
+    "VPCintegtesttagSecondaryAddress2475BE474"
+   ]
+  },
+  "IpamIntegTestIpam00B5B97A": {
+   "Type": "AWS::EC2::IPAM",
+   "Properties": {
+    "OperatingRegions": [
+     {
+      "RegionName": "us-west-2"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "NAME",
+      "Value": "CDKIpamTestTag"
+     }
+    ]
+   }
+  },
+  "IpamScope": {
+   "Type": "AWS::EC2::IPAMScope",
+   "Properties": {
+    "IpamId": {
+     "Fn::GetAtt": [
+      "IpamIntegTestIpam00B5B97A",
+      "IpamId"
+     ]
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

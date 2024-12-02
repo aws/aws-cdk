@@ -1,5 +1,5 @@
 import { CfnVPC, CfnVPCCidrBlock, DefaultInstanceTenancy, ISubnet, SubnetType } from 'aws-cdk-lib/aws-ec2';
-import { Arn, CfnResource, Lazy, Names, Resource } from 'aws-cdk-lib/core';
+import { Arn, CfnResource, Lazy, Names, Resource, Tags } from 'aws-cdk-lib/core';
 import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { IpamOptions, IIpamPool } from './ipam';
 import { IVpcV2, VpcV2Base } from './vpc-v2-base';
@@ -135,6 +135,11 @@ export interface IIpAddresses {
   allocateVpcCidr() : VpcCidrOptions;
 
 }
+
+/**
+ * Name tag constant
+ */
+const NAME_TAG: string = 'Name';
 
 /**
  * Properties to define VPC
@@ -279,6 +284,7 @@ export class VpcV2 extends VpcV2Base {
       public readonly ipv4CidrBlock: string;
       public readonly region: string;
       public readonly ownerAccountId: string;
+      public readonly vpcName?: string;
       private readonly _partition?: string;
 
       /*
@@ -437,6 +443,12 @@ export class VpcV2 extends VpcV2Base {
    */
   public readonly useIpv6: boolean = false;
 
+  /**
+   * VpcName to be used for tagging its components
+   * @attribute
+   */
+  public readonly vpcName?: string;
+
   public readonly ipv4CidrBlock: string = '';
 
   constructor(scope: Construct, id: string, props: VpcV2Props = {}) {
@@ -445,7 +457,7 @@ export class VpcV2 extends VpcV2Base {
         produce: () => Names.uniqueResourceName(this, { maxLength: 128, allowedSpecialCharacters: '_' }),
       }),
     });
-
+    this.vpcName = props.vpcName;
     this.ipAddresses = props.primaryAddressBlock ?? IpAddresses.ipv4('10.0.0.0/16');
     const vpcOptions = this.ipAddresses.allocateVpcCidr();
 
@@ -475,7 +487,8 @@ export class VpcV2 extends VpcV2Base {
     }, this.stack);
     this.region = this.stack.region;
     this.ownerAccountId = this.stack.account;
-
+    //Add tag to the VPC with the name provided in properties
+    Tags.of(this).add(NAME_TAG, props.vpcName || this.node.path);
     if (props.secondaryAddressBlocks) {
       const secondaryAddressBlocks: IIpAddresses[] = props.secondaryAddressBlocks;
 
@@ -732,7 +745,7 @@ class VPCCidrBlock extends Resource implements IVPCCidrBlock {
   public static fromVPCCidrBlockattributes(scope: Construct, id: string, props: VPCCidrBlockattributes) : IVPCCidrBlock {
     class Import extends Resource implements IVPCCidrBlock {
       public readonly cidrBlock = props.cidrBlock;
-      public readonly amazonProvidedIpv6CidrBlock ?: boolean = props.amazonProvidedIpv6CidrBlock;;
+      public readonly amazonProvidedIpv6CidrBlock ?: boolean = props.amazonProvidedIpv6CidrBlock;
       public readonly ipv6IpamPoolId ?: string = props.ipv6IpamPoolId;
       public readonly ipv4IpamPoolId ?: string = props.ipv4IpamPoolId;
     }
