@@ -59,6 +59,9 @@ export class FoundationModelIdentifier {
   /** Base model "amazon.titan-embed-image-v1". */
   public static readonly AMAZON_TITAN_MULTIMODAL_EMBEDDINGS_G1_V1 = new FoundationModelIdentifier('amazon.titan-embed-image-v1');
 
+  /** Base model "amazon.rerank-v1:0". */
+  public static readonly AMAZON_RERANK_V1 = new FoundationModelIdentifier('amazon.rerank-v1:0');
+
   /** Base model "ai21.j2-mid". */
   public static readonly AI21_J2_MID = new FoundationModelIdentifier('ai21.j2-mid');
 
@@ -166,6 +169,9 @@ export class FoundationModelIdentifier {
 
   /** Base model "cohere.command-r-v1:0". */
   public static readonly COHERE_COMMAND_R_PLUS_V1 = new FoundationModelIdentifier('cohere.command-r-plus-v1:0');
+
+  /** Base model "cohere.rerank-v3-5:0". */
+  public static readonly COHERE_RERANK_V3_5 = new FoundationModelIdentifier('cohere.rerank-v3-5:0');
 
   /** Base model "cohere.embed-english-v3". */
   public static readonly COHERE_EMBED_ENGLISH_V3 = new FoundationModelIdentifier('cohere.embed-english-v3');
