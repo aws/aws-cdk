@@ -3,6 +3,7 @@
     "props-physical-name:@aws-cdk/aws-neptune-alpha.ClusterParameterGroupProps",
     "props-physical-name:@aws-cdk/aws-neptune-alpha.ParameterGroupProps",
     "props-physical-name:@aws-cdk/aws-neptune-alpha.SubnetGroupProps",
-    "docs-public-apis:@aws-cdk/aws-neptune-alpha.ServerlessScalingConfiguration"
+    "docs-public-apis:@aws-cdk/aws-neptune-alpha.ServerlessScalingConfiguration",
+    "props-no-undefined-default:@aws-cdk/aws-neptune-alpha.DatabaseInstanceProps.autoMinorVersionUpgrade"
   ]
 }
