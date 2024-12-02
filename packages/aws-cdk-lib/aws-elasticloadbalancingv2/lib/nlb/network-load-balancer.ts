@@ -75,6 +75,15 @@ export interface NetworkLoadBalancerProps extends BaseLoadBalancerProps {
    * @default false
    */
   readonly zonalShift?: boolean;
+
+  /**
+   * Indicates whether to use an IPv6 prefix from each subnet for source NAT.
+   *
+   * The IP address type must be IpAddressType.DUALSTACK.
+   *
+   * @default undefined - NLB default behavior is false
+   */
+  readonly enablePrefixForIpv6SourceNat?: boolean;
 }
 
 /**
@@ -262,6 +271,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
       enforceSecurityGroupInboundRulesOnPrivateLinkTraffic: Lazy.string({
         produce: () => this.enforceSecurityGroupInboundRulesOnPrivateLinkTraffic,
       }),
+      enablePrefixForIpv6SourceNat: props.enablePrefixForIpv6SourceNat === true ? 'on': props.enablePrefixForIpv6SourceNat === false ? 'off' : undefined,
     });
 
     this.metrics = new NetworkLoadBalancerMetrics(this, this.loadBalancerFullName);
