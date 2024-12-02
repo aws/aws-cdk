@@ -17,7 +17,7 @@ describe('DatabaseInstanceBase from lookup', () => {
     });
 
     const stack = new Stack(undefined, undefined, { env: { region: 'us-east-1', account: '123456789012' } });
-    const instance = rds.DatabaseInstance.fromLookup(stack, 'Key', {
+    const instance = rds.DatabaseInstance.fromLookup(stack, 'MyInstance', {
       instanceIdentifier: 'instance-1',
     });
 
@@ -42,7 +42,7 @@ describe('DatabaseInstanceBase from lookup', () => {
     });
 
     const stack = new Stack(undefined, undefined, { env: { region: 'us-east-1', account: '123456789012' } });
-    const instance = rds.DatabaseInstance.fromLookup(stack, 'Key', {
+    const instance = rds.DatabaseInstance.fromLookup(stack, 'MyInstance', {
       instanceIdentifier: 'instance-1',
     });
 

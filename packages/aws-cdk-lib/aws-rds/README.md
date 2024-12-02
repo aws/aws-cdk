@@ -1421,3 +1421,20 @@ new rds.DatabaseCluster(this, 'Cluster', {
   monitoringRole,
 });
 ```
+
+## Importing existing DatabaseInstance
+
+### Lookup DatabaseInstance by instanceIdentifier
+
+You can lookup an existing DatabaseInstance by its instanceIdentifier using `DatabaseInstance.fromLookup()`.  This method returns an `IDatabaseInstance`.
+
+Here's how `DatabaseInstance.fromLookup()` can be used:
+
+```ts
+const instance = rds.DatabaseInstance.fromLookup(stack, 'MyInstance', {
+  instanceIdentifier: 'instance-1',
+});
+
+// Add the new security group to the existing security groups of the RDS instance
+instance.connections.addSecurityGroup(myNewSecurityGroup);
+```
