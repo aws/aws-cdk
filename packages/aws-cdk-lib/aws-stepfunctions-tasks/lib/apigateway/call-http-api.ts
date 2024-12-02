@@ -1,14 +1,14 @@
 import { Construct } from 'constructs';
 import { CallApiGatewayEndpointBase } from './base';
-import { CallApiGatewayEndpointBaseProps } from './base-types';
+import { CallApiGatewayEndpointBaseProps, CallApiGatewayEndpointJsonataBaseProps, CallApiGatewayEndpointJsonPathBaseProps } from './base-types';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
 
 /**
- * Properties for calling an HTTP API Endpoint
+ * Base properties for calling an HTTP API Endpoint
  */
-export interface CallApiGatewayHttpApiEndpointProps extends CallApiGatewayEndpointBaseProps {
+export interface CallApiGatewayHttpApiEndpointOptions {
   /**
    * The Id of the API to call
    */
@@ -27,11 +27,45 @@ export interface CallApiGatewayHttpApiEndpointProps extends CallApiGatewayEndpoi
 }
 
 /**
+ * Properties for calling an HTTP API Endpoint
+ */
+export interface CallApiGatewayHttpApiEndpointJsonPathProps extends CallApiGatewayHttpApiEndpointOptions, CallApiGatewayEndpointJsonPathBaseProps {}
+
+/**
+ * Properties for calling an HTTP API Endpoint
+ */
+export interface CallApiGatewayHttpApiEndpointJsonataProps extends CallApiGatewayHttpApiEndpointOptions, CallApiGatewayEndpointJsonataBaseProps {}
+
+/**
+ * Properties for calling an HTTP API Endpoint
+ */
+export interface CallApiGatewayHttpApiEndpointProps extends CallApiGatewayHttpApiEndpointOptions, CallApiGatewayEndpointBaseProps {}
+
+/**
  * Call HTTP API endpoint as a Task
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-api-gateway.html
  */
 export class CallApiGatewayHttpApiEndpoint extends CallApiGatewayEndpointBase {
+  /**
+   * Call HTTP API endpoint as a Task using JSONPath
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-api-gateway.html
+   */
+  public static jsonPath(scope: Construct, id: string, props: CallApiGatewayHttpApiEndpointJsonPathProps) {
+    return new CallApiGatewayHttpApiEndpoint(scope, id, props);
+  }
+  /**
+   * Call HTTP API endpoint as a Task using JSONata
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-api-gateway.html
+   */
+  public static jsonata(scope: Construct, id: string, props: CallApiGatewayHttpApiEndpointJsonataProps) {
+    return new CallApiGatewayHttpApiEndpoint(scope, id, {
+      ...props,
+      queryLanguage: sfn.QueryLanguage.JSONATA,
+    });
+  }
   protected readonly taskMetrics?: sfn.TaskMetricsConfig | undefined;
   protected readonly taskPolicies?: iam.PolicyStatement[] | undefined;
 
