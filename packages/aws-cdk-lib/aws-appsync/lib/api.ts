@@ -4,8 +4,7 @@ import { CfnApiKey, CfnApi } from './appsync.generated';
 import { ManagedPolicy, Role, ServicePrincipal } from '../../aws-iam';
 import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '../../aws-logs';
 import { Duration, Stack } from '../../core';
-import { AuthorizationType, FieldLogLevel } from './util';
-import { ApiKeyConfig, AuthorizationMode, LambdaAuthorizerConfig, LogConfig, OpenIdConnectConfig, UserPoolConfig, UserPoolDefaultAction } from './graphqlapi';
+import { AuthorizationType, FieldLogLevel, ApiKeyConfig, AuthorizationMode, LambdaAuthorizerConfig, LogConfig, OpenIdConnectConfig, UserPoolConfig, UserPoolDefaultAction } from './util';
 
 /**
  * Properties for an AppSync API
