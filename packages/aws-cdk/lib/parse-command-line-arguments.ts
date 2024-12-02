@@ -73,7 +73,7 @@ export function parseCommandLineArguments(
     })
     .option('debug', {
       type: 'boolean',
-      desc: 'Enable emission of additional debugging information, such as creation stack traces of tokens',
+      desc: 'Debug the CDK app. Log additional information during synthesis, such as creation stack traces of tokens (sets CDK_DEBUG, will slow down synthesis)',
       default: false,
     })
     .option('profile', {
