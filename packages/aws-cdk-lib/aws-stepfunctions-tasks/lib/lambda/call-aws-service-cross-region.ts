@@ -161,16 +161,17 @@ export class CallAwsServiceCrossRegion extends sfn.TaskStateBase {
    *
    * @internal
    */
-  protected _renderTask(): any {
+  protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
+    const queryLanguage = sfn._whichQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
     return {
       Resource: this.lambdaFunction.functionArn,
-      Parameters: sfn.FieldUtils.renderObject({
+      ...this._renderParametersOrArguments({
         region: this.props.region,
         endpoint: this.props.endpoint,
         action: this.props.action,
         service: this.props.service,
         parameters: this.props.parameters,
-      }),
+      }, queryLanguage),
     };
   }
 }
