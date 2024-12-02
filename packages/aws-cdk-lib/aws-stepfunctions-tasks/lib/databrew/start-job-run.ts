@@ -4,11 +4,7 @@ import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
-/**
- * Properties for starting a job run with StartJobRun
- */
-export interface GlueDataBrewStartJobRunProps extends sfn.TaskStateBaseProps {
-
+interface GlueDataBrewStartJobRunOptions {
   /**
    * Glue DataBrew Job to run
    */
@@ -16,11 +12,43 @@ export interface GlueDataBrewStartJobRunProps extends sfn.TaskStateBaseProps {
 }
 
 /**
+ * Properties for starting a job run with StartJobRun using JSONPath
+ */
+export interface GlueDataBrewStartJobRunJsonPathProps extends sfn.TaskStateJsonPathBaseProps, GlueDataBrewStartJobRunOptions {}
+
+/**
+ * Properties for starting a job run with StartJobRun using JSONata
+ */
+export interface GlueDataBrewStartJobRunJsonataProps extends sfn.TaskStateJsonataBaseProps, GlueDataBrewStartJobRunOptions {}
+
+/**
+ * Properties for starting a job run with StartJobRun
+ */
+export interface GlueDataBrewStartJobRunProps extends sfn.TaskStateBaseProps, GlueDataBrewStartJobRunOptions {}
+
+/**
  * Start a Job run as a Task
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-databrew.html
  */
 export class GlueDataBrewStartJobRun extends sfn.TaskStateBase {
+  /**
+   * Start a Job run as a Task using JSONPath
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-databrew.html
+   */
+  public static jsonPath(scope: Construct, id: string, props: GlueDataBrewStartJobRunJsonPathProps) {
+    return new GlueDataBrewStartJobRun(scope, id, props);
+  }
+
+  /**
+   * Start a Job run as a Task using JSONata
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-databrew.html
+   */
+  public static jsonata(scope: Construct, id: string, props: GlueDataBrewStartJobRunJsonataProps) {
+    return new GlueDataBrewStartJobRun(scope, id, { ...props, queryLanguage: sfn.QueryLanguage.JSONATA });
+  }
 
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
@@ -65,12 +93,13 @@ export class GlueDataBrewStartJobRun extends sfn.TaskStateBase {
    * Provides the Glue DataBrew Start Job Run task configuration
    * @internal
    */
-  protected _renderTask(): any {
+  protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
+    const queryLanguage = sfn._whichQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
     return {
       Resource: integrationResourceArn('databrew', 'startJobRun', this.integrationPattern),
-      Parameters: sfn.FieldUtils.renderObject({
+      ...this._renderParametersOrArguments({
         Name: this.props.name,
-      }),
+      }, queryLanguage),
     };
   }
 }
