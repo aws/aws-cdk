@@ -2,7 +2,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
-import * as targets from 'aws-cdk-lib/aws-elasticloadbalancingv2-targets'
+import * as targets from 'aws-cdk-lib/aws-elasticloadbalancingv2-targets';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'NlbEnablePrefixForIpv6NatStack');
