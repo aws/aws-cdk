@@ -1,6 +1,7 @@
-import type { AwsCredentialIdentity } from '@smithy/types';
+import { inspect } from 'util';
+import type { AwsCredentialIdentityProvider } from '@smithy/types';
 import { debug, warning } from '../../logging';
-import { CredentialProviderSource, Mode, PluginHost } from '../plugin';
+import { CredentialProviderSource, PluginProviderResult, Mode, PluginHost, SDKv2CompatibleCredentials, SDKv3CompatibleCredentialProvider, SDKv3CompatibleCredentials } from '../plugin';
 
 /**
  * Cache for credential providers.
@@ -15,9 +16,9 @@ import { CredentialProviderSource, Mode, PluginHost } from '../plugin';
  * for the given account.
  */
 export class CredentialPlugins {
-  private readonly cache: { [key: string]: PluginCredentials | undefined } = {};
+  private readonly cache: { [key: string]: PluginCredentialsFetchResult | undefined } = {};
 
-  public async fetchCredentialsFor(awsAccountId: string, mode: Mode): Promise<PluginCredentials | undefined> {
+  public async fetchCredentialsFor(awsAccountId: string, mode: Mode): Promise<PluginCredentialsFetchResult | undefined> {
     const key = `${awsAccountId}-${mode}`;
     if (!(key in this.cache)) {
       this.cache[key] = await this.lookupCredentials(awsAccountId, mode);
@@ -29,7 +30,7 @@ export class CredentialPlugins {
     return PluginHost.instance.credentialProviderSources.map((s) => s.name);
   }
 
-  private async lookupCredentials(awsAccountId: string, mode: Mode): Promise<PluginCredentials | undefined> {
+  private async lookupCredentials(awsAccountId: string, mode: Mode): Promise<PluginCredentialsFetchResult | undefined> {
     const triedSources: CredentialProviderSource[] = [];
     // Otherwise, inspect the various credential sources we have
     for (const source of PluginHost.instance.credentialProviderSources) {
@@ -59,28 +60,74 @@ export class CredentialPlugins {
         continue;
       }
       debug(`Using ${source.name} credentials for account ${awsAccountId}`);
-      const providerOrCreds = await source.getProvider(awsAccountId, mode);
+      const providerOrCreds = await source.getProvider(awsAccountId, mode, {
+        supportsV3Providers: true,
+      });
 
-      // Backwards compatibility: if the plugin returns a ProviderChain, resolve that chain.
-      // Otherwise it must have returned credentials.
-      const credentials = (providerOrCreds as any).resolvePromise
-        ? await (providerOrCreds as any).resolvePromise()
-        : providerOrCreds;
-
-      // Another layer of backwards compatibility: in SDK v2, the credentials object
-      // is both a container and a provider. So we need to force the refresh using getPromise.
-      // In SDK v3, these two responsibilities are separate, and the getPromise doesn't exist.
-      if ((credentials as any).getPromise) {
-        await (credentials as any).getPromise();
-      }
-
-      return { credentials, pluginName: source.name };
+      return {
+        credentials: v3ProviderFromPluginResult(providerOrCreds),
+        pluginName: source.name,
+      };
     }
     return undefined;
   }
 }
 
-export interface PluginCredentials {
-  readonly credentials: AwsCredentialIdentity;
+/**
+ * Result from trying to fetch credentials from the Plugin host
+ */
+export interface PluginCredentialsFetchResult {
+  /**
+   * SDK-v3 compatible credential provider
+   */
+  readonly credentials: AwsCredentialIdentityProvider;
+
+  /**
+   * Name of plugin that successfully provided credentials
+   */
   readonly pluginName: string;
+}
+
+/**
+ * Converts whatever the plugin gave us into an SDKv3-compatible credential provider.
+ */
+function v3ProviderFromPluginResult(x: PluginProviderResult): AwsCredentialIdentityProvider {
+  if (isV3Provider(x)) {
+    return x;
+  } else if (isV3Credentials(x)) {
+    return () => Promise.resolve(x);
+  } else if (isV2Credentials(x)) {
+    return v3ProviderFromV2Credentials(x);
+  } else {
+    throw new Error(`Unrecognized credential provider result: ${inspect(x)}`);
+  }
+}
+
+/**
+ * Converts a V2 credential into a V3-compatible provider
+ */
+function v3ProviderFromV2Credentials(x: SDKv2CompatibleCredentials): AwsCredentialIdentityProvider {
+  return async () => {
+    // Get will fetch or refresh as necessary
+    await x.getPromise();
+
+    return {
+      accessKeyId: x.accessKeyId,
+      secretAccessKey: x.secretAccessKey,
+      sessionToken: x.sessionToken,
+      expiration: x.expireTime,
+    };
+  };
+}
+
+function isV3Provider(x: PluginProviderResult): x is SDKv3CompatibleCredentialProvider {
+  return typeof x === 'function';
+}
+
+function isV2Credentials(x: PluginProviderResult): x is SDKv2CompatibleCredentials {
+  return !!(x && typeof x === 'object' && x.accessKeyId && (x as SDKv2CompatibleCredentials).getPromise);
+}
+
+function isV3Credentials(x: PluginProviderResult): x is SDKv3CompatibleCredentials {
+  return !!(x && typeof x === 'object' && x.accessKeyId && !isV2Credentials(x));
 }

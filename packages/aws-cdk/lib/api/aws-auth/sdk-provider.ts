@@ -274,7 +274,7 @@ export class SdkProvider {
           throw new Error('Unable to resolve AWS credentials (setup with "aws configure")');
         }
 
-        return await new SDK(credentials, this.defaultRegion, this.requestHandler, this.logger).currentAccount();
+        return await new SDK(this.defaultCredentials, this.defaultRegion, this.requestHandler, this.logger).currentAccount();
       } catch (e: any) {
         // Treat 'ExpiredToken' specially. This is a common situation that people may find themselves in, and
         // they are complaining about if we fail 'cdk synth' on them. We loudly complain in order to show that
@@ -307,7 +307,7 @@ export class SdkProvider {
     if (defaultAccountId === accountId) {
       return {
         source: 'correctDefault',
-        credentials: await this.defaultCredentials(),
+        credentials: await this.defaultCredentialProvider,
       };
     }
 
@@ -322,7 +322,7 @@ export class SdkProvider {
       return {
         source: 'incorrectDefault',
         accountId: defaultAccountId,
-        credentials: await this.defaultCredentials(),
+        credentials: await this.defaultCredentialProvider,
         unusedPlugins: this.plugins.availablePluginNames,
       };
     }
@@ -380,7 +380,7 @@ export class SdkProvider {
           customUserAgent: 'aws-cdk',
           logger: this.logger,
         },
-      })();
+      });
 
       return new SDK(credentials, region, this.requestHandler, this.logger);
     } catch (err: any) {
@@ -457,11 +457,11 @@ export interface CredentialsOptions {
  * Result of obtaining base credentials
  */
 type ObtainBaseCredentialsResult =
-  | { source: 'correctDefault'; credentials: AwsCredentialIdentity }
-  | { source: 'plugin'; pluginName: string; credentials: AwsCredentialIdentity }
+  | { source: 'correctDefault'; credentials: AwsCredentialIdentityProvider }
+  | { source: 'plugin'; pluginName: string; credentials: AwsCredentialIdentityProvider }
   | {
     source: 'incorrectDefault';
-    credentials: AwsCredentialIdentity;
+    credentials: AwsCredentialIdentityProvider;
     accountId: string;
     unusedPlugins: string[];
   }
