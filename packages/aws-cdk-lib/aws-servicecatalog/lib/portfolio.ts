@@ -366,7 +366,7 @@ export class Portfolio extends PortfolioBase {
           (c as Portfolio).addBucketPermissionsToSharedAccounts();
         };
       },
-    });
+    }, { priority: cdk.AspectPriority.MUTATING });
   }
 
   protected generateUniqueHash(value: string): string {
