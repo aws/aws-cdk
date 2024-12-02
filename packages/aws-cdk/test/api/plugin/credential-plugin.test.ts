@@ -88,3 +88,4 @@ function mockCredentialPlugin(p: CredentialProviderSource) {
 
   host.load(THE_PLUGIN);
 }
+
