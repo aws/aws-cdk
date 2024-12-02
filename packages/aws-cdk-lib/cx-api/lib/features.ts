@@ -115,6 +115,7 @@ export const USE_CORRECT_VALUE_FOR_INSTANCE_RESOURCE_ID_PROPERTY = '@aws-cdk/aws
 export const CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS = '@aws-cdk/core:cfnIncludeRejectComplexResourceUpdateCreatePolicyIntrinsics';
 export const LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES = '@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages';
 export const STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY = '@aws-cdk/aws-stepfunctions-tasks:fixRunEcsTaskPolicy';
+export const ASPECT_STABILIZATION = '@aws-cdk/core:aspectStabilization';
 export const USE_NEW_METHOD_FOR_USER_POOL_DOMAIN_DNS_NAME = '@aws-cdk/aws-route53-targets:useNewMethodForUserPoolDomainDnsName';
 
 export const FLAGS: Record<string, FlagInfo> = {
@@ -1249,6 +1250,21 @@ export const FLAGS: Record<string, FlagInfo> = {
       When this feature flag is enabled, if the task definition is created in the stack, the 'Resource' section will 'Ref' the taskDefinition.
     `,
     introducedIn: { v2: '2.163.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [ASPECT_STABILIZATION]: {
+    type: FlagType.VisibleContext,
+    summary: 'When enabled, a stabilization loop will be run when invoking Aspects during synthesis.',
+    detailsMd: `
+      Currently, when Aspects are invoked in one single pass of the construct tree.
+      This means that the Aspects that create other Aspects are not run and Aspects that create new nodes of the tree sometimes do not inherit their parent Aspects.
+
+      When this feature flag is enabled, a stabilization loop is run to recurse the construct tree multiple times when invoking Aspects.
+    `,
+    defaults: { v2: true },
+    introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
   },
 
