@@ -72,7 +72,7 @@ interface TaskStateBaseOptions extends StateBaseProps {
   readonly credentials?: Credentials;
 }
 
-interface TaskStateBaseJsonPathOptions extends JsonPathCommonOptions {
+interface TaskStateJsonPathBaseOptions extends JsonPathCommonOptions {
   /**
    * JSONPath expression to indicate where to inject the state's output
    *
@@ -98,15 +98,22 @@ interface TaskStateBaseJsonPathOptions extends JsonPathCommonOptions {
   readonly resultSelector?: { [key: string]: any };
 }
 
+interface TaskStateJsonataBaseOptions extends JsonataCommonOptions {}
+
 /**
  * Props that are common to all tasks that using JSONPath
  */
-export interface TaskStateBaseJsonPathProps extends TaskStateBaseOptions, TaskStateBaseJsonPathOptions {}
+export interface TaskStateJsonPathBaseProps extends TaskStateBaseOptions, TaskStateJsonPathBaseOptions {}
+
+/**
+ * Props that are common to all tasks that using JSONata
+ */
+export interface TaskStateJsonataBaseProps extends TaskStateBaseOptions, TaskStateJsonataBaseOptions {}
 
 /**
  * Props that are common to all tasks
  */
-export interface TaskStateBaseProps extends TaskStateBaseOptions, TaskStateBaseJsonPathOptions, JsonataCommonOptions {}
+export interface TaskStateBaseProps extends TaskStateBaseOptions, TaskStateJsonPathBaseOptions, JsonataCommonOptions {}
 
 /**
  * Define a Task state in the state machine
@@ -175,13 +182,13 @@ export abstract class TaskStateBase extends State implements INextable {
   /**
    * Return the Amazon States Language object for this state
    */
-  public toStateJson(queryLanguage?: QueryLanguage): object {
+  public toStateJson(topLevelQueryLanguage?: QueryLanguage): object {
     return {
-      ...this.renderQueryLanguage(queryLanguage),
+      ...this.renderQueryLanguage(topLevelQueryLanguage),
       ...this.renderNextEnd(),
       ...this.renderRetryCatch(),
       ...this.renderTaskBase(),
-      ...this._renderTask(),
+      ...this._renderTask(topLevelQueryLanguage),
     };
   }
 
@@ -298,7 +305,19 @@ export abstract class TaskStateBase extends State implements INextable {
   /**
    * @internal
    */
-  protected abstract _renderTask(): any;
+  protected abstract _renderTask(topLevelQueryLanguage?: QueryLanguage): any;
+
+  /**
+   * @internal
+   */
+  protected _renderParametersOrArguments(paramOrArg: any, queryLanguage: QueryLanguage): any {
+    return {
+      Parameters: queryLanguage === QueryLanguage.JSONPATH
+        ? FieldUtils.renderObject(paramOrArg) : undefined,
+      Arguments: queryLanguage === QueryLanguage.JSONATA
+        ? paramOrArg : undefined,
+    };
+  }
 
   private taskMetric(prefix: string | undefined, suffix: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (prefix === undefined) {

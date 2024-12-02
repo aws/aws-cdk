@@ -64,7 +64,7 @@ export interface BedrockInvokeModelOutputProps {
 /**
  * Properties for invoking a Bedrock Model
  */
-export interface BedrockInvokeModelProps extends sfn.TaskStateBaseJsonPathProps {
+export interface BedrockInvokeModelProps extends sfn.TaskStateJsonPathBaseProps {
 
   /**
    * The Bedrock model that the task will invoke.

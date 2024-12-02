@@ -563,12 +563,12 @@ export abstract class State extends Construct implements IChainable {
   /**
    * Render QueryLanguage in ASL JSON format if needed.
    */
-  protected renderQueryLanguage(stateMachineQueryLanguage?: QueryLanguage): any {
-    stateMachineQueryLanguage = stateMachineQueryLanguage ?? QueryLanguage.JSONPATH;
-    if (stateMachineQueryLanguage === QueryLanguage.JSONATA && this.queryLanguage === QueryLanguage.JSONPATH) {
+  protected renderQueryLanguage(topLevelQueryLanguage?: QueryLanguage): any {
+    topLevelQueryLanguage = topLevelQueryLanguage ?? QueryLanguage.JSONPATH;
+    if (topLevelQueryLanguage === QueryLanguage.JSONATA && this.queryLanguage === QueryLanguage.JSONPATH) {
       throw new Error(`'queryLanguage' can not be 'JSONPath' if set to 'JSONata' for whole state machine ${this.node.path}`);
     }
-    const queryLanguage = stateMachineQueryLanguage === QueryLanguage.JSONPATH && this.queryLanguage === QueryLanguage.JSONATA
+    const queryLanguage = topLevelQueryLanguage === QueryLanguage.JSONPATH && this.queryLanguage === QueryLanguage.JSONATA
       ? QueryLanguage.JSONATA : undefined;
     return {
       QueryLanguage: queryLanguage,
@@ -766,4 +766,8 @@ function isPrefixable(x: any): x is Prefixable {
  */
 function isNextable(x: any): x is INextable {
   return typeof(x) === 'object' && x.next;
+}
+
+export function _whichQueryLanguage(topLevelQueryLanguage?: QueryLanguage, stateLevelQueryLanguage?: QueryLanguage) {
+  return stateLevelQueryLanguage ?? topLevelQueryLanguage ?? QueryLanguage.JSONPATH;
 }

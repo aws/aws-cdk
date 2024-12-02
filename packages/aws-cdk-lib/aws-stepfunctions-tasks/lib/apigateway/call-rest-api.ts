@@ -89,7 +89,7 @@ export class CallApiGatewayRestApiEndpoint extends CallApiGatewayEndpointBase {
     return new CallApiGatewayRestApiEndpoint(scope, id, props);
   }
   /**
-   * Call REST API endpoint as a Task  using JSONata
+   * Call REST API endpoint as a Task using JSONata
    *
    * Be aware that the header values must be arrays. When passing the Task Token
    * in the headers field `WAIT_FOR_TASK_TOKEN` integration, use
