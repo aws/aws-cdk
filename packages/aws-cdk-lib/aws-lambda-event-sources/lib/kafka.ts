@@ -164,6 +164,7 @@ export class ManagedKafkaEventSource extends StreamEventSource {
         kafkaConsumerGroupId: this.innerProps.consumerGroupId,
         onFailure: this.innerProps.onFailure,
         supportS3OnFailureDestination: true,
+        provisionedPollerConfig: this.innerProps.provisionedPollerConfig,
       }),
     );
 
@@ -240,6 +241,7 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
       throw new Error('secret must be set if Kafka brokers accessed over Internet');
     }
     this.innerProps = props;
+
   }
 
   public bind(target: lambda.IFunction) {
@@ -256,6 +258,7 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
         sourceAccessConfigurations: this.sourceAccessConfigurations(),
         onFailure: this.innerProps.onFailure,
         supportS3OnFailureDestination: true,
+        provisionedPollerConfig: this.innerProps.provisionedPollerConfig,
       }),
     );
 
