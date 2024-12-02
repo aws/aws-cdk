@@ -17,6 +17,7 @@ import * as iam from '../../aws-iam';
 import * as sns from '../../aws-sns';
 import {
   Annotations,
+  AspectPriority,
   Aspects,
   Aws,
   CfnAutoScalingRollingUpdate, CfnCreationPolicy, CfnUpdatePolicy,
