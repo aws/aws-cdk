@@ -7,7 +7,6 @@ import { IAccessPolicy, IAccessEntry, AccessEntry, AccessPolicy, AccessScopeType
 import { IAddon, Addon } from './addon';
 import { AlbController, AlbControllerOptions } from './alb-controller';
 import { AwsAuth } from './aws-auth';
-import { ClusterResource, clusterArnComponents } from './cluster-resource';
 import { FargateProfile, FargateProfileOptions } from './fargate-profile';
 import { HelmChart, HelmChartOptions } from './helm-chart';
 import { INSTANCE_TYPES } from './instance-types';
@@ -26,7 +25,8 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
-import { Annotations, CfnOutput, CfnResource, IResource, Resource, Stack, Tags, Token, Duration, Size } from 'aws-cdk-lib/core';
+import { Annotations, CfnOutput, CfnResource, IResource, Resource, Stack, Tags, Token, Duration, Size, CfnTag, ArnComponents } from 'aws-cdk-lib/core';
+import { CfnCluster } from 'aws-cdk-lib/aws-eks';
 
 // defaults are based on https://eksctl.io
 const DEFAULT_CAPACITY_COUNT = 2;
@@ -852,7 +852,7 @@ export interface ClusterProps extends ClusterOptions {
    *
    * @default - none
    */
-  readonly tags?: { [key: string]: string };
+  readonly tags?: CfnTag[];
 }
 
 /**
@@ -1535,7 +1535,7 @@ export class Cluster extends ClusterBase {
    * that manages it. If this cluster is not kubectl-enabled (i.e. uses the
    * stock `CfnCluster`), this is `undefined`.
    */
-  private readonly _clusterResource: ClusterResource;
+  private readonly _clusterResource: CfnCluster;
 
   private _neuronDevicePlugin?: KubernetesManifest;
 
@@ -1545,7 +1545,7 @@ export class Cluster extends ClusterBase {
 
   private readonly version: KubernetesVersion;
 
-  private readonly logging?: { [key: string]: [ { [key: string]: any } ] };
+  private readonly logging?: { [key: string]: any };
 
   /**
    * A dummy CloudFormation resource that is used as a wait barrier which
@@ -1620,12 +1620,14 @@ export class Cluster extends ClusterBase {
     const subnetIds = Array.from(new Set(flatten(selectedSubnetIdsPerGroup)));
 
     this.logging = props.clusterLogging ? {
-      clusterLogging: [
-        {
-          enabled: true,
-          types: Object.values(props.clusterLogging),
-        },
-      ],
+      logging: {
+        clusterLogging: [
+          {
+            enabled: true,
+            types: Object.values(props.clusterLogging),
+          },
+        ],
+      },
     } : undefined;
 
     this.endpointAccess = props.endpointAccess ?? EndpointAccess.PUBLIC_AND_PRIVATE;
@@ -1671,18 +1673,20 @@ export class Cluster extends ClusterBase {
 
     this.authenticationMode = props.authenticationMode;
 
-    const resource = this._clusterResource = new ClusterResource(this, 'Resource', {
+    const resource = this._clusterResource = new CfnCluster(this, 'Resource', {
       name: this.physicalName,
-      environment: props.clusterHandlerEnvironment,
       roleArn: this.role.roleArn,
       version: props.version.version,
-      accessconfig: {
+      accessConfig: {
         authenticationMode: props.authenticationMode,
         bootstrapClusterCreatorAdminPermissions: props.bootstrapClusterCreatorAdminPermissions,
       },
       resourcesVpcConfig: {
         securityGroupIds: [securityGroup.securityGroupId],
         subnetIds,
+        endpointPrivateAccess: this.endpointAccess._config.privateAccess,
+        endpointPublicAccess: this.endpointAccess._config.publicAccess,
+        publicAccessCidrs: this.endpointAccess._config.publicCidrs,
       },
       ...(props.secretsEncryptionKey ? {
         encryptionConfig: [{
@@ -1696,14 +1700,6 @@ export class Cluster extends ClusterBase {
         ipFamily: this.ipFamily,
         serviceIpv4Cidr: props.serviceIpv4Cidr,
       },
-      endpointPrivateAccess: this.endpointAccess._config.privateAccess,
-      endpointPublicAccess: this.endpointAccess._config.publicAccess,
-      publicAccessCidrs: this.endpointAccess._config.publicCidrs,
-      secretsEncryptionKey: props.secretsEncryptionKey,
-      vpc: this.vpc,
-      subnets: placeClusterHandlerInVpc ? privateSubnets : undefined,
-      clusterHandlerSecurityGroup: this.clusterHandlerSecurityGroup,
-      onEventLayer: this.onEventLayer,
       tags: props.tags,
       logging: this.logging,
     });
@@ -1724,8 +1720,6 @@ export class Cluster extends ClusterBase {
       // this ensures that.
       this._clusterResource.node.addDependency(this.vpc);
     }
-
-    this.adminRole = resource.adminRole;
 
     // we use an SSM parameter as a barrier because it's free and fast.
     this._kubectlReadyBarrier = new CfnResource(this, 'KubectlReadyBarrier', {
@@ -1758,14 +1752,17 @@ export class Cluster extends ClusterBase {
     // and configured to allow connections from itself.
     this.kubectlSecurityGroup = this.clusterSecurityGroup;
 
-    this.adminRole.assumeRolePolicy?.addStatements(new iam.PolicyStatement({
-      actions: ['sts:AssumeRole'],
-      principals: [this.kubectlLambdaRole],
-    }));
+    this.adminRole = new iam.Role(this, 'kubectlRole', {
+      assumedBy: new iam.CompositePrincipal(this.kubectlLambdaRole),
+    });;
 
-    // use the cluster creation role to issue kubectl commands against the cluster because when the
-    // cluster is first created, that's the only role that has "system:masters" permissions
     this.kubectlRole = this.adminRole;
+
+    this.grantAccess('mastersRoleAccess', this.kubectlRole.roleArn, [
+      AccessPolicy.fromAccessPolicyName('AmazonEKSClusterAdminPolicy', {
+        accessScopeType: AccessScopeType.CLUSTER,
+      }),
+    ]);
 
     this._kubectlResourceProvider = this.defineKubectlProvider();
 
@@ -1982,17 +1979,6 @@ export class Cluster extends ClusterBase {
    */
   public get clusterOpenIdConnectIssuerUrl(): string {
     return this._clusterResource.attrOpenIdConnectIssuerUrl;
-  }
-
-  /**
-   * If this cluster is kubectl-enabled, returns the OpenID Connect issuer.
-   * This is because the values is only be retrieved by the API and not exposed
-   * by CloudFormation. If this cluster is not kubectl-enabled (i.e. uses the
-   * stock `CfnCluster`), this is `undefined`.
-   * @attribute
-   */
-  public get clusterOpenIdConnectIssuer(): string {
-    return this._clusterResource.attrOpenIdConnectIssuer;
   }
 
   /**
@@ -2676,3 +2662,12 @@ function cpuArchForInstanceType(instanceType: ec2.InstanceType) {
 function flatten<A>(xss: A[][]): A[] {
   return Array.prototype.concat.call([], ...xss);
 }
+
+function clusterArnComponents(clusterName: string): ArnComponents {
+  return {
+    service: 'eks',
+    resource: 'cluster',
+    resourceName: clusterName,
+  };
+}
+
