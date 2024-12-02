@@ -379,4 +379,3 @@ export class CidrBlockIpv6 {
     return ipv6Number;
   }
 }
-
