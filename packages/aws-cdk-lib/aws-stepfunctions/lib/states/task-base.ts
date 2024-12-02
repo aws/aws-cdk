@@ -9,7 +9,10 @@ import { StateGraph } from '../state-graph';
 import { Credentials } from '../task-credentials';
 import { CatchProps, IChainable, INextable, QueryLanguage, RetryProps } from '../types';
 
-interface TaskStateBaseOptions extends StateBaseProps {
+/**
+ * Base options for all task states
+ */
+export interface TaskStateBaseOptions extends StateBaseProps {
   /**
    * Timeout for the task
    *

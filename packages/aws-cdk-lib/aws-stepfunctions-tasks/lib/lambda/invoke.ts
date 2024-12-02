@@ -176,11 +176,12 @@ export class LambdaInvoke extends sfn.TaskStateBase {
   protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
     const queryLanguage = sfn._whichQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
     const [resource, paramOrArg] = this.props.payloadResponseOnly ?
-      [this.props.lambdaFunction.functionArn, this.props.payload?.value]
-      : [integrationResourceArn('lambda', 'invoke', this.integrationPattern), {
+      [this.props.lambdaFunction.functionArn, this.props.payload?.value] :
+      [integrationResourceArn('lambda', 'invoke', this.integrationPattern), {
         FunctionName: this.props.lambdaFunction.functionArn,
-        Payload: this.props.payload?.value ?? this.props.queryLanguage === sfn.QueryLanguage.JSONATA
-          ? '{% $states.input %}' : sfn.TaskInput.fromJsonPathAt('$').value,
+        Payload: this.props.payload?.value ??
+          (queryLanguage === sfn.QueryLanguage.JSONATA ? '{% $states.input %}'
+            : sfn.TaskInput.fromJsonPathAt('$').value),
         InvocationType: this.props.invocationType,
         ClientContext: this.props.clientContext,
         Qualifier: this.props.qualifier,
