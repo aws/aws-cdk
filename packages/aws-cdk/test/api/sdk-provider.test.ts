@@ -129,7 +129,7 @@ describe('with intercepted network calls', () => {
 
       // Ask for a different region
       const sdk = (await provider.forEnvironment({ ...env(account), region: 'rgn' }, Mode.ForReading)).sdk;
-      expect(sdkConfig(sdk).credentials!.accessKeyId).toEqual(uniq('access'));
+      expect((await sdkConfig(sdk).credentials()).accessKeyId).toEqual(uniq('access'));
       expect(sdk.currentRegion).toEqual('rgn');
     });
 
@@ -188,7 +188,7 @@ describe('with intercepted network calls', () => {
           Mode.ForReading,
         )
       ).sdk;
-      expect(sdkConfig(sdk).credentials!.accessKeyId).toEqual(uniq('access'));
+      expect((await sdkConfig(sdk).credentials()).accessKeyId).toEqual(uniq('access'));
       expect((await sdk.currentAccount()).accountId).toEqual(uniq('11111'));
       expect(sdk.currentRegion).toEqual('eu-bla-5');
     });
@@ -229,7 +229,7 @@ describe('with intercepted network calls', () => {
       await expect(provider.defaultAccount()).resolves.toEqual({ accountId: uniq('22222'), partition: 'aws' });
 
       const sdk = (await provider.forEnvironment(env(uniq('22222')), Mode.ForReading)).sdk;
-      expect(sdkConfig(sdk).credentials!.accessKeyId).toEqual(uniq('fooccess'));
+      expect((await sdkConfig(sdk).credentials()).accessKeyId).toEqual(uniq('fooccess'));
     });
 
     test('supports profile only in config_file', async () => {
@@ -248,7 +248,7 @@ describe('with intercepted network calls', () => {
       await expect(provider.defaultAccount()).resolves.toEqual({ accountId: uniq('22222'), partition: 'aws' });
 
       const sdk = (await provider.forEnvironment(env(uniq('22222')), Mode.ForReading)).sdk;
-      expect(sdkConfig(sdk).credentials!.accessKeyId).toEqual(uniq('fooccess'));
+      expect((await sdkConfig(sdk).credentials()).accessKeyId).toEqual(uniq('fooccess'));
     });
 
     test('can assume-role configured in config', async () => {
