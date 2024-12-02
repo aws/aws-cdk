@@ -2,6 +2,44 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.171.1](https://github.com/aws/aws-cdk/compare/v2.171.0...v2.171.1) (2024-11-27)
+
+
+### Bug Fixes
+
+* **cli:** lambda hotswap fails if `lambda:GetFunctionConfiguration` action is not allowed  ([#32301](https://github.com/aws/aws-cdk/issues/32301)) ([a073e93](https://github.com/aws/aws-cdk/commit/a073e9302dbd4213275e99c86476ab8152af7caf)), closes [/github.com/aws/aws-sdk-js-v3/blob/main/clients/client-lambda/src/waiters/waitForFunctionUpdatedV2.ts#L10](https://github.com/aws//github.com/aws/aws-sdk-js-v3/blob/main/clients/client-lambda/src/waiters/waitForFunctionUpdatedV2.ts/issues/L10) [/github.com/aws/aws-sdk-js-v3/blob/main/clients/client-lambda/src/waiters/waitForFunctionUpdated.ts#L13](https://github.com/aws//github.com/aws/aws-sdk-js-v3/blob/main/clients/client-lambda/src/waiters/waitForFunctionUpdated.ts/issues/L13)
+
+## [2.171.0](https://github.com/aws/aws-cdk/compare/v2.170.0...v2.171.0) (2024-11-25)
+
+
+### Features
+
+* **rds:** enhanced monitoring configuration at the cluster level ([#32157](https://github.com/aws/aws-cdk/issues/32157)) ([01f2dcd](https://github.com/aws/aws-cdk/commit/01f2dcd6fb892905afae735c791ddbb3e6adbcb1)), closes [#32151](https://github.com/aws/aws-cdk/issues/32151)
+* **rds:** support zero ACU for Aurora Serverless V2 ([#32231](https://github.com/aws/aws-cdk/issues/32231)) ([d1b07d9](https://github.com/aws/aws-cdk/commit/d1b07d9aeadab65db5672272050e64672e7d6beb))
+
+
+### Bug Fixes
+
+* **cli:** sso with proxy fails  ([#32261](https://github.com/aws/aws-cdk/issues/32261)) ([bedcf16](https://github.com/aws/aws-cdk/commit/bedcf164a2b7cbd613ac645d477302c93ddfa4b6))
+
+## [2.170.0](https://github.com/aws/aws-cdk/compare/v2.169.0...v2.170.0) (2024-11-22)
+
+
+### Features
+
+* **lambda:** support for Provisioned Pollers ([#32205](https://github.com/aws/aws-cdk/issues/32205)) ([68b969e](https://github.com/aws/aws-cdk/commit/68b969e6006212b2930844226f7817c81cfd8e18))
+* **vpcv2:** vpc peering connection construct ([#31645](https://github.com/aws/aws-cdk/issues/31645)) ([e1195f9](https://github.com/aws/aws-cdk/commit/e1195f93f9ee12b86d38bc7a64b2118ba204ef9e)), closes [RFC#507](https://github.com/aws/RFC/issues/507) [1#L252](https://github.com/aws/1/issues/L252)
+
+
+### Bug Fixes
+
+* **cli:** sts retry options are ignored ([#32227](https://github.com/aws/aws-cdk/issues/32227)) ([193ab8c](https://github.com/aws/aws-cdk/commit/193ab8cf892a3d2a3dbafc6db9f7a1d246fab2ec))
+
+
+### Reverts
+
+* "fix(ecr): allow creating repository uri to use tokens like cfn params" ([#32241](https://github.com/aws/aws-cdk/issues/32241)) ([b3e39a9](https://github.com/aws/aws-cdk/commit/b3e39a9a264511475ebb2bc8889325a096780d93)), closes [#32238](https://github.com/aws/aws-cdk/issues/32238)
+
 ## [2.169.0](https://github.com/aws/aws-cdk/compare/v2.168.0...v2.169.0) (2024-11-21)
 
 

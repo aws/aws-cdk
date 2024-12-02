@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.171.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.171.0-alpha.0...v2.171.1-alpha.0) (2024-11-27)
+
+## [2.171.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.170.0-alpha.0...v2.171.0-alpha.0) (2024-11-25)
+
+## [2.170.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.169.0-alpha.0...v2.170.0-alpha.0) (2024-11-22)
+
 ## [2.169.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.168.0-alpha.0...v2.169.0-alpha.0) (2024-11-21)
 
 
@@ -76,7 +82,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Bug Fixes
 
-* **location:** remove base class from PlaceIndex class ([#31287](https://github.com/aws/aws-cdk/issues/31287)) ([bc67866](https://github.com/aws/aws-cdk/commit/bc67866f579c401556d427eb150bcd118d69bd17)), closes [#30711](https://github.com/aws/aws-cdk/issues/30711) [#30682](https://github.com/aws/aws-cdk/issues/30682) 
+* **location:** remove base class from PlaceIndex class ([#31287](https://github.com/aws/aws-cdk/issues/31287)) ([bc67866](https://github.com/aws/aws-cdk/commit/bc67866f579c401556d427eb150bcd118d69bd17)), closes [#30711](https://github.com/aws/aws-cdk/issues/30711) [#30682](https://github.com/aws/aws-cdk/issues/30682)
 * **scheduler-alpha:** scheduler input always get transformed to string with extra double quotes ([#31894](https://github.com/aws/aws-cdk/issues/31894)) ([186b8ab](https://github.com/aws/aws-cdk/commit/186b8abfab8452b31cba13b56998242f63c43159))
 * **scheduler-alpha:** too many KMS permissions granted ([#31923](https://github.com/aws/aws-cdk/issues/31923)) ([06678a3](https://github.com/aws/aws-cdk/commit/06678a39e029582af14c8b021f946b9ce9cac9be)), closes [#31785](https://github.com/aws/aws-cdk/issues/31785)
 
@@ -144,10 +150,10 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
 
-* **kinesisfirehose-destinations:** the `logging` and `logGroup` properties in `DestinationLoggingProps` have been removed and replaced with a single optional property `loggingConfig` which accepts a class of type `LoggingConfig`. 
+* **kinesisfirehose-destinations:** the `logging` and `logGroup` properties in `DestinationLoggingProps` have been removed and replaced with a single optional property `loggingConfig` which accepts a class of type `LoggingConfig`.
 
 #### Details
-Combine the `logging` and `logGroup` properties into a single new optional property called `loggingConfig` which accepts a class of type `LoggingConfig`. 
+Combine the `logging` and `logGroup` properties into a single new optional property called `loggingConfig` which accepts a class of type `LoggingConfig`.
 
 `LoggingConfig` is an abstract class which can be instantiated through either an instance of `EnableLogging` or `DisableLogging` which can be used in the following 3 ways:
 
@@ -218,7 +224,7 @@ unit + integ test
 
 ### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
 
-* **kinesisfirehose-alpha:** `encryptionKey` property is removed and `encryption` property type has changed from the `StreamEncryption` enum to the `StreamEncryption` class. 
+* **kinesisfirehose-alpha:** `encryptionKey` property is removed and `encryption` property type has changed from the `StreamEncryption` enum to the `StreamEncryption` class.
 
 To pass in a KMS key for the customer managed key case, use `StreamEncryption.customerManagedKey(key)`
 
@@ -230,12 +236,12 @@ StreamEncryption.awsOwnedKey()
 StreamEncryption.customerManagedKey(key?: IKey)
 ```
 
-This makes it so it's not longer possible to pass in a key when the encryption type is AWS owned or unencrypted. The `key` is an optional parameter in `StreamEncryption.customerManagedKey(key?: IKey)` so following the previous behaviour, if a key is provided it will be used, otherwise a key will be created for the user. 
+This makes it so it's not longer possible to pass in a key when the encryption type is AWS owned or unencrypted. The `key` is an optional parameter in `StreamEncryption.customerManagedKey(key?: IKey)` so following the previous behaviour, if a key is provided it will be used, otherwise a key will be created for the user.
 ### Description of how you validated changes
 
-Generated templates do not change so behaviour remains the same. 
+Generated templates do not change so behaviour remains the same.
 
-Updated integ/unit tests. 
+Updated integ/unit tests.
 
 ### Checklist
 - [x] My code adheres to the [CONTRIBUTING GUIDE](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and [DESIGN GUIDELINES](https://github.com/aws/aws-cdk/blob/main/docs/DESIGN_GUIDELINES.md)

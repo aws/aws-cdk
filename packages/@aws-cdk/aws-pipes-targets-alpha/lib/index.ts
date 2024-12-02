@@ -1,4 +1,5 @@
 export * from './api-destination';
+export * from './api-gateway';
 export * from './cloudwatch-logs';
 export * from './event-bridge';
 export * from './kinesis';
