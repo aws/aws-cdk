@@ -923,3 +923,4 @@ class ObjectParser<T extends object> {
 function ucfirst(x: string) {
   return x.slice(0, 1).toUpperCase() + x.slice(1);
 }
+
