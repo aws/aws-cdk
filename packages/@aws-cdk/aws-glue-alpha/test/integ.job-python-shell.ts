@@ -55,7 +55,7 @@ new glue.PythonShellJob(stack, 'DetailedShellJob39', {
   tags: {
     key: 'value',
   },
-  jobRunQueuingEnabled: true
+  jobRunQueuingEnabled: true,
 });
 
 new integ.IntegTest(app, 'aws-glue-job-python-shell-integ-test', {

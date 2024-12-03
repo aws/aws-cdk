@@ -54,7 +54,7 @@ new glue.ScalaSparkStreamingJob(stack, 'OverrideScalaSparkStreamingJob', {
   tags: {
     key: 'value',
   },
-  jobRunQueuingEnabled: true
+  jobRunQueuingEnabled: true,
 });
 
 new integ.IntegTest(app, 'aws-glue-job-scalaspark-streaming-integ-test', {

@@ -595,7 +595,7 @@ describe('Job', () => {
         },
         numberOfWorkers: 2,
         maxRetries: 2,
-        jobRunQueuingEnabled: true
+        jobRunQueuingEnabled: true,
       });
     });
 

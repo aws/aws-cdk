@@ -68,7 +68,7 @@ describe('Job', () => {
         JobRunQueuingEnabled: false,
       });
     });
-    
+
   });
 
   describe('Create new Ray Job with log override parameters', () => {
@@ -275,7 +275,7 @@ describe('Job', () => {
           SecondTagName: 'SecondTagValue',
           XTagName: 'XTagValue',
         },
-        jobRunQueuingEnabled: true
+        jobRunQueuingEnabled: true,
       });
     });
 

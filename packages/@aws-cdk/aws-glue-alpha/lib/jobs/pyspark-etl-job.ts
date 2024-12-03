@@ -55,9 +55,7 @@ export interface PySparkEtlJobProps extends JobProperties {
    * A value of true means job run queuing is enabled for the job runs.
    * If false or not populated, the job runs will not be considered for queueing.
    * If this field does not match the value set in the job run, then the value from
-   * the job run field will be used. 
-   * 
-   * This property must be set to false for flex jobs.
+   * the job run field will be used. This property must be set to false for flex jobs.
    * If this property is enabled, maxRetries must be set to zero.
    *
    * @default - no job run queuing
