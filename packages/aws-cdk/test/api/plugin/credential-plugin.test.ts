@@ -51,6 +51,24 @@ test('plugin can return V3 compatible credentials that expire', async () => {
   expect(mockProducer).toHaveBeenCalledTimes(2); // Cache busted
 });
 
+test('provider returning expiring credentials must keep returning the same object type', async () => {
+  // GIVEN
+  const mockProducer = jest.fn()
+    .mockImplementationOnce(() => Promise.resolve({
+      accessKeyId: 'keyid',
+      secretAccessKey: 'secret',
+      sessionToken: 'session',
+      expiration: new Date(Date.now() + 300_000), // 5 minutes from now
+    } satisfies SDKv3CompatibleCredentials))
+    .mockImplementationOnce(() => Promise.resolve(() => Promise.resolve({ accessKeyId: 'akid' })));
+  mockCredentialFunction(mockProducer);
+
+  // WHEN
+  await fetchNow();
+  jest.advanceTimersByTime(300_000); // Make the credentials expire
+  await expect(fetchNow()).rejects.toThrow(/Plugin initially returned static V3/);
+});
+
 test('plugin can return V3 compatible credential-provider', async () => {
   // GIVEN
   mockCredentialFunction(() => Promise.resolve(() => Promise.resolve({
@@ -84,6 +102,16 @@ test('plugin can return V2 compatible credential-provider', async () => {
     accessKeyId: 'keyid',
   }));
   expect(getPromise).toHaveBeenCalled();
+});
+
+test('plugin must not return something that is not a credential', async () => {
+  // GIVEN
+  mockCredentialFunction(() => Promise.resolve({
+    nothing: 'burger',
+  } as any));
+
+  // THEN
+  await expect(fetchNow()).rejects.toThrow(/Plugin returned a value that/);
 });
 
 function mockCredentialFunction(p: CredentialProviderSource['getProvider']) {

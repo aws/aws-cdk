@@ -124,7 +124,7 @@ async function v3ProviderFromPlugin(producer: () => Promise<PluginProviderResult
     // V2 credentials that refresh and cache themselves
     return v3ProviderFromV2Credentials(initial);
   } else {
-    throw new Error(`Unrecognized credential provider result: ${inspect(initial)}`);
+    throw new Error(`Plugin returned a value that doesn't resemble AWS credentials: ${inspect(initial)}`);
   }
 }
 
