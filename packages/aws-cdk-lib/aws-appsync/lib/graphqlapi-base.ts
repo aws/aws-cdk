@@ -10,6 +10,7 @@ import {
   EventBridgeDataSource,
 } from './data-source';
 import { Resolver, ExtendedResolverProps } from './resolver';
+import { AuthorizationType } from './util';
 import { ITable } from '../../aws-dynamodb';
 import { IDomain as IElasticsearchDomain } from '../../aws-elasticsearch';
 import { IEventBus } from '../../aws-events';
@@ -19,7 +20,6 @@ import { IDomain as IOpenSearchDomain } from '../../aws-opensearchservice';
 import { IDatabaseCluster, IServerlessCluster } from '../../aws-rds';
 import { ISecret } from '../../aws-secretsmanager';
 import { ArnFormat, CfnResource, IResource, Resource, Stack } from '../../core';
-import { AuthorizationType } from './util';
 
 /**
  * Optional configuration for data sources

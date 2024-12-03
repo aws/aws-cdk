@@ -40,7 +40,7 @@ export interface IApi extends IResource {
    * @param grantee The principal
    * @param actions The actions that should be granted to the principal (i.e. appsync:EventConnect )
    */
-  grant(grantee: IGrantable): Grant;
+  grant(grantee: IGrantable, ...actions: string[]): Grant;
 
   /**
    * Adds an IAM policy statement to publish to this API for an IAM principal's policy.
