@@ -2369,7 +2369,7 @@ describe('email MFA test', () => {
         email: true,
       },
       featurePlan: FeaturePlan.LITE,
-    })).toThrow('To enable email-based MFA, set `featurePlan` to `FeaturePlan.ESSENTIALS` or `FeaturePlan.PRO`.');
+    })).toThrow('To enable email-based MFA, set `featurePlan` to `FeaturePlan.ESSENTIALS` or `FeaturePlan.PLUS`.');
   });
 });
 

@@ -15,7 +15,7 @@ new UserPool(stack, 'userpool-essentials-plan', {
   removalPolicy: RemovalPolicy.DESTROY,
 });
 
-new UserPool(stack, 'userpool-pro-plan', {
+new UserPool(stack, 'userpool-plus-plan', {
   featurePlan: FeaturePlan.PLUS,
   removalPolicy: RemovalPolicy.DESTROY,
 });

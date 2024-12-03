@@ -64,7 +64,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "userpoolproplan5BB4C59B": {
+  "userpoolplusplan01FBD006": {
    "Type": "AWS::Cognito::UserPool",
    "Properties": {
     "AccountRecoverySetting": {
@@ -85,6 +85,7 @@
     "EmailVerificationMessage": "The verification code to your new account is {####}",
     "EmailVerificationSubject": "Verify your new account",
     "SmsVerificationMessage": "The verification code to your new account is {####}",
+    "UserPoolTier": "PLUS",
     "VerificationMessageTemplate": {
      "DefaultEmailOption": "CONFIRM_WITH_CODE",
      "EmailMessage": "The verification code to your new account is {####}",

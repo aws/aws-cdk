@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/122ab1785a9bd898d8791742a27aed792bd6f52fc9f1e88cd758ab938ae46035.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a72b902838ee34a1865ddc6b3df03a50523b0fd57ac3fcca7e9265397b960308.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -46,10 +46,10 @@
             "data": "userpoolessentialsplan605F6755"
           }
         ],
-        "/integ-user-pool-feature-plans/userpool-pro-plan/Resource": [
+        "/integ-user-pool-feature-plans/userpool-plus-plan/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "userpoolproplan5BB4C59B"
+            "data": "userpoolplusplan01FBD006"
           }
         ],
         "/integ-user-pool-feature-plans/BootstrapVersion": [

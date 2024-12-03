@@ -104,13 +104,13 @@
               "version": "0.0.0"
             }
           },
-          "userpool-pro-plan": {
-            "id": "userpool-pro-plan",
-            "path": "integ-user-pool-feature-plans/userpool-pro-plan",
+          "userpool-plus-plan": {
+            "id": "userpool-plus-plan",
+            "path": "integ-user-pool-feature-plans/userpool-plus-plan",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "integ-user-pool-feature-plans/userpool-pro-plan/Resource",
+                "path": "integ-user-pool-feature-plans/userpool-plus-plan/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Cognito::UserPool",
                   "aws:cdk:cloudformation:props": {
@@ -132,6 +132,7 @@
                     "emailVerificationMessage": "The verification code to your new account is {####}",
                     "emailVerificationSubject": "Verify your new account",
                     "smsVerificationMessage": "The verification code to your new account is {####}",
+                    "userPoolTier": "PLUS",
                     "verificationMessageTemplate": {
                       "defaultEmailOption": "CONFIRM_WITH_CODE",
                       "emailMessage": "The verification code to your new account is {####}",
