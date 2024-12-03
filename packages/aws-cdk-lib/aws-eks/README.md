@@ -33,6 +33,7 @@ In addition, the library also supports defining Kubernetes resource manifests wi
     - [ARM64 Support](#arm64-support)
     - [Masters Role](#masters-role)
     - [Encryption](#encryption)
+    - [Hybrid nodes](#hybrid-nodes)
   - [Permissions and Security](#permissions-and-security)
     - [AWS IAM Mapping](#aws-iam-mapping)
     - [Access Config](#access-config)
@@ -1009,6 +1010,10 @@ The Amazon Resource Name (ARN) for that CMK can be retrieved.
 declare const cluster: eks.Cluster;
 const clusterEncryptionConfigKeyArn = cluster.clusterEncryptionConfigKeyArn;
 ```
+
+### Hybrid Nodes
+
+
 
 ## Permissions and Security
 
