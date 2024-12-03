@@ -45,7 +45,7 @@ describe('Job', () => {
         MaxRetries: 0,
       });
     });
-    
+
     test('Default job run queuing should be diabled', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         JobRunQueuingEnabled: false,
