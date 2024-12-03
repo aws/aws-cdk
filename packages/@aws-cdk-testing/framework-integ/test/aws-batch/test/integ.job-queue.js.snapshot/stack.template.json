@@ -504,7 +504,7 @@
     },
     "ReplaceComputeEnvironment": false,
     "State": "ENABLED",
-    "Type": "managed",
+    "Type": "MANAGED",
     "UpdatePolicy": {}
    }
   },
@@ -634,7 +634,7 @@
     },
     "ReplaceComputeEnvironment": false,
     "State": "ENABLED",
-    "Type": "managed",
+    "Type": "MANAGED",
     "UpdatePolicy": {}
    }
   }
