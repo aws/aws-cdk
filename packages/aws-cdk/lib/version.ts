@@ -15,6 +15,10 @@ const UPGRADE_DOCUMENTATION_LINKS: Record<number, string> = {
 
 export const DISPLAY_VERSION = `${versionNumber()} (build ${commit()})`;
 
+export function isDeveloperBuild(): boolean {
+  return versionNumber() === '0.0.0';
+}
+
 export function versionNumber(): string {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   return require(path.join(rootDir(), 'package.json')).version.replace(/\+[0-9a-f]+$/, '');

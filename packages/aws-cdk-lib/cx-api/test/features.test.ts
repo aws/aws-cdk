@@ -40,6 +40,7 @@ test('feature flag defaults may not be changed anymore', () => {
     [feats.PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE]: true,
     [feats.USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK]: true,
     // Add new disabling feature flags below this line
+    [feats.ASPECT_STABILIZATION]: true,
   });
 });
 

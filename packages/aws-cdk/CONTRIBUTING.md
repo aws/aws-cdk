@@ -257,3 +257,20 @@ will change, and needs to be regenerated. For you, this means that:
 2. When you build the CLI locally, you must ensure your dependencies are up to date by running `yarn install` inside the CLI package.
 Otherwise, you might get an error like so: `aws-cdk: - [bundle/outdated-attributions] THIRD_PARTY_LICENSES is outdated (fixable)`.
 
+## Source Maps
+
+The source map handling is not entirely intuitive, so it bears some description here.
+
+There are 2 steps to producing a CLI build:
+
+- First we compile TypeScript to JavaScript. This step is configured to produce inline sourcemaps.
+- Then we bundle JavaScript -> bundled JavaScript. This removes the inline
+  sourcemaps, and also is configured to *not* emit a fresh sourcemap file.
+
+The upshot is that we don't vend a 30+MB sourcemap to customers that they have no use for,
+and that we don't slow down Node loading those sourcemaps, while if we are locally developing
+and testing the sourcemaps are still present and can be used.
+
+During the CLI initialization, we always enable source map support: if we are developing
+then source maps are present and can be used, while in a production build there will be no
+source maps so there's nothing to load anyway.

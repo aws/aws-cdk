@@ -63,12 +63,12 @@
   resolved "https://registry.npmjs.org/@aws-cdk/asset-node-proxy-agent-v6/-/asset-node-proxy-agent-v6-2.1.0.tgz#6d3c7860354d4856a7e75375f2f0ecab313b4989"
   integrity sha512-7bY3J8GCVxLupn/kNmpPc5VJz8grx+4RKfnnJiO1LG+uxkZfANZG3RMHhE+qQxxwkyQ9/MfPtTpf748UhR425A==
 
-"@aws-cdk/aws-service-spec@^0.1.35":
-  version "0.1.35"
-  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.35.tgz#2358c86d446a84fc31104510b4bf060aa8854866"
-  integrity sha512-1LcfP/mQZflEgup6VOq1qBw56GLoju8EcgGR+K5CDwsHHPybPvBxlwZUU+Ny8A7gFWi9pvm8Jdd79lz9ihmNPw==
+"@aws-cdk/aws-service-spec@^0.1.36":
+  version "0.1.36"
+  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.36.tgz#a64c518bd246c7d7ab1fdda12da6e1bbb0a34822"
+  integrity sha512-Pgs70xwtV4tUdDpslutB3+JqBp1+Q9WLd3kVkgTyUiGJU7Db6wQ9oLHNKRF41mtO31VYo+oyVmH8eomFfqvXew==
   dependencies:
-    "@aws-cdk/service-spec-types" "^0.0.102"
+    "@aws-cdk/service-spec-types" "^0.0.103"
     "@cdklabs/tskb" "^0.0.3"
 
 "@aws-cdk/cloud-assembly-schema@^38.0.0", "@aws-cdk/cloud-assembly-schema@^38.0.1":
@@ -126,6 +126,13 @@
   version "0.0.102"
   resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.102.tgz#1a7554556a4890c6ccfe62b7d15c4f9297c11e3d"
   integrity sha512-CL9hyaPB4C4mcMinkO56uRHFlgtuy57LlpzQv3Qc3Z9FIElK8KG76GDD1SCy+FE/7B13EpIVJmJFRCvjJvyNng==
+  dependencies:
+    "@cdklabs/tskb" "^0.0.3"
+
+"@aws-cdk/service-spec-types@^0.0.103":
+  version "0.0.103"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.103.tgz#0519026090f40fb1937f84683800594662ab9f41"
+  integrity sha512-gt2mx0GpwmY0jQxDtxREskqHGtAvUwRU5YtTA65cdGwkjh/TXlw7nUXnHgG+JRQFrfvCIgqL1D+SB18UAo2zvA==
   dependencies:
     "@cdklabs/tskb" "^0.0.3"
 
@@ -7732,6 +7739,15 @@
   resolved "https://registry.npmjs.org/@tootallnate/quickjs-emscripten/-/quickjs-emscripten-0.23.0.tgz#db4ecfd499a9765ab24002c3b696d02e6d32a12c"
   integrity sha512-C5Mc6rdnsaJDjO3UpGW/CQTHtCKaYlScZTly4JIu97Jxo/odCiH0ITnDXSJPTOrEKk/ycSZ0AOgTmkDtkOsvIA==
 
+"@ts-morph/common@~0.25.0":
+  version "0.25.0"
+  resolved "https://registry.npmjs.org/@ts-morph/common/-/common-0.25.0.tgz#b76cbd517118acc8eadaf12b2fc2d47f42923452"
+  integrity sha512-kMnZz+vGGHi4GoHnLmMhGNjm44kGtKUXGnOvrKmMwAuvNjM/PgKVGfUnL7IDvK7Jb2QQ82jq3Zmp04Gy+r3Dkg==
+  dependencies:
+    minimatch "^9.0.4"
+    path-browserify "^1.0.1"
+    tinyglobby "^0.2.9"
+
 "@tsconfig/node10@^1.0.7":
   version "1.0.11"
   resolved "https://registry.npmjs.org/@tsconfig/node10/-/node10-1.0.11.tgz#6ee46400685f130e278128c7b38b7e031ff5b2f2"
@@ -9643,6 +9659,11 @@ co@^4.6.0:
   resolved "https://registry.npmjs.org/co/-/co-4.6.0.tgz#6ea6bdf3d853ae54ccb8e47bfa0bf3f9031fb184"
   integrity sha512-QVb0dM5HvG+uaxitm8wONl7jltx8dqhfU33DcqtOZcLSVIKSDDLDi7+0LbAKiyI8hD9u42m2YxXSkMGWThaecQ==
 
+code-block-writer@^13.0.3:
+  version "13.0.3"
+  resolved "https://registry.npmjs.org/code-block-writer/-/code-block-writer-13.0.3.tgz#90f8a84763a5012da7af61319dd638655ae90b5b"
+  integrity sha512-Oofo0pq3IKnsFtuHqSF7TqBfr71aeyZDVJ0HpmqB7FBM2qEigL0iPONSCZSO9pE9dZTAxANe5XHG9Uy0YMv8cg==
+
 codemaker@^1.104.0:
   version "1.104.0"
   resolved "https://registry.npmjs.org/codemaker/-/codemaker-1.104.0.tgz#e310320177d774e3c62e80e862802c3688b63a4d"
@@ -11537,6 +11558,11 @@ fb-watchman@^2.0.0:
   integrity sha512-p5161BqbuCaSnB8jIbzQHOlpgsPmK5rJVDfDKO91Axs5NC1uu3HRQm6wt9cd9/+GtQQIO53JdGXXoyDpTAsgYA==
   dependencies:
     bser "2.1.1"
+
+fdir@^6.4.2:
+  version "6.4.2"
+  resolved "https://registry.npmjs.org/fdir/-/fdir-6.4.2.tgz#ddaa7ce1831b161bc3657bb99cb36e1622702689"
+  integrity sha512-KnhMXsKSPZlAhp7+IjUkRZKPb4fUyccpDrdFXbi4QL1qkmFh9kVY09Yox+n4MaOb3lHZ1Tv829C3oaaXoMYPDQ==
 
 fecha@^4.2.0:
   version "4.2.3"
@@ -16181,6 +16207,11 @@ patch-package@^6.5.1:
     tmp "^0.0.33"
     yaml "^1.10.2"
 
+path-browserify@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.npmjs.org/path-browserify/-/path-browserify-1.0.1.tgz#d98454a9c3753d5790860f16f68867b9e46be1fd"
+  integrity sha512-b7uo2UCUOYZcnF/3ID0lulOJi/bafxa1xPe7ZPsammBSpjSWQkjNxlt635YGS2MiR9GjvuXCtz2emr3jbsz98g==
+
 path-case@^3.0.4:
   version "3.0.4"
   resolved "https://registry.npmjs.org/path-case/-/path-case-3.0.4.tgz#9168645334eb942658375c56f80b4c0cb5f82c6f"
@@ -16288,6 +16319,11 @@ picomatch@^2.0.4, picomatch@^2.2.1, picomatch@^2.2.3, picomatch@^2.3.1:
   version "2.3.1"
   resolved "https://registry.npmjs.org/picomatch/-/picomatch-2.3.1.tgz#3ba3833733646d9d3e4995946c1365a67fb07a42"
   integrity sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==
+
+picomatch@^4.0.2:
+  version "4.0.2"
+  resolved "https://registry.npmjs.org/picomatch/-/picomatch-4.0.2.tgz#77c742931e8f3b8820946c76cd0c1f13730d1dab"
+  integrity sha512-M7BAV6Rlcy5u+m6oPhAPFgJTzAioX/6B0DxyvDlo9l8+T3nLKbrczg2WLUyzd45L8RqfUMyGPzekbMvX2Ldkwg==
 
 pify@5.0.0, pify@^5.0.0:
   version "5.0.0"
@@ -17403,9 +17439,9 @@ smart-buffer@^4.2.0:
   integrity sha512-94hK0Hh8rPqQl2xXc3HsaBoOXKV20MToPkcXvwbISWLEs+64sBq5kFgn2kJDHb1Pry9yrP0dxrCI9RRci7RXKg==
 
 smol-toml@~1.3.0:
-  version "1.3.0"
-  resolved "https://registry.npmjs.org/smol-toml/-/smol-toml-1.3.0.tgz#5200e251fffadbb72570c84e9776d2a3eca48143"
-  integrity sha512-tWpi2TsODPScmi48b/OQZGi2lgUmBCHy6SZrhi/FdnnHiU1GwebbCfuQuxsC3nHaLwtYeJGPrDZDIeodDOc4pA==
+  version "1.3.1"
+  resolved "https://registry.npmjs.org/smol-toml/-/smol-toml-1.3.1.tgz#d9084a9e212142e3cab27ef4e2b8e8ba620bfe15"
+  integrity sha512-tEYNll18pPKHroYSmLLrksq233j021G0giwW7P3D24jC54pQ5W5BXMsQ/Mvw1OJCmEYDgY+lrzT+3nNUtoNfXQ==
 
 snake-case@^3.0.4:
   version "3.0.4"
@@ -18024,6 +18060,14 @@ tiny-relative-date@^1.3.0:
   resolved "https://registry.npmjs.org/tiny-relative-date/-/tiny-relative-date-1.3.0.tgz#fa08aad501ed730f31cc043181d995c39a935e07"
   integrity sha512-MOQHpzllWxDCHHaDno30hhLfbouoYlOI8YlMNtvKe1zXbjEVhbcEovQxvZrPvtiYW630GQDoMMarCnjfyfHA+A==
 
+tinyglobby@^0.2.9:
+  version "0.2.10"
+  resolved "https://registry.npmjs.org/tinyglobby/-/tinyglobby-0.2.10.tgz#e712cf2dc9b95a1f5c5bbd159720e15833977a0f"
+  integrity sha512-Zc+8eJlFMvgatPZTl6A9L/yht8QqdmUNtURHaKZLmKBE12hNPSrqNkUp2cs3M/UKmNVVAMFQYSjYIVHDjW5zew==
+  dependencies:
+    fdir "^6.4.2"
+    picomatch "^4.0.2"
+
 tinyrainbow@^1.2.0:
   version "1.2.0"
   resolved "https://registry.npmjs.org/tinyrainbow/-/tinyrainbow-1.2.0.tgz#5c57d2fc0fb3d1afd78465c33ca885d04f02abb5"
@@ -18117,6 +18161,14 @@ ts-mock-imports@^1.3.16:
   version "1.3.16"
   resolved "https://registry.npmjs.org/ts-mock-imports/-/ts-mock-imports-1.3.16.tgz#7d817cf9694daafffaae8592172b128af709cfae"
   integrity sha512-BJ3SShPRHcMC9IzW1iFk7h1I4/nkzetB8w0LQySC4Ly14vVKpBr0NOIX8gjLM9I9mo9JViFqlctX0dGWW2iyhA==
+
+ts-morph@~24.0.0:
+  version "24.0.0"
+  resolved "https://registry.npmjs.org/ts-morph/-/ts-morph-24.0.0.tgz#6249b526ade40cf99c8803e7abdae6c65882e58e"
+  integrity sha512-2OAOg/Ob5yx9Et7ZX4CvTCc0UFoZHwLEJ+dpDPSUi5TgwwlTlX47w+iFRrEwzUZwYACjq83cgjS/Da50Ga37uw==
+  dependencies:
+    "@ts-morph/common" "~0.25.0"
+    code-block-writer "^13.0.3"
 
 ts-node@^10.9.1, ts-node@^10.9.2:
   version "10.9.2"

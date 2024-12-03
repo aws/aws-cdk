@@ -13,7 +13,7 @@ import { IKey } from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cloudmap from '../../aws-servicediscovery';
-import { Aws, Duration, IResource, Resource, Stack, Aspects, ArnFormat, IAspect, Token, Names } from '../../core';
+import { Aws, Duration, IResource, Resource, Stack, Aspects, ArnFormat, IAspect, Token, Names, AspectPriority } from '../../core';
 
 const CLUSTER_SYMBOL = Symbol.for('@aws-cdk/aws-ecs/lib/cluster.Cluster');
 
@@ -282,7 +282,7 @@ export class Cluster extends Resource implements ICluster {
     // since it's harmless, but we'd prefer not to add unexpected new
     // resources to the stack which could surprise users working with
     // brown-field CDK apps and stacks.
-    Aspects.of(this).add(new MaybeCreateCapacityProviderAssociations(this, id));
+    Aspects.of(this).add(new MaybeCreateCapacityProviderAssociations(this, id), { priority: AspectPriority.MUTATING });
   }
 
   /**

@@ -3,7 +3,7 @@ import { ArtifactMetadataEntryType, type MetadataEntry } from '@aws-cdk/cloud-as
 import type { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
 import { ResourceEvent, StackEventPoller } from './stack-event-poller';
-import { error, logLevel, LogLevel, setLogLevel } from '../../../logging';
+import { error, LogLevel, setLogLevel } from '../../../logging';
 import type { ICloudFormationClient } from '../../aws-auth';
 import { RewritableBlock } from '../display';
 
@@ -102,7 +102,7 @@ export class StackActivityMonitor {
     };
 
     const isWindows = process.platform === 'win32';
-    const verbose = options.logLevel ?? logLevel;
+    const verbose = options.logLevel ?? LogLevel.INFO;
     // On some CI systems (such as CircleCI) output still reports as a TTY so we also
     // need an individual check for whether we're running on CI.
     // see: https://discuss.circleci.com/t/circleci-terminal-is-a-tty-but-term-is-not-set/9965
@@ -626,7 +626,7 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
    */
   public readonly updateSleep: number = 2_000;
 
-  private oldLogLevel: LogLevel = LogLevel.DEFAULT;
+  private oldLogLevel: LogLevel = LogLevel.INFO;
   private block = new RewritableBlock(this.stream);
 
   constructor(props: PrinterProps) {
@@ -674,8 +674,7 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
   public start() {
     // Need to prevent the waiter from printing 'stack not stable' every 5 seconds, it messes
     // with the output calculations.
-    this.oldLogLevel = logLevel;
-    setLogLevel(LogLevel.DEFAULT);
+    setLogLevel(LogLevel.INFO);
   }
 
   public stop() {

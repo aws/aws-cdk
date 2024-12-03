@@ -1,4 +1,4 @@
-import { UpdateFunctionCodeCommand, waitUntilFunctionUpdated } from '@aws-sdk/client-lambda';
+import { UpdateFunctionCodeCommand, waitUntilFunctionUpdatedV2 } from '@aws-sdk/client-lambda';
 import * as setup from './hotswap-test-setup';
 import { HotswapMode } from '../../../lib/api/hotswap/common';
 import { mockLambdaClient } from '../../util/mock-sdk';
@@ -9,7 +9,7 @@ jest.mock('@aws-sdk/client-lambda', () => {
 
   return {
     ...original,
-    waitUntilFunctionUpdated: jest.fn(),
+    waitUntilFunctionUpdatedV2: jest.fn(),
   };
 });
 
@@ -116,7 +116,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
     // THEN
-    expect(waitUntilFunctionUpdated).toHaveBeenCalledWith(
+    expect(waitUntilFunctionUpdatedV2).toHaveBeenCalledWith(
       expect.objectContaining({
         minDelay: 5,
         maxDelay: 5,

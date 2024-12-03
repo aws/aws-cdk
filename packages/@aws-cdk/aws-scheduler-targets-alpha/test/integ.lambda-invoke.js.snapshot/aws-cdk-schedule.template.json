@@ -30,7 +30,7 @@
        ]
       ]
      },
-     "Input": "\"importedLambdaTagValue\"",
+     "Input": "{\"tagValue\":\"importedLambdaTagValue\"}",
      "RetryPolicy": {
       "MaximumEventAgeInSeconds": 86400,
       "MaximumRetryAttempts": 185
@@ -209,7 +209,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "7f6fc8a416807b6be0ca2397479cd45d43dfe989a95bc81708f269e993296d34.zip"
+     "S3Key": "67412d7336becb4f3cc171ba3cf4ad59c7a45c7f2371ad1745ff38de715411f2.zip"
     },
     "Environment": {
      "Variables": {
@@ -267,7 +267,7 @@
        "Arn"
       ]
      },
-     "Input": "\"sameStackLambdaTagValue\"",
+     "Input": "{\"tagValue\":\"sameStackLambdaTagValue\"}",
      "RetryPolicy": {
       "MaximumEventAgeInSeconds": 86400,
       "MaximumRetryAttempts": 185
@@ -384,8 +384,8 @@
       ]
      },
      "RetryPolicy": {
-      "MaximumEventAgeInSeconds": 86400,
-      "MaximumRetryAttempts": 0
+      "MaximumEventAgeInSeconds": 60,
+      "MaximumRetryAttempts": 1
      },
      "RoleArn": {
       "Fn::GetAtt": [

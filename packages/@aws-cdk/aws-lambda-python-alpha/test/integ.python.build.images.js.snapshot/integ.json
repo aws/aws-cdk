@@ -1,0 +1,13 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "lambda-python-build-images/DefaultTest": {
+      "stacks": [
+        "integ-lambda-python-test-build-images"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "lambda-python-build-images/DefaultTest/DeployAssert",
+      "assertionStackName": "lambdapythonbuildimagesDefaultTestDeployAssertB7623923"
+    }
+  }
+}

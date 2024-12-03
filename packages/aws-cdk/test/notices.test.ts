@@ -514,11 +514,10 @@ describe(Notices, () => {
     // disable caching
     jest.spyOn(CachedDataSource.prototype as any, 'save').mockImplementation((_: any) => Promise.resolve());
     jest.spyOn(CachedDataSource.prototype as any, 'load').mockImplementation(() => Promise.resolve({ expiration: 0, notices: [] }));
-
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    jest.restoreAllMocks();
   });
 
   describe('addBootstrapVersion', () => {
@@ -537,7 +536,6 @@ describe(Notices, () => {
       notices.display();
       expect(print).toHaveBeenCalledWith(new FilteredNotice(BOOTSTRAP_NOTICE_V10).format());
       expect(print).toHaveBeenCalledWith(new FilteredNotice(BOOTSTRAP_NOTICE_V11).format());
-
     });
 
     test('deduplicates', async () => {

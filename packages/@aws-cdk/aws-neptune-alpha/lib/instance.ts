@@ -403,6 +403,13 @@ export interface DatabaseInstanceProps {
    * @default RemovalPolicy.Retain
    */
   readonly removalPolicy?: cdk.RemovalPolicy;
+
+  /**
+   * Indicates that minor version patches are applied automatically.
+   *
+   * @default undefined
+   */
+  readonly autoMinorVersionUpgrade?: boolean;
 }
 
 /**
@@ -494,6 +501,7 @@ export class DatabaseInstance extends DatabaseInstanceBase implements IDatabaseI
     super(scope, id);
 
     const instance = new CfnDBInstance(this, 'Resource', {
+      autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,
       dbClusterIdentifier: props.cluster.clusterIdentifier,
       dbInstanceClass: props.instanceType._instanceType,
       availabilityZone: props.availabilityZone,

@@ -436,8 +436,8 @@ export class CdkToolkit {
 
             case 'failpaused-need-rollback-first': {
               const motivation = r.reason === 'replacement'
-                ? 'Stack is in a paused fail state and change includes a replacement which cannot be deployed with "--no-rollback"'
-                : 'Stack is in a paused fail state and command line arguments do not include "--no-rollback"';
+                ? `Stack is in a paused fail state (${r.status}) and change includes a replacement which cannot be deployed with "--no-rollback"`
+                : `Stack is in a paused fail state (${r.status}) and command line arguments do not include "--no-rollback"`;
 
               if (options.force) {
                 warning(`${motivation}. Rolling back first (--force).`);
@@ -461,7 +461,7 @@ export class CdkToolkit {
               break;
             }
 
-            case 'replacement-requires-norollback': {
+            case 'replacement-requires-rollback': {
               const motivation = 'Change includes a replacement which cannot be deployed with "--no-rollback"';
 
               if (options.force) {

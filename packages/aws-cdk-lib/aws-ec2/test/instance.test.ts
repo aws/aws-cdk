@@ -1,5 +1,6 @@
 import * as path from 'path';
 import { Annotations, Match, Template } from '../../assertions';
+import { InstanceProfile, Role, ServicePrincipal } from '../../aws-iam';
 import { Key } from '../../aws-kms';
 import { Asset } from '../../aws-s3-assets';
 import { StringParameter } from '../../aws-ssm';
@@ -443,6 +444,45 @@ describe('instance', () => {
 
       // THEN
       Annotations.fromStack(stack).hasWarning('/Default/Instance', 'iops will be ignored without volumeType: IO1, IO2, or GP3 [ack: @aws-cdk/aws-ec2:iopsIgnored]');
+    });
+  });
+
+  describe('instanceProfile', () => {
+    let instanceProfile: InstanceProfile;
+    let role: Role;
+
+    beforeEach(() => {
+      role = new Role(stack, 'MyRole', {
+        assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
+      });
+      instanceProfile = new InstanceProfile(stack, 'MyInstanceProfile', {
+        role,
+      });
+    });
+
+    test('can specify instanceProfile', () => {
+      new Instance(stack, 'Instance', {
+        vpc,
+        machineImage: new AmazonLinuxImage(),
+        instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+        instanceProfile,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::InstanceProfile', {
+        Roles: [{ Ref: 'MyRoleF48FFE04' }],
+      });
+    });
+
+    test('throws if used with role', () => {
+      expect(() => {
+        new Instance(stack, 'Instance', {
+          vpc,
+          machineImage: new AmazonLinuxImage(),
+          instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+          instanceProfile,
+          role,
+        });
+      }).toThrow(/You cannot provide both instanceProfile and role/);
     });
   });
 

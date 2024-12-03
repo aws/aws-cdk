@@ -121,6 +121,6 @@ export function findLastCommonElement<T>(path1: T[], path2: T[]): T | undefined 
   return path1[i - 1];
 }
 
-export function undefinedIfAllValuesAreEmpty(object: object): object | undefined {
+export function undefinedIfAllValuesAreEmpty<A extends object>(object: A): A | undefined {
   return Object.values(object).some(v => v !== undefined) ? object : undefined;
 }

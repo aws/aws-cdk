@@ -1,7 +1,7 @@
 export function parsePattern<A extends string>(pattern: string, fields: { [k in A]: unknown }): PatternedString<A> {
   const placeholders = Object.keys(fields);
   if (!placeholders.some((param) => pattern.includes(param))) {
-    throw `Error: --pattern must contain one of [${placeholders.join(', ')}]`;
+    throw new Error(`--pattern must contain one of [${placeholders.join(', ')}]`);
   }
 
   return (values: { [k in A]: string }) => {
