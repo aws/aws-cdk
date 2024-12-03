@@ -3,7 +3,7 @@ import * as path from 'path';
 import { Construct, Node } from 'constructs';
 import * as semver from 'semver';
 import * as YAML from 'yaml';
-import { IAccessPolicy, IAccessEntry, AccessEntry, AccessPolicy, AccessScopeType } from './access-entry';
+import { IAccessPolicy, IAccessEntry, AccessEntry, AccessPolicy, AccessScopeType, AccessEntryGrants } from './access-entry';
 import { IAddon, Addon } from './addon';
 import { AlbController, AlbControllerOptions } from './alb-controller';
 import { AwsAuth } from './aws-auth';
@@ -726,7 +726,6 @@ interface EndpointAccessConfig {
    * @default - No restrictions.
    */
   readonly publicCidrs?: string[];
-
 }
 
 /**
@@ -1842,7 +1841,26 @@ export class Cluster extends ClusterBase {
    * @param accessPolicies - An array of `IAccessPolicy` objects that define the access permissions to be granted to the IAM principal.
    */
   public grantAccess(id: string, principal: string, accessPolicies: IAccessPolicy[]) {
-    this.addToAccessEntry(id, principal, accessPolicies);
+    this.addToAccessEntry(id, principal, {
+      accessPolicies: accessPolicies,
+    });
+  }
+
+  /**
+   * Grants the specified IAM principal access to the EKS cluster based on the provided access policies.
+   *
+   * This method creates an `AccessEntry` construct that grants the specified IAM principal the access to
+   * the specified kubernetesGroups. You have to create (cluster) rolebindings and (cluster) roles manually.
+   * Without them, the given principal will be able to login, but has no permissions.
+   *
+   * @param id - The ID of the `AccessEntry` construct to be created.
+   * @param principal - The IAM principal (role or user) to be granted access to the EKS cluster.
+   * @param kubernetesGroups - An array of `IAccessPolicy` objects that define the access permissions to be granted to the IAM principal.
+   */
+  public grantAccessToGroups(id: string, principal: string, kubernetesGroups: string[]) {
+    this.addToAccessEntry(id, principal, {
+      kubernetesGroups,
+    });
   }
 
   /**
@@ -2080,25 +2098,31 @@ export class Cluster extends ClusterBase {
   /**
    * Adds an access entry to the cluster's access entries map.
    *
-   * If an entry already exists for the given principal, it adds the provided access policies to the existing entry.
+   * If an entry already exists for the given principal, it adds the provided access policies or kubernetes groups to the existing entry.
    * If no entry exists for the given principal, it creates a new access entry with the provided access policies.
    *
    * @param principal - The principal (e.g., IAM user or role) for which the access entry is being added.
-   * @param policies - An array of access policies to be associated with the principal.
+   * @param grants - An object containing arrays of access policies and kubernetes groups to be associated with the principal.
    *
    * @throws {Error} If the uniqueName generated for the new access entry is not unique.
    *
    * @returns {void}
    */
-  private addToAccessEntry(id: string, principal: string, policies: IAccessPolicy[]) {
+  private addToAccessEntry(id: string, principal: string, grants: AccessEntryGrants) {
     const entry = this.accessEntries.get(principal);
     if (entry) {
-      (entry as AccessEntry).addAccessPolicies(policies);
+      if ( grants.accessPolicies ) {
+        (entry as AccessEntry).addAccessPolicies(grants.accessPolicies);
+      }
+      if (grants.kubernetesGroups) {
+        (entry as AccessEntry).addKubernetesGroups(grants.kubernetesGroups);
+      }
     } else {
       const newEntry = new AccessEntry(this, id, {
         principal,
         cluster: this,
-        accessPolicies: policies,
+        accessPolicies: grants.accessPolicies,
+        kubernetesGroups: grants.kubernetesGroups,
       });
       this.accessEntries.set(principal, newEntry);
     }

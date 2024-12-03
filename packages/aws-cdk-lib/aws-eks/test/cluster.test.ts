@@ -3378,6 +3378,23 @@ describe('cluster', () => {
       });
     });
 
+    test('cluster can grantAccess to kubernetes group', () => {
+      // GIVEN
+      const { stack, vpc } = testFixture();
+      // WHEN
+      const mastersRole = new iam.Role(stack, 'role', { assumedBy: new iam.AccountRootPrincipal() });
+      const cluster = new eks.Cluster(stack, 'Cluster', {
+        vpc,
+        mastersRole,
+        version: CLUSTER_VERSION,
+      });
+      cluster.grantAccessToGroups('mastersAccess', mastersRole.roleArn, ['my-custom-group']);
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EKS::AccessEntry', {
+        KubernetesGroups: ['my-custom-group'],
+      });
+    });
+
   });
 
 });
