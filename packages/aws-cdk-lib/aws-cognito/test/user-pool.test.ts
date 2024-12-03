@@ -5,7 +5,7 @@ import { Role, ServicePrincipal } from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import { CfnParameter, Duration, Stack, Tags } from '../../core';
-import { AccountRecovery, Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolIdentityProvider, UserPoolOperation, VerificationEmailStyle, UserPoolEmail, AdvancedSecurityMode, LambdaVersion } from '../lib';
+import { AccountRecovery, Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolIdentityProvider, UserPoolOperation, VerificationEmailStyle, UserPoolEmail, AdvancedSecurityMode, LambdaVersion, PasskeyVerification } from '../lib';
 
 describe('User Pool', () => {
   test('default setup', () => {
@@ -2087,6 +2087,78 @@ describe('User Pool', () => {
         sesVerifiedDomain: 'example.com',
       }),
     })).toThrow(/"fromEmail" contains a different domain than the "sesVerifiedDomain"/);
+  });
+
+  test('allowFirstAuthFactors is not present if option is not provided', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', {});
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+      Policies: Match.absent(),
+    });
+  });
+
+  test.each([
+    ['blank', {}, ['PASSWORD']],
+    ['email OTP', { emailOtp: true }, ['PASSWORD', 'EMAIL_OTP']],
+    ['SMS OTP', { smsOtp: true }, ['PASSWORD', 'SMS_OTP']],
+    ['passkey', { passkey: true }, ['PASSWORD', 'WEB_AUTHN']],
+    ['email OTP and SMS OTP', { emailOtp: true, smsOtp: true }, ['PASSWORD', 'EMAIL_OTP', 'SMS_OTP']],
+    ['email OTP and passkey', { emailOtp: true, passkey: true }, ['PASSWORD', 'EMAIL_OTP', 'WEB_AUTHN']],
+    ['SMS OTP and passkey', { smsOtp: true, passkey: true }, ['PASSWORD', 'SMS_OTP', 'WEB_AUTHN']],
+    ['all enabled', { emailOtp: true, smsOtp: true, passkey: true }, ['PASSWORD', 'EMAIL_OTP', 'SMS_OTP', 'WEB_AUTHN']],
+  ])('allowFirstAuthFactors is configured correctly when set to %s', (_, allowedFirstAuthFactors, compareArray) => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', { allowedFirstAuthFactors });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+      Policies: {
+        SignInPolicy: {
+          AllowedFirstAuthFactors: compareArray,
+        },
+      },
+    });
+  });
+
+  // TODO: test('allowFirstAuthFactors throws when the feature plan is Lite')
+
+  test('passkeyRelyingPartyId is configured', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      passkeyRelyingPartyId: 'example.com',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+      WebAuthnRelyingPartyID: 'example.com',
+    });
+  });
+
+  test.each([
+    [PasskeyVerification.PREFERRED, 'preferred'],
+    [PasskeyVerification.REQUIRED, 'required'],
+  ])('passkeyVerification is configured correctly when set to (%s)', (passkeyVerification, compareString) => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', { passkeyVerification });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+      WebAuthnUserVerification: compareString,
+    });
   });
 });
 

@@ -22,6 +22,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
       - [Code Verification](#code-verification)
       - [Link Verification](#link-verification)
     - [Sign In](#sign-in)
+      - [Passwordless sign-in](#passwordless-sign-in)
     - [Attributes](#attributes)
     - [Attribute verification](#attribute-verification)
     - [Security](#security)
@@ -192,6 +193,58 @@ new cognito.UserPool(this, 'myuserpool', {
 
 A user pool can optionally ignore case when evaluating sign-ins. When `signInCaseSensitive` is false, Cognito will not
 check the capitalization of the alias when signing in. Default is true.
+
+#### Passwordless sign-in
+
+User pools can be configured to allow passwordless sign-in with email message one-time password, SMS message one-time password, and passkey (WebAuthn) sign-in. Passwordless sign-in requires the [Essentials feature plan](#user-pool-feature-plans).
+
+For details of authentication methods and client implementation, see [Manage authentication methods in AWS SDKs](https://docs.aws.amazon.com/cognito/latest/developerguide/authentication-flows-selection-sdk.html).
+
+The following code configures a user pool with passwordless sign-in enabled:
+
+```ts
+new cognito.UserPool(this, 'myuserpool', {
+  allowedFirstAuthFactors: {
+    emailOtp: true, // enables email message one-time password
+    smsOtp: true,   // enables SMS message one-time password
+    passkey: true,  // enables passkey sign-in
+  },
+});
+```
+
+⚠️ enabling SMS message one-time password requires the AWS account be activated to SMS message sending.
+For details, see [SMS message settings for Amazon Cognito user pools](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-sms-settings.html).
+
+When enabling passkey sign-in, you should specify the authentication domain used as the relying party ID.
+Learn more about [passkey sign-in of user pools](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-authentication-flow-methods.html#amazon-cognito-user-pools-authentication-flow-methods-passkey) and [Web Authentication API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API).
+
+To use the hosted Amazon Cognito domain as the relying party ID:
+
+```ts
+new cognito.UserPool(this, 'myuserpool', {
+  allowedFirstAuthFactors: { passkey: true },
+  passkeyRelyingPartyId: 'myclientname.auth.region-name.amazoncognito.com',
+});
+```
+
+To use the custom domain as the relying party ID:
+
+```ts
+new cognito.UserPool(this, 'myuserpool', {
+  allowedFirstAuthFactors: { passkey: true },
+  passkeyRelyingPartyId: 'auth.example.com',
+});
+```
+
+You can also configure the passkey is required (preferred by default):
+
+```ts
+new cognito.UserPool(this, 'myuserpool', {
+  allowedFirstAuthFactors: { passkey: true },
+  passkeyRelyingPartyId: 'auth.example.com',
+  passkeyVerification: cognito.PasskeyVerification.REQUIRED,
+});
+```
 
 ### Attributes
 
