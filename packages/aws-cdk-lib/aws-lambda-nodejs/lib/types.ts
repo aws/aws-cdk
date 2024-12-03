@@ -210,7 +210,7 @@ export interface BundlingOptions extends DockerRunOptions {
    *
    * For example, to add the [--log-limit](https://esbuild.github.io/api/#log-limit) flag:
    *
-   * ```ts
+   * ```text
    * new NodejsFunction(scope, id, {
    *   ...
    *   bundling: {
@@ -223,7 +223,7 @@ export interface BundlingOptions extends DockerRunOptions {
    *
    * If an argument may be specified multiple times, an array of values may be provided:
    *
-   * ```ts
+   * ```text
    * new NodejsFunction(scope, id, {
    *   ...
    *   bundling: {
