@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/59468471b83aa514898e64f086b0b64d10b56dbdb67ca1df32b5ace667be9db5.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fa46958bcb246c27c21906c9bf41a44bce7f9613a3d90335588eedc4daeb49dd.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,160 +34,208 @@
         "NlbEnablePrefixForIpv6NatStack.assets"
       ],
       "metadata": {
-        "/NlbEnablePrefixForIpv6NatStack/VPC/Resource": [
+        "/NlbEnablePrefixForIpv6NatStack/Vpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCB9E5F0B4"
+            "data": "Vpc8378EB38"
           }
         ],
-        "/NlbEnablePrefixForIpv6NatStack/VPC/ipv6cidr": [
+        "/NlbEnablePrefixForIpv6NatStack/Vpc/ipv6cidr": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCipv6cidr4D5C3141"
+            "data": "Vpcipv6cidr40D3CB78"
           }
         ],
-        "/NlbEnablePrefixForIpv6NatStack/VPC/PublicSubnet1/Subnet": [
+        "/NlbEnablePrefixForIpv6NatStack/Vpc/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet1SubnetB4246D30"
+            "data": "VpcPublicSubnet1Subnet5C2D37C4"
           }
         ],
-        "/NlbEnablePrefixForIpv6NatStack/VPC/PublicSubnet1/RouteTable": [
+        "/NlbEnablePrefixForIpv6NatStack/Vpc/PublicSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet1RouteTableFEE4B781"
+            "data": "VpcPublicSubnet1RouteTable6C95E38E"
           }
         ],
-        "/NlbEnablePrefixForIpv6NatStack/VPC/PublicSubnet1/RouteTableAssociation": [
+        "/NlbEnablePrefixForIpv6NatStack/Vpc/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+            "data": "VpcPublicSubnet1RouteTableAssociation97140677"
           }
         ],
-        "/NlbEnablePrefixForIpv6NatStack/VPC/PublicSubnet1/DefaultRoute": [
+        "/NlbEnablePrefixForIpv6NatStack/Vpc/PublicSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet1DefaultRoute91CEF279"
+            "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
           }
         ],
-        "/NlbEnablePrefixForIpv6NatStack/VPC/PublicSubnet1/DefaultRoute6": [
+        "/NlbEnablePrefixForIpv6NatStack/Vpc/PublicSubnet1/DefaultRoute6": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet1DefaultRoute6AD2A6FA7"
+            "data": "VpcPublicSubnet1DefaultRoute6A21265FB"
           }
         ],
-        "/NlbEnablePrefixForIpv6NatStack/VPC/PublicSubnet2/Subnet": [
+        "/NlbEnablePrefixForIpv6NatStack/Vpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet2Subnet74179F39"
+            "data": "VpcPublicSubnet2Subnet691E08A3"
           }
         ],
-        "/NlbEnablePrefixForIpv6NatStack/VPC/PublicSubnet2/RouteTable": [
+        "/NlbEnablePrefixForIpv6NatStack/Vpc/PublicSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet2RouteTable6F1A15F1"
+            "data": "VpcPublicSubnet2RouteTable94F7E489"
           }
         ],
-        "/NlbEnablePrefixForIpv6NatStack/VPC/PublicSubnet2/RouteTableAssociation": [
+        "/NlbEnablePrefixForIpv6NatStack/Vpc/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
+            "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
           }
         ],
-        "/NlbEnablePrefixForIpv6NatStack/VPC/PublicSubnet2/DefaultRoute": [
+        "/NlbEnablePrefixForIpv6NatStack/Vpc/PublicSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
+            "data": "VpcPublicSubnet2DefaultRoute97F91067"
           }
         ],
-        "/NlbEnablePrefixForIpv6NatStack/VPC/PublicSubnet2/DefaultRoute6": [
+        "/NlbEnablePrefixForIpv6NatStack/Vpc/PublicSubnet2/DefaultRoute6": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet2DefaultRoute622F3CED9"
+            "data": "VpcPublicSubnet2DefaultRoute63E63096C"
           }
         ],
-        "/NlbEnablePrefixForIpv6NatStack/VPC/IsolatedSubnet1/Subnet": [
+        "/NlbEnablePrefixForIpv6NatStack/Vpc/IsolatedSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCIsolatedSubnet1SubnetEBD00FC6"
+            "data": "VpcIsolatedSubnet1SubnetE48C5737"
           }
         ],
-        "/NlbEnablePrefixForIpv6NatStack/VPC/IsolatedSubnet1/RouteTable": [
+        "/NlbEnablePrefixForIpv6NatStack/Vpc/IsolatedSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCIsolatedSubnet1RouteTableEB156210"
+            "data": "VpcIsolatedSubnet1RouteTable4771E3E5"
           }
         ],
-        "/NlbEnablePrefixForIpv6NatStack/VPC/IsolatedSubnet1/RouteTableAssociation": [
+        "/NlbEnablePrefixForIpv6NatStack/Vpc/IsolatedSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCIsolatedSubnet1RouteTableAssociationA2D18F7C"
+            "data": "VpcIsolatedSubnet1RouteTableAssociationD300FCBB"
           }
         ],
-        "/NlbEnablePrefixForIpv6NatStack/VPC/IsolatedSubnet2/Subnet": [
+        "/NlbEnablePrefixForIpv6NatStack/Vpc/IsolatedSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCIsolatedSubnet2Subnet4B1C8CAA"
+            "data": "VpcIsolatedSubnet2Subnet16364B91"
           }
         ],
-        "/NlbEnablePrefixForIpv6NatStack/VPC/IsolatedSubnet2/RouteTable": [
+        "/NlbEnablePrefixForIpv6NatStack/Vpc/IsolatedSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCIsolatedSubnet2RouteTable9B4F78DC"
+            "data": "VpcIsolatedSubnet2RouteTable1D30AF7D"
           }
         ],
-        "/NlbEnablePrefixForIpv6NatStack/VPC/IsolatedSubnet2/RouteTableAssociation": [
+        "/NlbEnablePrefixForIpv6NatStack/Vpc/IsolatedSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCIsolatedSubnet2RouteTableAssociation7BF8E0EB"
+            "data": "VpcIsolatedSubnet2RouteTableAssociationF7B18CCA"
           }
         ],
-        "/NlbEnablePrefixForIpv6NatStack/VPC/IGW": [
+        "/NlbEnablePrefixForIpv6NatStack/Vpc/IGW": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCIGWB7E252D3"
+            "data": "VpcIGWD7BA715C"
           }
         ],
-        "/NlbEnablePrefixForIpv6NatStack/VPC/VPCGW": [
+        "/NlbEnablePrefixForIpv6NatStack/Vpc/VPCGW": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCVPCGW99B986DC"
+            "data": "VpcVPCGWBF912B6E"
           }
         ],
-        "/NlbEnablePrefixForIpv6NatStack/VPC/EIGW6": [
+        "/NlbEnablePrefixForIpv6NatStack/Vpc/EIGW6": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCEIGW68A11D88F"
+            "data": "VpcEIGW61416F369"
           }
         ],
-        "/NlbEnablePrefixForIpv6NatStack/SG/Resource": [
+        "/NlbEnablePrefixForIpv6NatStack/DisabledLbSg/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SGADB53937"
+            "data": "DisabledLbSgB7154DC8"
           }
         ],
-        "/NlbEnablePrefixForIpv6NatStack/LB/Resource": [
+        "/NlbEnablePrefixForIpv6NatStack/DisabledLb/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "LB8A12904C"
+            "data": "DisabledLbF70482DB"
           }
         ],
-        "/NlbEnablePrefixForIpv6NatStack/LB/Listener/Resource": [
+        "/NlbEnablePrefixForIpv6NatStack/DisabledLb/TcpListener/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "LBListener49E825B4"
+            "data": "DisabledLbTcpListener070B4D6E"
           }
         ],
-        "/NlbEnablePrefixForIpv6NatStack/TargetGroup": [
+        "/NlbEnablePrefixForIpv6NatStack/TcpTargetGroup": [
           {
             "type": "aws:cdk:warning",
             "data": "When creating an empty TargetGroup, you should specify a 'targetType' (this warning may become an error in the future). [ack: @aws-cdk/aws-elbv2:targetGroupSpecifyTargetTypeForEmptyTargetGroup]"
           }
         ],
-        "/NlbEnablePrefixForIpv6NatStack/TargetGroup/Resource": [
+        "/NlbEnablePrefixForIpv6NatStack/TcpTargetGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TargetGroup3D7CD9B8"
+            "data": "TcpTargetGroupD98C5CDB"
+          }
+        ],
+        "/NlbEnablePrefixForIpv6NatStack/EnabledLbSg/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EnabledLbSg11D53248"
+          }
+        ],
+        "/NlbEnablePrefixForIpv6NatStack/EnabledLb/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EnabledLb9F3E8D30"
+          }
+        ],
+        "/NlbEnablePrefixForIpv6NatStack/EnabledLb/UdpListener/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EnabledLbUdpListener550E1122"
+          }
+        ],
+        "/NlbEnablePrefixForIpv6NatStack/EnabledLb/TcpWithUdpListener/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EnabledLbTcpWithUdpListenerBBFA335D"
+          }
+        ],
+        "/NlbEnablePrefixForIpv6NatStack/UdpTargetGroup": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "When creating an empty TargetGroup, you should specify a 'targetType' (this warning may become an error in the future). [ack: @aws-cdk/aws-elbv2:targetGroupSpecifyTargetTypeForEmptyTargetGroup]"
+          }
+        ],
+        "/NlbEnablePrefixForIpv6NatStack/UdpTargetGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UdpTargetGroup5F89FEC0"
+          }
+        ],
+        "/NlbEnablePrefixForIpv6NatStack/TcpWithUdpTargetGroup": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "When creating an empty TargetGroup, you should specify a 'targetType' (this warning may become an error in the future). [ack: @aws-cdk/aws-elbv2:targetGroupSpecifyTargetTypeForEmptyTargetGroup]"
+          }
+        ],
+        "/NlbEnablePrefixForIpv6NatStack/TcpWithUdpTargetGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TcpWithUdpTargetGroup827EE6D7"
           }
         ],
         "/NlbEnablePrefixForIpv6NatStack/BootstrapVersion": [

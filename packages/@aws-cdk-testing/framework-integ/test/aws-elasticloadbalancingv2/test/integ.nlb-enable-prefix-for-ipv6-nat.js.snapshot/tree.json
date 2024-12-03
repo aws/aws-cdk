@@ -8,13 +8,13 @@
         "id": "NlbEnablePrefixForIpv6NatStack",
         "path": "NlbEnablePrefixForIpv6NatStack",
         "children": {
-          "VPC": {
-            "id": "VPC",
-            "path": "NlbEnablePrefixForIpv6NatStack/VPC",
+          "Vpc": {
+            "id": "Vpc",
+            "path": "NlbEnablePrefixForIpv6NatStack/Vpc",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "NlbEnablePrefixForIpv6NatStack/VPC/Resource",
+                "path": "NlbEnablePrefixForIpv6NatStack/Vpc/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
                   "aws:cdk:cloudformation:props": {
@@ -25,7 +25,7 @@
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "NlbEnablePrefixForIpv6NatStack/VPC"
+                        "value": "NlbEnablePrefixForIpv6NatStack/Vpc"
                       }
                     ]
                   }
@@ -37,13 +37,13 @@
               },
               "ipv6cidr": {
                 "id": "ipv6cidr",
-                "path": "NlbEnablePrefixForIpv6NatStack/VPC/ipv6cidr",
+                "path": "NlbEnablePrefixForIpv6NatStack/Vpc/ipv6cidr",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
                   "aws:cdk:cloudformation:props": {
                     "amazonProvidedIpv6CidrBlock": true,
                     "vpcId": {
-                      "Ref": "VPCB9E5F0B4"
+                      "Ref": "Vpc8378EB38"
                     }
                   }
                 },
@@ -54,11 +54,11 @@
               },
               "PublicSubnet1": {
                 "id": "PublicSubnet1",
-                "path": "NlbEnablePrefixForIpv6NatStack/VPC/PublicSubnet1",
+                "path": "NlbEnablePrefixForIpv6NatStack/Vpc/PublicSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "NlbEnablePrefixForIpv6NatStack/VPC/PublicSubnet1/Subnet",
+                    "path": "NlbEnablePrefixForIpv6NatStack/Vpc/PublicSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -82,7 +82,7 @@
                                     0,
                                     {
                                       "Fn::GetAtt": [
-                                        "VPCB9E5F0B4",
+                                        "Vpc8378EB38",
                                         "Ipv6CidrBlocks"
                                       ]
                                     }
@@ -106,11 +106,11 @@
                           },
                           {
                             "key": "Name",
-                            "value": "NlbEnablePrefixForIpv6NatStack/VPC/PublicSubnet1"
+                            "value": "NlbEnablePrefixForIpv6NatStack/Vpc/PublicSubnet1"
                           }
                         ],
                         "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
+                          "Ref": "Vpc8378EB38"
                         }
                       }
                     },
@@ -121,7 +121,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "NlbEnablePrefixForIpv6NatStack/VPC/PublicSubnet1/Acl",
+                    "path": "NlbEnablePrefixForIpv6NatStack/Vpc/PublicSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.4.2"
@@ -129,18 +129,18 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "NlbEnablePrefixForIpv6NatStack/VPC/PublicSubnet1/RouteTable",
+                    "path": "NlbEnablePrefixForIpv6NatStack/Vpc/PublicSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "NlbEnablePrefixForIpv6NatStack/VPC/PublicSubnet1"
+                            "value": "NlbEnablePrefixForIpv6NatStack/Vpc/PublicSubnet1"
                           }
                         ],
                         "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
+                          "Ref": "Vpc8378EB38"
                         }
                       }
                     },
@@ -151,15 +151,15 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "NlbEnablePrefixForIpv6NatStack/VPC/PublicSubnet1/RouteTableAssociation",
+                    "path": "NlbEnablePrefixForIpv6NatStack/Vpc/PublicSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
                         "routeTableId": {
-                          "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
+                          "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
                         },
                         "subnetId": {
-                          "Ref": "VPCPublicSubnet1SubnetB4246D30"
+                          "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
                         }
                       }
                     },
@@ -170,16 +170,16 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "NlbEnablePrefixForIpv6NatStack/VPC/PublicSubnet1/DefaultRoute",
+                    "path": "NlbEnablePrefixForIpv6NatStack/Vpc/PublicSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
                         "destinationCidrBlock": "0.0.0.0/0",
                         "gatewayId": {
-                          "Ref": "VPCIGWB7E252D3"
+                          "Ref": "VpcIGWD7BA715C"
                         },
                         "routeTableId": {
-                          "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
+                          "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
                         }
                       }
                     },
@@ -190,16 +190,16 @@
                   },
                   "DefaultRoute6": {
                     "id": "DefaultRoute6",
-                    "path": "NlbEnablePrefixForIpv6NatStack/VPC/PublicSubnet1/DefaultRoute6",
+                    "path": "NlbEnablePrefixForIpv6NatStack/Vpc/PublicSubnet1/DefaultRoute6",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
                         "destinationIpv6CidrBlock": "::/0",
                         "gatewayId": {
-                          "Ref": "VPCIGWB7E252D3"
+                          "Ref": "VpcIGWD7BA715C"
                         },
                         "routeTableId": {
-                          "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
+                          "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
                         }
                       }
                     },
@@ -216,11 +216,11 @@
               },
               "PublicSubnet2": {
                 "id": "PublicSubnet2",
-                "path": "NlbEnablePrefixForIpv6NatStack/VPC/PublicSubnet2",
+                "path": "NlbEnablePrefixForIpv6NatStack/Vpc/PublicSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "NlbEnablePrefixForIpv6NatStack/VPC/PublicSubnet2/Subnet",
+                    "path": "NlbEnablePrefixForIpv6NatStack/Vpc/PublicSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -244,7 +244,7 @@
                                     0,
                                     {
                                       "Fn::GetAtt": [
-                                        "VPCB9E5F0B4",
+                                        "Vpc8378EB38",
                                         "Ipv6CidrBlocks"
                                       ]
                                     }
@@ -268,11 +268,11 @@
                           },
                           {
                             "key": "Name",
-                            "value": "NlbEnablePrefixForIpv6NatStack/VPC/PublicSubnet2"
+                            "value": "NlbEnablePrefixForIpv6NatStack/Vpc/PublicSubnet2"
                           }
                         ],
                         "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
+                          "Ref": "Vpc8378EB38"
                         }
                       }
                     },
@@ -283,7 +283,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "NlbEnablePrefixForIpv6NatStack/VPC/PublicSubnet2/Acl",
+                    "path": "NlbEnablePrefixForIpv6NatStack/Vpc/PublicSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.4.2"
@@ -291,18 +291,18 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "NlbEnablePrefixForIpv6NatStack/VPC/PublicSubnet2/RouteTable",
+                    "path": "NlbEnablePrefixForIpv6NatStack/Vpc/PublicSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "NlbEnablePrefixForIpv6NatStack/VPC/PublicSubnet2"
+                            "value": "NlbEnablePrefixForIpv6NatStack/Vpc/PublicSubnet2"
                           }
                         ],
                         "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
+                          "Ref": "Vpc8378EB38"
                         }
                       }
                     },
@@ -313,15 +313,15 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "NlbEnablePrefixForIpv6NatStack/VPC/PublicSubnet2/RouteTableAssociation",
+                    "path": "NlbEnablePrefixForIpv6NatStack/Vpc/PublicSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
                         "routeTableId": {
-                          "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
+                          "Ref": "VpcPublicSubnet2RouteTable94F7E489"
                         },
                         "subnetId": {
-                          "Ref": "VPCPublicSubnet2Subnet74179F39"
+                          "Ref": "VpcPublicSubnet2Subnet691E08A3"
                         }
                       }
                     },
@@ -332,16 +332,16 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "NlbEnablePrefixForIpv6NatStack/VPC/PublicSubnet2/DefaultRoute",
+                    "path": "NlbEnablePrefixForIpv6NatStack/Vpc/PublicSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
                         "destinationCidrBlock": "0.0.0.0/0",
                         "gatewayId": {
-                          "Ref": "VPCIGWB7E252D3"
+                          "Ref": "VpcIGWD7BA715C"
                         },
                         "routeTableId": {
-                          "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
+                          "Ref": "VpcPublicSubnet2RouteTable94F7E489"
                         }
                       }
                     },
@@ -352,16 +352,16 @@
                   },
                   "DefaultRoute6": {
                     "id": "DefaultRoute6",
-                    "path": "NlbEnablePrefixForIpv6NatStack/VPC/PublicSubnet2/DefaultRoute6",
+                    "path": "NlbEnablePrefixForIpv6NatStack/Vpc/PublicSubnet2/DefaultRoute6",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
                         "destinationIpv6CidrBlock": "::/0",
                         "gatewayId": {
-                          "Ref": "VPCIGWB7E252D3"
+                          "Ref": "VpcIGWD7BA715C"
                         },
                         "routeTableId": {
-                          "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
+                          "Ref": "VpcPublicSubnet2RouteTable94F7E489"
                         }
                       }
                     },
@@ -378,11 +378,11 @@
               },
               "IsolatedSubnet1": {
                 "id": "IsolatedSubnet1",
-                "path": "NlbEnablePrefixForIpv6NatStack/VPC/IsolatedSubnet1",
+                "path": "NlbEnablePrefixForIpv6NatStack/Vpc/IsolatedSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "NlbEnablePrefixForIpv6NatStack/VPC/IsolatedSubnet1/Subnet",
+                    "path": "NlbEnablePrefixForIpv6NatStack/Vpc/IsolatedSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -406,7 +406,7 @@
                                     0,
                                     {
                                       "Fn::GetAtt": [
-                                        "VPCB9E5F0B4",
+                                        "Vpc8378EB38",
                                         "Ipv6CidrBlocks"
                                       ]
                                     }
@@ -430,11 +430,11 @@
                           },
                           {
                             "key": "Name",
-                            "value": "NlbEnablePrefixForIpv6NatStack/VPC/IsolatedSubnet1"
+                            "value": "NlbEnablePrefixForIpv6NatStack/Vpc/IsolatedSubnet1"
                           }
                         ],
                         "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
+                          "Ref": "Vpc8378EB38"
                         }
                       }
                     },
@@ -445,7 +445,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "NlbEnablePrefixForIpv6NatStack/VPC/IsolatedSubnet1/Acl",
+                    "path": "NlbEnablePrefixForIpv6NatStack/Vpc/IsolatedSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.4.2"
@@ -453,18 +453,18 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "NlbEnablePrefixForIpv6NatStack/VPC/IsolatedSubnet1/RouteTable",
+                    "path": "NlbEnablePrefixForIpv6NatStack/Vpc/IsolatedSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "NlbEnablePrefixForIpv6NatStack/VPC/IsolatedSubnet1"
+                            "value": "NlbEnablePrefixForIpv6NatStack/Vpc/IsolatedSubnet1"
                           }
                         ],
                         "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
+                          "Ref": "Vpc8378EB38"
                         }
                       }
                     },
@@ -475,15 +475,15 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "NlbEnablePrefixForIpv6NatStack/VPC/IsolatedSubnet1/RouteTableAssociation",
+                    "path": "NlbEnablePrefixForIpv6NatStack/Vpc/IsolatedSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
                         "routeTableId": {
-                          "Ref": "VPCIsolatedSubnet1RouteTableEB156210"
+                          "Ref": "VpcIsolatedSubnet1RouteTable4771E3E5"
                         },
                         "subnetId": {
-                          "Ref": "VPCIsolatedSubnet1SubnetEBD00FC6"
+                          "Ref": "VpcIsolatedSubnet1SubnetE48C5737"
                         }
                       }
                     },
@@ -500,11 +500,11 @@
               },
               "IsolatedSubnet2": {
                 "id": "IsolatedSubnet2",
-                "path": "NlbEnablePrefixForIpv6NatStack/VPC/IsolatedSubnet2",
+                "path": "NlbEnablePrefixForIpv6NatStack/Vpc/IsolatedSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "NlbEnablePrefixForIpv6NatStack/VPC/IsolatedSubnet2/Subnet",
+                    "path": "NlbEnablePrefixForIpv6NatStack/Vpc/IsolatedSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -528,7 +528,7 @@
                                     0,
                                     {
                                       "Fn::GetAtt": [
-                                        "VPCB9E5F0B4",
+                                        "Vpc8378EB38",
                                         "Ipv6CidrBlocks"
                                       ]
                                     }
@@ -552,11 +552,11 @@
                           },
                           {
                             "key": "Name",
-                            "value": "NlbEnablePrefixForIpv6NatStack/VPC/IsolatedSubnet2"
+                            "value": "NlbEnablePrefixForIpv6NatStack/Vpc/IsolatedSubnet2"
                           }
                         ],
                         "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
+                          "Ref": "Vpc8378EB38"
                         }
                       }
                     },
@@ -567,7 +567,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "NlbEnablePrefixForIpv6NatStack/VPC/IsolatedSubnet2/Acl",
+                    "path": "NlbEnablePrefixForIpv6NatStack/Vpc/IsolatedSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.4.2"
@@ -575,18 +575,18 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "NlbEnablePrefixForIpv6NatStack/VPC/IsolatedSubnet2/RouteTable",
+                    "path": "NlbEnablePrefixForIpv6NatStack/Vpc/IsolatedSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "NlbEnablePrefixForIpv6NatStack/VPC/IsolatedSubnet2"
+                            "value": "NlbEnablePrefixForIpv6NatStack/Vpc/IsolatedSubnet2"
                           }
                         ],
                         "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
+                          "Ref": "Vpc8378EB38"
                         }
                       }
                     },
@@ -597,15 +597,15 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "NlbEnablePrefixForIpv6NatStack/VPC/IsolatedSubnet2/RouteTableAssociation",
+                    "path": "NlbEnablePrefixForIpv6NatStack/Vpc/IsolatedSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
                         "routeTableId": {
-                          "Ref": "VPCIsolatedSubnet2RouteTable9B4F78DC"
+                          "Ref": "VpcIsolatedSubnet2RouteTable1D30AF7D"
                         },
                         "subnetId": {
-                          "Ref": "VPCIsolatedSubnet2Subnet4B1C8CAA"
+                          "Ref": "VpcIsolatedSubnet2Subnet16364B91"
                         }
                       }
                     },
@@ -622,14 +622,14 @@
               },
               "IGW": {
                 "id": "IGW",
-                "path": "NlbEnablePrefixForIpv6NatStack/VPC/IGW",
+                "path": "NlbEnablePrefixForIpv6NatStack/Vpc/IGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::InternetGateway",
                   "aws:cdk:cloudformation:props": {
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "NlbEnablePrefixForIpv6NatStack/VPC"
+                        "value": "NlbEnablePrefixForIpv6NatStack/Vpc"
                       }
                     ]
                   }
@@ -641,15 +641,15 @@
               },
               "VPCGW": {
                 "id": "VPCGW",
-                "path": "NlbEnablePrefixForIpv6NatStack/VPC/VPCGW",
+                "path": "NlbEnablePrefixForIpv6NatStack/Vpc/VPCGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                   "aws:cdk:cloudformation:props": {
                     "internetGatewayId": {
-                      "Ref": "VPCIGWB7E252D3"
+                      "Ref": "VpcIGWD7BA715C"
                     },
                     "vpcId": {
-                      "Ref": "VPCB9E5F0B4"
+                      "Ref": "Vpc8378EB38"
                     }
                   }
                 },
@@ -660,12 +660,12 @@
               },
               "EIGW6": {
                 "id": "EIGW6",
-                "path": "NlbEnablePrefixForIpv6NatStack/VPC/EIGW6",
+                "path": "NlbEnablePrefixForIpv6NatStack/Vpc/EIGW6",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::EgressOnlyInternetGateway",
                   "aws:cdk:cloudformation:props": {
                     "vpcId": {
-                      "Ref": "VPCB9E5F0B4"
+                      "Ref": "Vpc8378EB38"
                     }
                   }
                 },
@@ -680,17 +680,17 @@
               "version": "10.4.2"
             }
           },
-          "SG": {
-            "id": "SG",
-            "path": "NlbEnablePrefixForIpv6NatStack/SG",
+          "DisabledLbSg": {
+            "id": "DisabledLbSg",
+            "path": "NlbEnablePrefixForIpv6NatStack/DisabledLbSg",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "NlbEnablePrefixForIpv6NatStack/SG/Resource",
+                "path": "NlbEnablePrefixForIpv6NatStack/DisabledLbSg/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                   "aws:cdk:cloudformation:props": {
-                    "groupDescription": "NlbEnablePrefixForIpv6NatStack/SG",
+                    "groupDescription": "NlbEnablePrefixForIpv6NatStack/DisabledLbSg",
                     "securityGroupEgress": [
                       {
                         "cidrIp": "0.0.0.0/0",
@@ -699,7 +699,7 @@
                       }
                     ],
                     "vpcId": {
-                      "Ref": "VPCB9E5F0B4"
+                      "Ref": "Vpc8378EB38"
                     }
                   }
                 },
@@ -714,17 +714,17 @@
               "version": "10.4.2"
             }
           },
-          "LB": {
-            "id": "LB",
-            "path": "NlbEnablePrefixForIpv6NatStack/LB",
+          "DisabledLb": {
+            "id": "DisabledLb",
+            "path": "NlbEnablePrefixForIpv6NatStack/DisabledLb",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "NlbEnablePrefixForIpv6NatStack/LB/Resource",
+                "path": "NlbEnablePrefixForIpv6NatStack/DisabledLb/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
                   "aws:cdk:cloudformation:props": {
-                    "enablePrefixForIpv6SourceNat": "on",
+                    "enablePrefixForIpv6SourceNat": "off",
                     "ipAddressType": "dualstack",
                     "loadBalancerAttributes": [
                       {
@@ -736,17 +736,17 @@
                     "securityGroups": [
                       {
                         "Fn::GetAtt": [
-                          "SGADB53937",
+                          "DisabledLbSgB7154DC8",
                           "GroupId"
                         ]
                       }
                     ],
                     "subnets": [
                       {
-                        "Ref": "VPCPublicSubnet1SubnetB4246D30"
+                        "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
                       },
                       {
-                        "Ref": "VPCPublicSubnet2Subnet74179F39"
+                        "Ref": "VpcPublicSubnet2Subnet691E08A3"
                       }
                     ],
                     "type": "network"
@@ -757,13 +757,13 @@
                   "version": "10.4.2"
                 }
               },
-              "Listener": {
-                "id": "Listener",
-                "path": "NlbEnablePrefixForIpv6NatStack/LB/Listener",
+              "TcpListener": {
+                "id": "TcpListener",
+                "path": "NlbEnablePrefixForIpv6NatStack/DisabledLb/TcpListener",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "NlbEnablePrefixForIpv6NatStack/LB/Listener/Resource",
+                    "path": "NlbEnablePrefixForIpv6NatStack/DisabledLb/TcpListener/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::Listener",
                       "aws:cdk:cloudformation:props": {
@@ -771,15 +771,15 @@
                           {
                             "type": "forward",
                             "targetGroupArn": {
-                              "Ref": "TargetGroup3D7CD9B8"
+                              "Ref": "TcpTargetGroupD98C5CDB"
                             }
                           }
                         ],
                         "loadBalancerArn": {
-                          "Ref": "LB8A12904C"
+                          "Ref": "DisabledLbF70482DB"
                         },
                         "port": 1229,
-                        "protocol": "UDP"
+                        "protocol": "TCP"
                       }
                     },
                     "constructInfo": {
@@ -799,13 +799,197 @@
               "version": "10.4.2"
             }
           },
-          "TargetGroup": {
-            "id": "TargetGroup",
-            "path": "NlbEnablePrefixForIpv6NatStack/TargetGroup",
+          "TcpTargetGroup": {
+            "id": "TcpTargetGroup",
+            "path": "NlbEnablePrefixForIpv6NatStack/TcpTargetGroup",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "NlbEnablePrefixForIpv6NatStack/TargetGroup/Resource",
+                "path": "NlbEnablePrefixForIpv6NatStack/TcpTargetGroup/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "ipAddressType": "ipv6",
+                    "port": 1229,
+                    "protocol": "TCP",
+                    "vpcId": {
+                      "Ref": "Vpc8378EB38"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "EnabledLbSg": {
+            "id": "EnabledLbSg",
+            "path": "NlbEnablePrefixForIpv6NatStack/EnabledLbSg",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "NlbEnablePrefixForIpv6NatStack/EnabledLbSg/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "groupDescription": "NlbEnablePrefixForIpv6NatStack/EnabledLbSg",
+                    "securityGroupEgress": [
+                      {
+                        "cidrIp": "0.0.0.0/0",
+                        "description": "Allow all outbound traffic by default",
+                        "ipProtocol": "-1"
+                      }
+                    ],
+                    "vpcId": {
+                      "Ref": "Vpc8378EB38"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "EnabledLb": {
+            "id": "EnabledLb",
+            "path": "NlbEnablePrefixForIpv6NatStack/EnabledLb",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "NlbEnablePrefixForIpv6NatStack/EnabledLb/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+                  "aws:cdk:cloudformation:props": {
+                    "enablePrefixForIpv6SourceNat": "on",
+                    "ipAddressType": "dualstack",
+                    "loadBalancerAttributes": [
+                      {
+                        "key": "deletion_protection.enabled",
+                        "value": "false"
+                      }
+                    ],
+                    "scheme": "internet-facing",
+                    "securityGroups": [
+                      {
+                        "Fn::GetAtt": [
+                          "EnabledLbSg11D53248",
+                          "GroupId"
+                        ]
+                      }
+                    ],
+                    "subnets": [
+                      {
+                        "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
+                      },
+                      {
+                        "Ref": "VpcPublicSubnet2Subnet691E08A3"
+                      }
+                    ],
+                    "type": "network"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "UdpListener": {
+                "id": "UdpListener",
+                "path": "NlbEnablePrefixForIpv6NatStack/EnabledLb/UdpListener",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "NlbEnablePrefixForIpv6NatStack/EnabledLb/UdpListener/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::Listener",
+                      "aws:cdk:cloudformation:props": {
+                        "defaultActions": [
+                          {
+                            "type": "forward",
+                            "targetGroupArn": {
+                              "Ref": "UdpTargetGroup5F89FEC0"
+                            }
+                          }
+                        ],
+                        "loadBalancerArn": {
+                          "Ref": "EnabledLb9F3E8D30"
+                        },
+                        "port": 1229,
+                        "protocol": "UDP"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "TcpWithUdpListener": {
+                "id": "TcpWithUdpListener",
+                "path": "NlbEnablePrefixForIpv6NatStack/EnabledLb/TcpWithUdpListener",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "NlbEnablePrefixForIpv6NatStack/EnabledLb/TcpWithUdpListener/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::Listener",
+                      "aws:cdk:cloudformation:props": {
+                        "defaultActions": [
+                          {
+                            "type": "forward",
+                            "targetGroupArn": {
+                              "Ref": "TcpWithUdpTargetGroup827EE6D7"
+                            }
+                          }
+                        ],
+                        "loadBalancerArn": {
+                          "Ref": "EnabledLb9F3E8D30"
+                        },
+                        "port": 3502,
+                        "protocol": "TCP_UDP"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "UdpTargetGroup": {
+            "id": "UdpTargetGroup",
+            "path": "NlbEnablePrefixForIpv6NatStack/UdpTargetGroup",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "NlbEnablePrefixForIpv6NatStack/UdpTargetGroup/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::TargetGroup",
                   "aws:cdk:cloudformation:props": {
@@ -813,7 +997,36 @@
                     "port": 1229,
                     "protocol": "UDP",
                     "vpcId": {
-                      "Ref": "VPCB9E5F0B4"
+                      "Ref": "Vpc8378EB38"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "TcpWithUdpTargetGroup": {
+            "id": "TcpWithUdpTargetGroup",
+            "path": "NlbEnablePrefixForIpv6NatStack/TcpWithUdpTargetGroup",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "NlbEnablePrefixForIpv6NatStack/TcpWithUdpTargetGroup/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "ipAddressType": "ipv6",
+                    "port": 3502,
+                    "protocol": "TCP_UDP",
+                    "vpcId": {
+                      "Ref": "Vpc8378EB38"
                     }
                   }
                 },

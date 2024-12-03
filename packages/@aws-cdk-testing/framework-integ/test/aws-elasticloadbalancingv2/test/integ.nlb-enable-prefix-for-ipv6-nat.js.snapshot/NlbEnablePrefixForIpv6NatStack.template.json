@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "VPCB9E5F0B4": {
+  "Vpc8378EB38": {
    "Type": "AWS::EC2::VPC",
    "Properties": {
     "CidrBlock": "10.0.0.0/16",
@@ -10,21 +10,21 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "NlbEnablePrefixForIpv6NatStack/VPC"
+      "Value": "NlbEnablePrefixForIpv6NatStack/Vpc"
      }
     ]
    }
   },
-  "VPCipv6cidr4D5C3141": {
+  "Vpcipv6cidr40D3CB78": {
    "Type": "AWS::EC2::VPCCidrBlock",
    "Properties": {
     "AmazonProvidedIpv6CidrBlock": true,
     "VpcId": {
-     "Ref": "VPCB9E5F0B4"
+     "Ref": "Vpc8378EB38"
     }
    }
   },
-  "VPCPublicSubnet1SubnetB4246D30": {
+  "VpcPublicSubnet1Subnet5C2D37C4": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
     "AssignIpv6AddressOnCreation": true,
@@ -47,7 +47,7 @@
           0,
           {
            "Fn::GetAtt": [
-            "VPCB9E5F0B4",
+            "Vpc8378EB38",
             "Ipv6CidrBlocks"
            ]
           }
@@ -71,80 +71,80 @@
      },
      {
       "Key": "Name",
-      "Value": "NlbEnablePrefixForIpv6NatStack/VPC/PublicSubnet1"
+      "Value": "NlbEnablePrefixForIpv6NatStack/Vpc/PublicSubnet1"
      }
     ],
     "VpcId": {
-     "Ref": "VPCB9E5F0B4"
+     "Ref": "Vpc8378EB38"
     }
    },
    "DependsOn": [
-    "VPCipv6cidr4D5C3141"
+    "Vpcipv6cidr40D3CB78"
    ]
   },
-  "VPCPublicSubnet1RouteTableFEE4B781": {
+  "VpcPublicSubnet1RouteTable6C95E38E": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
     "Tags": [
      {
       "Key": "Name",
-      "Value": "NlbEnablePrefixForIpv6NatStack/VPC/PublicSubnet1"
+      "Value": "NlbEnablePrefixForIpv6NatStack/Vpc/PublicSubnet1"
      }
     ],
     "VpcId": {
-     "Ref": "VPCB9E5F0B4"
+     "Ref": "Vpc8378EB38"
     }
    },
    "DependsOn": [
-    "VPCipv6cidr4D5C3141"
+    "Vpcipv6cidr40D3CB78"
    ]
   },
-  "VPCPublicSubnet1RouteTableAssociation0B0896DC": {
+  "VpcPublicSubnet1RouteTableAssociation97140677": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
    "Properties": {
     "RouteTableId": {
-     "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
+     "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
     },
     "SubnetId": {
-     "Ref": "VPCPublicSubnet1SubnetB4246D30"
+     "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
     }
    },
    "DependsOn": [
-    "VPCipv6cidr4D5C3141"
+    "Vpcipv6cidr40D3CB78"
    ]
   },
-  "VPCPublicSubnet1DefaultRoute91CEF279": {
+  "VpcPublicSubnet1DefaultRoute3DA9E72A": {
    "Type": "AWS::EC2::Route",
    "Properties": {
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
-     "Ref": "VPCIGWB7E252D3"
+     "Ref": "VpcIGWD7BA715C"
     },
     "RouteTableId": {
-     "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
+     "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
     }
    },
    "DependsOn": [
-    "VPCipv6cidr4D5C3141",
-    "VPCVPCGW99B986DC"
+    "Vpcipv6cidr40D3CB78",
+    "VpcVPCGWBF912B6E"
    ]
   },
-  "VPCPublicSubnet1DefaultRoute6AD2A6FA7": {
+  "VpcPublicSubnet1DefaultRoute6A21265FB": {
    "Type": "AWS::EC2::Route",
    "Properties": {
     "DestinationIpv6CidrBlock": "::/0",
     "GatewayId": {
-     "Ref": "VPCIGWB7E252D3"
+     "Ref": "VpcIGWD7BA715C"
     },
     "RouteTableId": {
-     "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
+     "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
     }
    },
    "DependsOn": [
-    "VPCipv6cidr4D5C3141"
+    "Vpcipv6cidr40D3CB78"
    ]
   },
-  "VPCPublicSubnet2Subnet74179F39": {
+  "VpcPublicSubnet2Subnet691E08A3": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
     "AssignIpv6AddressOnCreation": true,
@@ -167,7 +167,7 @@
           0,
           {
            "Fn::GetAtt": [
-            "VPCB9E5F0B4",
+            "Vpc8378EB38",
             "Ipv6CidrBlocks"
            ]
           }
@@ -191,80 +191,80 @@
      },
      {
       "Key": "Name",
-      "Value": "NlbEnablePrefixForIpv6NatStack/VPC/PublicSubnet2"
+      "Value": "NlbEnablePrefixForIpv6NatStack/Vpc/PublicSubnet2"
      }
     ],
     "VpcId": {
-     "Ref": "VPCB9E5F0B4"
+     "Ref": "Vpc8378EB38"
     }
    },
    "DependsOn": [
-    "VPCipv6cidr4D5C3141"
+    "Vpcipv6cidr40D3CB78"
    ]
   },
-  "VPCPublicSubnet2RouteTable6F1A15F1": {
+  "VpcPublicSubnet2RouteTable94F7E489": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
     "Tags": [
      {
       "Key": "Name",
-      "Value": "NlbEnablePrefixForIpv6NatStack/VPC/PublicSubnet2"
+      "Value": "NlbEnablePrefixForIpv6NatStack/Vpc/PublicSubnet2"
      }
     ],
     "VpcId": {
-     "Ref": "VPCB9E5F0B4"
+     "Ref": "Vpc8378EB38"
     }
    },
    "DependsOn": [
-    "VPCipv6cidr4D5C3141"
+    "Vpcipv6cidr40D3CB78"
    ]
   },
-  "VPCPublicSubnet2RouteTableAssociation5A808732": {
+  "VpcPublicSubnet2RouteTableAssociationDD5762D8": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
    "Properties": {
     "RouteTableId": {
-     "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
+     "Ref": "VpcPublicSubnet2RouteTable94F7E489"
     },
     "SubnetId": {
-     "Ref": "VPCPublicSubnet2Subnet74179F39"
+     "Ref": "VpcPublicSubnet2Subnet691E08A3"
     }
    },
    "DependsOn": [
-    "VPCipv6cidr4D5C3141"
+    "Vpcipv6cidr40D3CB78"
    ]
   },
-  "VPCPublicSubnet2DefaultRouteB7481BBA": {
+  "VpcPublicSubnet2DefaultRoute97F91067": {
    "Type": "AWS::EC2::Route",
    "Properties": {
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
-     "Ref": "VPCIGWB7E252D3"
+     "Ref": "VpcIGWD7BA715C"
     },
     "RouteTableId": {
-     "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
+     "Ref": "VpcPublicSubnet2RouteTable94F7E489"
     }
    },
    "DependsOn": [
-    "VPCipv6cidr4D5C3141",
-    "VPCVPCGW99B986DC"
+    "Vpcipv6cidr40D3CB78",
+    "VpcVPCGWBF912B6E"
    ]
   },
-  "VPCPublicSubnet2DefaultRoute622F3CED9": {
+  "VpcPublicSubnet2DefaultRoute63E63096C": {
    "Type": "AWS::EC2::Route",
    "Properties": {
     "DestinationIpv6CidrBlock": "::/0",
     "GatewayId": {
-     "Ref": "VPCIGWB7E252D3"
+     "Ref": "VpcIGWD7BA715C"
     },
     "RouteTableId": {
-     "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
+     "Ref": "VpcPublicSubnet2RouteTable94F7E489"
     }
    },
    "DependsOn": [
-    "VPCipv6cidr4D5C3141"
+    "Vpcipv6cidr40D3CB78"
    ]
   },
-  "VPCIsolatedSubnet1SubnetEBD00FC6": {
+  "VpcIsolatedSubnet1SubnetE48C5737": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
     "AssignIpv6AddressOnCreation": true,
@@ -287,7 +287,7 @@
           0,
           {
            "Fn::GetAtt": [
-            "VPCB9E5F0B4",
+            "Vpc8378EB38",
             "Ipv6CidrBlocks"
            ]
           }
@@ -311,49 +311,49 @@
      },
      {
       "Key": "Name",
-      "Value": "NlbEnablePrefixForIpv6NatStack/VPC/IsolatedSubnet1"
+      "Value": "NlbEnablePrefixForIpv6NatStack/Vpc/IsolatedSubnet1"
      }
     ],
     "VpcId": {
-     "Ref": "VPCB9E5F0B4"
+     "Ref": "Vpc8378EB38"
     }
    },
    "DependsOn": [
-    "VPCipv6cidr4D5C3141"
+    "Vpcipv6cidr40D3CB78"
    ]
   },
-  "VPCIsolatedSubnet1RouteTableEB156210": {
+  "VpcIsolatedSubnet1RouteTable4771E3E5": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
     "Tags": [
      {
       "Key": "Name",
-      "Value": "NlbEnablePrefixForIpv6NatStack/VPC/IsolatedSubnet1"
+      "Value": "NlbEnablePrefixForIpv6NatStack/Vpc/IsolatedSubnet1"
      }
     ],
     "VpcId": {
-     "Ref": "VPCB9E5F0B4"
+     "Ref": "Vpc8378EB38"
     }
    },
    "DependsOn": [
-    "VPCipv6cidr4D5C3141"
+    "Vpcipv6cidr40D3CB78"
    ]
   },
-  "VPCIsolatedSubnet1RouteTableAssociationA2D18F7C": {
+  "VpcIsolatedSubnet1RouteTableAssociationD300FCBB": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
    "Properties": {
     "RouteTableId": {
-     "Ref": "VPCIsolatedSubnet1RouteTableEB156210"
+     "Ref": "VpcIsolatedSubnet1RouteTable4771E3E5"
     },
     "SubnetId": {
-     "Ref": "VPCIsolatedSubnet1SubnetEBD00FC6"
+     "Ref": "VpcIsolatedSubnet1SubnetE48C5737"
     }
    },
    "DependsOn": [
-    "VPCipv6cidr4D5C3141"
+    "Vpcipv6cidr40D3CB78"
    ]
   },
-  "VPCIsolatedSubnet2Subnet4B1C8CAA": {
+  "VpcIsolatedSubnet2Subnet16364B91": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
     "AssignIpv6AddressOnCreation": true,
@@ -376,7 +376,7 @@
           0,
           {
            "Fn::GetAtt": [
-            "VPCB9E5F0B4",
+            "Vpc8378EB38",
             "Ipv6CidrBlocks"
            ]
           }
@@ -400,82 +400,82 @@
      },
      {
       "Key": "Name",
-      "Value": "NlbEnablePrefixForIpv6NatStack/VPC/IsolatedSubnet2"
+      "Value": "NlbEnablePrefixForIpv6NatStack/Vpc/IsolatedSubnet2"
      }
     ],
     "VpcId": {
-     "Ref": "VPCB9E5F0B4"
+     "Ref": "Vpc8378EB38"
     }
    },
    "DependsOn": [
-    "VPCipv6cidr4D5C3141"
+    "Vpcipv6cidr40D3CB78"
    ]
   },
-  "VPCIsolatedSubnet2RouteTable9B4F78DC": {
+  "VpcIsolatedSubnet2RouteTable1D30AF7D": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
     "Tags": [
      {
       "Key": "Name",
-      "Value": "NlbEnablePrefixForIpv6NatStack/VPC/IsolatedSubnet2"
+      "Value": "NlbEnablePrefixForIpv6NatStack/Vpc/IsolatedSubnet2"
      }
     ],
     "VpcId": {
-     "Ref": "VPCB9E5F0B4"
+     "Ref": "Vpc8378EB38"
     }
    },
    "DependsOn": [
-    "VPCipv6cidr4D5C3141"
+    "Vpcipv6cidr40D3CB78"
    ]
   },
-  "VPCIsolatedSubnet2RouteTableAssociation7BF8E0EB": {
+  "VpcIsolatedSubnet2RouteTableAssociationF7B18CCA": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
    "Properties": {
     "RouteTableId": {
-     "Ref": "VPCIsolatedSubnet2RouteTable9B4F78DC"
+     "Ref": "VpcIsolatedSubnet2RouteTable1D30AF7D"
     },
     "SubnetId": {
-     "Ref": "VPCIsolatedSubnet2Subnet4B1C8CAA"
+     "Ref": "VpcIsolatedSubnet2Subnet16364B91"
     }
    },
    "DependsOn": [
-    "VPCipv6cidr4D5C3141"
+    "Vpcipv6cidr40D3CB78"
    ]
   },
-  "VPCIGWB7E252D3": {
+  "VpcIGWD7BA715C": {
    "Type": "AWS::EC2::InternetGateway",
    "Properties": {
     "Tags": [
      {
       "Key": "Name",
-      "Value": "NlbEnablePrefixForIpv6NatStack/VPC"
+      "Value": "NlbEnablePrefixForIpv6NatStack/Vpc"
      }
     ]
    }
   },
-  "VPCVPCGW99B986DC": {
+  "VpcVPCGWBF912B6E": {
    "Type": "AWS::EC2::VPCGatewayAttachment",
    "Properties": {
     "InternetGatewayId": {
-     "Ref": "VPCIGWB7E252D3"
+     "Ref": "VpcIGWD7BA715C"
     },
     "VpcId": {
-     "Ref": "VPCB9E5F0B4"
+     "Ref": "Vpc8378EB38"
     }
    }
   },
-  "VPCEIGW68A11D88F": {
+  "VpcEIGW61416F369": {
    "Type": "AWS::EC2::EgressOnlyInternetGateway",
    "Properties": {
     "VpcId": {
-     "Ref": "VPCB9E5F0B4"
+     "Ref": "Vpc8378EB38"
     }
    }
   },
-  "SGADB53937": {
+  "DisabledLbSgB7154DC8": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "NlbEnablePrefixForIpv6NatStack/SG",
+    "GroupDescription": "NlbEnablePrefixForIpv6NatStack/DisabledLbSg",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -484,11 +484,95 @@
      }
     ],
     "VpcId": {
-     "Ref": "VPCB9E5F0B4"
+     "Ref": "Vpc8378EB38"
     }
    }
   },
-  "LB8A12904C": {
+  "DisabledLbF70482DB": {
+   "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+   "Properties": {
+    "EnablePrefixForIpv6SourceNat": "off",
+    "IpAddressType": "dualstack",
+    "LoadBalancerAttributes": [
+     {
+      "Key": "deletion_protection.enabled",
+      "Value": "false"
+     }
+    ],
+    "Scheme": "internet-facing",
+    "SecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "DisabledLbSgB7154DC8",
+       "GroupId"
+      ]
+     }
+    ],
+    "Subnets": [
+     {
+      "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
+     },
+     {
+      "Ref": "VpcPublicSubnet2Subnet691E08A3"
+     }
+    ],
+    "Type": "network"
+   },
+   "DependsOn": [
+    "VpcPublicSubnet1DefaultRoute3DA9E72A",
+    "VpcPublicSubnet1DefaultRoute6A21265FB",
+    "VpcPublicSubnet1RouteTableAssociation97140677",
+    "VpcPublicSubnet2DefaultRoute97F91067",
+    "VpcPublicSubnet2DefaultRoute63E63096C",
+    "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+   ]
+  },
+  "DisabledLbTcpListener070B4D6E": {
+   "Type": "AWS::ElasticLoadBalancingV2::Listener",
+   "Properties": {
+    "DefaultActions": [
+     {
+      "TargetGroupArn": {
+       "Ref": "TcpTargetGroupD98C5CDB"
+      },
+      "Type": "forward"
+     }
+    ],
+    "LoadBalancerArn": {
+     "Ref": "DisabledLbF70482DB"
+    },
+    "Port": 1229,
+    "Protocol": "TCP"
+   }
+  },
+  "TcpTargetGroupD98C5CDB": {
+   "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+   "Properties": {
+    "IpAddressType": "ipv6",
+    "Port": 1229,
+    "Protocol": "TCP",
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "EnabledLbSg11D53248": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "NlbEnablePrefixForIpv6NatStack/EnabledLbSg",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "EnabledLb9F3E8D30": {
    "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
    "Properties": {
     "EnablePrefixForIpv6SourceNat": "on",
@@ -503,56 +587,85 @@
     "SecurityGroups": [
      {
       "Fn::GetAtt": [
-       "SGADB53937",
+       "EnabledLbSg11D53248",
        "GroupId"
       ]
      }
     ],
     "Subnets": [
      {
-      "Ref": "VPCPublicSubnet1SubnetB4246D30"
+      "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
      },
      {
-      "Ref": "VPCPublicSubnet2Subnet74179F39"
+      "Ref": "VpcPublicSubnet2Subnet691E08A3"
      }
     ],
     "Type": "network"
    },
    "DependsOn": [
-    "VPCPublicSubnet1DefaultRoute91CEF279",
-    "VPCPublicSubnet1DefaultRoute6AD2A6FA7",
-    "VPCPublicSubnet1RouteTableAssociation0B0896DC",
-    "VPCPublicSubnet2DefaultRouteB7481BBA",
-    "VPCPublicSubnet2DefaultRoute622F3CED9",
-    "VPCPublicSubnet2RouteTableAssociation5A808732"
+    "VpcPublicSubnet1DefaultRoute3DA9E72A",
+    "VpcPublicSubnet1DefaultRoute6A21265FB",
+    "VpcPublicSubnet1RouteTableAssociation97140677",
+    "VpcPublicSubnet2DefaultRoute97F91067",
+    "VpcPublicSubnet2DefaultRoute63E63096C",
+    "VpcPublicSubnet2RouteTableAssociationDD5762D8"
    ]
   },
-  "LBListener49E825B4": {
+  "EnabledLbUdpListener550E1122": {
    "Type": "AWS::ElasticLoadBalancingV2::Listener",
    "Properties": {
     "DefaultActions": [
      {
       "TargetGroupArn": {
-       "Ref": "TargetGroup3D7CD9B8"
+       "Ref": "UdpTargetGroup5F89FEC0"
       },
       "Type": "forward"
      }
     ],
     "LoadBalancerArn": {
-     "Ref": "LB8A12904C"
+     "Ref": "EnabledLb9F3E8D30"
     },
     "Port": 1229,
     "Protocol": "UDP"
    }
   },
-  "TargetGroup3D7CD9B8": {
+  "EnabledLbTcpWithUdpListenerBBFA335D": {
+   "Type": "AWS::ElasticLoadBalancingV2::Listener",
+   "Properties": {
+    "DefaultActions": [
+     {
+      "TargetGroupArn": {
+       "Ref": "TcpWithUdpTargetGroup827EE6D7"
+      },
+      "Type": "forward"
+     }
+    ],
+    "LoadBalancerArn": {
+     "Ref": "EnabledLb9F3E8D30"
+    },
+    "Port": 3502,
+    "Protocol": "TCP_UDP"
+   }
+  },
+  "UdpTargetGroup5F89FEC0": {
    "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
    "Properties": {
     "IpAddressType": "ipv6",
     "Port": 1229,
     "Protocol": "UDP",
     "VpcId": {
-     "Ref": "VPCB9E5F0B4"
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "TcpWithUdpTargetGroup827EE6D7": {
+   "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+   "Properties": {
+    "IpAddressType": "ipv6",
+    "Port": 3502,
+    "Protocol": "TCP_UDP",
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
     }
    }
   }

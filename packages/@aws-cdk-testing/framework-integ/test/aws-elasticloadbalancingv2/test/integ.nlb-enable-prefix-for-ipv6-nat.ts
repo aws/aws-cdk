@@ -13,27 +13,60 @@ const vpc = new ec2.Vpc(stack, 'Vpc', {
   natGateways: 0,
 });
 
-const nlb = new elbv2.NetworkLoadBalancer(stack, 'Lb', {
+const disabledNlb = new elbv2.NetworkLoadBalancer(stack, 'DisabledLb', {
   vpc,
   internetFacing: true,
   securityGroups: [
-    new ec2.SecurityGroup(stack, 'Sg', { vpc }),
+    new ec2.SecurityGroup(stack, 'DisabledLbSg', { vpc }),
   ],
-  enablePrefixForIpv6SourceNat: true,
+  enablePrefixForIpv6SourceNat: false,
   ipAddressType: elbv2.IpAddressType.DUAL_STACK,
 });
 
-const listener = nlb.addListener('Listener', {
+const tcpListener = disabledNlb.addListener('TcpListener', {
+  port: 1229,
+  protocol: elbv2.Protocol.TCP,
+});
+const tcpTargetGroup = new elbv2.NetworkTargetGroup(stack, 'TcpTargetGroup', {
+  vpc,
+  port: 1229,
+  protocol: elbv2.Protocol.TCP,
+  ipAddressType: elbv2.TargetGroupIpAddressType.IPV6,
+});
+tcpListener.addTargetGroups('TcpTargetGroup', tcpTargetGroup);
+
+const enabledNlb = new elbv2.NetworkLoadBalancer(stack, 'EnabledLb', {
+  vpc,
+  internetFacing: true,
+  securityGroups: [
+    new ec2.SecurityGroup(stack, 'EnabledLbSg', { vpc }),
+  ],
+  ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+});
+// explicitly enable prefix for ipv6 source nat
+const udpListener = enabledNlb.addListener('UdpListener', {
   port: 1229,
   protocol: elbv2.Protocol.UDP,
 });
-const targetGroup = new elbv2.NetworkTargetGroup(stack, 'TargetGroup', {
+const udpTargetGroup = new elbv2.NetworkTargetGroup(stack, 'UdpTargetGroup', {
   vpc,
   port: 1229,
   protocol: elbv2.Protocol.UDP,
   ipAddressType: elbv2.TargetGroupIpAddressType.IPV6,
 });
-listener.addTargetGroups('TargetGroup', targetGroup);
+udpListener.addTargetGroups('TargetGroup', udpTargetGroup);
+
+const tcpWithUdpListener = enabledNlb.addListener('TcpWithUdpListener', {
+  port: 3502,
+  protocol: elbv2.Protocol.TCP_UDP,
+});
+const tcpWithUdpTargetGroup = new elbv2.NetworkTargetGroup(stack, 'TcpWithUdpTargetGroup', {
+  vpc,
+  port: 3502,
+  protocol: elbv2.Protocol.TCP_UDP,
+  ipAddressType: elbv2.TargetGroupIpAddressType.IPV6,
+});
+tcpWithUdpListener.addTargetGroups('TcpWithUdpTargetGroup', tcpWithUdpTargetGroup);
 
 new integ.IntegTest(app, 'NlbEnablePrefixForIpv6NatStackTest', {
   testCases: [stack],

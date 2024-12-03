@@ -379,7 +379,8 @@ const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
 });
 ```
 
-If you wan to create UDP listeners, you must set `enablePrefixIpv6SourceNat` to `true`:
+You can configure whether to use an IPv6 prefix from each subnet for source NAT by setting `enablePrefixForIpv6SourceNat` to `true`.
+This must be enabled if you want to create a dualstack Network Load Balancer with a listener that uses UDP protocol.
 
 ```ts
 declare const vpc: ec2.Vpc;
@@ -387,7 +388,21 @@ declare const vpc: ec2.Vpc;
 const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
   vpc,
   ipAddressType: elbv2.IpAddressType.DUAL_STACK,
-  enablePrefixIpv6SourceNat: true,
+  enablePrefixForIpv6SourceNat: true,
+});
+```
+
+If you call `addListener()` with a UDP protocol for dual-stack Network Load Balancer,
+`enablePrefixForIpv6SourceNat` will be set to `true` automatically.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
+  vpc,
+  ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+  // You don't need to set this property explicitly
+  // enablePrefixForIpv6SourceNat: true,
 });
 
 const listener = nlb.addListener('Listener', {

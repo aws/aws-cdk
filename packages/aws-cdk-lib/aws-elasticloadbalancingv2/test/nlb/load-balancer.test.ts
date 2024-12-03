@@ -1135,17 +1135,19 @@ describe('tests', () => {
         IpAddressType: 'dualstack',
       });
     });
+  });
 
+  describe('enable prefix for ipv6 source nat', () => {
     test.each([
       { config: true, value: 'on' },
       { config: false, value: 'off' },
-    ])('configure EnablePrefixForIpv6SourceNat', ({ config, value }) => {
+    ])('specify EnablePrefixForIpv6SourceNat', ({ config, value }) => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'Stack');
 
       // WHEN
-      new elbv2.NetworkLoadBalancer(stack, 'LB', {
+      new elbv2.NetworkLoadBalancer(stack, 'Lb', {
         vpc,
         enablePrefixForIpv6SourceNat: config,
         ipAddressType: elbv2.IpAddressType.DUAL_STACK,
@@ -1158,6 +1160,48 @@ describe('tests', () => {
         IpAddressType: 'dualstack',
         EnablePrefixForIpv6SourceNat: value,
       });
+    });
+
+    test('set EnablePrefixForIpv6SourceNat by calling addListener()', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+      const lb = new elbv2.NetworkLoadBalancer(stack, 'Lb', {
+        vpc,
+        ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+      });
+
+      // WHEN
+      lb.addListener('Listener', {
+        port: 80,
+        protocol: elbv2.Protocol.UDP,
+        defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })],
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        EnablePrefixForIpv6SourceNat: 'on',
+      });
+    });
+
+    test('throw error for enablePrefixForIpv6SourceNat set to false and add UDP listener', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+      const lb = new elbv2.NetworkLoadBalancer(stack, 'Lb', {
+        vpc,
+        ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+        enablePrefixForIpv6SourceNat: false,
+      });
+
+      // THEN
+      expect(() => {
+        lb.addListener('Listener', {
+          port: 80,
+          protocol: elbv2.Protocol.UDP,
+          defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })],
+        });
+      }).toThrow('To add a listener with UDP protocol to a dual stack NLB, \'enablePrefixForIpv6SourceNat\' must be set to true.');
     });
   });
 
