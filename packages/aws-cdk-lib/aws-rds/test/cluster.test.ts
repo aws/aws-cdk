@@ -166,7 +166,7 @@ describe('cluster new api', () => {
       });
     });
 
-    test('cluster scailability option', () => {
+    test('cluster scalability option', () => {
       // GIVEN
       const stack = testStack();
       const vpc = new ec2.Vpc(stack, 'VPC');
