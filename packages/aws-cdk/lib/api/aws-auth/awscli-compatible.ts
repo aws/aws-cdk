@@ -1,8 +1,8 @@
 import { createCredentialChain, fromEnv, fromIni, fromNodeProviderChain } from '@aws-sdk/credential-providers';
 import { MetadataService } from '@aws-sdk/ec2-metadata-service';
 import type { NodeHttpHandlerOptions } from '@smithy/node-http-handler';
-import { loadSharedConfigFiles } from '@smithy/shared-ini-file-loader';
-import { AwsCredentialIdentityProvider, Logger } from '@smithy/types';
+import { loadSharedConfigFiles, SourceProfileInit } from '@smithy/shared-ini-file-loader';
+import { AwsCredentialIdentityProvider, Logger, ParsedIniData } from '@smithy/types';
 import * as promptly from 'promptly';
 import { ProxyAgent } from 'proxy-agent';
 import type { SdkHttpOptions } from './sdk-provider';
@@ -153,26 +153,8 @@ export class AwsCliCompatible {
  * @returns The region for the profile or default profile, if present. Otherwise returns undefined.
  */
 async function getRegionFromIni(profile: string): Promise<string | undefined> {
-  const sharedFiles = await loadSharedConfigFiles({ ignoreCache: true });
-
-  // Priority:
-  //
-  // credentials come before config because aws-cli v1 behaves like that.
-  //
-  // 1. profile-region-in-credentials
-  // 2. profile-region-in-config
-  // 3. default-region-in-credentials
-  // 4. default-region-in-config
-
-  return getRegionFromIniFile(profile, sharedFiles.credentialsFile)
-    ?? getRegionFromIniFile(profile, sharedFiles.configFile)
-    ?? getRegionFromIniFile('default', sharedFiles.credentialsFile)
-    ?? getRegionFromIniFile('default', sharedFiles.configFile);
-
-}
-
-function getRegionFromIniFile(profile: string, data?: any) {
-  return data?.[profile]?.region;
+  const data = await parseKnownFiles( { ignoreCache: true });
+  return data[profile]?.region ?? data.default?.region;
 }
 
 function tryGetCACert(bundlePath?: string) {
@@ -272,3 +254,30 @@ async function tokenCodeFn(serialArn: string): Promise<string> {
     throw e;
   }
 }
+
+/**
+ * Load profiles from credentials and config INI files and normalize them into a
+ * single profile list.
+ */
+async function parseKnownFiles (init: SourceProfileInit): Promise<ParsedIniData> {
+  const parsedFiles = await loadSharedConfigFiles(init);
+  return mergeConfigFiles(parsedFiles.configFile, parsedFiles.credentialsFile);
+}
+
+/**
+ * Merge multiple profile config files such that settings each file are kept together
+ */
+function mergeConfigFiles (...files: ParsedIniData[]): ParsedIniData {
+  const merged: ParsedIniData = {};
+  for (const file of files) {
+    for (const [key, values] of Object.entries(file)) {
+      if (merged[key] !== undefined) {
+        Object.assign(merged[key], values);
+      } else {
+        merged[key] = values;
+      }
+    }
+  }
+  return merged;
+}
+
