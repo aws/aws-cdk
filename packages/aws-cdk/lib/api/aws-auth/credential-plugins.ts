@@ -1,7 +1,8 @@
 import { inspect } from 'util';
-import type { AwsCredentialIdentityProvider } from '@smithy/types';
+import type { AwsCredentialIdentity, AwsCredentialIdentityProvider } from '@smithy/types';
 import { debug, warning } from '../../logging';
 import { CredentialProviderSource, PluginProviderResult, Mode, PluginHost, SDKv2CompatibleCredentials, SDKv3CompatibleCredentialProvider, SDKv3CompatibleCredentials } from '../plugin';
+import { credentialsAboutToExpire, makeCachingProvider } from './provider-caching';
 
 /**
  * Cache for credential providers.
@@ -65,12 +66,11 @@ export class CredentialPlugins {
         continue;
       }
       debug(`Using ${source.name} credentials for account ${awsAccountId}`);
-      const providerOrCreds = await source.getProvider(awsAccountId, mode, {
-        supportsV3Providers: true,
-      });
 
       return {
-        credentials: v3ProviderFromPluginResult(providerOrCreds),
+        credentials: await v3ProviderFromPlugin(() => source.getProvider(awsAccountId, mode, {
+          supportsV3Providers: true,
+        })),
         pluginName: source.name,
       };
     }
@@ -94,17 +94,37 @@ export interface PluginCredentialsFetchResult {
 }
 
 /**
- * Converts whatever the plugin gave us into an SDKv3-compatible credential provider.
+ * Take a function that calls the plugin, and turn it into an SDKv3-compatible credential provider.
+ *
+ * What we will do is the following:
+ *
+ * - Query the plugin and see what kind of result it gives us.
+ * - If the result is self-refreshing or doesn't need refreshing, we turn it into an SDKv3 provider
+ *   and return it directly.
+ *   * If the underlying return value is a provider, we will make it a caching provider
+ *     (because we can't know if it will cache by itself or not).
+ *   * If the underlying return value is a static credential, caching isn't relevant.
+ *   * If the underlying return value is V2 credentials, those have caching built-in.
+ * - If the result is a static credential that expires, we will wrap it in an SDKv3 provider
+ *   that will query the plugin again when the credential expires.
  */
-function v3ProviderFromPluginResult(x: PluginProviderResult): AwsCredentialIdentityProvider {
-  if (isV3Provider(x)) {
-    return x;
-  } else if (isV3Credentials(x)) {
-    return () => Promise.resolve(x);
-  } else if (isV2Credentials(x)) {
-    return v3ProviderFromV2Credentials(x);
+async function v3ProviderFromPlugin(producer: () => Promise<PluginProviderResult>): Promise<AwsCredentialIdentityProvider> {
+  const initial = await producer();
+
+  if (isV3Provider(initial)) {
+    // Already a provider, make caching
+    return makeCachingProvider(initial);
+  } else if (isV3Credentials(initial) && initial.expiration === undefined) {
+    // Static credentials that don't need refreshing nor caching
+    return () => Promise.resolve(initial);
+  } else if (isV3Credentials(initial) && initial.expiration !== undefined) {
+    // Static credentials that do need refreshing and caching
+    return refreshFromPluginProvider(initial, producer);
+  } else if (isV2Credentials(initial)) {
+    // V2 credentials that refresh and cache themselves
+    return v3ProviderFromV2Credentials(initial);
   } else {
-    throw new Error(`Unrecognized credential provider result: ${inspect(x)}`);
+    throw new Error(`Unrecognized credential provider result: ${inspect(initial)}`);
   }
 }
 
@@ -122,6 +142,21 @@ function v3ProviderFromV2Credentials(x: SDKv2CompatibleCredentials): AwsCredenti
       sessionToken: x.sessionToken,
       expiration: x.expireTime,
     };
+  };
+}
+
+function refreshFromPluginProvider(current: AwsCredentialIdentity, producer: () => Promise<PluginProviderResult>): AwsCredentialIdentityProvider {
+  return async () => {
+    // eslint-disable-next-line no-console
+    console.error(current, Date.now());
+    if (credentialsAboutToExpire(current)) {
+      const newCreds = await producer();
+      if (!isV3Credentials(newCreds)) {
+        throw new Error(`Plugin initially returned static V3 credentials but now returned something else: ${inspect(newCreds)}`);
+      }
+      current = newCreds;
+    }
+    return current;
   };
 }
 

@@ -12,6 +12,7 @@ import { SDK } from './sdk';
 import { debug, warning } from '../../logging';
 import { traceMethods } from '../../util/tracing';
 import { Mode } from '../plugin';
+import { makeCachingProvider } from './provider-caching';
 
 export type AssumeRoleAdditionalOptions = Partial<Omit<AssumeRoleCommandInput, 'ExternalId' | 'RoleArn'>>;
 
@@ -348,7 +349,7 @@ export class SdkProvider {
     const sourceDescription = fmtObtainedCredentials(mainCredentials);
 
     try {
-      const credentials = await fromTemporaryCredentials({
+      const credentials = await makeCachingProvider(fromTemporaryCredentials({
         masterCredentials: mainCredentials.credentials,
         params: {
           RoleArn: roleArn,
@@ -363,7 +364,11 @@ export class SdkProvider {
           customUserAgent: 'aws-cdk',
           logger: this.logger,
         },
-      });
+        logger: this.logger,
+      }));
+
+      // Call the provider at least once here, to catch an error if it occurs
+      await credentials();
 
       return new SDK(credentials, region, this.requestHandler, this.logger);
     } catch (err: any) {
