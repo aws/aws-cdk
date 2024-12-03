@@ -51,6 +51,7 @@ new glue.PySparkStreamingJob(stack, 'OverridePySparkStreamingJob', {
   tags: {
     key: 'value',
   },
+  jobRunQueuingEnabled: true
 });
 
 new integ.IntegTest(app, 'aws-glue-job-pyspark-streaming-integ-test', {

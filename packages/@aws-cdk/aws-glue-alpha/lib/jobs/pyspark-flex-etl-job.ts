@@ -141,7 +141,9 @@ export class PySparkFlexEtlJob extends Job {
       securityConfiguration: props.securityConfiguration?.securityConfigurationName,
       tags: props.tags,
       executionClass: ExecutionClass.FLEX,
+      jobRunQueuingEnabled: false,
       defaultArguments,
+
     });
 
     const resourceName = this.getResourceNameAttribute(jobResource.ref);

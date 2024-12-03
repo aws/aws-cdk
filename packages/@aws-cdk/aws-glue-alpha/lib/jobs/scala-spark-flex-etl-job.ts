@@ -174,6 +174,7 @@ export class ScalaSparkFlexEtlJob extends Job {
       securityConfiguration: props.securityConfiguration?.securityConfigurationName,
       tags: props.tags,
       executionClass: ExecutionClass.FLEX,
+      jobRunQueuingEnabled: false,
       defaultArguments,
     });
 

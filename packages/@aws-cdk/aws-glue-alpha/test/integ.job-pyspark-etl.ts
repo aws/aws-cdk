@@ -51,6 +51,7 @@ new glue.PySparkEtlJob(stack, 'OverridePySparkETLJob', {
   tags: {
     key: 'value',
   },
+  jobRunQueuingEnabled: true
 });
 
 new integ.IntegTest(app, 'aws-glue-job-pyspark-etl-integ-test', {

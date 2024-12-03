@@ -96,6 +96,41 @@ Reference the pyspark-etl-jobs.test.ts and scalaspark-etl-jobs.test.ts unit test
 for examples of required-only and optional job parameters when creating these
 types of jobs.
 
+For the sake of brevity, examples are shown using the pySpark job variety.
+
+Example with only required parameters:
+```ts
+new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
+  role,
+  script,
+  jobName: 'PySparkETLJob',
+});
+```
+
+Example with optional override parameters:
+```ts
+new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
+        jobName: 'PySparkETLJobCustomName',
+        description: 'This is a description',
+        role,
+        script,
+        glueVersion: glue.GlueVersion.V3_0,
+        continuousLogging: { enabled: false },
+        workerType: glue.WorkerType.G_2X,
+        maxConcurrentRuns: 100,
+        timeout: cdk.Duration.hours(2),
+        connections: [glue.Connection.fromConnectionName(stack, 'Connection', 'connectionName')],
+        securityConfiguration: glue.SecurityConfiguration.fromSecurityConfigurationName(stack, 'SecurityConfig', 'securityConfigName'),
+        tags: {
+          FirstTagName: 'FirstTagValue',
+          SecondTagName: 'SecondTagValue',
+          XTagName: 'XTagValue',
+        },
+        numberOfWorkers: 2,
+        maxRetries: 2,
+      });
+```
+
 **Streaming Jobs**
 
 Streaming jobs are similar to ETL jobs, except that they perform ETL on data
@@ -111,6 +146,35 @@ Reference the pyspark-streaming-jobs.test.ts and scalaspark-streaming-jobs.test.
 unit tests for examples of required-only and optional job parameters when creating
 these types of jobs.
 
+Example with only required parameters:
+```ts
+new glue.PySparkStreamingJob(stack, 'ImportedJob', { role, script });
+```
+
+Example with optional override parameters:
+```ts
+new glue.PySparkStreamingJob(stack, 'PySparkStreamingJob', {
+  jobName: 'PySparkStreamingJobCustomName',
+  description: 'This is a description',
+  role,
+  script,
+  glueVersion: glue.GlueVersion.V3_0,
+  continuousLogging: { enabled: false },
+  workerType: glue.WorkerType.G_2X,
+  maxConcurrentRuns: 100,
+  timeout: cdk.Duration.hours(2),
+  connections: [glue.Connection.fromConnectionName(stack, 'Connection', 'connectionName')],
+  securityConfiguration: glue.SecurityConfiguration.fromSecurityConfigurationName(stack, 'SecurityConfig', 'securityConfigName'),
+  tags: {
+    FirstTagName: 'FirstTagValue',
+    SecondTagName: 'SecondTagValue',
+    XTagName: 'XTagValue',
+  },
+  numberOfWorkers: 2,
+  maxRetries: 2,
+});
+```
+
 **Flex Jobs**
 
 The flexible execution class is appropriate for non-urgent jobs such as
@@ -122,6 +186,35 @@ features are enabled by default:
 Reference the pyspark-flex-etl-jobs.test.ts and scalaspark-flex-etl-jobs.test.ts 
 unit tests for examples of required-only and optional job parameters when creating
 these types of jobs.
+
+Example with only required parameters:
+```ts
+job = new glue.PySparkFlexEtlJob(stack, 'ImportedJob', { role, script });
+```
+
+Example with optional override parameters:
+```ts
+new glue.PySparkEtlJob(stack, 'pySparkEtlJob', {
+  jobName: 'pySparkEtlJob',
+  description: 'This is a description',
+  role,
+  script,
+  glueVersion: glue.GlueVersion.V3_0,
+  continuousLogging: { enabled: false },
+  workerType: glue.WorkerType.G_2X,
+  maxConcurrentRuns: 100,
+  timeout: cdk.Duration.hours(2),
+  connections: [glue.Connection.fromConnectionName(stack, 'Connection', 'connectionName')],
+  securityConfiguration: glue.SecurityConfiguration.fromSecurityConfigurationName(stack, 'SecurityConfig', 'securityConfigName'),
+  tags: {
+    FirstTagName: 'FirstTagValue',
+    SecondTagName: 'SecondTagValue',
+    XTagName: 'XTagValue',
+  },
+  numberOfWorkers: 2,
+  maxRetries: 2,
+});
+```
 
 ### Python Shell Jobs
 
@@ -135,6 +228,37 @@ enabled by default.
 Reference the pyspark-shell-job.test.ts unit tests for examples of 
 required-only and optional job parameters when creating these types of jobs.
 
+Example with only required parameters:
+```ts
+job = new glue.PythonShellJob(stack, 'ImportedJob', { role, script });
+```
+
+Example with optional override parameters:
+```ts
+new glue.PythonShellJob(stack, 'PythonShellJob', {
+  jobName: 'PythonShellJobCustomName',
+  description: 'This is a description',
+  pythonVersion: glue.PythonVersion.TWO,
+  maxCapacity: glue.MaxCapacity.DPU_1,
+  role,
+  script,
+  glueVersion: glue.GlueVersion.V2_0,
+  continuousLogging: { enabled: false },
+  workerType: glue.WorkerType.G_2X,
+  maxConcurrentRuns: 100,
+  timeout: cdk.Duration.hours(2),
+  connections: [glue.Connection.fromConnectionName(stack, 'Connection', 'connectionName')],
+  securityConfiguration: glue.SecurityConfiguration.fromSecurityConfigurationName(stack, 'SecurityConfig', 'securityConfigName'),
+  tags: {
+    FirstTagName: 'FirstTagValue',
+    SecondTagName: 'SecondTagValue',
+    XTagName: 'XTagValue',
+  },
+  numberOfWorkers: 2,
+  maxRetries: 2,
+});
+```
+
 ### Ray Jobs
 
 Glue Ray jobs use worker type Z.2X and Glue version 4.0. These are not
@@ -143,6 +267,49 @@ currently support. The runtime defaults to Ray2.4 and min workers defaults to 3.
 
 Reference the ray-job.test.ts unit tests for examples of required-only and
 optional job parameters when creating these types of jobs.
+
+Example with only required parameters:
+```ts
+job = new glue.RayJob(stack, 'ImportedJob', { role, script });
+```
+
+Example with optional override parameters:
+```ts
+new glue.RayJob(stack, 'ImportedJob', {
+  role,
+  script,
+  jobName: 'RayCustomJobName',
+  description: 'This is a description',
+  workerType: glue.WorkerType.Z_2X,
+  numberOfWorkers: 5,
+  runtime: glue.Runtime.RAY_TWO_FOUR,
+  maxRetries: 3,
+  maxConcurrentRuns: 100,
+  timeout: cdk.Duration.hours(2),
+  connections: [glue.Connection.fromConnectionName(stack, 'Connection', 'connectionName')],
+  securityConfiguration: glue.SecurityConfiguration.fromSecurityConfigurationName(stack, 'SecurityConfig', 'securityConfigName'),
+  tags: {
+    FirstTagName: 'FirstTagValue',
+    SecondTagName: 'SecondTagValue',
+    XTagName: 'XTagValue',
+  },
+});
+```
+
+### Enable Job Run Queuing
+
+AWS Glue job queuing monitors your account level quotas and limits. If quotas or limits are insufficient to start a Glue job run, AWS Glue will automatically queue the job and wait for limits to free up. Once limits become available, AWS Glue will retry the job run. Glue jobs will queue for limits like max concurrent job runs per account, max concurrent Data Processing Units (DPU), and resource unavailable due to IP address exhaustion in Amazon Virtual Private Cloud (Amazon VPC).
+
+Enable job run queuing by setting the `jobRunQueuingEnabled` property to `true`.
+
+```ts
+new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
+    role,
+    script,
+    jobName: 'PySparkETLJob',
+    jobRunQueuingEnabled: true
+  });
+```
 
 ### Uploading scripts from the CDK app repository to S3
 

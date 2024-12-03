@@ -62,6 +62,13 @@ describe('Job', () => {
         }),
       });
     });
+
+    test('Default job run queuing should be diabled', () => {
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        JobRunQueuingEnabled: false,
+      });
+    });
+    
   });
 
   describe('Create new Ray Job with log override parameters', () => {
@@ -205,6 +212,135 @@ describe('Job', () => {
     test('Overriden max retries should be 3', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         MaxRetries: 3,
+      });
+    });
+
+    test('Overriden max concurrent runs should be 100', () => {
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        ExecutionProperty: {
+          MaxConcurrentRuns: 100,
+        },
+      });
+    });
+
+    test('Overriden timeout should be 2 hours', () => {
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        Timeout: 120,
+      });
+    });
+
+    test('Overriden connections should be 100', () => {
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        Connections: {
+          Connections: ['connectionName'],
+        },
+      });
+    });
+
+    test('Overriden security configuration should be set', () => {
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        SecurityConfiguration: 'securityConfigName',
+      });
+    });
+
+    test('Should have tags', () => {
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        Tags: {
+          FirstTagName: 'FirstTagValue',
+          SecondTagName: 'SecondTagValue',
+          XTagName: 'XTagValue',
+        },
+      });
+    });
+  });
+
+  describe('Create Ray Job with job run queuing enabled', () => {
+
+    beforeEach(() => {
+      job = new glue.RayJob(stack, 'ImportedJob', {
+        role,
+        script,
+        jobName: 'RayCustomJobName',
+        description: 'This is a description',
+        workerType: glue.WorkerType.Z_2X,
+        numberOfWorkers: 5,
+        runtime: glue.Runtime.RAY_TWO_FOUR,
+        maxRetries: 3,
+        maxConcurrentRuns: 100,
+        timeout: cdk.Duration.hours(2),
+        connections: [glue.Connection.fromConnectionName(stack, 'Connection', 'connectionName')],
+        securityConfiguration: glue.SecurityConfiguration.fromSecurityConfigurationName(stack, 'SecurityConfig', 'securityConfigName'),
+        tags: {
+          FirstTagName: 'FirstTagValue',
+          SecondTagName: 'SecondTagValue',
+          XTagName: 'XTagValue',
+        },
+        jobRunQueuingEnabled: true
+      });
+    });
+
+    test('Test default attributes', () => {
+      expect(job.jobArn).toEqual(stack.formatArn({
+        service: 'glue',
+        resource: 'job',
+        resourceName: job.jobName,
+      }));
+      expect(job.grantPrincipal).toEqual(role);
+    });
+
+    test('Cannot override Glue Version should be 4.0', () => {
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        GlueVersion: '4.0',
+      });
+    });
+
+    test('Overridden number of workers should be 5', () => {
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        NumberOfWorkers: 5,
+      });
+    });
+
+    test('Cannot override worker type should be Z.2X', () => {
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        WorkerType: 'Z.2X',
+      });
+    });
+
+    test('Has Continuous Logging Enabled', () => {
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        DefaultArguments: Match.objectLike({
+          '--enable-metrics': '',
+          '--enable-observability-metrics': 'true',
+          '--enable-continuous-cloudwatch-log': 'true',
+        }),
+      });
+    });
+
+    test('Custom Job Name and Description', () => {
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        Name: 'RayCustomJobName',
+        Description: 'This is a description',
+      });
+    });
+
+    test('Verify Default Arguemnts', () => {
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        DefaultArguments: Match.objectLike({
+          '--enable-metrics': '',
+          '--enable-observability-metrics': 'true',
+        }),
+      });
+    });
+
+    test('Overriden job run queuing should be enabled', () => {
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        JobRunQueuingEnabled: true,
+      });
+    });
+
+    test('Default max retries with job run queuing enabled should be 0', () => {
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        MaxRetries: 0,
       });
     });
 

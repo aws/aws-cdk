@@ -71,6 +71,12 @@ describe('Job', () => {
         NumberOfWorkers: 10,
       });
     });
+
+    test('Job run queuing must be disabled for flex jobs', () => {
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        JobRunQueuingEnabled: false,
+      });
+    });
   });
 
   describe('Create new ScalaSpark ETL Job with log override parameters', () => {

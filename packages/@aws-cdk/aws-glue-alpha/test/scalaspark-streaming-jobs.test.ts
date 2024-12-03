@@ -71,6 +71,12 @@ describe('Job', () => {
         NumberOfWorkers: 10,
       });
     });
+
+    test('Default job run queuing should be diabled', () => {
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        JobRunQueuingEnabled: false,
+      });
+    });
   });
 
   describe('Create new ScalaSpark Streaming Job with log override parameters', () => {
@@ -211,6 +217,128 @@ describe('Job', () => {
     test('Overriden max retries should be 2', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         MaxRetries: 2,
+      });
+    });
+
+    test('Overriden max concurrent runs should be 100', () => {
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        ExecutionProperty: {
+          MaxConcurrentRuns: 100,
+        },
+      });
+    });
+
+    test('Overriden timeout should be 2 hours', () => {
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        Timeout: 120,
+      });
+    });
+
+    test('Overriden connections should be 100', () => {
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        Connections: {
+          Connections: ['connectionName'],
+        },
+      });
+    });
+
+    test('Overriden security configuration should be set', () => {
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        SecurityConfiguration: 'securityConfigName',
+      });
+    });
+
+    test('Should have tags', () => {
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        Tags: {
+          FirstTagName: 'FirstTagValue',
+          SecondTagName: 'SecondTagValue',
+          XTagName: 'XTagValue',
+        },
+      });
+    });
+  });
+
+  describe('Create ScalaSpark Streaming ETL Job with optional properties', () => {
+
+    beforeEach(() => {
+      job = new glue.ScalaSparkStreamingJob(stack, 'ScalaSparkStreamingJob', {
+        jobName: 'ScalaSparkStreamingJob',
+        description: 'This is a description',
+        role,
+        script,
+        className,
+        glueVersion: glue.GlueVersion.V3_0,
+        continuousLogging: { enabled: false },
+        workerType: glue.WorkerType.G_2X,
+        maxConcurrentRuns: 100,
+        timeout: cdk.Duration.hours(2),
+        connections: [glue.Connection.fromConnectionName(stack, 'Connection', 'connectionName')],
+        securityConfiguration: glue.SecurityConfiguration.fromSecurityConfigurationName(stack, 'SecurityConfig', 'securityConfigName'),
+        tags: {
+          FirstTagName: 'FirstTagValue',
+          SecondTagName: 'SecondTagValue',
+          XTagName: 'XTagValue',
+        },
+        numberOfWorkers: 2,
+        maxRetries: 2,
+        jobRunQueuingEnabled: true
+      });
+    });
+
+    test('Test job attributes', () => {
+      expect(job.jobArn).toEqual(stack.formatArn({
+        service: 'glue',
+        resource: 'job',
+        resourceName: job.jobName,
+      }));
+      expect(job.grantPrincipal).toEqual(role);
+    });
+
+    test('Custom Job Name and Description', () => {
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        Name: 'ScalaSparkStreamingJob',
+        Description: 'This is a description',
+      });
+    });
+
+    test('Overriden Glue Version should be 3.0', () => {
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        GlueVersion: '3.0',
+      });
+    });
+
+    test('Verify Default Arguemnts', () => {
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        DefaultArguments: Match.objectLike({
+          '--enable-metrics': '',
+          '--enable-observability-metrics': 'true',
+          '--job-language': 'scala',
+        }),
+      });
+    });
+
+    test('Overriden numberOfWorkers should be 2', () => {
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        NumberOfWorkers: 2,
+      });
+    });
+
+    test('Overriden WorkerType should be G.2X', () => {
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        WorkerType: glue.WorkerType.G_2X,
+      });
+    });
+
+    test('Overriden job run queuing should be enabled', () => {
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        JobRunQueuingEnabled: true,
+      });
+    });
+
+    test('Default max retries with job run queuing enabled should be 0', () => {
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        MaxRetries: 0,
       });
     });
 

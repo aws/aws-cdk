@@ -50,6 +50,18 @@ export interface ScalaSparkEtlJobProps extends JobProperties {
    * @default - no extra jar files
   */
   readonly extraJars?: Code[];
+
+  /**
+   * Specifies whether job run queuing is enabled for the job runs for this job.
+   * A value of true means job run queuing is enabled for the job runs.
+   * If false or not populated, the job runs will not be considered for queueing.
+   * If this field does not match the value set in the job run, then the value from
+   * the job run field will be used. This property must be set to false for flex jobs.
+   * If this property is enabled, maxRetries must be set to zero.
+   *
+   * @default - no job run queuing
+   */
+  readonly jobRunQueuingEnabled?: boolean;
 }
 
 /**
@@ -132,7 +144,8 @@ export class ScalaSparkEtlJob extends Job {
       glueVersion: props.glueVersion ? props.glueVersion : GlueVersion.V4_0,
       workerType: props.workerType ? props.workerType : WorkerType.G_1X,
       numberOfWorkers: props.numberOfWorkers ? props.numberOfWorkers : 10,
-      maxRetries: props.maxRetries,
+      maxRetries: props.jobRunQueuingEnabled ? 0 : props.maxRetries,
+      jobRunQueuingEnabled: props.jobRunQueuingEnabled ? props.jobRunQueuingEnabled : false,
       executionProperty: props.maxConcurrentRuns ? { maxConcurrentRuns: props.maxConcurrentRuns } : undefined,
       timeout: props.timeout?.toMinutes(),
       connections: props.connections ? { connections: props.connections.map((connection) => connection.connectionName) } : undefined,

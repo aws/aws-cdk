@@ -54,6 +54,7 @@ new glue.ScalaSparkEtlJob(stack, 'OverrideScalaSparkETLJob', {
   tags: {
     key: 'value',
   },
+  jobRunQueuingEnabled: true
 });
 
 new integ.IntegTest(app, 'aws-glue-job-scalaspark-etl-integ-test', {
