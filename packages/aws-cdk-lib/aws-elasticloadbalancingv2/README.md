@@ -366,7 +366,6 @@ and [Register targets with your Target
 Group](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/target-group-register-targets.html)
 for more information.
 
-
 ### Dualstack Network Load Balancer
 
 You can create a dualstack Network Load Balancer using the `ipAddressType` property:
@@ -377,6 +376,23 @@ declare const vpc: ec2.Vpc;
 const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
   vpc,
   ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+});
+```
+
+If you wan to create UDP listeners, you must set `enablePrefixIpv6SourceNat` to `true`:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
+  vpc,
+  ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+  enablePrefixIpv6SourceNat: true,
+});
+
+const listener = nlb.addListener('Listener', {
+  port: 1229,
+  protocol: elbv2.Protocol.UDP,
 });
 ```
 

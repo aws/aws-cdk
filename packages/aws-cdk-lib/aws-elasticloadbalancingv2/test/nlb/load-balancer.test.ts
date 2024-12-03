@@ -1135,6 +1135,30 @@ describe('tests', () => {
         IpAddressType: 'dualstack',
       });
     });
+
+    test.each([
+      { config: true, value: 'on' },
+      { config: false, value: 'off' },
+    ])('configure EnablePrefixForIpv6SourceNat', ({ config, value }) => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      // WHEN
+      new elbv2.NetworkLoadBalancer(stack, 'LB', {
+        vpc,
+        enablePrefixForIpv6SourceNat: config,
+        ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        Scheme: 'internal',
+        Type: 'network',
+        IpAddressType: 'dualstack',
+        EnablePrefixForIpv6SourceNat: value,
+      });
+    });
   });
 
   describe('dualstack without public ipv4', () => {

@@ -2,28 +2,22 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
-import * as targets from 'aws-cdk-lib/aws-elasticloadbalancingv2-targets';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'NlbEnablePrefixForIpv6NatStack');
 
-const vpc = new ec2.Vpc(stack, 'VPC', {
+const vpc = new ec2.Vpc(stack, 'Vpc', {
   restrictDefaultSecurityGroup: false,
   maxAzs: 2,
   ipProtocol: ec2.IpProtocol.DUAL_STACK,
+  natGateways: 0,
 });
 
-const instance = new ec2.Instance(stack, 'Instance', {
-  vpc,
-  instanceType: new ec2.InstanceType('t2.micro'),
-  machineImage: new ec2.AmazonLinuxImage(),
-});
-
-const nlb = new elbv2.NetworkLoadBalancer(stack, 'LB', {
+const nlb = new elbv2.NetworkLoadBalancer(stack, 'Lb', {
   vpc,
   internetFacing: true,
   securityGroups: [
-    new ec2.SecurityGroup(stack, 'SG', { vpc }),
+    new ec2.SecurityGroup(stack, 'Sg', { vpc }),
   ],
   enablePrefixForIpv6SourceNat: true,
   ipAddressType: elbv2.IpAddressType.DUAL_STACK,
@@ -33,13 +27,13 @@ const listener = nlb.addListener('Listener', {
   port: 1229,
   protocol: elbv2.Protocol.UDP,
 });
-
-listener.addTargets('Target', {
+const targetGroup = new elbv2.NetworkTargetGroup(stack, 'TargetGroup', {
+  vpc,
   port: 1229,
-  targets: [new targets.InstanceTarget(instance)],
+  protocol: elbv2.Protocol.UDP,
+  ipAddressType: elbv2.TargetGroupIpAddressType.IPV6,
 });
-
-nlb.connections.allowTo(instance, ec2.Port.udp(1229));
+listener.addTargetGroups('TargetGroup', targetGroup);
 
 new integ.IntegTest(app, 'NlbEnablePrefixForIpv6NatStackTest', {
   testCases: [stack],
