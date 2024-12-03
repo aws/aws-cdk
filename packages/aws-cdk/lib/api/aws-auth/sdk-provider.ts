@@ -4,7 +4,7 @@ import { Environment, EnvironmentUtils, UNKNOWN_ACCOUNT, UNKNOWN_REGION } from '
 import { AssumeRoleCommandInput } from '@aws-sdk/client-sts';
 import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
 import type { NodeHttpHandlerOptions } from '@smithy/node-http-handler';
-import { AwsCredentialIdentity, AwsCredentialIdentityProvider, Logger } from '@smithy/types';
+import { AwsCredentialIdentityProvider, Logger } from '@smithy/types';
 import { AwsCliCompatible } from './awscli-compatible';
 import { cached } from './cached';
 import { CredentialPlugins } from './credential-plugins';
@@ -57,7 +57,6 @@ export interface SdkHttpOptions {
 }
 
 const CACHED_ACCOUNT = Symbol('cached_account');
-const CACHED_DEFAULT_CREDENTIALS = Symbol('cached_default_credentials');
 
 /**
  * SDK configuration for a given environment
@@ -326,16 +325,6 @@ export class SdkProvider {
       source: 'none',
       unusedPlugins: this.plugins.availablePluginNames,
     };
-  }
-
-  /**
-   * Resolve the default chain to the first set of credentials that is available
-   */
-  private async defaultCredentials(): Promise<AwsCredentialIdentity> {
-    return cached(this, CACHED_DEFAULT_CREDENTIALS, async () => {
-      debug('Resolving default credentials');
-      return this.defaultCredentialProvider();
-    });
   }
 
   /**
