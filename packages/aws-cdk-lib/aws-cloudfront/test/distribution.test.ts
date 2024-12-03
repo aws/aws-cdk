@@ -1394,4 +1394,30 @@ describe('attachWebAclId', () => {
       distribution.attachWebAclId('473e64fd-f30b-4765-81a0-62ad96dd167b');
     }).toThrow(/A WebACL has already been attached to this distribution/);
   });
+
+  describe('throws if the WebAcl is not in us-east-1 region', () => {
+    test('when try to attach WebACL using `attachWebAclId` method', () => {
+      const origin = defaultOrigin();
+
+      const distribution = new Distribution(stack, 'MyDist', {
+        defaultBehavior: { origin },
+      });
+
+      expect(() => {
+        distribution.attachWebAclId('arn:aws:wafv2:ap-northeast-1:123456789012:global/web-acl/MyWebAcl/473e64fd-f30b-4765-81a0-62ad96dd167a');
+      }).toThrow(/WebACL for CloudFront distributions must be created in the us-east-1 region; received ap-northeast-1/);
+    });
+
+    test('when try to attach WebACL by specifying value for props', () => {
+      const origin = defaultOrigin();
+
+      expect(() => {
+        new Distribution(stack, 'MyDist', {
+          defaultBehavior: { origin },
+          webAclId: 'arn:aws:wafv2:ap-northeast-1:123456789012:global/web-acl/MyWebAcl/473e64fd-f30b-4765-81a0-62ad96dd167a',
+        });
+      }).toThrow(/WebACL for CloudFront distributions must be created in the us-east-1 region; received ap-northeast-1/);
+    });
+  });
+
 });
