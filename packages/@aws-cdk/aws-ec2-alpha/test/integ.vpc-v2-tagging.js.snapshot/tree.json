@@ -35,36 +35,6 @@
                   "version": "0.0.0"
                 }
               },
-              "SecondaryAddress2": {
-                "id": "SecondaryAddress2",
-                "path": "aws-cdk-ec2-alpha-tag/VPC-integ-test-tag/SecondaryAddress2",
-                "children": {
-                  "SecondaryAddress2": {
-                    "id": "SecondaryAddress2",
-                    "path": "aws-cdk-ec2-alpha-tag/VPC-integ-test-tag/SecondaryAddress2/SecondaryAddress2",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
-                      "aws:cdk:cloudformation:props": {
-                        "cidrBlock": "10.2.0.0/16",
-                        "vpcId": {
-                          "Fn::GetAtt": [
-                            "VPCintegtesttag58C3A45F",
-                            "VpcId"
-                          ]
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnVPCCidrBlock",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0"
-                }
-              },
               "AmazonProvided": {
                 "id": "AmazonProvided",
                 "path": "aws-cdk-ec2-alpha-tag/VPC-integ-test-tag/AmazonProvided",
@@ -95,88 +65,243 @@
                   "version": "0.0.0"
                 }
               },
-              "TestGWendpoint": {
-                "id": "TestGWendpoint",
-                "path": "aws-cdk-ec2-alpha-tag/VPC-integ-test-tag/TestGWendpoint",
+              "InternetGateway": {
+                "id": "InternetGateway",
+                "path": "aws-cdk-ec2-alpha-tag/VPC-integ-test-tag/InternetGateway",
                 "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-cdk-ec2-alpha-tag/VPC-integ-test-tag/TestGWendpoint/Resource",
+                  "IGW": {
+                    "id": "IGW",
+                    "path": "aws-cdk-ec2-alpha-tag/VPC-integ-test-tag/InternetGateway/IGW",
                     "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::VPCEndpoint",
+                      "aws:cdk:cloudformation:type": "AWS::EC2::InternetGateway",
+                      "aws:cdk:cloudformation:props": {
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "CDKIntegTestTagIGW"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnInternetGateway",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "GWAttachment": {
+                    "id": "GWAttachment",
+                    "path": "aws-cdk-ec2-alpha-tag/VPC-integ-test-tag/InternetGateway/GWAttachment",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
+                      "aws:cdk:cloudformation:props": {
+                        "internetGatewayId": {
+                          "Fn::GetAtt": [
+                            "VPCintegtesttagInternetGatewayIGWC653A733",
+                            "InternetGatewayId"
+                          ]
+                        },
+                        "vpcId": {
+                          "Fn::GetAtt": [
+                            "VPCintegtesttag58C3A45F",
+                            "VpcId"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnVPCGatewayAttachment",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2-alpha.InternetGateway",
+                  "version": "0.0.0"
+                }
+              },
+              "VpnGateway": {
+                "id": "VpnGateway",
+                "path": "aws-cdk-ec2-alpha-tag/VPC-integ-test-tag/VpnGateway",
+                "children": {
+                  "IGW": {
+                    "id": "IGW",
+                    "path": "aws-cdk-ec2-alpha-tag/VPC-integ-test-tag/VpnGateway/IGW",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::VPNGateway",
+                      "aws:cdk:cloudformation:props": {
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "CDKintegTestVPC"
+                          }
+                        ],
+                        "type": "ipsec.1"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnVPNGateway",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "VPCVPNGW": {
+                    "id": "VPCVPNGW",
+                    "path": "aws-cdk-ec2-alpha-tag/VPC-integ-test-tag/VpnGateway/VPCVPNGW",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
+                      "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Fn::GetAtt": [
+                            "VPCintegtesttag58C3A45F",
+                            "VpcId"
+                          ]
+                        },
+                        "vpnGatewayId": {
+                          "Fn::GetAtt": [
+                            "VPCintegtesttagVpnGatewayIGW22B9A571",
+                            "VPNGatewayId"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnVPCGatewayAttachment",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RoutePropagation": {
+                    "id": "RoutePropagation",
+                    "path": "aws-cdk-ec2-alpha-tag/VPC-integ-test-tag/VpnGateway/RoutePropagation",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::VPNGatewayRoutePropagation",
                       "aws:cdk:cloudformation:props": {
                         "routeTableIds": [
                           {
                             "Fn::GetAtt": [
-                              "testsubnetRouteTable682580B2",
+                              "TestRouteTableC34C2E1C",
                               "RouteTableId"
                             ]
                           }
                         ],
-                        "serviceName": {
-                          "Fn::Join": [
-                            "",
-                            [
-                              "com.amazonaws.",
-                              {
-                                "Ref": "AWS::Region"
-                              },
-                              ".s3"
-                            ]
-                          ]
-                        },
-                        "vpcEndpointType": "Gateway",
-                        "vpcId": {
+                        "vpnGatewayId": {
                           "Fn::GetAtt": [
-                            "VPCintegtesttag58C3A45F",
-                            "VpcId"
+                            "VPCintegtesttagVpnGatewayIGW22B9A571",
+                            "VPNGatewayId"
                           ]
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnVPCEndpoint",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnVPNGatewayRoutePropagation",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.GatewayVpcEndpoint",
+                  "fqn": "@aws-cdk/aws-ec2-alpha.VPNGatewayV2",
                   "version": "0.0.0"
                 }
               },
-              "EgressOnlyGW": {
-                "id": "EgressOnlyGW",
-                "path": "aws-cdk-ec2-alpha-tag/VPC-integ-test-tag/EgressOnlyGW",
+              "NATGateway": {
+                "id": "NATGateway",
+                "path": "aws-cdk-ec2-alpha-tag/VPC-integ-test-tag/NATGateway",
                 "children": {
-                  "EIGW": {
-                    "id": "EIGW",
-                    "path": "aws-cdk-ec2-alpha-tag/VPC-integ-test-tag/EgressOnlyGW/EIGW",
+                  "EIP": {
+                    "id": "EIP",
+                    "path": "aws-cdk-ec2-alpha-tag/VPC-integ-test-tag/NATGateway/EIP",
                     "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::EgressOnlyInternetGateway",
+                      "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
+                        "domain": {
                           "Fn::GetAtt": [
                             "VPCintegtesttag58C3A45F",
                             "VpcId"
                           ]
-                        }
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "CDKIntegTestTagNGW"
+                          }
+                        ]
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnEgressOnlyInternetGateway",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnEIP",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "NATGateway": {
+                    "id": "NATGateway",
+                    "path": "aws-cdk-ec2-alpha-tag/VPC-integ-test-tag/NATGateway/NATGateway",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
+                      "aws:cdk:cloudformation:props": {
+                        "allocationId": {
+                          "Fn::GetAtt": [
+                            "VPCintegtesttagNATGatewayEIP485980AA",
+                            "AllocationId"
+                          ]
+                        },
+                        "subnetId": {
+                          "Ref": "testsubnetSubnetDD417829"
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "CDKIntegTestTagNGW"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnNatGateway",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2-alpha.EgressOnlyInternetGateway",
+                  "fqn": "@aws-cdk/aws-ec2-alpha.NatGateway",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "@aws-cdk/aws-ec2-alpha.VpcV2",
+              "version": "0.0.0"
+            }
+          },
+          "TestRouteTable": {
+            "id": "TestRouteTable",
+            "path": "aws-cdk-ec2-alpha-tag/TestRouteTable",
+            "children": {
+              "RouteTable": {
+                "id": "RouteTable",
+                "path": "aws-cdk-ec2-alpha-tag/TestRouteTable/RouteTable",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                  "aws:cdk:cloudformation:props": {
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "TestRouteTable"
+                      }
+                    ],
+                    "vpcId": {
+                      "Fn::GetAtt": [
+                        "VPCintegtesttag58C3A45F",
+                        "VpcId"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ec2-alpha.RouteTable",
               "version": "0.0.0"
             }
           },
@@ -192,7 +317,7 @@
                   "aws:cdk:cloudformation:props": {
                     "assignIpv6AddressOnCreation": false,
                     "availabilityZone": "us-west-2b",
-                    "cidrBlock": "10.2.0.0/24",
+                    "cidrBlock": "10.1.0.0/24",
                     "tags": [
                       {
                         "key": "Name",
@@ -224,45 +349,6 @@
                   "version": "0.0.0"
                 }
               },
-              "RouteTable": {
-                "id": "RouteTable",
-                "path": "aws-cdk-ec2-alpha-tag/testsubnet/RouteTable",
-                "children": {
-                  "RouteTable": {
-                    "id": "RouteTable",
-                    "path": "aws-cdk-ec2-alpha-tag/testsubnet/RouteTable/RouteTable",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
-                      "aws:cdk:cloudformation:props": {
-                        "tags": [
-                          {
-                            "key": "Name",
-                            "value": "CDKIntegTestSubnet"
-                          },
-                          {
-                            "key": "VpcName",
-                            "value": "CDKintegTestVPC"
-                          }
-                        ],
-                        "vpcId": {
-                          "Fn::GetAtt": [
-                            "VPCintegtesttag58C3A45F",
-                            "VpcId"
-                          ]
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2-alpha.RouteTable",
-                  "version": "0.0.0"
-                }
-              },
               "RouteTableAssociation": {
                 "id": "RouteTableAssociation",
                 "path": "aws-cdk-ec2-alpha-tag/testsubnet/RouteTableAssociation",
@@ -271,7 +357,7 @@
                   "aws:cdk:cloudformation:props": {
                     "routeTableId": {
                       "Fn::GetAtt": [
-                        "testsubnetRouteTable682580B2",
+                        "TestRouteTableC34C2E1C",
                         "RouteTableId"
                       ]
                     },
@@ -308,7 +394,7 @@
                     ],
                     "tags": [
                       {
-                        "key": "NAME",
+                        "key": "Name",
                         "value": "CDKIpamTestTag"
                       }
                     ]
@@ -344,12 +430,76 @@
                     "IpamIntegTestIpam00B5B97A",
                     "IpamId"
                   ]
-                }
+                },
+                "tags": [
+                  {
+                    "key": "Name",
+                    "value": "CustomPrivateScopeTag"
+                  }
+                ]
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_ec2.CfnIPAMScope",
               "version": "0.0.0"
+            }
+          },
+          "Exports": {
+            "id": "Exports",
+            "path": "aws-cdk-ec2-alpha-tag/Exports",
+            "children": {
+              "Output{\"Fn::GetAtt\":[\"VPCintegtesttag58C3A45F\",\"VpcId\"]}": {
+                "id": "Output{\"Fn::GetAtt\":[\"VPCintegtesttag58C3A45F\",\"VpcId\"]}",
+                "path": "aws-cdk-ec2-alpha-tag/Exports/Output{\"Fn::GetAtt\":[\"VPCintegtesttag58C3A45F\",\"VpcId\"]}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Fn::GetAtt\":[\"VPCintegtesttagInternetGatewayIGWC653A733\",\"InternetGatewayId\"]}": {
+                "id": "Output{\"Fn::GetAtt\":[\"VPCintegtesttagInternetGatewayIGWC653A733\",\"InternetGatewayId\"]}",
+                "path": "aws-cdk-ec2-alpha-tag/Exports/Output{\"Fn::GetAtt\":[\"VPCintegtesttagInternetGatewayIGWC653A733\",\"InternetGatewayId\"]}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Fn::GetAtt\":[\"VPCintegtesttagNATGatewayCE05D4D3\",\"NatGatewayId\"]}": {
+                "id": "Output{\"Fn::GetAtt\":[\"VPCintegtesttagNATGatewayCE05D4D3\",\"NatGatewayId\"]}",
+                "path": "aws-cdk-ec2-alpha-tag/Exports/Output{\"Fn::GetAtt\":[\"VPCintegtesttagNATGatewayCE05D4D3\",\"NatGatewayId\"]}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Fn::GetAtt\":[\"TestRouteTableC34C2E1C\",\"RouteTableId\"]}": {
+                "id": "Output{\"Fn::GetAtt\":[\"TestRouteTableC34C2E1C\",\"RouteTableId\"]}",
+                "path": "aws-cdk-ec2-alpha-tag/Exports/Output{\"Fn::GetAtt\":[\"TestRouteTableC34C2E1C\",\"RouteTableId\"]}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Fn::GetAtt\":[\"IpamIntegTestIpam00B5B97A\",\"IpamId\"]}": {
+                "id": "Output{\"Fn::GetAtt\":[\"IpamIntegTestIpam00B5B97A\",\"IpamId\"]}",
+                "path": "aws-cdk-ec2-alpha-tag/Exports/Output{\"Fn::GetAtt\":[\"IpamIntegTestIpam00B5B97A\",\"IpamId\"]}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Fn::GetAtt\":[\"IpamScope\",\"IpamScopeId\"]}": {
+                "id": "Output{\"Fn::GetAtt\":[\"IpamScope\",\"IpamScopeId\"]}",
+                "path": "aws-cdk-ec2-alpha-tag/Exports/Output{\"Fn::GetAtt\":[\"IpamScope\",\"IpamScopeId\"]}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
             }
           },
           "BootstrapVersion": {
@@ -394,6 +544,372 @@
                 "id": "DeployAssert",
                 "path": "integtest-model/DefaultTest/DeployAssert",
                 "children": {
+                  "AwsApiCallEC2describeVpcs05561814f1e78d0cfa29ef5272521670": {
+                    "id": "AwsApiCallEC2describeVpcs05561814f1e78d0cfa29ef5272521670",
+                    "path": "integtest-model/DefaultTest/DeployAssert/AwsApiCallEC2describeVpcs05561814f1e78d0cfa29ef5272521670",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "integtest-model/DefaultTest/DeployAssert/AwsApiCallEC2describeVpcs05561814f1e78d0cfa29ef5272521670/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "integtest-model/DefaultTest/DeployAssert/AwsApiCallEC2describeVpcs05561814f1e78d0cfa29ef5272521670/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "integtest-model/DefaultTest/DeployAssert/AwsApiCallEC2describeVpcs05561814f1e78d0cfa29ef5272521670/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "integtest-model/DefaultTest/DeployAssert/AwsApiCallEC2describeVpcs05561814f1e78d0cfa29ef5272521670/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "integtest-model/DefaultTest/DeployAssert/AwsApiCallEC2describeVpcs05561814f1e78d0cfa29ef5272521670/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "SingletonFunction1488541a7b23466481b69b4408076b81": {
+                    "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "path": "integtest-model/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "integtest-model/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "integtest-model/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "integtest-model/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "LatestNodeRuntimeMap": {
+                    "id": "LatestNodeRuntimeMap",
+                    "path": "integtest-model/DefaultTest/DeployAssert/LatestNodeRuntimeMap",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnMapping",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AwsApiCallEC2describeInternetGateways7423672f34f9408be926d1ced9502e5d": {
+                    "id": "AwsApiCallEC2describeInternetGateways7423672f34f9408be926d1ced9502e5d",
+                    "path": "integtest-model/DefaultTest/DeployAssert/AwsApiCallEC2describeInternetGateways7423672f34f9408be926d1ced9502e5d",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "integtest-model/DefaultTest/DeployAssert/AwsApiCallEC2describeInternetGateways7423672f34f9408be926d1ced9502e5d/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "integtest-model/DefaultTest/DeployAssert/AwsApiCallEC2describeInternetGateways7423672f34f9408be926d1ced9502e5d/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "integtest-model/DefaultTest/DeployAssert/AwsApiCallEC2describeInternetGateways7423672f34f9408be926d1ced9502e5d/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "integtest-model/DefaultTest/DeployAssert/AwsApiCallEC2describeInternetGateways7423672f34f9408be926d1ced9502e5d/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "integtest-model/DefaultTest/DeployAssert/AwsApiCallEC2describeInternetGateways7423672f34f9408be926d1ced9502e5d/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AwsApiCallEC2describeNatGateways511a1d900eb1e5aff6e80b436887825b": {
+                    "id": "AwsApiCallEC2describeNatGateways511a1d900eb1e5aff6e80b436887825b",
+                    "path": "integtest-model/DefaultTest/DeployAssert/AwsApiCallEC2describeNatGateways511a1d900eb1e5aff6e80b436887825b",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "integtest-model/DefaultTest/DeployAssert/AwsApiCallEC2describeNatGateways511a1d900eb1e5aff6e80b436887825b/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "integtest-model/DefaultTest/DeployAssert/AwsApiCallEC2describeNatGateways511a1d900eb1e5aff6e80b436887825b/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "integtest-model/DefaultTest/DeployAssert/AwsApiCallEC2describeNatGateways511a1d900eb1e5aff6e80b436887825b/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "integtest-model/DefaultTest/DeployAssert/AwsApiCallEC2describeNatGateways511a1d900eb1e5aff6e80b436887825b/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "integtest-model/DefaultTest/DeployAssert/AwsApiCallEC2describeNatGateways511a1d900eb1e5aff6e80b436887825b/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AwsApiCallEC2describeRouteTables12b9b6cc894f4fb271c8783896ec62c3": {
+                    "id": "AwsApiCallEC2describeRouteTables12b9b6cc894f4fb271c8783896ec62c3",
+                    "path": "integtest-model/DefaultTest/DeployAssert/AwsApiCallEC2describeRouteTables12b9b6cc894f4fb271c8783896ec62c3",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "integtest-model/DefaultTest/DeployAssert/AwsApiCallEC2describeRouteTables12b9b6cc894f4fb271c8783896ec62c3/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "integtest-model/DefaultTest/DeployAssert/AwsApiCallEC2describeRouteTables12b9b6cc894f4fb271c8783896ec62c3/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "integtest-model/DefaultTest/DeployAssert/AwsApiCallEC2describeRouteTables12b9b6cc894f4fb271c8783896ec62c3/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "integtest-model/DefaultTest/DeployAssert/AwsApiCallEC2describeRouteTables12b9b6cc894f4fb271c8783896ec62c3/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "integtest-model/DefaultTest/DeployAssert/AwsApiCallEC2describeRouteTables12b9b6cc894f4fb271c8783896ec62c3/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AwsApiCallEC2describeIpams1f021f01bab38b9d5c38e379c465bf37": {
+                    "id": "AwsApiCallEC2describeIpams1f021f01bab38b9d5c38e379c465bf37",
+                    "path": "integtest-model/DefaultTest/DeployAssert/AwsApiCallEC2describeIpams1f021f01bab38b9d5c38e379c465bf37",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "integtest-model/DefaultTest/DeployAssert/AwsApiCallEC2describeIpams1f021f01bab38b9d5c38e379c465bf37/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "integtest-model/DefaultTest/DeployAssert/AwsApiCallEC2describeIpams1f021f01bab38b9d5c38e379c465bf37/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "integtest-model/DefaultTest/DeployAssert/AwsApiCallEC2describeIpams1f021f01bab38b9d5c38e379c465bf37/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "integtest-model/DefaultTest/DeployAssert/AwsApiCallEC2describeIpams1f021f01bab38b9d5c38e379c465bf37/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "integtest-model/DefaultTest/DeployAssert/AwsApiCallEC2describeIpams1f021f01bab38b9d5c38e379c465bf37/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AwsApiCallEC2describeIpamScopes66fb6cbc44f999e9eaafa20e56188a53": {
+                    "id": "AwsApiCallEC2describeIpamScopes66fb6cbc44f999e9eaafa20e56188a53",
+                    "path": "integtest-model/DefaultTest/DeployAssert/AwsApiCallEC2describeIpamScopes66fb6cbc44f999e9eaafa20e56188a53",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "integtest-model/DefaultTest/DeployAssert/AwsApiCallEC2describeIpamScopes66fb6cbc44f999e9eaafa20e56188a53/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "integtest-model/DefaultTest/DeployAssert/AwsApiCallEC2describeIpamScopes66fb6cbc44f999e9eaafa20e56188a53/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "integtest-model/DefaultTest/DeployAssert/AwsApiCallEC2describeIpamScopes66fb6cbc44f999e9eaafa20e56188a53/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "integtest-model/DefaultTest/DeployAssert/AwsApiCallEC2describeIpamScopes66fb6cbc44f999e9eaafa20e56188a53/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "integtest-model/DefaultTest/DeployAssert/AwsApiCallEC2describeIpamScopes66fb6cbc44f999e9eaafa20e56188a53/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
                     "path": "integtest-model/DefaultTest/DeployAssert/BootstrapVersion",

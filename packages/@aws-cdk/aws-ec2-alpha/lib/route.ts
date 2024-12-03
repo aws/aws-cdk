@@ -383,15 +383,22 @@ export class VPNGatewayV2 extends Resource implements IRouteTarget {
  * @resource AWS::EC2::NatGateway
  */
 export class NatGateway extends Resource implements IRouteTarget {
+
+  /**
+   * Id of the NatGateway
+   * @attribute
+   */
+  public readonly natGatewayId: string;
+
   /**
    * The type of router used in the route.
    */
-  readonly routerType: RouterType;
+  public readonly routerType: RouterType;
 
   /**
    * The ID of the route target.
    */
-  readonly routerTargetId: string;
+  public readonly routerTargetId: string;
 
   /**
    * Indicates whether the NAT gateway supports public or private connectivity.
@@ -451,6 +458,7 @@ export class NatGateway extends Resource implements IRouteTarget {
       secondaryAllocationIds: props.secondaryAllocationIds,
       ...props,
     });
+    this.natGatewayId = this.resource.attrNatGatewayId;
 
     this.routerTargetId = this.resource.attrNatGatewayId;
     this.node.defaultChild = this.resource;
@@ -725,10 +733,6 @@ export class Route extends Resource implements IRouteV2 {
       throw new Error('Egress only internet gateway does not support IPv4 routing');
     }
     this.targetRouterType = this.target.gateway ? this.target.gateway.routerType : RouterType.VPC_ENDPOINT;
-
-    if (props.routeName) {
-      Tags.of(this).add(NAME_TAG, props.routeName);
-    }
     // Gateway generates route automatically via its RouteTable, thus we don't need to generate the resource for it
     if (!(this.target.endpoint instanceof GatewayVpcEndpoint)) {
       this.resource = new CfnRoute(this, 'Route', {

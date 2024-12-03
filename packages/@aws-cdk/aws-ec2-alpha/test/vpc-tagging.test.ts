@@ -4,7 +4,7 @@ import * as vpc from '../lib/vpc-v2';
 import { IpCidr, SubnetV2 } from '../lib/subnet-v2';
 import { InternetGateway, NatGateway, RouteTable, VPCPeeringConnection, VPNGatewayV2 } from '../lib/route';
 import { SubnetType, VpnConnectionType } from 'aws-cdk-lib/aws-ec2';
-import { Ipam } from '../lib';
+import { AddressFamily, Ipam } from '../lib';
 
 describe('Vpc V2 with full control', () => {
   let stack: cdk.Stack;
@@ -273,19 +273,26 @@ describe('Vpc V2 with full control', () => {
     });
   });
 
-  test('Adds tag to IPAM and IPAM Pool', () => {
+  test('Adds tag to IPAM and IPAM Scope and Pool', () => {
     const ipam = new Ipam(stack, 'TestIpam', {
       ipamName: 'TestIpam',
+      operatingRegion: ['us-west-1'],
     });
 
     ipam.addScope(stack, 'TestScope', {
       ipamScopeName: 'TestScope',
     });
 
+    ipam.privateScope.addPool('testPool', {
+      locale: 'us-west-1',
+      ipamPoolName: 'TestPool',
+      addressFamily: AddressFamily.IP_V4,
+    });
+
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::IPAM', {
       Tags: [
         {
-          Key: 'NAME',
+          Key: 'Name',
           Value: 'TestIpam',
         },
       ],
@@ -293,8 +300,16 @@ describe('Vpc V2 with full control', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::IPAMScope', {
       Tags: [
         {
-          Key: 'NAME',
+          Key: 'Name',
           Value: 'TestScope',
+        },
+      ],
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::IPAMPool', {
+      Tags: [
+        {
+          Key: 'Name',
+          Value: 'TestPool',
         },
       ],
     });
