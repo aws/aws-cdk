@@ -405,7 +405,7 @@ const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
   // enablePrefixForIpv6SourceNat: true,
 });
 
-const listener = nlb.addListener('Listener', {
+const listener = lb.addListener('Listener', {
   port: 1229,
   protocol: elbv2.Protocol.UDP,
 });
