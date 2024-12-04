@@ -1,7 +1,7 @@
 /* eslint-disable import/order */
 jest.mock('child_process');
 import { bockfs } from '@aws-cdk/cdk-build-tools';
-import * as cxschema from 'aws-cdk-lib/cloud-assembly-schema';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cdk from 'aws-cdk-lib';
 import * as semver from 'semver';
 import * as sinon from 'sinon';
@@ -13,6 +13,7 @@ import { testAssembly } from '../util';
 import { mockSpawn } from '../util/mock-child_process';
 import { MockSdkProvider } from '../util/mock-sdk';
 import { RWLock } from '../../lib/api/util/rwlock';
+import { rewriteManifestVersion } from './assembly-versions';
 
 let sdkProvider: MockSdkProvider;
 let config: Configuration;
@@ -36,7 +37,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  setLogLevel(LogLevel.DEFAULT);
+  setLogLevel(LogLevel.INFO);
 
   sinon.restore();
   bockfs.restore();
@@ -76,6 +77,8 @@ test('cli throws when manifest version > schema version', async () => {
     mockVersionNumber.restore();
   }
 
+  rewriteManifestVersion('cdk.out', `${mockManifestVersion}`);
+
   const expectedError = 'This CDK CLI is not compatible with the CDK library used by your application. Please upgrade the CLI to the latest version.'
     + `\n(Cloud assembly schema version mismatch: Maximum schema version supported is ${semver.major(currentSchemaVersion)}.x.x, but found ${mockManifestVersion})`;
 
@@ -90,6 +93,8 @@ test('cli does not throw when manifest version = schema version', async () => {
   const app = createApp();
   app.synth();
 
+  rewriteManifestVersionToOurs();
+
   config.settings.set(['app'], 'cdk.out');
 
   const { lock } = await execProgram(sdkProvider, config);
@@ -97,12 +102,21 @@ test('cli does not throw when manifest version = schema version', async () => {
 
 }, TEN_SECOND_TIMEOUT);
 
-test('cli does not throw when manifest version < schema version', async () => {
+// Why do we have to do something here at all? Because `aws-cdk-lib` has its own version of `cloud-assembly-schema`,
+// which will have real version `38.0.0`, different from the `0.0.0` version of `cloud-assembly-schema` that the CLI
+// uses.
+//
+// Since our Cloud Assembly Schema version will be `0.0.0` and there is no such thing as `-1.0.0`, this test doesn't
+// make any sense anymore.
+// eslint-disable-next-line jest/no-disabled-tests
+test.skip('cli does not throw when manifest version < schema version', async () => {
 
   const app = createApp();
   const currentSchemaVersion = cxschema.Manifest.version();
 
   app.synth();
+
+  rewriteManifestVersionToOurs();
 
   config.settings.set(['app'], 'cdk.out');
 
@@ -130,6 +144,7 @@ test('bypasses synth when app points to a cloud assembly', async () => {
   // GIVEN
   config.settings.set(['app'], 'cdk.out');
   writeOutputAssembly();
+  rewriteManifestVersionToOurs();
 
   // WHEN
   const { assembly: cloudAssembly, lock } = await execProgram(sdkProvider, config);
@@ -259,4 +274,18 @@ function writeOutputAssembly() {
     stacks: [],
   });
   bockfs.write('/home/project/cdk.out/manifest.json', JSON.stringify(asm.manifest));
+  rewriteManifestVersionToOurs(bockfs.path('/home/project/cdk.out'));
+}
+
+/**
+ * Rewrite the manifest schema version in the given directory to match the version number we expect (probably `0.0.0`).
+ *
+ * Why do we have to do this? Because `aws-cdk-lib` has its own version of `cloud-assembly-schema`,
+ * which will have real version `38.0.0`, different from the `0.0.0` version of `cloud-assembly-schema` that the CLI
+ * uses.
+ *
+ * If we don't do this, every time we load a Cloud Assembly the code will say "Maximum schema version supported is 0.x.x, but found 30.0.0".0
+ */
+function rewriteManifestVersionToOurs(dir: string = 'cdk.out') {
+  rewriteManifestVersion(dir, cxschema.Manifest.version());
 }
