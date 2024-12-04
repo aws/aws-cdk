@@ -140,6 +140,11 @@ export enum SslPolicy {
   TLS13_11 = 'ELBSecurityPolicy-TLS13-1-1-2021-06',
 
   /**
+   * TLS1.2 only
+   */
+  TLS13_12 = 'ELBSecurityPolicy-TLS13-1-2-2021-06',
+
+  /**
    * TLS1.3 only
    */
   TLS13_13 = 'ELBSecurityPolicy-TLS13-1-3-2021-06',
