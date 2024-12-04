@@ -390,20 +390,6 @@ const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
   ipAddressType: elbv2.IpAddressType.DUAL_STACK,
   enablePrefixForIpv6SourceNat: true,
 });
-```
-
-If you call `addListener()` with a UDP protocol for dual-stack Network Load Balancer,
-`enablePrefixForIpv6SourceNat` will be set to `true` automatically.
-
-```ts
-declare const vpc: ec2.Vpc;
-
-const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
-  vpc,
-  ipAddressType: elbv2.IpAddressType.DUAL_STACK,
-  // You don't need to set this property explicitly
-  // enablePrefixForIpv6SourceNat: true,
-});
 
 const listener = lb.addListener('Listener', {
   port: 1229,

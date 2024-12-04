@@ -250,7 +250,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
   public readonly connections: ec2.Connections;
   private readonly isSecurityGroupsPropertyDefined: boolean;
   private readonly _enforceSecurityGroupInboundRulesOnPrivateLinkTraffic?: boolean;
-  private enablePrefixIpv6SourceNat?: boolean;
+  private enablePrefixForIpv6SourceNat?: boolean;
 
   /**
    * After the implementation of `IConnectable` (see https://github.com/aws/aws-cdk/pull/28494), the default
@@ -272,12 +272,10 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
       enforceSecurityGroupInboundRulesOnPrivateLinkTraffic: Lazy.string({
         produce: () => this.enforceSecurityGroupInboundRulesOnPrivateLinkTraffic,
       }),
-      enablePrefixForIpv6SourceNat: Lazy.string({
-        produce: () => this.enablePrefixIpv6SourceNat === true ? 'on': this.enablePrefixIpv6SourceNat === false ? 'off' : undefined,
-      }),
+      enablePrefixForIpv6SourceNat: props.enablePrefixForIpv6SourceNat === true ? 'on': props.enablePrefixForIpv6SourceNat === false ? 'off' : undefined,
     });
 
-    this.enablePrefixIpv6SourceNat = props.enablePrefixForIpv6SourceNat;
+    this.enablePrefixForIpv6SourceNat = props.enablePrefixForIpv6SourceNat;
     this.metrics = new NetworkLoadBalancerMetrics(this, this.loadBalancerFullName);
     this.isSecurityGroupsPropertyDefined = !!props.securityGroups;
     this.connections = new ec2.Connections({ securityGroups: props.securityGroups });
@@ -305,12 +303,10 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
     // UDP listener with dual stack NLB requires prefix IPv6 source NAT to be enabled
     if (
       (props.protocol === Protocol.UDP || props.protocol === Protocol.TCP_UDP) &&
-      (this.ipAddressType === IpAddressType.DUAL_STACK || this.ipAddressType === IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4)
+      (this.ipAddressType === IpAddressType.DUAL_STACK || this.ipAddressType === IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4) &&
+      this.enablePrefixForIpv6SourceNat !== true
     ) {
-      if (this.enablePrefixIpv6SourceNat === false) {
-        throw new Error('To add a listener with UDP protocol to a dual stack NLB, \'enablePrefixForIpv6SourceNat\' must be set to true.');
-      }
-      this.enablePrefixIpv6SourceNat = true;
+      throw new Error('To add a listener with UDP protocol to a dual stack NLB, \'enablePrefixForIpv6SourceNat\' must be set to true.');
     }
     return new NetworkListener(this, id, {
       loadBalancer: this,

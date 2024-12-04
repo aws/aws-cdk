@@ -42,8 +42,8 @@ const enabledNlb = new elbv2.NetworkLoadBalancer(stack, 'EnabledLb', {
     new ec2.SecurityGroup(stack, 'EnabledLbSg', { vpc }),
   ],
   ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+  enablePrefixForIpv6SourceNat: true,
 });
-// explicitly enable prefix for ipv6 source nat
 const udpListener = enabledNlb.addListener('UdpListener', {
   port: 1229,
   protocol: elbv2.Protocol.UDP,
