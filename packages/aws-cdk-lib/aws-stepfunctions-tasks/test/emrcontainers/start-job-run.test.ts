@@ -961,7 +961,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
           'Arn',
         ],
       },
-      Create: '{\"service\":\"EMRcontainers\",\"action\":\"describeVirtualCluster\",\"parameters\":{\"id\":\"clusterId\"},\"outputPaths\":[\"virtualCluster.containerProvider.info.eksInfo.namespace\",\"virtualCluster.containerProvider.id\"],\"physicalResourceId\":{\"id\":\"id\"},"logApiResponseData":true}',
+      Create: '{\"service\":\"EMRcontainers\",\"action\":\"describeVirtualCluster\",\"parameters\":{\"id\":\"clusterId\"},\"outputPaths\":[\"virtualCluster.containerProvider.info.eksInfo.namespace\",\"virtualCluster.containerProvider.id\"],\"physicalResourceId\":{\"id\":\"id\"}}',
       InstallLatestAwsSdk: false,
     });
 
@@ -1045,7 +1045,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
         },
       ],
       MemorySize: 256,
-      Runtime: 'python3.9',
+      Runtime: 'python3.11',
       Timeout: 30,
     });
   });

@@ -36,6 +36,14 @@
               "version": "0.0.0"
             }
           },
+          "LatestNodeRuntimeMap": {
+            "id": "LatestNodeRuntimeMap",
+            "path": "oidc-provider-integ-test/LatestNodeRuntimeMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "0.0.0"
+            }
+          },
           "Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider": {
             "id": "Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider",
             "path": "oidc-provider-integ-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider",
@@ -185,7 +193,7 @@
                 "path": "iodc-provider-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -231,7 +239,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },

@@ -3,6 +3,7 @@ import { ItemBatcher } from './distributed-map/item-batcher';
 import { IItemReader } from './distributed-map/item-reader';
 import { ResultWriter } from './distributed-map/result-writer';
 import { MapBase, MapBaseProps } from './map-base';
+import { Annotations } from '../../../core';
 import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
 import { StateMachineType } from '../state-machine';
@@ -18,6 +19,8 @@ export interface DistributedMapProps extends MapBaseProps {
    * MapExecutionType
    *
    * The execution type of the distributed map state
+   *
+   * This property overwrites ProcessorConfig.executionType
    *
    * @default StateMachineType.STANDARD
    */
@@ -110,7 +113,7 @@ export class DistributedMap extends MapBase implements INextable {
    * Return whether the given object is a DistributedMap.
    */
   public static isDistributedMap(x: any): x is DistributedMap {
-    return x !== null && typeof(x) === 'object' && DISTRIBUTED_MAP_SYMBOL in x;
+    return x !== null && typeof (x) === 'object' && DISTRIBUTED_MAP_SYMBOL in x;
   }
 
   private readonly mapExecutionType?: StateMachineType;
@@ -165,6 +168,10 @@ export class DistributedMap extends MapBase implements INextable {
 
     if (this.itemBatcher) {
       errors.push(...this.itemBatcher.validateItemBatcher());
+    }
+
+    if (this.itemReader) {
+      errors.push(...this.itemReader.validateItemReader());
     }
 
     if (this.label) {
@@ -234,9 +241,10 @@ export class DistributedMap extends MapBase implements INextable {
    */
   public toStateJson(): object {
     let rendered: any = super.toStateJson();
-    if (this.mapExecutionType) {
-      rendered.ItemProcessor.ProcessorConfig.ExecutionType = this.mapExecutionType;
+    if (rendered.ItemProcessor.ProcessorConfig.ExecutionType) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-stepfunctions:propertyIgnored', 'Property \'ProcessorConfig.executionType\' is ignored, use the \'mapExecutionType\' in the \'DistributedMap\' class instead.');
     }
+    rendered.ItemProcessor.ProcessorConfig.ExecutionType = this.mapExecutionType;
 
     return {
       ...rendered,

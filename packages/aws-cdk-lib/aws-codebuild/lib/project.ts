@@ -6,7 +6,9 @@ import { CodeBuildMetrics } from './codebuild-canned-metrics.generated';
 import { CfnProject } from './codebuild.generated';
 import { CodePipelineArtifacts } from './codepipeline-artifacts';
 import { ComputeType } from './compute-type';
+import { EnvironmentType } from './environment-type';
 import { IFileSystemLocation } from './file-location';
+import { IFleet } from './fleet';
 import { LinuxArmLambdaBuildImage } from './linux-arm-lambda-build-image';
 import { LinuxLambdaBuildImage } from './linux-lambda-build-image';
 import { NoArtifacts } from './no-artifacts';
@@ -561,7 +563,7 @@ export interface CommonProjectProps {
   /**
    * Build environment to use for the build.
    *
-   * @default BuildEnvironment.LinuxBuildImage.STANDARD_1_0
+   * @default BuildEnvironment.LinuxBuildImage.STANDARD_7_0
    */
   readonly environment?: BuildEnvironment;
 
@@ -629,7 +631,7 @@ export interface CommonProjectProps {
    * then PRIVATE_WITHOUT_EGRESS, and finally PUBLIC subnets. If your VPC doesn't have PRIVATE_WITH_EGRESS subnets but you need
    * AWS service access, add VPC Endpoints to your private subnets.
    *
-   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/vpc-support.html for more details.
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/vpc-support.html
    *
    * @default - private subnets if available else public subnets
    */
@@ -725,6 +727,13 @@ export interface CommonProjectProps {
    * @default false
    */
   readonly ssmSessionPermissions?: boolean;
+
+  /**
+   * Specifies the visibility of the project's builds.
+   *
+   * @default - no visibility is set
+   */
+  readonly visibility?: ProjectVisibility;
 }
 
 export interface ProjectProps extends CommonProjectProps {
@@ -1051,7 +1060,7 @@ export class Project extends ProjectBase {
     });
     this.grantPrincipal = this.role;
 
-    this.buildImage = (props.environment && props.environment.buildImage) || LinuxBuildImage.STANDARD_1_0;
+    this.buildImage = (props.environment && props.environment.buildImage) || LinuxBuildImage.STANDARD_7_0;
 
     // let source "bind" to the project. this usually involves granting permissions
     // for the code build role to interact with the source.
@@ -1124,6 +1133,7 @@ export class Project extends ProjectBase {
       triggers: sourceConfig.buildTriggers,
       sourceVersion: sourceConfig.sourceVersion,
       vpcConfig: this.configureVpc(props),
+      visibility: props.visibility,
       logsConfig: this.renderLoggingConfiguration(props.logging),
       buildBatchConfig: Lazy.any({
         produce: () => {
@@ -1379,6 +1389,7 @@ export class Project extends ProjectBase {
         : undefined,
       certificate: env.certificate?.bucket.arnForObjects(env.certificate.objectKey),
       privilegedMode: env.privileged || false,
+      fleet: this.configureFleet(env),
       computeType: env.computeType || this.buildImage.defaultComputeType,
       environmentVariables: hasEnvironmentVars
         ? Project.serializeEnvVariables(vars, props.checkSecretsInPlainTextEnvVariables ?? true, this)
@@ -1408,6 +1419,19 @@ export class Project extends ProjectBase {
     return this._secondaryArtifacts.length === 0
       ? undefined
       : this._secondaryArtifacts;
+  }
+
+  private configureFleet({ fleet }: BuildEnvironment): { fleetArn: string } | undefined {
+    if (!fleet) {
+      return undefined;
+    }
+
+    // If the fleetArn is resolved, the fleet is imported and we cannot validate the environment type
+    if (Token.isUnresolved(fleet.fleetArn) && this.buildImage.type !== fleet.environmentType) {
+      throw new Error(`The environment type of the fleet (${fleet.environmentType}) must match the environment type of the build image (${this.buildImage.type})`);
+    }
+
+    return { fleetArn: fleet.fleetArn };
   }
 
   /**
@@ -1600,7 +1624,7 @@ export interface BuildEnvironment {
   /**
    * The image used for the builds.
    *
-   * @default LinuxBuildImage.STANDARD_1_0
+   * @default LinuxBuildImage.STANDARD_7_0
    */
   readonly buildImage?: IBuildImage;
 
@@ -1611,6 +1635,19 @@ export interface BuildEnvironment {
    * @default taken from `#buildImage#defaultComputeType`
    */
   readonly computeType?: ComputeType;
+
+  /**
+   * Fleet resource for a reserved capacity CodeBuild project.
+   *
+   * Fleets allow for process builds or tests to run immediately and reduces build durations,
+   * by reserving compute resources for your projects.
+   *
+   * You will be charged for the resources in the fleet, even if they are idle.
+   *
+   * @default - No fleet will be attached to the project, which will remain on-demand.
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.html
+   */
+  readonly fleet?: IFleet;
 
   /**
    * Indicates how the project builds Docker images. Specify true to enable
@@ -1712,8 +1749,9 @@ export interface IBindableBuildImage extends IBuildImage {
 
 /**
  * The options when creating a CodeBuild Docker build image
- * using `LinuxBuildImage.fromDockerRegistry`
- * or `WindowsBuildImage.fromDockerRegistry`.
+ * using `LinuxBuildImage.fromDockerRegistry`,
+ * `WindowsBuildImage.fromDockerRegistry`,
+ * or `MacBuildImage.fromDockerRegistry`
  */
 export interface DockerImageOptions {
   /**
@@ -1756,15 +1794,15 @@ import { LinuxArmBuildImage } from './linux-arm-build-image';
  * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
  */
 export class LinuxBuildImage implements IBuildImage {
-  /** @deprecated Use LinuxBuildImage.STANDARD_7_0 instead. */
+  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} instead. */
   public static readonly STANDARD_1_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:1.0');
-  /** @deprecated Use LinuxBuildImage.STANDARD_7_0 instead. */
+  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} instead. */
   public static readonly STANDARD_2_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:2.0');
-  /** @deprecated Use LinuxBuildImage.STANDARD_7_0 instead. */
+  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} instead. */
   public static readonly STANDARD_3_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:3.0');
   /**
    * The `aws/codebuild/standard:4.0` build image.
-   * @deprecated Use LinuxBuildImage.STANDARD_7_0 instead.
+   * @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} instead.
    * */
   public static readonly STANDARD_4_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:4.0');
   /** The `aws/codebuild/standard:5.0` build image. */
@@ -1774,86 +1812,102 @@ export class LinuxBuildImage implements IBuildImage {
   /** The `aws/codebuild/standard:7.0` build image. */
   public static readonly STANDARD_7_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:7.0');
 
-  /** @deprecated Use LinuxBuildImage.AMAZON_LINUX_2_5 instead. */
+  /** @deprecated Use {@link LinuxBuildImage.AMAZON_LINUX_2_5} instead. */
   public static readonly AMAZON_LINUX_2 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:1.0');
-  /** @deprecated Use LinuxBuildImage.AMAZON_LINUX_2_5 instead. */
+  /** @deprecated Use {@link LinuxBuildImage.AMAZON_LINUX_2_5} instead. */
   public static readonly AMAZON_LINUX_2_2 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:2.0');
   /**
    * The Amazon Linux 2 x86_64 standard image, version `3.0`.
-   * @deprecated Use LinuxBuildImage.AMAZON_LINUX_2_5 instead.
+   * @deprecated Use {@link LinuxBuildImage.AMAZON_LINUX_2_5} instead.
    * */
   public static readonly AMAZON_LINUX_2_3 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:3.0');
   /** The Amazon Linux 2 x86_64 standard image, version `4.0`. */
   public static readonly AMAZON_LINUX_2_4 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:4.0');
-  /** The Amazon Linux 2 x86_64 standard image, version `5.0`. */
+  /** The Amazon Linux 2023 x86_64 standard image, version `5.0`. */
   public static readonly AMAZON_LINUX_2_5 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:5.0');
 
-  /** @deprecated Use LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_3_0 instead. */
+  /** The Amazon Coretto 8 image x86_64, based on Amazon Linux 2. */
+  public static readonly AMAZON_LINUX_2_CORETTO_8 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:corretto8');
+  /** The Amazon Coretto 11 image x86_64, based on Amazon Linux 2. */
+  public static readonly AMAZON_LINUX_2_CORETTO_11 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:corretto11');
+
+  /**
+   * Image "aws/codebuild/amazonlinux2-aarch64-standard:1.0".
+   * @see {LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_1_0}
+   *
+   * @deprecated Use {@link LinuxArmBuildImage.AMAZON_LINUX_2_ARM_3} instead.
+   **/
   public static readonly AMAZON_LINUX_2_ARM = LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_1_0;
-  /** The `aws/codebuild/amazonlinux2-aarch64-standard:2.0` build image. */
+  /**
+   * Image "aws/codebuild/amazonlinux2-aarch64-standard:2.0".
+   * @see {LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_2_0}
+   * */
   public static readonly AMAZON_LINUX_2_ARM_2 = LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_2_0;
-  /** The `aws/codebuild/amazonlinux2-aarch64-standard:3.0` build image. */
+  /**
+   * Image "aws/codebuild/amazonlinux2-aarch64-standard:3.0".
+   * @see {LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_3_0}
+   * */
   public static readonly AMAZON_LINUX_2_ARM_3 = LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_3_0;
 
-  /** @deprecated Use `STANDARD_7_0` and specify runtime in buildspec runtime-versions section */
+  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_BASE = LinuxBuildImage.codeBuildImage('aws/codebuild/ubuntu-base:14.04');
-  /** @deprecated Use `STANDARD_7_0` and specify runtime in buildspec runtime-versions section */
+  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_ANDROID_JAVA8_24_4_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/android-java-8:24.4.1');
-  /** @deprecated Use `STANDARD_7_0` and specify runtime in buildspec runtime-versions section */
+  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_ANDROID_JAVA8_26_1_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/android-java-8:26.1.1');
-  /** @deprecated Use `STANDARD_7_0` and specify runtime in buildspec runtime-versions section */
+  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_DOCKER_17_09_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/docker:17.09.0');
-  /** @deprecated Use `STANDARD_7_0` and specify runtime in buildspec runtime-versions section */
+  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_DOCKER_18_09_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/docker:18.09.0');
-  /** @deprecated Use `STANDARD_7_0` and specify runtime in buildspec runtime-versions section */
+  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_GOLANG_1_10 = LinuxBuildImage.codeBuildImage('aws/codebuild/golang:1.10');
-  /** @deprecated Use `STANDARD_7_0` and specify runtime in buildspec runtime-versions section */
+  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_GOLANG_1_11 = LinuxBuildImage.codeBuildImage('aws/codebuild/golang:1.11');
-  /** @deprecated Use `STANDARD_7_0` and specify runtime in buildspec runtime-versions section */
+  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_OPEN_JDK_8 = LinuxBuildImage.codeBuildImage('aws/codebuild/java:openjdk-8');
-  /** @deprecated Use `STANDARD_7_0` and specify runtime in buildspec runtime-versions section */
+  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_OPEN_JDK_9 = LinuxBuildImage.codeBuildImage('aws/codebuild/java:openjdk-9');
-  /** @deprecated Use `STANDARD_7_0` and specify runtime in buildspec runtime-versions section */
+  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_OPEN_JDK_11 = LinuxBuildImage.codeBuildImage('aws/codebuild/java:openjdk-11');
-  /** @deprecated Use `STANDARD_7_0` and specify runtime in buildspec runtime-versions section */
+  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_NODEJS_10_14_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/nodejs:10.14.1');
-  /** @deprecated Use `STANDARD_7_0` and specify runtime in buildspec runtime-versions section */
+  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_NODEJS_10_1_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/nodejs:10.1.0');
-  /** @deprecated Use `STANDARD_7_0` and specify runtime in buildspec runtime-versions section */
+  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_NODEJS_8_11_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/nodejs:8.11.0');
-  /** @deprecated Use `STANDARD_7_0` and specify runtime in buildspec runtime-versions section */
+  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_NODEJS_6_3_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/nodejs:6.3.1');
-  /** @deprecated Use `STANDARD_7_0` and specify runtime in buildspec runtime-versions section */
+  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_PHP_5_6 = LinuxBuildImage.codeBuildImage('aws/codebuild/php:5.6');
-  /** @deprecated Use `STANDARD_7_0` and specify runtime in buildspec runtime-versions section */
+  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_PHP_7_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/php:7.0');
-  /** @deprecated Use `STANDARD_7_0` and specify runtime in buildspec runtime-versions section */
+  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_PHP_7_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/php:7.1');
-  /** @deprecated Use `STANDARD_7_0` and specify runtime in buildspec runtime-versions section */
+  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_PYTHON_3_7_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/python:3.7.1');
-  /** @deprecated Use `STANDARD_7_0` and specify runtime in buildspec runtime-versions section */
+  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_PYTHON_3_6_5 = LinuxBuildImage.codeBuildImage('aws/codebuild/python:3.6.5');
-  /** @deprecated Use `STANDARD_7_0` and specify runtime in buildspec runtime-versions section */
+  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_PYTHON_3_5_2 = LinuxBuildImage.codeBuildImage('aws/codebuild/python:3.5.2');
-  /** @deprecated Use `STANDARD_7_0` and specify runtime in buildspec runtime-versions section */
+  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_PYTHON_3_4_5 = LinuxBuildImage.codeBuildImage('aws/codebuild/python:3.4.5');
-  /** @deprecated Use `STANDARD_7_0` and specify runtime in buildspec runtime-versions section */
+  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_PYTHON_3_3_6 = LinuxBuildImage.codeBuildImage('aws/codebuild/python:3.3.6');
-  /** @deprecated Use `STANDARD_7_0` and specify runtime in buildspec runtime-versions section */
+  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_PYTHON_2_7_12 = LinuxBuildImage.codeBuildImage('aws/codebuild/python:2.7.12');
-  /** @deprecated Use `STANDARD_7_0` and specify runtime in buildspec runtime-versions section */
+  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_RUBY_2_5_3 = LinuxBuildImage.codeBuildImage('aws/codebuild/ruby:2.5.3');
-  /** @deprecated Use `STANDARD_7_0` and specify runtime in buildspec runtime-versions section */
+  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_RUBY_2_5_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/ruby:2.5.1');
-  /** @deprecated Use `STANDARD_7_0` and specify runtime in buildspec runtime-versions section */
+  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_RUBY_2_3_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/ruby:2.3.1');
-  /** @deprecated Use `STANDARD_7_0` and specify runtime in buildspec runtime-versions section */
+  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_RUBY_2_2_5 = LinuxBuildImage.codeBuildImage('aws/codebuild/ruby:2.2.5');
-  /** @deprecated Use `STANDARD_7_0` and specify runtime in buildspec runtime-versions section */
+  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_DOTNET_CORE_1_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/dot-net:core-1');
-  /** @deprecated Use `STANDARD_7_0` and specify runtime in buildspec runtime-versions section */
+  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_DOTNET_CORE_2_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/dot-net:core-2.0');
-  /** @deprecated Use `STANDARD_7_0` and specify runtime in buildspec runtime-versions section */
+  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_DOTNET_CORE_2_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/dot-net:core-2.1');
 
   /**
@@ -1919,7 +1973,7 @@ export class LinuxBuildImage implements IBuildImage {
     });
   }
 
-  public readonly type = 'LINUX_CONTAINER';
+  public readonly type = EnvironmentType.LINUX_CONTAINER as string;
   public readonly defaultComputeType = ComputeType.SMALL;
   public readonly imageId: string;
   public readonly imagePullPrincipalType?: ImagePullPrincipalType;
@@ -1960,7 +2014,17 @@ export enum WindowsImageType {
   /**
    * The WINDOWS_SERVER_2019_CONTAINER environment type
    */
-  SERVER_2019 = 'WINDOWS_SERVER_2019_CONTAINER',
+  SERVER_2019 = EnvironmentType.WINDOWS_SERVER_2019_CONTAINER,
+
+  /**
+   * The WINDOWS_SERVER_2022_CONTAINER environment type
+   *
+   * Notice: Cannot be used with on-demand compute, only with a {@link BuildEnvironment.fleet}.
+   *
+   * @see https://github.com/aws/aws-cdk/issues/29617
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.html
+   */
+  SERVER_2022 = EnvironmentType.WINDOWS_SERVER_2022_CONTAINER,
 }
 
 /**
@@ -1992,7 +2056,7 @@ export class WindowsBuildImage implements IBuildImage {
   /**
    * Corresponds to the standard CodeBuild image `aws/codebuild/windows-base:1.0`.
    *
-   * @deprecated `WindowsBuildImage.WIN_SERVER_CORE_2019_BASE_3_0` should be used instead.
+   * @deprecated {@link WindowsBuildImage.WIN_SERVER_CORE_2019_BASE_3_0} should be used instead.
    */
   public static readonly WIN_SERVER_CORE_2016_BASE: IBuildImage = new WindowsBuildImage({
     imageId: 'aws/codebuild/windows-base:1.0',
@@ -2003,7 +2067,7 @@ export class WindowsBuildImage implements IBuildImage {
    * The standard CodeBuild image `aws/codebuild/windows-base:2.0`, which is
    * based off Windows Server Core 2016.
    *
-   * @deprecated `WindowsBuildImage.WIN_SERVER_CORE_2019_BASE_3_0` should be used instead.
+   * @deprecated {@link WindowsBuildImage.WIN_SERVER_CORE_2019_BASE_3_0} should be used instead.
    */
   public static readonly WINDOWS_BASE_2_0: IBuildImage = new WindowsBuildImage({
     imageId: 'aws/codebuild/windows-base:2.0',
@@ -2038,6 +2102,21 @@ export class WindowsBuildImage implements IBuildImage {
     imageId: 'aws/codebuild/windows-base:2019-3.0',
     imagePullPrincipalType: ImagePullPrincipalType.CODEBUILD,
     imageType: WindowsImageType.SERVER_2019,
+  });
+
+  /**
+   * The standard CodeBuild image `aws/codebuild/windows-base:2022-1.0`, which is
+   * based off Windows Server Core 2022.
+   *
+   * Notice: Cannot be used with on-demand compute, only with a {@link BuildEnvironment.fleet}.
+   *
+   * @see https://github.com/aws/aws-cdk/issues/29617
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.html
+   */
+  public static readonly WIN_SERVER_CORE_2022_BASE_3_0: IBuildImage = new WindowsBuildImage({
+    imageId: 'aws/codebuild/windows-base:2022-1.0',
+    imagePullPrincipalType: ImagePullPrincipalType.CODEBUILD,
+    imageType: WindowsImageType.SERVER_2022,
   });
 
   /**
@@ -2128,6 +2207,11 @@ export class WindowsBuildImage implements IBuildImage {
     if (buildEnvironment.computeType !== undefined && unsupportedComputeTypes.includes(buildEnvironment.computeType)) {
       errors.push(`Windows images do not support the '${buildEnvironment.computeType}' compute type`);
     }
+
+    if (!buildEnvironment.fleet && this.type === WindowsImageType.SERVER_2022) {
+      errors.push('Windows Server 2022 images must be used with a fleet');
+    }
+
     return errors;
   }
 
@@ -2154,6 +2238,108 @@ export class WindowsBuildImage implements IBuildImage {
         },
       },
     });
+  }
+}
+
+/**
+ * Construction properties of `MacBuildImage`.
+ * Module-private, as the constructor of `MacBuildImage` is private.
+ */
+interface MacBuildImageProps {
+  readonly imageId: string;
+  readonly imagePullPrincipalType?: ImagePullPrincipalType;
+  readonly secretsManagerCredentials?: secretsmanager.ISecret;
+  readonly repository?: ecr.IRepository;
+}
+
+/**
+ * A CodeBuild image running ARM MacOS.
+ *
+ * This class has a bunch of public constants that represent the most popular images.
+ *
+ * You can also specify a custom image using one of the static methods:
+ *
+ * - MacBuildImage.fromDockerRegistry(image[, { secretsManagerCredentials }])
+ * - MacBuildImage.fromEcrRepository(repo[, tag])
+ * - MacBuildImage.fromAsset(parent, id, props)
+ *
+ *
+ * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
+ */
+export class MacBuildImage implements IBuildImage {
+  /**
+   * Corresponds to the standard CodeBuild image `aws/codebuild/macos-arm-base:14`.
+   */
+  public static readonly BASE_14: IBuildImage = new MacBuildImage({
+    imageId: 'aws/codebuild/macos-arm-base:14',
+    imagePullPrincipalType: ImagePullPrincipalType.CODEBUILD,
+  });
+
+  /**
+   * Makes an ARM MacOS build image from a Docker Hub image.
+   */
+  public static fromDockerRegistry(name: string, options: DockerImageOptions = {}): IBuildImage {
+    return new MacBuildImage({
+      ...options,
+      imageId: name,
+      imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
+    });
+  }
+
+  /**
+   * Makes an ARM MacOS build image from an ECR repository.
+   */
+  public static fromEcrRepository(repository: ecr.IRepository, tagOrDigest: string = 'latest'): IBuildImage {
+    return new MacBuildImage({
+      imageId: repository.repositoryUriForTagOrDigest(tagOrDigest),
+      imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
+      repository,
+    });
+  }
+
+  /**
+   * Uses an Docker image asset as a ARM MacOS build image.
+   */
+  public static fromAsset(scope: Construct, id: string, props: DockerImageAssetProps): IBuildImage {
+    const asset = new DockerImageAsset(scope, id, props);
+    return new MacBuildImage({
+      imageId: asset.imageUri,
+      imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
+      repository: asset.repository,
+    });
+  }
+
+  public readonly type = EnvironmentType.MAC_ARM as string;
+  public readonly defaultComputeType = ComputeType.MEDIUM;
+  public readonly imageId: string;
+  public readonly imagePullPrincipalType?: ImagePullPrincipalType;
+  public readonly secretsManagerCredentials?: secretsmanager.ISecret;
+  public readonly repository?: ecr.IRepository;
+
+  private constructor(props: MacBuildImageProps) {
+    this.imageId = props.imageId;
+    this.imagePullPrincipalType = props.imagePullPrincipalType;
+    this.secretsManagerCredentials = props.secretsManagerCredentials;
+    this.repository = props.repository;
+  }
+
+  public validate(buildEnvironment: BuildEnvironment): string[] {
+    const errors: string[] = [];
+
+    if (buildEnvironment.computeType && isLambdaComputeType(buildEnvironment.computeType)) {
+      errors.push('Mac images do not support Lambda compute types');
+    }
+
+    if (!buildEnvironment.fleet) {
+      errors.push('Mac images must be used with a fleet');
+    }
+
+    return errors;
+  }
+
+  public runScriptBuildspec(entrypoint: string): BuildSpec {
+    // Reuse Linux BuildSpec, since it is compatible
+    return runScriptLinuxBuildSpec(entrypoint);
   }
 }
 
@@ -2191,6 +2377,21 @@ export enum BuildEnvironmentVariableType {
    * An environment variable stored in AWS Secrets Manager.
    */
   SECRETS_MANAGER = 'SECRETS_MANAGER',
+}
+
+/**
+ * Specifies the visibility of the project's builds.
+ */
+export enum ProjectVisibility {
+  /**
+   * The project builds are visible to the public.
+   */
+  PUBLIC_READ = 'PUBLIC_READ',
+
+  /**
+   * The project builds are not visible to the public.
+   */
+  PRIVATE = 'PRIVATE',
 }
 
 /**

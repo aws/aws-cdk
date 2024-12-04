@@ -125,6 +125,14 @@
               "version": "0.0.0"
             }
           },
+          "LatestNodeRuntimeMap": {
+            "id": "LatestNodeRuntimeMap",
+            "path": "aws-cdk-aws-api-target-integ/LatestNodeRuntimeMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "0.0.0"
+            }
+          },
           "AWSb4cf1abd4e4f4bc699441af7ccd9ec37": {
             "id": "AWSb4cf1abd4e4f4bc699441af7ccd9ec37",
             "path": "aws-cdk-aws-api-target-integ/AWSb4cf1abd4e4f4bc699441af7ccd9ec37",
@@ -266,7 +274,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "582949af1835c40c50e00a38187ee273df77f397293349e1e55dca63f063f8e8.zip"
+                      "s3Key": "2cac8fc73da9ed6d5a3bf770a8dcae5fcf36d1816d0a6de8e240db920411ae4d.zip"
                     },
                     "handler": "index.handler",
                     "memorySize": 256,
@@ -276,7 +284,15 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs18.x",
+                    "runtime": {
+                      "Fn::FindInMap": [
+                        "LatestNodeRuntimeMap",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        "value"
+                      ]
+                    },
                     "timeout": 60
                   }
                 },
@@ -575,7 +591,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.70"
+              "version": "10.3.0"
             }
           },
           "BootstrapVersion": {
@@ -613,7 +629,7 @@
                 "path": "aws-api-integ/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -633,7 +649,7 @@
                             "path": "aws-api-integ/DefaultTest/DeployAssert/AwsApiCallEventBridgeputEvents13ba168ed67d6e97ff2c94cc14e4d276/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.70"
+                              "version": "10.3.0"
                             }
                           }
                         },
@@ -697,7 +713,15 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "version": "10.3.0"
+                    }
+                  },
+                  "LatestNodeRuntimeMap": {
+                    "id": "LatestNodeRuntimeMap",
+                    "path": "aws-api-integ/DefaultTest/DeployAssert/LatestNodeRuntimeMap",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnMapping",
+                      "version": "0.0.0"
                     }
                   },
                   "AwsApiCallSSMgetParameter968d20b6d08f54c7f2e797d02863bf0e": {
@@ -713,7 +737,7 @@
                             "path": "aws-api-integ/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter968d20b6d08f54c7f2e797d02863bf0e/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.70"
+                              "version": "10.3.0"
                             }
                           }
                         },
@@ -753,7 +777,7 @@
                                 "path": "aws-api-integ/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter968d20b6d08f54c7f2e797d02863bf0e/WaitFor/IsCompleteProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.2.70"
+                                  "version": "10.3.0"
                                 }
                               },
                               "Invoke": {
@@ -779,7 +803,7 @@
                                 "path": "aws-api-integ/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter968d20b6d08f54c7f2e797d02863bf0e/WaitFor/TimeoutProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.2.70"
+                                  "version": "10.3.0"
                                 }
                               },
                               "Invoke": {
@@ -863,7 +887,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "version": "10.3.0"
                     }
                   },
                   "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a": {
@@ -897,7 +921,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "version": "10.3.0"
                     }
                   },
                   "BootstrapVersion": {
@@ -939,7 +963,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.3.0"
         }
       }
     },

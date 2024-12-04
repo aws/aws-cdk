@@ -1,4 +1,6 @@
-import { BundlingDockerImage, DockerImage } from '../../core';
+import { Construct } from 'constructs';
+import { BundlingDockerImage, DockerImage, Stack } from '../../core';
+import { FactName } from '../../region-info';
 
 export interface LambdaRuntimeProps {
   /**
@@ -96,6 +98,7 @@ export class Runtime {
 
   /**
    * The NodeJS 16.x runtime (nodejs16.x)
+   * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest NodeJS runtime.
    */
   public static readonly NODEJS_16_X = new Runtime('nodejs16.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
@@ -114,6 +117,11 @@ export class Runtime {
    * available in YOUR region).
    */
   public static readonly NODEJS_LATEST = new Runtime('nodejs18.x', RuntimeFamily.NODEJS, { supportsInlineCode: true, isVariable: true });
+
+  /**
+   * The NodeJS 22.x runtime (nodejs22.x)
+   */
+  public static readonly NODEJS_22_X = new Runtime('nodejs22.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
   /**
    * The Python 2.7 runtime (python2.7)
@@ -180,6 +188,16 @@ export class Runtime {
   public static readonly PYTHON_3_12 = new Runtime('python3.12', RuntimeFamily.PYTHON, {
     supportsInlineCode: true,
     supportsCodeGuruProfiling: true,
+    supportsSnapStart: true,
+  });
+
+  /**
+   * The Python 3.13 runtime (python3.13)
+   */
+  public static readonly PYTHON_3_13 = new Runtime('python3.13', RuntimeFamily.PYTHON, {
+    supportsInlineCode: true,
+    supportsCodeGuruProfiling: true,
+    supportsSnapStart: true,
   });
 
   /**
@@ -229,7 +247,9 @@ export class Runtime {
   /**
    * The .NET 8 runtime (dotnet8)
    */
-  public static readonly DOTNET_8 = new Runtime('dotnet8', RuntimeFamily.DOTNET_CORE);
+  public static readonly DOTNET_8 = new Runtime('dotnet8', RuntimeFamily.DOTNET_CORE, {
+    supportsSnapStart: true,
+  });
 
   /**
    * The .NET Core 1.0 runtime (dotnetcore1.0)
@@ -370,4 +390,14 @@ export class Runtime {
       other.family === this.family &&
       other.supportsInlineCode === this.supportsInlineCode;
   }
+}
+
+/**
+ * The latest Lambda node runtime available by AWS region.
+ */
+export function determineLatestNodeRuntime(scope: Construct): Runtime {
+  // Runtime regional fact should always return a known runtime string that Runtime can index off, but for type
+  // safety we also default it here.
+  const runtimeName = Stack.of(scope).regionalFact(FactName.LATEST_NODE_RUNTIME, Runtime.NODEJS_18_X.name);
+  return new Runtime(runtimeName, RuntimeFamily.NODEJS, { supportsInlineCode: true, isVariable: true });
 }

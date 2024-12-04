@@ -176,6 +176,16 @@ describe('Topic', () => {
         signatureVersion: '3',
       })).toThrow(/signatureVersion must be "1" or "2", received: "3"/);
     });
+
+    test('throw error when displayName is too long', () => {
+      const stack = new cdk.Stack();
+
+      expect(() => {
+        new sns.Topic(stack, 'MyTopic', {
+          displayName: 'a'.repeat(101),
+        });
+      }).toThrow('displayName must be less than or equal to 100 characters, got 101');
+    });
   });
 
   test('can add a policy to the topic', () => {
@@ -267,6 +277,31 @@ describe('Topic', () => {
         'Statement': [
           {
             'Action': 'sns:Publish',
+            'Effect': 'Allow',
+            'Resource': stack.resolve(topic.topicArn),
+          },
+        ],
+      },
+    });
+
+  });
+
+  test('give subscribing permissions', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const topic = new sns.Topic(stack, 'Topic');
+    const user = new iam.User(stack, 'User');
+
+    // WHEN
+    topic.grantSubscribe(user);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      'PolicyDocument': {
+        Version: '2012-10-17',
+        'Statement': [
+          {
+            'Action': 'sns:Subscribe',
             'Effect': 'Allow',
             'Resource': stack.resolve(topic.topicArn),
           },

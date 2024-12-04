@@ -134,6 +134,8 @@ set to an email, all of the rules in that configuration set are applied to the e
 Use the `ConfigurationSet` construct to create a configuration set:
 
 ```ts
+import { Duration } from 'aws-cdk-lib';
+
 declare const myPool: ses.IDedicatedIpPool;
 
 new ses.ConfigurationSet(this, 'ConfigurationSet', {
@@ -141,6 +143,10 @@ new ses.ConfigurationSet(this, 'ConfigurationSet', {
   suppressionReasons: ses.SuppressionReasons.COMPLAINTS_ONLY,
   tlsPolicy: ses.ConfigurationSetTlsPolicy.REQUIRE,
   dedicatedIpPool: myPool,
+  // Specify maximum delivery time
+  // This configuration can be useful in such cases as time-sensitive emails (like those containing a one-time-password),
+  // transactional emails, and email that you want to ensure isn't delivered during non-business hours.
+  maxDeliveryDuration: Duration.minutes(10),
 });
 ```
 
@@ -238,4 +244,19 @@ Use the `VdmAttributes` construct to configure the Virtual Deliverability Manage
 ```ts
 // Enables engagement tracking and optimized shared delivery by default
 new ses.VdmAttributes(this, 'Vdm');
+```
+
+If you want to override the VDM settings in the specified configuration set, use `vdmOptions` in the `ConfigurationSet` construct.
+
+> **Note:** The configuration set level settings need to be used together with the account level settings. (To set the account level settings using CDK, use the `VdmAttributes` Construct.)
+If you enable only the configuration set level settings, VDM will not be enabled until the account level settings are configured.
+For more information, see [Virtual Deliverability Manager settings](https://docs.aws.amazon.com/ses/latest/dg/vdm-settings.html).
+
+```ts
+new ses.ConfigurationSet(this, 'ConfigurationSetWithVdmOptions', {
+  vdmOptions: {
+    engagementMetrics: true,
+    optimizedSharedDelivery: true,
+  },
+});
 ```

@@ -1,0 +1,13 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "LambdaNodeJsCodeSpecified/DefaultTest": {
+      "stacks": [
+        "cdk-integ-lambda-nodejs-codespecified"
+      ],
+      "diffAssets": true,
+      "assertionStack": "LambdaNodeJsCodeSpecified/DefaultTest/DeployAssert",
+      "assertionStackName": "LambdaNodeJsCodeSpecifiedDefaultTestDeployAssertD50C7B96"
+    }
+  }
+}

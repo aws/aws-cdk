@@ -544,21 +544,24 @@ new route53.CnameRecord(this, `CnameApiRecord`, {
 AppSync automatically create a log group with the name `/aws/appsync/apis/<graphql_api_id>` upon deployment with
 log data set to never expire. If you want to set a different expiration period, use the `logConfig.retention` property.
 
+Also you can choose the log level by setting the `logConfig.fieldLogLevel` property.
+
+For more information, see [CloudWatch logs](https://docs.aws.amazon.com/en_us/appsync/latest/devguide/monitoring.html#cwl).
+
 To obtain the GraphQL API's log group as a `logs.ILogGroup` use the `logGroup` property of the
 `GraphqlApi` construct.
 
 ```ts
 import * as logs from 'aws-cdk-lib/aws-logs';
 
-const logConfig: appsync.LogConfig = {
-  retention: logs.RetentionDays.ONE_WEEK,
-};
-
 new appsync.GraphqlApi(this, 'api', {
   authorizationConfig: {},
   name: 'myApi',
   definition: appsync.Definition.fromFile(path.join(__dirname, 'myApi.graphql')),
-  logConfig,
+  logConfig: {
+    fieldLogLevel: appsync.FieldLogLevel.INFO,
+    retention: logs.RetentionDays.ONE_WEEK,
+  },
 });
 ```
 
@@ -755,6 +758,22 @@ const appsyncFunction = new appsync.AppsyncFunction(this, 'function', {
 });
 ```
 
+When using the `LambdaDataSource`, you can control the maximum number of resolver request
+inputs that will be sent to a single AWS Lambda function in a BatchInvoke operation
+by setting the `maxBatchSize` property.
+
+```ts
+declare const api: appsync.GraphqlApi;
+declare const lambdaDataSource: appsync.LambdaDataSource;
+
+const appsyncFunction = new appsync.AppsyncFunction(this, 'function', {
+  name: 'appsync_function',
+  api,
+  dataSource: lambdaDataSource,
+  maxBatchSize: 10,
+});
+```
+
 AppSync Functions are used in tandem with pipeline resolvers to compose multiple
 operations.
 
@@ -864,7 +883,7 @@ const api = new appsync.GraphqlApi(this, 'api', {
   definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.schema.graphql')),
   environmentVariables: {
     EnvKey1: 'non-empty-1',
-  },  
+  },
 });
 
 api.addEnvironmentVariable('EnvKey2', 'non-empty-2');
@@ -892,4 +911,17 @@ rule.addTarget(new targets.AppSync(api, {
     message: 'hello world',
   }),
 }));
+```
+
+## Owner Contact
+
+You can set the owner contact information for an API resource.
+This field accepts any string input with a length of 0 - 256 characters.
+
+```ts
+const api = new appsync.GraphqlApi(this, 'OwnerContact', {
+    name: 'OwnerContact',
+    definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
+    ownerContact: 'test-owner-contact',
+});
 ```

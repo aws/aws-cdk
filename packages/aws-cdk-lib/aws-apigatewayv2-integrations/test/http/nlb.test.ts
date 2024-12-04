@@ -1,9 +1,9 @@
-import { HttpNlbIntegration } from './../../lib/http/nlb';
 import { Template } from '../../../assertions';
 import { HttpApi, HttpMethod, HttpRoute, HttpRouteKey, MappingValue, ParameterMapping, VpcLink } from '../../../aws-apigatewayv2';
 import * as ec2 from '../../../aws-ec2';
 import * as elbv2 from '../../../aws-elasticloadbalancingv2';
-import { Stack } from '../../../core';
+import { Duration, Stack } from '../../../core';
+import { HttpNlbIntegration } from './../../lib/http/nlb';
 
 describe('HttpNlbIntegration', () => {
   test('default', () => {
@@ -88,6 +88,28 @@ describe('HttpNlbIntegration', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
       IntegrationMethod: 'PATCH',
+    });
+  });
+
+  test('timeout option is correctly recognized', () => {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const lb = new elbv2.NetworkLoadBalancer(stack, 'lb', { vpc });
+    const listener = lb.addListener('listener', { port: 80 });
+    listener.addTargets('target', { port: 80 });
+
+    // WHEN
+    const api = new HttpApi(stack, 'HttpApi');
+    new HttpRoute(stack, 'HttpProxyPrivateRoute', {
+      httpApi: api,
+      integration: new HttpNlbIntegration('Integration', listener, { timeout: Duration.seconds(20) }),
+      routeKey: HttpRouteKey.with('/pets'),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
+      TimeoutInMillis: 20000,
     });
   });
 

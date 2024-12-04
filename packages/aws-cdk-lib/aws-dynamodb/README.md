@@ -136,7 +136,7 @@ class BarStack extends cdk.Stack {
 const app = new cdk.App();
 
 const fooStack = new FooStack(app, 'FooStack', { env: { region: 'us-west-2' } });
-const barStack = new BarStack(app, 'BarStack', { 
+const barStack = new BarStack(app, 'BarStack', {
   replicaTable: fooStack.globalTable.replica('us-east-1'),
   env: { region: 'us-east-1' },
 });
@@ -148,6 +148,7 @@ Note: You can create an instance of the `TableV2` construct with as many `replic
 
 The `TableV2` construct can be configured with on-demand or provisioned billing:
 * On-demand - The default option. This is a flexible billing option capable of serving requests without capacity planning. The billing mode will be `PAY_PER_REQUEST`.
+* You can optionally specify the `maxReadRequestUnits` or `maxWriteRequestUnits` on individual tables and associated global secondary indexes (GSIs). When you configure maximum throughput for an on-demand table, throughput requests that exceed the maximum amount specified will be throttled.
 * Provisioned - Specify the `readCapacity` and `writeCapacity` that you need for your application. The billing mode will be `PROVISIONED`. Capacity can be configured using one of the following modes:
   * Fixed - provisioned throughput capacity is configured with a fixed number of I/O operations per second.
   * Autoscaled - provisioned throughput capacity is dynamically adjusted on your behalf in response to actual traffic patterns.
@@ -160,6 +161,18 @@ The following example shows how to configure `TableV2` with on-demand billing:
 const table = new dynamodb.TableV2(this, 'Table', {
   partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
   billing: dynamodb.Billing.onDemand(),
+})
+```
+
+The following example shows how to configure `TableV2` with on-demand billing with optional maximum throughput configured:
+
+```ts
+const table = new dynamodb.TableV2(this, 'Table', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  billing: dynamodb.Billing.onDemand({
+    maxReadRequestUnits: 100,
+    maxWriteRequestUnits: 115,
+  }),
 })
 ```
 
@@ -514,6 +527,21 @@ const table = new dynamodb.TableV2(this, 'Table', {
 });
 ```
 
+When you use `Table`, you can enable contributor insights for a table or specific global secondary index by setting `contributorInsightsEnabled` to `true`.
+
+```ts
+const table = new dynamodb.Table(this, 'Table', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  contributorInsightsEnabled: true, // for a table
+});
+
+table.addGlobalSecondaryIndex({
+  contributorInsightsEnabled: true, // for a specific global secondary index
+  indexName: 'gsi',
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+});
+```
+
 Further reading:
 https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/contributorinsights_HowItWorks.html
 
@@ -602,7 +630,7 @@ https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.Tabl
 
 ## Tags
 
-You can add tags to a `TableV2` in several ways. By adding the tags to the construct itself it will apply the tags to the 
+You can add tags to a `TableV2` in several ways. By adding the tags to the construct itself it will apply the tags to the
 primary table.
 ```ts
 const table = new dynamodb.TableV2(this, 'Table', {
@@ -643,6 +671,36 @@ If you intend to use the `tableStreamArn` (including indirectly, for example by 
 `TableV2.fromTableAttributes` method and the `tableStreamArn` property *must* be populated.
 
 To grant permissions to indexes for a referenced table you can either set `grantIndexPermissions` to `true`, or you can provide the indexes via the `globalIndexes` or `localIndexes` properties. This will enable `grant*` methods to also grant permissions to *all* table indexes.
+
+## Resource Policy
+
+Using `resourcePolicy` you can add a [resource policy](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/access-control-resource-based.html) to a table in the form of a `PolicyDocument`:
+
+```
+    // resource policy document
+    const policy = new iam.PolicyDocument({
+      statements: [
+        new iam.PolicyStatement({
+          actions: ['dynamodb:GetItem'],
+          principals: [new iam.AccountRootPrincipal()],
+          resources: ['*'],
+        }),
+      ],
+    });
+
+    // table with resource policy
+    new dynamodb.TableV2(this, 'TableTestV2-1', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING,
+      },
+      removalPolicy: RemovalPolicy.DESTROY,
+      resourcePolicy: policy,
+    });
+```
+
+TableV2 doesn’t support creating a replica and adding a resource-based policy to that replica in the same stack update in Regions other than the Region where you deploy the stack update.
+To incorporate a resource-based policy into a replica, you'll need to initially deploy the replica without the policy, followed by a subsequent update to include the desired policy.
 
 ## Grants
 

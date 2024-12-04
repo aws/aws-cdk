@@ -61,7 +61,7 @@ Example:
 ```ts
 const gitHubSource = codebuild.Source.gitHub({
   owner: 'awslabs',
-  repo: 'aws-cdk',
+  repo: 'aws-cdk', // optional, default: undefined if unspecified will create organization webhook
   webhook: true, // optional, default: true if `webhookFilters` were provided, false otherwise
   webhookTriggersBatchBuild: true, // optional, default is false
   webhookFilters: [
@@ -69,6 +69,24 @@ const gitHubSource = codebuild.Source.gitHub({
       .inEventOf(codebuild.EventAction.PUSH)
       .andBranchIs('main')
       .andCommitMessageIs('the commit message'),
+    codebuild.FilterGroup
+      .inEventOf(codebuild.EventAction.RELEASED)
+      .andBranchIs('main')
+  ], // optional, by default all pushes and Pull Requests will trigger a build
+});
+```
+
+The `GitHubSource` is also able to trigger all repos in GitHub Organizations
+Example:
+```ts
+const gitHubSource = codebuild.Source.gitHub({
+  owner: 'aws',
+  webhookTriggersBatchBuild: true, // optional, default is false
+  webhookFilters: [
+    codebuild.FilterGroup
+      .inEventOf(codebuild.EventAction.WORKFLOW_JOB_QUEUED)
+      .andRepositoryNameIs("aws-.*")
+      .andRepositoryNameIsNot("aws-cdk-lib"),
   ], // optional, by default all pushes and Pull Requests will trigger a build
 });
 ```
@@ -298,17 +316,20 @@ can use the `environment` property to customize the build environment:
 * `environmentVariables` can be set at this level (and also at the project
   level).
 
+Finally, you can also set the build environment `fleet` property to create
+a reserved capacity project. See [Fleet](#fleet) for more information.
+
 ## Images
 
-The CodeBuild library supports both Linux and Windows images via the
-`LinuxBuildImage` (or `LinuxArmBuildImage`), and `WindowsBuildImage` classes, respectively.
+The CodeBuild library supports Linux, Windows, and Mac images via the
+`LinuxBuildImage` (or `LinuxArmBuildImage`), `WindowsBuildImage`, and `MacBuildImage` classes, respectively.
 With the introduction of Lambda compute support, the `LinuxLambdaBuildImage ` (or `LinuxArmLambdaBuildImage`) class
 is available for specifying Lambda-compatible images.
 
 You can specify one of the predefined Windows/Linux images by using one
 of the constants such as `WindowsBuildImage.WIN_SERVER_CORE_2019_BASE`,
 `WindowsBuildImage.WINDOWS_BASE_2_0`, `LinuxBuildImage.STANDARD_2_0`,
-`LinuxBuildImage.AMAZON_LINUX_2_5`, `LinuxArmBuildImage.AMAZON_LINUX_2_ARM`,
+`LinuxBuildImage.AMAZON_LINUX_2_5`, `MacBuildImage.BASE_14`, `LinuxArmBuildImage.AMAZON_LINUX_2_ARM`,
 `LinuxLambdaBuildImage.AMAZON_LINUX_2_NODE_18` or `LinuxArmLambdaBuildImage.AMAZON_LINUX_2_NODE_18`.
 
 Alternatively, you can specify a custom image using one of the static methods on
@@ -326,6 +347,12 @@ or one of the corresponding methods on `WindowsBuildImage`:
 * `WindowsBuildImage.fromDockerRegistry(image[, { secretsManagerCredentials }, imageType])`
 * `WindowsBuildImage.fromEcrRepository(repo[, tag, imageType])`
 * `WindowsBuildImage.fromAsset(parent, id, props, [, imageType])`
+
+or one of the corresponding methods on `MacBuildImage`:
+
+* `MacBuildImage.fromDockerRegistry(image[, { secretsManagerCredentials }, imageType])`
+* `MacBuildImage.fromEcrRepository(repo[, tag, imageType])`
+* `MacBuildImage.fromAsset(parent, id, props, [, imageType])`
 
 or one of the corresponding methods on `LinuxArmBuildImage`:
 
@@ -345,7 +372,7 @@ new codebuild.Project(this, 'Project', {
     buildImage: codebuild.WindowsBuildImage.fromEcrRepository(ecrRepository, 'v1.0', codebuild.WindowsImageType.SERVER_2019),
     // optional certificate to include in the build image
     certificate: {
-      bucket: s3.Bucket.fromBucketName(this, 'Bucket', 'my-bucket'),
+      bucket: s3.Bucket.fromBucketName(this, 'Bucket', 'amzn-s3-demo-bucket'),
       objectKey: 'path/to/cert.pem',
     },
   },
@@ -416,6 +443,53 @@ new codebuild.Project(this, 'Project', {
 ```
 
 > Visit [AWS Lambda compute in AWS CodeBuild](https://docs.aws.amazon.com/codebuild/latest/userguide/lambda.html) for more details.
+
+## Fleet
+
+By default, a CodeBuild project will request on-demand compute resources
+to process your build requests. While being able to scale and handle high load,
+on-demand resources can also be slow to provision.
+
+Reserved capacity fleets are an alternative to on-demand.
+Dedicated instances, maintained by CodeBuild,
+will be ready to fulfill your build requests immediately.
+Skipping the provisioning step in your project will reduce your build time,
+at the cost of paying for these reserved instances, even when idling, until they are released.
+
+For more information, see [Working with reserved capacity in AWS CodeBuild](https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.html) in the CodeBuild documentation.
+
+```ts
+const fleet = new codebuild.Fleet(this, 'Fleet', {
+    computeType: codebuild.FleetComputeType.MEDIUM,
+    environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+    baseCapacity: 1,
+});
+
+new codebuild.Project(this, 'Project', {
+  environment: {
+    fleet,
+    buildImage: codebuild.LinuxBuildImage.STANDARD_7_0,
+  },
+  // ...
+})
+```
+
+You can also import an existing fleet to share its resources
+among several projects across multiple stacks:
+
+```ts
+new codebuild.Project(this, 'Project', {
+  environment: {
+    fleet: codebuild.Fleet.fromFleetArn(
+      this, 'SharedFleet',
+      'arn:aws:codebuild:us-east-1:123456789012:fleet/MyFleet:ed0d0823-e38a-4c10-90a1-1bf25f50fa76', 
+    ),
+    buildImage: codebuild.LinuxBuildImage.STANDARD_7_0,
+  },
+  // ...
+})
+```
+
 
 ## Logs
 
@@ -891,5 +965,20 @@ By default there is no explicit limit.
 ```ts
 new codebuild.Project(this, 'MyProject', {
   concurrentBuildLimit: 1
+});
+```
+
+## Visibility
+When you can specify the visibility of the project builds. This setting controls whether the builds are publicly readable or remain private.
+
+Visibility options:
+- `PUBLIC_READ`: The project builds are visible to the public.
+- `PRIVATE`: The project builds are not visible to the public.
+
+Examples:
+
+```ts
+new codebuild.Project(this, 'MyProject', {
+  visibility: codebuild.ProjectVisibility.PUBLIC_READ,
 });
 ```

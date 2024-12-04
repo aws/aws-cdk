@@ -81,7 +81,7 @@ const UPDATE = chalk.yellow('[~]');
 const REMOVAL = chalk.red('[-]');
 const IMPORT = chalk.blue('[←]');
 
-class Formatter {
+export class Formatter {
   constructor(
     private readonly stream: FormatStream,
     private readonly logicalToPathMap: { [logicalId: string]: string },
@@ -160,7 +160,7 @@ class Formatter {
     const resourceType = diff.isRemoval ? diff.oldResourceType : diff.newResourceType;
 
     // eslint-disable-next-line max-len
-    this.print(`${this.formatResourcePrefix(diff)} ${this.formatValue(resourceType, chalk.cyan)} ${this.formatLogicalId(logicalId)} ${this.formatImpact(diff.changeImpact)}`);
+    this.print(`${this.formatResourcePrefix(diff)} ${this.formatValue(resourceType, chalk.cyan)} ${this.formatLogicalId(logicalId)} ${this.formatImpact(diff.changeImpact)}`.trimEnd());
 
     if (diff.isUpdate) {
       const differenceCount = diff.differenceCount;

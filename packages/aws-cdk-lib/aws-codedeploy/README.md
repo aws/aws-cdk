@@ -99,6 +99,9 @@ const deploymentGroup = new codedeploy.ServerDeploymentGroup(this, 'CodeDeployDe
     stoppedDeployment: true, // default: false
     deploymentInAlarm: true, // default: true if you provided any alarms, false otherwise
   },
+  // whether the deployment group was configured to have CodeDeploy install a termination hook into an Auto Scaling group
+  // default: false
+  terminationHook: true,
 });
 ```
 
@@ -210,6 +213,25 @@ const deploymentConfig = codedeploy.ServerDeploymentConfig.fromServerDeploymentC
   'MyExistingDeploymentConfiguration',
 );
 ```
+
+### Zonal Configuration
+
+CodeDeploy can deploy your application to one Availability Zone at a time, within an AWS Region by configuring [zonal configuration](https://docs.aws.amazon.com/codedeploy/latest/userguide/deployment-configurations-create.html#zonal-config).
+
+To create a new deployment configuration with zonal configuration:
+
+```ts
+const deploymentConfig = new codedeploy.ServerDeploymentConfig(this, 'DeploymentConfiguration', {
+  minimumHealthyHosts: codedeploy.MinimumHealthyHosts.count(2),
+  zonalConfig: {
+    monitorDuration: Duration.minutes(30),
+    firstZoneMonitorDuration: Duration.minutes(60),
+    minimumHealthyHostsPerZone: codedeploy.MinimumHealthyHostsPerZone.count(1),
+  },
+});
+```
+
+**Note**: Zonal configuration is only configurable for EC2/on-premise deployments.
 
 ## Lambda Applications
 

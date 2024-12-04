@@ -77,6 +77,14 @@ export class EngineVersion {
    */
   public static readonly V1_2_1_0 = new EngineVersion('1.2.1.0');
   /**
+   * Neptune engine version 1.2.1.1
+   */
+  public static readonly V1_2_1_1 = new EngineVersion('1.2.1.1');
+  /**
+   * Neptune engine version 1.2.1.2
+   */
+  public static readonly V1_2_1_2 = new EngineVersion('1.2.1.2');
+  /**
    * Neptune engine version 1.3.0.0
    */
   public static readonly V1_3_0_0 = new EngineVersion('1.3.0.0');
@@ -84,12 +92,28 @@ export class EngineVersion {
    * Neptune engine version 1.3.1.0
    */
   public static readonly V1_3_1_0 = new EngineVersion('1.3.1.0');
+  /**
+   * Neptune engine version 1.3.2.0
+   */
+  public static readonly V1_3_2_0 = new EngineVersion('1.3.2.0');
+  /**
+   * Neptune engine version 1.3.2.1
+   */
+  public static readonly V1_3_2_1 = new EngineVersion('1.3.2.1');
+  /**
+   * Neptune engine version 1.3.3.0
+   */
+  public static readonly V1_3_3_0 = new EngineVersion('1.3.3.0');
+  /**
+   * Neptune engine version 1.3.4.0
+   */
+  public static readonly V1_3_4_0 = new EngineVersion('1.3.4.0');
 
   /**
    * Constructor for specifying a custom engine version
    * @param version the engine version of Neptune
    */
-  public constructor(public readonly version: string) {}
+  public constructor(public readonly version: string) { }
 }
 
 /**
@@ -109,7 +133,7 @@ export class LogType {
    * Constructor for specifying a custom log type
    * @param value the log type
    */
-  public constructor(public readonly value: string) {}
+  public constructor(public readonly value: string) { }
 }
 
 export interface ServerlessScalingConfiguration {
@@ -325,6 +349,20 @@ export interface DatabaseClusterProps {
    * @default - required if instanceType is db.serverless
    */
   readonly serverlessScalingConfiguration?: ServerlessScalingConfiguration;
+
+  /**
+   * Whether to copy tags to the snapshot when a snapshot is created.
+   *
+   * @default - false
+   */
+  readonly copyTagsToSnapshot?: boolean;
+
+  /**
+   * The port number on which the DB instances in the DB cluster accept connections.
+   *
+   * @default 8182
+   */
+  readonly port?: number;
 }
 
 /**
@@ -610,6 +648,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
       deletionProtection: deletionProtection,
       associatedRoles: props.associatedRoles ? props.associatedRoles.map(role => ({ roleArn: role.roleArn })) : undefined,
       iamAuthEnabled: Lazy.any({ produce: () => this.enableIamAuthentication }),
+      dbPort: props.port,
       // Backup
       backupRetentionPeriod: props.backupRetention?.toDays(),
       preferredBackupWindow: props.preferredBackupWindow,
@@ -620,6 +659,8 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
       enableCloudwatchLogsExports: props.cloudwatchLogsExports?.map(logType => logType.value),
       storageEncrypted,
       serverlessScalingConfiguration: props.serverlessScalingConfiguration,
+      // Tags
+      copyTagsToSnapshot: props.copyTagsToSnapshot,
     });
 
     cluster.applyRemovalPolicy(props.removalPolicy, {

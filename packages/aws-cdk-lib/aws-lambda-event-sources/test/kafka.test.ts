@@ -1,6 +1,7 @@
 import { TestFunction } from './test-function';
 import { Template, Match } from '../../assertions';
 import { SecurityGroup, SubnetType, Vpc } from '../../aws-ec2';
+import { Key } from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import { Bucket } from '../../aws-s3';
 import { Secret } from '../../aws-secretsmanager';
@@ -173,6 +174,110 @@ describe('KafkaEventSource', () => {
       });
     });
 
+    test('adding filter criteria encryption', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const clusterArn = 'some-arn';
+      const kafkaTopic = 'some-topic';
+      const myKey = Key.fromKeyArn(
+        stack,
+        'SourceBucketEncryptionKey',
+        'arn:aws:kms:us-east-1:123456789012:key/<key-id>',
+      );
+
+      // WHEN
+      fn.addEventSource(new sources.ManagedKafkaEventSource(
+        {
+          clusterArn,
+          topic: kafkaTopic,
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+          filters: [
+            lambda.FilterCriteria.filter({
+              orFilter: lambda.FilterRule.or('one', 'two'),
+              stringEquals: lambda.FilterRule.isEqual('test'),
+            }),
+            lambda.FilterCriteria.filter({
+              numericEquals: lambda.FilterRule.isEqual(1),
+            }),
+          ],
+          filterEncryption: myKey,
+        }));
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        FilterCriteria: {
+          Filters: [
+            {
+              Pattern: '{"orFilter":["one","two"],"stringEquals":["test"]}',
+            },
+            {
+              Pattern: '{"numericEquals":[{"numeric":["=",1]}]}',
+            },
+          ],
+        },
+        KmsKeyArn: 'arn:aws:kms:us-east-1:123456789012:key/<key-id>',
+      });
+    });
+
+    test('adding filter criteria encryption with stack key', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const clusterArn = 'some-arn';
+      const kafkaTopic = 'some-topic';
+
+      const myKey = new Key(stack, 'fc-test-key-name', {
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+        pendingWindow: cdk.Duration.days(7),
+        description: 'KMS key for test fc encryption',
+      });
+
+      // WHEN
+      fn.addEventSource(new sources.ManagedKafkaEventSource(
+        {
+          clusterArn,
+          topic: kafkaTopic,
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+          filters: [
+            lambda.FilterCriteria.filter({
+              orFilter: lambda.FilterRule.or('one', 'two'),
+              stringEquals: lambda.FilterRule.isEqual('test'),
+            }),
+            lambda.FilterCriteria.filter({
+              numericEquals: lambda.FilterRule.isEqual(1),
+            }),
+          ],
+          filterEncryption: myKey,
+        }));
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+        KeyPolicy: {
+          Statement: [
+            {
+              Action: 'kms:*',
+              Effect: 'Allow',
+              Principal: {
+                AWS: {
+                  'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']],
+                },
+              },
+              Resource: '*',
+            },
+            {
+              Action: 'kms:Decrypt',
+              Effect: 'Allow',
+              Principal: {
+                Service: 'lambda.amazonaws.com',
+              },
+              Resource: '*',
+            },
+          ],
+        },
+      });
+    });
+
     test('with s3 onfailure destination', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -203,6 +308,105 @@ describe('KafkaEventSource', () => {
       });
     });
 
+    test('with provisioned pollers', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const testLambdaFunction = new TestFunction(stack, 'Fn');
+      const clusterArn = 'some-arn';
+      const kafkaTopic = 'some-topic';
+      const bucket = Bucket.fromBucketName(stack, 'BucketByName', 'my-bucket');
+      const s3OnFailureDestination = new sources.S3OnFailureDestination(bucket);
+      // WHEN
+      testLambdaFunction.addEventSource(new sources.ManagedKafkaEventSource(
+        {
+          clusterArn,
+          topic: kafkaTopic,
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+          onFailure: s3OnFailureDestination,
+          provisionedPollerConfig: {
+            minimumPollers: 1,
+            maximumPollers: 3,
+          },
+        }));
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        DestinationConfig: {
+          OnFailure: {
+            Destination: {
+              'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::my-bucket']],
+            },
+          },
+        },
+        ProvisionedPollerConfig: {
+          MinimumPollers: 1,
+          MaximumPollers: 3,
+        },
+      });
+    });
+
+    test('maximum provisioned poller is out of limit', () => {
+      const stack = new cdk.Stack();
+      const testLambdaFunction = new TestFunction(stack, 'Fn');
+      const clusterArn = 'some-arn';
+      const kafkaTopic = 'some-topic';
+      const bucket = Bucket.fromBucketName(stack, 'BucketByName', 'my-bucket');
+      const s3OnFailureDestination = new sources.S3OnFailureDestination(bucket);
+
+      expect(() => testLambdaFunction.addEventSource(new sources.ManagedKafkaEventSource(
+        {
+          clusterArn,
+          topic: kafkaTopic,
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+          onFailure: s3OnFailureDestination,
+          provisionedPollerConfig: {
+            minimumPollers: 1,
+            maximumPollers: 2001,
+          },
+        }))).toThrow(/Maximum provisioned pollers must be between 1 and 2000 inclusive/);
+    });
+
+    test('minimum provisioned poller is out of limit', () => {
+      const stack = new cdk.Stack();
+      const testLambdaFunction = new TestFunction(stack, 'Fn');
+      const clusterArn = 'some-arn';
+      const kafkaTopic = 'some-topic';
+      const bucket = Bucket.fromBucketName(stack, 'BucketByName', 'my-bucket');
+      const s3OnFailureDestination = new sources.S3OnFailureDestination(bucket);
+
+      expect(() => testLambdaFunction.addEventSource(new sources.ManagedKafkaEventSource(
+        {
+          clusterArn,
+          topic: kafkaTopic,
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+          onFailure: s3OnFailureDestination,
+          provisionedPollerConfig: {
+            minimumPollers: 0,
+            maximumPollers: 3,
+          },
+        }))).toThrow(/Minimum provisioned pollers must be between 1 and 200 inclusive/);
+    });
+
+    test('Minimum provisioned poller greater than maximum provisioned poller', () => {
+      const stack = new cdk.Stack();
+      const testLambdaFunction = new TestFunction(stack, 'Fn');
+      const clusterArn = 'some-arn';
+      const kafkaTopic = 'some-topic';
+      const bucket = Bucket.fromBucketName(stack, 'BucketByName', 'my-bucket');
+      const s3OnFailureDestination = new sources.S3OnFailureDestination(bucket);
+
+      expect(() => testLambdaFunction.addEventSource(new sources.ManagedKafkaEventSource(
+        {
+          clusterArn,
+          topic: kafkaTopic,
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+          onFailure: s3OnFailureDestination,
+          provisionedPollerConfig: {
+            minimumPollers: 3,
+            maximumPollers: 1,
+          },
+        }))).toThrow(/Minimum provisioned pollers must be less than or equal to maximum provisioned pollers/);
+    });
   });
 
   describe('self-managed kafka', () => {
@@ -312,6 +516,54 @@ describe('KafkaEventSource', () => {
             },
           ],
         },
+      });
+    });
+
+    test('adding filter criteria encryption', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const kafkaTopic = 'some-topic';
+      const secret = new Secret(stack, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
+      const bootstrapServers = ['kafka-broker:9092'];
+      const myKey = Key.fromKeyArn(
+        stack,
+        'SourceBucketEncryptionKey',
+        'arn:aws:kms:us-east-1:123456789012:key/<key-id>',
+      );
+
+      // WHEN
+      fn.addEventSource(new sources.SelfManagedKafkaEventSource(
+        {
+          bootstrapServers: bootstrapServers,
+          topic: kafkaTopic,
+          secret: secret,
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+          filters: [
+            lambda.FilterCriteria.filter({
+              orFilter: lambda.FilterRule.or('one', 'two'),
+              stringEquals: lambda.FilterRule.isEqual('test'),
+            }),
+            lambda.FilterCriteria.filter({
+              numericEquals: lambda.FilterRule.isEqual(1),
+            }),
+          ],
+          filterEncryption: myKey,
+        }));
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        FilterCriteria: {
+          Filters: [
+            {
+              Pattern: '{"orFilter":["one","two"],"stringEquals":["test"]}',
+            },
+            {
+              Pattern: '{"numericEquals":[{"numeric":["=",1]}]}',
+            },
+          ],
+        },
+        KmsKeyArn: 'arn:aws:kms:us-east-1:123456789012:key/<key-id>',
       });
     });
 
@@ -844,6 +1096,95 @@ describe('KafkaEventSource', () => {
       fn.addEventSource(mskEventMapping);
       expect(mskEventMapping.eventSourceMappingId).toBeDefined();
       expect(mskEventMapping.eventSourceMappingArn).toBeDefined();
+    });
+
+    test('with provisioned pollers', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const clusterArn = 'some-arn';
+      const kafkaTopic = 'some-topic';
+
+      const mskEventMapping = new sources.ManagedKafkaEventSource(
+        {
+          clusterArn,
+          topic: kafkaTopic,
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+          provisionedPollerConfig: {
+            minimumPollers: 1,
+            maximumPollers: 3,
+          },
+        });
+
+      // WHEN
+      fn.addEventSource(mskEventMapping);
+      expect(mskEventMapping.eventSourceMappingId).toBeDefined();
+      expect(mskEventMapping.eventSourceMappingArn).toBeDefined();
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        ProvisionedPollerConfig: {
+          MinimumPollers: 1,
+          MaximumPollers: 3,
+        },
+      });
+    });
+
+    test('maximum provisioned poller is out of limit', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const clusterArn = 'some-arn';
+      const kafkaTopic = 'some-topic';
+
+      expect(() => fn.addEventSource(new sources.ManagedKafkaEventSource(
+        {
+          clusterArn,
+          topic: kafkaTopic,
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+          provisionedPollerConfig: {
+            minimumPollers: 1,
+            maximumPollers: 2001,
+          },
+        }))).toThrow(/Maximum provisioned pollers must be between 1 and 2000 inclusive/);
+    });
+
+    test('minimum provisioned poller is out of limit', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const clusterArn = 'some-arn';
+      const kafkaTopic = 'some-topic';
+
+      expect(() => fn.addEventSource(new sources.ManagedKafkaEventSource(
+        {
+          clusterArn,
+          topic: kafkaTopic,
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+          provisionedPollerConfig: {
+            minimumPollers: 0,
+            maximumPollers: 3,
+          },
+        }))).toThrow(/Minimum provisioned pollers must be between 1 and 200 inclusive/);
+    });
+
+    test('Minimum provisioned poller greater than maximum provisioned poller', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const clusterArn = 'some-arn';
+      const kafkaTopic = 'some-topic';
+
+      expect(() => fn.addEventSource(new sources.ManagedKafkaEventSource(
+        {
+          clusterArn,
+          topic: kafkaTopic,
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+          provisionedPollerConfig: {
+            minimumPollers: 3,
+            maximumPollers: 1,
+          },
+        }))).toThrow(/Minimum provisioned pollers must be less than or equal to maximum provisioned pollers/);
     });
   });
 });

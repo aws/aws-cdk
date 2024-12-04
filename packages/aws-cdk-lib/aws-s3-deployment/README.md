@@ -469,6 +469,26 @@ new cdk.CfnOutput(this, 'ObjectKey', {
 });
 ```
 
+## Controlling the Output of Source Object Keys
+
+By default, the keys of the source objects copied to the destination bucket are returned in the Data property of the custom resource. However, you can disable this behavior by setting the outputObjectKeys property to false. This is particularly useful when the number of objects is too large and might exceed the size limit of the responseData property.
+
+```ts
+import * as cdk from 'aws-cdk-lib';
+
+declare const destinationBucket: s3.Bucket;
+
+const myBucketDeployment = new s3deploy.BucketDeployment(this, 'DeployMeWithoutExtractingFilesOnDestination', {
+  sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+  destinationBucket,
+  outputObjectKeys: false,
+});
+
+new cdk.CfnOutput(this, 'ObjectKey', {
+  value: cdk.Fn.select(0, myBucketDeployment.objectKeys),
+});
+```
+
 ## Notes
 
 - This library uses an AWS CloudFormation custom resource which is about 10MiB in
@@ -489,8 +509,9 @@ new cdk.CfnOutput(this, 'ObjectKey', {
 ## Development
 
 The custom resource is implemented in Python 3.9 in order to be able to leverage
-the AWS CLI for "aws s3 sync". The code is under [`lib/lambda`](https://github.com/aws/aws-cdk/tree/main/packages/aws-cdk-lib/aws-s3-deployment/lib/lambda) and
-unit tests are under [`test/lambda`](https://github.com/aws/aws-cdk/tree/main/packages/aws-cdk-lib/aws-s3-deployment/test/lambda).
+the AWS CLI for "aws s3 sync".
+The code is now in the `@aws-cdk/custom-resource-handlers` package under [`lib/aws-s3-deployment/bucket-deployment-handler`](https://github.com/aws/aws-cdk/tree/main/packages/@aws-cdk/custom-resource-handlers/lib/aws-s3-deployment/bucket-deployment-handler/) and
+unit tests are under [`test/aws-s3-deployment/bucket-deployment-handler`](https://github.com/aws/aws-cdk/tree/main/packages/@aws-cdk/custom-resource-handlers/test/aws-s3-deployment/bucket-deployment-handler/).
 
 This package requires Python 3.9 during build time in order to create the custom
 resource Lambda bundle and test it. It also relies on a few bash scripts, so

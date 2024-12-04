@@ -253,7 +253,7 @@ for (const gateway of provider.gatewayInstances) {
 [using NAT instances](test/integ.nat-instances.lit.ts) [Deprecated]
 
 The V1 `NatProvider.instance` construct will use the AWS official NAT instance AMI, which has already
-reached EOL on Dec 31, 2023. For more information, see the following blog post: 
+reached EOL on Dec 31, 2023. For more information, see the following blog post:
 [Amazon Linux AMI end of life](https://aws.amazon.com/blogs/aws/update-on-amazon-linux-ami-end-of-life/).
 
 ```ts
@@ -268,6 +268,23 @@ new ec2.Vpc(this, 'TheVPC', {
 });
 provider.connections.allowFrom(ec2.Peer.ipv4('1.2.3.4/8'), ec2.Port.HTTP);
 ```
+
+### Associate Public IP Address to NAT Instance
+
+You can choose to associate public IP address to a NAT instance V2 by specifying `associatePublicIpAddress`
+like the following:
+
+```ts
+const natGatewayProvider = ec2.NatProvider.instanceV2({
+  instanceType: new ec2.InstanceType('t3.small'),
+  associatePublicIpAddress: true,
+});
+```
+
+In certain scenarios where the public subnet has set `mapPublicIpOnLaunch` to `false`, NAT instances does not
+get public IP addresses assigned which would result in non-working NAT instance as NAT instance requires a public
+IP address to enable outbound internet connectivity. Users can specify `associatePublicIpAddress` to `true` to
+solve this problem.
 
 ### Ip Address Management
 
@@ -451,7 +468,7 @@ Here is a break down of IPv4 and IPv6 specifc `subnetConfiguration` properties i
 ```ts
 const vpc = new ec2.Vpc(this, 'TheVPC', {
   ipProtocol: ec2.IpProtocol.DUAL_STACK,
-  
+
   subnetConfiguration: [
     {
       // general properties
@@ -474,7 +491,7 @@ The property `mapPublicIpOnLaunch` controls if a public IPv4 address will be ass
 
 The `ipv6AssignAddressOnCreation` property controls the same behavior for the IPv6 address. It defaults to true.
 
-Using IPv6 specific properties in an IPv4 only VPC will result in errors. 
+Using IPv6 specific properties in an IPv4 only VPC will result in errors.
 
 ### Accessing the Internet Gateway
 
@@ -1521,7 +1538,20 @@ const host = new ec2.BastionHostLinux(this, 'BastionHost', {
 });
 ```
 
-### Placement Group 
+It's recommended to set the `@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault`
+[feature flag](https://docs.aws.amazon.com/cdk/v2/guide/featureflags.html) to `true` to use Amazon Linux 2023 as the
+bastion host AMI. Without this flag set, the bastion host will default to Amazon Linux 2, which will be unsupported in
+June 2025.
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault": true
+  }
+}
+```
+
+### Placement Group
 
 Specify `placementGroup` to enable the placement group support:
 
@@ -1596,6 +1626,33 @@ new ec2.Instance(this, 'Instance', {
       volume: ec2.BlockDeviceVolume.ebs(50, {
         encrypted: true,
         kmsKey: kmsKey,
+      }),
+    },
+  ],
+});
+
+```
+
+To specify the throughput value for `gp3` volumes, use the `throughput` property:
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const instanceType: ec2.InstanceType;
+declare const machineImage: ec2.IMachineImage;
+
+new ec2.Instance(this, 'Instance', {
+  vpc,
+  instanceType,
+  machineImage,
+
+  // ...
+
+  blockDevices: [
+    {
+      deviceName: '/dev/sda1',
+      volume: ec2.BlockDeviceVolume.ebs(100, {
+        volumeType: ec2.EbsDeviceVolumeType.GP3,
+        throughput: 250,
       }),
     },
   ],
@@ -1882,6 +1939,23 @@ Note to set `mapPublicIpOnLaunch` to true in the `subnetConfiguration`.
 
 Additionally, IPv6 support varies by instance type. Most instance types have IPv6 support with exception of m1-m3, c1, g2, and t1.micro. A full list can be found here: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-eni.html#AvailableIpPerENI.
 
+#### Specifying the IPv6 Address
+
+If you want to specify [the number of IPv6 addresses](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/MultipleIP.html#assign-multiple-ipv6) to assign to the instance, you can use the `ipv6AddresseCount` property:
+
+```ts
+// dual stack VPC
+declare const vpc: ec2.Vpc;
+
+const instance = new ec2.Instance(this, 'MyInstance', {
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
+  machineImage: ec2.MachineImage.latestAmazonLinux2(),
+  vpc: vpc,
+  vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+  // Assign 2 IPv6 addresses to the instance
+  ipv6AddressCount: 2,
+});
+```
 
 ### Credit configuration modes for burstable instances
 
@@ -1912,6 +1986,86 @@ new ec2.Vpc(this, 'VPC', {
 ```
 
 **Note**: `CpuCredits.UNLIMITED` mode is not supported for T3 instances that are launched on a Dedicated Host.
+
+### Shutdown behavior
+
+You can specify the behavior of the instance when you initiate shutdown from the instance (using the operating system command for system shutdown).
+
+```ts
+declare const vpc: ec2.Vpc;
+
+new ec2.Instance(this, 'Instance', {
+  vpc,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.NANO),
+  machineImage: new ec2.AmazonLinuxImage({ generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 }),
+  instanceInitiatedShutdownBehavior: ec2.InstanceInitiatedShutdownBehavior.TERMINATE, // default is STOP
+});
+```
+
+### Enabling Nitro Enclaves
+
+You can enable [AWS Nitro Enclaves](https://docs.aws.amazon.com/enclaves/latest/user/nitro-enclave.html) for
+your EC2 instances by setting the `enclaveEnabled` property to `true`. Nitro Enclaves is a feature of
+AWS Nitro System that enables creating isolated and highly constrained CPU environments known as enclaves.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const instance = new ec2.Instance(this, 'Instance', {
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE),
+  machineImage: new ec2.AmazonLinuxImage(),
+  vpc: vpc,
+  enclaveEnabled: true,
+});
+```
+
+> NOTE: You must use an instance type and operating system that support Nitro Enclaves.
+> For more information, see [Requirements](https://docs.aws.amazon.com/enclaves/latest/user/nitro-enclave.html#nitro-enclave-reqs).
+
+### Enabling Termination Protection
+
+You can enable [Termination Protection](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Using_ChangingDisableAPITermination.html) for
+your EC2 instances by setting the `disableApiTermination` property to `true`. Termination Protection controls whether the instance can be terminated using the AWS Management Console, AWS Command Line Interface (AWS CLI), or API.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const instance = new ec2.Instance(this, 'Instance', {
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE),
+  machineImage: new ec2.AmazonLinuxImage(),
+  vpc: vpc,
+  disableApiTermination: true,
+});
+```
+
+### Enabling Instance Hibernation
+
+You can enable [Instance Hibernation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Hibernate.html) for
+your EC2 instances by setting the `hibernationEnabled` property to `true`. Instance Hibernation saves the
+instance's in-memory (RAM) state when an instance is stopped, and restores that state when the instance is started.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const instance = new ec2.Instance(this, 'Instance', {
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE),
+  machineImage: new ec2.AmazonLinuxImage(),
+  vpc: vpc,
+  hibernationEnabled: true,
+  blockDevices: [{
+    deviceName: '/dev/xvda',
+    volume: ec2.BlockDeviceVolume.ebs(30, {
+      volumeType: ec2.EbsDeviceVolumeType.GP3,
+      encrypted: true,
+      deleteOnTermination: true,
+    }),
+  }],
+});
+```
+
+> NOTE: You must use an instance and a volume that meet the requirements for hibernation.
+> For more information, see [Prerequisites for Amazon EC2 instance hibernation](https://docs.aws.amazon.com/enclaves/latest/user/nitro-enclave.html#nitro-enclave-reqs).
+
 
 ## VPC Flow Logs
 
@@ -2223,6 +2377,8 @@ const instanceProfile = new iam.InstanceProfile(this, 'InstanceProfile', {
 });
 
 const template = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
+  launchTemplateName: 'MyTemplateV1',
+  versionDescription: 'This is my v1 template',
   machineImage: ec2.MachineImage.latestAmazonLinux2023(),
   securityGroup: new ec2.SecurityGroup(this, 'LaunchTemplateSG', {
     vpc: vpc,
@@ -2388,3 +2544,26 @@ new ec2.NetworkInterface(this, 'NetworkInterface', {
 ```
 
 For more information see [Scenarios for network interfaces](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/scenarios-enis.html).
+
+### IAM instance profile
+
+Use `instanceProfile` to apply specific IAM Instance Profile. Cannot be used with role
+
+```ts
+declare const instanceType: ec2.InstanceType;
+declare const vpc: ec2.Vpc;
+
+const role = new iam.Role(this, 'Role', {
+  assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+});
+const instanceProfile = new iam.InstanceProfile(this, 'InstanceProfile', {
+  role,
+});
+
+new ec2.Instance(this, 'Instance', {
+  vpc,
+  instanceType,
+  machineImage: ec2.MachineImage.latestAmazonLinux2023(),
+  instanceProfile,
+});
+```

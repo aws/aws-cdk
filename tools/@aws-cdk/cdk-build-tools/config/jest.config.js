@@ -1,5 +1,3 @@
-const { cpus } = require('os');
-
 module.exports = {
   // The preset deals with preferring TS over JS
   moduleFileExtensions: [
@@ -7,9 +5,7 @@ module.exports = {
     'ts',
     'js',
   ],
-  testMatch: [
-    '<rootDir>/test/**/?(*.)+(test).ts',
-  ],
+  testMatch: ['<rootDir>/test/**/?(*.)+(test).ts'],
 
   // Transform TypeScript using ts-jest. Use of this preset still requires the depending
   // package to depend on `ts-jest` directly.
@@ -22,11 +18,8 @@ module.exports = {
       },
     ],
   },
-
-  // Limit workers to a reasonable fixed number. If we scale in the number of available CPUs, we will explode
-  // our memory limit on the CodeBuild instance that has 72 CPUs.
-  maxWorkers: Math.min(8, cpus().length - 1),
-
+  // Jest is resource greedy so this shouldn't be more than 50%
+  maxWorkers: '50%',
   testEnvironment: 'node',
   coverageThreshold: {
     global: {
@@ -36,19 +29,16 @@ module.exports = {
   },
   collectCoverage: true,
   coverageReporters: [
-    'lcov',
-    'html',
-    'text-summary',
-    ['text', { file: 'coverage.txt' }],
+    'text-summary', // for console summary
+    'cobertura', // for codecov. see https://docs.codecov.com/docs/code-coverage-with-javascript
+    'html' // for local deep dive
   ],
-  coveragePathIgnorePatterns: [
-    '\\.generated\\.[jt]s$',
-    '<rootDir>/test/',
-    '.warnings.jsii.js$',
-    '/node_modules/',
-  ],
-  reporters: [
-    'default',
-    ['jest-junit', { suiteName: 'jest tests', outputDirectory: 'coverage' }],
-  ],
+  coveragePathIgnorePatterns: ['\\.generated\\.[jt]s$', '<rootDir>/test/', '.warnings.jsii.js$', '/node_modules/'],
+  reporters: ['default', ['jest-junit', { suiteName: 'jest tests', outputDirectory: 'coverage' }]],
+  /**
+   * This will still show us helpful information when running tests but remove console statements.
+   * The exception is when we use our custom logger in the CLI or when other processes are spun up
+   * within tests. It has no impact there.
+   */
+  silent: true,
 };

@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "AppRunnerIpAddressType/DefaultTest": {
+      "stacks": [
+        "integ-apprunner-ip-address-type"
+      ],
+      "assertionStack": "AppRunnerIpAddressType/DefaultTest/DeployAssert",
+      "assertionStackName": "AppRunnerIpAddressTypeDefaultTestDeployAssertAC7DD6FC"
+    }
+  }
+}

@@ -1,3 +1,4 @@
+import * as child_process from 'child_process';
 import * as path from 'path';
 import { Match, Template } from '../../assertions';
 import * as ecr from '../../aws-ecr';
@@ -12,6 +13,85 @@ describe('code', () => {
     test('fails if used with unsupported runtimes', () => {
       expect(() => defineFunction(lambda.Code.fromInline('boom'), lambda.Runtime.GO_1_X)).toThrow(/Inline source not allowed for go1\.x/);
       expect(() => defineFunction(lambda.Code.fromInline('boom'), lambda.Runtime.JAVA_8)).toThrow(/Inline source not allowed for java8/);
+    });
+  });
+
+  describe('lambda.Code.fromCustomCommand', () => {
+    let spawnSyncMock: jest.SpyInstance;
+    beforeEach(() => {
+      spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue({
+        status: 0,
+        stderr: Buffer.from('stderr'),
+        stdout: Buffer.from('stdout'),
+        pid: 123,
+        output: ['stdout', 'stderr'],
+        signal: null,
+      });
+    });
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    test('fails if command is empty', () => {
+      // GIVEN
+      const command = [];
+
+      // THEN
+      expect(() => lambda.Code.fromCustomCommand('', command)).toThrow('command must contain at least one argument. For example, ["node", "buildFile.js"].');
+    });
+    test('properly splices arguments', () => {
+      // GIVEN
+      const command = 'node is a great command, wow'.split(' ');
+      lambda.Code.fromCustomCommand('', command);
+
+      // THEN
+      expect(spawnSyncMock).toHaveBeenCalledWith(
+        'node',
+        ['is', 'a', 'great', 'command,', 'wow'],
+      );
+    });
+    test('command of length 1 does not cause crash', () => {
+      // WHEN
+      lambda.Code.fromCustomCommand('', ['node']);
+
+      // THEN
+      expect(spawnSyncMock).toHaveBeenCalledWith('node', []);
+    });
+    test('properly splices arguments when commandOptions are included', () => {
+      // GIVEN
+      const command = 'node is a great command, wow'.split(' ');
+      const commandOptions = { commandOptions: { cwd: '/tmp', env: { SOME_KEY: 'SOME_VALUE' } } };
+      lambda.Code.fromCustomCommand('', command, commandOptions);
+
+      // THEN
+      expect(spawnSyncMock).toHaveBeenCalledWith(
+        'node',
+        ['is', 'a', 'great', 'command,', 'wow'],
+        commandOptions.commandOptions,
+      );
+    });
+    test('throws custom error message when spawnSync errors', () => {
+      // GIVEN
+      jest.restoreAllMocks(); // use the real spawnSync, which doesn't work in unit tests.
+      const command = ['whatever'];
+
+      // THEN
+      expect(() => lambda.Code.fromCustomCommand('', command)).toThrow(/Failed to execute custom command: .*/);
+    });
+    test('throws custom error message when spawnSync exits with non-zero status code', () => {
+      // GIVEN
+      const command = ['whatever'];
+      spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue({
+        status: 1,
+        stderr: Buffer.from('stderr'),
+        stdout: Buffer.from('stdout'),
+        pid: 123,
+        output: ['stdout', 'stderr'],
+        signal: null,
+      });
+
+      // THEN
+      expect(() => lambda.Code.fromCustomCommand('', command)).toThrow('whatever exited with status: 1\n\nstdout: stdout\n\nstderr: stderr');
     });
   });
 
@@ -365,7 +445,7 @@ describe('code', () => {
       // then
       Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
         Metadata: {
-          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.da491b551a48a7aaf33f41a3bfe7eb269112a87ba24651a2ff8f2d526ca4466c',
+          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.94589594a9968c9eeb447189c1c5b83b4f8b95f12c392a82749abcd36ecbbfb8',
           [cxapi.ASSET_RESOURCE_METADATA_DOCKERFILE_PATH_KEY]: dockerfilePath,
           [cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_ARGS_KEY]: dockerBuildArgs,
           [cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_SSH_KEY]: dockerBuildSsh,
@@ -390,7 +470,7 @@ describe('code', () => {
       // then
       Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
         Metadata: {
-          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.05ed717106fc60c50f9e1b4b59a33e1c218fbcb03d11f78f5bef460c40a90b74',
+          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.1abd5e50b7a576ba32f8d038dfcd3665b4c34aa82ed17576969830142a99f254',
           [cxapi.ASSET_RESOURCE_METADATA_DOCKERFILE_PATH_KEY]: 'Dockerfile',
           [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'Code.ImageUri',
         },
@@ -423,7 +503,7 @@ describe('code', () => {
       // then
       Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
         Metadata: {
-          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.da491b551a48a7aaf33f41a3bfe7eb269112a87ba24651a2ff8f2d526ca4466c',
+          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.94589594a9968c9eeb447189c1c5b83b4f8b95f12c392a82749abcd36ecbbfb8',
           [cxapi.ASSET_RESOURCE_METADATA_DOCKERFILE_PATH_KEY]: dockerfilePath,
           [cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_ARGS_KEY]: dockerBuildArgs,
           [cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_SSH_KEY]: dockerBuildSsh,

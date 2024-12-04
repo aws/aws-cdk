@@ -888,6 +888,40 @@ const applicationLoadBalancedFargateService = new ecsPatterns.ApplicationLoadBal
 });
 ```
 
+### Customize Container Name for ScheduledFargateTask
+
+```ts
+declare const cluster: ecs.Cluster;
+const scheduledFargateTask = new ecsPatterns.ScheduledFargateTask(this, 'ScheduledFargateTask', {
+  cluster,
+  scheduledFargateTaskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+    containerName: 'customContainerName',  
+    memoryLimitMiB: 512,
+  },
+  schedule: appscaling.Schedule.expression('rate(1 minute)'),
+  platformVersion: ecs.FargatePlatformVersion.LATEST,
+});
+```
+
+### Customize Container Name for ScheduledEc2Task
+
+```ts
+declare const cluster: ecs.Cluster;
+const ecsScheduledTask = new ecsPatterns.ScheduledEc2Task(this, 'ScheduledTask', {
+    cluster,
+    scheduledEc2TaskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        containerName: 'customContainerName',
+        memoryLimitMiB: 256,
+        environment: { name: 'TRIGGER', value: 'CloudWatch Events' },
+    },
+    schedule: appscaling.Schedule.expression('rate(1 minute)'),
+    enabled: true,
+    ruleName: 'sample-scheduled-task-rule',
+});
+```
+
 ### Set PlatformVersion for ScheduledFargateTask
 
 ```ts
@@ -1089,7 +1123,93 @@ const queueProcessingFargateService = new ecsPatterns.NetworkLoadBalancedFargate
 });
 ```
 
-### Use dualstack NLB
+### Set TLS for NetworkLoadBalancedFargateService / NetworkLoadBalancedEc2Service
+
+To set up TLS listener in Network Load Balancer, you need to pass extactly one ACM certificate into the option `listenerCertificate`. The listener port and the target group port will also become 443 by default. You can override the listener's port with `listenerPort` and the target group's port with `taskImageOptions.containerPort`.
+
+```ts
+import { Certificate } from 'aws-cdk-lib/aws-certificatemanager';
+
+const certificate = Certificate.fromCertificateArn(this, 'Cert', 'arn:aws:acm:us-east-1:123456:certificate/abcdefg');
+const loadBalancedFargateService = new ecsPatterns.NetworkLoadBalancedFargateService(this, 'Service', {
+  // The default value of listenerPort is 443 if you pass in listenerCertificate
+  // It is configured to port 4443 here
+  listenerPort: 4443,
+  listenerCertificate: certificate,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+    // The default value of containerPort is 443 if you pass in listenerCertificate
+    // It is configured to port 8443 here
+    containerPort: 8443,
+  },
+});
+```
+
+```ts
+import { Certificate } from 'aws-cdk-lib/aws-certificatemanager';
+
+declare const cluster: ecs.Cluster;
+const certificate = Certificate.fromCertificateArn(this, 'Cert', 'arn:aws:acm:us-east-1:123456:certificate/abcdefg');
+const loadBalancedEcsService = new ecsPatterns.NetworkLoadBalancedEc2Service(this, 'Service', {
+  cluster,
+  memoryLimitMiB: 1024,
+  // The default value of listenerPort is 443 if you pass in listenerCertificate
+  // It is configured to port 4443 here
+  listenerPort: 4443,
+  listenerCertificate: certificate,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry('test'),
+    // The default value of containerPort is 443 if you pass in listenerCertificate
+    // It is configured to port 8443 here
+    containerPort: 8443,
+    environment: {
+      TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
+      TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value",
+    },
+  },
+  desiredCount: 2,
+});
+```
+
+### Use dualstack Load Balancer
+
+You can use dualstack IP address type for Application Load Balancer and Network Load Balancer.
+
+To use dualstack IP address type, you must have associated IPv6 CIDR blocks with the VPC and subnets and set the `ipAddressType` to `IpAddressType.DUAL_STACK` when creating the load balancer.
+
+### Application Load Balancer
+
+You can use dualstack Application Load Balancer for Fargate and EC2 services.
+
+```ts
+import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
+
+// The VPC and subnet must have associated IPv6 CIDR blocks.
+const vpc = new ec2.Vpc(this, 'Vpc', {
+  ipProtocol: ec2.IpProtocol.DUAL_STACK,
+});
+const cluster = new ecs.Cluster(this, 'EcsCluster', { vpc });
+
+const service = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'myService', {
+  cluster,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  },
+  ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+});
+
+const applicationLoadBalancedEc2Service = new ecsPatterns.ApplicationLoadBalancedEc2Service(this, 'myService', {
+  cluster,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  },
+  ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+});
+```
+
+### Network Load Balancer
+
+You can use dualstack Network Load Balancer for Fargate and EC2 services.
 
 ```ts
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';

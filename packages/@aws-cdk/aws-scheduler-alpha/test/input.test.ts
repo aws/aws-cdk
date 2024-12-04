@@ -43,7 +43,24 @@ describe('schedule target input', () => {
     Template.fromStack(stack).hasResource('AWS::Scheduler::Schedule', {
       Properties: {
         Target: {
-          Input: '"test"',
+          Input: 'test',
+        },
+      },
+    });
+  });
+
+  test('create an input from text concatenated from literal string with a token', () => {
+    new Schedule(stack, 'MyScheduleDummy', {
+      schedule: expr,
+      target: new SomeLambdaTarget(func, ScheduleTargetInput.fromText(`ac-${stack.account}`)),
+    });
+
+    Template.fromStack(stack).hasResource('AWS::Scheduler::Schedule', {
+      Properties: {
+        Target: {
+          Input: {
+            'Fn::Join': ['', ['ac-', { Ref: 'AWS::AccountId' }]],
+          },
         },
       },
     });
@@ -54,12 +71,11 @@ describe('schedule target input', () => {
       schedule: expr,
       target: new SomeLambdaTarget(func, ScheduleTargetInput.fromText(stack.account)),
     });
+
     Template.fromStack(stack).hasResource('AWS::Scheduler::Schedule', {
       Properties: {
         Target: {
-          Input: {
-            'Fn::Join': ['', ['"', { Ref: 'AWS::AccountId' }, '"']],
-          },
+          Input: { Ref: 'AWS::AccountId' },
         },
       },
     });
@@ -115,7 +131,7 @@ describe('schedule target input', () => {
     Template.fromStack(stack).hasResource('AWS::Scheduler::Schedule', {
       Properties: {
         Target: {
-          Input: '"Test=<aws.scheduler.schedule-arn>"',
+          Input: 'Test=<aws.scheduler.schedule-arn>',
         },
       },
     });
@@ -143,26 +159,6 @@ describe('schedule target input', () => {
             '"tim":"<aws.scheduler.scheduled-time>",' +
             '"cus":"<aws.scheduler.escapehatch>"}',
         },
-      },
-    });
-  });
-
-  test('can override target input', () => {
-    // WHEN
-    const input = ScheduleTargetInput.fromText('Original Input');
-    new Schedule(stack, 'TestSchedule', {
-      schedule: expr,
-      target: new SomeLambdaTarget(func, input),
-      targetOverrides: {
-        input: ScheduleTargetInput.fromText('Overridden Input'),
-      },
-      enabled: false,
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Scheduler::Schedule', {
-      Target: {
-        Input: '"Overridden Input"',
       },
     });
   });
