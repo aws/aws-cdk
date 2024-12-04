@@ -1711,7 +1711,7 @@ describe('cluster', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
 
-    new ecs.Cluster(stack, 'EcsCluster', { containerInsights: true });
+    new ecs.Cluster(stack, 'EcsCluster', { containerInsights: ContainerInsights.ENABLED });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::Cluster', {
@@ -1730,7 +1730,7 @@ describe('cluster', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
 
-    new ecs.Cluster(stack, 'EcsCluster', { containerInsights: false });
+    new ecs.Cluster(stack, 'EcsCluster', { containerInsights: ContainerInsights.DISABLED });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::Cluster', {
@@ -1738,6 +1738,25 @@ describe('cluster', () => {
         {
           Name: 'containerInsights',
           Value: 'disabled',
+        },
+      ],
+    });
+
+  });
+
+  test('enable enhanced container insights', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    new ecs.Cluster(stack, 'EcsCluster', { containerInsights: ContainerInsights.ENHANCED });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Cluster', {
+      ClusterSettings: [
+        {
+          Name: 'containerInsights',
+          Value: 'enhanced',
         },
       ],
     });
