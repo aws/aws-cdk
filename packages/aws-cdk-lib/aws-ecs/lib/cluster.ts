@@ -66,11 +66,12 @@ export interface ClusterProps {
   readonly enableFargateCapacityProviders?: boolean;
 
   /**
-   * If true CloudWatch Container Insights will be enabled for the cluster
+   * If enabled CloudWatch Container Insights will be enabled for the cluster.
+   * If enhanced, enhanced CloudWatch Container Insights will be enabled.
    *
    * @default - Container Insights will be disabled for this cluster.
    */
-  readonly containerInsights?: boolean;
+  readonly containerInsights?: ContainerInsights;
 
   /**
    * The execute command configuration for the cluster
@@ -233,7 +234,7 @@ export class Cluster extends Resource implements ICluster {
     if (props.containerInsights !== undefined) {
       clusterSettings = [{
         name: 'containerInsights',
-        value: props.containerInsights ? ContainerInsights.ENABLED : ContainerInsights.DISABLED,
+        value: props.containerInsights,
       }];
     }
 
@@ -1095,18 +1096,28 @@ export interface CloudMapNamespaceOptions {
   readonly useForServiceConnect?: boolean;
 
 }
-
-enum ContainerInsights {
+/**
+ * The configuration for CloudWatch Container Insights for an ECS cluster.
+ */
+export enum ContainerInsights {
   /**
-   * Enable CloudWatch Container Insights for the cluster
+   * Enable CloudWatch Container Insights for the ECS cluster.
+   * This will enable basic Container Insights metrics and logs.
    */
-
   ENABLED = 'enabled',
 
   /**
-   * Disable CloudWatch Container Insights for the cluster
+   * Disable CloudWatch Container Insights for the ECS cluster.
+   * No Container Insights metrics or logs will be collected.
    */
   DISABLED = 'disabled',
+
+  /**
+   * Enable Enhanced Container Insights for the ECS cluster.
+   * This provides additional metrics and more detailed monitoring capabilities
+   * beyond the basic Container Insights.
+   */
+  ENHANCED = 'enhanced',
 }
 
 /**
