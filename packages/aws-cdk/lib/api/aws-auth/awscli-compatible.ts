@@ -5,6 +5,7 @@ import { loadSharedConfigFiles } from '@smithy/shared-ini-file-loader';
 import { AwsCredentialIdentityProvider, Logger } from '@smithy/types';
 import * as promptly from 'promptly';
 import { ProxyAgent } from 'proxy-agent';
+import { makeCachingProvider } from './provider-caching';
 import type { SdkHttpOptions } from './sdk-provider';
 import { readIfPossible } from './util';
 import { debug } from '../../logging';
@@ -23,6 +24,8 @@ const DEFAULT_TIMEOUT = 300000;
 export class AwsCliCompatible {
   /**
    * Build an AWS CLI-compatible credential chain provider
+   *
+   * The credential chain returned by this function is always caching.
    */
   public static async credentialChainBuilder(
     options: CredentialChainOptions = {},
@@ -43,13 +46,13 @@ export class AwsCliCompatible {
      * environment credentials still take precedence over AWS_PROFILE
      */
     if (options.profile) {
-      return fromIni({
+      return makeCachingProvider(fromIni({
         profile: options.profile,
         ignoreCache: true,
         mfaCodeProvider: tokenCodeFn,
         clientConfig,
         logger: options.logger,
-      });
+      }));
     }
 
     const envProfile = process.env.AWS_PROFILE || process.env.AWS_DEFAULT_PROFILE;
@@ -74,6 +77,8 @@ export class AwsCliCompatible {
      * fromContainerMetadata()
      * fromTokenFile()
      * fromInstanceMetadata()
+     *
+     * The NodeProviderChain is already cached.
      */
     const nodeProviderChain = fromNodeProviderChain({
       profile: envProfile,

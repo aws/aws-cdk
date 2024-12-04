@@ -311,11 +311,11 @@ import { GetCallerIdentityCommand, STSClient } from '@aws-sdk/client-sts';
 import { Upload } from '@aws-sdk/lib-storage';
 import { getEndpointFromInstructions } from '@smithy/middleware-endpoint';
 import type { NodeHttpHandlerOptions } from '@smithy/node-http-handler';
-import { AwsCredentialIdentity, Logger } from '@smithy/types';
+import { AwsCredentialIdentityProvider, Logger } from '@smithy/types';
 import { ConfiguredRetryStrategy } from '@smithy/util-retry';
 import { WaiterResult } from '@smithy/util-waiter';
 import { AccountAccessKeyCache } from './account-cache';
-import { cached } from './cached';
+import { cachedAsync } from './cached';
 import { Account } from './sdk-provider';
 import { defaultCliUserAgent } from './user-agent';
 import { debug } from '../../logging';
@@ -350,7 +350,7 @@ export interface SdkOptions {
 
 export interface ConfigurationOptions {
   region: string;
-  credentials: AwsCredentialIdentity;
+  credentials: AwsCredentialIdentityProvider;
   requestHandler: NodeHttpHandlerOptions;
   retryStrategy: ConfiguredRetryStrategy;
   customUserAgent: string;
@@ -542,14 +542,14 @@ export class SDK {
   private _credentialsValidated = false;
 
   constructor(
-    private readonly _credentials: AwsCredentialIdentity,
+    private readonly credProvider: AwsCredentialIdentityProvider,
     region: string,
     requestHandler: NodeHttpHandlerOptions,
     logger?: Logger,
   ) {
     this.config = {
       region,
-      credentials: _credentials,
+      credentials: credProvider,
       requestHandler,
       retryStrategy: new ConfiguredRetryStrategy(7, (attempt) => 300 * (2 ** attempt)),
       customUserAgent: defaultCliUserAgent(),
@@ -943,8 +943,9 @@ export class SDK {
   }
 
   public async currentAccount(): Promise<Account> {
-    return cached(this, CURRENT_ACCOUNT_KEY, () =>
-      SDK.accountCache.fetch(this._credentials.accessKeyId, async () => {
+    return cachedAsync(this, CURRENT_ACCOUNT_KEY, async () => {
+      const creds = await this.credProvider();
+      return SDK.accountCache.fetch(creds.accessKeyId, async () => {
         // if we don't have one, resolve from STS and store in cache.
         debug('Looking up default account ID from STS');
         const client = new STSClient({
@@ -963,8 +964,8 @@ export class SDK {
         // Save another STS call later if this one already succeeded
         this._credentialsValidated = true;
         return { accountId, partition };
-      }),
-    );
+      });
+    });
   }
 
   /**
