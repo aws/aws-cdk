@@ -1572,7 +1572,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "KubectlReadyBarrier": {
@@ -2069,13 +2069,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_eks.KubernetesManifest",
+                      "fqn": "@aws-cdk/aws-eks-v2-alpha.KubernetesManifest",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_eks.AwsAuth",
+                  "fqn": "@aws-cdk/aws-eks-v2-alpha.AwsAuth",
                   "version": "0.0.0"
                 }
               },
@@ -2248,7 +2248,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_eks.Nodegroup",
+                  "fqn": "@aws-cdk/aws-eks-v2-alpha.Nodegroup",
                   "version": "0.0.0"
                 }
               },
@@ -2332,24 +2332,34 @@
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-cdk-eks-cluster-ipv6-test/Cluster/fargate-profile-default/Resource",
-                    "children": {
-                      "Default": {
-                        "id": "Default",
-                        "path": "aws-cdk-eks-cluster-ipv6-test/Cluster/fargate-profile-default/Resource/Default",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
-                          "version": "0.0.0"
-                        }
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EKS::FargateProfile",
+                      "aws:cdk:cloudformation:props": {
+                        "clusterName": {
+                          "Ref": "Cluster9EE0221C"
+                        },
+                        "podExecutionRoleArn": {
+                          "Fn::GetAtt": [
+                            "ClusterfargateprofiledefaultPodExecutionRole09952CFF",
+                            "Arn"
+                          ]
+                        },
+                        "selectors": [
+                          {
+                            "namespace": "default",
+                            "labels": []
+                          }
+                        ]
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CustomResource",
+                      "fqn": "aws-cdk-lib.aws_eks.CfnFargateProfile",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_eks.FargateProfile",
+                  "fqn": "@aws-cdk/aws-eks-v2-alpha.FargateProfile",
                   "version": "0.0.0"
                 }
               },
@@ -4615,7 +4625,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_eks.HelmChart",
+                  "fqn": "@aws-cdk/aws-eks-v2-alpha.HelmChart",
                   "version": "0.0.0"
                 }
               },
@@ -4788,7 +4798,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_eks.Nodegroup",
+                  "fqn": "@aws-cdk/aws-eks-v2-alpha.Nodegroup",
                   "version": "0.0.0"
                 }
               },
@@ -4964,7 +4974,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_eks.Nodegroup",
+                  "fqn": "@aws-cdk/aws-eks-v2-alpha.Nodegroup",
                   "version": "0.0.0"
                 }
               },
@@ -5137,7 +5147,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_eks.Nodegroup",
+                  "fqn": "@aws-cdk/aws-eks-v2-alpha.Nodegroup",
                   "version": "0.0.0"
                 }
               },
@@ -5310,7 +5320,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_eks.Nodegroup",
+                  "fqn": "@aws-cdk/aws-eks-v2-alpha.Nodegroup",
                   "version": "0.0.0"
                 }
               },
@@ -5367,7 +5377,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_eks.Nodegroup",
+                  "fqn": "@aws-cdk/aws-eks-v2-alpha.Nodegroup",
                   "version": "0.0.0"
                 }
               },
@@ -5395,7 +5405,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_eks.KubernetesManifest",
+                  "fqn": "@aws-cdk/aws-eks-v2-alpha.KubernetesManifest",
                   "version": "0.0.0"
                 }
               },
@@ -5423,7 +5433,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_eks.HelmChart",
+                  "fqn": "@aws-cdk/aws-eks-v2-alpha.HelmChart",
                   "version": "0.0.0"
                 }
               },
@@ -5451,7 +5461,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_eks.HelmChart",
+                  "fqn": "@aws-cdk/aws-eks-v2-alpha.HelmChart",
                   "version": "0.0.0"
                 }
               },
@@ -5479,7 +5489,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_eks.KubernetesManifest",
+                  "fqn": "@aws-cdk/aws-eks-v2-alpha.KubernetesManifest",
                   "version": "0.0.0"
                 }
               },
@@ -5507,7 +5517,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_eks.KubernetesManifest",
+                  "fqn": "@aws-cdk/aws-eks-v2-alpha.KubernetesManifest",
                   "version": "0.0.0"
                 }
               },
@@ -5535,7 +5545,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_eks.HelmChart",
+                  "fqn": "@aws-cdk/aws-eks-v2-alpha.HelmChart",
                   "version": "0.0.0"
                 }
               },
@@ -5648,13 +5658,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_eks.KubernetesManifest",
+                      "fqn": "@aws-cdk/aws-eks-v2-alpha.KubernetesManifest",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_eks.ServiceAccount",
+                  "fqn": "@aws-cdk/aws-eks-v2-alpha.ServiceAccount",
                   "version": "0.0.0"
                 }
               },
@@ -5682,7 +5692,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_eks.OpenIdConnectProvider",
+                  "fqn": "@aws-cdk/aws-eks-v2-alpha.OpenIdConnectProvider",
                   "version": "0.0.0"
                 }
               },
@@ -5795,19 +5805,19 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_eks.KubernetesManifest",
+                      "fqn": "@aws-cdk/aws-eks-v2-alpha.KubernetesManifest",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_eks.ServiceAccount",
+                  "fqn": "@aws-cdk/aws-eks-v2-alpha.ServiceAccount",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_eks.Cluster",
+              "fqn": "@aws-cdk/aws-eks-v2-alpha.Cluster",
               "version": "0.0.0"
             }
           },
@@ -5855,7 +5865,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
                           },
-                          "s3Key": "22de69e75b55e15d4d49905d8a4901edd66d1367f617c2a01ac6e86ca2b7eb84.zip"
+                          "s3Key": "93d96d34e0d3cd20eb082652b91012b131bdc34fcf2bc16eb4170e04772fddb1.zip"
                         },
                         "description": "/opt/nodejs/node_modules/proxy-agent"
                       }
@@ -5968,7 +5978,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
                           },
-                          "s3Key": "1eaf141d4012ab0977a33bdf864ebbc6aa869a607e97fab6cd231fe6ef503aec.zip"
+                          "s3Key": "a2c21e49681db6d38ad6c55b325a1168522925850c5e1e96b8f94f9bada84cef.zip"
                         },
                         "description": "onEvent handler for EKS cluster resource provider",
                         "environment": {
@@ -6100,7 +6110,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
                           },
-                          "s3Key": "1eaf141d4012ab0977a33bdf864ebbc6aa869a607e97fab6cd231fe6ef503aec.zip"
+                          "s3Key": "a2c21e49681db6d38ad6c55b325a1168522925850c5e1e96b8f94f9bada84cef.zip"
                         },
                         "description": "isComplete handler for EKS cluster resource provider",
                         "environment": {
@@ -6323,7 +6333,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
                               },
-                              "s3Key": "46fb886516825167db3571f1ed91110fc6163ce20ee26fdb097c2c983f25fcd6.zip"
+                              "s3Key": "fe4094cd52f099e46f858f05efdde02f5de79288c9c783676b3fa53a494d04b5.zip"
                             },
                             "description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
                             "environment": {
@@ -6544,7 +6554,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
                               },
-                              "s3Key": "46fb886516825167db3571f1ed91110fc6163ce20ee26fdb097c2c983f25fcd6.zip"
+                              "s3Key": "fe4094cd52f099e46f858f05efdde02f5de79288c9c783676b3fa53a494d04b5.zip"
                             },
                             "description": "AWS CDK resource provider framework - isComplete (aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
                             "environment": {
@@ -6762,7 +6772,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
                               },
-                              "s3Key": "46fb886516825167db3571f1ed91110fc6163ce20ee26fdb097c2c983f25fcd6.zip"
+                              "s3Key": "fe4094cd52f099e46f858f05efdde02f5de79288c9c783676b3fa53a494d04b5.zip"
                             },
                             "description": "AWS CDK resource provider framework - onTimeout (aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
                             "environment": {
@@ -7103,7 +7113,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
                           },
-                          "/acf36df7147f6a8d611b2e0a8d594625a97642c12d016a6fbf3c677c783f41e0.json"
+                          "/6bc30f0b8b2ac244428709f68d814a7de8bdde5ff935ea880e39df0ec32e7bb0.json"
                         ]
                       ]
                     }
@@ -7117,7 +7127,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "@aws-cdk--aws-eks.KubectlProvider": {
@@ -7164,7 +7174,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
                           },
-                          "s3Key": "abc70c90ded969d12235ca11768293cb20557cff54518518480c0d9fb344a098.zip"
+                          "s3Key": "024d0b8c5d7cf69ece484efe22f1647e273f484175ef3b79df543b7538da9c81.zip"
                         },
                         "description": "onEvent handler for EKS kubectl resource provider",
                         "environment": {
@@ -7255,7 +7265,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
                           },
-                          "s3Key": "3322b7049fb0ed2b7cbb644a2ada8d1116ff80c32dca89e6ada846b5de26f961.zip"
+                          "s3Key": "f24ba5e516d9d80b64bc7b0f406eedd12c36b20e7461f3e7719b7ffbdad72410.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -7460,7 +7470,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
                               },
-                              "s3Key": "46fb886516825167db3571f1ed91110fc6163ce20ee26fdb097c2c983f25fcd6.zip"
+                              "s3Key": "fe4094cd52f099e46f858f05efdde02f5de79288c9c783676b3fa53a494d04b5.zip"
                             },
                             "description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.KubectlProvider/Provider)",
                             "environment": {
@@ -7566,7 +7576,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_eks.KubectlProvider",
+              "fqn": "@aws-cdk/aws-eks-v2-alpha.KubectlProvider",
               "version": "0.0.0"
             }
           },
@@ -7615,7 +7625,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
                           },
-                          "/1b52751cdbc52a425751400a1ff5fcd438ef670e77050243bd6312a71c0bf2f7.json"
+                          "/b125b9610685d5cbf09eb1d56aa86c69b8f02a9a1b0a39d0361204325014de78.json"
                         ]
                       ]
                     }
@@ -7629,7 +7639,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "SsmParameterValue:--aws--service--eks--optimized-ami--1.24--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": {
@@ -7752,7 +7762,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_eks.KubernetesManifest",
+              "fqn": "@aws-cdk/aws-eks-v2-alpha.KubernetesManifest",
               "version": "0.0.0"
             }
           },
@@ -7933,7 +7943,7 @@
                 "path": "aws-cdk-eks-cluster-ipv6/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -7979,7 +7989,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },
