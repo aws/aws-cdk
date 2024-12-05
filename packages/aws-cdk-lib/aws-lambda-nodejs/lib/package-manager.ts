@@ -12,6 +12,7 @@ interface PackageManagerProps {
 export enum LockFile {
   NPM = 'package-lock.json',
   YARN = 'yarn.lock',
+  BUN = 'bun.lockb',
   PNPM = 'pnpm-lock.yaml',
 }
 
@@ -45,6 +46,12 @@ export class PackageManager {
           // --no-prefer-frozen-lockfile (works the same as yarn's --no-immutable) Disable --frozen-lockfile that is enabled by default in CI environments (https://github.com/pnpm/pnpm/issues/1994).
           runCommand: ['pnpm', 'exec'],
           argsSeparator: '--',
+        });
+      case LockFile.BUN:
+        return new PackageManager({
+          lockFile: LockFile.BUN,
+          installCommand: logLevel && logLevel !== LogLevel.INFO ? ['bun', 'install', '--frozen-lockfile', '--backend', 'copyfile', '--silent'] : ['bun', 'install', '--frozen-lockfile', '--backend', 'copyfile'],
+          runCommand: ['bun', 'run'],
         });
       default:
         return new PackageManager({
