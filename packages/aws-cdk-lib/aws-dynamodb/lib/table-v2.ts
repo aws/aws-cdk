@@ -11,6 +11,7 @@ import {
   SecondaryIndexProps,
   StreamViewType,
   TableClass,
+  ApproximateCreationDateTimePrecision,
 } from './shared';
 import { ITableV2, TableBaseV2 } from './table-v2-base';
 import { PolicyDocument } from '../../aws-iam';
@@ -158,6 +159,13 @@ export interface TableOptionsV2 {
    * @default - no Kinesis Data Stream
    */
   readonly kinesisStream?: IStream;
+
+  /**
+   * Kinesis Data Stream approximate creation timestamp prescision
+   *
+   * @default ApproximateCreationDateTimePrecision.MICROSECOND
+   */
+  readonly kinesisPrecisionTimestamp?: ApproximateCreationDateTimePrecision;
 
   /**
    * Tags to be applied to the primary table (default replica table).
@@ -693,6 +701,13 @@ export class TableV2 extends TableBaseV2 {
       ? (props.region === this.region ? this.tableOptions.resourcePolicy : props.resourcePolicy) || undefined
       : props.resourcePolicy ?? this.tableOptions.resourcePolicy;
 
+    const kinesisStreamSpecification = props.kinesisStream
+      ? {
+        streamArn: props.kinesisStream.streamArn,
+        ...(props.kinesisPrecisionTimestamp && { approximateCreationDateTimePrecision: props.kinesisPrecisionTimestamp }),
+      }
+      : undefined;
+
     const propTags: Record<string, string> = (props.tags ?? []).reduce((p, item) =>
       ({ ...p, [item.key]: item.value }), {},
     );
@@ -708,9 +723,7 @@ export class TableV2 extends TableBaseV2 {
       deletionProtectionEnabled: props.deletionProtection ?? this.tableOptions.deletionProtection,
       tableClass: props.tableClass ?? this.tableOptions.tableClass,
       sseSpecification: this.encryption?._renderReplicaSseSpecification(this, props.region),
-      kinesisStreamSpecification: props.kinesisStream
-        ? { streamArn: props.kinesisStream.streamArn }
-        : undefined,
+      kinesisStreamSpecification: kinesisStreamSpecification,
       contributorInsightsSpecification: contributorInsights !== undefined
         ? { enabled: contributorInsights }
         : undefined,
@@ -846,6 +859,7 @@ export class TableV2 extends TableBaseV2 {
     replicaTables.push(this.configureReplicaTable({
       region: this.stack.region,
       kinesisStream: this.tableOptions.kinesisStream,
+      kinesisPrecisionTimestamp: this.tableOptions.kinesisPrecisionTimestamp,
       tags: this.tableOptions.tags,
     }));
 
