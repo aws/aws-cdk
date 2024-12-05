@@ -603,6 +603,29 @@ test('Detects pnpm-lock.yaml', () => {
   });
 });
 
+test('Detects bun.lockb', () => {
+  const bunLock = path.join(__dirname, '..', 'bun.lockb');
+  Bundling.bundle(stack, {
+    entry: __filename,
+    projectRoot: path.dirname(bunLock),
+    depsLockFilePath: bunLock,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    nodeModules: ['delay'],
+    forceDockerBundling: true,
+  });
+
+  // Correctly bundles with esbuild
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(bunLock), {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      command: expect.arrayContaining([
+        expect.stringMatching(/bun\.lockb.+bun install --frozen-lockfile/),
+      ]),
+    }),
+  });
+});
+
 test('with Docker build args', () => {
   Bundling.bundle(stack, {
     entry,
