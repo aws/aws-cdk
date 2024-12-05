@@ -2128,7 +2128,18 @@ describe('User Pool', () => {
     });
   });
 
-  // TODO: test('allowFirstAuthFactors throws when the feature plan is Lite')
+  test('allowFirstAuthFactors throws when the feature plan is Lite', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    expect(() => {
+      new UserPool(stack, 'Pool', {
+        allowedFirstAuthFactors: { emailOtp: true },
+        featurePlan: FeaturePlan.LITE,
+      });
+    }).toThrow('To enable passwordless sign-in, set `featurePlan` to `FeaturePlan.ESSENTIALS` or `FeaturePlan.PLUS`.');
+  });
 
   test('passkeyRelyingPartyId is configured', () => {
     // GIVEN

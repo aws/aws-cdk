@@ -1362,7 +1362,9 @@ export class UserPool extends UserPoolBase {
       return undefined;
     }
 
-    // TODO: validate whether the feature plan is not Lite
+    if (props.featurePlan === FeaturePlan.LITE) {
+      throw new Error('To enable passwordless sign-in, set `featurePlan` to `FeaturePlan.ESSENTIALS` or `FeaturePlan.PLUS`.');
+    }
 
     const allowedFirstAuthFactors = ['PASSWORD'];
     if (props.allowedFirstAuthFactors.emailOtp) {
