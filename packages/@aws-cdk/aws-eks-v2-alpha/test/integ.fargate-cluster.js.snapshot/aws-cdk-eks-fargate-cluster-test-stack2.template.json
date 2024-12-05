@@ -7,7 +7,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "bfbdea4d45250c8162c204fe0687cb775e24d61c895ad89e4ca6e9a7fc90b0f0.zip"
+     "S3Key": "0afbe25a9ce0197a83dffd77a86c1560704da246373a4ccafde5476e7e3d0811.zip"
     },
     "Description": "/opt/kubectl/kubectl 1.30; /opt/helm/helm 3.15",
     "LicenseInfo": "Apache-2.0"
@@ -421,42 +421,28 @@
    }
   },
   "FargateClusterfargateprofiledefault10E54561": {
-   "Type": "Custom::AWSCDK-EKS-FargateProfile",
+   "Type": "AWS::EKS::FargateProfile",
    "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
-      "Outputs.awscdkeksfargateclusterteststack2awscdkawseksClusterResourceProviderframeworkonEventB487163FArn"
-     ]
+    "ClusterName": {
+     "Ref": "FargateCluster019F03E8"
     },
-    "AssumeRoleArn": {
+    "PodExecutionRoleArn": {
      "Fn::GetAtt": [
-      "FargateClusterCreationRole8C524AD8",
+      "FargateClusterfargateprofiledefaultPodExecutionRole66F2610E",
       "Arn"
      ]
     },
-    "Config": {
-     "clusterName": {
-      "Ref": "FargateCluster019F03E8"
+    "Selectors": [
+     {
+      "Labels": [],
+      "Namespace": "default"
      },
-     "podExecutionRoleArn": {
-      "Fn::GetAtt": [
-       "FargateClusterfargateprofiledefaultPodExecutionRole66F2610E",
-       "Arn"
-      ]
-     },
-     "selectors": [
-      {
-       "namespace": "default"
-      },
-      {
-       "namespace": "kube-system"
-      }
-     ]
-    }
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
+     {
+      "Labels": [],
+      "Namespace": "kube-system"
+     }
+    ]
+   }
   },
   "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454": {
    "Type": "AWS::CloudFormation::Stack",
@@ -477,7 +463,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/85e61a1e09c8e11520bf9940e7664c749bd4c7e4a5ed3f86c9aa356b883ebde9.json"
+       "/3f64f085a6262292b5c65e278d14c1fe7905c5922ba17228d3ab0addf52e7041.json"
       ]
      ]
     }
@@ -521,7 +507,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/9cd1800a682781a7ca16f75423a2af722c065e312bc779d323b5578687b15be1.json"
+       "/e755d59188c6d320199958ee27c7a43ce5496344cb7e44f29319d850e2dd96ff.json"
       ]
      ]
     }

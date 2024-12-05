@@ -20,12 +20,10 @@ describe('fargate', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-FargateProfile', {
-      Config: {
-        clusterName: { Ref: 'MyCluster8AD82BF8' },
-        podExecutionRoleArn: { 'Fn::GetAtt': ['MyClusterfargateprofileMyProfilePodExecutionRole4795C054', 'Arn'] },
-        selectors: [{ namespace: 'default' }],
-      },
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::FargateProfile', {
+      ClusterName: { Ref: 'MyCluster8AD82BF8' },
+      PodExecutionRoleArn: { 'Fn::GetAtt': ['MyClusterfargateprofileMyProfilePodExecutionRole4795C054', 'Arn'] },
+      Selectors: [{ Namespace: 'default' }],
     });
   });
 
@@ -41,13 +39,11 @@ describe('fargate', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-FargateProfile', {
-      Config: {
-        clusterName: { Ref: 'MyCluster8AD82BF8' },
-        podExecutionRoleArn: { 'Fn::GetAtt': ['MyClusterfargateprofileMyProfilePodExecutionRole4795C054', 'Arn'] },
-        selectors: [{ namespace: 'default' }],
-        fargateProfileName: 'MyProfileName',
-      },
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::FargateProfile', {
+      ClusterName: { Ref: 'MyCluster8AD82BF8' },
+      PodExecutionRoleArn: { 'Fn::GetAtt': ['MyClusterfargateprofileMyProfilePodExecutionRole4795C054', 'Arn'] },
+      Selectors: [{ Namespace: 'default' }],
+      FargateProfileName: 'MyProfileName',
     });
   });
 
@@ -64,12 +60,10 @@ describe('fargate', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-FargateProfile', {
-      Config: {
-        clusterName: { Ref: 'MyCluster8AD82BF8' },
-        podExecutionRoleArn: { 'Fn::GetAtt': ['MyRoleF48FFE04', 'Arn'] },
-        selectors: [{ namespace: 'default' }],
-      },
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::FargateProfile', {
+      ClusterName: { Ref: 'MyCluster8AD82BF8' },
+      PodExecutionRoleArn: { 'Fn::GetAtt': ['MyRoleF48FFE04', 'Arn'] },
+      Selectors: [{ Namespace: 'default' }],
     });
   });
 
@@ -87,16 +81,20 @@ describe('fargate', () => {
     Tags.of(cluster).add('propTag', '123');
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-FargateProfile', {
-      Config: {
-        selectors: [{ namespace: 'default' }],
-        clusterName: { Ref: 'MyCluster8AD82BF8' },
-        podExecutionRoleArn: { 'Fn::GetAtt': ['MyClusterfargateprofileMyProfilePodExecutionRole4795C054', 'Arn'] },
-        tags: {
-          propTag: '123',
-          aspectTag: 'hello',
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::FargateProfile', {
+      Selectors: [{ Namespace: 'default' }],
+      ClusterName: { Ref: 'MyCluster8AD82BF8' },
+      PodExecutionRoleArn: { 'Fn::GetAtt': ['MyClusterfargateprofileMyProfilePodExecutionRole4795C054', 'Arn'] },
+      Tags: [
+        {
+          Key: 'aspectTag',
+          Value: 'hello',
         },
-      },
+        {
+          Key: 'propTag',
+          Value: '123',
+        },
+      ],
     });
   });
 
@@ -117,13 +115,11 @@ describe('fargate', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-FargateProfile', {
-      Config: {
-        clusterName: { Ref: 'MyCluster8AD82BF8' },
-        podExecutionRoleArn: { 'Fn::GetAtt': ['MyClusterfargateprofileMyProfilePodExecutionRole4795C054', 'Arn'] },
-        selectors: [{ namespace: 'default' }],
-        subnets: ['priv1'],
-      },
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::FargateProfile', {
+      ClusterName: { Ref: 'MyCluster8AD82BF8' },
+      PodExecutionRoleArn: { 'Fn::GetAtt': ['MyClusterfargateprofileMyProfilePodExecutionRole4795C054', 'Arn'] },
+      Selectors: [{ Namespace: 'default' }],
+      Subnets: ['priv1'],
     });
   });
 
@@ -164,22 +160,20 @@ describe('fargate', () => {
       },
     });
 
-    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-FargateProfile', {
-      Config: {
-        clusterName: {
-          Ref: 'FargateCluster019F03E8',
-        },
-        podExecutionRoleArn: {
-          'Fn::GetAtt': [
-            'FargateClusterfargateprofiledefaultPodExecutionRole66F2610E',
-            'Arn',
-          ],
-        },
-        selectors: [
-          { namespace: 'default' },
-          { namespace: 'kube-system' },
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::FargateProfile', {
+      ClusterName: {
+        Ref: 'FargateCluster019F03E8',
+      },
+      PodExecutionRoleArn: {
+        'Fn::GetAtt': [
+          'FargateClusterfargateprofiledefaultPodExecutionRole66F2610E',
+          'Arn',
         ],
       },
+      Selectors: [
+        { Namespace: 'default' },
+        { Namespace: 'kube-system' },
+      ],
     });
   });
 
@@ -196,23 +190,21 @@ describe('fargate', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-FargateProfile', {
-      Config: {
-        clusterName: {
-          Ref: 'FargateCluster019F03E8',
-        },
-        fargateProfileName: 'my-app',
-        podExecutionRoleArn: {
-          'Fn::GetAtt': [
-            'FargateClusterfargateprofilemyappPodExecutionRole875B4635',
-            'Arn',
-          ],
-        },
-        selectors: [
-          { namespace: 'foo' },
-          { namespace: 'bar' },
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::FargateProfile', {
+      ClusterName: {
+        Ref: 'FargateCluster019F03E8',
+      },
+      FargateProfileName: 'my-app',
+      PodExecutionRoleArn: {
+        'Fn::GetAtt': [
+          'FargateClusterfargateprofilemyappPodExecutionRole875B4635',
+          'Arn',
         ],
       },
+      Selectors: [
+        { Namespace: 'foo' },
+        { Namespace: 'bar' },
+      ],
     });
   });
 
@@ -229,22 +221,20 @@ describe('fargate', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-FargateProfile', {
-      Config: {
-        clusterName: {
-          Ref: 'FargateCluster019F03E8',
-        },
-        podExecutionRoleArn: {
-          'Fn::GetAtt': [
-            'FargateClusterfargateprofilecustomPodExecutionRoleDB415F19',
-            'Arn',
-          ],
-        },
-        selectors: [
-          { namespace: 'foo' },
-          { namespace: 'bar' },
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::FargateProfile', {
+      ClusterName: {
+        Ref: 'FargateCluster019F03E8',
+      },
+      PodExecutionRoleArn: {
+        'Fn::GetAtt': [
+          'FargateClusterfargateprofilecustomPodExecutionRoleDB415F19',
+          'Arn',
         ],
       },
+      Selectors: [
+        { Namespace: 'foo' },
+        { Namespace: 'bar' },
+      ],
     });
   });
 
@@ -262,27 +252,16 @@ describe('fargate', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-FargateProfile', {
-      Config: {
-        clusterName: { Ref: 'MyCluster8AD82BF8' },
-        podExecutionRoleArn: { 'Fn::GetAtt': ['MyClusterfargateprofileMyProfile1PodExecutionRole794E9E37', 'Arn'] },
-        selectors: [{ namespace: 'namespace1' }],
-      },
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::FargateProfile', {
+      ClusterName: { Ref: 'MyCluster8AD82BF8' },
+      PodExecutionRoleArn: { 'Fn::GetAtt': ['MyClusterfargateprofileMyProfile1PodExecutionRole794E9E37', 'Arn'] },
+      Selectors: [{ Namespace: 'namespace1' }],
     });
-    Template.fromStack(stack).hasResource('Custom::AWSCDK-EKS-FargateProfile', {
+    Template.fromStack(stack).hasResource('AWS::EKS::FargateProfile', {
       Properties: {
-        ServiceToken: {
-          'Fn::GetAtt': [
-            'awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454',
-            'Outputs.awscdkawseksClusterResourceProviderframeworkonEventEA97AA31Arn',
-          ],
-        },
-        AssumeRoleArn: { 'Fn::GetAtt': ['MyClusterCreationRoleB5FA4FF3', 'Arn'] },
-        Config: {
-          clusterName: { Ref: 'MyCluster8AD82BF8' },
-          podExecutionRoleArn: { 'Fn::GetAtt': ['MyClusterfargateprofileMyProfile2PodExecutionRoleD1151CCF', 'Arn'] },
-          selectors: [{ namespace: 'namespace2' }],
-        },
+        ClusterName: { Ref: 'MyCluster8AD82BF8' },
+        PodExecutionRoleArn: { 'Fn::GetAtt': ['MyClusterfargateprofileMyProfile2PodExecutionRoleD1151CCF', 'Arn'] },
+        Selectors: [{ Namespace: 'namespace2' }],
       },
       DependsOn: [
         'MyClusterfargateprofileMyProfile1PodExecutionRole794E9E37',

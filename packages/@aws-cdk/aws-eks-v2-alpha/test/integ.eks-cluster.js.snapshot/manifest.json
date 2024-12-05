@@ -1,5 +1,5 @@
 {
-  "version": "36.0.5",
+  "version": "38.0.1",
   "artifacts": {
     "aws-cdk-eks-cluster.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/aa6ce75b036df134f49cb529be3e75558ebc14d1fc4484090a1974c80cfe98a9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/10fd4b4f4f3ea0f7a409625c6b5b0fa7f149ff495341036a570c40ee4c73d6ca.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -376,7 +376,7 @@
             "data": "ClusterfargateprofiledefaultPodExecutionRole09952CFF"
           }
         ],
-        "/aws-cdk-eks-cluster/Cluster/fargate-profile-default/Resource/Default": [
+        "/aws-cdk-eks-cluster/Cluster/fargate-profile-default/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterfargateprofiledefaultEFC59F14"
@@ -814,6 +814,12 @@
             "data": "NodeProxyAgentLayer924C1971"
           }
         ],
+        "/aws-cdk-eks-cluster/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+            "data": 0
+          }
+        ],
         "/aws-cdk-eks-cluster/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -824,6 +830,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "OnEventHandler42BEBAE0"
+          }
+        ],
+        "/aws-cdk-eks-cluster/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+            "data": 0
           }
         ],
         "/aws-cdk-eks-cluster/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/Resource": [

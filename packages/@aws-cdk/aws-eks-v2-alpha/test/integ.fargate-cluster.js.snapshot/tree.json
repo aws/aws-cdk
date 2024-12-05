@@ -683,7 +683,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "bfbdea4d45250c8162c204fe0687cb775e24d61c895ad89e4ca6e9a7fc90b0f0.zip"
+                      "s3Key": "0afbe25a9ce0197a83dffd77a86c1560704da246373a4ccafde5476e7e3d0811.zip"
                     },
                     "description": "/opt/kubectl/kubectl 1.30; /opt/helm/helm 3.15",
                     "licenseInfo": "Apache-2.0"
@@ -697,7 +697,7 @@
             },
             "constructInfo": {
               "fqn": "@aws-cdk/lambda-layer-kubectl-v30.KubectlV30Layer",
-              "version": "2.0.0"
+              "version": "2.0.1"
             }
           },
           "FargateCluster": {
@@ -1128,7 +1128,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "KubectlReadyBarrier": {
@@ -1179,7 +1179,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_eks.KubernetesPatch",
+                  "fqn": "@aws-cdk/aws-eks-v2-alpha.KubernetesPatch",
                   "version": "0.0.0"
                 }
               },
@@ -1247,30 +1247,44 @@
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-cdk-eks-fargate-cluster-test-stack1/FargateCluster/fargate-profile-default/Resource",
-                    "children": {
-                      "Default": {
-                        "id": "Default",
-                        "path": "aws-cdk-eks-fargate-cluster-test-stack1/FargateCluster/fargate-profile-default/Resource/Default",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
-                          "version": "0.0.0"
-                        }
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EKS::FargateProfile",
+                      "aws:cdk:cloudformation:props": {
+                        "clusterName": {
+                          "Ref": "FargateCluster019F03E8"
+                        },
+                        "podExecutionRoleArn": {
+                          "Fn::GetAtt": [
+                            "FargateClusterfargateprofiledefaultPodExecutionRole66F2610E",
+                            "Arn"
+                          ]
+                        },
+                        "selectors": [
+                          {
+                            "namespace": "default",
+                            "labels": []
+                          },
+                          {
+                            "namespace": "kube-system",
+                            "labels": []
+                          }
+                        ]
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CustomResource",
+                      "fqn": "aws-cdk-lib.aws_eks.CfnFargateProfile",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_eks.FargateProfile",
+                  "fqn": "@aws-cdk/aws-eks-v2-alpha.FargateProfile",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_eks.FargateCluster",
+              "fqn": "@aws-cdk/aws-eks-v2-alpha.FargateCluster",
               "version": "0.0.0"
             }
           },
@@ -1318,7 +1332,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "22de69e75b55e15d4d49905d8a4901edd66d1367f617c2a01ac6e86ca2b7eb84.zip"
+                          "s3Key": "93d96d34e0d3cd20eb082652b91012b131bdc34fcf2bc16eb4170e04772fddb1.zip"
                         },
                         "description": "/opt/nodejs/node_modules/proxy-agent"
                       }
@@ -1439,7 +1453,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "4e5786121b49befeda196d85566718fb8bf828540847d3d87b5dabccd17c2578.zip"
+                          "s3Key": "d365d51b7e1f8bf3d9a1081e7f20147fbd89be9f116a0cdbe23c37d9fc451866.zip"
                         },
                         "description": "onEvent handler for EKS cluster resource provider",
                         "environment": {
@@ -1579,7 +1593,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "4e5786121b49befeda196d85566718fb8bf828540847d3d87b5dabccd17c2578.zip"
+                          "s3Key": "d365d51b7e1f8bf3d9a1081e7f20147fbd89be9f116a0cdbe23c37d9fc451866.zip"
                         },
                         "description": "isComplete handler for EKS cluster resource provider",
                         "environment": {
@@ -1810,7 +1824,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "d320874294f5d626406d5f86087c2a2c8e6efc0aab690c5105572555dc445fd4.zip"
+                              "s3Key": "fe4094cd52f099e46f858f05efdde02f5de79288c9c783676b3fa53a494d04b5.zip"
                             },
                             "description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-fargate-cluster-test-stack1/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
                             "environment": {
@@ -2039,7 +2053,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "d320874294f5d626406d5f86087c2a2c8e6efc0aab690c5105572555dc445fd4.zip"
+                              "s3Key": "fe4094cd52f099e46f858f05efdde02f5de79288c9c783676b3fa53a494d04b5.zip"
                             },
                             "description": "AWS CDK resource provider framework - isComplete (aws-cdk-eks-fargate-cluster-test-stack1/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
                             "environment": {
@@ -2265,7 +2279,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "d320874294f5d626406d5f86087c2a2c8e6efc0aab690c5105572555dc445fd4.zip"
+                              "s3Key": "fe4094cd52f099e46f858f05efdde02f5de79288c9c783676b3fa53a494d04b5.zip"
                             },
                             "description": "AWS CDK resource provider framework - onTimeout (aws-cdk-eks-fargate-cluster-test-stack1/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
                             "environment": {
@@ -2618,7 +2632,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/d50d7baff6b8343d7c90e6cbedaf0e5b94546d6bdb5f5bd427108be6aa304b20.json"
+                          "/14ac517ed3a85fed733227b3d0dbaa1a28d8246ac117b1d2fffad4a6b3e71321.json"
                         ]
                       ]
                     }
@@ -2632,7 +2646,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "@aws-cdk--aws-eks.KubectlProvider": {
@@ -2679,7 +2693,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "abc70c90ded969d12235ca11768293cb20557cff54518518480c0d9fb344a098.zip"
+                          "s3Key": "024d0b8c5d7cf69ece484efe22f1647e273f484175ef3b79df543b7538da9c81.zip"
                         },
                         "description": "onEvent handler for EKS kubectl resource provider",
                         "environment": {
@@ -2770,7 +2784,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "3322b7049fb0ed2b7cbb644a2ada8d1116ff80c32dca89e6ada846b5de26f961.zip"
+                          "s3Key": "f24ba5e516d9d80b64bc7b0f406eedd12c36b20e7461f3e7719b7ffbdad72410.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -2975,7 +2989,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "d320874294f5d626406d5f86087c2a2c8e6efc0aab690c5105572555dc445fd4.zip"
+                              "s3Key": "fe4094cd52f099e46f858f05efdde02f5de79288c9c783676b3fa53a494d04b5.zip"
                             },
                             "description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-fargate-cluster-test-stack1/@aws-cdk--aws-eks.KubectlProvider/Provider)",
                             "environment": {
@@ -3097,7 +3111,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_eks.KubectlProvider",
+              "fqn": "@aws-cdk/aws-eks-v2-alpha.KubectlProvider",
               "version": "0.0.0"
             }
           },
@@ -3150,7 +3164,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/92e9c24e07ebca832cfc6ab315859e1ae27c8fe0d7ce0a76c0fe54fe8114f414.json"
+                          "/9c8e402c8ebaf598e9fd7104fc6418f1e6afd32b3849caf0d9955288df3699d4.json"
                         ]
                       ]
                     }
@@ -3164,7 +3178,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "Exports": {
@@ -3214,7 +3228,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "BootstrapVersion": {
@@ -3283,7 +3297,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "bfbdea4d45250c8162c204fe0687cb775e24d61c895ad89e4ca6e9a7fc90b0f0.zip"
+                      "s3Key": "0afbe25a9ce0197a83dffd77a86c1560704da246373a4ccafde5476e7e3d0811.zip"
                     },
                     "description": "/opt/kubectl/kubectl 1.30; /opt/helm/helm 3.15",
                     "licenseInfo": "Apache-2.0"
@@ -3297,7 +3311,7 @@
             },
             "constructInfo": {
               "fqn": "@aws-cdk/lambda-layer-kubectl-v30.KubectlV30Layer",
-              "version": "2.0.0"
+              "version": "2.0.1"
             }
           },
           "FargateCluster": {
@@ -3728,7 +3742,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "KubectlReadyBarrier": {
@@ -3779,7 +3793,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_eks.KubernetesPatch",
+                  "fqn": "@aws-cdk/aws-eks-v2-alpha.KubernetesPatch",
                   "version": "0.0.0"
                 }
               },
@@ -3847,30 +3861,44 @@
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-cdk-eks-fargate-cluster-test-stack2/FargateCluster/fargate-profile-default/Resource",
-                    "children": {
-                      "Default": {
-                        "id": "Default",
-                        "path": "aws-cdk-eks-fargate-cluster-test-stack2/FargateCluster/fargate-profile-default/Resource/Default",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
-                          "version": "0.0.0"
-                        }
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EKS::FargateProfile",
+                      "aws:cdk:cloudformation:props": {
+                        "clusterName": {
+                          "Ref": "FargateCluster019F03E8"
+                        },
+                        "podExecutionRoleArn": {
+                          "Fn::GetAtt": [
+                            "FargateClusterfargateprofiledefaultPodExecutionRole66F2610E",
+                            "Arn"
+                          ]
+                        },
+                        "selectors": [
+                          {
+                            "namespace": "default",
+                            "labels": []
+                          },
+                          {
+                            "namespace": "kube-system",
+                            "labels": []
+                          }
+                        ]
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CustomResource",
+                      "fqn": "aws-cdk-lib.aws_eks.CfnFargateProfile",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_eks.FargateProfile",
+                  "fqn": "@aws-cdk/aws-eks-v2-alpha.FargateProfile",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_eks.FargateCluster",
+              "fqn": "@aws-cdk/aws-eks-v2-alpha.FargateCluster",
               "version": "0.0.0"
             }
           },
@@ -3918,7 +3946,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "22de69e75b55e15d4d49905d8a4901edd66d1367f617c2a01ac6e86ca2b7eb84.zip"
+                          "s3Key": "93d96d34e0d3cd20eb082652b91012b131bdc34fcf2bc16eb4170e04772fddb1.zip"
                         },
                         "description": "/opt/nodejs/node_modules/proxy-agent"
                       }
@@ -4039,7 +4067,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "4e5786121b49befeda196d85566718fb8bf828540847d3d87b5dabccd17c2578.zip"
+                          "s3Key": "d365d51b7e1f8bf3d9a1081e7f20147fbd89be9f116a0cdbe23c37d9fc451866.zip"
                         },
                         "description": "onEvent handler for EKS cluster resource provider",
                         "environment": {
@@ -4179,7 +4207,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "4e5786121b49befeda196d85566718fb8bf828540847d3d87b5dabccd17c2578.zip"
+                          "s3Key": "d365d51b7e1f8bf3d9a1081e7f20147fbd89be9f116a0cdbe23c37d9fc451866.zip"
                         },
                         "description": "isComplete handler for EKS cluster resource provider",
                         "environment": {
@@ -4410,7 +4438,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "d320874294f5d626406d5f86087c2a2c8e6efc0aab690c5105572555dc445fd4.zip"
+                              "s3Key": "fe4094cd52f099e46f858f05efdde02f5de79288c9c783676b3fa53a494d04b5.zip"
                             },
                             "description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-fargate-cluster-test-stack2/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
                             "environment": {
@@ -4639,7 +4667,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "d320874294f5d626406d5f86087c2a2c8e6efc0aab690c5105572555dc445fd4.zip"
+                              "s3Key": "fe4094cd52f099e46f858f05efdde02f5de79288c9c783676b3fa53a494d04b5.zip"
                             },
                             "description": "AWS CDK resource provider framework - isComplete (aws-cdk-eks-fargate-cluster-test-stack2/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
                             "environment": {
@@ -4865,7 +4893,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "d320874294f5d626406d5f86087c2a2c8e6efc0aab690c5105572555dc445fd4.zip"
+                              "s3Key": "fe4094cd52f099e46f858f05efdde02f5de79288c9c783676b3fa53a494d04b5.zip"
                             },
                             "description": "AWS CDK resource provider framework - onTimeout (aws-cdk-eks-fargate-cluster-test-stack2/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
                             "environment": {
@@ -5218,7 +5246,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/85e61a1e09c8e11520bf9940e7664c749bd4c7e4a5ed3f86c9aa356b883ebde9.json"
+                          "/3f64f085a6262292b5c65e278d14c1fe7905c5922ba17228d3ab0addf52e7041.json"
                         ]
                       ]
                     }
@@ -5232,7 +5260,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "@aws-cdk--aws-eks.KubectlProvider": {
@@ -5279,7 +5307,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "abc70c90ded969d12235ca11768293cb20557cff54518518480c0d9fb344a098.zip"
+                          "s3Key": "024d0b8c5d7cf69ece484efe22f1647e273f484175ef3b79df543b7538da9c81.zip"
                         },
                         "description": "onEvent handler for EKS kubectl resource provider",
                         "environment": {
@@ -5370,7 +5398,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "3322b7049fb0ed2b7cbb644a2ada8d1116ff80c32dca89e6ada846b5de26f961.zip"
+                          "s3Key": "f24ba5e516d9d80b64bc7b0f406eedd12c36b20e7461f3e7719b7ffbdad72410.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -5575,7 +5603,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "d320874294f5d626406d5f86087c2a2c8e6efc0aab690c5105572555dc445fd4.zip"
+                              "s3Key": "fe4094cd52f099e46f858f05efdde02f5de79288c9c783676b3fa53a494d04b5.zip"
                             },
                             "description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-fargate-cluster-test-stack2/@aws-cdk--aws-eks.KubectlProvider/Provider)",
                             "environment": {
@@ -5681,7 +5709,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_eks.KubectlProvider",
+              "fqn": "@aws-cdk/aws-eks-v2-alpha.KubectlProvider",
               "version": "0.0.0"
             }
           },
@@ -5728,7 +5756,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/9cd1800a682781a7ca16f75423a2af722c065e312bc779d323b5578687b15be1.json"
+                          "/e755d59188c6d320199958ee27c7a43ce5496344cb7e44f29319d850e2dd96ff.json"
                         ]
                       ]
                     }
@@ -5742,7 +5770,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "BootstrapVersion": {
@@ -5780,7 +5808,7 @@
                 "path": "aws-cdk-eks-fargate-cluster/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -5826,7 +5854,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },
