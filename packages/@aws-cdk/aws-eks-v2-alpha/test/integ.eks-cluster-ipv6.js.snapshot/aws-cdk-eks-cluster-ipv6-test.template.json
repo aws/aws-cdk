@@ -1929,42 +1929,27 @@
    ]
   },
   "ClusterfargateprofiledefaultEFC59F14": {
-   "Type": "Custom::AWSCDK-EKS-FargateProfile",
+   "Type": "AWS::EKS::FargateProfile",
    "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
-      "Outputs.awscdkeksclusteripv6testawscdkawseksClusterResourceProviderframeworkonEvent27EA7496Arn"
-     ]
+    "ClusterName": {
+     "Ref": "Cluster9EE0221C"
     },
-    "AssumeRoleArn": {
+    "PodExecutionRoleArn": {
      "Fn::GetAtt": [
-      "ClusterCreationRole360249B6",
+      "ClusterfargateprofiledefaultPodExecutionRole09952CFF",
       "Arn"
      ]
     },
-    "Config": {
-     "clusterName": {
-      "Ref": "Cluster9EE0221C"
-     },
-     "podExecutionRoleArn": {
-      "Fn::GetAtt": [
-       "ClusterfargateprofiledefaultPodExecutionRole09952CFF",
-       "Arn"
-      ]
-     },
-     "selectors": [
-      {
-       "namespace": "default"
-      }
-     ]
-    }
+    "Selectors": [
+     {
+      "Labels": [],
+      "Namespace": "default"
+     }
+    ]
    },
    "DependsOn": [
     "CIDR6"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
+   ]
   },
   "ClusterNodesInstanceSecurityGroup899246BD": {
    "Type": "AWS::EC2::SecurityGroup",
@@ -4678,7 +4663,7 @@
       "OpenIdConnectIssuerUrl"
      ]
     },
-    "CodeHash": "469d5d61e22fea12a07cfcadd430b3a6babbbd52a6d677d3eb99b583b278761d"
+    "CodeHash": "a4796a13d6463dc004e4c4a2558caba37e681d86598515bae73669dde9bc73c8"
    },
    "DependsOn": [
     "CIDR6"
@@ -4825,7 +4810,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/acf36df7147f6a8d611b2e0a8d594625a97642c12d016a6fbf3c677c783f41e0.json"
+       "/8097bbc983ca3728fca8db37bb49fcb390e48267c07fa0568c1d41bb8b3d0a3b.json"
       ]
      ]
     }
@@ -4871,7 +4856,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/1b52751cdbc52a425751400a1ff5fcd438ef670e77050243bd6312a71c0bf2f7.json"
+       "/b125b9610685d5cbf09eb1d56aa86c69b8f02a9a1b0a39d0361204325014de78.json"
       ]
      ]
     }
@@ -4989,7 +4974,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "469d5d61e22fea12a07cfcadd430b3a6babbbd52a6d677d3eb99b583b278761d.zip"
+     "S3Key": "a4796a13d6463dc004e4c4a2558caba37e681d86598515bae73669dde9bc73c8.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -5035,7 +5020,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "a4052fc8993f394f879e80c418974b5f01321a8ea600ed16668222a0705b6d1a.zip"
+     "S3Key": "0d94926290549a70008a6e1e24fe1f1b29c5b53364bc1c09c60ef9cb02f562ca.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,

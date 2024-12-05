@@ -1,5 +1,5 @@
 {
-  "version": "36.0.5",
+  "version": "38.0.1",
   "artifacts": {
     "aws-cdk-eks-fargate-cluster-test-stack1.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/33411a8f64f66b7861893922600ebfdc9a4d6e3c5af4540aaf10cf2ac2ef7bf5.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2bb1983d5f11d0fa2b24ae1c09b1b3b3d179cb71c694eaa810581185fd14decd.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -232,7 +232,7 @@
             "data": "FargateClusterfargateprofiledefaultPodExecutionRole66F2610E"
           }
         ],
-        "/aws-cdk-eks-fargate-cluster-test-stack1/FargateCluster/fargate-profile-default/Resource/Default": [
+        "/aws-cdk-eks-fargate-cluster-test-stack1/FargateCluster/fargate-profile-default/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FargateClusterfargateprofiledefault10E54561"
@@ -388,12 +388,6 @@
             "data": "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454"
           }
         ],
-        "/aws-cdk-eks-fargate-cluster-test-stack1/@aws-cdk--aws-eks.KubectlProvider/Handler": [
-          {
-            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
-            "data": 2
-          }
-        ],
         "/aws-cdk-eks-fargate-cluster-test-stack1/@aws-cdk--aws-eks.KubectlProvider/Handler/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -534,7 +528,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/37b8aaef4deca52831a72725e8461a796a0cb22c930e68905e0662cca2f25537.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ca2c4786979465e05d4e865a2ea668c773dc3045441fbe016e946080d9b17f87.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -623,7 +617,7 @@
             "data": "FargateClusterfargateprofiledefaultPodExecutionRole66F2610E"
           }
         ],
-        "/aws-cdk-eks-fargate-cluster-test-stack2/FargateCluster/fargate-profile-default/Resource/Default": [
+        "/aws-cdk-eks-fargate-cluster-test-stack2/FargateCluster/fargate-profile-default/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FargateClusterfargateprofiledefault10E54561"
@@ -777,12 +771,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454"
-          }
-        ],
-        "/aws-cdk-eks-fargate-cluster-test-stack2/@aws-cdk--aws-eks.KubectlProvider/Handler": [
-          {
-            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
-            "data": 2
           }
         ],
         "/aws-cdk-eks-fargate-cluster-test-stack2/@aws-cdk--aws-eks.KubectlProvider/Handler/Resource": [
