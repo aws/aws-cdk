@@ -2,6 +2,7 @@ import { Template } from 'aws-cdk-lib/assertions';
 import * as cdk from 'aws-cdk-lib';
 import * as vpc from '../lib/vpc-v2';
 import { AddressFamily, AwsServiceName, Ipam, IpamPoolPublicIpSource } from '../lib';
+/* eslint-disable no-console */
 
 describe('Vpc V2 with full control', () => {
   let stack: cdk.Stack;
@@ -69,7 +70,29 @@ describe('Vpc V2 with full control', () => {
         },
       },
     });
+  });
 
+  test('VPC with secondary IPv6 Pool address', () => {
+    new vpc.VpcV2(stack, 'TestVpc', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+      secondaryAddressBlocks: [vpc.IpAddresses.ipv6Pool('2001:db8::/32', {
+        cidrBlockName: 'SecondaryIPv6',
+        ipv6Pool: 'SecondaryIPv6Pool',
+      })],
+      enableDnsHostnames: true,
+      enableDnsSupport: true,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCCidrBlock', {
+      VpcId: {
+        'Fn::GetAtt': [
+          'TestVpcE77CE678',
+          'VpcId',
+        ],
+      },
+      Ipv6CidrBlock: '2001:db8::/32',
+      Ipv6Pool: 'SecondaryIPv6Pool',
+    });
   });
 
   test('VPC throws error with incorrect cidr range (IPv4)', () => {
