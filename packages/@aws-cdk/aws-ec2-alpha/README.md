@@ -121,8 +121,8 @@ Once you have provisioned your address block, you can use the IPv6 in your VPC a
 
 ```ts
 const myVpc = new VpcV2(this, 'Vpc', {
-  primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
-  secondaryAddressBlocks: [vpc.IpAddresses.ipv6Pool('2001:db8::/32', {
+  primaryAddressBlock: IpAddresses.ipv4('10.1.0.0/16'),
+  secondaryAddressBlocks: [IpAddresses.ipv6Pool('2001:db8::/32', {
     cidrBlockName: 'MyByoipCidrBlock',
     ipv6Pool: 'MyByoipPool',
   })],
