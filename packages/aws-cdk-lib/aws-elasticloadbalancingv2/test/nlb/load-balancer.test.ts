@@ -1162,36 +1162,14 @@ describe('tests', () => {
       });
     });
 
-    test('set EnablePrefixForIpv6SourceNat by calling addListener()', () => {
+    test.each([false, undefined])('throw error for disabling `enablePrefixForIpv6SourceNat` and add UDP listener', (enablePrefixForIpv6SourceNat) => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'Stack');
       const lb = new elbv2.NetworkLoadBalancer(stack, 'Lb', {
         vpc,
         ipAddressType: elbv2.IpAddressType.DUAL_STACK,
-      });
-
-      // WHEN
-      lb.addListener('Listener', {
-        port: 80,
-        protocol: elbv2.Protocol.UDP,
-        defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })],
-      });
-
-      // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
-        EnablePrefixForIpv6SourceNat: 'on',
-      });
-    });
-
-    test('throw error for enablePrefixForIpv6SourceNat set to false and add UDP listener', () => {
-      // GIVEN
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'Stack');
-      const lb = new elbv2.NetworkLoadBalancer(stack, 'Lb', {
-        vpc,
-        ipAddressType: elbv2.IpAddressType.DUAL_STACK,
-        enablePrefixForIpv6SourceNat: false,
+        enablePrefixForIpv6SourceNat,
       });
 
       // THEN
