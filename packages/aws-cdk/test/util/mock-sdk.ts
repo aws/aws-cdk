@@ -30,7 +30,7 @@ export const FAKE_CREDENTIALS: AwsCredentialIdentity = {
   sessionToken: 'TOKEN ',
 };
 
-const FAKE_CREDENTIAL_CHAIN = createCredentialChain(() => Promise.resolve(FAKE_CREDENTIALS));
+export const FAKE_CREDENTIAL_CHAIN = createCredentialChain(() => Promise.resolve(FAKE_CREDENTIALS));
 
 // Default implementations
 export const mockAppSyncClient = mockClient(AppSyncClient);
@@ -131,8 +131,7 @@ export class MockSdkProvider extends SdkProvider {
  */
 export class MockSdk extends SDK {
   constructor() {
-    restoreSdkMocksToDefault();
-    super(FAKE_CREDENTIALS, 'bermuda-triangle-1337', {});
+    super(FAKE_CREDENTIAL_CHAIN, 'bermuda-triangle-1337', {});
   }
 }
 

@@ -59,6 +59,30 @@ export class FoundationModelIdentifier {
   /** Base model "amazon.titan-embed-image-v1". */
   public static readonly AMAZON_TITAN_MULTIMODAL_EMBEDDINGS_G1_V1 = new FoundationModelIdentifier('amazon.titan-embed-image-v1');
 
+  /** Base model "amazon.nova-canvas-v1:0". */
+  public static readonly AMAZON_NOVA_CANVAS_V1_0 = new FoundationModelIdentifier('amazon.nova-canvas-v1:0');
+
+  /** Base model "amazon.nova-lite-v1:0". */
+  public static readonly AMAZON_NOVA_LITE_V1_0 = new FoundationModelIdentifier('amazon.nova-lite-v1:0');
+
+  /** Base model "amazon.nova-lite-v1:0:300k". */
+  public static readonly AMAZON_NOVA_LITE_V1_0_300_K = new FoundationModelIdentifier('amazon.nova-lite-v1:0:300k');
+
+  /** Base model "amazon.nova-micro-v1:0". */
+  public static readonly AMAZON_NOVA_MICRO_V1_0 = new FoundationModelIdentifier('amazon.nova-micro-v1:0');
+
+  /** Base model "amazon.nova-micro-v1:0:128k". */
+  public static readonly AMAZON_NOVA_MICRO_V1_0_128_K = new FoundationModelIdentifier('amazon.nova-micro-v1:0:128k');
+
+  /** Base model "amazon.nova-pro-v1:0". */
+  public static readonly AMAZON_NOVA_PRO_V1_0 = new FoundationModelIdentifier('amazon.nova-pro-v1:0');
+
+  /** Base model "amazon.nova-pro-v1:0:300k". */
+  public static readonly AMAZON_NOVA_PRO_V1_0_300_K = new FoundationModelIdentifier('amazon.nova-pro-v1:0:300k');
+
+  /** Base model "amazon.nova-reel-v1:0". */
+  public static readonly AMAZON_NOVA_REEL_V1_0 = new FoundationModelIdentifier('amazon.nova-reel-v1:0');
+
   /** Base model "ai21.j2-mid". */
   public static readonly AI21_J2_MID = new FoundationModelIdentifier('ai21.j2-mid');
 
