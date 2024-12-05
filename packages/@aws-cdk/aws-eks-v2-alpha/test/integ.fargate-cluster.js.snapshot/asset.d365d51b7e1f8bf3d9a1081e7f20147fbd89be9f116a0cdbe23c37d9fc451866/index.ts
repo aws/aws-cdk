@@ -10,7 +10,6 @@ import { ProxyAgent } from 'proxy-agent';
 import { ClusterResourceHandler } from './cluster';
 import { EksClient } from './common';
 import * as consts from './consts';
-import { FargateProfileResourceHandler } from './fargate';
 import { IsCompleteResponse } from 'aws-cdk-lib/custom-resources/lib/provider-framework/types';
 
 const proxyAgent = new ProxyAgent();
@@ -67,7 +66,6 @@ export async function isComplete(event: AWSLambda.CloudFormationCustomResourceEv
 function createResourceHandler(event: AWSLambda.CloudFormationCustomResourceEvent) {
   switch (event.ResourceType) {
     case consts.CLUSTER_RESOURCE_TYPE: return new ClusterResourceHandler(defaultEksClient, event);
-    case consts.FARGATE_PROFILE_RESOURCE_TYPE: return new FargateProfileResourceHandler(defaultEksClient, event);
     default:
       throw new Error(`Unsupported resource type "${event.ResourceType}`);
   }
