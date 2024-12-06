@@ -91,7 +91,12 @@ onCommitRule.addTarget(new targets.SnsTopic(topic, {
 }));
 ```
 
-To define a pattern, use the matcher API, which provides a number of factory methods to declare different logical predicates. For example, to match all S3 events for objects larger than 1024 bytes, stored using one of the storage classes Glacier, Glacier IR or Deep Archive and coming from any region other than the AWS GovCloud ones:
+### Matchers
+
+To define a pattern, use the `Match` class, which provides a number of factory methods to declare
+different logical predicates. For example, to match all S3 events for objects larger than 1024
+bytes, stored using one of the storage classes Glacier, Glacier IR or Deep Archive and coming from
+any region other than the AWS GovCloud ones:
 
 ```ts
 const rule = new events.Rule(this, 'rule', {
@@ -104,16 +109,61 @@ const rule = new events.Rule(this, 'rule', {
 
       // 'OR' condition
       'source-storage-class': events.Match.anyOf(
-        events.Match.prefix("GLACIER"),
+        events.Match.prefix('GLACIER'),
         events.Match.exactString('DEEP_ARCHIVE'),
       ),
     },
-    detailType: events.Match.equalsIgnoreCase('object created'),
 
     // If you prefer, you can use a low level array of strings, as directly consumed by EventBridge
     source: ['aws.s3'],
 
     region: events.Match.anythingButPrefix('us-gov'),
+  },
+});
+```
+
+Matches can also be made case-insensitive, or make use of wildcard matches. For example, to match
+object create events for buckets whose name starts with `raw-`, for objects with key matching
+the pattern `path/to/object/*.txt` and the requester ends with `.AMAZONAWS.COM`:
+
+```ts
+const rule = new events.Rule(this, 'rule', {
+  eventPattern: {
+    detail: {
+      bucket: {
+        name: events.Match.prefixEqualsIgnoreCase('raw-'),
+      },
+
+      object: {
+        key: events.Match.wildcard('path/to/object/*.txt'),
+      },
+
+      requester: events.Match.suffixEqualsIgnoreCase('.AMAZONAWS.COM'),
+    },
+    detailType: events.Match.equalsIgnoreCase('object created'),
+  },
+});
+```
+
+The "anything but" matchers allow you to specify multiple arguments. For example:
+
+```ts
+const rule = new events.Rule(this, 'rule', {
+  eventPattern: {
+    region: events.Match.anythingBut('us-east-1', 'us-east-2', 'us-west-1', 'us-west-2'),
+
+    detail: {
+      bucket: {
+        name: events.Match.anythingButPrefix('foo', 'bar', 'baz'),
+      },
+
+      object: {
+        key: events.Match.anythingButSuffix('.gif', '.png', '.jpg'),
+      },
+
+      requester: events.Match.anythingButWildcard('*.amazonaws.com', '123456789012'),
+    },
+    detailType: events.Match.anythingButEqualsIgnoreCase('object created', 'object deleted'),
   },
 });
 ```
@@ -271,4 +321,3 @@ new events.EventBus(this, 'Bus', {
 **Note**: Archives and schema discovery are not supported for event buses encrypted using a customer managed key.
 To enable archives or schema discovery on an event bus, choose to use an AWS owned key.
 For more information, see [KMS key options for event bus encryption](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-encryption-at-rest-key-options.html).
-
