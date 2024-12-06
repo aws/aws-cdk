@@ -245,7 +245,7 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
   }
 
   public bind(target: lambda.IFunction) {
-    if (!(target instanceof Construct)) { throw new Error('Function is not a construct. Unexpected error.'); }
+    if (!(Construct.isConstruct(target))) { throw new Error('Function is not a construct. Unexpected error.'); }
     target.addEventSourceMapping(
       this.mappingId(target),
       this.enrichMappingOptions({
