@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
-import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
+import { integrationResourceArn, isJsonPathOrJsonataExpression, validatePatternSupported } from '../private/task-utils';
 
 interface GlueDataBrewStartJobRunOptions {
   /**
@@ -81,7 +81,7 @@ export class GlueDataBrewStartJobRun extends sfn.TaskStateBase {
             service: 'databrew',
             resource: 'job',
             // If the name comes from input, we cannot target the policy to a particular ARN prefix reliably.
-            resourceName: sfn.JsonPath.isEncodedJsonPath(this.props.name) ? '*' : this.props.name,
+            resourceName: isJsonPathOrJsonataExpression(this.props.name) ? '*' : this.props.name,
           }),
         ],
         actions: actions,
