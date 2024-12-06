@@ -1,3 +1,4 @@
+
 import { Construct } from 'constructs';
 import * as events from '../../../aws-events';
 import * as iam from '../../../aws-iam';
@@ -54,10 +55,7 @@ interface TaskParameters {
   };
 }
 
-/**
- * Properties for calling an external HTTP endpoint with HttpInvoke.
- */
-export interface HttpInvokeProps extends sfn.TaskStateBaseProps {
+interface HttpInvokeOptions {
   /**
    * Permissions are granted to call all resources under this path.
    *
@@ -118,9 +116,41 @@ export interface HttpInvokeProps extends sfn.TaskStateBaseProps {
 }
 
 /**
+ * Properties for calling an external HTTP endpoint with HttpInvoke using JSONPath.
+ */
+export interface HttpInvokeJsonPathProps extends sfn.TaskStateJsonPathBaseProps, HttpInvokeOptions {}
+
+/**
+ * Properties for calling an external HTTP endpoint with HttpInvoke using JSONata.
+ */
+export interface HttpInvokeJsonataProps extends sfn.TaskStateJsonataBaseProps, HttpInvokeOptions {}
+
+/**
+ * Properties for calling an external HTTP endpoint with HttpInvoke.
+ */
+export interface HttpInvokeProps extends sfn.TaskStateBaseProps, HttpInvokeOptions {}
+
+/**
  * A Step Functions Task to call a public third-party API.
  */
 export class HttpInvoke extends sfn.TaskStateBase {
+  /**
+   * A Step Functions Task to call a public third-party API using JSONPath.
+   */
+  public static jsonPath(scope: Construct, id: string, props: HttpInvokeJsonPathProps) {
+    return new HttpInvoke(scope, id, props);
+  }
+
+  /**
+   * A Step Functions Task to call a public third-party API using JSONata.
+   */
+  public static jsonata(scope: Construct, id: string, props: HttpInvokeJsonataProps) {
+    return new HttpInvoke(scope, id, {
+      ...props,
+      queryLanguage: sfn.QueryLanguage.JSONATA,
+    });
+  }
+
   protected readonly taskMetrics?: sfn.TaskMetricsConfig;
   protected readonly taskPolicies?: iam.PolicyStatement[];
 
@@ -135,10 +165,11 @@ export class HttpInvoke extends sfn.TaskStateBase {
    *
    * @internal
    */
-  protected _renderTask(): any {
+  protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
+    const queryLanguage = sfn._whichQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
     return {
       Resource: integrationResourceArn('http', 'invoke'),
-      Parameters: sfn.FieldUtils.renderObject(this.buildTaskParameters()),
+      ...this._renderParametersOrArguments(this.buildTaskParameters(), queryLanguage),
     };
   }
 
