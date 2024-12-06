@@ -4,11 +4,7 @@ import * as sfn from '../../../aws-stepfunctions';
 import { Stack } from '../../../core';
 import { integrationResourceArn } from '../private/task-utils';
 
-/**
- * Properties for EmrModifyInstanceFleetByName
- *
- */
-export interface EmrModifyInstanceFleetByNameProps extends sfn.TaskStateBaseProps {
+interface EmrModifyInstanceFleetByNameOptions {
   /**
    * The ClusterId to update.
    */
@@ -37,6 +33,12 @@ export interface EmrModifyInstanceFleetByNameProps extends sfn.TaskStateBaseProp
    */
   readonly targetSpotCapacity: number;
 }
+
+/**
+ * Properties for EmrModifyInstanceFleetByName
+ *
+ */
+export interface EmrModifyInstanceFleetByNameProps extends sfn.TaskStateBaseProps, EmrModifyInstanceFleetByNameOptions {}
 
 /**
  * A Step Functions Task to to modify an InstanceFleet on an EMR Cluster.
