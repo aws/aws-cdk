@@ -1,5 +1,6 @@
 import {
   IntegrationPattern,
+  JsonPath,
 } from '../../../aws-stepfunctions';
 import { Aws } from '../../../core';
 
@@ -32,4 +33,11 @@ export function integrationResourceArn(service: string, api: string, integration
   }
   return `arn:${Aws.PARTITION}:states:::${service}:${api}` +
         (integrationPattern ? resourceArnSuffix[integrationPattern] : '');
+}
+
+/**
+ * Determines if the indicated string is an encoded JSON path or JSONata expression
+ */
+export function isJsonPathOrJsonataExpression(value: string) {
+  return JsonPath.isEncodedJsonPath(value) || /^{%(.*)%}$/.test(value);
 }
