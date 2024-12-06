@@ -120,7 +120,7 @@ test('Throws when name has more than 255 characters', () => {
     }),
     runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_8_0,
   }))
-    .toThrow(`Canary name is too large, must be between 1 and 255 characters, but is 22 (got "${'a'.repeat(22)}")`);
+    .toThrow(`Canary name is too large, must be between 1 and 255 characters, but is 256 (got "${'a'.repeat(256)}")`);
 });
 
 test('An existing role can be specified instead of auto-created', () => {
