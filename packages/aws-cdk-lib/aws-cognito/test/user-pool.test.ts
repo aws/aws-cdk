@@ -5,7 +5,7 @@ import { Role, ServicePrincipal } from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import { CfnParameter, Duration, Stack, Tags } from '../../core';
-import { AccountRecovery, Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolIdentityProvider, UserPoolOperation, VerificationEmailStyle, UserPoolEmail, AdvancedSecurityMode, LambdaVersion, PasskeyVerification } from '../lib';
+import { AccountRecovery, Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolIdentityProvider, UserPoolOperation, VerificationEmailStyle, UserPoolEmail, AdvancedSecurityMode, LambdaVersion, PasskeyUserVerification } from '../lib';
 
 describe('User Pool', () => {
   test('default setup', () => {
@@ -2102,27 +2102,29 @@ describe('User Pool', () => {
     });
   });
 
-  test.each([
-    ['blank', {}, ['PASSWORD']],
-    ['email OTP', { emailOtp: true }, ['PASSWORD', 'EMAIL_OTP']],
-    ['SMS OTP', { smsOtp: true }, ['PASSWORD', 'SMS_OTP']],
-    ['passkey', { passkey: true }, ['PASSWORD', 'WEB_AUTHN']],
-    ['email OTP and SMS OTP', { emailOtp: true, smsOtp: true }, ['PASSWORD', 'EMAIL_OTP', 'SMS_OTP']],
-    ['email OTP and passkey', { emailOtp: true, passkey: true }, ['PASSWORD', 'EMAIL_OTP', 'WEB_AUTHN']],
-    ['SMS OTP and passkey', { smsOtp: true, passkey: true }, ['PASSWORD', 'SMS_OTP', 'WEB_AUTHN']],
-    ['all enabled', { emailOtp: true, smsOtp: true, passkey: true }, ['PASSWORD', 'EMAIL_OTP', 'SMS_OTP', 'WEB_AUTHN']],
-  ])('allowFirstAuthFactors is configured correctly when set to %s', (_, allowedFirstAuthFactors, compareArray) => {
+  test('allowFirstAuthFactors are correctly named', () => {
     // GIVEN
     const stack = new Stack();
 
     // WHEN
-    new UserPool(stack, 'Pool', { allowedFirstAuthFactors });
+    new UserPool(stack, 'Pool', {
+      allowedFirstAuthFactors: {
+        emailOtp: true,
+        smsOtp: true,
+        passkey: true,
+      },
+    });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
       Policies: {
         SignInPolicy: {
-          AllowedFirstAuthFactors: compareArray,
+          AllowedFirstAuthFactors: [
+            'PASSWORD',
+            'EMAIL_OTP',
+            'SMS_OTP',
+            'WEB_AUTHN',
+          ],
         },
       },
     });
@@ -2157,14 +2159,14 @@ describe('User Pool', () => {
   });
 
   test.each([
-    [PasskeyVerification.PREFERRED, 'preferred'],
-    [PasskeyVerification.REQUIRED, 'required'],
-  ])('passkeyVerification is configured correctly when set to (%s)', (passkeyVerification, compareString) => {
+    [PasskeyUserVerification.PREFERRED, 'preferred'],
+    [PasskeyUserVerification.REQUIRED, 'required'],
+  ])('passkeyUserVerification is configured correctly when set to (%s)', (passkeyUserVerification, compareString) => {
     // GIVEN
     const stack = new Stack();
 
     // WHEN
-    new UserPool(stack, 'Pool', { passkeyVerification });
+    new UserPool(stack, 'Pool', { passkeyUserVerification });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {

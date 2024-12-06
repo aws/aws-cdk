@@ -485,7 +485,7 @@ export interface AuthFactor {
  * The user-pool treatment for MFA with a passkey
  * @see https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-authentication-flow-methods.html#amazon-cognito-user-pools-authentication-flow-methods-passkey
  */
-export enum PasskeyVerification {
+export enum PasskeyUserVerification {
   /** Passkey MFA is preferred */
   PREFERRED = 'preferred',
   /** Passkey MFA is required */
@@ -753,9 +753,9 @@ export interface UserPoolProps {
    * You can override other MFA options and require passkey MFA, or you can set it as preferred.
    * When passkey MFA is preferred, the hosted UI encourages users to register a passkey at sign-in.
    *
-   * @default PasskeyVerification.PREFERRED
+   * @default PasskeyUserVerification.PREFERRED
    */
-  readonly passkeyVerification?: PasskeyVerification;
+  readonly passkeyUserVerification?: PasskeyUserVerification;
 
   /**
    * Email settings for a user pool.
@@ -1102,7 +1102,7 @@ export class UserPool extends UserPoolBase {
       enabledMfas: this.mfaConfiguration(props),
       policies: undefinedIfNoKeys({ passwordPolicy, signInPolicy }),
       webAuthnRelyingPartyId: props.passkeyRelyingPartyId,
-      webAuthnUserVerification: props.passkeyVerification,
+      webAuthnUserVerification: props.passkeyUserVerification,
       emailConfiguration,
       usernameConfiguration: undefinedIfNoKeys({
         caseSensitive: props.signInCaseSensitive,
