@@ -1,4 +1,4 @@
-import { Aspects, CfnOutput, CustomResource, Lazy, Token } from 'aws-cdk-lib';
+import { AspectPriority, Aspects, CfnOutput, CustomResource, Lazy, Token } from 'aws-cdk-lib';
 import { Construct, IConstruct } from 'constructs';
 import { ApiCallBase, IApiCall } from './api-call-base';
 import { ExpectedResult } from './common';
@@ -51,7 +51,7 @@ export class HttpApiCall extends ApiCallBase {
           }
         }
       },
-    });
+    }, { priority: AspectPriority.MUTATING });
   }
 
   public assertAtPath(_path: string, _expected: ExpectedResult): IApiCall {

@@ -1421,3 +1421,31 @@ new rds.DatabaseCluster(this, 'Cluster', {
   monitoringRole,
 });
 ```
+
+## Limitless Database Cluster
+
+Amazon Aurora [PostgreSQL Limitless Database](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/limitless.html) provides automated horizontal scaling to process millions of write transactions per second and manages petabytes of data while maintaining the simplicity of operating inside a single database.
+
+The following example shows creating an Aurora PostgreSQL Limitless Database cluster:
+
+```ts
+declare const vpc: ec2.IVpc;
+
+new rds.DatabaseCluster(this, 'LimitlessDatabaseCluster', {
+  engine: rds.DatabaseClusterEngine.auroraPostgres({
+    version: rds.AuroraPostgresEngineVersion.VER_16_4_LIMITLESS,
+  }),
+  vpc,
+  clusterScailabilityType: rds.ClusterScailabilityType.LIMITLESS,
+  // Requires enabling Performance Insights
+  enablePerformanceInsights: true,
+  performanceInsightRetention: rds.PerformanceInsightRetention.MONTHS_1,
+  // Requires enabling Enhanced Monitoring at the cluster level
+  monitoringInterval: Duration.minutes(1),
+  enableClusterLevelEnhancedMonitoring: true,
+  // Requires I/O optimized storage type
+  storageType: rds.DBClusterStorageType.AURORA_IOPT1,
+  // Requires exporting the PostgreSQL log to Amazon CloudWatch Logs.
+  cloudwatchLogsExports: ['postgresql'],
+});
+```

@@ -62,7 +62,7 @@ const importedLambdaTagValue = 'importedLambdaTagValue';
 new scheduler.Schedule(scheduleStack, 'ScheduleWithImportedLambda', {
   schedule: scheduler.ScheduleExpression.rate(cdk.Duration.minutes(1)),
   target: new LambdaInvoke(importedFunc, {
-    input: scheduler.ScheduleTargetInput.fromObject(importedLambdaTagValue),
+    input: scheduler.ScheduleTargetInput.fromObject({ tagValue: importedLambdaTagValue }),
   }),
 });
 
@@ -88,14 +88,14 @@ const sameStackLambdaTagValue = 'sameStackLambdaTagValue';
 new scheduler.Schedule(scheduleStack, 'ScheduleWithSameStackLambda', {
   schedule: scheduler.ScheduleExpression.rate(cdk.Duration.minutes(1)),
   target: new LambdaInvoke(sameStackFunc, {
-    input: scheduler.ScheduleTargetInput.fromObject(sameStackLambdaTagValue),
+    input: scheduler.ScheduleTargetInput.fromObject({ tagValue: sameStackLambdaTagValue }),
   }),
 });
 
-// 3rd case testing reusing target lambda and static date
+// 3rd case testing reusing target lambda, static date and target props
 new scheduler.Schedule(scheduleStack, 'ScheduleWithStaticDate', {
   schedule: scheduler.ScheduleExpression.at(new Date('2000-01-01T00:00:00Z')),
-  target: new LambdaInvoke(sameStackFunc, { retryAttempts: 0 }),
+  target: new LambdaInvoke(sameStackFunc, { maxEventAge: cdk.Duration.minutes(1), retryAttempts: 1 }),
 });
 
 const integ = new IntegTest(app, 'integtest-lambda-invoke', {

@@ -4,7 +4,7 @@ import { IConstruct, Construct, Node } from 'constructs';
 import { Annotations } from './annotations';
 import { App } from './app';
 import { Arn, ArnComponents, ArnFormat } from './arn';
-import { Aspects } from './aspect';
+import { AspectPriority, Aspects } from './aspect';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from './assets';
 import { CfnElement } from './cfn-element';
 import { Fn } from './cfn-fn';
@@ -583,7 +583,7 @@ export class Stack extends Construct implements ITaggable {
             node.addPropertyOverride('PermissionsBoundary', permissionsBoundaryArn);
           }
         },
-      });
+      }, { priority: AspectPriority.MUTATING });
 
     }
   }

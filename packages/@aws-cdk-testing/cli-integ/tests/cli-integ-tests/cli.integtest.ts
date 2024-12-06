@@ -1,4 +1,5 @@
 import { existsSync, promises as fs } from 'fs';
+import * as querystring from 'node:querystring';
 import * as os from 'os';
 import * as path from 'path';
 import {
@@ -23,6 +24,7 @@ import { PutObjectLockConfigurationCommand } from '@aws-sdk/client-s3';
 import { CreateTopicCommand, DeleteTopicCommand } from '@aws-sdk/client-sns';
 import { AssumeRoleCommand, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
 import * as mockttp from 'mockttp';
+import { CompletedRequest } from 'mockttp';
 import {
   cloneDirectory,
   integTest,
@@ -2846,10 +2848,19 @@ integTest('requests go through a proxy when configured',
       });
     } finally {
       await fs.rm(certDir, { recursive: true, force: true });
+      await proxyServer.stop();
     }
 
-    // Checking that there was some interaction with the proxy
-    const requests = await endpoint.getSeenRequests();
-    expect(requests.length).toBeGreaterThan(0);
+    const actionsUsed = actions(await endpoint.getSeenRequests());
+    expect(actionsUsed).toContain('AssumeRole');
+    expect(actionsUsed).toContain('CreateChangeSet');
   }),
 );
+
+function actions(requests: CompletedRequest[]): string[] {
+  return [...new Set(requests
+    .map(req => req.body.buffer.toString('utf-8'))
+    .map(body => querystring.decode(body))
+    .map(x => x.Action as string)
+    .filter(action => action != null))];
+}

@@ -1,0 +1,383 @@
+{
+  "version": "38.0.1",
+  "artifacts": {
+    "AlbTargetGroupIpAddressTypeTestStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "AlbTargetGroupIpAddressTypeTestStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "AlbTargetGroupIpAddressTypeTestStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "AlbTargetGroupIpAddressTypeTestStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/03976be104a0c543b1d266c3401be49cb0a85127f59bff731412267cfc179618.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "AlbTargetGroupIpAddressTypeTestStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "AlbTargetGroupIpAddressTypeTestStack.assets"
+      ],
+      "metadata": {
+        "/AlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ipv4Vpc1439105D"
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ipv4VpcPublicSubnet1SubnetEC9C8EC9"
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ipv4VpcPublicSubnet1RouteTableF1965042"
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ipv4VpcPublicSubnet1RouteTableAssociation5FC45ABA"
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ipv4VpcPublicSubnet1DefaultRoute0C4F086E"
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ipv4VpcPublicSubnet2Subnet5F5E4544"
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ipv4VpcPublicSubnet2RouteTableCAB310B5"
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ipv4VpcPublicSubnet2RouteTableAssociation5294334B"
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ipv4VpcPublicSubnet2DefaultRoute826D6EFE"
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/IsolatedSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ipv4VpcIsolatedSubnet1Subnet55C712BF"
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/IsolatedSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ipv4VpcIsolatedSubnet1RouteTableA5641DD1"
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/IsolatedSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ipv4VpcIsolatedSubnet1RouteTableAssociationA9CD1AEE"
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/IsolatedSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ipv4VpcIsolatedSubnet2Subnet30A426C1"
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/IsolatedSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ipv4VpcIsolatedSubnet2RouteTable26B47FB4"
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/IsolatedSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ipv4VpcIsolatedSubnet2RouteTableAssociationD5682B3F"
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ipv4VpcIGW9797A423"
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ipv4VpcVPCGWF187A055"
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestStack/Ipv4Vpc/RestrictDefaultSecurityGroupCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ipv4VpcRestrictDefaultSecurityGroupCustomResource412C54F5"
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestStack/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestStack/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestStack/DualstackVpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualstackVpc3B16059D"
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestStack/DualstackVpc/ipv6cidr": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualstackVpcipv6cidr98E23615"
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestStack/DualstackVpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualstackVpcPublicSubnet1Subnet345ABF6C"
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestStack/DualstackVpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualstackVpcPublicSubnet1RouteTable115D5C6A"
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestStack/DualstackVpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualstackVpcPublicSubnet1RouteTableAssociationC0CA8C6E"
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestStack/DualstackVpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualstackVpcPublicSubnet1DefaultRoute9CD4625F"
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestStack/DualstackVpc/PublicSubnet1/DefaultRoute6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualstackVpcPublicSubnet1DefaultRoute6C2383FA6"
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestStack/DualstackVpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualstackVpcPublicSubnet2SubnetF7BFA8A4"
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestStack/DualstackVpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualstackVpcPublicSubnet2RouteTable0F548002"
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestStack/DualstackVpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualstackVpcPublicSubnet2RouteTableAssociationB96A93FE"
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestStack/DualstackVpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualstackVpcPublicSubnet2DefaultRouteBC53FA35"
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestStack/DualstackVpc/PublicSubnet2/DefaultRoute6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualstackVpcPublicSubnet2DefaultRoute675820509"
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestStack/DualstackVpc/IsolatedSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualstackVpcIsolatedSubnet1SubnetDD7D99E1"
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestStack/DualstackVpc/IsolatedSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualstackVpcIsolatedSubnet1RouteTable0B40D8B6"
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestStack/DualstackVpc/IsolatedSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualstackVpcIsolatedSubnet1RouteTableAssociation86B9AE73"
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestStack/DualstackVpc/IsolatedSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualstackVpcIsolatedSubnet2Subnet88E17746"
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestStack/DualstackVpc/IsolatedSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualstackVpcIsolatedSubnet2RouteTableAEF5E608"
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestStack/DualstackVpc/IsolatedSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualstackVpcIsolatedSubnet2RouteTableAssociation8CD57CFF"
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestStack/DualstackVpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualstackVpcIGWED712EFF"
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestStack/DualstackVpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualstackVpcVPCGWBFA6CC4A"
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestStack/DualstackVpc/EIGW6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualstackVpcEIGW61425E04A"
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestStack/DualstackVpc/RestrictDefaultSecurityGroupCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualstackVpcRestrictDefaultSecurityGroupCustomResource4FDA257A"
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestStack/Ipv4TargetGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ipv4TargetGroupE427AE4A"
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestStack/Ipv6TargetGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ipv6TargetGroup2FEE9CC5"
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "AlbTargetGroupIpAddressTypeTestStack"
+    },
+    "AlbTargetGroupIpAddressTypeTestIntegDefaultTestDeployAssert7B27CD73.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "AlbTargetGroupIpAddressTypeTestIntegDefaultTestDeployAssert7B27CD73.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "AlbTargetGroupIpAddressTypeTestIntegDefaultTestDeployAssert7B27CD73": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "AlbTargetGroupIpAddressTypeTestIntegDefaultTestDeployAssert7B27CD73.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "AlbTargetGroupIpAddressTypeTestIntegDefaultTestDeployAssert7B27CD73.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "AlbTargetGroupIpAddressTypeTestIntegDefaultTestDeployAssert7B27CD73.assets"
+      ],
+      "metadata": {
+        "/AlbTargetGroupIpAddressTypeTestInteg/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/AlbTargetGroupIpAddressTypeTestInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "AlbTargetGroupIpAddressTypeTestInteg/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

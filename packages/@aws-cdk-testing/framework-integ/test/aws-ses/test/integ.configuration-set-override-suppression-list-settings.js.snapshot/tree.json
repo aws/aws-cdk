@@ -1,0 +1,212 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "cdk-ses-configuration-set-overriding-suppression-list-integ": {
+        "id": "cdk-ses-configuration-set-overriding-suppression-list-integ",
+        "path": "cdk-ses-configuration-set-overriding-suppression-list-integ",
+        "children": {
+          "DisableSuppressionList": {
+            "id": "DisableSuppressionList",
+            "path": "cdk-ses-configuration-set-overriding-suppression-list-integ/DisableSuppressionList",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-ses-configuration-set-overriding-suppression-list-integ/DisableSuppressionList/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SES::ConfigurationSet",
+                  "aws:cdk:cloudformation:props": {
+                    "suppressionOptions": {
+                      "suppressedReasons": []
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ses.CfnConfigurationSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ses.ConfigurationSet",
+              "version": "0.0.0"
+            }
+          },
+          "OverrideSuppressionReasonsToBouncesOnly": {
+            "id": "OverrideSuppressionReasonsToBouncesOnly",
+            "path": "cdk-ses-configuration-set-overriding-suppression-list-integ/OverrideSuppressionReasonsToBouncesOnly",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-ses-configuration-set-overriding-suppression-list-integ/OverrideSuppressionReasonsToBouncesOnly/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SES::ConfigurationSet",
+                  "aws:cdk:cloudformation:props": {
+                    "suppressionOptions": {
+                      "suppressedReasons": [
+                        "BOUNCE"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ses.CfnConfigurationSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ses.ConfigurationSet",
+              "version": "0.0.0"
+            }
+          },
+          "OverrideSuppressionReasonsToComplaintsOnly": {
+            "id": "OverrideSuppressionReasonsToComplaintsOnly",
+            "path": "cdk-ses-configuration-set-overriding-suppression-list-integ/OverrideSuppressionReasonsToComplaintsOnly",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-ses-configuration-set-overriding-suppression-list-integ/OverrideSuppressionReasonsToComplaintsOnly/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SES::ConfigurationSet",
+                  "aws:cdk:cloudformation:props": {
+                    "suppressionOptions": {
+                      "suppressedReasons": [
+                        "COMPLAINT"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ses.CfnConfigurationSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ses.ConfigurationSet",
+              "version": "0.0.0"
+            }
+          },
+          "OverrideSuppressionReasonsToBouncesAndComplaints": {
+            "id": "OverrideSuppressionReasonsToBouncesAndComplaints",
+            "path": "cdk-ses-configuration-set-overriding-suppression-list-integ/OverrideSuppressionReasonsToBouncesAndComplaints",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-ses-configuration-set-overriding-suppression-list-integ/OverrideSuppressionReasonsToBouncesAndComplaints/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SES::ConfigurationSet",
+                  "aws:cdk:cloudformation:props": {
+                    "suppressionOptions": {
+                      "suppressedReasons": [
+                        "BOUNCE",
+                        "COMPLAINT"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ses.CfnConfigurationSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ses.ConfigurationSet",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "cdk-ses-configuration-set-overriding-suppression-list-integ/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "cdk-ses-configuration-set-overriding-suppression-list-integ/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "ConfigurationSetOverridingSuppressionListSettingsInteg": {
+        "id": "ConfigurationSetOverridingSuppressionListSettingsInteg",
+        "path": "ConfigurationSetOverridingSuppressionListSettingsInteg",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "ConfigurationSetOverridingSuppressionListSettingsInteg/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "ConfigurationSetOverridingSuppressionListSettingsInteg/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "ConfigurationSetOverridingSuppressionListSettingsInteg/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "ConfigurationSetOverridingSuppressionListSettingsInteg/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "ConfigurationSetOverridingSuppressionListSettingsInteg/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

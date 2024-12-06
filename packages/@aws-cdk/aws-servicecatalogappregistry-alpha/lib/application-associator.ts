@@ -50,7 +50,7 @@ export class ApplicationAssociator extends Construct {
     this.associateCrossAccountStacks = targetBindResult.associateCrossAccountStacks;
     cdk.Aspects.of(scope).add(new CheckedStageStackAssociator(this, {
       associateCrossAccountStacks: this.associateCrossAccountStacks,
-    }));
+    }), { priority: cdk.AspectPriority.MUTATING });
   }
 
   /**
@@ -61,7 +61,7 @@ export class ApplicationAssociator extends Construct {
     this.associatedStages.add(stage);
     cdk.Aspects.of(stage).add(new CheckedStageStackAssociator(this, {
       associateCrossAccountStacks: this.associateCrossAccountStacks,
-    }));
+    }), { priority: cdk.AspectPriority.MUTATING });
     return stage;
   }
 

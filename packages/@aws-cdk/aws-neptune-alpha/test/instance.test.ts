@@ -108,6 +108,23 @@ describe('DatabaseInstance', () => {
     });
   });
 
+  test.each([true, false])('instance with auto minor version upgrade', (autoMinorVersionUpgrade) => {
+    // GIVEN
+    const stack = testStack();
+
+    // WHEN
+    new DatabaseInstance(stack, 'Instance', {
+      cluster: stack.cluster,
+      instanceType: InstanceType.R5_LARGE,
+      autoMinorVersionUpgrade,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBInstance', {
+      AutoMinorVersionUpgrade: autoMinorVersionUpgrade,
+    });
+  });
+
   test('instance type from CfnParameter', () => {
     // GIVEN
     const stack = testStack();

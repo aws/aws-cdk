@@ -165,36 +165,268 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-events.CfnRule",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-events.Rule",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "MyWildcardRule": {
+            "id": "MyWildcardRule",
+            "path": "RuleStack/MyWildcardRule",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "RuleStack/MyWildcardRule/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Events::Rule",
+                  "aws:cdk:cloudformation:props": {
+                    "eventPattern": {
+                      "account": [
+                        {
+                          "wildcard": "account*"
+                        }
+                      ]
+                    },
+                    "state": "ENABLED"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "MyAnythingButPrefixRule": {
+            "id": "MyAnythingButPrefixRule",
+            "path": "RuleStack/MyAnythingButPrefixRule",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "RuleStack/MyAnythingButPrefixRule/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Events::Rule",
+                  "aws:cdk:cloudformation:props": {
+                    "eventPattern": {
+                      "account": [
+                        {
+                          "anything-but": {
+                            "prefix": "prefix-"
+                          }
+                        }
+                      ]
+                    },
+                    "state": "ENABLED"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "MyAnythingButSuffixRule": {
+            "id": "MyAnythingButSuffixRule",
+            "path": "RuleStack/MyAnythingButSuffixRule",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "RuleStack/MyAnythingButSuffixRule/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Events::Rule",
+                  "aws:cdk:cloudformation:props": {
+                    "eventPattern": {
+                      "account": [
+                        {
+                          "anything-but": {
+                            "suffix": "-suffix"
+                          }
+                        }
+                      ]
+                    },
+                    "state": "ENABLED"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "MyAnythingButWildcardRule": {
+            "id": "MyAnythingButWildcardRule",
+            "path": "RuleStack/MyAnythingButWildcardRule",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "RuleStack/MyAnythingButWildcardRule/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Events::Rule",
+                  "aws:cdk:cloudformation:props": {
+                    "eventPattern": {
+                      "account": [
+                        {
+                          "anything-but": {
+                            "wildcard": "account*"
+                          }
+                        }
+                      ]
+                    },
+                    "state": "ENABLED"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "MyAnythingButEqualsIgnoreCase": {
+            "id": "MyAnythingButEqualsIgnoreCase",
+            "path": "RuleStack/MyAnythingButEqualsIgnoreCase",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "RuleStack/MyAnythingButEqualsIgnoreCase/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Events::Rule",
+                  "aws:cdk:cloudformation:props": {
+                    "eventPattern": {
+                      "account": [
+                        {
+                          "anything-but": {
+                            "equals-ignore-case": [
+                              "account1",
+                              "account2"
+                            ]
+                          }
+                        }
+                      ]
+                    },
+                    "state": "ENABLED"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "MyPrefixEqualsIgnoreCase": {
+            "id": "MyPrefixEqualsIgnoreCase",
+            "path": "RuleStack/MyPrefixEqualsIgnoreCase",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "RuleStack/MyPrefixEqualsIgnoreCase/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Events::Rule",
+                  "aws:cdk:cloudformation:props": {
+                    "eventPattern": {
+                      "account": [
+                        {
+                          "prefix": {
+                            "equals-ignore-case": "prefix-"
+                          }
+                        }
+                      ]
+                    },
+                    "state": "ENABLED"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "MySuffixEqualsIgnoreCase": {
+            "id": "MySuffixEqualsIgnoreCase",
+            "path": "RuleStack/MySuffixEqualsIgnoreCase",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "RuleStack/MySuffixEqualsIgnoreCase/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Events::Rule",
+                  "aws:cdk:cloudformation:props": {
+                    "eventPattern": {
+                      "account": [
+                        {
+                          "suffix": {
+                            "equals-ignore-case": "-suffix"
+                          }
+                        }
+                      ]
+                    },
+                    "state": "ENABLED"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "RuleStack/BootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
             }
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
             "path": "RuleStack/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnRule",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
         }
       },
       "IntegTest-BatchDefaultEnvVarsStack": {
@@ -210,7 +442,7 @@
                 "path": "IntegTest-BatchDefaultEnvVarsStack/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.154"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -221,33 +453,33 @@
                     "id": "BootstrapVersion",
                     "path": "IntegTest-BatchDefaultEnvVarsStack/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
                     "path": "IntegTest-BatchDefaultEnvVarsStack/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnRule",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Stack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
           "version": "0.0.0"
         }
       },
@@ -256,13 +488,13 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.154"
+          "version": "10.4.2"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.4.2"
     }
   }
 }

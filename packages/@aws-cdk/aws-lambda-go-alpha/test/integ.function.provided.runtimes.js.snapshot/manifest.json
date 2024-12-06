@@ -1,0 +1,198 @@
+{
+  "version": "38.0.1",
+  "artifacts": {
+    "cdk-integ-lambda-golang-provided-al2023.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "cdk-integ-lambda-golang-provided-al2023.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "cdk-integ-lambda-golang-provided-al2023": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdk-integ-lambda-golang-provided-al2023.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/34293767b5134bd2028237f5362259b4594a9e316e6ac19bbc42f610af769649.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "cdk-integ-lambda-golang-provided-al2023.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "cdk-integ-lambda-golang-provided-al2023.assets"
+      ],
+      "metadata": {
+        "/cdk-integ-lambda-golang-provided-al2023/go-handler-provided.al2-0/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "gohandlerprovidedal20ServiceRole8426AEF6"
+          }
+        ],
+        "/cdk-integ-lambda-golang-provided-al2023/go-handler-provided.al2-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "gohandlerprovidedal20A3EC5933"
+          }
+        ],
+        "/cdk-integ-lambda-golang-provided-al2023/go-handler-provided.al2023-1/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "gohandlerprovidedal20231ServiceRole68A34C3F"
+          }
+        ],
+        "/cdk-integ-lambda-golang-provided-al2023/go-handler-provided.al2023-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "gohandlerprovidedal2023182E754E4"
+          }
+        ],
+        "/cdk-integ-lambda-golang-provided-al2023/Exports/Output{\"Ref\":\"gohandlerprovidedal20A3EC5933\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefgohandlerprovidedal20A3EC5933F5EA8606"
+          }
+        ],
+        "/cdk-integ-lambda-golang-provided-al2023/Exports/Output{\"Ref\":\"gohandlerprovidedal2023182E754E4\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefgohandlerprovidedal2023182E754E4D088A80B"
+          }
+        ],
+        "/cdk-integ-lambda-golang-provided-al2023/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/cdk-integ-lambda-golang-provided-al2023/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "cdk-integ-lambda-golang-provided-al2023"
+    },
+    "lambdagoruntimeDefaultTestDeployAssert366012A1.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "lambdagoruntimeDefaultTestDeployAssert366012A1.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "lambdagoruntimeDefaultTestDeployAssert366012A1": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "lambdagoruntimeDefaultTestDeployAssert366012A1.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/665413b584435ebdf5f793a7d2380a56e3148d53574757886dc43130ffda7d9d.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "lambdagoruntimeDefaultTestDeployAssert366012A1.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "cdk-integ-lambda-golang-provided-al2023",
+        "lambdagoruntimeDefaultTestDeployAssert366012A1.assets"
+      ],
+      "metadata": {
+        "/lambda-go-runtime/DefaultTest/DeployAssert/LambdaInvokef3b58fd2af78e934527e05bc469d07dc/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvokef3b58fd2af78e934527e05bc469d07dc"
+          }
+        ],
+        "/lambda-go-runtime/DefaultTest/DeployAssert/LambdaInvokef3b58fd2af78e934527e05bc469d07dc/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvokef3b58fd2af78e934527e05bc469d07dcInvokeFB39F386"
+          }
+        ],
+        "/lambda-go-runtime/DefaultTest/DeployAssert/LambdaInvokef3b58fd2af78e934527e05bc469d07dc/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsLambdaInvokef3b58fd2af78e934527e05bc469d07dc"
+          }
+        ],
+        "/lambda-go-runtime/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/lambda-go-runtime/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/lambda-go-runtime/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/lambda-go-runtime/DefaultTest/DeployAssert/LambdaInvokee64be71dc9e61c18c827e4067293abf7/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvokee64be71dc9e61c18c827e4067293abf7"
+          }
+        ],
+        "/lambda-go-runtime/DefaultTest/DeployAssert/LambdaInvokee64be71dc9e61c18c827e4067293abf7/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvokee64be71dc9e61c18c827e4067293abf7Invoke6B51EA75"
+          }
+        ],
+        "/lambda-go-runtime/DefaultTest/DeployAssert/LambdaInvokee64be71dc9e61c18c827e4067293abf7/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsLambdaInvokee64be71dc9e61c18c827e4067293abf7"
+          }
+        ],
+        "/lambda-go-runtime/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/lambda-go-runtime/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "lambda-go-runtime/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

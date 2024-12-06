@@ -47,6 +47,9 @@ module.exports = {
     '@cdklabs/no-invalid-path': [ 'error' ],
     '@cdklabs/promiseall-no-unbounded-parallelism': [ 'error' ],
 
+    // Error handling
+    'no-throw-literal': [ 'error' ],
+
     // Require use of the `import { foo } from 'bar';` form instead of `import foo = require('bar');`
     '@typescript-eslint/no-require-imports': ['error'],
     '@typescript-eslint/indent': ['error', 2],
@@ -66,6 +69,7 @@ module.exports = {
     'brace-style': ['error', '1tbs', { allowSingleLine: true }], // enforce one true brace style
     'space-before-blocks': 'error', // require space before blocks
     'curly': ['error', 'multi-line', 'consistent'], // require curly braces for multiline control statements
+    'eol-last': ["error", "always"], // require a newline a the end of files
 
     // Require all imported dependencies are actually declared in package.json
     'import/no-extraneous-dependencies': [

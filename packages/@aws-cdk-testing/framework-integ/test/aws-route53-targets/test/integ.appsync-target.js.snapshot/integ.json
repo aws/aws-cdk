@@ -1,0 +1,17 @@
+{
+  "enableLookups": true,
+  "version": "38.0.1",
+  "testCases": {
+    "appsync-domain-name/DefaultTest": {
+      "stacks": [
+        "aws-cdk-appsync-alias-integ"
+      ],
+      "regions": [
+        "us-east-1"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "appsync-domain-name/DefaultTest/DeployAssert",
+      "assertionStackName": "appsyncdomainnameDefaultTestDeployAssert6D41B82A"
+    }
+  }
+}

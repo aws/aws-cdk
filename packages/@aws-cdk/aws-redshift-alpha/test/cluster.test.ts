@@ -4,7 +4,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
-import { Cluster, ClusterParameterGroup, ClusterSubnetGroup, ClusterType, NodeType } from '../lib';
+import { Cluster, ClusterParameterGroup, ClusterSubnetGroup, ClusterType, NodeType, ResourceAction } from '../lib';
 import { CfnCluster } from 'aws-cdk-lib/aws-redshift';
 
 let stack: cdk.Stack;
@@ -510,6 +510,36 @@ test('can create a cluster with logging enabled', () => {
       S3KeyPrefix: 'prefix',
     },
   });
+});
+
+test.each([
+  ResourceAction.PAUSE_CLUSTER,
+  ResourceAction.RESUME_CLUSTER,
+  ResourceAction.FAILOVER_PRIMARY_COMPUTE,
+])('specify resource action %s', (resourceAction) => {
+  // WHEN
+  new Cluster(stack, 'Redshift', {
+    masterUser: {
+      masterUsername: 'admin',
+    },
+    vpc,
+    resourceAction,
+    nodeType: NodeType.RA3_XLPLUS,
+    multiAz: true,
+  });
+});
+
+test.each([false, undefined])('throw error for failover primary compute action with single AZ cluster', (multiAz) => {
+  expect(() => {
+    new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      multiAz,
+      resourceAction: ResourceAction.FAILOVER_PRIMARY_COMPUTE,
+    });
+  }).toThrow('ResourceAction.FAILOVER_PRIMARY_COMPUTE can only be used with multi-AZ clusters.');
 });
 
 test('throws when trying to add rotation to a cluster without secret', () => {

@@ -1,11 +1,11 @@
 import { DescribeSecurityGroupsCommand } from '@aws-sdk/client-ec2';
 import { SDK, type SdkForEnvironment } from '../../lib';
 import { hasAllTrafficEgress, SecurityGroupContextProviderPlugin } from '../../lib/context-providers/security-groups';
-import { FAKE_CREDENTIALS, MockSdkProvider, mockEC2Client, restoreSdkMocksToDefault } from '../util/mock-sdk';
+import { FAKE_CREDENTIAL_CHAIN, MockSdkProvider, mockEC2Client, restoreSdkMocksToDefault } from '../util/mock-sdk';
 
 const mockSDK = new (class extends MockSdkProvider {
   public forEnvironment(): Promise<SdkForEnvironment> {
-    return Promise.resolve({ sdk: new SDK(FAKE_CREDENTIALS, mockSDK.defaultRegion, {}), didAssumeRole: false });
+    return Promise.resolve({ sdk: new SDK(FAKE_CREDENTIAL_CHAIN, mockSDK.defaultRegion, {}), didAssumeRole: false });
   }
 })();
 

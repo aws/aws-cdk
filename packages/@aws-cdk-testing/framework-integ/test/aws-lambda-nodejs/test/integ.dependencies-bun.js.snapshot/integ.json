@@ -1,0 +1,13 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "BunTest/DefaultTest": {
+      "stacks": [
+        "TestStack"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "BunTest/DefaultTest/DeployAssert",
+      "assertionStackName": "BunTestDefaultTestDeployAssert773BA602"
+    }
+  }
+}
