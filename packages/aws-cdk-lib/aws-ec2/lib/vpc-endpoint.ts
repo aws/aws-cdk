@@ -425,6 +425,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly CODECOMMIT_GIT_FIPS = new InterfaceVpcEndpointAwsService('git-codecommit-fips');
   public static readonly GLUE = new InterfaceVpcEndpointAwsService('glue');
   public static readonly GLUE_DATABREW = new InterfaceVpcEndpointAwsService('databrew');
+  public static readonly GLUE_DASHBOARD = new InterfaceVpcEndpointAwsService('glue.dashboard');
   public static readonly GRAFANA = new InterfaceVpcEndpointAwsService('grafana');
   public static readonly GRAFANA_WORKSPACE = new InterfaceVpcEndpointAwsService('grafana-workspace');
   public static readonly GROUNDSTATION = new InterfaceVpcEndpointAwsService('groundstation');
@@ -442,6 +443,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly IMAGE_BUILDER = new InterfaceVpcEndpointAwsService('imagebuilder');
   public static readonly INSPECTOR = new InterfaceVpcEndpointAwsService('inspector2');
   public static readonly INSPECTOR_SCAN = new InterfaceVpcEndpointAwsService('inspector-scan');
+  public static readonly INVOICING = new InterfaceVpcEndpointAwsService('invoicing');
   public static readonly IOT_CORE = new InterfaceVpcEndpointAwsService('iot.data');
   public static readonly IOT_CORE_CREDENTIALS = new InterfaceVpcEndpointAwsService('iot.credentials');
   public static readonly IOT_CORE_DEVICE_ADVISOR = new InterfaceVpcEndpointAwsService('deviceadvisor.iot');
@@ -562,12 +564,16 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly S3 = new InterfaceVpcEndpointAwsService('s3');
   public static readonly S3_OUTPOSTS = new InterfaceVpcEndpointAwsService('s3-outposts');
   public static readonly S3_MULTI_REGION_ACCESS_POINTS = new InterfaceVpcEndpointAwsService('s3-global.accesspoint', 'com.amazonaws', undefined, { global: true });
+  public static readonly S3_TABLES = new InterfaceVpcEndpointAwsService('s3tables');
+  public static readonly SAVINGS_PLANS = new InterfaceVpcEndpointAwsService('savingsplans', 'com.amazonaws', undefined, { global: true });
   public static readonly SAGEMAKER_API = new InterfaceVpcEndpointAwsService('sagemaker.api');
+  public static readonly SAGEMAKER_DATA_SCIENCE_ASSISTANT = new InterfaceVpcEndpointAwsService('sagemaker-data-science-assistant');
   public static readonly SAGEMAKER_EXPERIMENTS = new InterfaceVpcEndpointAwsService('experiments', 'aws.sagemaker');
   public static readonly SAGEMAKER_FEATURESTORE_RUNTIME = new InterfaceVpcEndpointAwsService('sagemaker.featurestore-runtime');
   public static readonly SAGEMAKER_GEOSPATIAL = new InterfaceVpcEndpointAwsService('sagemaker-geospatial');
   public static readonly SAGEMAKER_METRICS = new InterfaceVpcEndpointAwsService('sagemaker.metrics');
   public static readonly SAGEMAKER_NOTEBOOK = new InterfaceVpcEndpointAwsService('notebook', 'aws.sagemaker');
+  public static readonly SAGEMAKER_PARTNER_APP = new InterfaceVpcEndpointAwsService('partner-app', 'aws.sagemaker');
   public static readonly SAGEMAKER_RUNTIME = new InterfaceVpcEndpointAwsService('sagemaker.runtime');
   public static readonly SAGEMAKER_RUNTIME_FIPS = new InterfaceVpcEndpointAwsService('sagemaker.runtime-fips');
   public static readonly SAGEMAKER_STUDIO = new InterfaceVpcEndpointAwsService('studio', 'aws.sagemaker');
