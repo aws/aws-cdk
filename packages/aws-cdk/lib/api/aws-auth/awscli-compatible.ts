@@ -5,6 +5,7 @@ import { loadSharedConfigFiles } from '@smithy/shared-ini-file-loader';
 import { AwsCredentialIdentityProvider, Logger } from '@smithy/types';
 import * as promptly from 'promptly';
 import { ProxyAgent } from 'proxy-agent';
+import { makeCachingProvider } from './provider-caching';
 import type { SdkHttpOptions } from './sdk-provider';
 import { readIfPossible } from './util';
 import { debug } from '../../logging';
@@ -23,10 +24,18 @@ const DEFAULT_TIMEOUT = 300000;
 export class AwsCliCompatible {
   /**
    * Build an AWS CLI-compatible credential chain provider
+   *
+   * The credential chain returned by this function is always caching.
    */
   public static async credentialChainBuilder(
     options: CredentialChainOptions = {},
   ): Promise<AwsCredentialIdentityProvider> {
+    const clientConfig = {
+      requestHandler: AwsCliCompatible.requestHandlerBuilder(options.httpOptions),
+      customUserAgent: 'aws-cdk',
+      logger: options.logger,
+    };
+
     /**
      * The previous implementation matched AWS CLI behavior:
      *
@@ -37,20 +46,16 @@ export class AwsCliCompatible {
      * environment credentials still take precedence over AWS_PROFILE
      */
     if (options.profile) {
-      return fromIni({
+      return makeCachingProvider(fromIni({
         profile: options.profile,
         ignoreCache: true,
         mfaCodeProvider: tokenCodeFn,
-        clientConfig: {
-          requestHandler: AwsCliCompatible.requestHandlerBuilder(options.httpOptions),
-          customUserAgent: 'aws-cdk',
-          logger: options.logger,
-        },
+        clientConfig,
         logger: options.logger,
-      });
+      }));
     }
 
-    const profile = options.profile || process.env.AWS_PROFILE || process.env.AWS_DEFAULT_PROFILE;
+    const envProfile = process.env.AWS_PROFILE || process.env.AWS_DEFAULT_PROFILE;
 
     /**
      * Env AWS - EnvironmentCredentials with string AWS
@@ -72,15 +77,14 @@ export class AwsCliCompatible {
      * fromContainerMetadata()
      * fromTokenFile()
      * fromInstanceMetadata()
+     *
+     * The NodeProviderChain is already cached.
      */
     const nodeProviderChain = fromNodeProviderChain({
-      profile: profile,
-      clientConfig: {
-        requestHandler: AwsCliCompatible.requestHandlerBuilder(options.httpOptions),
-        customUserAgent: 'aws-cdk',
-        logger: options.logger,
-      },
+      profile: envProfile,
+      clientConfig,
       logger: options.logger,
+      mfaCodeProvider: tokenCodeFn,
       ignoreCache: true,
     });
 

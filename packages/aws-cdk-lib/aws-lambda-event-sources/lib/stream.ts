@@ -54,6 +54,9 @@ export interface BaseStreamEventSourceProps{
   readonly provisionedPollerConfig?: ProvisionedPollerConfig;
 }
 
+/**
+ * (Amazon MSK and self-managed Apache Kafka only) The provisioned mode configuration for the event source.
+ */
 export interface ProvisionedPollerConfig {
   /**
    * The minimum number of pollers that should be provisioned.
