@@ -110,7 +110,7 @@ export interface JsonataCommonOptions {
    *
    * @default - None
    */
-  readonly output?: any;
+  readonly outputs?: any;
 }
 
 /**
@@ -125,7 +125,7 @@ export interface JsonataStateOptions extends JsonataCommonOptions {
    *
    * @default - No arguments
    */
-  readonly arguments?: { [name: string]: any };
+  readonly arguments?: any;
 }
 
 /**
@@ -236,7 +236,7 @@ export abstract class State extends Construct implements IChainable {
   protected readonly resultSelector?: object;
   protected readonly branches: StateGraph[] = [];
   protected readonly queryLanguage?: QueryLanguage;
-  protected readonly output?: object;
+  protected readonly outputs?: object;
   protected readonly arguments?: object;
   protected iteration?: StateGraph;
   protected processorMode?: ProcessorMode = ProcessorMode.INLINE;
@@ -281,7 +281,7 @@ export abstract class State extends Construct implements IChainable {
     this.outputPath = props.outputPath;
     this.resultPath = props.resultPath;
     this.resultSelector = props.resultSelector;
-    this.output = props.output;
+    this.outputs = props.outputs;
     this.arguments = props.arguments;
 
     this.node.addValidation({ validate: () => this.validateState() });
@@ -484,7 +484,7 @@ export abstract class State extends Construct implements IChainable {
       Parameters: this.parameters,
       OutputPath: renderJsonPath(this.outputPath),
       Arguments: this.arguments,
-      Output: this.output,
+      Output: this.outputs,
     };
   }
 
