@@ -23,8 +23,8 @@ const submitJob = new tasks.LambdaInvoke(this, 'Submit Job', {
   outputPath: '$.guid',
 });
 
-const waitX = sfn.Wait.jsonata(this, 'Wait X Seconds', {
-  time: sfn.WaitTime.seconds('{% $states.input.waitSeconds %}'),
+const waitX = new sfn.Wait(this, 'Wait X Seconds', {
+  time: sfn.WaitTime.secondsPath('$.waitSeconds'),
 });
 
 const getStatus = new tasks.LambdaInvoke(this, 'Get Job Status', {
@@ -50,10 +50,10 @@ const finalStatus = new tasks.LambdaInvoke(this, 'Get Final Job Status', {
 const definition = submitJob
   .next(waitX)
   .next(getStatus)
-  .next(sfn.Choice.jsonata(this, 'Job Complete?')
+  .next(new sfn.Choice(this, 'Job Complete?')
     // Look at the "status" field
-    .when(sfn.Condition.jsonata('{% $states.input.status = FAILED %}'), jobFailed)
-    .when(sfn.Condition.jsonata('{% $states.input.status = SUCCEEDED %}'), finalStatus)
+    .when(sfn.Condition.stringEquals('$.status', 'FAILED'), jobFailed)
+    .when(sfn.Condition.stringEquals('$.status', 'SUCCEEDED'), finalStatus)
     .otherwise(waitX));
 
 new sfn.StateMachine(this, 'StateMachine', {
@@ -73,7 +73,7 @@ definition. The definition is specified by its start state, and encompasses
 all states reachable from the start state:
 
 ```ts
-const startState = sfn.Pass.jsonata(this, 'StartState');
+const startState = new sfn.Pass(this, 'StartState');
 
 new sfn.StateMachine(this, 'StateMachine', {
   definitionBody: sfn.DefinitionBody.fromChainable(startState),
@@ -100,7 +100,7 @@ Alternatively you can specify an existing step functions definition by providing
 
 ```ts
 new sfn.StateMachine(this, 'StateMachineFromString', {
-  definitionBody: sfn.DefinitionBody.fromString('{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","QueryLanguage":"JSONata","End":true}}}'),
+  definitionBody: sfn.DefinitionBody.fromString('{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}'),
 });
 
 new sfn.StateMachine(this, 'StateMachineFromFile', {
@@ -117,41 +117,10 @@ gets modified by individual steps as the state machine progresses, and finally
 is produced as output.
 
 By default, the entire Data object is passed into every state, and the return data of the step
-becomes new the new Data object. Step Functions supports JSONPath and JSONata for these data operations. Data can be changed using the operation methods provided for each query language.
+becomes new the new Data object. This behavior can be modified by supplying values for `inputPath`,
+`resultSelector`, `resultPath` and `outputPath`.
 
-### (JSONata) Transforming data with JSONata
-With JSONata, you gain a powerful open source query and expression language to select and transform data in your workflows. For a brief introduction and complete JSONata reference, see [JSONata.org documentation](https://docs.jsonata.org/overview.html). After selecting JSONata, your workflow fields will be reduced from five JSONPath fields (`InputPath`, `Parameters`, `ResultSelector`, `ResultPath`, and `OutputPath`) to only two fields: `Arguments` and `Output`. Also, you will not use `.$` on JSON object key names.
-
-If you are new to Step Functions, you only need to know that JSONata expressions use the following syntax:
-
-JSONata syntax: `"{% <JSONata expression> %}"`
-
-The following code samples show a conversion from JSONPath to JSONata:
-
-```json
- // Original sample using JSONPath
-{
-  "static": "Hello",
-  "title.$": "$.title",
-  "name.$": "$customerName",  // With $customerName declared as a variable
-  "not-evaluated": "$customerName"
-}
-```
-
-```json
-// Sample after conversion to JSONata
-{
-  "static": "Hello",
-  "title": "{% $states.input.title %}", 
-  "name": "{% $customerName %}",   // With $customerName declared as a variable
-  "not-evaluated": "$customerName"
-}
-```
-
-See the official documentation on [Transforming data with JSONata in Step Functions](https://docs.aws.amazon.com/step-functions/latest/dg/transforming-data.html).
-
-
-### (JSONPath) Manipulating state machine data using inputPath, resultSelector, resultPath and outputPath
+### Manipulating state machine data using inputPath, resultSelector, resultPath and outputPath
 
 These properties impact how each individual step interacts with the state machine data:
 
@@ -190,8 +159,6 @@ See the official documentation on [input and output processing in Step Functions
 
 Tasks take parameters, whose values can be taken from the State Machine Data object. For example, your
 workflow may want to start a CodeBuild with an environment variable that is taken from the State Machine data, or pass part of the State Machine Data into an AWS Lambda Function.
-
-#### (JSONPath) Passing Parameters to Tasks
 
 In the original JSON-based states language used by AWS Step Functions, you would
 add `.$` to the end of a key to indicate that a value needs to be interpreted as
