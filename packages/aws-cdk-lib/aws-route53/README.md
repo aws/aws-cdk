@@ -230,7 +230,7 @@ See the [Route 53 Health Checks documentation](https://docs.aws.amazon.com/AWSCl
 Route 53 has the ability to monitor the health of your application and only return records for healthy endpoints.
 This is done using a `HealthCheck` construct.
 
-In the following example, the `ARecord` will be returned by Route 53in response to DNS queries only if the HTTP requests to the `example.com/health` endpoint return a 2XX or 3XX status code.
+In the following example, the `ARecord` will be returned by Route 53 in response to DNS queries only if the HTTP requests to the `example.com/health` endpoint return a 2XX or 3XX status code.
 
 In case, when the endpoint is not healthy, the `ARecord2` will be returned by Route 53 in response to DNS queries.
 
