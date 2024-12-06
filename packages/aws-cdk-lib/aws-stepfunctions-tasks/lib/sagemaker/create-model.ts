@@ -156,7 +156,7 @@ export class SageMakerCreateModel extends sfn.TaskStateBase implements iam.IGran
    * @internal
    */
   protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
-    const queryLanguage = sfn._whichQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
+    const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
     return {
       Resource: integrationResourceArn('sagemaker', 'createModel', this.integrationPattern),
       ...this._renderParametersOrArguments(this.renderParameters(), queryLanguage),

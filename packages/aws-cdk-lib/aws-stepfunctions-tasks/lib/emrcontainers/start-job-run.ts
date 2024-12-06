@@ -174,7 +174,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
    * @internal
    */
   protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
-    const queryLanguage = sfn._whichQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
+    const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
     return {
       Resource: integrationResourceArn('emr-containers', 'startJobRun', this.integrationPattern),
       ...this._renderParametersOrArguments({

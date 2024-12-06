@@ -39,7 +39,7 @@ export abstract class CallApiGatewayEndpointBase extends sfn.TaskStateBase {
    * @internal
    */
   protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage) {
-    const queryLanguage = sfn._whichQueryLanguage(topLevelQueryLanguage, this.baseProps.queryLanguage);
+    const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.baseProps.queryLanguage);
     return {
       Resource: integrationResourceArn('apigateway', 'invoke', this.integrationPattern),
       ...this._renderParametersOrArguments({

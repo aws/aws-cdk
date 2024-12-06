@@ -768,6 +768,9 @@ function isNextable(x: any): x is INextable {
   return typeof(x) === 'object' && x.next;
 }
 
-export function _whichQueryLanguage(topLevelQueryLanguage?: QueryLanguage, stateLevelQueryLanguage?: QueryLanguage) {
+/**
+ * @internal
+ */
+export function _getActualQueryLanguage(topLevelQueryLanguage?: QueryLanguage, stateLevelQueryLanguage?: QueryLanguage) {
   return stateLevelQueryLanguage ?? topLevelQueryLanguage ?? QueryLanguage.JSON_PATH;
 }

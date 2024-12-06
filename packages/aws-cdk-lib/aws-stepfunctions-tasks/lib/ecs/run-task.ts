@@ -348,7 +348,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
    * @internal
    */
   protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
-    const queryLanguage = sfn._whichQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
+    const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
     return {
       Resource: integrationResourceArn('ecs', 'runTask', this.integrationPattern),
       ...this._renderParametersOrArguments({

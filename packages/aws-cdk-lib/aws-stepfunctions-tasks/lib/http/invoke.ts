@@ -166,7 +166,7 @@ export class HttpInvoke extends sfn.TaskStateBase {
    * @internal
    */
   protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
-    const queryLanguage = sfn._whichQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
+    const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
     return {
       Resource: integrationResourceArn('http', 'invoke'),
       ...this._renderParametersOrArguments(this.buildTaskParameters(), queryLanguage),

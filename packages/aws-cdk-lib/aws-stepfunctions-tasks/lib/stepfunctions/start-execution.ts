@@ -115,7 +115,7 @@ export class StepFunctionsStartExecution extends sfn.TaskStateBase {
    * @internal
    */
   protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
-    const queryLanguage = sfn._whichQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
+    const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
     // suffix of ':2' indicates that the output of the nested state machine should be JSON
     // suffix is only applicable when waiting for a nested state machine to complete (RUN_JOB)
     // https://docs.aws.amazon.com/step-functions/latest/dg/connect-stepfunctions.html
