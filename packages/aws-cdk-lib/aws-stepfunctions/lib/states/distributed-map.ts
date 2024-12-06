@@ -2,16 +2,17 @@ import { Construct } from 'constructs';
 import { ItemBatcher } from './distributed-map/item-batcher';
 import { IItemReader } from './distributed-map/item-reader';
 import { ResultWriter } from './distributed-map/result-writer';
-import { MapBase, MapBaseJsonataOptions, MapBaseJsonPathOptions, MapBaseOptions } from './map-base';
+import { MapBase, MapBaseJsonataOptions, MapBaseJsonPathOptions, MapBaseOptions, MapBaseProps } from './map-base';
 import { Annotations } from '../../../core';
 import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
 import { StateMachineType } from '../state-machine';
 import { CatchProps, IChainable, INextable, ProcessorConfig, ProcessorMode, QueryLanguage, RetryProps } from '../types';
+import { StateBaseProps } from './state';
 
 const DISTRIBUTED_MAP_SYMBOL = Symbol.for('@aws-cdk/aws-stepfunctions.DistributedMap');
 
-interface DistributedMapBaseProps extends MapBaseOptions {
+interface DistributedMapBaseOptions extends MapBaseOptions {
   /**
    * MapExecutionType
    *
@@ -94,22 +95,20 @@ interface DistributedMapJsonPathOptions extends MapBaseJsonPathOptions {
   readonly toleratedFailureCountPath?: string;
 }
 
-interface DistributedMapJsonataOptions extends MapBaseJsonataOptions {}
-
 /**
  * Properties for configuring a Distribute Map state that using JSONPath
  */
-export interface DistributedMapJsonPathProps extends DistributedMapBaseProps, DistributedMapJsonPathOptions {}
+export interface DistributedMapJsonPathProps extends StateBaseProps, DistributedMapBaseOptions, DistributedMapJsonPathOptions {}
 
 /**
  * Properties for configuring a Distribute Map state that using JSONata
  */
-export interface DistributedMapJsonataProps extends DistributedMapBaseProps, DistributedMapJsonataOptions {}
+export interface DistributedMapJsonataProps extends StateBaseProps, DistributedMapBaseOptions, MapBaseJsonataOptions {}
 
 /**
  * Properties for configuring a Distribute Map state
  */
-export interface DistributedMapProps extends DistributedMapBaseProps, DistributedMapJsonPathOptions, DistributedMapJsonataOptions {}
+export interface DistributedMapProps extends MapBaseProps, DistributedMapBaseOptions, DistributedMapJsonPathOptions, MapBaseJsonataOptions {}
 
 /**
  * Define a Distributed Mode Map state in the state machine

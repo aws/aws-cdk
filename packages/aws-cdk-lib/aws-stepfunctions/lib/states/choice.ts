@@ -5,24 +5,20 @@ import { Chain } from '../chain';
 import { Condition } from '../condition';
 import { IChainable, INextable, QueryLanguage } from '../types';
 
-interface ChoiceBaseProps extends StateBaseProps {}
-interface ChoiceJsonPathOptions extends JsonPathCommonOptions {}
-interface ChoiceJsonataOptions extends JsonataCommonOptions {}
-
 /**
  * Properties for defining a Choice state that using JSONPath
  */
-export interface ChoiceJsonPathProps extends ChoiceBaseProps, ChoiceJsonPathOptions { }
+export interface ChoiceJsonPathProps extends StateBaseProps, JsonPathCommonOptions {}
 
 /**
  * Properties for defining a Choice state that using JSONata
  */
-export interface ChoiceJsonataProps extends ChoiceBaseProps, ChoiceJsonataOptions { }
+export interface ChoiceJsonataProps extends StateBaseProps, JsonataCommonOptions {}
 
 /**
  * Properties for defining a Choice state
  */
-export interface ChoiceProps extends ChoiceBaseProps, ChoiceJsonPathOptions, ChoiceJsonataOptions { }
+export interface ChoiceProps extends StateBaseProps, JsonPathCommonOptions, JsonataCommonOptions {}
 
 /**
  * Define a Choice in the state machine

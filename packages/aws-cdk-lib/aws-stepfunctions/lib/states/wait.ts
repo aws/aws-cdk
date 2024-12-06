@@ -57,27 +57,25 @@ export class WaitTime {
   }
 }
 
-interface WaitBaseProps extends StateBaseProps {
+interface WaitOptions {
   /**
    * Wait duration.
    */
   readonly time: WaitTime;
 }
-interface WaitJsonPathOptions extends JsonPathCommonOptions {}
-interface WaitJsonataOptions extends JsonataCommonOptions {}
 
 /**
  * Properties for defining a Wait state that using JSONPath
  */
-export interface WaitJsonPathProps extends WaitBaseProps, WaitJsonPathOptions {}
+export interface WaitJsonPathProps extends StateBaseProps, WaitOptions, JsonPathCommonOptions {}
 /**
  * Properties for defining a Wait state that using JSONata
  */
-export interface WaitJsonataProps extends WaitBaseProps, WaitJsonataOptions {}
+export interface WaitJsonataProps extends StateBaseProps, WaitOptions, JsonataCommonOptions {}
 /**
  * Properties for defining a Wait state
  */
-export interface WaitProps extends WaitBaseProps {}
+export interface WaitProps extends StateBaseProps, WaitOptions {}
 
 /**
  * Define a Wait state in the state machine

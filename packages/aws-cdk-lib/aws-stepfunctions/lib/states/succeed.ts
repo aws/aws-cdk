@@ -3,21 +3,18 @@ import { StateType } from './private/state-type';
 import { JsonataCommonOptions, JsonPathCommonOptions, State, StateBaseProps } from './state';
 import { INextable, QueryLanguage } from '../types';
 
-interface SucceedBaseProps extends StateBaseProps {}
-interface SucceedJsonPathOptions extends JsonPathCommonOptions {}
-interface SucceedJsonataOptions extends JsonataCommonOptions {}
 /**
  * Properties for defining a Succeed state that using JSONPath
  */
-export interface SucceedJsonPathProps extends SucceedBaseProps, SucceedJsonPathOptions {}
+export interface SucceedJsonPathProps extends StateBaseProps, JsonPathCommonOptions {}
 /**
  * Properties for defining a Succeed state that using JSONata
  */
-export interface SucceedJsonataProps extends SucceedBaseProps, SucceedJsonataOptions {}
+export interface SucceedJsonataProps extends StateBaseProps, JsonataCommonOptions {}
 /**
  * Properties for defining a Succeed state
  */
-export interface SucceedProps extends SucceedBaseProps, SucceedJsonPathOptions, SucceedJsonataOptions {}
+export interface SucceedProps extends StateBaseProps, JsonPathCommonOptions, JsonataCommonOptions {}
 
 /**
  * Define a Succeed state in the state machine

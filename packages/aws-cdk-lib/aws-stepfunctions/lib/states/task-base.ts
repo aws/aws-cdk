@@ -12,7 +12,7 @@ import { CatchProps, IChainable, INextable, QueryLanguage, RetryProps } from '..
 /**
  * Base options for all task states
  */
-export interface TaskStateBaseOptions extends StateBaseProps {
+export interface TaskStateBaseOptions {
   /**
    * Timeout for the task
    *
@@ -101,22 +101,20 @@ interface TaskStateJsonPathBaseOptions extends JsonPathCommonOptions {
   readonly resultSelector?: { [key: string]: any };
 }
 
-interface TaskStateJsonataBaseOptions extends JsonataCommonOptions {}
-
 /**
  * Props that are common to all tasks that using JSONPath
  */
-export interface TaskStateJsonPathBaseProps extends TaskStateBaseOptions, TaskStateJsonPathBaseOptions {}
+export interface TaskStateJsonPathBaseProps extends StateBaseProps, TaskStateBaseOptions, TaskStateJsonPathBaseOptions {}
 
 /**
  * Props that are common to all tasks that using JSONata
  */
-export interface TaskStateJsonataBaseProps extends TaskStateBaseOptions, TaskStateJsonataBaseOptions {}
+export interface TaskStateJsonataBaseProps extends StateBaseProps, TaskStateBaseOptions, JsonataCommonOptions {}
 
 /**
  * Props that are common to all tasks
  */
-export interface TaskStateBaseProps extends TaskStateBaseOptions, TaskStateJsonPathBaseOptions, JsonataCommonOptions {}
+export interface TaskStateBaseProps extends StateBaseProps, TaskStateBaseOptions, TaskStateJsonPathBaseOptions, JsonataCommonOptions {}
 
 /**
  * Define a Task state in the state machine
@@ -345,7 +343,7 @@ export abstract class TaskStateBase extends State implements INextable {
       OutputPath: renderJsonPath(this.outputPath),
       ResultPath: renderJsonPath(this.resultPath),
       Arguments: this.arguments,
-      Output: this.output,
+      Output: this.outputs,
       ...this.renderResultSelector(),
       ...this.renderCredentials(),
     };

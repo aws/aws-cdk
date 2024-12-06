@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { StateType } from './private/state-type';
-import { JsonataCommonOptions, renderJsonPath, State, StateBaseProps } from './state';
+import { JsonataCommonOptions, JsonPathCommonOptions, renderJsonPath, State, StateBaseProps } from './state';
 import { Chain } from '../chain';
 import { FieldUtils } from '../fields';
 import { IChainable, INextable, QueryLanguage } from '../types';
@@ -52,27 +52,15 @@ export class Result {
   }
 }
 
-interface PassBaseProps extends StateBaseProps {}
-interface PassJsonPathOptions {
+interface PassJsonPathOptions extends JsonPathCommonOptions {
   /**
-   * JSONPath expression to select part of the state to be the input to this state.
+   * If given, treat as the result of this operation
    *
-   * May also be the special value JsonPath.DISCARD, which will cause the effective
-   * input to be the empty object {}.
+   * Can be used to inject or replace the current execution state.
    *
-   * @default $
+   * @default No injected result
    */
-  readonly inputPath?: string;
-
-  /**
-   * JSONPath expression to select part of the state to be the output to this state.
-   *
-   * May also be the special value JsonPath.DISCARD, which will cause the effective
-   * output to be the empty object {}.
-   *
-   * @default $
-   */
-  readonly outputPath?: string;
+  readonly result?: Result;
 
   /**
    * JSONPath expression to indicate where to inject the state's output
@@ -85,15 +73,6 @@ interface PassJsonPathOptions {
   readonly resultPath?: string;
 
   /**
-   * If given, treat as the result of this operation
-   *
-   * Can be used to inject or replace the current execution state.
-   *
-   * @default No injected result
-   */
-  readonly result?: Result;
-
-  /**
    * Parameters pass a collection of key-value pairs, either static values or JSONPath expressions that select from the input.
    *
    * @see
@@ -103,22 +82,21 @@ interface PassJsonPathOptions {
    */
   readonly parameters?: { [name: string]: any };
 }
-interface PassJsonataOptions extends JsonataCommonOptions {}
 
 /**
  * Properties for defining a Pass state that using JSONPath
  */
-export interface PassJsonPathProps extends PassBaseProps, PassJsonPathOptions {}
+export interface PassJsonPathProps extends StateBaseProps, PassJsonPathOptions {}
 
 /**
  * Properties for defining a Pass state that using JSONata
  */
-export interface PassJsonataProps extends PassBaseProps, PassJsonataOptions {}
+export interface PassJsonataProps extends StateBaseProps, JsonataCommonOptions {}
 
 /**
  * Properties for defining a Pass state
  */
-export interface PassProps extends PassBaseProps, PassJsonPathOptions, PassJsonataOptions {}
+export interface PassProps extends StateBaseProps, PassJsonPathOptions, JsonataCommonOptions {}
 
 /**
  * Define a Pass in the state machine

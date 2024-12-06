@@ -5,7 +5,6 @@ import { Chain } from '../chain';
 import { StateGraph } from '../state-graph';
 import { CatchProps, IChainable, INextable, QueryLanguage, RetryProps } from '../types';
 
-interface ParallelBaseProps extends StateBaseProps {}
 interface ParallelJsonPathOptions extends JsonPathCommonOptions {
   /**
    * JSONPath expression to indicate where to inject the state's output
@@ -46,17 +45,17 @@ interface ParallelJsonataOptions extends JsonataCommonOptions {
 /**
  * Properties for defining a Parallel state that using JSONPath
  */
-export interface ParallelJsonPathProps extends ParallelBaseProps, ParallelJsonPathOptions {}
+export interface ParallelJsonPathProps extends StateBaseProps, ParallelJsonPathOptions {}
 
 /**
  * Properties for defining a Parallel state that using JSONata
  */
-export interface ParallelJsonataProps extends ParallelBaseProps, ParallelJsonataOptions {}
+export interface ParallelJsonataProps extends StateBaseProps, ParallelJsonataOptions {}
 
 /**
  * Properties for defining a Parallel state
  */
-export interface ParallelProps extends ParallelBaseProps, ParallelJsonPathOptions, ParallelJsonataOptions {}
+export interface ParallelProps extends StateBaseProps, ParallelJsonPathOptions, ParallelJsonataOptions {}
 
 /**
  * Define a Parallel state in the state machine

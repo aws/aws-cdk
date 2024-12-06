@@ -3,8 +3,9 @@ import { MapBase, MapBaseJsonataOptions, MapBaseJsonPathOptions, MapBaseOptions,
 import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
 import { CatchProps, IChainable, INextable, ProcessorConfig, ProcessorMode, QueryLanguage, RetryProps } from '../types';
+import { StateBaseProps } from './state';
 
-interface MapOptions {
+interface MapOptions extends MapBaseOptions {
   /**
    * The JSON that you want to override your default iteration input (mutually exclusive  with `itemSelector`).
    *
@@ -21,12 +22,12 @@ interface MapOptions {
 /**
  * Properties for defining a Map state that using JSONPath
  */
-export interface MapJsonPathProps extends MapBaseOptions, MapOptions, MapBaseJsonPathOptions {}
+export interface MapJsonPathProps extends StateBaseProps, MapOptions, MapBaseJsonPathOptions {}
 
 /**
  * Properties for defining a Map state that using JSONata
  */
-export interface MapJsonataProps extends MapBaseOptions, MapOptions, MapBaseJsonataOptions {}
+export interface MapJsonataProps extends StateBaseProps, MapOptions, MapBaseJsonataOptions {}
 
 /**
  * Properties for defining a Map state

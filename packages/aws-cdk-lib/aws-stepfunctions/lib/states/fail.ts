@@ -4,7 +4,7 @@ import { renderJsonPath, State, StateBaseProps } from './state';
 import { Token } from '../../../core';
 import { INextable, QueryLanguage } from '../types';
 
-interface FailBaseProps extends StateBaseProps {
+interface FailBaseOptions {
   /**
    * Error code used to represent this failure
    *
@@ -41,20 +41,19 @@ interface FailJsonPathOptions {
    */
   readonly causePath?: string;
 }
-interface FailJsonataOptions { }
 
 /**
  * Properties for defining a Fail state that using JSONPath
  */
-export interface FailJsonPathProps extends FailBaseProps, FailJsonPathOptions { }
+export interface FailJsonPathProps extends StateBaseProps, FailBaseOptions, FailJsonPathOptions {}
 /**
  * Properties for defining a Fail state that using JSONata
  */
-export interface FailJsonataProps extends FailBaseProps, FailJsonataOptions { }
+export interface FailJsonataProps extends StateBaseProps, FailBaseOptions {}
 /**
  * Properties for defining a Fail state
  */
-export interface FailProps extends FailBaseProps, FailJsonPathOptions, FailJsonataOptions { }
+export interface FailProps extends StateBaseProps, FailBaseOptions, FailJsonPathOptions {}
 
 /**
  * Define a Fail state in the state machine

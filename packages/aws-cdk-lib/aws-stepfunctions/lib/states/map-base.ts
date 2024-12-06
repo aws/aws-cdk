@@ -90,7 +90,7 @@ export interface MapBaseJsonataOptions extends JsonataCommonOptions {
 /**
  * Base properties for defining a Map state
  */
-export interface MapBaseOptions extends StateBaseProps {
+export interface MapBaseOptions {
   /**
    * MaxConcurrency
    *
@@ -117,7 +117,7 @@ export interface MapBaseOptions extends StateBaseProps {
 /**
  * Properties for defining a Map state
  */
-export interface MapBaseProps extends MapBaseOptions, MapBaseJsonPathOptions, MapBaseJsonataOptions {}
+export interface MapBaseProps extends StateBaseProps, MapBaseOptions, MapBaseJsonPathOptions, MapBaseJsonataOptions {}
 
 /**
  * Returns true if the value passed is a positive integer
