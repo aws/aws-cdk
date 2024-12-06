@@ -21,10 +21,7 @@ export enum ActionAfterCompletion {
   DELETE = 'DELETE',
 }
 
-/**
- * Properties for creating an AWS EventBridge Scheduler schedule
- */
-export interface EventBridgeSchedulerCreateScheduleTaskProps extends sfn.TaskStateBaseProps {
+interface EventBridgeSchedulerCreateScheduleTaskOptions {
   /**
    * Schedule name
    */
@@ -121,6 +118,23 @@ export interface EventBridgeSchedulerCreateScheduleTaskProps extends sfn.TaskSta
    */
   readonly target: EventBridgeSchedulerTarget;
 }
+
+/**
+ * Properties for creating an AWS EventBridge Scheduler schedule using JSONPath
+ */
+export interface EventBridgeSchedulerCreateScheduleTaskJsonPathProps
+  extends sfn.TaskStateJsonPathBaseProps, EventBridgeSchedulerCreateScheduleTaskOptions {}
+
+/**
+ * Properties for creating an AWS EventBridge Scheduler schedule using JSONata
+ */
+export interface EventBridgeSchedulerCreateScheduleTaskJsonataProps
+  extends sfn.TaskStateJsonataBaseProps, EventBridgeSchedulerCreateScheduleTaskOptions {}
+
+/**
+ * Properties for creating an AWS EventBridge Scheduler schedule
+ */
+export interface EventBridgeSchedulerCreateScheduleTaskProps extends sfn.TaskStateBaseProps, EventBridgeSchedulerCreateScheduleTaskOptions {}
 
 /**
  * Properties for `EventBridgeSchedulerTarget`
@@ -258,6 +272,22 @@ export interface RetryPolicy {
  * @see https://docs.aws.amazon.com/scheduler/latest/APIReference/API_CreateSchedule.html
  */
 export class EventBridgeSchedulerCreateScheduleTask extends sfn.TaskStateBase {
+  /**
+   * Create an AWS EventBridge Scheduler schedule using JSONPath
+   */
+  public static jsonPath(scope: Construct, id: string, props: EventBridgeSchedulerCreateScheduleTaskJsonPathProps) {
+    return new EventBridgeSchedulerCreateScheduleTask(scope, id, props);
+  }
+
+  /**
+   * Create an AWS EventBridge Scheduler schedule using JSONata
+   */
+  public static jsonata(scope: Construct, id: string, props: EventBridgeSchedulerCreateScheduleTaskJsonataProps) {
+    return new EventBridgeSchedulerCreateScheduleTask(scope, id, {
+      ...props,
+      queryLanguage: sfn.QueryLanguage.JSONATA,
+    });
+  }
 
   protected readonly taskMetrics?: sfn.TaskMetricsConfig;
   protected readonly taskPolicies?: iam.PolicyStatement[];
@@ -297,10 +327,11 @@ export class EventBridgeSchedulerCreateScheduleTask extends sfn.TaskStateBase {
   /**
    * @internal
    */
-  protected _renderTask(): any {
+  protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
+    const queryLanguage = sfn._whichQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
     return {
       Resource: integrationResourceArn('aws-sdk:scheduler', 'createSchedule', this.integrationPattern),
-      Parameters: {
+      ...this._renderParametersOrArguments({
         ActionAfterCompletion: this.props.actionAfterCompletion ?? ActionAfterCompletion.NONE,
         ClientToken: this.props.clientToken,
         Description: this.props.description,
@@ -317,7 +348,7 @@ export class EventBridgeSchedulerCreateScheduleTask extends sfn.TaskStateBase {
         StartDate: this.props.startDate ? this.props.startDate.toISOString() : undefined,
         State: (this.props.enabled ?? true) ? 'ENABLED' : 'DISABLED',
         Target: this.props.target.renderTargetObject(),
-      },
+      }, queryLanguage),
     };
   }
 
