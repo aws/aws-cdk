@@ -62,9 +62,12 @@ class EksClusterStack extends Stack {
       ipFamily: eks.IpFamily.IP_V6,
       ...getClusterVersionConfig(this),
       secretsEncryptionKey,
-      tags: {
-        foo: 'bar',
-      },
+      tags: [
+        {
+          key: 'foo',
+          value: 'bar',
+        },
+      ],
       clusterLogging: [
         eks.ClusterLoggingTypes.API,
         eks.ClusterLoggingTypes.AUTHENTICATOR,

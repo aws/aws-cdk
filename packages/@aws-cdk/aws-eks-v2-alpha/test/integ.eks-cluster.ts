@@ -45,9 +45,12 @@ class EksClusterStack extends Stack {
       defaultCapacity: 2,
       ...getClusterVersionConfig(this),
       secretsEncryptionKey,
-      tags: {
-        foo: 'bar',
-      },
+      tags: [
+        {
+          key: 'foo',
+          value: 'bar',
+        },
+      ],
       clusterLogging: [
         eks.ClusterLoggingTypes.API,
         eks.ClusterLoggingTypes.AUTHENTICATOR,

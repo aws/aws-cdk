@@ -16,9 +16,12 @@ class EksClusterTagsStack extends Stack {
       vpc,
       ...getClusterVersionConfig(this, eks.KubernetesVersion.V1_30),
       defaultCapacity: 0,
-      tags: {
-        foo: 'bar',
-      },
+      tags: [
+        {
+          key: 'foo',
+          value: 'bar',
+        },
+      ],
     },
     );
   }
