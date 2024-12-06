@@ -131,6 +131,10 @@ describe('version message', () => {
     // Given current version is 99.0.0 and the latest version is 100.0.0
     const currentVersion = '99.0.0';
     jest.spyOn(npm, 'getLatestVersionFromNpm').mockResolvedValue('100.0.0');
+    jest.spyOn(npm, 'isVersionMarkedDeprecated').mockResolvedValue({
+      isDeprecated: false,
+      deprecatedReason: "",
+    });
     const printSpy = jest.spyOn(logging, 'print');
 
     // When displayVersionMessage is called
@@ -139,6 +143,25 @@ describe('version message', () => {
     // Then no upgrade documentation is printed
     expect(printSpy).toHaveBeenCalledWith(expect.stringContaining('100.0.0'));
     expect(printSpy).not.toHaveBeenCalledWith(expect.stringContaining('Information about upgrading from 99.x to 100.x'));
+  });
+
+  test('Include warning of Deprecation for a version', async() => {
+    // Given current version is 99.0.0 and the latest version is 100.0.0
+    const currentVersion = '99.0.0';
+    jest.spyOn(npm, 'getLatestVersionFromNpm').mockResolvedValue('100.0.0');
+    jest.spyOn(npm, 'isVersionMarkedDeprecated').mockResolvedValue({
+      isDeprecated: true,
+      deprecatedReason: "some reason",
+    });
+    const printSpy = jest.spyOn(logging, 'print');
+
+    // When displayVersionMessage is called
+    await displayVersionMessage(currentVersion, new VersionCheckTTL(tmpfile(), 0));
+
+    // Then no upgrade documentation is printed
+    expect(printSpy).toHaveBeenCalledWith(expect.stringContaining('100.0.0'));
+    expect(printSpy).not.toHaveBeenCalledWith(expect.stringContaining('Information about upgrading from 99.x to 100.x'));
+    expect(printSpy).toHaveBeenCalledWith(expect.stringContaining('You are using DEPRECATED version : [99.0.0], reason : some reason'));
   });
 });
 

@@ -3,7 +3,7 @@ import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
 import * as semver from 'semver';
 import { cdkCacheDir, rootDir } from './util/directories';
-import { getLatestVersionFromNpm } from './util/npm';
+import { IsVersionMarkedDeprecated, getLatestVersionFromNpm, isVersionMarkedDeprecated } from './util/npm';
 import { debug, print } from '../lib/logging';
 import { formatAsBanner } from '../lib/util/console-formatters';
 
@@ -102,12 +102,19 @@ function getMajorVersionUpgradeMessage(currentVersion: string): string | void {
   }
 }
 
-function getVersionMessage(currentVersion: string, laterVersion: string): string[] {
-  return [
+async function getVersionMessage(currentVersion: string, laterVersion: string): Promise<string[]> {
+  let versionMessage : string[] = [];
+  const versionDetails : IsVersionMarkedDeprecated = await isVersionMarkedDeprecated('aws-cdk', currentVersion);
+  if (versionDetails.isDeprecated) {
+    versionMessage.push(`You are using DEPRECATED version : [${chalk.redBright(currentVersion as string)}], reason : ${versionDetails.deprecatedReason}`);
+  }
+  versionMessage = [
+    ...versionMessage,
     `Newer version of CDK is available [${chalk.green(laterVersion as string)}]`,
     getMajorVersionUpgradeMessage(currentVersion),
     'Upgrade recommended (npm install -g aws-cdk)',
   ].filter(Boolean) as string[];
+  return versionMessage;
 }
 
 export async function displayVersionMessage(currentVersion = versionNumber(), versionCheckCache?: VersionCheckTTL): Promise<void> {
@@ -118,7 +125,7 @@ export async function displayVersionMessage(currentVersion = versionNumber(), ve
   try {
     const laterVersion = await latestVersionIfHigher(currentVersion, versionCheckCache ?? new VersionCheckTTL());
     if (laterVersion) {
-      const bannerMsg = formatAsBanner(getVersionMessage(currentVersion, laterVersion));
+      const bannerMsg = formatAsBanner(await getVersionMessage(currentVersion, laterVersion));
       bannerMsg.forEach((e) => print(e));
     }
   } catch (err: any) {
