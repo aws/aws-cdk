@@ -511,6 +511,85 @@ describe('role', () => {
       },
     });
   });
+
+  it('omits state machine resource constraint if isCompleteHandler is specified', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new cr.Provider(stack, 'MyProvider', {
+      onEventHandler: new lambda.Function(stack, 'OnEventHandler', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.onEvent',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      }),
+      isCompleteHandler: new lambda.Function(stack, 'IsCompleteHandler', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.onEvent',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      }),
+      role: new iam.Role(stack, 'MyRole', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.como') }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [{
+          Action: 'lambda:InvokeFunction',
+          Effect: 'Allow',
+          Resource: [
+            {
+              'Fn::GetAtt': [
+                'OnEventHandler42BEBAE0',
+                'Arn',
+              ],
+            }, {
+              'Fn::Join': [
+                '',
+                [
+                  {
+                    'Fn::GetAtt': [
+                      'OnEventHandler42BEBAE0',
+                      'Arn',
+                    ],
+                  },
+                  ':*',
+                ],
+              ],
+            },
+          ],
+        }, {
+          Action: 'lambda:InvokeFunction',
+          Effect: 'Allow',
+          Resource: [
+            {
+              'Fn::GetAtt': [
+                'IsCompleteHandler7073F4DA',
+                'Arn',
+              ],
+            }, {
+              'Fn::Join': [
+                '',
+                [
+                  {
+                    'Fn::GetAtt': [
+                      'IsCompleteHandler7073F4DA',
+                      'Arn',
+                    ],
+                  },
+                  ':*',
+                ],
+              ],
+            },
+          ],
+        }, {
+          Action: 'states:StartExecution',
+          Effect: 'Allow',
+          Resource: '*',
+        }],
+      },
+    });
+  });
 });
 
 describe('name', () => {
