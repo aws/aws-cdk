@@ -315,7 +315,7 @@ export abstract class TaskStateBase extends State implements INextable {
    */
   protected _renderParametersOrArguments(paramOrArg: any, queryLanguage: QueryLanguage): any {
     return {
-      Parameters: queryLanguage === QueryLanguage.JSONPATH
+      Parameters: queryLanguage === QueryLanguage.JSON_PATH
         ? FieldUtils.renderObject(paramOrArg) : undefined,
       Arguments: queryLanguage === QueryLanguage.JSONATA
         ? paramOrArg : undefined,

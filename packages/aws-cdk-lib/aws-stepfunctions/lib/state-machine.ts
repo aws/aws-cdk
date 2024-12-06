@@ -134,7 +134,7 @@ export interface StateMachineProps {
    * If the state does not contain a `queryLanguage` field,
    * then it will use the query language specified in the top-level `queryLanguage` field.
    *
-   * @default - JSONPATH
+   * @default - JSON_PATH
    */
   readonly queryLanguage?: QueryLanguage;
 

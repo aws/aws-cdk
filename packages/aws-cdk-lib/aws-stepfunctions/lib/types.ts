@@ -262,13 +262,13 @@ export const DISCARD = 'DISCARD';
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/transforming-data.html
  *
- * @default JSONPATH
+ * @default JSON_PATH
  */
 export enum QueryLanguage {
   /**
    * Use JSONPath
    */
-  JSONPATH = 'JSONPath',
+  JSON_PATH = 'JSONPath',
   /**
    * Use JSONata
    */
