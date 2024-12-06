@@ -24,6 +24,7 @@ import {
   CfnTable,
   InputCompressionType,
   InputFormat,
+  ApproximateCreationDateTimePrecision,
 } from '../lib';
 import { ReplicaProvider } from '../lib/replica-provider';
 
@@ -3639,6 +3640,37 @@ test('Resource policy test', () => {
           },
         ],
       },
+    },
+  });
+});
+
+test('Kinesis Stream - precision timestamp', () => {
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'Stack');
+
+  const stream = new kinesis.Stream(stack, 'Stream');
+
+  // WHEN
+  const table = new Table(stack, 'Table', {
+    partitionKey: { name: 'id', type: AttributeType.STRING },
+    kinesisStream: stream,
+    kinesisPrecisionTimestamp: ApproximateCreationDateTimePrecision.MILLISECOND,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+    KeySchema: [
+      { AttributeName: 'id', KeyType: 'HASH' },
+    ],
+    AttributeDefinitions: [
+      { AttributeName: 'id', AttributeType: 'S' },
+    ],
+    KinesisStreamSpecification: {
+      StreamArn: {
+        'Fn::GetAtt': ['Stream790BDEE4', 'Arn'],
+      },
+      ApproximateCreationDateTimePrecision: 'MILLISECOND',
     },
   });
 });
