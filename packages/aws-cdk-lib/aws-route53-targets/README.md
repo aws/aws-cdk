@@ -31,6 +31,20 @@ new route53.ARecord(this, 'AliasRecord', {
 });
 ```
 
+- AppSync custom domains
+
+```ts
+import * as appsync from 'aws-cdk-lib/aws-appsync';
+
+declare const zone: route53.HostedZone;
+declare const graphqlApi: appsync.GraphqlApi;
+
+new route53.ARecord(this, 'AliasRecord', {
+  zone,
+  target: route53.RecordTarget.fromAlias(new targets.AppSyncTarget(graphqlApi)),
+});
+```
+
 - CloudFront distributions
 
 ```ts
