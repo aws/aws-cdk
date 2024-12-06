@@ -467,7 +467,7 @@ class JsonataCondition extends Condition {
   constructor(private readonly condition: string) {
     super();
     if (!/^{%(.*)%}$/.test(condition)) {
-      throw new Error(`Variable reference must be '$', start with '$.', or start with '$[', got '${condition}'`);
+      throw new Error(`JSONata expression must be start with '{%' and end with '%}', got '${condition}'`);
     }
   }
 
