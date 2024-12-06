@@ -6,6 +6,21 @@ import * as cdk from '../../../core';
 import { CfnTargetGroup } from '../elasticloadbalancingv2.generated';
 
 /**
+ * The IP address type of targets registered with a target group
+ */
+export enum TargetGroupIpAddressType {
+  /**
+   * IPv4 addresses
+   */
+  IPV4 = 'ipv4',
+
+  /**
+   * IPv6 addresses
+   */
+  IPV6 = 'ipv6',
+}
+
+/**
  * Basic properties of both Application and Network Target Groups
  */
 export interface BaseTargetGroupProps {
@@ -56,6 +71,21 @@ export interface BaseTargetGroupProps {
    * @default - Determined automatically.
    */
   readonly targetType?: TargetType;
+
+  /**
+   * Indicates whether cross zone load balancing is enabled.
+   *
+   * @default - use load balancer configuration
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-targetgroup-targetgroupattribute.html
+   */
+  readonly crossZoneEnabled?: boolean;
+
+  /**
+   * The type of IP addresses of the targets registered with the target group.
+   *
+   * @default undefined - ELB defaults to IPv4
+   */
+  readonly ipAddressType?: TargetGroupIpAddressType;
 }
 
 /**
@@ -76,7 +106,7 @@ export interface HealthCheck {
    * The approximate number of seconds between health checks for an individual target.
    * Must be 5 to 300 seconds
    *
-   * @default 10 seconds if protocol is `GENEVE`, 35 seconds if target type is `lambda`, else 30 seconds
+   * @default - 10 seconds if protocol is `GENEVE`, 35 seconds if target type is `lambda`, else 30 seconds
    */
   readonly interval?: cdk.Duration;
 
@@ -100,7 +130,7 @@ export interface HealthCheck {
    * The TCP protocol is supported for health checks only if the protocol of the target group is TCP, TLS, UDP, or TCP_UDP.
    * The TLS, UDP, and TCP_UDP protocols are not supported for health checks.
    *
-   * @default HTTP for ALBs, TCP for NLBs
+   * @default - HTTP for ALBs, TCP for NLBs
    */
   readonly protocol?: Protocol;
 
@@ -108,7 +138,7 @@ export interface HealthCheck {
    * The amount of time, in seconds, during which no response from a target means a failed health check.
    * Must be 2 to 120 seconds.
    *
-   * @default 6 seconds if the protocol is HTTP, 5 seconds if protocol is `GENEVE`, 30 seconds if target type is `lambda`, 10 seconds for TCP, TLS, or HTTPS
+   * @default - 6 seconds if the protocol is HTTP, 5 seconds if protocol is `GENEVE`, 30 seconds if target type is `lambda`, 10 seconds for TCP, TLS, or HTTPS
    */
   readonly timeout?: cdk.Duration;
 
@@ -117,7 +147,7 @@ export interface HealthCheck {
    *
    * For Application Load Balancers, the default is 5. For Network Load Balancers, the default is 3.
    *
-   * @default 5 for ALBs, 3 for NLBs
+   * @default - 5 for ALBs, 3 for NLBs
    */
   readonly healthyThresholdCount?: number;
 
@@ -137,7 +167,7 @@ export interface HealthCheck {
    * You can specify values between 0 and 99. You can specify multiple values
    * (for example, "0,1") or a range of values (for example, "0-5").
    *
-   * @default - 12
+   * @default 12
    */
   readonly healthyGrpcCodes?: string;
 
@@ -239,6 +269,10 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
       this.setAttribute('deregistration_delay.timeout_seconds', baseProps.deregistrationDelay.toSeconds().toString());
     }
 
+    if (baseProps.crossZoneEnabled !== undefined) {
+      this.setAttribute('load_balancing.cross_zone.enabled', baseProps.crossZoneEnabled === true ? 'true' : 'false');
+    }
+
     this.healthCheck = baseProps.healthCheck || {};
     this.vpc = baseProps.vpc;
     this.targetType = baseProps.targetType;
@@ -269,6 +303,7 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
           httpCode: this.healthCheck.healthyHttpCodes,
         } : undefined,
       }),
+      ipAddressType: baseProps.ipAddressType,
 
       ...additionalProps,
     });

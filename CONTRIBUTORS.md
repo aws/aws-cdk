@@ -16,17 +16,17 @@ Shout out to our top contributors!
 - [TheRealAmazonKendra](https://github.com/TheRealAmazonKendra)
 - [comcalvi](https://github.com/comcalvi)
 - [madeline-k](https://github.com/madeline-k)
+- [mazyu36](https://github.com/mazyu36)
+- [go-to-k](https://github.com/go-to-k)
 - [NetaNir](https://github.com/NetaNir)
 - [robertd](https://github.com/robertd)
-- [go-to-k](https://github.com/go-to-k)
+- [badmintoncryer](https://github.com/badmintoncryer)
 - [MrArnoldPalmer](https://github.com/MrArnoldPalmer)
 - [lpizzinidev](https://github.com/lpizzinidev)
 - [peterwoodworth](https://github.com/peterwoodworth)
-- [mazyu36](https://github.com/mazyu36)
-- [colifran](https://github.com/colifran)
-- [badmintoncryer](https://github.com/badmintoncryer)
 - [msambol](https://github.com/msambol)
+- [colifran](https://github.com/colifran)
 - [watany-dev](https://github.com/watany-dev)
 
 
-_Last updated: Tue, 01 Oct 24 00:12:17 +0000_
+_Last updated: Sun, 01 Dec 24 00:14:16 +0000_

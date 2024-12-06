@@ -24,6 +24,36 @@ global, trusted providers Esri and HERE. With affordable data, tracking and geof
 capabilities, and built-in metrics for health monitoring, you can build sophisticated
 location-enabled applications.
 
+## Map
+
+The Amazon Location Service Map resource gives you access to the underlying basemap data for a map.
+You use the Map resource with a map rendering library to add an interactive map to your application.
+You can add other functionality to your map, such as markers (or pins), routes, and polygon areas, as needed for your application.
+
+For information about how to use map resources in practice, see [Using Amazon Location Maps in your application](https://docs.aws.amazon.com/location/latest/developerguide/using-maps.html).
+
+To create a map, define a `Map`:
+
+```ts
+new location.Map(this, 'Map', {
+  mapName: 'my-map',
+  style: location.Style.VECTOR_ESRI_NAVIGATION,
+  customLayers: [location.CustomLayer.POI],
+});
+```
+
+Use the `grant()` or `grantRendering()` method to grant the given identity permissions to perform actions
+on the map:
+
+```ts
+declare const role: iam.Role;
+
+const map = new location.Map(this, 'Map', {
+  style: location.Style.VECTOR_ESRI_NAVIGATION,
+});
+map.grantRendering(role);
+```
+
 ## Place Index
 
 A key function of Amazon Location Service is the ability to search the geolocation information.
@@ -103,4 +133,49 @@ const routeCalculator = new location.RouteCalculator(this, 'RouteCalculator', {
   dataSource: location.DataSource.ESRI,
 });
 routeCalculator.grantRead(role);
+```
+
+## Tracker
+
+A tracker stores position updates for a collection of devices. The tracker can be used to query the devices' current location or location history. It stores the updates, but reduces storage space and visual noise by filtering the locations before storing them.
+
+For more information, see [Trackers](https://docs.aws.amazon.com/location/latest/developerguide/geofence-tracker-concepts.html#tracking-overview).
+
+To create a tracker, define a `Tracker`:
+
+```ts
+declare const key: kms.Key;
+
+new location.Tracker(this, 'Tracker', {
+  trackerName: 'MyTracker', // optional, defaults to a generated name
+  kmsKey: key, // optional, defaults to use an AWS managed key
+});
+```
+
+Use the `grant()`, `grantUpdateDevicePositions` or `grantRead()` method to grant the given identity permissions to perform actions
+on the geofence collection:
+
+```ts
+declare const role: iam.Role;
+
+const tracker = new location.Tracker(this, 'Tracker', {
+  trackerName: 'MyTracker',
+});
+
+tracker.grantRead(role);
+```
+
+If you want to associate a tracker with geofence collections, define a `geofenceCollections` property or use `addGeofenceCollections` method.
+
+```ts
+declare const geofenceCollection: location.GeofenceCollection;
+declare const geofenceCollectionForAdd: location.GeofenceCollection;
+declare const tracker: location.Tracker;
+
+const tracker = new location.Tracker(this, 'Tracker', {
+  trackerName: 'MyTracker',
+  geofenceCollections: [geofenceCollection],
+});
+
+tracker.addGeofenceCollections(geofenceCollectionForAdd);
 ```

@@ -16,10 +16,9 @@
         "templateFile": "aws-cdk-schedule-lambda.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/be833ee096af567e7c39c110f906891002888273cb55fdc71d72997bde436ab9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7eb3ea61858a7e85bc488a32f5820e1e0f4ef746d7072170c9658af73d618c32.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -83,10 +82,9 @@
         "templateFile": "aws-cdk-schedule.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a659d0e16232815135c40f60ac6045cae13287002f893f68edae8d5e9e5ef4b9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c9885c09ee79faecc8af1f36f7344be451c8ebb129645bd6f41f623cabd4d156.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -109,16 +107,16 @@
             "data": "ScheduleWithImportedLambda1C2110DF"
           }
         ],
-        "/aws-cdk-schedule/SchedulerRoleForTarget-1441a7/Resource": [
+        "/aws-cdk-schedule/SchedulerRoleForTarget-ed282b/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SchedulerRoleForTarget1441a743A31888"
+            "data": "SchedulerRoleForTargeted282bDF60C6B6"
           }
         ],
-        "/aws-cdk-schedule/SchedulerRoleForTarget-1441a7/DefaultPolicy/Resource": [
+        "/aws-cdk-schedule/SchedulerRoleForTarget-ed282b/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SchedulerRoleForTarget1441a7DefaultPolicy885B6BFD"
+            "data": "SchedulerRoleForTargeted282bDefaultPolicyC5F8D00B"
           }
         ],
         "/aws-cdk-schedule/MyLambda/ServiceRole/Resource": [
@@ -143,6 +141,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ScheduleWithSameStackLambda41F66AE8"
+          }
+        ],
+        "/aws-cdk-schedule/SchedulerRoleForTarget-637b51/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SchedulerRoleForTarget637b5173FB8068"
+          }
+        ],
+        "/aws-cdk-schedule/SchedulerRoleForTarget-637b51/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SchedulerRoleForTarget637b51DefaultPolicyBAF35E02"
           }
         ],
         "/aws-cdk-schedule/ScheduleWithStaticDate/Resource": [
@@ -181,10 +191,9 @@
         "templateFile": "integtestlambdainvokeDefaultTestDeployAssertEC6565E6.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/02d1ab525daaf145591856547abf91ecf627687732633fdbcbc496886fa476c8.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d0e92b74c110bc4ca270391102f7563bed80511b9e30b2062e7fd7d7a0bde536.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

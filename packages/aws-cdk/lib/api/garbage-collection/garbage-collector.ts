@@ -1,23 +1,77 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { S3 } from 'aws-sdk';
+import { ImageIdentifier } from '@aws-sdk/client-ecr';
+import { Tag } from '@aws-sdk/client-s3';
 import * as chalk from 'chalk';
 import * as promptly from 'promptly';
 import { debug, print } from '../../logging';
-import { ISDK, Mode, SdkProvider } from '../aws-auth';
+import { IECRClient, IS3Client, SDK, SdkProvider } from '../aws-auth';
 import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitInfo } from '../toolkit-info';
 import { ProgressPrinter } from './progress-printer';
 import { ActiveAssetCache, BackgroundStackRefresh, refreshStacks } from './stack-refresh';
+import { Mode } from '../plugin';
 
 // Must use a require() otherwise esbuild complains
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const pLimit: typeof import('p-limit') = require('p-limit');
 
-const ISOLATED_TAG = 'aws-cdk:isolated';
+export const S3_ISOLATED_TAG = 'aws-cdk:isolated';
+export const ECR_ISOLATED_TAG = 'aws-cdk.isolated'; // ':' is not valid in ECR tags
 const P_LIMIT = 50;
 const DAY = 24 * 60 * 60 * 1000; // Number of milliseconds in a day
 
-export class S3Asset {
-  private cached_tags: S3.TagSet | undefined = undefined;
+export type GcAsset = ImageAsset | ObjectAsset;
+
+/**
+ * An image asset that lives in the bootstrapped ECR Repository
+ */
+export class ImageAsset {
+  public constructor(
+    public readonly digest: string,
+    public readonly size: number,
+    public readonly tags: string[],
+    public readonly manifest: string,
+  ) {}
+
+  private getTag(tag: string) {
+    return this.tags.find(t => t.includes(tag));
+  }
+
+  private hasTag(tag: string) {
+    return this.tags.some(t => t.includes(tag));
+  }
+
+  public hasIsolatedTag() {
+    return this.hasTag(ECR_ISOLATED_TAG);
+  }
+
+  public getIsolatedTag() {
+    return this.getTag(ECR_ISOLATED_TAG);
+  }
+
+  public isolatedTagBefore(date: Date) {
+    const dateIsolated = this.dateIsolated();
+    if (!dateIsolated || dateIsolated == '') {
+      return false;
+    }
+    return new Date(dateIsolated) < date;
+  }
+
+  public buildImageTag(inc: number) {
+    // isolatedTag will look like "X-aws-cdk.isolated-YYYYY"
+    return `${inc}-${ECR_ISOLATED_TAG}-${String(Date.now())}`;
+  }
+
+  public dateIsolated() {
+    // isolatedTag will look like "X-aws-cdk.isolated-YYYYY"
+    return this.getIsolatedTag()?.split('-')[3];
+  }
+}
+
+/**
+ * An object asset that lives in the bootstrapped S3 Bucket
+ */
+export class ObjectAsset {
+  private cached_tags: Tag[] | undefined = undefined;
 
   public constructor(private readonly bucket: string, public readonly key: string, public readonly size: number) {}
 
@@ -25,12 +79,12 @@ export class S3Asset {
     return this.key.split('.')[0];
   }
 
-  public async allTags(s3: S3) {
+  public async allTags(s3: IS3Client) {
     if (this.cached_tags) {
       return this.cached_tags;
     }
 
-    const response = await s3.getObjectTagging({ Bucket: this.bucket, Key: this.key }).promise();
+    const response = await s3.getObjectTagging({ Bucket: this.bucket, Key: this.key });
     this.cached_tags = response.TagSet;
     return this.cached_tags;
   }
@@ -39,22 +93,22 @@ export class S3Asset {
     if (!this.cached_tags) {
       throw new Error('Cannot call getTag before allTags');
     }
-    return this.cached_tags.find(t => t.Key === tag)?.Value;
+    return this.cached_tags.find((t: any) => t.Key === tag)?.Value;
   }
 
   private hasTag(tag: string) {
     if (!this.cached_tags) {
       throw new Error('Cannot call hasTag before allTags');
     }
-    return this.cached_tags.some(t => t.Key === tag);
+    return this.cached_tags.some((t: any) => t.Key === tag);
   }
 
   public hasIsolatedTag() {
-    return this.hasTag(ISOLATED_TAG);
+    return this.hasTag(S3_ISOLATED_TAG);
   }
 
   public isolatedTagBefore(date: Date) {
-    const tagValue = this.getTag(ISOLATED_TAG);
+    const tagValue = this.getTag(S3_ISOLATED_TAG);
     if (!tagValue || tagValue == '') {
       return false;
     }
@@ -110,13 +164,6 @@ interface GarbageCollectorProps {
   readonly bootstrapStackName?: string;
 
   /**
-   * Max wait time for retries in milliseconds (for testing purposes).
-   *
-   * @default 60000
-   */
-  readonly maxWaitTime?: number;
-
-  /**
    * Confirm with the user before actual deletion happens
    *
    * @default true
@@ -133,7 +180,6 @@ export class GarbageCollector {
   private permissionToDelete: boolean;
   private permissionToTag: boolean;
   private bootstrapStackName: string;
-  private maxWaitTime: number;
   private confirm: boolean;
 
   public constructor(readonly props: GarbageCollectorProps) {
@@ -144,15 +190,9 @@ export class GarbageCollector {
 
     this.permissionToDelete = ['delete-tagged', 'full'].includes(props.action);
     this.permissionToTag = ['tag', 'full'].includes(props.action);
-    this.maxWaitTime = props.maxWaitTime ?? 60000;
     this.confirm = props.confirm ?? true;
 
     this.bootstrapStackName = props.bootstrapStackName ?? DEFAULT_TOOLKIT_STACK_NAME;
-
-    // TODO: ECR garbage collection
-    if (this.garbageCollectEcrAssets) {
-      throw new Error('ECR garbage collection is not yet supported');
-    }
   }
 
   /**
@@ -162,30 +202,120 @@ export class GarbageCollector {
     // SDKs
     const sdk = (await this.props.sdkProvider.forEnvironment(this.props.resolvedEnvironment, Mode.ForWriting)).sdk;
     const cfn = sdk.cloudFormation();
-    const s3 = sdk.s3();
 
     const qualifier = await this.bootstrapQualifier(sdk, this.bootstrapStackName);
     const activeAssets = new ActiveAssetCache();
 
     // Grab stack templates first
-    await refreshStacks(cfn, activeAssets, this.maxWaitTime, qualifier);
+    await refreshStacks(cfn, activeAssets, qualifier);
     // Start the background refresh
     const backgroundStackRefresh = new BackgroundStackRefresh({
       cfn,
       activeAssets,
       qualifier,
-      maxWaitTime: this.maxWaitTime,
     });
     backgroundStackRefresh.start();
 
+    try {
+      if (this.garbageCollectS3Assets) {
+        await this.garbageCollectS3(sdk, activeAssets, backgroundStackRefresh);
+      }
+
+      if (this.garbageCollectEcrAssets) {
+        await this.garbageCollectEcr(sdk, activeAssets, backgroundStackRefresh);
+      }
+    } catch (err: any) {
+      throw new Error(err);
+    } finally {
+      backgroundStackRefresh.stop();
+    }
+  }
+
+  /**
+   * Perform garbage collection on ECR assets
+   */
+  public async garbageCollectEcr(sdk: SDK, activeAssets: ActiveAssetCache, backgroundStackRefresh: BackgroundStackRefresh) {
+    const ecr = sdk.ecr();
+    const repo = await this.bootstrapRepositoryName(sdk, this.bootstrapStackName);
+    const numImages = await this.numImagesInRepo(ecr, repo);
+    const printer = new ProgressPrinter(numImages, 1000);
+
+    debug(`Found bootstrap repo ${repo} with ${numImages} images`);
+
+    try {
+      // const batches = 1;
+      const batchSize = 1000;
+      const currentTime = Date.now();
+      const graceDays = this.props.rollbackBufferDays;
+
+      debug(`Parsing through ${numImages} images in batches`);
+
+      for await (const batch of this.readRepoInBatches(ecr, repo, batchSize, currentTime)) {
+        await backgroundStackRefresh.noOlderThan(600_000); // 10 mins
+        printer.start();
+
+        const { included: isolated, excluded: notIsolated } = partition(batch, asset => !asset.tags.some(t => activeAssets.contains(t)));
+
+        debug(`${isolated.length} isolated images`);
+        debug(`${notIsolated.length} not isolated images`);
+        debug(`${batch.length} images total`);
+
+        let deletables: ImageAsset[] = isolated;
+        let taggables: ImageAsset[] = [];
+        let untaggables: ImageAsset[] = [];
+
+        if (graceDays > 0) {
+          debug('Filtering out images that are not old enough to delete');
+
+          // We delete images that are not referenced in ActiveAssets and have the Isolated Tag with a date
+          // earlier than the current time - grace period.
+          deletables = isolated.filter(img => img.isolatedTagBefore(new Date(currentTime - (graceDays * DAY))));
+
+          // We tag images that are not referenced in ActiveAssets and do not have the Isolated Tag.
+          taggables = isolated.filter(img => !img.hasIsolatedTag());
+
+          // We untag images that are referenced in ActiveAssets and currently have the Isolated Tag.
+          untaggables = notIsolated.filter(img => img.hasIsolatedTag());
+        }
+
+        debug(`${deletables.length} deletable assets`);
+        debug(`${taggables.length} taggable assets`);
+        debug(`${untaggables.length} assets to untag`);
+
+        if (this.permissionToDelete && deletables.length > 0) {
+          await this.confirmationPrompt(printer, deletables);
+          await this.parallelDeleteEcr(ecr, repo, deletables, printer);
+        }
+
+        if (this.permissionToTag && taggables.length > 0) {
+          await this.parallelTagEcr(ecr, repo, taggables, printer);
+        }
+
+        if (this.permissionToTag && untaggables.length > 0) {
+          await this.parallelUntagEcr(ecr, repo, untaggables);
+        }
+
+        printer.reportScannedAsset(batch.length);
+      }
+    } catch (err: any) {
+      throw new Error(err);
+    } finally {
+      printer.stop();
+    }
+  }
+
+  /**
+   * Perform garbage collection on S3 assets
+   */
+  public async garbageCollectS3(sdk: SDK, activeAssets: ActiveAssetCache, backgroundStackRefresh: BackgroundStackRefresh) {
+    const s3 = sdk.s3();
     const bucket = await this.bootstrapBucketName(sdk, this.bootstrapStackName);
     const numObjects = await this.numObjectsInBucket(s3, bucket);
     const printer = new ProgressPrinter(numObjects, 1000);
 
-    debug(`Found bootstrap bucket ${bucket}`);
+    debug(`Found bootstrap bucket ${bucket} with ${numObjects} objects`);
 
     try {
-      const batches = 1;
       const batchSize = 1000;
       const currentTime = Date.now();
       const graceDays = this.props.rollbackBufferDays;
@@ -197,7 +327,6 @@ export class GarbageCollector {
       // where gc is run for the first time on a long-standing bucket where ~100% of objects are isolated.
       for await (const batch of this.readBucketInBatches(s3, bucket, batchSize, currentTime)) {
         await backgroundStackRefresh.noOlderThan(600_000); // 10 mins
-        print(chalk.green(`Processing batch ${batches} of ${Math.floor(numObjects / batchSize) + 1}`));
         printer.start();
 
         const { included: isolated, excluded: notIsolated } = partition(batch, asset => !activeAssets.contains(asset.fileName()));
@@ -206,9 +335,9 @@ export class GarbageCollector {
         debug(`${notIsolated.length} not isolated assets`);
         debug(`${batch.length} objects total`);
 
-        let deletables: S3Asset[] = isolated;
-        let taggables: S3Asset[] = [];
-        let untaggables: S3Asset[] = [];
+        let deletables: ObjectAsset[] = isolated;
+        let taggables: ObjectAsset[] = [];
+        let untaggables: ObjectAsset[] = [];
 
         if (graceDays > 0) {
           debug('Filtering out assets that are not old enough to delete');
@@ -230,49 +359,28 @@ export class GarbageCollector {
         debug(`${untaggables.length} assets to untag`);
 
         if (this.permissionToDelete && deletables.length > 0) {
-          if (this.confirm) {
-            const message = [
-              `Found ${deletables.length} objects to delete based off of the following criteria:`,
-              `- objects have been isolated for > ${this.props.rollbackBufferDays} days`,
-              `- objects were created > ${this.props.createdBufferDays} days ago`,
-              '',
-              'Delete this batch (yes/no/delete-all)?',
-            ].join('\n');
-            printer.pause();
-            const response = await promptly.prompt(message,
-              { trim: true },
-            );
-
-            // Anything other than yes/y/delete-all is treated as no
-            if (!response || !['yes', 'y', 'delete-all'].includes(response.toLowerCase())) {
-              throw new Error('Deletion aborted by user');
-            } else if (response.toLowerCase() == 'delete-all') {
-              this.confirm = false;
-            }
-          }
-          printer.resume();
-          await this.parallelDelete(s3, bucket, deletables, printer);
+          await this.confirmationPrompt(printer, deletables);
+          await this.parallelDeleteS3(s3, bucket, deletables, printer);
         }
 
         if (this.permissionToTag && taggables.length > 0) {
-          await this.parallelTag(s3, bucket, taggables, currentTime, printer);
+          await this.parallelTagS3(s3, bucket, taggables, currentTime, printer);
         }
 
         if (this.permissionToTag && untaggables.length > 0) {
-          await this.parallelUntag(s3, bucket, untaggables);
+          await this.parallelUntagS3(s3, bucket, untaggables);
         }
 
-        printer.reportScannedObjects(batch.length);
+        printer.reportScannedAsset(batch.length);
       }
     } catch (err: any) {
       throw new Error(err);
     } finally {
-      backgroundStackRefresh.stop();
       printer.stop();
     }
   }
 
-  private async parallelReadAllTags(s3: S3, objects: S3Asset[]) {
+  private async parallelReadAllTags(s3: IS3Client, objects: ObjectAsset[]) {
     const limit = pLimit(P_LIMIT);
 
     for (const obj of objects) {
@@ -284,18 +392,40 @@ export class GarbageCollector {
    * Untag assets that were previously tagged, but now currently referenced.
    * Since this is treated as an implementation detail, we do not print the results in the printer.
    */
-  private async parallelUntag(s3: S3, bucket: string, untaggables: S3Asset[]) {
+  private async parallelUntagEcr(ecr: IECRClient, repo: string, untaggables: ImageAsset[]) {
+    const limit = pLimit(P_LIMIT);
+
+    for (const img of untaggables) {
+      const tag = img.getIsolatedTag();
+      await limit(() =>
+        ecr.batchDeleteImage({
+          repositoryName: repo,
+          imageIds: [{
+            imageTag: tag,
+          }],
+        }),
+      );
+    }
+
+    debug(`Untagged ${untaggables.length} assets`);
+  }
+
+  /**
+   * Untag assets that were previously tagged, but now currently referenced.
+   * Since this is treated as an implementation detail, we do not print the results in the printer.
+   */
+  private async parallelUntagS3(s3: IS3Client, bucket: string, untaggables: ObjectAsset[]) {
     const limit = pLimit(P_LIMIT);
 
     for (const obj of untaggables) {
-      const tags = await obj.allTags(s3);
-      const updatedTags = tags.filter(tag => tag.Key !== ISOLATED_TAG);
+      const tags = await obj.allTags(s3) ?? [];
+      const updatedTags = tags.filter((tag: Tag) => tag.Key !== S3_ISOLATED_TAG);
       await limit(() =>
         s3.deleteObjectTagging({
           Bucket: bucket,
           Key: obj.key,
 
-        }).promise(),
+        }),
       );
       await limit(() =>
         s3.putObjectTagging({
@@ -304,7 +434,7 @@ export class GarbageCollector {
           Tagging: {
             TagSet: updatedTags,
           },
-        }).promise(),
+        }),
       );
     }
 
@@ -312,10 +442,40 @@ export class GarbageCollector {
   }
 
   /**
+   * Tag images in parallel using p-limit
+   */
+  private async parallelTagEcr(ecr: IECRClient, repo: string, taggables: ImageAsset[], printer: ProgressPrinter) {
+    const limit = pLimit(P_LIMIT);
+
+    for (let i = 0; i < taggables.length; i++) {
+      const img = taggables[i];
+      const tagEcr = async () => {
+        try {
+          await ecr.putImage({
+            repositoryName: repo,
+            imageDigest: img.digest,
+            imageManifest: img.manifest,
+            imageTag: img.buildImageTag(i),
+          });
+        } catch (error) {
+          // This is a false negative -- an isolated asset is untagged
+          // likely due to an imageTag collision. We can safely ignore,
+          // and the isolated asset will be tagged next time.
+          debug(`Warning: unable to tag image ${JSON.stringify(img.tags)} with ${img.buildImageTag(i)} due to the following error: ${error}`);
+        }
+      };
+      await limit(() => tagEcr());
+    }
+
+    printer.reportTaggedAsset(taggables);
+    debug(`Tagged ${taggables.length} assets`);
+  }
+
+  /**
    * Tag objects in parallel using p-limit. The putObjectTagging API does not
    * support batch tagging so we must handle the parallelism client-side.
    */
-  private async parallelTag(s3: S3, bucket: string, taggables: S3Asset[], date: number, printer: ProgressPrinter) {
+  private async parallelTagS3(s3: IS3Client, bucket: string, taggables: ObjectAsset[], date: number, printer: ProgressPrinter) {
     const limit = pLimit(P_LIMIT);
 
     for (const obj of taggables) {
@@ -326,25 +486,55 @@ export class GarbageCollector {
           Tagging: {
             TagSet: [
               {
-                Key: ISOLATED_TAG,
+                Key: S3_ISOLATED_TAG,
                 Value: String(date),
               },
             ],
           },
-        }).promise(),
+        }),
       );
     }
 
-    printer.reportTaggedObjects(taggables);
+    printer.reportTaggedAsset(taggables);
     debug(`Tagged ${taggables.length} assets`);
+  }
+
+  /**
+   * Delete images in parallel. The deleteImage API supports batches of 100.
+   */
+  private async parallelDeleteEcr(ecr: IECRClient, repo: string, deletables: ImageAsset[], printer: ProgressPrinter) {
+    const batchSize = 100;
+    const imagesToDelete = deletables.map(img => ({
+      imageDigest: img.digest,
+    }));
+
+    try {
+      const batches = [];
+      for (let i = 0; i < imagesToDelete.length; i += batchSize) {
+        batches.push(imagesToDelete.slice(i, i + batchSize));
+      }
+      // Delete images in batches
+      for (const batch of batches) {
+        await ecr.batchDeleteImage({
+          imageIds: batch,
+          repositoryName: repo,
+        });
+
+        const deletedCount = batch.length;
+        debug(`Deleted ${deletedCount} assets`);
+        printer.reportDeletedAsset(deletables.slice(0, deletedCount));
+      }
+    } catch (err) {
+      print(chalk.red(`Error deleting images: ${err}`));
+    }
   }
 
   /**
    * Delete objects in parallel. The deleteObjects API supports batches of 1000.
    */
-  private async parallelDelete(s3: S3, bucket: string, deletables: S3Asset[], printer: ProgressPrinter) {
+  private async parallelDeleteS3(s3: IS3Client, bucket: string, deletables: ObjectAsset[], printer: ProgressPrinter) {
     const batchSize = 1000;
-    const objectsToDelete: S3.ObjectIdentifierList = deletables.map(asset => ({
+    const objectsToDelete = deletables.map(asset => ({
       Key: asset.key,
     }));
 
@@ -361,28 +551,33 @@ export class GarbageCollector {
             Objects: batch,
             Quiet: true,
           },
-        }).promise();
+        });
 
         const deletedCount = batch.length;
         debug(`Deleted ${deletedCount} assets`);
-        printer.reportDeletedObjects(deletables.slice(0, deletedCount));
+        printer.reportDeletedAsset(deletables.slice(0, deletedCount));
       }
     } catch (err) {
       print(chalk.red(`Error deleting objects: ${err}`));
     }
   }
 
-  private async bootstrapBucketName(sdk: ISDK, bootstrapStackName: string): Promise<string> {
+  private async bootstrapBucketName(sdk: SDK, bootstrapStackName: string): Promise<string> {
     const info = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
     return info.bucketName;
   }
 
-  private async bootstrapQualifier(sdk: ISDK, bootstrapStackName: string): Promise<string | undefined> {
+  private async bootstrapRepositoryName(sdk: SDK, bootstrapStackName: string): Promise<string> {
+    const info = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
+    return info.repositoryName;
+  }
+
+  private async bootstrapQualifier(sdk: SDK, bootstrapStackName: string): Promise<string | undefined> {
     const info = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
     return info.bootstrapStack.parameters.Qualifier;
   }
 
-  private async numObjectsInBucket(s3: S3, bucket: string): Promise<number> {
+  private async numObjectsInBucket(s3: IS3Client, bucket: string): Promise<number> {
     let totalCount = 0;
     let continuationToken: string | undefined;
 
@@ -390,7 +585,7 @@ export class GarbageCollector {
       const response = await s3.listObjectsV2({
         Bucket: bucket,
         ContinuationToken: continuationToken,
-      }).promise();
+      });
 
       totalCount += response.KeyCount ?? 0;
       continuationToken = response.NextContinuationToken;
@@ -399,29 +594,109 @@ export class GarbageCollector {
     return totalCount;
   }
 
-  /**
-   * Generator function that reads objects from the S3 Bucket in batches.
-   */
-  private async *readBucketInBatches(s3: S3, bucket: string, batchSize: number = 1000, currentTime: number): AsyncGenerator<S3Asset[]> {
+  private async numImagesInRepo(ecr: IECRClient, repo: string): Promise<number> {
+    let totalCount = 0;
+    let nextToken: string | undefined;
+
+    do {
+      const response = await ecr.listImages({
+        repositoryName: repo,
+        nextToken: nextToken,
+      });
+
+      totalCount += response.imageIds?.length ?? 0;
+      nextToken = response.nextToken;
+    } while (nextToken);
+
+    return totalCount;
+  }
+
+  private async *readRepoInBatches(ecr: IECRClient, repo: string, batchSize: number = 1000, currentTime: number): AsyncGenerator<ImageAsset[]> {
     let continuationToken: string | undefined;
 
     do {
-      const batch: S3Asset[] = [];
+      const batch: ImageAsset[] = [];
+
+      while (batch.length < batchSize) {
+        const response = await ecr.listImages({
+          repositoryName: repo,
+        });
+
+        // No images in the repository
+        if (!response.imageIds || response.imageIds.length === 0) {
+          break;
+        }
+
+        // map unique image digest to (possibly multiple) tags
+        const images = imageMap(response.imageIds ?? []);
+
+        const imageIds = Object.keys(images).map(key => ({
+          imageDigest: key,
+        }));
+
+        const describeImageInfo = await ecr.describeImages({
+          repositoryName: repo,
+          imageIds: imageIds,
+        });
+
+        const getImageInfo = await ecr.batchGetImage({
+          repositoryName: repo,
+          imageIds: imageIds,
+        });
+
+        const combinedImageInfo = describeImageInfo.imageDetails?.map(imageDetail => {
+          const matchingImage = getImageInfo.images?.find(
+            img => img.imageId?.imageDigest === imageDetail.imageDigest,
+          );
+
+          return {
+            ...imageDetail,
+            manifest: matchingImage?.imageManifest,
+          };
+        });
+
+        for (const image of combinedImageInfo ?? []) {
+          const lastModified = image.imagePushedAt ?? new Date(currentTime);
+          // Store the image if it was pushed earlier than today - createdBufferDays
+          if (image.imageDigest && lastModified < new Date(currentTime - (this.props.createdBufferDays * DAY))) {
+            batch.push(new ImageAsset(image.imageDigest, image.imageSizeInBytes ?? 0, image.imageTags ?? [], image.manifest ?? ''));
+          }
+        }
+
+        continuationToken = response.nextToken;
+
+        if (!continuationToken) break; // No more images to fetch
+      }
+
+      if (batch.length > 0) {
+        yield batch;
+      }
+    } while (continuationToken);
+  }
+
+  /**
+   * Generator function that reads objects from the S3 Bucket in batches.
+   */
+  private async *readBucketInBatches(s3: IS3Client, bucket: string, batchSize: number = 1000, currentTime: number): AsyncGenerator<ObjectAsset[]> {
+    let continuationToken: string | undefined;
+
+    do {
+      const batch: ObjectAsset[] = [];
 
       while (batch.length < batchSize) {
         const response = await s3.listObjectsV2({
           Bucket: bucket,
           ContinuationToken: continuationToken,
-        }).promise();
+        });
 
-        response.Contents?.forEach((obj) => {
+        response.Contents?.forEach((obj: any) => {
           const key = obj.Key ?? '';
           const size = obj.Size ?? 0;
           const lastModified = obj.LastModified ?? new Date(currentTime);
           // Store the object if it has a Key and
           // if it has not been modified since today - createdBufferDays
           if (key && lastModified < new Date(currentTime - (this.props.createdBufferDays * DAY))) {
-            batch.push(new S3Asset(bucket, key, size));
+            batch.push(new ObjectAsset(bucket, key, size));
           }
         });
 
@@ -434,6 +709,30 @@ export class GarbageCollector {
         yield batch;
       }
     } while (continuationToken);
+  }
+
+  private async confirmationPrompt(printer: ProgressPrinter, deletables: GcAsset[]) {
+    if (this.confirm) {
+      const message = [
+        `Found ${deletables.length} assets to delete based off of the following criteria:`,
+        `- assets have been isolated for > ${this.props.rollbackBufferDays} days`,
+        `- assets were created > ${this.props.createdBufferDays} days ago`,
+        '',
+        'Delete this batch (yes/no/delete-all)?',
+      ].join('\n');
+      printer.pause();
+      const response = await promptly.prompt(message,
+        { trim: true },
+      );
+
+      // Anything other than yes/y/delete-all is treated as no
+      if (!response || !['yes', 'y', 'delete-all'].includes(response.toLowerCase())) {
+        throw new Error('Deletion aborted by user');
+      } else if (response.toLowerCase() == 'delete-all') {
+        this.confirm = false;
+      }
+    }
+    printer.resume();
   }
 }
 
@@ -452,4 +751,16 @@ function partition<A>(xs: Iterable<A>, pred: (x: A) => boolean): { included: A[]
   }
 
   return result;
+}
+
+function imageMap(imageIds: ImageIdentifier[]) {
+  const images: Record<string, string[]> = {};
+  for (const image of imageIds ?? []) {
+    if (!image.imageDigest || !image.imageTag) { continue; }
+    if (!images[image.imageDigest]) {
+      images[image.imageDigest] = [];
+    }
+    images[image.imageDigest].push(image.imageTag);
+  }
+  return images;
 }

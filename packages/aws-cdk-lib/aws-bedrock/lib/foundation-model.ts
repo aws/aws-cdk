@@ -59,6 +59,30 @@ export class FoundationModelIdentifier {
   /** Base model "amazon.titan-embed-image-v1". */
   public static readonly AMAZON_TITAN_MULTIMODAL_EMBEDDINGS_G1_V1 = new FoundationModelIdentifier('amazon.titan-embed-image-v1');
 
+  /** Base model "amazon.nova-canvas-v1:0". */
+  public static readonly AMAZON_NOVA_CANVAS_V1_0 = new FoundationModelIdentifier('amazon.nova-canvas-v1:0');
+
+  /** Base model "amazon.nova-lite-v1:0". */
+  public static readonly AMAZON_NOVA_LITE_V1_0 = new FoundationModelIdentifier('amazon.nova-lite-v1:0');
+
+  /** Base model "amazon.nova-lite-v1:0:300k". */
+  public static readonly AMAZON_NOVA_LITE_V1_0_300_K = new FoundationModelIdentifier('amazon.nova-lite-v1:0:300k');
+
+  /** Base model "amazon.nova-micro-v1:0". */
+  public static readonly AMAZON_NOVA_MICRO_V1_0 = new FoundationModelIdentifier('amazon.nova-micro-v1:0');
+
+  /** Base model "amazon.nova-micro-v1:0:128k". */
+  public static readonly AMAZON_NOVA_MICRO_V1_0_128_K = new FoundationModelIdentifier('amazon.nova-micro-v1:0:128k');
+
+  /** Base model "amazon.nova-pro-v1:0". */
+  public static readonly AMAZON_NOVA_PRO_V1_0 = new FoundationModelIdentifier('amazon.nova-pro-v1:0');
+
+  /** Base model "amazon.nova-pro-v1:0:300k". */
+  public static readonly AMAZON_NOVA_PRO_V1_0_300_K = new FoundationModelIdentifier('amazon.nova-pro-v1:0:300k');
+
+  /** Base model "amazon.nova-reel-v1:0". */
+  public static readonly AMAZON_NOVA_REEL_V1_0 = new FoundationModelIdentifier('amazon.nova-reel-v1:0');
+
   /** Base model "ai21.j2-mid". */
   public static readonly AI21_J2_MID = new FoundationModelIdentifier('ai21.j2-mid');
 
@@ -133,6 +157,9 @@ export class FoundationModelIdentifier {
 
   /** Base model "anthropic.claude-3-haiku-20240307-v1:0:48k" */
   public static readonly ANTHROPIC_CLAUDE_3_HAIKU_20240307_V1_0_48K = new FoundationModelIdentifier('anthropic.claude-3-haiku-20240307-v1:0:48k');
+
+  /** Base model "anthropic.claude-3-5-haiku-20241022-v1:0" */
+  public static readonly ANTHROPIC_CLAUDE_3_5_HAIKU_20241022_V1_0 = new FoundationModelIdentifier('anthropic.claude-3-5-haiku-20241022-v1:0');
 
   /** Base model "anthropic.claude-3-haiku-20240307-v1:0:200k" */
   public static readonly ANTHROPIC_CLAUDE_3_HAIKU_20240307_V1_0_200K = new FoundationModelIdentifier('anthropic.claude-3-haiku-20240307-v1:0:200k');
