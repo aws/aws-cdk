@@ -29,17 +29,17 @@ export interface CallApiGatewayHttpApiEndpointOptions {
 /**
  * Properties for calling an HTTP API Endpoint using JSONPath
  */
-export interface CallApiGatewayHttpApiEndpointJsonPathProps extends CallApiGatewayHttpApiEndpointOptions, CallApiGatewayEndpointJsonPathBaseProps {}
+export interface CallApiGatewayHttpApiEndpointJsonPathProps extends CallApiGatewayEndpointJsonPathBaseProps, CallApiGatewayHttpApiEndpointOptions {}
 
 /**
  * Properties for calling an HTTP API Endpoint using JSONata
  */
-export interface CallApiGatewayHttpApiEndpointJsonataProps extends CallApiGatewayHttpApiEndpointOptions, CallApiGatewayEndpointJsonataBaseProps {}
+export interface CallApiGatewayHttpApiEndpointJsonataProps extends CallApiGatewayEndpointJsonataBaseProps, CallApiGatewayHttpApiEndpointOptions {}
 
 /**
  * Properties for calling an HTTP API Endpoint
  */
-export interface CallApiGatewayHttpApiEndpointProps extends CallApiGatewayHttpApiEndpointOptions, CallApiGatewayEndpointBaseProps {}
+export interface CallApiGatewayHttpApiEndpointProps extends CallApiGatewayEndpointBaseProps, CallApiGatewayHttpApiEndpointOptions {}
 
 /**
  * Call HTTP API endpoint as a Task

@@ -138,22 +138,6 @@ interface BedrockInvokeModelOptions {
   readonly traceEnabled?: boolean;
 }
 
-interface BedrockInvokeModelJsonataBaseProps extends sfn.TaskStateBaseOptions {
-  /**
-   * Used to specify and transform output from the state.
-   * When specified, the value overrides the state output default.
-   * The output field accepts any JSON value (object, array, string, number, boolean, null).
-   * Any string value, including those inside objects or arrays,
-   * will be evaluated as JSONata if surrounded by {% %} characters.
-   * Output also accepts a JSONata expression directly.
-   *
-   * @see https://docs.aws.amazon.com/step-functions/latest/dg/concepts-input-output-filtering.html
-   *
-   * @default - None
-   */
-  readonly stateOutput?: any;
-}
-
 /**
  * Properties for invoking a Bedrock Model
  */
@@ -162,12 +146,12 @@ export interface BedrockInvokeModelJsonPathProps extends sfn.TaskStateJsonPathBa
 /**
  * Properties for invoking a Bedrock Model
  */
-export interface BedrockInvokeModelJsonataProps extends BedrockInvokeModelJsonataBaseProps, BedrockInvokeModelOptions {}
+export interface BedrockInvokeModelJsonataProps extends sfn.TaskStateJsonataBaseProps, BedrockInvokeModelOptions {}
 
 /**
  * Properties for invoking a Bedrock Model
  */
-export interface BedrockInvokeModelProps extends sfn.TaskStateJsonPathBaseProps, BedrockInvokeModelJsonataBaseProps, BedrockInvokeModelOptions {}
+export interface BedrockInvokeModelProps extends sfn.TaskStateBaseProps, BedrockInvokeModelOptions {}
 
 /**
  * A Step Functions Task to invoke a model in Bedrock.
@@ -199,10 +183,7 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
   private readonly modelOutput?: BedrockInvokeModelOutputProps;
 
   constructor(scope: Construct, id: string, private readonly props: BedrockInvokeModelProps) {
-    super(scope, id, {
-      ...props,
-      output: props.stateOutput,
-    });
+    super(scope, id, props);
 
     this.modelOutput = props.output;
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
