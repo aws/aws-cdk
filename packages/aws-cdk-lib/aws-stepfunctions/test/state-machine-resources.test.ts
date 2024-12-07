@@ -222,6 +222,8 @@ describe('State Machine Resources', () => {
       ResultPath: undefined,
       TimeoutSeconds: undefined,
       HeartbeatSeconds: undefined,
+      Arguments: undefined,
+      Output: undefined,
     });
   }),
 
@@ -265,6 +267,8 @@ describe('State Machine Resources', () => {
       ResultPath: undefined,
       TimeoutSeconds: undefined,
       HeartbeatSeconds: undefined,
+      Arguments: undefined,
+      Output: undefined,
     });
   }),
 
@@ -720,10 +724,10 @@ describe('State Machine Resources', () => {
     }
   }),
 
-  test('Pass should render InputPath / Parameters / OutputPath correctly', () => {
+  test('Pass with JSONPath should render InputPath / Parameters / OutputPath correctly', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const task = new stepfunctions.Pass(stack, 'Pass', {
+    const task = stepfunctions.Pass.jsonPath(stack, 'Pass', {
       stateName: 'my-pass-state',
       inputPath: '$',
       outputPath: '$.state',
@@ -753,9 +757,51 @@ describe('State Machine Resources', () => {
           'arrayArgument': ['a', 'b', 'c'],
         },
       Type: 'Pass',
+      QueryLanguage: undefined,
       Comment: undefined,
       Result: undefined,
       ResultPath: undefined,
+      Arguments: undefined,
+      Output: undefined,
+    });
+  }),
+
+  test('Pass with JSONata should render Output correctly', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const task = stepfunctions.Pass.jsonata(stack, 'Pass', {
+      stateName: 'my-pass-state',
+      output: {
+        input: '{% $states.input %}',
+        stringArgument: 'inital-task',
+        numberArgument: 123,
+        booleanArgument: true,
+        arrayArgument: ['a', 'b', 'c'],
+      },
+    });
+
+    // WHEN
+    const taskState = task.toStateJson();
+
+    // THEN
+    expect(taskState).toStrictEqual({
+      Type: 'Pass',
+      QueryLanguage: 'JSONata',
+      Output: {
+        input: '{% $states.input %}',
+        stringArgument: 'inital-task',
+        numberArgument: 123,
+        booleanArgument: true,
+        arrayArgument: ['a', 'b', 'c'],
+      },
+      End: true,
+      Comment: undefined,
+      InputPath: undefined,
+      Result: undefined,
+      ResultPath: undefined,
+      Parameters: undefined,
+      OutputPath: undefined,
+      Arguments: undefined,
     });
   }),
 
