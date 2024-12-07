@@ -525,7 +525,7 @@
        "Effect": "Allow",
        "Resource": {
         "Fn::GetAtt": [
-         "Cluster9EE0221C",
+         "ClusterEB0386A7",
          "Arn"
         ]
        }
@@ -535,7 +535,7 @@
        "Effect": "Allow",
        "Resource": {
         "Fn::GetAtt": [
-         "ClusterCreationRole360249B6",
+         "ClusterkubectlRole4CCE0069",
          "Arn"
         ]
        }
@@ -639,227 +639,69 @@
     }
    }
   },
-  "ClusterCreationRole360249B6": {
-   "Type": "AWS::IAM::Role",
+  "ClusterEB0386A7": {
+   "Type": "AWS::EKS::Cluster",
    "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": [
-         {
-          "Fn::GetAtt": [
-           "ClusterKubectlHandlerRole94549F93",
-           "Arn"
-          ]
-         },
-         {
-          "Fn::GetAtt": [
-           "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
-           "Outputs.awscdkekshelmtestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole12F3DEC7Arn"
-          ]
-         },
-         {
-          "Fn::GetAtt": [
-           "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
-           "Outputs.awscdkekshelmtestawscdkawseksClusterResourceProviderOnEventHandlerServiceRole53C6A0AEArn"
-          ]
-         }
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   },
-   "DependsOn": [
-    "VpcIGWD7BA715C",
-    "VpcPrivateSubnet1DefaultRouteBE02A9ED",
-    "VpcPrivateSubnet1RouteTableB2C5B500",
-    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
-    "VpcPrivateSubnet1Subnet536B997A",
-    "VpcPrivateSubnet2DefaultRoute060D2087",
-    "VpcPrivateSubnet2RouteTableA678073B",
-    "VpcPrivateSubnet2RouteTableAssociationA89CAD56",
-    "VpcPrivateSubnet2Subnet3788AAA1",
-    "VpcPublicSubnet1DefaultRoute3DA9E72A",
-    "VpcPublicSubnet1EIPD7E02669",
-    "VpcPublicSubnet1NATGateway4D7517AA",
-    "VpcPublicSubnet1RouteTable6C95E38E",
-    "VpcPublicSubnet1RouteTableAssociation97140677",
-    "VpcPublicSubnet1Subnet5C2D37C4",
-    "VpcPublicSubnet2DefaultRoute97F91067",
-    "VpcPublicSubnet2RouteTable94F7E489",
-    "VpcPublicSubnet2RouteTableAssociationDD5762D8",
-    "VpcPublicSubnet2Subnet691E08A3",
-    "Vpc8378EB38",
-    "VpcVPCGWBF912B6E"
-   ]
-  },
-  "ClusterCreationRoleDefaultPolicyE8BDFC7B": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "iam:PassRole",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "ClusterRoleFA261979",
-         "Arn"
-        ]
-       }
-      },
-      {
-       "Action": [
-        "eks:CreateCluster",
-        "eks:CreateFargateProfile",
-        "eks:DeleteCluster",
-        "eks:DescribeCluster",
-        "eks:DescribeUpdate",
-        "eks:TagResource",
-        "eks:UntagResource",
-        "eks:UpdateClusterConfig",
-        "eks:UpdateClusterVersion"
-       ],
-       "Effect": "Allow",
-       "Resource": "*"
-      },
-      {
-       "Action": [
-        "eks:DeleteFargateProfile",
-        "eks:DescribeFargateProfile"
-       ],
-       "Effect": "Allow",
-       "Resource": "*"
-      },
-      {
-       "Action": [
-        "ec2:DescribeDhcpOptions",
-        "ec2:DescribeInstances",
-        "ec2:DescribeNetworkInterfaces",
-        "ec2:DescribeRouteTables",
-        "ec2:DescribeSecurityGroups",
-        "ec2:DescribeSubnets",
-        "ec2:DescribeVpcs",
-        "iam:CreateServiceLinkedRole",
-        "iam:GetRole",
-        "iam:listAttachedRolePolicies"
-       ],
-       "Effect": "Allow",
-       "Resource": "*"
-      }
-     ],
-     "Version": "2012-10-17"
+    "AccessConfig": {},
+    "KubernetesNetworkConfig": {
+     "IpFamily": "ipv4"
     },
-    "PolicyName": "ClusterCreationRoleDefaultPolicyE8BDFC7B",
-    "Roles": [
-     {
-      "Ref": "ClusterCreationRole360249B6"
+    "Logging": {
+     "ClusterLogging": {
+      "EnabledTypes": [
+       {
+        "Type": "api"
+       },
+       {
+        "Type": "authenticator"
+       },
+       {
+        "Type": "scheduler"
+       }
+      ]
      }
-    ]
-   },
-   "DependsOn": [
-    "VpcIGWD7BA715C",
-    "VpcPrivateSubnet1DefaultRouteBE02A9ED",
-    "VpcPrivateSubnet1RouteTableB2C5B500",
-    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
-    "VpcPrivateSubnet1Subnet536B997A",
-    "VpcPrivateSubnet2DefaultRoute060D2087",
-    "VpcPrivateSubnet2RouteTableA678073B",
-    "VpcPrivateSubnet2RouteTableAssociationA89CAD56",
-    "VpcPrivateSubnet2Subnet3788AAA1",
-    "VpcPublicSubnet1DefaultRoute3DA9E72A",
-    "VpcPublicSubnet1EIPD7E02669",
-    "VpcPublicSubnet1NATGateway4D7517AA",
-    "VpcPublicSubnet1RouteTable6C95E38E",
-    "VpcPublicSubnet1RouteTableAssociation97140677",
-    "VpcPublicSubnet1Subnet5C2D37C4",
-    "VpcPublicSubnet2DefaultRoute97F91067",
-    "VpcPublicSubnet2RouteTable94F7E489",
-    "VpcPublicSubnet2RouteTableAssociationDD5762D8",
-    "VpcPublicSubnet2Subnet691E08A3",
-    "Vpc8378EB38",
-    "VpcVPCGWBF912B6E"
-   ]
-  },
-  "Cluster9EE0221C": {
-   "Type": "Custom::AWSCDK-EKS-Cluster",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
-      "Outputs.awscdkekshelmtestawscdkawseksClusterResourceProviderframeworkonEventFCDC8710Arn"
+    },
+    "ResourcesVpcConfig": {
+     "EndpointPrivateAccess": true,
+     "EndpointPublicAccess": true,
+     "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "ClusterControlPlaneSecurityGroupD274242C",
+        "GroupId"
+       ]
+      }
+     ],
+     "SubnetIds": [
+      {
+       "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
+      },
+      {
+       "Ref": "VpcPublicSubnet2Subnet691E08A3"
+      },
+      {
+       "Ref": "VpcPrivateSubnet1Subnet536B997A"
+      },
+      {
+       "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+      }
      ]
     },
-    "Config": {
-     "version": "1.24",
-     "roleArn": {
-      "Fn::GetAtt": [
-       "ClusterRoleFA261979",
-       "Arn"
-      ]
-     },
-     "kubernetesNetworkConfig": {
-      "ipFamily": "ipv4"
-     },
-     "resourcesVpcConfig": {
-      "subnetIds": [
-       {
-        "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
-       },
-       {
-        "Ref": "VpcPublicSubnet2Subnet691E08A3"
-       },
-       {
-        "Ref": "VpcPrivateSubnet1Subnet536B997A"
-       },
-       {
-        "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
-       }
-      ],
-      "securityGroupIds": [
-       {
-        "Fn::GetAtt": [
-         "ClusterControlPlaneSecurityGroupD274242C",
-         "GroupId"
-        ]
-       }
-      ],
-      "endpointPublicAccess": true,
-      "endpointPrivateAccess": true
-     },
-     "tags": {
-      "foo": "bar"
-     },
-     "logging": {
-      "clusterLogging": [
-       {
-        "enabled": true,
-        "types": [
-         "api",
-         "authenticator",
-         "scheduler"
-        ]
-       }
-      ]
-     },
-     "accessConfig": {}
-    },
-    "AssumeRoleArn": {
+    "RoleArn": {
      "Fn::GetAtt": [
-      "ClusterCreationRole360249B6",
+      "ClusterRoleFA261979",
       "Arn"
      ]
     },
-    "AttributesRevision": 3
+    "Tags": [
+     {
+      "Key": "foo",
+      "Value": "bar"
+     }
+    ],
+    "Version": "1.24"
    },
    "DependsOn": [
-    "ClusterCreationRoleDefaultPolicyE8BDFC7B",
-    "ClusterCreationRole360249B6",
     "VpcIGWD7BA715C",
     "VpcPrivateSubnet1DefaultRouteBE02A9ED",
     "VpcPrivateSubnet1RouteTableB2C5B500",
@@ -881,9 +723,7 @@
     "VpcPublicSubnet2Subnet691E08A3",
     "Vpc8378EB38",
     "VpcVPCGWBF912B6E"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
+   ]
   },
   "ClusterKubectlReadyBarrier200052AF": {
    "Type": "AWS::SSM::Parameter",
@@ -892,10 +732,63 @@
     "Value": "aws:cdk:eks:kubectl-ready"
    },
    "DependsOn": [
-    "ClusterCreationRoleDefaultPolicyE8BDFC7B",
-    "ClusterCreationRole360249B6",
-    "Cluster9EE0221C"
+    "ClusterEB0386A7"
    ]
+  },
+  "ClusterkubectlRole4CCE0069": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "ClusterKubectlHandlerRole94549F93",
+          "Arn"
+         ]
+        }
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "ClusterClusterAdminRoleAccessF2BFF759": {
+   "Type": "AWS::EKS::AccessEntry",
+   "Properties": {
+    "AccessPolicies": [
+     {
+      "AccessScope": {
+       "Type": "cluster"
+      },
+      "PolicyArn": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+        ]
+       ]
+      }
+     }
+    ],
+    "ClusterName": {
+     "Ref": "ClusterEB0386A7"
+    },
+    "PrincipalArn": {
+     "Fn::GetAtt": [
+      "ClusterkubectlRole4CCE0069",
+      "Arn"
+     ]
+    }
+   }
   },
   "ClusterAwsAuthmanifestFE51F8AE": {
    "Type": "Custom::AWSCDK-EKS-KubernetesResource",
@@ -936,11 +829,11 @@
      ]
     },
     "ClusterName": {
-     "Ref": "Cluster9EE0221C"
+     "Ref": "ClusterEB0386A7"
     },
     "RoleArn": {
      "Fn::GetAtt": [
-      "ClusterCreationRole360249B6",
+      "ClusterkubectlRole4CCE0069",
       "Arn"
      ]
     },
@@ -1013,7 +906,7 @@
    "Properties": {
     "AmiType": "AL2_x86_64",
     "ClusterName": {
-     "Ref": "Cluster9EE0221C"
+     "Ref": "ClusterEB0386A7"
     },
     "ForceUpdateEnabled": true,
     "InstanceTypes": [
@@ -1050,11 +943,11 @@
      ]
     },
     "ClusterName": {
-     "Ref": "Cluster9EE0221C"
+     "Ref": "ClusterEB0386A7"
     },
     "RoleArn": {
      "Fn::GetAtt": [
-      "ClusterCreationRole360249B6",
+      "ClusterkubectlRole4CCE0069",
       "Arn"
      ]
     },
@@ -1081,11 +974,11 @@
      ]
     },
     "ClusterName": {
-     "Ref": "Cluster9EE0221C"
+     "Ref": "ClusterEB0386A7"
     },
     "RoleArn": {
      "Fn::GetAtt": [
-      "ClusterCreationRole360249B6",
+      "ClusterkubectlRole4CCE0069",
       "Arn"
      ]
     },
@@ -1124,11 +1017,11 @@
      ]
     },
     "ClusterName": {
-     "Ref": "Cluster9EE0221C"
+     "Ref": "ClusterEB0386A7"
     },
     "RoleArn": {
      "Fn::GetAtt": [
-      "ClusterCreationRole360249B6",
+      "ClusterkubectlRole4CCE0069",
       "Arn"
      ]
     },
@@ -1167,11 +1060,11 @@
      ]
     },
     "ClusterName": {
-     "Ref": "Cluster9EE0221C"
+     "Ref": "ClusterEB0386A7"
     },
     "RoleArn": {
      "Fn::GetAtt": [
-      "ClusterCreationRole360249B6",
+      "ClusterkubectlRole4CCE0069",
       "Arn"
      ]
     },
@@ -1211,11 +1104,11 @@
      ]
     },
     "ClusterName": {
-     "Ref": "Cluster9EE0221C"
+     "Ref": "ClusterEB0386A7"
     },
     "RoleArn": {
      "Fn::GetAtt": [
-      "ClusterCreationRole360249B6",
+      "ClusterkubectlRole4CCE0069",
       "Arn"
      ]
     },
@@ -1256,11 +1149,11 @@
      ]
     },
     "ClusterName": {
-     "Ref": "Cluster9EE0221C"
+     "Ref": "ClusterEB0386A7"
     },
     "RoleArn": {
      "Fn::GetAtt": [
-      "ClusterCreationRole360249B6",
+      "ClusterkubectlRole4CCE0069",
       "Arn"
      ]
     },
@@ -1274,33 +1167,6 @@
    "DependsOn": [
     "ClusterKubectlReadyBarrier200052AF"
    ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454": {
-   "Type": "AWS::CloudFormation::Stack",
-   "Properties": {
-    "TemplateURL": {
-     "Fn::Join": [
-      "",
-      [
-       "https://s3.",
-       {
-        "Ref": "AWS::Region"
-       },
-       ".",
-       {
-        "Ref": "AWS::URLSuffix"
-       },
-       "/",
-       {
-        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-       },
-       "/0b8ba04d8bd9d760e0a86266afa34b5949a1d1898d0e2b020901dd9d4a1e89f7.json"
-      ]
-     ]
-    }
-   },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
@@ -1323,9 +1189,9 @@
      "referencetoawscdkekshelmtestVpcPrivateSubnet2SubnetF5E4AFE9Ref": {
       "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
      },
-     "referencetoawscdkekshelmtestCluster35BA672BClusterSecurityGroupId": {
+     "referencetoawscdkekshelmtestCluster7A3F6220ClusterSecurityGroupId": {
       "Fn::GetAtt": [
-       "Cluster9EE0221C",
+       "ClusterEB0386A7",
        "ClusterSecurityGroupId"
       ]
      }
@@ -1346,7 +1212,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/0c524d56077119a57cc17bbeb9b8c75b1950076929210e56952e8d95322652da.json"
+       "/a4a501abc09f534c2ddd3e01832416fe8d6b3497015e05b9816d5d6e9fd87926.json"
       ]
      ]
     }
@@ -1381,7 +1247,7 @@
      [
       "aws eks update-kubeconfig --name ",
       {
-       "Ref": "Cluster9EE0221C"
+       "Ref": "ClusterEB0386A7"
       },
       " --region ",
       {
@@ -1405,7 +1271,7 @@
      [
       "aws eks get-token --cluster-name ",
       {
-       "Ref": "Cluster9EE0221C"
+       "Ref": "ClusterEB0386A7"
       },
       " --region ",
       {

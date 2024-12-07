@@ -37,75 +37,6 @@ describe('cluster', () => {
     expect(cluster.albController).toBeDefined();
   });
 
-  test('can specify custom environment to cluster resource handler', () => {
-    const { stack } = testFixture();
-
-    new eks.Cluster(stack, 'Cluster', {
-      version: CLUSTER_VERSION,
-      clusterHandlerEnvironment: {
-        foo: 'bar',
-      },
-    });
-
-    const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.ClusterResourceProvider') as cdk.NestedStack;
-
-    Template.fromStack(nested).hasResourceProperties('AWS::Lambda::Function', {
-      Environment: { Variables: { foo: 'bar' } },
-    });
-  });
-
-  test('can specify security group to cluster resource handler', () => {
-    const { stack, vpc } = testFixture();
-    const securityGroup = new ec2.SecurityGroup(stack, 'ProxyInstanceSG', {
-      vpc,
-      allowAllOutbound: false,
-    });
-
-    new eks.Cluster(stack, 'Cluster', {
-      version: CLUSTER_VERSION,
-      placeClusterHandlerInVpc: true,
-      clusterHandlerSecurityGroup: securityGroup,
-    });
-
-    const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.ClusterResourceProvider') as cdk.NestedStack;
-
-    Template.fromStack(nested).hasResourceProperties('AWS::Lambda::Function', {
-      VpcConfig: {
-        SecurityGroupIds: [{ Ref: 'referencetoStackProxyInstanceSG80B79D87GroupId' }],
-      },
-    });
-  });
-
-  test('throws when trying to place cluster handlers in a vpc with no private subnets', () => {
-    const { stack } = testFixture();
-
-    const vpc = new ec2.Vpc(stack, 'Vpc');
-
-    expect(() => {
-      new eks.Cluster(stack, 'Cluster', {
-        version: CLUSTER_VERSION,
-        placeClusterHandlerInVpc: true,
-        vpc: vpc,
-        vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
-      });
-    }).toThrow(/Cannot place cluster handler in the VPC since no private subnets could be selected/);
-  });
-
-  test('throws when provided `clusterHandlerSecurityGroup` without `placeClusterHandlerInVpc: true`', () => {
-    const { stack, vpc } = testFixture();
-    const securityGroup = new ec2.SecurityGroup(stack, 'ProxyInstanceSG', {
-      vpc,
-      allowAllOutbound: false,
-    });
-
-    expect(() => {
-      new eks.Cluster(stack, 'Cluster', {
-        version: CLUSTER_VERSION,
-        clusterHandlerSecurityGroup: securityGroup,
-      });
-    }).toThrow(/Cannot specify clusterHandlerSecurityGroup without placeClusterHandlerInVpc set to true/);
-  });
-
   describe('imported Vpc from unparseable list tokens', () => {
     let stack: cdk.Stack;
     let vpc: ec2.IVpc;
@@ -146,15 +77,13 @@ describe('cluster', () => {
       });
 
       // THEN
-      Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
-        Config: {
-          resourcesVpcConfig: {
-            subnetIds: {
-              'Fn::Split': [
-                ',',
-                { 'Fn::ImportValue': 'myPublicSubnetIds' },
-              ],
-            },
+      Template.fromStack(stack).hasResourceProperties('AWS::EKS::Cluster', {
+        ResourcesVpcConfig: {
+          SubnetIds: {
+            'Fn::Split': [
+              ',',
+              { 'Fn::ImportValue': 'myPublicSubnetIds' },
+            ],
           },
         },
       });
@@ -169,32 +98,6 @@ describe('cluster', () => {
     });
 
     expect(() => cluster.clusterSecurityGroup).toThrow(/"clusterSecurityGroup" is not defined for this imported cluster/);
-  });
-
-  test('can place cluster handlers in the cluster vpc', () => {
-    const { stack } = testFixture();
-
-    new eks.Cluster(stack, 'Cluster', {
-      version: CLUSTER_VERSION,
-      placeClusterHandlerInVpc: true,
-    });
-
-    const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.ClusterResourceProvider') as cdk.NestedStack;
-    const template = Template.fromStack(nested);
-    const resources = template.findResources('AWS::Lambda::Function');
-
-    function assertFunctionPlacedInVpc(id: string) {
-      expect(resources[id].Properties.VpcConfig.SubnetIds).toEqual([
-        { Ref: 'referencetoStackClusterDefaultVpcPrivateSubnet1SubnetA64D1BF0Ref' },
-        { Ref: 'referencetoStackClusterDefaultVpcPrivateSubnet2Subnet32D85AB8Ref' },
-      ]);
-    }
-
-    assertFunctionPlacedInVpc('OnEventHandler42BEBAE0');
-    assertFunctionPlacedInVpc('IsCompleteHandler7073F4DA');
-    assertFunctionPlacedInVpc('ProviderframeworkonEvent83C1D0A7');
-    assertFunctionPlacedInVpc('ProviderframeworkisComplete26D7B0CB');
-    assertFunctionPlacedInVpc('ProviderframeworkonTimeout0B47CA38');
   });
 
   test('can access cluster security group for imported cluster with cluster security group id', () => {
@@ -230,7 +133,7 @@ describe('cluster', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
       SecurityGroups: [
         { 'Fn::GetAtt': ['ClusterselfmanagedInstanceSecurityGroup64468C3A', 'GroupId'] },
-        { 'Fn::GetAtt': ['Cluster9EE0221C', 'ClusterSecurityGroupId'] },
+        { 'Fn::GetAtt': ['ClusterEB0386A7', 'ClusterSecurityGroupId'] },
       ],
     });
   });
@@ -281,7 +184,7 @@ describe('cluster', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
       SecurityGroups: [
         { 'Fn::GetAtt': ['selfmanagedInstanceSecurityGroupEA6D80C9', 'GroupId'] },
-        { 'Fn::GetAtt': ['Cluster9EE0221C', 'ClusterSecurityGroupId'] },
+        { 'Fn::GetAtt': ['ClusterEB0386A7', 'ClusterSecurityGroupId'] },
       ],
     });
   });
@@ -308,7 +211,7 @@ describe('cluster', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
       SecurityGroups: [
         { 'Fn::GetAtt': ['selfmanagedInstanceSecurityGroupEA6D80C9', 'GroupId'] },
-        { 'Fn::GetAtt': ['Cluster9EE0221C', 'ClusterSecurityGroupId'] },
+        { 'Fn::GetAtt': ['ClusterEB0386A7', 'ClusterSecurityGroupId'] },
       ],
     });
   });
@@ -382,7 +285,7 @@ describe('cluster', () => {
           [
             '[{"apiVersion":"v1","kind":"Pod","metadata":{"labels":{"clusterName":"',
             {
-              Ref: 'Cluster9EE0221C',
+              Ref: 'ClusterEB0386A7',
             },
             '"},"name":"fake-pod"}}]',
           ],
@@ -400,7 +303,7 @@ describe('cluster', () => {
     });
 
     expect(cluster.connections.securityGroups.map(sg => stack.resolve(sg.securityGroupId))).toEqual([
-      { 'Fn::GetAtt': ['Cluster9EE0221C', 'ClusterSecurityGroupId'] },
+      { 'Fn::GetAtt': ['ClusterEB0386A7', 'ClusterSecurityGroupId'] },
       { 'Fn::GetAtt': ['ClusterControlPlaneSecurityGroupD274242C', 'GroupId'] },
     ]);
   });
@@ -639,39 +542,17 @@ describe('cluster', () => {
     new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
-      Config: {
-        roleArn: { 'Fn::GetAtt': ['ClusterRoleFA261979', 'Arn'] },
-        version: CLUSTER_VERSION.version,
-        resourcesVpcConfig: {
-          securityGroupIds: [{ 'Fn::GetAtt': ['ClusterControlPlaneSecurityGroupD274242C', 'GroupId'] }],
-          subnetIds: [
-            { Ref: 'VPCPublicSubnet1SubnetB4246D30' },
-            { Ref: 'VPCPublicSubnet2Subnet74179F39' },
-            { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
-            { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
-          ],
-        },
-      },
-    });
-  });
-
-  test('cluster handler gets created with STS regional endpoint configuration', () => {
-    // This is necessary to make aws-sdk-jsv2 work in opt-in regions
-
-    // GIVEN
-    const { stack, vpc } = testFixture();
-
-    // WHEN
-    new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
-
-    // THEN
-    const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.ClusterResourceProvider') as cdk.NestedStack;
-    Template.fromStack(nested).hasResourceProperties('AWS::Lambda::Function', {
-      Environment: {
-        Variables: {
-          AWS_STS_REGIONAL_ENDPOINTS: 'regional',
-        },
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Cluster', {
+      RoleArn: { 'Fn::GetAtt': ['ClusterRoleFA261979', 'Arn'] },
+      Version: CLUSTER_VERSION.version,
+      ResourcesVpcConfig: {
+        SecurityGroupIds: [{ 'Fn::GetAtt': ['ClusterControlPlaneSecurityGroupD274242C', 'GroupId'] }],
+        SubnetIds: [
+          { Ref: 'VPCPublicSubnet1SubnetB4246D30' },
+          { Ref: 'VPCPublicSubnet2Subnet74179F39' },
+          { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
+          { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
+        ],
       },
     });
   });
@@ -823,7 +704,7 @@ describe('cluster', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
       Tags: [
         {
-          Key: { 'Fn::Join': ['', ['kubernetes.io/cluster/', { Ref: 'Cluster9EE0221C' }]] },
+          Key: { 'Fn::Join': ['', ['kubernetes.io/cluster/', { Ref: 'ClusterEB0386A7' }]] },
           PropagateAtLaunch: true,
           Value: 'owned',
         },
@@ -888,7 +769,7 @@ describe('cluster', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
       Tags: [
         {
-          Key: { 'Fn::Join': ['', ['kubernetes.io/cluster/', { Ref: 'Cluster9EE0221C' }]] },
+          Key: { 'Fn::Join': ['', ['kubernetes.io/cluster/', { Ref: 'ClusterEB0386A7' }]] },
           PropagateAtLaunch: true,
           Value: 'owned',
         },
@@ -1106,7 +987,7 @@ describe('cluster', () => {
                 },
                 ':cluster/',
                 {
-                  'Fn::ImportValue': 'Stack:ExportsOutputRefCluster9EE0221C4853B4C3',
+                  'Fn::ImportValue': 'Stack:ExportsOutputRefClusterEB0386A796A0E3FE',
                 },
               ],
             ],
@@ -1206,8 +1087,8 @@ describe('cluster', () => {
               'Fn::ImportValue': 'Stack:ExportsOutputFnGetAttawscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6BOutputsStackawscdkawseksKubectlProviderframeworkonEvent8897FD9BArn49BEF20C',
             },
             Manifest: '[{\"foo\":\"bar\"}]',
-            ClusterName: { 'Fn::ImportValue': 'Stack:ExportsOutputRefclusterC5B25D0D98D553F5' },
-            RoleArn: { 'Fn::ImportValue': 'Stack:ExportsOutputFnGetAttclusterCreationRole2B3B5002ArnF05122FC' },
+            ClusterName: { 'Fn::ImportValue': 'Stack:ExportsOutputRefcluster611F8AFFA07FC079' },
+            RoleArn: { 'Fn::ImportValue': 'Stack:ExportsOutputFnGetAttclusterkubectlRoleC33D3B63Arn85DD3402' },
           },
           UpdateReplacePolicy: 'Delete',
           DeletionPolicy: 'Delete',
@@ -1327,8 +1208,8 @@ describe('cluster', () => {
       const assembly = app.synth();
       const template = assembly.getStackByName(stack.stackName).template;
       expect(template.Outputs).toEqual({
-        ClusterConfigCommand43AAE40F: { Value: { 'Fn::Join': ['', ['aws eks update-kubeconfig --name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1 --role-arn ', { 'Fn::GetAtt': ['masters0D04F23D', 'Arn'] }]] } },
-        ClusterGetTokenCommand06AE992E: { Value: { 'Fn::Join': ['', ['aws eks get-token --cluster-name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1 --role-arn ', { 'Fn::GetAtt': ['masters0D04F23D', 'Arn'] }]] } },
+        ClusterConfigCommand43AAE40F: { Value: { 'Fn::Join': ['', ['aws eks update-kubeconfig --name ', { Ref: 'ClusterEB0386A7' }, ' --region us-east-1 --role-arn ', { 'Fn::GetAtt': ['masters0D04F23D', 'Arn'] }]] } },
+        ClusterGetTokenCommand06AE992E: { Value: { 'Fn::Join': ['', ['aws eks get-token --cluster-name ', { Ref: 'ClusterEB0386A7' }, ' --region us-east-1 --role-arn ', { 'Fn::GetAtt': ['masters0D04F23D', 'Arn'] }]] } },
       });
     });
 
@@ -1367,7 +1248,7 @@ describe('cluster', () => {
       const assembly = app.synth();
       const template = assembly.getStackByName(stack.stackName).template;
       expect(template.Outputs).toEqual({
-        ClusterClusterNameEB26049E: { Value: { Ref: 'Cluster9EE0221C' } },
+        ClusterClusterNameEB26049E: { Value: { Ref: 'ClusterEB0386A7' } },
       });
     });
 
@@ -1404,7 +1285,7 @@ describe('cluster', () => {
         // THEN
         const template = app.synth().getStackByName(stack.stackName).template;
         const userData = template.Resources.ClusterMyCapcityLaunchConfig58583345.Properties.UserData;
-        expect(userData).toEqual({ 'Fn::Base64': { 'Fn::Join': ['', ['#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'Cluster9EE0221C' }, ' --kubelet-extra-args "--node-labels lifecycle=OnDemand" --apiserver-endpoint \'', { 'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'] }, '\' --b64-cluster-ca \'', { 'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'] }, '\' --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1']] } });
+        expect(userData).toEqual({ 'Fn::Base64': { 'Fn::Join': ['', ['#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'ClusterEB0386A7' }, ' --kubelet-extra-args "--node-labels lifecycle=OnDemand" --apiserver-endpoint \'', { 'Fn::GetAtt': ['ClusterEB0386A7', 'Endpoint'] }, '\' --b64-cluster-ca \'', { 'Fn::GetAtt': ['ClusterEB0386A7', 'CertificateAuthorityData'] }, '\' --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1']] } });
       });
 
       test('not rendered if bootstrap is disabled', () => {
@@ -1441,7 +1322,7 @@ describe('cluster', () => {
         // THEN
         const template = app.synth().getStackByName(stack.stackName).template;
         const userData = template.Resources.ClusterMyCapcityLaunchConfig58583345.Properties.UserData;
-        expect(userData).toEqual({ 'Fn::Base64': { 'Fn::Join': ['', ['#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'Cluster9EE0221C' }, ' --kubelet-extra-args "--node-labels lifecycle=OnDemand  --node-labels FOO=42" --apiserver-endpoint \'', { 'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'] }, '\' --b64-cluster-ca \'', { 'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'] }, '\' --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1']] } });
+        expect(userData).toEqual({ 'Fn::Base64': { 'Fn::Join': ['', ['#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'ClusterEB0386A7' }, ' --kubelet-extra-args "--node-labels lifecycle=OnDemand  --node-labels FOO=42" --apiserver-endpoint \'', { 'Fn::GetAtt': ['ClusterEB0386A7', 'Endpoint'] }, '\' --b64-cluster-ca \'', { 'Fn::GetAtt': ['ClusterEB0386A7', 'CertificateAuthorityData'] }, '\' --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1']] } });
       });
 
       describe('spot instances', () => {
@@ -1460,7 +1341,7 @@ describe('cluster', () => {
           // THEN
           const template = app.synth().getStackByName(stack.stackName).template;
           const userData = template.Resources.ClusterMyCapcityLaunchConfig58583345.Properties.UserData;
-          expect(userData).toEqual({ 'Fn::Base64': { 'Fn::Join': ['', ['#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'Cluster9EE0221C' }, ' --kubelet-extra-args "--node-labels lifecycle=Ec2Spot --register-with-taints=spotInstance=true:PreferNoSchedule" --apiserver-endpoint \'', { 'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'] }, '\' --b64-cluster-ca \'', { 'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'] }, '\' --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1']] } });
+          expect(userData).toEqual({ 'Fn::Base64': { 'Fn::Join': ['', ['#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'ClusterEB0386A7' }, ' --kubelet-extra-args "--node-labels lifecycle=Ec2Spot --register-with-taints=spotInstance=true:PreferNoSchedule" --apiserver-endpoint \'', { 'Fn::GetAtt': ['ClusterEB0386A7', 'Endpoint'] }, '\' --b64-cluster-ca \'', { 'Fn::GetAtt': ['ClusterEB0386A7', 'CertificateAuthorityData'] }, '\' --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1']] } });
         });
 
         test('interrupt handler is added', () => {
@@ -1760,239 +1641,6 @@ describe('cluster', () => {
       )).toEqual(true);
     });
 
-    test('when using custom resource a creation role & policy is defined', () => {
-      // GIVEN
-      const { stack } = testFixture();
-
-      // WHEN
-      new eks.Cluster(stack, 'MyCluster', {
-        clusterName: 'my-cluster-name',
-        version: CLUSTER_VERSION,
-        prune: false,
-      });
-
-      // THEN
-      Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
-        Config: {
-          name: 'my-cluster-name',
-          roleArn: { 'Fn::GetAtt': ['MyClusterRoleBA20FE72', 'Arn'] },
-          version: CLUSTER_VERSION.version,
-          resourcesVpcConfig: {
-            securityGroupIds: [
-              { 'Fn::GetAtt': ['MyClusterControlPlaneSecurityGroup6B658F79', 'GroupId'] },
-            ],
-            subnetIds: [
-              { Ref: 'MyClusterDefaultVpcPublicSubnet1SubnetFAE5A9B6' },
-              { Ref: 'MyClusterDefaultVpcPublicSubnet2SubnetF6D028A0' },
-              { Ref: 'MyClusterDefaultVpcPrivateSubnet1SubnetE1D0DCDB' },
-              { Ref: 'MyClusterDefaultVpcPrivateSubnet2Subnet11FEA8D0' },
-            ],
-            endpointPrivateAccess: true,
-            endpointPublicAccess: true,
-          },
-        },
-      });
-
-      // role can be assumed by 3 lambda handlers (2 for the cluster resource and 1 for the kubernetes resource)
-      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
-        AssumeRolePolicyDocument: {
-          Statement: [
-            {
-              Action: 'sts:AssumeRole',
-              Effect: 'Allow',
-              Principal: {
-                Service: 'lambda.amazonaws.com',
-              },
-            },
-          ],
-          Version: '2012-10-17',
-        },
-      });
-
-      // policy allows creation role to pass the cluster role and to interact with the cluster (given we know the explicit cluster name)
-      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-        PolicyDocument: {
-          Statement: [
-            {
-              Action: 'iam:PassRole',
-              Effect: 'Allow',
-              Resource: {
-                'Fn::GetAtt': [
-                  'MyClusterRoleBA20FE72',
-                  'Arn',
-                ],
-              },
-            },
-            {
-              Action: [
-                'eks:CreateCluster',
-                'eks:DescribeCluster',
-                'eks:DescribeUpdate',
-                'eks:DeleteCluster',
-                'eks:UpdateClusterVersion',
-                'eks:UpdateClusterConfig',
-                'eks:CreateFargateProfile',
-                'eks:TagResource',
-                'eks:UntagResource',
-              ],
-              Effect: 'Allow',
-              Resource: [{
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      Ref: 'AWS::Partition',
-                    },
-                    ':eks:us-east-1:',
-                    {
-                      Ref: 'AWS::AccountId',
-                    },
-                    ':cluster/my-cluster-name',
-                  ],
-                ],
-              }, {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      Ref: 'AWS::Partition',
-                    },
-                    ':eks:us-east-1:',
-                    {
-                      Ref: 'AWS::AccountId',
-                    },
-                    ':cluster/my-cluster-name/*',
-                  ],
-                ],
-              }],
-            },
-            {
-              Action: [
-                'eks:DescribeFargateProfile',
-                'eks:DeleteFargateProfile',
-              ],
-              Effect: 'Allow',
-              Resource: {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      Ref: 'AWS::Partition',
-                    },
-                    ':eks:us-east-1:',
-                    {
-                      Ref: 'AWS::AccountId',
-                    },
-                    ':fargateprofile/my-cluster-name/*',
-                  ],
-                ],
-              },
-            },
-            {
-              Action: ['iam:GetRole', 'iam:listAttachedRolePolicies'],
-              Effect: 'Allow',
-              Resource: '*',
-            },
-            {
-              Action: 'iam:CreateServiceLinkedRole',
-              Effect: 'Allow',
-              Resource: '*',
-            },
-            {
-              Action: [
-                'ec2:DescribeInstances',
-                'ec2:DescribeNetworkInterfaces',
-                'ec2:DescribeSecurityGroups',
-                'ec2:DescribeSubnets',
-                'ec2:DescribeRouteTables',
-                'ec2:DescribeDhcpOptions',
-                'ec2:DescribeVpcs',
-              ],
-              Effect: 'Allow',
-              Resource: '*',
-            },
-          ],
-          Version: '2012-10-17',
-        },
-      });
-    });
-
-    test('if an explicit cluster name is not provided, the creation role policy is wider (allows interacting with all clusters)', () => {
-      // GIVEN
-      const { stack } = testFixture();
-
-      // WHEN
-      new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION, prune: false });
-
-      // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-        PolicyDocument: {
-          Statement: [
-            {
-              Action: 'iam:PassRole',
-              Effect: 'Allow',
-              Resource: {
-                'Fn::GetAtt': [
-                  'MyClusterRoleBA20FE72',
-                  'Arn',
-                ],
-              },
-            },
-            {
-              Action: [
-                'eks:CreateCluster',
-                'eks:DescribeCluster',
-                'eks:DescribeUpdate',
-                'eks:DeleteCluster',
-                'eks:UpdateClusterVersion',
-                'eks:UpdateClusterConfig',
-                'eks:CreateFargateProfile',
-                'eks:TagResource',
-                'eks:UntagResource',
-              ],
-              Effect: 'Allow',
-              Resource: ['*'],
-            },
-            {
-              Action: [
-                'eks:DescribeFargateProfile',
-                'eks:DeleteFargateProfile',
-              ],
-              Effect: 'Allow',
-              Resource: '*',
-            },
-            {
-              Action: ['iam:GetRole', 'iam:listAttachedRolePolicies'],
-              Effect: 'Allow',
-              Resource: '*',
-            },
-            {
-              Action: 'iam:CreateServiceLinkedRole',
-              Effect: 'Allow',
-              Resource: '*',
-            },
-            {
-              Action: [
-                'ec2:DescribeInstances',
-                'ec2:DescribeNetworkInterfaces',
-                'ec2:DescribeSecurityGroups',
-                'ec2:DescribeSubnets',
-                'ec2:DescribeRouteTables',
-                'ec2:DescribeDhcpOptions',
-                'ec2:DescribeVpcs',
-              ],
-              Effect: 'Allow',
-              Resource: '*',
-            },
-          ],
-          Version: '2012-10-17',
-        },
-      });
-    });
-
     test('if helm charts are used, the provider role is allowed to assume the creation role', () => {
       // GIVEN
       const { stack } = testFixture();
@@ -2024,14 +1672,14 @@ describe('cluster', () => {
               Action: 'eks:DescribeCluster',
               Effect: 'Allow',
               Resource: {
-                'Fn::GetAtt': ['MyCluster8AD82BF8', 'Arn'],
+                'Fn::GetAtt': ['MyCluster4C1BA579', 'Arn'],
               },
             },
             {
               Action: 'sts:AssumeRole',
               Effect: 'Allow',
               Resource: {
-                'Fn::GetAtt': ['MyClusterCreationRoleB5FA4FF3', 'Arn'],
+                'Fn::GetAtt': ['MyClusterkubectlRole29979636', 'Arn'],
               },
             },
           ],
@@ -2120,11 +1768,11 @@ describe('cluster', () => {
         ApplyPatchJson: '{"spec":{"template":{"metadata":{"annotations":{"eks.amazonaws.com/compute-type":"fargate"}}}}}',
         RestorePatchJson: '{"spec":{"template":{"metadata":{"annotations":{"eks.amazonaws.com/compute-type":"ec2"}}}}}',
         ClusterName: {
-          Ref: 'MyCluster8AD82BF8',
+          Ref: 'MyCluster4C1BA579',
         },
         RoleArn: {
           'Fn::GetAtt': [
-            'MyClusterCreationRoleB5FA4FF3',
+            'MyClusterkubectlRole29979636',
             'Arn',
           ],
         },
@@ -2153,7 +1801,7 @@ describe('cluster', () => {
         ],
         Url: {
           'Fn::GetAtt': [
-            'Cluster9EE0221C',
+            'ClusterEB0386A7',
             'OpenIdConnectIssuerUrl',
           ],
         },
@@ -2300,9 +1948,7 @@ describe('cluster', () => {
         'Clusterfargateprofileprofile3D06F3076',
         'Clusterfargateprofileprofile4PodExecutionRole086057FB',
         'Clusterfargateprofileprofile4A0E3BBE8',
-        'ClusterCreationRoleDefaultPolicyE8BDFC7B',
-        'ClusterCreationRole360249B6',
-        'Cluster9EE0221C',
+        'ClusterEB0386A7',
       ]);
 
       const kubectlResources = ['chartF2447AFC', 'patch1B964AC93', 'Clustermanifestresource10B1C9505', 'ClusterAwsAuthmanifestFE51F8AE'];
@@ -2333,7 +1979,7 @@ describe('cluster', () => {
               Effect: 'Allow',
               Resource: {
                 'Fn::GetAtt': [
-                  'Cluster1B02DD5A2',
+                  'Cluster192CD0375',
                   'Arn',
                 ],
               },
@@ -2343,7 +1989,7 @@ describe('cluster', () => {
               Effect: 'Allow',
               Resource: {
                 'Fn::GetAtt': [
-                  'Cluster1CreationRoleA231BE8D',
+                  'Cluster1kubectlRole4852DA20',
                   'Arn',
                 ],
               },
@@ -2427,7 +2073,7 @@ describe('cluster', () => {
     const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
     Template.fromStack(nested).hasResourceProperties('AWS::Lambda::Function', {
       VpcConfig: {
-        SecurityGroupIds: [{ Ref: 'referencetoStackCluster18DFEAC17ClusterSecurityGroupId' }],
+        SecurityGroupIds: [{ Ref: 'referencetoStackCluster17032651AClusterSecurityGroupId' }],
       },
     });
   });
@@ -2855,8 +2501,8 @@ describe('cluster', () => {
 
       const app = stack.node.root as cdk.App;
       const template = app.synth().getStackArtifact(stack.stackName).template;
-      expect(template.Resources.Cluster1B02DD5A2.Properties.Config.resourcesVpcConfig.endpointPrivateAccess).toEqual(true);
-      expect(template.Resources.Cluster1B02DD5A2.Properties.Config.resourcesVpcConfig.endpointPublicAccess).toEqual(false);
+      expect(template.Resources.Cluster192CD0375.Properties.ResourcesVpcConfig.EndpointPrivateAccess).toEqual(true);
+      expect(template.Resources.Cluster192CD0375.Properties.ResourcesVpcConfig.EndpointPublicAccess).toEqual(false);
     });
 
     test('kubectl provider chooses only private subnets', () => {
@@ -2901,7 +2547,7 @@ describe('cluster', () => {
         VpcConfig: {
           SecurityGroupIds: [
             {
-              Ref: 'referencetoStackCluster18DFEAC17ClusterSecurityGroupId',
+              Ref: 'referencetoStackCluster17032651AClusterSecurityGroupId',
             },
           ],
           SubnetIds: [
@@ -3013,7 +2659,7 @@ describe('cluster', () => {
         VpcConfig: {
           SecurityGroupIds: [
             {
-              Ref: 'referencetoStackCluster18DFEAC17ClusterSecurityGroupId',
+              Ref: 'referencetoStackCluster17032651AClusterSecurityGroupId',
             },
           ],
           SubnetIds: [
@@ -3093,11 +2739,11 @@ describe('cluster', () => {
         ],
       },
       ClusterName: {
-        Ref: 'Cluster1B02DD5A2',
+        Ref: 'Cluster192CD0375',
       },
       RoleArn: {
         'Fn::GetAtt': [
-          'Cluster1CreationRoleA231BE8D',
+          'Cluster1kubectlRole4852DA20',
           'Arn',
         ],
       },
@@ -3209,20 +2855,18 @@ describe('cluster', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
-      Config: {
-        encryptionConfig: [{
-          provider: {
-            keyArn: {
-              'Fn::GetAtt': [
-                'Key961B73FD',
-                'Arn',
-              ],
-            },
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Cluster', {
+      EncryptionConfig: [{
+        Provider: {
+          KeyArn: {
+            'Fn::GetAtt': [
+              'Key961B73FD',
+              'Arn',
+            ],
           },
-          resources: ['secrets'],
-        }],
-      },
+        },
+        Resources: ['secrets'],
+      }],
     });
   });
 
@@ -3274,11 +2918,9 @@ describe('cluster', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
-      Config: {
-        kubernetesNetworkConfig: {
-          serviceIpv4Cidr: customCidr,
-        },
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Cluster', {
+      KubernetesNetworkConfig: {
+        ServiceIpv4Cidr: customCidr,
       },
     });
   });
@@ -3301,11 +2943,9 @@ describe('cluster', () => {
         });
 
         // THEN
-        Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
-          Config: {
-            accessConfig: {
-              authenticationMode: b,
-            },
+        Template.fromStack(stack).hasResourceProperties('AWS::EKS::Cluster', {
+          AccessConfig: {
+            AuthenticationMode: b,
           },
         });
       },
@@ -3328,11 +2968,9 @@ describe('cluster', () => {
         });
 
         // THEN
-        Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
-          Config: {
-            accessConfig: {
-              bootstrapClusterCreatorAdminPermissions: b,
-            },
+        Template.fromStack(stack).hasResourceProperties('AWS::EKS::Cluster', {
+          AccessConfig: {
+            BootstrapClusterCreatorAdminPermissions: b,
           },
         });
       },
