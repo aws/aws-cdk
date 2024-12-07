@@ -18,3 +18,28 @@ export async function getLatestVersionFromNpm(): Promise<string> {
 
   return latestVersion;
 }
+
+export interface IsVersionMarkedDeprecated {
+  isDeprecated: boolean;
+  deprecatedReason: string;
+}
+
+export async function isVersionMarkedDeprecated(packageName:string, version: string): Promise<IsVersionMarkedDeprecated> {
+  const command = `npm info ${packageName}@${version} --json`;
+
+  const { stdout, stderr } = await exec(command, { timeout: 5000 }); // Execute the command and await the result
+  if (stderr && stderr.trim().length > 0) {
+    debug(`The 'npm view' command generated an error stream with content [${stderr.trim()}]`);
+  }
+  const npmDetails = JSON.parse(stdout); // Parse and return the JSON output
+  let isDeprecated = false;
+  let deprecatedReason = '';
+  if (npmDetails.deprecated !== undefined) {
+    isDeprecated = true;
+    deprecatedReason = npmDetails.deprecated;
+  }
+  return {
+    isDeprecated: isDeprecated,
+    deprecatedReason: deprecatedReason,
+  };
+}
