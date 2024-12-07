@@ -408,7 +408,7 @@ export interface MfaSecondFactor {
    * The MFA token is sent to the user via EMAIL
    *
    * To enable email-based MFA, set `email` property to the Amazon SES email-sending configuration
-   * and set `advancedSecurityMode` to `AdvancedSecurity.ENFORCED` or `AdvancedSecurity.AUDIT`
+   * and set `feturePlan` to `FeaturePlan.ESSENTIALS` or `FeaturePlan.PLUS`
    *
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-mfa-sms-email-message.html
    * @default false
@@ -573,6 +573,7 @@ export interface DeviceTracking {
 
 /**
  * The different ways in which a user pool's Advanced Security Mode can be configured.
+ * @deprecated Advanced Security Mode is deprecated in favor of user pool feature plans.
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cognito-userpool-userpooladdons.html#cfn-cognito-userpool-userpooladdons-advancedsecuritymode
  */
 export enum AdvancedSecurityMode {
@@ -583,6 +584,19 @@ export enum AdvancedSecurityMode {
   /** Advanced security mode is disabled */
   OFF = 'OFF',
 }
+
+/**
+ * The user pool feature plan, or tier.
+ * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-sign-in-feature-plans.html
+ */
+export enum FeaturePlan {
+  /** Lite feature plan */
+  LITE = 'LITE',
+  /** Essentials feature plan */
+  ESSENTIALS = 'ESSENTIALS',
+  /** Plus feature plan */
+  PLUS = 'PLUS',
+};
 
 /**
  * Props for the UserPool construct
@@ -821,9 +835,18 @@ export interface UserPoolProps {
 
   /**
    * The user pool's Advanced Security Mode
+   * @deprecated Advanced Security Mode is deprecated in favor of user pool feature plans.
    * @default - no value
    */
   readonly advancedSecurityMode?: AdvancedSecurityMode;
+
+  /**
+   * The user pool feature plan, or tier.
+   * This parameter determines the eligibility of the user pool for features like managed login, access-token customization, and threat protection.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-sign-in-feature-plans.html
+   * @default - FeaturePlan.ESSENTIALS for a newly created user pool; FeaturePlan.LITE otherwise
+   */
+  readonly featurePlan?: FeaturePlan;
 }
 
 /**
@@ -1081,6 +1104,13 @@ export class UserPool extends UserPoolBase {
     });
     this.emailConfiguration = emailConfiguration;
 
+    if (
+      props.featurePlan && props.featurePlan !== FeaturePlan.LITE &&
+      props.advancedSecurityMode && props.advancedSecurityMode !== AdvancedSecurityMode.OFF
+    ) {
+      throw new Error('you cannot enable Advanced Security Mode when feature plan is Essentials or higher.');
+    }
+
     const userPool = new CfnUserPool(this, 'Resource', {
       userPoolName: props.userPoolName,
       usernameAttributes: signIn.usernameAttrs,
@@ -1110,6 +1140,7 @@ export class UserPool extends UserPoolBase {
       accountRecoverySetting: this.accountRecovery(props),
       deviceConfiguration: props.deviceTracking,
       userAttributeUpdateSettings: this.configureUserAttributeChanges(props),
+      userPoolTier: props.featurePlan,
       deletionProtection: defaultDeletionProtection(props.deletionProtection),
     });
     userPool.applyRemovalPolicy(props.removalPolicy);
@@ -1488,8 +1519,8 @@ export class UserPool extends UserPoolBase {
       throw new Error('To enable email-based MFA, set `email` property to the Amazon SES email-sending configuration.');
     }
 
-    if (props.advancedSecurityMode === AdvancedSecurityMode.OFF) {
-      throw new Error('To enable email-based MFA, set `advancedSecurityMode` to `AdvancedSecurity.ENFORCED` or `AdvancedSecurity.AUDIT`.');
+    if (props.featurePlan === FeaturePlan.LITE && (!props.advancedSecurityMode || props.advancedSecurityMode === AdvancedSecurityMode.OFF)) {
+      throw new Error('To enable email-based MFA, set `featurePlan` to `FeaturePlan.ESSENTIALS` or `FeaturePlan.PLUS`.');
     }
   }
 }

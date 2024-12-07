@@ -18,6 +18,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 - [Amazon Cognito Construct Library](#amazon-cognito-construct-library)
   - [Table of Contents](#table-of-contents)
   - [User Pools](#user-pools)
+    - [User pool feature plans](#user-pool-feature-plans)
     - [Sign Up](#sign-up)
       - [Code Verification](#code-verification)
       - [Link Verification](#link-verification)
@@ -75,6 +76,20 @@ const role = new iam.Role(this, 'role', {
 });
 userPool.grant(role, 'cognito-idp:AdminCreateUser');
 ```
+
+### User pool feature plans
+
+Amazon Cognito has feature plans for user pools. Each plan has a set of features and a monthly cost per active user. Each feature plan unlocks access to more features than the one before it.
+Lean more aboug [feature plans here](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-sign-in-feature-plans.html).
+
+- *Lite* - a low-cost feature plan for user pools with lower numbers of monthly active users.
+- *Essentials* - all of the latest user pool authentication features.
+- *Plus* - includes everything in the Essentials plan and adds advanced security features that protect your users.
+
+The default feature plan is Essentials for newly create user pools.
+For the existing user pools, Lite plan is automatically set.
+
+Previously, some user pool features were included in [an advanced security features](#advanced-security-mode) pricing structure. The features that were included in this structure are now under either the Essentials or Plus plan.
 
 ### Sign Up
 
@@ -367,8 +382,8 @@ configure an MFA token and use it for sign in. It also allows for the users to u
 [time-based one time password
 (TOTP)](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-mfa-totp.html).
 
-If you want to enable email-based MFA, set `email` propety to the Amazon SES email-sending configuration and set `advancedSecurityMode` to `AdvancedSecurity.ENFORCED` or `AdvancedSecurity.AUDIT`.
-For more information, see [Email MFA](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-advanced-security-email-mfa.html).
+If you want to enable email-based MFA, set `email` propety to the Amazon SES email-sending configuration and set `featurePlan` to `FeaturePlan.ESSENTIALS` or `FeaturePlan.PLUS`.
+For more information, see [SMS and email message MFA](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-mfa-sms-email-message.html).
 
 ```ts
 new cognito.UserPool(this, 'myuserpool', {
@@ -423,6 +438,8 @@ The default for account recovery is by phone if available and by email otherwise
 A user will not be allowed to reset their password via phone if they are also using it for MFA.
 
 #### Advanced Security Mode
+
+⚠️ Advanced Security Mode is deprecated in favor of [user pool feature plans](#user-pool-feature-plans).
 
 User pools can be configured to use Advanced security. You can turn the user pool advanced security features on, and customize the actions that are taken in response to different risks. Or you can use audit mode to gather metrics on detected risks without taking action. In audit mode, the advanced security features publish metrics to Amazon CloudWatch. See the [documentation on Advanced security](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-advanced-security.html) to learn more.
 
