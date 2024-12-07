@@ -1074,8 +1074,8 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
   }
 
   private validateServerlessScalingConfig(): void {
-    if (this.serverlessV2MaxCapacity > 256 || this.serverlessV2MaxCapacity < 0.5) {
-      throw new Error('serverlessV2MaxCapacity must be >= 0.5 & <= 256');
+    if (this.serverlessV2MaxCapacity > 256 || this.serverlessV2MaxCapacity < 1) {
+      throw new Error('serverlessV2MaxCapacity must be >= 1 & <= 256');
     }
 
     if (this.serverlessV2MinCapacity > 256 || this.serverlessV2MinCapacity < 0) {
@@ -1086,9 +1086,6 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       throw new Error('serverlessV2MaxCapacity must be greater than serverlessV2MinCapacity');
     }
 
-    if (this.serverlessV2MaxCapacity === 0.5 && this.serverlessV2MinCapacity === 0.5) {
-      throw new Error('If serverlessV2MinCapacity === 0.5 then serverlessV2MaxCapacity must be >=1');
-    }
     const regexp = new RegExp(/^[0-9]+\.?5?$/);
     if (!regexp.test(this.serverlessV2MaxCapacity.toString()) || !regexp.test(this.serverlessV2MinCapacity.toString())) {
       throw new Error('serverlessV2MinCapacity & serverlessV2MaxCapacity must be in 0.5 step increments, received '+
