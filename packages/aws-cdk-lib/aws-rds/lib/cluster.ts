@@ -444,6 +444,15 @@ interface DatabaseClusterBaseProps {
    * @default true
    */
   readonly autoMinorVersionUpgrade?: boolean;
+
+  /**
+   * Specifies the scalability mode of the Aurora DB cluster.
+   *
+   * Set LIMITLESS if you want to use a limitless database; otherwise, set it to STANDARD.
+   *
+   * @default ClusterScailabilityType.STANDARD
+   */
+  readonly clusterScailabilityType?: ClusterScailabilityType;
 }
 
 /**
@@ -478,6 +487,24 @@ export enum InstanceUpdateBehaviour {
    * If your cluster consists of more than 1 instance, the downtime periods are limited to the time a primary switch needs.
    */
   ROLLING = 'ROLLING',
+}
+
+/**
+ * The scalability mode of the Aurora DB cluster.
+ */
+export enum ClusterScailabilityType {
+  /**
+   * The cluster uses normal DB instance creation.
+   */
+  STANDARD = 'standard',
+
+  /**
+   * The cluster operates as an Aurora Limitless Database,
+   * allowing you to create a DB shard group for horizontal scaling (sharding) capabilities.
+   *
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/limitless.html
+   */
+  LIMITLESS = 'limitless',
 }
 
 /**
@@ -775,6 +802,30 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       throw new Error('`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set');
     }
 
+    if (props.clusterScailabilityType === ClusterScailabilityType.LIMITLESS) {
+      if (!props.enablePerformanceInsights) {
+        throw new Error('Performance Insights must be enabled for Aurora Limitless Database.');
+      }
+      if (!props.performanceInsightRetention || props.performanceInsightRetention < PerformanceInsightRetention.MONTHS_1) {
+        throw new Error('Performance Insights retention period must be set at least 31 days for Aurora Limitless Database.');
+      }
+      if (!props.monitoringInterval || !props.enableClusterLevelEnhancedMonitoring) {
+        throw new Error('Cluster level enhanced monitoring must be set for Aurora Limitless Database. Please set \'monitoringInterval\' and enable \'enableClusterLevelEnhancedMonitoring\'.');
+      }
+      if (props.writer || props.readers) {
+        throw new Error('Aurora Limitless Database does not support readers or writer instances.');
+      }
+      if (!props.engine.engineVersion?.fullVersion?.endsWith('limitless')) {
+        throw new Error(`Aurora Limitless Database requires an engine version that supports it, got ${props.engine.engineVersion?.fullVersion}`);
+      }
+      if (props.storageType !== DBClusterStorageType.AURORA_IOPT1) {
+        throw new Error(`Aurora Limitless Database requires I/O optimized storage type, got: ${props.storageType}`);
+      }
+      if (props.cloudwatchLogsExports === undefined || props.cloudwatchLogsExports.length === 0) {
+        throw new Error('Aurora Limitless Database requires CloudWatch Logs exports to be set.');
+      }
+    }
+
     this.performanceInsightsEnabled = enablePerformanceInsights;
     this.performanceInsightRetention = enablePerformanceInsights
       ? (props.performanceInsightRetention || PerformanceInsightRetention.DEFAULT)
@@ -826,6 +877,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       }),
       storageType: props.storageType?.toString(),
       enableLocalWriteForwarding: props.enableLocalWriteForwarding,
+      clusterScalabilityType: props.clusterScailabilityType,
       // Admin
       backtrackWindow: props.backtrackWindow?.toSeconds(),
       backupRetentionPeriod: props.backup?.retention?.toDays(),
@@ -1233,19 +1285,27 @@ export class DatabaseCluster extends DatabaseClusterNew {
     cluster.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.SNAPSHOT);
 
     setLogRetention(this, props);
-    if ((props.writer || props.readers) && (props.instances || props.instanceProps)) {
-      throw new Error('Cannot provide writer or readers if instances or instanceProps are provided');
-    }
 
-    if (!props.instanceProps && !props.writer) {
-      throw new Error('writer must be provided');
-    }
+    // create the instances for only standard aurora clusters
+    if (props.clusterScailabilityType !== ClusterScailabilityType.LIMITLESS) {
+      if ((props.writer || props.readers) && (props.instances || props.instanceProps)) {
+        throw new Error('Cannot provide writer or readers if instances or instanceProps are provided');
+      }
 
-    const createdInstances = props.writer ? this._createInstances(props) : legacyCreateInstances(this, props, this.subnetGroup);
-    this.instanceIdentifiers = createdInstances.instanceIdentifiers;
-    this.instanceEndpoints = createdInstances.instanceEndpoints;
+      if (!props.instanceProps && !props.writer) {
+        throw new Error('writer must be provided');
+      }
+
+      const createdInstances = props.writer ? this._createInstances(props) : legacyCreateInstances(this, props, this.subnetGroup);
+      this.instanceIdentifiers = createdInstances.instanceIdentifiers;
+      this.instanceEndpoints = createdInstances.instanceEndpoints;
+    } else {
+      // Limitless database does not have instances,
+      // but an empty array will be assigned to avoid destructive changes.
+      this.instanceIdentifiers = [];
+      this.instanceEndpoints = [];
+    }
   }
-
 }
 
 /**
