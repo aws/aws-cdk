@@ -318,6 +318,23 @@
         ]
        }
       }
+     ],
+     "AT_DEPLOYMENT_TICK": [
+      {
+       "Name": "awsappconfigextension-MyLambdaExtension-68C15290-0",
+       "Uri": {
+        "Fn::GetAtt": [
+         "MyFunction3BAA72D1",
+         "Arn"
+        ]
+       },
+       "RoleArn": {
+        "Fn::GetAtt": [
+         "MyLambdaExtensionRoleBC958D3F13B04",
+         "Arn"
+        ]
+       }
+      }
      ]
     },
     "Name": "awsappconfigextension-MyLambdaExtension-68C15290"
