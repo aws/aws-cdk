@@ -27,8 +27,10 @@ export interface NamespaceAuthConfig {
 export interface BaseChannelNamespaceProps {
   /**
    * the name of the channel namespace
+   *
+   * @default - id of channel namespace
    */
-  readonly name: string;
+  readonly name?: string;
 
   /**
    * The Event Handler code
@@ -60,6 +62,13 @@ export interface ChannelNamespaceProps extends BaseChannelNamespaceProps {
  */
 export interface ChannelNamespaceOptions {
   /**
+   * The Channel Namespace name
+   *
+   * @default - the `id` is used if not provided
+   */
+  readonly name?: string;
+
+  /**
    * The Event Handler code
    *
    * @default - no code is used
@@ -90,11 +99,17 @@ export class ChannelNamespace extends Construct {
 
     const code = props.code?.bind(this);
 
-    this.validateAuthorizationConfig(props.api.authProviders, props.authorizationConfig?.publishAuthModes ?? []);
-    this.validateAuthorizationConfig(props.api.authProviders, props.authorizationConfig?.subscribeAuthModes ?? []);
+    this.validateAuthorizationConfig(
+      props.api.authProviderTypes,
+      props.authorizationConfig?.publishAuthModes ?? [],
+    );
+    this.validateAuthorizationConfig(
+      props.api.authProviderTypes,
+      props.authorizationConfig?.subscribeAuthModes ?? [],
+    );
 
     this.channelNamespace = new CfnChannelNamespace(this, 'Resource', {
-      name: props.name,
+      name: props.name ?? id,
       apiId: props.api.apiId,
       codeHandlers: code?.inlineCode,
       codeS3Location: code?.s3Location,
@@ -109,12 +124,14 @@ export class ChannelNamespace extends Construct {
     this.arn = this.channelNamespace.attrChannelNamespaceArn;
   }
 
-  private validateAuthorizationConfig(authProviders: AuthorizationType[], authModes: AuthorizationType[]) {
+  private validateAuthorizationConfig(
+    authProviders: AuthorizationType[],
+    authModes: AuthorizationType[],
+  ) {
     authModes.forEach((mode) => {
       if (!authProviders.find((authProvider) => authProvider === mode)) {
         throw new Error(`Missing authorization configuration for ${mode}`);
       }
     });
   }
-
 }
