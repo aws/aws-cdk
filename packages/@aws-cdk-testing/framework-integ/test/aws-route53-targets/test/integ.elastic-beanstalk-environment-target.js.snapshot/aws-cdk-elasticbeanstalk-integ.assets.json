@@ -1,0 +1,45 @@
+{
+  "version": "38.0.1",
+  "files": {
+    "02e8c4fbaddae67c5789ab6e8ef26eb226f048244bda7fdeb2ecaf8bda19eb9a": {
+      "source": {
+        "path": "asset.02e8c4fbaddae67c5789ab6e8ef26eb226f048244bda7fdeb2ecaf8bda19eb9a.elastic-beanstalk-environment-target-assets",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "02e8c4fbaddae67c5789ab6e8ef26eb226f048244bda7fdeb2ecaf8bda19eb9a.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "9e8936ba1db43e0919ba2fc8265d50686eeaca82830c471ff8b7b0672c5970ec": {
+      "source": {
+        "path": "asset.9e8936ba1db43e0919ba2fc8265d50686eeaca82830c471ff8b7b0672c5970ec",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "9e8936ba1db43e0919ba2fc8265d50686eeaca82830c471ff8b7b0672c5970ec.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "b99ece706eb589ba67398c6bb4b65fc572f8a0f96dafc6b07585296e95ae943c": {
+      "source": {
+        "path": "aws-cdk-elasticbeanstalk-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "b99ece706eb589ba67398c6bb4b65fc572f8a0f96dafc6b07585296e95ae943c.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

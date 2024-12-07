@@ -48,12 +48,34 @@ test('GlobalAcceleratorTarget creates an alias resource with a Global Accelerato
   Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
     AliasTarget: {
       DNSName: {
-        'Fn::GetAtt': [
-          logicalId,
-          'DnsName',
-        ],
+        'Fn::GetAtt': [logicalId, 'DnsName'],
       },
       HostedZoneId: 'Z2BJ6XQ5FK7U4H',
+    },
+  });
+});
+
+test('GlobalAcceleratorTarget creates an alias resource with health check', () => {
+  // GIVEN
+  const stack = new Stack();
+  const accelerator = new globalaccelerator.Accelerator(stack, 'Accelerator');
+  const zone = new route53.PublicHostedZone(stack, 'HostedZone', { zoneName: 'test.public' });
+
+  // WHEN
+  new route53.ARecord(stack, 'GlobalAcceleratorAlias', {
+    target: route53.RecordTarget.fromAlias(
+      new targets.GlobalAcceleratorTarget(accelerator, {
+        evaluateTargetHealth: true,
+      }),
+    ),
+    recordName: 'test',
+    zone,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+    AliasTarget: {
+      EvaluateTargetHealth: true,
     },
   });
 });
