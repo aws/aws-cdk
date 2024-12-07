@@ -18,6 +18,18 @@ export interface SecondaryAddressProps {
 }
 
 /**
+ * Additional props needed for BYOIP IPv6 address props
+ */
+export interface Ipv6PoolSecondaryAddressProps extends SecondaryAddressProps {
+  /**
+   * ID of the IPv6 address pool from which to allocate the IPv6 CIDR block
+   *
+   * @default - None
+   */
+  readonly ipv6Pool?: string;
+}
+
+/**
  * IpAddress options to define VPC V2
  */
 export class IpAddresses {
@@ -27,6 +39,13 @@ export class IpAddresses {
    */
   public static ipv4(ipv4Cidr: string, props?: SecondaryAddressProps): IIpAddresses {
     return new ipv4CidrAllocation(ipv4Cidr, props);
+  }
+
+  /**
+   * A BYOIP IPv6 address pool
+   */
+  public static ipv6Pool(ipv6Cidr: string, props?: Ipv6PoolSecondaryAddressProps): IIpAddresses {
+    return new Ipv6Pool(ipv6Cidr, props);
   }
 
   /**
@@ -121,6 +140,20 @@ export interface VpcCidrOptions {
    * @default - no IPAM IPv4 CIDR range is provisioned using IPAM
    */
   readonly ipv4IpamProvisionedCidrs?: string[];
+
+  /**
+   * IPv6 CIDR block from the IPv6 address pool.
+   *
+   * @default - None
+   */
+  readonly ipv6CidrBlock?: string;
+
+  /**
+   * ID of the IPv6 address pool from which to allocate the IPv6 CIDR block
+   *
+   * @default - None
+   */
+  readonly ipv6Pool?: string;
 }
 
 /**
@@ -506,6 +539,8 @@ export class VpcV2 extends VpcV2Base {
           ipv4NetmaskLength: secondaryVpcOptions.ipv4NetmaskLength,
           ipv6NetmaskLength: secondaryVpcOptions.ipv6NetmaskLength,
           ipv6IpamPoolId: secondaryVpcOptions.ipv6IpamPool?.ipamPoolId,
+          ipv6CidrBlock: secondaryVpcOptions?.ipv6CidrBlock,
+          ipv6Pool: secondaryVpcOptions?.ipv6Pool,
           amazonProvidedIpv6CidrBlock: secondaryVpcOptions.amazonProvided,
         });
         if (secondaryVpcOptions.dependencies) {
@@ -554,6 +589,23 @@ class ipv4CidrAllocation implements IIpAddresses {
   allocateVpcCidr(): VpcCidrOptions {
     return {
       ipv4CidrBlock: this.cidrBlock,
+      cidrBlockName: this.props?.cidrBlockName,
+    };
+  }
+}
+
+/**
+ * Supports assigning IPv6 address to VPC in an address pool
+ */
+class Ipv6Pool implements IIpAddresses {
+
+  constructor(private readonly cidrBlock: string, private readonly props?: Ipv6PoolSecondaryAddressProps) {
+  }
+
+  allocateVpcCidr(): VpcCidrOptions {
+    return {
+      ipv6CidrBlock: this.cidrBlock,
+      ipv6Pool: this.props?.ipv6Pool,
       cidrBlockName: this.props?.cidrBlockName,
     };
   }
@@ -645,6 +697,16 @@ export interface IVPCCidrBlock {
    * IPAM pool for IPv4 address type
    */
   readonly ipv4IpamPoolId ?: string;
+
+  /**
+   * The IPv6 CIDR block from the specified IPv6 address pool.
+   */
+  readonly ipv6CidrBlock?: string;
+
+  /**
+   * The ID of the IPv6 address pool from which to allocate the IPv6 CIDR block.
+   */
+  readonly ipv6Pool?: string;
 }
 
 /**
@@ -708,6 +770,20 @@ export interface VPCCidrBlockattributes {
    * @default - no IPAM IPv4 CIDR range is provisioned using IPAM
    */
   readonly ipv4IpamProvisionedCidrs?: string[];
+
+  /**
+   * The IPv6 CIDR block from the specified IPv6 address pool.
+   *
+   * @default - None
+   */
+  readonly ipv6CidrBlock?: string;
+
+  /**
+   * The ID of the IPv6 address pool from which to allocate the IPv6 CIDR block.
+   *
+   * @default - None
+   */
+  readonly ipv6Pool?: string;
 }
 
 /**
@@ -749,6 +825,10 @@ class VPCCidrBlock extends Resource implements IVPCCidrBlock {
 
   public readonly ipv4IpamPoolId?: string;
 
+  public readonly ipv6CidrBlock?: string;
+
+  public readonly ipv6Pool?: string;
+
   constructor(scope: Construct, id: string, props: VPCCidrBlockProps) {
     super(scope, id);
     this.resource = new CfnVPCCidrBlock(this, id, props);
@@ -756,6 +836,8 @@ class VPCCidrBlock extends Resource implements IVPCCidrBlock {
     this.cidrBlock = props.cidrBlock;
     this.ipv6IpamPoolId = props.ipv6IpamPoolId;
     this.ipv4IpamPoolId = props.ipv4IpamPoolId;
+    this.ipv6CidrBlock = props.ipv6CidrBlock;
+    this.ipv6Pool = props.ipv6Pool;
     this.amazonProvidedIpv6CidrBlock = props.amazonProvidedIpv6CidrBlock;
   }
 }
