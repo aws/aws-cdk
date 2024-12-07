@@ -18,14 +18,9 @@ export interface IChannelNamespace extends IResource {
 }
 
 /**
- * Properties for an AppSync channel namespace
+ * Options for an AppSync channel namespace
  */
-export interface ChannelNamespaceProps {
-  /**
-   * The Api
-   */
-  readonly api: IApi;
-
+export interface ChannelNamespaceOptions {
   /**
    * The name of the channel namespace.
    * This name must be unique within the Api.
@@ -56,6 +51,16 @@ export interface ChannelNamespaceProps {
    * @default - not override the default Aipauthorization configuration
    */
   readonly subscribeAuthModes?: AuthorizationType[];
+}
+
+/**
+ * Properties for an AppSync channel namespace
+ */
+export interface ChannelNamespaceProps extends ChannelNamespaceOptions {
+  /**
+   * The Api
+   */
+  readonly api: IApi;
 }
 
 /**

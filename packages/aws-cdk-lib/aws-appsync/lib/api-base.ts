@@ -1,3 +1,4 @@
+import { ChannelNamespace, ChannelNamespaceOptions } from './channel-namespace';
 import { Grant, IGrantable } from '../../aws-iam';
 import { IResource, Resource } from '../../core';
 
@@ -33,6 +34,11 @@ export interface IApi extends IResource {
    * @attribute
    */
   readonly dnsRealTime: string;
+
+  /**
+   * Adds a channel namespace to the Api.
+   */
+  addChannelNamespace(id: string, props: ChannelNamespaceOptions): ChannelNamespace;
 
   /**
    * Adds an IAM policy statement associated with this api to an IAM principal's policy.
@@ -88,6 +94,18 @@ export abstract class ApiBase extends Resource implements IApi {
    * The domain name of the Api's real-time endpoint.
    */
   public abstract readonly dnsRealTime: string;
+
+  /**
+   * Adds a channel namespace to the Api.
+   */
+  public addChannelNamespace(id: string, props: ChannelNamespaceOptions): ChannelNamespace {
+    const channelNamespace = new ChannelNamespace(this, id, {
+      api: this,
+      ...props,
+    });
+
+    return channelNamespace;
+  };
 
   /**
    * Adds an IAM policy statement associated with this api to an IAM principal's policy.

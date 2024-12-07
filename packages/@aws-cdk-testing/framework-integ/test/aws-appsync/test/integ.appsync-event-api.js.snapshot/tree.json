@@ -351,6 +351,37 @@
                   "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
+              },
+              "AnotherChannelNamespace": {
+                "id": "AnotherChannelNamespace",
+                "path": "appsync-event-api-stack/EventApi/AnotherChannelNamespace",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "appsync-event-api-stack/EventApi/AnotherChannelNamespace/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::AppSync::ChannelNamespace",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Fn::GetAtt": [
+                            "EventApiE141E6C0",
+                            "ApiId"
+                          ]
+                        },
+                        "codeHandlers": "\n        export function onPublish(ctx) {\n          return ctx.events.filter((event) => event.payload.odds > 0)\n        }\n      ",
+                        "name": "AnotherChannelNamespace"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_appsync.CfnChannelNamespace",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.ChannelNamespace",
+                  "version": "0.0.0"
+                }
               }
             },
             "constructInfo": {
@@ -513,6 +544,32 @@
             "id": "ChannelNamespace",
             "path": "appsync-event-api-stack/ChannelNamespace",
             "children": {
+              "Code": {
+                "id": "Code",
+                "path": "appsync-event-api-stack/ChannelNamespace/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "appsync-event-api-stack/ChannelNamespace/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "appsync-event-api-stack/ChannelNamespace/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
               "Resource": {
                 "id": "Resource",
                 "path": "appsync-event-api-stack/ChannelNamespace/Resource",
@@ -525,7 +582,15 @@
                         "ApiId"
                       ]
                     },
+                    "codeS3Location": {
+                      "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f79e346159c9d109573aa79dac7f882e156f79c4ece518897a558a122e3924fd.js"
+                    },
                     "name": "appsynceventapistackChannelNamespaceCD3E3067",
+                    "publishAuthModes": [
+                      {
+                        "authType": "AWS_LAMBDA"
+                      }
+                    ],
                     "subscribeAuthModes": [
                       {
                         "authType": "AWS_LAMBDA"

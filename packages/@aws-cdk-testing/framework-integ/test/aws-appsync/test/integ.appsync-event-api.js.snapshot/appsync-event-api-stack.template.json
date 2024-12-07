@@ -231,6 +231,19 @@
     }
    }
   },
+  "EventApiAnotherChannelNamespace5BC7F3A5": {
+   "Type": "AWS::AppSync::ChannelNamespace",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "EventApiE141E6C0",
+      "ApiId"
+     ]
+    },
+    "CodeHandlers": "\n        export function onPublish(ctx) {\n          return ctx.events.filter((event) => event.payload.odds > 0)\n        }\n      ",
+    "Name": "AnotherChannelNamespace"
+   }
+  },
   "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -327,7 +340,15 @@
       "ApiId"
      ]
     },
+    "CodeS3Location": {
+     "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f79e346159c9d109573aa79dac7f882e156f79c4ece518897a558a122e3924fd.js"
+    },
     "Name": "appsynceventapistackChannelNamespaceCD3E3067",
+    "PublishAuthModes": [
+     {
+      "AuthType": "AWS_LAMBDA"
+     }
+    ],
     "SubscribeAuthModes": [
      {
       "AuthType": "AWS_LAMBDA"

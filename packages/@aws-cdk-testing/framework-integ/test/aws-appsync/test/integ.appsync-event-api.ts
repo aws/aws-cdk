@@ -3,6 +3,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as appsync from 'aws-cdk-lib/aws-appsync';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as path from 'path';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'appsync-event-api-stack');
@@ -77,7 +78,22 @@ const api = new appsync.Api(stack, 'EventApi', {
 
 new appsync.ChannelNamespace(stack, 'ChannelNamespace', {
   api,
+  publishAuthModes: [appsync.AuthorizationType.LAMBDA],
   subscribeAuthModes: [appsync.AuthorizationType.LAMBDA],
+  code: appsync.Code.fromAsset(path.join(
+    __dirname,
+    'integ-assets',
+    'appsync-js-channel-namespace-handler.js',
+  )),
+});
+
+api.addChannelNamespace('AnotherChannelNamespace', {
+  channelNamespaceName: 'AnotherChannelNamespace',
+  code: appsync.Code.fromInline(`
+        export function onPublish(ctx) {
+          return ctx.events.filter((event) => event.payload.odds > 0)
+        }
+      `),
 });
 
 new IntegTest(app, 'appsync-event-api', {
