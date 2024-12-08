@@ -417,6 +417,13 @@ export interface AwsCustomResourceProps {
    * @default - the Vpc default strategy if not specified
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
+
+  /**
+   * A list of IDs of security groups that the lambda function should use
+   *
+   * @default - a new security group will be created in the specified VPC
+   */
+  readonly securityGroups?: ec2.ISecurityGroup[];
 }
 
 /**

@@ -1207,6 +1207,39 @@ test('can specify VPC', () => {
   });
 });
 
+test('can specify security group', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'TestVpc');
+  const securityGroups = [
+    new ec2.SecurityGroup(stack, 'Sg1', {
+      vpc: vpc,
+      allowAllOutbound: false,
+      description: 'my security group',
+    }),
+  ];
+
+  // WHEN
+  new AwsCustomResource(stack, 'AwsSdk', {
+    onCreate: {
+      service: 'service',
+      action: 'action',
+      physicalResourceId: PhysicalResourceId.of('id'),
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+    vpc,
+    vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+    securityGroups,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    VpcConfig: {
+      SecurityGroupIds: stack.resolve(securityGroups.map(sg => sg.securityGroupId)),
+    },
+  });
+});
+
 test('specifying public subnets results in a synthesis error', () => {
   // GIVEN
   const stack = new cdk.Stack();
