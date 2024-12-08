@@ -1448,3 +1448,23 @@ new lambda.Function(this, 'Function', {
   handler: 'index.handler',
 });
 ```
+
+## Tracing Configuration
+
+Lambda functions support X-Ray tracing configuration through the `tracingConfig` property. You can specify one of two tracing modes:
+
+* `TracingMode.ACTIVE` - Sets the X-Ray tracing mode to active.
+* `TracingMode.PASS_THROUGH` - Sets the X-Ray tracing mode to pass-through.
+
+Example:
+
+```ts
+new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.NODEJS_18_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+  tracingConfig: {
+    mode: lambda.TracingMode.ACTIVE
+  }
+});
+```
