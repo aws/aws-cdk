@@ -1,3 +1,5 @@
+import { Construct } from 'constructs';
+import { CfnApiKey } from './appsync.generated';
 import { IUserPool } from '../../aws-cognito';
 import { IFunction } from '../../aws-lambda';
 import { Duration, Expiration } from '../../core';
@@ -161,3 +163,68 @@ export interface LambdaAuthorizerConfig {
    */
   readonly validationRegex?: string;
 }
+
+/**
+ * Set up OIDC Authorization configuration for GraphQL APIs and Event APIs
+ */
+export function setupOpenIdConnectConfig(config?: OpenIdConnectConfig) {
+  if (!config) return undefined;
+  return {
+    authTtl: config.tokenExpiryFromAuth,
+    clientId: config.clientId,
+    iatTtl: config.tokenExpiryFromIssue,
+    issuer: config.oidcProvider,
+  };
+}
+
+/**
+ * Set up Cognito Authorization configuration for GraphQL APIs
+ */
+export function setupUserPoolConfig(config?: UserPoolConfig) {
+  if (!config) return undefined;
+  return {
+    userPoolId: config.userPool.userPoolId,
+    awsRegion: config.userPool.env.region,
+    appIdClientRegex: config.appIdClientRegex,
+    defaultAction: config.defaultAction || UserPoolDefaultAction.ALLOW,
+  };
+}
+
+/**
+ * Set up Cognito Authorization configuration for Event APIs
+ */
+export function setupCognitoConfig(config?: CognitoConfig) {
+  if (!config) return undefined;
+  return {
+    userPoolId: config.userPool.userPoolId,
+    awsRegion: config.userPool.env.region,
+    appIdClientRegex: config.appIdClientRegex,
+  };
+}
+
+/**
+ * Set up Lambda Authorization configuration for GraphQL APIs and Event APIs
+ */
+export function setupLambdaAuthorizerConfig(config?: LambdaAuthorizerConfig) {
+  if (!config) return undefined;
+  return {
+    authorizerResultTtlInSeconds: config.resultsCacheTtl?.toSeconds(),
+    authorizerUri: config.handler.functionArn,
+    identityValidationExpression: config.validationRegex,
+  };
+}
+
+/**
+ * Create an API Key for GraphQL APIs and Event APIs
+ */
+export function createAPIKey(scope: Construct, apiId: string, config?: ApiKeyConfig) {
+  if (config?.expires?.isBefore(Duration.days(1)) || config?.expires?.isAfter(Duration.days(365))) {
+    throw Error('API key expiration must be between 1 and 365 days.');
+  }
+  const expires = config?.expires ? config?.expires.toEpoch() : undefined;
+  return new CfnApiKey(scope, `${config?.name || 'Default'}ApiKey`, {
+    expires,
+    description: config?.description,
+    apiId: apiId,
+  });
+};

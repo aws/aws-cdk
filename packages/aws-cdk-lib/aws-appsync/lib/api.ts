@@ -1,10 +1,10 @@
 import { Construct } from 'constructs';
 import { ApiBase, IApi } from './api-base';
 import { CfnApiKey, CfnApi } from './appsync.generated';
-import { AuthorizationType, ApiKeyConfig, LambdaAuthorizerConfig, CognitoConfig, OpenIdConnectConfig } from './auth-config';
+import { AuthorizationType, ApiKeyConfig, LambdaAuthorizerConfig, CognitoConfig, OpenIdConnectConfig, createAPIKey, setupOpenIdConnectConfig, setupCognitoConfig, setupLambdaAuthorizerConfig } from './auth-config';
 import { IRole, ManagedPolicy, Role, ServicePrincipal } from '../../aws-iam';
 import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '../../aws-logs';
-import { Duration, Lazy, Names, Stack, Token } from '../../core';
+import { Lazy, Names, Stack, Token } from '../../core';
 
 /**
  * Interface to specify auth provider
@@ -272,9 +272,9 @@ export class Api extends ApiBase {
       eventConfig: {
         authProviders: props.authProviders.map(mode => ({
           authType: mode.authorizationType,
-          openIdConnectConfig: this.setupOpenIdConnectConfig(mode.openIdConnectConfig),
-          cognitoConfig: this.setupCognitoConfig(mode.cognitoConfig),
-          lambdaAuthorizerConfig: this.setupLambdaAuthorizerConfig(mode.lambdaAuthorizerConfig),
+          openIdConnectConfig: setupOpenIdConnectConfig(mode.openIdConnectConfig),
+          cognitoConfig: setupCognitoConfig(mode.cognitoConfig),
+          lambdaAuthorizerConfig: setupLambdaAuthorizerConfig(mode.lambdaAuthorizerConfig),
         })),
         connectionAuthModes: props.connectionAuthModes.map(mode => ({ authType: mode })),
         defaultPublishAuthModes: props.defaultPublishAuthModes.map(mode => ({ authType: mode })),
@@ -293,7 +293,7 @@ export class Api extends ApiBase {
       const config = modes.find((mode: AuthProvider) => {
         return mode.authorizationType === AuthorizationType.API_KEY && mode.apiKeyConfig;
       })?.apiKeyConfig;
-      this.apiKeyResource = this.createAPIKey(config);
+      this.apiKeyResource = createAPIKey(this, this.apiId, config);
       this.apiKey = this.apiKeyResource.attrApiKey;
     }
 
@@ -372,45 +372,5 @@ export class Api extends ApiBase {
       cloudWatchLogsRoleArn: logsRoleArn,
       logLevel,
     };
-  }
-
-  private setupOpenIdConnectConfig(config?: OpenIdConnectConfig) {
-    if (!config) return undefined;
-    return {
-      authTtl: config.tokenExpiryFromAuth,
-      clientId: config.clientId,
-      iatTtl: config.tokenExpiryFromIssue,
-      issuer: config.oidcProvider,
-    };
-  }
-
-  private setupCognitoConfig(config?: CognitoConfig) {
-    if (!config) return undefined;
-    return {
-      userPoolId: config.userPool.userPoolId,
-      awsRegion: config.userPool.env.region,
-      appIdClientRegex: config.appIdClientRegex,
-    };
-  }
-
-  private setupLambdaAuthorizerConfig(config?: LambdaAuthorizerConfig) {
-    if (!config) return undefined;
-    return {
-      authorizerResultTtlInSeconds: config.resultsCacheTtl?.toSeconds(),
-      authorizerUri: config.handler.functionArn,
-      identityValidationExpression: config.validationRegex,
-    };
-  }
-
-  private createAPIKey(config?: ApiKeyConfig) {
-    if (config?.expires?.isBefore(Duration.days(1)) || config?.expires?.isAfter(Duration.days(365))) {
-      throw Error('API key expiration must be between 1 and 365 days.');
-    }
-    const expires = config?.expires ? config?.expires.toEpoch() : undefined;
-    return new CfnApiKey(this, `${config?.name || 'Default'}ApiKey`, {
-      expires,
-      description: config?.description,
-      apiId: this.apiId,
-    });
   }
 }

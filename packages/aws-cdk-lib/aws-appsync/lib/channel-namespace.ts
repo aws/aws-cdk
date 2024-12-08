@@ -1,8 +1,8 @@
 import { Construct } from 'constructs';
 import { IApi } from './api-base';
 import { CfnChannelNamespace } from './appsync.generated';
+import { AuthorizationType } from './auth-config';
 import { Code } from './code';
-import { AuthorizationType } from './util';
 import { IResource, Lazy, Names, Resource, Token } from '../../core';
 
 /**

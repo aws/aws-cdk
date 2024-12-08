@@ -1,3 +1,4 @@
+import { AuthorizationType } from './auth-config';
 import {
   DynamoDbDataSource,
   HttpDataSource,
@@ -10,7 +11,6 @@ import {
   EventBridgeDataSource,
 } from './data-source';
 import { Resolver, ExtendedResolverProps } from './resolver';
-import { AuthorizationType } from './util';
 import { ITable } from '../../aws-dynamodb';
 import { IDomain as IElasticsearchDomain } from '../../aws-elasticsearch';
 import { IEventBus } from '../../aws-events';
