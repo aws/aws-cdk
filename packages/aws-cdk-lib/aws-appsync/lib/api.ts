@@ -14,7 +14,7 @@ export interface AuthProvider {
   /**
    * One of possible four values AppSync supports
    *
-   * @see https://docs.aws.amazon.com/appsync/latest/devguide/security.html
+   * @see https://docs.aws.amazon.com/appsync/latest/eventapi/configure-event-api-auth.html
    *
    * @default - `AuthorizationType.API_KEY`
    */
