@@ -246,6 +246,7 @@ test('esbuild bundling with esbuild options', () => {
       '--splitting': true,
       '--keep-names': '',
       '--out-extension': '.js=.mjs',
+      '--alias': ['@layer1=/opt/nodejs/layer1', '@layer2=/opt/nodejs/layer2'],
     },
   });
 
@@ -266,6 +267,7 @@ test('esbuild bundling with esbuild options', () => {
           '--metafile=/asset-output/index.meta.json --banner:js="/* comments */" --footer:js="/* comments */"',
           '--main-fields=module,main --inject:"./my-shim.js" --inject:"./path with space/second-shim.js"',
           '--log-limit="0" --resolve-extensions=".ts,.js" --splitting --keep-names --out-extension:".js=.mjs"',
+          '--alias:"@layer1=/opt/nodejs/layer1" --alias:"@layer2=/opt/nodejs/layer2"',
         ].join(' '),
       ],
     }),
