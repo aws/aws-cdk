@@ -831,7 +831,7 @@
        }
       },
       "Id": "Target0",
-      "Input": "{\"containerOverrides\":[{\"name\":\"TheContainer\",\"environment\":[{\"name\":\"I_WAS_TRIGGERED\",\"value\":\"From CloudWatch Events\"}]}]}",
+      "Input": "{\"containerOverrides\":[{\"name\":\"TheContainer\",\"environment\":[{\"name\":\"I_WAS_TRIGGERED\",\"value\":\"From CloudWatch Events\"}]}],\"cpu\":\"512\",\"memory\":\"512\"}",
       "RoleArn": {
        "Fn::GetAtt": [
         "TaskDefEventsRoleFB3B67B8",
