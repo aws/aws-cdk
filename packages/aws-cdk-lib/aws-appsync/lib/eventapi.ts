@@ -14,15 +14,7 @@ import { ChannelNamespace, ChannelNamespaceOptions } from './channel-namespace';
 import { LogConfig, FieldLogLevel } from './graphqlapi';
 import { Grant, IGrantable, ManagedPolicy, ServicePrincipal, Role } from '../../aws-iam';
 import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '../../aws-logs';
-import {
-  IResolvable,
-  IResource,
-  RemovalPolicy,
-  Resource,
-  Stack,
-  Token,
-  Duration,
-} from '../../core';
+import { IResolvable, IResource, RemovalPolicy, Resource, Stack, Token, Duration } from '../../core';
 
 /**
  * Authorization configuration for the Event API
@@ -166,6 +158,9 @@ export abstract class EventApiBase extends Resource implements IEventApi {
    * @param actions The actions that should be granted to the principal (i.e. appsync:EventPublish )
    */
   public grant(grantee: IGrantable, resources: IamResource, ...actions: string[]): Grant {
+    if (!this.authProviderTypes.includes(AuthorizationType.IAM)) {
+      throw new Error('IAM Authorization mode is not configured on this API.');
+    }
     return Grant.addToPrincipal({
       grantee,
       actions,
@@ -284,11 +279,7 @@ export class EventApi extends EventApiBase {
    * @param id id
    * @param attrs Event API Attributes of an API
    */
-  public static fromEventApiAttributes(
-    scope: Construct,
-    id: string,
-    attrs: EventApiAttributes,
-  ): IEventApi {
+  public static fromEventApiAttributes(scope: Construct, id: string, attrs: EventApiAttributes): IEventApi {
     const arn =
       attrs.apiArn ??
       Stack.of(scope).formatArn({
@@ -342,12 +333,11 @@ export class EventApi extends EventApiBase {
   public readonly defaultSubscribeModeTypes: AuthorizationType[];
 
   /**
-   * the configured API key, if present
+   * the configured API keys, if present
    *
    * @default - no api key
-   * @attribute ApiKey
    */
-  public readonly apiKey?: string;
+  public readonly apiKeys: { [key: string]: CfnApiKey } = {};
 
   /**
    * the CloudWatch Log Group for this API
@@ -356,24 +346,18 @@ export class EventApi extends EventApiBase {
 
   private api: CfnApi;
   private eventConfig: CfnApi.EventConfigProperty;
-  private apiKeyResource?: CfnApiKey;
 
   constructor(scope: Construct, id: string, props: EventApiProps) {
     super(scope, id);
 
     this.authProviderTypes = this.setupAuthProviderTypes(props.authorizationConfig?.authProviders);
 
-    const authProviders = props.authorizationConfig?.authProviders ?? [
-      { authorizationType: AuthorizationType.API_KEY },
-    ];
+    const authProviders = props.authorizationConfig?.authProviders ?? [{ authorizationType: AuthorizationType.API_KEY }];
     this.validateAuthorizationProps(authProviders);
 
-    const connectionAuthModeType =
-      props.authorizationConfig?.connectionAuthModeTypes ?? this.authProviderTypes;
-    const defaultPublishAuthModeTypes =
-      props.authorizationConfig?.defaultPublishAuthModeTypes ?? this.authProviderTypes;
-    const defaultSubscribeAuthModeTypes =
-      props.authorizationConfig?.defaultSubscribeAuthModeTypes ?? this.authProviderTypes;
+    const connectionAuthModeType = props.authorizationConfig?.connectionAuthModeTypes ?? this.authProviderTypes;
+    const defaultPublishAuthModeTypes = props.authorizationConfig?.defaultPublishAuthModeTypes ?? this.authProviderTypes;
+    const defaultSubscribeAuthModeTypes = props.authorizationConfig?.defaultSubscribeAuthModeTypes ?? this.authProviderTypes;
 
     this.validateAuthorizationConfig(authProviders, connectionAuthModeType);
     this.validateAuthorizationConfig(authProviders, defaultPublishAuthModeTypes);
@@ -382,11 +366,7 @@ export class EventApi extends EventApiBase {
     this.defaultPublishModeTypes = defaultPublishAuthModeTypes;
     this.defaultSubscribeModeTypes = defaultSubscribeAuthModeTypes;
 
-    if (
-      !Token.isUnresolved(props.ownerContact) &&
-      props.ownerContact !== undefined &&
-      props.ownerContact.length > 256
-    ) {
+    if (!Token.isUnresolved(props.ownerContact) && props.ownerContact !== undefined && props.ownerContact.length > 256) {
       throw new Error('You must specify `ownerContact` as a string of 256 characters or less.');
     }
 
@@ -411,12 +391,9 @@ export class EventApi extends EventApiBase {
     this.arn = this.api.attrApiArn;
     this.endpointDns = this.api.attrDns;
 
-    if (authProviders.some((mode) => mode.authorizationType === AuthorizationType.API_KEY)) {
-      const config = authProviders.find((mode: AuthorizationMode) => {
-        return mode.authorizationType === AuthorizationType.API_KEY && mode.apiKeyConfig;
-      })?.apiKeyConfig;
-      this.apiKeyResource = this.createAPIKey(config);
-      this.apiKey = this.apiKeyResource.attrApiKey;
+    const apiKeyConfigs = authProviders.filter((mode) => mode.authorizationType === AuthorizationType.API_KEY);
+    for (const mode of apiKeyConfigs) {
+      this.apiKeys[mode.apiKeyConfig?.name ?? 'Default'] = this.createAPIKey(mode.apiKeyConfig);
     }
 
     if (authProviders.some((mode) => mode.authorizationType === AuthorizationType.LAMBDA)) {
@@ -450,9 +427,7 @@ export class EventApi extends EventApiBase {
       config.role?.roleArn ??
       new Role(this, 'ApiLogsRole', {
         assumedBy: new ServicePrincipal('appsync.amazonaws.com'),
-        managedPolicies: [
-          ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSAppSyncPushToCloudWatchLogs'),
-        ],
+        managedPolicies: [ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSAppSyncPushToCloudWatchLogs')],
       }).roleArn;
     const fieldLogLevel: FieldLogLevel = config.fieldLogLevel ?? FieldLogLevel.NONE;
     return {
@@ -513,10 +488,7 @@ export class EventApi extends EventApiBase {
   }
 
   private createAPIKey(config?: ApiKeyConfig) {
-    if (
-      config?.expires?.isBefore(Duration.days(1)) ||
-      config?.expires?.isAfter(Duration.days(365))
-    ) {
+    if (config?.expires?.isBefore(Duration.days(1)) || config?.expires?.isAfter(Duration.days(365))) {
       throw Error('API key expiration must be between 1 and 365 days.');
     }
     const expires = config?.expires ? config?.expires.toEpoch() : undefined;
@@ -528,62 +500,36 @@ export class EventApi extends EventApiBase {
   }
 
   private validateAuthorizationProps(authProviders: AuthorizationMode[]) {
-    if (
-      authProviders.filter(
-        (authProvider) => authProvider.authorizationType === AuthorizationType.LAMBDA,
-      ).length > 1
-    ) {
+    const keyConfigs = authProviders.filter((mode) => mode.authorizationType === AuthorizationType.API_KEY);
+    const someWithNoNames = keyConfigs.some((config) => !config.apiKeyConfig?.name);
+    if (keyConfigs.length > 1 && someWithNoNames) {
+      throw new Error('You must specify key names when configuring more than 1 API key.');
+    }
+
+    if (authProviders.filter((authProvider) => authProvider.authorizationType === AuthorizationType.LAMBDA).length > 1) {
       throw new Error(
         'You can only have a single AWS Lambda function configured to authorize your API. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html',
       );
     }
 
-    if (
-      authProviders.filter(
-        (authProvider) => authProvider.authorizationType === AuthorizationType.API_KEY,
-      ).length > 1
-    ) {
-      throw new Error(
-        "You can't duplicate API_KEY configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html",
-      );
-    }
-
-    if (
-      authProviders.filter(
-        (authProvider) => authProvider.authorizationType === AuthorizationType.IAM,
-      ).length > 1
-    ) {
-      throw new Error(
-        "You can't duplicate IAM configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html",
-      );
+    if (authProviders.filter((authProvider) => authProvider.authorizationType === AuthorizationType.IAM).length > 1) {
+      throw new Error("You can't duplicate IAM configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html");
     }
 
     authProviders.map((authProvider) => {
-      if (
-        authProvider.authorizationType === AuthorizationType.OIDC &&
-        !authProvider.openIdConnectConfig
-      ) {
+      if (authProvider.authorizationType === AuthorizationType.OIDC && !authProvider.openIdConnectConfig) {
         throw new Error('Missing OIDC Configuration');
       }
-      if (
-        authProvider.authorizationType === AuthorizationType.USER_POOL &&
-        !authProvider.userPoolConfig
-      ) {
+      if (authProvider.authorizationType === AuthorizationType.USER_POOL && !authProvider.userPoolConfig) {
         throw new Error('Missing User Pool Configuration');
       }
-      if (
-        authProvider.authorizationType === AuthorizationType.LAMBDA &&
-        !authProvider.lambdaAuthorizerConfig
-      ) {
+      if (authProvider.authorizationType === AuthorizationType.LAMBDA && !authProvider.lambdaAuthorizerConfig) {
         throw new Error('Missing Lambda Configuration');
       }
     });
   }
 
-  private validateAuthorizationConfig(
-    authProviders: AuthorizationMode[],
-    authModes: AuthorizationType[],
-  ) {
+  private validateAuthorizationConfig(authProviders: AuthorizationMode[], authModes: AuthorizationType[]) {
     for (const mode of authModes) {
       if (!authProviders.find((authProvider) => authProvider.authorizationType === mode)) {
         throw new Error(`Missing authorization configuration for ${mode}`);

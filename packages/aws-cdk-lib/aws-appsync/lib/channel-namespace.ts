@@ -12,13 +12,13 @@ export interface NamespaceAuthConfig {
    * Default publish auth modes
    * @default - API Key authorization
    */
-  readonly publishAuthModes?: AuthorizationType[];
+  readonly publishAuthModeTypes?: AuthorizationType[];
 
   /**
    * Default subscribe auth modes
    * @default - API Key authorization
    */
-  readonly subscribeAuthModes?: AuthorizationType[];
+  readonly subscribeAuthModeTypes?: AuthorizationType[];
 }
 
 /**
@@ -101,11 +101,11 @@ export class ChannelNamespace extends Construct {
 
     this.validateAuthorizationConfig(
       props.api.authProviderTypes,
-      props.authorizationConfig?.publishAuthModes ?? [],
+      props.authorizationConfig?.publishAuthModeTypes ?? [],
     );
     this.validateAuthorizationConfig(
       props.api.authProviderTypes,
-      props.authorizationConfig?.subscribeAuthModes ?? [],
+      props.authorizationConfig?.subscribeAuthModeTypes ?? [],
     );
 
     this.channelNamespace = new CfnChannelNamespace(this, 'Resource', {
@@ -113,25 +113,25 @@ export class ChannelNamespace extends Construct {
       apiId: props.api.apiId,
       codeHandlers: code?.inlineCode,
       codeS3Location: code?.s3Location,
-      publishAuthModes: props.authorizationConfig?.publishAuthModes?.map((mode) => {
-        return { authType: mode };
-      }),
-      subscribeAuthModes: props.authorizationConfig?.subscribeAuthModes?.map((mode) => {
-        return { authType: mode };
-      }),
+      publishAuthModes: props.authorizationConfig?.publishAuthModeTypes?.map((mode) => ({
+        authType: mode,
+      })),
+      subscribeAuthModes: props.authorizationConfig?.subscribeAuthModeTypes?.map((mode) => ({
+        authType: mode,
+      })),
     });
 
     this.arn = this.channelNamespace.attrChannelNamespaceArn;
   }
 
   private validateAuthorizationConfig(
-    authProviders: AuthorizationType[],
-    authModes: AuthorizationType[],
+    authProviderTypes: AuthorizationType[],
+    authModeTypes: AuthorizationType[],
   ) {
-    authModes.forEach((mode) => {
-      if (!authProviders.find((authProvider) => authProvider === mode)) {
+    for (const mode in authModeTypes) {
+      if (!authProviderTypes.find((authProvider) => authProvider === mode)) {
         throw new Error(`Missing authorization configuration for ${mode}`);
       }
-    });
+    }
   }
 }
