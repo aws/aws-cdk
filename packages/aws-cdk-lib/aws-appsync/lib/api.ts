@@ -8,7 +8,7 @@ import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '../../aws-logs
 import { Duration, Lazy, Names, Stack, Token } from '../../core';
 
 /**
- * Interface to specify default or additional authorization(s)
+ * Interface to specify auth provider
  */
 export interface AuthProvider {
   /**
@@ -21,28 +21,28 @@ export interface AuthProvider {
   readonly authorizationType: AuthorizationType;
 
   /**
-   * If authorizationType is `AuthorizationType.USER_POOL`, this option is required.
-   * @default - none
-   */
-  readonly cognitoConfig?: CognitoConfig;
-
-  /**
    * If authorizationType is `AuthorizationType.API_KEY`, this option can be configured.
    * @default - name: 'DefaultAPIKey' | description: 'Default API Key created by CDK'
    */
   readonly apiKeyConfig?: ApiKeyConfig;
 
   /**
-   * If authorizationType is `AuthorizationType.OIDC`, this option is required.
+   * If authorizationType is `AuthorizationType.USER_POOL`, this option is required.
    * @default - none
    */
-  readonly openIdConnectConfig?: OpenIdConnectConfig;
+  readonly cognitoConfig?: CognitoConfig;
 
   /**
    * If authorizationType is `AuthorizationType.LAMBDA`, this option is required.
    * @default - none
    */
   readonly lambdaAuthorizerConfig?: LambdaAuthorizerConfig;
+
+  /**
+   * If authorizationType is `AuthorizationType.OIDC`, this option is required.
+   * @default - none
+   */
+  readonly openIdConnectConfig?: OpenIdConnectConfig;
 }
 
 /**
@@ -62,7 +62,7 @@ export interface CognitoConfig {
 }
 
 /**
- * Properties for an AppSync API
+ * Properties for an AppSync Event API
  */
 export interface ApiProps {
   /**

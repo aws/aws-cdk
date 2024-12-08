@@ -275,6 +275,97 @@ describe('Authorization Config test', () => {
       ).toThrow('Missing Lambda Configuration');
     },
   );
+
+  test('throws when multiple API Key authorization configurations are set',
+    () => {
+      expect(() => new appsync.Api(stack, 'api', {
+        apiName: 'MyApi',
+        ownerContact: 'test-owner',
+        authProviders: [{
+          authorizationType: appsync.AuthorizationType.API_KEY,
+        },
+        {
+          authorizationType: appsync.AuthorizationType.API_KEY,
+        }],
+        connectionAuthModes: [
+          appsync.AuthorizationType.API_KEY,
+        ],
+        defaultPublishAuthModes: [
+          appsync.AuthorizationType.API_KEY,
+        ],
+        defaultSubscribeAuthModes: [
+          appsync.AuthorizationType.API_KEY,
+        ],
+      }),
+      ).toThrow('You can\'t duplicate API_KEY configuration.');
+    },
+  );
+
+  test('throws when multiple IAM authorization configurations are set',
+    () => {
+      expect(() => new appsync.Api(stack, 'api', {
+        apiName: 'MyApi',
+        ownerContact: 'test-owner',
+        authProviders: [{
+          authorizationType: appsync.AuthorizationType.IAM,
+        },
+        {
+          authorizationType: appsync.AuthorizationType.IAM,
+        }],
+        connectionAuthModes: [
+          appsync.AuthorizationType.IAM,
+        ],
+        defaultPublishAuthModes: [
+          appsync.AuthorizationType.IAM,
+        ],
+        defaultSubscribeAuthModes: [
+          appsync.AuthorizationType.IAM,
+        ],
+      }),
+      ).toThrow('You can\'t duplicate IAM configuration.');
+    },
+  );
+
+  test('throws when multiple Lambda authorization configurations are set',
+    () => {
+      const fn = new Function(stack, 'auth-function', {
+        runtime: Runtime.NODEJS_LATEST,
+        handler: 'index.handler',
+        code: Code.fromInline('/* lambda authentication code here.*/'),
+      });
+
+      expect(() => new appsync.Api(stack, 'api', {
+        apiName: 'MyApi',
+        ownerContact: 'test-owner',
+        authProviders: [{
+          authorizationType: appsync.AuthorizationType.LAMBDA,
+          lambdaAuthorizerConfig: {
+            handler: fn,
+            resultsCacheTtl: cdk.Duration.minutes(6),
+            validationRegex: 'test',
+          },
+        },
+        {
+          authorizationType: appsync.AuthorizationType.LAMBDA,
+          lambdaAuthorizerConfig: {
+            handler: fn,
+            resultsCacheTtl: cdk.Duration.minutes(6),
+            validationRegex: 'test',
+          },
+        }],
+        connectionAuthModes: [
+          appsync.AuthorizationType.LAMBDA,
+        ],
+        defaultPublishAuthModes: [
+          appsync.AuthorizationType.LAMBDA,
+        ],
+        defaultSubscribeAuthModes: [
+          appsync.AuthorizationType.LAMBDA,
+        ],
+      }),
+      ).toThrow('You can only have a single AWS Lambda function configured to authorize your API.');
+    },
+  );
 });
 
 describe('apiName test', () => {
