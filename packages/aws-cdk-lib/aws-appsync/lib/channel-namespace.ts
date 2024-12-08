@@ -98,8 +98,7 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
     }
 
     super(scope, id, {
-      physicalName:
-        props.channelNamespaceName ??
+      physicalName: props.channelNamespaceName ??
         Lazy.string({
           produce: () =>
             Names.uniqueResourceName(this, {

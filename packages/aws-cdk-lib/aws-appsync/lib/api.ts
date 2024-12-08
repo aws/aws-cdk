@@ -1,10 +1,65 @@
 import { Construct } from 'constructs';
 import { ApiBase, IApi } from './api-base';
 import { CfnApiKey, CfnApi } from './appsync.generated';
-import { AuthorizationType, FieldLogLevel, ApiKeyConfig, AuthorizationMode, LambdaAuthorizerConfig, LogConfig, OpenIdConnectConfig, UserPoolConfig, UserPoolDefaultAction } from './util';
+import { AuthorizationType, FieldLogLevel, ApiKeyConfig, LambdaAuthorizerConfig, LogConfig, OpenIdConnectConfig } from './util';
+import { IUserPool } from '../../aws-cognito';
 import { ManagedPolicy, Role, ServicePrincipal } from '../../aws-iam';
 import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '../../aws-logs';
 import { Duration, Lazy, Names, Stack, Token } from '../../core';
+
+/**
+ * Interface to specify default or additional authorization(s)
+ */
+export interface AuthProvider {
+  /**
+   * One of possible four values AppSync supports
+   *
+   * @see https://docs.aws.amazon.com/appsync/latest/devguide/security.html
+   *
+   * @default - `AuthorizationType.API_KEY`
+   */
+  readonly authorizationType: AuthorizationType;
+
+  /**
+   * If authorizationType is `AuthorizationType.USER_POOL`, this option is required.
+   * @default - none
+   */
+  readonly cognitoConfig?: CognitoConfig;
+
+  /**
+   * If authorizationType is `AuthorizationType.API_KEY`, this option can be configured.
+   * @default - name: 'DefaultAPIKey' | description: 'Default API Key created by CDK'
+   */
+  readonly apiKeyConfig?: ApiKeyConfig;
+
+  /**
+   * If authorizationType is `AuthorizationType.OIDC`, this option is required.
+   * @default - none
+   */
+  readonly openIdConnectConfig?: OpenIdConnectConfig;
+
+  /**
+   * If authorizationType is `AuthorizationType.LAMBDA`, this option is required.
+   * @default - none
+   */
+  readonly lambdaAuthorizerConfig?: LambdaAuthorizerConfig;
+}
+
+/**
+ * Configuration for Cognito user-pools in AppSync
+ */
+export interface CognitoConfig {
+  /**
+   * The Cognito user pool to use as identity source
+   */
+  readonly userPool: IUserPool;
+  /**
+   * the optional app id regex
+   *
+   * @default -  None
+   */
+  readonly appIdClientRegex?: string;
+}
 
 /**
  * Properties for an AppSync API
@@ -20,7 +75,7 @@ export interface ApiProps {
   /**
    * A list of authorization providers.
    */
-  readonly authProvider: AuthorizationMode[];
+  readonly authProviders: AuthProvider[];
 
   /**
    * A list of valid authorization modes for the Event API connections.
@@ -161,27 +216,26 @@ export class Api extends ApiBase {
     }
 
     super(scope, id, {
-      physicalName:
-        props.apiName ??
-        Lazy.string({
-          produce: () =>
-            Names.uniqueResourceName(this, {
-              maxLength: 50,
-              separator: '-',
-            }),
-        }),
+      physicalName: props.apiName ?? Lazy.string({
+        produce: () =>
+          Names.uniqueResourceName(this, {
+            maxLength: 50,
+            separator: '-',
+          }),
+      }),
     });
 
-    this.validateAuthorizationProps(props.authProvider);
+    this.validateOwnerContact(props.ownerContact);
+    this.validateAuthProviderProps(props.authProviders);
 
     this.api = new CfnApi(this, 'Resource', {
       name: this.physicalName,
       ownerContact: props.ownerContact,
       eventConfig: {
-        authProviders: props.authProvider.map(mode => ({
+        authProviders: props.authProviders.map(mode => ({
           authType: mode.authorizationType,
           openIdConnectConfig: this.setupOpenIdConnectConfig(mode.openIdConnectConfig),
-          cognitoConfig: this.setupUserPoolConfig(mode.userPoolConfig),
+          cognitoConfig: this.setupCognitoConfig(mode.cognitoConfig),
           lambdaAuthorizerConfig: this.setupLambdaAuthorizerConfig(mode.lambdaAuthorizerConfig),
         })),
         connectionAuthModes: props.connectionAuthModes.map(mode => ({ authType: mode })),
@@ -196,9 +250,9 @@ export class Api extends ApiBase {
     this.dnsHttp = this.api.attrDnsHttp;
     this.dnsRealTime = this.api.attrDnsRealtime;
 
-    const modes = props.authProvider;
+    const modes = props.authProviders;
     if (modes.some((mode) => mode.authorizationType === AuthorizationType.API_KEY)) {
-      const config = modes.find((mode: AuthorizationMode) => {
+      const config = modes.find((mode: AuthProvider) => {
         return mode.authorizationType === AuthorizationType.API_KEY && mode.apiKeyConfig;
       })?.apiKeyConfig;
       this.apiKeyResource = this.createAPIKey(config);
@@ -206,7 +260,7 @@ export class Api extends ApiBase {
     }
 
     if (modes.some((mode) => mode.authorizationType === AuthorizationType.LAMBDA)) {
-      const config = modes.find((mode: AuthorizationMode) => {
+      const config = modes.find((mode: AuthProvider) => {
         return mode.authorizationType === AuthorizationType.LAMBDA && mode.lambdaAuthorizerConfig;
       })?.lambdaAuthorizerConfig;
 
@@ -230,26 +284,40 @@ export class Api extends ApiBase {
     }
   }
 
-  private validateAuthorizationProps(modes: AuthorizationMode[]) {
-    if (modes.filter((mode) => mode.authorizationType === AuthorizationType.LAMBDA).length > 1) {
-      throw new Error('You can only have a single AWS Lambda function configured to authorize your API.');
+  private validateOwnerContact(ownerContact?: string) {
+    if (ownerContact === undefined || Token.isUnresolved(ownerContact)) { return; }
+
+    if (ownerContact.length < 1 || ownerContact.length > 256) {
+      throw new Error(`\`ownerContact\` must be between 1 and 256 characters, got: ${ownerContact.length} characters.`);
     }
+
+    const ownerContactPattern = /^[A-Za-z0-9_\-\ \.]+$/;
+
+    if (!ownerContactPattern.test(ownerContact)) {
+      throw new Error(`\`ownerContact\` must contain only alphanumeric characters, underscores, hyphens, spaces, and periods, got: ${ownerContact}`);
+    }
+  }
+
+  private validateAuthProviderProps(modes: AuthProvider[]) {
     modes.map((mode) => {
       if (mode.authorizationType === AuthorizationType.OIDC && !mode.openIdConnectConfig) {
         throw new Error('Missing OIDC Configuration');
       }
-      if (mode.authorizationType === AuthorizationType.USER_POOL && !mode.userPoolConfig) {
-        throw new Error('Missing User Pool Configuration');
+      if (mode.authorizationType === AuthorizationType.USER_POOL && !mode.cognitoConfig) {
+        throw new Error('Missing Cognito Configuration');
       }
       if (mode.authorizationType === AuthorizationType.LAMBDA && !mode.lambdaAuthorizerConfig) {
         throw new Error('Missing Lambda Configuration');
       }
     });
     if (modes.filter((mode) => mode.authorizationType === AuthorizationType.API_KEY).length > 1) {
-      throw new Error('You can\'t duplicate API_KEY configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
+      throw new Error('You can\'t duplicate API_KEY configuration.');
     }
     if (modes.filter((mode) => mode.authorizationType === AuthorizationType.IAM).length > 1) {
-      throw new Error('You can\'t duplicate IAM configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
+      throw new Error('You can\'t duplicate IAM configuration.');
+    }
+    if (modes.filter((mode) => mode.authorizationType === AuthorizationType.LAMBDA).length > 1) {
+      throw new Error('You can only have a single AWS Lambda function configured to authorize your API.');
     }
   }
 
@@ -278,13 +346,12 @@ export class Api extends ApiBase {
     };
   }
 
-  private setupUserPoolConfig(config?: UserPoolConfig) {
+  private setupCognitoConfig(config?: CognitoConfig) {
     if (!config) return undefined;
     return {
       userPoolId: config.userPool.userPoolId,
       awsRegion: config.userPool.env.region,
       appIdClientRegex: config.appIdClientRegex,
-      defaultAction: config.defaultAction || UserPoolDefaultAction.ALLOW,
     };
   }
 

@@ -40,15 +40,14 @@ const authorizer = new lambda.Function(stack, 'AuthorizerFunction', {
 const api = new appsync.Api(stack, 'EventApi', {
   apiName: 'my-event-api',
   ownerContact: 'test-owner-contact',
-  authProvider: [
+  authProviders: [
     {
       authorizationType: appsync.AuthorizationType.API_KEY,
     },
     {
       authorizationType: appsync.AuthorizationType.USER_POOL,
-      userPoolConfig: {
+      cognitoConfig: {
         userPool,
-        defaultAction: appsync.UserPoolDefaultAction.ALLOW,
       },
     },
     {

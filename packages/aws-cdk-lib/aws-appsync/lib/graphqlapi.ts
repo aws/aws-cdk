@@ -3,12 +3,83 @@ import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema, CfnDomainName, CfnDomainNam
 import { IGraphqlApi, GraphqlApiBase, Visibility } from './graphqlapi-base';
 import { ISchema, SchemaFile } from './schema';
 import { MergeType, addSourceApiAutoMergePermission, addSourceGraphQLPermission } from './source-api-association';
-import { ApiKeyConfig, AuthorizationMode, AuthorizationType, FieldLogLevel, LambdaAuthorizerConfig, LogConfig, OpenIdConnectConfig, UserPoolConfig, UserPoolDefaultAction } from './util';
+import { ApiKeyConfig, AuthorizationType, FieldLogLevel, LambdaAuthorizerConfig, LogConfig, OpenIdConnectConfig } from './util';
 import { ICertificate } from '../../aws-certificatemanager';
+import { IUserPool } from '../../aws-cognito';
 import { ManagedPolicy, Role, IRole, ServicePrincipal } from '../../aws-iam';
 import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '../../aws-logs';
 import { CfnResource, Duration, FeatureFlags, Lazy, Stack, Token } from '../../core';
 import * as cxapi from '../../cx-api';
+
+/**
+ * Interface to specify default or additional authorization(s)
+ */
+export interface AuthorizationMode {
+  /**
+   * One of possible four values AppSync supports
+   *
+   * @see https://docs.aws.amazon.com/appsync/latest/devguide/security.html
+   *
+   * @default - `AuthorizationType.API_KEY`
+   */
+  readonly authorizationType: AuthorizationType;
+  /**
+   * If authorizationType is `AuthorizationType.USER_POOL`, this option is required.
+   * @default - none
+   */
+  readonly userPoolConfig?: UserPoolConfig;
+  /**
+   * If authorizationType is `AuthorizationType.API_KEY`, this option can be configured.
+   * @default - name: 'DefaultAPIKey' | description: 'Default API Key created by CDK'
+   */
+  readonly apiKeyConfig?: ApiKeyConfig;
+  /**
+   * If authorizationType is `AuthorizationType.OIDC`, this option is required.
+   * @default - none
+   */
+  readonly openIdConnectConfig?: OpenIdConnectConfig;
+  /**
+   * If authorizationType is `AuthorizationType.LAMBDA`, this option is required.
+   * @default - none
+   */
+  readonly lambdaAuthorizerConfig?: LambdaAuthorizerConfig;
+}
+
+/**
+ * enum with all possible values for Cognito user-pool default actions
+ */
+export enum UserPoolDefaultAction {
+  /**
+   * ALLOW access to API
+   */
+  ALLOW = 'ALLOW',
+  /**
+   * DENY access to API
+   */
+  DENY = 'DENY',
+}
+
+/**
+ * Configuration for Cognito user-pools in AppSync
+ */
+export interface UserPoolConfig {
+  /**
+   * The Cognito user pool to use as identity source
+   */
+  readonly userPool: IUserPool;
+  /**
+   * the optional app id regex
+   *
+   * @default -  None
+   */
+  readonly appIdClientRegex?: string;
+  /**
+   * Default auth action
+   *
+   * @default ALLOW
+   */
+  readonly defaultAction?: UserPoolDefaultAction;
+}
 
 /**
  * Configuration of the API authorization modes.
