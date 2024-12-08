@@ -69,9 +69,8 @@ const api = new appsync.Api(stack, 'EventApi', {
   defaultSubscribeAuthModes: [
     appsync.AuthorizationType.IAM,
   ],
-  logConfig: {
-    excludeVerboseContent: false,
-    fieldLogLevel: appsync.FieldLogLevel.ERROR,
+  eventLogConfig: {
+    logLevel: appsync.LogLevel.ERROR,
   },
 });
 

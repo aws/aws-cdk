@@ -1,9 +1,8 @@
 import { Construct } from 'constructs';
 import { ApiBase, IApi } from './api-base';
 import { CfnApiKey, CfnApi } from './appsync.generated';
-import { AuthorizationType, FieldLogLevel, ApiKeyConfig, LambdaAuthorizerConfig, LogConfig, OpenIdConnectConfig } from './util';
-import { IUserPool } from '../../aws-cognito';
-import { ManagedPolicy, Role, ServicePrincipal } from '../../aws-iam';
+import { AuthorizationType, ApiKeyConfig, LambdaAuthorizerConfig, CognitoConfig, OpenIdConnectConfig } from './auth-config';
+import { IRole, ManagedPolicy, Role, ServicePrincipal } from '../../aws-iam';
 import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '../../aws-logs';
 import { Duration, Lazy, Names, Stack, Token } from '../../core';
 
@@ -46,19 +45,58 @@ export interface AuthProvider {
 }
 
 /**
- * Configuration for Cognito user-pools in AppSync
+ * log-level for handler in AppSync Event APIs
  */
-export interface CognitoConfig {
+export enum LogLevel {
   /**
-   * The Cognito user pool to use as identity source
+   * Handler logging is disabled
    */
-  readonly userPool: IUserPool;
+  NONE = 'NONE',
   /**
-   * the optional app id regex
+   * Only Error messages appear in logs
+   */
+  ERROR = 'ERROR',
+  /**
+   * Info and Error messages appear in logs
+   */
+  INFO = 'INFO',
+  /**
+   * Debug, Info, and Error messages, appear in logs
+   */
+  DEBUG = 'DEBUG',
+  /**
+   * All messages (Debug, Error, Info, and Trace) appear in logs
+   */
+  ALL = 'ALL',
+}
+
+/**
+ * Logging configuration for AppSync Event APIs
+ */
+export interface EventLogConfig {
+  /**
+   * The type of information to log for the Event API
    *
-   * @default -  None
+   * @default - Use AppSync default
    */
-  readonly appIdClientRegex?: string;
+  readonly logLevel?: LogLevel;
+
+  /**
+   * The role for CloudWatch Logs
+   *
+   * @default - None
+   */
+  readonly role?: IRole;
+
+  /**
+  * The number of days log events are kept in CloudWatch Logs.
+  * By default AppSync keeps the logs infinitely. When updating this property,
+  * unsetting it doesn't remove the log retention policy.
+  * To remove the retention policy, set the value to `INFINITE`
+  *
+  * @default RetentionDays.INFINITE
+  */
+  readonly retention?: RetentionDays;
 }
 
 /**
@@ -106,7 +144,7 @@ export interface ApiProps {
    *
    * @default - None
    */
-  readonly logConfig?: LogConfig;
+  readonly eventLogConfig?: EventLogConfig;
 }
 
 /**
@@ -241,7 +279,7 @@ export class Api extends ApiBase {
         connectionAuthModes: props.connectionAuthModes.map(mode => ({ authType: mode })),
         defaultPublishAuthModes: props.defaultPublishAuthModes.map(mode => ({ authType: mode })),
         defaultSubscribeAuthModes: props.defaultSubscribeAuthModes.map(mode => ({ authType: mode })),
-        logConfig: this.setupLogConfig(props.logConfig),
+        logConfig: this.setupEventLogConfig(props.eventLogConfig),
       },
     });
 
@@ -273,10 +311,10 @@ export class Api extends ApiBase {
 
     const logGroupName = `/aws/appsync/apis/${this.apiId}`;
 
-    if (props.logConfig) {
+    if (props.eventLogConfig) {
       const logRetention = new LogRetention(this, 'LogRetention', {
         logGroupName: logGroupName,
-        retention: props.logConfig?.retention ?? RetentionDays.INFINITE,
+        retention: props.eventLogConfig?.retention ?? RetentionDays.INFINITE,
       });
       this.logGroup = LogGroup.fromLogGroupArn(this, 'LogGroup', logRetention.logGroupArn);
     } else {
@@ -321,7 +359,7 @@ export class Api extends ApiBase {
     }
   }
 
-  private setupLogConfig(config?: LogConfig) {
+  private setupEventLogConfig(config?: EventLogConfig) {
     if (!config) return undefined;
     const logsRoleArn: string = config.role?.roleArn ?? new Role(this, 'ApiLogsRole', {
       assumedBy: new ServicePrincipal('appsync.amazonaws.com'),
@@ -329,10 +367,10 @@ export class Api extends ApiBase {
         ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSAppSyncPushToCloudWatchLogs'),
       ],
     }).roleArn;
-    const fieldLogLevel: FieldLogLevel = config.fieldLogLevel ?? FieldLogLevel.NONE;
+    const logLevel: LogLevel = config.logLevel ?? LogLevel.NONE;
     return {
       cloudWatchLogsRoleArn: logsRoleArn,
-      logLevel: fieldLogLevel,
+      logLevel,
     };
   }
 

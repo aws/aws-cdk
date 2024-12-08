@@ -3,12 +3,11 @@ import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema, CfnDomainName, CfnDomainNam
 import { IGraphqlApi, GraphqlApiBase, Visibility } from './graphqlapi-base';
 import { ISchema, SchemaFile } from './schema';
 import { MergeType, addSourceApiAutoMergePermission, addSourceGraphQLPermission } from './source-api-association';
-import { ApiKeyConfig, AuthorizationType, FieldLogLevel, LambdaAuthorizerConfig, LogConfig, OpenIdConnectConfig } from './util';
+import { ApiKeyConfig, AuthorizationType, LambdaAuthorizerConfig, OpenIdConnectConfig, UserPoolConfig, UserPoolDefaultAction } from './auth-config';
 import { ICertificate } from '../../aws-certificatemanager';
-import { IUserPool } from '../../aws-cognito';
 import { ManagedPolicy, Role, IRole, ServicePrincipal } from '../../aws-iam';
 import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '../../aws-logs';
-import { CfnResource, Duration, FeatureFlags, Lazy, Stack, Token } from '../../core';
+import { CfnResource, Duration, FeatureFlags, IResolvable, Lazy, Stack, Token } from '../../core';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -46,39 +45,64 @@ export interface AuthorizationMode {
 }
 
 /**
- * enum with all possible values for Cognito user-pool default actions
+ * log-level for fields in AppSync
  */
-export enum UserPoolDefaultAction {
+export enum FieldLogLevel {
   /**
-   * ALLOW access to API
+   * Resolver logging is disabled
    */
-  ALLOW = 'ALLOW',
+  NONE = 'NONE',
   /**
-   * DENY access to API
+   * Only Error messages appear in logs
    */
-  DENY = 'DENY',
+  ERROR = 'ERROR',
+  /**
+   * Info and Error messages appear in logs
+   */
+  INFO = 'INFO',
+  /**
+   * Debug, Info, and Error messages, appear in logs
+   */
+  DEBUG = 'DEBUG',
+  /**
+   * All messages (Debug, Error, Info, and Trace) appear in logs
+   */
+  ALL = 'ALL',
 }
 
 /**
- * Configuration for Cognito user-pools in AppSync
+ * Logging configuration for AppSync
  */
-export interface UserPoolConfig {
+export interface LogConfig {
   /**
-   * The Cognito user pool to use as identity source
-   */
-  readonly userPool: IUserPool;
-  /**
-   * the optional app id regex
+   * exclude verbose content
    *
-   * @default -  None
+   * @default false
    */
-  readonly appIdClientRegex?: string;
+  readonly excludeVerboseContent?: boolean | IResolvable;
   /**
-   * Default auth action
+   * log level for fields
    *
-   * @default ALLOW
+   * @default - Use AppSync default
    */
-  readonly defaultAction?: UserPoolDefaultAction;
+  readonly fieldLogLevel?: FieldLogLevel;
+
+  /**
+   * The role for CloudWatch Logs
+   *
+   * @default - None
+   */
+  readonly role?: IRole;
+
+  /**
+  * The number of days log events are kept in CloudWatch Logs.
+  * By default AppSync keeps the logs infinitely. When updating this property,
+  * unsetting it doesn't remove the log retention policy.
+  * To remove the retention policy, set the value to `INFINITE`
+  *
+  * @default RetentionDays.INFINITE
+  */
+  readonly retention?: RetentionDays;
 }
 
 /**

@@ -1,7 +1,6 @@
-import { IRole } from '../../aws-iam';
+import { IUserPool } from '../../aws-cognito';
 import { IFunction } from '../../aws-lambda';
-import { RetentionDays } from '../../aws-logs';
-import { Duration, Expiration, IResolvable } from '../../core';
+import { Duration, Expiration } from '../../core';
 
 /**
  * enum with all possible values for AppSync authorization type
@@ -30,33 +29,7 @@ export enum AuthorizationType {
 }
 
 /**
- * log-level for fields in AppSync
- */
-export enum FieldLogLevel {
-  /**
-   * Resolver logging is disabled
-   */
-  NONE = 'NONE',
-  /**
-   * Only Error messages appear in logs
-   */
-  ERROR = 'ERROR',
-  /**
-   * Info and Error messages appear in logs
-   */
-  INFO = 'INFO',
-  /**
-   * Debug, Info, and Error messages, appear in logs
-   */
-  DEBUG = 'DEBUG',
-  /**
-   * All messages (Debug, Error, Info, and Trace) appear in logs
-   */
-  ALL = 'ALL',
-}
-
-/**
- * Configuration for API Key authorization in AppSync
+ * Configuration for API Key authorization in AppSync GraphQL APIs and Event APIs.
  */
 export interface ApiKeyConfig {
   /**
@@ -81,7 +54,59 @@ export interface ApiKeyConfig {
 }
 
 /**
- * Configuration for OpenID Connect authorization in AppSync
+ * Configuration for Cognito user-pools in AppSync Event APIs.
+ */
+export interface CognitoConfig {
+  /**
+   * The Cognito user pool to use as identity source
+   */
+  readonly userPool: IUserPool;
+  /**
+   * the optional app id regex
+   *
+   * @default -  None
+   */
+  readonly appIdClientRegex?: string;
+}
+
+/**
+ * enum with all possible values for Cognito user-pool default actions in AppSync GraphQL APIs
+ */
+export enum UserPoolDefaultAction {
+  /**
+   * ALLOW access to API
+   */
+  ALLOW = 'ALLOW',
+  /**
+   * DENY access to API
+   */
+  DENY = 'DENY',
+}
+
+/**
+ * Configuration for Cognito user-pools in AppSync GraphQL APIs
+ */
+export interface UserPoolConfig {
+  /**
+   * The Cognito user pool to use as identity source
+   */
+  readonly userPool: IUserPool;
+  /**
+   * the optional app id regex
+   *
+   * @default -  None
+   */
+  readonly appIdClientRegex?: string;
+  /**
+   * Default auth action
+   *
+   * @default ALLOW
+   */
+  readonly defaultAction?: UserPoolDefaultAction;
+}
+
+/**
+ * Configuration for OpenID Connect authorization in AppSync GraphQL APIs and Event APIs.
  */
 export interface OpenIdConnectConfig {
   /**
@@ -110,7 +135,8 @@ export interface OpenIdConnectConfig {
 }
 
 /**
- * Configuration for Lambda authorization in AppSync. Note that you can only have a single AWS Lambda function configured to authorize your API.
+ * Configuration for Lambda authorization in AppSync GraphQL APIs and Event APIs.
+ * Note that you can only have a single AWS Lambda function configured to authorize your API.
  */
 export interface LambdaAuthorizerConfig {
   /**
@@ -135,38 +161,3 @@ export interface LambdaAuthorizerConfig {
    */
   readonly validationRegex?: string;
 }
-/**
- * Logging configuration for AppSync
- */
-export interface LogConfig {
-  /**
-   * exclude verbose content
-   *
-   * @default false
-   */
-  readonly excludeVerboseContent?: boolean | IResolvable;
-  /**
-   * log level for fields
-   *
-   * @default - Use AppSync default
-   */
-  readonly fieldLogLevel?: FieldLogLevel;
-
-  /**
-   * The role for CloudWatch Logs
-   *
-   * @default - None
-   */
-  readonly role?: IRole;
-
-  /**
-  * The number of days log events are kept in CloudWatch Logs.
-  * By default AppSync keeps the logs infinitely. When updating this property,
-  * unsetting it doesn't remove the log retention policy.
-  * To remove the retention policy, set the value to `INFINITE`
-  *
-  * @default RetentionDays.INFINITE
-  */
-  readonly retention?: RetentionDays;
-}
-
