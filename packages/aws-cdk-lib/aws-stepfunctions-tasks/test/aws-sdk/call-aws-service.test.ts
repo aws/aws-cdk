@@ -401,7 +401,7 @@ test('IAM policy for elasticloadbalancingv2', () => {
     PolicyDocument: {
       Statement: [
         {
-          Action: 'elasticloadbalancing:DescribeTargetGroups',
+          Action: 'elasticloadbalancing:describeTargetGroups',
           Resource: '*',
           Effect: 'Allow',
         },
