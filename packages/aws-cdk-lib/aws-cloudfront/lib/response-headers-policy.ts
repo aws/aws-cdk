@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { CfnResponseHeadersPolicy } from './cloudfront.generated';
-import { Duration, Names, Resource, Token } from '../../core';
+import { Duration, Names, Resource, Token, withResolved } from '../../core';
 
 /**
  * Represents a response headers policy.
@@ -130,6 +130,52 @@ export class ResponseHeadersPolicy extends Resource implements IResponseHeadersP
   }
 
   private _renderCorsConfig(behavior: ResponseHeadersCorsBehavior): CfnResponseHeadersPolicy.CorsConfigProperty {
+    withResolved(behavior.accessControlAllowHeaders, (headers) => {
+      if (headers.length === 0) {
+        // Invalid request provided: AWS::CloudFront::ResponseHeadersPolicy: The parameter Allow Headers  needs to have at least one item.
+        throw new Error('accessControlAllowHeaders needs to have at least one item');
+      }
+      for (const header of headers) {
+        if (Token.isUnresolved(header)) continue;
+        if (containsMultipleStars(header)) {
+          // Invalid request provided: AWS::CloudFront::ResponseHeadersPolicy
+          throw new Error("accessControlAllowHeaders contains multiple '*' chars; only 1 is allowed");
+        } else if (!isValidHeaderName(header)) {
+          // Invalid request provided: AWS::CloudFront::ResponseHeadersPolicy
+          throw new Error('accessControlAllowHeaders contains illegal character');
+        }
+      }
+    });
+    withResolved(behavior.accessControlAllowMethods, (methods) => {
+      const allowedMethods = ['GET', 'DELETE', 'HEAD', 'OPTIONS', 'PATCH', 'POST', 'PUT', 'ALL'];
+      if (methods.length === 0) {
+        // Invalid request provided: AWS::CloudFront::ResponseHeadersPolicy
+        throw new Error('accessControlAllowMethods needs to have at least one item');
+      } else if (methods.includes('ALL') && methods.length !== 1) {
+        // Invalid request provided: AWS::CloudFront::ResponseHeadersPolicy
+        throw new Error("accessControlAllowMethods cannot be mixed 'ALL' with other values");
+      } else if (!methods.every((method) => Token.isUnresolved(method) || allowedMethods.includes(method))) {
+        // Internal error reported from downstream service during operation 'AWS::CloudFront::ResponseHeadersPolicy'
+        throw new Error(`accessControlAllowMethods contains unexpected method name; allowed values: ${allowedMethods.join(', ')}`);
+      }
+    });
+    withResolved(behavior.accessControlAllowOrigins, (origins) => {
+      if (origins.length === 0) {
+        // Invalid request provided: AWS::CloudFront::ResponseHeadersPolicy: The parameter Allow Origin  needs to have at least one item.
+        throw new Error('accessControlAllowOrigins needs to have at least one item');
+      }
+    });
+    withResolved(behavior.accessControlExposeHeaders, (headers) => {
+      if (!headers) return;
+      for (const header of headers) {
+        if (Token.isUnresolved(header)) continue;
+        if (!isValidHeaderName(header)) {
+          // Invalid request provided: AWS::CloudFront::ResponseHeadersPolicy
+          throw new Error('accessControlExposeHeaders contains illegal character');
+        }
+      }
+    });
+
     return {
       accessControlAllowCredentials: behavior.accessControlAllowCredentials,
       accessControlAllowHeaders: { items: behavior.accessControlAllowHeaders },
@@ -211,6 +257,9 @@ export interface ResponseHeadersCorsBehavior {
 
   /**
    * A list of HTTP methods that CloudFront includes as values for the Access-Control-Allow-Methods HTTP response header.
+   *
+   * Allowed methods: `'GET'`, `'DELETE'`, `'HEAD'`, `'OPTIONS'`, `'PATCH'`, `'POST'`, and `'PUT'`.
+   * You can specify `['ALL']` to allow all methods.
    */
   readonly accessControlAllowMethods: string[];
 
@@ -508,4 +557,14 @@ export enum HeadersReferrerPolicy {
 function hasMaxDecimalPlaces(num: number, decimals: number): boolean {
   const parts = num.toString().split('.');
   return parts.length === 1 || parts[1].length <= decimals;
+}
+
+function containsMultipleStars(value: string) {
+  return Array.from(value.matchAll(/\*/g)).length > 1;
+}
+
+function isValidHeaderName(value: string) {
+  // the valid characters are defined in RFC 9110 section 5.6.2.
+  // https://httpwg.org/specs/rfc9110.html#rule.token.separators
+  return /^[!#$%&'*+\-.^_`|~0-9A-Za-z]+$/.test(value);
 }
