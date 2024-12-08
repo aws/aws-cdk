@@ -382,3 +382,31 @@ test('IAM policy for efs', () => {
     },
   });
 });
+
+test('IAM policy for elasticloadbalancingv2', () => {
+  // WHEN
+  const task = new tasks.CallAwsService(stack, 'DescribeELBV2TargetGroups', {
+    service: 'elasticloadbalancingv2',
+    action: 'describeTargetGroups',
+    iamResources: ['*'],
+    resultPath: sfn.JsonPath.DISCARD,
+  });
+
+  new sfn.StateMachine(stack, 'StateMachine', {
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'elasticloadbalancing:describeTargetGroups',
+          Resource: '*',
+          Effect: 'Allow',
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});
