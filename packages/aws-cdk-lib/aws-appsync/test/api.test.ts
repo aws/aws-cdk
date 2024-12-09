@@ -1,7 +1,8 @@
 import { Match, Template } from '../../assertions';
 import { UserPool } from '../../aws-cognito';
-import { Role, ServicePrincipal } from '../../aws-iam';
+import { ManagedPolicy, Role, ServicePrincipal } from '../../aws-iam';
 import { Code, Function, Runtime } from '../../aws-lambda';
+import { RetentionDays } from '../../aws-logs';
 import * as cdk from '../../core';
 import * as appsync from '../lib';
 
@@ -283,6 +284,127 @@ describe('Authorization Config test', () => {
       ).toThrow('You can only have a single AWS Lambda function configured to authorize your API.');
     },
   );
+});
+
+describe('Logging Config test', () => {
+  test.each([
+    [appsync.LogLevel.ALL],
+    [appsync.LogLevel.ERROR],
+    [appsync.LogLevel.NONE],
+    [appsync.LogLevel.INFO],
+    [appsync.LogLevel.DEBUG],
+  ])('Event APIs with LogLevel %s', (logLevel) => {
+    // WHEN
+    new appsync.Api(stack, 'api', {
+      authProviders: [
+        appsync.AuthProvider.apiKeyAuth(),
+      ],
+      connectionAuthModes: [
+        appsync.AuthorizationType.API_KEY,
+      ],
+      defaultPublishAuthModes: [
+        appsync.AuthorizationType.API_KEY,
+      ],
+      defaultSubscribeAuthModes: [
+        appsync.AuthorizationType.API_KEY,
+      ],
+      eventLogConfig: {
+        logLevel,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Api', {
+      EventConfig: {
+        LogConfig: {
+          LogLevel: logLevel,
+        },
+      },
+    });
+  });
+
+  test('Event API should be configured with custom CloudWatch Logs role when specified', () => {
+    // GIVEN
+    const cloudWatchLogRole = new Role(stack, 'CloudWatchLogRole', {
+      assumedBy: new ServicePrincipal('appsync.amazonaws.com'),
+      managedPolicies: [
+        ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSAppSyncPushToCloudWatchLogs'),
+      ],
+    });
+
+    // WHEN
+    new appsync.Api(stack, 'api', {
+      authProviders: [
+        appsync.AuthProvider.apiKeyAuth(),
+      ],
+      connectionAuthModes: [
+        appsync.AuthorizationType.API_KEY,
+      ],
+      defaultPublishAuthModes: [
+        appsync.AuthorizationType.API_KEY,
+      ],
+      defaultSubscribeAuthModes: [
+        appsync.AuthorizationType.API_KEY,
+      ],
+      eventLogConfig: {
+        role: cloudWatchLogRole,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Api', {
+      EventConfig: {
+        LogConfig: {
+          CloudWatchLogsRoleArn: {
+            'Fn::GetAtt': [
+              'CloudWatchLogRoleE3242F1C',
+              'Arn',
+            ],
+          },
+        },
+      },
+    });
+  });
+
+  test('Log retention should be configured with given retention time when specified', () => {
+    // WHEN
+    new appsync.Api(stack, 'api', {
+      authProviders: [
+        appsync.AuthProvider.apiKeyAuth(),
+      ],
+      connectionAuthModes: [
+        appsync.AuthorizationType.API_KEY,
+      ],
+      defaultPublishAuthModes: [
+        appsync.AuthorizationType.API_KEY,
+      ],
+      defaultSubscribeAuthModes: [
+        appsync.AuthorizationType.API_KEY,
+      ],
+      eventLogConfig: {
+        retention: RetentionDays.ONE_WEEK,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
+      LogGroupName: {
+        'Fn::Join': [
+          '',
+          [
+            '/aws/appsync/apis/',
+            {
+              'Fn::GetAtt': [
+                'apiC8550315',
+                'ApiId',
+              ],
+            },
+          ],
+        ],
+      },
+      RetentionInDays: 7,
+    });
+  });
 });
 
 describe('apiName test', () => {

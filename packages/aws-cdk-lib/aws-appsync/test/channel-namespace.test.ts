@@ -29,7 +29,7 @@ test('Create channel namespace', () => {
     channelNamespaceName: 'MyChannelNamespace',
     publishAuthModes: [appsync.AuthorizationType.API_KEY],
     subscribeAuthModes: [appsync.AuthorizationType.API_KEY],
-    code: appsync.Code.fromInline('/* lambda authentication code here.*/'),
+    code: appsync.Code.fromInline('/* event handler code here.*/'),
   });
 
   // THEN
@@ -38,7 +38,7 @@ test('Create channel namespace', () => {
     Name: 'MyChannelNamespace',
     PublishAuthModes: [{ AuthType: 'API_KEY' }],
     SubscribeAuthModes: [{ AuthType: 'API_KEY' }],
-    CodeHandlers: '/* lambda authentication code here.*/',
+    CodeHandlers: '/* event handler code here.*/',
   });
 });
 
