@@ -3480,6 +3480,35 @@ describe('cluster', () => {
       }).toThrow(`CIDR block ${overlappingCidr} in remote node network #1 should not overlap with CIDR block ${overlappingCidr} in remote node network #2`);
     });
 
+    test('create a cluster using remote network config with overlapping CIDRs across two different remote pod networks', () => {
+      // GIVEN
+      const { stack } = testFixture();
+      const overlappingCidr = '172.16.0.0/12';
+      const remoteNodeNetworkCidrs = ['10.20.30.40/20'];
+      const remotePodNetworkCidrs1 = ['192.168.0.0/12', overlappingCidr];
+      const remotePodNetworkCidrs2 = [overlappingCidr, '10.0.0.0/16'];
+
+      // WHEN
+      expect(() => {
+        new eks.Cluster(stack, 'Cluster', {
+          version: CLUSTER_VERSION,
+          remoteNodeNetworks: [
+            {
+              cidrs: remoteNodeNetworkCidrs,
+            },
+          ],
+          remotePodNetworks: [
+            {
+              cidrs: remotePodNetworkCidrs1,
+            },
+            {
+              cidrs: remotePodNetworkCidrs2,
+            },
+          ],
+        });
+      }).toThrow(`CIDR block ${overlappingCidr} in remote pod network #1 should not overlap with CIDR block ${overlappingCidr} in remote pod network #2`);
+    });
+
     test('create a cluster using remote network config with overlapping CIDRs within the same remote node network', () => {
       // GIVEN
       const { stack } = testFixture();
@@ -3496,7 +3525,7 @@ describe('cluster', () => {
             },
           ],
         });
-      }).toThrow(`CIDR ${overlappingCidr} should not overlap with CIDR ${overlappingCidr} in remote node network #1`);
+      }).toThrow(`CIDR ${overlappingCidr} should not overlap with another CIDR in remote node network #1`);
     });
 
     test('create a cluster using remote network config with overlapping CIDRs within the same remote pod network', () => {
@@ -3521,7 +3550,7 @@ describe('cluster', () => {
             },
           ],
         });
-      }).toThrow(`CIDR ${overlappingCidr} should not overlap with CIDR ${overlappingCidr} in remote pod network #1`);
+      }).toThrow(`CIDR ${overlappingCidr} should not overlap with another CIDR in remote pod network #1`);
     });
   });
 });
