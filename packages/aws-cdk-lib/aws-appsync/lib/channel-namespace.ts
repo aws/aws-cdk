@@ -99,14 +99,8 @@ export class ChannelNamespace extends Construct {
 
     const code = props.code?.bind(this);
 
-    this.validateAuthorizationConfig(
-      props.api.authProviderTypes,
-      props.authorizationConfig?.publishAuthModeTypes ?? [],
-    );
-    this.validateAuthorizationConfig(
-      props.api.authProviderTypes,
-      props.authorizationConfig?.subscribeAuthModeTypes ?? [],
-    );
+    this.validateAuthorizationConfig(props.api.authProviderTypes, props.authorizationConfig?.publishAuthModeTypes ?? []);
+    this.validateAuthorizationConfig(props.api.authProviderTypes, props.authorizationConfig?.subscribeAuthModeTypes ?? []);
 
     this.channelNamespace = new CfnChannelNamespace(this, 'Resource', {
       name: props.name ?? id,
@@ -124,10 +118,7 @@ export class ChannelNamespace extends Construct {
     this.arn = this.channelNamespace.attrChannelNamespaceArn;
   }
 
-  private validateAuthorizationConfig(
-    authProviderTypes: AuthorizationType[],
-    authModeTypes: AuthorizationType[],
-  ) {
+  private validateAuthorizationConfig(authProviderTypes: AuthorizationType[], authModeTypes: AuthorizationType[]) {
     for (const mode in authModeTypes) {
       if (!authProviderTypes.find((authProvider) => authProvider === mode)) {
         throw new Error(`Missing authorization configuration for ${mode}`);

@@ -5,8 +5,7 @@ import {
   AuthorizationMode,
   AuthorizationType,
   ApiKeyConfig,
-  UserPoolConfig,
-  UserPoolDefaultAction,
+  CognitoConfig,
   LambdaAuthorizerConfig,
   OpenIdConnectConfig,
 } from './auth-config';
@@ -62,7 +61,7 @@ export interface IEventApi extends IResource {
    *
    * @attribute
    */
-  readonly arn: string;
+  readonly apiArn: string;
 
   /**
    * The Authorization Types for this Event Api
@@ -127,12 +126,12 @@ export abstract class EventApiBase extends Resource implements IEventApi {
   /**
    * the ARN of the API
    */
-  public abstract readonly arn: string;
+  public abstract readonly apiArn: string;
 
   /**
    * the domain name of the API
    */
-  public abstract readonly endpointDns: IResolvable;
+  public abstract readonly dns: IResolvable;
 
   /**
    * The Authorization Types for this Event Api
@@ -208,7 +207,7 @@ export interface EventApiProps {
   /**
    * the name of the Event API
    */
-  readonly apiName: string;
+  readonly name: string;
 
   /**
    * Optional authorization configuration
@@ -241,7 +240,7 @@ export interface EventApiAttributes {
   /**
    * the name of the Event API
    */
-  readonly apiName: string;
+  readonly name: string;
 
   /**
    * an unique AWS AppSync Event API identifier
@@ -257,7 +256,7 @@ export interface EventApiAttributes {
   /**
    * the domain name of the API
    */
-  readonly apiDns: IResolvable;
+  readonly dns: IResolvable;
 
   /**
    * The Authorization Types for this Event Api
@@ -288,8 +287,8 @@ export class EventApi extends EventApiBase {
       });
     class Import extends EventApiBase {
       public readonly apiId = attrs.apiId;
-      public readonly arn = arn;
-      public readonly endpointDns = attrs.apiDns;
+      public readonly apiArn = arn;
+      public readonly dns = attrs.dns;
       public readonly authProviderTypes = attrs.authProviderTypes ?? [];
     }
     return new Import(scope, id);
@@ -299,7 +298,7 @@ export class EventApi extends EventApiBase {
    * the name of the Event Api
    * @attribute ApiName
    */
-  public readonly apiName: string;
+  public readonly name: string;
 
   /**
    * an unique AWS AppSync Event API identifier
@@ -310,12 +309,12 @@ export class EventApi extends EventApiBase {
   /**
    * the ARN of the API
    */
-  public readonly arn: string;
+  public readonly apiArn: string;
 
   /**
    * the domain name of the API
    */
-  public readonly endpointDns: IResolvable;
+  public readonly dns: IResolvable;
 
   /**
    * The Authorization Types for this Event Api
@@ -379,17 +378,17 @@ export class EventApi extends EventApiBase {
     };
 
     this.api = new CfnApi(this, 'Resource', {
-      name: props.apiName,
+      name: props.name,
       eventConfig: this.eventConfig,
       ownerContact: props.ownerContact,
     });
 
     this.api.applyRemovalPolicy(RemovalPolicy.DESTROY);
 
-    this.apiName = this.api.name;
+    this.name = this.api.name;
     this.apiId = this.api.attrApiId;
-    this.arn = this.api.attrApiArn;
-    this.endpointDns = this.api.attrDns;
+    this.apiArn = this.api.attrApiArn;
+    this.dns = this.api.attrDns;
 
     const apiKeyConfigs = authProviders.filter((mode) => mode.authorizationType === AuthorizationType.API_KEY);
     for (const mode of apiKeyConfigs) {
@@ -404,7 +403,7 @@ export class EventApi extends EventApiBase {
       config?.handler.addPermission(`${id}-appsync`, {
         principal: new ServicePrincipal('appsync.amazonaws.com'),
         action: 'lambda:InvokeFunction',
-        sourceArn: this.arn,
+        sourceArn: this.apiArn,
       });
     }
 
@@ -446,13 +445,12 @@ export class EventApi extends EventApiBase {
     };
   }
 
-  private setupUserPoolConfig(config?: UserPoolConfig) {
+  private setupCognitoConfig(config?: CognitoConfig) {
     if (!config) return undefined;
     return {
       userPoolId: config.userPool.userPoolId,
       awsRegion: config.userPool.env.region,
       appIdClientRegex: config.appIdClientRegex,
-      defaultAction: config.defaultAction || UserPoolDefaultAction.ALLOW,
     };
   }
 
@@ -475,7 +473,7 @@ export class EventApi extends EventApiBase {
     return authProviders.reduce<CfnApi.AuthProviderProperty[]>((acc, mode) => {
       acc.push({
         authType: mode.authorizationType,
-        cognitoConfig: this.setupUserPoolConfig(mode.userPoolConfig),
+        cognitoConfig: this.setupCognitoConfig(mode.cognitoConfig),
         openIdConnectConfig: this.setupOpenIdConnectConfig(mode.openIdConnectConfig),
         lambdaAuthorizerConfig: this.setupLambdaAuthorizerConfig(mode.lambdaAuthorizerConfig),
       });
@@ -520,8 +518,8 @@ export class EventApi extends EventApiBase {
       if (authProvider.authorizationType === AuthorizationType.OIDC && !authProvider.openIdConnectConfig) {
         throw new Error('Missing OIDC Configuration');
       }
-      if (authProvider.authorizationType === AuthorizationType.USER_POOL && !authProvider.userPoolConfig) {
-        throw new Error('Missing User Pool Configuration');
+      if (authProvider.authorizationType === AuthorizationType.USER_POOL && !authProvider.cognitoConfig) {
+        throw new Error('Missing Cognito Configuration');
       }
       if (authProvider.authorizationType === AuthorizationType.LAMBDA && !authProvider.lambdaAuthorizerConfig) {
         throw new Error('Missing Lambda Configuration');

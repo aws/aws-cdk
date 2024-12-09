@@ -46,6 +46,11 @@ export interface AuthorizationMode {
    */
   readonly userPoolConfig?: UserPoolConfig;
   /**
+   * If authorizationType is `AuthorizationType.USER_POOL`, this option is required.
+   * @default - none
+   */
+  readonly cognitoConfig?: CognitoConfig;
+  /**
    * If authorizationType is `AuthorizationType.API_KEY`, this option can be configured.
    * @default - name: 'DefaultAPIKey' | description: 'Default API Key created by CDK'
    */
@@ -96,6 +101,22 @@ export interface UserPoolConfig {
    * @default ALLOW
    */
   readonly defaultAction?: UserPoolDefaultAction;
+}
+
+/**
+ * Configuration for Cognito user-pools in AppSync for Api
+ */
+export interface CognitoConfig {
+  /**
+   * The Cognito user pool to use as identity source
+   */
+  readonly userPool: IUserPool;
+  /**
+   * the optional app id regex
+   *
+   * @default -  None
+   */
+  readonly appIdClientRegex?: string;
 }
 
 /**
