@@ -1035,8 +1035,8 @@ const api = new appsync.Api(this, 'api', {
 });
 
 // You can get custom HTTP/Realtime endpoint
-new CfnOutput(this, 'AWS AppSync Events HTTP endpoint', { value: stack.api.customHttpEndpoint });
-new CfnOutput(this, 'AWS AppSync Events Realtime endpoint', { value: stack.api.customRealtimeEndpoint });
+new CfnOutput(this, 'AWS AppSync Events HTTP endpoint', { value: api.customHttpEndpoint });
+new CfnOutput(this, 'AWS AppSync Events Realtime endpoint', { value: api.customRealtimeEndpoint });
 ```
 
 ### Log Group
