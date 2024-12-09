@@ -83,9 +83,9 @@ describe('AppSync Event Api auth configuration', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Api', {
       Name: 'apiWithMultipleProviders',
       EventConfig: {
-        ConnectionAuthModes: [{ AuthType: 'API_KEY' }, { AuthType: 'AWS_IAM' }],
-        DefaultPublishAuthModes: [{ AuthType: 'API_KEY' }, { AuthType: 'AWS_IAM' }],
-        DefaultSubscribeAuthModes: [{ AuthType: 'API_KEY' }, { AuthType: 'AWS_IAM' }],
+        ConnectionAuthModes: [{ AuthType: appsync.AuthorizationType.API_KEY }, { AuthType: appsync.AuthorizationType.IAM }],
+        DefaultPublishAuthModes: [{ AuthType: appsync.AuthorizationType.API_KEY }, { AuthType: appsync.AuthorizationType.IAM }],
+        DefaultSubscribeAuthModes: [{ AuthType: appsync.AuthorizationType.API_KEY }, { AuthType: appsync.AuthorizationType.IAM }],
       },
     });
   });
@@ -117,9 +117,9 @@ describe('AppSync Event Api auth configuration', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Api', {
       Name: 'apiWithMultipleProviders',
       EventConfig: {
-        ConnectionAuthModes: [{ AuthType: 'AWS_LAMBDA' }],
-        DefaultPublishAuthModes: [{ AuthType: 'AWS_LAMBDA' }],
-        DefaultSubscribeAuthModes: [{ AuthType: 'AWS_LAMBDA' }],
+        ConnectionAuthModes: [{ AuthType: appsync.AuthorizationType.LAMBDA }],
+        DefaultPublishAuthModes: [{ AuthType: appsync.AuthorizationType.LAMBDA }],
+        DefaultSubscribeAuthModes: [{ AuthType: appsync.AuthorizationType.LAMBDA }],
       },
     });
   });
@@ -138,9 +138,9 @@ describe('AppSync Event Api auth configuration', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Api', {
       Name: 'apiWithMultipleProviders',
       EventConfig: {
-        ConnectionAuthModes: [{ AuthType: 'AWS_IAM' }],
-        DefaultPublishAuthModes: [{ AuthType: 'API_KEY' }, { AuthType: 'AWS_IAM' }],
-        DefaultSubscribeAuthModes: [{ AuthType: 'API_KEY' }, { AuthType: 'AWS_IAM' }],
+        ConnectionAuthModes: [{ AuthType: appsync.AuthorizationType.IAM }],
+        DefaultPublishAuthModes: [{ AuthType: appsync.AuthorizationType.API_KEY }, { AuthType: appsync.AuthorizationType.IAM }],
+        DefaultSubscribeAuthModes: [{ AuthType: appsync.AuthorizationType.API_KEY }, { AuthType: appsync.AuthorizationType.IAM }],
       },
     });
   });
@@ -184,9 +184,9 @@ describe('AppSync Event Api auth configuration', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Api', {
       Name: 'apiWithUserPool',
       EventConfig: {
-        ConnectionAuthModes: [{ AuthType: 'AMAZON_COGNITO_USER_POOLS' }],
-        DefaultPublishAuthModes: [{ AuthType: 'AMAZON_COGNITO_USER_POOLS' }, { AuthType: 'OPENID_CONNECT' }],
-        DefaultSubscribeAuthModes: [{ AuthType: 'AMAZON_COGNITO_USER_POOLS' }, { AuthType: 'OPENID_CONNECT' }],
+        ConnectionAuthModes: [{ AuthType: appsync.AuthorizationType.USER_POOL }],
+        DefaultPublishAuthModes: [{ AuthType: appsync.AuthorizationType.USER_POOL }, { AuthType: appsync.AuthorizationType.OIDC }],
+        DefaultSubscribeAuthModes: [{ AuthType: appsync.AuthorizationType.USER_POOL }, { AuthType: appsync.AuthorizationType.OIDC }],
       },
     });
   });
