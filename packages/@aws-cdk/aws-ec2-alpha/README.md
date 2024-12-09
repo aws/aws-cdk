@@ -105,6 +105,37 @@ new VpcV2(this, 'Vpc', {
 
 Since `VpcV2` does not create subnets automatically, users have full control over IP addresses allocation across subnets.
 
+### Bring your own IPv6 addresses (BYOIP) 
+
+If you have your own IP address that you would like to use with EC2, you can set up an IPv6 pool via the AWS CLI, and use that pool ID in your application.
+
+Once you have certified your IP address block with an ROA and have an X509 certificate, you can run the following command to provision your CIDR block with AWS:
+
+```shell
+aws ec2 provision-byoip-cidr --region <region> --cidr <your CIDR block> --cidr-authorization-context Message="1|aws|<account>|<your CIDR block>|<expiration date>|SHA256".Signature="<signature>"
+```
+
+When your BYOIP CIDR is provisioned, you can run the following command to retrieve your IPv6 pool ID, which will be used in your VPC declaration:
+
+```shell
+aws ec2 describe-byoip-cidr --region <region>
+```
+
+For more help on setting up your IPv6 address, please review the [EC2 Documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-byoip.html).
+
+Once you have provisioned your address block, you can use the IPv6 in your VPC as follows:
+
+```ts
+const myVpc = new VpcV2(this, 'Vpc', {
+  primaryAddressBlock: IpAddresses.ipv4('10.1.0.0/16'),
+  secondaryAddressBlocks: [IpAddresses.ipv6Pool('2001:db8::/32', {
+    cidrBlockName: 'MyByoipCidrBlock',
+    ipv6Pool: 'ipv6pool-ec2-someHashValue',
+  })],
+  enableDnsHostnames: true,
+  enableDnsSupport: true,
+});
+```
 
 ## Routing
 
