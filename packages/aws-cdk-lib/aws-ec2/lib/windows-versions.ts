@@ -23,6 +23,10 @@ export enum WindowsVersion {
   WINDOWS_SERVER_2019_ENGLISH_FULL_EKS_OPTIMIZED_1_28 = 'Windows_Server-2019-English-Full-EKS_Optimized-1.28',
   WINDOWS_SERVER_2019_ENGLISH_CORE_EKS_OPTIMIZED_1_29 = 'Windows_Server-2019-English-Core-EKS_Optimized-1.29',
   WINDOWS_SERVER_2019_ENGLISH_FULL_EKS_OPTIMIZED_1_29 = 'Windows_Server-2019-English-Full-EKS_Optimized-1.29',
+  WINDOWS_SERVER_2019_ENGLISH_CORE_EKS_OPTIMIZED_1_30 = 'Windows_Server-2019-English-Core-EKS_Optimized-1.30',
+  WINDOWS_SERVER_2019_ENGLISH_FULL_EKS_OPTIMIZED_1_30 = 'Windows_Server-2019-English-Full-EKS_Optimized-1.30',
+  WINDOWS_SERVER_2019_ENGLISH_CORE_EKS_OPTIMIZED_1_31 = 'Windows_Server-2019-English-Core-EKS_Optimized-1.31',
+  WINDOWS_SERVER_2019_ENGLISH_FULL_EKS_OPTIMIZED_1_31 = 'Windows_Server-2019-English-Full-EKS_Optimized-1.31',
   /** @deprecated - reached EKS end of extended support */
   WINDOWS_SERVER_2022_ENGLISH_CORE_EKS_OPTIMIZED_1_23 = 'Windows_Server-2022-English-Core-EKS_Optimized-1.23',
   /** @deprecated - reached EKS end of extended support */
@@ -39,6 +43,11 @@ export enum WindowsVersion {
   WINDOWS_SERVER_2022_ENGLISH_FULL_EKS_OPTIMIZED_1_28 = 'Windows_Server-2022-English-Full-EKS_Optimized-1.28',
   WINDOWS_SERVER_2022_ENGLISH_CORE_EKS_OPTIMIZED_1_29 = 'Windows_Server-2022-English-Core-EKS_Optimized-1.29',
   WINDOWS_SERVER_2022_ENGLISH_FULL_EKS_OPTIMIZED_1_29 = 'Windows_Server-2022-English-Full-EKS_Optimized-1.29',
+  WINDOWS_SERVER_2022_ENGLISH_CORE_EKS_OPTIMIZED_1_30 = 'Windows_Server-2022-English-Core-EKS_Optimized-1.30',
+  WINDOWS_SERVER_2022_ENGLISH_FULL_EKS_OPTIMIZED_1_30 = 'Windows_Server-2022-English-Full-EKS_Optimized-1.30',
+  WINDOWS_SERVER_2022_ENGLISH_CORE_EKS_OPTIMIZED_1_31 = 'Windows_Server-2022-English-Core-EKS_Optimized-1.31',
+  WINDOWS_SERVER_2022_ENGLISH_FULL_EKS_OPTIMIZED_1_31 = 'Windows_Server-2022-English-Full-EKS_Optimized-1.31',
+
   /** EKS Optimized - End */
   /** 1709 - Start */
   /** @deprecated - reached Microsoft End-of-Support */
