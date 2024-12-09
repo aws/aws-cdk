@@ -981,7 +981,7 @@ const api = new appsync.Api(this, 'api', {
     appsync.AuthProvider.apiKeyAuth(),
     appsync.AuthProvider.lambdaAuth({
       handler,
-      resultsCacheTtl: cdk.Duration.minutes(6),
+      resultsCacheTtl: Duration.minutes(6),
       validationRegex: 'test',
     }),
   ],
@@ -1051,7 +1051,7 @@ new appsync.ChannelNamespace(this, 'Namespace', {
 });
 
 // You can also create by addChannelNamespace method
-api.addChannelNamespace('AnotherNameSpace');
+api.addChannelNamespace('AnotherNameSpace', {});
 ```
 
 The publishing and subscribing authorization configuration is automatically applied to all namespaces.
