@@ -250,7 +250,7 @@ export class Alarm extends AlarmBase {
   /**
    * Trigger this action if the alarm fires
    *
-   * Typically SnsAcion or AutoScalingAction.
+   * Typically SnsAction or AutoScalingAction.
    */
   public addAlarmAction(...actions: IAlarmAction[]) {
     if (this.alarmActionArns === undefined) {

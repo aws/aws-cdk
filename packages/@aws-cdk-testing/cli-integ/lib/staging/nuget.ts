@@ -25,7 +25,7 @@ export async function uploadDotnetPackages(packages: string[], usageDir: UsageDi
       '--disable-buffering',
       '--timeout', '600',
       '--skip-duplicate'], {
-      output,
+      outputs: [output],
     });
 
     console.log(`✅ ${pkg}`);

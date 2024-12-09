@@ -3,7 +3,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
 import { print, error } from '../../logging';
 import { flatten } from '../../util/arrays';
-import { ISDK } from '../aws-auth';
+import type { SDK } from '../aws-auth';
 
 /**
  * After reading events from all CloudWatch log groups
@@ -43,7 +43,7 @@ interface LogGroupsAccessSettings {
   /**
    * The SDK for a given environment (account/region)
    */
-  readonly sdk: ISDK;
+  readonly sdk: SDK;
 
   /**
    * A map of log groups and associated startTime in a given account.
@@ -101,12 +101,15 @@ export class CloudWatchLogEventMonitor {
    * per env along with the SDK object that has access to read from
    * that environment.
    */
-  public addLogGroups(env: cxapi.Environment, sdk: ISDK, logGroupNames: string[]): void {
+  public addLogGroups(env: cxapi.Environment, sdk: SDK, logGroupNames: string[]): void {
     const awsEnv = `${env.account}:${env.region}`;
-    const logGroupsStartTimes = logGroupNames.reduce((acc, groupName) => {
-      acc[groupName] = this.startTime;
-      return acc;
-    }, {} as { [logGroupName: string]: number });
+    const logGroupsStartTimes = logGroupNames.reduce(
+      (acc, groupName) => {
+        acc[groupName] = this.startTime;
+        return acc;
+      },
+      {} as { [logGroupName: string]: number },
+    );
     this.envsLogGroupsAccessSettings.set(awsEnv, {
       sdk,
       logGroupsStartTimes: {
@@ -117,16 +120,19 @@ export class CloudWatchLogEventMonitor {
   }
 
   private scheduleNextTick(sleep: number): void {
-    setTimeout(() => void(this.tick()), sleep);
+    setTimeout(() => void this.tick(), sleep);
   }
 
   private async tick(): Promise<void> {
+    // excluding from codecoverage because this
+    // doesn't always run (depends on timing)
+    /* istanbul ignore next */
     if (!this.active) {
       return;
     }
     try {
       const events = flatten(await this.readNewEvents());
-      events.forEach(event => {
+      events.forEach((event) => {
         this.print(event);
       });
     } catch (e) {
@@ -147,6 +153,8 @@ export class CloudWatchLogEventMonitor {
         promises.push(this.readEventsFromLogGroup(settings, group));
       }
     }
+    // Limited set of log groups
+    // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
     return Promise.all(promises);
   }
 
@@ -154,10 +162,14 @@ export class CloudWatchLogEventMonitor {
    * Print out a cloudwatch event
    */
   private print(event: CloudWatchLogEvent): void {
-    print(util.format('[%s] %s %s',
-      chalk.blue(event.logGroupName),
-      chalk.yellow(event.timestamp.toLocaleTimeString()),
-      event.message.trim()));
+    print(
+      util.format(
+        '[%s] %s %s',
+        chalk.blue(event.logGroupName),
+        chalk.yellow(event.timestamp.toLocaleTimeString()),
+        event.message.trim(),
+      ),
+    );
   }
 
   /**
@@ -181,7 +193,7 @@ export class CloudWatchLogEventMonitor {
         logGroupName: logGroupName,
         limit: 100,
         startTime: startTime,
-      }).promise();
+      });
       const filteredEvents = response.events ?? [];
 
       for (const event of filteredEvents) {
@@ -195,7 +207,6 @@ export class CloudWatchLogEventMonitor {
           if (event.timestamp && endTime < event.timestamp) {
             endTime = event.timestamp;
           }
-
         }
       }
       // As long as there are _any_ events in the log group `filterLogEvents` will return a nextToken.
@@ -213,7 +224,7 @@ export class CloudWatchLogEventMonitor {
       // with Lambda functions the CloudWatch is not created
       // until something is logged, so just keep polling until
       // there is somthing to find
-      if (e.code === 'ResourceNotFoundException') {
+      if (e.name === 'ResourceNotFoundException') {
         return [];
       }
       throw e;

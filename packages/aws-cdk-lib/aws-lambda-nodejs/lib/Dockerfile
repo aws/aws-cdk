@@ -9,12 +9,16 @@ RUN npm install --global yarn@1.22.5
 # Install pnpm
 RUN npm install --global pnpm@7.30.5
 
+# Install bun
+RUN npm install --global bun@1.1.30
+
 # Install typescript
 RUN npm install --global typescript
 
 # Install esbuild
 # (unsafe-perm because esbuild has a postinstall script)
-ARG ESBUILD_VERSION=0
+# pin the minor version to 0.21 to prevent breaking change
+ARG ESBUILD_VERSION=0.21
 RUN npm install --global --unsafe-perm=true esbuild@$ESBUILD_VERSION
 
 # Ensure all users can write to npm cache
@@ -37,5 +41,10 @@ RUN npm config --global set update-notifier false
 
 # create non root user and change allow execute command for non root user
 RUN /sbin/useradd -u 1000 user && chmod 711 /
+
+# Ensure all users can write to bun cache
+RUN mkdir /tmp/bun-cache && \
+    chmod -R 777 /tmp/bun-cache && \
+    echo -e "[install.cache]\ndir = \"/tmp/bun-cache\"\ndisable = true" >> /home/user/.bunfig.toml
 
 CMD [ "esbuild" ]

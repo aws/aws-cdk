@@ -563,7 +563,7 @@ export interface CommonProjectProps {
   /**
    * Build environment to use for the build.
    *
-   * @default BuildEnvironment.LinuxBuildImage.STANDARD_1_0
+   * @default BuildEnvironment.LinuxBuildImage.STANDARD_7_0
    */
   readonly environment?: BuildEnvironment;
 
@@ -631,7 +631,7 @@ export interface CommonProjectProps {
    * then PRIVATE_WITHOUT_EGRESS, and finally PUBLIC subnets. If your VPC doesn't have PRIVATE_WITH_EGRESS subnets but you need
    * AWS service access, add VPC Endpoints to your private subnets.
    *
-   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/vpc-support.html for more details.
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/vpc-support.html
    *
    * @default - private subnets if available else public subnets
    */
@@ -1060,7 +1060,7 @@ export class Project extends ProjectBase {
     });
     this.grantPrincipal = this.role;
 
-    this.buildImage = (props.environment && props.environment.buildImage) || LinuxBuildImage.STANDARD_1_0;
+    this.buildImage = (props.environment && props.environment.buildImage) || LinuxBuildImage.STANDARD_7_0;
 
     // let source "bind" to the project. this usually involves granting permissions
     // for the code build role to interact with the source.
@@ -1624,7 +1624,7 @@ export interface BuildEnvironment {
   /**
    * The image used for the builds.
    *
-   * @default LinuxBuildImage.STANDARD_1_0
+   * @default LinuxBuildImage.STANDARD_7_0
    */
   readonly buildImage?: IBuildImage;
 
@@ -1749,8 +1749,9 @@ export interface IBindableBuildImage extends IBuildImage {
 
 /**
  * The options when creating a CodeBuild Docker build image
- * using `LinuxBuildImage.fromDockerRegistry`
- * or `WindowsBuildImage.fromDockerRegistry`.
+ * using `LinuxBuildImage.fromDockerRegistry`,
+ * `WindowsBuildImage.fromDockerRegistry`,
+ * or `MacBuildImage.fromDockerRegistry`
  */
 export interface DockerImageOptions {
   /**
@@ -1843,7 +1844,7 @@ export class LinuxBuildImage implements IBuildImage {
    * */
   public static readonly AMAZON_LINUX_2_ARM_2 = LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_2_0;
   /**
-   * Image "aws/codebuild/amazonlinux2-aarch64-standard:2.0".
+   * Image "aws/codebuild/amazonlinux2-aarch64-standard:3.0".
    * @see {LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_3_0}
    * */
   public static readonly AMAZON_LINUX_2_ARM_3 = LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_3_0;
@@ -2237,6 +2238,108 @@ export class WindowsBuildImage implements IBuildImage {
         },
       },
     });
+  }
+}
+
+/**
+ * Construction properties of `MacBuildImage`.
+ * Module-private, as the constructor of `MacBuildImage` is private.
+ */
+interface MacBuildImageProps {
+  readonly imageId: string;
+  readonly imagePullPrincipalType?: ImagePullPrincipalType;
+  readonly secretsManagerCredentials?: secretsmanager.ISecret;
+  readonly repository?: ecr.IRepository;
+}
+
+/**
+ * A CodeBuild image running ARM MacOS.
+ *
+ * This class has a bunch of public constants that represent the most popular images.
+ *
+ * You can also specify a custom image using one of the static methods:
+ *
+ * - MacBuildImage.fromDockerRegistry(image[, { secretsManagerCredentials }])
+ * - MacBuildImage.fromEcrRepository(repo[, tag])
+ * - MacBuildImage.fromAsset(parent, id, props)
+ *
+ *
+ * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
+ */
+export class MacBuildImage implements IBuildImage {
+  /**
+   * Corresponds to the standard CodeBuild image `aws/codebuild/macos-arm-base:14`.
+   */
+  public static readonly BASE_14: IBuildImage = new MacBuildImage({
+    imageId: 'aws/codebuild/macos-arm-base:14',
+    imagePullPrincipalType: ImagePullPrincipalType.CODEBUILD,
+  });
+
+  /**
+   * Makes an ARM MacOS build image from a Docker Hub image.
+   */
+  public static fromDockerRegistry(name: string, options: DockerImageOptions = {}): IBuildImage {
+    return new MacBuildImage({
+      ...options,
+      imageId: name,
+      imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
+    });
+  }
+
+  /**
+   * Makes an ARM MacOS build image from an ECR repository.
+   */
+  public static fromEcrRepository(repository: ecr.IRepository, tagOrDigest: string = 'latest'): IBuildImage {
+    return new MacBuildImage({
+      imageId: repository.repositoryUriForTagOrDigest(tagOrDigest),
+      imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
+      repository,
+    });
+  }
+
+  /**
+   * Uses an Docker image asset as a ARM MacOS build image.
+   */
+  public static fromAsset(scope: Construct, id: string, props: DockerImageAssetProps): IBuildImage {
+    const asset = new DockerImageAsset(scope, id, props);
+    return new MacBuildImage({
+      imageId: asset.imageUri,
+      imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
+      repository: asset.repository,
+    });
+  }
+
+  public readonly type = EnvironmentType.MAC_ARM as string;
+  public readonly defaultComputeType = ComputeType.MEDIUM;
+  public readonly imageId: string;
+  public readonly imagePullPrincipalType?: ImagePullPrincipalType;
+  public readonly secretsManagerCredentials?: secretsmanager.ISecret;
+  public readonly repository?: ecr.IRepository;
+
+  private constructor(props: MacBuildImageProps) {
+    this.imageId = props.imageId;
+    this.imagePullPrincipalType = props.imagePullPrincipalType;
+    this.secretsManagerCredentials = props.secretsManagerCredentials;
+    this.repository = props.repository;
+  }
+
+  public validate(buildEnvironment: BuildEnvironment): string[] {
+    const errors: string[] = [];
+
+    if (buildEnvironment.computeType && isLambdaComputeType(buildEnvironment.computeType)) {
+      errors.push('Mac images do not support Lambda compute types');
+    }
+
+    if (!buildEnvironment.fleet) {
+      errors.push('Mac images must be used with a fleet');
+    }
+
+    return errors;
+  }
+
+  public runScriptBuildspec(entrypoint: string): BuildSpec {
+    // Reuse Linux BuildSpec, since it is compatible
+    return runScriptLinuxBuildSpec(entrypoint);
   }
 }
 

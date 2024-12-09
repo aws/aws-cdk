@@ -91,7 +91,12 @@ onCommitRule.addTarget(new targets.SnsTopic(topic, {
 }));
 ```
 
-To define a pattern, use the matcher API, which provides a number of factory methods to declare different logical predicates. For example, to match all S3 events for objects larger than 1024 bytes, stored using one of the storage classes Glacier, Glacier IR or Deep Archive and coming from any region other than the AWS GovCloud ones:
+### Matchers
+
+To define a pattern, use the `Match` class, which provides a number of factory methods to declare
+different logical predicates. For example, to match all S3 events for objects larger than 1024
+bytes, stored using one of the storage classes Glacier, Glacier IR or Deep Archive and coming from
+any region other than the AWS GovCloud ones:
 
 ```ts
 const rule = new events.Rule(this, 'rule', {
@@ -104,16 +109,61 @@ const rule = new events.Rule(this, 'rule', {
 
       // 'OR' condition
       'source-storage-class': events.Match.anyOf(
-        events.Match.prefix("GLACIER"),
+        events.Match.prefix('GLACIER'),
         events.Match.exactString('DEEP_ARCHIVE'),
       ),
     },
-    detailType: events.Match.equalsIgnoreCase('object created'),
 
     // If you prefer, you can use a low level array of strings, as directly consumed by EventBridge
     source: ['aws.s3'],
 
     region: events.Match.anythingButPrefix('us-gov'),
+  },
+});
+```
+
+Matches can also be made case-insensitive, or make use of wildcard matches. For example, to match
+object create events for buckets whose name starts with `raw-`, for objects with key matching
+the pattern `path/to/object/*.txt` and the requester ends with `.AMAZONAWS.COM`:
+
+```ts
+const rule = new events.Rule(this, 'rule', {
+  eventPattern: {
+    detail: {
+      bucket: {
+        name: events.Match.prefixEqualsIgnoreCase('raw-'),
+      },
+
+      object: {
+        key: events.Match.wildcard('path/to/object/*.txt'),
+      },
+
+      requester: events.Match.suffixEqualsIgnoreCase('.AMAZONAWS.COM'),
+    },
+    detailType: events.Match.equalsIgnoreCase('object created'),
+  },
+});
+```
+
+The "anything but" matchers allow you to specify multiple arguments. For example:
+
+```ts
+const rule = new events.Rule(this, 'rule', {
+  eventPattern: {
+    region: events.Match.anythingBut('us-east-1', 'us-east-2', 'us-west-1', 'us-west-2'),
+
+    detail: {
+      bucket: {
+        name: events.Match.anythingButPrefix('foo', 'bar', 'baz'),
+      },
+
+      object: {
+        key: events.Match.anythingButSuffix('.gif', '.png', '.jpg'),
+      },
+
+      requester: events.Match.anythingButWildcard('*.amazonaws.com', '123456789012'),
+    },
+    detailType: events.Match.anythingButEqualsIgnoreCase('object created', 'object deleted'),
   },
 });
 ```
@@ -159,19 +209,7 @@ const ecsTaskTarget = new targets.EcsTask({ cluster, taskDefinition, role, platf
 The `aws-cdk-lib/aws-events-targets` module includes classes that implement the `IRuleTarget`
 interface for various AWS services.
 
-The following targets are supported:
-
-* `targets.CodeBuildProject`: Start an AWS CodeBuild build
-* `targets.CodePipeline`: Start an AWS CodePipeline pipeline execution
-* `targets.EcsTask`: Start a task on an Amazon ECS cluster
-* `targets.LambdaFunction`: Invoke an AWS Lambda function
-* `targets.SnsTopic`: Publish into an SNS topic
-* `targets.SqsQueue`: Send a message to an Amazon SQS Queue
-* `targets.SfnStateMachine`: Trigger an AWS Step Functions state machine
-* `targets.BatchJob`: Queue an AWS Batch Job
-* `targets.AwsApi`: Make an AWS API call
-* `targets.ApiGateway`: Invoke an AWS API Gateway
-* `targets.ApiDestination`: Make an call to an external destination
+See the README of the [`aws-cdk-lib/aws-events-targets`](https://github.com/aws/aws-cdk/tree/main/packages/aws-cdk-lib/aws-events-targets) module for more information on supported targets.
 
 ### Cross-account and cross-region targets
 
@@ -220,7 +258,8 @@ It is possible to archive all or some events sent to an event bus. It is then po
 
 ```ts
 const bus = new events.EventBus(this, 'bus', {
-  eventBusName: 'MyCustomEventBus'
+  eventBusName: 'MyCustomEventBus',
+  description: 'MyCustomEventBus',
 });
 
 bus.archive('MyArchive', {
@@ -230,6 +269,22 @@ bus.archive('MyArchive', {
     account: [Stack.of(this).account],
   },
   retention: Duration.days(365),
+});
+```
+
+## Dead-Letter Queue for EventBus
+
+It is possible to configure a [Dead Letter Queue for an EventBus](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-rule-event-delivery.html#eb-rule-dlq). This is useful when you want to capture events that could not be delivered to any of the targets.
+
+To configure a Dead Letter Queue for an EventBus, you can use the `deadLetterQueue` property of the `EventBus` construct.
+
+```ts
+import * as sqs from 'aws-cdk-lib/aws-sqs';
+
+const dlq = new sqs.Queue(this, 'DLQ');
+
+const bus = new events.EventBus(this, 'Bus', {
+  deadLetterQueue: dlq,
 });
 ```
 
@@ -248,3 +303,21 @@ const eventBus = events.EventBus.fromEventBusArn(this, 'ImportedEventBus', 'arn:
 // now you can just call methods on the eventbus
 eventBus.grantPutEventsTo(lambdaFunction);
 ```
+
+## Use a customer managed key
+
+To use a customer managed key for events on the event bus, use the `kmsKey` attribute.
+
+```ts
+import * as kms from 'aws-cdk-lib/aws-kms';
+
+declare const kmsKey: kms.IKey;
+
+new events.EventBus(this, 'Bus', {
+  kmsKey,
+});
+```
+
+**Note**: Archives and schema discovery are not supported for event buses encrypted using a customer managed key.
+To enable archives or schema discovery on an event bus, choose to use an AWS owned key.
+For more information, see [KMS key options for event bus encryption](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-encryption-at-rest-key-options.html).

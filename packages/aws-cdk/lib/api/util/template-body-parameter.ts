@@ -1,13 +1,13 @@
 import * as path from 'path';
-import * as cxapi from '@aws-cdk/cx-api';
+import { type CloudFormationStackArtifact, type Environment, EnvironmentPlaceholders } from '@aws-cdk/cx-api';
+import { HeadObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { getEndpointFromInstructions } from '@smithy/middleware-endpoint';
 import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
 import { debug, error } from '../../logging';
 import { toYAML } from '../../serialize';
 import { AssetManifestBuilder } from '../../util/asset-manifest-builder';
-import { publishAssets } from '../../util/asset-publishing';
 import { contentHash } from '../../util/content-hash';
-import { ISDK, SdkProvider } from '../aws-auth';
 import { EnvironmentResources } from '../environment-resources';
 
 export type TemplateBodyParameter = {
@@ -31,17 +31,17 @@ const LARGE_TEMPLATE_SIZE_KB = 50;
  * @param toolkitInfo information about the toolkit stack
  */
 export async function makeBodyParameter(
-  stack: cxapi.CloudFormationStackArtifact,
-  resolvedEnvironment: cxapi.Environment,
+  stack: CloudFormationStackArtifact,
+  resolvedEnvironment: Environment,
   assetManifest: AssetManifestBuilder,
   resources: EnvironmentResources,
-  sdk: ISDK,
   overrideTemplate?: any,
 ): Promise<TemplateBodyParameter> {
-
   // If the template has already been uploaded to S3, just use it from there.
   if (stack.stackTemplateAssetObjectUrl && !overrideTemplate) {
-    return { TemplateURL: restUrlFromManifest(stack.stackTemplateAssetObjectUrl, resolvedEnvironment, sdk) };
+    return {
+      TemplateURL: await restUrlFromManifest(stack.stackTemplateAssetObjectUrl, resolvedEnvironment),
+    };
   }
 
   // Otherwise, pass via API call (if small) or upload here (if large)
@@ -55,9 +55,10 @@ export async function makeBodyParameter(
   if (!toolkitInfo.found) {
     error(
       `The template for stack "${stack.displayName}" is ${Math.round(templateJson.length / 1024)}KiB. ` +
-      `Templates larger than ${LARGE_TEMPLATE_SIZE_KB}KiB must be uploaded to S3.\n` +
-      'Run the following command in order to setup an S3 bucket in this environment, and then re-deploy:\n\n',
-      chalk.blue(`\t$ cdk bootstrap ${resolvedEnvironment.name}\n`));
+        `Templates larger than ${LARGE_TEMPLATE_SIZE_KB}KiB must be uploaded to S3.\n` +
+        'Run the following command in order to setup an S3 bucket in this environment, and then re-deploy:\n\n',
+      chalk.blue(`\t$ cdk bootstrap ${resolvedEnvironment.name}\n`),
+    );
 
     throw new Error('Template too large to deploy ("cdk bootstrap" is required)');
   }
@@ -73,44 +74,20 @@ export async function makeBodyParameter(
     await fs.writeFile(templateFilePath, templateJson, { encoding: 'utf-8' });
   }
 
-  assetManifest.addFileAsset(templateHash, {
-    path: templateFile,
-  }, {
-    bucketName: toolkitInfo.bucketName,
-    objectKey: key,
-  });
+  assetManifest.addFileAsset(
+    templateHash,
+    {
+      path: templateFile,
+    },
+    {
+      bucketName: toolkitInfo.bucketName,
+      objectKey: key,
+    },
+  );
 
   const templateURL = `${toolkitInfo.bucketUrl}/${key}`;
   debug('Storing template in S3 at:', templateURL);
   return { TemplateURL: templateURL };
-}
-
-/**
- * Prepare a body parameter for CFN, performing the upload
- *
- * Return it as-is if it is small enough to pass in the API call,
- * upload to S3 and return the coordinates if it is not.
- */
-export async function makeBodyParameterAndUpload(
-  stack: cxapi.CloudFormationStackArtifact,
-  resolvedEnvironment: cxapi.Environment,
-  resources: EnvironmentResources,
-  sdkProvider: SdkProvider,
-  sdk: ISDK,
-  overrideTemplate?: any): Promise<TemplateBodyParameter> {
-
-  // We don't have access to the actual asset manifest here, so pretend that the
-  // stack doesn't have a pre-published URL.
-  const forceUploadStack = Object.create(stack, {
-    stackTemplateAssetObjectUrl: { value: undefined },
-  });
-
-  const builder = new AssetManifestBuilder();
-  const bodyparam = await makeBodyParameter(forceUploadStack, resolvedEnvironment, builder, resources, sdk, overrideTemplate);
-  const manifest = builder.toManifest(stack.assembly.directory);
-  await publishAssets(manifest, sdkProvider, resolvedEnvironment, { quiet: true });
-
-  return bodyparam;
 }
 
 /**
@@ -120,29 +97,39 @@ export async function makeBodyParameterAndUpload(
  * and reformats s3://.../... urls into S3 REST URLs (which CloudFormation
  * expects)
  */
-function restUrlFromManifest(url: string, environment: cxapi.Environment, sdk: ISDK): string {
+async function restUrlFromManifest(url: string, environment: Environment): Promise<string> {
   const doNotUseMarker = '**DONOTUSE**';
+  const region = environment.region;
   // This URL may contain placeholders, so still substitute those.
-  url = cxapi.EnvironmentPlaceholders.replace(url, {
+  url = EnvironmentPlaceholders.replace(url, {
     accountId: environment.account,
-    region: environment.region,
+    region,
     partition: doNotUseMarker,
   });
 
   // Yes, this is extremely crude, but we don't actually need this so I'm not inclined to spend
   // a lot of effort trying to thread the right value to this location.
   if (url.indexOf(doNotUseMarker) > -1) {
-    throw new Error('Cannot use \'${AWS::Partition}\' in the \'stackTemplateAssetObjectUrl\' field');
+    throw new Error("Cannot use '${AWS::Partition}' in the 'stackTemplateAssetObjectUrl' field");
   }
 
   const s3Url = url.match(/s3:\/\/([^/]+)\/(.*)$/);
-  if (!s3Url) { return url; }
+  if (!s3Url) {
+    return url;
+  }
 
   // We need to pass an 'https://s3.REGION.amazonaws.com[.cn]/bucket/object' URL to CloudFormation, but we
   // got an 's3://bucket/object' URL instead. Construct the rest API URL here.
   const bucketName = s3Url[1];
   const objectKey = s3Url[2];
 
-  const urlSuffix: string = sdk.getEndpointSuffix(environment.region);
-  return `https://s3.${environment.region}.${urlSuffix}/${bucketName}/${objectKey}`;
+  // SDK v3 no longer allows for getting endpoints from only region.
+  // A command and client config must now be provided.
+  const s3 = new S3Client({ region });
+  const endpoint = await getEndpointFromInstructions({}, HeadObjectCommand, {
+    ...s3.config,
+  });
+  endpoint.url.hostname;
+
+  return `${endpoint.url.origin}/${bucketName}/${objectKey}`;
 }

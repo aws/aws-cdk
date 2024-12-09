@@ -4,7 +4,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
-import { Cluster, ClusterParameterGroup, ClusterSubnetGroup, ClusterType, NodeType } from '../lib';
+import { Cluster, ClusterParameterGroup, ClusterSubnetGroup, ClusterType, NodeType, ResourceAction } from '../lib';
 import { CfnCluster } from 'aws-cdk-lib/aws-redshift';
 
 let stack: cdk.Stack;
@@ -125,6 +125,54 @@ test('creates a secret when master credentials are not specified', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
     GenerateSecretString: {
       ExcludeCharacters: '"@/\\\ \'',
+      GenerateStringKey: 'password',
+      PasswordLength: 30,
+      SecretStringTemplate: '{"username":"admin"}',
+    },
+  });
+});
+
+test('creates a secret with a custom excludeCharacters', () => {
+  // WHEN
+  new Cluster(stack, 'Redshift', {
+    masterUser: {
+      masterUsername: 'admin',
+      excludeCharacters: '"@/\\\ \'`',
+    },
+    vpc,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
+    MasterUsername: {
+      'Fn::Join': [
+        '',
+        [
+          '{{resolve:secretsmanager:',
+          {
+            Ref: 'RedshiftSecretA08D42D6',
+          },
+          ':SecretString:username::}}',
+        ],
+      ],
+    },
+    MasterUserPassword: {
+      'Fn::Join': [
+        '',
+        [
+          '{{resolve:secretsmanager:',
+          {
+            Ref: 'RedshiftSecretA08D42D6',
+          },
+          ':SecretString:password::}}',
+        ],
+      ],
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
+    GenerateSecretString: {
+      ExcludeCharacters: '"@/\\\ \'`',
       GenerateStringKey: 'password',
       PasswordLength: 30,
       SecretStringTemplate: '{"username":"admin"}',
@@ -384,6 +432,39 @@ test('publicly accessible cluster', () => {
   });
 });
 
+test('availability zone relocation enabled', () => {
+  // WHEN
+  new Cluster(stack, 'Redshift', {
+    masterUser: {
+      masterUsername: 'admin',
+    },
+    vpc,
+    availabilityZoneRelocation: true,
+    nodeType: NodeType.RA3_XLPLUS,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
+    AvailabilityZoneRelocation: true,
+  });
+});
+
+test.each([
+  NodeType.DC1_8XLARGE,
+  NodeType.DC2_LARGE,
+])('throw error when availability zone relocation is enabled for invalid node type %s', (nodeType) => {
+  expect(() => {
+    new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      availabilityZoneRelocation: true,
+      nodeType,
+    });
+  }).toThrow(`Availability zone relocation is supported for only RA3 node types, got: ${nodeType}`);
+});
+
 test('imported cluster with imported security group honors allowAllOutbound', () => {
   // GIVEN
   const cluster = Cluster.fromClusterAttributes(stack, 'Database', {
@@ -429,6 +510,36 @@ test('can create a cluster with logging enabled', () => {
       S3KeyPrefix: 'prefix',
     },
   });
+});
+
+test.each([
+  ResourceAction.PAUSE_CLUSTER,
+  ResourceAction.RESUME_CLUSTER,
+  ResourceAction.FAILOVER_PRIMARY_COMPUTE,
+])('specify resource action %s', (resourceAction) => {
+  // WHEN
+  new Cluster(stack, 'Redshift', {
+    masterUser: {
+      masterUsername: 'admin',
+    },
+    vpc,
+    resourceAction,
+    nodeType: NodeType.RA3_XLPLUS,
+    multiAz: true,
+  });
+});
+
+test.each([false, undefined])('throw error for failover primary compute action with single AZ cluster', (multiAz) => {
+  expect(() => {
+    new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      multiAz,
+      resourceAction: ResourceAction.FAILOVER_PRIMARY_COMPUTE,
+    });
+  }).toThrow('ResourceAction.FAILOVER_PRIMARY_COMPUTE can only be used with multi-AZ clusters.');
 });
 
 test('throws when trying to add rotation to a cluster without secret', () => {

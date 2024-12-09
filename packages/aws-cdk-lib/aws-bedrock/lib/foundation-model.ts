@@ -41,17 +41,50 @@ export class FoundationModelIdentifier {
   /** Base model "amazon.titan-embed-text-v2:0". */
   public static readonly AMAZON_TITAN_EMBED_TEXT_V2_0 = new FoundationModelIdentifier('amazon.titan-embed-text-v2:0');
 
+  /** Base model "amazon.titan-embed-text-v2:0:8k". */
+  public static readonly AMAZON_TITAN_EMBED_TEXT_V2_0_8K = new FoundationModelIdentifier('amazon.titan-embed-text-v2:0:8k');
+
   /** Base model "amazon.titan-image-generator-v1". */
   public static readonly AMAZON_TITAN_IMAGE_GENERATOR_G1_V1 = new FoundationModelIdentifier('amazon.titan-image-generator-v1');
 
   /** Base model "amazon.titan-image-generator-v1:0". */
   public static readonly AMAZON_TITAN_IMAGE_GENERATOR_V1_0 = new FoundationModelIdentifier('amazon.titan-image-generator-v1:0');
 
+  /** Base model "amazon.titan-image-generator-v2:0". */
+  public static readonly AMAZON_TITAN_IMAGE_GENERATOR_V2_0 = new FoundationModelIdentifier('amazon.titan-image-generator-v2:0');
+
   /** Base model "amazon.titan-embed-image-v1:0". */
   public static readonly AMAZON_TITAN_EMBED_IMAGE_V1_0 = new FoundationModelIdentifier('amazon.titan-embed-image-v1:0');
 
   /** Base model "amazon.titan-embed-image-v1". */
   public static readonly AMAZON_TITAN_MULTIMODAL_EMBEDDINGS_G1_V1 = new FoundationModelIdentifier('amazon.titan-embed-image-v1');
+
+  /** Base model "amazon.rerank-v1:0". */
+  public static readonly AMAZON_RERANK_V1 = new FoundationModelIdentifier('amazon.rerank-v1:0');
+
+  /** Base model "amazon.nova-canvas-v1:0". */
+  public static readonly AMAZON_NOVA_CANVAS_V1_0 = new FoundationModelIdentifier('amazon.nova-canvas-v1:0');
+
+  /** Base model "amazon.nova-lite-v1:0". */
+  public static readonly AMAZON_NOVA_LITE_V1_0 = new FoundationModelIdentifier('amazon.nova-lite-v1:0');
+
+  /** Base model "amazon.nova-lite-v1:0:300k". */
+  public static readonly AMAZON_NOVA_LITE_V1_0_300_K = new FoundationModelIdentifier('amazon.nova-lite-v1:0:300k');
+
+  /** Base model "amazon.nova-micro-v1:0". */
+  public static readonly AMAZON_NOVA_MICRO_V1_0 = new FoundationModelIdentifier('amazon.nova-micro-v1:0');
+
+  /** Base model "amazon.nova-micro-v1:0:128k". */
+  public static readonly AMAZON_NOVA_MICRO_V1_0_128_K = new FoundationModelIdentifier('amazon.nova-micro-v1:0:128k');
+
+  /** Base model "amazon.nova-pro-v1:0". */
+  public static readonly AMAZON_NOVA_PRO_V1_0 = new FoundationModelIdentifier('amazon.nova-pro-v1:0');
+
+  /** Base model "amazon.nova-pro-v1:0:300k". */
+  public static readonly AMAZON_NOVA_PRO_V1_0_300_K = new FoundationModelIdentifier('amazon.nova-pro-v1:0:300k');
+
+  /** Base model "amazon.nova-reel-v1:0". */
+  public static readonly AMAZON_NOVA_REEL_V1_0 = new FoundationModelIdentifier('amazon.nova-reel-v1:0');
 
   /** Base model "ai21.j2-mid". */
   public static readonly AI21_J2_MID = new FoundationModelIdentifier('ai21.j2-mid');
@@ -65,11 +98,23 @@ export class FoundationModelIdentifier {
   /** Base model "ai21.j2-ultra-v1". */
   public static readonly AI21_LABS_JURASSIC_2_ULTRA_V1 = new FoundationModelIdentifier('ai21.j2-ultra-v1');
 
+  /** Base model "ai21.j2-ultra-v1:0:8k". */
+  public static readonly AI21_LABS_JURASSIC_2_ULTRA_V1_0_8K = new FoundationModelIdentifier('ai21.j2-ultra-v1:0:8k');
+
   /** Base model "ai21.j2-grande-instruct". */
   public static readonly AI21_J2_GRANDE_INSTRUCT = new FoundationModelIdentifier('ai21.j2-grande-instruct');
 
   /** Base model "ai21.j2-jumbo-instruct". */
   public static readonly AI21_J2_JUMBO_INSTRUCT = new FoundationModelIdentifier('ai21.j2-jumbo-instruct');
+
+  /** Base model "ai21.jamba-instruct-v1:0". */
+  public static readonly AI21_J2_JAMBA_INSTRUCT_V1_0 = new FoundationModelIdentifier('ai21.jamba-instruct-v1:0');
+
+  /** Base model "ai21.jamba-1-5-large-v1:0". */
+  public static readonly AI21_JAMBA_1_5_LARGE_V_1_0 = new FoundationModelIdentifier('ai21.jamba-1-5-large-v1:0');
+
+  /** Base model "ai21.jamba-1-5-mini-v1:0". */
+  public static readonly AI21_JAMBA_1_5_MINI_V_1_0 = new FoundationModelIdentifier('ai21.jamba-1-5-mini-v1:0');
 
   /**
    * Base model "anthropic.claude-v1".
@@ -104,11 +149,20 @@ export class FoundationModelIdentifier {
   /** Base model "anthropic.claude-3-sonnet-20240229-v1:0:200k" */
   public static readonly ANTHROPIC_CLAUDE_3_SONNET_20240229_V1_0_200K = new FoundationModelIdentifier('anthropic.claude-3-sonnet-20240229-v1:0:200k');
 
+  /** Base model "anthropic.claude-3-5-sonnet-20240620-v1:0" */
+  public static readonly ANTHROPIC_CLAUDE_3_5_SONNET_20240620_V1_0 = new FoundationModelIdentifier('anthropic.claude-3-5-sonnet-20240620-v1:0');
+
+  /** Base model "anthropic.claude-3-5-sonnet-20241022-v2:0" */
+  public static readonly ANTHROPIC_CLAUDE_3_5_SONNET_20241022_V2_0 = new FoundationModelIdentifier('anthropic.claude-3-5-sonnet-20241022-v2:0');
+
   /** Base model "anthropic.claude-3-haiku-20240307-v1:0". */
   public static readonly ANTHROPIC_CLAUDE_3_HAIKU_20240307_V1_0 = new FoundationModelIdentifier('anthropic.claude-3-haiku-20240307-v1:0');
 
   /** Base model "anthropic.claude-3-haiku-20240307-v1:0:48k" */
   public static readonly ANTHROPIC_CLAUDE_3_HAIKU_20240307_V1_0_48K = new FoundationModelIdentifier('anthropic.claude-3-haiku-20240307-v1:0:48k');
+
+  /** Base model "anthropic.claude-3-5-haiku-20241022-v1:0" */
+  public static readonly ANTHROPIC_CLAUDE_3_5_HAIKU_20241022_V1_0 = new FoundationModelIdentifier('anthropic.claude-3-5-haiku-20241022-v1:0');
 
   /** Base model "anthropic.claude-3-haiku-20240307-v1:0:200k" */
   public static readonly ANTHROPIC_CLAUDE_3_HAIKU_20240307_V1_0_200K = new FoundationModelIdentifier('anthropic.claude-3-haiku-20240307-v1:0:200k');
@@ -135,16 +189,25 @@ export class FoundationModelIdentifier {
   public static readonly COHERE_COMMAND_LIGHT_TEXT_V14_7_4K = new FoundationModelIdentifier('cohere.command-light-text-v14:7:4k');
 
   /** Base model "cohere.command-r-v1:0". */
-  public static readonly COHERE_COMMAND_R_V1 = new FoundationModelIdentifier('ccohere.command-r-v1:0');
+  public static readonly COHERE_COMMAND_R_V1 = new FoundationModelIdentifier('cohere.command-r-v1:0');
 
   /** Base model "cohere.command-r-v1:0". */
   public static readonly COHERE_COMMAND_R_PLUS_V1 = new FoundationModelIdentifier('cohere.command-r-plus-v1:0');
 
+  /** Base model "cohere.rerank-v3-5:0". */
+  public static readonly COHERE_RERANK_V3_5 = new FoundationModelIdentifier('cohere.rerank-v3-5:0');
+
   /** Base model "cohere.embed-english-v3". */
   public static readonly COHERE_EMBED_ENGLISH_V3 = new FoundationModelIdentifier('cohere.embed-english-v3');
 
+  /** Base model "cohere.embed-english-v3:0:512". */
+  public static readonly COHERE_EMBED_ENGLISH_V3_0_512 = new FoundationModelIdentifier('cohere.embed-english-v3:0:512');
+
   /** Base model "cohere.embed-multilingual-v3". */
   public static readonly COHERE_EMBED_MULTILINGUAL_V3 = new FoundationModelIdentifier('cohere.embed-multilingual-v3');
+
+  /** Base model "cohere.embed-multilingual-v3:0:512". */
+  public static readonly COHERE_EMBED_MULTILINGUAL_V3_0_512 = new FoundationModelIdentifier('cohere.embed-multilingual-v3:0:512');
 
   /** Base model "meta.llama2-13b-v1". */
   public static readonly META_LLAMA_2_13B_V1 = new FoundationModelIdentifier('meta.llama2-13b-v1');
@@ -176,6 +239,27 @@ export class FoundationModelIdentifier {
   /** Base model "meta.llama3-70b-instruct-v1:0". */
   public static readonly META_LLAMA_3_70_INSTRUCT_V1 = new FoundationModelIdentifier('meta.llama3-70b-instruct-v1:0');
 
+  /** Base model "meta.llama3-1-8b-instruct-v1:0". */
+  public static readonly META_LLAMA_3_1_8B_INSTRUCT_V1 = new FoundationModelIdentifier('meta.llama3-1-8b-instruct-v1:0');
+
+  /** Base model "meta.llama3-1-70b-instruct-v1:0". */
+  public static readonly META_LLAMA_3_1_70_INSTRUCT_V1 = new FoundationModelIdentifier('meta.llama3-1-70b-instruct-v1:0');
+
+  /** Base model "meta.llama3-1-405b-instruct-v1:0". */
+  public static readonly META_LLAMA_3_1_405_INSTRUCT_V1 = new FoundationModelIdentifier('meta.llama3-1-405b-instruct-v1:0');
+
+  /** Base model "meta.llama3-2-1b-instruct-v1:0". */
+  public static readonly META_LLAMA_3_2_1B_INSTRUCT_V1 = new FoundationModelIdentifier('meta.llama3-2-1b-instruct-v1:0');
+
+  /** Base model "meta.llama3-2-3b-instruct-v1:0". */
+  public static readonly META_LLAMA_3_2_3B_INSTRUCT_V1 = new FoundationModelIdentifier('meta.llama3-2-3b-instruct-v1:0');
+
+  /** Base model "meta.llama3-2-11b-instruct-v1:0". */
+  public static readonly META_LLAMA_3_2_11B_INSTRUCT_V1 = new FoundationModelIdentifier('meta.llama3-2-11b-instruct-v1:0');
+
+  /** Base model "meta.llama3-2-90b-instruct-v1:0". */
+  public static readonly META_LLAMA_3_2_90B_INSTRUCT_V1 = new FoundationModelIdentifier('meta.llama3-2-90b-instruct-v1:0');
+
   /** Base model "mistral.mistral-7b-instruct-v0:2". */
   public static readonly MISTRAL_MISTRAL_7B_INSTRUCT_V0_2 = new FoundationModelIdentifier('mistral.mistral-7b-instruct-v0:2');
 
@@ -184,6 +268,12 @@ export class FoundationModelIdentifier {
 
   /** Base model "mistral.mistral-large-2402-v1:0". */
   public static readonly MISTRAL_LARGE_V0_1 = new FoundationModelIdentifier('mistral.mistral-large-2402-v1:0');
+
+  /** Base model "mistral.mistral-small-2402-v1:0". */
+  public static readonly MISTRAL_SMALL_V0_1 = new FoundationModelIdentifier('mistral.mistral-small-2402-v1:0');
+
+  /** Base model "mistral.mistral-large-2407-v1:0". */
+  public static readonly MISTRAL_LARGE_2_V0_1 = new FoundationModelIdentifier('mistral.mistral-large-2407-v1:0');
 
   /**
    * Base model "stability.stable-diffusion-xl".
@@ -202,6 +292,15 @@ export class FoundationModelIdentifier {
 
   /** Base model "stability.stable-diffusion-xl-v1:0". */
   public static readonly STABILITY_STABLE_DIFFUSION_XL_V1_0 = new FoundationModelIdentifier('stability.stable-diffusion-xl-v1:0');
+
+  /** Base model "stability.sd3-large-v1:0". */
+  public static readonly STABILITY_SD3_LARGE_V1_0 = new FoundationModelIdentifier('stability.sd3-large-v1:0');
+
+  /** Base model "stability.stable-image-ultra-v1:0". */
+  public static readonly STABILITY_STABLE_IMAGE_ULTRA_V1_0 = new FoundationModelIdentifier('stability.stable-image-ultra-v1:0');
+
+  /** Base model "stability.stable-image-core-v1:0". */
+  public static readonly STABILITY_STABLE_IMAGE_CORE_V1_0 = new FoundationModelIdentifier('stability.stable-image-core-v1:0');
 
   /**
    * Constructor for foundation model identifier

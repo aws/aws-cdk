@@ -7484,10 +7484,10 @@ const bucket = new s3.Bucket(this, 'L2Bucket');
 const bucketResource = bucket.findChild('Resource') as s3.cloudformation.BucketResource;
 
 // strongly-typed overrides
-bucketResource.propertyOverrides.bucketName = 'NewBucketName';
+bucketResource.propertyOverrides.bucketName = 'amzn-s3-demo-bucket';
 
 // weakly-typed overrides
-bucketResource.addPropertyOverride('BucketName', 'NewerBucketName');
+bucketResource.addPropertyOverride('BucketName', 'amzn-s3-demo-bucket1');
 ```
 
 ### Bug Fixes
@@ -8022,7 +8022,7 @@ The headliners of this release are **.NET support**, and a wealth of commits by 
 
 ### AWS CodePipeline
 
-- _**BREAKING**_: Moved CodeCommit and CodeBuild and LambdaInvoke actions from the CodePipeline library to `@aws-cdk/aws-xxx-codepipline` modules ([@skinny85] in [#401] and [#402]).
+- _**BREAKING**_: Moved CodeCommit and CodeBuild and LambdaInvoke actions from the CodePipeline library to `@aws-cdk/aws-xxx-codepipeline` modules ([@skinny85] in [#401] and [#402]).
 - Added attributes `pipelineName` and `pipelineVersion` ([@eladb] in [#408])
 
 ### Docs
@@ -8142,7 +8142,7 @@ Coverage to all event sources and target will be added in subsequent releases.
 Supported targets:
 
 - `codebuild.BuildProject`
-- `codepipline.Pipeline`
+- `codepipeline.Pipeline`
 - `sns.Topic`
 
 Supported sources:
@@ -8289,7 +8289,7 @@ new Pipeline(this, 'MyCoolPipeline', { artifactsBucket: bucket });
 You can also import a bucket by just specifying its name:
 
 ```typescript
-const bucket = Bucket.import({ bucketName: new BucketName('my-bucket') });
+const bucket = Bucket.import({ bucketName: new BucketName('amzn-s3-demo-bucket') });
 new Pipeline(this, 'MyCoolPipeline', { artifactsBucket: bucket });
 ```
 

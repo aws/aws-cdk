@@ -1,28 +1,15 @@
-import {
-  CfnIdentityPoolRoleAttachment,
-} from 'aws-cdk-lib/aws-cognito';
-import {
-  IRole,
-} from 'aws-cdk-lib/aws-iam';
-import {
-  Resource,
-  IResource,
-  Token,
-} from 'aws-cdk-lib/core';
-import {
-  Construct,
-} from 'constructs';
-import {
-  IIdentityPool,
-  IdentityPoolProviderUrl,
-} from './identitypool';
+import { CfnIdentityPoolRoleAttachment } from 'aws-cdk-lib/aws-cognito';
+import { IRole } from 'aws-cdk-lib/aws-iam';
+import { Resource, IResource, Token } from 'aws-cdk-lib/core';
+import { Construct } from 'constructs';
+import { IIdentityPool, IdentityPoolProviderUrl } from './identitypool';
 
 /**
  * Represents an Identity Pool Role Attachment
  */
 export interface IIdentityPoolRoleAttachment extends IResource {
   /**
-   * Id of the Attachments Underlying Identity Pool
+   * ID of the Attachment's underlying Identity Pool
    */
   readonly identityPoolId: string;
 }
@@ -33,47 +20,47 @@ export interface IIdentityPoolRoleAttachment extends IResource {
 export interface IdentityPoolRoleAttachmentProps {
 
   /**
-   * Id of the Attachments Underlying Identity Pool
+   * ID of the Attachment's underlying Identity Pool
    */
   readonly identityPool: IIdentityPool;
 
   /**
-   * Default Authenticated (User) Role
-   * @default - No default authenticated role will be added
+   * Default authenticated (User) Role
+   * @default - No default authenticated Role will be added
    */
   readonly authenticatedRole?: IRole;
 
   /**
-    * Default Unauthenticated (Guest) Role
-    * @default - No default unauthenticated role will be added
-    */
+   * Default unauthenticated (Guest) Role
+   * @default - No default unauthenticated Role will be added
+   */
   readonly unauthenticatedRole?: IRole;
 
   /**
    * Rules for mapping roles to users
-   * @default - no Role Mappings
+   * @default - No role mappings
    */
   readonly roleMappings?: IdentityPoolRoleMapping[];
 }
 
 /**
- * Map roles to users in the identity pool based on claims from the Identity Provider
- *  @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-identitypoolroleattachment.html
+ * Map roles to users in the Identity Pool based on claims from the Identity Provider
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-identitypoolroleattachment.html
  */
 export interface IdentityPoolRoleMapping {
   /**
-   * The url of the provider of for which the role is mapped
+   * The url of the Provider for which the role is mapped
    */
   readonly providerUrl: IdentityPoolProviderUrl;
 
   /**
    * The key used for the role mapping in the role mapping hash. Required if the providerUrl is a token.
-   * @default - the provided providerUrl
+   * @default - The provided providerUrl
    */
   readonly mappingKey?: string;
 
   /**
-   *  If true then mapped roles must be passed through the cognito:roles or cognito:preferred_role claims from identity provider.
+   * If true then mapped roles must be passed through the cognito:roles or cognito:preferred_role claims from Identity Provider.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/role-based-access-control.html#using-tokens-to-assign-roles-to-users
    *
    * @default false
@@ -88,47 +75,47 @@ export interface IdentityPoolRoleMapping {
 
   /**
    * The claim and value that must be matched in order to assume the role. Required if useToken is false
-   * @default - No Rule Mapping Rule
+   * @default - No role mapping rule
    */
   readonly rules?: RoleMappingRule[];
 }
 
 /**
- * Types of matches allowed for Role Mapping
+ * Types of matches allowed for role mapping
  */
 export enum RoleMappingMatchType {
   /**
-   * The Claim from the token must equal the given value in order for a match
+   * The claim from the token must equal the given value in order for a match
    */
   EQUALS = 'Equals',
 
   /**
-   * The Claim from the token must contain the given value in order for a match
+   * The claim from the token must contain the given value in order for a match
    */
   CONTAINS = 'Contains',
 
   /**
-   * The Claim from the token must start with the given value in order for a match
+   * The claim from the token must start with the given value in order for a match
    */
   STARTS_WITH = 'StartsWith',
 
   /**
-   * The Claim from the token must not equal the given value in order for a match
+   * The claim from the token must not equal the given value in order for a match
    */
   NOTEQUAL = 'NotEqual',
 }
 
 /**
- * Represents an Identity Pool Role Attachment Role Mapping Rule
+ * Represents an Identity Pool Role Attachment role mapping rule
  */
 export interface RoleMappingRule {
   /**
-   * The key sent in the token by the federated identity provider.
+   * The key sent in the token by the federated Identity Provider
    */
   readonly claim: string;
 
   /**
-   * The Role to be assumed when Claim Value is matched.
+   * The role to be assumed when the claim value is matched
    */
   readonly mappedRole: IRole;
 
@@ -138,9 +125,9 @@ export interface RoleMappingRule {
   readonly claimValue: string;
 
   /**
-   * How to match with the Claim value
+   * How to match with the claim value
    * @default RoleMappingMatchType.EQUALS
-  */
+   */
   readonly matchType?: RoleMappingMatchType;
 }
 
@@ -151,7 +138,7 @@ export interface RoleMappingRule {
  */
 export class IdentityPoolRoleAttachment extends Resource implements IIdentityPoolRoleAttachment {
   /**
-   * Id of the underlying identity pool
+   * ID of the underlying Identity Pool
    */
   public readonly identityPoolId: string
 
@@ -176,7 +163,7 @@ export class IdentityPoolRoleAttachment extends Resource implements IIdentityPoo
   }
 
   /**
-   * Configures Role Mappings for Identity Pool Role Attachment
+   * Configures role mappings for the Identity Pool Role Attachment
    */
   private configureRoleMappings(
     ...props: IdentityPoolRoleMapping[]

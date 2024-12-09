@@ -94,6 +94,7 @@ export class CallAwsService extends sfn.TaskStateBase {
       cloudwatchlogs: 'logs',
       mediapackagevod: 'mediapackage-vod',
       mwaa: 'airflow',
+      efs: 'elasticfilesystem',
     };
     const iamService = iamServiceMap[props.service] ?? props.service;
 
