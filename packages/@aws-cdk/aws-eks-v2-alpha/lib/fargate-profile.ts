@@ -1,10 +1,9 @@
 import { Construct } from 'constructs';
 import { Cluster, AuthenticationMode } from './cluster';
-import { FARGATE_PROFILE_RESOURCE_TYPE } from './cluster-resource-handler/consts';
-import { ClusterResourceProvider } from './cluster-resource-provider';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { Annotations, CustomResource, ITaggable, Lazy, TagManager, TagType } from 'aws-cdk-lib/core';
+import { CfnFargateProfile } from 'aws-cdk-lib/aws-eks';
+import { Annotations, ITaggable, TagManager, TagType } from 'aws-cdk-lib/core';
 
 /**
  * Options for defining EKS Fargate Profiles.
@@ -143,10 +142,6 @@ export class FargateProfile extends Construct implements ITaggable {
   constructor(scope: Construct, id: string, props: FargateProfileProps) {
     super(scope, id);
 
-    const provider = ClusterResourceProvider.getOrCreate(this, {
-      onEventLayer: props.cluster.onEventLayer,
-    });
-
     this.podExecutionRole = props.podExecutionRole ?? new iam.Role(this, 'PodExecutionRole', {
       assumedBy: new iam.ServicePrincipal('eks-fargate-pods.amazonaws.com'),
       managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSFargatePodExecutionRolePolicy')],
@@ -174,23 +169,22 @@ export class FargateProfile extends Construct implements ITaggable {
 
     this.tags = new TagManager(TagType.MAP, 'AWS::EKS::FargateProfile');
 
-    const resource = new CustomResource(this, 'Resource', {
-      serviceToken: provider.serviceToken,
-      resourceType: FARGATE_PROFILE_RESOURCE_TYPE,
-      properties: {
-        AssumeRoleArn: props.cluster.adminRole.roleArn,
-        Config: {
-          clusterName: props.cluster.clusterName,
-          fargateProfileName: props.fargateProfileName,
-          podExecutionRoleArn: this.podExecutionRole.roleArn,
-          selectors: props.selectors,
-          subnets,
-          tags: Lazy.any({ produce: () => this.tags.renderTags() }),
-        },
-      },
+    const resource = new CfnFargateProfile(this, 'Resource', {
+      clusterName: props.cluster.clusterName,
+      fargateProfileName: props.fargateProfileName,
+      podExecutionRoleArn: this.podExecutionRole.roleArn,
+      selectors: props.selectors.map((s) => ({
+        namespace: s.namespace,
+        labels: Object.entries(s.labels ?? {}).map((e) => ({
+          key: e[0],
+          value: e[1],
+        })),
+      })),
+      subnets,
+      tags: this.tags.renderTags(),
     });
 
-    this.fargateProfileArn = resource.getAttString('fargateProfileArn');
+    this.fargateProfileArn = resource.attrArn;
     this.fargateProfileName = resource.ref;
 
     // Fargate profiles must be created sequentially. If other profile(s) already
