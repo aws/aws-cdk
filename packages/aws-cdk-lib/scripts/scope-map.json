@@ -353,6 +353,9 @@
   "aws-internetmonitor": [
     "AWS::InternetMonitor"
   ],
+  "aws-invoicing": [
+    "AWS::Invoicing"
+  ],
   "aws-iot": [
     "AWS::IoT"
   ],
