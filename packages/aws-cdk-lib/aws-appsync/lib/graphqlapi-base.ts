@@ -1,3 +1,4 @@
+import { AuthorizationType } from './auth-config';
 import {
   DynamoDbDataSource,
   HttpDataSource,
@@ -125,32 +126,6 @@ export enum Visibility {
    * Only accessible through a VPC
    */
   PRIVATE = 'PRIVATE',
-}
-
-/**
- * enum with all possible values for AppSync authorization type
- */
-export enum AuthorizationType {
-  /**
-   * API Key authorization type
-   */
-  API_KEY = 'API_KEY',
-  /**
-   * AWS IAM authorization type. Can be used with Cognito Identity Pool federated credentials
-   */
-  IAM = 'AWS_IAM',
-  /**
-   * Cognito User Pool authorization type
-   */
-  USER_POOL = 'AMAZON_COGNITO_USER_POOLS',
-  /**
-   * OpenID Connect authorization type
-   */
-  OIDC = 'OPENID_CONNECT',
-  /**
-   * Lambda authorization type
-   */
-  LAMBDA = 'AWS_LAMBDA',
 }
 
 /**
