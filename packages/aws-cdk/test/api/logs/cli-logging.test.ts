@@ -11,6 +11,9 @@ describe('logging', () => {
     return str.replace(ansiRegex, '');
   };
 
+  // Helper function to match timestamp format
+  const timestampRegex = /^\[\d{2}:\d{2}:\d{2}\] /;
+
   beforeEach(() => {
     // Reset log level before each test
     setLogLevel(LogLevel.INFO);
@@ -39,26 +42,30 @@ describe('logging', () => {
   describe('stream selection', () => {
     test('data() always writes to stdout', () => {
       data('test message');
-      expect(mockStdout).toHaveBeenCalledWith('test message\n');
+      expect(mockStdout.mock.calls[0][0]).toMatch(timestampRegex);
+      expect(mockStdout.mock.calls[0][0]).toMatch(/test message\n$/);
       expect(mockStderr).not.toHaveBeenCalled();
     });
 
     test('error() always writes to stderr', () => {
       error('test error');
-      expect(mockStderr).toHaveBeenCalledWith('test error\n');
+      expect(mockStderr.mock.calls[0][0]).toMatch(timestampRegex);
+      expect(mockStderr.mock.calls[0][0]).toMatch(/test error\n$/);
       expect(mockStdout).not.toHaveBeenCalled();
     });
 
     test('print() writes to stderr by default', () => {
       print('test print');
-      expect(mockStderr).toHaveBeenCalledWith('test print\n');
+      expect(mockStderr.mock.calls[0][0]).toMatch(timestampRegex);
+      expect(mockStderr.mock.calls[0][0]).toMatch(/test print\n$/);
       expect(mockStdout).not.toHaveBeenCalled();
     });
 
     test('print() writes to stdout in CI mode', () => {
       setCI(true);
       print('test print');
-      expect(mockStdout).toHaveBeenCalledWith('test print\n');
+      expect(mockStdout.mock.calls[0][0]).toMatch(timestampRegex);
+      expect(mockStdout.mock.calls[0][0]).toMatch(/test print\n$/);
       expect(mockStderr).not.toHaveBeenCalled();
     });
   });
@@ -69,9 +76,9 @@ describe('logging', () => {
       error('error message');
       warning('warning message');
       print('print message');
-      expect(mockStderr).toHaveBeenCalledWith('error message\n');
-      expect(mockStderr).not.toHaveBeenCalledWith('warning message\n');
-      expect(mockStderr).not.toHaveBeenCalledWith('print message\n');
+      expect(mockStderr.mock.calls[0][0]).toMatch(timestampRegex);
+      expect(mockStderr.mock.calls[0][0]).toMatch(/error message\n$/);
+      expect(mockStderr.mock.calls).toHaveLength(1); // Only error message should be logged
     });
 
     test('debug messages only show at debug level', () => {
@@ -81,7 +88,8 @@ describe('logging', () => {
 
       setLogLevel(LogLevel.DEBUG);
       debug('debug message');
-      expect(mockStderr).toHaveBeenCalledWith('debug message\n');
+      expect(mockStderr.mock.calls[0][0]).toMatch(timestampRegex);
+      expect(mockStderr.mock.calls[0][0]).toMatch(/debug message\n$/);
     });
 
     test('trace messages only show at trace level', () => {
@@ -91,25 +99,28 @@ describe('logging', () => {
 
       setLogLevel(LogLevel.TRACE);
       trace('trace message');
-      expect(mockStderr).toHaveBeenCalledWith('trace message\n');
+      expect(mockStderr.mock.calls[0][0]).toMatch(timestampRegex);
+      expect(mockStderr.mock.calls[0][0]).toMatch(/trace message\n$/);
     });
   });
 
   describe('message formatting', () => {
     test('formats messages with multiple arguments', () => {
       print('Value: %d, String: %s', 42, 'test');
-      expect(mockStderr).toHaveBeenCalledWith('Value: 42, String: test\n');
+      expect(mockStderr.mock.calls[0][0]).toMatch(timestampRegex);
+      expect(mockStderr.mock.calls[0][0]).toMatch(/Value: 42, String: test\n$/);
     });
 
     test('handles prefix correctly', () => {
       const prefixedLog = prefix('PREFIX');
       prefixedLog('test message');
-      expect(mockStderr).toHaveBeenCalledWith('PREFIX test message\n');
+      expect(mockStderr.mock.calls[0][0]).toMatch(/^PREFIX \[\d{2}:\d{2}:\d{2}\] test message\n$/);
     });
 
     test('handles custom styles', () => {
       success('success message');
-      expect(mockStderr).toHaveBeenCalledWith('success message\n');
+      expect(mockStderr.mock.calls[0][0]).toMatch(timestampRegex);
+      expect(mockStderr.mock.calls[0][0]).toMatch(/success message\n$/);
     });
   });
 
@@ -121,8 +132,10 @@ describe('logging', () => {
         expect(mockStderr).not.toHaveBeenCalled();
       });
 
-      expect(mockStderr).toHaveBeenCalledWith('message 1\n');
-      expect(mockStderr).toHaveBeenCalledWith('message 2\n');
+      expect(mockStderr.mock.calls[0][0]).toMatch(timestampRegex);
+      expect(mockStderr.mock.calls[0][0]).toMatch(/message 1\n$/);
+      expect(mockStderr.mock.calls[1][0]).toMatch(timestampRegex);
+      expect(mockStderr.mock.calls[1][0]).toMatch(/message 2\n$/);
     });
 
     test('handles nested corking correctly', async () => {
@@ -136,9 +149,12 @@ describe('logging', () => {
       });
 
       expect(mockStderr).toHaveBeenCalledTimes(3);
-      expect(mockStderr).toHaveBeenCalledWith('outer 1\n');
-      expect(mockStderr).toHaveBeenCalledWith('inner\n');
-      expect(mockStderr).toHaveBeenCalledWith('outer 2\n');
+      expect(mockStderr.mock.calls[0][0]).toMatch(timestampRegex);
+      expect(mockStderr.mock.calls[0][0]).toMatch(/outer 1\n$/);
+      expect(mockStderr.mock.calls[1][0]).toMatch(timestampRegex);
+      expect(mockStderr.mock.calls[1][0]).toMatch(/inner\n$/);
+      expect(mockStderr.mock.calls[2][0]).toMatch(timestampRegex);
+      expect(mockStderr.mock.calls[2][0]).toMatch(/outer 2\n$/);
     });
   });
 
@@ -150,9 +166,17 @@ describe('logging', () => {
         timestamp: true,
         prefix: 'PREFIX',
       });
-      expect(mockStderr).toHaveBeenCalledWith(
-        expect.stringMatching(/^PREFIX \[\d{2}:\d{2}:\d{2}\] test message\n$/),
-      );
+      expect(mockStderr.mock.calls[0][0]).toMatch(/^PREFIX \[\d{2}:\d{2}:\d{2}\] test message\n$/);
+    });
+
+    test('allows explicit timestamp disabling', () => {
+      log({
+        level: LogLevel.INFO,
+        message: 'test message',
+        timestamp: false,
+        prefix: 'PREFIX',
+      });
+      expect(mockStderr.mock.calls[0][0]).toBe('PREFIX test message\n');
     });
   });
 });
