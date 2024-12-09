@@ -1,0 +1,19 @@
+{
+  "version": "38.0.1",
+  "files": {
+    "fa46958bcb246c27c21906c9bf41a44bce7f9613a3d90335588eedc4daeb49dd": {
+      "source": {
+        "path": "NlbEnablePrefixForIpv6NatStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "fa46958bcb246c27c21906c9bf41a44bce7f9613a3d90335588eedc4daeb49dd.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
