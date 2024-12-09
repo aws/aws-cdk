@@ -969,6 +969,62 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     },
   );
 
+  silentTest(
+    'calls the startSchemaCreation() API and ensures that it resolves via hotswap on failure with ConcurrentModificationException',
+    async () => {
+      // GIVEN
+      mockAppSyncClient.on(GetSchemaCreationStatusCommand).resolvesOnce({ status: 'FAILED', details: 'ConcurrentModificationException' });
+
+      setup.setCurrentCfnStackTemplate({
+        Resources: {
+          AppSyncGraphQLSchema: {
+            Type: 'AWS::AppSync::GraphQLSchema',
+            Properties: {
+              ApiId: 'apiId',
+              Definition: 'original graphqlSchema',
+            },
+            Metadata: {
+              'aws:asset:path': 'old-path',
+            },
+          },
+        },
+      });
+      setup.pushStackResourceSummaries(
+        setup.stackSummaryOf(
+          'AppSyncGraphQLSchema',
+          'AWS::AppSync::GraphQLSchema',
+          'arn:aws:appsync:us-east-1:111111111111:apis/apiId/schema/my-schema',
+        ),
+      );
+      const cdkStackArtifact = setup.cdkStackArtifactOf({
+        template: {
+          Resources: {
+            AppSyncGraphQLSchema: {
+              Type: 'AWS::AppSync::GraphQLSchema',
+              Properties: {
+                ApiId: 'apiId',
+                Definition: 'new graphqlSchema',
+              },
+              Metadata: {
+                'aws:asset:path': 'new-path',
+              },
+            },
+          },
+        },
+      });
+
+      // WHEN
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+
+      // THEN
+      expect(deployStackResult).not.toBeUndefined();
+      expect(mockAppSyncClient).toHaveReceivedCommandWith(StartSchemaCreationCommand, {
+        apiId: 'apiId',
+        definition: 'new graphqlSchema',
+      });
+    },
+  );
+
   silentTest('calls the updateFunction() API with functionId when function is listed on second page', async () => {
     // GIVEN
     mockAppSyncClient
