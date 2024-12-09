@@ -1035,8 +1035,8 @@ const api = new appsync.Api(this, 'api', {
 });
 
 // You can get custom HTTP/Realtime endpoint
-new cdk.CfnOutput(stack, 'AWS AppSync Events HTTP endpoint', { value: stack.api.customHttpEndpoint });
-new cdk.CfnOutput(stack, 'AWS AppSync Events Realtime endpoint', { value: stack.api.customRealtimeEndpoint });
+new CfnOutput(this, 'AWS AppSync Events HTTP endpoint', { value: stack.api.customHttpEndpoint });
+new CfnOutput(this, 'AWS AppSync Events Realtime endpoint', { value: stack.api.customRealtimeEndpoint });
 ```
 
 ### Log Group
@@ -1088,7 +1088,7 @@ declare const api: appsync.Api;
 declare const webAcl: wafv2.CfnWebACL;
 
 // Associate waf with Event API
-new CfnWebACLAssociation(this, 'WafAssociation', {
+new wafv2.CfnWebACLAssociation(this, 'WafAssociation', {
   resourceArn: api.apiArn,
   webAclArn: webAcl.attrArn,
 });

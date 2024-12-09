@@ -1,5 +1,5 @@
 // Fixture with packages imported, but nothing else
-import { Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import { Duration, RemovalPolicy, Stack, CfnOutput } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import appsync = require('aws-cdk-lib/aws-appsync');
 import ec2 = require('aws-cdk-lib/aws-ec2');
