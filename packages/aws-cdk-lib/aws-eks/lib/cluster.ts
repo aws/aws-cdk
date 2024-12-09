@@ -1690,73 +1690,7 @@ export class Cluster extends ClusterBase {
       throw new Error('Cannot specify serviceIpv4Cidr with ipFamily equal to IpFamily.IP_V6');
     }
 
-    if (props.remoteNodeNetworks) {
-      // validate that no two CIDRs overlap within the same remote node network
-      for (let i = 0; i < props.remoteNodeNetworks.length; i++) {
-        if (props.remoteNodeNetworks[i].cidrs.length > 1) {
-          for (let j = 0; j < props.remoteNodeNetworks[i].cidrs.length; j++) {
-            for (let k = j + 1; k < props.remoteNodeNetworks[i].cidrs.length; k++) {
-              const overlap = validateCidrPairOverlap(props.remoteNodeNetworks[i].cidrs[j], props.remoteNodeNetworks[i].cidrs[k]);
-              if (overlap) {
-                throw new Error(`CIDR ${props.remoteNodeNetworks[i].cidrs[j]} should not overlap with CIDR ${props.remoteNodeNetworks[i].cidrs[k]} in remote node network #${i+1}`);
-              }
-            }
-          }
-        }
-      }
-
-      // validate that no two CIDRs overlap across different remote node networks
-      for (let i = 0; i < props.remoteNodeNetworks.length; i++) {
-        for (let j = i + 1; j < props.remoteNodeNetworks.length; j++) {
-          const [overlap, remoteNodeCidr1, remoteNodeCidr2] = validateCidrBlocksOverlap(
-            props.remoteNodeNetworks[i].cidrs,
-            props.remoteNodeNetworks[j].cidrs,
-          );
-          if (overlap) {
-            throw new Error(`CIDR block ${remoteNodeCidr1} in remote node network #${i+1} should not overlap with CIDR block ${remoteNodeCidr2} in remote node network #${j+1}`);
-          }
-        }
-      }
-
-      if (props.remotePodNetworks) {
-        // validate that no two CIDRs overlap within the same remote pod network
-        for (let i = 0; i < props.remotePodNetworks.length; i++) {
-          if (props.remotePodNetworks[i].cidrs.length > 1) {
-            for (let j = 0; j < props.remotePodNetworks[i].cidrs.length; j++) {
-              for (let k = j + 1; k < props.remotePodNetworks[i].cidrs.length; k++) {
-                const overlap = validateCidrPairOverlap(props.remotePodNetworks[i].cidrs[j], props.remotePodNetworks[i].cidrs[k]);
-                if (overlap) {
-                  throw new Error(`CIDR ${props.remotePodNetworks[i].cidrs[j]} should not overlap with CIDR ${props.remotePodNetworks[i].cidrs[k]} in remote pod network #${i+1}`);
-                }
-              }
-            }
-          }
-        }
-
-        // validate that no two CIDRs overlap across different remote pod networks
-        for (let i = 0; i < props.remotePodNetworks.length; i++) {
-          for (let j = i + 1; j < props.remotePodNetworks.length; j++) {
-            const [overlap, remotePodCidr1, remotePodCidr2] = validateCidrBlocksOverlap(
-              props.remotePodNetworks[i].cidrs,
-              props.remotePodNetworks[j].cidrs,
-            );
-            if (overlap) {
-              throw new Error(`CIDR block ${remotePodCidr1} in remote pod network #${i} should not overlap with CIDR block ${remotePodCidr2} in remote pod network #${j}`);
-            }
-          }
-        }
-
-        // validate that no two CIDRs overlap between a given remote node network and remote pod network
-        for (const nodeNetwork of props.remoteNodeNetworks) {
-          for (const podNetwork of props.remotePodNetworks) {
-            const [overlap, remoteNodeCidr, remotePodCidr] = validateCidrBlocksOverlap(nodeNetwork.cidrs, podNetwork.cidrs);
-            if (overlap) {
-              throw new Error(`Remote node network CIDR block ${remoteNodeCidr} should not overlap with remote pod network CIDR block ${remotePodCidr}`);
-            }
-          }
-        }
-      }
-    }
+    this.validateRemoteNetworkConfig(props);
 
     this.authenticationMode = props.authenticationMode;
 
@@ -2320,6 +2254,65 @@ export class Cluster extends ClusterBase {
       applyPatch: renderPatch(CoreDnsComputeType.FARGATE),
       restorePatch: renderPatch(CoreDnsComputeType.EC2),
     });
+  }
+
+  private validateRemoteNetworkConfig(props: ClusterProps) {
+    if (!props.remoteNodeNetworks) { return;}
+    // validate that no two CIDRs overlap within the same remote node network
+    props.remoteNodeNetworks.forEach((network, index) => {
+      const { cidrs } = network;
+      if (cidrs.length > 1) {
+        cidrs.forEach((cidr1, j) => {
+          if (cidrs.slice(j + 1).some(cidr2 => validateCidrPairOverlap(cidr1, cidr2))) {
+            throw new Error(`CIDR ${cidr1} should not overlap with another CIDR in remote node network #${index + 1}`);
+          }
+        });
+      }
+    });
+
+    // validate that no two CIDRs overlap across different remote node networks
+    props.remoteNodeNetworks.forEach((network1, i) => {
+      props.remoteNodeNetworks!.slice(i + 1).forEach((network2, j) => {
+        const [overlap, remoteNodeCidr1, remoteNodeCidr2] = validateCidrBlocksOverlap(network1.cidrs, network2.cidrs);
+        if (overlap) {
+          throw new Error(`CIDR block ${remoteNodeCidr1} in remote node network #${i + 1} should not overlap with CIDR block ${remoteNodeCidr2} in remote node network #${i + j + 2}`);
+        }
+      });
+    });
+
+    if (props.remotePodNetworks) {
+      // validate that no two CIDRs overlap within the same remote pod network
+      props.remotePodNetworks.forEach((network, index) => {
+        const { cidrs } = network;
+        if (cidrs.length > 1) {
+          cidrs.forEach((cidr1, j) => {
+            if (cidrs.slice(j + 1).some(cidr2 => validateCidrPairOverlap(cidr1, cidr2))) {
+              throw new Error(`CIDR ${cidr1} should not overlap with another CIDR in remote pod network #${index + 1}`);
+            }
+          });
+        }
+      });
+
+      // validate that no two CIDRs overlap across different remote pod networks
+      props.remotePodNetworks.forEach((network1, i) => {
+        props.remotePodNetworks!.slice(i + 1).forEach((network2, j) => {
+          const [overlap, remotePodCidr1, remotePodCidr2] = validateCidrBlocksOverlap(network1.cidrs, network2.cidrs);
+          if (overlap) {
+            throw new Error(`CIDR block ${remotePodCidr1} in remote pod network #${i + 1} should not overlap with CIDR block ${remotePodCidr2} in remote pod network #${i + j + 2}`);
+          }
+        });
+      });
+
+      // validate that no two CIDRs overlap between a given remote node network and remote pod network
+      for (const nodeNetwork of props.remoteNodeNetworks!) {
+        for (const podNetwork of props.remotePodNetworks) {
+          const [overlap, remoteNodeCidr, remotePodCidr] = validateCidrBlocksOverlap(nodeNetwork.cidrs, podNetwork.cidrs);
+          if (overlap) {
+            throw new Error(`Remote node network CIDR block ${remoteNodeCidr} should not overlap with remote pod network CIDR block ${remotePodCidr}`);
+          }
+        }
+      }
+    }
   }
 }
 
