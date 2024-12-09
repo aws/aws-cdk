@@ -23,7 +23,7 @@ export interface SecondaryAddressProps {
 export interface Ipv6PoolSecondaryAddressProps extends SecondaryAddressProps {
   /**
    * ID of the IPv6 address pool from which to allocate the IPv6 CIDR block
-   * 
+   *
    * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-byoip.html
    */
   readonly ipv6Pool: string;
