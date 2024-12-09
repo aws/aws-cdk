@@ -75,10 +75,11 @@ export class WebSocketRoute extends Resource implements IWebSocketRoute {
   public readonly routeId: string;
   public readonly webSocketApi: IWebSocketApi;
   public readonly routeKey: string;
-
   /**
-   * Integration response ID
-   */
+  * Integration response ID
+  *
+  * @deprecated - Use `WebSocketIntegrationResponse` instead
+  */
   public readonly integrationResponseId?: string;
 
   constructor(scope: Construct, id: string, props: WebSocketRouteProps) {
@@ -94,6 +95,7 @@ export class WebSocketRoute extends Resource implements IWebSocketRoute {
     const config = props.integration._bindToRoute({
       route: this,
       scope: this,
+      returnResponse: props.returnResponse,
     });
 
     const authorizer = props.authorizer ?? new WebSocketNoneAuthorizer(); // must be explicitly NONE (not undefined) for stack updates to work correctly
