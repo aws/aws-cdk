@@ -116,11 +116,10 @@ describe('cluster new api', () => {
     });
 
     test.each([
-      [0.5, 300, /serverlessV2MaxCapacity must be >= 0.5 & <= 256/],
-      [0.5, 0, /serverlessV2MaxCapacity must be >= 0.5 & <= 256/],
+      [0.5, 300, /serverlessV2MaxCapacity must be >= 1 & <= 256/],
+      [0.5, 0, /serverlessV2MaxCapacity must be >= 1 & <= 256/],
       [-1, 1, /serverlessV2MinCapacity must be >= 0 & <= 256/],
       [300, 1, /serverlessV2MinCapacity must be >= 0 & <= 256/],
-      [0.5, 0.5, /If serverlessV2MinCapacity === 0.5 then serverlessV2MaxCapacity must be >=1/],
       [10.1, 12, /serverlessV2MinCapacity & serverlessV2MaxCapacity must be in 0.5 step increments/],
       [12, 12.1, /serverlessV2MinCapacity & serverlessV2MaxCapacity must be in 0.5 step increments/],
       [5, 1, /serverlessV2MaxCapacity must be greater than serverlessV2MinCapacity/],
