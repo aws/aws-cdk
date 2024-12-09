@@ -21,6 +21,13 @@ export class IamResource {
   }
 
   /**
+   * Generate a resource for the calling API
+   */
+  public static forAPI(): IamResource {
+    return new IamResource([]);
+  }
+
+  /**
    * Generate the resource names given a type and fields
    *
    * @param type The type that needs to be allowed
@@ -29,7 +36,9 @@ export class IamResource {
    * Example: ofType('Query', 'GetExample')
    */
   public static ofType(type: string, ...fields: string[]): IamResource {
-    const arns = fields.length ? fields.map((field) => `types/${type}/fields/${field}`) : [`types/${type}/*`];
+    const arns = fields.length
+      ? fields.map((field) => `types/${type}/fields/${field}`)
+      : [`types/${type}/*`];
     return new IamResource(arns);
   }
 
@@ -51,7 +60,16 @@ export class IamResource {
    *
    * @param api The AppSync API to give permissions
    */
-  public resourceArns(api: GraphqlApiBase | EventApiBase ): string[] {
+  public resourceArns(api: GraphqlApiBase | EventApiBase): string[] {
+    if (this.arns.length === 0) {
+      return [
+        Stack.of(api).formatArn({
+          service: 'appsync',
+          resource: `apis/${api.apiId}`,
+          arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+        }),
+      ];
+    }
     return this.arns.map((arn) =>
       Stack.of(api).formatArn({
         service: 'appsync',

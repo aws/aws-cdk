@@ -1,4 +1,4 @@
-import * as path from 'path';
+import * as path from 'node:path';
 import { Template } from '../../assertions';
 import * as cognito from '../../aws-cognito';
 import * as lambda from '../../aws-lambda';
@@ -10,13 +10,11 @@ import * as appsync from '../lib';
 let stack: cdk.Stack;
 let app: App;
 beforeEach(() => {
-  app = new App(
-    {
-      context: {
-        '@aws-cdk/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission': true,
-      },
+  app = new App({
+    context: {
+      '@aws-cdk/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission': true,
     },
-  );
+  });
   stack = new cdk.Stack(app);
 });
 
@@ -39,9 +37,7 @@ describe('AppSync GraphQL API Key Authorization', () => {
       schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
       authorizationConfig: {
         defaultAuthorization: { authorizationType: appsync.AuthorizationType.IAM },
-        additionalAuthorizationModes: [
-          { authorizationType: appsync.AuthorizationType.API_KEY },
-        ],
+        additionalAuthorizationModes: [{ authorizationType: appsync.AuthorizationType.API_KEY }],
       },
     });
 
@@ -56,7 +52,6 @@ describe('AppSync GraphQL API Key Authorization', () => {
       schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
       authorizationConfig: {
         defaultAuthorization: { authorizationType: appsync.AuthorizationType.IAM },
-
       },
     });
 
@@ -86,10 +81,12 @@ describe('AppSync GraphQL API Key Authorization', () => {
       schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
       authorizationConfig: {
         defaultAuthorization: { authorizationType: appsync.AuthorizationType.IAM },
-        additionalAuthorizationModes: [{
-          authorizationType: appsync.AuthorizationType.API_KEY,
-          apiKeyConfig: { description: 'Custom Description' },
-        }],
+        additionalAuthorizationModes: [
+          {
+            authorizationType: appsync.AuthorizationType.API_KEY,
+            apiKeyConfig: { description: 'Custom Description' },
+          },
+        ],
       },
     });
 
@@ -198,12 +195,14 @@ describe('AppSync GraphQL API Key Authorization', () => {
         name: 'api',
         schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
         authorizationConfig: {
-          additionalAuthorizationModes: [{
-            authorizationType: appsync.AuthorizationType.API_KEY,
-          }],
+          additionalAuthorizationModes: [
+            {
+              authorizationType: appsync.AuthorizationType.API_KEY,
+            },
+          ],
         },
       });
-    }).toThrow('You can\'t duplicate API_KEY configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
+    }).toThrow("You can't duplicate API_KEY configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html");
   });
 
   test('AppSync GraphQL API - appsync fails when multiple API_KEY auth modes', () => {
@@ -214,12 +213,14 @@ describe('AppSync GraphQL API Key Authorization', () => {
         schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
         authorizationConfig: {
           defaultAuthorization: { authorizationType: appsync.AuthorizationType.API_KEY },
-          additionalAuthorizationModes: [{
-            authorizationType: appsync.AuthorizationType.API_KEY,
-          }],
+          additionalAuthorizationModes: [
+            {
+              authorizationType: appsync.AuthorizationType.API_KEY,
+            },
+          ],
         },
       });
-    }).toThrow('You can\'t duplicate API_KEY configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
+    }).toThrow("You can't duplicate API_KEY configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html");
   });
 
   test('AppSync GraphQL API - appsync fails when multiple API_KEY auth modes in additionalXxx', () => {
@@ -236,16 +237,15 @@ describe('AppSync GraphQL API Key Authorization', () => {
           ],
         },
       });
-    }).toThrow('You can\'t duplicate API_KEY configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
+    }).toThrow("You can't duplicate API_KEY configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html");
   });
 });
 
 describe('AppSync Event API Key Authorization', () => {
-
   test('AppSync Event API creates default API key', () => {
     // WHEN
     new appsync.EventApi(stack, 'api', {
-      apiName: 'api',
+      name: 'api',
     });
 
     // THEN
@@ -255,21 +255,15 @@ describe('AppSync Event API Key Authorization', () => {
   test('AppSync Event API sets default connection, publish, and subscribe auth modes as API key', () => {
     // WHEN
     new appsync.EventApi(stack, 'api', {
-      apiName: 'api',
+      name: 'api',
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Api', {
       EventConfig: {
-        ConnectionAuthModes: [{
-          AuthType: appsync.AuthorizationType.API_KEY,
-        }],
-        DefaultPublishAuthModes: [{
-          AuthType: appsync.AuthorizationType.API_KEY,
-        }],
-        DefaultSubscribeAuthModes: [{
-          AuthType: appsync.AuthorizationType.API_KEY,
-        }],
+        ConnectionAuthModes: [{ AuthType: appsync.AuthorizationType.API_KEY }],
+        DefaultPublishAuthModes: [{ AuthType: appsync.AuthorizationType.API_KEY }],
+        DefaultSubscribeAuthModes: [{ AuthType: appsync.AuthorizationType.API_KEY }],
       },
     });
   });
@@ -277,39 +271,18 @@ describe('AppSync Event API Key Authorization', () => {
   test('AppSync Event API sets connection auth modes as auth provider options when not explicitly specified', () => {
     // WHEN
     new appsync.EventApi(stack, 'api', {
-      apiName: 'api',
+      name: 'api',
       authorizationConfig: {
-        authProviders: [
-          { authorizationType: appsync.AuthorizationType.IAM },
-          { authorizationType: appsync.AuthorizationType.API_KEY },
-        ],
+        authProviders: [{ authorizationType: appsync.AuthorizationType.API_KEY }, { authorizationType: appsync.AuthorizationType.IAM }],
       },
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Api', {
       EventConfig: {
-        ConnectionAuthModes: [
-          {
-            AuthType: appsync.AuthorizationType.API_KEY,
-          }, {
-            AuthType: appsync.AuthorizationType.IAM,
-          },
-        ],
-        DefaultPublishAuthModes: [
-          {
-            AuthType: appsync.AuthorizationType.API_KEY,
-          }, {
-            AuthType: appsync.AuthorizationType.IAM,
-          },
-        ],
-        DefaultSubscribeAuthModes: [
-          {
-            AuthType: appsync.AuthorizationType.API_KEY,
-          }, {
-            AuthType: appsync.AuthorizationType.IAM,
-          },
-        ],
+        ConnectionAuthModes: [{ AuthType: appsync.AuthorizationType.API_KEY }, { AuthType: appsync.AuthorizationType.IAM }],
+        DefaultPublishAuthModes: [{ AuthType: appsync.AuthorizationType.API_KEY }, { AuthType: appsync.AuthorizationType.IAM }],
+        DefaultSubscribeAuthModes: [{ AuthType: appsync.AuthorizationType.API_KEY }, { AuthType: appsync.AuthorizationType.IAM }],
       },
     });
   });
@@ -317,12 +290,9 @@ describe('AppSync Event API Key Authorization', () => {
   test('AppSync Event API creates API key from secondary auth provider', () => {
     // WHEN
     new appsync.EventApi(stack, 'api', {
-      apiName: 'api',
+      name: 'api',
       authorizationConfig: {
-        authProviders: [
-          { authorizationType: appsync.AuthorizationType.IAM },
-          { authorizationType: appsync.AuthorizationType.API_KEY },
-        ],
+        authProviders: [{ authorizationType: appsync.AuthorizationType.IAM }, { authorizationType: appsync.AuthorizationType.API_KEY }],
       },
     });
 
@@ -333,11 +303,9 @@ describe('AppSync Event API Key Authorization', () => {
   test('AppSync Event API - does not create unspecified API key when API key is not included as an auth provider', () => {
     // WHEN
     new appsync.EventApi(stack, 'api', {
-      apiName: 'api',
+      name: 'api',
       authorizationConfig: {
-        authProviders: [
-          { authorizationType: appsync.AuthorizationType.IAM },
-        ],
+        authProviders: [{ authorizationType: appsync.AuthorizationType.IAM }],
       },
     });
 
@@ -348,7 +316,7 @@ describe('AppSync Event API Key Authorization', () => {
   test('AppSync Event API - creates configured api key when explicitly provided', () => {
     // WHEN
     new appsync.EventApi(stack, 'api', {
-      apiName: 'api',
+      name: 'api',
       authorizationConfig: {
         authProviders: [
           {
@@ -372,7 +340,7 @@ describe('AppSync Event API Key Authorization', () => {
 
     // WHEN
     new appsync.EventApi(stack, 'api', {
-      apiName: 'api',
+      name: 'api',
       authorizationConfig: {
         authProviders: [
           {
@@ -385,7 +353,7 @@ describe('AppSync Event API Key Authorization', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::ApiKey', {
-      ApiId: { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
+      ApiId: { 'Fn::GetAtt': ['apiC8550315', 'ApiId'] },
       Expires: expirationDate,
     });
   });
@@ -394,7 +362,7 @@ describe('AppSync Event API Key Authorization', () => {
     // WHEN
     const when = () => {
       new appsync.EventApi(stack, 'api', {
-        apiName: 'api',
+        name: 'api',
         authorizationConfig: {
           authProviders: [
             {
@@ -416,7 +384,7 @@ describe('AppSync Event API Key Authorization', () => {
     // WHEN
     const when = () => {
       new appsync.EventApi(stack, 'api', {
-        apiName: 'api',
+        name: 'api',
         authorizationConfig: {
           authProviders: [
             {
@@ -438,20 +406,12 @@ describe('AppSync Event API Key Authorization', () => {
     // WHEN
     const when = () => {
       new appsync.EventApi(stack, 'api', {
-        apiName: 'api',
+        name: 'api',
         authorizationConfig: {
-          authProviders: [
-            { authorizationType: appsync.AuthorizationType.IAM },
-          ],
-          connectionAuthModes: [
-            appsync.AuthorizationType.API_KEY,
-          ],
-          defaultPublishAuthModes: [
-            appsync.AuthorizationType.API_KEY,
-          ],
-          defaultSubscribeAuthModes: [
-            appsync.AuthorizationType.API_KEY,
-          ],
+          authProviders: [{ authorizationType: appsync.AuthorizationType.IAM }],
+          connectionAuthModeTypes: [appsync.AuthorizationType.API_KEY],
+          defaultPublishAuthModeTypes: [appsync.AuthorizationType.API_KEY],
+          defaultSubscribeAuthModeTypes: [appsync.AuthorizationType.API_KEY],
         },
       });
     };
@@ -505,7 +465,7 @@ describe('AppSync GraphQL API IAM Authorization', () => {
           additionalAuthorizationModes: [{ authorizationType: appsync.AuthorizationType.IAM }],
         },
       });
-    }).toThrow('You can\'t duplicate IAM configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
+    }).toThrow("You can't duplicate IAM configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html");
   });
 
   test('AppSync GraphQL API fails when multiple IAM auth modes in additionalXxx', () => {
@@ -521,7 +481,7 @@ describe('AppSync GraphQL API IAM Authorization', () => {
           ],
         },
       });
-    }).toThrow('You can\'t duplicate IAM configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
+    }).toThrow("You can't duplicate IAM configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html");
   });
 });
 
@@ -529,20 +489,20 @@ describe('AppSync Event API IAM Authorization', () => {
   test('AppSync Event API Iam authorization configurable in authorization provider', () => {
     // WHEN
     new appsync.EventApi(stack, 'api', {
-      apiName: 'api',
+      name: 'api',
       authorizationConfig: {
-        authProviders: [
-          { authorizationType: appsync.AuthorizationType.IAM },
-        ],
+        authProviders: [{ authorizationType: appsync.AuthorizationType.IAM }],
       },
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Api', {
       EventConfig: {
-        AuthProviders: [{
-          AuthType: appsync.AuthorizationType.IAM,
-        }],
+        AuthProviders: [
+          {
+            AuthType: appsync.AuthorizationType.IAM,
+          },
+        ],
       },
     });
   });
@@ -550,32 +510,18 @@ describe('AppSync Event API IAM Authorization', () => {
   test('AppSync Event API sets connection auth modes as auth provider options when not explicitly specified', () => {
     // WHEN
     new appsync.EventApi(stack, 'api', {
-      apiName: 'api',
+      name: 'api',
       authorizationConfig: {
-        authProviders: [
-          { authorizationType: appsync.AuthorizationType.IAM },
-        ],
+        authProviders: [{ authorizationType: appsync.AuthorizationType.IAM }],
       },
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Api', {
       EventConfig: {
-        ConnectionAuthModes: [
-          {
-            AuthType: appsync.AuthorizationType.IAM,
-          },
-        ],
-        DefaultPublishAuthModes: [
-          {
-            AuthType: appsync.AuthorizationType.IAM,
-          },
-        ],
-        DefaultSubscribeAuthModes: [
-          {
-            AuthType: appsync.AuthorizationType.IAM,
-          },
-        ],
+        ConnectionAuthModes: [{ AuthType: appsync.AuthorizationType.IAM }],
+        DefaultPublishAuthModes: [{ AuthType: appsync.AuthorizationType.IAM }],
+        DefaultSubscribeAuthModes: [{ AuthType: appsync.AuthorizationType.IAM }],
       },
     });
   });
@@ -584,20 +530,12 @@ describe('AppSync Event API IAM Authorization', () => {
     // WHEN
     const when = () => {
       new appsync.EventApi(stack, 'api', {
-        apiName: 'api',
+        name: 'api',
         authorizationConfig: {
-          authProviders: [
-            { authorizationType: appsync.AuthorizationType.API_KEY },
-          ],
-          connectionAuthModes: [
-            appsync.AuthorizationType.IAM,
-          ],
-          defaultPublishAuthModes: [
-            appsync.AuthorizationType.IAM,
-          ],
-          defaultSubscribeAuthModes: [
-            appsync.AuthorizationType.IAM,
-          ],
+          authProviders: [{ authorizationType: appsync.AuthorizationType.API_KEY }],
+          connectionAuthModeTypes: [appsync.AuthorizationType.IAM],
+          defaultPublishAuthModeTypes: [appsync.AuthorizationType.IAM],
+          defaultSubscribeAuthModeTypes: [appsync.AuthorizationType.IAM],
         },
       });
     };
@@ -610,15 +548,12 @@ describe('AppSync Event API IAM Authorization', () => {
     // THEN
     expect(() => {
       new appsync.EventApi(stack, 'api', {
-        apiName: 'api',
+        name: 'api',
         authorizationConfig: {
-          authProviders: [
-            { authorizationType: appsync.AuthorizationType.IAM },
-            { authorizationType: appsync.AuthorizationType.IAM },
-          ],
+          authProviders: [{ authorizationType: appsync.AuthorizationType.IAM }, { authorizationType: appsync.AuthorizationType.IAM }],
         },
       });
-    }).toThrow('You can\'t duplicate IAM configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
+    }).toThrow("You can't duplicate IAM configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html");
   });
 });
 
@@ -686,22 +621,26 @@ describe('AppSync GraphQL API User Pool Authorization', () => {
       name: 'api',
       schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
       authorizationConfig: {
-        additionalAuthorizationModes: [{
-          authorizationType: appsync.AuthorizationType.USER_POOL,
-          userPoolConfig: { userPool },
-        }],
+        additionalAuthorizationModes: [
+          {
+            authorizationType: appsync.AuthorizationType.USER_POOL,
+            userPoolConfig: { userPool },
+          },
+        ],
       },
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', {
-      AdditionalAuthenticationProviders: [{
-        AuthenticationType: 'AMAZON_COGNITO_USER_POOLS',
-        UserPoolConfig: {
-          AwsRegion: { Ref: 'AWS::Region' },
-          UserPoolId: { Ref: 'pool056F3F7E' },
+      AdditionalAuthenticationProviders: [
+        {
+          AuthenticationType: 'AMAZON_COGNITO_USER_POOLS',
+          UserPoolConfig: {
+            AwsRegion: { Ref: 'AWS::Region' },
+            UserPoolId: { Ref: 'pool056F3F7E' },
+          },
         },
-      }],
+      ],
     });
   });
 
@@ -711,27 +650,31 @@ describe('AppSync GraphQL API User Pool Authorization', () => {
       name: 'api',
       schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
       authorizationConfig: {
-        additionalAuthorizationModes: [{
-          authorizationType: appsync.AuthorizationType.USER_POOL,
-          userPoolConfig: {
-            userPool,
-            appIdClientRegex: 'test',
-            defaultAction: appsync.UserPoolDefaultAction.DENY,
+        additionalAuthorizationModes: [
+          {
+            authorizationType: appsync.AuthorizationType.USER_POOL,
+            userPoolConfig: {
+              userPool,
+              appIdClientRegex: 'test',
+              defaultAction: appsync.UserPoolDefaultAction.DENY,
+            },
           },
-        }],
+        ],
       },
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', {
-      AdditionalAuthenticationProviders: [{
-        AuthenticationType: 'AMAZON_COGNITO_USER_POOLS',
-        UserPoolConfig: {
-          AwsRegion: { Ref: 'AWS::Region' },
-          AppIdClientRegex: 'test',
-          UserPoolId: { Ref: 'pool056F3F7E' },
+      AdditionalAuthenticationProviders: [
+        {
+          AuthenticationType: 'AMAZON_COGNITO_USER_POOLS',
+          UserPoolConfig: {
+            AwsRegion: { Ref: 'AWS::Region' },
+            AppIdClientRegex: 'test',
+            UserPoolId: { Ref: 'pool056F3F7E' },
+          },
         },
-      }],
+      ],
     });
   });
 
@@ -799,24 +742,24 @@ describe('AppSync Event API User Pool Authorization', () => {
   test('User Pool authorization configurable', () => {
     // WHEN
     new appsync.EventApi(stack, 'api', {
-      apiName: 'api',
+      name: 'api',
       authorizationConfig: {
-        authProviders: [
-          { authorizationType: appsync.AuthorizationType.USER_POOL, userPoolConfig: { userPool } },
-        ],
+        authProviders: [{ authorizationType: appsync.AuthorizationType.USER_POOL, cognitoConfig: { userPool } }],
       },
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Api', {
       EventConfig: {
-        AuthProviders: [{
-          AuthType: appsync.AuthorizationType.USER_POOL,
-          UserPoolConfig: {
-            AwsRegion: { Ref: 'AWS::Region' },
-            UserPoolId: { Ref: 'pool056F3F7E' },
+        AuthProviders: [
+          {
+            AuthType: appsync.AuthorizationType.USER_POOL,
+            CognitoConfig: {
+              AwsRegion: { Ref: 'AWS::Region' },
+              UserPoolId: { Ref: 'pool056F3F7E' },
+            },
           },
-        }],
+        ],
       },
     });
   });
@@ -824,32 +767,18 @@ describe('AppSync Event API User Pool Authorization', () => {
   test('AppSync Event API sets connection auth modes as auth provider options when not explicitly specified', () => {
     // WHEN
     new appsync.EventApi(stack, 'api', {
-      apiName: 'api',
+      name: 'api',
       authorizationConfig: {
-        authProviders: [
-          { authorizationType: appsync.AuthorizationType.USER_POOL, userPoolConfig: { userPool } },
-        ],
+        authProviders: [{ authorizationType: appsync.AuthorizationType.USER_POOL, cognitoConfig: { userPool } }],
       },
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Api', {
       EventConfig: {
-        ConnectionAuthModes: [
-          {
-            AuthType: appsync.AuthorizationType.USER_POOL,
-          },
-        ],
-        DefaultPublishAuthModes: [
-          {
-            AuthType: appsync.AuthorizationType.USER_POOL,
-          },
-        ],
-        DefaultSubscribeAuthModes: [
-          {
-            AuthType: appsync.AuthorizationType.USER_POOL,
-          },
-        ],
+        ConnectionAuthModes: [{ AuthType: appsync.AuthorizationType.USER_POOL }],
+        DefaultPublishAuthModes: [{ AuthType: appsync.AuthorizationType.USER_POOL }],
+        DefaultSubscribeAuthModes: [{ AuthType: appsync.AuthorizationType.USER_POOL }],
       },
     });
   });
@@ -858,20 +787,12 @@ describe('AppSync Event API User Pool Authorization', () => {
     // WHEN
     const when = () => {
       new appsync.EventApi(stack, 'api', {
-        apiName: 'api',
+        name: 'api',
         authorizationConfig: {
-          authProviders: [
-            { authorizationType: appsync.AuthorizationType.API_KEY },
-          ],
-          connectionAuthModes: [
-            appsync.AuthorizationType.USER_POOL,
-          ],
-          defaultPublishAuthModes: [
-            appsync.AuthorizationType.USER_POOL,
-          ],
-          defaultSubscribeAuthModes: [
-            appsync.AuthorizationType.USER_POOL,
-          ],
+          authProviders: [{ authorizationType: appsync.AuthorizationType.API_KEY }],
+          connectionAuthModeTypes: [appsync.AuthorizationType.USER_POOL],
+          defaultPublishAuthModeTypes: [appsync.AuthorizationType.USER_POOL],
+          defaultSubscribeAuthModeTypes: [appsync.AuthorizationType.USER_POOL],
         },
       });
     };
@@ -883,15 +804,14 @@ describe('AppSync Event API User Pool Authorization', () => {
   test('User Pool property defaultAction does not configure when in additional auth', () => {
     // WHEN
     new appsync.EventApi(stack, 'api', {
-      apiName: 'api',
+      name: 'api',
       authorizationConfig: {
         authProviders: [
           {
             authorizationType: appsync.AuthorizationType.USER_POOL,
-            userPoolConfig: {
+            cognitoConfig: {
               userPool,
               appIdClientRegex: 'test',
-              defaultAction: appsync.UserPoolDefaultAction.DENY,
             },
           },
         ],
@@ -901,14 +821,16 @@ describe('AppSync Event API User Pool Authorization', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Api', {
       EventConfig: {
-        AuthProviders: [{
-          AuthType: appsync.AuthorizationType.USER_POOL,
-          UserPoolConfig: {
-            AwsRegion: { Ref: 'AWS::Region' },
-            AppIdClientRegex: 'test',
-            UserPoolId: { Ref: 'pool056F3F7E' },
+        AuthProviders: [
+          {
+            AuthType: appsync.AuthorizationType.USER_POOL,
+            CognitoConfig: {
+              AwsRegion: { Ref: 'AWS::Region' },
+              AppIdClientRegex: 'test',
+              UserPoolId: { Ref: 'pool056F3F7E' },
+            },
           },
-        }],
+        ],
       },
     });
   });
@@ -973,21 +895,25 @@ describe('AppSync GraphQL API OIDC Authorization', () => {
       name: 'api',
       schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
       authorizationConfig: {
-        additionalAuthorizationModes: [{
-          authorizationType: appsync.AuthorizationType.OIDC,
-          openIdConnectConfig: { oidcProvider: 'test' },
-        }],
+        additionalAuthorizationModes: [
+          {
+            authorizationType: appsync.AuthorizationType.OIDC,
+            openIdConnectConfig: { oidcProvider: 'test' },
+          },
+        ],
       },
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', {
-      AdditionalAuthenticationProviders: [{
-        AuthenticationType: 'OPENID_CONNECT',
-        OpenIDConnectConfig: {
-          Issuer: 'test',
+      AdditionalAuthenticationProviders: [
+        {
+          AuthenticationType: 'OPENID_CONNECT',
+          OpenIDConnectConfig: {
+            Issuer: 'test',
+          },
         },
-      }],
+      ],
     });
   });
 
@@ -997,29 +923,33 @@ describe('AppSync GraphQL API OIDC Authorization', () => {
       name: 'api',
       schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
       authorizationConfig: {
-        additionalAuthorizationModes: [{
-          authorizationType: appsync.AuthorizationType.OIDC,
-          openIdConnectConfig: {
-            oidcProvider: 'test',
-            clientId: 'id',
-            tokenExpiryFromAuth: 1,
-            tokenExpiryFromIssue: 1,
+        additionalAuthorizationModes: [
+          {
+            authorizationType: appsync.AuthorizationType.OIDC,
+            openIdConnectConfig: {
+              oidcProvider: 'test',
+              clientId: 'id',
+              tokenExpiryFromAuth: 1,
+              tokenExpiryFromIssue: 1,
+            },
           },
-        }],
+        ],
       },
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', {
-      AdditionalAuthenticationProviders: [{
-        AuthenticationType: 'OPENID_CONNECT',
-        OpenIDConnectConfig: {
-          AuthTTL: 1,
-          ClientId: 'id',
-          IatTTL: 1,
-          Issuer: 'test',
+      AdditionalAuthenticationProviders: [
+        {
+          AuthenticationType: 'OPENID_CONNECT',
+          OpenIDConnectConfig: {
+            AuthTTL: 1,
+            ClientId: 'id',
+            IatTTL: 1,
+            Issuer: 'test',
+          },
         },
-      }],
+      ],
     });
   });
 
@@ -1088,23 +1018,23 @@ describe('AppSync Event API OIDC Authorization', () => {
   test('OIDC authorization configurable', () => {
     // WHEN
     new appsync.EventApi(stack, 'api', {
-      apiName: 'api',
+      name: 'api',
       authorizationConfig: {
-        authProviders: [
-          { authorizationType: appsync.AuthorizationType.OIDC, openIdConnectConfig: { oidcProvider: 'test' } },
-        ],
+        authProviders: [{ authorizationType: appsync.AuthorizationType.OIDC, openIdConnectConfig: { oidcProvider: 'test' } }],
       },
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Api', {
       EventConfig: {
-        AuthProviders: [{
-          AuthType: appsync.AuthorizationType.OIDC,
-          OpenIDConnectConfig: {
-            Issuer: 'test',
+        AuthProviders: [
+          {
+            AuthType: appsync.AuthorizationType.OIDC,
+            OpenIDConnectConfig: {
+              Issuer: 'test',
+            },
           },
-        }],
+        ],
       },
     });
   });
@@ -1112,31 +1042,35 @@ describe('AppSync Event API OIDC Authorization', () => {
   test('OIDC authorization configurable in default authorization', () => {
     // WHEN
     new appsync.EventApi(stack, 'api', {
-      apiName: 'api',
+      name: 'api',
       authorizationConfig: {
-        authProviders: [{
-          authorizationType: appsync.AuthorizationType.OIDC,
-          openIdConnectConfig: {
-            oidcProvider: 'test',
-            clientId: 'id',
-            tokenExpiryFromAuth: 1,
-            tokenExpiryFromIssue: 1,
+        authProviders: [
+          {
+            authorizationType: appsync.AuthorizationType.OIDC,
+            openIdConnectConfig: {
+              oidcProvider: 'test',
+              clientId: 'id',
+              tokenExpiryFromAuth: 1,
+              tokenExpiryFromIssue: 1,
+            },
           },
-        }],
+        ],
       },
     });
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Api', {
       EventConfig: {
-        AuthProviders: [{
-          AuthType: appsync.AuthorizationType.OIDC,
-          OpenIDConnectConfig: {
-            AuthTTL: 1,
-            ClientId: 'id',
-            IatTTL: 1,
-            Issuer: 'test',
+        AuthProviders: [
+          {
+            AuthType: appsync.AuthorizationType.OIDC,
+            OpenIDConnectConfig: {
+              AuthTTL: 1,
+              ClientId: 'id',
+              IatTTL: 1,
+              Issuer: 'test',
+            },
           },
-        }],
+        ],
       },
     });
   });
@@ -1144,38 +1078,28 @@ describe('AppSync Event API OIDC Authorization', () => {
   test('AppSync Event API sets connection auth modes as auth provider options when not explicitly specified', () => {
     // WHEN
     new appsync.EventApi(stack, 'api', {
-      apiName: 'api',
+      name: 'api',
       authorizationConfig: {
-        authProviders: [{
-          authorizationType: appsync.AuthorizationType.OIDC,
-          openIdConnectConfig: {
-            oidcProvider: 'test',
-            clientId: 'id',
-            tokenExpiryFromAuth: 1,
-            tokenExpiryFromIssue: 1,
+        authProviders: [
+          {
+            authorizationType: appsync.AuthorizationType.OIDC,
+            openIdConnectConfig: {
+              oidcProvider: 'test',
+              clientId: 'id',
+              tokenExpiryFromAuth: 1,
+              tokenExpiryFromIssue: 1,
+            },
           },
-        }],
+        ],
       },
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Api', {
       EventConfig: {
-        ConnectionAuthModes: [
-          {
-            AuthType: appsync.AuthorizationType.OIDC,
-          },
-        ],
-        DefaultPublishAuthModes: [
-          {
-            AuthType: appsync.AuthorizationType.OIDC,
-          },
-        ],
-        DefaultSubscribeAuthModes: [
-          {
-            AuthType: appsync.AuthorizationType.OIDC,
-          },
-        ],
+        ConnectionAuthModes: [{ AuthType: appsync.AuthorizationType.OIDC }],
+        DefaultPublishAuthModes: [{ AuthType: appsync.AuthorizationType.OIDC }],
+        DefaultSubscribeAuthModes: [{ AuthType: appsync.AuthorizationType.OIDC }],
       },
     });
   });
@@ -1184,20 +1108,12 @@ describe('AppSync Event API OIDC Authorization', () => {
     // WHEN
     const when = () => {
       new appsync.EventApi(stack, 'api', {
-        apiName: 'api',
+        name: 'api',
         authorizationConfig: {
-          authProviders: [
-            { authorizationType: appsync.AuthorizationType.API_KEY },
-          ],
-          connectionAuthModes: [
-            appsync.AuthorizationType.OIDC,
-          ],
-          defaultPublishAuthModes: [
-            appsync.AuthorizationType.OIDC,
-          ],
-          defaultSubscribeAuthModes: [
-            appsync.AuthorizationType.OIDC,
-          ],
+          authProviders: [{ authorizationType: appsync.AuthorizationType.API_KEY }],
+          connectionAuthModeTypes: [appsync.AuthorizationType.OIDC],
+          defaultPublishAuthModeTypes: [appsync.AuthorizationType.OIDC],
+          defaultSubscribeAuthModeTypes: [appsync.AuthorizationType.OIDC],
         },
       });
     };
@@ -1209,7 +1125,7 @@ describe('AppSync Event API OIDC Authorization', () => {
   test('User Pool authorization configurable in with multiple authorization', () => {
     // WHEN
     new appsync.EventApi(stack, 'api', {
-      apiName: 'api',
+      name: 'api',
       authorizationConfig: {
         authProviders: [
           { authorizationType: appsync.AuthorizationType.OIDC, openIdConnectConfig: { oidcProvider: 'test' } },
@@ -1299,10 +1215,7 @@ describe('AppSync GraphQL API Lambda Authorization', () => {
       AuthenticationType: 'AWS_LAMBDA',
       LambdaAuthorizerConfig: {
         AuthorizerUri: {
-          'Fn::GetAtt': [
-            'authfunction96361832',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['authfunction96361832', 'Arn'],
         },
       },
     });
@@ -1310,22 +1223,16 @@ describe('AppSync GraphQL API Lambda Authorization', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
       Action: 'lambda:InvokeFunction',
       FunctionName: {
-        'Fn::GetAtt': [
-          'authfunction96361832',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['authfunction96361832', 'Arn'],
       },
     });
-
   });
 
   test('Attach Lambda Authorization to two or more graphql api', () => {
     // WHEN
     new appsync.GraphqlApi(stack, 'api1', {
       name: 'api1',
-      schema: appsync.SchemaFile.fromAsset(
-        path.join(__dirname, 'appsync.test.graphql'),
-      ),
+      schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
       authorizationConfig: {
         defaultAuthorization: {
           authorizationType: appsync.AuthorizationType.LAMBDA,
@@ -1338,9 +1245,7 @@ describe('AppSync GraphQL API Lambda Authorization', () => {
 
     new appsync.GraphqlApi(stack, 'api2', {
       name: 'api2',
-      schema: appsync.SchemaFile.fromAsset(
-        path.join(__dirname, 'appsync.test.graphql'),
-      ),
+      schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
       authorizationConfig: {
         defaultAuthorization: {
           authorizationType: appsync.AuthorizationType.LAMBDA,
@@ -1352,17 +1257,14 @@ describe('AppSync GraphQL API Lambda Authorization', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties(
-      'AWS::AppSync::GraphQLApi',
-      {
-        AuthenticationType: 'AWS_LAMBDA',
-        LambdaAuthorizerConfig: {
-          AuthorizerUri: {
-            'Fn::GetAtt': ['authfunction96361832', 'Arn'],
-          },
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', {
+      AuthenticationType: 'AWS_LAMBDA',
+      LambdaAuthorizerConfig: {
+        AuthorizerUri: {
+          'Fn::GetAtt': ['authfunction96361832', 'Arn'],
         },
       },
-    );
+    });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
       Action: 'lambda:InvokeFunction',
@@ -1394,10 +1296,7 @@ describe('AppSync GraphQL API Lambda Authorization', () => {
       AuthenticationType: 'AWS_LAMBDA',
       LambdaAuthorizerConfig: {
         AuthorizerUri: {
-          'Fn::GetAtt': [
-            'authfunction96361832',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['authfunction96361832', 'Arn'],
         },
         AuthorizerResultTtlInSeconds: 300,
         IdentityValidationExpression: 'custom-.*',
@@ -1406,10 +1305,7 @@ describe('AppSync GraphQL API Lambda Authorization', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
       Action: 'lambda:InvokeFunction',
       FunctionName: {
-        'Fn::GetAtt': [
-          'authfunction96361832',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['authfunction96361832', 'Arn'],
       },
     });
   });
@@ -1420,36 +1316,34 @@ describe('AppSync GraphQL API Lambda Authorization', () => {
       name: 'api',
       schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
       authorizationConfig: {
-        additionalAuthorizationModes: [{
-          authorizationType: appsync.AuthorizationType.LAMBDA,
-          lambdaAuthorizerConfig: {
-            handler: fn,
+        additionalAuthorizationModes: [
+          {
+            authorizationType: appsync.AuthorizationType.LAMBDA,
+            lambdaAuthorizerConfig: {
+              handler: fn,
+            },
           },
-        }],
+        ],
       },
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', {
-      AdditionalAuthenticationProviders: [{
-        AuthenticationType: 'AWS_LAMBDA',
-        LambdaAuthorizerConfig: {
-          AuthorizerUri: {
-            'Fn::GetAtt': [
-              'authfunction96361832',
-              'Arn',
-            ],
+      AdditionalAuthenticationProviders: [
+        {
+          AuthenticationType: 'AWS_LAMBDA',
+          LambdaAuthorizerConfig: {
+            AuthorizerUri: {
+              'Fn::GetAtt': ['authfunction96361832', 'Arn'],
+            },
           },
         },
-      }],
+      ],
     });
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
       Action: 'lambda:InvokeFunction',
       FunctionName: {
-        'Fn::GetAtt': [
-          'authfunction96361832',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['authfunction96361832', 'Arn'],
       },
     });
   });
@@ -1460,106 +1354,113 @@ describe('AppSync GraphQL API Lambda Authorization', () => {
       name: 'api',
       schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
       authorizationConfig: {
-        additionalAuthorizationModes: [{
-          authorizationType: appsync.AuthorizationType.LAMBDA,
-          lambdaAuthorizerConfig: {
-            handler: fn,
-            resultsCacheTtl: cdk.Duration.seconds(300),
-            validationRegex: 'custom-.*',
+        additionalAuthorizationModes: [
+          {
+            authorizationType: appsync.AuthorizationType.LAMBDA,
+            lambdaAuthorizerConfig: {
+              handler: fn,
+              resultsCacheTtl: cdk.Duration.seconds(300),
+              validationRegex: 'custom-.*',
+            },
           },
-        }],
+        ],
       },
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', {
-      AdditionalAuthenticationProviders: [{
-        AuthenticationType: 'AWS_LAMBDA',
-        LambdaAuthorizerConfig: {
-          AuthorizerUri: {
-            'Fn::GetAtt': [
-              'authfunction96361832',
-              'Arn',
-            ],
+      AdditionalAuthenticationProviders: [
+        {
+          AuthenticationType: 'AWS_LAMBDA',
+          LambdaAuthorizerConfig: {
+            AuthorizerUri: {
+              'Fn::GetAtt': ['authfunction96361832', 'Arn'],
+            },
+            AuthorizerResultTtlInSeconds: 300,
+            IdentityValidationExpression: 'custom-.*',
           },
-          AuthorizerResultTtlInSeconds: 300,
-          IdentityValidationExpression: 'custom-.*',
         },
-      }],
+      ],
     });
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
       Action: 'lambda:InvokeFunction',
       FunctionName: {
-        'Fn::GetAtt': [
-          'authfunction96361832',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['authfunction96361832', 'Arn'],
       },
     });
   });
 
   test('Lambda authorization throws with multiple lambda authorization', () => {
-    expect(() => new appsync.GraphqlApi(stack, 'api', {
-      name: 'api',
-      schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
-      authorizationConfig: {
-        defaultAuthorization: {
-          authorizationType: appsync.AuthorizationType.LAMBDA,
-          lambdaAuthorizerConfig: {
-            handler: fn,
-          },
-        },
-        additionalAuthorizationModes: [
-          {
-            authorizationType: appsync.AuthorizationType.LAMBDA,
-            lambdaAuthorizerConfig: {
-              handler: fn,
-              resultsCacheTtl: cdk.Duration.seconds(300),
-              validationRegex: 'custom-.*',
+    expect(
+      () =>
+        new appsync.GraphqlApi(stack, 'api', {
+          name: 'api',
+          schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+          authorizationConfig: {
+            defaultAuthorization: {
+              authorizationType: appsync.AuthorizationType.LAMBDA,
+              lambdaAuthorizerConfig: {
+                handler: fn,
+              },
             },
+            additionalAuthorizationModes: [
+              {
+                authorizationType: appsync.AuthorizationType.LAMBDA,
+                lambdaAuthorizerConfig: {
+                  handler: fn,
+                  resultsCacheTtl: cdk.Duration.seconds(300),
+                  validationRegex: 'custom-.*',
+                },
+              },
+            ],
           },
-        ],
-      },
-    })).toThrow('You can only have a single AWS Lambda function configured to authorize your API.');
+        }),
+    ).toThrow('You can only have a single AWS Lambda function configured to authorize your API.');
 
-    expect(() => new appsync.GraphqlApi(stack, 'api2', {
-      name: 'api',
-      schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
-      authorizationConfig: {
-        defaultAuthorization: { authorizationType: appsync.AuthorizationType.IAM },
-        additionalAuthorizationModes: [
-          {
-            authorizationType: appsync.AuthorizationType.LAMBDA,
-            lambdaAuthorizerConfig: {
-              handler: fn,
-              resultsCacheTtl: cdk.Duration.seconds(300),
-              validationRegex: 'custom-.*',
-            },
+    expect(
+      () =>
+        new appsync.GraphqlApi(stack, 'api2', {
+          name: 'api',
+          schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+          authorizationConfig: {
+            defaultAuthorization: { authorizationType: appsync.AuthorizationType.IAM },
+            additionalAuthorizationModes: [
+              {
+                authorizationType: appsync.AuthorizationType.LAMBDA,
+                lambdaAuthorizerConfig: {
+                  handler: fn,
+                  resultsCacheTtl: cdk.Duration.seconds(300),
+                  validationRegex: 'custom-.*',
+                },
+              },
+              {
+                authorizationType: appsync.AuthorizationType.LAMBDA,
+                lambdaAuthorizerConfig: {
+                  handler: fn,
+                  resultsCacheTtl: cdk.Duration.seconds(300),
+                  validationRegex: 'custom-.*',
+                },
+              },
+            ],
           },
-          {
-            authorizationType: appsync.AuthorizationType.LAMBDA,
-            lambdaAuthorizerConfig: {
-              handler: fn,
-              resultsCacheTtl: cdk.Duration.seconds(300),
-              validationRegex: 'custom-.*',
-            },
-          },
-        ],
-      },
-    })).toThrow('You can only have a single AWS Lambda function configured to authorize your API.');
+        }),
+    ).toThrow('You can only have a single AWS Lambda function configured to authorize your API.');
   });
 
   test('throws if authorization type and mode do not match', () => {
-    expect(() => new appsync.GraphqlApi(stack, 'api', {
-      name: 'api',
-      schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
-      authorizationConfig: {
-        defaultAuthorization: {
-          authorizationType: appsync.AuthorizationType.LAMBDA,
-          openIdConnectConfig: { oidcProvider: 'test' },
-        },
-      },
-    })).toThrow('Missing Lambda Configuration');
+    expect(
+      () =>
+        new appsync.GraphqlApi(stack, 'api', {
+          name: 'api',
+          schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+          authorizationConfig: {
+            defaultAuthorization: {
+              authorizationType: appsync.AuthorizationType.LAMBDA,
+              openIdConnectConfig: { oidcProvider: 'test' },
+            },
+          },
+        }),
+    ).toThrow('Missing Lambda Configuration');
   });
 
   test('Lambda authorization properly scoped under feature flag', () => {
@@ -1581,20 +1482,13 @@ describe('AppSync GraphQL API Lambda Authorization', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
       Action: 'lambda:InvokeFunction',
       FunctionName: {
-        'Fn::GetAtt': [
-          'authfunction96361832',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['authfunction96361832', 'Arn'],
       },
       Principal: 'appsync.amazonaws.com',
       SourceArn: {
-        'Fn::GetAtt': [
-          'apiC8550315',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['apiC8550315', 'Arn'],
       },
     });
-
   });
 });
 
@@ -1611,41 +1505,40 @@ describe('AppSync Event API Lambda Authorization', () => {
   test('Lambda authorization configurable in default authorization has default configuration', () => {
     // WHEN
     new appsync.EventApi(stack, 'api', {
-      apiName: 'api',
+      name: 'api',
       authorizationConfig: {
-        authProviders: [{
-          authorizationType: appsync.AuthorizationType.LAMBDA,
-          lambdaAuthorizerConfig: {
-            handler: fn,
+        authProviders: [
+          {
+            authorizationType: appsync.AuthorizationType.LAMBDA,
+            lambdaAuthorizerConfig: { handler: fn },
           },
-        }],
+        ],
       },
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Api', {
       EventConfig: {
-        AuthProviders: [{
-          AuthType: appsync.AuthorizationType.LAMBDA,
-          LambdaAuthorizerConfig: {
-            AuthorizerUri: {
-              'Fn::GetAtt': [
-                'authfunction96361832',
-                'Arn',
-              ],
+        ConnectionAuthModes: [{ AuthType: 'AWS_LAMBDA' }],
+        DefaultPublishAuthModes: [{ AuthType: 'AWS_LAMBDA' }],
+        DefaultSubscribeAuthModes: [{ AuthType: 'AWS_LAMBDA' }],
+        AuthProviders: [
+          {
+            AuthType: appsync.AuthorizationType.LAMBDA,
+            LambdaAuthorizerConfig: {
+              AuthorizerUri: {
+                'Fn::GetAtt': ['authfunction96361832', 'Arn'],
+              },
             },
           },
-        }],
+        ],
       },
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
       Action: 'lambda:InvokeFunction',
       FunctionName: {
-        'Fn::GetAtt': [
-          'authfunction96361832',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['authfunction96361832', 'Arn'],
       },
     });
   });
@@ -1653,35 +1546,26 @@ describe('AppSync Event API Lambda Authorization', () => {
   test('AppSync Event API sets connection auth modes as auth provider options when not explicitly specified', () => {
     // WHEN
     new appsync.EventApi(stack, 'api', {
-      apiName: 'api',
+      name: 'api',
       authorizationConfig: {
-        authProviders: [{
-          authorizationType: appsync.AuthorizationType.LAMBDA,
-          lambdaAuthorizerConfig: {
-            handler: fn,
+        authProviders: [
+          {
+            authorizationType: appsync.AuthorizationType.LAMBDA,
+            lambdaAuthorizerConfig: {
+              handler: fn,
+            },
           },
-        }],
+        ],
       },
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Api', {
+      Name: 'api',
       EventConfig: {
-        ConnectionAuthModes: [
-          {
-            AuthType: appsync.AuthorizationType.LAMBDA,
-          },
-        ],
-        DefaultPublishAuthModes: [
-          {
-            AuthType: appsync.AuthorizationType.LAMBDA,
-          },
-        ],
-        DefaultSubscribeAuthModes: [
-          {
-            AuthType: appsync.AuthorizationType.LAMBDA,
-          },
-        ],
+        ConnectionAuthModes: [{ AuthType: appsync.AuthorizationType.LAMBDA }],
+        DefaultPublishAuthModes: [{ AuthType: appsync.AuthorizationType.LAMBDA }],
+        DefaultSubscribeAuthModes: [{ AuthType: appsync.AuthorizationType.LAMBDA }],
       },
     });
   });
@@ -1690,20 +1574,12 @@ describe('AppSync Event API Lambda Authorization', () => {
     // WHEN
     const when = () => {
       new appsync.EventApi(stack, 'api', {
-        apiName: 'api',
+        name: 'api',
         authorizationConfig: {
-          authProviders: [
-            { authorizationType: appsync.AuthorizationType.API_KEY },
-          ],
-          connectionAuthModes: [
-            appsync.AuthorizationType.LAMBDA,
-          ],
-          defaultPublishAuthModes: [
-            appsync.AuthorizationType.LAMBDA,
-          ],
-          defaultSubscribeAuthModes: [
-            appsync.AuthorizationType.LAMBDA,
-          ],
+          authProviders: [{ authorizationType: appsync.AuthorizationType.API_KEY }],
+          connectionAuthModeTypes: [appsync.AuthorizationType.LAMBDA],
+          defaultPublishAuthModeTypes: [appsync.AuthorizationType.LAMBDA],
+          defaultSubscribeAuthModeTypes: [appsync.AuthorizationType.LAMBDA],
         },
       });
     };
@@ -1715,43 +1591,46 @@ describe('AppSync Event API Lambda Authorization', () => {
   test('Attach Lambda Authorization to two or more event api', () => {
     // WHEN
     new appsync.EventApi(stack, 'api1', {
-      apiName: 'api1',
+      name: 'api1',
       authorizationConfig: {
-        authProviders: [{
-          authorizationType: appsync.AuthorizationType.LAMBDA,
-          lambdaAuthorizerConfig: {
-            handler: fn,
+        authProviders: [
+          {
+            authorizationType: appsync.AuthorizationType.LAMBDA,
+            lambdaAuthorizerConfig: {
+              handler: fn,
+            },
           },
-        }],
+        ],
       },
     });
 
     new appsync.EventApi(stack, 'api2', {
-      apiName: 'api2',
+      name: 'api2',
       authorizationConfig: {
-        authProviders: [{
-          authorizationType: appsync.AuthorizationType.LAMBDA,
-          lambdaAuthorizerConfig: {
-            handler: fn,
+        authProviders: [
+          {
+            authorizationType: appsync.AuthorizationType.LAMBDA,
+            lambdaAuthorizerConfig: {
+              handler: fn,
+            },
           },
-        }],
+        ],
       },
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Api', {
       EventConfig: {
-        AuthProviders: [{
-          AuthType: appsync.AuthorizationType.LAMBDA,
-          LambdaAuthorizerConfig: {
-            AuthorizerUri: {
-              'Fn::GetAtt': [
-                'authfunction96361832',
-                'Arn',
-              ],
+        AuthProviders: [
+          {
+            AuthType: appsync.AuthorizationType.LAMBDA,
+            LambdaAuthorizerConfig: {
+              AuthorizerUri: {
+                'Fn::GetAtt': ['authfunction96361832', 'Arn'],
+              },
             },
           },
-        }],
+        ],
       },
     });
 
@@ -1766,119 +1645,138 @@ describe('AppSync Event API Lambda Authorization', () => {
   test('Lambda authorization configurable in default authorization', () => {
     // WHEN
     new appsync.EventApi(stack, 'api', {
-      apiName: 'api',
+      name: 'api',
       authorizationConfig: {
-        authProviders: [{
-          authorizationType: appsync.AuthorizationType.LAMBDA,
-          lambdaAuthorizerConfig: {
-            handler: fn,
-            resultsCacheTtl: cdk.Duration.seconds(300),
-            validationRegex: 'custom-.*',
+        authProviders: [
+          {
+            authorizationType: appsync.AuthorizationType.LAMBDA,
+            lambdaAuthorizerConfig: {
+              handler: fn,
+              resultsCacheTtl: cdk.Duration.seconds(300),
+              validationRegex: 'custom-.*',
+            },
           },
-        }],
+        ],
       },
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Api', {
       EventConfig: {
-        AuthProviders: [{
-          AuthType: appsync.AuthorizationType.LAMBDA,
-          LambdaAuthorizerConfig: {
-            AuthorizerUri: {
-              'Fn::GetAtt': [
-                'authfunction96361832',
-                'Arn',
-              ],
+        AuthProviders: [
+          {
+            AuthType: appsync.AuthorizationType.LAMBDA,
+            LambdaAuthorizerConfig: {
+              AuthorizerUri: {
+                'Fn::GetAtt': ['authfunction96361832', 'Arn'],
+              },
+              AuthorizerResultTtlInSeconds: 300,
+              IdentityValidationExpression: 'custom-.*',
             },
-            AuthorizerResultTtlInSeconds: 300,
-            IdentityValidationExpression: 'custom-.*',
           },
-        }],
+        ],
       },
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
       Action: 'lambda:InvokeFunction',
       FunctionName: {
-        'Fn::GetAtt': [
-          'authfunction96361832',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['authfunction96361832', 'Arn'],
       },
     });
   });
 
   test('Lambda authorization throws with multiple lambda authorization', () => {
-    expect(() =>
-      new appsync.EventApi(stack, 'api', {
-        apiName: 'api',
-        authorizationConfig: {
-          authProviders: [{
-            authorizationType: appsync.AuthorizationType.LAMBDA,
-            lambdaAuthorizerConfig: {
-              handler: fn,
-            },
-          }, {
-            authorizationType: appsync.AuthorizationType.LAMBDA,
-            lambdaAuthorizerConfig: {
-              handler: fn,
-              resultsCacheTtl: cdk.Duration.seconds(300),
-              validationRegex: 'custom-.*',
-            },
-          }],
-        },
-      })).toThrow('You can only have a single AWS Lambda function configured to authorize your Event API.');
+    expect(
+      () =>
+        new appsync.EventApi(stack, 'api', {
+          name: 'api',
+          authorizationConfig: {
+            authProviders: [
+              {
+                authorizationType: appsync.AuthorizationType.LAMBDA,
+                lambdaAuthorizerConfig: {
+                  handler: fn,
+                },
+              },
+              {
+                authorizationType: appsync.AuthorizationType.LAMBDA,
+                lambdaAuthorizerConfig: {
+                  handler: fn,
+                  resultsCacheTtl: cdk.Duration.seconds(300),
+                  validationRegex: 'custom-.*',
+                },
+              },
+            ],
+          },
+        }),
+    ).toThrow(
+      'You can only have a single AWS Lambda function configured to authorize your API. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html',
+    );
 
-    expect(() =>
-      new appsync.EventApi(stack, 'api2', {
-        apiName: 'api',
-        authorizationConfig: {
-          authProviders: [{
-            authorizationType: appsync.AuthorizationType.IAM,
-          }, {
-            authorizationType: appsync.AuthorizationType.LAMBDA,
-            lambdaAuthorizerConfig: {
-              handler: fn,
-              resultsCacheTtl: cdk.Duration.seconds(300),
-              validationRegex: 'custom-.*',
-            },
-          }, {
-            authorizationType: appsync.AuthorizationType.LAMBDA,
-            lambdaAuthorizerConfig: {
-              handler: fn,
-              resultsCacheTtl: cdk.Duration.seconds(300),
-              validationRegex: 'custom-.*',
-            },
-          }],
-        },
-      })).toThrow('You can only have a single AWS Lambda function configured to authorize your Event API.');
+    expect(
+      () =>
+        new appsync.EventApi(stack, 'api2', {
+          name: 'api',
+          authorizationConfig: {
+            authProviders: [
+              {
+                authorizationType: appsync.AuthorizationType.IAM,
+              },
+              {
+                authorizationType: appsync.AuthorizationType.LAMBDA,
+                lambdaAuthorizerConfig: {
+                  handler: fn,
+                  resultsCacheTtl: cdk.Duration.seconds(300),
+                  validationRegex: 'custom-.*',
+                },
+              },
+              {
+                authorizationType: appsync.AuthorizationType.LAMBDA,
+                lambdaAuthorizerConfig: {
+                  handler: fn,
+                  resultsCacheTtl: cdk.Duration.seconds(300),
+                  validationRegex: 'custom-.*',
+                },
+              },
+            ],
+          },
+        }),
+    ).toThrow(
+      'You can only have a single AWS Lambda function configured to authorize your API. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html',
+    );
   });
 
   test('throws if authorization type and mode do not match', () => {
-    expect(() =>
-      new appsync.EventApi(stack, 'api', {
-        apiName: 'api',
-        authorizationConfig: {
-          authProviders: [{
-            authorizationType: appsync.AuthorizationType.LAMBDA,
-            openIdConnectConfig: { oidcProvider: 'test' },
-          }],
-        },
-      })).toThrow('Missing Lambda Configuration');
+    expect(
+      () =>
+        new appsync.EventApi(stack, 'api', {
+          name: 'api',
+          authorizationConfig: {
+            authProviders: [
+              {
+                authorizationType: appsync.AuthorizationType.LAMBDA,
+                openIdConnectConfig: { oidcProvider: 'test' },
+              },
+            ],
+          },
+        }),
+    ).toThrow('Missing Lambda Configuration');
   });
 
   test('Lambda authorization properly scoped under feature flag', () => {
     // WHEN
     new appsync.EventApi(stack, 'api', {
-      apiName: 'api',
+      name: 'api',
       authorizationConfig: {
-        authProviders: [{
-          authorizationType: appsync.AuthorizationType.LAMBDA,
-          lambdaAuthorizerConfig: {
-            handler: fn,
+        authProviders: [
+          {
+            authorizationType: appsync.AuthorizationType.LAMBDA,
+            lambdaAuthorizerConfig: {
+              handler: fn,
+            },
           },
-        }],
+        ],
       },
     });
 
@@ -1886,17 +1784,11 @@ describe('AppSync Event API Lambda Authorization', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
       Action: 'lambda:InvokeFunction',
       FunctionName: {
-        'Fn::GetAtt': [
-          'authfunction96361832',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['authfunction96361832', 'Arn'],
       },
       Principal: 'appsync.amazonaws.com',
       SourceArn: {
-        'Fn::GetAtt': [
-          'apiC8550315',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['apiC8550315', 'ApiArn'],
       },
     });
   });
