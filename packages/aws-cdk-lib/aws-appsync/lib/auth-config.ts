@@ -56,22 +56,6 @@ export interface ApiKeyConfig {
 }
 
 /**
- * Configuration for Cognito user-pools in AppSync Event APIs.
- */
-export interface CognitoConfig {
-  /**
-   * The Cognito user pool to use as identity source
-   */
-  readonly userPool: IUserPool;
-  /**
-   * the optional app id regex
-   *
-   * @default -  None
-   */
-  readonly appIdClientRegex?: string;
-}
-
-/**
  * enum with all possible values for Cognito user-pool default actions in AppSync GraphQL APIs
  */
 export enum UserPoolDefaultAction {
@@ -86,7 +70,7 @@ export enum UserPoolDefaultAction {
 }
 
 /**
- * Configuration for Cognito user-pools in AppSync GraphQL APIs
+ * Configuration for Cognito user-pools in AppSync GraphQL APIs and Event APIs
  */
 export interface UserPoolConfig {
   /**
@@ -178,7 +162,7 @@ export function setupOpenIdConnectConfig(config?: OpenIdConnectConfig) {
 }
 
 /**
- * Set up Cognito Authorization configuration for GraphQL APIs
+ * Set up Cognito Authorization configuration for GraphQL APIs and Event APIs
  */
 export function setupUserPoolConfig(config?: UserPoolConfig) {
   if (!config) return undefined;
@@ -187,18 +171,6 @@ export function setupUserPoolConfig(config?: UserPoolConfig) {
     awsRegion: config.userPool.env.region,
     appIdClientRegex: config.appIdClientRegex,
     defaultAction: config.defaultAction || UserPoolDefaultAction.ALLOW,
-  };
-}
-
-/**
- * Set up Cognito Authorization configuration for Event APIs
- */
-export function setupCognitoConfig(config?: CognitoConfig) {
-  if (!config) return undefined;
-  return {
-    userPoolId: config.userPool.userPoolId,
-    awsRegion: config.userPool.env.region,
-    appIdClientRegex: config.appIdClientRegex,
   };
 }
 

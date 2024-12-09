@@ -254,7 +254,8 @@
                             },
                             "awsRegion": {
                               "Ref": "AWS::Region"
-                            }
+                            },
+                            "defaultAction": "ALLOW"
                           }
                         },
                         {

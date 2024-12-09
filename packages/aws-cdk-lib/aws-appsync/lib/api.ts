@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { ApiBase, IApi } from './api-base';
 import { CfnApiKey, CfnApi } from './appsync.generated';
-import { AuthorizationType, ApiKeyConfig, LambdaAuthorizerConfig, CognitoConfig, OpenIdConnectConfig, createAPIKey, setupOpenIdConnectConfig, setupCognitoConfig, setupLambdaAuthorizerConfig } from './auth-config';
+import { AuthorizationType, ApiKeyConfig, LambdaAuthorizerConfig, UserPoolConfig, OpenIdConnectConfig, createAPIKey, setupOpenIdConnectConfig, setupUserPoolConfig, setupLambdaAuthorizerConfig } from './auth-config';
 import { IRole, ManagedPolicy, Role, ServicePrincipal } from '../../aws-iam';
 import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '../../aws-logs';
 import { Lazy, Names, Stack, Token } from '../../core';
@@ -31,10 +31,10 @@ export class AuthProvider {
   /**
    * Enable Cognito authorization.
    *
-   * @param cognitoConfig Cognito authorization config
+   * @param userPoolConfig Cognito authorization config
    */
-  public static cognitoAuth(cognitoConfig: CognitoConfig): AuthProvider {
-    return new AuthProvider(AuthorizationType.USER_POOL, undefined, cognitoConfig);
+  public static cognitoAuth(userPoolConfig: UserPoolConfig): AuthProvider {
+    return new AuthProvider(AuthorizationType.USER_POOL, undefined, userPoolConfig);
   }
 
   /**
@@ -58,14 +58,14 @@ export class AuthProvider {
   /**
    * @param authorizationType AppSync authorization type
    * @param apiKeyConfig API Key config
-   * @param cognitoConfig Cognito authorization config
+   * @param userPoolConfig Cognito authorization config
    * @param openIdConnectConfig Open ID Connect authorization config
    * @param lambdaAuthorizerConfig Lambda authorization config
    */
   private constructor(
     readonly authorizationType: AuthorizationType,
     readonly apiKeyConfig?: ApiKeyConfig,
-    readonly cognitoConfig?: CognitoConfig,
+    readonly userPoolConfig?: UserPoolConfig,
     readonly openIdConnectConfig?: OpenIdConnectConfig,
     readonly lambdaAuthorizerConfig?: LambdaAuthorizerConfig,
   ) { }
@@ -301,7 +301,7 @@ export class Api extends ApiBase {
         authProviders: props.authProviders.map(authProvider => ({
           authType: authProvider.authorizationType,
           openIdConnectConfig: setupOpenIdConnectConfig(authProvider.openIdConnectConfig),
-          cognitoConfig: setupCognitoConfig(authProvider.cognitoConfig),
+          cognitoConfig: setupUserPoolConfig(authProvider.userPoolConfig),
           lambdaAuthorizerConfig: setupLambdaAuthorizerConfig(authProvider.lambdaAuthorizerConfig),
         })),
         connectionAuthModes: props.connectionAuthModes.map(mode => ({ authType: mode })),
