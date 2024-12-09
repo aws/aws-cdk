@@ -971,13 +971,16 @@ For mor information, see [Configuring authorization and authentication to secure
 
 
 ```ts
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+declare const handler: lambda.Function;
+
 const api = new appsync.Api(this, 'api', {
   // set auth providers
   authProviders: [
     appsync.AuthProvider.iamAuth(),
     appsync.AuthProvider.apiKeyAuth(),
     appsync.AuthProvider.lambdaAuth({
-      handler: fn,
+      handler,
       resultsCacheTtl: cdk.Duration.minutes(6),
       validationRegex: 'test',
     }),
@@ -1024,7 +1027,7 @@ const api = new appsync.Api(this, 'api', {
   defaultSubscribeAuthModes: [
     appsync.AuthorizationType.API_KEY,
   ],
-  logConfig: {
+  eventLogConfig: {
     logLevel: appsync.LogLevel.INFO,
     retention: logs.RetentionDays.ONE_WEEK,
   },
@@ -1058,6 +1061,7 @@ You can override this configuration at the namespace.
 declare const api: appsync.Api;
 
 new appsync.ChannelNamespace(this, 'Namespace', {
+  api,
   // Override publishing authorization to API Key
   publishAuthModes: [appsync.AuthorizationType.API_KEY],
   // Override subscribing authorization to Lambda
