@@ -970,18 +970,28 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
   );
 
   silentTest(
-    'calls the startSchemaCreation() API and ensures that it resolves via hotswap on failure with ConcurrentModificationException',
+    'updateFunction() API recovers from failed update attempt through retry logic',
     async () => {
-      // GIVEN
-      mockAppSyncClient.on(GetSchemaCreationStatusCommand).resolvesOnce({ status: 'FAILED', details: 'ConcurrentModificationException' });
+      const ConcurrentModError = new Error('ConcurrentModificationException: Schema is currently being altered, please wait until that is complete.');
+      ConcurrentModError.name = 'ConcurrentModificationException';
+      mockAppSyncClient
+        .on(ListFunctionsCommand)
+        .resolvesOnce({ functions: [{ name: 'my-function', functionId: 'functionId' }] }).rejects(ConcurrentModError);
+      mockAppSyncClient
+        .on(ListFunctionsCommand)
+        .resolvesOnce({ functions: [{ name: 'my-function', functionId: 'functionId' }] });
 
       setup.setCurrentCfnStackTemplate({
         Resources: {
-          AppSyncGraphQLSchema: {
-            Type: 'AWS::AppSync::GraphQLSchema',
+          AppSyncFunction: {
+            Type: 'AWS::AppSync::FunctionConfiguration',
             Properties: {
+              Name: 'my-function',
               ApiId: 'apiId',
-              Definition: 'original graphqlSchema',
+              DataSourceName: 'my-datasource',
+              FunctionVersion: '2018-05-29',
+              RequestMappingTemplate: '## original request template',
+              ResponseMappingTemplate: '## original response template',
             },
             Metadata: {
               'aws:asset:path': 'old-path',
@@ -989,21 +999,18 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
           },
         },
       });
-      setup.pushStackResourceSummaries(
-        setup.stackSummaryOf(
-          'AppSyncGraphQLSchema',
-          'AWS::AppSync::GraphQLSchema',
-          'arn:aws:appsync:us-east-1:111111111111:apis/apiId/schema/my-schema',
-        ),
-      );
       const cdkStackArtifact = setup.cdkStackArtifactOf({
         template: {
           Resources: {
-            AppSyncGraphQLSchema: {
-              Type: 'AWS::AppSync::GraphQLSchema',
+            AppSyncFunction: {
+              Type: 'AWS::AppSync::FunctionConfiguration',
               Properties: {
+                Name: 'my-function',
                 ApiId: 'apiId',
-                Definition: 'new graphqlSchema',
+                DataSourceName: 'my-datasource',
+                FunctionVersion: '2018-05-29',
+                RequestMappingTemplate: '## original request template',
+                ResponseMappingTemplate: '## new response template',
               },
               Metadata: {
                 'aws:asset:path': 'new-path',
@@ -1018,9 +1025,14 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
 
       // THEN
       expect(deployStackResult).not.toBeUndefined();
-      expect(mockAppSyncClient).toHaveReceivedCommandWith(StartSchemaCreationCommand, {
+      expect(mockAppSyncClient).toHaveReceivedCommandWith(UpdateFunctionCommand, {
         apiId: 'apiId',
-        definition: 'new graphqlSchema',
+        dataSourceName: 'my-datasource',
+        functionId: 'functionId',
+        functionVersion: '2018-05-29',
+        name: 'my-function',
+        requestMappingTemplate: '## original request template',
+        responseMappingTemplate: '## new response template',
       });
     },
   );
