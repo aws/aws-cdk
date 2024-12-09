@@ -1,10 +1,15 @@
+import * as logging from '../../lib/logging';
 import * as npm from '../../lib/util/npm';
 
 jest.mock('util', () => {
   const mockExec = jest.fn();
+  const format = jest.fn((fmt, ...args) => {
+    return [fmt, ...args].join(' '); // Simplistic string formatting
+  });
   return {
     promisify: jest.fn(() => mockExec),
     __mockExec: mockExec, // Expose the mockExec for dynamic manipulation
+    format, // Add the mock for util.format
   };
 });
 
@@ -60,6 +65,21 @@ describe('Testing isVersionMarkedDeprecated', () => {
     await expect(npm.isVersionMarkedDeprecated('sample', '1.0'))
       .rejects.toThrow('Command timed out');
 
+    expect(__mockExec).toHaveBeenCalledWith('npm info sample@1.0 --json', { timeout: 5000 });
+  });
+
+  it('logging stderr during `exec` call', async () => {
+    const stderr = 'Some Error Occured';
+    __mockExec.mockResolvedValueOnce({
+      stdout: '{}',
+      stderr: stderr,
+    });
+    const printSpy = jest.spyOn(logging, 'print');
+
+    await expect(npm.isVersionMarkedDeprecated('sample', '1.0'))
+      .resolves.toEqual({ isDeprecated: false, deprecatedReason: '' });
+
+    expect(printSpy).not.toHaveBeenCalledWith(expect.stringContaining(`The 'npm view' command generated an error stream with content [${stderr.trim()}]`));
     expect(__mockExec).toHaveBeenCalledWith('npm info sample@1.0 --json', { timeout: 5000 });
   });
 });
