@@ -86,6 +86,22 @@ export interface Attribute {
 }
 
 /**
+ * Reference to WarmThroughput for a DynamoDB table
+ */
+export interface WarmThroughput {
+  /**
+   * Configures the number of read units per second a table will be able to handle instantly
+   * @default - no readUnitsPerSecond configured
+  */
+  readonly readUnitsPerSecond?: number;
+  /**
+   * Configures the number of write units per second a table will be able to handle instantly
+   * @default - no writeUnitsPerSecond configured
+  */
+  readonly writeUnitsPerSecond?: number;
+}
+
+/**
  * Data types for attributes within a table
  *
  * @see https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.NamingRulesDataTypes.html#HowItWorks.DataTypes
