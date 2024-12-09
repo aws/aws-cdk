@@ -61,11 +61,7 @@ export interface BedrockInvokeModelOutputProps {
   readonly s3OutputUri?: string;
 }
 
-/**
- * Properties for invoking a Bedrock Model
- */
-export interface BedrockInvokeModelProps extends sfn.TaskStateBaseProps {
-
+interface BedrockInvokeModelOptions {
   /**
    * The Bedrock model that the task will invoke.
    *
@@ -143,11 +139,39 @@ export interface BedrockInvokeModelProps extends sfn.TaskStateBaseProps {
 }
 
 /**
+ * Properties for invoking a Bedrock Model
+ */
+export interface BedrockInvokeModelJsonPathProps extends sfn.TaskStateJsonPathBaseProps, BedrockInvokeModelOptions {}
+
+/**
+ * Properties for invoking a Bedrock Model
+ */
+export interface BedrockInvokeModelJsonataProps extends sfn.TaskStateJsonataBaseProps, BedrockInvokeModelOptions {}
+
+/**
+ * Properties for invoking a Bedrock Model
+ */
+export interface BedrockInvokeModelProps extends sfn.TaskStateBaseProps, BedrockInvokeModelOptions {}
+
+/**
  * A Step Functions Task to invoke a model in Bedrock.
- *
  */
 export class BedrockInvokeModel extends sfn.TaskStateBase {
-
+  /**
+   * A Step Functions Task using JSONPath to invoke a model in Bedrock.
+   */
+  public static jsonPath(scope: Construct, id: string, props: BedrockInvokeModelJsonPathProps) {
+    return new BedrockInvokeModel(scope, id, props);
+  }
+  /**
+   * A Step Functions Task using JSONata to invoke a model in Bedrock.
+   */
+  public static jsonata(scope: Construct, id: string, props: BedrockInvokeModelJsonataProps) {
+    return new BedrockInvokeModel(scope, id, {
+      ...props,
+      queryLanguage: sfn.QueryLanguage.JSONATA,
+    });
+  }
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
   ];
@@ -156,10 +180,12 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
   protected readonly taskPolicies: iam.PolicyStatement[] | undefined;
 
   private readonly integrationPattern: sfn.IntegrationPattern;
+  private readonly modelOutput?: BedrockInvokeModelOutputProps;
 
   constructor(scope: Construct, id: string, private readonly props: BedrockInvokeModelProps) {
     super(scope, id, props);
 
+    this.modelOutput = props.output;
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
 
     validatePatternSupported(this.integrationPattern, BedrockInvokeModel.SUPPORTED_INTEGRATION_PATTERNS);
@@ -246,7 +272,7 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
     }
 
     //For Compatibility with existing behaviour of output path
-    if (this.props.output?.s3OutputUri !== undefined || (!useNewS3UriParamsForTask && this.props.outputPath !== undefined)) {
+    if (this.modelOutput?.s3OutputUri !== undefined || (!useNewS3UriParamsForTask && this.props.outputPath !== undefined)) {
       policyStatements.push(
         new iam.PolicyStatement({
           actions: ['s3:PutObject'],
@@ -260,7 +286,7 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
           ],
         }),
       );
-    } else if (this.props.output !== undefined && this.props.output.s3Location !== undefined) {
+    } else if (this.modelOutput !== undefined && this.modelOutput.s3Location !== undefined) {
       policyStatements.push(
         new iam.PolicyStatement({
           actions: ['s3:PutObject'],
@@ -269,8 +295,8 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
               region: '',
               account: '',
               service: 's3',
-              resource: this.props.output?.s3Location?.bucketName,
-              resourceName: this.props.output?.s3Location?.objectKey,
+              resource: this.modelOutput?.s3Location?.bucketName,
+              resourceName: this.modelOutput?.s3Location?.objectKey,
             }),
           ],
         }),

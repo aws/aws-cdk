@@ -6,11 +6,7 @@ import * as sfn from '../../../aws-stepfunctions';
 import { Duration, Stack } from '../../../core';
 import { integrationResourceArn } from '../private/task-utils';
 
-/**
- * Properties for EmrModifyInstanceGroupByName
- *
- */
-export interface EmrModifyInstanceGroupByNameProps extends sfn.TaskStateBaseProps {
+interface EmrModifyInstanceGroupByNameOptions {
   /**
    * The ClusterId to update.
    */
@@ -32,10 +28,45 @@ export interface EmrModifyInstanceGroupByNameProps extends sfn.TaskStateBaseProp
 }
 
 /**
+ * Properties for EmrModifyInstanceGroupByName using JSONPath
+ *
+ */
+export interface EmrModifyInstanceGroupByNameJsonPathProps extends sfn.TaskStateJsonPathBaseProps, EmrModifyInstanceGroupByNameOptions {}
+
+/**
+ * Properties for EmrModifyInstanceGroupByName using JSONata
+ *
+ */
+export interface EmrModifyInstanceGroupByNameJsonataProps extends sfn.TaskStateJsonataBaseProps, EmrModifyInstanceGroupByNameOptions {}
+
+/**
+ * Properties for EmrModifyInstanceGroupByName
+ *
+ */
+export interface EmrModifyInstanceGroupByNameProps extends sfn.TaskStateBaseProps, EmrModifyInstanceGroupByNameOptions {}
+
+/**
  * A Step Functions Task to to modify an InstanceGroup on an EMR Cluster.
  *
  */
 export class EmrModifyInstanceGroupByName extends sfn.TaskStateBase {
+  /**
+   * A Step Functions Task using JSONPath to modify an InstanceGroup on an EMR Cluster.
+   *
+   */
+  public static jsonPath(scope: Construct, id: string, props: EmrModifyInstanceGroupByNameJsonPathProps) {
+    return new EmrModifyInstanceGroupByName(scope, id, props);
+  }
+  /**
+   * A Step Functions Task using JSONata to modify an InstanceGroup on an EMR Cluster.
+   *
+   */
+  public static jsonata(scope: Construct, id: string, props: EmrModifyInstanceGroupByNameJsonataProps) {
+    return new EmrModifyInstanceGroupByName(scope, id, {
+      ...props,
+      queryLanguage: sfn.QueryLanguage.JSONATA,
+    });
+  }
   protected readonly taskPolicies?: iam.PolicyStatement[];
   protected readonly taskMetrics?: sfn.TaskMetricsConfig;
 
@@ -61,14 +92,15 @@ export class EmrModifyInstanceGroupByName extends sfn.TaskStateBase {
   /**
    * @internal
    */
-  protected _renderTask(): any {
+  protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
+    const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
     return {
       Resource: integrationResourceArn('elasticmapreduce', 'modifyInstanceGroupByName', sfn.IntegrationPattern.REQUEST_RESPONSE),
-      Parameters: sfn.FieldUtils.renderObject({
+      ...this._renderParametersOrArguments({
         ClusterId: this.props.clusterId,
         InstanceGroupName: this.props.instanceGroupName,
         InstanceGroup: InstanceGroupModifyConfigPropertyToJson(this.props.instanceGroup),
-      }),
+      }, queryLanguage),
     };
   }
 }
