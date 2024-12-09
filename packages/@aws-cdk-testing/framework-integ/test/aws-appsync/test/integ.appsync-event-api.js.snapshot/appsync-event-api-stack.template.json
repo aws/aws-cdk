@@ -1,5 +1,24 @@
 {
  "Resources": {
+  "Certificate4E7ABB08": {
+   "Type": "AWS::CertificateManager::Certificate",
+   "Properties": {
+    "DomainName": "*.*.example.com",
+    "DomainValidationOptions": [
+     {
+      "DomainName": "*.*.example.com",
+      "HostedZoneId": "Z23ABC4XYZL05B"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "appsync-event-api-stack/Certificate"
+     }
+    ],
+    "ValidationMethod": "DNS"
+   }
+  },
   "PoolD3F588B8": {
    "Type": "AWS::Cognito::UserPool",
    "Properties": {
@@ -67,7 +86,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "ZipFile": "\n        exports.handler = async (event) => {\n          console.log(\"Authorization event:\", JSON.stringify(event));\n\n          const isAuthorized = true;\n          if (isAuthorized) {\n            return {\n              isAuthorized: true,\n              resolverContext: {\n                userId: 'user-id-example'\n              }\n            };\n          } else {\n            return {\n              isAuthorized: false\n            };\n          }\n        };\n      "
+     "ZipFile": "\n            exports.handler = async (event) => {\n              console.log(\"Authorization event:\", JSON.stringify(event));\n\n              const isAuthorized = true;\n              if (isAuthorized) {\n                return {\n                  isAuthorized: true,\n                  resolverContext: {\n                    userId: 'user-id-example'\n                  }\n                };\n              } else {\n                return {\n                  isAuthorized: false\n                };\n              }\n            };\n          "
     },
     "Handler": "index.handler",
     "Role": {
@@ -195,6 +214,31 @@
     "OwnerContact": "test-owner-contact"
    }
   },
+  "EventApiDomainName1C1CA3FD": {
+   "Type": "AWS::AppSync::DomainName",
+   "Properties": {
+    "CertificateArn": {
+     "Ref": "Certificate4E7ABB08"
+    },
+    "Description": "domain for my-event-api",
+    "DomainName": "api.*.example.com"
+   }
+  },
+  "EventApiDomainAssociationECB84F09": {
+   "Type": "AWS::AppSync::DomainNameApiAssociation",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "EventApiE141E6C0",
+      "ApiId"
+     ]
+    },
+    "DomainName": "api.*.example.com"
+   },
+   "DependsOn": [
+    "EventApiDomainName1C1CA3FD"
+   ]
+  },
   "EventApiDefaultApiKeyB9AB1E44": {
    "Type": "AWS::AppSync::ApiKey",
    "Properties": {
@@ -240,7 +284,7 @@
       "ApiId"
      ]
     },
-    "CodeHandlers": "\n        export function onPublish(ctx) {\n          return ctx.events.filter((event) => event.payload.odds > 0)\n        }\n      ",
+    "CodeHandlers": "\n            export function onPublish(ctx) {\n              return ctx.events.filter((event) => event.payload.odds > 0)\n            }\n          ",
     "Name": "AnotherChannelNamespace"
    }
   },
@@ -354,6 +398,37 @@
       "AuthType": "AWS_LAMBDA"
      }
     ]
+   }
+  },
+  "WebAcl": {
+   "Type": "AWS::WAFv2::WebACL",
+   "Properties": {
+    "DefaultAction": {
+     "Allow": {}
+    },
+    "Scope": "REGIONAL",
+    "VisibilityConfig": {
+     "CloudWatchMetricsEnabled": false,
+     "MetricName": "webAclMetric",
+     "SampledRequestsEnabled": false
+    }
+   }
+  },
+  "WafAssociation": {
+   "Type": "AWS::WAFv2::WebACLAssociation",
+   "Properties": {
+    "ResourceArn": {
+     "Fn::GetAtt": [
+      "EventApiE141E6C0",
+      "ApiArn"
+     ]
+    },
+    "WebACLArn": {
+     "Fn::GetAtt": [
+      "WebAcl",
+      "Arn"
+     ]
+    }
    }
   }
  },
@@ -478,6 +553,42 @@
    },
    "us-west-2": {
     "value": "nodejs20.x"
+   }
+  }
+ },
+ "Outputs": {
+  "AWSAppSyncEventsHTTPendpoint": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Fn::GetAtt": [
+        "EventApiDomainName1C1CA3FD",
+        "DomainName"
+       ]
+      },
+      "/event"
+     ]
+    ]
+   }
+  },
+  "AWSAppSyncEventsRealtimeendpoint": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "wss://",
+      {
+       "Fn::GetAtt": [
+        "EventApiDomainName1C1CA3FD",
+        "DomainName"
+       ]
+      },
+      "/event/realtime"
+     ]
+    ]
    }
   }
  },

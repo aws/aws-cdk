@@ -1,7 +1,8 @@
 import { Construct } from 'constructs';
 import { ApiBase, IApi } from './api-base';
-import { CfnApiKey, CfnApi } from './appsync.generated';
+import { CfnApiKey, CfnApi, CfnDomainName, CfnDomainNameApiAssociation } from './appsync.generated';
 import { AuthorizationType, ApiKeyConfig, LambdaAuthorizerConfig, UserPoolConfig, OpenIdConnectConfig, createAPIKey, setupOpenIdConnectConfig, setupUserPoolConfig, setupLambdaAuthorizerConfig } from './auth-config';
+import { DomainOptions } from './domain-options';
 import { IRole, ManagedPolicy, Role, ServicePrincipal } from '../../aws-iam';
 import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '../../aws-logs';
 import { Lazy, Names, Stack, Token } from '../../core';
@@ -172,6 +173,16 @@ export interface ApiProps {
    * @default - None
    */
   readonly eventLogConfig?: EventLogConfig;
+
+  /**
+   * The domain name configuration for the GraphQL API
+   *
+   * The Route 53 hosted zone and CName DNS record must be configured in addition to this setting to
+   * enable custom domain URL
+   *
+   * @default - no domain name
+   */
+  readonly domainName?: DomainOptions;
 }
 
 /**
@@ -253,7 +264,7 @@ export class Api extends ApiBase {
   public readonly dnsRealTime: string;
 
   /**
-   * the configured API key, if present
+   * The configured API key, if present
    *
    * @default - no api key
    * @attribute
@@ -261,12 +272,13 @@ export class Api extends ApiBase {
   public readonly apiKey?: string;
 
   /**
-   * the CloudWatch Log Group for this API
+   * The CloudWatch Log Group for this API
    */
   public readonly logGroup: ILogGroup;
 
   private api: CfnApi;
   private apiKeyResource?: CfnApiKey;
+  private domainNameResource?: CfnDomainName;
 
   constructor(scope: Construct, id: string, props: ApiProps) {
     if (props.apiName !== undefined && !Token.isUnresolved(props.apiName)) {
@@ -317,6 +329,20 @@ export class Api extends ApiBase {
     this.dnsRealTime = this.api.attrDnsRealtime;
 
     const authProviders = props.authProviders;
+
+    if (props.domainName) {
+      this.domainNameResource = new CfnDomainName(this, 'DomainName', {
+        domainName: props.domainName.domainName,
+        certificateArn: props.domainName.certificate.certificateArn,
+        description: `domain for ${this.physicalName}`,
+      });
+      const domainNameAssociation = new CfnDomainNameApiAssociation(this, 'DomainAssociation', {
+        domainName: props.domainName.domainName,
+        apiId: this.apiId,
+      });
+
+      domainNameAssociation.addDependency(this.domainNameResource);
+    }
 
     /**
      * Create API Key
@@ -410,5 +436,35 @@ export class Api extends ApiBase {
       cloudWatchLogsRoleArn: logsRoleArn,
       logLevel,
     };
+  }
+
+  /**
+   * The AppSyncDomainName of the associated custom domain
+   */
+  public get appSyncDomainName(): string {
+    if (!this.domainNameResource) {
+      throw new Error('Cannot retrieve the appSyncDomainName without a domainName configuration');
+    }
+    return this.domainNameResource.attrAppSyncDomainName;
+  }
+
+  /**
+   * The HTTP Endpoint of the associated custom domain
+   */
+  public get customHttpEndpoint(): string {
+    if (!this.domainNameResource) {
+      throw new Error('Cannot retrieve the appSyncDomainName without a domainName configuration');
+    }
+    return `https://${this.domainNameResource.attrDomainName}/event`;
+  }
+
+  /**
+   * The Realtime Endpoint of the associated custom domain
+   */
+  public get customRealtimeEndpoint(): string {
+    if (!this.domainNameResource) {
+      throw new Error('Cannot retrieve the appSyncDomainName without a domainName configuration');
+    }
+    return `wss://${this.domainNameResource.attrDomainName}/event/realtime`;
   }
 }

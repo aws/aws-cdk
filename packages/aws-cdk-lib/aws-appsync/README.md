@@ -997,6 +997,48 @@ const api = new appsync.Api(this, 'api', {
 });
 ```
 
+### Custom Domain Names
+
+With AWS AppSync, you can use custom domain names to configure a single, memorable domain that works for your Event APIs.
+You can set custom domain by setting `domainName`. Also you can get custom HTTP/Realtime endpoint by `customHttpEndpoint`, `customRealtimeEndpoint`.
+
+For more information, see [Configuring custom domain names for Event APIs](https://docs.aws.amazon.com/appsync/latest/eventapi/event-api-custom-domains.html).
+
+
+```ts
+import * as acm from 'aws-cdk-lib/aws-certificatemanager';
+import * as route53 from 'aws-cdk-lib/aws-route53';
+
+const myDomainName = 'api.example.com';
+const certificate = new acm.Certificate(this, 'cert', { domainName: myDomainName });
+
+const api = new appsync.Api(this, 'api', {
+  apiName: 'Api',
+  ownerContact: 'OwnerContact',
+  authProviders: [
+    appsync.AuthProvider.apiKeyAuth(),
+  ],
+  connectionAuthModes: [
+    appsync.AuthorizationType.API_KEY,
+  ],
+  defaultPublishAuthModes: [
+    appsync.AuthorizationType.API_KEY,
+  ],
+  defaultSubscribeAuthModes: [
+    appsync.AuthorizationType.API_KEY,
+  ],
+  // Custom Domain Settings
+  domainName: {
+    certificate,
+    domainName: myDomainName,
+  },
+});
+
+// You can get custom HTTP/Realtime endpoint
+new cdk.CfnOutput(stack, 'AWS AppSync Events HTTP endpoint', { value: stack.api.customHttpEndpoint });
+new cdk.CfnOutput(stack, 'AWS AppSync Events Realtime endpoint', { value: stack.api.customRealtimeEndpoint });
+```
+
 ### Log Group
 
 AppSync automatically create a log group with the name `/aws/appsync/apis/<api_id>` upon deployment withlog data set to never expire.
@@ -1031,6 +1073,24 @@ const api = new appsync.Api(this, 'api', {
     logLevel: appsync.LogLevel.INFO,
     retention: logs.RetentionDays.ONE_WEEK,
   },
+});
+```
+
+### WAF Protection
+
+You can use AWS WAF to protect your AppSync API from common web exploits, such as SQL injection and cross-site scripting (XSS) attacks.
+These could affect API availability and performance, compromise security, or consume excessive resources.
+
+For more information, see [Using AWS WAF to protect AWS AppSync Event APIs](https://docs.aws.amazon.com/appsync/latest/eventapi/using-waf-protect-apis.html).
+
+```ts
+declare const api: appsync.Api;
+declare const webAcl: wafv2.CfnWebACL;
+
+// Associate waf with Event API
+new CfnWebACLAssociation(this, 'WafAssociation', {
+  resourceArn: api.apiArn,
+  webAclArn: webAcl.attrArn,
 });
 ```
 

@@ -8,6 +8,51 @@
         "id": "appsync-event-api-stack",
         "path": "appsync-event-api-stack",
         "children": {
+          "HostedZone": {
+            "id": "HostedZone",
+            "path": "appsync-event-api-stack/HostedZone",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "Certificate": {
+            "id": "Certificate",
+            "path": "appsync-event-api-stack/Certificate",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "appsync-event-api-stack/Certificate/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CertificateManager::Certificate",
+                  "aws:cdk:cloudformation:props": {
+                    "domainName": "*.*.example.com",
+                    "domainValidationOptions": [
+                      {
+                        "domainName": "*.*.example.com",
+                        "hostedZoneId": "Z23ABC4XYZL05B"
+                      }
+                    ],
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "appsync-event-api-stack/Certificate"
+                      }
+                    ],
+                    "validationMethod": "DNS"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_certificatemanager.CfnCertificate",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_certificatemanager.Certificate",
+              "version": "0.0.0"
+            }
+          },
           "Pool": {
             "id": "Pool",
             "path": "appsync-event-api-stack/Pool",
@@ -124,7 +169,7 @@
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
                     "code": {
-                      "zipFile": "\n        exports.handler = async (event) => {\n          console.log(\"Authorization event:\", JSON.stringify(event));\n\n          const isAuthorized = true;\n          if (isAuthorized) {\n            return {\n              isAuthorized: true,\n              resolverContext: {\n                userId: 'user-id-example'\n              }\n            };\n          } else {\n            return {\n              isAuthorized: false\n            };\n          }\n        };\n      "
+                      "zipFile": "\n            exports.handler = async (event) => {\n              console.log(\"Authorization event:\", JSON.stringify(event));\n\n              const isAuthorized = true;\n              if (isAuthorized) {\n                return {\n                  isAuthorized: true,\n                  resolverContext: {\n                    userId: 'user-id-example'\n                  }\n                };\n              } else {\n                return {\n                  isAuthorized: false\n                };\n              }\n            };\n          "
                     },
                     "handler": "index.handler",
                     "role": {
@@ -307,6 +352,44 @@
                   "version": "0.0.0"
                 }
               },
+              "DomainName": {
+                "id": "DomainName",
+                "path": "appsync-event-api-stack/EventApi/DomainName",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::DomainName",
+                  "aws:cdk:cloudformation:props": {
+                    "certificateArn": {
+                      "Ref": "Certificate4E7ABB08"
+                    },
+                    "description": "domain for my-event-api",
+                    "domainName": "api.*.example.com"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnDomainName",
+                  "version": "0.0.0"
+                }
+              },
+              "DomainAssociation": {
+                "id": "DomainAssociation",
+                "path": "appsync-event-api-stack/EventApi/DomainAssociation",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::DomainNameApiAssociation",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Fn::GetAtt": [
+                        "EventApiE141E6C0",
+                        "ApiId"
+                      ]
+                    },
+                    "domainName": "api.*.example.com"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnDomainNameApiAssociation",
+                  "version": "0.0.0"
+                }
+              },
               "DefaultApiKey": {
                 "id": "DefaultApiKey",
                 "path": "appsync-event-api-stack/EventApi/DefaultApiKey",
@@ -368,7 +451,7 @@
                             "ApiId"
                           ]
                         },
-                        "codeHandlers": "\n        export function onPublish(ctx) {\n          return ctx.events.filter((event) => event.payload.odds > 0)\n        }\n      ",
+                        "codeHandlers": "\n            export function onPublish(ctx) {\n              return ctx.events.filter((event) => event.payload.odds > 0)\n            }\n          ",
                         "name": "AnotherChannelNamespace"
                       }
                     },
@@ -606,6 +689,69 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_appsync.ChannelNamespace",
+              "version": "0.0.0"
+            }
+          },
+          "WebAcl": {
+            "id": "WebAcl",
+            "path": "appsync-event-api-stack/WebAcl",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::WAFv2::WebACL",
+              "aws:cdk:cloudformation:props": {
+                "defaultAction": {
+                  "allow": {}
+                },
+                "scope": "REGIONAL",
+                "visibilityConfig": {
+                  "cloudWatchMetricsEnabled": false,
+                  "metricName": "webAclMetric",
+                  "sampledRequestsEnabled": false
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_wafv2.CfnWebACL",
+              "version": "0.0.0"
+            }
+          },
+          "WafAssociation": {
+            "id": "WafAssociation",
+            "path": "appsync-event-api-stack/WafAssociation",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::WAFv2::WebACLAssociation",
+              "aws:cdk:cloudformation:props": {
+                "resourceArn": {
+                  "Fn::GetAtt": [
+                    "EventApiE141E6C0",
+                    "ApiArn"
+                  ]
+                },
+                "webAclArn": {
+                  "Fn::GetAtt": [
+                    "WebAcl",
+                    "Arn"
+                  ]
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_wafv2.CfnWebACLAssociation",
+              "version": "0.0.0"
+            }
+          },
+          "AWS AppSync Events HTTP endpoint": {
+            "id": "AWS AppSync Events HTTP endpoint",
+            "path": "appsync-event-api-stack/AWS AppSync Events HTTP endpoint",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "AWS AppSync Events Realtime endpoint": {
+            "id": "AWS AppSync Events Realtime endpoint",
+            "path": "appsync-event-api-stack/AWS AppSync Events Realtime endpoint",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
               "version": "0.0.0"
             }
           },

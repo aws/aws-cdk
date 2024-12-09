@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dbfbf550d5e05da080f541f5c63007cfeb0b22dcec5ff3d602e4b763178c2754.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dd6c721253150f66744a66e2b06d3ad6de15467cc9e53e3c79adf4a813f087f4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,6 +34,12 @@
         "appsync-event-api-stack.assets"
       ],
       "metadata": {
+        "/appsync-event-api-stack/Certificate/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Certificate4E7ABB08"
+          }
+        ],
         "/appsync-event-api-stack/Pool/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -68,6 +74,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "EventApiE141E6C0"
+          }
+        ],
+        "/appsync-event-api-stack/EventApi/DomainName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiDomainName1C1CA3FD"
+          }
+        ],
+        "/appsync-event-api-stack/EventApi/DomainAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiDomainAssociationECB84F09"
           }
         ],
         "/appsync-event-api-stack/EventApi/DefaultApiKey": [
@@ -116,6 +134,30 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ChannelNamespace5873C25D"
+          }
+        ],
+        "/appsync-event-api-stack/WebAcl": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebAcl"
+          }
+        ],
+        "/appsync-event-api-stack/WafAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WafAssociation"
+          }
+        ],
+        "/appsync-event-api-stack/AWS AppSync Events HTTP endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWSAppSyncEventsHTTPendpoint"
+          }
+        ],
+        "/appsync-event-api-stack/AWS AppSync Events Realtime endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWSAppSyncEventsRealtimeendpoint"
           }
         ],
         "/appsync-event-api-stack/BootstrapVersion": [

@@ -1,4 +1,5 @@
 import { Match, Template } from '../../assertions';
+import { Certificate } from '../../aws-certificatemanager';
 import { UserPool } from '../../aws-cognito';
 import { ManagedPolicy, Role, ServicePrincipal } from '../../aws-iam';
 import { Code, Function, Runtime } from '../../aws-lambda';
@@ -284,6 +285,47 @@ describe('Authorization Config test', () => {
       ).toThrow('You can only have a single AWS Lambda function configured to authorize your API.');
     },
   );
+});
+
+describe('Custom Domain test', () => {
+  test('Event API should be configured with custom CloudWatch Logs role when specified', () => {
+    // GIVEN
+    const certificate = new Certificate(stack, 'certificate', {
+      domainName: 'aws.amazon.com',
+    });
+
+    // WHEN
+    const api = new appsync.Api(stack, 'api', {
+      authProviders: [
+        appsync.AuthProvider.apiKeyAuth(),
+      ],
+      connectionAuthModes: [
+        appsync.AuthorizationType.API_KEY,
+      ],
+      defaultPublishAuthModes: [
+        appsync.AuthorizationType.API_KEY,
+      ],
+      defaultSubscribeAuthModes: [
+        appsync.AuthorizationType.API_KEY,
+      ],
+      domainName: {
+        certificate,
+        domainName: 'aws.amazon.com',
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DomainName', {
+      CertificateArn: stack.resolve(certificate.certificateArn),
+      DomainName: 'aws.amazon.com',
+      Description: 'domain for api',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DomainNameApiAssociation', {
+      ApiId: stack.resolve(api.apiId),
+      DomainName: 'aws.amazon.com',
+    });
+  });
 });
 
 describe('Logging Config test', () => {

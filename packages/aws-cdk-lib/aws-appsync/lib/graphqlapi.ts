@@ -1,10 +1,10 @@
 import { Construct } from 'constructs';
 import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema, CfnDomainName, CfnDomainNameApiAssociation, CfnSourceApiAssociation } from './appsync.generated';
 import { ApiKeyConfig, AuthorizationType, createAPIKey, LambdaAuthorizerConfig, OpenIdConnectConfig, setupLambdaAuthorizerConfig, setupOpenIdConnectConfig, setupUserPoolConfig, UserPoolConfig } from './auth-config';
+import { DomainOptions } from './domain-options';
 import { IGraphqlApi, GraphqlApiBase, Visibility } from './graphqlapi-base';
 import { ISchema, SchemaFile } from './schema';
 import { MergeType, addSourceApiAutoMergePermission, addSourceGraphQLPermission } from './source-api-association';
-import { ICertificate } from '../../aws-certificatemanager';
 import { ManagedPolicy, Role, IRole, ServicePrincipal } from '../../aws-iam';
 import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '../../aws-logs';
 import { CfnResource, FeatureFlags, IResolvable, Lazy, Stack, Token } from '../../core';
@@ -122,21 +122,6 @@ export interface LogConfig {
   * @default RetentionDays.INFINITE
   */
   readonly retention?: RetentionDays;
-}
-
-/**
- * Domain name configuration for AppSync
- */
-export interface DomainOptions {
-  /**
-   * The certificate to use with the domain name.
-   */
-  readonly certificate: ICertificate;
-
-  /**
-   * The actual domain name. For example, `api.example.com`.
-   */
-  readonly domainName: string;
 }
 
 /**

@@ -6,6 +6,7 @@ import ec2 = require('aws-cdk-lib/aws-ec2');
 import dynamodb = require('aws-cdk-lib/aws-dynamodb');
 import iam = require('aws-cdk-lib/aws-iam');
 import rds = require('aws-cdk-lib/aws-rds');
+import * as wafv2 from 'aws-cdk-lib/aws-wafv2';
 import path = require('path');
 
 class Fixture extends Stack {
