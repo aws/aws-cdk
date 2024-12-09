@@ -1,0 +1,14 @@
+{
+  "enableLookups": true,
+  "version": "38.0.1",
+  "testCases": {
+    "alb-mtls-integ/DefaultTest": {
+      "stacks": [
+        "alb-mtls-test-stack"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "alb-mtls-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "albmtlsintegDefaultTestDeployAssert30225695"
+    }
+  }
+}

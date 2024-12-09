@@ -11,7 +11,7 @@ import { CrossRegionAwsSdkSingletonFunction } from '../../../custom-resource-han
  */
 export interface CallAwsServiceCrossRegionProps extends sfn.TaskStateBaseProps {
   /**
-   * The AWS service to call in AWS SDK for JavaScript v3 style.
+   * The AWS service to call in AWS SDK for JavaScript v3 format.
    *
    * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/
    * @example 's3'
@@ -26,9 +26,7 @@ export interface CallAwsServiceCrossRegionProps extends sfn.TaskStateBaseProps {
   readonly action: string;
 
   /**
-   * Parameters for the API action call.
-   *
-   * Use PascalCase for the parameter names.
+   * Parameters for the API action call in AWS SDK for JavaScript v3 format.
    *
    * @default - no parameters
    */
@@ -111,12 +109,6 @@ export class CallAwsServiceCrossRegion extends sfn.TaskStateBase {
     }
     if (!Token.isUnresolved(props.action) && !props.action.startsWith(props.action[0]?.toLowerCase())) {
       throw new Error(`action must be camelCase, got: ${props.action}`);
-    }
-    if (props.parameters) {
-      const invalidKeys = Object.keys(props.parameters).filter((key) => !key.startsWith(key[0]?.toUpperCase()));
-      if (invalidKeys.length) {
-        throw new Error(`parameter names must be PascalCase, got: ${invalidKeys.join(', ')}`);
-      }
     }
 
     // props.service expects a service name in the AWS SDK for JavaScript v3 format.

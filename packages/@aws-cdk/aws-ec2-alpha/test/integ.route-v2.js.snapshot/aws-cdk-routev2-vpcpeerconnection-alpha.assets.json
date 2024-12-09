@@ -1,0 +1,19 @@
+{
+  "version": "38.0.1",
+  "files": {
+    "c733c57b8cbfd381c7b3048e4baac657309ea7413231f8e8b4a9cda04c890928": {
+      "source": {
+        "path": "aws-cdk-routev2-vpcpeerconnection-alpha.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "c733c57b8cbfd381c7b3048e4baac657309ea7413231f8e8b4a9cda04c890928.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

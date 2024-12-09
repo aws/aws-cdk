@@ -1,0 +1,19 @@
+{
+  "version": "38.0.1",
+  "files": {
+    "0250a80a07a681dbad6c490b9f7c3b5248c945559f9d2d6b87460a3251464f39": {
+      "source": {
+        "path": "aws-cdk-routev2-dynamodbendpoint-alpha.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "0250a80a07a681dbad6c490b9f7c3b5248c945559f9d2d6b87460a3251464f39.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

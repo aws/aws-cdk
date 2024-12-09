@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "integtest-pipe-target-cwl/DefaultTest": {
+      "stacks": [
+        "aws-cdk-pipes-targets-cwl"
+      ],
+      "assertionStack": "integtest-pipe-target-cwl/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestpipetargetcwlDefaultTestDeployAssert4A6B8BD3"
+    }
+  }
+}

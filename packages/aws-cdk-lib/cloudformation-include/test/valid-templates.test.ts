@@ -611,24 +611,91 @@ describe('CDK Include', () => {
     });
   });
 
-  test('correctly handles the CreationPolicy resource attribute', () => {
-    const cfnTemplate = includeTestTemplate(stack, 'resource-attribute-creation-policy.json');
-    const cfnBucket = cfnTemplate.getResource('Bucket');
+  test('Intrinsics can be used in the leaf nodes of autoscaling creation policy', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'intrinsics-create-policy-autoscaling.json');
+    const cfnBucket = cfnTemplate.getResource('AutoScalingCreationPolicyIntrinsic');
 
     expect(cfnBucket.cfnOptions.creationPolicy).toBeDefined();
 
     Template.fromStack(stack).templateMatches(
-      loadTestFileToJsObject('resource-attribute-creation-policy.json'),
+      loadTestFileToJsObject('intrinsics-create-policy-autoscaling.json'),
     );
   });
 
-  test('correctly handles the UpdatePolicy resource attribute', () => {
-    const cfnTemplate = includeTestTemplate(stack, 'resource-attribute-update-policy.json');
-    const cfnBucket = cfnTemplate.getResource('Bucket');
+  test('Nested intrinsics can be used in the leaf nodes of autoscaling creation policy', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'intrinsics-create-policy-complex.json');
+    const cfnBucket = cfnTemplate.getResource('ASG');
+
+    expect(cfnBucket.cfnOptions.creationPolicy).toBeDefined();
+
+    Template.fromStack(stack).templateMatches(
+      loadTestFileToJsObject('intrinsics-create-policy-complex.json'),
+    );
+  });
+
+  test('intrinsics can be used in the leaf nodes of autoscaling resource signal creation policy', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'intrinsics-create-policy-resource-signal.json');
+    const cfnBucket = cfnTemplate.getResource('ResourceSignalIntrinsic');
+
+    expect(cfnBucket.cfnOptions.creationPolicy).toBeDefined();
+
+    Template.fromStack(stack).templateMatches(
+      loadTestFileToJsObject('intrinsics-create-policy-resource-signal.json'),
+    );
+  });
+
+  test('Intrinsics can be used in the leaf nodes of autoscaling rolling update policy', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'intrinsics-update-policy-autoscaling-rolling-update.json');
+    const cfnBucket = cfnTemplate.getResource('ASG');
 
     expect(cfnBucket.cfnOptions.updatePolicy).toBeDefined();
+
     Template.fromStack(stack).templateMatches(
-      loadTestFileToJsObject('resource-attribute-update-policy.json'),
+      loadTestFileToJsObject('intrinsics-update-policy-autoscaling-rolling-update.json'),
+    );
+  });
+
+  test('Intrinsics can be used in the leaf nodes of autoscaling replacing update policy', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'intrinsics-update-policy-autoscaling-replacing-update.json');
+    const cfnBucket = cfnTemplate.getResource('ASG');
+
+    expect(cfnBucket.cfnOptions.updatePolicy).toBeDefined();
+
+    Template.fromStack(stack).templateMatches(
+      loadTestFileToJsObject('intrinsics-update-policy-autoscaling-replacing-update.json'),
+    );
+  });
+
+  test('Intrinsics can be used in the leaf nodes of autoscaling scheduled-action update policy', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'intrinsics-update-policy-autoscaling-scheduled-action.json');
+    const cfnBucket = cfnTemplate.getResource('ASG');
+
+    expect(cfnBucket.cfnOptions.updatePolicy).toBeDefined();
+
+    Template.fromStack(stack).templateMatches(
+      loadTestFileToJsObject('intrinsics-update-policy-autoscaling-scheduled-action.json'),
+    );
+  });
+
+  test('Intrinsics can be used in the leaf nodes of code deploy lambda alias update policy', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'intrinsics-update-policy-code-deploy-lambda-alias-update.json');
+    const cfnBucket = cfnTemplate.getResource('Alias');
+
+    expect(cfnBucket.cfnOptions.updatePolicy).toBeDefined();
+
+    Template.fromStack(stack).templateMatches(
+      loadTestFileToJsObject('intrinsics-update-policy-code-deploy-lambda-alias-update.json'),
+    );
+  });
+
+  test('Nested Intrinsics can be used in the leaf nodes of autoscaling rolling update policy', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'intrinsics-update-policy-complex.json');
+    const cfnBucket = cfnTemplate.getResource('ASG');
+
+    expect(cfnBucket.cfnOptions.updatePolicy).toBeDefined();
+
+    Template.fromStack(stack).templateMatches(
+      loadTestFileToJsObject('intrinsics-update-policy-complex.json'),
     );
   });
 
@@ -637,6 +704,13 @@ describe('CDK Include', () => {
 
     Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('non-existent-resource-attribute.json'),
+    );
+  });
+
+  test('preserves unknown policy attributes', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'non-existent-policy-attribute.json');
+    Template.fromStack(stack).templateMatches(
+      loadTestFileToJsObject('non-existent-policy-attribute.json'),
     );
   });
 
@@ -1119,6 +1193,14 @@ describe('CDK Include', () => {
 
     Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('fn-select-with-novalue.json'),
+    );
+  });
+
+  test('Fn::If can be used in Tags', () => {
+    includeTestTemplate(stack, 'tags-with-intrinsics.json');
+
+    Template.fromStack(stack).templateMatches(
+      loadTestFileToJsObject('tags-with-intrinsics.json'),
     );
   });
 });

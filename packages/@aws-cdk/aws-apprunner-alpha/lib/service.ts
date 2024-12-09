@@ -203,6 +203,11 @@ export class Runtime {
   public static readonly NODEJS_16 = Runtime.of('NODEJS_16')
 
   /**
+   * NodeJS 18
+   */
+  public static readonly NODEJS_18 = Runtime.of('NODEJS_18')
+
+  /**
    * PHP 8.1
    */
   public static readonly PHP_81 = Runtime.of('PHP_81')
@@ -211,6 +216,11 @@ export class Runtime {
    * Python 3
    */
   public static readonly PYTHON_3 = Runtime.of('PYTHON_3')
+
+  /**
+   * Python 3.11
+   */
+  public static readonly PYTHON_311 = Runtime.of('PYTHON_311')
 
   /**
    * Ruby 3.1
@@ -425,8 +435,8 @@ export abstract class Source {
   }
 
   /**
-    * Called when the Job is initialized to allow this object to bind.
-    */
+   * Called when the Job is initialized to allow this object to bind.
+   */
   public abstract bind(scope: Construct): SourceConfig;
 }
 
@@ -721,6 +731,15 @@ export interface ServiceProps {
    * @default - no VPC connector, uses the DEFAULT egress type instead
    */
   readonly vpcConnector?: IVpcConnector;
+
+  /**
+   * Specifies whether your App Runner service is publicly accessible.
+   *
+   * If you use `VpcIngressConnection`, you must set this property to `false`.
+   *
+   * @default true
+   */
+  readonly isPubliclyAccessible?: boolean;
 
   /**
    * Settings for the health check that AWS App Runner performs to monitor the health of a service.
@@ -1274,6 +1293,21 @@ export class Service extends cdk.Resource implements iam.IGrantable {
       throw new Error('configurationValues cannot be provided if the ConfigurationSource is Repository');
     }
 
+    if (props.serviceName !== undefined && !cdk.Token.isUnresolved(props.serviceName)) {
+
+      if (props.serviceName.length < 4 || props.serviceName.length > 40) {
+        throw new Error(
+          `\`serviceName\` must be between 4 and 40 characters, got: ${props.serviceName.length} characters.`,
+        );
+      }
+
+      if (!/^[A-Za-z0-9][A-Za-z0-9\-_]*$/.test(props.serviceName)) {
+        throw new Error(
+          `\`serviceName\` must start with an alphanumeric character and contain only alphanumeric characters, hyphens, or underscores after that, got: ${props.serviceName}.`,
+        );
+      }
+    }
+
     const resource = new CfnService(this, 'Resource', {
       serviceName: this.props.serviceName,
       instanceConfiguration: {
@@ -1300,6 +1334,7 @@ export class Service extends cdk.Resource implements iam.IGrantable {
           egressType: this.props.vpcConnector ? 'VPC' : 'DEFAULT',
           vpcConnectorArn: this.props.vpcConnector?.vpcConnectorArn,
         },
+        ingressConfiguration: props.isPubliclyAccessible !== undefined ? { isPubliclyAccessible: props.isPubliclyAccessible } : undefined,
         ipAddressType: this.props.ipAddressType,
       },
       healthCheckConfiguration: this.props.healthCheck ?
