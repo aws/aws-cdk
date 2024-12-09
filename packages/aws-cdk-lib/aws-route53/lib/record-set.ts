@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { AliasRecordTargetConfig, IAliasRecordTarget } from './alias-record-target';
 import { GeoLocation } from './geo-location';
+import { IHealthCheck } from './health-check';
 import { IHostedZone } from './hosted-zone-ref';
 import { CfnRecordSet } from './route53.generated';
 import { determineFullyQualifiedDomainName } from './util';
@@ -264,6 +265,15 @@ export interface RecordSetOptions {
    * @default - Auto generated string
    */
   readonly setIdentifier?: string;
+
+  /**
+   * The health check to associate with the record set.
+   *
+   * Route53 will return this record set in response to DNS queries only if the health check is passing.
+   *
+   * @default - No health check configured
+   */
+  readonly healthCheck?: IHealthCheck;
 }
 
 /**
@@ -378,6 +388,7 @@ export class RecordSet extends Resource implements IRecordSet {
       setIdentifier: props.setIdentifier ?? this.configureSetIdentifier(),
       weight: props.weight,
       region: props.region,
+      healthCheckId: props.healthCheck?.healthCheckId,
     });
 
     this.domainName = recordSet.ref;
