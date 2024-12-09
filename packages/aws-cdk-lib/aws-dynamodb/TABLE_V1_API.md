@@ -222,6 +222,8 @@ const sortKey = schema.sortKey;
 
 A Kinesis Data Stream can be configured on the DynamoDB table to capture item-level changes.
 
+You can optionally configure the `kinesisPrecisionTimestamp` parameter to specify the precision level of the approximate creation date and time. The allowed values are `MICROSECOND` and `MILLISECOND`. If this parameter is not specified, the default precision is set to `MICROSECOND`.
+
 ```ts
 import * as kinesis from 'aws-cdk-lib/aws-kinesis';
 
