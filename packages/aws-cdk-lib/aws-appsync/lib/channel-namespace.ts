@@ -5,6 +5,7 @@ import { AppSyncAuthorizationType } from './auth-config';
 import { Code } from './code';
 import { IEventApi } from './eventapi';
 import { IGrantable } from '../../aws-iam';
+import { IGrantable } from '../../aws-iam';
 import { IResource, Resource, Token } from '../../core';
 
 /**
@@ -122,6 +123,8 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
 
   private api: IEventApi;
 
+  private api: IEventApi;
+
   constructor(scope: Construct, id: string, props: ChannelNamespaceProps) {
     if (props.channelNamespaceName !== undefined && !Token.isUnresolved(props.channelNamespaceName)) {
       if (props.channelNamespaceName.length < 1 || props.channelNamespaceName.length > 50) {
@@ -140,6 +143,8 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
 
     this.api = props.api;
 
+    this.api = props.api;
+
     this.channelNamespace = new CfnChannelNamespace(this, 'Resource', {
       name: this.physicalName,
       apiId: props.api.apiId,
@@ -155,6 +160,7 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
 
     this.channelNamespaceArn = this.channelNamespace.attrChannelNamespaceArn;
   }
+
 
   /**
    * Adds an IAM policy statement for EventSubscribe access to this channel namespace to an IAM
