@@ -397,7 +397,7 @@ export class VpcV2 extends VpcV2Base {
   public readonly publicSubnets: ISubnet[];
 
   /**
-   * Pbulic Subnets that are part of this VPC.
+   * Public Subnets that are part of this VPC.
    */
   public readonly privateSubnets: ISubnet[];
 
