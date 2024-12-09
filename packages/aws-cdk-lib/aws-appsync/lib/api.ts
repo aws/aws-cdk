@@ -7,41 +7,68 @@ import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '../../aws-logs
 import { Lazy, Names, Stack, Token } from '../../core';
 
 /**
- * Interface to specify auth provider
+ * Auth provider settings for sAppSync Event APIs
+ *
+ * @see https://docs.aws.amazon.com/appsync/latest/eventapi/configure-event-api-auth.html
  */
-export interface AuthProvider {
+export class AuthProvider {
   /**
-   * One of possible four values AppSync supports
+   * Enable API Key authorization. API Key will be automatically created.
    *
-   * @see https://docs.aws.amazon.com/appsync/latest/eventapi/configure-event-api-auth.html
+   * @param apiKeyConfig API Key config
+   */
+  public static apiKeyAuth(apiKeyConfig?: ApiKeyConfig): AuthProvider {
+    return new AuthProvider(AuthorizationType.API_KEY, apiKeyConfig);
+  }
+
+  /**
+   * Enable IAM authorization.
+   */
+  public static iamAuth(): AuthProvider {
+    return new AuthProvider(AuthorizationType.IAM);
+  }
+
+  /**
+   * Enable Cognito authorization.
    *
-   * @default - `AuthorizationType.API_KEY`
+   * @param cognitoConfig Cognito authorization config
    */
-  readonly authorizationType: AuthorizationType;
+  public static cognitoAuth(cognitoConfig: CognitoConfig): AuthProvider {
+    return new AuthProvider(AuthorizationType.USER_POOL, undefined, cognitoConfig);
+  }
 
   /**
-   * If authorizationType is `AuthorizationType.API_KEY`, this option can be configured.
-   * @default - name: 'DefaultAPIKey' | description: 'Default API Key created by CDK'
+   * Enable Open ID Connect authorization.
+   *
+   * @param openIdConnectConfig Open ID Connect authorization config
    */
-  readonly apiKeyConfig?: ApiKeyConfig;
+  public static oidcAuth(openIdConnectConfig: OpenIdConnectConfig): AuthProvider {
+    return new AuthProvider(AuthorizationType.OIDC, undefined, undefined, openIdConnectConfig);
+  }
 
   /**
-   * If authorizationType is `AuthorizationType.USER_POOL`, this option is required.
-   * @default - none
+   * Enable Lambda authorization.
+   *
+   * @param lambdaAuthorizerConfig Lambda authorization config
    */
-  readonly cognitoConfig?: CognitoConfig;
+  public static lambdaAuth(lambdaAuthorizerConfig: LambdaAuthorizerConfig): AuthProvider {
+    return new AuthProvider(AuthorizationType.LAMBDA, undefined, undefined, undefined, lambdaAuthorizerConfig);
+  }
 
   /**
-   * If authorizationType is `AuthorizationType.LAMBDA`, this option is required.
-   * @default - none
+   * @param authorizationType AppSync authorization type
+   * @param apiKeyConfig API Key config
+   * @param cognitoConfig Cognito authorization config
+   * @param openIdConnectConfig Open ID Connect authorization config
+   * @param lambdaAuthorizerConfig Lambda authorization config
    */
-  readonly lambdaAuthorizerConfig?: LambdaAuthorizerConfig;
-
-  /**
-   * If authorizationType is `AuthorizationType.OIDC`, this option is required.
-   * @default - none
-   */
-  readonly openIdConnectConfig?: OpenIdConnectConfig;
+  private constructor(
+    readonly authorizationType: AuthorizationType,
+    readonly apiKeyConfig?: ApiKeyConfig,
+    readonly cognitoConfig?: CognitoConfig,
+    readonly openIdConnectConfig?: OpenIdConnectConfig,
+    readonly lambdaAuthorizerConfig?: LambdaAuthorizerConfig,
+  ) { }
 }
 
 /**
@@ -189,7 +216,8 @@ export class Api extends ApiBase {
   public static fromApiAttributes(scope: Construct, id: string, attrs: ApiAttributes): IApi {
     const arn = attrs.apiArn ?? Stack.of(scope).formatArn({
       service: 'appsync',
-      resource: `apis/${attrs.apiId}`,
+      resource: 'apis',
+      resourceName: attrs.apiId,
     });
     class Import extends ApiBase {
       public readonly apiId = attrs.apiId;
@@ -264,17 +292,17 @@ export class Api extends ApiBase {
     });
 
     this.validateOwnerContact(props.ownerContact);
-    this.validateAuthProviderProps(props.authProviders);
+    this.validateAuthProvidersProps(props.authProviders);
 
     this.api = new CfnApi(this, 'Resource', {
       name: this.physicalName,
       ownerContact: props.ownerContact,
       eventConfig: {
-        authProviders: props.authProviders.map(mode => ({
-          authType: mode.authorizationType,
-          openIdConnectConfig: setupOpenIdConnectConfig(mode.openIdConnectConfig),
-          cognitoConfig: setupCognitoConfig(mode.cognitoConfig),
-          lambdaAuthorizerConfig: setupLambdaAuthorizerConfig(mode.lambdaAuthorizerConfig),
+        authProviders: props.authProviders.map(authProvider => ({
+          authType: authProvider.authorizationType,
+          openIdConnectConfig: setupOpenIdConnectConfig(authProvider.openIdConnectConfig),
+          cognitoConfig: setupCognitoConfig(authProvider.cognitoConfig),
+          lambdaAuthorizerConfig: setupLambdaAuthorizerConfig(authProvider.lambdaAuthorizerConfig),
         })),
         connectionAuthModes: props.connectionAuthModes.map(mode => ({ authType: mode })),
         defaultPublishAuthModes: props.defaultPublishAuthModes.map(mode => ({ authType: mode })),
@@ -288,18 +316,25 @@ export class Api extends ApiBase {
     this.dnsHttp = this.api.attrDnsHttp;
     this.dnsRealTime = this.api.attrDnsRealtime;
 
-    const modes = props.authProviders;
-    if (modes.some((mode) => mode.authorizationType === AuthorizationType.API_KEY)) {
-      const config = modes.find((mode: AuthProvider) => {
-        return mode.authorizationType === AuthorizationType.API_KEY && mode.apiKeyConfig;
+    const authProviders = props.authProviders;
+
+    /**
+     * Create API Key
+     */
+    if (authProviders.some((authProvider) => authProvider.authorizationType === AuthorizationType.API_KEY)) {
+      const config = authProviders.find((authProvider: AuthProvider) => {
+        return authProvider.authorizationType === AuthorizationType.API_KEY && authProvider.apiKeyConfig;
       })?.apiKeyConfig;
       this.apiKeyResource = createAPIKey(this, this.apiId, config);
       this.apiKey = this.apiKeyResource.attrApiKey;
     }
 
-    if (modes.some((mode) => mode.authorizationType === AuthorizationType.LAMBDA)) {
-      const config = modes.find((mode: AuthProvider) => {
-        return mode.authorizationType === AuthorizationType.LAMBDA && mode.lambdaAuthorizerConfig;
+    /**
+     * Add Lambda Policy
+     */
+    if (authProviders.some((authProvider) => authProvider.authorizationType === AuthorizationType.LAMBDA)) {
+      const config = authProviders.find((authProvider: AuthProvider) => {
+        return authProvider.authorizationType === AuthorizationType.LAMBDA && authProvider.lambdaAuthorizerConfig;
       })?.lambdaAuthorizerConfig;
 
       config?.handler.addPermission(`${id}-appsync`, {
@@ -309,8 +344,10 @@ export class Api extends ApiBase {
       });
     }
 
+    /**
+     * Set Log Group
+     */
     const logGroupName = `/aws/appsync/apis/${this.apiId}`;
-
     if (props.eventLogConfig) {
       const logRetention = new LogRetention(this, 'LogRetention', {
         logGroupName: logGroupName,
@@ -322,8 +359,11 @@ export class Api extends ApiBase {
     }
   }
 
+  /**
+   * Validate ownerContact property
+   */
   private validateOwnerContact(ownerContact?: string) {
-    if (ownerContact === undefined || Token.isUnresolved(ownerContact)) { return; }
+    if (ownerContact === undefined || Token.isUnresolved(ownerContact)) return undefined;
 
     if (ownerContact.length < 1 || ownerContact.length > 256) {
       throw new Error(`\`ownerContact\` must be between 1 and 256 characters, got: ${ownerContact.length} characters.`);
@@ -336,38 +376,36 @@ export class Api extends ApiBase {
     }
   }
 
-  private validateAuthProviderProps(modes: AuthProvider[]) {
-    modes.map((mode) => {
-      if (mode.authorizationType === AuthorizationType.OIDC && !mode.openIdConnectConfig) {
-        throw new Error('Missing OIDC Configuration');
-      }
-      if (mode.authorizationType === AuthorizationType.USER_POOL && !mode.cognitoConfig) {
-        throw new Error('Missing Cognito Configuration');
-      }
-      if (mode.authorizationType === AuthorizationType.LAMBDA && !mode.lambdaAuthorizerConfig) {
-        throw new Error('Missing Lambda Configuration');
-      }
-    });
-    if (modes.filter((mode) => mode.authorizationType === AuthorizationType.API_KEY).length > 1) {
+  /**
+   * Validate authProviders property
+   */
+  private validateAuthProvidersProps(authProviders: AuthProvider[]) {
+    if (authProviders.filter((authProvider) => authProvider.authorizationType === AuthorizationType.API_KEY).length > 1) {
       throw new Error('You can\'t duplicate API_KEY configuration.');
     }
-    if (modes.filter((mode) => mode.authorizationType === AuthorizationType.IAM).length > 1) {
+    if (authProviders.filter((authProvider) => authProvider.authorizationType === AuthorizationType.IAM).length > 1) {
       throw new Error('You can\'t duplicate IAM configuration.');
     }
-    if (modes.filter((mode) => mode.authorizationType === AuthorizationType.LAMBDA).length > 1) {
+    if (authProviders.filter((authProvider) => authProvider.authorizationType === AuthorizationType.LAMBDA).length > 1) {
       throw new Error('You can only have a single AWS Lambda function configured to authorize your API.');
     }
   }
 
+  /**
+   * Create Event Log Config
+   */
   private setupEventLogConfig(config?: EventLogConfig) {
     if (!config) return undefined;
+
     const logsRoleArn: string = config.role?.roleArn ?? new Role(this, 'ApiLogsRole', {
       assumedBy: new ServicePrincipal('appsync.amazonaws.com'),
       managedPolicies: [
         ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSAppSyncPushToCloudWatchLogs'),
       ],
     }).roleArn;
+
     const logLevel: LogLevel = config.logLevel ?? LogLevel.NONE;
+
     return {
       cloudWatchLogsRoleArn: logsRoleArn,
       logLevel,

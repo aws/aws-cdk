@@ -41,24 +41,10 @@ const api = new appsync.Api(stack, 'EventApi', {
   apiName: 'my-event-api',
   ownerContact: 'test-owner-contact',
   authProviders: [
-    {
-      authorizationType: appsync.AuthorizationType.API_KEY,
-    },
-    {
-      authorizationType: appsync.AuthorizationType.USER_POOL,
-      cognitoConfig: {
-        userPool,
-      },
-    },
-    {
-      authorizationType: appsync.AuthorizationType.IAM,
-    },
-    {
-      authorizationType: appsync.AuthorizationType.LAMBDA,
-      lambdaAuthorizerConfig: {
-        handler: authorizer,
-      },
-    },
+    appsync.AuthProvider.apiKeyAuth(),
+    appsync.AuthProvider.cognitoAuth({ userPool }),
+    appsync.AuthProvider.iamAuth(),
+    appsync.AuthProvider.lambdaAuth({ handler: authorizer }),
   ],
   connectionAuthModes: [
     appsync.AuthorizationType.API_KEY,

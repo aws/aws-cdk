@@ -1,5 +1,6 @@
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import { UserPool } from '../../aws-cognito';
+import { Role, ServicePrincipal } from '../../aws-iam';
 import { Code, Function, Runtime } from '../../aws-lambda';
 import * as cdk from '../../core';
 import * as appsync from '../lib';
@@ -19,17 +20,14 @@ describe('Authorization Config test', () => {
     const api = new appsync.Api(stack, 'api', {
       apiName: 'MyApi',
       ownerContact: 'test-owner',
-      authProviders: [{
-        authorizationType: appsync.AuthorizationType.API_KEY,
-        apiKeyConfig: {
+      authProviders: [
+        appsync.AuthProvider.apiKeyAuth({
           name: 'test-api-key',
           description: 'test api key description',
           expires: expires,
-        },
-      },
-      {
-        authorizationType: appsync.AuthorizationType.IAM,
-      }],
+        }),
+        appsync.AuthProvider.iamAuth(),
+      ],
       connectionAuthModes: [
         appsync.AuthorizationType.API_KEY,
       ],
@@ -72,13 +70,10 @@ describe('Authorization Config test', () => {
     new appsync.Api(stack, 'api', {
       apiName: 'MyApi',
       ownerContact: 'test-owner',
-      authProviders: [{
-        authorizationType: appsync.AuthorizationType.USER_POOL,
-        cognitoConfig: {
-          userPool: userPool,
-          appIdClientRegex: 'test',
-        },
-      }],
+      authProviders: [appsync.AuthProvider.cognitoAuth({
+        userPool: userPool,
+        appIdClientRegex: 'test',
+      })],
       connectionAuthModes: [
         appsync.AuthorizationType.USER_POOL,
       ],
@@ -117,15 +112,14 @@ describe('Authorization Config test', () => {
     new appsync.Api(stack, 'api', {
       apiName: 'MyApi',
       ownerContact: 'test-owner',
-      authProviders: [{
-        authorizationType: appsync.AuthorizationType.OIDC,
-        openIdConnectConfig: {
+      authProviders: [
+        appsync.AuthProvider.oidcAuth({
           oidcProvider: 'test-provider',
           clientId: 'test-client',
           tokenExpiryFromAuth: 5,
           tokenExpiryFromIssue: 10,
-        },
-      }],
+        }),
+      ],
       connectionAuthModes: [
         appsync.AuthorizationType.OIDC,
       ],
@@ -169,14 +163,13 @@ describe('Authorization Config test', () => {
     new appsync.Api(stack, 'api', {
       apiName: 'MyApi',
       ownerContact: 'test-owner',
-      authProviders: [{
-        authorizationType: appsync.AuthorizationType.LAMBDA,
-        lambdaAuthorizerConfig: {
+      authProviders: [
+        appsync.AuthProvider.lambdaAuth({
           handler: fn,
           resultsCacheTtl: cdk.Duration.minutes(6),
           validationRegex: 'test',
-        },
-      }],
+        }),
+      ],
       connectionAuthModes: [
         appsync.AuthorizationType.LAMBDA,
       ],
@@ -210,83 +203,15 @@ describe('Authorization Config test', () => {
     });
   });
 
-  test('throws when authorizationType is OIDC without OIDC configuration',
-    () => {
-      expect(() => new appsync.Api(stack, 'api', {
-        apiName: 'MyApi',
-        ownerContact: 'test-owner',
-        authProviders: [{
-          authorizationType: appsync.AuthorizationType.OIDC,
-        }],
-        connectionAuthModes: [
-          appsync.AuthorizationType.OIDC,
-        ],
-        defaultPublishAuthModes: [
-          appsync.AuthorizationType.OIDC,
-        ],
-        defaultSubscribeAuthModes: [
-          appsync.AuthorizationType.OIDC,
-        ],
-      }),
-      ).toThrow('Missing OIDC Configuration');
-    },
-  );
-
-  test('throws when authorizationType is USER_POOL without Cognito configuration',
-    () => {
-      expect(() => new appsync.Api(stack, 'api', {
-        apiName: 'MyApi',
-        ownerContact: 'test-owner',
-        authProviders: [{
-          authorizationType: appsync.AuthorizationType.USER_POOL,
-        }],
-        connectionAuthModes: [
-          appsync.AuthorizationType.USER_POOL,
-        ],
-        defaultPublishAuthModes: [
-          appsync.AuthorizationType.USER_POOL,
-        ],
-        defaultSubscribeAuthModes: [
-          appsync.AuthorizationType.USER_POOL,
-        ],
-      }),
-      ).toThrow('Missing Cognito Configuration');
-    },
-  );
-
-  test('throws when authorizationType is LAMBDA without Lambda configuration',
-    () => {
-      expect(() => new appsync.Api(stack, 'api', {
-        apiName: 'MyApi',
-        ownerContact: 'test-owner',
-        authProviders: [{
-          authorizationType: appsync.AuthorizationType.LAMBDA,
-        }],
-        connectionAuthModes: [
-          appsync.AuthorizationType.LAMBDA,
-        ],
-        defaultPublishAuthModes: [
-          appsync.AuthorizationType.LAMBDA,
-        ],
-        defaultSubscribeAuthModes: [
-          appsync.AuthorizationType.LAMBDA,
-        ],
-      }),
-      ).toThrow('Missing Lambda Configuration');
-    },
-  );
-
   test('throws when multiple API Key authorization configurations are set',
     () => {
       expect(() => new appsync.Api(stack, 'api', {
         apiName: 'MyApi',
         ownerContact: 'test-owner',
-        authProviders: [{
-          authorizationType: appsync.AuthorizationType.API_KEY,
-        },
-        {
-          authorizationType: appsync.AuthorizationType.API_KEY,
-        }],
+        authProviders: [
+          appsync.AuthProvider.apiKeyAuth(),
+          appsync.AuthProvider.apiKeyAuth(),
+        ],
         connectionAuthModes: [
           appsync.AuthorizationType.API_KEY,
         ],
@@ -306,12 +231,10 @@ describe('Authorization Config test', () => {
       expect(() => new appsync.Api(stack, 'api', {
         apiName: 'MyApi',
         ownerContact: 'test-owner',
-        authProviders: [{
-          authorizationType: appsync.AuthorizationType.IAM,
-        },
-        {
-          authorizationType: appsync.AuthorizationType.IAM,
-        }],
+        authProviders: [
+          appsync.AuthProvider.iamAuth(),
+          appsync.AuthProvider.iamAuth(),
+        ],
         connectionAuthModes: [
           appsync.AuthorizationType.IAM,
         ],
@@ -337,22 +260,16 @@ describe('Authorization Config test', () => {
       expect(() => new appsync.Api(stack, 'api', {
         apiName: 'MyApi',
         ownerContact: 'test-owner',
-        authProviders: [{
-          authorizationType: appsync.AuthorizationType.LAMBDA,
-          lambdaAuthorizerConfig: {
-            handler: fn,
-            resultsCacheTtl: cdk.Duration.minutes(6),
-            validationRegex: 'test',
-          },
-        },
-        {
-          authorizationType: appsync.AuthorizationType.LAMBDA,
-          lambdaAuthorizerConfig: {
-            handler: fn,
-            resultsCacheTtl: cdk.Duration.minutes(6),
-            validationRegex: 'test',
-          },
-        }],
+        authProviders: [appsync.AuthProvider.lambdaAuth({
+          handler: fn,
+          resultsCacheTtl: cdk.Duration.minutes(6),
+          validationRegex: 'test',
+        }),
+        appsync.AuthProvider.lambdaAuth({
+          handler: fn,
+          resultsCacheTtl: cdk.Duration.minutes(6),
+          validationRegex: 'test',
+        })],
         connectionAuthModes: [
           appsync.AuthorizationType.LAMBDA,
         ],
@@ -372,9 +289,7 @@ describe('apiName test', () => {
   test.each(['', 'a'.repeat(257)])('throws when apiName length is invalid', (apiName) => {
     expect(() => new appsync.Api(stack, 'api', {
       apiName,
-      authProviders: [{
-        authorizationType: appsync.AuthorizationType.API_KEY,
-      }],
+      authProviders: [appsync.AuthProvider.apiKeyAuth()],
       connectionAuthModes: [
         appsync.AuthorizationType.API_KEY,
       ],
@@ -391,9 +306,7 @@ describe('apiName test', () => {
   test.each(['My Api Name?', 'My Api Name.'])('throws when apiName includes invalid characters', (apiName) => {
     expect(() => new appsync.Api(stack, 'api', {
       apiName,
-      authProviders: [{
-        authorizationType: appsync.AuthorizationType.API_KEY,
-      }],
+      authProviders: [appsync.AuthProvider.apiKeyAuth()],
       connectionAuthModes: [
         appsync.AuthorizationType.API_KEY,
       ],
@@ -413,9 +326,7 @@ describe('ownerContact test', () => {
     expect(() => new appsync.Api(stack, 'api', {
       apiName: 'MyApi',
       ownerContact,
-      authProviders: [{
-        authorizationType: appsync.AuthorizationType.API_KEY,
-      }],
+      authProviders: [appsync.AuthProvider.apiKeyAuth()],
       connectionAuthModes: [
         appsync.AuthorizationType.API_KEY,
       ],
@@ -433,9 +344,7 @@ describe('ownerContact test', () => {
     expect(() => new appsync.Api(stack, 'api', {
       apiName: 'MyApi',
       ownerContact,
-      authProviders: [{
-        authorizationType: appsync.AuthorizationType.API_KEY,
-      }],
+      authProviders: [appsync.AuthProvider.apiKeyAuth()],
       connectionAuthModes: [
         appsync.AuthorizationType.API_KEY,
       ],
@@ -447,5 +356,275 @@ describe('ownerContact test', () => {
       ],
     }),
     ).toThrow(`\`ownerContact\` must contain only alphanumeric characters, underscores, hyphens, spaces, and periods, got: ${ownerContact}`);
+  });
+});
+
+describe('test addChannelNamespace method', () => {
+  test('Create channel namespace by addChannelNamespace method', () => {
+    // WHEN
+    const api = new appsync.Api(stack, 'api', {
+      apiName: 'MyApi',
+      ownerContact: 'test-owner',
+      authProviders: [
+        appsync.AuthProvider.apiKeyAuth(),
+      ],
+      connectionAuthModes: [
+        appsync.AuthorizationType.API_KEY,
+      ],
+      defaultPublishAuthModes: [
+        appsync.AuthorizationType.API_KEY,
+      ],
+      defaultSubscribeAuthModes: [
+        appsync.AuthorizationType.API_KEY,
+      ],
+    });
+
+    api.addChannelNamespace('MyChannelNamespace', {
+      channelNamespaceName: 'MyChannelNamespace',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::ChannelNamespace', {
+      ApiId: stack.resolve(api.apiId),
+      Name: 'MyChannelNamespace',
+    });
+  });
+});
+
+describe('test grant methods', () => {
+  test('test grant method', () => {
+    // WHEN
+    const api = new appsync.Api(stack, 'api', {
+      apiName: 'MyApi',
+      ownerContact: 'test-owner',
+      authProviders: [
+        appsync.AuthProvider.apiKeyAuth(),
+      ],
+      connectionAuthModes: [
+        appsync.AuthorizationType.API_KEY,
+      ],
+      defaultPublishAuthModes: [
+        appsync.AuthorizationType.API_KEY,
+      ],
+      defaultSubscribeAuthModes: [
+        appsync.AuthorizationType.API_KEY,
+      ],
+    });
+
+    const role = new Role(stack, 'Role', {
+      assumedBy: new ServicePrincipal('foo'),
+    });
+
+    api.grant(role, 'appsync:EventConnect');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', Match.objectLike({
+      PolicyDocument: Match.objectLike({
+        Statement: [
+          {
+            Action: 'appsync:EventConnect',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  { 'Fn::GetAtt': ['apiC8550315', 'ApiId'] },
+                  '/*',
+                ]
+                ,
+              ],
+            },
+          },
+        ],
+      }),
+    }));
+  });
+
+  test('test grantPublish method', () => {
+    // WHEN
+    const api = new appsync.Api(stack, 'api', {
+      apiName: 'MyApi',
+      ownerContact: 'test-owner',
+      authProviders: [
+        appsync.AuthProvider.apiKeyAuth(),
+      ],
+      connectionAuthModes: [
+        appsync.AuthorizationType.API_KEY,
+      ],
+      defaultPublishAuthModes: [
+        appsync.AuthorizationType.API_KEY,
+      ],
+      defaultSubscribeAuthModes: [
+        appsync.AuthorizationType.API_KEY,
+      ],
+    });
+
+    const role = new Role(stack, 'Role', {
+      assumedBy: new ServicePrincipal('foo'),
+    });
+
+    api.grantPublish(role);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', Match.objectLike({
+      PolicyDocument: Match.objectLike({
+        Statement: [
+          {
+            Action: ['appsync:EventConnect', 'appsync:EventPublish'],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  { 'Fn::GetAtt': ['apiC8550315', 'ApiId'] },
+                  '/*',
+                ]
+                ,
+              ],
+            },
+          },
+        ],
+      }),
+    }));
+  });
+
+  test('test grantSubscribe method', () => {
+    // WHEN
+    const api = new appsync.Api(stack, 'api', {
+      apiName: 'MyApi',
+      ownerContact: 'test-owner',
+      authProviders: [
+        appsync.AuthProvider.apiKeyAuth(),
+      ],
+      connectionAuthModes: [
+        appsync.AuthorizationType.API_KEY,
+      ],
+      defaultPublishAuthModes: [
+        appsync.AuthorizationType.API_KEY,
+      ],
+      defaultSubscribeAuthModes: [
+        appsync.AuthorizationType.API_KEY,
+      ],
+    });
+
+    const role = new Role(stack, 'Role', {
+      assumedBy: new ServicePrincipal('foo'),
+    });
+
+    api.grantSubscribe(role);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', Match.objectLike({
+      PolicyDocument: Match.objectLike({
+        Statement: [
+          {
+            Action: ['appsync:EventConnect', 'appsync:EventSubscribe'],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  { 'Fn::GetAtt': ['apiC8550315', 'ApiId'] },
+                  '/*',
+                ]
+                ,
+              ],
+            },
+          },
+        ],
+      }),
+    }));
+  });
+
+  test('test grantPublishSubscribe method', () => {
+    // WHEN
+    const api = new appsync.Api(stack, 'api', {
+      apiName: 'MyApi',
+      ownerContact: 'test-owner',
+      authProviders: [
+        appsync.AuthProvider.apiKeyAuth(),
+      ],
+      connectionAuthModes: [
+        appsync.AuthorizationType.API_KEY,
+      ],
+      defaultPublishAuthModes: [
+        appsync.AuthorizationType.API_KEY,
+      ],
+      defaultSubscribeAuthModes: [
+        appsync.AuthorizationType.API_KEY,
+      ],
+    });
+
+    const role = new Role(stack, 'Role', {
+      assumedBy: new ServicePrincipal('foo'),
+    });
+
+    api.grantPublishSubscribe(role);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', Match.objectLike({
+      PolicyDocument: Match.objectLike({
+        Statement: [
+          {
+            Action: ['appsync:EventConnect', 'appsync:EventPublish', 'appsync:EventSubscribe'],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  { 'Fn::GetAtt': ['apiC8550315', 'ApiId'] },
+                  '/*',
+                ]
+                ,
+              ],
+            },
+          },
+        ],
+      }),
+    }));
+  });
+});
+
+describe('test import methods', () => {
+  test('test import method without arn', () => {
+    // WHEN
+    const apiId = 'MyApi';
+    const dnsHttp = 'MyDnsHttp';
+    const dnsRealTime = 'MyDnsRealTime';
+    const api = appsync.Api.fromApiAttributes(stack, 'MyApi', {
+      apiId,
+      dnsHttp,
+      dnsRealTime,
+    });
+
+    // THEN
+    expect(api.apiId).toEqual(apiId);
+    expect(api.dnsHttp).toEqual(dnsHttp);
+    expect(api.dnsRealTime).toEqual(dnsRealTime);
+    expect(api.apiArn).toEqual(stack.formatArn({
+      service: 'appsync',
+      resource: 'apis',
+      resourceName: apiId,
+    }));
+  });
+
+  test('test import method with arn', () => {
+    // WHEN
+    const apiArn = 'arn:aws:appsync:us-east-1:123456789012:apis/MyApi';
+    const apiId = 'MyApi';
+    const dnsHttp = 'MyDnsHttp';
+    const dnsRealTime = 'MyDnsRealTime';
+    const api = appsync.Api.fromApiAttributes(stack, 'MyApi', {
+      apiId,
+      apiArn,
+      dnsHttp,
+      dnsRealTime,
+    });
+
+    // THEN
+    expect(api.apiId).toEqual(apiId);
+    expect(api.dnsHttp).toEqual(dnsHttp);
+    expect(api.dnsRealTime).toEqual(dnsRealTime);
+    expect(api.apiArn).toEqual(apiArn);
   });
 });

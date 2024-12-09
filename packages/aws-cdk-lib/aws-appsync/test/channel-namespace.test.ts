@@ -9,9 +9,7 @@ let api: appsync.Api;
 beforeEach(() => {
   stack = new cdk.Stack();
   api = new appsync.Api(stack, 'api', {
-    authProviders: [{
-      authorizationType: appsync.AuthorizationType.API_KEY,
-    }],
+    authProviders: [appsync.AuthProvider.apiKeyAuth()],
     connectionAuthModes: [
       appsync.AuthorizationType.API_KEY,
     ],
@@ -71,7 +69,7 @@ test.each(['', 'a'.repeat(51)])('throws when channelNamespaceName length is inva
   },
 );
 
-test.each(['My channel namespace', 'My-Channel-Namespace'])('throws when channelNamespaceName inclueds invalid characters',
+test.each(['My channel namespace', 'My-Channel-Namespace'])('throws when channelNamespaceName includes invalid characters',
   (channelNamespaceName) => {
     expect(() => new appsync.ChannelNamespace(stack, 'MyChannelNamespace', {
       api,
@@ -79,3 +77,12 @@ test.each(['My channel namespace', 'My-Channel-Namespace'])('throws when channel
     })).toThrow(`\`channelNamespaceName\` must contain only alphanumeric characters, got: ${channelNamespaceName}`);
   },
 );
+
+test('test import method', () => {
+  // WHEN
+  const channelNamespaceArn = 'arn:aws:appsync:us-east-1:123456789012:apis/MyApi/channelNamespace/MyChannelNamespace';
+  const channelNamespace = appsync.ChannelNamespace.fromChannelNamespaceArn(stack, 'MyChannelNamespace', channelNamespaceArn);
+
+  // THEN
+  expect(channelNamespace.channelNamespaceArn).toEqual(channelNamespaceArn);
+});

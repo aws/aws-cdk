@@ -38,17 +38,17 @@ export interface ChannelNamespaceOptions {
 
   /**
    * The authorization mode to use for publishing messages on the channel namespace.
-   * This configuration overrides the default Apiauthorization configuration.
+   * This configuration overrides the default Authorization configuration.
    *
-   * @default - not override the default Aipauthorization configuration
+   * @default - not override the default Authorization configuration
    */
   readonly publishAuthModes?: AuthorizationType[];
 
   /**
    * The authorization mode to use for subscribing to messages on the channel namespace.
-   * This configuration overrides the default Apiauthorization configuration.
+   * This configuration overrides the default Authorization configuration.
    *
-   * @default - not override the default Aipauthorization configuration
+   * @default - not override the default Authorization configuration
    */
   readonly subscribeAuthModes?: AuthorizationType[];
 }
@@ -64,7 +64,7 @@ export interface ChannelNamespaceProps extends ChannelNamespaceOptions {
 }
 
 /**
- * An AppSync channel namespase
+ * An AppSync channel namespace
  *
  * @resource AWS::AppSync::ChannelNamespace
  */
@@ -98,13 +98,12 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
     }
 
     super(scope, id, {
-      physicalName: props.channelNamespaceName ??
-        Lazy.string({
-          produce: () =>
-            Names.uniqueResourceName(this, {
-              maxLength: 50,
-            }),
-        }),
+      physicalName: props.channelNamespaceName ?? Lazy.string({
+        produce: () =>
+          Names.uniqueResourceName(this, {
+            maxLength: 50,
+          }),
+      }),
     });
 
     const code = props.code?.bind(this);
