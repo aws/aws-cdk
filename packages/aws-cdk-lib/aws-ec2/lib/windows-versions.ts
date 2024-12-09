@@ -452,6 +452,7 @@ export enum WindowsVersion {
   /** @deprecated - use WINDOWS_SERVER_2016_PORTUGUESE_BRAZIL_FULL_BASE */
   WINDOWS_SERVER_2016_PORTUGESE_BRAZIL_FULL_BASE = 'Windows_Server-2016-Portugese_Brazil-Full-Base',
   WINDOWS_SERVER_2016_ENGLISH_FULL_SQL_2019_STANDARD = 'Windows_Server-2016-English-Full-SQL_2019_Standard',
+  /** @deprecated - use WINDOWS_SERVER_2016_ENGLISH_FULL_SQL_2019_STANDARD */
   WINDOWS_SERVER_2016_ENGLISH_FULL_SQL_2014_SP3_STANDARD = 'Windows_Server-2016-English-Full-SQL_2014_SP3_Standard',
   WINDOWS_SERVER_2016_JAPANESE_FULL_SQL_2016_SP3_ENTERPRISE = 'Windows_Server-2016-Japanese-Full-SQL_2016_SP3_Enterprise',
   /** @deprecated - reached Microsoft End-of-Support */
@@ -466,6 +467,7 @@ export enum WindowsVersion {
   WINDOWS_SERVER_2016_PORTUGUESE_PORTUGAL_FULL_BASE = 'Windows_Server-2016-Portuguese_Portugal-Full-Base',
   /** @deprecated - use WINDOWS_SERVER_2016_PORTUGUESE_PORTUGAL_FULL_BASE */
   WINDOWS_SERVER_2016_PORTUGESE_PORTUGAL_FULL_BASE = 'Windows_Server-2016-Portugese_Portugal-Full-Base',
+  /** @deprecated - use WINDOWS_SERVER_2016_ENGLISH_FULL_SQL_2019_ENTERPRISE */
   WINDOWS_SERVER_2016_ENGLISH_FULL_SQL_2014_SP3_ENTERPRISE = 'Windows_Server-2016-English-Full-SQL_2014_SP3_Enterprise',
   WINDOWS_SERVER_2016_ENGLISH_FULL_SQL_2019_ENTERPRISE = 'Windows_Server-2016-English-Full-SQL_2019_Enterprise',
   WINDOWS_SERVER_2016_JAPANESE_FULL_SQL_2017_STANDARD = 'Windows_Server-2016-Japanese-Full-SQL_2017_Standard',
