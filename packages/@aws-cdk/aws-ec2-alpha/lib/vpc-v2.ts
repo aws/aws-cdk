@@ -23,10 +23,10 @@ export interface SecondaryAddressProps {
 export interface Ipv6PoolSecondaryAddressProps extends SecondaryAddressProps {
   /**
    * ID of the IPv6 address pool from which to allocate the IPv6 CIDR block
-   *
-   * @default - None
+   * 
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-byoip.html
    */
-  readonly ipv6Pool?: string;
+  readonly ipv6Pool: string;
 }
 
 /**
@@ -44,7 +44,7 @@ export class IpAddresses {
   /**
    * A BYOIP IPv6 address pool
    */
-  public static ipv6Pool(ipv6Cidr: string, props?: Ipv6PoolSecondaryAddressProps): IIpAddresses {
+  public static ipv6Pool(ipv6Cidr: string, props: Ipv6PoolSecondaryAddressProps): IIpAddresses {
     return new Ipv6Pool(ipv6Cidr, props);
   }
 
@@ -599,13 +599,13 @@ class ipv4CidrAllocation implements IIpAddresses {
  */
 class Ipv6Pool implements IIpAddresses {
 
-  constructor(private readonly cidrBlock: string, private readonly props?: Ipv6PoolSecondaryAddressProps) {
+  constructor(private readonly cidrBlock: string, private readonly props: Ipv6PoolSecondaryAddressProps) {
   }
 
   allocateVpcCidr(): VpcCidrOptions {
     return {
       ipv6CidrBlock: this.cidrBlock,
-      ipv6Pool: this.props?.ipv6Pool,
+      ipv6Pool: this.props.ipv6Pool,
       cidrBlockName: this.props?.cidrBlockName,
     };
   }
