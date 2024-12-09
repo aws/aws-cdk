@@ -564,6 +564,33 @@ rule.addTarget(new targets.EcsTask({
 }));
 ```
 
+### Overriding Values in the Task Definition
+
+You can override values in the task definition by setting the corresponding properties in the `EcsTaskProps`. All
+values in the [`TaskOverrides` API](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_TaskOverride.html) are
+supported.
+
+```ts
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+
+declare const cluster: ecs.ICluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
+const rule = new events.Rule(this, 'Rule', {
+  schedule: events.Schedule.rate(cdk.Duration.hours(1)),
+});
+
+rule.addTarget(new targets.EcsTask({
+  cluster,
+  taskDefinition,
+  taskCount: 1,
+
+  // Overrides the cpu and memory values in the task definition
+  cpu: '512',
+  memory: '512',
+}));
+```
+
 ## Schedule a Redshift query (serverless or cluster)
 
 Use the `RedshiftQuery` target to schedule an Amazon Redshift Query.
