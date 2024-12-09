@@ -975,8 +975,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       const ConcurrentModError = new Error('ConcurrentModificationException: Schema is currently being altered, please wait until that is complete.');
       ConcurrentModError.name = 'ConcurrentModificationException';
       mockAppSyncClient
-        .on(ListFunctionsCommand)
-        .resolvesOnce({ functions: [{ name: 'my-function', functionId: 'functionId' }] }).rejects(ConcurrentModError);
+        .on(ListFunctionsCommand).rejects(ConcurrentModError);
       mockAppSyncClient
         .on(ListFunctionsCommand)
         .resolvesOnce({ functions: [{ name: 'my-function', functionId: 'functionId' }] });
