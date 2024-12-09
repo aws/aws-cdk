@@ -124,7 +124,7 @@ const cluster = new msk.Cluster(this, 'cluster', {
 });
 ```
 
-### SASL/IAM
+### IAM
 
 Enable client authentication with [IAM](https://docs.aws.amazon.com/msk/latest/developerguide/iam-access-control.html):
 

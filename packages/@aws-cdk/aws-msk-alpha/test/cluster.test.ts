@@ -104,6 +104,34 @@ describe('MSK Cluster', () => {
 
   describe('created with authentication enabled', () => {
     describe('with tls auth', () => {
+      test('tls enabled is true', () => {
+        new msk.Cluster(stack, 'Cluster', {
+          clusterName: 'cluster',
+          kafkaVersion: msk.KafkaVersion.V2_6_1,
+          vpc,
+          encryptionInTransit: {
+            clientBroker: msk.ClientBrokerEncryption.TLS,
+          },
+          clientAuthentication: msk.ClientAuthentication.tls({
+            certificateAuthorities: [
+              acmpca.CertificateAuthority.fromCertificateAuthorityArn(
+                stack,
+                'CertificateAuthority',
+                'arn:aws:acm-pca:us-west-2:1234567890:certificate-authority/11111111-1111-1111-1111-111111111111',
+              ),
+            ],
+          }),
+        });
+        Template.fromStack(stack).hasResourceProperties('AWS::MSK::Cluster', {
+          ClientAuthentication: {
+            Tls: {
+              CertificateAuthorityArnList: ['arn:aws:acm-pca:us-west-2:1234567890:certificate-authority/11111111-1111-1111-1111-111111111111'],
+              Enabled: true,
+            },
+          },
+        });
+      });
+
       test('fails if client broker encryption is set to plaintext', () => {
         expect(
           () =>
@@ -131,6 +159,27 @@ describe('MSK Cluster', () => {
     });
 
     describe('with sasl/scram auth', () => {
+      test('sasl/scram enabled is true', () => {
+        new msk.Cluster(stack, 'Cluster', {
+          clusterName: 'cluster',
+          kafkaVersion: msk.KafkaVersion.V2_6_1,
+          vpc,
+          encryptionInTransit: {
+            clientBroker: msk.ClientBrokerEncryption.TLS,
+          },
+          clientAuthentication: msk.ClientAuthentication.sasl({
+            scram: true,
+          }),
+        });
+        Template.fromStack(stack).hasResourceProperties('AWS::MSK::Cluster', {
+          ClientAuthentication: {
+            Sasl: {
+              Scram: { Enabled: true },
+            },
+          },
+        });
+      });
+
       test('fails if tls encryption is set to plaintext', () => {
         expect(() => new msk.Cluster(stack, 'Cluster', {
           clusterName: 'cluster',
@@ -168,7 +217,7 @@ describe('MSK Cluster', () => {
       });
     });
 
-    describe('with sasl/iam auth', () => {
+    describe('with iam auth', () => {
       test('iam enabled is true', () => {
         new msk.Cluster(stack, 'Cluster', {
           clusterName: 'cluster',
@@ -187,6 +236,7 @@ describe('MSK Cluster', () => {
           },
         });
       });
+
       test('fails if tls encryption is set to plaintext', () => {
         expect(
           () =>
@@ -226,8 +276,93 @@ describe('MSK Cluster', () => {
       });
     });
 
-    describe('with sasl/iam auth and tls', () => {
-      test('Snapshot test with all values set (iam/sasl)', () => {
+    describe('with combinations of sasl/scram, iam, and tls', () => {
+      test('sasl/scram and iam enabled is true', () => {
+        new msk.Cluster(stack, 'Cluster', {
+          clusterName: 'cluster',
+          kafkaVersion: msk.KafkaVersion.V2_6_1,
+          vpc,
+          encryptionInTransit: {
+            clientBroker: msk.ClientBrokerEncryption.TLS,
+          },
+          clientAuthentication: msk.ClientAuthentication.sasl({
+            iam: true,
+            scram: true,
+          }),
+        });
+        Template.fromStack(stack).hasResourceProperties('AWS::MSK::Cluster', {
+          ClientAuthentication: {
+            Sasl: {
+              Iam: { Enabled: true },
+              Scram: { Enabled: true },
+            },
+          },
+        });
+      });
+
+      test('sasl/scram and tls enabled is true', () => {
+        new msk.Cluster(stack, 'Cluster', {
+          clusterName: 'cluster',
+          kafkaVersion: msk.KafkaVersion.V2_6_1,
+          vpc,
+          encryptionInTransit: {
+            clientBroker: msk.ClientBrokerEncryption.TLS,
+          },
+          clientAuthentication: msk.ClientAuthentication.saslTls({
+            scram: true,
+            certificateAuthorities: [
+              acmpca.CertificateAuthority.fromCertificateAuthorityArn(
+                stack,
+                'CertificateAuthority',
+                'arn:aws:acm-pca:us-west-2:1234567890:certificate-authority/11111111-1111-1111-1111-111111111111',
+              ),
+            ],
+          }),
+        });
+        Template.fromStack(stack).hasResourceProperties('AWS::MSK::Cluster', {
+          ClientAuthentication: {
+            Sasl: {
+              Scram: { Enabled: true },
+            },
+            Tls: {
+              CertificateAuthorityArnList: ['arn:aws:acm-pca:us-west-2:1234567890:certificate-authority/11111111-1111-1111-1111-111111111111'],
+            },
+          },
+        });
+      });
+
+      test('iam and tls enabled is true', () => {
+        new msk.Cluster(stack, 'Cluster', {
+          clusterName: 'cluster',
+          kafkaVersion: msk.KafkaVersion.V2_6_1,
+          vpc,
+          encryptionInTransit: {
+            clientBroker: msk.ClientBrokerEncryption.TLS,
+          },
+          clientAuthentication: msk.ClientAuthentication.saslTls({
+            iam: true,
+            certificateAuthorities: [
+              acmpca.CertificateAuthority.fromCertificateAuthorityArn(
+                stack,
+                'CertificateAuthority',
+                'arn:aws:acm-pca:us-west-2:1234567890:certificate-authority/11111111-1111-1111-1111-111111111111',
+              ),
+            ],
+          }),
+        });
+        Template.fromStack(stack).hasResourceProperties('AWS::MSK::Cluster', {
+          ClientAuthentication: {
+            Sasl: {
+              Iam: { Enabled: true },
+            },
+            Tls: {
+              CertificateAuthorityArnList: ['arn:aws:acm-pca:us-west-2:1234567890:certificate-authority/11111111-1111-1111-1111-111111111111'],
+            },
+          },
+        });
+      });
+
+      test('Snapshot test with all values set (iam/scram/tls)', () => {
         const cluster = new msk.Cluster(stack, 'kafka', {
           clusterName: 'test-cluster',
           kafkaVersion: msk.KafkaVersion.V2_6_1,
@@ -249,6 +384,7 @@ describe('MSK Cluster', () => {
           },
           clientAuthentication: msk.ClientAuthentication.saslTls({
             iam: true,
+            scram: true,
             certificateAuthorities: [
               acmpca.CertificateAuthority.fromCertificateAuthorityArn(
                 stack,
@@ -371,24 +507,6 @@ describe('MSK Cluster', () => {
           },
         });
       });
-    });
-
-    test('fails if more than one authentication method is enabled', () => {
-      expect(
-        () =>
-          new msk.Cluster(stack, 'Cluster', {
-            clusterName: 'cluster',
-            kafkaVersion: msk.KafkaVersion.V2_6_1,
-            vpc,
-            encryptionInTransit: {
-              clientBroker: msk.ClientBrokerEncryption.TLS,
-            },
-            clientAuthentication: msk.ClientAuthentication.sasl({
-              iam: true,
-              scram: true,
-            }),
-          }),
-      ).toThrow('Only one client authentication method can be enabled.');
     });
   });
 
