@@ -76,11 +76,11 @@ export enum NodegroupAmiType {
    */
   AL2023_X86_64_STANDARD = 'AL2023_x86_64_STANDARD',
   /**
-   * Amazon Linux 2023 Neuron (x86-64)
+   * Amazon Linux 2023 with AWS Neuron drivers (x86-64)
    */
   AL2023_X86_64_NEURON = 'AL2023_x86_64_NEURON',
   /**
-   * Amazon Linux 2023 with Nvidia-GPU support (x86-64)
+   * Amazon Linux 2023 with NVIDIA drivers (x86-64)
    */
   AL2023_X86_64_NVIDIA = 'AL2023_x86_64_NVIDIA',
   /**
