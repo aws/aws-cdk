@@ -1,9 +1,9 @@
 {
-  "version": "36.0.0",
+  "version": "38.0.1",
   "files": {
     "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
       "source": {
-        "path": "windowsmachineimageintegtestDefaultTestDeployAssertB65E22D7.template.json",
+        "path": "windowsmachineimageidsintegtestDefaultTestDeployAssert275BD33B.template.json",
         "packaging": "file"
       },
       "destinations": {

@@ -1,15 +1,15 @@
 {
   "enableLookups": true,
-  "version": "36.0.0",
+  "version": "38.0.1",
   "testCases": {
-    "windows-machine-image-integ-test/DefaultTest": {
+    "windows-machine-image-ids-integ-test/DefaultTest": {
       "stacks": [
-        "integ-ec2-windows-image-ids",
+        "integ-ec2-windows-image-ids-c42a03e507b385cc94e919240a4cac82",
         "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base",
         "integ-ec2-windows-instance-Windows-Server-2022-Dutch-Full-Base"
       ],
-      "assertionStack": "windows-machine-image-integ-test/DefaultTest/DeployAssert",
-      "assertionStackName": "windowsmachineimageintegtestDefaultTestDeployAssertB65E22D7"
+      "assertionStack": "windows-machine-image-ids-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "windowsmachineimageidsintegtestDefaultTestDeployAssert275BD33B"
     }
   }
 }

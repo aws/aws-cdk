@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "38.0.1",
   "artifacts": {
     "integ-ec2-windows-vpc.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-test-region",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/5dd390bb81d4583b2c98763d129b4d5dea2709867dbf31b9502234d8ef5c7b05.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/0d7bc26eb204455ddf49f69e2143561c51f0961da9497bddb0bc5c2975cd566b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -106,6 +106,12 @@
             "data": "VpcRestrictDefaultSecurityGroupCustomResourceC73DA2BE"
           }
         ],
+        "/integ-ec2-windows-vpc/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
         "/integ-ec2-windows-vpc/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
           {
             "type": "aws:cdk:logicalId",
@@ -145,19 +151,19 @@
       },
       "displayName": "integ-ec2-windows-vpc"
     },
-    "integ-ec2-windows-image-ids.assets": {
+    "integ-ec2-windows-image-ids-c42a03e507b385cc94e919240a4cac82.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "integ-ec2-windows-image-ids.assets.json",
+        "file": "integ-ec2-windows-image-ids-c42a03e507b385cc94e919240a4cac82.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "integ-ec2-windows-image-ids": {
+    "integ-ec2-windows-image-ids-c42a03e507b385cc94e919240a4cac82": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://12345678/test-region",
       "properties": {
-        "templateFile": "integ-ec2-windows-image-ids.template.json",
+        "templateFile": "integ-ec2-windows-image-ids-c42a03e507b385cc94e919240a4cac82.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region",
@@ -166,7 +172,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "integ-ec2-windows-image-ids.assets"
+          "integ-ec2-windows-image-ids-c42a03e507b385cc94e919240a4cac82.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-lookup-role-12345678-test-region",
@@ -175,23 +181,23 @@
         }
       },
       "dependencies": [
-        "integ-ec2-windows-image-ids.assets"
+        "integ-ec2-windows-image-ids-c42a03e507b385cc94e919240a4cac82.assets"
       ],
       "metadata": {
-        "/integ-ec2-windows-image-ids/BootstrapVersion": [
+        "/integ-ec2-windows-image-ids-c42a03e507b385cc94e919240a4cac82/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/integ-ec2-windows-image-ids/CheckBootstrapVersion": [
+        "/integ-ec2-windows-image-ids-c42a03e507b385cc94e919240a4cac82/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "integ-ec2-windows-image-ids"
+      "displayName": "integ-ec2-windows-image-ids-c42a03e507b385cc94e919240a4cac82"
     },
     "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base.assets": {
       "type": "cdk:asset-manifest",
@@ -248,10 +254,7 @@
         "/integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Instance/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "InstanceC1063A87",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "InstanceC1063A87"
           }
         ],
         "/integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/SsmParameterValue:--aws--service--ami-windows-latest--Windows_Server-2016-English-Core-Base:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
@@ -330,10 +333,7 @@
         "/integ-ec2-windows-instance-Windows-Server-2022-Dutch-Full-Base/Instance/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "InstanceC1063A87",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "InstanceC1063A87"
           }
         ],
         "/integ-ec2-windows-instance-Windows-Server-2022-Dutch-Full-Base/SsmParameterValue:--aws--service--ami-windows-latest--Windows_Server-2022-Dutch-Full-Base:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
@@ -357,19 +357,19 @@
       },
       "displayName": "integ-ec2-windows-instance-Windows-Server-2022-Dutch-Full-Base"
     },
-    "windowsmachineimageintegtestDefaultTestDeployAssertB65E22D7.assets": {
+    "windowsmachineimageidsintegtestDefaultTestDeployAssert275BD33B.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "windowsmachineimageintegtestDefaultTestDeployAssertB65E22D7.assets.json",
+        "file": "windowsmachineimageidsintegtestDefaultTestDeployAssert275BD33B.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "windowsmachineimageintegtestDefaultTestDeployAssertB65E22D7": {
+    "windowsmachineimageidsintegtestDefaultTestDeployAssert275BD33B": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "windowsmachineimageintegtestDefaultTestDeployAssertB65E22D7.template.json",
+        "templateFile": "windowsmachineimageidsintegtestDefaultTestDeployAssert275BD33B.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -378,7 +378,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "windowsmachineimageintegtestDefaultTestDeployAssertB65E22D7.assets"
+          "windowsmachineimageidsintegtestDefaultTestDeployAssert275BD33B.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -387,23 +387,23 @@
         }
       },
       "dependencies": [
-        "windowsmachineimageintegtestDefaultTestDeployAssertB65E22D7.assets"
+        "windowsmachineimageidsintegtestDefaultTestDeployAssert275BD33B.assets"
       ],
       "metadata": {
-        "/windows-machine-image-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/windows-machine-image-ids-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/windows-machine-image-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/windows-machine-image-ids-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "windows-machine-image-integ-test/DefaultTest/DeployAssert"
+      "displayName": "windows-machine-image-ids-integ-test/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

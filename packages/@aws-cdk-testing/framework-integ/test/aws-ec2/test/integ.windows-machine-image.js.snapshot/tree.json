@@ -378,7 +378,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "BootstrapVersion": {
@@ -403,13 +403,13 @@
           "version": "0.0.0"
         }
       },
-      "integ-ec2-windows-image-ids": {
-        "id": "integ-ec2-windows-image-ids",
-        "path": "integ-ec2-windows-image-ids",
+      "integ-ec2-windows-image-ids-c42a03e507b385cc94e919240a4cac82": {
+        "id": "integ-ec2-windows-image-ids-c42a03e507b385cc94e919240a4cac82",
+        "path": "integ-ec2-windows-image-ids-c42a03e507b385cc94e919240a4cac82",
         "children": {
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "integ-ec2-windows-image-ids/BootstrapVersion",
+            "path": "integ-ec2-windows-image-ids-c42a03e507b385cc94e919240a4cac82/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -417,7 +417,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "integ-ec2-windows-image-ids/CheckBootstrapVersion",
+            "path": "integ-ec2-windows-image-ids-c42a03e507b385cc94e919240a4cac82/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
@@ -841,29 +841,29 @@
           "version": "0.0.0"
         }
       },
-      "windows-machine-image-integ-test": {
-        "id": "windows-machine-image-integ-test",
-        "path": "windows-machine-image-integ-test",
+      "windows-machine-image-ids-integ-test": {
+        "id": "windows-machine-image-ids-integ-test",
+        "path": "windows-machine-image-ids-integ-test",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "windows-machine-image-integ-test/DefaultTest",
+            "path": "windows-machine-image-ids-integ-test/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "windows-machine-image-integ-test/DefaultTest/Default",
+                "path": "windows-machine-image-ids-integ-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "windows-machine-image-integ-test/DefaultTest/DeployAssert",
+                "path": "windows-machine-image-ids-integ-test/DefaultTest/DeployAssert",
                 "children": {
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
-                    "path": "windows-machine-image-integ-test/DefaultTest/DeployAssert/BootstrapVersion",
+                    "path": "windows-machine-image-ids-integ-test/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
@@ -871,7 +871,7 @@
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
-                    "path": "windows-machine-image-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "path": "windows-machine-image-ids-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"
@@ -900,7 +900,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },

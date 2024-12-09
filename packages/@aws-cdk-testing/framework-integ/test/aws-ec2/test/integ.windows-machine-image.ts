@@ -8,6 +8,7 @@ import * as jsii from 'jsii';
 import * as reflect from 'jsii-reflect';
 import * as path from 'path';
 import * as fs from 'fs';
+import { md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 const env = {
   account: process.env.CDK_INTEG_ACCOUNT ?? process.env.CDK_DEFAULT_ACCOUNT,
@@ -56,9 +57,7 @@ class ImageIdTestCase extends Stack {
     super(scope, id, props);
 
     for (const version of props.windowsVersions) {
-      const member = windowsVersionReflector.findMember(getWindowsVersionEnumKey(version));
-      if (!member) throw new Error(`Could not find enum member for: ${version}`);
-      if (member.docs.deprecated) {
+      if (isWindowsVersionDeprecated(version)) {
         try {
           // Expecting this to throw, if not, the image should not have been deprecated
           retrieveWindowsImage(version);
@@ -112,15 +111,21 @@ const app = new App();
 
 const { vpc } = new VpcStack(app, 'integ-ec2-windows-vpc', { env });
 
-new IntegTest(app, 'windows-machine-image-integ-test', {
+const windowsVersions = Object.values(ec2.WindowsVersion);
+// Hash calculated to detect changes made to the WindowsVersion enum
+// This will detect additions, deletions, renames or changes to their deprecation status.
+const windowsVersionsHash = md5hash(
+  windowsVersions.reduce((hash, version) =>
+    [hash, slugifyVersion(version), isWindowsVersionDeprecated(version) ? 'deprecated' : ''].join(','),
+  ''),
+);
+
+new IntegTest(app, 'windows-machine-image-ids-integ-test', {
   testCases: [
     new ImageIdTestCase(
       app,
-      'integ-ec2-windows-image-ids',
-      {
-        windowsVersions: Object.values(ec2.WindowsVersion),
-        env,
-      },
+      `integ-ec2-windows-image-ids-${windowsVersionsHash}`,
+      { windowsVersions, env },
     ),
 
     ...[
@@ -141,6 +146,12 @@ function slugifyVersion(version: string) {
 
 function getWindowsVersionEnumKey(windowsVersion: ec2.WindowsVersion) {
   return windowsVersion.toLocaleUpperCase().replace(/[-.]/g, '_');
+}
+
+function isWindowsVersionDeprecated(version: ec2.WindowsVersion): boolean {
+  const member = windowsVersionReflector.findMember(getWindowsVersionEnumKey(version));
+  if (!member) throw new Error(`Could not find enum member for: ${version}`);
+  return member.docs.deprecated;
 }
 
 function retrieveWindowsImage(version: ec2.WindowsVersion) {
