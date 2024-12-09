@@ -1,0 +1,15 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "aws-cdk-s3-integ-test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-s3-integ"
+      ],
+      "regions": [
+        "us-east-1"
+      ],
+      "assertionStack": "aws-cdk-s3-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdks3integtestDefaultTestDeployAssert9DECDFBF"
+    }
+  }
+}

@@ -1,0 +1,611 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "aws-cdk-elasticbeanstalk-integ": {
+        "id": "aws-cdk-elasticbeanstalk-integ",
+        "path": "aws-cdk-elasticbeanstalk-integ",
+        "children": {
+          "Bucket": {
+            "id": "Bucket",
+            "path": "aws-cdk-elasticbeanstalk-integ/Bucket",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-elasticbeanstalk-integ/Bucket/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_s3.Bucket",
+              "version": "0.0.0"
+            }
+          },
+          "Asset": {
+            "id": "Asset",
+            "path": "aws-cdk-elasticbeanstalk-integ/Asset",
+            "children": {
+              "Stage": {
+                "id": "Stage",
+                "path": "aws-cdk-elasticbeanstalk-integ/Asset/Stage",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.AssetStaging",
+                  "version": "0.0.0"
+                }
+              },
+              "AssetBucket": {
+                "id": "AssetBucket",
+                "path": "aws-cdk-elasticbeanstalk-integ/Asset/AssetBucket",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+              "version": "0.0.0"
+            }
+          },
+          "Application": {
+            "id": "Application",
+            "path": "aws-cdk-elasticbeanstalk-integ/Application",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::ElasticBeanstalk::Application",
+              "aws:cdk:cloudformation:props": {
+                "applicationName": "MyApplication"
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_elasticbeanstalk.CfnApplication",
+              "version": "0.0.0"
+            }
+          },
+          "ApplicationVersion": {
+            "id": "ApplicationVersion",
+            "path": "aws-cdk-elasticbeanstalk-integ/ApplicationVersion",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::ElasticBeanstalk::ApplicationVersion",
+              "aws:cdk:cloudformation:props": {
+                "applicationName": "MyApplication",
+                "sourceBundle": {
+                  "s3Bucket": {
+                    "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                  },
+                  "s3Key": "02e8c4fbaddae67c5789ab6e8ef26eb226f048244bda7fdeb2ecaf8bda19eb9a.zip"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_elasticbeanstalk.CfnApplicationVersion",
+              "version": "0.0.0"
+            }
+          },
+          "MyApplication-aws-elasticbeanstalk-ec2-role": {
+            "id": "MyApplication-aws-elasticbeanstalk-ec2-role",
+            "path": "aws-cdk-elasticbeanstalk-integ/MyApplication-aws-elasticbeanstalk-ec2-role",
+            "children": {
+              "ImportMyApplication-aws-elasticbeanstalk-ec2-role": {
+                "id": "ImportMyApplication-aws-elasticbeanstalk-ec2-role",
+                "path": "aws-cdk-elasticbeanstalk-integ/MyApplication-aws-elasticbeanstalk-ec2-role/ImportMyApplication-aws-elasticbeanstalk-ec2-role",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-elasticbeanstalk-integ/MyApplication-aws-elasticbeanstalk-ec2-role/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "ec2.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "managedPolicyArns": [
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":iam::aws:policy/AWSElasticBeanstalkWebTier"
+                          ]
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "0.0.0"
+            }
+          },
+          "MyApplication-aws-elasticbeanstalk-ec2-instance-profile": {
+            "id": "MyApplication-aws-elasticbeanstalk-ec2-instance-profile",
+            "path": "aws-cdk-elasticbeanstalk-integ/MyApplication-aws-elasticbeanstalk-ec2-instance-profile",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::IAM::InstanceProfile",
+              "aws:cdk:cloudformation:props": {
+                "instanceProfileName": "MyApplication-aws-elasticbeanstalk-ec2-instance-profile",
+                "roles": [
+                  {
+                    "Ref": "MyApplicationawselasticbeanstalkec2roleA466279A"
+                  }
+                ]
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.CfnInstanceProfile",
+              "version": "0.0.0"
+            }
+          },
+          "Environment": {
+            "id": "Environment",
+            "path": "aws-cdk-elasticbeanstalk-integ/Environment",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::ElasticBeanstalk::Environment",
+              "aws:cdk:cloudformation:props": {
+                "applicationName": "MyApplication",
+                "environmentName": "MyEnvironment",
+                "optionSettings": [
+                  {
+                    "namespace": "aws:autoscaling:launchconfiguration",
+                    "optionName": "IamInstanceProfile",
+                    "value": "MyApplication-aws-elasticbeanstalk-ec2-instance-profile"
+                  },
+                  {
+                    "namespace": "aws:autoscaling:asg",
+                    "optionName": "MinSize",
+                    "value": "1"
+                  },
+                  {
+                    "namespace": "aws:autoscaling:asg",
+                    "optionName": "MaxSize",
+                    "value": "1"
+                  },
+                  {
+                    "namespace": "aws:ec2:instances",
+                    "optionName": "InstanceTypes",
+                    "value": "t3.micro"
+                  }
+                ],
+                "solutionStackName": "64bit Amazon Linux 2023 v6.3.0 running Node.js 20",
+                "versionLabel": {
+                  "Ref": "ApplicationVersion"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_elasticbeanstalk.CfnEnvironment",
+              "version": "0.0.0"
+            }
+          },
+          "GetEnvironmentUrl": {
+            "id": "GetEnvironmentUrl",
+            "path": "aws-cdk-elasticbeanstalk-integ/GetEnvironmentUrl",
+            "children": {
+              "Provider": {
+                "id": "Provider",
+                "path": "aws-cdk-elasticbeanstalk-integ/GetEnvironmentUrl/Provider",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-elasticbeanstalk-integ/GetEnvironmentUrl/Resource",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "aws-cdk-elasticbeanstalk-integ/GetEnvironmentUrl/Resource/Default",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CustomResource",
+                  "version": "0.0.0"
+                }
+              },
+              "CustomResourcePolicy": {
+                "id": "CustomResourcePolicy",
+                "path": "aws-cdk-elasticbeanstalk-integ/GetEnvironmentUrl/CustomResourcePolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-elasticbeanstalk-integ/GetEnvironmentUrl/CustomResourcePolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "elasticbeanstalk:DescribeEnvironments",
+                              "Effect": "Allow",
+                              "Resource": "*"
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "GetEnvironmentUrlCustomResourcePolicy09B7289C",
+                        "roles": [
+                          {
+                            "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Policy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.custom_resources.AwsCustomResource",
+              "version": "0.0.0"
+            }
+          },
+          "LatestNodeRuntimeMap": {
+            "id": "LatestNodeRuntimeMap",
+            "path": "aws-cdk-elasticbeanstalk-integ/LatestNodeRuntimeMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "0.0.0"
+            }
+          },
+          "AWS679f53fac002430cb0da5b7982bd2287": {
+            "id": "AWS679f53fac002430cb0da5b7982bd2287",
+            "path": "aws-cdk-elasticbeanstalk-integ/AWS679f53fac002430cb0da5b7982bd2287",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "aws-cdk-elasticbeanstalk-integ/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "aws-cdk-elasticbeanstalk-integ/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-elasticbeanstalk-integ/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "aws-cdk-elasticbeanstalk-integ/AWS679f53fac002430cb0da5b7982bd2287/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "aws-cdk-elasticbeanstalk-integ/AWS679f53fac002430cb0da5b7982bd2287/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "aws-cdk-elasticbeanstalk-integ/AWS679f53fac002430cb0da5b7982bd2287/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-elasticbeanstalk-integ/AWS679f53fac002430cb0da5b7982bd2287/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "9e8936ba1db43e0919ba2fc8265d50686eeaca82830c471ff8b7b0672c5970ec.zip"
+                    },
+                    "handler": "index.handler",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": {
+                      "Fn::FindInMap": [
+                        "LatestNodeRuntimeMap",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        "value"
+                      ]
+                    },
+                    "timeout": 120
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "HostedZone": {
+            "id": "HostedZone",
+            "path": "aws-cdk-elasticbeanstalk-integ/HostedZone",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-elasticbeanstalk-integ/HostedZone/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::HostedZone",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "test.public."
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnHostedZone",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.PublicHostedZone",
+              "version": "0.0.0"
+            }
+          },
+          "Alias": {
+            "id": "Alias",
+            "path": "aws-cdk-elasticbeanstalk-integ/Alias",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-elasticbeanstalk-integ/Alias/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                  "aws:cdk:cloudformation:props": {
+                    "aliasTarget": {
+                      "hostedZoneId": "Z117KPS5GTRQ2G",
+                      "dnsName": {
+                        "Fn::GetAtt": [
+                          "GetEnvironmentUrl8ABBCF5A",
+                          "Environments.0.CNAME"
+                        ]
+                      }
+                    },
+                    "hostedZoneId": {
+                      "Ref": "HostedZoneDB99F866"
+                    },
+                    "name": "without-health-check.test.public.",
+                    "type": "A"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.ARecord",
+              "version": "0.0.0"
+            }
+          },
+          "AliasWithHealthCheck": {
+            "id": "AliasWithHealthCheck",
+            "path": "aws-cdk-elasticbeanstalk-integ/AliasWithHealthCheck",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-elasticbeanstalk-integ/AliasWithHealthCheck/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                  "aws:cdk:cloudformation:props": {
+                    "aliasTarget": {
+                      "hostedZoneId": "Z117KPS5GTRQ2G",
+                      "dnsName": {
+                        "Fn::GetAtt": [
+                          "GetEnvironmentUrl8ABBCF5A",
+                          "Environments.0.CNAME"
+                        ]
+                      },
+                      "evaluateTargetHealth": true
+                    },
+                    "hostedZoneId": {
+                      "Ref": "HostedZoneDB99F866"
+                    },
+                    "name": "with-health-check.test.public.",
+                    "type": "A"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.ARecord",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-elasticbeanstalk-integ/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-elasticbeanstalk-integ/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "aws-cdk-elasticbeanstalk-integ-test": {
+        "id": "aws-cdk-elasticbeanstalk-integ-test",
+        "path": "aws-cdk-elasticbeanstalk-integ-test",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "aws-cdk-elasticbeanstalk-integ-test/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "aws-cdk-elasticbeanstalk-integ-test/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "aws-cdk-elasticbeanstalk-integ-test/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "aws-cdk-elasticbeanstalk-integ-test/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "aws-cdk-elasticbeanstalk-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

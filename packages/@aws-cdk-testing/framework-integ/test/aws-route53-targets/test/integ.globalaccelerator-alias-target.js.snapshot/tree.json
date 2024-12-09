@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "aws-cdk-globalaccelerator-integ": {
         "id": "aws-cdk-globalaccelerator-integ",
         "path": "aws-cdk-globalaccelerator-integ",
@@ -26,18 +18,18 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::GlobalAccelerator::Accelerator",
                   "aws:cdk:cloudformation:props": {
-                    "name": "aws-cdk-globalaccelerator-integ",
-                    "enabled": true
+                    "enabled": true,
+                    "name": "aws-cdk-globalaccelerator-integ"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-globalaccelerator.CfnAccelerator",
+                  "fqn": "aws-cdk-lib.aws_globalaccelerator.CfnAccelerator",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-globalaccelerator.Accelerator",
+              "fqn": "aws-cdk-lib.aws_globalaccelerator.Accelerator",
               "version": "0.0.0"
             }
           },
@@ -55,13 +47,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-route53.CfnHostedZone",
+                  "fqn": "aws-cdk-lib.aws_route53.CfnHostedZone",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-route53.PublicHostedZone",
+              "fqn": "aws-cdk-lib.aws_route53.PublicHostedZone",
               "version": "0.0.0"
             }
           },
@@ -75,8 +67,6 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
                   "aws:cdk:cloudformation:props": {
-                    "name": "test-local.test.public.",
-                    "type": "A",
                     "aliasTarget": {
                       "hostedZoneId": "Z2BJ6XQ5FK7U4H",
                       "dnsName": {
@@ -89,17 +79,19 @@
                     "comment": "Alias to the locally created Global Accelerator",
                     "hostedZoneId": {
                       "Ref": "HostedZoneDB99F866"
-                    }
+                    },
+                    "name": "test-local.test.public.",
+                    "type": "A"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-route53.CfnRecordSet",
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-route53.ARecord",
+              "fqn": "aws-cdk-lib.aws_route53.ARecord",
               "version": "0.0.0"
             }
           },
@@ -113,8 +105,6 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
                   "aws:cdk:cloudformation:props": {
-                    "name": "test-existing.test.public.",
-                    "type": "A",
                     "aliasTarget": {
                       "hostedZoneId": "Z2BJ6XQ5FK7U4H",
                       "dnsName": "someexisting.awsglobalaccelerator.com"
@@ -122,30 +112,95 @@
                     "comment": "Alias to the an existing Global Accelerator",
                     "hostedZoneId": {
                       "Ref": "HostedZoneDB99F866"
-                    }
+                    },
+                    "name": "test-existing.test.public.",
+                    "type": "A"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-route53.CfnRecordSet",
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-route53.ARecord",
+              "fqn": "aws-cdk-lib.aws_route53.ARecord",
+              "version": "0.0.0"
+            }
+          },
+          "LocalGlobalAcceleratorAliasWithHealthCheck": {
+            "id": "LocalGlobalAcceleratorAliasWithHealthCheck",
+            "path": "aws-cdk-globalaccelerator-integ/LocalGlobalAcceleratorAliasWithHealthCheck",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-globalaccelerator-integ/LocalGlobalAcceleratorAliasWithHealthCheck/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                  "aws:cdk:cloudformation:props": {
+                    "aliasTarget": {
+                      "hostedZoneId": "Z2BJ6XQ5FK7U4H",
+                      "dnsName": {
+                        "Fn::GetAtt": [
+                          "Accelerator8EB0B6B1",
+                          "DnsName"
+                        ]
+                      },
+                      "evaluateTargetHealth": true
+                    },
+                    "comment": "Alias to the locally created Global Accelerator with health check",
+                    "hostedZoneId": {
+                      "Ref": "HostedZoneDB99F866"
+                    },
+                    "name": "test-local-health.test.public.",
+                    "type": "A"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.ARecord",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-globalaccelerator-integ/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-globalaccelerator-integ/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.3.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
     }
   }
 }
