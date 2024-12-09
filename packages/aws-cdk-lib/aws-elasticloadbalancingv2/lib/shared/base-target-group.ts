@@ -155,7 +155,7 @@ export interface HealthCheck {
    * The number of consecutive health check failures required before considering a target unhealthy.
    *
    * For Application Load Balancers, the default is 2. For Network Load
-   * Balancers, this value must be the same as the healthy threshold count.
+   * Balancers, the range is between 2-10 and can be set accordingly.
    *
    * @default 2
    */
