@@ -9,6 +9,7 @@ import { ReplicationTimeValue } from '../lib/bucket';
 
 // to make it easy to copy & paste from output:
 /* eslint-disable quote-props */
+/* eslint-disable no-console */
 
 describe('bucket', () => {
   test('default bucket', () => {
@@ -4176,7 +4177,7 @@ describe('bucket', () => {
         bucketName: 'another-account-dst-bucket',
       });
 
-      new s3.Bucket(stack, 'SrcBucket', {
+      const sourcebucket = new s3.Bucket(stack, 'SrcBucket', {
         versioned: true,
         replicationRules: [
           {
@@ -4184,6 +4185,10 @@ describe('bucket', () => {
           },
         ],
       });
+
+      if (sourcebucket.replicationRoleArn) {
+        dstBucket.addReplicationPolicy(sourcebucket.replicationRoleArn);
+      }
 
       Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
         VersioningConfiguration: { Status: 'Enabled' },
@@ -4227,6 +4232,30 @@ describe('bucket', () => {
         PolicyDocument: {
           Statement: [
             {
+              Action: ['s3:GetBucketVersioning', 's3:PutBucketVersioning'],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': [
+                  'DstBucket3E241BF2',
+                  'Arn',
+                ],
+              },
+              Principal: {
+                AWS: {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        'Ref': 'AWS::Partition',
+                      },
+                      ':iam::111111111111:role/CDKReplicationRole',
+                    ],
+                  ],
+                },
+              },
+            },
+            {
               Action: ['s3:ReplicateObject', 's3:ReplicateDelete'],
               Effect: 'Allow',
               Resource: {
@@ -4252,28 +4281,7 @@ describe('bucket', () => {
                       {
                         'Ref': 'AWS::Partition',
                       },
-                      ':iam::111111111111:role/stacktreplicationrole304e3d102c95a832f68a',
-                    ],
-                  ],
-                },
-              },
-            },
-            {
-              Action: ['s3:GetBucketVersioning', 's3:PutBucketVersioning'],
-              Effect: 'Allow',
-              Resource: {
-                'Fn::GetAtt': ['DstBucket3E241BF2', 'Arn'],
-              },
-              Principal: {
-                AWS: {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        'Ref': 'AWS::Partition',
-                      },
-                      ':iam::111111111111:role/stacktreplicationrole304e3d102c95a832f68a',
+                      ':iam::111111111111:role/CDKReplicationRole',
                     ],
                   ],
                 },
@@ -4302,7 +4310,7 @@ describe('bucket', () => {
         bucketName: 'another-account-dst-bucket',
       });
 
-      new s3.Bucket(stack, 'SrcBucket', {
+      const sourcebucket = new s3.Bucket(stack, 'SrcBucket', {
         versioned: true,
         replicationRules: [
           {
@@ -4312,6 +4320,9 @@ describe('bucket', () => {
         ],
       });
 
+      if (sourcebucket.replicationRoleArn) {
+        dstBucket.addReplicationPolicy(sourcebucket.replicationRoleArn, true, '111111111111');
+      }
       Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
         VersioningConfiguration: { Status: 'Enabled' },
         ReplicationConfiguration: {
@@ -4357,6 +4368,30 @@ describe('bucket', () => {
         PolicyDocument: {
           Statement: [
             {
+              Action: ['s3:GetBucketVersioning', 's3:PutBucketVersioning'],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': [
+                  'DstBucket3E241BF2',
+                  'Arn',
+                ],
+              },
+              Principal: {
+                AWS: {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        'Ref': 'AWS::Partition',
+                      },
+                      ':iam::111111111111:role/CDKReplicationRole',
+                    ],
+                  ],
+                },
+              },
+            },
+            {
               Action: ['s3:ReplicateObject', 's3:ReplicateDelete'],
               Effect: 'Allow',
               Resource: {
@@ -4382,28 +4417,7 @@ describe('bucket', () => {
                       {
                         'Ref': 'AWS::Partition',
                       },
-                      ':iam::111111111111:role/stacktreplicationrole304e3d102c95a832f68a',
-                    ],
-                  ],
-                },
-              },
-            },
-            {
-              Action: ['s3:GetBucketVersioning', 's3:PutBucketVersioning'],
-              Effect: 'Allow',
-              Resource: {
-                'Fn::GetAtt': ['DstBucket3E241BF2', 'Arn'],
-              },
-              Principal: {
-                AWS: {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        'Ref': 'AWS::Partition',
-                      },
-                      ':iam::111111111111:role/stacktreplicationrole304e3d102c95a832f68a',
+                      ':iam::111111111111:role/CDKReplicationRole',
                     ],
                   ],
                 },

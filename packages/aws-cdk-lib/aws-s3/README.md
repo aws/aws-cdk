@@ -1000,7 +1000,10 @@ const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
 
 You can also set a destination bucket from a different account as the replication destination.
 
-In this case, the bucket policy for the destination bucket is required, but CDK will automatically configure it.
+In this case, the bucket policy for the destination bucket is required, to configure it through CDK use  `addReplicationPolicy()` method to add bucket policy on destination bucket.
+If you need to ovveride the bucket ownership to destination account pass the account value to the method to provide permissions to override bucket owner.
+`addReplicationPolicy(bucket.replicationRoleArn, true, '11111111111')`;
+
 
 However, if the destination bucket is a referenced bucket, CDK cannot set the bucket policy,
 so you will need to [configure the necessary bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-walkthrough-2.html) separately.
@@ -1021,4 +1024,9 @@ const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
     },
   ],
 });
+
+//Add permissions to the destination after replication role is created
+if (sourcebucket.replicationRoleArn) {
+  destinationBucket.addReplicationPolicy(sourcebucket.replicationRoleArn, true, '111111111111');
+  }
 ```
