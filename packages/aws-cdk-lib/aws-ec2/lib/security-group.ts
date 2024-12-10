@@ -369,22 +369,22 @@ export class SecurityGroup extends SecurityGroupBase {
    *
    * @deprecated Use `fromLookupById()` instead
    */
-  public static fromLookup(scope: Construct, id: string, securityGroupId: string) {
-    return this.fromLookupAttributes(scope, id, { securityGroupId });
+  public static fromLookup(scope: Construct, id: string, securityGroupId: string, additionalCacheKey?: string) {
+    return this.fromLookupAttributes(scope, id, { securityGroupId, additionalCacheKey });
   }
 
   /**
    * Look up a security group by id.
    */
-  public static fromLookupById(scope: Construct, id: string, securityGroupId: string) {
-    return this.fromLookupAttributes(scope, id, { securityGroupId });
+  public static fromLookupById(scope: Construct, id: string, securityGroupId: string, additionalCacheKey?: string) {
+    return this.fromLookupAttributes(scope, id, { securityGroupId, additionalCacheKey });
   }
 
   /**
    * Look up a security group by name.
    */
-  public static fromLookupByName(scope: Construct, id: string, securityGroupName: string, vpc: IVpc) {
-    return this.fromLookupAttributes(scope, id, { securityGroupName, vpc });
+  public static fromLookupByName(scope: Construct, id: string, securityGroupName: string, vpc: IVpc, additionalCacheKey?: string) {
+    return this.fromLookupAttributes(scope, id, { securityGroupName, vpc, additionalCacheKey });
   }
 
   /**
@@ -449,6 +449,7 @@ export class SecurityGroup extends SecurityGroupBase {
         securityGroupId: 'sg-12345678',
         allowAllOutbound: true,
       } as cxapi.SecurityGroupContextResponse,
+      additionalCacheKey: options.additionalCacheKey,
     }).value;
 
     return SecurityGroup.fromSecurityGroupId(scope, id, attributes.securityGroupId, {
@@ -843,4 +844,11 @@ interface SecurityGroupLookupOptions {
    * @default Don't filter on VPC
    */
   readonly vpc?: IVpc;
+
+  /**
+   * Adds an additional discriminator to the `cdk.context.json` cache key.
+   *
+   * @default - no additional cache key
+   */
+  readonly additionalCacheKey?: string;
 }
