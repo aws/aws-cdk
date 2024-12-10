@@ -33,7 +33,7 @@
     "VpcConfig": {
      "SecurityGroupIds": [
       {
-       "Ref": "referencetoawscdkeksfargateclusterteststack2FargateCluster328B84B5ClusterSecurityGroupId"
+       "Ref": "referencetoawscdkeksfargateclusterteststack2FargateCluster6732C993ClusterSecurityGroupId"
       }
      ],
      "SubnetIds": [
@@ -184,7 +184,7 @@
     "VpcConfig": {
      "SecurityGroupIds": [
       {
-       "Ref": "referencetoawscdkeksfargateclusterteststack2FargateCluster328B84B5ClusterSecurityGroupId"
+       "Ref": "referencetoawscdkeksfargateclusterteststack2FargateCluster6732C993ClusterSecurityGroupId"
       }
      ],
      "SubnetIds": [
@@ -344,7 +344,7 @@
   "referencetoawscdkeksfargateclusterteststack2FargateClusterKubectlHandlerRole1840C412Arn": {
    "Type": "String"
   },
-  "referencetoawscdkeksfargateclusterteststack2FargateCluster328B84B5ClusterSecurityGroupId": {
+  "referencetoawscdkeksfargateclusterteststack2FargateCluster6732C993ClusterSecurityGroupId": {
    "Type": "String"
   }
  }

@@ -1,5 +1,5 @@
 {
-  "version": "36.0.5",
+  "version": "38.0.1",
   "artifacts": {
     "eks-pod-identities.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e205de360a34085b91965425ad5ed65ad9fd81df20baa53715813a90c06a2bb1.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/beb3c9b438a848ebf63756a75d27a00c28d93ae8702856fac6b480c015c1f115.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -226,28 +226,28 @@
             "data": "ClusterControlPlaneSecurityGroupD274242C"
           }
         ],
-        "/eks-pod-identities/Cluster/Resource/CreationRole/Resource": [
+        "/eks-pod-identities/Cluster/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterCreationRole360249B6"
-          }
-        ],
-        "/eks-pod-identities/Cluster/Resource/CreationRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterCreationRoleDefaultPolicyE8BDFC7B"
-          }
-        ],
-        "/eks-pod-identities/Cluster/Resource/Resource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Cluster9EE0221C"
+            "data": "ClusterEB0386A7"
           }
         ],
         "/eks-pod-identities/Cluster/KubectlReadyBarrier": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterKubectlReadyBarrier200052AF"
+          }
+        ],
+        "/eks-pod-identities/Cluster/kubectlRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterkubectlRole4CCE0069"
+          }
+        ],
+        "/eks-pod-identities/Cluster/ClusterAdminRoleAccess/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterClusterAdminRoleAccessF2BFF759"
           }
         ],
         "/eks-pod-identities/Cluster/HasEcrPublic": [
@@ -259,7 +259,10 @@
         "/eks-pod-identities/Cluster/mastersRoleAccess/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClustermastersRoleAccess698EBA51"
+            "data": "ClustermastersRoleAccess698EBA51",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/eks-pod-identities/Cluster/NodegroupDefaultCapacity/NodeGroupRole/Resource": [
@@ -271,7 +274,10 @@
         "/eks-pod-identities/Cluster/NodegroupDefaultCapacity/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterNodegroupDefaultCapacityDA0920A3"
+            "data": "ClusterNodegroupDefaultCapacityDA0920A3",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/eks-pod-identities/Cluster/AwsAuth/manifest/Resource/Default": [
@@ -295,151 +301,16 @@
         "/eks-pod-identities/Cluster/EksPodIdentityAgentAddon/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterEksPodIdentityAgentAddonEF717E32"
+            "data": "ClusterEksPodIdentityAgentAddonEF717E32",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/eks-pod-identities/Cluster/manifest-demopod/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Clustermanifestdemopod4389851E"
-          }
-        ],
-        "/eks-pod-identities/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "NodeProxyAgentLayer924C1971"
-          }
-        ],
-        "/eks-pod-identities/@aws-cdk--aws-eks.ClusterResourceProvider/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
-          }
-        ],
-        "/eks-pod-identities/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "OnEventHandlerServiceRole15A26729"
-          }
-        ],
-        "/eks-pod-identities/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "OnEventHandler42BEBAE0"
-          }
-        ],
-        "/eks-pod-identities/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "IsCompleteHandlerServiceRole5810CC58"
-          }
-        ],
-        "/eks-pod-identities/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "IsCompleteHandler7073F4DA"
-          }
-        ],
-        "/eks-pod-identities/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ProviderframeworkonEventServiceRole9FF04296"
-          }
-        ],
-        "/eks-pod-identities/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ProviderframeworkonEventServiceRoleDefaultPolicy48CD2133"
-          }
-        ],
-        "/eks-pod-identities/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ProviderframeworkonEvent83C1D0A7"
-          }
-        ],
-        "/eks-pod-identities/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ProviderframeworkisCompleteServiceRoleB1087139"
-          }
-        ],
-        "/eks-pod-identities/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ProviderframeworkisCompleteServiceRoleDefaultPolicy2E7140AC"
-          }
-        ],
-        "/eks-pod-identities/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ProviderframeworkisComplete26D7B0CB"
-          }
-        ],
-        "/eks-pod-identities/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ProviderframeworkonTimeoutServiceRole28643D26"
-          }
-        ],
-        "/eks-pod-identities/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ProviderframeworkonTimeoutServiceRoleDefaultPolicy2688969F"
-          }
-        ],
-        "/eks-pod-identities/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ProviderframeworkonTimeout0B47CA38"
-          }
-        ],
-        "/eks-pod-identities/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ProviderwaiterstatemachineRole0C7159F9"
-          }
-        ],
-        "/eks-pod-identities/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ProviderwaiterstatemachineRoleDefaultPolicyD3C3DA1A"
-          }
-        ],
-        "/eks-pod-identities/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/LogGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ProviderwaiterstatemachineLogGroupDD693A98"
-          }
-        ],
-        "/eks-pod-identities/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Providerwaiterstatemachine5D4A9DF0"
-          }
-        ],
-        "/eks-pod-identities/@aws-cdk--aws-eks.ClusterResourceProvider/ekspodidentitiesawscdkawseksClusterResourceProviderOnEventHandlerServiceRoleA47600ECArn": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ekspodidentitiesawscdkawseksClusterResourceProviderOnEventHandlerServiceRoleA47600ECArn"
-          }
-        ],
-        "/eks-pod-identities/@aws-cdk--aws-eks.ClusterResourceProvider/ekspodidentitiesawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole201EABC7Arn": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ekspodidentitiesawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole201EABC7Arn"
-          }
-        ],
-        "/eks-pod-identities/@aws-cdk--aws-eks.ClusterResourceProvider/ekspodidentitiesawscdkawseksClusterResourceProviderframeworkonEvent3A55F7C1Arn": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ekspodidentitiesawscdkawseksClusterResourceProviderframeworkonEvent3A55F7C1Arn"
-          }
-        ],
-        "/eks-pod-identities/@aws-cdk--aws-eks.ClusterResourceProvider.NestedStack/@aws-cdk--aws-eks.ClusterResourceProvider.NestedStackResource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454"
           }
         ],
         "/eks-pod-identities/@aws-cdk--aws-eks.KubectlProvider/Handler/Resource": [
@@ -508,10 +379,10 @@
             "data": "referencetoekspodidentitiesVPCPrivateSubnet2SubnetBBBF606FRef"
           }
         ],
-        "/eks-pod-identities/@aws-cdk--aws-eks.KubectlProvider/reference-to-ekspodidentitiesCluster0EF41F84ClusterSecurityGroupId": [
+        "/eks-pod-identities/@aws-cdk--aws-eks.KubectlProvider/reference-to-ekspodidentitiesClusterC0BD88A9ClusterSecurityGroupId": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "referencetoekspodidentitiesCluster0EF41F84ClusterSecurityGroupId"
+            "data": "referencetoekspodidentitiesClusterC0BD88A9ClusterSecurityGroupId"
           }
         ],
         "/eks-pod-identities/@aws-cdk--aws-eks.KubectlProvider.NestedStack/@aws-cdk--aws-eks.KubectlProvider.NestedStackResource": [
@@ -529,7 +400,10 @@
         "/eks-pod-identities/ServiceAccount/Association": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ServiceAccountAssociation24AB2A05"
+            "data": "ServiceAccountAssociation24AB2A05",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/eks-pod-identities/ServiceAccount/manifest-ServiceAccountServiceAccountResource/Resource/Default": [
@@ -548,6 +422,42 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "ClusterCreationRole360249B6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterCreationRole360249B6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterCreationRoleDefaultPolicyE8BDFC7B": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterCreationRoleDefaultPolicyE8BDFC7B",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "Cluster9EE0221C": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Cluster9EE0221C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

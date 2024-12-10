@@ -1026,7 +1026,7 @@
                                   "Effect": "Allow",
                                   "Resource": {
                                     "Fn::GetAtt": [
-                                      "Cluster9EE0221C",
+                                      "ClusterEB0386A7",
                                       "Arn"
                                     ]
                                   }
@@ -1036,7 +1036,7 @@
                                   "Effect": "Allow",
                                   "Resource": {
                                     "Fn::GetAtt": [
-                                      "ClusterCreationRole360249B6",
+                                      "ClusterkubectlRole4CCE0069",
                                       "Arn"
                                     ]
                                   }
@@ -1274,7 +1274,7 @@
                         "ipProtocol": "tcp",
                         "sourceSecurityGroupId": {
                           "Fn::GetAtt": [
-                            "Cluster9EE0221C",
+                            "ClusterEB0386A7",
                             "ClusterSecurityGroupId"
                           ]
                         },
@@ -1382,197 +1382,87 @@
               "Resource": {
                 "id": "Resource",
                 "path": "aws-cdk-eks-cluster-ipv6-test/Cluster/Resource",
-                "children": {
-                  "CreationRole": {
-                    "id": "CreationRole",
-                    "path": "aws-cdk-eks-cluster-ipv6-test/Cluster/Resource/CreationRole",
-                    "children": {
-                      "ImportCreationRole": {
-                        "id": "ImportCreationRole",
-                        "path": "aws-cdk-eks-cluster-ipv6-test/Cluster/Resource/CreationRole/ImportCreationRole",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.Resource",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "aws-cdk-eks-cluster-ipv6-test/Cluster/Resource/CreationRole/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                          "aws:cdk:cloudformation:props": {
-                            "assumeRolePolicyDocument": {
-                              "Statement": [
-                                {
-                                  "Action": "sts:AssumeRole",
-                                  "Effect": "Allow",
-                                  "Principal": {
-                                    "AWS": [
-                                      {
-                                        "Fn::GetAtt": [
-                                          "ClusterKubectlHandlerRole94549F93",
-                                          "Arn"
-                                        ]
-                                      },
-                                      {
-                                        "Fn::GetAtt": [
-                                          "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
-                                          "Outputs.awscdkeksclusteripv6testawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole1F912062Arn"
-                                        ]
-                                      },
-                                      {
-                                        "Fn::GetAtt": [
-                                          "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
-                                          "Outputs.awscdkeksclusteripv6testawscdkawseksClusterResourceProviderOnEventHandlerServiceRole6C18AE9AArn"
-                                        ]
-                                      }
-                                    ]
-                                  }
-                                }
-                              ],
-                              "Version": "2012-10-17"
-                            }
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EKS::Cluster",
+                  "aws:cdk:cloudformation:props": {
+                    "accessConfig": {},
+                    "encryptionConfig": [
+                      {
+                        "provider": {
+                          "keyArn": {
+                            "Fn::GetAtt": [
+                              "SecretsKey317DCF94",
+                              "Arn"
+                            ]
                           }
                         },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "DefaultPolicy": {
-                        "id": "DefaultPolicy",
-                        "path": "aws-cdk-eks-cluster-ipv6-test/Cluster/Resource/CreationRole/DefaultPolicy",
-                        "children": {
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "aws-cdk-eks-cluster-ipv6-test/Cluster/Resource/CreationRole/DefaultPolicy/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                              "aws:cdk:cloudformation:props": {
-                                "policyDocument": {
-                                  "Statement": [
-                                    {
-                                      "Action": "iam:PassRole",
-                                      "Effect": "Allow",
-                                      "Resource": [
-                                        {
-                                          "Fn::GetAtt": [
-                                            "ClusterRoleFA261979",
-                                            "Arn"
-                                          ]
-                                        },
-                                        {
-                                          "Fn::GetAtt": [
-                                            "ClusterfargateprofiledefaultPodExecutionRole09952CFF",
-                                            "Arn"
-                                          ]
-                                        }
-                                      ]
-                                    },
-                                    {
-                                      "Action": [
-                                        "eks:CreateCluster",
-                                        "eks:CreateFargateProfile",
-                                        "eks:DeleteCluster",
-                                        "eks:DescribeCluster",
-                                        "eks:DescribeUpdate",
-                                        "eks:TagResource",
-                                        "eks:UntagResource",
-                                        "eks:UpdateClusterConfig",
-                                        "eks:UpdateClusterVersion"
-                                      ],
-                                      "Effect": "Allow",
-                                      "Resource": "*"
-                                    },
-                                    {
-                                      "Action": [
-                                        "eks:DeleteFargateProfile",
-                                        "eks:DescribeFargateProfile"
-                                      ],
-                                      "Effect": "Allow",
-                                      "Resource": "*"
-                                    },
-                                    {
-                                      "Action": [
-                                        "ec2:DescribeDhcpOptions",
-                                        "ec2:DescribeInstances",
-                                        "ec2:DescribeNetworkInterfaces",
-                                        "ec2:DescribeRouteTables",
-                                        "ec2:DescribeSecurityGroups",
-                                        "ec2:DescribeSubnets",
-                                        "ec2:DescribeVpcs",
-                                        "iam:CreateServiceLinkedRole",
-                                        "iam:GetRole",
-                                        "iam:listAttachedRolePolicies"
-                                      ],
-                                      "Effect": "Allow",
-                                      "Resource": "*"
-                                    },
-                                    {
-                                      "Action": [
-                                        "kms:CreateGrant",
-                                        "kms:Decrypt",
-                                        "kms:DescribeKey",
-                                        "kms:Encrypt"
-                                      ],
-                                      "Effect": "Allow",
-                                      "Resource": {
-                                        "Fn::GetAtt": [
-                                          "SecretsKey317DCF94",
-                                          "Arn"
-                                        ]
-                                      }
-                                    }
-                                  ],
-                                  "Version": "2012-10-17"
-                                },
-                                "policyName": "ClusterCreationRoleDefaultPolicyE8BDFC7B",
-                                "roles": [
-                                  {
-                                    "Ref": "ClusterCreationRole360249B6"
-                                  }
-                                ]
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                              "version": "0.0.0"
-                            }
+                        "resources": [
+                          "secrets"
+                        ]
+                      }
+                    ],
+                    "kubernetesNetworkConfig": {
+                      "ipFamily": "ipv6"
+                    },
+                    "logging": {
+                      "clusterLogging": {
+                        "enabledTypes": [
+                          {
+                            "type": "api"
+                          },
+                          {
+                            "type": "authenticator"
+                          },
+                          {
+                            "type": "scheduler"
                           }
+                        ]
+                      }
+                    },
+                    "resourcesVpcConfig": {
+                      "securityGroupIds": [
+                        {
+                          "Fn::GetAtt": [
+                            "ClusterControlPlaneSecurityGroupD274242C",
+                            "GroupId"
+                          ]
+                        }
+                      ],
+                      "subnetIds": [
+                        {
+                          "Ref": "VpcPrivateSubnet1Subnet536B997A"
                         },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.Policy",
-                          "version": "0.0.0"
+                        {
+                          "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+                        },
+                        {
+                          "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
+                        },
+                        {
+                          "Ref": "VpcPublicSubnet2Subnet691E08A3"
                         }
-                      }
+                      ],
+                      "endpointPrivateAccess": true,
+                      "endpointPublicAccess": true
                     },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Role",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-cdk-eks-cluster-ipv6-test/Cluster/Resource/Resource",
-                    "children": {
-                      "Default": {
-                        "id": "Default",
-                        "path": "aws-cdk-eks-cluster-ipv6-test/Cluster/Resource/Resource/Default",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
-                          "version": "0.0.0"
-                        }
-                      }
+                    "roleArn": {
+                      "Fn::GetAtt": [
+                        "ClusterRoleFA261979",
+                        "Arn"
+                      ]
                     },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.CustomResource",
-                      "version": "0.0.0"
-                    }
+                    "tags": [
+                      {
+                        "key": "foo",
+                        "value": "bar"
+                      }
+                    ],
+                    "version": "1.24"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.4.2"
+                  "fqn": "aws-cdk-lib.aws_eks.CfnCluster",
+                  "version": "0.0.0"
                 }
               },
               "KubectlReadyBarrier": {
@@ -1626,7 +1516,7 @@
                         },
                         "groupId": {
                           "Fn::GetAtt": [
-                            "Cluster9EE0221C",
+                            "ClusterEB0386A7",
                             "ClusterSecurityGroupId"
                           ]
                         },
@@ -1648,7 +1538,7 @@
                         "description": "from 10.0.0.0/8:ALL TRAFFIC",
                         "groupId": {
                           "Fn::GetAtt": [
-                            "Cluster9EE0221C",
+                            "ClusterEB0386A7",
                             "ClusterSecurityGroupId"
                           ]
                         },
@@ -1670,7 +1560,7 @@
                         "fromPort": 443,
                         "groupId": {
                           "Fn::GetAtt": [
-                            "Cluster9EE0221C",
+                            "ClusterEB0386A7",
                             "ClusterSecurityGroupId"
                           ]
                         },
@@ -1698,7 +1588,7 @@
                         "description": "from awscdkeksclusteripv6testClusterNodesInstanceSecurityGroup329A56DE:ALL TRAFFIC",
                         "groupId": {
                           "Fn::GetAtt": [
-                            "Cluster9EE0221C",
+                            "ClusterEB0386A7",
                             "ClusterSecurityGroupId"
                           ]
                         },
@@ -1726,14 +1616,14 @@
                         "fromPort": 443,
                         "groupId": {
                           "Fn::GetAtt": [
-                            "Cluster9EE0221C",
+                            "ClusterEB0386A7",
                             "ClusterSecurityGroupId"
                           ]
                         },
                         "ipProtocol": "tcp",
                         "sourceSecurityGroupId": {
                           "Fn::GetAtt": [
-                            "Cluster9EE0221C",
+                            "ClusterEB0386A7",
                             "ClusterSecurityGroupId"
                           ]
                         },
@@ -1755,7 +1645,7 @@
                         "fromPort": 443,
                         "groupId": {
                           "Fn::GetAtt": [
-                            "Cluster9EE0221C",
+                            "ClusterEB0386A7",
                             "ClusterSecurityGroupId"
                           ]
                         },
@@ -1784,14 +1674,14 @@
                         "fromPort": 1025,
                         "groupId": {
                           "Fn::GetAtt": [
-                            "Cluster9EE0221C",
+                            "ClusterEB0386A7",
                             "ClusterSecurityGroupId"
                           ]
                         },
                         "ipProtocol": "tcp",
                         "sourceSecurityGroupId": {
                           "Fn::GetAtt": [
-                            "Cluster9EE0221C",
+                            "ClusterEB0386A7",
                             "ClusterSecurityGroupId"
                           ]
                         },
@@ -1813,7 +1703,7 @@
                         "fromPort": 1025,
                         "groupId": {
                           "Fn::GetAtt": [
-                            "Cluster9EE0221C",
+                            "ClusterEB0386A7",
                             "ClusterSecurityGroupId"
                           ]
                         },
@@ -1841,14 +1731,14 @@
                         "description": "from awscdkeksclusteripv6testClusterClusterSecurityGroupE4D19A6D:ALL TRAFFIC",
                         "groupId": {
                           "Fn::GetAtt": [
-                            "Cluster9EE0221C",
+                            "ClusterEB0386A7",
                             "ClusterSecurityGroupId"
                           ]
                         },
                         "ipProtocol": "-1",
                         "sourceSecurityGroupId": {
                           "Fn::GetAtt": [
-                            "Cluster9EE0221C",
+                            "ClusterEB0386A7",
                             "ClusterSecurityGroupId"
                           ]
                         }
@@ -1869,7 +1759,7 @@
                         "fromPort": 443,
                         "groupId": {
                           "Fn::GetAtt": [
-                            "Cluster9EE0221C",
+                            "ClusterEB0386A7",
                             "ClusterSecurityGroupId"
                           ]
                         },
@@ -1897,7 +1787,7 @@
                         "description": "from awscdkeksclusteripv6testClusterNodesArmInstanceSecurityGroupFEB06BBB:ALL TRAFFIC",
                         "groupId": {
                           "Fn::GetAtt": [
-                            "Cluster9EE0221C",
+                            "ClusterEB0386A7",
                             "ClusterSecurityGroupId"
                           ]
                         },
@@ -1925,7 +1815,7 @@
                         "fromPort": 443,
                         "groupId": {
                           "Fn::GetAtt": [
-                            "Cluster9EE0221C",
+                            "ClusterEB0386A7",
                             "ClusterSecurityGroupId"
                           ]
                         },
@@ -1953,7 +1843,7 @@
                         "description": "from awscdkeksclusteripv6testClusterBottlerocketNodesInstanceSecurityGroupB7764229:ALL TRAFFIC",
                         "groupId": {
                           "Fn::GetAtt": [
-                            "Cluster9EE0221C",
+                            "ClusterEB0386A7",
                             "ClusterSecurityGroupId"
                           ]
                         },
@@ -1981,7 +1871,7 @@
                         "fromPort": 443,
                         "groupId": {
                           "Fn::GetAtt": [
-                            "Cluster9EE0221C",
+                            "ClusterEB0386A7",
                             "ClusterSecurityGroupId"
                           ]
                         },
@@ -2009,7 +1899,7 @@
                         "description": "from awscdkeksclusteripv6testClusterspotInstanceSecurityGroupF363CA03:ALL TRAFFIC",
                         "groupId": {
                           "Fn::GetAtt": [
-                            "Cluster9EE0221C",
+                            "ClusterEB0386A7",
                             "ClusterSecurityGroupId"
                           ]
                         },
@@ -2030,6 +1920,149 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "kubectlRole": {
+                "id": "kubectlRole",
+                "path": "aws-cdk-eks-cluster-ipv6-test/Cluster/kubectlRole",
+                "children": {
+                  "ImportkubectlRole": {
+                    "id": "ImportkubectlRole",
+                    "path": "aws-cdk-eks-cluster-ipv6-test/Cluster/kubectlRole/ImportkubectlRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-eks-cluster-ipv6-test/Cluster/kubectlRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "AWS": {
+                                  "Fn::GetAtt": [
+                                    "ClusterKubectlHandlerRole94549F93",
+                                    "Arn"
+                                  ]
+                                }
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-cdk-eks-cluster-ipv6-test/Cluster/kubectlRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-eks-cluster-ipv6-test/Cluster/kubectlRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "iam:PassRole",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "ClusterfargateprofiledefaultPodExecutionRole09952CFF",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "ClusterkubectlRoleDefaultPolicyF5C0D146",
+                            "roles": [
+                              {
+                                "Ref": "ClusterkubectlRole4CCE0069"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "ClusterAdminRoleAccess": {
+                "id": "ClusterAdminRoleAccess",
+                "path": "aws-cdk-eks-cluster-ipv6-test/Cluster/ClusterAdminRoleAccess",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-eks-cluster-ipv6-test/Cluster/ClusterAdminRoleAccess/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EKS::AccessEntry",
+                      "aws:cdk:cloudformation:props": {
+                        "accessPolicies": [
+                          {
+                            "accessScope": {
+                              "type": "cluster"
+                            },
+                            "policyArn": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+                                ]
+                              ]
+                            }
+                          }
+                        ],
+                        "clusterName": {
+                          "Ref": "ClusterEB0386A7"
+                        },
+                        "principalArn": {
+                          "Fn::GetAtt": [
+                            "ClusterkubectlRole4CCE0069",
+                            "Arn"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_eks.CfnAccessEntry",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-eks-v2-alpha.AccessEntry",
                   "version": "0.0.0"
                 }
               },
@@ -2214,7 +2247,7 @@
                       "aws:cdk:cloudformation:props": {
                         "amiType": "AL2_x86_64",
                         "clusterName": {
-                          "Ref": "Cluster9EE0221C"
+                          "Ref": "ClusterEB0386A7"
                         },
                         "forceUpdateEnabled": true,
                         "instanceTypes": [
@@ -2336,7 +2369,7 @@
                       "aws:cdk:cloudformation:type": "AWS::EKS::FargateProfile",
                       "aws:cdk:cloudformation:props": {
                         "clusterName": {
-                          "Ref": "Cluster9EE0221C"
+                          "Ref": "ClusterEB0386A7"
                         },
                         "podExecutionRoleArn": {
                           "Fn::GetAtt": [
@@ -2445,7 +2478,7 @@
                             "ipProtocol": "tcp",
                             "sourceSecurityGroupId": {
                               "Fn::GetAtt": [
-                                "Cluster9EE0221C",
+                                "ClusterEB0386A7",
                                 "ClusterSecurityGroupId"
                               ]
                             },
@@ -2503,7 +2536,7 @@
                             "ipProtocol": "tcp",
                             "sourceSecurityGroupId": {
                               "Fn::GetAtt": [
-                                "Cluster9EE0221C",
+                                "ClusterEB0386A7",
                                 "ClusterSecurityGroupId"
                               ]
                             },
@@ -2560,7 +2593,7 @@
                             "ipProtocol": "-1",
                             "sourceSecurityGroupId": {
                               "Fn::GetAtt": [
-                                "Cluster9EE0221C",
+                                "ClusterEB0386A7",
                                 "ClusterSecurityGroupId"
                               ]
                             }
@@ -2653,7 +2686,7 @@
                                     [
                                       "kubernetes.io/cluster/",
                                       {
-                                        "Ref": "Cluster9EE0221C"
+                                        "Ref": "ClusterEB0386A7"
                                       }
                                     ]
                                   ]
@@ -2739,7 +2772,7 @@
                                 },
                                 {
                                   "Fn::GetAtt": [
-                                    "Cluster9EE0221C",
+                                    "ClusterEB0386A7",
                                     "ClusterSecurityGroupId"
                                   ]
                                 }
@@ -2755,7 +2788,7 @@
                                           [
                                             "kubernetes.io/cluster/",
                                             {
-                                              "Ref": "Cluster9EE0221C"
+                                              "Ref": "ClusterEB0386A7"
                                             }
                                           ]
                                         ]
@@ -2778,7 +2811,7 @@
                                           [
                                             "kubernetes.io/cluster/",
                                             {
-                                              "Ref": "Cluster9EE0221C"
+                                              "Ref": "ClusterEB0386A7"
                                             }
                                           ]
                                         ]
@@ -2799,19 +2832,19 @@
                                     [
                                       "#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ",
                                       {
-                                        "Ref": "Cluster9EE0221C"
+                                        "Ref": "ClusterEB0386A7"
                                       },
                                       " --kubelet-extra-args \"--node-labels lifecycle=OnDemand\" --apiserver-endpoint '",
                                       {
                                         "Fn::GetAtt": [
-                                          "Cluster9EE0221C",
+                                          "ClusterEB0386A7",
                                           "Endpoint"
                                         ]
                                       },
                                       "' --b64-cluster-ca '",
                                       {
                                         "Fn::GetAtt": [
-                                          "Cluster9EE0221C",
+                                          "ClusterEB0386A7",
                                           "CertificateAuthorityData"
                                         ]
                                       },
@@ -2832,7 +2865,7 @@
                                         [
                                           "kubernetes.io/cluster/",
                                           {
-                                            "Ref": "Cluster9EE0221C"
+                                            "Ref": "ClusterEB0386A7"
                                           }
                                         ]
                                       ]
@@ -2886,7 +2919,7 @@
                                 [
                                   "kubernetes.io/cluster/",
                                   {
-                                    "Ref": "Cluster9EE0221C"
+                                    "Ref": "ClusterEB0386A7"
                                   }
                                 ]
                               ]
@@ -3003,7 +3036,7 @@
                             "ipProtocol": "tcp",
                             "sourceSecurityGroupId": {
                               "Fn::GetAtt": [
-                                "Cluster9EE0221C",
+                                "ClusterEB0386A7",
                                 "ClusterSecurityGroupId"
                               ]
                             },
@@ -3061,7 +3094,7 @@
                             "ipProtocol": "tcp",
                             "sourceSecurityGroupId": {
                               "Fn::GetAtt": [
-                                "Cluster9EE0221C",
+                                "ClusterEB0386A7",
                                 "ClusterSecurityGroupId"
                               ]
                             },
@@ -3118,7 +3151,7 @@
                             "ipProtocol": "-1",
                             "sourceSecurityGroupId": {
                               "Fn::GetAtt": [
-                                "Cluster9EE0221C",
+                                "ClusterEB0386A7",
                                 "ClusterSecurityGroupId"
                               ]
                             }
@@ -3211,7 +3244,7 @@
                                     [
                                       "kubernetes.io/cluster/",
                                       {
-                                        "Ref": "Cluster9EE0221C"
+                                        "Ref": "ClusterEB0386A7"
                                       }
                                     ]
                                   ]
@@ -3297,7 +3330,7 @@
                                 },
                                 {
                                   "Fn::GetAtt": [
-                                    "Cluster9EE0221C",
+                                    "ClusterEB0386A7",
                                     "ClusterSecurityGroupId"
                                   ]
                                 }
@@ -3313,7 +3346,7 @@
                                           [
                                             "kubernetes.io/cluster/",
                                             {
-                                              "Ref": "Cluster9EE0221C"
+                                              "Ref": "ClusterEB0386A7"
                                             }
                                           ]
                                         ]
@@ -3336,7 +3369,7 @@
                                           [
                                             "kubernetes.io/cluster/",
                                             {
-                                              "Ref": "Cluster9EE0221C"
+                                              "Ref": "ClusterEB0386A7"
                                             }
                                           ]
                                         ]
@@ -3357,19 +3390,19 @@
                                     [
                                       "#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ",
                                       {
-                                        "Ref": "Cluster9EE0221C"
+                                        "Ref": "ClusterEB0386A7"
                                       },
                                       " --kubelet-extra-args \"--node-labels lifecycle=OnDemand\" --apiserver-endpoint '",
                                       {
                                         "Fn::GetAtt": [
-                                          "Cluster9EE0221C",
+                                          "ClusterEB0386A7",
                                           "Endpoint"
                                         ]
                                       },
                                       "' --b64-cluster-ca '",
                                       {
                                         "Fn::GetAtt": [
-                                          "Cluster9EE0221C",
+                                          "ClusterEB0386A7",
                                           "CertificateAuthorityData"
                                         ]
                                       },
@@ -3390,7 +3423,7 @@
                                         [
                                           "kubernetes.io/cluster/",
                                           {
-                                            "Ref": "Cluster9EE0221C"
+                                            "Ref": "ClusterEB0386A7"
                                           }
                                         ]
                                       ]
@@ -3444,7 +3477,7 @@
                                 [
                                   "kubernetes.io/cluster/",
                                   {
-                                    "Ref": "Cluster9EE0221C"
+                                    "Ref": "ClusterEB0386A7"
                                   }
                                 ]
                               ]
@@ -3561,7 +3594,7 @@
                             "ipProtocol": "tcp",
                             "sourceSecurityGroupId": {
                               "Fn::GetAtt": [
-                                "Cluster9EE0221C",
+                                "ClusterEB0386A7",
                                 "ClusterSecurityGroupId"
                               ]
                             },
@@ -3619,7 +3652,7 @@
                             "ipProtocol": "tcp",
                             "sourceSecurityGroupId": {
                               "Fn::GetAtt": [
-                                "Cluster9EE0221C",
+                                "ClusterEB0386A7",
                                 "ClusterSecurityGroupId"
                               ]
                             },
@@ -3676,7 +3709,7 @@
                             "ipProtocol": "-1",
                             "sourceSecurityGroupId": {
                               "Fn::GetAtt": [
-                                "Cluster9EE0221C",
+                                "ClusterEB0386A7",
                                 "ClusterSecurityGroupId"
                               ]
                             }
@@ -3769,7 +3802,7 @@
                                     [
                                       "kubernetes.io/cluster/",
                                       {
-                                        "Ref": "Cluster9EE0221C"
+                                        "Ref": "ClusterEB0386A7"
                                       }
                                     ]
                                   ]
@@ -3855,7 +3888,7 @@
                                 },
                                 {
                                   "Fn::GetAtt": [
-                                    "Cluster9EE0221C",
+                                    "ClusterEB0386A7",
                                     "ClusterSecurityGroupId"
                                   ]
                                 }
@@ -3871,7 +3904,7 @@
                                           [
                                             "kubernetes.io/cluster/",
                                             {
-                                              "Ref": "Cluster9EE0221C"
+                                              "Ref": "ClusterEB0386A7"
                                             }
                                           ]
                                         ]
@@ -3894,7 +3927,7 @@
                                           [
                                             "kubernetes.io/cluster/",
                                             {
-                                              "Ref": "Cluster9EE0221C"
+                                              "Ref": "ClusterEB0386A7"
                                             }
                                           ]
                                         ]
@@ -3916,20 +3949,20 @@
                                       "\n[settings.kubernetes]\napi-server=\"",
                                       {
                                         "Fn::GetAtt": [
-                                          "Cluster9EE0221C",
+                                          "ClusterEB0386A7",
                                           "Endpoint"
                                         ]
                                       },
                                       "\"\ncluster-certificate=\"",
                                       {
                                         "Fn::GetAtt": [
-                                          "Cluster9EE0221C",
+                                          "ClusterEB0386A7",
                                           "CertificateAuthorityData"
                                         ]
                                       },
                                       "\"\ncluster-name=\"",
                                       {
-                                        "Ref": "Cluster9EE0221C"
+                                        "Ref": "ClusterEB0386A7"
                                       },
                                       "\""
                                     ]
@@ -3948,7 +3981,7 @@
                                         [
                                           "kubernetes.io/cluster/",
                                           {
-                                            "Ref": "Cluster9EE0221C"
+                                            "Ref": "ClusterEB0386A7"
                                           }
                                         ]
                                       ]
@@ -4002,7 +4035,7 @@
                                 [
                                   "kubernetes.io/cluster/",
                                   {
-                                    "Ref": "Cluster9EE0221C"
+                                    "Ref": "ClusterEB0386A7"
                                   }
                                 ]
                               ]
@@ -4119,7 +4152,7 @@
                             "ipProtocol": "tcp",
                             "sourceSecurityGroupId": {
                               "Fn::GetAtt": [
-                                "Cluster9EE0221C",
+                                "ClusterEB0386A7",
                                 "ClusterSecurityGroupId"
                               ]
                             },
@@ -4177,7 +4210,7 @@
                             "ipProtocol": "tcp",
                             "sourceSecurityGroupId": {
                               "Fn::GetAtt": [
-                                "Cluster9EE0221C",
+                                "ClusterEB0386A7",
                                 "ClusterSecurityGroupId"
                               ]
                             },
@@ -4234,7 +4267,7 @@
                             "ipProtocol": "-1",
                             "sourceSecurityGroupId": {
                               "Fn::GetAtt": [
-                                "Cluster9EE0221C",
+                                "ClusterEB0386A7",
                                 "ClusterSecurityGroupId"
                               ]
                             }
@@ -4327,7 +4360,7 @@
                                     [
                                       "kubernetes.io/cluster/",
                                       {
-                                        "Ref": "Cluster9EE0221C"
+                                        "Ref": "ClusterEB0386A7"
                                       }
                                     ]
                                   ]
@@ -4419,7 +4452,7 @@
                                 },
                                 {
                                   "Fn::GetAtt": [
-                                    "Cluster9EE0221C",
+                                    "ClusterEB0386A7",
                                     "ClusterSecurityGroupId"
                                   ]
                                 }
@@ -4435,7 +4468,7 @@
                                           [
                                             "kubernetes.io/cluster/",
                                             {
-                                              "Ref": "Cluster9EE0221C"
+                                              "Ref": "ClusterEB0386A7"
                                             }
                                           ]
                                         ]
@@ -4458,7 +4491,7 @@
                                           [
                                             "kubernetes.io/cluster/",
                                             {
-                                              "Ref": "Cluster9EE0221C"
+                                              "Ref": "ClusterEB0386A7"
                                             }
                                           ]
                                         ]
@@ -4479,19 +4512,19 @@
                                     [
                                       "#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ",
                                       {
-                                        "Ref": "Cluster9EE0221C"
+                                        "Ref": "ClusterEB0386A7"
                                       },
                                       " --kubelet-extra-args \"--node-labels lifecycle=Ec2Spot --register-with-taints=spotInstance=true:PreferNoSchedule --node-labels foo=bar,goo=far\" --apiserver-endpoint '",
                                       {
                                         "Fn::GetAtt": [
-                                          "Cluster9EE0221C",
+                                          "ClusterEB0386A7",
                                           "Endpoint"
                                         ]
                                       },
                                       "' --b64-cluster-ca '",
                                       {
                                         "Fn::GetAtt": [
-                                          "Cluster9EE0221C",
+                                          "ClusterEB0386A7",
                                           "CertificateAuthorityData"
                                         ]
                                       },
@@ -4512,7 +4545,7 @@
                                         [
                                           "kubernetes.io/cluster/",
                                           {
-                                            "Ref": "Cluster9EE0221C"
+                                            "Ref": "ClusterEB0386A7"
                                           }
                                         ]
                                       ]
@@ -4566,7 +4599,7 @@
                                 [
                                   "kubernetes.io/cluster/",
                                   {
-                                    "Ref": "Cluster9EE0221C"
+                                    "Ref": "ClusterEB0386A7"
                                   }
                                 ]
                               ]
@@ -4764,7 +4797,7 @@
                       "aws:cdk:cloudformation:props": {
                         "amiType": "AL2_x86_64",
                         "clusterName": {
-                          "Ref": "Cluster9EE0221C"
+                          "Ref": "ClusterEB0386A7"
                         },
                         "forceUpdateEnabled": true,
                         "instanceTypes": [
@@ -4938,7 +4971,7 @@
                         "amiType": "AL2_x86_64",
                         "capacityType": "SPOT",
                         "clusterName": {
-                          "Ref": "Cluster9EE0221C"
+                          "Ref": "ClusterEB0386A7"
                         },
                         "forceUpdateEnabled": true,
                         "instanceTypes": [
@@ -5113,7 +5146,7 @@
                       "aws:cdk:cloudformation:props": {
                         "amiType": "AL2_ARM_64",
                         "clusterName": {
-                          "Ref": "Cluster9EE0221C"
+                          "Ref": "ClusterEB0386A7"
                         },
                         "forceUpdateEnabled": true,
                         "instanceTypes": [
@@ -5286,7 +5319,7 @@
                       "aws:cdk:cloudformation:props": {
                         "amiType": "AL2_ARM_64",
                         "clusterName": {
-                          "Ref": "Cluster9EE0221C"
+                          "Ref": "ClusterEB0386A7"
                         },
                         "forceUpdateEnabled": true,
                         "instanceTypes": [
@@ -5335,7 +5368,7 @@
                       "aws:cdk:cloudformation:type": "AWS::EKS::Nodegroup",
                       "aws:cdk:cloudformation:props": {
                         "clusterName": {
-                          "Ref": "Cluster9EE0221C"
+                          "Ref": "ClusterEB0386A7"
                         },
                         "forceUpdateEnabled": true,
                         "launchTemplate": {
@@ -5821,1315 +5854,6 @@
               "version": "0.0.0"
             }
           },
-          "@aws-cdk--aws-eks.ClusterResourceProvider": {
-            "id": "@aws-cdk--aws-eks.ClusterResourceProvider",
-            "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider",
-            "children": {
-              "NodeProxyAgentLayer": {
-                "id": "NodeProxyAgentLayer",
-                "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer",
-                "children": {
-                  "Code": {
-                    "id": "Code",
-                    "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer/Code",
-                    "children": {
-                      "Stage": {
-                        "id": "Stage",
-                        "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer/Code/Stage",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.AssetStaging",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "AssetBucket": {
-                        "id": "AssetBucket",
-                        "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer/Code/AssetBucket",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::Lambda::LayerVersion",
-                      "aws:cdk:cloudformation:props": {
-                        "content": {
-                          "s3Bucket": {
-                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
-                          },
-                          "s3Key": "93d96d34e0d3cd20eb082652b91012b131bdc34fcf2bc16eb4170e04772fddb1.zip"
-                        },
-                        "description": "/opt/nodejs/node_modules/proxy-agent"
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_lambda.CfnLayerVersion",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.lambda_layer_node_proxy_agent.NodeProxyAgentLayer",
-                  "version": "0.0.0"
-                }
-              },
-              "OnEventHandler": {
-                "id": "OnEventHandler",
-                "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler",
-                "children": {
-                  "ServiceRole": {
-                    "id": "ServiceRole",
-                    "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole",
-                    "children": {
-                      "ImportServiceRole": {
-                        "id": "ImportServiceRole",
-                        "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/ImportServiceRole",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.Resource",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                          "aws:cdk:cloudformation:props": {
-                            "assumeRolePolicyDocument": {
-                              "Statement": [
-                                {
-                                  "Action": "sts:AssumeRole",
-                                  "Effect": "Allow",
-                                  "Principal": {
-                                    "Service": "lambda.amazonaws.com"
-                                  }
-                                }
-                              ],
-                              "Version": "2012-10-17"
-                            },
-                            "managedPolicyArns": [
-                              {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    "arn:",
-                                    {
-                                      "Ref": "AWS::Partition"
-                                    },
-                                    ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-                                  ]
-                                ]
-                              }
-                            ]
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Role",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Code": {
-                    "id": "Code",
-                    "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/Code",
-                    "children": {
-                      "Stage": {
-                        "id": "Stage",
-                        "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/Code/Stage",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.AssetStaging",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "AssetBucket": {
-                        "id": "AssetBucket",
-                        "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/Code/AssetBucket",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
-                      "aws:cdk:cloudformation:props": {
-                        "code": {
-                          "s3Bucket": {
-                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
-                          },
-                          "s3Key": "d365d51b7e1f8bf3d9a1081e7f20147fbd89be9f116a0cdbe23c37d9fc451866.zip"
-                        },
-                        "description": "onEvent handler for EKS cluster resource provider",
-                        "environment": {
-                          "variables": {
-                            "AWS_STS_REGIONAL_ENDPOINTS": "regional"
-                          }
-                        },
-                        "handler": "index.onEvent",
-                        "layers": [
-                          {
-                            "Ref": "NodeProxyAgentLayer924C1971"
-                          }
-                        ],
-                        "role": {
-                          "Fn::GetAtt": [
-                            "OnEventHandlerServiceRole15A26729",
-                            "Arn"
-                          ]
-                        },
-                        "runtime": "nodejs20.x",
-                        "timeout": 60
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_lambda.Function",
-                  "version": "0.0.0"
-                }
-              },
-              "IsCompleteHandler": {
-                "id": "IsCompleteHandler",
-                "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler",
-                "children": {
-                  "ServiceRole": {
-                    "id": "ServiceRole",
-                    "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole",
-                    "children": {
-                      "ImportServiceRole": {
-                        "id": "ImportServiceRole",
-                        "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/ImportServiceRole",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.Resource",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                          "aws:cdk:cloudformation:props": {
-                            "assumeRolePolicyDocument": {
-                              "Statement": [
-                                {
-                                  "Action": "sts:AssumeRole",
-                                  "Effect": "Allow",
-                                  "Principal": {
-                                    "Service": "lambda.amazonaws.com"
-                                  }
-                                }
-                              ],
-                              "Version": "2012-10-17"
-                            },
-                            "managedPolicyArns": [
-                              {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    "arn:",
-                                    {
-                                      "Ref": "AWS::Partition"
-                                    },
-                                    ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-                                  ]
-                                ]
-                              }
-                            ]
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Role",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Code": {
-                    "id": "Code",
-                    "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/Code",
-                    "children": {
-                      "Stage": {
-                        "id": "Stage",
-                        "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/Code/Stage",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.AssetStaging",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "AssetBucket": {
-                        "id": "AssetBucket",
-                        "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/Code/AssetBucket",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
-                      "aws:cdk:cloudformation:props": {
-                        "code": {
-                          "s3Bucket": {
-                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
-                          },
-                          "s3Key": "d365d51b7e1f8bf3d9a1081e7f20147fbd89be9f116a0cdbe23c37d9fc451866.zip"
-                        },
-                        "description": "isComplete handler for EKS cluster resource provider",
-                        "environment": {
-                          "variables": {
-                            "AWS_STS_REGIONAL_ENDPOINTS": "regional"
-                          }
-                        },
-                        "handler": "index.isComplete",
-                        "layers": [
-                          {
-                            "Ref": "NodeProxyAgentLayer924C1971"
-                          }
-                        ],
-                        "role": {
-                          "Fn::GetAtt": [
-                            "IsCompleteHandlerServiceRole5810CC58",
-                            "Arn"
-                          ]
-                        },
-                        "runtime": "nodejs20.x",
-                        "timeout": 60
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_lambda.Function",
-                  "version": "0.0.0"
-                }
-              },
-              "Provider": {
-                "id": "Provider",
-                "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider",
-                "children": {
-                  "framework-onEvent": {
-                    "id": "framework-onEvent",
-                    "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent",
-                    "children": {
-                      "ServiceRole": {
-                        "id": "ServiceRole",
-                        "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole",
-                        "children": {
-                          "ImportServiceRole": {
-                            "id": "ImportServiceRole",
-                            "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole",
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.Resource",
-                              "version": "0.0.0"
-                            }
-                          },
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                              "aws:cdk:cloudformation:props": {
-                                "assumeRolePolicyDocument": {
-                                  "Statement": [
-                                    {
-                                      "Action": "sts:AssumeRole",
-                                      "Effect": "Allow",
-                                      "Principal": {
-                                        "Service": "lambda.amazonaws.com"
-                                      }
-                                    }
-                                  ],
-                                  "Version": "2012-10-17"
-                                },
-                                "managedPolicyArns": [
-                                  {
-                                    "Fn::Join": [
-                                      "",
-                                      [
-                                        "arn:",
-                                        {
-                                          "Ref": "AWS::Partition"
-                                        },
-                                        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-                                      ]
-                                    ]
-                                  }
-                                ]
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                              "version": "0.0.0"
-                            }
-                          },
-                          "DefaultPolicy": {
-                            "id": "DefaultPolicy",
-                            "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy",
-                            "children": {
-                              "Resource": {
-                                "id": "Resource",
-                                "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource",
-                                "attributes": {
-                                  "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                                  "aws:cdk:cloudformation:props": {
-                                    "policyDocument": {
-                                      "Statement": [
-                                        {
-                                          "Action": "lambda:InvokeFunction",
-                                          "Effect": "Allow",
-                                          "Resource": [
-                                            {
-                                              "Fn::GetAtt": [
-                                                "IsCompleteHandler7073F4DA",
-                                                "Arn"
-                                              ]
-                                            },
-                                            {
-                                              "Fn::GetAtt": [
-                                                "OnEventHandler42BEBAE0",
-                                                "Arn"
-                                              ]
-                                            },
-                                            {
-                                              "Fn::Join": [
-                                                "",
-                                                [
-                                                  {
-                                                    "Fn::GetAtt": [
-                                                      "IsCompleteHandler7073F4DA",
-                                                      "Arn"
-                                                    ]
-                                                  },
-                                                  ":*"
-                                                ]
-                                              ]
-                                            },
-                                            {
-                                              "Fn::Join": [
-                                                "",
-                                                [
-                                                  {
-                                                    "Fn::GetAtt": [
-                                                      "OnEventHandler42BEBAE0",
-                                                      "Arn"
-                                                    ]
-                                                  },
-                                                  ":*"
-                                                ]
-                                              ]
-                                            }
-                                          ]
-                                        },
-                                        {
-                                          "Action": "states:StartExecution",
-                                          "Effect": "Allow",
-                                          "Resource": {
-                                            "Ref": "Providerwaiterstatemachine5D4A9DF0"
-                                          }
-                                        }
-                                      ],
-                                      "Version": "2012-10-17"
-                                    },
-                                    "policyName": "ProviderframeworkonEventServiceRoleDefaultPolicy48CD2133",
-                                    "roles": [
-                                      {
-                                        "Ref": "ProviderframeworkonEventServiceRole9FF04296"
-                                      }
-                                    ]
-                                  }
-                                },
-                                "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                                  "version": "0.0.0"
-                                }
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.Policy",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.Role",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "Code": {
-                        "id": "Code",
-                        "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/Code",
-                        "children": {
-                          "Stage": {
-                            "id": "Stage",
-                            "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/Code/Stage",
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.AssetStaging",
-                              "version": "0.0.0"
-                            }
-                          },
-                          "AssetBucket": {
-                            "id": "AssetBucket",
-                            "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/Code/AssetBucket",
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
-                          "aws:cdk:cloudformation:props": {
-                            "code": {
-                              "s3Bucket": {
-                                "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
-                              },
-                              "s3Key": "fe4094cd52f099e46f858f05efdde02f5de79288c9c783676b3fa53a494d04b5.zip"
-                            },
-                            "description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
-                            "environment": {
-                              "variables": {
-                                "USER_ON_EVENT_FUNCTION_ARN": {
-                                  "Fn::GetAtt": [
-                                    "OnEventHandler42BEBAE0",
-                                    "Arn"
-                                  ]
-                                },
-                                "USER_IS_COMPLETE_FUNCTION_ARN": {
-                                  "Fn::GetAtt": [
-                                    "IsCompleteHandler7073F4DA",
-                                    "Arn"
-                                  ]
-                                },
-                                "WAITER_STATE_MACHINE_ARN": {
-                                  "Ref": "Providerwaiterstatemachine5D4A9DF0"
-                                }
-                              }
-                            },
-                            "handler": "framework.onEvent",
-                            "role": {
-                              "Fn::GetAtt": [
-                                "ProviderframeworkonEventServiceRole9FF04296",
-                                "Arn"
-                              ]
-                            },
-                            "runtime": "nodejs20.x",
-                            "timeout": 900
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_lambda.Function",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "framework-isComplete": {
-                    "id": "framework-isComplete",
-                    "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete",
-                    "children": {
-                      "ServiceRole": {
-                        "id": "ServiceRole",
-                        "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole",
-                        "children": {
-                          "ImportServiceRole": {
-                            "id": "ImportServiceRole",
-                            "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/ImportServiceRole",
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.Resource",
-                              "version": "0.0.0"
-                            }
-                          },
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                              "aws:cdk:cloudformation:props": {
-                                "assumeRolePolicyDocument": {
-                                  "Statement": [
-                                    {
-                                      "Action": "sts:AssumeRole",
-                                      "Effect": "Allow",
-                                      "Principal": {
-                                        "Service": "lambda.amazonaws.com"
-                                      }
-                                    }
-                                  ],
-                                  "Version": "2012-10-17"
-                                },
-                                "managedPolicyArns": [
-                                  {
-                                    "Fn::Join": [
-                                      "",
-                                      [
-                                        "arn:",
-                                        {
-                                          "Ref": "AWS::Partition"
-                                        },
-                                        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-                                      ]
-                                    ]
-                                  }
-                                ]
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                              "version": "0.0.0"
-                            }
-                          },
-                          "DefaultPolicy": {
-                            "id": "DefaultPolicy",
-                            "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/DefaultPolicy",
-                            "children": {
-                              "Resource": {
-                                "id": "Resource",
-                                "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/DefaultPolicy/Resource",
-                                "attributes": {
-                                  "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                                  "aws:cdk:cloudformation:props": {
-                                    "policyDocument": {
-                                      "Statement": [
-                                        {
-                                          "Action": "lambda:InvokeFunction",
-                                          "Effect": "Allow",
-                                          "Resource": [
-                                            {
-                                              "Fn::GetAtt": [
-                                                "IsCompleteHandler7073F4DA",
-                                                "Arn"
-                                              ]
-                                            },
-                                            {
-                                              "Fn::GetAtt": [
-                                                "OnEventHandler42BEBAE0",
-                                                "Arn"
-                                              ]
-                                            },
-                                            {
-                                              "Fn::Join": [
-                                                "",
-                                                [
-                                                  {
-                                                    "Fn::GetAtt": [
-                                                      "IsCompleteHandler7073F4DA",
-                                                      "Arn"
-                                                    ]
-                                                  },
-                                                  ":*"
-                                                ]
-                                              ]
-                                            },
-                                            {
-                                              "Fn::Join": [
-                                                "",
-                                                [
-                                                  {
-                                                    "Fn::GetAtt": [
-                                                      "OnEventHandler42BEBAE0",
-                                                      "Arn"
-                                                    ]
-                                                  },
-                                                  ":*"
-                                                ]
-                                              ]
-                                            }
-                                          ]
-                                        }
-                                      ],
-                                      "Version": "2012-10-17"
-                                    },
-                                    "policyName": "ProviderframeworkisCompleteServiceRoleDefaultPolicy2E7140AC",
-                                    "roles": [
-                                      {
-                                        "Ref": "ProviderframeworkisCompleteServiceRoleB1087139"
-                                      }
-                                    ]
-                                  }
-                                },
-                                "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                                  "version": "0.0.0"
-                                }
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.Policy",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.Role",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "Code": {
-                        "id": "Code",
-                        "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/Code",
-                        "children": {
-                          "Stage": {
-                            "id": "Stage",
-                            "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/Code/Stage",
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.AssetStaging",
-                              "version": "0.0.0"
-                            }
-                          },
-                          "AssetBucket": {
-                            "id": "AssetBucket",
-                            "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/Code/AssetBucket",
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
-                          "aws:cdk:cloudformation:props": {
-                            "code": {
-                              "s3Bucket": {
-                                "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
-                              },
-                              "s3Key": "fe4094cd52f099e46f858f05efdde02f5de79288c9c783676b3fa53a494d04b5.zip"
-                            },
-                            "description": "AWS CDK resource provider framework - isComplete (aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
-                            "environment": {
-                              "variables": {
-                                "USER_ON_EVENT_FUNCTION_ARN": {
-                                  "Fn::GetAtt": [
-                                    "OnEventHandler42BEBAE0",
-                                    "Arn"
-                                  ]
-                                },
-                                "USER_IS_COMPLETE_FUNCTION_ARN": {
-                                  "Fn::GetAtt": [
-                                    "IsCompleteHandler7073F4DA",
-                                    "Arn"
-                                  ]
-                                }
-                              }
-                            },
-                            "handler": "framework.isComplete",
-                            "role": {
-                              "Fn::GetAtt": [
-                                "ProviderframeworkisCompleteServiceRoleB1087139",
-                                "Arn"
-                              ]
-                            },
-                            "runtime": "nodejs20.x",
-                            "timeout": 900
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_lambda.Function",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "framework-onTimeout": {
-                    "id": "framework-onTimeout",
-                    "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout",
-                    "children": {
-                      "ServiceRole": {
-                        "id": "ServiceRole",
-                        "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole",
-                        "children": {
-                          "ImportServiceRole": {
-                            "id": "ImportServiceRole",
-                            "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/ImportServiceRole",
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.Resource",
-                              "version": "0.0.0"
-                            }
-                          },
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                              "aws:cdk:cloudformation:props": {
-                                "assumeRolePolicyDocument": {
-                                  "Statement": [
-                                    {
-                                      "Action": "sts:AssumeRole",
-                                      "Effect": "Allow",
-                                      "Principal": {
-                                        "Service": "lambda.amazonaws.com"
-                                      }
-                                    }
-                                  ],
-                                  "Version": "2012-10-17"
-                                },
-                                "managedPolicyArns": [
-                                  {
-                                    "Fn::Join": [
-                                      "",
-                                      [
-                                        "arn:",
-                                        {
-                                          "Ref": "AWS::Partition"
-                                        },
-                                        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-                                      ]
-                                    ]
-                                  }
-                                ]
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                              "version": "0.0.0"
-                            }
-                          },
-                          "DefaultPolicy": {
-                            "id": "DefaultPolicy",
-                            "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/DefaultPolicy",
-                            "children": {
-                              "Resource": {
-                                "id": "Resource",
-                                "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/DefaultPolicy/Resource",
-                                "attributes": {
-                                  "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                                  "aws:cdk:cloudformation:props": {
-                                    "policyDocument": {
-                                      "Statement": [
-                                        {
-                                          "Action": "lambda:InvokeFunction",
-                                          "Effect": "Allow",
-                                          "Resource": [
-                                            {
-                                              "Fn::GetAtt": [
-                                                "IsCompleteHandler7073F4DA",
-                                                "Arn"
-                                              ]
-                                            },
-                                            {
-                                              "Fn::GetAtt": [
-                                                "OnEventHandler42BEBAE0",
-                                                "Arn"
-                                              ]
-                                            },
-                                            {
-                                              "Fn::Join": [
-                                                "",
-                                                [
-                                                  {
-                                                    "Fn::GetAtt": [
-                                                      "IsCompleteHandler7073F4DA",
-                                                      "Arn"
-                                                    ]
-                                                  },
-                                                  ":*"
-                                                ]
-                                              ]
-                                            },
-                                            {
-                                              "Fn::Join": [
-                                                "",
-                                                [
-                                                  {
-                                                    "Fn::GetAtt": [
-                                                      "OnEventHandler42BEBAE0",
-                                                      "Arn"
-                                                    ]
-                                                  },
-                                                  ":*"
-                                                ]
-                                              ]
-                                            }
-                                          ]
-                                        }
-                                      ],
-                                      "Version": "2012-10-17"
-                                    },
-                                    "policyName": "ProviderframeworkonTimeoutServiceRoleDefaultPolicy2688969F",
-                                    "roles": [
-                                      {
-                                        "Ref": "ProviderframeworkonTimeoutServiceRole28643D26"
-                                      }
-                                    ]
-                                  }
-                                },
-                                "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                                  "version": "0.0.0"
-                                }
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.Policy",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.Role",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "Code": {
-                        "id": "Code",
-                        "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/Code",
-                        "children": {
-                          "Stage": {
-                            "id": "Stage",
-                            "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/Code/Stage",
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.AssetStaging",
-                              "version": "0.0.0"
-                            }
-                          },
-                          "AssetBucket": {
-                            "id": "AssetBucket",
-                            "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/Code/AssetBucket",
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
-                          "aws:cdk:cloudformation:props": {
-                            "code": {
-                              "s3Bucket": {
-                                "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
-                              },
-                              "s3Key": "fe4094cd52f099e46f858f05efdde02f5de79288c9c783676b3fa53a494d04b5.zip"
-                            },
-                            "description": "AWS CDK resource provider framework - onTimeout (aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
-                            "environment": {
-                              "variables": {
-                                "USER_ON_EVENT_FUNCTION_ARN": {
-                                  "Fn::GetAtt": [
-                                    "OnEventHandler42BEBAE0",
-                                    "Arn"
-                                  ]
-                                },
-                                "USER_IS_COMPLETE_FUNCTION_ARN": {
-                                  "Fn::GetAtt": [
-                                    "IsCompleteHandler7073F4DA",
-                                    "Arn"
-                                  ]
-                                }
-                              }
-                            },
-                            "handler": "framework.onTimeout",
-                            "role": {
-                              "Fn::GetAtt": [
-                                "ProviderframeworkonTimeoutServiceRole28643D26",
-                                "Arn"
-                              ]
-                            },
-                            "runtime": "nodejs20.x",
-                            "timeout": 900
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_lambda.Function",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "waiter-state-machine": {
-                    "id": "waiter-state-machine",
-                    "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine",
-                    "children": {
-                      "Role": {
-                        "id": "Role",
-                        "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role",
-                        "children": {
-                          "ImportRole": {
-                            "id": "ImportRole",
-                            "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/ImportRole",
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.Resource",
-                              "version": "0.0.0"
-                            }
-                          },
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                              "aws:cdk:cloudformation:props": {
-                                "assumeRolePolicyDocument": {
-                                  "Statement": [
-                                    {
-                                      "Action": "sts:AssumeRole",
-                                      "Effect": "Allow",
-                                      "Principal": {
-                                        "Service": "states.amazonaws.com"
-                                      }
-                                    }
-                                  ],
-                                  "Version": "2012-10-17"
-                                }
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                              "version": "0.0.0"
-                            }
-                          },
-                          "DefaultPolicy": {
-                            "id": "DefaultPolicy",
-                            "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/DefaultPolicy",
-                            "children": {
-                              "Resource": {
-                                "id": "Resource",
-                                "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/DefaultPolicy/Resource",
-                                "attributes": {
-                                  "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                                  "aws:cdk:cloudformation:props": {
-                                    "policyDocument": {
-                                      "Statement": [
-                                        {
-                                          "Action": "lambda:InvokeFunction",
-                                          "Effect": "Allow",
-                                          "Resource": [
-                                            {
-                                              "Fn::GetAtt": [
-                                                "ProviderframeworkisComplete26D7B0CB",
-                                                "Arn"
-                                              ]
-                                            },
-                                            {
-                                              "Fn::GetAtt": [
-                                                "ProviderframeworkonTimeout0B47CA38",
-                                                "Arn"
-                                              ]
-                                            },
-                                            {
-                                              "Fn::Join": [
-                                                "",
-                                                [
-                                                  {
-                                                    "Fn::GetAtt": [
-                                                      "ProviderframeworkisComplete26D7B0CB",
-                                                      "Arn"
-                                                    ]
-                                                  },
-                                                  ":*"
-                                                ]
-                                              ]
-                                            },
-                                            {
-                                              "Fn::Join": [
-                                                "",
-                                                [
-                                                  {
-                                                    "Fn::GetAtt": [
-                                                      "ProviderframeworkonTimeout0B47CA38",
-                                                      "Arn"
-                                                    ]
-                                                  },
-                                                  ":*"
-                                                ]
-                                              ]
-                                            }
-                                          ]
-                                        },
-                                        {
-                                          "Action": [
-                                            "logs:CreateLogDelivery",
-                                            "logs:CreateLogStream",
-                                            "logs:DeleteLogDelivery",
-                                            "logs:DescribeLogGroups",
-                                            "logs:DescribeResourcePolicies",
-                                            "logs:GetLogDelivery",
-                                            "logs:ListLogDeliveries",
-                                            "logs:PutLogEvents",
-                                            "logs:PutResourcePolicy",
-                                            "logs:UpdateLogDelivery"
-                                          ],
-                                          "Effect": "Allow",
-                                          "Resource": "*"
-                                        }
-                                      ],
-                                      "Version": "2012-10-17"
-                                    },
-                                    "policyName": "ProviderwaiterstatemachineRoleDefaultPolicyD3C3DA1A",
-                                    "roles": [
-                                      {
-                                        "Ref": "ProviderwaiterstatemachineRole0C7159F9"
-                                      }
-                                    ]
-                                  }
-                                },
-                                "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                                  "version": "0.0.0"
-                                }
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.Policy",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.Role",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "LogGroup": {
-                        "id": "LogGroup",
-                        "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/LogGroup",
-                        "children": {
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/LogGroup/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
-                              "aws:cdk:cloudformation:props": {
-                                "logGroupName": {
-                                  "Fn::Join": [
-                                    "",
-                                    [
-                                      "/aws/vendedlogs/states/waiter-state-machine-",
-                                      {
-                                        "Ref": "ProviderframeworkisComplete26D7B0CB"
-                                      },
-                                      "-c8cc375276bd14adeda1858c12b0a7e6519b177f71"
-                                    ]
-                                  ]
-                                },
-                                "retentionInDays": 731
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_logs.LogGroup",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
-                          "aws:cdk:cloudformation:props": {
-                            "definitionString": {
-                              "Fn::Join": [
-                                "",
-                                [
-                                  "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":60,\"MaxAttempts\":60,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
-                                  {
-                                    "Fn::GetAtt": [
-                                      "ProviderframeworkisComplete26D7B0CB",
-                                      "Arn"
-                                    ]
-                                  },
-                                  "\"},\"framework-onTimeout-task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
-                                  {
-                                    "Fn::GetAtt": [
-                                      "ProviderframeworkonTimeout0B47CA38",
-                                      "Arn"
-                                    ]
-                                  },
-                                  "\"}}}"
-                                ]
-                              ]
-                            },
-                            "loggingConfiguration": {
-                              "destinations": [
-                                {
-                                  "cloudWatchLogsLogGroup": {
-                                    "logGroupArn": {
-                                      "Fn::GetAtt": [
-                                        "ProviderwaiterstatemachineLogGroupDD693A98",
-                                        "Arn"
-                                      ]
-                                    }
-                                  }
-                                }
-                              ],
-                              "includeExecutionData": false,
-                              "level": "ERROR"
-                            },
-                            "roleArn": {
-                              "Fn::GetAtt": [
-                                "ProviderwaiterstatemachineRole0C7159F9",
-                                "Arn"
-                              ]
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_stepfunctions.CfnStateMachine",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.custom_resources.WaiterStateMachine",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.custom_resources.Provider",
-                  "version": "0.0.0"
-                }
-              },
-              "awscdkeksclusteripv6testawscdkawseksClusterResourceProviderOnEventHandlerServiceRole6C18AE9AArn": {
-                "id": "awscdkeksclusteripv6testawscdkawseksClusterResourceProviderOnEventHandlerServiceRole6C18AE9AArn",
-                "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/awscdkeksclusteripv6testawscdkawseksClusterResourceProviderOnEventHandlerServiceRole6C18AE9AArn",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnOutput",
-                  "version": "0.0.0"
-                }
-              },
-              "awscdkeksclusteripv6testawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole1F912062Arn": {
-                "id": "awscdkeksclusteripv6testawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole1F912062Arn",
-                "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/awscdkeksclusteripv6testawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole1F912062Arn",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnOutput",
-                  "version": "0.0.0"
-                }
-              },
-              "awscdkeksclusteripv6testawscdkawseksClusterResourceProviderframeworkonEvent27EA7496Arn": {
-                "id": "awscdkeksclusteripv6testawscdkawseksClusterResourceProviderframeworkonEvent27EA7496Arn",
-                "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider/awscdkeksclusteripv6testawscdkawseksClusterResourceProviderframeworkonEvent27EA7496Arn",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnOutput",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.NestedStack",
-              "version": "0.0.0"
-            }
-          },
-          "@aws-cdk--aws-eks.ClusterResourceProvider.NestedStack": {
-            "id": "@aws-cdk--aws-eks.ClusterResourceProvider.NestedStack",
-            "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider.NestedStack",
-            "children": {
-              "@aws-cdk--aws-eks.ClusterResourceProvider.NestedStackResource": {
-                "id": "@aws-cdk--aws-eks.ClusterResourceProvider.NestedStackResource",
-                "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.ClusterResourceProvider.NestedStack/@aws-cdk--aws-eks.ClusterResourceProvider.NestedStackResource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::CloudFormation::Stack",
-                  "aws:cdk:cloudformation:props": {
-                    "templateUrl": {
-                      "Fn::Join": [
-                        "",
-                        [
-                          "https://s3.us-east-1.",
-                          {
-                            "Ref": "AWS::URLSuffix"
-                          },
-                          "/",
-                          {
-                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
-                          },
-                          "/8097bbc983ca3728fca8db37bb49fcb390e48267c07fa0568c1d41bb8b3d0a3b.json"
-                        ]
-                      ]
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnStack",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.4.2"
-            }
-          },
           "@aws-cdk--aws-eks.KubectlProvider": {
             "id": "@aws-cdk--aws-eks.KubectlProvider",
             "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.KubectlProvider",
@@ -7208,7 +5932,7 @@
                           ],
                           "securityGroupIds": [
                             {
-                              "Ref": "referencetoawscdkeksclusteripv6testCluster1C21F8EDClusterSecurityGroupId"
+                              "Ref": "referencetoawscdkeksclusteripv6testCluster136A3A2DClusterSecurityGroupId"
                             }
                           ]
                         }
@@ -7503,7 +6227,7 @@
                               ],
                               "securityGroupIds": [
                                 {
-                                  "Ref": "referencetoawscdkeksclusteripv6testCluster1C21F8EDClusterSecurityGroupId"
+                                  "Ref": "referencetoawscdkeksclusteripv6testCluster136A3A2DClusterSecurityGroupId"
                                 }
                               ]
                             }
@@ -7566,9 +6290,9 @@
                   "version": "0.0.0"
                 }
               },
-              "reference-to-awscdkeksclusteripv6testCluster1C21F8EDClusterSecurityGroupId": {
-                "id": "reference-to-awscdkeksclusteripv6testCluster1C21F8EDClusterSecurityGroupId",
-                "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusteripv6testCluster1C21F8EDClusterSecurityGroupId",
+              "reference-to-awscdkeksclusteripv6testCluster136A3A2DClusterSecurityGroupId": {
+                "id": "reference-to-awscdkeksclusteripv6testCluster136A3A2DClusterSecurityGroupId",
+                "path": "aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusteripv6testCluster136A3A2DClusterSecurityGroupId",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnParameter",
                   "version": "0.0.0"
@@ -7606,9 +6330,9 @@
                       "referencetoawscdkeksclusteripv6testVpcPrivateSubnet2Subnet21732C40Ref": {
                         "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
                       },
-                      "referencetoawscdkeksclusteripv6testCluster1C21F8EDClusterSecurityGroupId": {
+                      "referencetoawscdkeksclusteripv6testCluster136A3A2DClusterSecurityGroupId": {
                         "Fn::GetAtt": [
-                          "Cluster9EE0221C",
+                          "ClusterEB0386A7",
                           "ClusterSecurityGroupId"
                         ]
                       }
@@ -7625,7 +6349,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
                           },
-                          "/b125b9610685d5cbf09eb1d56aa86c69b8f02a9a1b0a39d0361204325014de78.json"
+                          "/79aaf7665d387d150963721521d28d98d519f1d544a931b79ed28a3e4d0cd33d.json"
                         ]
                       ]
                     }
@@ -7724,7 +6448,7 @@
                         [
                           "#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ",
                           {
-                            "Ref": "Cluster9EE0221C"
+                            "Ref": "ClusterEB0386A7"
                           }
                         ]
                       ]

@@ -33,7 +33,7 @@
     "VpcConfig": {
      "SecurityGroupIds": [
       {
-       "Ref": "referencetoEKSStandardAccessEntryCluster6AA72C0CClusterSecurityGroupId"
+       "Ref": "referencetoEKSStandardAccessEntryClusterC444E74EClusterSecurityGroupId"
       }
      ],
      "SubnetIds": [
@@ -184,7 +184,7 @@
     "VpcConfig": {
      "SecurityGroupIds": [
       {
-       "Ref": "referencetoEKSStandardAccessEntryCluster6AA72C0CClusterSecurityGroupId"
+       "Ref": "referencetoEKSStandardAccessEntryClusterC444E74EClusterSecurityGroupId"
       }
      ],
      "SubnetIds": [
@@ -340,7 +340,7 @@
   "referencetoEKSStandardAccessEntryVpcPrivateSubnet2Subnet9CA42BD9Ref": {
    "Type": "String"
   },
-  "referencetoEKSStandardAccessEntryCluster6AA72C0CClusterSecurityGroupId": {
+  "referencetoEKSStandardAccessEntryClusterC444E74EClusterSecurityGroupId": {
    "Type": "String"
   }
  }

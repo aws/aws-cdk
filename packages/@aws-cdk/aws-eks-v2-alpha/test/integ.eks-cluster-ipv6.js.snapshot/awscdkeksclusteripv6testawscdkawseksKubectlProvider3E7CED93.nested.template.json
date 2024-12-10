@@ -33,7 +33,7 @@
     "VpcConfig": {
      "SecurityGroupIds": [
       {
-       "Ref": "referencetoawscdkeksclusteripv6testCluster1C21F8EDClusterSecurityGroupId"
+       "Ref": "referencetoawscdkeksclusteripv6testCluster136A3A2DClusterSecurityGroupId"
       }
      ],
      "SubnetIds": [
@@ -176,7 +176,7 @@
     "VpcConfig": {
      "SecurityGroupIds": [
       {
-       "Ref": "referencetoawscdkeksclusteripv6testCluster1C21F8EDClusterSecurityGroupId"
+       "Ref": "referencetoawscdkeksclusteripv6testCluster136A3A2DClusterSecurityGroupId"
       }
      ],
      "SubnetIds": [
@@ -218,7 +218,7 @@
   "referencetoawscdkeksclusteripv6testVpcPrivateSubnet2Subnet21732C40Ref": {
    "Type": "String"
   },
-  "referencetoawscdkeksclusteripv6testCluster1C21F8EDClusterSecurityGroupId": {
+  "referencetoawscdkeksclusteripv6testCluster136A3A2DClusterSecurityGroupId": {
    "Type": "String"
   }
  }

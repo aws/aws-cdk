@@ -704,7 +704,7 @@
        "Effect": "Allow",
        "Resource": {
         "Fn::GetAtt": [
-         "Cluster9EE0221C",
+         "ClusterEB0386A7",
          "Arn"
         ]
        }
@@ -714,7 +714,7 @@
        "Effect": "Allow",
        "Resource": {
         "Fn::GetAtt": [
-         "ClusterCreationRole360249B6",
+         "ClusterkubectlRole4CCE0069",
          "Arn"
         ]
        }
@@ -898,7 +898,7 @@
     "IpProtocol": "tcp",
     "SourceSecurityGroupId": {
      "Fn::GetAtt": [
-      "Cluster9EE0221C",
+      "ClusterEB0386A7",
       "ClusterSecurityGroupId"
      ]
     },
@@ -980,152 +980,82 @@
     "CIDR6"
    ]
   },
-  "ClusterCreationRole360249B6": {
-   "Type": "AWS::IAM::Role",
+  "ClusterEB0386A7": {
+   "Type": "AWS::EKS::Cluster",
    "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": [
-         {
-          "Fn::GetAtt": [
-           "ClusterKubectlHandlerRole94549F93",
-           "Arn"
-          ]
-         },
-         {
-          "Fn::GetAtt": [
-           "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
-           "Outputs.awscdkeksclusteripv6testawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole1F912062Arn"
-          ]
-         },
-         {
-          "Fn::GetAtt": [
-           "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
-           "Outputs.awscdkeksclusteripv6testawscdkawseksClusterResourceProviderOnEventHandlerServiceRole6C18AE9AArn"
-          ]
-         }
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   },
-   "DependsOn": [
-    "CIDR6",
-    "VpcIGWD7BA715C",
-    "VpcPrivateSubnet1DefaultRouteBE02A9ED",
-    "VpcPrivateSubnet1RouteTableB2C5B500",
-    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
-    "VpcPrivateSubnet1Subnet536B997A",
-    "VpcPrivateSubnet2DefaultRoute060D2087",
-    "VpcPrivateSubnet2RouteTableA678073B",
-    "VpcPrivateSubnet2RouteTableAssociationA89CAD56",
-    "VpcPrivateSubnet2Subnet3788AAA1",
-    "VpcPublicSubnet1DefaultRoute3DA9E72A",
-    "VpcPublicSubnet1EIPD7E02669",
-    "VpcPublicSubnet1NATGateway4D7517AA",
-    "VpcPublicSubnet1RouteTable6C95E38E",
-    "VpcPublicSubnet1RouteTableAssociation97140677",
-    "VpcPublicSubnet1Subnet5C2D37C4",
-    "VpcPublicSubnet2DefaultRoute97F91067",
-    "VpcPublicSubnet2RouteTable94F7E489",
-    "VpcPublicSubnet2RouteTableAssociationDD5762D8",
-    "VpcPublicSubnet2Subnet691E08A3",
-    "Vpc8378EB38",
-    "VpcVPCGWBF912B6E"
-   ]
-  },
-  "ClusterCreationRoleDefaultPolicyE8BDFC7B": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "iam:PassRole",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "ClusterRoleFA261979",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::GetAtt": [
-          "ClusterfargateprofiledefaultPodExecutionRole09952CFF",
-          "Arn"
-         ]
-        }
-       ]
-      },
-      {
-       "Action": [
-        "eks:CreateCluster",
-        "eks:CreateFargateProfile",
-        "eks:DeleteCluster",
-        "eks:DescribeCluster",
-        "eks:DescribeUpdate",
-        "eks:TagResource",
-        "eks:UntagResource",
-        "eks:UpdateClusterConfig",
-        "eks:UpdateClusterVersion"
-       ],
-       "Effect": "Allow",
-       "Resource": "*"
-      },
-      {
-       "Action": [
-        "eks:DeleteFargateProfile",
-        "eks:DescribeFargateProfile"
-       ],
-       "Effect": "Allow",
-       "Resource": "*"
-      },
-      {
-       "Action": [
-        "ec2:DescribeDhcpOptions",
-        "ec2:DescribeInstances",
-        "ec2:DescribeNetworkInterfaces",
-        "ec2:DescribeRouteTables",
-        "ec2:DescribeSecurityGroups",
-        "ec2:DescribeSubnets",
-        "ec2:DescribeVpcs",
-        "iam:CreateServiceLinkedRole",
-        "iam:GetRole",
-        "iam:listAttachedRolePolicies"
-       ],
-       "Effect": "Allow",
-       "Resource": "*"
-      },
-      {
-       "Action": [
-        "kms:CreateGrant",
-        "kms:Decrypt",
-        "kms:DescribeKey",
-        "kms:Encrypt"
-       ],
-       "Effect": "Allow",
-       "Resource": {
+    "AccessConfig": {},
+    "EncryptionConfig": [
+     {
+      "Provider": {
+       "KeyArn": {
         "Fn::GetAtt": [
          "SecretsKey317DCF94",
          "Arn"
         ]
        }
+      },
+      "Resources": [
+       "secrets"
+      ]
+     }
+    ],
+    "KubernetesNetworkConfig": {
+     "IpFamily": "ipv6"
+    },
+    "Logging": {
+     "ClusterLogging": {
+      "EnabledTypes": [
+       {
+        "Type": "api"
+       },
+       {
+        "Type": "authenticator"
+       },
+       {
+        "Type": "scheduler"
+       }
+      ]
+     }
+    },
+    "ResourcesVpcConfig": {
+     "EndpointPrivateAccess": true,
+     "EndpointPublicAccess": true,
+     "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "ClusterControlPlaneSecurityGroupD274242C",
+        "GroupId"
+       ]
       }
      ],
-     "Version": "2012-10-17"
+     "SubnetIds": [
+      {
+       "Ref": "VpcPrivateSubnet1Subnet536B997A"
+      },
+      {
+       "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+      },
+      {
+       "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
+      },
+      {
+       "Ref": "VpcPublicSubnet2Subnet691E08A3"
+      }
+     ]
     },
-    "PolicyName": "ClusterCreationRoleDefaultPolicyE8BDFC7B",
-    "Roles": [
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "ClusterRoleFA261979",
+      "Arn"
+     ]
+    },
+    "Tags": [
      {
-      "Ref": "ClusterCreationRole360249B6"
+      "Key": "foo",
+      "Value": "bar"
      }
-    ]
+    ],
+    "Version": "1.24"
    },
    "DependsOn": [
     "CIDR6",
@@ -1151,121 +1081,6 @@
     "Vpc8378EB38",
     "VpcVPCGWBF912B6E"
    ]
-  },
-  "Cluster9EE0221C": {
-   "Type": "Custom::AWSCDK-EKS-Cluster",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
-      "Outputs.awscdkeksclusteripv6testawscdkawseksClusterResourceProviderframeworkonEvent27EA7496Arn"
-     ]
-    },
-    "Config": {
-     "version": "1.24",
-     "roleArn": {
-      "Fn::GetAtt": [
-       "ClusterRoleFA261979",
-       "Arn"
-      ]
-     },
-     "encryptionConfig": [
-      {
-       "provider": {
-        "keyArn": {
-         "Fn::GetAtt": [
-          "SecretsKey317DCF94",
-          "Arn"
-         ]
-        }
-       },
-       "resources": [
-        "secrets"
-       ]
-      }
-     ],
-     "kubernetesNetworkConfig": {
-      "ipFamily": "ipv6"
-     },
-     "resourcesVpcConfig": {
-      "subnetIds": [
-       {
-        "Ref": "VpcPrivateSubnet1Subnet536B997A"
-       },
-       {
-        "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
-       },
-       {
-        "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
-       },
-       {
-        "Ref": "VpcPublicSubnet2Subnet691E08A3"
-       }
-      ],
-      "securityGroupIds": [
-       {
-        "Fn::GetAtt": [
-         "ClusterControlPlaneSecurityGroupD274242C",
-         "GroupId"
-        ]
-       }
-      ],
-      "endpointPublicAccess": true,
-      "endpointPrivateAccess": true
-     },
-     "tags": {
-      "foo": "bar"
-     },
-     "logging": {
-      "clusterLogging": [
-       {
-        "enabled": true,
-        "types": [
-         "api",
-         "authenticator",
-         "scheduler"
-        ]
-       }
-      ]
-     },
-     "accessConfig": {}
-    },
-    "AssumeRoleArn": {
-     "Fn::GetAtt": [
-      "ClusterCreationRole360249B6",
-      "Arn"
-     ]
-    },
-    "AttributesRevision": 3
-   },
-   "DependsOn": [
-    "CIDR6",
-    "ClusterCreationRoleDefaultPolicyE8BDFC7B",
-    "ClusterCreationRole360249B6",
-    "VpcIGWD7BA715C",
-    "VpcPrivateSubnet1DefaultRouteBE02A9ED",
-    "VpcPrivateSubnet1RouteTableB2C5B500",
-    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
-    "VpcPrivateSubnet1Subnet536B997A",
-    "VpcPrivateSubnet2DefaultRoute060D2087",
-    "VpcPrivateSubnet2RouteTableA678073B",
-    "VpcPrivateSubnet2RouteTableAssociationA89CAD56",
-    "VpcPrivateSubnet2Subnet3788AAA1",
-    "VpcPublicSubnet1DefaultRoute3DA9E72A",
-    "VpcPublicSubnet1EIPD7E02669",
-    "VpcPublicSubnet1NATGateway4D7517AA",
-    "VpcPublicSubnet1RouteTable6C95E38E",
-    "VpcPublicSubnet1RouteTableAssociation97140677",
-    "VpcPublicSubnet1Subnet5C2D37C4",
-    "VpcPublicSubnet2DefaultRoute97F91067",
-    "VpcPublicSubnet2RouteTable94F7E489",
-    "VpcPublicSubnet2RouteTableAssociationDD5762D8",
-    "VpcPublicSubnet2Subnet691E08A3",
-    "Vpc8378EB38",
-    "VpcVPCGWBF912B6E"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
   },
   "ClusterKubectlReadyBarrier200052AF": {
    "Type": "AWS::SSM::Parameter",
@@ -1277,9 +1092,7 @@
     "CIDR6",
     "ClusterfargateprofiledefaultPodExecutionRole09952CFF",
     "ClusterfargateprofiledefaultEFC59F14",
-    "ClusterCreationRoleDefaultPolicyE8BDFC7B",
-    "ClusterCreationRole360249B6",
-    "Cluster9EE0221C"
+    "ClusterEB0386A7"
    ]
   },
   "ClusterClusterSecurityGroupfromIndirectPeerALLTRAFFICB574992D": {
@@ -1318,7 +1131,7 @@
     },
     "GroupId": {
      "Fn::GetAtt": [
-      "Cluster9EE0221C",
+      "ClusterEB0386A7",
       "ClusterSecurityGroupId"
      ]
     },
@@ -1335,7 +1148,7 @@
     "Description": "from 10.0.0.0/8:ALL TRAFFIC",
     "GroupId": {
      "Fn::GetAtt": [
-      "Cluster9EE0221C",
+      "ClusterEB0386A7",
       "ClusterSecurityGroupId"
      ]
     },
@@ -1352,7 +1165,7 @@
     "FromPort": 443,
     "GroupId": {
      "Fn::GetAtt": [
-      "Cluster9EE0221C",
+      "ClusterEB0386A7",
       "ClusterSecurityGroupId"
      ]
     },
@@ -1375,7 +1188,7 @@
     "Description": "from awscdkeksclusteripv6testClusterNodesInstanceSecurityGroup329A56DE:ALL TRAFFIC",
     "GroupId": {
      "Fn::GetAtt": [
-      "Cluster9EE0221C",
+      "ClusterEB0386A7",
       "ClusterSecurityGroupId"
      ]
     },
@@ -1398,14 +1211,14 @@
     "FromPort": 443,
     "GroupId": {
      "Fn::GetAtt": [
-      "Cluster9EE0221C",
+      "ClusterEB0386A7",
       "ClusterSecurityGroupId"
      ]
     },
     "IpProtocol": "tcp",
     "SourceSecurityGroupId": {
      "Fn::GetAtt": [
-      "Cluster9EE0221C",
+      "ClusterEB0386A7",
       "ClusterSecurityGroupId"
      ]
     },
@@ -1422,7 +1235,7 @@
     "FromPort": 443,
     "GroupId": {
      "Fn::GetAtt": [
-      "Cluster9EE0221C",
+      "ClusterEB0386A7",
       "ClusterSecurityGroupId"
      ]
     },
@@ -1446,14 +1259,14 @@
     "FromPort": 1025,
     "GroupId": {
      "Fn::GetAtt": [
-      "Cluster9EE0221C",
+      "ClusterEB0386A7",
       "ClusterSecurityGroupId"
      ]
     },
     "IpProtocol": "tcp",
     "SourceSecurityGroupId": {
      "Fn::GetAtt": [
-      "Cluster9EE0221C",
+      "ClusterEB0386A7",
       "ClusterSecurityGroupId"
      ]
     },
@@ -1470,7 +1283,7 @@
     "FromPort": 1025,
     "GroupId": {
      "Fn::GetAtt": [
-      "Cluster9EE0221C",
+      "ClusterEB0386A7",
       "ClusterSecurityGroupId"
      ]
     },
@@ -1493,14 +1306,14 @@
     "Description": "from awscdkeksclusteripv6testClusterClusterSecurityGroupE4D19A6D:ALL TRAFFIC",
     "GroupId": {
      "Fn::GetAtt": [
-      "Cluster9EE0221C",
+      "ClusterEB0386A7",
       "ClusterSecurityGroupId"
      ]
     },
     "IpProtocol": "-1",
     "SourceSecurityGroupId": {
      "Fn::GetAtt": [
-      "Cluster9EE0221C",
+      "ClusterEB0386A7",
       "ClusterSecurityGroupId"
      ]
     }
@@ -1516,7 +1329,7 @@
     "FromPort": 443,
     "GroupId": {
      "Fn::GetAtt": [
-      "Cluster9EE0221C",
+      "ClusterEB0386A7",
       "ClusterSecurityGroupId"
      ]
     },
@@ -1539,7 +1352,7 @@
     "Description": "from awscdkeksclusteripv6testClusterNodesArmInstanceSecurityGroupFEB06BBB:ALL TRAFFIC",
     "GroupId": {
      "Fn::GetAtt": [
-      "Cluster9EE0221C",
+      "ClusterEB0386A7",
       "ClusterSecurityGroupId"
      ]
     },
@@ -1562,7 +1375,7 @@
     "FromPort": 443,
     "GroupId": {
      "Fn::GetAtt": [
-      "Cluster9EE0221C",
+      "ClusterEB0386A7",
       "ClusterSecurityGroupId"
      ]
     },
@@ -1585,7 +1398,7 @@
     "Description": "from awscdkeksclusteripv6testClusterBottlerocketNodesInstanceSecurityGroupB7764229:ALL TRAFFIC",
     "GroupId": {
      "Fn::GetAtt": [
-      "Cluster9EE0221C",
+      "ClusterEB0386A7",
       "ClusterSecurityGroupId"
      ]
     },
@@ -1608,7 +1421,7 @@
     "FromPort": 443,
     "GroupId": {
      "Fn::GetAtt": [
-      "Cluster9EE0221C",
+      "ClusterEB0386A7",
       "ClusterSecurityGroupId"
      ]
     },
@@ -1631,7 +1444,7 @@
     "Description": "from awscdkeksclusteripv6testClusterspotInstanceSecurityGroupF363CA03:ALL TRAFFIC",
     "GroupId": {
      "Fn::GetAtt": [
-      "Cluster9EE0221C",
+      "ClusterEB0386A7",
       "ClusterSecurityGroupId"
      ]
     },
@@ -1640,6 +1453,96 @@
      "Fn::GetAtt": [
       "ClusterspotInstanceSecurityGroup01F7B1CE",
       "GroupId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "CIDR6"
+   ]
+  },
+  "ClusterkubectlRole4CCE0069": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "ClusterKubectlHandlerRole94549F93",
+          "Arn"
+         ]
+        }
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "DependsOn": [
+    "CIDR6"
+   ]
+  },
+  "ClusterkubectlRoleDefaultPolicyF5C0D146": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "iam:PassRole",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "ClusterfargateprofiledefaultPodExecutionRole09952CFF",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ClusterkubectlRoleDefaultPolicyF5C0D146",
+    "Roles": [
+     {
+      "Ref": "ClusterkubectlRole4CCE0069"
+     }
+    ]
+   },
+   "DependsOn": [
+    "CIDR6"
+   ]
+  },
+  "ClusterClusterAdminRoleAccessF2BFF759": {
+   "Type": "AWS::EKS::AccessEntry",
+   "Properties": {
+    "AccessPolicies": [
+     {
+      "AccessScope": {
+       "Type": "cluster"
+      },
+      "PolicyArn": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+        ]
+       ]
+      }
+     }
+    ],
+    "ClusterName": {
+     "Ref": "ClusterEB0386A7"
+    },
+    "PrincipalArn": {
+     "Fn::GetAtt": [
+      "ClusterkubectlRole4CCE0069",
+      "Arn"
      ]
     }
    },
@@ -1756,11 +1659,11 @@
      ]
     },
     "ClusterName": {
-     "Ref": "Cluster9EE0221C"
+     "Ref": "ClusterEB0386A7"
     },
     "RoleArn": {
      "Fn::GetAtt": [
-      "ClusterCreationRole360249B6",
+      "ClusterkubectlRole4CCE0069",
       "Arn"
      ]
     },
@@ -1864,7 +1767,7 @@
    "Properties": {
     "AmiType": "AL2_x86_64",
     "ClusterName": {
-     "Ref": "Cluster9EE0221C"
+     "Ref": "ClusterEB0386A7"
     },
     "ForceUpdateEnabled": true,
     "InstanceTypes": [
@@ -1932,7 +1835,7 @@
    "Type": "AWS::EKS::FargateProfile",
    "Properties": {
     "ClusterName": {
-     "Ref": "Cluster9EE0221C"
+     "Ref": "ClusterEB0386A7"
     },
     "PodExecutionRoleArn": {
      "Fn::GetAtt": [
@@ -2012,7 +1915,7 @@
     "IpProtocol": "tcp",
     "SourceSecurityGroupId": {
      "Fn::GetAtt": [
-      "Cluster9EE0221C",
+      "ClusterEB0386A7",
       "ClusterSecurityGroupId"
      ]
     },
@@ -2060,7 +1963,7 @@
     "IpProtocol": "tcp",
     "SourceSecurityGroupId": {
      "Fn::GetAtt": [
-      "Cluster9EE0221C",
+      "ClusterEB0386A7",
       "ClusterSecurityGroupId"
      ]
     },
@@ -2107,7 +2010,7 @@
     "IpProtocol": "-1",
     "SourceSecurityGroupId": {
      "Fn::GetAtt": [
-      "Cluster9EE0221C",
+      "ClusterEB0386A7",
       "ClusterSecurityGroupId"
      ]
     }
@@ -2177,7 +2080,7 @@
         [
          "kubernetes.io/cluster/",
          {
-          "Ref": "Cluster9EE0221C"
+          "Ref": "ClusterEB0386A7"
          }
         ]
        ]
@@ -2235,7 +2138,7 @@
       },
       {
        "Fn::GetAtt": [
-        "Cluster9EE0221C",
+        "ClusterEB0386A7",
         "ClusterSecurityGroupId"
        ]
       }
@@ -2251,7 +2154,7 @@
            [
             "kubernetes.io/cluster/",
             {
-             "Ref": "Cluster9EE0221C"
+             "Ref": "ClusterEB0386A7"
             }
            ]
           ]
@@ -2274,7 +2177,7 @@
            [
             "kubernetes.io/cluster/",
             {
-             "Ref": "Cluster9EE0221C"
+             "Ref": "ClusterEB0386A7"
             }
            ]
           ]
@@ -2295,19 +2198,19 @@
         [
          "#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ",
          {
-          "Ref": "Cluster9EE0221C"
+          "Ref": "ClusterEB0386A7"
          },
          " --kubelet-extra-args \"--node-labels lifecycle=OnDemand\" --apiserver-endpoint '",
          {
           "Fn::GetAtt": [
-           "Cluster9EE0221C",
+           "ClusterEB0386A7",
            "Endpoint"
           ]
          },
          "' --b64-cluster-ca '",
          {
           "Fn::GetAtt": [
-           "Cluster9EE0221C",
+           "ClusterEB0386A7",
            "CertificateAuthorityData"
           ]
          },
@@ -2328,7 +2231,7 @@
           [
            "kubernetes.io/cluster/",
            {
-            "Ref": "Cluster9EE0221C"
+            "Ref": "ClusterEB0386A7"
            }
           ]
          ]
@@ -2372,7 +2275,7 @@
         [
          "kubernetes.io/cluster/",
          {
-          "Ref": "Cluster9EE0221C"
+          "Ref": "ClusterEB0386A7"
          }
         ]
        ]
@@ -2465,7 +2368,7 @@
     "IpProtocol": "tcp",
     "SourceSecurityGroupId": {
      "Fn::GetAtt": [
-      "Cluster9EE0221C",
+      "ClusterEB0386A7",
       "ClusterSecurityGroupId"
      ]
     },
@@ -2513,7 +2416,7 @@
     "IpProtocol": "tcp",
     "SourceSecurityGroupId": {
      "Fn::GetAtt": [
-      "Cluster9EE0221C",
+      "ClusterEB0386A7",
       "ClusterSecurityGroupId"
      ]
     },
@@ -2560,7 +2463,7 @@
     "IpProtocol": "-1",
     "SourceSecurityGroupId": {
      "Fn::GetAtt": [
-      "Cluster9EE0221C",
+      "ClusterEB0386A7",
       "ClusterSecurityGroupId"
      ]
     }
@@ -2630,7 +2533,7 @@
         [
          "kubernetes.io/cluster/",
          {
-          "Ref": "Cluster9EE0221C"
+          "Ref": "ClusterEB0386A7"
          }
         ]
        ]
@@ -2688,7 +2591,7 @@
       },
       {
        "Fn::GetAtt": [
-        "Cluster9EE0221C",
+        "ClusterEB0386A7",
         "ClusterSecurityGroupId"
        ]
       }
@@ -2704,7 +2607,7 @@
            [
             "kubernetes.io/cluster/",
             {
-             "Ref": "Cluster9EE0221C"
+             "Ref": "ClusterEB0386A7"
             }
            ]
           ]
@@ -2727,7 +2630,7 @@
            [
             "kubernetes.io/cluster/",
             {
-             "Ref": "Cluster9EE0221C"
+             "Ref": "ClusterEB0386A7"
             }
            ]
           ]
@@ -2748,19 +2651,19 @@
         [
          "#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ",
          {
-          "Ref": "Cluster9EE0221C"
+          "Ref": "ClusterEB0386A7"
          },
          " --kubelet-extra-args \"--node-labels lifecycle=OnDemand\" --apiserver-endpoint '",
          {
           "Fn::GetAtt": [
-           "Cluster9EE0221C",
+           "ClusterEB0386A7",
            "Endpoint"
           ]
          },
          "' --b64-cluster-ca '",
          {
           "Fn::GetAtt": [
-           "Cluster9EE0221C",
+           "ClusterEB0386A7",
            "CertificateAuthorityData"
           ]
          },
@@ -2781,7 +2684,7 @@
           [
            "kubernetes.io/cluster/",
            {
-            "Ref": "Cluster9EE0221C"
+            "Ref": "ClusterEB0386A7"
            }
           ]
          ]
@@ -2825,7 +2728,7 @@
         [
          "kubernetes.io/cluster/",
          {
-          "Ref": "Cluster9EE0221C"
+          "Ref": "ClusterEB0386A7"
          }
         ]
        ]
@@ -2918,7 +2821,7 @@
     "IpProtocol": "tcp",
     "SourceSecurityGroupId": {
      "Fn::GetAtt": [
-      "Cluster9EE0221C",
+      "ClusterEB0386A7",
       "ClusterSecurityGroupId"
      ]
     },
@@ -2966,7 +2869,7 @@
     "IpProtocol": "tcp",
     "SourceSecurityGroupId": {
      "Fn::GetAtt": [
-      "Cluster9EE0221C",
+      "ClusterEB0386A7",
       "ClusterSecurityGroupId"
      ]
     },
@@ -3013,7 +2916,7 @@
     "IpProtocol": "-1",
     "SourceSecurityGroupId": {
      "Fn::GetAtt": [
-      "Cluster9EE0221C",
+      "ClusterEB0386A7",
       "ClusterSecurityGroupId"
      ]
     }
@@ -3083,7 +2986,7 @@
         [
          "kubernetes.io/cluster/",
          {
-          "Ref": "Cluster9EE0221C"
+          "Ref": "ClusterEB0386A7"
          }
         ]
        ]
@@ -3141,7 +3044,7 @@
       },
       {
        "Fn::GetAtt": [
-        "Cluster9EE0221C",
+        "ClusterEB0386A7",
         "ClusterSecurityGroupId"
        ]
       }
@@ -3157,7 +3060,7 @@
            [
             "kubernetes.io/cluster/",
             {
-             "Ref": "Cluster9EE0221C"
+             "Ref": "ClusterEB0386A7"
             }
            ]
           ]
@@ -3180,7 +3083,7 @@
            [
             "kubernetes.io/cluster/",
             {
-             "Ref": "Cluster9EE0221C"
+             "Ref": "ClusterEB0386A7"
             }
            ]
           ]
@@ -3202,20 +3105,20 @@
          "\n[settings.kubernetes]\napi-server=\"",
          {
           "Fn::GetAtt": [
-           "Cluster9EE0221C",
+           "ClusterEB0386A7",
            "Endpoint"
           ]
          },
          "\"\ncluster-certificate=\"",
          {
           "Fn::GetAtt": [
-           "Cluster9EE0221C",
+           "ClusterEB0386A7",
            "CertificateAuthorityData"
           ]
          },
          "\"\ncluster-name=\"",
          {
-          "Ref": "Cluster9EE0221C"
+          "Ref": "ClusterEB0386A7"
          },
          "\""
         ]
@@ -3234,7 +3137,7 @@
           [
            "kubernetes.io/cluster/",
            {
-            "Ref": "Cluster9EE0221C"
+            "Ref": "ClusterEB0386A7"
            }
           ]
          ]
@@ -3278,7 +3181,7 @@
         [
          "kubernetes.io/cluster/",
          {
-          "Ref": "Cluster9EE0221C"
+          "Ref": "ClusterEB0386A7"
          }
         ]
        ]
@@ -3371,7 +3274,7 @@
     "IpProtocol": "tcp",
     "SourceSecurityGroupId": {
      "Fn::GetAtt": [
-      "Cluster9EE0221C",
+      "ClusterEB0386A7",
       "ClusterSecurityGroupId"
      ]
     },
@@ -3419,7 +3322,7 @@
     "IpProtocol": "tcp",
     "SourceSecurityGroupId": {
      "Fn::GetAtt": [
-      "Cluster9EE0221C",
+      "ClusterEB0386A7",
       "ClusterSecurityGroupId"
      ]
     },
@@ -3466,7 +3369,7 @@
     "IpProtocol": "-1",
     "SourceSecurityGroupId": {
      "Fn::GetAtt": [
-      "Cluster9EE0221C",
+      "ClusterEB0386A7",
       "ClusterSecurityGroupId"
      ]
     }
@@ -3536,7 +3439,7 @@
         [
          "kubernetes.io/cluster/",
          {
-          "Ref": "Cluster9EE0221C"
+          "Ref": "ClusterEB0386A7"
          }
         ]
        ]
@@ -3600,7 +3503,7 @@
       },
       {
        "Fn::GetAtt": [
-        "Cluster9EE0221C",
+        "ClusterEB0386A7",
         "ClusterSecurityGroupId"
        ]
       }
@@ -3616,7 +3519,7 @@
            [
             "kubernetes.io/cluster/",
             {
-             "Ref": "Cluster9EE0221C"
+             "Ref": "ClusterEB0386A7"
             }
            ]
           ]
@@ -3639,7 +3542,7 @@
            [
             "kubernetes.io/cluster/",
             {
-             "Ref": "Cluster9EE0221C"
+             "Ref": "ClusterEB0386A7"
             }
            ]
           ]
@@ -3660,19 +3563,19 @@
         [
          "#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ",
          {
-          "Ref": "Cluster9EE0221C"
+          "Ref": "ClusterEB0386A7"
          },
          " --kubelet-extra-args \"--node-labels lifecycle=Ec2Spot --register-with-taints=spotInstance=true:PreferNoSchedule --node-labels foo=bar,goo=far\" --apiserver-endpoint '",
          {
           "Fn::GetAtt": [
-           "Cluster9EE0221C",
+           "ClusterEB0386A7",
            "Endpoint"
           ]
          },
          "' --b64-cluster-ca '",
          {
           "Fn::GetAtt": [
-           "Cluster9EE0221C",
+           "ClusterEB0386A7",
            "CertificateAuthorityData"
           ]
          },
@@ -3693,7 +3596,7 @@
           [
            "kubernetes.io/cluster/",
            {
-            "Ref": "Cluster9EE0221C"
+            "Ref": "ClusterEB0386A7"
            }
           ]
          ]
@@ -3737,7 +3640,7 @@
         [
          "kubernetes.io/cluster/",
          {
-          "Ref": "Cluster9EE0221C"
+          "Ref": "ClusterEB0386A7"
          }
         ]
        ]
@@ -3779,11 +3682,11 @@
      ]
     },
     "ClusterName": {
-     "Ref": "Cluster9EE0221C"
+     "Ref": "ClusterEB0386A7"
     },
     "RoleArn": {
      "Fn::GetAtt": [
-      "ClusterCreationRole360249B6",
+      "ClusterkubectlRole4CCE0069",
       "Arn"
      ]
     },
@@ -3892,7 +3795,7 @@
    "Properties": {
     "AmiType": "AL2_x86_64",
     "ClusterName": {
-     "Ref": "Cluster9EE0221C"
+     "Ref": "ClusterEB0386A7"
     },
     "ForceUpdateEnabled": true,
     "InstanceTypes": [
@@ -4013,7 +3916,7 @@
     "AmiType": "AL2_x86_64",
     "CapacityType": "SPOT",
     "ClusterName": {
-     "Ref": "Cluster9EE0221C"
+     "Ref": "ClusterEB0386A7"
     },
     "ForceUpdateEnabled": true,
     "InstanceTypes": [
@@ -4135,7 +4038,7 @@
    "Properties": {
     "AmiType": "AL2_ARM_64",
     "ClusterName": {
-     "Ref": "Cluster9EE0221C"
+     "Ref": "ClusterEB0386A7"
     },
     "ForceUpdateEnabled": true,
     "InstanceTypes": [
@@ -4255,7 +4158,7 @@
    "Properties": {
     "AmiType": "AL2_ARM_64",
     "ClusterName": {
-     "Ref": "Cluster9EE0221C"
+     "Ref": "ClusterEB0386A7"
     },
     "ForceUpdateEnabled": true,
     "InstanceTypes": [
@@ -4289,7 +4192,7 @@
    "Type": "AWS::EKS::Nodegroup",
    "Properties": {
     "ClusterName": {
-     "Ref": "Cluster9EE0221C"
+     "Ref": "ClusterEB0386A7"
     },
     "ForceUpdateEnabled": true,
     "LaunchTemplate": {
@@ -4338,11 +4241,11 @@
     },
     "Manifest": "[{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"name\":\"hello-kubernetes\",\"labels\":{\"aws.cdk.eks/prune-c857e5928dedf3ab260d0e79df8bb4cad40c0fc39f\":\"\"}},\"spec\":{\"ports\":[{\"port\":80,\"targetPort\":8080}],\"selector\":{\"app\":\"hello-kubernetes\"}}},{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"name\":\"hello-kubernetes\",\"labels\":{\"aws.cdk.eks/prune-c857e5928dedf3ab260d0e79df8bb4cad40c0fc39f\":\"\"}},\"spec\":{\"replicas\":1,\"selector\":{\"matchLabels\":{\"app\":\"hello-kubernetes\"}},\"template\":{\"metadata\":{\"labels\":{\"app\":\"hello-kubernetes\"}},\"spec\":{\"containers\":[{\"name\":\"hello-kubernetes\",\"image\":\"paulbouwer/hello-kubernetes:1.5\",\"ports\":[{\"containerPort\":8080}]}]}}}}]",
     "ClusterName": {
-     "Ref": "Cluster9EE0221C"
+     "Ref": "ClusterEB0386A7"
     },
     "RoleArn": {
      "Fn::GetAtt": [
-      "ClusterCreationRole360249B6",
+      "ClusterkubectlRole4CCE0069",
       "Arn"
      ]
     },
@@ -4365,11 +4268,11 @@
      ]
     },
     "ClusterName": {
-     "Ref": "Cluster9EE0221C"
+     "Ref": "ClusterEB0386A7"
     },
     "RoleArn": {
      "Fn::GetAtt": [
-      "ClusterCreationRole360249B6",
+      "ClusterkubectlRole4CCE0069",
       "Arn"
      ]
     },
@@ -4397,11 +4300,11 @@
      ]
     },
     "ClusterName": {
-     "Ref": "Cluster9EE0221C"
+     "Ref": "ClusterEB0386A7"
     },
     "RoleArn": {
      "Fn::GetAtt": [
-      "ClusterCreationRole360249B6",
+      "ClusterkubectlRole4CCE0069",
       "Arn"
      ]
     },
@@ -4434,18 +4337,18 @@
       [
        "[{\"apiVersion\":\"v1\",\"kind\":\"ConfigMap\",\"metadata\":{\"name\":\"chart-config-map-c820e51c\",\"labels\":{\"aws.cdk.eks/prune-c8a4647b41837ccb80fac3f90c9d2b1b83b2b17b0f\":\"\"}},\"data\":{\"clusterName\":\"",
        {
-        "Ref": "Cluster9EE0221C"
+        "Ref": "ClusterEB0386A7"
        },
        "\"},\"immutable\":false}]"
       ]
      ]
     },
     "ClusterName": {
-     "Ref": "Cluster9EE0221C"
+     "Ref": "ClusterEB0386A7"
     },
     "RoleArn": {
      "Fn::GetAtt": [
-      "ClusterCreationRole360249B6",
+      "ClusterkubectlRole4CCE0069",
       "Arn"
      ]
     },
@@ -4469,11 +4372,11 @@
     },
     "Manifest": "[{\"apiVersion\":\"v1\",\"kind\":\"Namespace\",\"metadata\":{\"name\":\"nginx\",\"labels\":{\"aws.cdk.eks/prune-c893c714b666ac633e6f779b60a86213c0ee669753\":\"\"}}}]",
     "ClusterName": {
-     "Ref": "Cluster9EE0221C"
+     "Ref": "ClusterEB0386A7"
     },
     "RoleArn": {
      "Fn::GetAtt": [
-      "ClusterCreationRole360249B6",
+      "ClusterkubectlRole4CCE0069",
       "Arn"
      ]
     },
@@ -4496,11 +4399,11 @@
      ]
     },
     "ClusterName": {
-     "Ref": "Cluster9EE0221C"
+     "Ref": "ClusterEB0386A7"
     },
     "RoleArn": {
      "Fn::GetAtt": [
-      "ClusterCreationRole360249B6",
+      "ClusterkubectlRole4CCE0069",
       "Arn"
      ]
     },
@@ -4628,11 +4531,11 @@
      ]
     },
     "ClusterName": {
-     "Ref": "Cluster9EE0221C"
+     "Ref": "ClusterEB0386A7"
     },
     "RoleArn": {
      "Fn::GetAtt": [
-      "ClusterCreationRole360249B6",
+      "ClusterkubectlRole4CCE0069",
       "Arn"
      ]
     },
@@ -4659,7 +4562,7 @@
     ],
     "Url": {
      "Fn::GetAtt": [
-      "Cluster9EE0221C",
+      "ClusterEB0386A7",
       "OpenIdConnectIssuerUrl"
      ]
     },
@@ -4778,11 +4681,11 @@
      ]
     },
     "ClusterName": {
-     "Ref": "Cluster9EE0221C"
+     "Ref": "ClusterEB0386A7"
     },
     "RoleArn": {
      "Fn::GetAtt": [
-      "ClusterCreationRole360249B6",
+      "ClusterkubectlRole4CCE0069",
       "Arn"
      ]
     },
@@ -4792,29 +4695,6 @@
     "CIDR6",
     "ClusterKubectlReadyBarrier200052AF"
    ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454": {
-   "Type": "AWS::CloudFormation::Stack",
-   "Properties": {
-    "TemplateURL": {
-     "Fn::Join": [
-      "",
-      [
-       "https://s3.us-east-1.",
-       {
-        "Ref": "AWS::URLSuffix"
-       },
-       "/",
-       {
-        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
-       },
-       "/8097bbc983ca3728fca8db37bb49fcb390e48267c07fa0568c1d41bb8b3d0a3b.json"
-      ]
-     ]
-    }
-   },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
@@ -4837,9 +4717,9 @@
      "referencetoawscdkeksclusteripv6testVpcPrivateSubnet2Subnet21732C40Ref": {
       "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
      },
-     "referencetoawscdkeksclusteripv6testCluster1C21F8EDClusterSecurityGroupId": {
+     "referencetoawscdkeksclusteripv6testCluster136A3A2DClusterSecurityGroupId": {
       "Fn::GetAtt": [
-       "Cluster9EE0221C",
+       "ClusterEB0386A7",
        "ClusterSecurityGroupId"
       ]
      }
@@ -4856,7 +4736,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/b125b9610685d5cbf09eb1d56aa86c69b8f02a9a1b0a39d0361204325014de78.json"
+       "/79aaf7665d387d150963721521d28d98d519f1d544a931b79ed28a3e4d0cd33d.json"
       ]
      ]
     }
@@ -4887,7 +4767,7 @@
         [
          "#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ",
          {
-          "Ref": "Cluster9EE0221C"
+          "Ref": "ClusterEB0386A7"
          }
         ]
        ]
@@ -4907,11 +4787,11 @@
     },
     "Manifest": "[{\"apiVersion\":\"v1\",\"kind\":\"ConfigMap\",\"data\":{\"hello\":\"world\"},\"metadata\":{\"name\":\"config-map\",\"labels\":{\"aws.cdk.eks/prune-c892df0e0dff43984f6024f29abd9ac243e424f87a\":\"\"}},\"unknown\":{\"key\":\"value\"}}]",
     "ClusterName": {
-     "Ref": "Cluster9EE0221C"
+     "Ref": "ClusterEB0386A7"
     },
     "RoleArn": {
      "Fn::GetAtt": [
-      "ClusterCreationRole360249B6",
+      "ClusterkubectlRole4CCE0069",
       "Arn"
      ]
     },
@@ -5056,7 +4936,7 @@
      [
       "aws eks update-kubeconfig --name ",
       {
-       "Ref": "Cluster9EE0221C"
+       "Ref": "ClusterEB0386A7"
       },
       " --region us-east-1 --role-arn ",
       {
@@ -5076,7 +4956,7 @@
      [
       "aws eks get-token --cluster-name ",
       {
-       "Ref": "Cluster9EE0221C"
+       "Ref": "ClusterEB0386A7"
       },
       " --region us-east-1 --role-arn ",
       {
@@ -5092,7 +4972,7 @@
   "ClusterEndpoint": {
    "Value": {
     "Fn::GetAtt": [
-     "Cluster9EE0221C",
+     "ClusterEB0386A7",
      "Endpoint"
     ]
    }
@@ -5100,7 +4980,7 @@
   "ClusterArn": {
    "Value": {
     "Fn::GetAtt": [
-     "Cluster9EE0221C",
+     "ClusterEB0386A7",
      "Arn"
     ]
    }
@@ -5108,7 +4988,7 @@
   "ClusterCertificateAuthorityData": {
    "Value": {
     "Fn::GetAtt": [
-     "Cluster9EE0221C",
+     "ClusterEB0386A7",
      "CertificateAuthorityData"
     ]
    }
@@ -5116,7 +4996,7 @@
   "ClusterSecurityGroupId": {
    "Value": {
     "Fn::GetAtt": [
-     "Cluster9EE0221C",
+     "ClusterEB0386A7",
      "ClusterSecurityGroupId"
     ]
    }
@@ -5124,14 +5004,14 @@
   "ClusterEncryptionConfigKeyArn": {
    "Value": {
     "Fn::GetAtt": [
-     "Cluster9EE0221C",
+     "ClusterEB0386A7",
      "EncryptionConfigKeyArn"
     ]
    }
   },
   "ClusterName": {
    "Value": {
-    "Ref": "Cluster9EE0221C"
+    "Ref": "ClusterEB0386A7"
    }
   }
  },

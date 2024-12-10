@@ -7,7 +7,6 @@ import { IAccessPolicy, IAccessEntry, AccessEntry, AccessPolicy, AccessScopeType
 import { IAddon, Addon } from './addon';
 import { AlbController, AlbControllerOptions } from './alb-controller';
 import { AwsAuth } from './aws-auth';
-import { ClusterResource, clusterArnComponents } from './cluster-resource';
 import { FargateProfile, FargateProfileOptions } from './fargate-profile';
 import { HelmChart, HelmChartOptions } from './helm-chart';
 import { INSTANCE_TYPES } from './instance-types';
@@ -26,7 +25,8 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
-import { Annotations, CfnOutput, CfnResource, IResource, Resource, Stack, Tags, Token, Duration, Size } from 'aws-cdk-lib/core';
+import { Annotations, CfnOutput, CfnResource, IResource, Resource, Stack, Tags, Token, Duration, Size, CfnTag, ArnComponents } from 'aws-cdk-lib/core';
+import { CfnCluster } from 'aws-cdk-lib/aws-eks';
 
 // defaults are based on https://eksctl.io
 const DEFAULT_CAPACITY_COUNT = 2;
@@ -173,17 +173,6 @@ export interface ICluster extends IResource, ec2.IConnectable {
    * Amount of memory to allocate to the provider's lambda function.
    */
   readonly kubectlMemory?: Size;
-
-  /**
-   * A security group to associate with the Cluster Handler's Lambdas.
-   * The Cluster Handler's Lambdas are responsible for calling AWS's EKS API.
-   *
-   * Requires `placeClusterHandlerInVpc` to be set to true.
-   *
-   * @default - No security group.
-   * @attribute
-   */
-  readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup;
 
   /**
    * An AWS Lambda layer that includes the NPM dependency `proxy-agent`.
@@ -418,14 +407,6 @@ export interface ClusterAttributes {
   readonly kubectlMemory?: Size;
 
   /**
-   * A security group id to associate with the Cluster Handler's Lambdas.
-   * The Cluster Handler's Lambdas are responsible for calling AWS's EKS API.
-   *
-   * @default - No security group.
-   */
-  readonly clusterHandlerSecurityGroupId?: string;
-
-  /**
    * An AWS Lambda Layer which includes the NPM dependency `proxy-agent`. This layer
    * is used by the onEvent handler to route AWS SDK requests through a proxy.
    *
@@ -602,23 +583,6 @@ export interface ClusterOptions extends CommonClusterOptions {
   readonly kubectlMemory?: Size;
 
   /**
-   * Custom environment variables when interacting with the EKS endpoint to manage the cluster lifecycle.
-   *
-   * @default - No environment variables.
-   */
-  readonly clusterHandlerEnvironment?: { [key: string]: string };
-
-  /**
-   * A security group to associate with the Cluster Handler's Lambdas.
-   * The Cluster Handler's Lambdas are responsible for calling AWS's EKS API.
-   *
-   * Requires `placeClusterHandlerInVpc` to be set to true.
-   *
-   * @default - No security group.
-   */
-  readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup;
-
-  /**
    * An AWS Lambda Layer which includes the NPM dependency `proxy-agent`. This layer
    * is used by the onEvent handler to route AWS SDK requests through a proxy.
    *
@@ -648,14 +612,6 @@ export interface ClusterOptions extends CommonClusterOptions {
    * @default true
    */
   readonly prune?: boolean;
-
-  /**
-   * If set to true, the cluster handler functions will be placed in the private subnets
-   * of the cluster vpc, subject to the `vpcSubnets` selection strategy.
-   *
-   * @default false
-   */
-  readonly placeClusterHandlerInVpc?: boolean;
 
   /**
    * KMS secret for envelope encryption for Kubernetes secrets.
@@ -852,7 +808,7 @@ export interface ClusterProps extends ClusterOptions {
    *
    * @default - none
    */
-  readonly tags?: { [key: string]: string };
+  readonly tags?: CfnTag[];
 }
 
 /**
@@ -1088,7 +1044,6 @@ abstract class ClusterBase extends Resource implements ICluster {
   public abstract readonly kubectlSecurityGroup?: ec2.ISecurityGroup;
   public abstract readonly kubectlPrivateSubnets?: ec2.ISubnet[];
   public abstract readonly kubectlMemory?: Size;
-  public abstract readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup;
   public abstract readonly prune: boolean;
   public abstract readonly openIdConnectProvider: iam.IOpenIdConnectProvider;
   public abstract readonly awsAuth: AwsAuth;
@@ -1493,16 +1448,6 @@ export class Cluster extends ClusterBase {
   public readonly kubectlMemory?: Size;
 
   /**
-   * A security group to associate with the Cluster Handler's Lambdas.
-   * The Cluster Handler's Lambdas are responsible for calling AWS's EKS API.
-   *
-   * Requires `placeClusterHandlerInVpc` to be set to true.
-   *
-   * @default - No security group.
-   */
-  public readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup;
-
-  /**
    * The AWS Lambda layer that contains the NPM dependency `proxy-agent`. If
    * undefined, a SAR app that contains this layer will be used.
    */
@@ -1530,12 +1475,7 @@ export class Cluster extends ClusterBase {
    */
   public readonly authenticationMode?: AuthenticationMode;
 
-  /**
-   * If this cluster is kubectl-enabled, returns the `ClusterResource` object
-   * that manages it. If this cluster is not kubectl-enabled (i.e. uses the
-   * stock `CfnCluster`), this is `undefined`.
-   */
-  private readonly _clusterResource: ClusterResource;
+  private readonly _clusterResource: CfnCluster;
 
   private _neuronDevicePlugin?: KubernetesManifest;
 
@@ -1545,7 +1485,7 @@ export class Cluster extends ClusterBase {
 
   private readonly version: KubernetesVersion;
 
-  private readonly logging?: { [key: string]: [ { [key: string]: any } ] };
+  private readonly logging?: { [key: string]: { [key:string]: any} };;
 
   /**
    * A dummy CloudFormation resource that is used as a wait barrier which
@@ -1620,12 +1560,9 @@ export class Cluster extends ClusterBase {
     const subnetIds = Array.from(new Set(flatten(selectedSubnetIdsPerGroup)));
 
     this.logging = props.clusterLogging ? {
-      clusterLogging: [
-        {
-          enabled: true,
-          types: Object.values(props.clusterLogging),
-        },
-      ],
+      clusterLogging: {
+        enabledTypes: props.clusterLogging.map((type) => ({ type })),
+      },
     } : undefined;
 
     this.endpointAccess = props.endpointAccess ?? EndpointAccess.PUBLIC_AND_PRIVATE;
@@ -1635,7 +1572,6 @@ export class Cluster extends ClusterBase {
     this.kubectlMemory = props.kubectlMemory;
     this.ipFamily = props.ipFamily ?? IpFamily.IP_V4;
     this.onEventLayer = props.onEventLayer;
-    this.clusterHandlerSecurityGroup = props.clusterHandlerSecurityGroup;
 
     const privateSubnets = this.selectPrivateSubnets().slice(0, 16);
     const publicAccessDisabled = !this.endpointAccess._config.publicAccess;
@@ -1655,34 +1591,26 @@ export class Cluster extends ClusterBase {
       throw new Error('Vpc must contain private subnets when public endpoint access is restricted');
     }
 
-    const placeClusterHandlerInVpc = props.placeClusterHandlerInVpc ?? false;
-
-    if (placeClusterHandlerInVpc && privateSubnets.length === 0) {
-      throw new Error('Cannot place cluster handler in the VPC since no private subnets could be selected');
-    }
-
-    if (props.clusterHandlerSecurityGroup && !placeClusterHandlerInVpc) {
-      throw new Error('Cannot specify clusterHandlerSecurityGroup without placeClusterHandlerInVpc set to true');
-    }
-
     if (props.serviceIpv4Cidr && props.ipFamily == IpFamily.IP_V6) {
       throw new Error('Cannot specify serviceIpv4Cidr with ipFamily equal to IpFamily.IP_V6');
     }
 
     this.authenticationMode = props.authenticationMode;
 
-    const resource = this._clusterResource = new ClusterResource(this, 'Resource', {
+    const resource = this._clusterResource = new CfnCluster(this, 'Resource', {
       name: this.physicalName,
-      environment: props.clusterHandlerEnvironment,
       roleArn: this.role.roleArn,
       version: props.version.version,
-      accessconfig: {
+      accessConfig: {
         authenticationMode: props.authenticationMode,
         bootstrapClusterCreatorAdminPermissions: props.bootstrapClusterCreatorAdminPermissions,
       },
       resourcesVpcConfig: {
         securityGroupIds: [securityGroup.securityGroupId],
         subnetIds,
+        endpointPrivateAccess: this.endpointAccess._config.privateAccess,
+        endpointPublicAccess: this.endpointAccess._config.publicAccess,
+        publicAccessCidrs: this.endpointAccess._config.publicCidrs,
       },
       ...(props.secretsEncryptionKey ? {
         encryptionConfig: [{
@@ -1696,14 +1624,6 @@ export class Cluster extends ClusterBase {
         ipFamily: this.ipFamily,
         serviceIpv4Cidr: props.serviceIpv4Cidr,
       },
-      endpointPrivateAccess: this.endpointAccess._config.privateAccess,
-      endpointPublicAccess: this.endpointAccess._config.publicAccess,
-      publicAccessCidrs: this.endpointAccess._config.publicCidrs,
-      secretsEncryptionKey: props.secretsEncryptionKey,
-      vpc: this.vpc,
-      subnets: placeClusterHandlerInVpc ? privateSubnets : undefined,
-      clusterHandlerSecurityGroup: this.clusterHandlerSecurityGroup,
-      onEventLayer: this.onEventLayer,
       tags: props.tags,
       logging: this.logging,
     });
@@ -1724,8 +1644,6 @@ export class Cluster extends ClusterBase {
       // this ensures that.
       this._clusterResource.node.addDependency(this.vpc);
     }
-
-    this.adminRole = resource.adminRole;
 
     // we use an SSM parameter as a barrier because it's free and fast.
     this._kubectlReadyBarrier = new CfnResource(this, 'KubectlReadyBarrier', {
@@ -1758,14 +1676,17 @@ export class Cluster extends ClusterBase {
     // and configured to allow connections from itself.
     this.kubectlSecurityGroup = this.clusterSecurityGroup;
 
-    this.adminRole.assumeRolePolicy?.addStatements(new iam.PolicyStatement({
-      actions: ['sts:AssumeRole'],
-      principals: [this.kubectlLambdaRole],
-    }));
+    this.adminRole = new iam.Role(this, 'kubectlRole', {
+      assumedBy: this.kubectlLambdaRole,
+    });;
 
-    // use the cluster creation role to issue kubectl commands against the cluster because when the
-    // cluster is first created, that's the only role that has "system:masters" permissions
     this.kubectlRole = this.adminRole;
+
+    this.grantAccess('ClusterAdminRoleAccess', this.kubectlRole.roleArn, [
+      AccessPolicy.fromAccessPolicyName('AmazonEKSClusterAdminPolicy', {
+        accessScopeType: AccessScopeType.CLUSTER,
+      }),
+    ]);
 
     this._kubectlResourceProvider = this.defineKubectlProvider();
 
@@ -1982,17 +1903,6 @@ export class Cluster extends ClusterBase {
    */
   public get clusterOpenIdConnectIssuerUrl(): string {
     return this._clusterResource.attrOpenIdConnectIssuerUrl;
-  }
-
-  /**
-   * If this cluster is kubectl-enabled, returns the OpenID Connect issuer.
-   * This is because the values is only be retrieved by the API and not exposed
-   * by CloudFormation. If this cluster is not kubectl-enabled (i.e. uses the
-   * stock `CfnCluster`), this is `undefined`.
-   * @attribute
-   */
-  public get clusterOpenIdConnectIssuer(): string {
-    return this._clusterResource.attrOpenIdConnectIssuer;
   }
 
   /**
@@ -2411,7 +2321,6 @@ class ImportedCluster extends ClusterBase {
   public readonly kubectlProvider?: IKubectlProvider;
   public readonly onEventLayer?: lambda.ILayerVersion;
   public readonly kubectlMemory?: Size;
-  public readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup | undefined;
   public readonly prune: boolean;
 
   // so that `clusterSecurityGroup` on `ICluster` can be configured without optionality, avoiding users from having
@@ -2432,7 +2341,6 @@ class ImportedCluster extends ClusterBase {
     this.ipFamily = props.ipFamily;
     this.awscliLayer = props.awscliLayer;
     this.kubectlMemory = props.kubectlMemory;
-    this.clusterHandlerSecurityGroup = props.clusterHandlerSecurityGroupId ? ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterHandlerSecurityGroup', props.clusterHandlerSecurityGroupId) : undefined;
     this.kubectlProvider = props.kubectlProvider;
     this.onEventLayer = props.onEventLayer;
     this.prune = props.prune ?? true;
@@ -2676,3 +2584,12 @@ function cpuArchForInstanceType(instanceType: ec2.InstanceType) {
 function flatten<A>(xss: A[][]): A[] {
   return Array.prototype.concat.call([], ...xss);
 }
+
+function clusterArnComponents(clusterName: string): ArnComponents {
+  return {
+    service: 'eks',
+    resource: 'cluster',
+    resourceName: clusterName,
+  };
+}
+
