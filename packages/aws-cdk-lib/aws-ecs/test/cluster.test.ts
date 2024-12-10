@@ -831,8 +831,8 @@ describe('cluster', () => {
   });
 
   /*
-   * TODO:v2.0.0 BEGINNING OF OBSOLETE BLOCK
-   */
+     * TODO:v2.0.0 BEGINNING OF OBSOLETE BLOCK
+     */
   testDeprecated('allows specifying special HW AMI Type', () => {
     // GIVEN
     const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
@@ -1196,8 +1196,8 @@ describe('cluster', () => {
   });
 
   /*
-   * TODO:v2.0.0 END OF OBSOLETE BLOCK
-   */
+     * TODO:v2.0.0 END OF OBSOLETE BLOCK
+     */
 
   testDeprecated('allows specifying special HW AMI Type v2', () => {
     // GIVEN
@@ -1711,7 +1711,7 @@ describe('cluster', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
 
-    new ecs.Cluster(stack, 'EcsCluster', { containerInsights: true });
+    new ecs.Cluster(stack, 'EcsCluster', { containerInsights: ecs.ContainerInsights.ENABLED });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::Cluster', {
@@ -1730,7 +1730,7 @@ describe('cluster', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
 
-    new ecs.Cluster(stack, 'EcsCluster', { containerInsights: false });
+    new ecs.Cluster(stack, 'EcsCluster', { containerInsights: ecs.ContainerInsights.DISABLED });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::Cluster', {
@@ -1738,6 +1738,25 @@ describe('cluster', () => {
         {
           Name: 'containerInsights',
           Value: 'disabled',
+        },
+      ],
+    });
+
+  });
+
+  test('enable enhanced container insights', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    new ecs.Cluster(stack, 'EcsCluster', { containerInsights: ecs.ContainerInsights.ENHANCED });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Cluster', {
+      ClusterSettings: [
+        {
+          Name: 'containerInsights',
+          Value: 'enhanced',
         },
       ],
     });
@@ -1758,7 +1777,7 @@ describe('cluster', () => {
 
     expect(
       template.Resources.EcsCluster97242B84.Properties === undefined ||
-      template.Resources.EcsCluster97242B84.Properties.ClusterSettings === undefined,
+            template.Resources.EcsCluster97242B84.Properties.ClusterSettings === undefined,
     ).toEqual(true);
 
   });
@@ -1880,11 +1899,11 @@ describe('cluster', () => {
     const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
     expect(Object.entries(parameters).some(
       ([k, v]) => k.startsWith('SsmParameterValueawsservicebottlerocketawsecs') &&
-        (v as any).Default.includes('/bottlerocket/'),
+                (v as any).Default.includes('/bottlerocket/'),
     )).toEqual(true);
     expect(Object.entries(parameters).some(
       ([k, v]) => k.startsWith('SsmParameterValueawsservicebottlerocketawsecs') &&
-        (v as any).Default.includes('/aws-ecs-1/'),
+                (v as any).Default.includes('/aws-ecs-1/'),
     )).toEqual(true);
 
   });
