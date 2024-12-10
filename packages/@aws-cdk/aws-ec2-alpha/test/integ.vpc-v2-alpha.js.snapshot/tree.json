@@ -21,7 +21,13 @@
                     "cidrBlock": "10.1.0.0/16",
                     "enableDnsHostnames": true,
                     "enableDnsSupport": true,
-                    "instanceTenancy": "default"
+                    "instanceTenancy": "default",
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "aws-cdk-vpcv2-alpha/VPC-integ-test-1"
+                      }
+                    ]
                   }
                 },
                 "constructInfo": {
@@ -219,6 +225,12 @@
                                 }
                               }
                             ],
+                            "tags": [
+                              {
+                                "key": "Name",
+                                "value": "aws-cdk-vpcv2-alpha/VPC-integ-test-1"
+                              }
+                            ],
                             "vpcId": {
                               "Fn::GetAtt": [
                                 "VPCintegtest1EBA1CB75",
@@ -368,6 +380,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::VPNGateway",
                       "aws:cdk:cloudformation:props": {
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-vpcv2-alpha/VPC-integ-test-1"
+                          }
+                        ],
                         "type": "ipsec.1"
                       }
                     },
@@ -443,7 +461,14 @@
                     "path": "aws-cdk-vpcv2-alpha/VPC-integ-test-1/InternetGateway/IGW",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::InternetGateway",
-                      "aws:cdk:cloudformation:props": {}
+                      "aws:cdk:cloudformation:props": {
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-vpcv2-alpha/VPC-integ-test-1"
+                          }
+                        ]
+                      }
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_ec2.CfnInternetGateway",
@@ -530,7 +555,13 @@
                         "connectivityType": "private",
                         "subnetId": {
                           "Ref": "testsbubnetSubnet77337845"
-                        }
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-vpcv2-alpha/VPC-integ-test-1"
+                          }
+                        ]
                       }
                     },
                     "constructInfo": {
@@ -594,6 +625,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "DefaultCDKRouteTable"
+                          }
+                        ],
                         "vpcId": {
                           "Fn::GetAtt": [
                             "VPCintegtest1EBA1CB75",
@@ -685,6 +722,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "DefaultCDKRouteTable"
+                          }
+                        ],
                         "vpcId": {
                           "Fn::GetAtt": [
                             "VPCintegtest1EBA1CB75",
@@ -776,6 +819,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "DefaultCDKRouteTable"
+                          }
+                        ],
                         "vpcId": {
                           "Fn::GetAtt": [
                             "VPCintegtest1EBA1CB75",
@@ -959,7 +1008,7 @@
                 "path": "integtest-model/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -1005,7 +1054,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },

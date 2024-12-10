@@ -6,7 +6,13 @@
     "CidrBlock": "10.0.0.0/16",
     "EnableDnsHostnames": true,
     "EnableDnsSupport": true,
-    "InstanceTenancy": "default"
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-routev2-virtualprivategw-alpha/vpgw"
+     }
+    ]
    }
   },
   "vpgwAmazonIpv6D24D8752": {

@@ -6,7 +6,13 @@
     "CidrBlock": "10.0.0.0/16",
     "EnableDnsHostnames": true,
     "EnableDnsSupport": true,
-    "InstanceTenancy": "default"
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "acceptor-stack/acceptorVpc"
+     }
+    ]
    }
   },
   "acceptorVpcVpcPeeringRoleF389E47A": {
@@ -25,7 +31,13 @@
      "Version": "2012-10-17"
     },
     "Description": "Restrictive role for VPC peering",
-    "RoleName": "VpcPeeringRole"
+    "RoleName": "VpcPeeringRole",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "acceptor-stack/acceptorVpc"
+     }
+    ]
    }
   },
   "acceptorVpcVpcPeeringRoleDefaultPolicyE79C72D0": {
@@ -110,7 +122,13 @@
     "CidrBlock": "10.1.0.0/16",
     "EnableDnsHostnames": true,
     "EnableDnsSupport": true,
-    "InstanceTenancy": "default"
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "acceptor-stack/requestorVpcSameAccount"
+     }
+    ]
    }
   },
   "requestorVpcSameAccountsameAccountPeeringVPCPeeringConnection4E07C8CD": {
@@ -124,6 +142,12 @@
       "VpcId"
      ]
     },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "acceptor-stack/requestorVpcSameAccount"
+     }
+    ],
     "VpcId": {
      "Fn::GetAtt": [
       "requestorVpcSameAccountF27E91F7",
