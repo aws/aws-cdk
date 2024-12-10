@@ -1,0 +1,238 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "cloudfront-waf-protection": {
+        "id": "cloudfront-waf-protection",
+        "path": "cloudfront-waf-protection",
+        "children": {
+          "Distro": {
+            "id": "Distro",
+            "path": "cloudfront-waf-protection/Distro",
+            "children": {
+              "Origin1": {
+                "id": "Origin1",
+                "path": "cloudfront-waf-protection/Distro/Origin1",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "WebAcl": {
+                "id": "WebAcl",
+                "path": "cloudfront-waf-protection/Distro/WebAcl",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::WAFv2::WebACL",
+                  "aws:cdk:cloudformation:props": {
+                    "defaultAction": {
+                      "allow": {}
+                    },
+                    "name": "CreatedByCloudFront-cloudfrontwafprotectionDistroB056DD41",
+                    "rules": [
+                      {
+                        "name": "AWS-AWSManagedRulesAmazonIpReputationList",
+                        "priority": 0,
+                        "statement": {
+                          "managedRuleGroupStatement": {
+                            "vendorName": "AWS",
+                            "name": "AWSManagedRulesAmazonIpReputationList"
+                          }
+                        },
+                        "overrideAction": {
+                          "none": {}
+                        },
+                        "visibilityConfig": {
+                          "sampledRequestsEnabled": true,
+                          "cloudWatchMetricsEnabled": true,
+                          "metricName": "AWS-AWSManagedRulesAmazonIpReputationList"
+                        }
+                      },
+                      {
+                        "name": "AWS-AWSManagedRulesCommonRuleSet",
+                        "priority": 1,
+                        "statement": {
+                          "managedRuleGroupStatement": {
+                            "vendorName": "AWS",
+                            "name": "AWSManagedRulesCommonRuleSet"
+                          }
+                        },
+                        "overrideAction": {
+                          "none": {}
+                        },
+                        "visibilityConfig": {
+                          "sampledRequestsEnabled": true,
+                          "cloudWatchMetricsEnabled": true,
+                          "metricName": "AWS-AWSManagedRulesCommonRuleSet"
+                        }
+                      },
+                      {
+                        "name": "AWS-AWSManagedRulesKnownBadInputsRuleSet",
+                        "priority": 2,
+                        "statement": {
+                          "managedRuleGroupStatement": {
+                            "vendorName": "AWS",
+                            "name": "AWSManagedRulesKnownBadInputsRuleSet"
+                          }
+                        },
+                        "overrideAction": {
+                          "none": {}
+                        },
+                        "visibilityConfig": {
+                          "sampledRequestsEnabled": true,
+                          "cloudWatchMetricsEnabled": true,
+                          "metricName": "AWS-AWSManagedRulesKnownBadInputsRuleSet"
+                        }
+                      }
+                    ],
+                    "scope": "CLOUDFRONT",
+                    "visibilityConfig": {
+                      "cloudWatchMetricsEnabled": true,
+                      "metricName": "CreatedByCloudFront-cloudfrontwafprotectionDistroB056DD41",
+                      "sampledRequestsEnabled": true
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_wafv2.CfnWebACL",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "cloudfront-waf-protection/Distro/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudFront::Distribution",
+                  "aws:cdk:cloudformation:props": {
+                    "distributionConfig": {
+                      "enabled": true,
+                      "origins": [
+                        {
+                          "domainName": "www.example.com",
+                          "id": "cloudfrontwafprotectionDistroOrigin19FB89A69",
+                          "customOriginConfig": {
+                            "originProtocolPolicy": "https-only"
+                          }
+                        }
+                      ],
+                      "defaultCacheBehavior": {
+                        "pathPattern": "*",
+                        "targetOriginId": "cloudfrontwafprotectionDistroOrigin19FB89A69",
+                        "cachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+                        "compress": true,
+                        "viewerProtocolPolicy": "allow-all"
+                      },
+                      "httpVersion": "http2",
+                      "ipv6Enabled": true,
+                      "webAclId": {
+                        "Fn::GetAtt": [
+                          "DistroWebAclD7C0F39D",
+                          "Arn"
+                        ]
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_cloudfront.CfnDistribution",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_cloudfront.Distribution",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "cloudfront-waf-protection/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "cloudfront-waf-protection/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "integ-cloudfront-waf-protection-test": {
+        "id": "integ-cloudfront-waf-protection-test",
+        "path": "integ-cloudfront-waf-protection-test",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "integ-cloudfront-waf-protection-test/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "integ-cloudfront-waf-protection-test/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "integ-cloudfront-waf-protection-test/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "integ-cloudfront-waf-protection-test/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "integ-cloudfront-waf-protection-test/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}
