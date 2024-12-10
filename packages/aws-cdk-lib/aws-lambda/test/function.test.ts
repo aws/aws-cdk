@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { testDeprecated, bockfs } from '@aws-cdk/cdk-build-tools';
 import * as constructs from 'constructs';
 import * as _ from 'lodash';
 import { Annotations, Match, Template } from '../../assertions';
@@ -2923,6 +2923,99 @@ describe('function', () => {
       });
     });
 
+    test('validate localMountPath format when mounting efs', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc', {
+        maxAzs: 3,
+        natGateways: 1,
+      });
+      const securityGroup = new ec2.SecurityGroup(stack, 'LambdaSG', {
+        vpc,
+        allowAllOutbound: false,
+      });
+
+      const fs = new efs.FileSystem(stack, 'Efs', {
+        vpc,
+      });
+      const accessPoint = fs.addAccessPoint('AccessPoint');
+
+      // THEN
+      expect(() => {
+        new lambda.Function(stack, 'MyFunction', {
+          vpc,
+          handler: 'foo',
+          securityGroups: [securityGroup],
+          runtime: lambda.Runtime.NODEJS_LATEST,
+          code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+          filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/not-mnt/foo-bar'),
+        });
+      }).toThrow('Local mount path should match with ^/mnt/[a-zA-Z0-9-_.]+$ but given /not-mnt/foo-bar');
+    });
+
+    test('validate localMountPath length when mounting efs', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc', {
+        maxAzs: 3,
+        natGateways: 1,
+      });
+      const securityGroup = new ec2.SecurityGroup(stack, 'LambdaSG', {
+        vpc,
+        allowAllOutbound: false,
+      });
+
+      const fs = new efs.FileSystem(stack, 'Efs', {
+        vpc,
+      });
+      const accessPoint = fs.addAccessPoint('AccessPoint');
+
+      // THEN
+      expect(() => {
+        new lambda.Function(stack, 'MyFunction', {
+          vpc,
+          handler: 'foo',
+          securityGroups: [securityGroup],
+          runtime: lambda.Runtime.NODEJS_LATEST,
+          code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+          filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, `/mnt/${'a'.repeat(160)}`),
+        });
+      }).toThrow('Local mount path can not be longer than 160 characters but has 165 characters');
+    });
+
+    test('No error when local mount path is Tokenized and Unresolved', () => {
+      // GIVEN
+      const realLocalMountPath = '/not-mnt/foo-bar';
+      const tokenizedLocalMountPath = cdk.Token.asString(new cdk.Intrinsic(realLocalMountPath));
+
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc', {
+        maxAzs: 3,
+        natGateways: 1,
+      });
+      const securityGroup = new ec2.SecurityGroup(stack, 'LambdaSG', {
+        vpc,
+        allowAllOutbound: false,
+      });
+
+      const fs = new efs.FileSystem(stack, 'Efs', {
+        vpc,
+      });
+      const accessPoint = fs.addAccessPoint('AccessPoint');
+
+      // THEN
+      expect(() => {
+        new lambda.Function(stack, 'MyFunction', {
+          vpc,
+          handler: 'foo',
+          securityGroups: [securityGroup],
+          runtime: lambda.Runtime.NODEJS_LATEST,
+          code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+          filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, tokenizedLocalMountPath),
+        });
+      }).not.toThrow();
+    });
+
     test('correct security group is created when deployed in separate stacks', () => {
       const app = new cdk.App();
 
@@ -3489,6 +3582,67 @@ describe('function', () => {
     });
   });
 
+  describe('Recursive Loop', () => {
+    test('with recursive loop protection', () => {
+      const stack = new cdk.Stack();
+      new lambda.Function(stack, 'MyLambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'bar',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+        recursiveLoop: lambda.RecursiveLoop.TERMINATE,
+      });
+
+      Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+        Properties:
+        {
+          Code: { ZipFile: 'foo' },
+          Handler: 'bar',
+          Runtime: lambda.Runtime.NODEJS_LATEST.name,
+          RecursiveLoop: 'Terminate',
+        },
+      });
+    });
+
+    test('without recursive loop protection', () => {
+      const stack = new cdk.Stack();
+      new lambda.Function(stack, 'MyLambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'bar',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+        recursiveLoop: lambda.RecursiveLoop.ALLOW,
+      });
+
+      Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+        Properties:
+        {
+          Code: { ZipFile: 'foo' },
+          Handler: 'bar',
+          Runtime: lambda.Runtime.NODEJS_LATEST.name,
+          RecursiveLoop: 'Allow',
+        },
+      });
+    });
+
+    test('default recursive loop protection', () => {
+      const stack = new cdk.Stack();
+      new lambda.Function(stack, 'MyLambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'bar',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      });
+
+      Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+        Properties:
+        {
+          Code: { ZipFile: 'foo' },
+          Handler: 'bar',
+          Runtime: lambda.Runtime.NODEJS_LATEST.name,
+          // for default, if the property is not set up in stack it doesn't show up in the template.
+        },
+      });
+    });
+  });
+
   test('called twice for the same service principal but with different conditions', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -3648,6 +3802,77 @@ describe('function', () => {
           },
         }),
     ).toThrow(/ADOT Lambda layer can't be configured with container image package type/);
+  });
+
+  describe('allowAllIpv6Outbound', () => {
+    test('allowAllIpv6Outbound set to true', () => {
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+
+      new lambda.Function(stack, 'MyLambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+        allowAllIpv6Outbound: true,
+        vpc,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
+        SecurityGroupEgress: [
+          {
+            CidrIp: '0.0.0.0/0',
+            Description: 'Allow all outbound traffic by default',
+            IpProtocol: '-1',
+          },
+          {
+            CidrIpv6: '::/0',
+            Description: 'Allow all outbound ipv6 traffic by default',
+            IpProtocol: '-1',
+          },
+        ],
+      });
+    });
+
+    test('throws when allowAllIpv6Outbound is defined without vpc', () => {
+      const stack = new cdk.Stack();
+
+      expect(() => new lambda.Function(stack, 'MyLambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+        allowAllIpv6Outbound: true,
+      })).toThrow(/Cannot configure \'allowAllIpv6Outbound\' without configuring a VPC/);
+    });
+
+    test('throws when both allowAllIpv6Outbound and securityGroup are defined', () => {
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc: vpc });
+
+      expect(() => new lambda.Function(stack, 'MyLambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+        allowAllIpv6Outbound: true,
+        vpc,
+        securityGroup: securityGroup,
+      })).toThrow(/Configure \'allowAllIpv6Outbound\' directly on the supplied SecurityGroup./);
+    });
+
+    test('throws when both allowAllIpv6Outbound and securityGroups are defined', () => {
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc: vpc });
+
+      expect(() => new lambda.Function(stack, 'MyLambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+        allowAllIpv6Outbound: true,
+        vpc,
+        securityGroups: [securityGroup],
+      })).toThrow(/Configure \'allowAllIpv6Outbound\' directly on the supplied SecurityGroups./);
+    });
   });
 });
 
@@ -4286,6 +4511,235 @@ describe('latest Lambda node runtime', () => {
         Runtime: 'nodejs18.x',
       },
     });
+  });
+});
+
+// Test sourceKMSKeyArn feature
+describe('CMCMK', () => {
+  test('set sourceKMSKeyArn using fromAsset', () => {
+    const stack = new cdk.Stack();
+    const key = new kms.Key(stack, 'myImportedKey', {
+      enableKeyRotation: true,
+    });
+    const option = {
+      sourceKMSKey: key,
+    };
+    // WHEN
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip'), option),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+    });
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Code: {
+          SourceKMSKeyArn: { 'Fn::GetAtt': ['myImportedKey10DE2890', 'Arn'] },
+        },
+        Runtime: 'python3.9',
+        Handler: 'index.handler',
+      },
+    });
+  });
+
+  test('no sourceKMSKey provided using fromAsset', () => {
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Code: {
+          SourceKMSKeyArn: Match.absent(),
+        },
+      },
+    });
+  });
+
+  test('set sourceKMSKeyArn using fromBucket', () => {
+    const stack = new cdk.Stack();
+    // S3 Bucket
+    const key = 'script';
+    let bucket: s3.IBucket;
+    bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'bucketname');
+
+    // KMS
+    const KMSkey = new kms.Key(stack, 'myImportedKey', {
+      enableKeyRotation: true,
+    });
+    const option = {
+      sourceKMSKey: KMSkey,
+    };
+    // WHEN
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromBucketV2(bucket, key, option),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+    });
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Code: {
+          SourceKMSKeyArn: { 'Fn::GetAtt': ['myImportedKey10DE2890', 'Arn'] },
+        },
+        Runtime: 'python3.9',
+        Handler: 'index.handler',
+      },
+    });
+  });
+
+  test('no sourceKMSKey provided using fromBucket', () => {
+    const stack = new cdk.Stack();
+    // S3 Bucket
+    const key = 'script';
+    let bucket: s3.IBucket;
+    bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'bucketname');
+
+    // WHEN
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromBucketV2(bucket, key),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+    });
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Code: {
+          SourceKMSKeyArn: Match.absent(),
+        },
+        Runtime: 'python3.9',
+        Handler: 'index.handler',
+      },
+    });
+  });
+
+  test('set sourceKMSKeyArn using fromCfnParameters', () => {
+    const stack = new cdk.Stack();
+    // KMS
+    const KMSkey = new kms.Key(stack, 'myImportedKey', {
+      enableKeyRotation: true,
+    });
+    // WHEN
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromCfnParameters({
+        sourceKMSKey: KMSkey,
+      }),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+    });
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Code: {
+          SourceKMSKeyArn: { 'Fn::GetAtt': ['myImportedKey10DE2890', 'Arn'] },
+        },
+        Runtime: 'python3.9',
+        Handler: 'index.handler',
+      },
+    });
+  });
+
+  test('no sourceKMSKey provided using fromCfnParameters', () => {
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromCfnParameters(),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+    });
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Code: {
+          SourceKMSKeyArn: Match.absent(),
+        },
+        Runtime: 'python3.9',
+        Handler: 'index.handler',
+      },
+    });
+  });
+
+  test('set sourceKMSKeyArn using fromCustomCommand', () => {
+    const mockCallsites = jest.fn();
+    jest.mock('../lib/util', () => ({
+      ...jest.requireActual('../lib/util'),
+      callsites: () => mockCallsites(),
+    }));
+    bockfs({
+      '/home/project/function.test.handler7.zip': '// nothing',
+    });
+    const bockPath = bockfs.workingDirectory('/home/project');
+    mockCallsites.mockImplementation(() => [
+      { getFunctionName: () => 'NodejsFunction' },
+      { getFileName: () => bockPath`function.test.ts` },
+    ]);
+
+    const stack = new cdk.Stack();
+    // KMS
+    const KMSkey = new kms.Key(stack, 'myImportedKey', {
+      enableKeyRotation: true,
+    });
+    // const command = ;
+    const commandOptions = { sourceKMSKey: KMSkey };
+    // WHEN
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromCustomCommand('function.test.handler7.zip', ['node'], commandOptions),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_18_X,
+    });
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Code: {
+          SourceKMSKeyArn: { 'Fn::GetAtt': ['myImportedKey10DE2890', 'Arn'] },
+        },
+        Runtime: 'nodejs18.x',
+        Handler: 'index.handler',
+      },
+    });
+    bockfs.restore();
+  });
+
+  test('no sourceKMSKey provided using fromCustomCommand', () => {
+    const mockCallsites = jest.fn();
+    jest.mock('../lib/util', () => ({
+      ...jest.requireActual('../lib/util'),
+      callsites: () => mockCallsites(),
+    }));
+    bockfs({
+      '/home/project/function.test.handler7.zip': '// nothing',
+    });
+    const bockPath = bockfs.workingDirectory('/home/project');
+    mockCallsites.mockImplementation(() => [
+      { getFunctionName: () => 'NodejsFunction' },
+      { getFileName: () => bockPath`function.test.ts` },
+    ]);
+
+    const stack = new cdk.Stack();
+    // WHEN
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromCustomCommand('function.test.handler7.zip', ['node']),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_18_X,
+    });
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Code: {
+          SourceKMSKeyArn: Match.absent(),
+        },
+        Runtime: 'nodejs18.x',
+        Handler: 'index.handler',
+      },
+    });
+    bockfs.restore();
   });
 });
 

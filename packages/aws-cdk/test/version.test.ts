@@ -3,10 +3,11 @@ import * as path from 'path';
 import { setTimeout as _setTimeout } from 'timers';
 import { promisify } from 'util';
 import * as fs from 'fs-extra';
+import * as os from 'os';
 import * as sinon from 'sinon';
 import * as logging from '../lib/logging';
 import * as npm from '../lib/util/npm';
-import { latestVersionIfHigher, VersionCheckTTL, displayVersionMessage } from '../lib/version';
+import { latestVersionIfHigher, VersionCheckTTL, displayVersionMessage, isDeveloperBuild } from '../lib/version';
 
 jest.setTimeout(10_000);
 
@@ -15,6 +16,10 @@ const setTimeout = promisify(_setTimeout);
 function tmpfile(): string {
   return `/tmp/version-${Math.floor(Math.random() * 10000)}`;
 }
+
+beforeEach(() => {
+  process.chdir(os.tmpdir()); // Need a chdir because in the workspace 'npm view' will take a long time
+});
 
 afterEach(done => {
   sinon.restore();
@@ -135,4 +140,14 @@ describe('version message', () => {
     expect(printSpy).toHaveBeenCalledWith(expect.stringContaining('100.0.0'));
     expect(printSpy).not.toHaveBeenCalledWith(expect.stringContaining('Information about upgrading from 99.x to 100.x'));
   });
+});
+
+test('isDeveloperBuild call does not throw an error', () => {
+  // To be frank: this is just to shut CodeCov up. It don't want to make an assertion
+  // that the value is `true` when running tests, because I won't want to make too
+  // many assumptions for no good reason.
+
+  isDeveloperBuild();
+
+  // THEN: should not explode
 });

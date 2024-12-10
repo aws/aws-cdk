@@ -1,3 +1,4 @@
+import { CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS } from '../../../cx-api';
 import { CfnCondition } from '../cfn-condition';
 import { CfnElement } from '../cfn-element';
 import { Fn } from '../cfn-fn';
@@ -9,10 +10,12 @@ import {
   CfnCreationPolicy, CfnDeletionPolicy, CfnResourceAutoScalingCreationPolicy, CfnResourceSignal, CfnUpdatePolicy,
 } from '../cfn-resource-policy';
 import { CfnTag } from '../cfn-tag';
+import { FeatureFlags } from '../feature-flags';
 import { Lazy } from '../lazy';
 import { CfnReference, ReferenceRendering } from '../private/cfn-reference';
 import { IResolvable } from '../resolvable';
 import { Validator } from '../runtime';
+import { Stack } from '../stack';
 import { isResolvableObject, Token } from '../token';
 import { undefinedIfAllValuesAreEmpty } from '../util';
 
@@ -216,7 +219,8 @@ export class FromCloudFormation {
     };
   }
 
-  public static getCfnTag(tag: any): FromCloudFormationResult<CfnTag> {
+  public static getCfnTag(tag: any): FromCloudFormationResult<CfnTag | IResolvable> {
+    if (isResolvableObject(tag)) { return new FromCloudFormationResult(tag); }
     return tag == null
       ? new FromCloudFormationResult({ } as any) // break the type system - this should be detected at runtime by a tag validator
       : new FromCloudFormationResult({
@@ -342,6 +346,7 @@ export interface ParseCfnOptions {
  */
 export class CfnParser {
   private readonly options: ParseCfnOptions;
+  private stack?: Stack;
 
   constructor(options: ParseCfnOptions) {
     this.options = options;
@@ -349,14 +354,24 @@ export class CfnParser {
 
   public handleAttributes(resource: CfnResource, resourceAttributes: any, logicalId: string): void {
     const cfnOptions = resource.cfnOptions;
+    this.stack = Stack.of(resource);
 
-    cfnOptions.creationPolicy = this.parseCreationPolicy(resourceAttributes.CreationPolicy);
-    cfnOptions.updatePolicy = this.parseUpdatePolicy(resourceAttributes.UpdatePolicy);
+    const creationPolicy = this.parseCreationPolicy(resourceAttributes.CreationPolicy, logicalId);
+    const updatePolicy = this.parseUpdatePolicy(resourceAttributes.UpdatePolicy, logicalId);
+    cfnOptions.creationPolicy = creationPolicy.value;
+    cfnOptions.updatePolicy = updatePolicy.value;
     cfnOptions.deletionPolicy = this.parseDeletionPolicy(resourceAttributes.DeletionPolicy);
     cfnOptions.updateReplacePolicy = this.parseDeletionPolicy(resourceAttributes.UpdateReplacePolicy);
     cfnOptions.version = this.parseValue(resourceAttributes.Version);
     cfnOptions.description = this.parseValue(resourceAttributes.Description);
     cfnOptions.metadata = this.parseValue(resourceAttributes.Metadata);
+
+    for (const [key, value] of Object.entries(creationPolicy.extraProperties)) {
+      resource.addOverride(`CreationPolicy.${key}`, value);
+    }
+    for (const [key, value] of Object.entries(updatePolicy.extraProperties)) {
+      resource.addOverride(`UpdatePolicy.${key}`, value);
+    }
 
     // handle Condition
     if (resourceAttributes.Condition) {
@@ -380,88 +395,93 @@ export class CfnParser {
     }
   }
 
-  private parseCreationPolicy(policy: any): CfnCreationPolicy | undefined {
-    if (typeof policy !== 'object') { return undefined; }
+  private parseCreationPolicy(policy: any, logicalId: string): FromCloudFormationResult<CfnCreationPolicy | undefined> {
+    if (typeof policy !== 'object') { return new FromCloudFormationResult(undefined); }
+    this.throwIfIsIntrinsic(policy, logicalId);
+    const self = this;
 
-    // change simple JS values to their CDK equivalents
-    policy = this.parseValue(policy);
+    const creaPol = new ObjectParser<CfnCreationPolicy>(this.parseValue(policy));
+    creaPol.parseCase('autoScalingCreationPolicy', parseAutoScalingCreationPolicy);
+    creaPol.parseCase('resourceSignal', parseResourceSignal);
+    return creaPol.toResult();
 
-    return undefinedIfAllValuesAreEmpty({
-      autoScalingCreationPolicy: parseAutoScalingCreationPolicy(policy.AutoScalingCreationPolicy),
-      resourceSignal: parseResourceSignal(policy.ResourceSignal),
-    });
+    function parseAutoScalingCreationPolicy(p: any): FromCloudFormationResult<CfnResourceAutoScalingCreationPolicy | undefined> {
+      self.throwIfIsIntrinsic(p, logicalId);
+      if (typeof p !== 'object') { return new FromCloudFormationResult(undefined); }
 
-    function parseAutoScalingCreationPolicy(p: any): CfnResourceAutoScalingCreationPolicy | undefined {
-      if (typeof p !== 'object') { return undefined; }
-
-      return undefinedIfAllValuesAreEmpty({
-        minSuccessfulInstancesPercent: FromCloudFormation.getNumber(p.MinSuccessfulInstancesPercent).value,
-      });
+      const autoPol = new ObjectParser<CfnResourceAutoScalingCreationPolicy>(p);
+      autoPol.parseCase('minSuccessfulInstancesPercent', FromCloudFormation.getNumber);
+      return autoPol.toResult();
     }
 
-    function parseResourceSignal(p: any): CfnResourceSignal | undefined {
-      if (typeof p !== 'object') { return undefined; }
+    function parseResourceSignal(p: any): FromCloudFormationResult<CfnResourceSignal | undefined> {
+      if (typeof p !== 'object') { return new FromCloudFormationResult(undefined); }
+      self.throwIfIsIntrinsic(p, logicalId);
 
-      return undefinedIfAllValuesAreEmpty({
-        count: FromCloudFormation.getNumber(p.Count).value,
-        timeout: FromCloudFormation.getString(p.Timeout).value,
-      });
+      const sig = new ObjectParser<CfnResourceSignal>(p);
+      sig.parseCase('count', FromCloudFormation.getNumber);
+      sig.parseCase('timeout', FromCloudFormation.getString);
+      return sig.toResult();
     }
   }
 
-  private parseUpdatePolicy(policy: any): CfnUpdatePolicy | undefined {
-    if (typeof policy !== 'object') { return undefined; }
+  private parseUpdatePolicy(policy: any, logicalId: string): FromCloudFormationResult<CfnUpdatePolicy | undefined> {
+    if (typeof policy !== 'object') { return new FromCloudFormationResult(undefined); }
+    this.throwIfIsIntrinsic(policy, logicalId);
+    const self = this;
 
     // change simple JS values to their CDK equivalents
-    policy = this.parseValue(policy);
+    const uppol = new ObjectParser<CfnUpdatePolicy>(this.parseValue(policy));
+    uppol.parseCase('autoScalingReplacingUpdate', parseAutoScalingReplacingUpdate);
+    uppol.parseCase('autoScalingRollingUpdate', parseAutoScalingRollingUpdate);
+    uppol.parseCase('autoScalingScheduledAction', parseAutoScalingScheduledAction);
+    uppol.parseCase('codeDeployLambdaAliasUpdate', parseCodeDeployLambdaAliasUpdate);
+    uppol.parseCase('enableVersionUpgrade', (x) => FromCloudFormation.getBoolean(x) as any);
+    uppol.parseCase('useOnlineResharding', (x) => FromCloudFormation.getBoolean(x) as any);
+    return uppol.toResult();
 
-    return undefinedIfAllValuesAreEmpty({
-      autoScalingReplacingUpdate: parseAutoScalingReplacingUpdate(policy.AutoScalingReplacingUpdate),
-      autoScalingRollingUpdate: parseAutoScalingRollingUpdate(policy.AutoScalingRollingUpdate),
-      autoScalingScheduledAction: parseAutoScalingScheduledAction(policy.AutoScalingScheduledAction),
-      codeDeployLambdaAliasUpdate: parseCodeDeployLambdaAliasUpdate(policy.CodeDeployLambdaAliasUpdate),
-      enableVersionUpgrade: FromCloudFormation.getBoolean(policy.EnableVersionUpgrade).value,
-      useOnlineResharding: FromCloudFormation.getBoolean(policy.UseOnlineResharding).value,
-    });
+    function parseAutoScalingReplacingUpdate(p: any): FromCloudFormationResult<CfnAutoScalingReplacingUpdate | undefined> {
+      if (typeof p !== 'object') { return new FromCloudFormationResult(undefined); }
+      self.throwIfIsIntrinsic(p, logicalId);
 
-    function parseAutoScalingReplacingUpdate(p: any): CfnAutoScalingReplacingUpdate | undefined {
-      if (typeof p !== 'object') { return undefined; }
-
-      return undefinedIfAllValuesAreEmpty({
-        willReplace: p.WillReplace,
-      });
+      const repUp = new ObjectParser<CfnAutoScalingReplacingUpdate>(p);
+      repUp.parseCase('willReplace', (x) => x);
+      return repUp.toResult();
     }
 
-    function parseAutoScalingRollingUpdate(p: any): CfnAutoScalingRollingUpdate | undefined {
-      if (typeof p !== 'object') { return undefined; }
+    function parseAutoScalingRollingUpdate(p: any): FromCloudFormationResult<CfnAutoScalingRollingUpdate | undefined> {
+      if (typeof p !== 'object') { return new FromCloudFormationResult(undefined); }
+      self.throwIfIsIntrinsic(p, logicalId);
 
-      return undefinedIfAllValuesAreEmpty({
-        maxBatchSize: FromCloudFormation.getNumber(p.MaxBatchSize).value,
-        minInstancesInService: FromCloudFormation.getNumber(p.MinInstancesInService).value,
-        minSuccessfulInstancesPercent: FromCloudFormation.getNumber(p.MinSuccessfulInstancesPercent).value,
-        pauseTime: FromCloudFormation.getString(p.PauseTime).value,
-        suspendProcesses: FromCloudFormation.getStringArray(p.SuspendProcesses).value,
-        waitOnResourceSignals: FromCloudFormation.getBoolean(p.WaitOnResourceSignals).value,
-      });
+      const rollUp = new ObjectParser<CfnAutoScalingRollingUpdate>(p);
+      rollUp.parseCase('maxBatchSize', FromCloudFormation.getNumber);
+      rollUp.parseCase('minInstancesInService', FromCloudFormation.getNumber);
+      rollUp.parseCase('minSuccessfulInstancesPercent', FromCloudFormation.getNumber);
+      rollUp.parseCase('pauseTime', FromCloudFormation.getString);
+      rollUp.parseCase('suspendProcesses', FromCloudFormation.getStringArray);
+      rollUp.parseCase('waitOnResourceSignals', FromCloudFormation.getBoolean);
+      return rollUp.toResult();
     }
 
-    function parseCodeDeployLambdaAliasUpdate(p: any): CfnCodeDeployLambdaAliasUpdate | undefined {
-      if (typeof p !== 'object') { return undefined; }
+    function parseCodeDeployLambdaAliasUpdate(p: any): FromCloudFormationResult<CfnCodeDeployLambdaAliasUpdate | undefined> {
+      if (typeof p !== 'object') { return new FromCloudFormationResult(undefined); }
+      self.throwIfIsIntrinsic(p, logicalId);
 
-      return {
-        beforeAllowTrafficHook: FromCloudFormation.getString(p.BeforeAllowTrafficHook).value,
-        afterAllowTrafficHook: FromCloudFormation.getString(p.AfterAllowTrafficHook).value,
-        applicationName: FromCloudFormation.getString(p.ApplicationName).value,
-        deploymentGroupName: FromCloudFormation.getString(p.DeploymentGroupName).value,
-      };
+      const cdUp = new ObjectParser<CfnCodeDeployLambdaAliasUpdate>(p);
+      cdUp.parseCase('beforeAllowTrafficHook', FromCloudFormation.getString);
+      cdUp.parseCase('afterAllowTrafficHook', FromCloudFormation.getString);
+      cdUp.parseCase('applicationName', FromCloudFormation.getString);
+      cdUp.parseCase('deploymentGroupName', FromCloudFormation.getString);
+      return cdUp.toResult();
     }
 
-    function parseAutoScalingScheduledAction(p: any): CfnAutoScalingScheduledAction | undefined {
-      if (typeof p !== 'object') { return undefined; }
+    function parseAutoScalingScheduledAction(p: any): FromCloudFormationResult<CfnAutoScalingScheduledAction | undefined> {
+      if (typeof p !== 'object') { return new FromCloudFormationResult(undefined); }
+      self.throwIfIsIntrinsic(p, logicalId);
 
-      return undefinedIfAllValuesAreEmpty({
-        ignoreUnmodifiedGroupSizeProperties: FromCloudFormation.getBoolean(p.IgnoreUnmodifiedGroupSizeProperties).value,
-      });
+      const schedUp = new ObjectParser<CfnAutoScalingScheduledAction>(p);
+      schedUp.parseCase('ignoreUnmodifiedGroupSizeProperties', FromCloudFormation.getBoolean);
+      return schedUp.toResult();
     }
   }
 
@@ -673,6 +693,20 @@ export class CfnParser {
     }
   }
 
+  private throwIfIsIntrinsic(object: object, logicalId: string): void {
+    // Top-level parsing functions check before we call `parseValue`, which requires
+    // calling `looksLikeCfnIntrinsic`. Helper parsing functions check after we call
+    // `parseValue`, which requires calling `isResolvableObject`.
+    if (!this.stack) {
+      throw new Error('cannot call this method before handleAttributes!');
+    }
+    if (FeatureFlags.of(this.stack).isEnabled(CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS)) {
+      if (isResolvableObject(object ?? {}) || this.looksLikeCfnIntrinsic(object ?? {})) {
+        throw new Error(`Cannot convert resource '${logicalId}' to CDK objects: it uses an intrinsic in a resource update or deletion policy to represent a non-primitive value. Specify '${logicalId}' in the 'dehydratedResources' prop to skip parsing this resource, while still including it in the output.`);
+      }
+    }
+  }
+
   private looksLikeCfnIntrinsic(object: object): string | undefined {
     const objectKeys = Object.keys(object);
     // a CFN intrinsic is always an object with a single key
@@ -823,3 +857,70 @@ export class CfnParser {
     return this.options.parameters || {};
   }
 }
+
+class ObjectParser<T extends object> {
+  private readonly parsed: Record<string, unknown> = {};
+  private readonly unparsed: Record<string, unknown> = {};
+
+  constructor(input: Record<string, unknown>) {
+    this.unparsed = { ...input };
+  }
+
+  /**
+   * Parse a single field from the object into the target object
+   *
+   * The source key will be assumed to be the exact same as the
+   * target key, but with an uppercase first letter.
+   */
+  public parseCase<K extends keyof T>(targetKey: K, parser: (x: any) => T[K] | FromCloudFormationResult<T[K] | IResolvable>) {
+    const sourceKey = ucfirst(String(targetKey));
+    this.parse(targetKey, sourceKey, parser);
+  }
+
+  public parse<K extends keyof T>(targetKey: K, sourceKey: string, parser: (x: any) => T[K] | FromCloudFormationResult<T[K] | IResolvable>) {
+    if (!(sourceKey in this.unparsed)) {
+      return;
+    }
+
+    const value = parser(this.unparsed[sourceKey]);
+    delete this.unparsed[sourceKey];
+
+    if (value instanceof FromCloudFormationResult) {
+      for (const [k, v] of Object.entries(value.extraProperties ?? {})) {
+        this.unparsed[`${sourceKey}.${k}`] = v;
+      }
+      this.parsed[targetKey as any] = value.value;
+    } else {
+      this.parsed[targetKey as any] = value;
+    }
+  }
+
+  public toResult(): FromCloudFormationResult<T | undefined> {
+    const ret = new FromCloudFormationResult(undefinedIfAllValuesAreEmpty(this.parsed as any));
+    for (const [k, v] of Object.entries(this.unparsedKeys)) {
+      ret.extraProperties[k] = v;
+    }
+    return ret;
+  }
+
+  private get unparsedKeys(): Record<string, unknown> {
+    const unparsed = { ...this.unparsed };
+
+    for (const [k, v] of Object.entries(this.unparsed)) {
+      if (v instanceof FromCloudFormationResult) {
+        for (const [k2, v2] of Object.entries(v.extraProperties ?? {})) {
+          unparsed[`${k}.${k2}`] = v2;
+        }
+      } else {
+        unparsed[k] = v;
+      }
+    }
+
+    return unparsed;
+  }
+}
+
+function ucfirst(x: string) {
+  return x.slice(0, 1).toUpperCase() + x.slice(1);
+}
+

@@ -46,8 +46,38 @@ const table = new dynamodb.Table(this, 'Table', {
 });
 ```
 
+You can specify a maximum read or write request units when using PAY_PER_REQUEST billing mode:
+
+```ts
+const table = new dynamodb.Table(this, 'Table', {
+  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
+  billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+  maxReadRequestUnits: 100,
+  maxWriteRequestUnits: 200,
+});
+```
+
 Further reading:
 https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadWriteCapacityMode.
+
+## Warm Throughput
+Warm throughput refers to the number of read and write operations your DynamoDB table can instantaneously support.
+
+This optional configuration allows you to pre-warm your table or index to handle anticipated throughput, ensuring optimal performance under expected load.
+
+Note: The Warm Throughput feature is not available for Global Table replicas using `Table` construct; use the `TableV2` construct instead to enable this functionality.
+
+```ts
+const table = new dynamodb.Table(this, 'Table', {
+  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
+  warmThroughput: {
+      readUnitsPerSecond: 15000,
+      writeUnitsPerSecond: 20000,
+    },
+});
+```
+Further reading:
+https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/warm-throughput.html
 
 ## Table Class
 

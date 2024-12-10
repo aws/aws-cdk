@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "ExcludeCharactersInteg/DefaultTest": {
+      "stacks": [
+        "redshift-exclude-characters-integ"
+      ],
+      "assertionStack": "ExcludeCharactersInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "ExcludeCharactersIntegDefaultTestDeployAssertF357433F"
+    }
+  }
+}

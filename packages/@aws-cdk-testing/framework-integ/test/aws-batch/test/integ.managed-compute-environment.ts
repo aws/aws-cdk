@@ -3,7 +3,7 @@ import { LaunchTemplate } from 'aws-cdk-lib/aws-ec2';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { App, Duration, Stack, Tags } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { AllocationStrategy, FargateComputeEnvironment, ManagedEc2EcsComputeEnvironment } from 'aws-cdk-lib/aws-batch';
+import { AllocationStrategy, FargateComputeEnvironment, ManagedEc2EcsComputeEnvironment, EcsMachineImageType } from 'aws-cdk-lib/aws-batch';
 
 const app = new App();
 const stack = new Stack(app, 'batch-stack');
@@ -78,6 +78,13 @@ const taggedEc2Ecs = new ManagedEc2EcsComputeEnvironment(stack, 'taggedCE', {
 
 Tags.of(taggedEc2Ecs).add('foo', 'bar');
 Tags.of(taggedEc2Ecs).add('super', 'salamander');
+
+new ManagedEc2EcsComputeEnvironment(stack, 'ECS_AL2023', {
+  vpc,
+  images: [{
+    imageType: EcsMachineImageType.ECS_AL2023,
+  }],
+});
 
 new integ.IntegTest(app, 'BatchManagedComputeEnvironmentTest', {
   testCases: [stack],

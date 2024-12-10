@@ -2,8 +2,9 @@ import * as path from 'path';
 import { Match, Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
+import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
-import { Duration, Lazy, Stack } from '../../core';
+import { Duration, Lazy, Size, Stack } from '../../core';
 import * as synthetics from '../lib';
 
 test('Basic canary properties work', () => {
@@ -103,23 +104,23 @@ test('Throws when name is specified incorrectly', () => {
     }),
     runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_8_0,
   }))
-    .toThrowError('Canary name must be lowercase, numbers, hyphens, or underscores (got "My Canary")');
+    .toThrow('Canary name must be lowercase, numbers, hyphens, or underscores (got "My Canary")');
 });
 
-test('Throws when name has more than 21 characters', () => {
+test('Throws when name has more than 255 characters', () => {
   // GIVEN
   const stack = new Stack();
 
   // THEN
   expect(() => new synthetics.Canary(stack, 'Canary', {
-    canaryName: 'a'.repeat(22),
+    canaryName: 'a'.repeat(256),
     test: synthetics.Test.custom({
       handler: 'index.handler',
       code: synthetics.Code.fromInline('/* Synthetics handler code */'),
     }),
     runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_8_0,
   }))
-    .toThrowError(`Canary name is too large, must be between 1 and 21 characters, but is 22 (got "${'a'.repeat(22)}")`);
+    .toThrow(`Canary name is too large, must be between 1 and 255 characters, but is 256 (got "${'a'.repeat(256)}")`);
 });
 
 test('An existing role can be specified instead of auto-created', () => {
@@ -224,7 +225,7 @@ test('Python runtime can be specified', () => {
 
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
-    runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_2_0,
+    runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_4_0,
     test: synthetics.Test.custom({
       handler: 'index.handler',
       code: synthetics.Code.fromInline('# Synthetics handler code'),
@@ -233,8 +234,46 @@ test('Python runtime can be specified', () => {
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
-    RuntimeVersion: 'syn-python-selenium-2.0',
+    RuntimeVersion: 'syn-python-selenium-4.0',
   });
+});
+
+test.each([true, false])('activeTracing can be set to %s', (activeTracing: boolean) => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    }),
+    activeTracing,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+    RunConfig: {
+      ActiveTracing: activeTracing,
+    },
+  });
+});
+
+test('throws when activeTracing is enabled with an unsupported runtime', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  expect(() => new synthetics.Canary(stack, 'Canary', {
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('# Synthetics handler code'),
+    }),
+    runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_2_1,
+    activeTracing: true,
+  }))
+    .toThrow('You can only enable active tracing for canaries that use canary runtime version `syn-nodejs-2.0` or later.');
 });
 
 test('environment variables can be specified', () => {
@@ -280,6 +319,114 @@ test('environment variables are skipped if not provided', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
     RunConfig: Match.absent(),
   });
+});
+
+test('memory can be set', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    }),
+    memory: Size.mebibytes(1024),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+    RunConfig: {
+      MemoryInMB: 1024,
+    },
+  });
+});
+
+test('throws when memory is not a multiple of 64 MiB', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  expect(() => new synthetics.Canary(stack, 'Canary', {
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    }),
+    memory: Size.mebibytes(5),
+  }))
+    .toThrow('\`memory\` must be a multiple of 64 MiB, got 5 MiB.');
+});
+
+test.each([64, 6400])('throws when memory is out of range, %d MiB', (memoryInMb: number) => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  expect(() => new synthetics.Canary(stack, 'Canary', {
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    }),
+    memory: Size.mebibytes(memoryInMb),
+  }))
+    .toThrow(`\`memory\` must be between 960 MiB and 3008 MiB, got ${memoryInMb} MiB.`);
+});
+
+test('timeout can be set', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    }),
+    timeout: Duration.seconds(60),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+    RunConfig: {
+      TimeoutInSeconds: 60,
+    },
+  });
+});
+
+test.each([100, 3100])('throws when timeout is not set as an integer representing seconds , %d milliseconds', (milliseconds: number) => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  expect(() => new synthetics.Canary(stack, 'Canary', {
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    }),
+    timeout: Duration.millis(milliseconds),
+  }))
+    .toThrow(`\`timeout\` must be set as an integer representing seconds, got ${milliseconds} milliseconds.`);
+});
+
+test.each([2, 900])('throws when timeout is out of range, %d seconds', (seconds: number) => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  expect(() => new synthetics.Canary(stack, 'Canary', {
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    }),
+    timeout: Duration.seconds(seconds),
+  }))
+    .toThrow(`\`timeout\` must be between 3 seconds and 840 seconds, got ${seconds} seconds.`);
 });
 
 test('Runtime can be customized', () => {
@@ -414,7 +561,7 @@ test('Throws when rate above 60 minutes', () => {
     }),
     runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_8_0,
   }))
-    .toThrowError('Schedule duration must be between 1 and 60 minutes');
+    .toThrow('Schedule duration must be between 1 and 60 minutes');
 });
 
 test('Throws when rate above is not a whole number of minutes', () => {
@@ -430,7 +577,7 @@ test('Throws when rate above is not a whole number of minutes', () => {
     }),
     runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_8_0,
   }))
-    .toThrowError('\'59 seconds\' cannot be converted into a whole number of minutes.');
+    .toThrow('\'59 seconds\' cannot be converted into a whole number of minutes.');
 });
 
 test('Can share artifacts bucket between canaries', () => {
@@ -785,5 +932,160 @@ describe('handler validation', () => {
         runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
       });
     }).toThrow(/Canary Handler length must be between 1 and 128/);
+  });
+});
+
+describe('artifact encryption test', () => {
+  test('SSE_S3 without a key', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new synthetics.Canary(stack, 'Canary', {
+      test: synthetics.Test.custom({
+        handler: 'index.handler',
+        code: synthetics.Code.fromInline(`
+          exports.handler = async () => {
+            console.log(\'hello world\');
+          };`),
+      }),
+      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+      artifactS3EncryptionMode: synthetics.ArtifactsEncryptionMode.S3_MANAGED,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+      ArtifactConfig: {
+        S3Encryption: {
+          EncryptionMode: 'SSE_S3',
+          KmsKeyArn: Match.absent(),
+        },
+      },
+    });
+  });
+
+  test('auto-creates KMS key if encryption type is SSE_KMS but no key is provided', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const canary = new synthetics.Canary(stack, 'Canary', {
+      test: synthetics.Test.custom({
+        handler: 'index.handler',
+        code: synthetics.Code.fromInline(`
+          exports.handler = async () => {
+            console.log(\'hello world\');
+          };`),
+      }),
+      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+      artifactS3EncryptionMode: synthetics.ArtifactsEncryptionMode.KMS,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      Description: 'Created by Default/Canary',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+      ArtifactConfig: {
+        S3Encryption: {
+          EncryptionMode: 'SSE_KMS',
+          KmsKeyArn: {
+            'Fn::GetAtt': [
+              'CanaryKey36A631B4',
+              'Arn',
+            ],
+          },
+        },
+      },
+    });
+  });
+
+  test('SSE_KMS with a key', () => {
+    // GIVEN
+    const stack = new Stack();
+    const key = new kms.Key(stack, 'myKey');
+
+    // WHEN
+    new synthetics.Canary(stack, 'Canary', {
+      test: synthetics.Test.custom({
+        handler: 'index.handler',
+        code: synthetics.Code.fromInline(`
+          exports.handler = async () => {
+            console.log(\'hello world\');
+          };`),
+      }),
+      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+      artifactS3EncryptionMode: synthetics.ArtifactsEncryptionMode.KMS,
+      artifactS3KmsKey: key,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+      ArtifactConfig: {
+        S3Encryption: {
+          EncryptionMode: 'SSE_KMS',
+          KmsKeyArn: stack.resolve(key.keyArn),
+        },
+      },
+    });
+  });
+
+  test('No artifactS3EncryptionMode setting with a key is set to SSE_KMS', () => {
+    // GIVEN
+    const stack = new Stack();
+    const key = new kms.Key(stack, 'myKey');
+
+    // WHEN
+    new synthetics.Canary(stack, 'Canary', {
+      test: synthetics.Test.custom({
+        handler: 'index.handler',
+        code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+      }),
+      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+      artifactS3KmsKey: key,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+      ArtifactConfig: {
+        S3Encryption: {
+          EncryptionMode: 'SSE_KMS',
+          KmsKeyArn: stack.resolve(key.keyArn),
+        },
+      },
+    });
+  });
+
+  test('SSE-S3 with a key throws', () => {
+    const stack = new Stack();
+    const key = new kms.Key(stack, 'myKey');
+
+    expect(() => {
+      new synthetics.Canary(stack, 'Canary', {
+        test: synthetics.Test.custom({
+          handler: 'index.handler',
+          code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+        }),
+        runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+        artifactS3EncryptionMode: synthetics.ArtifactsEncryptionMode.S3_MANAGED,
+        artifactS3KmsKey: key,
+      });
+    }).toThrow('A customer-managed KMS key was provided, but the encryption mode is not set to SSE-KMS, got: SSE_S3.');
+  });
+
+  test('Artifact encryption for non-Node.js runtime throws an error', () => {
+    const stack = new Stack();
+
+    expect(() => {
+      new synthetics.Canary(stack, 'Canary', {
+        runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_3_0,
+        test: synthetics.Test.custom({
+          handler: 'index.handler',
+          code: synthetics.Code.fromInline('# Synthetics handler code'),
+        }),
+        artifactS3EncryptionMode: synthetics.ArtifactsEncryptionMode.S3_MANAGED,
+      });
+    }).toThrow('Artifact encryption is only supported for canaries that use Synthetics runtime version `syn-nodejs-puppeteer-3.3` or later, got `syn-python-selenium-3.0`.');
   });
 });

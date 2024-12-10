@@ -147,6 +147,28 @@ describe('LaunchTemplate', () => {
     });
   });
 
+  test('Given versionDescription', () => {
+    // WHEN
+    new LaunchTemplate(stack, 'Template', {
+      versionDescription: 'test template',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+      VersionDescription: 'test template',
+    });
+  });
+
+  test('throw error when versionDescription is too long', () => {
+    const tooLongDescription = 'a'.repeat(256);
+    // WHEN / THEN
+    expect(() => {
+      new LaunchTemplate(stack, 'TemplateWithTooLongDescription', {
+        versionDescription: tooLongDescription,
+      });
+    }).toThrow('versionDescription must be less than or equal to 255 characters, got 256');
+  });
+
   test('Given instanceType', () => {
     // WHEN
     new LaunchTemplate(stack, 'Template', {
@@ -314,6 +336,12 @@ describe('LaunchTemplate', () => {
       }, {
         deviceName: 'ephemeral',
         volume: BlockDeviceVolume.ephemeral(0),
+      }, {
+        deviceName: 'gp3-with-throughput',
+        volume: BlockDeviceVolume.ebs(15, {
+          volumeType: EbsDeviceVolumeType.GP3,
+          throughput: 350,
+        }),
       },
     ];
 
@@ -366,9 +394,72 @@ describe('LaunchTemplate', () => {
             DeviceName: 'ephemeral',
             VirtualName: 'ephemeral0',
           },
+          {
+            DeviceName: 'gp3-with-throughput',
+            Ebs: {
+              VolumeSize: 15,
+              VolumeType: 'gp3',
+              Throughput: 350,
+            },
+          },
         ],
       },
     });
+  });
+  test.each([124, 1001])('throws if throughput is set less than 125 or more than 1000', (throughput) => {
+    expect(() => {
+      new LaunchTemplate(stack, 'LaunchTemplate', {
+        blockDevices: [{
+          deviceName: 'ebs',
+          volume: BlockDeviceVolume.ebs(15, {
+            volumeType: EbsDeviceVolumeType.GP3,
+            throughput,
+          }),
+        }],
+      });
+    }).toThrow(/'throughput' must be between 125 and 1000, got/);
+  });
+  test('throws if throughput is not an integer', () => {
+    expect(() => {
+      new LaunchTemplate(stack, 'LaunchTemplate', {
+        blockDevices: [{
+          deviceName: 'ebs',
+          volume: BlockDeviceVolume.ebs(15, {
+            volumeType: EbsDeviceVolumeType.GP3,
+            throughput: 234.56,
+          }),
+        }],
+      });
+    }).toThrow("'throughput' must be an integer, got: 234.56.");
+  });
+  test.each([
+    ...Object.values(EbsDeviceVolumeType).filter((v) => v !== 'gp3'),
+  ])('throws if throughput is set on any volume type other than GP3', (volumeType) => {
+    expect(() => {
+      new LaunchTemplate(stack, 'LaunchTemplate', {
+        blockDevices: [{
+          deviceName: 'ebs',
+          volume: BlockDeviceVolume.ebs(15, {
+            volumeType: volumeType,
+            throughput: 150,
+          }),
+        }],
+      });
+    }).toThrow(/'throughput' requires 'volumeType': gp3, got/);
+  });
+  test('throws if throughput / iops ratio is greater than 0.25', () => {
+    expect(() => {
+      new LaunchTemplate(stack, 'LaunchTemplate', {
+        blockDevices: [{
+          deviceName: 'ebs',
+          volume: BlockDeviceVolume.ebs(15, {
+            volumeType: EbsDeviceVolumeType.GP3,
+            throughput: 751,
+            iops: 3000,
+          }),
+        }],
+      });
+    }).toThrow('Throughput (MiBps) to iops ratio of 0.25033333333333335 is too high; maximum is 0.25 MiBps per iops');
   });
 
   test('Given instance profile', () => {

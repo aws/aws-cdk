@@ -189,6 +189,11 @@ export enum AdotLambdaExecWrapper {
    * Wrapping python lambda handlers see https://aws-otel.github.io/docs/getting-started/lambda/lambda-python
    */
   INSTRUMENT_HANDLER = '/opt/otel-instrument',
+
+  /**
+   * Wrapping SQS-triggered function handlers (implementing RequestHandler)
+   */
+  SQS_HANDLER = '/opt/otel-sqs-handler',
 }
 
 abstract class AdotLambdaLayerVersion {
