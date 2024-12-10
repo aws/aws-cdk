@@ -1265,7 +1265,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       When this feature flag is enabled, if you do not pass the machineImage property to the BastionHost construct,
       the latest Amazon Linux 2023 version will be used instead of Amazon Linux 2.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.172.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag or explicitly pass an Amazon Linux 2 machine image to the BastionHost construct.',
   },
@@ -1281,7 +1281,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       When this feature flag is enabled, a stabilization loop is run to recurse the construct tree multiple times when invoking Aspects.
     `,
     defaults: { v2: true },
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.172.0' },
     recommendedValue: true,
   },
 };
