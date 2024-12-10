@@ -1,5 +1,5 @@
 {
-  "version": "36.0.5",
+  "version": "38.0.1",
   "artifacts": {
     "aws-cdk-eks-cluster-inference.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8d18df6079eed811de38160216c823e3f5c0419fba44261fc54dec2a50291cde.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2a0d24e41ecbc3ba147cae8691e77fe661698e3a3ee0324beda8ee22da1717eb.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -199,7 +199,10 @@
         "/aws-cdk-eks-cluster-inference/Cluster/ControlPlaneSecurityGroup/from awscdkeksclusterinferenceClusterClusterSecurityGroup38FDA47C:443": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterControlPlaneSecurityGroupfromawscdkeksclusterinferenceClusterClusterSecurityGroup38FDA47C44386E6E38B"
+            "data": "ClusterControlPlaneSecurityGroupfromawscdkeksclusterinferenceClusterClusterSecurityGroup38FDA47C44386E6E38B",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-cluster-inference/Cluster/ControlPlaneSecurityGroup/from awscdkeksclusterinferenceClusterInference2InstancesInstanceSecurityGroup894FBAD1:443": [
@@ -208,22 +211,10 @@
             "data": "ClusterControlPlaneSecurityGroupfromawscdkeksclusterinferenceClusterInference2InstancesInstanceSecurityGroup894FBAD1443CE6275C1"
           }
         ],
-        "/aws-cdk-eks-cluster-inference/Cluster/Resource/CreationRole/Resource": [
+        "/aws-cdk-eks-cluster-inference/Cluster/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterCreationRole360249B6"
-          }
-        ],
-        "/aws-cdk-eks-cluster-inference/Cluster/Resource/CreationRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterCreationRoleDefaultPolicyE8BDFC7B"
-          }
-        ],
-        "/aws-cdk-eks-cluster-inference/Cluster/Resource/Resource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Cluster9EE0221C"
+            "data": "ClusterEB0386A7"
           }
         ],
         "/aws-cdk-eks-cluster-inference/Cluster/KubectlReadyBarrier": [
@@ -235,55 +226,94 @@
         "/aws-cdk-eks-cluster-inference/Cluster/ClusterSecurityGroup/from awscdkeksclusterinferenceClusterInferenceInstancesInstanceSecurityGroup8EEE0233:443": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterClusterSecurityGroupfromawscdkeksclusterinferenceClusterInferenceInstancesInstanceSecurityGroup8EEE02334435941645F"
+            "data": "ClusterClusterSecurityGroupfromawscdkeksclusterinferenceClusterInferenceInstancesInstanceSecurityGroup8EEE02334435941645F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-cluster-inference/Cluster/ClusterSecurityGroup/from awscdkeksclusterinferenceClusterInferenceInstancesInstanceSecurityGroup8EEE0233:ALL TRAFFIC": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterClusterSecurityGroupfromawscdkeksclusterinferenceClusterInferenceInstancesInstanceSecurityGroup8EEE0233ALLTRAFFIC51D904AC"
+            "data": "ClusterClusterSecurityGroupfromawscdkeksclusterinferenceClusterInferenceInstancesInstanceSecurityGroup8EEE0233ALLTRAFFIC51D904AC",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-cluster-inference/Cluster/ClusterSecurityGroup/from awscdkeksclusterinferenceClusterClusterSecurityGroup38FDA47C:443": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterClusterSecurityGroupfromawscdkeksclusterinferenceClusterClusterSecurityGroup38FDA47C443FDBB1C99"
+            "data": "ClusterClusterSecurityGroupfromawscdkeksclusterinferenceClusterClusterSecurityGroup38FDA47C443FDBB1C99",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-cluster-inference/Cluster/ClusterSecurityGroup/from awscdkeksclusterinferenceClusterControlPlaneSecurityGroup0F02D1C2:443": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterClusterSecurityGroupfromawscdkeksclusterinferenceClusterControlPlaneSecurityGroup0F02D1C2443C14ED838"
+            "data": "ClusterClusterSecurityGroupfromawscdkeksclusterinferenceClusterControlPlaneSecurityGroup0F02D1C2443C14ED838",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-cluster-inference/Cluster/ClusterSecurityGroup/from awscdkeksclusterinferenceClusterClusterSecurityGroup38FDA47C:1025-65535": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterClusterSecurityGroupfromawscdkeksclusterinferenceClusterClusterSecurityGroup38FDA47C1025655357BFB997B"
+            "data": "ClusterClusterSecurityGroupfromawscdkeksclusterinferenceClusterClusterSecurityGroup38FDA47C1025655357BFB997B",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-cluster-inference/Cluster/ClusterSecurityGroup/from awscdkeksclusterinferenceClusterControlPlaneSecurityGroup0F02D1C2:1025-65535": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterClusterSecurityGroupfromawscdkeksclusterinferenceClusterControlPlaneSecurityGroup0F02D1C2102565535BFCE22FF"
+            "data": "ClusterClusterSecurityGroupfromawscdkeksclusterinferenceClusterControlPlaneSecurityGroup0F02D1C2102565535BFCE22FF",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-cluster-inference/Cluster/ClusterSecurityGroup/from awscdkeksclusterinferenceClusterClusterSecurityGroup38FDA47C:ALL TRAFFIC": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterClusterSecurityGroupfromawscdkeksclusterinferenceClusterClusterSecurityGroup38FDA47CALLTRAFFIC2BFA935C"
+            "data": "ClusterClusterSecurityGroupfromawscdkeksclusterinferenceClusterClusterSecurityGroup38FDA47CALLTRAFFIC2BFA935C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-cluster-inference/Cluster/ClusterSecurityGroup/from awscdkeksclusterinferenceClusterInference2InstancesInstanceSecurityGroup894FBAD1:443": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterClusterSecurityGroupfromawscdkeksclusterinferenceClusterInference2InstancesInstanceSecurityGroup894FBAD144388B2BF30"
+            "data": "ClusterClusterSecurityGroupfromawscdkeksclusterinferenceClusterInference2InstancesInstanceSecurityGroup894FBAD144388B2BF30",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-cluster-inference/Cluster/ClusterSecurityGroup/from awscdkeksclusterinferenceClusterInference2InstancesInstanceSecurityGroup894FBAD1:ALL TRAFFIC": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterClusterSecurityGroupfromawscdkeksclusterinferenceClusterInference2InstancesInstanceSecurityGroup894FBAD1ALLTRAFFIC0F426788"
+            "data": "ClusterClusterSecurityGroupfromawscdkeksclusterinferenceClusterInference2InstancesInstanceSecurityGroup894FBAD1ALLTRAFFIC0F426788",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/aws-cdk-eks-cluster-inference/Cluster/kubectlRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterkubectlRole4CCE0069"
+          }
+        ],
+        "/aws-cdk-eks-cluster-inference/Cluster/ClusterAdminRoleAccess/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterClusterAdminRoleAccessF2BFF759"
           }
         ],
         "/aws-cdk-eks-cluster-inference/Cluster/HasEcrPublic": [
@@ -313,7 +343,10 @@
         "/aws-cdk-eks-cluster-inference/Cluster/NodegroupDefaultCapacity/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterNodegroupDefaultCapacityDA0920A3"
+            "data": "ClusterNodegroupDefaultCapacityDA0920A3",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-cluster-inference/Cluster/InferenceInstances/InstanceSecurityGroup": [
@@ -337,7 +370,10 @@
         "/aws-cdk-eks-cluster-inference/Cluster/InferenceInstances/InstanceSecurityGroup/from awscdkeksclusterinferenceClusterClusterSecurityGroup38FDA47C:443": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterInferenceInstancesInstanceSecurityGroupfromawscdkeksclusterinferenceClusterClusterSecurityGroup38FDA47C4432B523126"
+            "data": "ClusterInferenceInstancesInstanceSecurityGroupfromawscdkeksclusterinferenceClusterClusterSecurityGroup38FDA47C4432B523126",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-cluster-inference/Cluster/InferenceInstances/InstanceSecurityGroup/from awscdkeksclusterinferenceClusterControlPlaneSecurityGroup0F02D1C2:443": [
@@ -349,7 +385,10 @@
         "/aws-cdk-eks-cluster-inference/Cluster/InferenceInstances/InstanceSecurityGroup/from awscdkeksclusterinferenceClusterClusterSecurityGroup38FDA47C:1025-65535": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterInferenceInstancesInstanceSecurityGroupfromawscdkeksclusterinferenceClusterClusterSecurityGroup38FDA47C1025655359A6FAB83"
+            "data": "ClusterInferenceInstancesInstanceSecurityGroupfromawscdkeksclusterinferenceClusterClusterSecurityGroup38FDA47C1025655359A6FAB83",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-cluster-inference/Cluster/InferenceInstances/InstanceSecurityGroup/from awscdkeksclusterinferenceClusterControlPlaneSecurityGroup0F02D1C2:1025-65535": [
@@ -361,7 +400,10 @@
         "/aws-cdk-eks-cluster-inference/Cluster/InferenceInstances/InstanceSecurityGroup/from awscdkeksclusterinferenceClusterClusterSecurityGroup38FDA47C:ALL TRAFFIC": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterInferenceInstancesInstanceSecurityGroupfromawscdkeksclusterinferenceClusterClusterSecurityGroup38FDA47CALLTRAFFIC6C28EC91"
+            "data": "ClusterInferenceInstancesInstanceSecurityGroupfromawscdkeksclusterinferenceClusterClusterSecurityGroup38FDA47CALLTRAFFIC6C28EC91",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-cluster-inference/Cluster/InferenceInstances/InstanceRole/Resource": [
@@ -415,7 +457,10 @@
         "/aws-cdk-eks-cluster-inference/Cluster/Inference2Instances/InstanceSecurityGroup/from awscdkeksclusterinferenceClusterClusterSecurityGroup38FDA47C:443": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterInference2InstancesInstanceSecurityGroupfromawscdkeksclusterinferenceClusterClusterSecurityGroup38FDA47C443BAEE0357"
+            "data": "ClusterInference2InstancesInstanceSecurityGroupfromawscdkeksclusterinferenceClusterClusterSecurityGroup38FDA47C443BAEE0357",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-cluster-inference/Cluster/Inference2Instances/InstanceSecurityGroup/from awscdkeksclusterinferenceClusterControlPlaneSecurityGroup0F02D1C2:443": [
@@ -427,7 +472,10 @@
         "/aws-cdk-eks-cluster-inference/Cluster/Inference2Instances/InstanceSecurityGroup/from awscdkeksclusterinferenceClusterClusterSecurityGroup38FDA47C:1025-65535": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterInference2InstancesInstanceSecurityGroupfromawscdkeksclusterinferenceClusterClusterSecurityGroup38FDA47C102565535264611DC"
+            "data": "ClusterInference2InstancesInstanceSecurityGroupfromawscdkeksclusterinferenceClusterClusterSecurityGroup38FDA47C102565535264611DC",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-cluster-inference/Cluster/Inference2Instances/InstanceSecurityGroup/from awscdkeksclusterinferenceClusterControlPlaneSecurityGroup0F02D1C2:1025-65535": [
@@ -439,7 +487,10 @@
         "/aws-cdk-eks-cluster-inference/Cluster/Inference2Instances/InstanceSecurityGroup/from awscdkeksclusterinferenceClusterClusterSecurityGroup38FDA47C:ALL TRAFFIC": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterInference2InstancesInstanceSecurityGroupfromawscdkeksclusterinferenceClusterClusterSecurityGroup38FDA47CALLTRAFFIC34FE7CFD"
+            "data": "ClusterInference2InstancesInstanceSecurityGroupfromawscdkeksclusterinferenceClusterClusterSecurityGroup38FDA47CALLTRAFFIC34FE7CFD",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-cluster-inference/Cluster/Inference2Instances/InstanceRole/Resource": [
@@ -464,144 +515,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterInference2InstancesASGE0CA996F"
-          }
-        ],
-        "/aws-cdk-eks-cluster-inference/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "NodeProxyAgentLayer924C1971"
-          }
-        ],
-        "/aws-cdk-eks-cluster-inference/@aws-cdk--aws-eks.ClusterResourceProvider/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
-          }
-        ],
-        "/aws-cdk-eks-cluster-inference/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "OnEventHandlerServiceRole15A26729"
-          }
-        ],
-        "/aws-cdk-eks-cluster-inference/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "OnEventHandler42BEBAE0"
-          }
-        ],
-        "/aws-cdk-eks-cluster-inference/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "IsCompleteHandlerServiceRole5810CC58"
-          }
-        ],
-        "/aws-cdk-eks-cluster-inference/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "IsCompleteHandler7073F4DA"
-          }
-        ],
-        "/aws-cdk-eks-cluster-inference/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ProviderframeworkonEventServiceRole9FF04296"
-          }
-        ],
-        "/aws-cdk-eks-cluster-inference/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ProviderframeworkonEventServiceRoleDefaultPolicy48CD2133"
-          }
-        ],
-        "/aws-cdk-eks-cluster-inference/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ProviderframeworkonEvent83C1D0A7"
-          }
-        ],
-        "/aws-cdk-eks-cluster-inference/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ProviderframeworkisCompleteServiceRoleB1087139"
-          }
-        ],
-        "/aws-cdk-eks-cluster-inference/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ProviderframeworkisCompleteServiceRoleDefaultPolicy2E7140AC"
-          }
-        ],
-        "/aws-cdk-eks-cluster-inference/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ProviderframeworkisComplete26D7B0CB"
-          }
-        ],
-        "/aws-cdk-eks-cluster-inference/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ProviderframeworkonTimeoutServiceRole28643D26"
-          }
-        ],
-        "/aws-cdk-eks-cluster-inference/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ProviderframeworkonTimeoutServiceRoleDefaultPolicy2688969F"
-          }
-        ],
-        "/aws-cdk-eks-cluster-inference/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ProviderframeworkonTimeout0B47CA38"
-          }
-        ],
-        "/aws-cdk-eks-cluster-inference/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ProviderwaiterstatemachineRole0C7159F9"
-          }
-        ],
-        "/aws-cdk-eks-cluster-inference/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ProviderwaiterstatemachineRoleDefaultPolicyD3C3DA1A"
-          }
-        ],
-        "/aws-cdk-eks-cluster-inference/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/LogGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ProviderwaiterstatemachineLogGroupDD693A98"
-          }
-        ],
-        "/aws-cdk-eks-cluster-inference/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Providerwaiterstatemachine5D4A9DF0"
-          }
-        ],
-        "/aws-cdk-eks-cluster-inference/@aws-cdk--aws-eks.ClusterResourceProvider/awscdkeksclusterinferenceawscdkawseksClusterResourceProviderOnEventHandlerServiceRoleE17D3630Arn": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "awscdkeksclusterinferenceawscdkawseksClusterResourceProviderOnEventHandlerServiceRoleE17D3630Arn"
-          }
-        ],
-        "/aws-cdk-eks-cluster-inference/@aws-cdk--aws-eks.ClusterResourceProvider/awscdkeksclusterinferenceawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRoleC31D0587Arn": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "awscdkeksclusterinferenceawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRoleC31D0587Arn"
-          }
-        ],
-        "/aws-cdk-eks-cluster-inference/@aws-cdk--aws-eks.ClusterResourceProvider/awscdkeksclusterinferenceawscdkawseksClusterResourceProviderframeworkonEvent00634762Arn": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "awscdkeksclusterinferenceawscdkawseksClusterResourceProviderframeworkonEvent00634762Arn"
-          }
-        ],
-        "/aws-cdk-eks-cluster-inference/@aws-cdk--aws-eks.ClusterResourceProvider.NestedStack/@aws-cdk--aws-eks.ClusterResourceProvider.NestedStackResource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454"
           }
         ],
         "/aws-cdk-eks-cluster-inference/@aws-cdk--aws-eks.KubectlProvider/Handler/Resource": [
@@ -670,10 +583,10 @@
             "data": "referencetoawscdkeksclusterinferenceVpcPrivateSubnet2SubnetA5170822Ref"
           }
         ],
-        "/aws-cdk-eks-cluster-inference/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterinferenceCluster774B69DCClusterSecurityGroupId": [
+        "/aws-cdk-eks-cluster-inference/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterinferenceCluster75A6A282ClusterSecurityGroupId": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "referencetoawscdkeksclusterinferenceCluster774B69DCClusterSecurityGroupId"
+            "data": "referencetoawscdkeksclusterinferenceCluster75A6A282ClusterSecurityGroupId"
           }
         ],
         "/aws-cdk-eks-cluster-inference/@aws-cdk--aws-eks.KubectlProvider.NestedStack/@aws-cdk--aws-eks.KubectlProvider.NestedStackResource": [
@@ -770,6 +683,42 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "ClusterCreationRole360249B6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterCreationRole360249B6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterCreationRoleDefaultPolicyE8BDFC7B": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterCreationRoleDefaultPolicyE8BDFC7B",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "Cluster9EE0221C": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Cluster9EE0221C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

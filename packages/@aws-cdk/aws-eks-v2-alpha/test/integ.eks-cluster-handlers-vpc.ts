@@ -13,7 +13,6 @@ class EksAllHandlersInVpcStack extends Stack {
     this.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
     new eks.Cluster(this, 'EksAllHandlersInVpcStack', {
       ...getClusterVersionConfig(this),
-      placeClusterHandlerInVpc: true,
     });
   }
 }
