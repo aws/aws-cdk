@@ -188,7 +188,7 @@ export async function coerceSdkv3Response(value: unknown): Promise<unknown> {
     return value.toString('utf8');
   }
   if (ArrayBuffer.isView(value)) {
-    return decoder.decode(value.buffer);
+    return decoder.decode(value);
   }
 
   if (Array.isArray(value)) {
