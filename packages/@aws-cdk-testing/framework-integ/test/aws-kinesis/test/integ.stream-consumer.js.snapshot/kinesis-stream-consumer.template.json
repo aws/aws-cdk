@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "MyStream5C050E93": {
+  "Stream790BDEE4": {
    "Type": "AWS::Kinesis::Stream",
    "Properties": {
     "RetentionPeriodHours": 24,
@@ -21,22 +21,25 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "MyStreamPolicyC34ACF94": {
-   "Type": "AWS::Kinesis::ResourcePolicy",
+  "StreamConsumer58240CBA": {
+   "Type": "AWS::Kinesis::StreamConsumer",
    "Properties": {
-    "ResourceArn": {
+    "ConsumerName": "stream-consumer",
+    "StreamARN": {
      "Fn::GetAtt": [
-      "MyStream5C050E93",
+      "Stream790BDEE4",
       "Arn"
      ]
-    },
-    "ResourcePolicy": {
+    }
+   }
+  },
+  "Role1ABCC5F0": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
      "Statement": [
       {
-       "Action": [
-        "kinesis:DescribeStreamSummary",
-        "kinesis:GetRecords"
-       ],
+       "Action": "sts:AssumeRole",
        "Effect": "Allow",
        "Principal": {
         "AWS": {
@@ -55,12 +58,6 @@
           ]
          ]
         }
-       },
-       "Resource": {
-        "Fn::GetAtt": [
-         "MyStream5C050E93",
-         "Arn"
-        ]
        }
       }
      ],
@@ -68,53 +65,36 @@
     }
    }
   },
-  "StreamConsumer58240CBA": {
-   "Type": "AWS::Kinesis::StreamConsumer",
+  "RoleDefaultPolicy5FFB7DAB": {
+   "Type": "AWS::IAM::Policy",
    "Properties": {
-    "ConsumerName": "stream-consumer",
-    "StreamARN": {
-     "Fn::GetAtt": [
-      "MyStream5C050E93",
-      "Arn"
-     ]
-    }
-   }
-  },
-  "StreamConsumerPolicy925BAE36": {
-   "Type": "AWS::Kinesis::ResourcePolicy",
-   "Properties": {
-    "ResourceArn": {
-     "Fn::GetAtt": [
-      "StreamConsumer58240CBA",
-      "ConsumerARN"
-     ]
-    },
-    "ResourcePolicy": {
+    "PolicyDocument": {
      "Statement": [
+      {
+       "Action": [
+        "kinesis:DescribeStream",
+        "kinesis:DescribeStreamConsumer",
+        "kinesis:DescribeStreamSummary",
+        "kinesis:GetRecords",
+        "kinesis:GetShardIterator",
+        "kinesis:ListShards",
+        "kinesis:ListStreams",
+        "kinesis:SubscribeToShard"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "Stream790BDEE4",
+         "Arn"
+        ]
+       }
+      },
       {
        "Action": [
         "kinesis:DescribeStreamConsumer",
         "kinesis:SubscribeToShard"
        ],
        "Effect": "Allow",
-       "Principal": {
-        "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
-          ]
-         ]
-        }
-       },
        "Resource": {
         "Fn::GetAtt": [
          "StreamConsumer58240CBA",
@@ -124,7 +104,13 @@
       }
      ],
      "Version": "2012-10-17"
-    }
+    },
+    "PolicyName": "RoleDefaultPolicy5FFB7DAB",
+    "Roles": [
+     {
+      "Ref": "Role1ABCC5F0"
+     }
+    ]
    }
   }
  },
