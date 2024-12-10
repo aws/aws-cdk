@@ -76,6 +76,14 @@ export enum NodegroupAmiType {
    */
   AL2023_X86_64_STANDARD = 'AL2023_x86_64_STANDARD',
   /**
+   * Amazon Linux 2023 with AWS Neuron drivers (x86-64)
+   */
+  AL2023_X86_64_NEURON = 'AL2023_x86_64_NEURON',
+  /**
+   * Amazon Linux 2023 with NVIDIA drivers (x86-64)
+   */
+  AL2023_X86_64_NVIDIA = 'AL2023_x86_64_NVIDIA',
+  /**
    * Amazon Linux 2023 (ARM-64)
    */
   AL2023_ARM_64_STANDARD = 'AL2023_ARM_64_STANDARD',
@@ -594,6 +602,8 @@ const windowsAmiTypes: NodegroupAmiType[] = [
 ];
 const gpuAmiTypes: NodegroupAmiType[] = [
   NodegroupAmiType.AL2_X86_64_GPU,
+  NodegroupAmiType.AL2023_X86_64_NEURON,
+  NodegroupAmiType.AL2023_X86_64_NVIDIA,
   NodegroupAmiType.BOTTLEROCKET_X86_64_NVIDIA,
   NodegroupAmiType.BOTTLEROCKET_ARM_64_NVIDIA,
 ];
