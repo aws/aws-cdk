@@ -1036,7 +1036,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
   );
 
   silentTest(
-    'updateFunction() API fails if it recieves 6 failed attempts in a row - this is a long running test',
+    'updateFunction() API fails if it recieves 7 failed attempts in a row - this is a long running test',
     async () => {
       const ConcurrentModError = new Error('ConcurrentModificationException: Schema is currently being altered, please wait until that is complete.');
       ConcurrentModError.name = 'ConcurrentModificationException';
