@@ -233,7 +233,7 @@ export class FromCloudFormation {
    * Return a function that, when applied to a value, will return the first validly deserialized one
    */
   public static getTypeUnion(validators: Validator[], mappers: Array<(x: any) => FromCloudFormationResult<any>>):
-    (x: any) => FromCloudFormationResult<any> {
+  (x: any) => FromCloudFormationResult<any> {
     return (value: any) => {
       for (let i = 0; i < validators.length; i++) {
         const candidate = mappers[i](value);
