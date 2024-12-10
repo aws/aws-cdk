@@ -207,7 +207,7 @@ export interface EventApiProps {
   /**
    * the name of the Event API
    */
-  readonly name: string;
+  readonly apiName: string;
 
   /**
    * Optional authorization configuration
@@ -240,7 +240,7 @@ export interface EventApiAttributes {
   /**
    * the name of the Event API
    */
-  readonly name: string;
+  readonly apiName: string;
 
   /**
    * an unique AWS AppSync Event API identifier
@@ -298,7 +298,7 @@ export class EventApi extends EventApiBase {
    * the name of the Event Api
    * @attribute ApiName
    */
-  public readonly name: string;
+  public readonly apiName: string;
 
   /**
    * an unique AWS AppSync Event API identifier
@@ -335,6 +335,7 @@ export class EventApi extends EventApiBase {
    * the configured API keys, if present
    *
    * @default - no api key
+   * @attribute ApiKeys
    */
   public readonly apiKeys: { [key: string]: CfnApiKey } = {};
 
@@ -378,14 +379,14 @@ export class EventApi extends EventApiBase {
     };
 
     this.api = new CfnApi(this, 'Resource', {
-      name: props.name,
+      name: props.apiName,
       eventConfig: this.eventConfig,
       ownerContact: props.ownerContact,
     });
 
     this.api.applyRemovalPolicy(RemovalPolicy.DESTROY);
 
-    this.name = this.api.name;
+    this.apiName = this.api.name;
     this.apiId = this.api.attrApiId;
     this.apiArn = this.api.attrApiArn;
     this.dns = this.api.attrDns;

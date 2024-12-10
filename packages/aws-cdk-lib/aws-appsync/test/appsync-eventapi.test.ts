@@ -1,7 +1,7 @@
 import { Template } from '../../assertions';
-import * as lambda from '../../aws-lambda';
 import * as cognito from '../../aws-cognito';
 import * as iam from '../../aws-iam';
+import * as lambda from '../../aws-lambda';
 import * as logs from '../../aws-logs';
 import { App } from '../../core';
 import * as cdk from '../../core';
@@ -18,7 +18,7 @@ beforeEach(() => {
 describe('Appsync Event API Key Authorization', () => {
   test('Appsync Event API - creates default api key', () => {
     // WHEN
-    new appsync.EventApi(stack, 'api', { name: 'api' });
+    new appsync.EventApi(stack, 'api', { apiName: 'api' });
 
     // THEN
     Template.fromStack(stack).resourceCountIs('AWS::AppSync::ApiKey', 1);
@@ -27,7 +27,7 @@ describe('Appsync Event API Key Authorization', () => {
   test('Appsync Event API - allows a single key with no name', () => {
     // WHEN
     new appsync.EventApi(stack, 'api', {
-      name: 'api',
+      apiName: 'api',
       authorizationConfig: {
         authProviders: [{ authorizationType: appsync.AuthorizationType.API_KEY }],
       },
@@ -40,7 +40,7 @@ describe('Appsync Event API Key Authorization', () => {
   test('Appsync Event API - allows multiple keys to be created', () => {
     // WHEN
     new appsync.EventApi(stack, 'api', {
-      name: 'api',
+      apiName: 'api',
       authorizationConfig: {
         authProviders: [
           { authorizationType: appsync.AuthorizationType.API_KEY, apiKeyConfig: { name: 'first' } },
@@ -57,7 +57,7 @@ describe('Appsync Event API Key Authorization', () => {
     // WHEN and THEN
     expect(() => {
       new appsync.EventApi(stack, 'api', {
-        name: 'api',
+        apiName: 'api',
         authorizationConfig: {
           authProviders: [
             { authorizationType: appsync.AuthorizationType.API_KEY },
@@ -73,7 +73,7 @@ describe('AppSync Event Api auth configuration', () => {
   test('Authorization providers are used as allowed modes by default', () => {
     // WHEN
     new appsync.EventApi(stack, 'api', {
-      name: 'apiWithMultipleProviders',
+      apiName: 'apiWithMultipleProviders',
       authorizationConfig: {
         authProviders: [{ authorizationType: appsync.AuthorizationType.API_KEY }, { authorizationType: appsync.AuthorizationType.IAM }],
       },
@@ -100,7 +100,7 @@ describe('AppSync Event Api auth configuration', () => {
 
     // WHEN
     new appsync.EventApi(stack, 'api', {
-      name: 'apiWithMultipleProviders',
+      apiName: 'apiWithMultipleProviders',
       authorizationConfig: {
         authProviders: [
           {
@@ -127,7 +127,7 @@ describe('AppSync Event Api auth configuration', () => {
   test('Authorization providers do not overwrite provided modes', () => {
     // WHEN
     new appsync.EventApi(stack, 'api', {
-      name: 'apiWithMultipleProviders',
+      apiName: 'apiWithMultipleProviders',
       authorizationConfig: {
         authProviders: [{ authorizationType: appsync.AuthorizationType.API_KEY }, { authorizationType: appsync.AuthorizationType.IAM }],
         connectionAuthModeTypes: [appsync.AuthorizationType.IAM],
@@ -149,7 +149,7 @@ describe('AppSync Event Api auth configuration', () => {
     // WHEN
     function configureWithUserPool() {
       new appsync.EventApi(stack, 'api', {
-        name: 'apiWithMultipleProviders',
+        apiName: 'apiWithMultipleProviders',
         authorizationConfig: {
           authProviders: [{ authorizationType: appsync.AuthorizationType.API_KEY }, { authorizationType: appsync.AuthorizationType.IAM }],
           connectionAuthModeTypes: [appsync.AuthorizationType.USER_POOL],
@@ -164,7 +164,7 @@ describe('AppSync Event Api auth configuration', () => {
   test('Configuring OIDC and Cognito user pools', () => {
     // WHEN
     new appsync.EventApi(stack, 'api', {
-      name: 'apiWithUserPool',
+      apiName: 'apiWithUserPool',
       authorizationConfig: {
         authProviders: [
           {
@@ -202,7 +202,7 @@ describe('Appsync Event api with cloudwatch logs', () => {
 
     // WHEN
     new appsync.EventApi(stack, 'api-custom-cw-logs-role', {
-      name: 'apiWithCustomRole',
+      apiName: 'apiWithCustomRole',
       logConfig: { role: cloudWatchLogRole },
     });
 
@@ -222,7 +222,7 @@ describe('Appsync Event api with cloudwatch logs', () => {
   test('appsync GraphqlApi should not use custom role for CW Logs when not specified', () => {
     // WHEN
     new appsync.EventApi(stack, 'api', {
-      name: 'api',
+      apiName: 'api',
       logConfig: {},
     });
     // EXPECT
@@ -244,7 +244,7 @@ describe('Appsync Event api with cloudwatch logs', () => {
 
     // WHEN
     new appsync.EventApi(stack, 'log-retention', {
-      name: 'log-retention',
+      apiName: 'log-retention',
       logConfig: { retention },
     });
 
@@ -268,7 +268,7 @@ describe('Appsync Event api with cloudwatch logs', () => {
   test('log retention will appear whenever logconfig is set', () => {
     // WHEN
     new appsync.EventApi(stack, 'no-log-retention', {
-      name: 'no-log-retention',
+      apiName: 'no-log-retention',
       logConfig: {},
     });
 
@@ -281,7 +281,7 @@ describe('owner contact configuration', () => {
   test('when owner contact is set, they should be used on API', () => {
     // WHEN
     new appsync.EventApi(stack, 'owner-contact', {
-      name: 'owner-contact',
+      apiName: 'owner-contact',
       ownerContact: 'test',
     });
 
@@ -294,7 +294,7 @@ describe('owner contact configuration', () => {
   test('when owner contact exceeds 256 characters, it throws an error', () => {
     const buildWithOwnerContact = () => {
       new appsync.EventApi(stack, 'owner-contact-length-exceeded', {
-        name: 'owner-contact',
+        apiName: 'owner-contact',
         ownerContact: 'a'.repeat(256 + 1),
       });
     };
@@ -317,7 +317,7 @@ describe('grants', () => {
   test('Can grant connect to a function', () => {
     // WHEN
     const api = new appsync.EventApi(stack, 'api', {
-      name: 'api',
+      apiName: 'api',
       authorizationConfig: {
         authProviders: [{ authorizationType: appsync.AuthorizationType.IAM }],
       },
@@ -354,7 +354,7 @@ describe('grants', () => {
 
   test('can only grant IAM permissions if IAM is a configured mode provider', () => {
     // WHEN
-    const api = new appsync.EventApi(stack, 'api', { name: 'api' });
+    const api = new appsync.EventApi(stack, 'api', { apiName: 'api' });
 
     // THEN
     expect(() => api.grantConnect(func)).toThrow('IAM Authorization mode is not configured on this API.');
