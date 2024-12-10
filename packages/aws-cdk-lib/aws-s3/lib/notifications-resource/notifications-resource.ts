@@ -20,7 +20,7 @@ interface NotificationsProps {
   /**
    * Skips notification validation of Amazon SQS, Amazon SNS, and Lambda destinations.
    */
-  skipDestinationValidation: boolean;
+  skipDestinationValidation?: boolean;
 }
 
 /**
@@ -46,7 +46,7 @@ export class BucketNotifications extends Construct {
   private resource?: cdk.CfnResource;
   private readonly bucket: IBucket;
   private readonly handlerRole?: iam.IRole;
-  private readonly skipDestinationValidation: boolean;
+  private readonly skipDestinationValidation?: boolean;
 
   constructor(scope: Construct, id: string, props: NotificationsProps) {
     super(scope, id);
@@ -141,15 +141,20 @@ export class BucketNotifications extends Construct {
         }));
       }
 
+      const bucketNotificationProperties: any = {
+        ServiceToken: handler.functionArn,
+        BucketName: this.bucket.bucketName,
+        NotificationConfiguration: cdk.Lazy.any({ produce: () => this.renderNotificationConfiguration() }),
+        Managed: managed,
+      };
+
+      if (this.skipDestinationValidation !== undefined) {
+        bucketNotificationProperties.SkipDestinationValidation = this.skipDestinationValidation;
+      }
+
       this.resource = new cdk.CfnResource(this, 'Resource', {
         type: 'Custom::S3BucketNotifications',
-        properties: {
-          ServiceToken: handler.functionArn,
-          BucketName: this.bucket.bucketName,
-          NotificationConfiguration: cdk.Lazy.any({ produce: () => this.renderNotificationConfiguration() }),
-          Managed: managed,
-          SkipDestinationValidation: this.skipDestinationValidation,
-        },
+        properties: bucketNotificationProperties,
       });
 
       // Add dependency on bucket policy if it exists to avoid race conditions

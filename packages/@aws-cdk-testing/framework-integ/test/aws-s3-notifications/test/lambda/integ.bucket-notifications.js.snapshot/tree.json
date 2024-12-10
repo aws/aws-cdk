@@ -152,7 +152,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "AllowBucketNotificationsTocdkinteglambdabuckets3notificationsMyFunction47013F39": {
@@ -305,7 +305,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "Construct1": {
@@ -331,7 +331,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "AllowBucketNotificationsTocdkinteglambdabuckets3notificationsMyFunction47013F39": {
@@ -382,7 +382,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "Exports": {
@@ -400,7 +400,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "BootstrapVersion": {
@@ -438,7 +438,7 @@
                 "path": "LambdaBucketNotificationsTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -458,7 +458,7 @@
                             "path": "LambdaBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallS3getBucketNotificationConfigurationa12ea6c9e9639f75995e7228edc2fa6a/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -530,7 +530,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "LatestNodeRuntimeMap": {
@@ -580,7 +580,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },
