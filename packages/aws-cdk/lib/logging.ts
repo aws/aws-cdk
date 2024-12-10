@@ -123,11 +123,18 @@ export async function withCorkedLogging<T>(block: () => Promise<T>): Promise<T> 
 export function log(entry: LogEntry): void;
 export function log(level: LogLevel, fmt: string, ...args: unknown[]): void;
 export function log(levelOrEntry: LogLevel | LogEntry, fmt?: string, ...args: unknown[]): void {
-  // Normalize input
+  // Normalize input and set timestamp to true for string based calls,
+  // or default timestamp to true otherwise
   const entry: LogEntry = typeof levelOrEntry === 'string'
-    ? { level: levelOrEntry as LogLevel, message: util.format(fmt!, ...args) }
-    : levelOrEntry;
-
+    ? {
+      level: levelOrEntry as LogLevel,
+      message: util.format(fmt!, ...args),
+      timestamp: true,
+    }
+    : {
+      ...levelOrEntry,
+      timestamp: levelOrEntry.timestamp ?? true,
+    };
   // Check if we should log this level
   if (levelPriority[entry.level] > levelPriority[currentLogLevel]) {
     return;
