@@ -1,0 +1,14 @@
+{
+  "enableLookups": true,
+  "version": "36.0.0",
+  "testCases": {
+    "integ-test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-route53-health-check"
+      ],
+      "diffAssets": true,
+      "assertionStack": "integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestDefaultTestDeployAssert24D5C536"
+    }
+  }
+}
