@@ -39,6 +39,42 @@ test('Invoke glue job with just job ARN', () => {
   });
 });
 
+test('Invoke glue job with dynamic worker type', () => {
+  const task = new GlueStartJobRun(stack, 'Task', {
+    glueJobName,
+    workerConfiguration: {
+      workerType: WorkerType.of(sfn.JsonPath.stringAt('$.workerType')),
+      numberOfWorkers: 2,
+    },
+  });
+
+  new sfn.StateMachine(stack, 'SM', {
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
+  });
+
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::glue:startJobRun',
+        ],
+      ],
+    },
+    End: true,
+    Parameters: {
+      'JobName': glueJobName,
+      'NumberOfWorkers': 2,
+      'WorkerType.$': '$.workerType',
+    },
+  });
+});
+
 test('Invoke glue job with full properties', () => {
   const jobArguments = {
     key: 'value',

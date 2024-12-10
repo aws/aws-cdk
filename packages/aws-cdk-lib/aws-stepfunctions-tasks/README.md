@@ -1360,6 +1360,7 @@ new tasks.GlueStartJobRun(this, 'Task', {
   notifyDelayAfter: Duration.minutes(5),
 });
 ```
+
 You can configure workers by setting the `workerType` and `numberOfWorkers` properties.
 
 ```ts
@@ -1368,6 +1369,19 @@ new tasks.GlueStartJobRun(this, 'Task', {
   workerConfiguration: {
     workerType: tasks.WorkerType.G_1X, // Worker type
     numberOfWorkers: 2, // Number of Workers
+  },
+});
+```
+
+To configure the worker type or number of workers dynamically from StateMachine's input,
+you can configure it using JSON Path values like this:
+
+```ts
+new tasks.GlueStartJobRun(this, 'Glue Job Task', {
+  glueJobName: 'my-glue-job',
+  workerConfiguration: {
+    workerType: WorkerType.of(sfn.JsonPath.stringAt('$.glue_jobs_configs.executor_type')),
+    numberOfWorkers: sfn.JsonPath.numberAt('$.glue_jobs_configs.max_number_workers'),
   },
 });
 ```
