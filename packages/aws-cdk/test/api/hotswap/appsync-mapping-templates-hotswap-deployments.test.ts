@@ -972,6 +972,14 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
   silentTest(
     'updateFunction() API recovers from failed update attempt through retry logic',
     async () => {
+
+      // GIVEN
+      mockAppSyncClient
+        .on(ListFunctionsCommand)
+        .resolvesOnce({
+          functions: [{ name: 'my-function', functionId: 'functionId' }],
+        });
+
       const ConcurrentModError = new Error('ConcurrentModificationException: Schema is currently being altered, please wait until that is complete.');
       ConcurrentModError.name = 'ConcurrentModificationException';
       mockAppSyncClient
@@ -1023,6 +1031,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
 
       // THEN
       expect(deployStackResult).not.toBeUndefined();
+      expect(mockAppSyncClient).toHaveReceivedCommandTimes(UpdateFunctionCommand, 2); // 1st failure then success on retry
       expect(mockAppSyncClient).toHaveReceivedCommandWith(UpdateFunctionCommand, {
         apiId: 'apiId',
         dataSourceName: 'my-datasource',
@@ -1038,6 +1047,14 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
   silentTest(
     'updateFunction() API fails if it recieves 7 failed attempts in a row - this is a long running test',
     async () => {
+
+      // GIVEN
+      mockAppSyncClient
+        .on(ListFunctionsCommand)
+        .resolvesOnce({
+          functions: [{ name: 'my-function', functionId: 'functionId' }],
+        });
+
       const ConcurrentModError = new Error('ConcurrentModificationException: Schema is currently being altered, please wait until that is complete.');
       ConcurrentModError.name = 'ConcurrentModificationException';
       mockAppSyncClient
@@ -1096,7 +1113,8 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       );
 
       // THEN
-      expect(mockAppSyncClient).not.toHaveReceivedCommandWith(UpdateFunctionCommand, {
+      expect(mockAppSyncClient).toHaveReceivedCommandTimes(UpdateFunctionCommand, 7); // 1st attempt and then 6 retries before bailing
+      expect(mockAppSyncClient).toHaveReceivedCommandWith(UpdateFunctionCommand, {
         apiId: 'apiId',
         dataSourceName: 'my-datasource',
         functionId: 'functionId',
