@@ -118,8 +118,14 @@ export class GeofenceCollection extends Resource implements IGeofenceCollection 
       throw new Error(`\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`);
     }
 
-    if (props.geofenceCollectionName && !Token.isUnresolved(props.geofenceCollectionName) && !/^[-.\w]{1,100}$/.test(props.geofenceCollectionName)) {
-      throw new Error(`Invalid geofence collection name. The geofence collection name must be between 1 and 100 characters and contain only alphanumeric characters, hyphens, periods and underscores. Received: ${props.geofenceCollectionName}`);
+    if (props.geofenceCollectionName !== undefined && !Token.isUnresolved(props.geofenceCollectionName)) {
+      if (props.geofenceCollectionName.length < 1 || props.geofenceCollectionName.length > 100) {
+        throw new Error(`\`geofenceCollectionName\` must be between 1 and 100 characters, got: ${props.geofenceCollectionName.length} characters.`);
+      }
+
+      if (!/^[-._\w]+$/.test(props.geofenceCollectionName)) {
+        throw new Error(`\`geofenceCollectionName\` must contain only alphanumeric characters, hyphens, periods and underscores, got: ${props.geofenceCollectionName}.`);
+      }
     }
 
     super(scope, id, {

@@ -15,8 +15,9 @@ import { UserData } from './user-data';
 import { BlockDevice } from './volume';
 import { IVpc, Subnet, SubnetSelection } from './vpc';
 import * as iam from '../../aws-iam';
-import { Annotations, Aspects, Duration, Fn, IResource, Lazy, Resource, Stack, Tags, Token } from '../../core';
+import { Annotations, AspectPriority, Aspects, Duration, FeatureFlags, Fn, IResource, Lazy, Resource, Stack, Tags, Token } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
+import * as cxapi from '../../cx-api';
 
 /**
  * Name tag constant
@@ -177,7 +178,7 @@ export interface InstanceProps {
    * UserData, which will cause CloudFormation to replace it if the UserData
    * changes.
    *
-   * @default - true iff `initOptions` is specified, false otherwise.
+   * @default - true if `initOptions` is specified, false otherwise.
    */
   readonly userDataCausesReplacement?: boolean;
 
@@ -185,6 +186,7 @@ export interface InstanceProps {
    * An IAM role to associate with the instance profile assigned to this Auto Scaling Group.
    *
    * The role must be assumable by the service principal `ec2.amazonaws.com`:
+   * Note: You can provide an instanceProfile or a role, but not both.
    *
    * @example
    * const role = new iam.Role(this, 'MyRole', {
@@ -194,6 +196,15 @@ export interface InstanceProps {
    * @default - A role will automatically be created, it can be accessed via the `role` property
    */
   readonly role?: iam.IRole;
+
+  /**
+   * The instance profile used to pass role information to EC2 instances.
+   *
+   * Note: You can provide an instanceProfile or a role, but not both.
+   *
+   * @default - No instance profile
+   */
+  readonly instanceProfile?: iam.IInstanceProfile;
 
   /**
    * The name of the instance
@@ -318,6 +329,19 @@ export interface InstanceProps {
    * @default false
    */
   readonly ebsOptimized?: boolean;
+
+  /**
+   * If true, the instance will not be able to be terminated using the Amazon EC2 console, CLI, or API.
+   *
+   * To change this attribute after launch, use [ModifyInstanceAttribute](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_ModifyInstanceAttribute.html).
+   * Alternatively, if you set InstanceInitiatedShutdownBehavior to terminate, you can terminate the instance
+   * by running the shutdown command from the instance.
+   *
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-instance.html#cfn-ec2-instance-disableapitermination
+   *
+   * @default false
+   */
+  readonly disableApiTermination?: boolean;
 
   /**
    * Indicates whether an instance stops or terminates when you initiate shutdown from the instance
@@ -465,18 +489,30 @@ export class Instance extends Resource implements IInstance {
     this.securityGroups.push(this.securityGroup);
     Tags.of(this).add(NAME_TAG, props.instanceName || this.node.path);
 
-    this.role = props.role || new iam.Role(this, 'InstanceRole', {
-      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
-    });
+    if (props.instanceProfile && props.role) {
+      throw new Error('You cannot provide both instanceProfile and role');
+    }
+
+    let iamInstanceProfile: string | undefined = undefined;
+    if (props.instanceProfile?.role) {
+      this.role = props.instanceProfile.role;
+      iamInstanceProfile = props.instanceProfile.instanceProfileName;
+    } else {
+      this.role = props.role || new iam.Role(this, 'InstanceRole', {
+        assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+      });
+
+      const iamProfile = new iam.CfnInstanceProfile(this, 'InstanceProfile', {
+        roles: [this.role.roleName],
+      });
+      iamInstanceProfile = iamProfile.ref;
+    }
+
     this.grantPrincipal = this.role;
 
     if (props.ssmSessionPermissions) {
       this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore'));
     }
-
-    const iamProfile = new iam.CfnInstanceProfile(this, 'InstanceProfile', {
-      roles: [this.role.roleName],
-    });
 
     // use delayed evaluation
     const imageConfig = props.machineImage.getImage(this);
@@ -551,7 +587,7 @@ export class Instance extends Resource implements IInstance {
       subnetId: networkInterfaces ? undefined : subnet.subnetId,
       securityGroupIds: networkInterfaces ? undefined : securityGroupsToken,
       networkInterfaces,
-      iamInstanceProfile: iamProfile.ref,
+      iamInstanceProfile,
       userData: userDataToken,
       availabilityZone: subnet.availabilityZone,
       sourceDestCheck: props.sourceDestCheck,
@@ -561,6 +597,7 @@ export class Instance extends Resource implements IInstance {
       monitoring: props.detailedMonitoring,
       creditSpecification: props.creditSpecification ? { cpuCredits: props.creditSpecification } : undefined,
       ebsOptimized: props.ebsOptimized,
+      disableApiTermination: props.disableApiTermination,
       instanceInitiatedShutdownBehavior: props.instanceInitiatedShutdownBehavior,
       placementGroupName: props.placementGroup?.placementGroupName,
       enclaveOptions: props.enclaveEnabled !== undefined ? { enabled: props.enclaveEnabled } : undefined,
@@ -589,11 +626,22 @@ export class Instance extends Resource implements IInstance {
     this.instancePublicDnsName = this.instance.attrPublicDnsName;
     this.instancePublicIp = this.instance.attrPublicIp;
 
-    if (props.init) {
-      this.applyCloudFormationInit(props.init, props.initOptions);
-    }
+    // When feature flag is true, if both the resourceSignalTimeout and initOptions.timeout are set,
+    // the timeout is summed together. This logic is done in applyCloudFormationInit.
+    // This is because applyUpdatePolicies overwrites the timeout when both timeout fields are specified.
+    if (FeatureFlags.of(this).isEnabled(cxapi.EC2_SUM_TIMEOUT_ENABLED)) {
+      this.applyUpdatePolicies(props);
 
-    this.applyUpdatePolicies(props);
+      if (props.init) {
+        this.applyCloudFormationInit(props.init, props.initOptions);
+      }
+    } else {
+      if (props.init) {
+        this.applyCloudFormationInit(props.init, props.initOptions);
+      }
+
+      this.applyUpdatePolicies(props);
+    }
 
     // Trigger replacement (via new logical ID) on user data change, if specified or cfn-init is being used.
     //
@@ -621,7 +669,7 @@ export class Instance extends Resource implements IInstance {
     }));
 
     if (props.requireImdsv2) {
-      Aspects.of(this).add(new InstanceRequireImdsv2Aspect());
+      Aspects.of(this).add(new InstanceRequireImdsv2Aspect(), { priority: AspectPriority.MUTATING });
     }
   }
 
@@ -702,6 +750,7 @@ export class Instance extends Resource implements IInstance {
       this.instance.cfnOptions.creationPolicy = {
         ...this.instance.cfnOptions.creationPolicy,
         resourceSignal: {
+          ...this.instance.cfnOptions.creationPolicy?.resourceSignal,
           timeout: props.resourceSignalTimeout && props.resourceSignalTimeout.toIsoString(),
         },
       };

@@ -8,7 +8,7 @@ import { ScalableTableAttribute } from './scalable-table-attribute';
 import {
   Operation, OperationsMetricOptions, SystemErrorsForOperationsMetricOptions,
   Attribute, BillingMode, ProjectionType, ITable, SecondaryIndexProps, TableClass,
-  LocalSecondaryIndexProps, TableEncryption, StreamViewType,
+  LocalSecondaryIndexProps, TableEncryption, StreamViewType, WarmThroughput,
 } from './shared';
 import * as appscaling from '../../aws-applicationautoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
@@ -243,13 +243,13 @@ export interface TableOptions extends SchemaOptions {
    */
   readonly maxReadRequestUnits?: number;
   /**
-     * The write request units for the table. Careful if you add Global Secondary Indexes, as
-     * those will share the table's maximum on-demand throughput.
-     *
-     * Can only be provided if billingMode is PAY_PER_REQUEST.
-     *
-     * @default - on-demand throughput is disabled
-     */
+   * The write request units for the table. Careful if you add Global Secondary Indexes, as
+   * those will share the table's maximum on-demand throughput.
+   *
+   * Can only be provided if billingMode is PAY_PER_REQUEST.
+   *
+   * @default - on-demand throughput is disabled
+   */
   readonly maxWriteRequestUnits?: number;
 
   /**
@@ -258,6 +258,14 @@ export interface TableOptions extends SchemaOptions {
    * @default PROVISIONED if `replicationRegions` is not specified, PAY_PER_REQUEST otherwise
    */
   readonly billingMode?: BillingMode;
+
+  /**
+   * Specify values to pre-warm you DynamoDB Table
+   * Warm Throughput feature is not available for Global Table replicas using the `Table` construct. To enable Warm Throughput, use the `TableV2` construct instead.
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#cfn-dynamodb-table-warmthroughput
+   * @default - warm throughput is not configured
+   */
+  readonly warmThroughput?: WarmThroughput;
 
   /**
    * Whether point-in-time recovery is enabled.
@@ -347,6 +355,7 @@ export interface TableOptions extends SchemaOptions {
   readonly replicationTimeout?: Duration;
 
   /**
+   * [WARNING: Use this flag with caution, misusing this flag may cause deleting existing replicas, refer to the detailed documentation for more information]
    * Indicates whether CloudFormation stack waits for replication to finish.
    * If set to false, the CloudFormation resource will mark the resource as
    * created and replication will be completed asynchronously. This property is
@@ -455,6 +464,20 @@ export interface GlobalSecondaryIndexProps extends SecondaryIndexProps, SchemaOp
    * @default - on-demand throughput is disabled
    */
   readonly maxWriteRequestUnits?: number;
+
+  /**
+   * The warm throughput configuration for the global secondary index.
+   *
+   * @default - no warm throughput is configured
+   */
+  readonly warmThroughput?: WarmThroughput;
+
+  /**
+   * Whether CloudWatch contributor insights is enabled for the specified global secondary index.
+   *
+   * @default false
+   */
+  readonly contributorInsightsEnabled?: boolean;
 }
 
 /**
@@ -1179,6 +1202,7 @@ export class Table extends TableBase {
       resourcePolicy: props.resourcePolicy
         ? { policyDocument: props.resourcePolicy }
         : undefined,
+      warmThroughput: props.warmThroughput?? undefined,
     });
     this.table.applyRemovalPolicy(props.removalPolicy);
 
@@ -1226,6 +1250,7 @@ export class Table extends TableBase {
     const gsiProjection = this.buildIndexProjection(props);
 
     this.globalSecondaryIndexes.push({
+      contributorInsightsSpecification: props.contributorInsightsEnabled !== undefined ? { enabled: props.contributorInsightsEnabled } : undefined,
       indexName: props.indexName,
       keySchema: gsiKeySchema,
       projection: gsiProjection,
@@ -1240,6 +1265,7 @@ export class Table extends TableBase {
             maxWriteRequestUnits: props.maxWriteRequestUnits || undefined,
           },
         } : undefined),
+      warmThroughput: props.warmThroughput ?? undefined,
     });
 
     this.secondaryIndexSchemas.set(props.indexName, {

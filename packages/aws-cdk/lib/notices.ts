@@ -1,107 +1,319 @@
 import { ClientRequest } from 'http';
 import * as https from 'https';
 import * as path from 'path';
+import type { Environment } from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import * as semver from 'semver';
-import { debug, print } from './logging';
-import { ConstructTreeNode, loadTreeFromDir, some } from './tree';
+import { debug, print, warning, error } from './logging';
+import { Configuration } from './settings';
+import { loadTreeFromDir, some } from './tree';
 import { flatMap } from './util';
 import { cdkCacheDir } from './util/directories';
 import { versionNumber } from './version';
 
 const CACHE_FILE_PATH = path.join(cdkCacheDir(), 'notices.json');
 
-export interface DisplayNoticesProps {
+export interface NoticesProps {
   /**
-   * The cloud assembly directory. Usually 'cdk.out'.
+   * A `Configuration` instance holding CDK context and settings.
    */
-  readonly outdir: string;
+  readonly configuration: Configuration;
 
   /**
-   * Issue numbers of notices that have been acknowledged by a user
-   * of the current CDK repository. These notices will be skipped.
-   */
-  readonly acknowledgedIssueNumbers: number[];
-
-  /**
-   * Whether cached notices should be ignored. Setting this property
-   * to true will force the CLI to download fresh data
+   * Include notices that have already been acknowledged.
    *
    * @default false
    */
-  readonly ignoreCache?: boolean;
+  readonly includeAcknowledged?: boolean;
+
+}
+
+export interface NoticesPrintOptions {
 
   /**
-   * Whether to append the number of unacknowledged notices to the display.
+   * Whether to append the total number of unacknowledged notices to the display.
    *
    * @default false
    */
-  readonly unacknowledged?: boolean;
+  readonly showTotal?: boolean;
+
 }
 
-export async function refreshNotices() {
-  const dataSource = dataSourceReference(false);
-  return dataSource.fetch();
+export interface NoticesRefreshOptions {
+  /**
+   * Whether to force a cache refresh regardless of expiration time.
+   *
+   * @default false
+   */
+  readonly force?: boolean;
+
+  /**
+   * Data source for fetch notices from.
+   *
+   * @default - WebsiteNoticeDataSource
+   */
+  readonly dataSource?: NoticeDataSource;
 }
 
-export async function displayNotices(props: DisplayNoticesProps) {
-  const dataSource = dataSourceReference(props.ignoreCache ?? false);
-  print(await generateMessage(dataSource, props));
-  return 0;
+export interface NoticesFilterFilterOptions {
+  readonly data: Notice[];
+  readonly cliVersion: string;
+  readonly outDir: string;
+  readonly bootstrappedEnvironments: BootstrappedEnvironment[];
 }
 
-export async function generateMessage(dataSource: NoticeDataSource, props: DisplayNoticesProps) {
-  const data = await dataSource.fetch();
-  const filteredNotices = filterNotices(data, {
-    outdir: props.outdir,
-    acknowledgedIssueNumbers: new Set(props.acknowledgedIssueNumbers),
-  });
+export class NoticesFilter {
 
-  let messageString: string = '';
-  if (filteredNotices.length > 0) {
-    messageString = getFilteredMessages(filteredNotices);
+  public static filter(options: NoticesFilterFilterOptions): FilteredNotice[] {
+    return [
+      ...this.findForCliVersion(options.data, options.cliVersion),
+      ...this.findForFrameworkVersion(options.data, options.outDir),
+      ...this.findForBootstrapVersion(options.data, options.bootstrappedEnvironments),
+    ];
   }
-  if (props.unacknowledged) {
-    messageString = [messageString, `There are ${filteredNotices.length} unacknowledged notice(s).`].join('\n\n');
+
+  private static findForCliVersion(data: Notice[], cliVersion: string): FilteredNotice[] {
+    return flatMap(data, notice => {
+      const affectedComponent = notice.components.find(component => component.name === 'cli');
+      const affectedRange = affectedComponent?.version;
+
+      if (affectedRange == null) {
+        return [];
+      }
+
+      if (!semver.satisfies(cliVersion, affectedRange)) {
+        return [];
+      }
+
+      return [new FilteredNotice(notice)];
+    });
+
   }
-  return messageString;
+
+  private static findForFrameworkVersion(data: Notice[], outDir: string): FilteredNotice[] {
+    const tree = loadTreeFromDir(outDir);
+    return flatMap(data, notice => {
+
+      //  A match happens when:
+      //
+      //  1. The version of the node matches the version in the notice, interpreted
+      //  as a semver range.
+      //
+      //  AND
+      //
+      //  2. The name in the notice is a prefix of the node name when the query ends in '.',
+      //  or the two names are exactly the same, otherwise.
+
+      const matched = some(tree, node => {
+        return this.resolveAliases(notice.components).some(component =>
+          compareNames(component.name, node.constructInfo?.fqn) &&
+          compareVersions(component.version, node.constructInfo?.version));
+      });
+
+      if (!matched) {
+        return [];
+      }
+
+      return [new FilteredNotice(notice)];
+
+      function compareNames(pattern: string, target: string | undefined): boolean {
+        if (target == null) { return false; }
+        return pattern.endsWith('.') ? target.startsWith(pattern) : pattern === target;
+      }
+
+      function compareVersions(pattern: string, target: string | undefined): boolean {
+        return semver.satisfies(target ?? '', pattern);
+      }
+
+    });
+
+  }
+
+  private static findForBootstrapVersion(data: Notice[], bootstrappedEnvironments: BootstrappedEnvironment[]): FilteredNotice[] {
+    return flatMap(data, notice => {
+      const affectedComponent = notice.components.find(component => component.name === 'bootstrap');
+      const affectedRange = affectedComponent?.version;
+
+      if (affectedRange == null) {
+        return [];
+      }
+
+      const affected = bootstrappedEnvironments.filter(i => {
+
+        const semverBootstrapVersion = semver.coerce(i.bootstrapStackVersion);
+        if (!semverBootstrapVersion) {
+          // we don't throw because notices should never crash the cli.
+          warning(`While filtering notices, could not coerce bootstrap version '${i.bootstrapStackVersion}' into semver`);
+          return false;
+        }
+
+        return semver.satisfies(semverBootstrapVersion, affectedRange);
+
+      });
+
+      if (affected.length === 0) {
+        return [];
+      }
+
+      const filtered = new FilteredNotice(notice);
+      filtered.addDynamicValue('ENVIRONMENTS', affected.map(s => s.environment.name).join(','));
+
+      return [filtered];
+
+    });
+  }
+
+  private static resolveAliases(components: Component[]): Component[] {
+    return flatMap(components, component => {
+      if (component.name === 'framework') {
+        return [{
+          name: '@aws-cdk/core.',
+          version: component.version,
+        }, {
+          name: 'aws-cdk-lib.',
+          version: component.version,
+        }];
+      } else {
+        return [component];
+      }
+    });
+  }
+
 }
 
-function getFilteredMessages(filteredNotices: Notice[]): string {
-  const individualMessages = formatNotices(filteredNotices);
-  return finalMessage(individualMessages, filteredNotices[0].issueNumber);
+/**
+ * Infomration about a bootstrapped environment.
+ */
+export interface BootstrappedEnvironment {
+  readonly bootstrapStackVersion: number;
+  readonly environment: Environment;
 }
 
-function dataSourceReference(ignoreCache: boolean): NoticeDataSource {
-  return new CachedDataSource(CACHE_FILE_PATH, new WebsiteNoticeDataSource(), ignoreCache);
-}
+/**
+ * Provides access to notices the CLI can display.
+ */
+export class Notices {
 
-function finalMessage(individualMessages: string[], exampleNumber: number): string {
-  return [
-    '\nNOTICES         (What\'s this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)',
-    ...individualMessages,
-    `If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge ${exampleNumber}".`,
-  ].join('\n\n');
-}
+  /**
+   * Create an instance. Note that this replaces the singleton.
+   */
+  public static create(props: NoticesProps): Notices {
+    this._instance = new Notices(props);
+    return this._instance;
+  }
 
-export interface FilterNoticeOptions {
-  outdir?: string;
-  cliVersion?: string;
-  frameworkVersion?: string;
-  acknowledgedIssueNumbers?: Set<number>;
-}
+  /**
+   * Get the singleton instance. May return `undefined` if `create` has not been called.
+   */
+  public static get(): Notices | undefined {
+    return this._instance;
+  }
 
-export function filterNotices(data: Notice[], options: FilterNoticeOptions): Notice[] {
-  const filter = new NoticeFilter({
-    cliVersion: options.cliVersion ?? versionNumber(),
-    acknowledgedIssueNumbers: options.acknowledgedIssueNumbers ?? new Set(),
-    tree: loadTreeFromDir(options.outdir ?? 'cdk.out'),
-  });
-  return data.filter(notice => filter.apply(notice));
-}
+  private static _instance: Notices | undefined;
 
-export function formatNotices(data: Notice[]): string[] {
-  return data.map(formatNotice);
+  private readonly configuration: Configuration;
+  private readonly acknowledgedIssueNumbers: Set<Number>;
+  private readonly includeAcknowlegded: boolean;
+
+  private data: Set<Notice> = new Set();
+
+  // sets don't deduplicate interfaces, so we use a map.
+  private readonly bootstrappedEnvironments: Map<string, BootstrappedEnvironment> = new Map();
+
+  private constructor(props: NoticesProps) {
+    this.configuration = props.configuration;
+    this.acknowledgedIssueNumbers = new Set(this.configuration.context.get('acknowledged-issue-numbers') ?? []);
+    this.includeAcknowlegded = props.includeAcknowledged ?? false;
+  }
+
+  /**
+   * Add a bootstrap information to filter on. Can have multiple values
+   * in case of multi-environment deployments.
+   */
+  public addBootstrappedEnvironment(bootstrapped: BootstrappedEnvironment) {
+    const key = [
+      bootstrapped.bootstrapStackVersion,
+      bootstrapped.environment.account,
+      bootstrapped.environment.region,
+      bootstrapped.environment.name,
+    ].join(':');
+    this.bootstrappedEnvironments.set(key, bootstrapped);
+  }
+
+  /**
+   * Refresh the list of notices this instance is aware of.
+   * To make sure this never crashes the CLI process, all failures are caught and
+   * slitently logged.
+   *
+   * If context is configured to not display notices, this will no-op.
+   */
+  public async refresh(options: NoticesRefreshOptions = {}) {
+
+    if (!this.shouldDisplay()) {
+      return;
+    }
+
+    try {
+      const dataSource = new CachedDataSource(CACHE_FILE_PATH, options.dataSource ?? new WebsiteNoticeDataSource(), options.force ?? false);
+      const notices = await dataSource.fetch();
+      this.data = new Set(this.includeAcknowlegded ? notices : notices.filter(n => !this.acknowledgedIssueNumbers.has(n.issueNumber)));
+    } catch (e: any) {
+      debug(`Could not refresh notices: ${e}`);
+    }
+  }
+
+  /**
+   * Display the relevant notices (unless context dictates we shouldn't).
+   */
+  public display(options: NoticesPrintOptions = {}) {
+
+    if (!this.shouldDisplay()) {
+      return;
+    }
+
+    const filteredNotices = NoticesFilter.filter({
+      data: Array.from(this.data),
+      cliVersion: versionNumber(),
+      outDir: this.configuration.settings.get(['output']) ?? 'cdk.out',
+      bootstrappedEnvironments: Array.from(this.bootstrappedEnvironments.values()),
+    });
+
+    if (filteredNotices.length > 0) {
+      print('');
+      print('NOTICES         (What\'s this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)');
+      print('');
+      for (const filtered of filteredNotices) {
+        const formatted = filtered.format();
+        switch (filtered.notice.severity) {
+          case 'warning':
+            warning(formatted);
+            break;
+          case 'error':
+            error(formatted);
+            break;
+          default:
+            print(formatted);
+        }
+        print('');
+      }
+      print(`If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge ${filteredNotices[0].notice.issueNumber}".`);
+    }
+
+    if (options.showTotal ?? false) {
+      print('');
+      print(`There are ${filteredNotices.length} unacknowledged notice(s).`);
+    }
+
+  }
+
+  /**
+   * Determine whether or not notices should be displayed based on the
+   * configuration provided at instantiation time.
+   */
+  private shouldDisplay(): boolean {
+    return this.configuration.settings.get(['notices']) ?? true;
+  }
+
 }
 
 export interface Component {
@@ -115,6 +327,52 @@ export interface Notice {
   overview: string;
   components: Component[];
   schemaVersion: string;
+  severity?: string;
+}
+
+/**
+ * Notice after passing the filter. A filter can augment a notice with
+ * dynamic values as it has access to the dynamic matching data.
+ */
+export class FilteredNotice {
+
+  private readonly dynamicValues: { [key: string]: string } = {};
+
+  public constructor(public readonly notice: Notice) {}
+
+  public addDynamicValue(key: string, value: string) {
+    this.dynamicValues[`{resolve:${key}}`] = value;
+  }
+
+  public format(): string {
+
+    const componentsValue = this.notice.components.map(c => `${c.name}: ${c.version}`).join(', ');
+    return this.resolveDynamicValues([
+      `${this.notice.issueNumber}\t${this.notice.title}`,
+      this.formatOverview(),
+      `\tAffected versions: ${componentsValue}`,
+      `\tMore information at: https://github.com/aws/aws-cdk/issues/${this.notice.issueNumber}`,
+    ].join('\n\n') + '\n');
+
+  }
+
+  private formatOverview() {
+    const wrap = (s: string) => s.replace(/(?![^\n]{1,60}$)([^\n]{1,60})\s/g, '$1\n');
+
+    const heading = 'Overview: ';
+    const separator = `\n\t${' '.repeat(heading.length)}`;
+    const content = wrap(this.notice.overview)
+      .split('\n')
+      .join(separator);
+
+    return '\t' + heading + content;
+  }
+
+  private resolveDynamicValues(input: string): string {
+    const pattern = new RegExp(Object.keys(this.dynamicValues).join('|'), 'g');
+    return input.replace(pattern, (matched) => this.dynamicValues[matched] ?? matched);
+  }
+
 }
 
 export interface NoticeDataSource {
@@ -238,117 +496,5 @@ export class CachedDataSource implements NoticeDataSource {
     } catch (e) {
       debug(`Failed to store notices in the cache: ${e}`);
     }
-  }
-}
-
-export interface NoticeFilterProps {
-  cliVersion: string;
-  acknowledgedIssueNumbers: Set<number>;
-  tree: ConstructTreeNode;
-}
-
-export class NoticeFilter {
-  private readonly acknowledgedIssueNumbers: Set<number>;
-
-  constructor(private readonly props: NoticeFilterProps) {
-    this.acknowledgedIssueNumbers = props.acknowledgedIssueNumbers;
-  }
-
-  /**
-   * Returns true iff we should show this notice.
-   */
-  apply(notice: Notice): boolean {
-    if (this.acknowledgedIssueNumbers.has(notice.issueNumber)) {
-      return false;
-    }
-
-    return this.applyVersion(notice, 'cli', this.props.cliVersion) ||
-      match(resolveAliases(notice.components), this.props.tree);
-  }
-
-  /**
-   * Returns true iff we should show the notice.
-   */
-  private applyVersion(notice: Notice, name: string, compareToVersion: string | undefined) {
-    if (compareToVersion === undefined) { return false; }
-
-    const affectedComponent = notice.components.find(component => component.name === name);
-    const affectedRange = affectedComponent?.version;
-    return affectedRange != null && semver.satisfies(compareToVersion, affectedRange);
-  }
-}
-
-/**
- * Some component names are aliases to actual component names. For example "framework"
- * is an alias for either the core library (v1) or the whole CDK library (v2).
- *
- * This function converts all aliases to their actual counterpart names, to be used to
- * match against the construct tree.
- *
- * @param components a list of components. Components whose name is an alias will be
- * transformed and all others will be left intact.
- */
-function resolveAliases(components: Component[]): Component[] {
-  return flatMap(components, component => {
-    if (component.name === 'framework') {
-      return [{
-        name: '@aws-cdk/core.',
-        version: component.version,
-      }, {
-        name: 'aws-cdk-lib.',
-        version: component.version,
-      }];
-    } else {
-      return [component];
-    }
-  });
-}
-
-function formatNotice(notice: Notice): string {
-  const componentsValue = notice.components.map(c => `${c.name}: ${c.version}`).join(', ');
-  return [
-    `${notice.issueNumber}\t${notice.title}`,
-    formatOverview(notice.overview),
-    `\tAffected versions: ${componentsValue}`,
-    `\tMore information at: https://github.com/aws/aws-cdk/issues/${notice.issueNumber}`,
-  ].join('\n\n') + '\n';
-}
-
-function formatOverview(text: string) {
-  const wrap = (s: string) => s.replace(/(?![^\n]{1,60}$)([^\n]{1,60})\s/g, '$1\n');
-
-  const heading = 'Overview: ';
-  const separator = `\n\t${' '.repeat(heading.length)}`;
-  const content = wrap(text)
-    .split('\n')
-    .join(separator);
-
-  return '\t' + heading + content;
-}
-
-/**
- * Whether any component in the tree matches any component in the query.
- * A match happens when:
- *
- * 1. The version of the node matches the version in the query, interpreted
- * as a semver range.
- *
- * 2. The name in the query is a prefix of the node name when the query ends in '.',
- * or the two names are exactly the same, otherwise.
- */
-function match(query: Component[], tree: ConstructTreeNode): boolean {
-  return some(tree, node => {
-    return query.some(component =>
-      compareNames(component.name, node.constructInfo?.fqn) &&
-      compareVersions(component.version, node.constructInfo?.version));
-  });
-
-  function compareNames(pattern: string, target: string | undefined): boolean {
-    if (target == null) { return false; }
-    return pattern.endsWith('.') ? target.startsWith(pattern) : pattern === target;
-  }
-
-  function compareVersions(pattern: string, target: string | undefined): boolean {
-    return semver.satisfies(target ?? '', pattern);
   }
 }

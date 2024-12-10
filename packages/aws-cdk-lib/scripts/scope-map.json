@@ -179,6 +179,9 @@
   "aws-connectcampaigns": [
     "AWS::ConnectCampaigns"
   ],
+  "aws-connectcampaignsv2": [
+    "AWS::ConnectCampaignsV2"
+  ],
   "aws-controltower": [
     "AWS::ControlTower"
   ],
@@ -349,6 +352,9 @@
   ],
   "aws-internetmonitor": [
     "AWS::InternetMonitor"
+  ],
+  "aws-invoicing": [
+    "AWS::Invoicing"
   ],
   "aws-iot": [
     "AWS::IoT"
@@ -537,6 +543,9 @@
   "aws-pcaconnectorad": [
     "AWS::PCAConnectorAD"
   ],
+  "aws-pcaconnectorscep": [
+    "AWS::PCAConnectorSCEP"
+  ],
   "aws-personalize": [
     "AWS::Personalize"
   ],
@@ -563,6 +572,9 @@
   ],
   "aws-ram": [
     "AWS::RAM"
+  ],
+  "aws-rbin": [
+    "AWS::Rbin"
   ],
   "aws-rds": [
     "AWS::RDS"
@@ -680,6 +692,9 @@
   ],
   "aws-ssmincidents": [
     "AWS::SSMIncidents"
+  ],
+  "aws-ssmquicksetup": [
+    "AWS::SSMQuickSetup"
   ],
   "aws-sso": [
     "AWS::SSO"

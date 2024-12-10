@@ -31,12 +31,21 @@ export function printStackDiff(
   strict: boolean,
   context: number,
   quiet: boolean,
+  stackName?: string,
   changeSet?: DescribeChangeSetOutput,
   isImport?: boolean,
   stream: FormatStream = process.stderr,
   nestedStackTemplates?: { [nestedStackLogicalId: string]: NestedStackTemplates }): number {
-
   let diff = fullDiff(oldTemplate, newTemplate.template, changeSet, isImport);
+
+  // must output the stack name if there are differences, even if quiet
+  if (stackName && (!quiet || !diff.isEmpty)) {
+    stream.write(format('Stack %s\n', chalk.bold(stackName)));
+  }
+
+  if (!quiet && isImport) {
+    stream.write('Parameters and rules created during migration do not affect resource configuration.\n');
+  }
 
   // detect and filter out mangled characters from the diff
   let filteredChangesCount = 0;
@@ -74,9 +83,6 @@ export function printStackDiff(
       break;
     }
     const nestedStack = nestedStackTemplates[nestedStackLogicalId];
-    if (!quiet) {
-      stream.write(format('Stack %s\n', chalk.bold(nestedStack.physicalName ?? nestedStackLogicalId)));
-    }
 
     (newTemplate as any)._template = nestedStack.generatedTemplate;
     stackDiffCount += printStackDiff(
@@ -85,6 +91,7 @@ export function printStackDiff(
       strict,
       context,
       quiet,
+      nestedStack.physicalName ?? nestedStackLogicalId,
       undefined,
       isImport,
       stream,
@@ -112,11 +119,16 @@ export function printSecurityDiff(
   oldTemplate: any,
   newTemplate: cxapi.CloudFormationStackArtifact,
   requireApproval: RequireApproval,
+  _quiet?: boolean,
+  stackName?: string,
   changeSet?: DescribeChangeSetOutput,
+  stream: FormatStream = process.stderr,
 ): boolean {
   const diff = fullDiff(oldTemplate, newTemplate.template, changeSet);
 
-  if (difRequiresApproval(diff, requireApproval)) {
+  if (diffRequiresApproval(diff, requireApproval)) {
+    stream.write(format('Stack %s\n', chalk.bold(stackName)));
+
     // eslint-disable-next-line max-len
     warning(`This deployment will make potentially sensitive changes according to your current security approval level (--require-approval ${requireApproval}).`);
     warning('Please confirm you intend to make the following modifications:\n');
@@ -133,7 +145,7 @@ export function printSecurityDiff(
  * TODO: Filter the security impact determination based off of an enum that allows
  * us to pick minimum "severities" to alert on.
  */
-function difRequiresApproval(diff: TemplateDiff, requireApproval: RequireApproval) {
+function diffRequiresApproval(diff: TemplateDiff, requireApproval: RequireApproval) {
   switch (requireApproval) {
     case RequireApproval.Never: return false;
     case RequireApproval.AnyChange: return diff.permissionsAnyChanges;
