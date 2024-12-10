@@ -282,7 +282,7 @@ export class Table extends TableBase {
       },
     });
 
-    this.tableName = this.resource.ref;
+    this.tableName = props.tableName ?? this.resource.ref;
   }
 
   /**
