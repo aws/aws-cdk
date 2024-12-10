@@ -83,7 +83,7 @@ Flags come in three types:
 | [@aws-cdk/aws-dynamodb:resourcePolicyPerReplica](#aws-cdkaws-dynamodbresourcepolicyperreplica) | When enabled will allow you to specify a resource policy per replica, and not copy the source table policy to all replicas | 2.164.0 | (fix) |
 | [@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault](#aws-cdkaws-ec2bastionhostuseamazonlinux2023bydefault) | When enabled, the BastionHost construct will use the latest Amazon Linux 2023 AMI, instead of Amazon Linux 2. | 2.172.0 | (default) |
 | [@aws-cdk/core:aspectStabilization](#aws-cdkcoreaspectstabilization) | When enabled, a stabilization loop will be run when invoking Aspects during synthesis. | 2.172.0 | (config) |
-| [@aws-cdk/aws-route53-targets:useNewMethodForUserPoolDomainDnsName](#aws-cdkaws-route53-targetsusenewmethodforuserpooldomaindnsname) | When enabled, use a new method for DNS Name of user pool domain target. | V2NEXT | (fix) |
+| [@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource](#aws-cdkaws-route53-targetsuserpooldomainnamemethodwithoutcustomresource) | When enabled, use a new method for DNS Name of user pool domain target without creating a custom resource. | V2NEXT | (fix) |
 
 <!-- END table -->
 
@@ -155,7 +155,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages": true,
     "@aws-cdk/aws-stepfunctions-tasks:fixRunEcsTaskPolicy": true,
     "@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault": true,
-    "@aws-cdk/aws-route53-targets:useNewMethodForUserPoolDomainDnsName": true
+    "@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource": true
   }
 }
 ```
@@ -1572,9 +1572,9 @@ When this feature flag is enabled, a stabilization loop is run to recurse the co
 | 2.172.0 | `true` | `true` |
 
 
-### @aws-cdk/aws-route53-targets:useNewMethodForUserPoolDomainDnsName
+### @aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource
 
-*When enabled, use a new method for DNS Name of user pool domain target.* (fix)
+*When enabled, use a new method for DNS Name of user pool domain target without creating a custom resource.* (fix)
 
 When this feature flag is enabled, a new method will be used to get the DNS Name of the user pool domain target. The old method
 creates a custom resource internally, but the new method doesn't need a custom resource.

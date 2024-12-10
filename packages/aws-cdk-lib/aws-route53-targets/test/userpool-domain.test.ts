@@ -2,7 +2,7 @@ import { Template } from '../../assertions';
 import { UserPool, UserPoolDomain } from '../../aws-cognito';
 import { ARecord, PublicHostedZone, RecordTarget } from '../../aws-route53';
 import { Stack } from '../../core';
-import { USE_NEW_METHOD_FOR_USER_POOL_DOMAIN_DNS_NAME } from '../../cx-api';
+import { USER_POOL_DOMAIN_NAME_METHOD_WITHOUT_CUSTOM_RESOURCE } from '../../cx-api';
 import { UserPoolDomainTarget } from '../lib';
 
 test('use user pool domain as record target', () => {
@@ -43,7 +43,7 @@ test('use user pool domain as record target', () => {
 test('can get dns name without custom resource if feature flag is set', () => {
   // GIVEN
   const stack = new Stack();
-  stack.node.setContext(USE_NEW_METHOD_FOR_USER_POOL_DOMAIN_DNS_NAME, true);
+  stack.node.setContext(USER_POOL_DOMAIN_NAME_METHOD_WITHOUT_CUSTOM_RESOURCE, true);
   const zone = new PublicHostedZone(stack, 'HostedZone', { zoneName: 'test.public' });
   const userPool = new UserPool(stack, 'UserPool');
   const domain = new UserPoolDomain(stack, 'UserPoolDomain', {

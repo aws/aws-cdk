@@ -117,7 +117,7 @@ export const LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES = '@aws-cdk/aws-lambda
 export const STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY = '@aws-cdk/aws-stepfunctions-tasks:fixRunEcsTaskPolicy';
 export const BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT = '@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault';
 export const ASPECT_STABILIZATION = '@aws-cdk/core:aspectStabilization';
-export const USE_NEW_METHOD_FOR_USER_POOL_DOMAIN_DNS_NAME = '@aws-cdk/aws-route53-targets:useNewMethodForUserPoolDomainDnsName';
+export const USER_POOL_DOMAIN_NAME_METHOD_WITHOUT_CUSTOM_RESOURCE = '@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1287,9 +1287,9 @@ export const FLAGS: Record<string, FlagInfo> = {
   },
 
   //////////////////////////////////////////////////////////////////////
-  [USE_NEW_METHOD_FOR_USER_POOL_DOMAIN_DNS_NAME]: {
+  [USER_POOL_DOMAIN_NAME_METHOD_WITHOUT_CUSTOM_RESOURCE]: {
     type: FlagType.BugFix,
-    summary: 'When enabled, use a new method for DNS Name of user pool domain target.',
+    summary: 'When enabled, use a new method for DNS Name of user pool domain target without creating a custom resource.',
     detailsMd: `
     When this feature flag is enabled, a new method will be used to get the DNS Name of the user pool domain target. The old method
     creates a custom resource internally, but the new method doesn't need a custom resource.
