@@ -805,6 +805,7 @@ export interface ClusterProps extends ClusterOptions {
 
   /**
    * The tags assigned to the EKS cluster
+   * TODO: revisit the tag type
    *
    * @default - none
    */
@@ -1485,6 +1486,7 @@ export class Cluster extends ClusterBase {
 
   private readonly version: KubernetesVersion;
 
+  // TODO: revisit logging format
   private readonly logging?: { [key: string]: { [key:string]: any} };;
 
   /**
@@ -1902,6 +1904,16 @@ export class Cluster extends ClusterBase {
    * @attribute
    */
   public get clusterOpenIdConnectIssuerUrl(): string {
+    return this._clusterResource.attrOpenIdConnectIssuerUrl;
+  }
+
+  /**
+   * If this cluster is kubectl-enabled, returns the OpenID Connect issuer url.
+   * If this cluster is not kubectl-enabled (i.e. uses the
+   * stock `CfnCluster`), this is `undefined`.
+   * @attribute
+   */
+  public get clusterOpenIdConnectIssuer(): string {
     return this._clusterResource.attrOpenIdConnectIssuerUrl;
   }
 
