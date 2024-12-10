@@ -105,6 +105,8 @@ export enum SslPolicy {
   /**
    * The recommended security policy for TLS listeners.
    * This is the default policy for listeners created using the AWS Management Console
+   *
+   * This policy includes TLS 1.3, and is backwards compatible with TLS 1.2
    */
   RECOMMENDED_TLS = 'ELBSecurityPolicy-TLS13-1-2-2021-06',
 
