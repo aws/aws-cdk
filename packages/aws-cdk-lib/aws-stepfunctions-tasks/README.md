@@ -1383,7 +1383,7 @@ you can configure it using JSON Path values using `workerTypeV2` like this:
 new tasks.GlueStartJobRun(this, 'Glue Job Task', {
   glueJobName: 'my-glue-job',
   workerConfiguration: {
-    workerTypeV2: WorkerTypeV2.of(sfn.JsonPath.stringAt('$.glue_jobs_configs.executor_type')),
+    workerTypeV2: tasks.WorkerTypeV2.of(sfn.JsonPath.stringAt('$.glue_jobs_configs.executor_type')),
     numberOfWorkers: sfn.JsonPath.numberAt('$.glue_jobs_configs.max_number_workers'),
   },
 });
