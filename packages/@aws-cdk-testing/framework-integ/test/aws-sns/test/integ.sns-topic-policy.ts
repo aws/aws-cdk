@@ -41,6 +41,10 @@ topicAddPolicy.addToResourcePolicy(new PolicyStatement({
   resources: [topicAddPolicy.topicArn],
 }));
 
+new Topic(stack, 'TopicWithSSL', {
+  enforceSSL: true,
+});
+
 new IntegTest(app, 'SNSTopicPolicyInteg', {
   testCases: [stack],
   stackUpdateWorkflow: false,
