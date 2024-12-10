@@ -1,16 +1,31 @@
 {
+  "AWSTemplateFormatVersion": "2010-09-09",
   "Resources": {
-    "ASG": {
+    "AutoScalingGroup": {
       "Type": "AWS::AutoScaling::AutoScalingGroup",
       "Properties": {
+        "DesiredCapacity": "1",
         "MinSize": "1",
         "MaxSize": "5"
       },
       "CreationPolicy": {
-        "NonExistentResourceAttribute": "Bucket1"
+        "ResourceSignal": {
+          "Count": 1,
+          "Timeout": "PT10M"
+        }
       },
       "UpdatePolicy": {
-        "NonExistentResourceAttribute": "Bucket1"
+        "AutoScalingRollingUpdate": {
+          "PauseTime": "PT10M",
+          "SuspendProcesses": [
+            "HealthCheck",
+            "ReplaceUnhealthy",
+            "AZRebalance",
+            "AlarmNotification",
+            "ScheduledActions"
+          ],
+          "WaitOnResourceSignals": true
+        }
       }
     }
   }
