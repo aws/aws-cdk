@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "38.0.1",
   "testCases": {
     "aws-cdk-redshift-distkey-test/DefaultTest": {
       "stacks": [
