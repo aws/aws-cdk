@@ -6,8 +6,9 @@ import * as cdk from 'aws-cdk-lib/core';
 import * as customresources from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 import { DatabaseQueryHandlerProps } from './handler-props';
-import { Cluster } from '../cluster';
+import { Cluster, ICluster } from '../cluster';
 import { DatabaseOptions } from '../database-options';
+import { Stack } from 'aws-cdk-lib/core';
 
 export interface DatabaseQueryProps<HandlerProps> extends DatabaseOptions {
   readonly handler: string;
@@ -28,6 +29,11 @@ export interface DatabaseQueryProps<HandlerProps> extends DatabaseOptions {
 }
 
 export class DatabaseQuery<HandlerProps> extends Construct implements iam.IGrantable {
+  /**
+   * A mapping of singleton functions in the cluster to the assumable IAM roles of their respective invokers.
+   * */
+  private static handlerToRole: Record<string, iam.IRole> = {}
+
   readonly grantPrincipal: iam.IPrincipal;
   readonly ref: string;
 
@@ -64,6 +70,7 @@ export class DatabaseQuery<HandlerProps> extends Construct implements iam.IGrant
 
     const provider = new customresources.Provider(this, 'Provider', {
       onEventHandler: handler,
+      role: this.roleForHandler(handler, props.cluster),
     });
 
     const queryHandlerProps: DatabaseQueryHandlerProps & HandlerProps = {
@@ -115,5 +122,19 @@ export class DatabaseQuery<HandlerProps> extends Construct implements iam.IGrant
       }
     }
     return adminUser;
+  }
+
+  private roleForHandler(handler: lambda.SingletonFunction, cluster: ICluster): iam.IRole {
+    const key = cluster.clusterName + handler.constructName;
+    if (!DatabaseQuery.handlerToRole[key]) {
+      DatabaseQuery.handlerToRole[key] = new iam.Role(Stack.of(this), `Role${handler.constructName}`, {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'),
+        ],
+      });
+    }
+
+    return DatabaseQuery.handlerToRole[key];
   }
 }
