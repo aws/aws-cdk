@@ -494,3 +494,22 @@ _cdk.json_
   },
 }
 ```
+
+* `@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource`
+
+When enabled, use a new method for DNS Name of user pool domain target without creating a custom resource.
+
+When this feature flag is enabled, a new method will be used to get the DNS Name of the user pool domain target. The old method
+creates a custom resource internally, but the new method doesn't need a custom resource.
+
+If the flag is set to false then a custom resource will be created when using `UserPoolDomainTarget`.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource": true
+  }
+}
+```
