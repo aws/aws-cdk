@@ -104,7 +104,8 @@
       }
      ],
      "Version": "2012-10-17"
-    }
+    },
+    "RoleName": "CDKReplicationRole"
    }
   },
   "SourceBucketReplicationRoleDefaultPolicyF98AD664": {

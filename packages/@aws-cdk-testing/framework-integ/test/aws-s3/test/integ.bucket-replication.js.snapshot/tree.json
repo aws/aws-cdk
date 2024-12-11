@@ -24,14 +24,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "fqn": "aws-cdk-lib.aws_s3.Bucket",
+              "version": "0.0.0"
             }
           },
           "DestinationBucket2": {
@@ -50,14 +50,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "fqn": "aws-cdk-lib.aws_s3.Bucket",
+              "version": "0.0.0"
             }
           },
           "DestinationKmsKey": {
@@ -101,14 +101,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.aws_kms.CfnKey",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "fqn": "aws-cdk-lib.aws_kms.Key",
+              "version": "0.0.0"
             }
           },
           "SourceKmsKey": {
@@ -152,14 +152,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.aws_kms.CfnKey",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "fqn": "aws-cdk-lib.aws_kms.Key",
+              "version": "0.0.0"
             }
           },
           "SourceBucket": {
@@ -174,8 +174,8 @@
                     "id": "ImportReplicationRole",
                     "path": "ReplicationStack/SourceBucket/ReplicationRole/ImportReplicationRole",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -195,12 +195,13 @@
                             }
                           ],
                           "Version": "2012-10-17"
-                        }
+                        },
+                        "roleName": "CDKReplicationRole"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
                     }
                   },
                   "DefaultPolicy": {
@@ -325,20 +326,20 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
                 }
               },
               "Resource": {
@@ -457,14 +458,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "fqn": "aws-cdk-lib.aws_s3.Bucket",
+              "version": "0.0.0"
             }
           },
           "Exports": {
@@ -475,52 +476,52 @@
                 "id": "Output{\"Ref\":\"SourceBucketDDD2130A\"}",
                 "path": "ReplicationStack/Exports/Output{\"Ref\":\"SourceBucketDDD2130A\"}",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
                 }
               },
               "Output{\"Ref\":\"DestinationBucket1590C2E3A\"}": {
                 "id": "Output{\"Ref\":\"DestinationBucket1590C2E3A\"}",
                 "path": "ReplicationStack/Exports/Output{\"Ref\":\"DestinationBucket1590C2E3A\"}",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
                 }
               },
               "Output{\"Ref\":\"DestinationBucket217C2CCD2\"}": {
                 "id": "Output{\"Ref\":\"DestinationBucket217C2CCD2\"}",
                 "path": "ReplicationStack/Exports/Output{\"Ref\":\"DestinationBucket217C2CCD2\"}",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "ReplicationStack/BootstrapVersion",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
             }
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
             "path": "ReplicationStack/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
         }
       },
       "ReplicationInteg": {
@@ -536,7 +537,7 @@
                 "path": "ReplicationInteg/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -556,7 +557,7 @@
                             "path": "ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3putObject75573d90b014e8d9ac02510555b9974b/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -573,14 +574,14 @@
                             "id": "Default",
                             "path": "ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3putObject75573d90b014e8d9ac02510555b9974b/Default/Default",
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
                         }
                       },
                       "WaitFor": {
@@ -596,15 +597,15 @@
                                 "path": "ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3putObject75573d90b014e8d9ac02510555b9974b/WaitFor/IsCompleteProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.3.0"
+                                  "version": "10.4.2"
                                 }
                               },
                               "Invoke": {
                                 "id": "Invoke",
                                 "path": "ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3putObject75573d90b014e8d9ac02510555b9974b/WaitFor/IsCompleteProvider/Invoke",
                                 "constructInfo": {
-                                  "fqn": "constructs.Construct",
-                                  "version": "10.3.0"
+                                  "fqn": "aws-cdk-lib.CfnResource",
+                                  "version": "0.0.0"
                                 }
                               }
                             },
@@ -622,15 +623,15 @@
                                 "path": "ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3putObject75573d90b014e8d9ac02510555b9974b/WaitFor/TimeoutProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.3.0"
+                                  "version": "10.4.2"
                                 }
                               },
                               "Invoke": {
                                 "id": "Invoke",
                                 "path": "ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3putObject75573d90b014e8d9ac02510555b9974b/WaitFor/TimeoutProvider/Invoke",
                                 "constructInfo": {
-                                  "fqn": "constructs.Construct",
-                                  "version": "10.3.0"
+                                  "fqn": "aws-cdk-lib.CfnResource",
+                                  "version": "0.0.0"
                                 }
                               }
                             },
@@ -643,16 +644,16 @@
                             "id": "Role",
                             "path": "ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3putObject75573d90b014e8d9ac02510555b9974b/WaitFor/Role",
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
                             }
                           },
                           "Resource": {
                             "id": "Resource",
                             "path": "ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3putObject75573d90b014e8d9ac02510555b9974b/WaitFor/Resource",
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
                             }
                           }
                         },
@@ -675,38 +676,38 @@
                         "id": "Staging",
                         "path": "ReplicationInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "fqn": "aws-cdk-lib.AssetStaging",
+                          "version": "0.0.0"
                         }
                       },
                       "Role": {
                         "id": "Role",
                         "path": "ReplicationInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
                         }
                       },
                       "Handler": {
                         "id": "Handler",
                         "path": "ReplicationInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "LatestNodeRuntimeMap": {
                     "id": "LatestNodeRuntimeMap",
                     "path": "ReplicationInteg/DefaultTest/DeployAssert/LatestNodeRuntimeMap",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.CfnMapping",
+                      "version": "0.0.0"
                     }
                   },
                   "SingletonFunction76b3e830a873425f8453eddd85c86925": {
@@ -717,30 +718,30 @@
                         "id": "Staging",
                         "path": "ReplicationInteg/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Staging",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "fqn": "aws-cdk-lib.AssetStaging",
+                          "version": "0.0.0"
                         }
                       },
                       "Role": {
                         "id": "Role",
                         "path": "ReplicationInteg/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
                         }
                       },
                       "Handler": {
                         "id": "Handler",
                         "path": "ReplicationInteg/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a": {
@@ -751,30 +752,30 @@
                         "id": "Staging",
                         "path": "ReplicationInteg/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Staging",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "fqn": "aws-cdk-lib.AssetStaging",
+                          "version": "0.0.0"
                         }
                       },
                       "Role": {
                         "id": "Role",
                         "path": "ReplicationInteg/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
                         }
                       },
                       "Handler": {
                         "id": "Handler",
                         "path": "ReplicationInteg/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "AwsApiCallS3putObjectc37eeaa244b355dd997924b65635b69e": {
@@ -790,7 +791,7 @@
                             "path": "ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3putObjectc37eeaa244b355dd997924b65635b69e/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -807,14 +808,14 @@
                             "id": "Default",
                             "path": "ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3putObjectc37eeaa244b355dd997924b65635b69e/Default/Default",
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
                         }
                       },
                       "WaitFor": {
@@ -830,15 +831,15 @@
                                 "path": "ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3putObjectc37eeaa244b355dd997924b65635b69e/WaitFor/IsCompleteProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.3.0"
+                                  "version": "10.4.2"
                                 }
                               },
                               "Invoke": {
                                 "id": "Invoke",
                                 "path": "ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3putObjectc37eeaa244b355dd997924b65635b69e/WaitFor/IsCompleteProvider/Invoke",
                                 "constructInfo": {
-                                  "fqn": "constructs.Construct",
-                                  "version": "10.3.0"
+                                  "fqn": "aws-cdk-lib.CfnResource",
+                                  "version": "0.0.0"
                                 }
                               }
                             },
@@ -856,15 +857,15 @@
                                 "path": "ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3putObjectc37eeaa244b355dd997924b65635b69e/WaitFor/TimeoutProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.3.0"
+                                  "version": "10.4.2"
                                 }
                               },
                               "Invoke": {
                                 "id": "Invoke",
                                 "path": "ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3putObjectc37eeaa244b355dd997924b65635b69e/WaitFor/TimeoutProvider/Invoke",
                                 "constructInfo": {
-                                  "fqn": "constructs.Construct",
-                                  "version": "10.3.0"
+                                  "fqn": "aws-cdk-lib.CfnResource",
+                                  "version": "0.0.0"
                                 }
                               }
                             },
@@ -877,16 +878,16 @@
                             "id": "Role",
                             "path": "ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3putObjectc37eeaa244b355dd997924b65635b69e/WaitFor/Role",
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
                             }
                           },
                           "Resource": {
                             "id": "Resource",
                             "path": "ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3putObjectc37eeaa244b355dd997924b65635b69e/WaitFor/Resource",
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
                             }
                           }
                         },
@@ -914,7 +915,7 @@
                             "path": "ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3getObject072d8f513b356d62fe1279c51ab47904/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -931,14 +932,14 @@
                             "id": "Default",
                             "path": "ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3getObject072d8f513b356d62fe1279c51ab47904/Default/Default",
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
                         }
                       },
                       "WaitFor": {
@@ -954,15 +955,15 @@
                                 "path": "ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3getObject072d8f513b356d62fe1279c51ab47904/WaitFor/IsCompleteProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.3.0"
+                                  "version": "10.4.2"
                                 }
                               },
                               "Invoke": {
                                 "id": "Invoke",
                                 "path": "ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3getObject072d8f513b356d62fe1279c51ab47904/WaitFor/IsCompleteProvider/Invoke",
                                 "constructInfo": {
-                                  "fqn": "constructs.Construct",
-                                  "version": "10.3.0"
+                                  "fqn": "aws-cdk-lib.CfnResource",
+                                  "version": "0.0.0"
                                 }
                               }
                             },
@@ -980,15 +981,15 @@
                                 "path": "ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3getObject072d8f513b356d62fe1279c51ab47904/WaitFor/TimeoutProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.3.0"
+                                  "version": "10.4.2"
                                 }
                               },
                               "Invoke": {
                                 "id": "Invoke",
                                 "path": "ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3getObject072d8f513b356d62fe1279c51ab47904/WaitFor/TimeoutProvider/Invoke",
                                 "constructInfo": {
-                                  "fqn": "constructs.Construct",
-                                  "version": "10.3.0"
+                                  "fqn": "aws-cdk-lib.CfnResource",
+                                  "version": "0.0.0"
                                 }
                               }
                             },
@@ -1001,16 +1002,16 @@
                             "id": "Role",
                             "path": "ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3getObject072d8f513b356d62fe1279c51ab47904/WaitFor/Role",
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
                             }
                           },
                           "Resource": {
                             "id": "Resource",
                             "path": "ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3getObject072d8f513b356d62fe1279c51ab47904/WaitFor/Resource",
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
                             }
                           }
                         },
@@ -1038,7 +1039,7 @@
                             "path": "ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3getObject219d4d3c5382fd95564d0436b23cc0ed/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -1055,14 +1056,14 @@
                             "id": "Default",
                             "path": "ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3getObject219d4d3c5382fd95564d0436b23cc0ed/Default/Default",
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
                         }
                       },
                       "WaitFor": {
@@ -1078,15 +1079,15 @@
                                 "path": "ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3getObject219d4d3c5382fd95564d0436b23cc0ed/WaitFor/IsCompleteProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.3.0"
+                                  "version": "10.4.2"
                                 }
                               },
                               "Invoke": {
                                 "id": "Invoke",
                                 "path": "ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3getObject219d4d3c5382fd95564d0436b23cc0ed/WaitFor/IsCompleteProvider/Invoke",
                                 "constructInfo": {
-                                  "fqn": "constructs.Construct",
-                                  "version": "10.3.0"
+                                  "fqn": "aws-cdk-lib.CfnResource",
+                                  "version": "0.0.0"
                                 }
                               }
                             },
@@ -1104,15 +1105,15 @@
                                 "path": "ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3getObject219d4d3c5382fd95564d0436b23cc0ed/WaitFor/TimeoutProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.3.0"
+                                  "version": "10.4.2"
                                 }
                               },
                               "Invoke": {
                                 "id": "Invoke",
                                 "path": "ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3getObject219d4d3c5382fd95564d0436b23cc0ed/WaitFor/TimeoutProvider/Invoke",
                                 "constructInfo": {
-                                  "fqn": "constructs.Construct",
-                                  "version": "10.3.0"
+                                  "fqn": "aws-cdk-lib.CfnResource",
+                                  "version": "0.0.0"
                                 }
                               }
                             },
@@ -1125,16 +1126,16 @@
                             "id": "Role",
                             "path": "ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3getObject219d4d3c5382fd95564d0436b23cc0ed/WaitFor/Role",
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
                             }
                           },
                           "Resource": {
                             "id": "Resource",
                             "path": "ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3getObject219d4d3c5382fd95564d0436b23cc0ed/WaitFor/Resource",
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
                             }
                           }
                         },
@@ -1162,7 +1163,7 @@
                             "path": "ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3getObject8808a740aaee65bc3db0d839e0b7c905/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -1179,14 +1180,14 @@
                             "id": "Default",
                             "path": "ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3getObject8808a740aaee65bc3db0d839e0b7c905/Default/Default",
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
                         }
                       },
                       "WaitFor": {
@@ -1202,15 +1203,15 @@
                                 "path": "ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3getObject8808a740aaee65bc3db0d839e0b7c905/WaitFor/IsCompleteProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.3.0"
+                                  "version": "10.4.2"
                                 }
                               },
                               "Invoke": {
                                 "id": "Invoke",
                                 "path": "ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3getObject8808a740aaee65bc3db0d839e0b7c905/WaitFor/IsCompleteProvider/Invoke",
                                 "constructInfo": {
-                                  "fqn": "constructs.Construct",
-                                  "version": "10.3.0"
+                                  "fqn": "aws-cdk-lib.CfnResource",
+                                  "version": "0.0.0"
                                 }
                               }
                             },
@@ -1228,15 +1229,15 @@
                                 "path": "ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3getObject8808a740aaee65bc3db0d839e0b7c905/WaitFor/TimeoutProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.3.0"
+                                  "version": "10.4.2"
                                 }
                               },
                               "Invoke": {
                                 "id": "Invoke",
                                 "path": "ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3getObject8808a740aaee65bc3db0d839e0b7c905/WaitFor/TimeoutProvider/Invoke",
                                 "constructInfo": {
-                                  "fqn": "constructs.Construct",
-                                  "version": "10.3.0"
+                                  "fqn": "aws-cdk-lib.CfnResource",
+                                  "version": "0.0.0"
                                 }
                               }
                             },
@@ -1249,16 +1250,16 @@
                             "id": "Role",
                             "path": "ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3getObject8808a740aaee65bc3db0d839e0b7c905/WaitFor/Role",
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
                             }
                           },
                           "Resource": {
                             "id": "Resource",
                             "path": "ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3getObject8808a740aaee65bc3db0d839e0b7c905/WaitFor/Resource",
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
                             }
                           }
                         },
@@ -1277,22 +1278,22 @@
                     "id": "BootstrapVersion",
                     "path": "ReplicationInteg/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
                     }
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
                     "path": "ReplicationInteg/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
                 }
               }
             },
@@ -1312,13 +1313,13 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.3.0"
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
     }
   }
 }
