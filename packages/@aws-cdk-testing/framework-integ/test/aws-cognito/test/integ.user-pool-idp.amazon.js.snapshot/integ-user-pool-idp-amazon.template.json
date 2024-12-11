@@ -75,7 +75,7 @@
     "AttributeMapping": {
      "given_name": "name",
      "email": "email",
-     "userId": "user_id"
+     "custom:userId": "user_id"
     },
     "ProviderDetails": {
      "client_id": "amzn-client-id",
