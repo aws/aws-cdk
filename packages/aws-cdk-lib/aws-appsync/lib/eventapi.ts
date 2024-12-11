@@ -165,7 +165,7 @@ export abstract class EventApiBase extends ApiBase implements IEventApi {
    * @param grantee The principal
    */
   public grantPublish(grantee: IGrantable): Grant {
-    return this.grant(grantee, IamResource.custom(`${this.apiId}/*`), 'appsync:EventPublish');
+    return this.grant(grantee, IamResource.all(), 'appsync:EventPublish');
   }
 
   /**
@@ -175,7 +175,7 @@ export abstract class EventApiBase extends ApiBase implements IEventApi {
    * @param grantee The principal
    */
   public grantSubscribe(grantee: IGrantable): Grant {
-    return this.grant(grantee, IamResource.custom(`${this.apiId}/*`), 'appsync:EventSubscribe');
+    return this.grant(grantee, IamResource.all(), 'appsync:EventSubscribe');
   }
 
   /**
@@ -184,7 +184,7 @@ export abstract class EventApiBase extends ApiBase implements IEventApi {
    * @param grantee The principal
    */
   public grantPublishSubscribe(grantee: IGrantable): Grant {
-    return this.grant(grantee, IamResource.custom(`${this.apiId}/*`), 'appsync:EventPublish', 'appsync:EventSubscribe');
+    return this.grant(grantee, IamResource.all(), 'appsync:EventPublish', 'appsync:EventSubscribe');
   }
 
   /**
@@ -193,7 +193,7 @@ export abstract class EventApiBase extends ApiBase implements IEventApi {
    * @param grantee The principal
    */
   public grantConnect(grantee: IGrantable): Grant {
-    return this.grant(grantee, IamResource.custom(`${this.apiId}`), 'appsync:EventConnect');
+    return this.grant(grantee, IamResource.forAPI(), 'appsync:EventConnect');
   }
 }
 
