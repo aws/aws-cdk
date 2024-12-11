@@ -24,6 +24,7 @@ All notable changes to this project will be documented in this file. See [standa
 * update L1 CloudFormation resource definitions ([#32356](https://github.com/aws/aws-cdk/issues/32356)) ([9e6bb24](https://github.com/aws/aws-cdk/commit/9e6bb24f533c11bbb74a30a729566f91f5d6a13f))
 * **route53-targets:** add `AppSync` route53 target ([#31976](https://github.com/aws/aws-cdk/issues/31976)) ([dc7574a](https://github.com/aws/aws-cdk/commit/dc7574a3c048fdb58ca1ac996dbe46fd54b59993)), closes [#26109](https://github.com/aws/aws-cdk/issues/26109)
 
+
 ### Bug Fixes
 
 * **apigateway:** remove deprecated apigatewayv2 from aws-apigateway module ([#32297](https://github.com/aws/aws-cdk/issues/32297)) ([4db9565](https://github.com/aws/aws-cdk/commit/4db956597b41bb9d7dd8e1d65b39643772065353))
