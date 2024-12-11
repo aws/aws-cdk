@@ -29,7 +29,7 @@ describe('Addon', () => {
     t.hasResourceProperties('AWS::EKS::Addon', {
       AddonName: 'test-addon',
       ClusterName: {
-        Ref: 'Cluster9EE0221C',
+        Ref: 'ClusterEB0386A7',
       },
     });
   });
@@ -50,7 +50,7 @@ describe('Addon', () => {
       AddonName: 'test-addon',
       AddonVersion: addonVersion,
       ClusterName: {
-        Ref: 'Cluster9EE0221C',
+        Ref: 'ClusterEB0386A7',
       },
     });
   });
@@ -69,7 +69,7 @@ describe('Addon', () => {
     t.hasResourceProperties('AWS::EKS::Addon', {
       AddonName: 'test-addon',
       ClusterName: {
-        Ref: 'Cluster9EE0221C',
+        Ref: 'ClusterEB0386A7',
       },
       PreserveOnDelete: false,
     });
