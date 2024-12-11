@@ -221,11 +221,11 @@ describe('aws auth', () => {
         ],
       },
       ClusterName: {
-        Ref: 'Cluster9EE0221C',
+        Ref: 'ClusterEB0386A7',
       },
       RoleArn: {
         'Fn::GetAtt': [
-          'ClusterCreationRole360249B6',
+          'ClusterkubectlRole4CCE0069',
           'Arn',
         ],
       },
