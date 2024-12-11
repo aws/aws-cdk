@@ -22,7 +22,7 @@ export async function cliMain(cliArgs: string[]) {
     )
     .command('write', 'Write the bundled version of the project to a temp directory')
     .command('pack', 'Write the bundle and create the tarball', args => args
-      .option('pack-destination', { type: 'string', desc: 'Directory to write the tarball to', nargs: 1, requiresArg: true })
+      .option('destination', { type: 'string', desc: 'Directory to write the tarball to', nargs: 1, requiresArg: true })
     )
     .demandCommand() // require a subcommand
     .strict() // require a VALID subcommand, and only supported options
@@ -95,9 +95,9 @@ export async function cliMain(cliArgs: string[]) {
       write(bundle);
       break;
     case 'pack':
-      const packDestination = argv.packDestination as string | undefined;
+      const target = argv.destination as string | undefined;
       pack(bundle, {
-        target: packDestination,
+        target,
       });
       break;
     default:
