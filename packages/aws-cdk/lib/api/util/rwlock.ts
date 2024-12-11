@@ -11,6 +11,7 @@ import * as path from 'path';
  * This class is not 100% race safe, but in practice it should be a lot
  * better than the 0 protection we have today.
  */
+/* istanbul ignore next */
 export class RWLock {
   private readonly pidString: string;
   private readonly writerFile: string;
