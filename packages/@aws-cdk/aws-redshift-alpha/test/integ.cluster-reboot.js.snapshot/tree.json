@@ -627,7 +627,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "fe4094cd52f099e46f858f05efdde02f5de79288c9c783676b3fa53a494d04b5.zip"
+                              "s3Key": "15197a5512179542fe2cff74af89bb047793c9c4e0b4395f114641a81cd52ae5.zip"
                             },
                             "description": "AWS CDK resource provider framework - onEvent (aws-cdk-redshift-cluster-create/Cluster/ResourceProvider)",
                             "environment": {
@@ -1552,7 +1552,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "fe4094cd52f099e46f858f05efdde02f5de79288c9c783676b3fa53a494d04b5.zip"
+                              "s3Key": "15197a5512179542fe2cff74af89bb047793c9c4e0b4395f114641a81cd52ae5.zip"
                             },
                             "description": "AWS CDK resource provider framework - onEvent (aws-cdk-redshift-cluster-update/Cluster/ResourceProvider)",
                             "environment": {
@@ -1851,7 +1851,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.4.2"
+              "version": "10.3.0"
             }
           },
           "BootstrapVersion": {
@@ -1889,7 +1889,7 @@
                 "path": "aws-cdk-redshift-reboot-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.4.2"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -1909,7 +1909,7 @@
                             "path": "aws-cdk-redshift-reboot-test/DefaultTest/DeployAssert/AwsApiCallRedshiftdescribeClusters6bafd43948798e58841b1b8573ec604a/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.4.2"
+                              "version": "10.3.0"
                             }
                           }
                         },
@@ -1981,7 +1981,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.4.2"
+                      "version": "10.3.0"
                     }
                   },
                   "LatestNodeRuntimeMap": {
@@ -2005,7 +2005,7 @@
                             "path": "aws-cdk-redshift-reboot-test/DefaultTest/DeployAssert/AwsApiCallRedshiftdescribeClusterParameters801759f1ed4aa244ea8caa72110acfce/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.4.2"
+                              "version": "10.3.0"
                             }
                           }
                         },
@@ -2059,7 +2059,7 @@
                             "path": "aws-cdk-redshift-reboot-test/DefaultTest/DeployAssert/AwsApiCallRedshiftdescribeClusterParameters484bd6887b66878d75dbc528712556c7/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.4.2"
+                              "version": "10.3.0"
                             }
                           }
                         },
@@ -2139,7 +2139,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.4.2"
+          "version": "10.3.0"
         }
       }
     },
