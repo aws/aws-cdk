@@ -13,6 +13,8 @@ describe('GlueVersion', () => {
 
   test('.V4_0 should set the name correctly', () => expect(glue.GlueVersion.V4_0.name).toEqual('4.0'));
 
+  test('.V5_0 should set the name correctly', () => expect(glue.GlueVersion.V5_0.name).toEqual('5.0'));
+
   test('of(customVersion) should set the name correctly', () => expect(glue.GlueVersion.of('CustomVersion').name).toEqual('CustomVersion'));
 });
 
