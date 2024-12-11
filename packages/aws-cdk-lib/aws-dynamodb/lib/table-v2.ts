@@ -11,6 +11,7 @@ import {
   SecondaryIndexProps,
   StreamViewType,
   TableClass,
+  WarmThroughput,
 } from './shared';
 import { ITableV2, TableBaseV2 } from './table-v2-base';
 import { PolicyDocument } from '../../aws-iam';
@@ -118,6 +119,13 @@ export interface GlobalSecondaryIndexPropsV2 extends SecondaryIndexProps {
    * @default - inherited from the primary table.
    */
   readonly maxWriteRequestUnits?: number;
+
+  /**
+   * The warm throughput configuration for the global secondary index.
+   *
+   * @default - no warm throughput is configured
+   */
+  readonly warmThroughput?: WarmThroughput;
 }
 
 /**
@@ -298,6 +306,13 @@ export interface TablePropsV2 extends TableOptionsV2 {
    * @default TableEncryptionV2.dynamoOwnedKey()
    */
   readonly encryption?: TableEncryptionV2;
+
+  /**
+   * The warm throughput configuration for the table.
+   *
+   * @default - no warm throughput is configured
+   */
+  readonly warmThroughput?: WarmThroughput;
 }
 
 /**
@@ -576,6 +591,7 @@ export class TableV2 extends TableBaseV2 {
       timeToLiveSpecification: props.timeToLiveAttribute
         ? { attributeName: props.timeToLiveAttribute, enabled: true }
         : undefined,
+      warmThroughput: props.warmThroughput ?? undefined,
     });
     resource.applyRemovalPolicy(props.removalPolicy);
 
@@ -741,6 +757,8 @@ export class TableV2 extends TableBaseV2 {
 
     props.maxReadRequestUnits && this.globalSecondaryIndexMaxReadUnits.set(props.indexName, props.maxReadRequestUnits);
 
+    const warmThroughput = props.warmThroughput ?? undefined;
+
     const writeOnDemandThroughputSettings: CfnGlobalTable.WriteOnDemandThroughputSettingsProperty | undefined = props.maxWriteRequestUnits
       ? { maxWriteRequestUnits: props.maxWriteRequestUnits }
       : undefined;
@@ -751,6 +769,7 @@ export class TableV2 extends TableBaseV2 {
       projection,
       writeProvisionedThroughputSettings,
       writeOnDemandThroughputSettings,
+      warmThroughput,
     };
   }
 

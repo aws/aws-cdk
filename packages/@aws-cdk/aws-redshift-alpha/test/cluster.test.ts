@@ -734,7 +734,7 @@ describe('multi AZ cluster', () => {
         masterPassword: cdk.SecretValue.unsafePlainText('tooshort'),
       },
       vpc,
-      nodeType: NodeType.RA3_XLPLUS,
+      nodeType: NodeType.RA3_LARGE,
       multiAz: true,
     });
 
@@ -747,7 +747,7 @@ describe('multi AZ cluster', () => {
       AutomatedSnapshotRetentionPeriod: 1,
       Encrypted: true,
       NumberOfNodes: 2,
-      NodeType: 'ra3.xlplus',
+      NodeType: 'ra3.large',
       DBName: 'default_db',
       PubliclyAccessible: false,
       ClusterSubnetGroupName: { Ref: 'RedshiftSubnetsDFE70E0A' },

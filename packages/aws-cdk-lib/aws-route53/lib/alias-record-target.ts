@@ -25,4 +25,11 @@ export interface AliasRecordTargetConfig {
    * DNS name of the target
    */
   readonly dnsName: string;
+
+  /**
+   * Evaluate the target health
+   *
+   * @default - no health check configuration
+   */
+  readonly evaluateTargetHealth?: boolean;
 }

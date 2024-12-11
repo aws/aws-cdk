@@ -1,0 +1,1158 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "aws-cdk-route53-health-check": {
+        "id": "aws-cdk-route53-health-check",
+        "path": "aws-cdk-route53-health-check",
+        "children": {
+          "HostedZone": {
+            "id": "HostedZone",
+            "path": "aws-cdk-route53-health-check/HostedZone",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-route53-health-check/HostedZone/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::HostedZone",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "cdk.test."
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnHostedZone",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.HostedZone",
+              "version": "0.0.0"
+            }
+          },
+          "HealthCheckHttp": {
+            "id": "HealthCheckHttp",
+            "path": "aws-cdk-route53-health-check/HealthCheckHttp",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-route53-health-check/HealthCheckHttp/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::HealthCheck",
+                  "aws:cdk:cloudformation:props": {
+                    "healthCheckConfig": {
+                      "type": "HTTP",
+                      "failureThreshold": 3,
+                      "fullyQualifiedDomainName": "lb.cdk.test",
+                      "inverted": false,
+                      "measureLatency": false,
+                      "port": 80,
+                      "requestInterval": 30,
+                      "resourcePath": "/health"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnHealthCheck",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.HealthCheck",
+              "version": "0.0.0"
+            }
+          },
+          "ARecordHttp": {
+            "id": "ARecordHttp",
+            "path": "aws-cdk-route53-health-check/ARecordHttp",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-route53-health-check/ARecordHttp/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                  "aws:cdk:cloudformation:props": {
+                    "healthCheckId": {
+                      "Ref": "HealthCheckHttp45CD8FAC"
+                    },
+                    "hostedZoneId": {
+                      "Ref": "HostedZoneDB99F866"
+                    },
+                    "name": "cdk.test.",
+                    "resourceRecords": [
+                      "1.2.3.4"
+                    ],
+                    "setIdentifier": "WEIGHT_100_ID_awscdkroute53healthcheckARecordHttp450B1986",
+                    "ttl": "1800",
+                    "type": "A",
+                    "weight": 100
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.ARecord",
+              "version": "0.0.0"
+            }
+          },
+          "ARecordHttp2": {
+            "id": "ARecordHttp2",
+            "path": "aws-cdk-route53-health-check/ARecordHttp2",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-route53-health-check/ARecordHttp2/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                  "aws:cdk:cloudformation:props": {
+                    "hostedZoneId": {
+                      "Ref": "HostedZoneDB99F866"
+                    },
+                    "name": "cdk.test.",
+                    "resourceRecords": [
+                      "5.6.7.8"
+                    ],
+                    "setIdentifier": "WEIGHT_0_ID_awscdkroute53healthcheckARecordHttp22B2DEA01",
+                    "ttl": "1800",
+                    "type": "A",
+                    "weight": 0
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.ARecord",
+              "version": "0.0.0"
+            }
+          },
+          "HealthCheckHttps": {
+            "id": "HealthCheckHttps",
+            "path": "aws-cdk-route53-health-check/HealthCheckHttps",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-route53-health-check/HealthCheckHttps/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::HealthCheck",
+                  "aws:cdk:cloudformation:props": {
+                    "healthCheckConfig": {
+                      "type": "HTTPS",
+                      "enableSni": true,
+                      "failureThreshold": 3,
+                      "fullyQualifiedDomainName": "lb-ssl.cdk.test",
+                      "inverted": false,
+                      "measureLatency": false,
+                      "port": 443,
+                      "requestInterval": 30,
+                      "resourcePath": "/health"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnHealthCheck",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.HealthCheck",
+              "version": "0.0.0"
+            }
+          },
+          "ARecordHttps": {
+            "id": "ARecordHttps",
+            "path": "aws-cdk-route53-health-check/ARecordHttps",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-route53-health-check/ARecordHttps/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                  "aws:cdk:cloudformation:props": {
+                    "healthCheckId": {
+                      "Ref": "HealthCheckHttpsE7EFCB62"
+                    },
+                    "hostedZoneId": {
+                      "Ref": "HostedZoneDB99F866"
+                    },
+                    "name": "_foo.cdk.test.",
+                    "resourceRecords": [
+                      "1.2.3.4"
+                    ],
+                    "setIdentifier": "WEIGHT_100_ID_awscdkroute53healthcheckARecordHttps207C4ED0",
+                    "ttl": "1800",
+                    "type": "A",
+                    "weight": 100
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.ARecord",
+              "version": "0.0.0"
+            }
+          },
+          "ARecordHttps2": {
+            "id": "ARecordHttps2",
+            "path": "aws-cdk-route53-health-check/ARecordHttps2",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-route53-health-check/ARecordHttps2/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                  "aws:cdk:cloudformation:props": {
+                    "hostedZoneId": {
+                      "Ref": "HostedZoneDB99F866"
+                    },
+                    "name": "_foo.cdk.test.",
+                    "resourceRecords": [
+                      "5.6.7.8"
+                    ],
+                    "setIdentifier": "WEIGHT_0_ID_awscdkroute53healthcheckARecordHttps25F6F420F",
+                    "ttl": "1800",
+                    "type": "A",
+                    "weight": 0
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.ARecord",
+              "version": "0.0.0"
+            }
+          },
+          "HealthCheckTcp": {
+            "id": "HealthCheckTcp",
+            "path": "aws-cdk-route53-health-check/HealthCheckTcp",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-route53-health-check/HealthCheckTcp/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::HealthCheck",
+                  "aws:cdk:cloudformation:props": {
+                    "healthCheckConfig": {
+                      "type": "TCP",
+                      "failureThreshold": 3,
+                      "fullyQualifiedDomainName": "lb-tcp.cdk.test",
+                      "inverted": false,
+                      "measureLatency": false,
+                      "port": 443,
+                      "requestInterval": 30
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnHealthCheck",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.HealthCheck",
+              "version": "0.0.0"
+            }
+          },
+          "ARecordTcp": {
+            "id": "ARecordTcp",
+            "path": "aws-cdk-route53-health-check/ARecordTcp",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-route53-health-check/ARecordTcp/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                  "aws:cdk:cloudformation:props": {
+                    "healthCheckId": {
+                      "Ref": "HealthCheckTcpC39A45DC"
+                    },
+                    "hostedZoneId": {
+                      "Ref": "HostedZoneDB99F866"
+                    },
+                    "name": "_bar.cdk.test.",
+                    "resourceRecords": [
+                      "1.2.3.4"
+                    ],
+                    "setIdentifier": "WEIGHT_100_ID_awscdkroute53healthcheckARecordTcpEB5E7F54",
+                    "ttl": "1800",
+                    "type": "A",
+                    "weight": 100
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.ARecord",
+              "version": "0.0.0"
+            }
+          },
+          "ARecordTcp2": {
+            "id": "ARecordTcp2",
+            "path": "aws-cdk-route53-health-check/ARecordTcp2",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-route53-health-check/ARecordTcp2/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                  "aws:cdk:cloudformation:props": {
+                    "hostedZoneId": {
+                      "Ref": "HostedZoneDB99F866"
+                    },
+                    "name": "_bar.cdk.test.",
+                    "resourceRecords": [
+                      "5.6.7.8"
+                    ],
+                    "setIdentifier": "WEIGHT_0_ID_awscdkroute53healthcheckARecordTcp2987B773D",
+                    "ttl": "1800",
+                    "type": "A",
+                    "weight": 0
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.ARecord",
+              "version": "0.0.0"
+            }
+          },
+          "HealthCheckCalculated": {
+            "id": "HealthCheckCalculated",
+            "path": "aws-cdk-route53-health-check/HealthCheckCalculated",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-route53-health-check/HealthCheckCalculated/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::HealthCheck",
+                  "aws:cdk:cloudformation:props": {
+                    "healthCheckConfig": {
+                      "type": "CALCULATED",
+                      "childHealthChecks": [
+                        {
+                          "Ref": "HealthCheckHttp45CD8FAC"
+                        },
+                        {
+                          "Ref": "HealthCheckHttpsE7EFCB62"
+                        }
+                      ],
+                      "healthThreshold": 2,
+                      "inverted": false
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnHealthCheck",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.HealthCheck",
+              "version": "0.0.0"
+            }
+          },
+          "ARecordCalculated": {
+            "id": "ARecordCalculated",
+            "path": "aws-cdk-route53-health-check/ARecordCalculated",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-route53-health-check/ARecordCalculated/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                  "aws:cdk:cloudformation:props": {
+                    "healthCheckId": {
+                      "Ref": "HealthCheckCalculated4BA910E7"
+                    },
+                    "hostedZoneId": {
+                      "Ref": "HostedZoneDB99F866"
+                    },
+                    "name": "_calculated.cdk.test.",
+                    "resourceRecords": [
+                      "1.2.3.4"
+                    ],
+                    "setIdentifier": "WEIGHT_100_ID_awscdkroute53healthcheckARecordCalculatedBEBD8D95",
+                    "ttl": "1800",
+                    "type": "A",
+                    "weight": 100
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.ARecord",
+              "version": "0.0.0"
+            }
+          },
+          "ARecordCalculated2": {
+            "id": "ARecordCalculated2",
+            "path": "aws-cdk-route53-health-check/ARecordCalculated2",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-route53-health-check/ARecordCalculated2/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                  "aws:cdk:cloudformation:props": {
+                    "hostedZoneId": {
+                      "Ref": "HostedZoneDB99F866"
+                    },
+                    "name": "_calculated.cdk.test.",
+                    "resourceRecords": [
+                      "5.6.7.8"
+                    ],
+                    "setIdentifier": "WEIGHT_0_ID_awscdkroute53healthcheckARecordCalculated2148CA121",
+                    "ttl": "1800",
+                    "type": "A",
+                    "weight": 0
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.ARecord",
+              "version": "0.0.0"
+            }
+          },
+          "LambdaFunction": {
+            "id": "LambdaFunction",
+            "path": "aws-cdk-route53-health-check/LambdaFunction",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "aws-cdk-route53-health-check/LambdaFunction/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "aws-cdk-route53-health-check/LambdaFunction/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-route53-health-check/LambdaFunction/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-route53-health-check/LambdaFunction/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "zipFile": "exports.handler = async function(event) { return { statusCode: 200, body: \"OK\" }; }"
+                    },
+                    "handler": "index.handler",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "LambdaFunctionServiceRoleC555A460",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "nodejs20.x"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "Alarm": {
+            "id": "Alarm",
+            "path": "aws-cdk-route53-health-check/Alarm",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-route53-health-check/Alarm/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                  "aws:cdk:cloudformation:props": {
+                    "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                    "dimensions": [
+                      {
+                        "name": "FunctionName",
+                        "value": {
+                          "Ref": "LambdaFunctionBF21E41F"
+                        }
+                      }
+                    ],
+                    "evaluationPeriods": 10,
+                    "metricName": "Errors",
+                    "namespace": "AWS/Lambda",
+                    "period": 60,
+                    "statistic": "Sum",
+                    "threshold": 100
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
+              "version": "0.0.0"
+            }
+          },
+          "HealthCheckCloudWatch": {
+            "id": "HealthCheckCloudWatch",
+            "path": "aws-cdk-route53-health-check/HealthCheckCloudWatch",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-route53-health-check/HealthCheckCloudWatch/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::HealthCheck",
+                  "aws:cdk:cloudformation:props": {
+                    "healthCheckConfig": {
+                      "type": "CLOUDWATCH_METRIC",
+                      "alarmIdentifier": {
+                        "region": {
+                          "Ref": "AWS::Region"
+                        },
+                        "name": {
+                          "Ref": "Alarm7103F465"
+                        }
+                      },
+                      "insufficientDataHealthStatus": "LastKnownStatus",
+                      "inverted": false
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnHealthCheck",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.HealthCheck",
+              "version": "0.0.0"
+            }
+          },
+          "ARecordCloudWatch": {
+            "id": "ARecordCloudWatch",
+            "path": "aws-cdk-route53-health-check/ARecordCloudWatch",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-route53-health-check/ARecordCloudWatch/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                  "aws:cdk:cloudformation:props": {
+                    "healthCheckId": {
+                      "Ref": "HealthCheckCloudWatch996681BB"
+                    },
+                    "hostedZoneId": {
+                      "Ref": "HostedZoneDB99F866"
+                    },
+                    "name": "_cloudwatch.cdk.test.",
+                    "resourceRecords": [
+                      "1.2.3.4"
+                    ],
+                    "setIdentifier": "WEIGHT_100_ID_awscdkroute53healthcheckARecordCloudWatchC94706A4",
+                    "ttl": "1800",
+                    "type": "A",
+                    "weight": 100
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.ARecord",
+              "version": "0.0.0"
+            }
+          },
+          "ARecordCloudWatch2": {
+            "id": "ARecordCloudWatch2",
+            "path": "aws-cdk-route53-health-check/ARecordCloudWatch2",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-route53-health-check/ARecordCloudWatch2/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                  "aws:cdk:cloudformation:props": {
+                    "hostedZoneId": {
+                      "Ref": "HostedZoneDB99F866"
+                    },
+                    "name": "_cloudwatch.cdk.test.",
+                    "resourceRecords": [
+                      "5.6.7.8"
+                    ],
+                    "setIdentifier": "WEIGHT_0_ID_awscdkroute53healthcheckARecordCloudWatch20C617D0D",
+                    "ttl": "1800",
+                    "type": "A",
+                    "weight": 0
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.ARecord",
+              "version": "0.0.0"
+            }
+          },
+          "Exports": {
+            "id": "Exports",
+            "path": "aws-cdk-route53-health-check/Exports",
+            "children": {
+              "Output{\"Ref\":\"HealthCheckHttp45CD8FAC\"}": {
+                "id": "Output{\"Ref\":\"HealthCheckHttp45CD8FAC\"}",
+                "path": "aws-cdk-route53-health-check/Exports/Output{\"Ref\":\"HealthCheckHttp45CD8FAC\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Ref\":\"HealthCheckHttpsE7EFCB62\"}": {
+                "id": "Output{\"Ref\":\"HealthCheckHttpsE7EFCB62\"}",
+                "path": "aws-cdk-route53-health-check/Exports/Output{\"Ref\":\"HealthCheckHttpsE7EFCB62\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Ref\":\"HealthCheckTcpC39A45DC\"}": {
+                "id": "Output{\"Ref\":\"HealthCheckTcpC39A45DC\"}",
+                "path": "aws-cdk-route53-health-check/Exports/Output{\"Ref\":\"HealthCheckTcpC39A45DC\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Ref\":\"HealthCheckCalculated4BA910E7\"}": {
+                "id": "Output{\"Ref\":\"HealthCheckCalculated4BA910E7\"}",
+                "path": "aws-cdk-route53-health-check/Exports/Output{\"Ref\":\"HealthCheckCalculated4BA910E7\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Ref\":\"LambdaFunctionBF21E41F\"}": {
+                "id": "Output{\"Ref\":\"LambdaFunctionBF21E41F\"}",
+                "path": "aws-cdk-route53-health-check/Exports/Output{\"Ref\":\"LambdaFunctionBF21E41F\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Ref\":\"Alarm7103F465\"}": {
+                "id": "Output{\"Ref\":\"Alarm7103F465\"}",
+                "path": "aws-cdk-route53-health-check/Exports/Output{\"Ref\":\"Alarm7103F465\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Ref\":\"HealthCheckCloudWatch996681BB\"}": {
+                "id": "Output{\"Ref\":\"HealthCheckCloudWatch996681BB\"}",
+                "path": "aws-cdk-route53-health-check/Exports/Output{\"Ref\":\"HealthCheckCloudWatch996681BB\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-route53-health-check/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-route53-health-check/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "integ-test": {
+        "id": "integ-test",
+        "path": "integ-test",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "integ-test/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "integ-test/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "integ-test/DefaultTest/DeployAssert",
+                "children": {
+                  "AwsApiCallRoute53GetHealthChecke703dc6d05d05c4321d908749223003a": {
+                    "id": "AwsApiCallRoute53GetHealthChecke703dc6d05d05c4321d908749223003a",
+                    "path": "integ-test/DefaultTest/DeployAssert/AwsApiCallRoute53GetHealthChecke703dc6d05d05c4321d908749223003a",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "integ-test/DefaultTest/DeployAssert/AwsApiCallRoute53GetHealthChecke703dc6d05d05c4321d908749223003a/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "integ-test/DefaultTest/DeployAssert/AwsApiCallRoute53GetHealthChecke703dc6d05d05c4321d908749223003a/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "integ-test/DefaultTest/DeployAssert/AwsApiCallRoute53GetHealthChecke703dc6d05d05c4321d908749223003a/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "integ-test/DefaultTest/DeployAssert/AwsApiCallRoute53GetHealthChecke703dc6d05d05c4321d908749223003a/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "integ-test/DefaultTest/DeployAssert/AwsApiCallRoute53GetHealthChecke703dc6d05d05c4321d908749223003a/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "SingletonFunction1488541a7b23466481b69b4408076b81": {
+                    "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "path": "integ-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "integ-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "integ-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "integ-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "LatestNodeRuntimeMap": {
+                    "id": "LatestNodeRuntimeMap",
+                    "path": "integ-test/DefaultTest/DeployAssert/LatestNodeRuntimeMap",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnMapping",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AwsApiCallRoute53GetHealthCheck59aead14a34993b682cea1d898034d58": {
+                    "id": "AwsApiCallRoute53GetHealthCheck59aead14a34993b682cea1d898034d58",
+                    "path": "integ-test/DefaultTest/DeployAssert/AwsApiCallRoute53GetHealthCheck59aead14a34993b682cea1d898034d58",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "integ-test/DefaultTest/DeployAssert/AwsApiCallRoute53GetHealthCheck59aead14a34993b682cea1d898034d58/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "integ-test/DefaultTest/DeployAssert/AwsApiCallRoute53GetHealthCheck59aead14a34993b682cea1d898034d58/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "integ-test/DefaultTest/DeployAssert/AwsApiCallRoute53GetHealthCheck59aead14a34993b682cea1d898034d58/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "integ-test/DefaultTest/DeployAssert/AwsApiCallRoute53GetHealthCheck59aead14a34993b682cea1d898034d58/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "integ-test/DefaultTest/DeployAssert/AwsApiCallRoute53GetHealthCheck59aead14a34993b682cea1d898034d58/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AwsApiCallRoute53GetHealthCheck41bc31ce3714b56f4c7e78c19a7a71b1": {
+                    "id": "AwsApiCallRoute53GetHealthCheck41bc31ce3714b56f4c7e78c19a7a71b1",
+                    "path": "integ-test/DefaultTest/DeployAssert/AwsApiCallRoute53GetHealthCheck41bc31ce3714b56f4c7e78c19a7a71b1",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "integ-test/DefaultTest/DeployAssert/AwsApiCallRoute53GetHealthCheck41bc31ce3714b56f4c7e78c19a7a71b1/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "integ-test/DefaultTest/DeployAssert/AwsApiCallRoute53GetHealthCheck41bc31ce3714b56f4c7e78c19a7a71b1/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "integ-test/DefaultTest/DeployAssert/AwsApiCallRoute53GetHealthCheck41bc31ce3714b56f4c7e78c19a7a71b1/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "integ-test/DefaultTest/DeployAssert/AwsApiCallRoute53GetHealthCheck41bc31ce3714b56f4c7e78c19a7a71b1/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "integ-test/DefaultTest/DeployAssert/AwsApiCallRoute53GetHealthCheck41bc31ce3714b56f4c7e78c19a7a71b1/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AwsApiCallRoute53GetHealthCheckec626502c4461fdda680dcd1f5d79f38": {
+                    "id": "AwsApiCallRoute53GetHealthCheckec626502c4461fdda680dcd1f5d79f38",
+                    "path": "integ-test/DefaultTest/DeployAssert/AwsApiCallRoute53GetHealthCheckec626502c4461fdda680dcd1f5d79f38",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "integ-test/DefaultTest/DeployAssert/AwsApiCallRoute53GetHealthCheckec626502c4461fdda680dcd1f5d79f38/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "integ-test/DefaultTest/DeployAssert/AwsApiCallRoute53GetHealthCheckec626502c4461fdda680dcd1f5d79f38/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "integ-test/DefaultTest/DeployAssert/AwsApiCallRoute53GetHealthCheckec626502c4461fdda680dcd1f5d79f38/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "integ-test/DefaultTest/DeployAssert/AwsApiCallRoute53GetHealthCheckec626502c4461fdda680dcd1f5d79f38/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "integ-test/DefaultTest/DeployAssert/AwsApiCallRoute53GetHealthCheckec626502c4461fdda680dcd1f5d79f38/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AwsApiCallRoute53GetHealthCheck975176a65fd10720efee025ea51c61a1": {
+                    "id": "AwsApiCallRoute53GetHealthCheck975176a65fd10720efee025ea51c61a1",
+                    "path": "integ-test/DefaultTest/DeployAssert/AwsApiCallRoute53GetHealthCheck975176a65fd10720efee025ea51c61a1",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "integ-test/DefaultTest/DeployAssert/AwsApiCallRoute53GetHealthCheck975176a65fd10720efee025ea51c61a1/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "integ-test/DefaultTest/DeployAssert/AwsApiCallRoute53GetHealthCheck975176a65fd10720efee025ea51c61a1/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "integ-test/DefaultTest/DeployAssert/AwsApiCallRoute53GetHealthCheck975176a65fd10720efee025ea51c61a1/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "integ-test/DefaultTest/DeployAssert/AwsApiCallRoute53GetHealthCheck975176a65fd10720efee025ea51c61a1/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "integ-test/DefaultTest/DeployAssert/AwsApiCallRoute53GetHealthCheck975176a65fd10720efee025ea51c61a1/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "integ-test/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

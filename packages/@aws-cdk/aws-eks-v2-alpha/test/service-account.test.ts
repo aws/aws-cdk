@@ -367,11 +367,11 @@ describe('service account', () => {
       // should have a eks pod identity agent addon
       t.hasResourceProperties('AWS::EKS::Addon', {
         AddonName: 'eks-pod-identity-agent',
-        ClusterName: { Ref: 'Cluster9EE0221C' },
+        ClusterName: { Ref: 'ClusterEB0386A7' },
       });
       // should have pod identity association
       t.hasResourceProperties('AWS::EKS::PodIdentityAssociation', {
-        ClusterName: { Ref: 'Cluster9EE0221C' },
+        ClusterName: { Ref: 'ClusterEB0386A7' },
         Namespace: 'default',
         RoleArn: { 'Fn::GetAtt': ['MyServiceAccountRoleB41709FF', 'Arn'] },
         ServiceAccount: 'stackmyserviceaccount58b9529e',

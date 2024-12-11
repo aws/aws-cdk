@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "NlbEnablePrefixForIpv6NatStackTest/DefaultTest": {
+      "stacks": [
+        "NlbEnablePrefixForIpv6NatStack"
+      ],
+      "assertionStack": "NlbEnablePrefixForIpv6NatStackTest/DefaultTest/DeployAssert",
+      "assertionStackName": "NlbEnablePrefixForIpv6NatStackTestDefaultTestDeployAssert4C17D694"
+    }
+  }
+}

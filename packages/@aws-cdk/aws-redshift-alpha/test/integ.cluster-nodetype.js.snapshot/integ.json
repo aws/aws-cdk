@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "RA3LargeNodeIntegTest/DefaultTest": {
+      "stacks": [
+        "redshift-ra3-large-integ"
+      ],
+      "assertionStack": "RA3LargeNodeIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "RA3LargeNodeIntegTestDefaultTestDeployAssert1EF91947"
+    }
+  }
+}

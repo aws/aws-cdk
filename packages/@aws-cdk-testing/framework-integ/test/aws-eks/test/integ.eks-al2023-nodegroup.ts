@@ -40,6 +40,16 @@ class EksClusterStack extends Stack {
     this.cluster.addNodegroupCapacity('MNG_AL2023_ARM_64_STANDARD', {
       amiType: NodegroupAmiType.AL2023_ARM_64_STANDARD,
     });
+
+    // create nodegroup with AL2023_X86_64_NEURON
+    this.cluster.addNodegroupCapacity('MNG_AL2023_X86_64_NEURON', {
+      amiType: NodegroupAmiType.AL2023_X86_64_NEURON,
+    });
+
+    // create nodegroup with AL2023_X86_64_NVIDIA
+    this.cluster.addNodegroupCapacity('MNG_AL2023_X86_64_NVIDIA', {
+      amiType: NodegroupAmiType.AL2023_X86_64_NVIDIA,
+    });
   }
 }
 

@@ -50,6 +50,11 @@ export enum NodeType {
   DC2_8XLARGE = 'dc2.8xlarge',
 
   /**
+   * ra3.large
+   */
+  RA3_LARGE = 'ra3.large',
+
+  /**
    * ra3.xlplus
    */
   RA3_XLPLUS = 'ra3.xlplus',

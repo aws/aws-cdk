@@ -31,6 +31,33 @@ test('use S3 bucket website as record target', () => {
   });
 });
 
+test('use S3 bucket website as record target with health check', () => {
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'test', { env: { region: 'us-east-1' } });
+
+  const bucketWebsite = new s3.Bucket(stack, 'Bucket', { bucketName });
+
+  // WHEN
+  const zone = new route53.PublicHostedZone(stack, 'HostedZone', { zoneName });
+  new route53.ARecord(zone, 'Alias', {
+    zone,
+    recordName,
+    target: route53.RecordTarget.fromAlias(
+      new targets.BucketWebsiteTarget(bucketWebsite, {
+        evaluateTargetHealth: true,
+      }),
+    ),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+    AliasTarget: {
+      EvaluateTargetHealth: true,
+    },
+  });
+});
+
 test('use S3 bucket website as record target (fromBucketName)', () => {
   // GIVEN
   const app = new App();

@@ -24,6 +24,7 @@ import {
   CfnTable,
   InputCompressionType,
   InputFormat,
+  ApproximateCreationDateTimePrecision,
 } from '../lib';
 import { ReplicaProvider } from '../lib/replica-provider';
 
@@ -3639,6 +3640,178 @@ test('Resource policy test', () => {
           },
         ],
       },
+    },
+  });
+});
+
+test('Warm Throughput test on-demand', () => {
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'Stack');
+
+  // WHEN
+  const table = new Table(stack, 'Table', {
+    partitionKey: { name: 'id', type: AttributeType.STRING },
+    warmThroughput: {
+      readUnitsPerSecond: 13000,
+      writeUnitsPerSecond: 5000,
+    },
+  });
+
+  table.addGlobalSecondaryIndex({
+    indexName: 'my-index-1',
+    partitionKey: { name: 'gsi1pk', type: AttributeType.STRING },
+    warmThroughput: {
+      readUnitsPerSecond: 15000,
+      writeUnitsPerSecond: 6000,
+    },
+  });
+
+  table.addGlobalSecondaryIndex({
+    indexName: 'my-index-2',
+    partitionKey: { name: 'gsi2pk', type: AttributeType.STRING },
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+    KeySchema: [
+      { AttributeName: 'id', KeyType: 'HASH' },
+    ],
+    AttributeDefinitions: [
+      { AttributeName: 'id', AttributeType: 'S' },
+      { AttributeName: 'gsi1pk', AttributeType: 'S' },
+      { AttributeName: 'gsi2pk', AttributeType: 'S' },
+    ],
+    WarmThroughput: {
+      ReadUnitsPerSecond: 13000,
+      WriteUnitsPerSecond: 5000,
+    },
+    GlobalSecondaryIndexes: [
+      {
+        IndexName: 'my-index-1',
+        KeySchema: [
+          { AttributeName: 'gsi1pk', KeyType: 'HASH' },
+        ],
+        Projection: { ProjectionType: 'ALL' },
+        WarmThroughput: {
+          ReadUnitsPerSecond: 15000,
+          WriteUnitsPerSecond: 6000,
+        },
+      },
+      {
+        IndexName: 'my-index-2',
+        KeySchema: [
+          { AttributeName: 'gsi2pk', KeyType: 'HASH' },
+        ],
+        Projection: { ProjectionType: 'ALL' },
+      },
+    ],
+  });
+
+});
+
+test('Warm Throughput test provisioned', () => {
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'Stack');
+
+  // WHEN
+  const table = new Table(stack, 'Table', {
+    partitionKey: { name: 'id', type: AttributeType.STRING },
+    readCapacity: 5,
+    writeCapacity: 6,
+    warmThroughput: {
+      readUnitsPerSecond: 2000,
+      writeUnitsPerSecond: 1000,
+    },
+  });
+
+  table.addGlobalSecondaryIndex({
+    indexName: 'my-index-1',
+    partitionKey: { name: 'gsi1pk', type: AttributeType.STRING },
+    readCapacity: 7,
+    writeCapacity: 8,
+    warmThroughput: {
+      readUnitsPerSecond: 3000,
+      writeUnitsPerSecond: 4000,
+    },
+  });
+
+  table.addGlobalSecondaryIndex({
+    indexName: 'my-index-2',
+    partitionKey: { name: 'gsi2pk', type: AttributeType.STRING },
+    readCapacity: 9,
+    writeCapacity: 10,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+    KeySchema: [
+      { AttributeName: 'id', KeyType: 'HASH' },
+    ],
+    AttributeDefinitions: [
+      { AttributeName: 'id', AttributeType: 'S' },
+      { AttributeName: 'gsi1pk', AttributeType: 'S' },
+      { AttributeName: 'gsi2pk', AttributeType: 'S' },
+    ],
+    WarmThroughput: {
+      ReadUnitsPerSecond: 2000,
+      WriteUnitsPerSecond: 1000,
+    },
+    ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 6 },
+    GlobalSecondaryIndexes: [
+      {
+        IndexName: 'my-index-1',
+        KeySchema: [
+          { AttributeName: 'gsi1pk', KeyType: 'HASH' },
+        ],
+        Projection: { ProjectionType: 'ALL' },
+        WarmThroughput: {
+          ReadUnitsPerSecond: 3000,
+          WriteUnitsPerSecond: 4000,
+        },
+        ProvisionedThroughput: { ReadCapacityUnits: 7, WriteCapacityUnits: 8 },
+      },
+      {
+        IndexName: 'my-index-2',
+        KeySchema: [
+          { AttributeName: 'gsi2pk', KeyType: 'HASH' },
+        ],
+        Projection: { ProjectionType: 'ALL' },
+        ProvisionedThroughput: { ReadCapacityUnits: 9, WriteCapacityUnits: 10 },
+      },
+    ],
+  });
+
+});
+
+test('Kinesis Stream - precision timestamp', () => {
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'Stack');
+
+  const stream = new kinesis.Stream(stack, 'Stream');
+
+  // WHEN
+  const table = new Table(stack, 'Table', {
+    partitionKey: { name: 'id', type: AttributeType.STRING },
+    kinesisStream: stream,
+    kinesisPrecisionTimestamp: ApproximateCreationDateTimePrecision.MILLISECOND,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+    KeySchema: [
+      { AttributeName: 'id', KeyType: 'HASH' },
+    ],
+    AttributeDefinitions: [
+      { AttributeName: 'id', AttributeType: 'S' },
+    ],
+    KinesisStreamSpecification: {
+      StreamArn: {
+        'Fn::GetAtt': ['Stream790BDEE4', 'Arn'],
+      },
+      ApproximateCreationDateTimePrecision: 'MILLISECOND',
     },
   });
 });

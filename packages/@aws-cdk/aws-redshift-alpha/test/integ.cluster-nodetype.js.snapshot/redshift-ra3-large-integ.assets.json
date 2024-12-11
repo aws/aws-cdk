@@ -1,0 +1,19 @@
+{
+  "version": "38.0.1",
+  "files": {
+    "ac3ba08dcff1225c9f2f2ed2b165b8082ead5ca78d285898b4ad93a7f44eabac": {
+      "source": {
+        "path": "redshift-ra3-large-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "ac3ba08dcff1225c9f2f2ed2b165b8082ead5ca78d285898b4ad93a7f44eabac.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
