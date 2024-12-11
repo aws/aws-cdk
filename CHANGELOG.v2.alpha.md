@@ -7,7 +7,6 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Features
 
-* **eks-v2-alpha:** use L1 CfnCluster to replace custom resource for EKS Cluster ([#32400](https://github.com/aws/aws-cdk/issues/32400)) ([d0a4a78](https://github.com/aws/aws-cdk/commit/d0a4a785e1d246f97e1fa6c1b46b5967594cf3b0))
 * **redshift-alpha:** add support for RA3.large node type ([#31637](https://github.com/aws/aws-cdk/issues/31637)) ([ce0e09f](https://github.com/aws/aws-cdk/commit/ce0e09fea17c78d40026df114796bc89ad365d18)), closes [#31634](https://github.com/aws/aws-cdk/issues/31634)
 
 ## [2.172.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.171.1-alpha.0...v2.172.0-alpha.0) (2024-12-06)
