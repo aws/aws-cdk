@@ -299,7 +299,7 @@ describe('owner contact configuration', () => {
       });
     };
 
-    expect(() => buildWithOwnerContact()).toThrow('You must specify `ownerContact` as a string of 256 characters or less.');
+    expect(() => buildWithOwnerContact()).toThrow('`ownerContact` must be between 1 and 256 characters, got: 257 characters.');
   });
 });
 

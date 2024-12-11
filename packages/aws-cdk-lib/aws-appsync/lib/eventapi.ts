@@ -165,7 +165,7 @@ export abstract class EventApiBase extends ApiBase implements IEventApi {
    * @param grantee The principal
    */
   public grantPublish(grantee: IGrantable): Grant {
-    return this.grant(grantee, IamResource.custom(...`${this.apiId}/*`), 'appsync:EventPublish');
+    return this.grant(grantee, IamResource.custom(`${this.apiId}/*`), 'appsync:EventPublish');
   }
 
   /**
@@ -175,7 +175,7 @@ export abstract class EventApiBase extends ApiBase implements IEventApi {
    * @param grantee The principal
    */
   public grantSubscribe(grantee: IGrantable): Grant {
-    return this.grant(grantee, IamResource.custom(...`${this.apiId}/*`), 'appsync:EventSubscribe');
+    return this.grant(grantee, IamResource.custom(`${this.apiId}/*`), 'appsync:EventSubscribe');
   }
 
   /**
@@ -184,7 +184,7 @@ export abstract class EventApiBase extends ApiBase implements IEventApi {
    * @param grantee The principal
    */
   public grantPublishSubscribe(grantee: IGrantable): Grant {
-    return this.grant(grantee, IamResource.custom(...`${this.apiId}/*`), 'appsync:EventPublish', 'appsync:EventSubscribe');
+    return this.grant(grantee, IamResource.custom(`${this.apiId}/*`), 'appsync:EventPublish', 'appsync:EventSubscribe');
   }
 
   /**
@@ -193,7 +193,7 @@ export abstract class EventApiBase extends ApiBase implements IEventApi {
    * @param grantee The principal
    */
   public grantConnect(grantee: IGrantable): Grant {
-    return this.grant(grantee, IamResource.custom(...`${this.apiId}`), 'appsync:EventConnect');
+    return this.grant(grantee, IamResource.custom(`${this.apiId}`), 'appsync:EventConnect');
   }
 }
 
@@ -355,8 +355,6 @@ export class EventApi extends EventApiBase {
   private domainNameResource?: CfnDomainName;
 
   constructor(scope: Construct, id: string, props: EventApiProps) {
-    super(scope, id);
-
     if (props.apiName !== undefined && !Token.isUnresolved(props.apiName)) {
       if (props.apiName.length < 1 || props.apiName.length > 50) {
         throw new Error(`\`apiName\` must be between 1 and 50 characters, got: ${props.apiName.length} characters.`);

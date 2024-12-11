@@ -131,7 +131,7 @@ export class ChannelNamespace extends Construct {
    * @param grantee The principal
    */
   public grantSubscribe(grantee: IGrantable) {
-    return this.api.grant(grantee, IamResource.ofChannelNamespace(this.channelNamespace.name), 'appsync:EventPublish');
+    return this.api.grant(grantee, IamResource.ofChannelNamespace(this.channelNamespace.name), 'appsync:EventSubscribe');
   }
 
   /**
@@ -141,7 +141,7 @@ export class ChannelNamespace extends Construct {
    * @param grantee The principal
    */
   public grantPublish(grantee: IGrantable) {
-    return this.api.grant(grantee, IamResource.ofChannelNamespace(this.channelNamespace.name), 'appsync:EventSubscribe');
+    return this.api.grant(grantee, IamResource.ofChannelNamespace(this.channelNamespace.name), 'appsync:EventPublish');
   }
 
   /**
