@@ -76,6 +76,9 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
       if (type === undefined && routeTables.hasRouteToTransitGateway(subnet.SubnetId)) {
         type = SubnetType.Private;
       }
+      if (type === undefined && routeTables.hasRouteToCloudWAN(subnet.SubnetId)) {
+        type = SubnetType.Private;
+      }
       if (type === undefined) {
         type = SubnetType.Isolated;
       }
