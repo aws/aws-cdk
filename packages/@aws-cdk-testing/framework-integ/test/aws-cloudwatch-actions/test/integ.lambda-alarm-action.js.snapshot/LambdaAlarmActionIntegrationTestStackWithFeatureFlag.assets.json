@@ -1,7 +1,7 @@
 {
-  "version": "36.0.0",
+  "version": "38.0.1",
   "files": {
-    "db34b72b17af5b7d83e311e6552b5f6cc3c82caf16943655fcbabc28a5c9b826": {
+    "b98110f17efd8ffb88b58cbc7790046b770c602a6dd1424ed01a82ec7af14234": {
       "source": {
         "path": "LambdaAlarmActionIntegrationTestStackWithFeatureFlag.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "db34b72b17af5b7d83e311e6552b5f6cc3c82caf16943655fcbabc28a5c9b826.json",
+          "objectKey": "b98110f17efd8ffb88b58cbc7790046b770c602a6dd1424ed01a82ec7af14234.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
