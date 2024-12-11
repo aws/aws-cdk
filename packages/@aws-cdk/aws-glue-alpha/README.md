@@ -41,7 +41,7 @@ An ETL job processes data in batches using Apache Spark.
 declare const bucket: s3.Bucket;
 new glue.Job(this, 'ScalaSparkEtlJob', {
   executable: glue.JobExecutable.scalaEtl({
-    glueVersion: glue.GlueVersion.V4_0,
+    glueVersion: glue.GlueVersion.V5_0,
     script: glue.Code.fromBucket(bucket, 'src/com/example/HelloWorld.scala'),
     className: 'com.example.HelloWorld',
     extraJars: [glue.Code.fromBucket(bucket, 'jars/HelloWorld.jar')],
@@ -58,7 +58,7 @@ A Streaming job is similar to an ETL job, except that it performs ETL on data st
 ```ts
 new glue.Job(this, 'PythonSparkStreamingJob', {
   executable: glue.JobExecutable.pythonStreaming({
-    glueVersion: glue.GlueVersion.V4_0,
+    glueVersion: glue.GlueVersion.V5_0,
     pythonVersion: glue.PythonVersion.THREE,
     script: glue.Code.fromAsset(path.join(__dirname, 'job-script', 'hello_world.py')),
   }),
@@ -94,7 +94,7 @@ These jobs run in a Ray environment managed by AWS Glue.
 ```ts
 new glue.Job(this, 'RayJob', {
   executable: glue.JobExecutable.pythonRay({
-    glueVersion: glue.GlueVersion.V4_0,
+    glueVersion: glue.GlueVersion.V5_0,
     pythonVersion: glue.PythonVersion.THREE_NINE,
     runtime: glue.Runtime.RAY_TWO_FOUR,
     script: glue.Code.fromAsset(path.join(__dirname, 'job-script', 'hello_world.py')),
@@ -137,7 +137,7 @@ Enable job run queuing by setting the `jobRunQueuingEnabled` property to `true`.
 new glue.Job(this, 'EnableRunQueuing', {
   jobName: 'EtlJobWithRunQueuing',
   executable: glue.JobExecutable.pythonEtl({
-    glueVersion: glue.GlueVersion.V4_0,
+    glueVersion: glue.GlueVersion.V5_0,
     pythonVersion: glue.PythonVersion.THREE,
     script: glue.Code.fromAsset(path.join(__dirname, 'job-script', 'hello_world.py')),
   }),
@@ -488,7 +488,7 @@ new glue.S3Table(this, 'MyTable', {
 declare const myDatabase: glue.Database;
 // KMS key is created automatically
 new glue.S3Table(this, 'MyTable', {
-  encryption: glue.TableEncryption.CLIENT_SIDE_KMS, 
+  encryption: glue.TableEncryption.CLIENT_SIDE_KMS,
   // ...
   database: myDatabase,
   columns: [{
@@ -546,7 +546,7 @@ new glue.S3Table(this, 'MyTable', {
   // ...
   database: myDatabase,
   dataFormat: glue.DataFormat.JSON,
-});  
+});
 ```
 
 ### Primitives
