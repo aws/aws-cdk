@@ -293,4 +293,50 @@ describe('update', () => {
       Sql: expect.stringMatching(new RegExp(`.+ ON ${tableName} FROM ${username}`)),
     }));
   });
+
+  test('serializes properties in grant statement when tableName in physical resource ID', async () => {
+    const properties = {
+      ...resourceProperties,
+      tablePrivileges: [{
+        tableId,
+        tableName: `${makePhysicalId(tableName, resourceProperties, requestId)}`,
+        actions,
+      }],
+    };
+
+    const newEvent = {
+      ...event,
+      ResourceProperties: properties,
+      StackId: 'xxxxx:' + requestId,
+    };
+
+    await managePrivileges(properties, newEvent);
+
+    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+      Sql: `GRANT INSERT, SELECT ON ${tableName} TO ${username}`,
+    }));
+  });
+
+  test('serializes properties in drop statement when tableName in physical resource ID', async () => {
+    const properties = {
+      ...resourceProperties,
+      tablePrivileges: [{
+        tableId,
+        tableName: `${makePhysicalId(tableName, resourceProperties, requestId)}`,
+        actions: ['DROP'],
+      }],
+    };
+
+    const newEvent = {
+      ...event,
+      ResourceProperties: properties,
+      StackId: 'xxxxx:' + requestId,
+    };
+
+    await managePrivileges(properties, newEvent);
+
+    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+      Sql: `REVOKE INSERT, SELECT ON ${tableName} FROM ${username}`,
+    }));
+  });
 });
