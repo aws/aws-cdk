@@ -298,6 +298,10 @@ export class EventApi extends EventApiBase {
       public readonly apiArn = arn;
       public readonly dns = attrs.dns;
       public readonly authProviderTypes = attrs.authProviderTypes ?? [];
+
+      constructor(s: Construct, i: string) {
+        super(s, i);
+      }
     }
     return new Import(scope, id);
   }
