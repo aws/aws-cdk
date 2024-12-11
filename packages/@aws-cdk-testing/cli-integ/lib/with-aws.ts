@@ -1,9 +1,15 @@
+import { AtmosphereClient } from '@cdklabs/cdk-atmosphere-client';
 import { AwsClients } from './aws';
 import { TestContext } from './integ-test';
 import { ResourcePool } from './resource-pool';
 import { DisableBootstrapContext } from './with-cdk-app';
 
 export type AwsContext = { readonly aws: AwsClients };
+
+// will cause all aws environments to be allocated from the atmosphere service
+// instead of the static local region pool.
+const CDK_ATMOSPHERE_ENABLED = process.env.CDK_INTEG_ATMOSPHERE_ENABLED ? true : false;
+const CDK_ATMOSPHERE_ENDPOINT = process.env.CDK_INTEG_ATMOSPHERE_ENDPOINT;
 
 /**
  * Higher order function to execute a block with an AWS client setup
@@ -14,12 +20,33 @@ export function withAws<A extends TestContext>(
   block: (context: A & AwsContext & DisableBootstrapContext) => Promise<void>,
   disableBootstrap: boolean = false,
 ): (context: A) => Promise<void> {
-  return (context: A) => regionPool().using(async (region) => {
-    const aws = await AwsClients.forRegion(region, context.output);
-    await sanityCheck(aws);
 
-    return block({ ...context, disableBootstrap, aws });
-  });
+  return async (context: A) => {
+
+    if (CDK_ATMOSPHERE_ENABLED) {
+
+      if (!CDK_ATMOSPHERE_ENDPOINT) {
+        throw new Error('CDK_INTEG_ATMOSPHERE_ENABLED is set but CDK_INTEG_ATMOSPHERE_ENDPOINT is not');
+      }
+
+      const atmosphere = AtmosphereClient.getOrCreate(CDK_ATMOSPHERE_ENDPOINT);
+      const allocation = await atmosphere.acquire();
+      const aws = await AwsClients.forEnvironment(allocation.environment, context.output);
+
+      await sanityCheck(aws);
+
+      try {
+        return await block({ ...context, disableBootstrap, aws });
+      } finally {
+        await atmosphere.release(allocation.id);
+      }
+    }
+    return regionPool().using(async (region) => {
+      const aws = await AwsClients.forRegion(region, context.output);
+      await sanityCheck(aws);
+      return block({ ...context, disableBootstrap, aws });
+    });
+  };
 }
 
 let _regionPool: undefined | ResourcePool;

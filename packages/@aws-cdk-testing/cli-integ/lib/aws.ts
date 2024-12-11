@@ -20,22 +20,46 @@ import { SNSClient } from '@aws-sdk/client-sns';
 import { SSOClient } from '@aws-sdk/client-sso';
 import { STSClient, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
 import { fromIni } from '@aws-sdk/credential-providers';
-import type { AwsCredentialIdentityProvider } from '@smithy/types';
+import type { Environment } from '@cdklabs/cdk-atmosphere-client';
+import type { AwsCredentialIdentity, AwsCredentialIdentityProvider } from '@smithy/types';
 import { ConfiguredRetryStrategy } from '@smithy/util-retry';
 interface ClientConfig {
-  readonly credentials?: AwsCredentialIdentityProvider;
+  readonly credentials?: AwsCredentialIdentityProvider | AwsCredentialIdentity;
   readonly region: string;
   readonly retryStrategy: ConfiguredRetryStrategy;
 }
 
 export class AwsClients {
+
+  /**
+   * Create clients using:
+   *
+   *  - Region from environment variables or us-east-1.
+   *  - Account credentials from SDK defaults.
+   */
   public static async default(output: NodeJS.WritableStream) {
     const region = process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? 'us-east-1';
     return AwsClients.forRegion(region, output);
   }
 
+  /**
+   * Create clients using:
+   *
+   *  - Region from caller input.
+   *  - Account credentials from SDK defaults.
+   */
   public static async forRegion(region: string, output: NodeJS.WritableStream) {
     return new AwsClients(region, output);
+  }
+
+  /**
+   * Create clients using:
+   *
+   *  - Region from caller input.
+   *  - Account credentials from caller input.
+   */
+  public static async forEnvironment(enviroment: Environment, output: NodeJS.WritableStream) {
+    return new AwsClients(enviroment.region, output, enviroment.credentials);
   }
 
   private readonly config: ClientConfig;
@@ -50,9 +74,12 @@ export class AwsClients {
   public readonly lambda: LambdaClient;
   public readonly sts: STSClient;
 
-  constructor(public readonly region: string, private readonly output: NodeJS.WritableStream) {
+  private constructor(
+    public readonly region: string,
+    private readonly output: NodeJS.WritableStream,
+    private readonly identity?: AwsCredentialIdentity) {
     this.config = {
-      credentials: chainableCredentials(this.region),
+      credentials: this.identity ?? chainableCredentials(this.region),
       region: this.region,
       retryStrategy: new ConfiguredRetryStrategy(9, (attempt: number) => attempt ** 500),
     };

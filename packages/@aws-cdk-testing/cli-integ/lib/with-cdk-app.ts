@@ -187,6 +187,17 @@ export function withMonolithicCfnIncludeCdkApp<A extends TestContext>(block: (co
   };
 }
 
+export interface AwsOptions {
+
+  /**
+   * Use the atmosphere service to acquire environments.
+   * Otherwise, the local region pool is used.
+   *
+   * @default false.
+   */
+  readonly useAtmosphere?: boolean;
+}
+
 /**
  * Default test fixture for most (all?) integ tests
  *
