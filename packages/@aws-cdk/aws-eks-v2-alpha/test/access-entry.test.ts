@@ -47,7 +47,7 @@ describe('AccessEntry', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::AccessEntry', {
-      ClusterName: { Ref: 'Cluster9EE0221C' },
+      ClusterName: { Ref: 'ClusterEB0386A7' },
       PrincipalArn: 'mock-principal-arn',
       AccessPolicies: [
         {
@@ -74,7 +74,7 @@ describe('AccessEntry', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::EKS::AccessEntry', {
-        ClusterName: { Ref: 'Cluster9EE0221C' },
+        ClusterName: { Ref: 'ClusterEB0386A7' },
         PrincipalArn: 'mock-principal-arn',
         Type: accessEntryType,
       });
@@ -92,7 +92,7 @@ describe('AccessEntry', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::AccessEntry', {
-      ClusterName: { Ref: 'Cluster9EE0221C' },
+      ClusterName: { Ref: 'ClusterEB0386A7' },
       PrincipalArn: mockProps.principal,
       AccessPolicies: [
         { PolicyArn: mockProps.accessPolicies[0].policy },
@@ -132,6 +132,6 @@ describe('AccessEntry', () => {
     expect(importedAccessEntry.accessEntryName).toEqual(importedAccessEntryName);
     expect(importedAccessEntry.accessEntryArn).toEqual(importedAccessEntryArn);
 
-    Template.fromStack(stack).resourceCountIs('AWS::EKS::AccessEntry', 0);
+    Template.fromStack(stack).resourceCountIs('AWS::EKS::AccessEntry', 1);
   });
 });
