@@ -74,6 +74,43 @@ $ # Create a new library application in typescript
 $ cdk init lib --language=typescript
 ```
 
+#### If, There is a new release present and while running for the first time, following warning will be thrown
+
+```console
+$ cdk init --list
+Available templates:
+* app: Template for a CDK Application
+   └─ cdk init app --language=[csharp|fsharp|go|java|javascript|python|typescript]
+* lib: Template for a CDK Construct Library
+   └─ cdk init lib --language=typescript
+* sample-app: Example CDK Application with some constructs
+   └─ cdk init sample-app --language=[csharp|fsharp|go|java|javascript|python|typescript]
+***********************************************************************************************************************
+*** Newer version of CDK is available [2.171.1]                                                                     ***
+*** Upgrade recommended (npm install -g aws-cdk)                                                                    ***
+***********************************************************************************************************************
+$ 
+``` 
+
+#### If toolkit uses deprecated version, respective warning will be thrown and while running for the first time, following warning will be thrown
+
+```console
+$ cdk init --list
+Available templates:
+* app: Template for a CDK Application
+   └─ cdk init app --language=[csharp|fsharp|go|java|javascript|python|typescript]
+* lib: Template for a CDK Construct Library
+   └─ cdk init lib --language=typescript
+* sample-app: Example CDK Application with some constructs
+   └─ cdk init sample-app --language=[csharp|fsharp|go|java|javascript|python|typescript]
+***********************************************************************************************************************
+*** You are using DEPRECATED version : [2.167.0], reason : Some authentication scenarios are broken in this version ***
+*** Newer version of CDK is available [2.171.1]                                                                     ***
+*** Upgrade recommended (npm install -g aws-cdk)                                                                    ***
+***********************************************************************************************************************
+$ 
+``` 
+
 ### `cdk list`
 
 Lists the stacks and their dependencies modeled in the CDK app.
