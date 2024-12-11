@@ -17,12 +17,13 @@ export async function cliMain(cliArgs: string[]) {
     .option('dont-attribute', { type: 'string', desc: 'Dependencies matching this regular expressions wont be added to the notice file' })
     .option('test', { type: 'string', desc: 'Validation command to sanity test the bundle after its created' })
     .option('minify-whitespace', { type: 'boolean', default: false, desc: 'Minify whitespace' })
-    .option('pack-destination', { type: 'string', desc: 'Directory to write the tarball to', nargs: 1, requiresArg: true })
     .command('validate', 'Validate the package is ready for bundling', args => args
       .option('fix', { type: 'boolean', default: false, alias: 'f', desc: 'Fix any fixable violations' }),
     )
     .command('write', 'Write the bundled version of the project to a temp directory')
-    .command('pack', 'Write the bundle and create the tarball')
+    .command('pack', 'Write the bundle and create the tarball', args => args
+      .option('pack-destination', { type: 'string', desc: 'Directory to write the tarball to', nargs: 1, requiresArg: true })
+    )
     .demandCommand() // require a subcommand
     .strict() // require a VALID subcommand, and only supported options
     .fail((msg, err) => {
@@ -94,8 +95,9 @@ export async function cliMain(cliArgs: string[]) {
       write(bundle);
       break;
     case 'pack':
+      const packDestination = argv.packDestination as string | undefined;
       pack(bundle, {
-        target: argv['pack-destination'],
+        target: packDestination,
       });
       break;
     default:
