@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
-import { IamResource } from './appsync-common';
-import { CfnApi, CfnApiKey } from './appsync.generated';
+import { IApi, ApiBase } from './api-base';
+import { IamResource, LogConfig, FieldLogLevel, DomainOptions } from './appsync-common';
+import { CfnApi, CfnApiKey, CfnDomainName } from './appsync.generated';
 import {
   AuthorizationMode,
   AuthorizationType,
@@ -10,10 +11,9 @@ import {
   OpenIdConnectConfig,
 } from './auth-config';
 import { ChannelNamespace, ChannelNamespaceOptions } from './channel-namespace';
-import { LogConfig, FieldLogLevel } from './graphqlapi';
 import { Grant, IGrantable, ManagedPolicy, ServicePrincipal, Role } from '../../aws-iam';
 import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '../../aws-logs';
-import { IResolvable, IResource, RemovalPolicy, Resource, Stack, Token, Duration } from '../../core';
+import { IResolvable, Lazy, Names, RemovalPolicy, Stack, Token, Duration } from '../../core';
 
 /**
  * Authorization configuration for the Event API
@@ -47,26 +47,18 @@ export interface EventApiAuthConfig {
 /**
  * Interface for Event API
  */
-export interface IEventApi extends IResource {
-  /**
-   * an unique AWS AppSync Event API identifier
-   * i.e. 'lxz775lwdrgcndgz3nurvac7oa'
-   *
-   * @attribute
-   */
-  readonly apiId: string;
-
-  /**
-   * the ARN of the Event API
-   *
-   * @attribute
-   */
-  readonly apiArn: string;
-
+export interface IEventApi extends IApi {
   /**
    * The Authorization Types for this Event Api
    */
   readonly authProviderTypes: AuthorizationType[];
+
+  /**
+   * The domain name of the Api's endpoints.
+   *
+   * @attribute
+   */
+  readonly dns: IResolvable;
 
   /**
    * add a new channel namespace.
@@ -91,22 +83,26 @@ export interface IEventApi extends IResource {
    * principal's policy.
    *
    * @param grantee The principal
-   * @param channelNamespace The channel namespaces to grant access to for Event Publish operations. Wild card supported.
    */
-  grantPublish(grantee: IGrantable, ...channelNamespace: string[]): Grant;
+  grantPublish(grantee: IGrantable): Grant;
 
   /**
    * Adds an IAM policy statement for EventSubscribe access to this EventApi to an IAM
    * principal's policy.
    *
    * @param grantee The principal
-   * @param channelNamespace The channel namespaces to grant access to for Event Subscribe operations. Wild card supported.
    */
-  grantSubscribe(grantee: IGrantable, ...channelNamespace: string[]): Grant;
+  grantSubscribe(grantee: IGrantable): Grant;
 
   /**
-   * Adds an IAM policy statement for EventSubscribe access to this EventApi to an IAM
-   * principal's policy.
+   * Adds an IAM policy statement to publish and subscribe to this API for an IAM principal's policy.
+   *
+   * @param grantee The principal
+   */
+  grantPublishSubscribe(grantee: IGrantable): Grant;
+
+  /**
+   * Adds an IAM policy statement for EventConnect access to this EventApi to an IAM principal's policy.
    *
    * @param grantee The principal
    */
@@ -116,17 +112,11 @@ export interface IEventApi extends IResource {
 /**
  * Base Class for Event API
  */
-export abstract class EventApiBase extends Resource implements IEventApi {
+export abstract class EventApiBase extends ApiBase implements IEventApi {
   /**
-   * an unique AWS AppSync Event API identifier
-   * i.e. 'lxz775lwdrgcndgz3nurvac7oa'
+   * the domain name of the API
    */
-  public abstract readonly apiId: string;
-
-  /**
-   * the ARN of the API
-   */
-  public abstract readonly apiArn: string;
+  //public abstract readonly dns: IResolvable; TODO figure this out
 
   /**
    * the domain name of the API
@@ -173,10 +163,9 @@ export abstract class EventApiBase extends Resource implements IEventApi {
    * principal's policy.
    *
    * @param grantee The principal
-   * @param channelNamespace The channel namespaces to grant access to for Event Publish operations. Wild card supported.
    */
-  public grantPublish(grantee: IGrantable, ...channelNamespace: string[]): Grant {
-    return this.grant(grantee, IamResource.custom(...channelNamespace), 'appsync:EventPublish');
+  public grantPublish(grantee: IGrantable): Grant {
+    return this.grant(grantee, IamResource.custom(...`${this.apiId}/*`), 'appsync:EventPublish');
   }
 
   /**
@@ -184,10 +173,18 @@ export abstract class EventApiBase extends Resource implements IEventApi {
    * principal's policy.
    *
    * @param grantee The principal
-   * @param channelNamespace The channel namespaces to grant access to for Event Subscribe operations. Wild card supported.
    */
-  public grantSubscribe(grantee: IGrantable, ...channelNamespace: string[]): Grant {
-    return this.grant(grantee, IamResource.custom(...channelNamespace), 'appsync:EventSubscribe');
+  public grantSubscribe(grantee: IGrantable): Grant {
+    return this.grant(grantee, IamResource.custom(...`${this.apiId}/*`), 'appsync:EventSubscribe');
+  }
+
+  /**
+   * Adds an IAM policy statement to publish and subscribe to this API for an IAM principal's policy.
+   *
+   * @param grantee The principal
+   */
+  public grantPublishSubscribe(grantee: IGrantable): Grant {
+    return this.grant(grantee, IamResource.custom(...`${this.apiId}/*`), 'appsync:EventPublish', 'appsync:EventSubscribe');
   }
 
   /**
@@ -196,7 +193,7 @@ export abstract class EventApiBase extends Resource implements IEventApi {
    * @param grantee The principal
    */
   public grantConnect(grantee: IGrantable): Grant {
-    return this.grant(grantee, IamResource.forAPI(), 'appsync:EventConnect');
+    return this.grant(grantee, IamResource.custom(...`${this.apiId}`), 'appsync:EventConnect');
   }
 }
 
@@ -231,6 +228,16 @@ export interface EventApiProps {
    * @default - No owner contact.
    */
   readonly ownerContact?: string;
+
+  /**
+   * The domain name configuration for the GraphQL API
+   *
+   * The Route 53 hosted zone and CName DNS record must be configured in addition to this setting to
+   * enable custom domain URL
+   *
+   * @default - no domain name
+   */
+  readonly domainName?: DomainOptions;
 }
 
 /**
@@ -283,7 +290,8 @@ export class EventApi extends EventApiBase {
       attrs.apiArn ??
       Stack.of(scope).formatArn({
         service: 'appsync',
-        resource: `apis/${attrs.apiId}`,
+        resource: 'apis',
+        resourceName: attrs.apiId,
       });
     class Import extends EventApiBase {
       public readonly apiId = attrs.apiId;
@@ -293,12 +301,6 @@ export class EventApi extends EventApiBase {
     }
     return new Import(scope, id);
   }
-
-  /**
-   * the name of the Event Api
-   * @attribute ApiName
-   */
-  public readonly apiName: string;
 
   /**
    * an unique AWS AppSync Event API identifier
@@ -346,9 +348,34 @@ export class EventApi extends EventApiBase {
 
   private api: CfnApi;
   private eventConfig: CfnApi.EventConfigProperty;
+  private domainNameResource?: CfnDomainName;
 
   constructor(scope: Construct, id: string, props: EventApiProps) {
     super(scope, id);
+
+    if (props.apiName !== undefined && !Token.isUnresolved(props.apiName)) {
+      if (props.apiName.length < 1 || props.apiName.length > 50) {
+        throw new Error(`\`apiName\` must be between 1 and 50 characters, got: ${props.apiName.length} characters.`);
+      }
+
+      const apiNamePattern = /^[A-Za-z0-9_\-\ ]+$/;
+
+      if (!apiNamePattern.test(props.apiName)) {
+        throw new Error(`\`apiName\` must contain only alphanumeric characters, underscores, hyphens, and spaces, got: ${props.apiName}`);
+      }
+    }
+
+    super(scope, id, {
+      physicalName: props.apiName ?? Lazy.string({
+        produce: () =>
+          Names.uniqueResourceName(this, {
+            maxLength: 50,
+            separator: '-',
+          }),
+      }),
+    });
+
+    this.validateOwnerContact(props.ownerContact);
 
     this.authProviderTypes = this.setupAuthProviderTypes(props.authorizationConfig?.authProviders);
 
@@ -379,14 +406,13 @@ export class EventApi extends EventApiBase {
     };
 
     this.api = new CfnApi(this, 'Resource', {
-      name: props.apiName,
-      eventConfig: this.eventConfig,
+      name: this.physicalName,
       ownerContact: props.ownerContact,
+      eventConfig: this.eventConfig,
     });
 
     this.api.applyRemovalPolicy(RemovalPolicy.DESTROY);
 
-    this.apiName = this.api.name;
     this.apiId = this.api.attrApiId;
     this.apiArn = this.api.attrApiArn;
     this.dns = this.api.attrDns;
@@ -418,6 +444,23 @@ export class EventApi extends EventApiBase {
       this.logGroup = LogGroup.fromLogGroupArn(this, 'LogGroup', logRetention.logGroupArn);
     } else {
       this.logGroup = LogGroup.fromLogGroupName(this, 'LogGroup', logGroupName);
+    }
+  }
+
+  /**
+   * Validate ownerContact property
+   */
+  private validateOwnerContact(ownerContact?: string) {
+    if (ownerContact === undefined || Token.isUnresolved(ownerContact)) return undefined;
+
+    if (ownerContact.length < 1 || ownerContact.length > 256) {
+      throw new Error(`\`ownerContact\` must be between 1 and 256 characters, got: ${ownerContact.length} characters.`);
+    }
+
+    const ownerContactPattern = /^[A-Za-z0-9_\-\ \.]+$/;
+
+    if (!ownerContactPattern.test(ownerContact)) {
+      throw new Error(`\`ownerContact\` must contain only alphanumeric characters, underscores, hyphens, spaces, and periods, got: ${ownerContact}`);
     }
   }
 
@@ -534,5 +577,35 @@ export class EventApi extends EventApiBase {
         throw new Error(`Missing authorization configuration for ${mode}`);
       }
     }
+  }
+
+  /**
+   * The AppSyncDomainName of the associated custom domain
+   */
+  public get appSyncDomainName(): string {
+    if (!this.domainNameResource) {
+      throw new Error('Cannot retrieve the appSyncDomainName without a domainName configuration');
+    }
+    return this.domainNameResource.attrAppSyncDomainName;
+  }
+
+  /**
+   * The HTTP Endpoint of the associated custom domain
+   */
+  public get customHttpEndpoint(): string {
+    if (!this.domainNameResource) {
+      throw new Error('Cannot retrieve the appSyncDomainName without a domainName configuration');
+    }
+    return `https://${this.domainNameResource.attrDomainName}/event`;
+  }
+
+  /**
+   * The Realtime Endpoint of the associated custom domain
+   */
+  public get customRealtimeEndpoint(): string {
+    if (!this.domainNameResource) {
+      throw new Error('Cannot retrieve the appSyncDomainName without a domainName configuration');
+    }
+    return `wss://${this.domainNameResource.attrDomainName}/event/realtime`;
   }
 }

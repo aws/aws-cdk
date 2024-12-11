@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { IamResource } from './appsync-common';
 import { CfnChannelNamespace } from './appsync.generated';
 import { AuthorizationType } from './auth-config';
 import { Code } from './code';
@@ -10,13 +11,13 @@ import { IGrantable } from '../../aws-iam';
  */
 export interface NamespaceAuthConfig {
   /**
-   * Default publish auth modes
+   * The publish auth modes for this Event Api
    * @default - API Key authorization
    */
   readonly publishAuthModeTypes?: AuthorizationType[];
 
   /**
-   * Default subscribe auth modes
+   * The subscribe auth modes for this Event Api
    * @default - API Key authorization
    */
   readonly subscribeAuthModeTypes?: AuthorizationType[];
@@ -130,7 +131,7 @@ export class ChannelNamespace extends Construct {
    * @param grantee The principal
    */
   public grantSubscribe(grantee: IGrantable) {
-    return this.api.grantSubscribe(grantee, `channelNamespace/${this.channelNamespace.name}`);
+    return this.api.grant(grantee, IamResource.ofChannelNamespace(this.channelNamespace.name), 'appsync:EventPublish');
   }
 
   /**
@@ -140,7 +141,17 @@ export class ChannelNamespace extends Construct {
    * @param grantee The principal
    */
   public grantPublish(grantee: IGrantable) {
-    return this.api.grantPublish(grantee, `channelNamespace/${this.channelNamespace.name}`);
+    return this.api.grant(grantee, IamResource.ofChannelNamespace(this.channelNamespace.name), 'appsync:EventSubscribe');
+  }
+
+  /**
+   * Adds an IAM policy statement for EventPublish and EventSubscribe access to this channel namespace to an IAM
+   * principal's policy.
+   *
+   * @param grantee The principal
+   */
+  public grantPublishSubscribe(grantee: IGrantable) {
+    return this.api.grant(grantee, IamResource.ofChannelNamespace(this.channelNamespace.name), 'appsync:EventPublish', 'appsync:EventSubscribe');
   }
 
   private validateAuthorizationConfig(authProviderTypes: AuthorizationType[], authModeTypes: AuthorizationType[]) {

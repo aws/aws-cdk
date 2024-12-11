@@ -15,7 +15,7 @@ beforeEach(() => {
 describe('Basic channel namespace', () => {
   test('Appsync Event API channel namespace - id is used as the default name', () => {
     // WHEN
-    const api = new appsync.EventApi(stack, 'api', { name: 'api' });
+    const api = new appsync.EventApi(stack, 'api', { apiName: 'api' });
     api.addChannelNamespace('default');
 
     // THEN
@@ -26,7 +26,7 @@ describe('Basic channel namespace', () => {
 
   test('Appsync Event API channel namespace - name overrides id', () => {
     // WHEN
-    const api = new appsync.EventApi(stack, 'api', { name: 'api' });
+    const api = new appsync.EventApi(stack, 'api', { apiName: 'api' });
     api.addChannelNamespace('default', { name: 'another' });
 
     // THEN
@@ -37,7 +37,7 @@ describe('Basic channel namespace', () => {
 
   test('Appsync Event API channel namespace - dont allow modes that are not provided by the API', () => {
     // WHEN
-    const api = new appsync.EventApi(stack, 'api', { name: 'api' });
+    const api = new appsync.EventApi(stack, 'api', { apiName: 'api' });
     function configNameSpace() {
       api.addChannelNamespace('default', {
         authorizationConfig: {
@@ -53,7 +53,7 @@ describe('Basic channel namespace', () => {
   test('Appsync Event API channel namespace - grant publish from channel', () => {
     // WHEN
     const api = new appsync.EventApi(stack, 'api', {
-      name: 'api',
+      apiName: 'api',
       authorizationConfig: {
         authProviders: [{ authorizationType: appsync.AuthorizationType.IAM }],
       },
@@ -98,7 +98,7 @@ describe('Basic channel namespace', () => {
   test('Appsync Event API channel namespace - grant subscribe from channel', () => {
     // WHEN
     const api = new appsync.EventApi(stack, 'api', {
-      name: 'api',
+      apiName: 'api',
       authorizationConfig: {
         authProviders: [{ authorizationType: appsync.AuthorizationType.IAM }],
       },

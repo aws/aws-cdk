@@ -1,90 +1,14 @@
 import { Construct } from 'constructs';
+import { DomainOptions, LogConfig, FieldLogLevel } from './appsync-common';
 import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema, CfnDomainName, CfnDomainNameApiAssociation, CfnSourceApiAssociation } from './appsync.generated';
 import { AuthorizationMode, AuthorizationType, AuthorizationConfig, ApiKeyConfig, UserPoolConfig, OpenIdConnectConfig, LambdaAuthorizerConfig, UserPoolDefaultAction } from './auth-config';
 import { IGraphqlApi, GraphqlApiBase, Visibility } from './graphqlapi-base';
 import { ISchema, SchemaFile } from './schema';
 import { MergeType, addSourceApiAutoMergePermission, addSourceGraphQLPermission } from './source-api-association';
-import { ICertificate } from '../../aws-certificatemanager';
 import { ManagedPolicy, Role, IRole, ServicePrincipal } from '../../aws-iam';
 import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '../../aws-logs';
-import { CfnResource, Duration, FeatureFlags, IResolvable, Lazy, Stack, Token } from '../../core';
+import { CfnResource, Duration, FeatureFlags, Lazy, Stack, Token } from '../../core';
 import * as cxapi from '../../cx-api';
-
-/**
- * log-level for fields in AppSync
- */
-export enum FieldLogLevel {
-  /**
-   * Resolver logging is disabled
-   */
-  NONE = 'NONE',
-  /**
-   * Only Error messages appear in logs
-   */
-  ERROR = 'ERROR',
-  /**
-   * Info and Error messages appear in logs
-   */
-  INFO = 'INFO',
-  /**
-   * Debug, Info, and Error messages, appear in logs
-   */
-  DEBUG = 'DEBUG',
-  /**
-   * All messages (Debug, Error, Info, and Trace) appear in logs
-   */
-  ALL = 'ALL',
-}
-
-/**
- * Logging configuration for AppSync
- */
-export interface LogConfig {
-  /**
-   * exclude verbose content
-   *
-   * @default false
-   */
-  readonly excludeVerboseContent?: boolean | IResolvable;
-  /**
-   * log level for fields
-   *
-   * @default - Use AppSync default
-   */
-  readonly fieldLogLevel?: FieldLogLevel;
-
-  /**
-   * The role for CloudWatch Logs
-   *
-   * @default - None
-   */
-  readonly role?: IRole;
-
-  /**
-  * The number of days log events are kept in CloudWatch Logs.
-  * By default AppSync keeps the logs infinitely. When updating this property,
-  * unsetting it doesn't remove the log retention policy.
-  * To remove the retention policy, set the value to `INFINITE`
-  *
-  * @default RetentionDays.INFINITE
-  */
-  readonly retention?: RetentionDays;
-}
-
-/**
- * Domain name configuration for AppSync
- */
-export interface DomainOptions {
-  /**
-   * The certificate to use with the domain name.
-   */
-  readonly certificate: ICertificate;
-
-  /**
-   * The actual domain name. For example, `api.example.com`.
-   */
-  readonly domainName: string;
-}
 
 /**
  * Additional API configuration for creating a AppSync Merged API
