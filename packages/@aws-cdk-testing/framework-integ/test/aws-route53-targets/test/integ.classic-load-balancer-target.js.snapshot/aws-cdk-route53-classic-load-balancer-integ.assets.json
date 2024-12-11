@@ -1,0 +1,19 @@
+{
+  "version": "38.0.1",
+  "files": {
+    "8c9d74498ff35bfe2ae42fd8c7d3166e15119521475e5caf2e70a221de8d14f4": {
+      "source": {
+        "path": "aws-cdk-route53-classic-load-balancer-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "8c9d74498ff35bfe2ae42fd8c7d3166e15119521475e5caf2e70a221de8d14f4.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
