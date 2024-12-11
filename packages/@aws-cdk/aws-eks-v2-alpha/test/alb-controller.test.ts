@@ -26,7 +26,7 @@ test.each(versions)('support AlbControllerVersion (%s)', (version) => {
         [
           '{"clusterName":"',
           {
-            Ref: 'Cluster9EE0221C',
+            Ref: 'ClusterEB0386A7',
           },
           '","serviceAccount":{"create":false,"name":"aws-load-balancer-controller"},"region":"us-east-1","vpcId":"',
           {
@@ -78,7 +78,7 @@ test('can configure a custom repository', () => {
         [
           '{"clusterName":"',
           {
-            Ref: 'Cluster9EE0221C',
+            Ref: 'ClusterEB0386A7',
           },
           '","serviceAccount":{"create":false,"name":"aws-load-balancer-controller"},"region":"us-east-1","vpcId":"',
           {
@@ -140,7 +140,7 @@ test('correct helm chart version is set for selected alb controller version', ()
         [
           '{"clusterName":"',
           {
-            Ref: 'Cluster9EE0221C',
+            Ref: 'ClusterEB0386A7',
           },
           '","serviceAccount":{"create":false,"name":"aws-load-balancer-controller"},"region":"us-east-1","vpcId":"',
           {
