@@ -34,8 +34,8 @@ export class AwsCliCompatible {
       requestHandler: AwsCliCompatible.requestHandlerBuilder(options.httpOptions),
       customUserAgent: 'aws-cdk',
       logger: options.logger,
+      region: await this.region(options.profile),
     };
-
     /**
      * The previous implementation matched AWS CLI behavior:
      *
