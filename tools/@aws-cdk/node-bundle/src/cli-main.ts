@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as yargs from 'yargs';
-import { Bundle, BundleProps, BundleValidateOptions } from './api';
+import { Bundle, BundlePackOptions, BundleProps, BundleValidateOptions } from './api';
 
 function versionNumber(): string {
   return fs.readJSONSync(path.join(__dirname, '..', 'package.json')).version;
@@ -16,6 +16,8 @@ export async function cliMain(cliArgs: string[]) {
     .option('resource', { type: 'array', nargs: 1, default: [], desc: 'List of resources that need to be explicitly copied to the bundle (example: node_modules/proxy-agent/contextify.js:bin/contextify.js)' })
     .option('dont-attribute', { type: 'string', desc: 'Dependencies matching this regular expressions wont be added to the notice file' })
     .option('test', { type: 'string', desc: 'Validation command to sanity test the bundle after its created' })
+    .option('minify-whitespace', { type: 'boolean', default: false, desc: 'Minify whitespace' })
+    .option('pack-destination', { type: 'string', desc: 'Directory to write the tarball to', nargs: 1, requiresArg: true })
     .command('validate', 'Validate the package is ready for bundling', args => args
       .option('fix', { type: 'boolean', default: false, alias: 'f', desc: 'Fix any fixable violations' }),
     )
@@ -76,6 +78,7 @@ export async function cliMain(cliArgs: string[]) {
     resources: resources,
     dontAttribute: argv['dont-attribute'],
     test: argv.test,
+    minifyWhitespace: argv['minify-whitespace'],
   };
 
   const bundle = new Bundle(props);
@@ -91,7 +94,9 @@ export async function cliMain(cliArgs: string[]) {
       write(bundle);
       break;
     case 'pack':
-      pack(bundle);
+      pack(bundle, {
+        target: argv['pack-destination'],
+      });
       break;
     default:
       throw new Error(`Unknown command: ${command}`);
@@ -110,6 +115,6 @@ function validate(bundle: Bundle, options: BundleValidateOptions = {}) {
   }
 }
 
-function pack(bundle: Bundle) {
-  bundle.pack();
+function pack(bundle: Bundle, options?: BundlePackOptions) {
+  bundle.pack(options);
 }

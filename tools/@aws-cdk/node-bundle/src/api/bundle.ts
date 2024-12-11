@@ -112,6 +112,13 @@ export interface BundleProps {
    * @default false
    */
   readonly minifySyntax?: boolean;
+
+  /**
+   * Directory to write the tarball to
+   *
+   * @default '.'
+   */
+  readonly packDestination?: string;
 }
 
 /**
