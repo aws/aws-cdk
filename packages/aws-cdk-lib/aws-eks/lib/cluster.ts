@@ -1,7 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Construct, Node } from 'constructs';
-import * as semver from 'semver';
 import * as YAML from 'yaml';
 import { IAccessPolicy, IAccessEntry, AccessEntry, AccessPolicy, AccessScopeType } from './access-entry';
 import { IAddon, Addon } from './addon';
