@@ -173,7 +173,7 @@ export class FromCloudFormation {
     }
 
     // in all other cases, delegate to the standard mapping logic
-    return this.getArray(this.getString)(value);
+    return FromCloudFormation.getArray(FromCloudFormation.getString)(value);
   }
 
   public static getArray<T>(mapper: (arg: any) => FromCloudFormationResult<T>): (x: any) => FromCloudFormationResult<T[]> {
@@ -716,8 +716,8 @@ export class CfnParser {
 
     const key = objectKeys[0];
     return key === 'Ref' || key.startsWith('Fn::') ||
-        // special intrinsic only available in the 'Conditions' section
-        (this.options.context === CfnParsingContext.CONDITIONS && key === 'Condition')
+    // special intrinsic only available in the 'Conditions' section
+    (this.options.context === CfnParsingContext.CONDITIONS && key === 'Condition')
       ? key
       : undefined;
   }
