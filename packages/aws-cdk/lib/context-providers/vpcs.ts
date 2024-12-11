@@ -234,11 +234,24 @@ class RouteTables {
     );
   }
 
+
+  /**
+   * Whether the given subnet has a route to a CloudWAN Network
+   */
+  public hasRouteToCloudWAN(subnetId: string | undefined): boolean {
+    const table = this.tableForSubnet(subnetId) || this.mainRouteTable;
+
+    return (
+      !!table && !!table.Routes && table.Routes.some((route) => !!route.CoreNetworkArn && route.DestinationCidrBlock === '0.0.0.0/0')
+    );
+  }
+
   public tableForSubnet(subnetId: string | undefined) {
     return this.tables.find(
       (table) => !!table.Associations && table.Associations.some((assoc) => assoc.SubnetId === subnetId),
     );
   }
+
 }
 
 /**
