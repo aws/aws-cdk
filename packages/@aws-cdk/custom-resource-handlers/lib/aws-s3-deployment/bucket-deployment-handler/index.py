@@ -53,7 +53,7 @@ def handler(event, context):
             source_bucket_names = props['SourceBucketNames']
             source_object_keys  = props['SourceObjectKeys']
             source_markers      = props.get('SourceMarkers', None)
-            source_version_ids  = props.get('SourceVersionIDs', [])
+            source_version_ids  = props.get('SourceVersionIds', [])
             dest_bucket_name    = props['DestinationBucketName']
             dest_bucket_prefix  = props.get('DestinationBucketKeyPrefix', '')
             extract             = props.get('Extract', 'true') == 'true'

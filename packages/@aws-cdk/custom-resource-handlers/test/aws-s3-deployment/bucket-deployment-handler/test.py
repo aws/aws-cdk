@@ -686,14 +686,15 @@ class TestHandler(unittest.TestCase):
 
     def test_create_update_with_version_id(self):
         invoke_handler("Create", {
-            "SourceBucketNames": ["<source-bucket>"],
-            "SourceObjectKeys": ["<source-object-key>"],
-            "SourceVersionIDs": ["<source-version-id>"],
+            "SourceBucketNames": ["<source-bucket1>", "<source-bucket2>"],
+            "SourceObjectKeys": ["<source-object-key1>", "<source-object-key2>"],
+            "SourceVersionIds": ["", "<source-version-id>"],
             "DestinationBucketName": "<dest-bucket-name>"
         })
 
         self.assertAwsCommands(
-            ["s3api", "get-object","--bucket", "<source-bucket>", "--key", "<source-object-key>", "--version-id", "<source-version-id>", "archive.zip"],
+            ["s3api", "get-object","--bucket", "<source-bucket1>", "--key", "<source-object-key1>", "archive.zip"],
+            ["s3api", "get-object","--bucket", "<source-bucket2>", "--key", "<source-object-key2>", "--version-id", "<source-version-id>", "archive.zip"],
             ["s3", "sync", "--delete", "contents.zip", "s3://<dest-bucket-name>/"]
         )
     
@@ -701,7 +702,7 @@ class TestHandler(unittest.TestCase):
         invoke_handler("Create", {
             "SourceBucketNames": ["<source-bucket>"],
             "SourceObjectKeys": ["<source-object-key>"],
-            "SourceVersionIDs": [""],
+            "SourceVersionIds": [""],
             "DestinationBucketName": "<dest-bucket-name>"
         })
 

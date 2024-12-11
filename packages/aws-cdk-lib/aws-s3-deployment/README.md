@@ -125,7 +125,8 @@ The following source types are supported for bucket deployments:
 
 - Local .zip file: `s3deploy.Source.asset('/path/to/local/file.zip')`
 - Local directory: `s3deploy.Source.asset('/path/to/local/directory')`
-- Another bucket: `s3deploy.Source.bucket(bucket, zipObjectKey)`
+- Another bucket: `s3deploy.Source.bucket(bucket, zipObjectKey)` 
+  (supports [versionId](#bucket-source-with-version-id))
 - String data: `s3deploy.Source.data('object-key.txt', 'hello, world!')`
   (supports [deploy-time values](#data-with-deploy-time-values))
 - JSON data: `s3deploy.Source.jsonData('object-key.json', { json: 'object' })`
@@ -486,6 +487,23 @@ const myBucketDeployment = new s3deploy.BucketDeployment(this, 'DeployMeWithoutE
 
 new cdk.CfnOutput(this, 'ObjectKey', {
   value: cdk.Fn.select(0, myBucketDeployment.objectKeys),
+});
+```
+
+
+## Bucket Source With Version ID
+
+By default, the bucket source objects copied to the destination bucket will not use any versioning to retrieve the object. You can optionally specify the version ID for the source object.
+```ts
+import * as cdk from 'aws-cdk-lib';
+
+declare const destinationBucket: s3.Bucket;
+
+const myBucketDeployment = new s3deploy.BucketDeployment(this, 'DeployMeWithVersioningSupport', {
+  sources: [s3deploy.Source.bucket(bucket, zipObjectKey, {
+    versionId: versionID,
+  })],
+  destinationBucket,
 });
 ```
 

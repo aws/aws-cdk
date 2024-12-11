@@ -426,7 +426,13 @@ export class BucketDeployment extends Construct {
             }, [] as Array<Record<string, any>>);
           },
         }, { omitEmptyArray: true }),
-        SourceVersionIds: cdk.Lazy.uncachedList({ produce: () => this.sources.map(source => source.versionId ?? '') }),
+        SourceVersionIds: cdk.Lazy.uncachedAny({
+          produce: () => {
+            const versionIds = this.sources.map(source => source.versionId ?? '');
+            // in the case where no version IDs supplied, then omit the property
+            return versionIds.some(versionId => versionId.length > 0) ? versionIds : [];
+          },
+        }, { omitEmptyArray: true } ),
         DestinationBucketName: this.destinationBucket.bucketName,
         DestinationBucketKeyPrefix: props.destinationKeyPrefix,
         RetainOnDelete: props.retainOnDelete,
