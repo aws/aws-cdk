@@ -16,10 +16,9 @@
         "templateFile": "aws-cdk-vpcv2-alpha-new.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a88dc0ea3e4c5ea7d17016d0f0fb2cdac863bc0d2a1ed9aecfb42840baf64e13.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5d255179238bb6636b1f13a6468e815c07fcdb1bfdedac13ca9e51fdda76978f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -38,37 +37,55 @@
         "/aws-cdk-vpcv2-alpha-new/SubnetTest/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SubnetTest3296A161"
+            "data": "SubnetTest3296A161",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpcv2-alpha-new/SubnetTest/SecondaryTest/SecondaryTest": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SubnetTestSecondaryTest2AB12223"
+            "data": "SubnetTestSecondaryTest2AB12223",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpcv2-alpha-new/testSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testSubnet1Subnet72087287"
+            "data": "testSubnet1Subnet72087287",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpcv2-alpha-new/testSubnet1/RouteTable/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testSubnet1RouteTableB5FDDF81"
+            "data": "testSubnet1RouteTableB5FDDF81",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpcv2-alpha-new/testSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testSubnet1RouteTableAssociation1DA9E185"
+            "data": "testSubnet1RouteTableAssociation1DA9E185",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpcv2-alpha-new/Instance/InstanceSecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "InstanceInstanceSecurityGroupF0E2D5BE"
+            "data": "InstanceInstanceSecurityGroupF0E2D5BE",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpcv2-alpha-new/Instance/InstanceRole/Resource": [
@@ -86,7 +103,10 @@
         "/aws-cdk-vpcv2-alpha-new/Instance/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "InstanceC1063A87"
+            "data": "InstanceC1063A87",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpcv2-alpha-new/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
@@ -104,31 +124,46 @@
         "/aws-cdk-vpcv2-alpha-new/testIGW/GWAttachment": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testIGWGWAttachment682A6782"
+            "data": "testIGWGWAttachment682A6782",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpcv2-alpha-new/TestRoutetable/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TestRoutetableRouteTable7B7B907D"
+            "data": "TestRoutetableRouteTable7B7B907D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpcv2-alpha-new/TestRoutetable/eigwRoute/Route": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TestRoutetableeigwRouteCDE8BBAF"
+            "data": "TestRoutetableeigwRouteCDE8BBAF",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpcv2-alpha-new/testSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testSubnet2Subnet4681911A"
+            "data": "testSubnet2Subnet4681911A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpcv2-alpha-new/testSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testSubnet2RouteTableAssociation40DCE4CD"
+            "data": "testSubnet2RouteTableAssociation40DCE4CD",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-vpcv2-alpha-new/BootstrapVersion": [
@@ -141,15 +176,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "SubnetTestSecondaryTestBDE45F82": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SubnetTestSecondaryTestBDE45F82",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },
@@ -170,7 +196,6 @@
         "templateFile": "integtestmodelDefaultTestDeployAssertCF40BD53.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
