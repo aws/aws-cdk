@@ -16,8 +16,8 @@ new vpc_v2.VpcV2(stack, 'VPC-integ-test-1', {
   primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.1.0.0/16'),
   secondaryAddressBlocks: [
     vpc_v2.IpAddresses.ipv6Pool('TBD', {
-        ipv6Pool: 'TBD',
-        cidrBlockName: 'MyByoipIpv6Block',
+      ipv6Pool: 'TBD',
+      cidrBlockName: 'MyByoipIpv6Block',
     }),
   ],
   enableDnsHostnames: true,
