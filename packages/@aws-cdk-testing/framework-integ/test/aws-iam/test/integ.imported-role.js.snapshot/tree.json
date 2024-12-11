@@ -66,7 +66,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.70"
+              "version": "10.3.0"
             }
           },
           "BootstrapVersion": {
@@ -356,7 +356,7 @@
                     "path": "ImportedRoleTestAssertions/AwsApiCallIAMlistRolePoliciese15a421383f9698f4159fca8713990e6/SdkProvider/AssertionsProvider",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "version": "10.3.0"
                     }
                   }
                 },
@@ -428,7 +428,69 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.70"
+              "version": "10.3.0"
+            }
+          },
+          "LatestNodeRuntimeMap": {
+            "id": "LatestNodeRuntimeMap",
+            "path": "ImportedRoleTestAssertions/LatestNodeRuntimeMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "0.0.0"
+            }
+          },
+          "AwsApiCallIAMlistAttachedRolePolicies7b6e565f3b40bc5c7faa65c17a68f5be": {
+            "id": "AwsApiCallIAMlistAttachedRolePolicies7b6e565f3b40bc5c7faa65c17a68f5be",
+            "path": "ImportedRoleTestAssertions/AwsApiCallIAMlistAttachedRolePolicies7b6e565f3b40bc5c7faa65c17a68f5be",
+            "children": {
+              "SdkProvider": {
+                "id": "SdkProvider",
+                "path": "ImportedRoleTestAssertions/AwsApiCallIAMlistAttachedRolePolicies7b6e565f3b40bc5c7faa65c17a68f5be/SdkProvider",
+                "children": {
+                  "AssertionsProvider": {
+                    "id": "AssertionsProvider",
+                    "path": "ImportedRoleTestAssertions/AwsApiCallIAMlistAttachedRolePolicies7b6e565f3b40bc5c7faa65c17a68f5be/SdkProvider/AssertionsProvider",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                  "version": "0.0.0"
+                }
+              },
+              "Default": {
+                "id": "Default",
+                "path": "ImportedRoleTestAssertions/AwsApiCallIAMlistAttachedRolePolicies7b6e565f3b40bc5c7faa65c17a68f5be/Default",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "ImportedRoleTestAssertions/AwsApiCallIAMlistAttachedRolePolicies7b6e565f3b40bc5c7faa65c17a68f5be/Default/Default",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CustomResource",
+                  "version": "0.0.0"
+                }
+              },
+              "AssertionResults": {
+                "id": "AssertionResults",
+                "path": "ImportedRoleTestAssertions/AwsApiCallIAMlistAttachedRolePolicies7b6e565f3b40bc5c7faa65c17a68f5be/AssertionResults",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+              "version": "0.0.0"
             }
           },
           "BootstrapVersion": {
@@ -453,6 +515,246 @@
           "version": "0.0.0"
         }
       },
+      "integ-iam-imported-role-3": {
+        "id": "integ-iam-imported-role-3",
+        "path": "integ-iam-imported-role-3",
+        "children": {
+          "roleToBeImported": {
+            "id": "roleToBeImported",
+            "path": "integ-iam-imported-role-3/roleToBeImported",
+            "children": {
+              "ImportroleToBeImported": {
+                "id": "ImportroleToBeImported",
+                "path": "integ-iam-imported-role-3/roleToBeImported/ImportroleToBeImported",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-iam-imported-role-3/roleToBeImported/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "sqs.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "roleName": "mutableRoleToBeImported"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "0.0.0"
+            }
+          },
+          "ImportedMutableRole": {
+            "id": "ImportedMutableRole",
+            "path": "integ-iam-imported-role-3/ImportedMutableRole",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "ManagedPolicy": {
+            "id": "ManagedPolicy",
+            "path": "integ-iam-imported-role-3/ManagedPolicy",
+            "children": {
+              "ImportedManagedPolicy": {
+                "id": "ImportedManagedPolicy",
+                "path": "integ-iam-imported-role-3/ManagedPolicy/ImportedManagedPolicy",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-iam-imported-role-3/ManagedPolicy/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::ManagedPolicy",
+                  "aws:cdk:cloudformation:props": {
+                    "description": "",
+                    "managedPolicyName": "MyCustomManagedPolicy2",
+                    "path": "/",
+                    "policyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "s3:ListBucket",
+                          "Effect": "Allow",
+                          "Resource": "arn:aws:s3:::my-bucket"
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "roles": [
+                      {
+                        "Fn::Select": [
+                          1,
+                          {
+                            "Fn::Split": [
+                              "/",
+                              {
+                                "Fn::Select": [
+                                  5,
+                                  {
+                                    "Fn::Split": [
+                                      ":",
+                                      {
+                                        "Fn::GetAtt": [
+                                          "roleToBeImportedCAC1213C",
+                                          "Arn"
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnManagedPolicy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.ManagedPolicy",
+              "version": "0.0.0"
+            }
+          },
+          "ManagedPolicy1": {
+            "id": "ManagedPolicy1",
+            "path": "integ-iam-imported-role-3/ManagedPolicy1",
+            "children": {
+              "ImportedManagedPolicy1": {
+                "id": "ImportedManagedPolicy1",
+                "path": "integ-iam-imported-role-3/ManagedPolicy1/ImportedManagedPolicy1",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-iam-imported-role-3/ManagedPolicy1/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::ManagedPolicy",
+                  "aws:cdk:cloudformation:props": {
+                    "description": "",
+                    "managedPolicyName": "MyCustomManagedPolicy1",
+                    "path": "/",
+                    "policyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "s3:ListBucket",
+                          "Effect": "Allow",
+                          "Resource": "arn:aws:s3:::my-bucket"
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "roles": [
+                      {
+                        "Fn::Select": [
+                          1,
+                          {
+                            "Fn::Split": [
+                              "/",
+                              {
+                                "Fn::Select": [
+                                  5,
+                                  {
+                                    "Fn::Split": [
+                                      ":",
+                                      {
+                                        "Fn::GetAtt": [
+                                          "roleToBeImportedCAC1213C",
+                                          "Arn"
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnManagedPolicy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.ManagedPolicy",
+              "version": "0.0.0"
+            }
+          },
+          "Exports": {
+            "id": "Exports",
+            "path": "integ-iam-imported-role-3/Exports",
+            "children": {
+              "Output{\"Ref\":\"roleToBeImportedCAC1213C\"}": {
+                "id": "Output{\"Ref\":\"roleToBeImportedCAC1213C\"}",
+                "path": "integ-iam-imported-role-3/Exports/Output{\"Ref\":\"roleToBeImportedCAC1213C\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "integ-iam-imported-role-3/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "integ-iam-imported-role-3/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
       "ImportedRoleTest": {
         "id": "ImportedRoleTest",
         "path": "ImportedRoleTest",
@@ -466,7 +768,7 @@
                 "path": "ImportedRoleTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               }
             },
@@ -486,7 +788,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.3.0"
         }
       }
     },

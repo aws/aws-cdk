@@ -38,21 +38,31 @@ export async function cliInit(options: CliInitOptions) {
 
   const type = options.type || 'default'; // "default" is the default type (and maps to "app")
 
-  const template = (await availableInitTemplates()).find(t => t.hasName(type!));
+  const template = (await availableInitTemplates()).find((t) => t.hasName(type!));
   if (!template) {
     await printAvailableTemplates(options.language);
     throw new Error(`Unknown init template: ${type}`);
   }
   if (!options.language && template.languages.length === 1) {
     const language = template.languages[0];
-    warning(`No --language was provided, but '${type}' supports only '${language}', so defaulting to --language=${language}`);
+    warning(
+      `No --language was provided, but '${type}' supports only '${language}', so defaulting to --language=${language}`,
+    );
   }
   if (!options.language) {
-    print(`Available languages for ${chalk.green(type)}: ${template.languages.map(l => chalk.blue(l)).join(', ')}`);
+    print(`Available languages for ${chalk.green(type)}: ${template.languages.map((l) => chalk.blue(l)).join(', ')}`);
     throw new Error('No language was selected');
   }
 
-  await initializeProject(template, options.language, canUseNetwork, generateOnly, workDir, options.stackName, options.migrate);
+  await initializeProject(
+    template,
+    options.language,
+    canUseNetwork,
+    generateOnly,
+    workDir,
+    options.stackName,
+    options.migrate,
+  );
 }
 
 /**
@@ -70,7 +80,7 @@ const INFO_DOT_JSON = 'info.json';
 export class InitTemplate {
   public static async fromName(templatesDir: string, name: string) {
     const basePath = path.join(templatesDir, name);
-    const languages = (await listDirectory(basePath));
+    const languages = await listDirectory(basePath);
     const info = await fs.readJson(path.join(basePath, INFO_DOT_JSON));
     return new InitTemplate(basePath, name, languages, info);
   }
@@ -82,7 +92,8 @@ export class InitTemplate {
     private readonly basePath: string,
     public readonly name: string,
     public readonly languages: string[],
-    info: any) {
+    info: any,
+  ) {
     this.description = info.description;
     for (const alias of info.aliases || []) {
       this.aliases.add(alias);
@@ -105,8 +116,10 @@ export class InitTemplate {
    */
   public async install(language: string, targetDirectory: string, stackName?: string) {
     if (this.languages.indexOf(language) === -1) {
-      error(`The ${chalk.blue(language)} language is not supported for ${chalk.green(this.name)} `
-          + `(it supports: ${this.languages.map(l => chalk.blue(l)).join(', ')})`);
+      error(
+        `The ${chalk.blue(language)} language is not supported for ${chalk.green(this.name)} ` +
+          `(it supports: ${this.languages.map((l) => chalk.blue(l)).join(', ')})`,
+      );
       throw new Error(`Unsupported language: ${language}`);
     }
 
@@ -119,16 +132,19 @@ export class InitTemplate {
 
     await this.installFiles(sourceDirectory, targetDirectory, language, projectInfo);
     await this.applyFutureFlags(targetDirectory);
-    await invokeBuiltinHooks({ targetDirectory, language, templateName: this.name }, {
-      substitutePlaceholdersIn: async (...fileNames: string[]) => {
-        for (const fileName of fileNames) {
-          const fullPath = path.join(targetDirectory, fileName);
-          const template = await fs.readFile(fullPath, { encoding: 'utf-8' });
-          await fs.writeFile(fullPath, this.expand(template, language, projectInfo));
-        }
+    await invokeBuiltinHooks(
+      { targetDirectory, language, templateName: this.name },
+      {
+        substitutePlaceholdersIn: async (...fileNames: string[]) => {
+          for (const fileName of fileNames) {
+            const fullPath = path.join(targetDirectory, fileName);
+            const template = await fs.readFile(fullPath, { encoding: 'utf-8' });
+            await fs.writeFile(fullPath, this.expand(template, language, projectInfo));
+          }
+        },
+        placeholder: (ph: string) => this.expand(`%${ph}%`, language, projectInfo),
       },
-      placeholder: (ph: string) => this.expand(`%${ph}%`, language, projectInfo),
-    });
+    );
   }
 
   private async installFiles(sourceDirectory: string, targetDirectory: string, language: string, project: ProjectInfo) {
@@ -172,10 +188,17 @@ export class InitTemplate {
         constructsVersion = rangeFromSemver(constructsVersion, 'pep');
         break;
     }
-    return template.replace(/%name%/g, project.name)
+    return template
+      .replace(/%name%/g, project.name)
       .replace(/%stackname%/, project.stackName ?? '%name.PascalCased%Stack')
-      .replace(/%PascalNameSpace%/, project.stackName ? camelCase(project.stackName + 'Stack', { pascalCase: true }) : '%name.PascalCased%')
-      .replace(/%PascalStackProps%/, project.stackName ? (camelCase(project.stackName, { pascalCase: true }) + 'StackProps') : 'StackProps')
+      .replace(
+        /%PascalNameSpace%/,
+        project.stackName ? camelCase(project.stackName + 'Stack', { pascalCase: true }) : '%name.PascalCased%',
+      )
+      .replace(
+        /%PascalStackProps%/,
+        project.stackName ? camelCase(project.stackName, { pascalCase: true }) + 'StackProps' : 'StackProps',
+      )
       .replace(/%name\.camelCased%/g, camelCase(project.name))
       .replace(/%name\.PascalCased%/g, camelCase(project.name, { pascalCase: true }))
       .replace(/%cdk-version%/g, cdkVersion)
@@ -192,7 +215,7 @@ export class InitTemplate {
    */
   private async applyFutureFlags(projectDir: string) {
     const cdkJson = path.join(projectDir, 'cdk.json');
-    if (!await fs.pathExists(cdkJson)) {
+    if (!(await fs.pathExists(cdkJson))) {
       return;
     }
 
@@ -207,7 +230,7 @@ export class InitTemplate {
 
   public async addMigrateContext(projectDir: string) {
     const cdkJson = path.join(projectDir, 'cdk.json');
-    if (!await fs.pathExists(cdkJson)) {
+    if (!(await fs.pathExists(cdkJson))) {
       return;
     }
 
@@ -228,7 +251,7 @@ interface ProjectInfo {
 }
 
 export async function availableInitTemplates(): Promise<InitTemplate[]> {
-  return new Promise(async resolve => {
+  return new Promise(async (resolve) => {
     try {
       const templatesDir = path.join(rootDir(), 'lib', 'init-templates');
       const templateNames = await listDirectory(templatesDir);
@@ -243,7 +266,7 @@ export async function availableInitTemplates(): Promise<InitTemplate[]> {
   });
 }
 export async function availableInitLanguages(): Promise<string[]> {
-  return new Promise(async resolve => {
+  return new Promise(async (resolve) => {
     const templates = await availableInitTemplates();
     const result = new Set<string>();
     for (const template of templates) {
@@ -260,21 +283,27 @@ export async function availableInitLanguages(): Promise<string[]> {
  * @returns the list of file or directory names contained in ``dirPath``, excluding any dot-file, and sorted.
  */
 async function listDirectory(dirPath: string) {
-  return (await fs.readdir(dirPath))
-    .filter(p => !p.startsWith('.'))
-    .filter(p => !(p === 'LICENSE'))
-    // if, for some reason, the temp folder for the hook doesn't get deleted we don't want to display it in this list
-    .filter(p => !(p === INFO_DOT_JSON))
-    .sort();
+  return (
+    (await fs.readdir(dirPath))
+      .filter((p) => !p.startsWith('.'))
+      .filter((p) => !(p === 'LICENSE'))
+      // if, for some reason, the temp folder for the hook doesn't get deleted we don't want to display it in this list
+      .filter((p) => !(p === INFO_DOT_JSON))
+      .sort()
+  );
 }
 
 export async function printAvailableTemplates(language?: string) {
   print('Available templates:');
   for (const template of await availableInitTemplates()) {
-    if (language && template.languages.indexOf(language) === -1) { continue; }
+    if (language && template.languages.indexOf(language) === -1) {
+      continue;
+    }
     print(`* ${chalk.green(template.name)}: ${template.description}`);
-    const languageArg = language ? chalk.bold(language)
-      : template.languages.length > 1 ? `[${template.languages.map(t => chalk.bold(t)).join('|')}]`
+    const languageArg = language
+      ? chalk.bold(language)
+      : template.languages.length > 1
+        ? `[${template.languages.map((t) => chalk.bold(t)).join('|')}]`
         : chalk.bold(template.languages[0]);
     print(`   └─ ${chalk.blue(`cdk init ${chalk.bold(template.name)} --language=${languageArg}`)}`);
   }
@@ -295,13 +324,9 @@ async function initializeProject(
   if (migrate) {
     await template.addMigrateContext(workDir);
   }
-  if (await fs.pathExists('README.md')) {
-    const readme = await fs.readFile('README.md', { encoding: 'utf-8' });
-    // Save the logs!
-    // Without this statement, the readme of the CLI is printed in every init test
-    if (!readme.startsWith('# AWS CDK Toolkit')) {
-      print(chalk.green(readme));
-    }
+  if (await fs.pathExists(`${workDir}/README.md`)) {
+    const readme = await fs.readFile(`${workDir}/README.md`, { encoding: 'utf-8' });
+    print(chalk.green(readme));
   }
 
   if (!generateOnly) {
@@ -314,13 +339,15 @@ async function initializeProject(
 
 async function assertIsEmptyDirectory(workDir: string) {
   const files = await fs.readdir(workDir);
-  if (files.filter(f => !f.startsWith('.')).length !== 0) {
+  if (files.filter((f) => !f.startsWith('.')).length !== 0) {
     throw new Error('`cdk init` cannot be run in a non-empty directory!');
   }
 }
 
 async function initializeGitRepository(workDir: string) {
-  if (await isInGitRepository(workDir)) { return; }
+  if (await isInGitRepository(workDir)) {
+    return;
+  }
   print('Initializing a new git repository...');
   try {
     await execute('git', ['init'], { cwd: workDir });
@@ -365,20 +392,19 @@ async function postInstallTypescript(canUseNetwork: boolean, cwd: string) {
 }
 
 async function postInstallJava(canUseNetwork: boolean, cwd: string) {
-  const mvnPackageWarning = 'Please run \'mvn package\'!';
+  const mvnPackageWarning = "Please run 'mvn package'!";
   if (!canUseNetwork) {
     warning(mvnPackageWarning);
     return;
   }
 
-  print('Executing \'mvn package\'');
+  print("Executing 'mvn package'");
   try {
     await execute('mvn', ['package'], { cwd });
   } catch {
     warning('Unable to package compiled code as JAR');
     warning(mvnPackageWarning);
   }
-
 }
 
 async function postInstallPython(cwd: string) {
@@ -399,8 +425,12 @@ async function postInstallPython(cwd: string) {
  */
 async function isInGitRepository(dir: string) {
   while (true) {
-    if (await fs.pathExists(path.join(dir, '.git'))) { return true; }
-    if (isRoot(dir)) { return false; }
+    if (await fs.pathExists(path.join(dir, '.git'))) {
+      return true;
+    }
+    if (isRoot(dir)) {
+      return false;
+    }
     dir = path.dirname(dir);
   }
 }
@@ -422,12 +452,16 @@ function isRoot(dir: string) {
  * @returns STDOUT (if successful).
  */
 async function execute(cmd: string, args: string[], { cwd }: { cwd: string }) {
-  const child = childProcess.spawn(cmd, args, { cwd, shell: true, stdio: ['ignore', 'pipe', 'inherit'] });
+  const child = childProcess.spawn(cmd, args, {
+    cwd,
+    shell: true,
+    stdio: ['ignore', 'pipe', 'inherit'],
+  });
   let stdout = '';
-  child.stdout.on('data', chunk => stdout += chunk.toString());
+  child.stdout.on('data', (chunk) => (stdout += chunk.toString()));
   return new Promise<string>((ok, fail) => {
-    child.once('error', err => fail(err));
-    child.once('exit', status => {
+    child.once('error', (err) => fail(err));
+    child.once('exit', (status) => {
       if (status === 0) {
         return ok(stdout);
       } else {

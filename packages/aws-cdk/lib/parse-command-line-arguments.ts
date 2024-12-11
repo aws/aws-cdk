@@ -73,7 +73,7 @@ export function parseCommandLineArguments(
     })
     .option('debug', {
       type: 'boolean',
-      desc: 'Enable emission of additional debugging information, such as creation stack traces of tokens',
+      desc: 'Debug the CDK app. Log additional information during synthesis, such as creation stack traces of tokens (sets CDK_DEBUG, will slow down synthesis)',
       default: false,
     })
     .option('profile', {
@@ -355,7 +355,7 @@ export function parseCommandLineArguments(
         })
         .option('notification-arns', {
           type: 'array',
-          desc: 'ARNs of SNS topics that CloudFormation will notify with stack related events',
+          desc: "ARNs of SNS topics that CloudFormation will notify with stack related events. These will be added to ARNs specified with the 'notificationArns' stack property.",
           nargs: 1,
           requiresArg: true,
         })
