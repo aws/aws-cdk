@@ -26,6 +26,12 @@ export interface SourceConfig {
    * @default - no markers
    */
   readonly markers?: Record<string, any>;
+
+  /**
+   * The identifier of the S3 version of the object in the source bucket.
+   * @default - none
+   */
+  readonly versionId?: string;
 }
 
 /**

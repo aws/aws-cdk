@@ -426,6 +426,7 @@ export class BucketDeployment extends Construct {
             }, [] as Array<Record<string, any>>);
           },
         }, { omitEmptyArray: true }),
+        SourceVersionIds: cdk.Lazy.uncachedList({ produce: () => this.sources.map(source => source.versionId ?? '') }),
         DestinationBucketName: this.destinationBucket.bucketName,
         DestinationBucketKeyPrefix: props.destinationKeyPrefix,
         RetainOnDelete: props.retainOnDelete,
@@ -926,5 +927,6 @@ function sourceConfigEqual(stack: cdk.Stack, a: SourceConfig, b: SourceConfig) {
   return (
     JSON.stringify(stack.resolve(a.bucket.bucketName)) === JSON.stringify(stack.resolve(b.bucket.bucketName))
     && a.zipObjectKey === b.zipObjectKey
-    && a.markers === undefined && b.markers === undefined);
+    && a.markers === undefined && b.markers === undefined
+    && a.versionId === undefined && b.versionId === undefined);
 }

@@ -51,7 +51,7 @@ class TestHandler(unittest.TestCase):
         })
 
         self.assertAwsCommands(
-            ["s3", "cp", "s3://<source-bucket>/<source-object-key>", "archive.zip"],
+            ["s3api", "get-object","--bucket", "<source-bucket>", "--key", "<source-object-key>", "archive.zip"],
             ["s3", "sync", "--delete", "contents.zip", "s3://<dest-bucket-name>/"]
         )
 
@@ -64,7 +64,7 @@ class TestHandler(unittest.TestCase):
         })
 
         self.assertAwsCommands(
-            ["s3", "cp", "s3://<source-bucket>/<source-object-key>", "archive.zip"],
+            ["s3api", "get-object","--bucket", "<source-bucket>", "--key", "<source-object-key>", "archive.zip"],
             ["s3", "sync", "contents.zip", "s3://<dest-bucket-name>/"]
         )
 
@@ -79,7 +79,7 @@ class TestHandler(unittest.TestCase):
         }, physical_id="<physical-id>")
 
         self.assertAwsCommands(
-            ["s3", "cp", "s3://<source-bucket>/<source-object-key>", "archive.zip"],
+            ["s3api", "get-object","--bucket", "<source-bucket>", "--key", "<source-object-key>", "archive.zip"],
             ["s3", "sync", "contents.zip", "s3://<dest-bucket-name>/"]
         )
 
@@ -92,7 +92,7 @@ class TestHandler(unittest.TestCase):
         })
 
         self.assertAwsCommands(
-            ["s3", "cp", "s3://<source-bucket>/<source-object-key>", "archive.zip"],
+            ["s3api", "get-object","--bucket", "<source-bucket>", "--key", "<source-object-key>", "archive.zip"],
             ["s3", "sync", "--delete", "--exclude", "sample.json", "contents.zip", "s3://<dest-bucket-name>/"]
         )
 
@@ -107,7 +107,7 @@ class TestHandler(unittest.TestCase):
         }, physical_id="<physical-id>")
 
         self.assertAwsCommands(
-            ["s3", "cp", "s3://<source-bucket>/<source-object-key>", "archive.zip"],
+            ["s3api", "get-object","--bucket", "<source-bucket>", "--key", "<source-object-key>", "archive.zip"],
             ["s3", "sync", "--delete", "--exclude", "sample.json", "contents.zip", "s3://<dest-bucket-name>/"]
         )
 
@@ -120,7 +120,7 @@ class TestHandler(unittest.TestCase):
         })
 
         self.assertAwsCommands(
-            ["s3", "cp", "s3://<source-bucket>/<source-object-key>", "archive.zip"],
+            ["s3api", "get-object","--bucket", "<source-bucket>", "--key", "<source-object-key>", "archive.zip"],
             ["s3", "sync", "--delete", "--include", "/sample/*.json", "contents.zip", "s3://<dest-bucket-name>/"]
         )
 
@@ -135,7 +135,7 @@ class TestHandler(unittest.TestCase):
         }, physical_id="<physical-id>")
 
         self.assertAwsCommands(
-            ["s3", "cp", "s3://<source-bucket>/<source-object-key>", "archive.zip"],
+            ["s3api", "get-object","--bucket", "<source-bucket>", "--key", "<source-object-key>", "archive.zip"],
             ["s3", "sync", "--delete", "--include", "/sample/*.json", "contents.zip", "s3://<dest-bucket-name>/"]
         )
 
@@ -149,7 +149,7 @@ class TestHandler(unittest.TestCase):
         })
 
         self.assertAwsCommands(
-            ["s3", "cp", "s3://<source-bucket>/<source-object-key>", "archive.zip"],
+            ["s3api", "get-object","--bucket", "<source-bucket>", "--key", "<source-object-key>", "archive.zip"],
             ["s3", "sync", "--delete", "--exclude", "/sample/*", "--include", "/sample/*.json", "contents.zip", "s3://<dest-bucket-name>/"]
         )
 
@@ -165,7 +165,7 @@ class TestHandler(unittest.TestCase):
         }, physical_id="<physical-id>")
 
         self.assertAwsCommands(
-            ["s3", "cp", "s3://<source-bucket>/<source-object-key>", "archive.zip"],
+            ["s3api", "get-object","--bucket", "<source-bucket>", "--key", "<source-object-key>", "archive.zip"],
             ["s3", "sync", "--delete", "--exclude", "/sample/*", "--include", "/sample/*.json", "contents.zip", "s3://<dest-bucket-name>/"]
         )
 
@@ -178,7 +178,7 @@ class TestHandler(unittest.TestCase):
         })
 
         self.assertAwsCommands(
-                ["s3", "cp", "s3://<source-bucket>/<source-object-key>", "/tmp/contents"],
+                ["s3api", "get-object","--bucket", "<source-bucket>", "--key", "<source-object-key>", "/tmp/contents"],
                 ["s3", "sync", "--delete", "contents.zip", "s3://<dest-bucket-name>/"]
         )
 
@@ -193,7 +193,7 @@ class TestHandler(unittest.TestCase):
         }, physical_id="<physical-id>")
 
         self.assertAwsCommands(
-                ["s3", "cp", "s3://<source-bucket>/<source-object-key>", "/tmp/contents"],
+                ["s3api", "get-object","--bucket", "<source-bucket>", "--key", "<source-object-key>", "/tmp/contents"],
                 ["s3", "sync", "--delete", "contents.zip", "s3://<dest-bucket-name>/"]
         )
 
@@ -207,7 +207,7 @@ class TestHandler(unittest.TestCase):
         })
 
         self.assertAwsCommands(
-            ["s3", "cp", "s3://<source-bucket>/<source-object-key>", "archive.zip"],
+            ["s3api", "get-object","--bucket", "<source-bucket>", "--key", "<source-object-key>", "archive.zip"],
             ["s3", "sync", "--delete", "--exclude", "/sample/*", "--exclude", "/another/*", "--include", "/sample/*.json", "--include", "/another/*.json", "contents.zip", "s3://<dest-bucket-name>/"]
         )
 
@@ -223,7 +223,7 @@ class TestHandler(unittest.TestCase):
         }, physical_id="<physical-id>")
 
         self.assertAwsCommands(
-            ["s3", "cp", "s3://<source-bucket>/<source-object-key>", "archive.zip"],
+            ["s3api", "get-object","--bucket", "<source-bucket>", "--key", "<source-object-key>", "archive.zip"],
             ["s3", "sync", "--delete", "--exclude", "/sample/*", "--exclude", "/another/*", "--include", "/sample/*.json", "--include", "/another/*.json", "contents.zip", "s3://<dest-bucket-name>/"]
         )
 
@@ -237,8 +237,8 @@ class TestHandler(unittest.TestCase):
         # Note: these are different files in real-life. For testing purposes, we hijack
         #       the command to output a static filename, archive.zip
         self.assertAwsCommands(
-            ["s3", "cp", "s3://<source-bucket1>/<source-object-key1>", "archive.zip"],
-            ["s3", "cp", "s3://<source-bucket2>/<source-object-key2>", "archive.zip"],
+            ["s3api", "get-object","--bucket", "<source-bucket1>", "--key", "<source-object-key1>", "archive.zip"],
+            ["s3api", "get-object","--bucket", "<source-bucket2>", "--key", "<source-object-key2>", "archive.zip"],
             ["s3", "sync", "--delete", "contents.zip", "s3://<dest-bucket-name>/"]
         )
 
@@ -251,7 +251,7 @@ class TestHandler(unittest.TestCase):
         })
 
         self.assertAwsCommands(
-            ["s3", "cp", "s3://<source-bucket>/<source-object-key>", "archive.zip"],
+            ["s3api", "get-object","--bucket", "<source-bucket>", "--key", "<source-object-key>", "archive.zip"],
             ["s3", "sync", "--delete", "contents.zip", "s3://<dest-bucket-name>/"]
         )
 
@@ -265,7 +265,7 @@ class TestHandler(unittest.TestCase):
         })
 
         self.assertAwsCommands(
-            ["s3", "cp", "s3://<source-bucket>/<source-object-key>", "archive.zip"],
+            ["s3api", "get-object","--bucket", "<source-bucket>", "--key", "<source-object-key>", "archive.zip"],
             ["s3", "sync", "--delete", "contents.zip", "s3://<dest-bucket-name>/<dest-key-prefix>"]
         )
 
@@ -280,7 +280,7 @@ class TestHandler(unittest.TestCase):
         })
 
         self.assertAwsCommands(
-            ["s3", "cp", "s3://<source-bucket>/<source-object-key>", "archive.zip"],
+            ["s3api", "get-object","--bucket", "<source-bucket>", "--key", "<source-object-key>", "archive.zip"],
             ["s3", "sync", "--delete", "contents.zip", "s3://<dest-bucket-name>/<dest-key-prefix>", "--content-type", "text/html", "--content-language", "en", "--metadata", "{\"best\":\"game\"}", "--metadata-directive", "REPLACE"]
         )
 
@@ -390,7 +390,7 @@ class TestHandler(unittest.TestCase):
         }, physical_id="<physical-id>")
 
         self.assertAwsCommands(
-            ["s3", "cp", "s3://<source-bucket>/<source-object-key>", "archive.zip"],
+            ["s3api", "get-object","--bucket", "<source-bucket>", "--key", "<source-object-key>", "archive.zip"],
             ["s3", "sync", "--delete", "contents.zip", "s3://<dest-bucket-name>/"]
         )
 
@@ -471,7 +471,7 @@ class TestHandler(unittest.TestCase):
         }, physical_id="<physical-id>")
 
         self.assertAwsCommands(
-            ["s3", "cp", "s3://<source-bucket>/<source-object-key>", "archive.zip"],
+            ["s3api", "get-object","--bucket", "<source-bucket>", "--key", "<source-object-key>", "archive.zip"],
             ["s3", "sync", "--delete", "contents.zip", "s3://<dest-bucket-name>/"]
         )
 
@@ -489,7 +489,7 @@ class TestHandler(unittest.TestCase):
 
         self.assertAwsCommands(
             ["s3", "rm", "s3://<old-dest-bucket-name>/<old-dest-prefix>", "--recursive"],
-            ["s3", "cp", "s3://<source-bucket>/<source-object-key>", "archive.zip"],
+            ["s3api", "get-object","--bucket", "<source-bucket>", "--key", "<source-object-key>", "archive.zip"],
             ["s3", "sync", "--delete", "contents.zip", "s3://<new-dest-bucket-name>/"]
         )
 
@@ -504,7 +504,7 @@ class TestHandler(unittest.TestCase):
         }, physical_id="<physical-id>")
 
         self.assertAwsCommands(
-            ["s3", "cp", "s3://<source-bucket>/<source-object-key>", "archive.zip"],
+            ["s3api", "get-object","--bucket", "<source-bucket>", "--key", "<source-object-key>", "archive.zip"],
             ["s3", "sync", "--delete", "contents.zip", "s3://<new-dest-bucket-name>/"]
         )
 
@@ -522,7 +522,7 @@ class TestHandler(unittest.TestCase):
 
         self.assertAwsCommands(
             ["s3", "rm", "s3://<dest-bucket-name>/", "--recursive"],
-            ["s3", "cp", "s3://<source-bucket>/<source-object-key>", "archive.zip"],
+            ["s3api", "get-object","--bucket", "<source-bucket>", "--key", "<source-object-key>", "archive.zip"],
             ["s3", "sync", "--delete", "contents.zip", "s3://<dest-bucket-name>/<new-dest-prefix>"]
         )
 
@@ -537,7 +537,7 @@ class TestHandler(unittest.TestCase):
         }, physical_id="<physical id>")
 
         self.assertAwsCommands(
-            ["s3", "cp", "s3://<source-bucket>/<source-object-key>", "archive.zip"],
+            ["s3api", "get-object","--bucket", "<source-bucket>", "--key", "<source-object-key>", "archive.zip"],
             ["s3", "sync", "--delete", "contents.zip", "s3://<dest-bucket-name>/<new-dest-prefix>"]
         )
 
@@ -684,6 +684,31 @@ class TestHandler(unittest.TestCase):
         with open(os.path.join(workdir, "subfolder", "boom.txt"), "r") as file:
             self.assertEqual(file.read().rstrip(), "Another value1-source2 file with _marker2_ hey!\nLine 2 with value1-source2 again :-)")
 
+    def test_create_update_with_version_id(self):
+        invoke_handler("Create", {
+            "SourceBucketNames": ["<source-bucket>"],
+            "SourceObjectKeys": ["<source-object-key>"],
+            "SourceVersionIDs": ["<source-version-id>"],
+            "DestinationBucketName": "<dest-bucket-name>"
+        })
+
+        self.assertAwsCommands(
+            ["s3api", "get-object","--bucket", "<source-bucket>", "--key", "<source-object-key>", "--version-id", "<source-version-id>", "archive.zip"],
+            ["s3", "sync", "--delete", "contents.zip", "s3://<dest-bucket-name>/"]
+        )
+    
+    def test_create_update_with_empty_version_id(self):
+        invoke_handler("Create", {
+            "SourceBucketNames": ["<source-bucket>"],
+            "SourceObjectKeys": ["<source-object-key>"],
+            "SourceVersionIDs": [""],
+            "DestinationBucketName": "<dest-bucket-name>"
+        })
+
+        self.assertAwsCommands(
+            ["s3api", "get-object","--bucket", "<source-bucket>", "--key", "<source-object-key>", "archive.zip"],
+            ["s3", "sync", "--delete", "contents.zip", "s3://<dest-bucket-name>/"]
+        )
 
     # asserts that a given list of "aws xxx" commands have been invoked (in order)
     def assertAwsCommands(self, *expected):

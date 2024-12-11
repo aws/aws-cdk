@@ -53,6 +53,7 @@ def handler(event, context):
             source_bucket_names = props['SourceBucketNames']
             source_object_keys  = props['SourceObjectKeys']
             source_markers      = props.get('SourceMarkers', None)
+            source_version_ids  = props.get('SourceVersionIDs', [])
             dest_bucket_name    = props['DestinationBucketName']
             dest_bucket_prefix  = props.get('DestinationBucketKeyPrefix', '')
             extract             = props.get('Extract', 'true') == 'true'
@@ -93,7 +94,14 @@ def handler(event, context):
         if dest_bucket_prefix == "/":
             dest_bucket_prefix = ""
 
-        s3_source_zips = list(map(lambda name, key: "s3://%s/%s" % (name, key), source_bucket_names, source_object_keys))
+        s3_source_zips = [
+            {
+                "BucketName": bucket,
+                "ObjectKey": object_key,
+                "VersionID": source_version_ids[i] if i < len(source_version_ids) else ""
+            }
+            for i, (bucket, object_key) in enumerate(zip(source_bucket_names, source_object_keys))
+        ]
         s3_dest = "s3://%s/%s" % (dest_bucket_name, dest_bucket_prefix)
         old_s3_dest = "s3://%s/%s" % (old_props.get("DestinationBucketName", ""), old_props.get("DestinationBucketKeyPrefix", ""))
 
@@ -181,19 +189,26 @@ def s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, ex
     try:
         # download the archive from the source and extract to "contents"
         for i in range(len(s3_source_zips)):
-            s3_source_zip = s3_source_zips[i]
+            s3_source_bucket = s3_source_zips[i]['BucketName']
+            s3_source_key    = s3_source_zips[i]['ObjectKey']
+            s3_source_version_id = s3_source_zips[i]['VersionID']
             markers       = source_markers[i]
-
+            
+            s3_command = ["s3api", "get-object", "--bucket", s3_source_bucket, "--key", s3_source_key]
+            if len(s3_source_version_id) > 0:
+                s3_command.extend(["--version-id", s3_source_version_id])
             if extract:
                 archive=os.path.join(workdir, str(uuid4()))
                 logger.info("archive: %s" % archive)
-                aws_command("s3", "cp", s3_source_zip, archive)
+                s3_command.append(archive)
+                aws_command(*s3_command)
                 logger.info("| extracting archive to: %s\n" % contents_dir)
                 logger.info("| markers: %s" % markers)
                 extract_and_replace_markers(archive, contents_dir, markers)
             else:
                 logger.info("| copying archive to: %s\n" % contents_dir)
-                aws_command("s3", "cp", s3_source_zip, contents_dir)
+                s3_command.append(contents_dir)
+                aws_command(*s3_command)
 
         # sync from "contents" to destination
 

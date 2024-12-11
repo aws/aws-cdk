@@ -1374,6 +1374,7 @@ test('"SourceMarkers" is not included if none of the sources have markers', () =
     'ServiceToken',
     'SourceBucketNames',
     'SourceObjectKeys',
+    'SourceVersionIds',
     'DestinationBucketName',
     'Prune',
     'OutputObjectKeys',
