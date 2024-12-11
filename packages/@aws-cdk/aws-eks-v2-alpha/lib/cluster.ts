@@ -1898,22 +1898,11 @@ export class Cluster extends ClusterBase {
 
   /**
    * If this cluster is kubectl-enabled, returns the OpenID Connect issuer url.
-   * This is because the values is only be retrieved by the API and not exposed
-   * by CloudFormation. If this cluster is not kubectl-enabled (i.e. uses the
-   * stock `CfnCluster`), this is `undefined`.
-   * @attribute
-   */
-  public get clusterOpenIdConnectIssuerUrl(): string {
-    return this._clusterResource.attrOpenIdConnectIssuerUrl;
-  }
-
-  /**
-   * If this cluster is kubectl-enabled, returns the OpenID Connect issuer url.
    * If this cluster is not kubectl-enabled (i.e. uses the
    * stock `CfnCluster`), this is `undefined`.
    * @attribute
    */
-  public get clusterOpenIdConnectIssuer(): string {
+  public get clusterOpenIdConnectIssuerUrl(): string {
     return this._clusterResource.attrOpenIdConnectIssuerUrl;
   }
 
