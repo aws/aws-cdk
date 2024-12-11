@@ -3,7 +3,7 @@
   "testCases": {
     "HttpInvokeTest/DefaultTest": {
       "stacks": [
-        "aws-stepfunctions-tasks-http-invoke-integ"
+        "aws-stepfunctions-tasks-http-invoke-json-path-integ"
       ],
       "assertionStack": "HttpInvokeTest/DefaultTest/DeployAssert",
       "assertionStackName": "HttpInvokeTestDefaultTestDeployAssertBA1B4726"
