@@ -1026,7 +1026,7 @@ const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
 });
 
 //Add permissions to the destination after replication role is created
-if (sourcebucket.replicationRoleArn) {
-  destinationBucket.addReplicationPolicy(sourcebucket.replicationRoleArn, true, '111111111111');
+if (sourceBucket.replicationRoleArn) {
+  destinationBucket.addReplicationPolicy(sourceBucket.replicationRoleArn, true, '111111111111');
   }
 ```
