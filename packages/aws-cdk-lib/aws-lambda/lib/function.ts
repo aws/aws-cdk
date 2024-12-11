@@ -153,6 +153,33 @@ export enum RecursiveLoop {
 }
 
 /**
+ * The tracing mode.
+ */
+export enum TracingMode {
+  /**
+   * Sets the X-Ray tracing mode to active.
+   */
+  ACTIVE = 'Active',
+
+  /**
+   * Sets the X-Ray tracing mode to pass-through.
+   */
+  PASS_THROUGH = 'PassThrough',
+}
+
+/**
+ * The function's [AWS X-Ray](https://docs.aws.amazon.com/lambda/latest/dg/services-xray.html) tracing configuration.
+ */
+export interface TracingConfig {
+  /**
+   * The tracing mode.
+   *
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-tracingconfig.html#cfn-lambda-function-tracingconfig-mode
+   */
+  mode?: TracingMode;
+}
+
+/**
  * Non runtime options
  */
 export interface FunctionOptions extends EventInvokeConfigOptions {
@@ -626,6 +653,13 @@ export interface FunctionProps extends FunctionOptions {
    * the handler.
    */
   readonly handler: string;
+
+  /**
+   * The function's [AWS X-Ray](https://docs.aws.amazon.com/lambda/latest/dg/services-xray.html) tracing configuration. To sample and record incoming requests, set Mode to Active
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-tracingconfig.html#cfn-lambda-function-tracingconfig-mode
+   */
+  readonly tracingConfig?: TracingConfig;
 }
 
 /**
@@ -1072,6 +1106,7 @@ export class Function extends FunctionBase {
       snapStart: this.configureSnapStart(props),
       loggingConfig: this.getLoggingConfig(props),
       recursiveLoop: props.recursiveLoop,
+      tracingConfig: props.tracingConfig,
     });
 
     if ((props.tracing !== undefined) || (props.adotInstrumentation !== undefined)) {
