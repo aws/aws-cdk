@@ -65,18 +65,10 @@
                   "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
                   "aws:cdk:cloudformation:props": {
                     "dataProtectionPolicy": {
-                      "name": "policy-name",
-                      "description": "policy description",
-                      "version": "2021-06-01",
-                      "configuration": {
-                        "customDataIdentifier": [
-                          {
-                            "name": "EmployeeId",
-                            "regex": "EmployeeId-\\d{9}"
-                          }
-                        ]
-                      },
-                      "statement": [
+                      "Name": "policy-name",
+                      "Description": "policy description",
+                      "Version": "2021-06-01",
+                      "Statement": [
                         {
                           "sid": "audit-statement-cdk",
                           "dataIdentifier": [
@@ -158,7 +150,15 @@
                             }
                           }
                         }
-                      ]
+                      ],
+                      "Configuration": {
+                        "customDataIdentifier": [
+                          {
+                            "name": "EmployeeId",
+                            "regex": "EmployeeId-\\d{9}"
+                          }
+                        ]
+                      }
                     },
                     "retentionInDays": 731
                   }
