@@ -1,4 +1,3 @@
-import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
 import { Construct } from 'constructs';
@@ -7,6 +6,7 @@ import { ProductStackHistory } from './product-stack-history';
 import { IBucket } from '../../aws-s3';
 import { ServerSideEncryption } from '../../aws-s3-deployment';
 import * as cdk from '../../core';
+import { fingerprint } from '../../core/lib/fs/fingerprint';
 
 /**
  * Product stack props.
@@ -144,7 +144,9 @@ export class ProductStack extends cdk.Stack {
    */
   public _synthesizeTemplate(session: cdk.ISynthesisSession): void {
     const cfn = JSON.stringify(this._toCloudFormation(), undefined, 2);
-    const templateHash = crypto.createHash('sha256').update(cfn).digest('hex');
+    const templateFilePath = path.join(session.assembly.outdir, this.templateFile);
+    fs.writeFileSync(templateFilePath, cfn);
+    const templateHash = fingerprint(templateFilePath);
 
     this._templateUrl = this._parentStack.synthesizer.addFileAsset({
       packaging: cdk.FileAssetPackaging.FILE,
@@ -155,8 +157,6 @@ export class ProductStack extends cdk.Stack {
     if (this._parentProductStackHistory) {
       this._parentProductStackHistory._writeTemplateToSnapshot(cfn);
     }
-
-    fs.writeFileSync(path.join(session.assembly.outdir, this.templateFile), cfn);
   }
 }
 
