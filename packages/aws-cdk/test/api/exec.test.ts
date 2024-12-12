@@ -23,7 +23,7 @@ beforeEach(() => {
   sdkProvider = new MockSdkProvider();
   config = new Configuration();
 
-  config.settings.set(['output'], 'cdk.out');
+  config.commandLineArgSettings.set(['output'], 'cdk.out');
 
   // insert contents in fake filesystem
   bockfs({
@@ -82,7 +82,7 @@ test('cli throws when manifest version > schema version', async () => {
   const expectedError = 'This CDK CLI is not compatible with the CDK library used by your application. Please upgrade the CLI to the latest version.'
     + `\n(Cloud assembly schema version mismatch: Maximum schema version supported is ${semver.major(currentSchemaVersion)}.x.x, but found ${mockManifestVersion})`;
 
-  config.settings.set(['app'], 'cdk.out');
+  config.commandLineArgSettings.set(['app'], 'cdk.out');
 
   await expect(execProgram(sdkProvider, config)).rejects.toEqual(new Error(expectedError));
 
@@ -95,7 +95,7 @@ test('cli does not throw when manifest version = schema version', async () => {
 
   rewriteManifestVersionToOurs();
 
-  config.settings.set(['app'], 'cdk.out');
+  config.commandLineArgSettings.set(['app'], 'cdk.out');
 
   const { lock } = await execProgram(sdkProvider, config);
   await lock.release();
@@ -118,7 +118,7 @@ test.skip('cli does not throw when manifest version < schema version', async () 
 
   rewriteManifestVersionToOurs();
 
-  config.settings.set(['app'], 'cdk.out');
+  config.commandLineArgSettings.set(['app'], 'cdk.out');
 
   // this mock will cause the cli to think its exepcted schema version is
   // greater that the version created in the manifest, which is what we are testing for.
@@ -142,7 +142,7 @@ test('validates --app key is present', async () => {
 
 test('bypasses synth when app points to a cloud assembly', async () => {
   // GIVEN
-  config.settings.set(['app'], 'cdk.out');
+  config.commandLineArgSettings.set(['app'], 'cdk.out');
   writeOutputAssembly();
   rewriteManifestVersionToOurs();
 
@@ -156,7 +156,7 @@ test('bypasses synth when app points to a cloud assembly', async () => {
 
 test('the application set in --app is executed', async () => {
   // GIVEN
-  config.settings.set(['app'], 'cloud-executable');
+  config.commandLineArgSettings.set(['app'], 'cloud-executable');
   mockSpawn({
     commandLine: 'cloud-executable',
     sideEffect: () => writeOutputAssembly(),
@@ -169,7 +169,7 @@ test('the application set in --app is executed', async () => {
 
 test('the application set in --app is executed as-is if it contains a filename that does not exist', async () => {
   // GIVEN
-  config.settings.set(['app'], 'does-not-exist');
+  config.commandLineArgSettings.set(['app'], 'does-not-exist');
   mockSpawn({
     commandLine: 'does-not-exist',
     sideEffect: () => writeOutputAssembly(),
@@ -182,7 +182,7 @@ test('the application set in --app is executed as-is if it contains a filename t
 
 test('the application set in --app is executed with arguments', async () => {
   // GIVEN
-  config.settings.set(['app'], 'cloud-executable an-arg');
+  config.commandLineArgSettings.set(['app'], 'cloud-executable an-arg');
   mockSpawn({
     commandLine: 'cloud-executable an-arg',
     sideEffect: () => writeOutputAssembly(),
@@ -196,7 +196,7 @@ test('the application set in --app is executed with arguments', async () => {
 test('application set in --app as `*.js` always uses handler on windows', async () => {
   // GIVEN
   sinon.stub(process, 'platform').value('win32');
-  config.settings.set(['app'], 'windows.js');
+  config.commandLineArgSettings.set(['app'], 'windows.js');
   mockSpawn({
     commandLine: process.execPath + ' windows.js',
     sideEffect: () => writeOutputAssembly(),
@@ -209,7 +209,7 @@ test('application set in --app as `*.js` always uses handler on windows', async 
 
 test('application set in --app is `*.js` and executable', async () => {
   // GIVEN
-  config.settings.set(['app'], 'executable-app.js');
+  config.commandLineArgSettings.set(['app'], 'executable-app.js');
   mockSpawn({
     commandLine: 'executable-app.js',
     sideEffect: () => writeOutputAssembly(),
@@ -222,7 +222,7 @@ test('application set in --app is `*.js` and executable', async () => {
 
 test('cli throws when the `build` script fails', async () => {
   // GIVEN
-  config.settings.set(['build'], 'fake-command');
+  config.commandLineArgSettings.set(['build'], 'fake-command');
   mockSpawn({
     commandLine: 'fake-command',
     exitCode: 127,
@@ -234,8 +234,8 @@ test('cli throws when the `build` script fails', async () => {
 
 test('cli does not throw when the `build` script succeeds', async () => {
   // GIVEN
-  config.settings.set(['build'], 'real command');
-  config.settings.set(['app'], 'executable-app.js');
+  config.commandLineArgSettings.set(['build'], 'real command');
+  config.commandLineArgSettings.set(['app'], 'executable-app.js');
   mockSpawn({
     commandLine: 'real command', // `build` key is not split on whitespace
     exitCode: 0,
@@ -252,7 +252,7 @@ test('cli does not throw when the `build` script succeeds', async () => {
 
 test('cli releases the outdir lock when execProgram throws', async () => {
   // GIVEN
-  config.settings.set(['app'], 'cloud-executable');
+  config.commandLineArgSettings.set(['app'], 'cloud-executable');
   mockSpawn({
     commandLine: 'fake-command',
     exitCode: 127,
@@ -261,7 +261,7 @@ test('cli releases the outdir lock when execProgram throws', async () => {
   // WHEN
   await expect(execProgram(sdkProvider, config)).rejects.toThrow();
 
-  const output = config.settings.get(['output']);
+  const output = config.commandLineArgSettings.get(['output']);
   expect(output).toBeDefined();
 
   // check that the lock is released

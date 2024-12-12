@@ -1,5 +1,5 @@
 /* eslint-disable import/order */
-import { Command, Context, Settings } from '../lib/settings';
+import { Command, CommandLineArgSettings, Context, Settings } from '../lib/settings';
 import { Tag } from '../lib/cdk-toolkit';
 
 test('can delete values from Context object', () => {
@@ -64,8 +64,8 @@ test('can clear all values in all objects', () => {
 
 test('can parse string context from command line arguments', () => {
   // GIVEN
-  const settings1 = Settings.fromCommandLineArguments({ context: ['foo=bar'], _: [Command.DEPLOY] });
-  const settings2 = Settings.fromCommandLineArguments({ context: ['foo='], _: [Command.DEPLOY] });
+  const settings1 = CommandLineArgSettings.fromCommandLineArguments({ context: ['foo=bar'], _: [Command.DEPLOY] });
+  const settings2 = CommandLineArgSettings.fromCommandLineArguments({ context: ['foo='], _: [Command.DEPLOY] });
 
   // THEN
   expect(settings1.get(['context']).foo).toEqual( 'bar');
@@ -74,8 +74,8 @@ test('can parse string context from command line arguments', () => {
 
 test('can parse string context from command line arguments with equals sign in value', () => {
   // GIVEN
-  const settings1 = Settings.fromCommandLineArguments({ context: ['foo==bar='], _: [Command.DEPLOY] });
-  const settings2 = Settings.fromCommandLineArguments({ context: ['foo=bar='], _: [Command.DEPLOY] });
+  const settings1 = CommandLineArgSettings.fromCommandLineArguments({ context: ['foo==bar='], _: [Command.DEPLOY] });
+  const settings2 = CommandLineArgSettings.fromCommandLineArguments({ context: ['foo=bar='], _: [Command.DEPLOY] });
 
   // THEN
   expect(settings1.get(['context']).foo).toEqual( '=bar=');
@@ -84,8 +84,8 @@ test('can parse string context from command line arguments with equals sign in v
 
 test('can parse tag values from command line arguments', () => {
   // GIVEN
-  const settings1 = Settings.fromCommandLineArguments({ tags: ['foo=bar'], _: [Command.DEPLOY] });
-  const settings2 = Settings.fromCommandLineArguments({ tags: ['foo='], _: [Command.DEPLOY] });
+  const settings1 = CommandLineArgSettings.fromCommandLineArguments({ tags: ['foo=bar'], _: [Command.DEPLOY] });
+  const settings2 = CommandLineArgSettings.fromCommandLineArguments({ tags: ['foo='], _: [Command.DEPLOY] });
 
   // THEN
   expect(settings1.get(['tags']).find((tag: Tag) => tag.Key === 'foo').Value).toEqual('bar');
@@ -94,8 +94,8 @@ test('can parse tag values from command line arguments', () => {
 
 test('can parse tag values from command line arguments with equals sign in value', () => {
   // GIVEN
-  const settings1 = Settings.fromCommandLineArguments({ tags: ['foo==bar='], _: [Command.DEPLOY] });
-  const settings2 = Settings.fromCommandLineArguments({ tags: ['foo=bar='], _: [Command.DEPLOY] });
+  const settings1 = CommandLineArgSettings.fromCommandLineArguments({ tags: ['foo==bar='], _: [Command.DEPLOY] });
+  const settings2 = CommandLineArgSettings.fromCommandLineArguments({ tags: ['foo=bar='], _: [Command.DEPLOY] });
 
   // THEN
   expect(settings1.get(['tags']).find((tag: Tag) => tag.Key === 'foo').Value).toEqual('=bar=');
@@ -104,7 +104,7 @@ test('can parse tag values from command line arguments with equals sign in value
 
 test('bundling stacks defaults to an empty list', () => {
   // GIVEN
-  const settings = Settings.fromCommandLineArguments({
+  const settings = CommandLineArgSettings.fromCommandLineArguments({
     _: [Command.LIST],
   });
 
@@ -114,7 +114,7 @@ test('bundling stacks defaults to an empty list', () => {
 
 test('bundling stacks defaults to ** for deploy', () => {
   // GIVEN
-  const settings = Settings.fromCommandLineArguments({
+  const settings = CommandLineArgSettings.fromCommandLineArguments({
     _: [Command.DEPLOY],
   });
 
@@ -124,7 +124,7 @@ test('bundling stacks defaults to ** for deploy', () => {
 
 test('bundling stacks defaults to ** for watch', () => {
   // GIVEN
-  const settings = Settings.fromCommandLineArguments({
+  const settings = CommandLineArgSettings.fromCommandLineArguments({
     _: [Command.WATCH],
   });
 
@@ -134,7 +134,7 @@ test('bundling stacks defaults to ** for watch', () => {
 
 test('bundling stacks with deploy exclusively', () => {
   // GIVEN
-  const settings = Settings.fromCommandLineArguments({
+  const settings = CommandLineArgSettings.fromCommandLineArguments({
     _: [Command.DEPLOY],
     exclusively: true,
     STACKS: ['cool-stack'],
@@ -146,7 +146,7 @@ test('bundling stacks with deploy exclusively', () => {
 
 test('bundling stacks with watch exclusively', () => {
   // GIVEN
-  const settings = Settings.fromCommandLineArguments({
+  const settings = CommandLineArgSettings.fromCommandLineArguments({
     _: [Command.WATCH],
     exclusively: true,
     STACKS: ['cool-stack'],
@@ -158,7 +158,7 @@ test('bundling stacks with watch exclusively', () => {
 
 test('should include outputs-file in settings', () => {
   // GIVEN
-  const settings = Settings.fromCommandLineArguments({
+  const settings = CommandLineArgSettings.fromCommandLineArguments({
     _: [Command.DEPLOY],
     outputsFile: 'my-outputs-file.json',
   });
@@ -169,7 +169,7 @@ test('should include outputs-file in settings', () => {
 
 test('providing a build arg', () => {
   // GIVEN
-  const settings = Settings.fromCommandLineArguments({
+  const settings = CommandLineArgSettings.fromCommandLineArguments({
     _: [Command.SYNTH],
     build: 'mvn package',
   });

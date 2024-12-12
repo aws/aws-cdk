@@ -97,7 +97,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
   await notices.refresh();
 
   const sdkProvider = await SdkProvider.withAwsCliCompatibleDefaults({
-    profile: configuration.settings.get(['profile']),
+    profile: configuration.commandLineArgSettings.get(['profile']),
     httpOptions: {
       proxyAddress: argv.proxy,
       caBundlePath: argv['ca-bundle-path'],
@@ -148,7 +148,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
     }
   }
 
-  loadPlugins(configuration.settings);
+  loadPlugins(configuration.commandLineArgSettings);
 
   if (typeof(cmd) !== 'string') {
     throw new Error(`First argument should be a string. Got: ${cmd} (${typeof(cmd)})`);
@@ -178,7 +178,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
   }
 
   async function main(command: string, args: any): Promise<number | void> {
-    const toolkitStackName: string = ToolkitInfo.determineName(configuration.settings.get(['toolkitStackName']));
+    const toolkitStackName: string = ToolkitInfo.determineName(configuration.commandLineArgSettings.get(['toolkitStackName']));
     debug(`Toolkit stack: ${chalk.bold(toolkitStackName)}`);
 
     const cloudFormation = new Deployments({ sdkProvider, toolkitStackName });
@@ -254,12 +254,12 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           force: argv.force,
           toolkitStackName: toolkitStackName,
           execute: args.execute,
-          tags: configuration.settings.get(['tags']),
+          tags: configuration.commandLineArgSettings.get(['tags']),
           terminationProtection: args.terminationProtection,
           usePreviousParameters: args['previous-parameters'],
           parameters: {
-            bucketName: configuration.settings.get(['toolkitBucket', 'bucketName']),
-            kmsKeyId: configuration.settings.get(['toolkitBucket', 'kmsKeyId']),
+            bucketName: configuration.commandLineArgSettings.get(['toolkitBucket', 'bucketName']),
+            kmsKeyId: configuration.commandLineArgSettings.get(['toolkitBucket', 'kmsKeyId']),
             createCustomerMasterKey: args.bootstrapCustomerKey,
             qualifier: args.qualifier ?? configuration.context.get('@aws-cdk/core:bootstrapQualifier'),
             publicAccessBlockConfiguration: args.publicAccessBlockConfiguration,
@@ -321,23 +321,23 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           toolkitStackName,
           roleArn: args.roleArn,
           notificationArns: args.notificationArns,
-          requireApproval: configuration.settings.get(['requireApproval']),
+          requireApproval: configuration.commandLineArgSettings.get(['requireApproval']),
           reuseAssets: args['build-exclude'],
-          tags: configuration.settings.get(['tags']),
+          tags: configuration.commandLineArgSettings.get(['tags']),
           deploymentMethod,
           force: args.force,
           parameters: parameterMap,
           usePreviousParameters: args['previous-parameters'],
-          outputsFile: configuration.settings.get(['outputsFile']),
-          progress: configuration.settings.get(['progress']),
+          outputsFile: configuration.commandLineArgSettings.get(['outputsFile']),
+          progress: configuration.commandLineArgSettings.get(['progress']),
           ci: args.ci,
-          rollback: configuration.settings.get(['rollback']),
+          rollback: configuration.commandLineArgSettings.get(['rollback']),
           hotswap: determineHotswapMode(args.hotswap, args.hotswapFallback),
           watch: args.watch,
           traceLogs: args.logs,
           concurrency: args.concurrency,
-          assetParallelism: configuration.settings.get(['assetParallelism']),
-          assetBuildTime: configuration.settings.get(['assetPrebuild'])
+          assetParallelism: configuration.commandLineArgSettings.get(['assetParallelism']),
+          assetBuildTime: configuration.commandLineArgSettings.get(['assetPrebuild'])
             ? AssetBuildTime.ALL_BEFORE_DEPLOY
             : AssetBuildTime.JUST_IN_TIME,
           ignoreNoStacks: args.ignoreNoStacks,
@@ -363,8 +363,8 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
             execute: args.execute,
             changeSetName: args.changeSetName,
           },
-          progress: configuration.settings.get(['progress']),
-          rollback: configuration.settings.get(['rollback']),
+          progress: configuration.commandLineArgSettings.get(['progress']),
+          rollback: configuration.commandLineArgSettings.get(['rollback']),
           recordResourceMapping: args['record-resource-mapping'],
           resourceMappingFile: args['resource-mapping'],
           force: args.force,
@@ -382,8 +382,8 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
             changeSetName: args.changeSetName,
           },
           force: args.force,
-          progress: configuration.settings.get(['progress']),
-          rollback: configuration.settings.get(['rollback']),
+          progress: configuration.commandLineArgSettings.get(['progress']),
+          rollback: configuration.commandLineArgSettings.get(['rollback']),
           hotswap: determineHotswapMode(args.hotswap, args.hotswapFallback, true),
           traceLogs: args.logs,
           concurrency: args.concurrency,
@@ -399,7 +399,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         });
 
       case 'gc':
-        if (!configuration.settings.get(['unstable']).includes('gc')) {
+        if (!configuration.commandLineArgSettings.get(['unstable']).includes('gc')) {
           throw new Error('Unstable feature use: \'gc\' is unstable. It must be opted in via \'--unstable\', e.g. \'cdk gc --unstable=gc\'');
         }
         return cli.garbageCollect(args.ENVIRONMENTS, {
@@ -413,7 +413,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
       case 'synthesize':
       case 'synth':
-        const quiet = configuration.settings.get(['quiet']) ?? args.quiet;
+        const quiet = configuration.commandLineArgSettings.get(['quiet']) ?? args.quiet;
         if (args.exclusively) {
           return cli.synth(args.STACKS, args.exclusively, quiet, args.validation, argv.json);
         } else {
@@ -432,7 +432,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         return cli.acknowledge(args.ID);
 
       case 'init':
-        const language = configuration.settings.get(['language']);
+        const language = configuration.commandLineArgSettings.get(['language']);
         if (args.list) {
           return printAvailableTemplates(language);
         } else {

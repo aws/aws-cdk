@@ -33,8 +33,8 @@ test('load settings from both files if available', async () => {
   const config = await new Configuration().load();
 
   // THEN
-  expect(config.settings.get(['project'])).toBe('foobar');
-  expect(config.settings.get(['test'])).toBe('bar');
+  expect(config.commandLineArgSettings.get(['project'])).toBe('foobar');
+  expect(config.commandLineArgSettings.get(['test'])).toBe('bar');
 });
 
 test('load context from all 3 files if available', async () => {
@@ -110,5 +110,5 @@ test('Can specify the `quiet` key in the user config', async () => {
   // THEN
   const config = await new Configuration().load();
 
-  expect(config.settings.get(['quiet'])).toBe(true);
+  expect(config.commandLineArgSettings.get(['quiet'])).toBe(true);
 });

@@ -886,7 +886,7 @@ describe('deploy', () => {
   test('globby bootstrap uses whats in the stacks', async () => {
     // GIVEN
     const toolkit = defaultToolkitSetup();
-    cloudExecutable.configuration.settings.set(['app'], 'something');
+    cloudExecutable.configuration.commandLineArgSettings.set(['app'], 'something');
 
     // WHEN
     await toolkit.bootstrap(['aws://*/bermuda-triangle-1'], bootstrapper, {});
@@ -906,7 +906,7 @@ describe('deploy', () => {
 
   test('bootstrap can be invoked without the --app argument', async () => {
     // GIVEN
-    cloudExecutable.configuration.settings.clear();
+    cloudExecutable.configuration.commandLineArgSettings.clear();
     const mockSynthesize = jest.fn();
     cloudExecutable.synthesize = mockSynthesize;
 
@@ -963,7 +963,7 @@ describe('watch', () => {
   });
 
   test('observes only the root directory by default', async () => {
-    cloudExecutable.configuration.settings.set(['watch'], {});
+    cloudExecutable.configuration.commandLineArgSettings.set(['watch'], {});
     const toolkit = defaultToolkitSetup();
 
     await toolkit.watch({
@@ -976,7 +976,7 @@ describe('watch', () => {
   });
 
   test("allows providing a single string in 'watch.include'", async () => {
-    cloudExecutable.configuration.settings.set(['watch'], {
+    cloudExecutable.configuration.commandLineArgSettings.set(['watch'], {
       include: 'my-dir',
     });
     const toolkit = defaultToolkitSetup();
@@ -990,7 +990,7 @@ describe('watch', () => {
   });
 
   test("allows providing an array of strings in 'watch.include'", async () => {
-    cloudExecutable.configuration.settings.set(['watch'], {
+    cloudExecutable.configuration.commandLineArgSettings.set(['watch'], {
       include: ['my-dir1', '**/my-dir2/*'],
     });
     const toolkit = defaultToolkitSetup();
@@ -1004,8 +1004,8 @@ describe('watch', () => {
   });
 
   test('ignores the output dir, dot files, dot directories, and node_modules by default', async () => {
-    cloudExecutable.configuration.settings.set(['watch'], {});
-    cloudExecutable.configuration.settings.set(['output'], 'cdk.out');
+    cloudExecutable.configuration.commandLineArgSettings.set(['watch'], {});
+    cloudExecutable.configuration.commandLineArgSettings.set(['output'], 'cdk.out');
     const toolkit = defaultToolkitSetup();
 
     await toolkit.watch({
@@ -1017,7 +1017,7 @@ describe('watch', () => {
   });
 
   test("allows providing a single string in 'watch.exclude'", async () => {
-    cloudExecutable.configuration.settings.set(['watch'], {
+    cloudExecutable.configuration.commandLineArgSettings.set(['watch'], {
       exclude: 'my-dir',
     });
     const toolkit = defaultToolkitSetup();
@@ -1033,7 +1033,7 @@ describe('watch', () => {
   });
 
   test("allows providing an array of strings in 'watch.exclude'", async () => {
-    cloudExecutable.configuration.settings.set(['watch'], {
+    cloudExecutable.configuration.commandLineArgSettings.set(['watch'], {
       exclude: ['my-dir1', '**/my-dir2'],
     });
     const toolkit = defaultToolkitSetup();
@@ -1050,7 +1050,7 @@ describe('watch', () => {
   });
 
   test('allows watching with deploy concurrency', async () => {
-    cloudExecutable.configuration.settings.set(['watch'], {});
+    cloudExecutable.configuration.commandLineArgSettings.set(['watch'], {});
     const toolkit = defaultToolkitSetup();
     const cdkDeployMock = jest.fn();
     toolkit.deploy = cdkDeployMock;
@@ -1067,7 +1067,7 @@ describe('watch', () => {
 
   describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotswapMode) => {
     test('passes through the correct hotswap mode to deployStack()', async () => {
-      cloudExecutable.configuration.settings.set(['watch'], {});
+      cloudExecutable.configuration.commandLineArgSettings.set(['watch'], {});
       const toolkit = defaultToolkitSetup();
       const cdkDeployMock = jest.fn();
       toolkit.deploy = cdkDeployMock;
@@ -1083,7 +1083,7 @@ describe('watch', () => {
   });
 
   test('respects HotswapMode.HOTSWAP_ONLY', async () => {
-    cloudExecutable.configuration.settings.set(['watch'], {});
+    cloudExecutable.configuration.commandLineArgSettings.set(['watch'], {});
     const toolkit = defaultToolkitSetup();
     const cdkDeployMock = jest.fn();
     toolkit.deploy = cdkDeployMock;
@@ -1098,7 +1098,7 @@ describe('watch', () => {
   });
 
   test('respects HotswapMode.FALL_BACK', async () => {
-    cloudExecutable.configuration.settings.set(['watch'], {});
+    cloudExecutable.configuration.commandLineArgSettings.set(['watch'], {});
     const toolkit = defaultToolkitSetup();
     const cdkDeployMock = jest.fn();
     toolkit.deploy = cdkDeployMock;
@@ -1113,7 +1113,7 @@ describe('watch', () => {
   });
 
   test('respects HotswapMode.FULL_DEPLOYMENT', async () => {
-    cloudExecutable.configuration.settings.set(['watch'], {});
+    cloudExecutable.configuration.commandLineArgSettings.set(['watch'], {});
     const toolkit = defaultToolkitSetup();
     const cdkDeployMock = jest.fn();
     toolkit.deploy = cdkDeployMock;
@@ -1132,7 +1132,7 @@ describe('watch', () => {
     let cdkDeployMock: jest.Mock;
 
     beforeEach(async () => {
-      cloudExecutable.configuration.settings.set(['watch'], {});
+      cloudExecutable.configuration.commandLineArgSettings.set(['watch'], {});
       toolkit = defaultToolkitSetup();
       cdkDeployMock = jest.fn();
       toolkit.deploy = cdkDeployMock;

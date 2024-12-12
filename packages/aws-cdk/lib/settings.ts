@@ -69,7 +69,17 @@ export interface ConfigurationProps {
  * All sources of settings combined
  */
 export class Configuration {
-  public settings = new Settings();
+  /**
+   * Settings that are defined in the CLI arguments
+   */
+  public commandLineArgSettings = new CommandLineArgSettings();
+
+  /**
+   * Context are special settings specified in:
+   * - `--context` CLI parameter
+   * - `cdk.context.json`
+   * - `context` field in `cdk.json`
+   */
   public context = new Context();
 
   public readonly defaultConfig = new Settings({
@@ -79,7 +89,7 @@ export class Configuration {
     output: 'cdk.out',
   });
 
-  private readonly commandLineArguments: Settings;
+  private readonly commandLineArguments: CommandLineArgSettings;
   private readonly commandLineContext: Settings;
   private _projectConfig?: Settings;
   private _projectContext?: Settings;
@@ -87,8 +97,8 @@ export class Configuration {
 
   constructor(private readonly props: ConfigurationProps = {}) {
     this.commandLineArguments = props.commandLineArguments
-      ? Settings.fromCommandLineArguments(props.commandLineArguments)
-      : new Settings();
+      ? CommandLineArgSettings.fromCommandLineArguments(props.commandLineArguments)
+      : new CommandLineArgSettings();
     this.commandLineContext = this.commandLineArguments.subSettings([CONTEXT_KEY]).makeReadOnly();
   }
 
@@ -116,10 +126,6 @@ export class Configuration {
 
     const readUserContext = this.props.readUserContext ?? true;
 
-    if (userConfig.get(['build'])) {
-      throw new Error('The `build` key cannot be specified in the user config (~/.cdk.json), specify it in the project config (cdk.json) instead');
-    }
-
     const contextSources = [
       this.commandLineContext,
       this.projectConfig.subSettings([CONTEXT_KEY]).makeReadOnly(),
@@ -132,13 +138,14 @@ export class Configuration {
     this.context = new Context(...contextSources);
 
     // Build settings from what's left
-    this.settings = this.defaultConfig
-      .merge(userConfig)
-      .merge(this.projectConfig)
-      .merge(this.commandLineArguments)
-      .makeReadOnly();
+    this.commandLineArgSettings = CommandLineArgSettings.fromSettings(
+      this.defaultConfig
+        .merge(userConfig)
+        .merge(this.projectConfig)
+        .merge(this.commandLineArguments)
+        .makeReadOnly());
 
-    debug('merged settings:', this.settings.all);
+    debug('merged settings:', this.commandLineArgSettings.all);
 
     this.loaded = true;
 
@@ -233,128 +240,12 @@ export class Context {
  * A single bag of settings
  */
 export class Settings {
-  /**
-   * Parse Settings out of CLI arguments.
-   *
-   * CLI arguments in must be accessed in the CLI code via
-   * `configuration.settings.get(['argName'])` instead of via `args.argName`.
-   *
-   * The advantage is that they can be configured via `cdk.json` and
-   * `$HOME/.cdk.json`. Arguments not listed below and accessed via this object
-   * can only be specified on the command line.
-   *
-   * @param argv the received CLI arguments.
-   * @returns a new Settings object.
-   */
-  public static fromCommandLineArguments(argv: Arguments): Settings {
-    const context = this.parseStringContextListToObject(argv);
-    const tags = this.parseStringTagsListToObject(expectStringList(argv.tags));
-
-    // Determine bundling stacks
-    let bundlingStacks: string[];
-    if (BUNDLING_COMMANDS.includes(argv._[0])) {
-    // If we deploy, diff, synth or watch a list of stacks exclusively we skip
-    // bundling for all other stacks.
-      bundlingStacks = argv.exclusively
-        ? argv.STACKS ?? ['**']
-        : ['**'];
-    } else { // Skip bundling for all stacks
-      bundlingStacks = [];
-    }
-
-    return new Settings({
-      app: argv.app,
-      browser: argv.browser,
-      build: argv.build,
-      context,
-      debug: argv.debug,
-      tags,
-      language: argv.language,
-      pathMetadata: argv.pathMetadata,
-      assetMetadata: argv.assetMetadata,
-      profile: argv.profile,
-      plugin: argv.plugin,
-      requireApproval: argv.requireApproval,
-      toolkitStackName: argv.toolkitStackName,
-      toolkitBucket: {
-        bucketName: argv.bootstrapBucketName,
-        kmsKeyId: argv.bootstrapKmsKeyId,
-      },
-      versionReporting: argv.versionReporting,
-      staging: argv.staging,
-      output: argv.output,
-      outputsFile: argv.outputsFile,
-      progress: argv.progress,
-      bundlingStacks,
-      lookups: argv.lookups,
-      rollback: argv.rollback,
-      notices: argv.notices,
-      assetParallelism: argv['asset-parallelism'],
-      assetPrebuild: argv['asset-prebuild'],
-      ignoreNoStacks: argv['ignore-no-stacks'],
-      hotswap: {
-        ecs: {
-          minimumEcsHealthyPercent: argv.minimumEcsHealthyPercent,
-          maximumEcsHealthyPercent: argv.maximumEcsHealthyPercent,
-        },
-      },
-      unstable: argv.unstable,
-    });
-  }
-
   public static mergeAll(...settings: Settings[]): Settings {
     let ret = new Settings();
     for (const setting of settings) {
       ret = ret.merge(setting);
     }
     return ret;
-  }
-
-  private static parseStringContextListToObject(argv: Arguments): any {
-    const context: any = {};
-
-    for (const assignment of ((argv as any).context || [])) {
-      const parts = assignment.split(/=(.*)/, 2);
-      if (parts.length === 2) {
-        debug('CLI argument context: %s=%s', parts[0], parts[1]);
-        if (parts[0].match(/^aws:.+/)) {
-          throw new Error(`User-provided context cannot use keys prefixed with 'aws:', but ${parts[0]} was provided.`);
-        }
-        context[parts[0]] = parts[1];
-      } else {
-        warning('Context argument is not an assignment (key=value): %s', assignment);
-      }
-    }
-    return context;
-  }
-
-  /**
-   * Parse tags out of arguments
-   *
-   * Return undefined if no tags were provided, return an empty array if only empty
-   * strings were provided
-   */
-  private static parseStringTagsListToObject(argTags: string[] | undefined): Tag[] | undefined {
-    if (argTags === undefined) { return undefined; }
-    if (argTags.length === 0) { return undefined; }
-    const nonEmptyTags = argTags.filter(t => t !== '');
-    if (nonEmptyTags.length === 0) { return []; }
-
-    const tags: Tag[] = [];
-
-    for (const assignment of nonEmptyTags) {
-      const parts = assignment.split(/=(.*)/, 2);
-      if (parts.length === 2) {
-        debug('CLI argument tags: %s=%s', parts[0], parts[1]);
-        tags.push({
-          Key: parts[0],
-          Value: parts[1],
-        });
-      } else {
-        warning('Tags argument is not an assignment (key=value): %s', assignment);
-      }
-    }
-    return tags.length > 0 ? tags : undefined;
   }
 
   constructor(private settings: SettingsMap = {}, public readonly readOnly = false) {}
@@ -448,6 +339,136 @@ export class Settings {
         warning(`A reserved context key ('context.${prefix}') key was found in ${fs_path.resolve(fileName)}, it might cause surprising behavior and should be removed.`);
       }
     }
+  }
+}
+
+/**
+ * Settings defined in CLI Arguments
+ */
+export class CommandLineArgSettings extends Settings {
+  public static fromSettings(settings: Settings): CommandLineArgSettings {
+    return new CommandLineArgSettings(settings.all);
+  }
+
+  /**
+   * Parse Settings out of CLI arguments.
+   *
+   * CLI arguments in must be accessed in the CLI code via
+   * `configuration.settings.get(['argName'])` instead of via `args.argName`.
+   *
+   * The advantage is that they can be configured via `cdk.json` and
+   * `$HOME/.cdk.json`. Arguments not listed below and accessed via this object
+   * can only be specified on the command line.
+   *
+   * @param argv the received CLI arguments.
+   * @returns a new Settings object.
+   */
+  public static fromCommandLineArguments(argv: Arguments): CommandLineArgSettings {
+    const context = this.parseStringContextListToObject(argv);
+    const tags = this.parseStringTagsListToObject(expectStringList(argv.tags));
+
+    // Determine bundling stacks
+    let bundlingStacks: string[];
+    if (BUNDLING_COMMANDS.includes(argv._[0])) {
+    // If we deploy, diff, synth or watch a list of stacks exclusively we skip
+    // bundling for all other stacks.
+      bundlingStacks = argv.exclusively
+        ? argv.STACKS ?? ['**']
+        : ['**'];
+    } else { // Skip bundling for all stacks
+      bundlingStacks = [];
+    }
+
+    return new CommandLineArgSettings({
+      app: argv.app,
+      browser: argv.browser,
+      build: argv.build,
+      context,
+      debug: argv.debug,
+      tags,
+      language: argv.language,
+      pathMetadata: argv.pathMetadata,
+      assetMetadata: argv.assetMetadata,
+      profile: argv.profile,
+      plugin: argv.plugin,
+      requireApproval: argv.requireApproval,
+      toolkitStackName: argv.toolkitStackName,
+      toolkitBucket: {
+        bucketName: argv.bootstrapBucketName,
+        kmsKeyId: argv.bootstrapKmsKeyId,
+      },
+      versionReporting: argv.versionReporting,
+      staging: argv.staging,
+      output: argv.output,
+      outputsFile: argv.outputsFile,
+      progress: argv.progress,
+      bundlingStacks,
+      lookups: argv.lookups,
+      rollback: argv.rollback,
+      notices: argv.notices,
+      assetParallelism: argv['asset-parallelism'],
+      assetPrebuild: argv['asset-prebuild'],
+      ignoreNoStacks: argv['ignore-no-stacks'],
+      hotswap: {
+        ecs: {
+          minimumEcsHealthyPercent: argv.minimumEcsHealthyPercent,
+          maximumEcsHealthyPercent: argv.maximumEcsHealthyPercent,
+        },
+      },
+      unstable: argv.unstable,
+    });
+  }
+
+  private static parseStringContextListToObject(argv: Arguments): any {
+    const context: any = {};
+
+    for (const assignment of ((argv as any).context || [])) {
+      const parts = assignment.split(/=(.*)/, 2);
+      if (parts.length === 2) {
+        debug('CLI argument context: %s=%s', parts[0], parts[1]);
+        if (parts[0].match(/^aws:.+/)) {
+          throw new Error(`User-provided context cannot use keys prefixed with 'aws:', but ${parts[0]} was provided.`);
+        }
+        context[parts[0]] = parts[1];
+      } else {
+        warning('Context argument is not an assignment (key=value): %s', assignment);
+      }
+    }
+    return context;
+  }
+
+  /**
+   * Parse tags out of arguments
+   *
+   * Return undefined if no tags were provided, return an empty array if only empty
+   * strings were provided
+   */
+  private static parseStringTagsListToObject(argTags: string[] | undefined): Tag[] | undefined {
+    if (argTags === undefined) { return undefined; }
+    if (argTags.length === 0) { return undefined; }
+    const nonEmptyTags = argTags.filter(t => t !== '');
+    if (nonEmptyTags.length === 0) { return []; }
+
+    const tags: Tag[] = [];
+
+    for (const assignment of nonEmptyTags) {
+      const parts = assignment.split(/=(.*)/, 2);
+      if (parts.length === 2) {
+        debug('CLI argument tags: %s=%s', parts[0], parts[1]);
+        tags.push({
+          Key: parts[0],
+          Value: parts[1],
+        });
+      } else {
+        warning('Tags argument is not an assignment (key=value): %s', assignment);
+      }
+    }
+    return tags.length > 0 ? tags : undefined;
+  }
+
+  // TODO: type cliSettings
+  constructor(cliSettings: any = {}, public readonly readOnly = false) {
+    super(cliSettings);
   }
 }
 

@@ -625,7 +625,7 @@ describe(Notices, () => {
 
       const settings: any = { notices: false };
       const configuration = new Configuration();
-      (configuration.settings as any) = { get: (s_path: string[]) => settings[s_path[0]] };
+      (configuration.commandLineArgSettings as any) = { get: (s_path: string[]) => settings[s_path[0]] };
 
       let refreshCalled = false;
 
@@ -731,7 +731,7 @@ describe(Notices, () => {
 
       const settings: any = { notices: false };
       const configuration = new Configuration();
-      (configuration.settings as any) = { get: (s_path: string[]) => settings[s_path[0]] };
+      (configuration.commandLineArgSettings as any) = { get: (s_path: string[]) => settings[s_path[0]] };
 
       const notices = Notices.create({ configuration });
       await notices.refresh({ dataSource: { fetch: async () => [BASIC_NOTICE] } });

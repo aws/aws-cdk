@@ -23,12 +23,12 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
   const env = await prepareDefaultEnvironment(aws);
   const context = await prepareContext(config, env);
 
-  const build = config.settings.get(['build']);
+  const build = config.commandLineArgSettings.get(['build']);
   if (build) {
     await exec(build);
   }
 
-  const app = config.settings.get(['app']);
+  const app = config.commandLineArgSettings.get(['app']);
   if (!app) {
     throw new Error(`--app is required either in command-line, in ${PROJECT_CONFIG} or in ${USER_DEFAULTS}`);
   }
@@ -45,7 +45,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
 
   const commandLine = await guessExecutable(appToArray(app));
 
-  const outdir = config.settings.get(['output']);
+  const outdir = config.commandLineArgSettings.get(['output']);
   if (!outdir) {
     throw new Error('unexpected: --output is required');
   }
@@ -188,32 +188,32 @@ export async function prepareDefaultEnvironment(aws: SdkProvider): Promise<{ [ke
 export async function prepareContext(config: Configuration, env: { [key: string]: string | undefined}) {
   const context = config.context.all;
 
-  const debugMode: boolean = config.settings.get(['debug']) ?? true;
+  const debugMode: boolean = config.commandLineArgSettings.get(['debug']) ?? true;
   if (debugMode) {
     env.CDK_DEBUG = 'true';
   }
 
-  const pathMetadata: boolean = config.settings.get(['pathMetadata']) ?? true;
+  const pathMetadata: boolean = config.commandLineArgSettings.get(['pathMetadata']) ?? true;
   if (pathMetadata) {
     context[cxapi.PATH_METADATA_ENABLE_CONTEXT] = true;
   }
 
-  const assetMetadata: boolean = config.settings.get(['assetMetadata']) ?? true;
+  const assetMetadata: boolean = config.commandLineArgSettings.get(['assetMetadata']) ?? true;
   if (assetMetadata) {
     context[cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT] = true;
   }
 
-  const versionReporting: boolean = config.settings.get(['versionReporting']) ?? true;
+  const versionReporting: boolean = config.commandLineArgSettings.get(['versionReporting']) ?? true;
   if (versionReporting) { context[cxapi.ANALYTICS_REPORTING_ENABLED_CONTEXT] = true; }
   // We need to keep on doing this for framework version from before this flag was deprecated.
   if (!versionReporting) { context['aws:cdk:disable-version-reporting'] = true; }
 
-  const stagingEnabled = config.settings.get(['staging']) ?? true;
+  const stagingEnabled = config.commandLineArgSettings.get(['staging']) ?? true;
   if (!stagingEnabled) {
     context[cxapi.DISABLE_ASSET_STAGING_CONTEXT] = true;
   }
 
-  const bundlingStacks = config.settings.get(['bundlingStacks']) ?? ['**'];
+  const bundlingStacks = config.commandLineArgSettings.get(['bundlingStacks']) ?? ['**'];
   context[cxapi.BUNDLING_STACKS] = bundlingStacks;
 
   debug('context:', context);

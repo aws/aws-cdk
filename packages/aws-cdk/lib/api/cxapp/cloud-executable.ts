@@ -50,7 +50,7 @@ export class CloudExecutable {
    * Return whether there is an app command from the configuration
    */
   public get hasApp() {
-    return !!this.props.configuration.settings.get(['app']);
+    return !!this.props.configuration.commandLineArgSettings.get(['app']);
   }
 
   /**
@@ -68,7 +68,7 @@ export class CloudExecutable {
   }
 
   private async doSynthesize(): Promise<CloudAssembly> {
-    const trackVersions: boolean = this.props.configuration.settings.get(['versionReporting']);
+    const trackVersions: boolean = this.props.configuration.commandLineArgSettings.get(['versionReporting']);
 
     // We may need to run the cloud executable multiple times in order to satisfy all missing context
     // (When the executable runs, it will tell us about context it wants to use
@@ -183,7 +183,7 @@ export class CloudExecutable {
   }
 
   private get canLookup() {
-    return !!(this.props.configuration.settings.get(['lookups']) ?? true);
+    return !!(this.props.configuration.commandLineArgSettings.get(['lookups']) ?? true);
   }
 }
 

@@ -115,7 +115,7 @@ test('fails if lookups are disabled and missing context is synthesized', async (
       { key: 'abcdef', props: { account: '1324', region: 'us-east-1' }, provider: cxschema.ContextProvider.AVAILABILITY_ZONE_PROVIDER },
     ],
   });
-  cloudExecutable.configuration.settings.set(['lookups'], false);
+  cloudExecutable.configuration.commandLineArgSettings.set(['lookups'], false);
 
   // WHEN
   await expect(cloudExecutable.synthesize()).rejects.toThrow(/Context lookups have been disabled/);
@@ -146,7 +146,7 @@ async function testCloudExecutable(
     }],
     schemaVersion,
   });
-  cloudExec.configuration.settings.set(['versionReporting'], versionReporting);
+  cloudExec.configuration.commandLineArgSettings.set(['versionReporting'], versionReporting);
 
   return cloudExec;
 }

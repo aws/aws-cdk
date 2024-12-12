@@ -274,7 +274,7 @@ export class Notices {
     const filteredNotices = NoticesFilter.filter({
       data: Array.from(this.data),
       cliVersion: versionNumber(),
-      outDir: this.configuration.settings.get(['output']) ?? 'cdk.out',
+      outDir: this.configuration.commandLineArgSettings.get(['output']) ?? 'cdk.out',
       bootstrappedEnvironments: Array.from(this.bootstrappedEnvironments.values()),
     });
 
@@ -311,7 +311,7 @@ export class Notices {
    * configuration provided at instantiation time.
    */
   private shouldDisplay(): boolean {
-    return this.configuration.settings.get(['notices']) ?? true;
+    return this.configuration.commandLineArgSettings.get(['notices']) ?? true;
   }
 
 }

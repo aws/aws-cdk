@@ -294,7 +294,7 @@ export class CdkToolkit {
       warning('⚠️ They should only be used for development - never use them for your production Stacks!\n');
     }
 
-    let hotswapPropertiesFromSettings = this.props.configuration.settings.get(['hotswap']) || {};
+    let hotswapPropertiesFromSettings = this.props.configuration.commandLineArgSettings.get(['hotswap']) || {};
 
     let hotswapPropertyOverrides = new HotswapPropertyOverrides();
     hotswapPropertyOverrides.ecsHotswapProperties = new EcsHotswapProperties(
@@ -616,7 +616,7 @@ export class CdkToolkit {
     debug("root directory used for 'watch' is: %s", rootDir);
 
     const watchSettings: { include?: string | string[]; exclude: string | string[] } | undefined =
-      this.props.configuration.settings.get(['watch']);
+      this.props.configuration.commandLineArgSettings.get(['watch']);
     if (!watchSettings) {
       throw new Error(
         "Cannot use the 'watch' command without specifying at least one directory to monitor. " +
@@ -641,7 +641,7 @@ export class CdkToolkit {
     // 2. Any file whose name starts with a dot.
     // 3. Any directory's content whose name starts with a dot.
     // 4. Any node_modules and its content (even if it's not a JS/TS project, you might be using a local aws-cli package)
-    const outputDir = this.props.configuration.settings.get(['output']);
+    const outputDir = this.props.configuration.commandLineArgSettings.get(['output']);
     const watchExcludes = this.patternsArrayForWatch(watchSettings.exclude, {
       rootDir,
       returnRootDirIfEmpty: false,
