@@ -125,10 +125,9 @@ export class DatabaseQuery<HandlerProps> extends Construct implements iam.IGrant
   private getProviderRole(handler: lambda.SingletonFunction): iam.IRole {
     const id = handler.constructName + 'ProviderRole';
     const existing = cdk.Stack.of(this).node.tryFindChild(id);
-
     return existing != null
       ? existing as iam.Role
-      : new iam.Role(this, id, {
+      : new iam.Role(cdk.Stack.of(this), id, {
         assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
         managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')],
       });
