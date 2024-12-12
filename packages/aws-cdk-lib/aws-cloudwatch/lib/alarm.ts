@@ -15,6 +15,13 @@ import { ArnFormat, Lazy, Stack, Token, Annotations } from '../../core';
  * Properties for Alarms
  */
 export interface AlarmProps extends CreateAlarmOptions {
+
+  /**
+   * In an alarm based on an anomaly detection model, this is the ID of the ANOMALY_DETECTION_BAND function used as the threshold for the alarm.
+   *
+   * @default - No metric id.
+   */
+  readonly thresholdMetricId?: string;
   /**
    * The metric to add the alarm on
    *
@@ -67,13 +74,18 @@ export enum ComparisonOperator {
   LESS_THAN_LOWER_THRESHOLD = 'LessThanLowerThreshold',
 }
 
-const OPERATOR_SYMBOLS: {[key: string]: string} = {
+const OPERATOR_SYMBOLS: { [key: string]: string } = {
   GreaterThanOrEqualToThreshold: '>=',
   GreaterThanThreshold: '>',
   LessThanThreshold: '<',
   LessThanOrEqualToThreshold: '<=',
 };
 
+const ANOMALY_DETECTION_OPERATORS: ComparisonOperator[] = [
+  ComparisonOperator.LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD,
+  ComparisonOperator.GREATER_THAN_UPPER_THRESHOLD,
+  ComparisonOperator.LESS_THAN_LOWER_THRESHOLD,
+];
 /**
  * Specify how missing data points are treated during alarm evaluation
  */
@@ -138,6 +150,16 @@ export class Alarm extends AlarmBase {
   }
 
   /**
+   * Determine whether this operator is an anomaly detection operator.
+   *
+   * @param operator the comparison operator for the alarm.
+   * @returns true if the operator is an anomaly detection operator, false otherwise.
+   */
+  public static isAnomalyDetectionOperator(operator: ComparisonOperator): boolean {
+    return ANOMALY_DETECTION_OPERATORS.includes(operator);
+  }
+
+  /**
    * ARN of this alarm
    *
    * @attribute
@@ -167,6 +189,7 @@ export class Alarm extends AlarmBase {
     });
 
     const comparisonOperator = props.comparisonOperator || ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD;
+    const isAnomalyDetection = Alarm.isAnomalyDetectionOperator(comparisonOperator);
 
     // Render metric, process potential overrides from the alarm
     // (It would be preferable if the statistic etc. was worked into the metric,
@@ -190,7 +213,8 @@ export class Alarm extends AlarmBase {
 
       // Evaluation
       comparisonOperator,
-      threshold: props.threshold,
+      threshold: isAnomalyDetection ? undefined : props.threshold,
+      thresholdMetricId: isAnomalyDetection ? (props.thresholdMetricId || 'expr_1') : undefined,
       datapointsToAlarm: props.datapointsToAlarm,
       evaluateLowSampleCountPercentile: props.evaluateLowSampleCountPercentile,
       evaluationPeriods: props.evaluationPeriods,
@@ -206,12 +230,22 @@ export class Alarm extends AlarmBase {
       ...metricProps,
     });
 
+    if (isAnomalyDetection) {
+      // Ensure returnData is set to true for both metrics in anomaly detection
+      const cfnMetrics = alarm.metrics as any[];
+      if (cfnMetrics && cfnMetrics.length >= 2) {
+        cfnMetrics[0].returnData = true;
+        cfnMetrics[1].returnData = true;
+      }
+    }
+
     this.alarmArn = this.getResourceArnAttribute(alarm.attrArn, {
       service: 'cloudwatch',
       resource: 'alarm',
       resourceName: this.physicalName,
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
+
     this.alarmName = this.getResourceNameAttribute(alarm.ref);
 
     this.metric = props.metric;
