@@ -1,7 +1,7 @@
 {
-  "version": "35.0.0",
+  "version": "38.0.1",
   "files": {
-    "2ed9dff548ce8e8080a12fc15c933f25b7e4ac0eba3771b02e9f07fb943c7146": {
+    "e4962252421259e3c257c3aeb0947c0c4e804e2379a50d1b71fa49d6fea6a824": {
       "source": {
         "path": "integ-ec2-capacity-provider.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "2ed9dff548ce8e8080a12fc15c933f25b7e4ac0eba3771b02e9f07fb943c7146.json",
+          "objectKey": "e4962252421259e3c257c3aeb0947c0c4e804e2379a50d1b71fa49d6fea6a824.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

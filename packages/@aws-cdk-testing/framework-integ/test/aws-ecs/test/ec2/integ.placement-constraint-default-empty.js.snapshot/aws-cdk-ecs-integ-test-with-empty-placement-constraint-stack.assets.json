@@ -1,7 +1,7 @@
 {
-  "version": "36.0.0",
+  "version": "38.0.1",
   "files": {
-    "7e266e55d90d8a167dc9b1545687d2ec9103fc0e7fe4fa3c31d030f07ef554c7": {
+    "6979d9d755a14bb1cb87e63f294126803f96c024069112b4646d179e5621e077": {
       "source": {
         "path": "aws-cdk-ecs-integ-test-with-empty-placement-constraint-stack.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "7e266e55d90d8a167dc9b1545687d2ec9103fc0e7fe4fa3c31d030f07ef554c7.json",
+          "objectKey": "6979d9d755a14bb1cb87e63f294126803f96c024069112b4646d179e5621e077.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
