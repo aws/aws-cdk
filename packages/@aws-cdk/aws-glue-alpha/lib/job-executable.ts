@@ -11,16 +11,19 @@ import { Code } from './code';
 export class GlueVersion {
   /**
    * Glue version using Spark 2.2.1 and Python 2.7
+   * @deprecated Reached end of support
    */
   public static readonly V0_9 = new GlueVersion('0.9');
 
   /**
    * Glue version using Spark 2.4.3, Python 2.7 and Python 3.6
+   * @deprecated Reached end of support
    */
   public static readonly V1_0 = new GlueVersion('1.0');
 
   /**
    * Glue version using Spark 2.4.3 and Python 3.7
+   * @deprecated Reached end of support
    */
   public static readonly V2_0 = new GlueVersion('2.0');
 
@@ -33,6 +36,11 @@ export class GlueVersion {
    * Glue version using Spark 3.3.0 and Python 3.10
    */
   public static readonly V4_0 = new GlueVersion('4.0');
+
+  /**
+   * Glue version using Spark 3.5.2 and Python 3.11
+   */
+  public static readonly V5_0 = new GlueVersion('5.0');
 
   /**
    * Custom Glue version
