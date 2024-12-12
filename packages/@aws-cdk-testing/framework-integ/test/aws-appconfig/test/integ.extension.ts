@@ -39,6 +39,7 @@ const lambdaExtension = new Extension(stack, 'MyLambdaExtension', {
       actionPoints: [
         ActionPoint.PRE_CREATE_HOSTED_CONFIGURATION_VERSION,
         ActionPoint.ON_DEPLOYMENT_START,
+        ActionPoint.AT_DEPLOYMENT_TICK,
       ],
       eventDestination: new LambdaDestination(lambda),
     }),
