@@ -178,7 +178,7 @@ class TestHandler(unittest.TestCase):
         })
 
         self.assertAwsCommands(
-                ["s3api", "get-object","--bucket", "<source-bucket>", "--key", "<source-object-key>", "/tmp/contents"],
+                ["s3api", "get-object","--bucket", "<source-bucket>", "--key", "<source-object-key>", "/tmp/contents/archive.zip"],
                 ["s3", "sync", "--delete", "contents.zip", "s3://<dest-bucket-name>/"]
         )
 
@@ -193,7 +193,7 @@ class TestHandler(unittest.TestCase):
         }, physical_id="<physical-id>")
 
         self.assertAwsCommands(
-                ["s3api", "get-object","--bucket", "<source-bucket>", "--key", "<source-object-key>", "/tmp/contents"],
+                ["s3api", "get-object","--bucket", "<source-bucket>", "--key", "<source-object-key>", "/tmp/contents/archive.zip"],
                 ["s3", "sync", "--delete", "contents.zip", "s3://<dest-bucket-name>/"]
         )
 

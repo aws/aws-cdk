@@ -6,7 +6,7 @@
 # - argvs are going to be written to "aws.out" (one command in each line)
 # - if "aws s3api get-object" is invoked, the destination will be populated with a test zip file.
 # - for "get-object" and "sync", "aws.out" argv[-1] is replaced by "archive.zip" and "contents.zip"
-#   becuase the actual value is a full path of a temporary directory
+#   because the actual value is a full path of a temporary directory
 #
 import sys
 import json
@@ -16,9 +16,9 @@ import shutil
 scriptdir=os.path.dirname(os.path.realpath(__file__))
 
 # if "get-object" is called to contents, copy a test zip file to contents
-if sys.argv[2] == "get-object" and sys.argv[-1].endswith("/contents"):
+if sys.argv[2] == "get-object" and "/contents/" in sys.argv[-1] and sys.argv[-1].split("/contents/")[1]:
     shutil.copy(os.path.join(scriptdir, 'test.zip'), sys.argv[-1])
-    sys.argv[-1] = "/tmp/contents"
+    sys.argv[-1] = "/tmp/contents/archive.zip"
 # else if "get-object" is called with a local destination, copy a test zip file to the destination
 elif sys.argv[2] == "get-object" and not sys.argv[-1].startswith("s3://"):
     shutil.copyfile(os.path.join(scriptdir, 'test.zip'), sys.argv[-1])

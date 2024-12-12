@@ -206,8 +206,10 @@ def s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, ex
                 logger.info("| markers: %s" % markers)
                 extract_and_replace_markers(archive, contents_dir, markers)
             else:
-                logger.info("| copying archive to: %s\n" % contents_dir)
-                s3_command.append(contents_dir)
+                # get-object does not allow destination to be a directory
+                archive=os.path.join(contents_dir, s3_source_key.split('/')[-1])
+                logger.info("| copying archive to: %s\n" % archive)
+                s3_command.append(archive)
                 aws_command(*s3_command)
 
         # sync from "contents" to destination
