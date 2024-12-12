@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { IApi, ApiBase } from './api-base';
 import { IamResource, LogConfig, FieldLogLevel, DomainOptions } from './appsync-common';
-import { CfnApi, CfnApiKey, CfnDomainName } from './appsync.generated';
+import { CfnApi, CfnApiKey, CfnDomainName, CfnDomainNameApiAssociation } from './appsync.generated';
 import {
   AuthorizationMode,
   AuthorizationType,
@@ -230,7 +230,7 @@ export interface EventApiProps {
   readonly ownerContact?: string;
 
   /**
-   * The domain name configuration for the GraphQL API
+   * The domain name configuration for the Event API
    *
    * The Route 53 hosted zone and CName DNS record must be configured in addition to this setting to
    * enable custom domain URL
@@ -434,6 +434,20 @@ export class EventApi extends EventApiBase {
         action: 'lambda:InvokeFunction',
         sourceArn: this.apiArn,
       });
+    }
+
+    if (props.domainName) {
+      this.domainNameResource = new CfnDomainName(this, 'DomainName', {
+        domainName: props.domainName.domainName,
+        certificateArn: props.domainName.certificate.certificateArn,
+        description: `domain for ${props.apiName} Event API}`,
+      });
+      const domainNameAssociation = new CfnDomainNameApiAssociation(this, 'DomainAssociation', {
+        domainName: props.domainName.domainName,
+        apiId: this.apiId,
+      });
+
+      domainNameAssociation.addDependency(this.domainNameResource);
     }
 
     const logGroupName = `/aws/appsync/apis/${this.apiId}`;
