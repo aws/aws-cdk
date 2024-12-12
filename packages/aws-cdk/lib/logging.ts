@@ -176,13 +176,13 @@ export const data = (fmt: string, ...args: unknown[]) => log({
 export const debug = (fmt: string, ...args: unknown[]) => log({
   level: LogLevel.DEBUG,
   message: util.format(fmt, ...args),
-  timestamp: true
+  timestamp: true,
 });
 
 export const trace = (fmt: string, ...args: unknown[]) => log({
   level: LogLevel.TRACE,
   message: util.format(fmt, ...args),
-  timestamp: true
+  timestamp: true,
 });
 
 export const success = (fmt: string, ...args: unknown[]) => log({

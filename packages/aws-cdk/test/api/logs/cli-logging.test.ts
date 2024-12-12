@@ -78,23 +78,23 @@ describe('logging', () => {
       setLogLevel(LogLevel.INFO);
       debug('debug message');
       expect(mockStderr).not.toHaveBeenCalled();
-    
+
       setLogLevel(LogLevel.DEBUG);
       debug('debug message');
       expect(mockStderr).toHaveBeenCalledWith(
-        expect.stringMatching(/^\[\d{2}:\d{2}:\d{2}\] debug message\n$/)
+        expect.stringMatching(/^\[\d{2}:\d{2}:\d{2}\] debug message\n$/),
       );
     });
-    
+
     test('trace messages only show at trace level', () => {
       setLogLevel(LogLevel.DEBUG);
       trace('trace message');
       expect(mockStderr).not.toHaveBeenCalled();
-    
+
       setLogLevel(LogLevel.TRACE);
       trace('trace message');
       expect(mockStderr).toHaveBeenCalledWith(
-        expect.stringMatching(/^\[\d{2}:\d{2}:\d{2}\] trace message\n$/)
+        expect.stringMatching(/^\[\d{2}:\d{2}:\d{2}\] trace message\n$/),
       );
     });
   });
