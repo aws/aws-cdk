@@ -96,7 +96,7 @@ describe('cluster', () => {
                   Ref: 'EcsCluster97242B84',
                 },
                 // eslint-disable-next-line max-len
-                ' >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config',
+                ' >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo iptables-save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config',
               ],
             ],
           },
@@ -265,7 +265,7 @@ describe('cluster', () => {
                   Ref: 'EcsCluster97242B84',
                 },
                 // eslint-disable-next-line max-len
-                ' >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config',
+                ' >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo iptables-save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config',
               ],
             ],
           },
@@ -625,7 +625,7 @@ describe('cluster', () => {
                   Ref: 'EcsCluster97242B84',
                 },
                 // eslint-disable-next-line max-len
-                ' >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config',
+                ' >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo iptables-save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config',
               ],
             ],
           },
@@ -1342,7 +1342,7 @@ describe('cluster', () => {
               {
                 Ref: 'EcsCluster97242B84',
               },
-              ' >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config\necho ECS_ENABLE_SPOT_INSTANCE_DRAINING=true >> /etc/ecs/ecs.config',
+              ' >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo iptables-save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config\necho ECS_ENABLE_SPOT_INSTANCE_DRAINING=true >> /etc/ecs/ecs.config',
             ],
           ],
         },
@@ -1652,7 +1652,7 @@ describe('cluster', () => {
                 Ref: 'EcsCluster97242B84',
               },
               // eslint-disable-next-line max-len
-              ' >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config',
+              ' >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo iptables-save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config',
             ],
           ],
         },
@@ -3065,7 +3065,7 @@ test('can add ASG capacity via Capacity Provider by not specifying machineImageT
               Ref: 'EcsCluster97242B84',
 
             },
-            ' >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config',
+            ' >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo iptables-save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config',
           ],
         ],
       },
@@ -3237,7 +3237,7 @@ describe('Accessing container instance role', function () {
 
     // THEN
     expect(autoScalingGroup.addUserData).toHaveBeenCalledWith('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
-    expect(autoScalingGroup.addUserData).toHaveBeenCalledWith('sudo service iptables save');
+    expect(autoScalingGroup.addUserData).toHaveBeenCalledWith('sudo iptables-save');
     expect(autoScalingGroup.addUserData).toHaveBeenCalledWith('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
   });
 
@@ -3259,7 +3259,7 @@ describe('Accessing container instance role', function () {
 
     // THEN
     expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
-    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo service iptables save');
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo iptables-save');
     expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
   });
 
@@ -3280,7 +3280,7 @@ describe('Accessing container instance role', function () {
 
     // THEN
     expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
-    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo service iptables save');
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo iptables-save');
     expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
   });
 
@@ -3303,7 +3303,7 @@ describe('Accessing container instance role', function () {
 
     // THEN
     expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
-    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo service iptables save');
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo iptables-save');
     expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
   });
 
@@ -3326,7 +3326,7 @@ describe('Accessing container instance role', function () {
 
     // THEN
     expect(autoScalingGroup.addUserData).toHaveBeenCalledWith('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
-    expect(autoScalingGroup.addUserData).toHaveBeenCalledWith('sudo service iptables save');
+    expect(autoScalingGroup.addUserData).toHaveBeenCalledWith('sudo iptables-save');
     expect(autoScalingGroup.addUserData).toHaveBeenCalledWith('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
   });
 
@@ -3349,7 +3349,7 @@ describe('Accessing container instance role', function () {
 
     // THEN
     expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
-    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo service iptables save');
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo iptables-save');
     expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
   });
 });
