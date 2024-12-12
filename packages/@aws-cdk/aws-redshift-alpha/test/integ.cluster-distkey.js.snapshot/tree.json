@@ -946,6 +946,123 @@
                       "version": "0.0.0"
                     }
                   },
+                  "Query Redshift Database3de5bea727da479686625efb56431b5fProviderRole": {
+                    "id": "Query Redshift Database3de5bea727da479686625efb56431b5fProviderRole",
+                    "path": "aws-cdk-redshift-distkey-create/Table/Resource/Query Redshift Database3de5bea727da479686625efb56431b5fProviderRole",
+                    "children": {
+                      "ImportQuery Redshift Database3de5bea727da479686625efb56431b5fProviderRole": {
+                        "id": "ImportQuery Redshift Database3de5bea727da479686625efb56431b5fProviderRole",
+                        "path": "aws-cdk-redshift-distkey-create/Table/Resource/Query Redshift Database3de5bea727da479686625efb56431b5fProviderRole/ImportQuery Redshift Database3de5bea727da479686625efb56431b5fProviderRole",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-redshift-distkey-create/Table/Resource/Query Redshift Database3de5bea727da479686625efb56431b5fProviderRole/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                          "aws:cdk:cloudformation:props": {
+                            "assumeRolePolicyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "lambda.amazonaws.com"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "managedPolicyArns": [
+                              {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                                  ]
+                                ]
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "DefaultPolicy": {
+                        "id": "DefaultPolicy",
+                        "path": "aws-cdk-redshift-distkey-create/Table/Resource/Query Redshift Database3de5bea727da479686625efb56431b5fProviderRole/DefaultPolicy",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "aws-cdk-redshift-distkey-create/Table/Resource/Query Redshift Database3de5bea727da479686625efb56431b5fProviderRole/DefaultPolicy/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "lambda:InvokeFunction",
+                                      "Effect": "Allow",
+                                      "Resource": [
+                                        {
+                                          "Fn::GetAtt": [
+                                            "QueryRedshiftDatabase3de5bea727da479686625efb56431b5f3DF81997",
+                                            "Arn"
+                                          ]
+                                        },
+                                        {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              {
+                                                "Fn::GetAtt": [
+                                                  "QueryRedshiftDatabase3de5bea727da479686625efb56431b5f3DF81997",
+                                                  "Arn"
+                                                ]
+                                              },
+                                              ":*"
+                                            ]
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "TableQueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRoleDefaultPolicyBBFA0AEC",
+                                "roles": [
+                                  {
+                                    "Ref": "TableQueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRole71E75E1A"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Policy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Role",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Provider": {
                     "id": "Provider",
                     "path": "aws-cdk-redshift-distkey-create/Table/Resource/Provider",
@@ -954,123 +1071,6 @@
                         "id": "framework-onEvent",
                         "path": "aws-cdk-redshift-distkey-create/Table/Resource/Provider/framework-onEvent",
                         "children": {
-                          "ServiceRole": {
-                            "id": "ServiceRole",
-                            "path": "aws-cdk-redshift-distkey-create/Table/Resource/Provider/framework-onEvent/ServiceRole",
-                            "children": {
-                              "ImportServiceRole": {
-                                "id": "ImportServiceRole",
-                                "path": "aws-cdk-redshift-distkey-create/Table/Resource/Provider/framework-onEvent/ServiceRole/ImportServiceRole",
-                                "constructInfo": {
-                                  "fqn": "aws-cdk-lib.Resource",
-                                  "version": "0.0.0"
-                                }
-                              },
-                              "Resource": {
-                                "id": "Resource",
-                                "path": "aws-cdk-redshift-distkey-create/Table/Resource/Provider/framework-onEvent/ServiceRole/Resource",
-                                "attributes": {
-                                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                                  "aws:cdk:cloudformation:props": {
-                                    "assumeRolePolicyDocument": {
-                                      "Statement": [
-                                        {
-                                          "Action": "sts:AssumeRole",
-                                          "Effect": "Allow",
-                                          "Principal": {
-                                            "Service": "lambda.amazonaws.com"
-                                          }
-                                        }
-                                      ],
-                                      "Version": "2012-10-17"
-                                    },
-                                    "managedPolicyArns": [
-                                      {
-                                        "Fn::Join": [
-                                          "",
-                                          [
-                                            "arn:",
-                                            {
-                                              "Ref": "AWS::Partition"
-                                            },
-                                            ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-                                          ]
-                                        ]
-                                      }
-                                    ]
-                                  }
-                                },
-                                "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                                  "version": "0.0.0"
-                                }
-                              },
-                              "DefaultPolicy": {
-                                "id": "DefaultPolicy",
-                                "path": "aws-cdk-redshift-distkey-create/Table/Resource/Provider/framework-onEvent/ServiceRole/DefaultPolicy",
-                                "children": {
-                                  "Resource": {
-                                    "id": "Resource",
-                                    "path": "aws-cdk-redshift-distkey-create/Table/Resource/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource",
-                                    "attributes": {
-                                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                                      "aws:cdk:cloudformation:props": {
-                                        "policyDocument": {
-                                          "Statement": [
-                                            {
-                                              "Action": "lambda:InvokeFunction",
-                                              "Effect": "Allow",
-                                              "Resource": [
-                                                {
-                                                  "Fn::GetAtt": [
-                                                    "QueryRedshiftDatabase3de5bea727da479686625efb56431b5f3DF81997",
-                                                    "Arn"
-                                                  ]
-                                                },
-                                                {
-                                                  "Fn::Join": [
-                                                    "",
-                                                    [
-                                                      {
-                                                        "Fn::GetAtt": [
-                                                          "QueryRedshiftDatabase3de5bea727da479686625efb56431b5f3DF81997",
-                                                          "Arn"
-                                                        ]
-                                                      },
-                                                      ":*"
-                                                    ]
-                                                  ]
-                                                }
-                                              ]
-                                            }
-                                          ],
-                                          "Version": "2012-10-17"
-                                        },
-                                        "policyName": "TableProviderframeworkonEventServiceRoleDefaultPolicyAD08715D",
-                                        "roles": [
-                                          {
-                                            "Ref": "TableProviderframeworkonEventServiceRoleC3128F67"
-                                          }
-                                        ]
-                                      }
-                                    },
-                                    "constructInfo": {
-                                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                                      "version": "0.0.0"
-                                    }
-                                  }
-                                },
-                                "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_iam.Policy",
-                                  "version": "0.0.0"
-                                }
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.Role",
-                              "version": "0.0.0"
-                            }
-                          },
                           "Code": {
                             "id": "Code",
                             "path": "aws-cdk-redshift-distkey-create/Table/Resource/Provider/framework-onEvent/Code",
@@ -1123,7 +1123,7 @@
                                 "handler": "framework.onEvent",
                                 "role": {
                                   "Fn::GetAtt": [
-                                    "TableProviderframeworkonEventServiceRoleC3128F67",
+                                    "TableQueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRole71E75E1A",
                                     "Arn"
                                   ]
                                 },
@@ -2339,6 +2339,123 @@
                       "version": "0.0.0"
                     }
                   },
+                  "Query Redshift Database3de5bea727da479686625efb56431b5fProviderRole": {
+                    "id": "Query Redshift Database3de5bea727da479686625efb56431b5fProviderRole",
+                    "path": "aws-cdk-redshift-distkey-update/Table/Resource/Query Redshift Database3de5bea727da479686625efb56431b5fProviderRole",
+                    "children": {
+                      "ImportQuery Redshift Database3de5bea727da479686625efb56431b5fProviderRole": {
+                        "id": "ImportQuery Redshift Database3de5bea727da479686625efb56431b5fProviderRole",
+                        "path": "aws-cdk-redshift-distkey-update/Table/Resource/Query Redshift Database3de5bea727da479686625efb56431b5fProviderRole/ImportQuery Redshift Database3de5bea727da479686625efb56431b5fProviderRole",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-redshift-distkey-update/Table/Resource/Query Redshift Database3de5bea727da479686625efb56431b5fProviderRole/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                          "aws:cdk:cloudformation:props": {
+                            "assumeRolePolicyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "lambda.amazonaws.com"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "managedPolicyArns": [
+                              {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                                  ]
+                                ]
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "DefaultPolicy": {
+                        "id": "DefaultPolicy",
+                        "path": "aws-cdk-redshift-distkey-update/Table/Resource/Query Redshift Database3de5bea727da479686625efb56431b5fProviderRole/DefaultPolicy",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "aws-cdk-redshift-distkey-update/Table/Resource/Query Redshift Database3de5bea727da479686625efb56431b5fProviderRole/DefaultPolicy/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "lambda:InvokeFunction",
+                                      "Effect": "Allow",
+                                      "Resource": [
+                                        {
+                                          "Fn::GetAtt": [
+                                            "QueryRedshiftDatabase3de5bea727da479686625efb56431b5f3DF81997",
+                                            "Arn"
+                                          ]
+                                        },
+                                        {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              {
+                                                "Fn::GetAtt": [
+                                                  "QueryRedshiftDatabase3de5bea727da479686625efb56431b5f3DF81997",
+                                                  "Arn"
+                                                ]
+                                              },
+                                              ":*"
+                                            ]
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "TableQueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRoleDefaultPolicyBBFA0AEC",
+                                "roles": [
+                                  {
+                                    "Ref": "TableQueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRole71E75E1A"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Policy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Role",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Provider": {
                     "id": "Provider",
                     "path": "aws-cdk-redshift-distkey-update/Table/Resource/Provider",
@@ -2347,123 +2464,6 @@
                         "id": "framework-onEvent",
                         "path": "aws-cdk-redshift-distkey-update/Table/Resource/Provider/framework-onEvent",
                         "children": {
-                          "ServiceRole": {
-                            "id": "ServiceRole",
-                            "path": "aws-cdk-redshift-distkey-update/Table/Resource/Provider/framework-onEvent/ServiceRole",
-                            "children": {
-                              "ImportServiceRole": {
-                                "id": "ImportServiceRole",
-                                "path": "aws-cdk-redshift-distkey-update/Table/Resource/Provider/framework-onEvent/ServiceRole/ImportServiceRole",
-                                "constructInfo": {
-                                  "fqn": "aws-cdk-lib.Resource",
-                                  "version": "0.0.0"
-                                }
-                              },
-                              "Resource": {
-                                "id": "Resource",
-                                "path": "aws-cdk-redshift-distkey-update/Table/Resource/Provider/framework-onEvent/ServiceRole/Resource",
-                                "attributes": {
-                                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                                  "aws:cdk:cloudformation:props": {
-                                    "assumeRolePolicyDocument": {
-                                      "Statement": [
-                                        {
-                                          "Action": "sts:AssumeRole",
-                                          "Effect": "Allow",
-                                          "Principal": {
-                                            "Service": "lambda.amazonaws.com"
-                                          }
-                                        }
-                                      ],
-                                      "Version": "2012-10-17"
-                                    },
-                                    "managedPolicyArns": [
-                                      {
-                                        "Fn::Join": [
-                                          "",
-                                          [
-                                            "arn:",
-                                            {
-                                              "Ref": "AWS::Partition"
-                                            },
-                                            ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-                                          ]
-                                        ]
-                                      }
-                                    ]
-                                  }
-                                },
-                                "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                                  "version": "0.0.0"
-                                }
-                              },
-                              "DefaultPolicy": {
-                                "id": "DefaultPolicy",
-                                "path": "aws-cdk-redshift-distkey-update/Table/Resource/Provider/framework-onEvent/ServiceRole/DefaultPolicy",
-                                "children": {
-                                  "Resource": {
-                                    "id": "Resource",
-                                    "path": "aws-cdk-redshift-distkey-update/Table/Resource/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource",
-                                    "attributes": {
-                                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                                      "aws:cdk:cloudformation:props": {
-                                        "policyDocument": {
-                                          "Statement": [
-                                            {
-                                              "Action": "lambda:InvokeFunction",
-                                              "Effect": "Allow",
-                                              "Resource": [
-                                                {
-                                                  "Fn::GetAtt": [
-                                                    "QueryRedshiftDatabase3de5bea727da479686625efb56431b5f3DF81997",
-                                                    "Arn"
-                                                  ]
-                                                },
-                                                {
-                                                  "Fn::Join": [
-                                                    "",
-                                                    [
-                                                      {
-                                                        "Fn::GetAtt": [
-                                                          "QueryRedshiftDatabase3de5bea727da479686625efb56431b5f3DF81997",
-                                                          "Arn"
-                                                        ]
-                                                      },
-                                                      ":*"
-                                                    ]
-                                                  ]
-                                                }
-                                              ]
-                                            }
-                                          ],
-                                          "Version": "2012-10-17"
-                                        },
-                                        "policyName": "TableProviderframeworkonEventServiceRoleDefaultPolicyAD08715D",
-                                        "roles": [
-                                          {
-                                            "Ref": "TableProviderframeworkonEventServiceRoleC3128F67"
-                                          }
-                                        ]
-                                      }
-                                    },
-                                    "constructInfo": {
-                                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                                      "version": "0.0.0"
-                                    }
-                                  }
-                                },
-                                "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_iam.Policy",
-                                  "version": "0.0.0"
-                                }
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.Role",
-                              "version": "0.0.0"
-                            }
-                          },
                           "Code": {
                             "id": "Code",
                             "path": "aws-cdk-redshift-distkey-update/Table/Resource/Provider/framework-onEvent/Code",
@@ -2516,7 +2516,7 @@
                                 "handler": "framework.onEvent",
                                 "role": {
                                   "Fn::GetAtt": [
-                                    "TableProviderframeworkonEventServiceRoleC3128F67",
+                                    "TableQueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRole71E75E1A",
                                     "Arn"
                                   ]
                                 },

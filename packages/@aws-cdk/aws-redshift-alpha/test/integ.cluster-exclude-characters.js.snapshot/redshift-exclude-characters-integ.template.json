@@ -523,7 +523,7 @@
     "TargetType": "AWS::Redshift::Cluster"
    }
   },
-  "UserProviderframeworkonEventServiceRole8FBA2FBD": {
+  "UserQueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRoleE9658316": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -554,7 +554,7 @@
     ]
    }
   },
-  "UserProviderframeworkonEventServiceRoleDefaultPolicy9A9E044F": {
+  "UserQueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRoleDefaultPolicy3F47723C": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -588,10 +588,10 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "UserProviderframeworkonEventServiceRoleDefaultPolicy9A9E044F",
+    "PolicyName": "UserQueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRoleDefaultPolicy3F47723C",
     "Roles": [
      {
-      "Ref": "UserProviderframeworkonEventServiceRole8FBA2FBD"
+      "Ref": "UserQueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRoleE9658316"
      }
     ]
    }
@@ -619,7 +619,7 @@
     "Handler": "framework.onEvent",
     "Role": {
      "Fn::GetAtt": [
-      "UserProviderframeworkonEventServiceRole8FBA2FBD",
+      "UserQueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRoleE9658316",
       "Arn"
      ]
     },
@@ -635,8 +635,8 @@
     "Timeout": 900
    },
    "DependsOn": [
-    "UserProviderframeworkonEventServiceRoleDefaultPolicy9A9E044F",
-    "UserProviderframeworkonEventServiceRole8FBA2FBD"
+    "UserQueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRoleDefaultPolicy3F47723C",
+    "UserQueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRoleE9658316"
    ]
   },
   "UserFDDCDD17": {

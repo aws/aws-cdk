@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7b8d2dedda432de023f03f880a44a293c30f67b52abd2778f835a7806238c2f0.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a1bc29bb108915f08a1477a87f5c3a95c77182591035e946366e706dd5ff1cf4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -214,16 +214,16 @@
             "data": "UserSecretAttachment02022609"
           }
         ],
-        "/redshift-exclude-characters-integ/User/Resource/Provider/framework-onEvent/ServiceRole/Resource": [
+        "/redshift-exclude-characters-integ/User/Resource/Query Redshift Database3de5bea727da479686625efb56431b5fProviderRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "UserProviderframeworkonEventServiceRole8FBA2FBD"
+            "data": "UserQueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRoleE9658316"
           }
         ],
-        "/redshift-exclude-characters-integ/User/Resource/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+        "/redshift-exclude-characters-integ/User/Resource/Query Redshift Database3de5bea727da479686625efb56431b5fProviderRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "UserProviderframeworkonEventServiceRoleDefaultPolicy9A9E044F"
+            "data": "UserQueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRoleDefaultPolicy3F47723C"
           }
         ],
         "/redshift-exclude-characters-integ/User/Resource/Provider/framework-onEvent/Resource": [
@@ -272,6 +272,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "UserProviderframeworkonEventServiceRole8FBA2FBD": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserProviderframeworkonEventServiceRole8FBA2FBD",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "UserProviderframeworkonEventServiceRoleDefaultPolicy9A9E044F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserProviderframeworkonEventServiceRoleDefaultPolicy9A9E044F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3bb5577706470becf32d04544c930065ae1598618f5a65af6a32c5b4b58a2390.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/02f365b755a06a3174b7729519d14c929722033cbb1cb6ee0287dc6bcca11bed.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -208,16 +208,16 @@
             "data": "ClusterEB0386A7"
           }
         ],
-        "/aws-cdk-redshift-cluster-database/Table/Resource/Provider/framework-onEvent/ServiceRole/Resource": [
+        "/aws-cdk-redshift-cluster-database/Table/Resource/Query Redshift Database3de5bea727da479686625efb56431b5fProviderRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TableProviderframeworkonEventServiceRoleC3128F67"
+            "data": "TableQueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRole71E75E1A"
           }
         ],
-        "/aws-cdk-redshift-cluster-database/Table/Resource/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+        "/aws-cdk-redshift-cluster-database/Table/Resource/Query Redshift Database3de5bea727da479686625efb56431b5fProviderRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TableProviderframeworkonEventServiceRoleDefaultPolicyAD08715D"
+            "data": "TableQueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRoleDefaultPolicyBBFA0AEC"
           }
         ],
         "/aws-cdk-redshift-cluster-database/Table/Resource/Provider/framework-onEvent/Resource": [
@@ -266,6 +266,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "TableProviderframeworkonEventServiceRoleC3128F67": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TableProviderframeworkonEventServiceRoleC3128F67",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "TableProviderframeworkonEventServiceRoleDefaultPolicyAD08715D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TableProviderframeworkonEventServiceRoleDefaultPolicyAD08715D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

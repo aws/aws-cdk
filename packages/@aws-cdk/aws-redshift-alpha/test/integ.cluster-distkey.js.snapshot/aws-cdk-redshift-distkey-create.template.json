@@ -604,7 +604,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "TableProviderframeworkonEventServiceRoleC3128F67": {
+  "TableQueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRole71E75E1A": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -637,7 +637,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "TableProviderframeworkonEventServiceRoleDefaultPolicyAD08715D": {
+  "TableQueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRoleDefaultPolicyBBFA0AEC": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -671,10 +671,10 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "TableProviderframeworkonEventServiceRoleDefaultPolicyAD08715D",
+    "PolicyName": "TableQueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRoleDefaultPolicyBBFA0AEC",
     "Roles": [
      {
-      "Ref": "TableProviderframeworkonEventServiceRoleC3128F67"
+      "Ref": "TableQueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRole71E75E1A"
      }
     ]
    },
@@ -704,7 +704,7 @@
     "Handler": "framework.onEvent",
     "Role": {
      "Fn::GetAtt": [
-      "TableProviderframeworkonEventServiceRoleC3128F67",
+      "TableQueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRole71E75E1A",
       "Arn"
      ]
     },
@@ -720,8 +720,8 @@
     "Timeout": 900
    },
    "DependsOn": [
-    "TableProviderframeworkonEventServiceRoleDefaultPolicyAD08715D",
-    "TableProviderframeworkonEventServiceRoleC3128F67"
+    "TableQueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRoleDefaultPolicyBBFA0AEC",
+    "TableQueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRole71E75E1A"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
