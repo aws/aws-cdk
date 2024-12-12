@@ -97,7 +97,7 @@ const styleMap: Record<IoMessageLevel, (str: string) => string> = {
  * Used by the toolkit unit tests.
  * These APIs are not part of the public interface and will change without notice.
  * Do Not Use.
- * 
+ *
  */
 export const _private = {
   CliIoHost,

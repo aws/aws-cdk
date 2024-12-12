@@ -12,7 +12,7 @@ describe('CliIoHost', () => {
   beforeEach(() => {
     mockStdout = jest.fn();
     mockStderr = jest.fn();
-    
+
     // MOck the write methods of STD out and STD err
     jest.spyOn(process.stdout, 'write').mockImplementation((str: any, encoding?: any, cb?: any) => {
       mockStdout(str.toString());
@@ -184,21 +184,21 @@ describe('CliIoHost', () => {
     });
   });
 
-  // describe('error handling', () => {
-  //   test('rejects on write error', async () => {
-  //     jest.spyOn(process.stdout, 'write').mockImplementation((_: any, callback: any) => {
-  //       callback(new Error('Write failed'));
-  //       return true;
-  //     });
+  describe('error handling', () => {
+    test('rejects on write error', async () => {
+      jest.spyOn(process.stdout, 'write').mockImplementation((_: any, callback: any) => {
+        callback(new Error('Write failed'));
+        return true;
+      });
 
-  //     const host = new CliIoHost({ useTTY: true });
-  //     await expect(host.notify({
-  //       time: new Date(),
-  //       level: IoMessageLevel.INFO,
-  //       action: IoAction.SYNTH,
-  //       code: 'TEST',
-  //       message: 'test message',
-  //     })).rejects.toThrow('Write failed');
-  //   });
-  // });
+      const host = new CliIoHost({ useTTY: true });
+      await expect(host.notify({
+        time: new Date(),
+        level: IoMessageLevel.INFO,
+        action: IoAction.SYNTH,
+        code: 'TEST',
+        message: 'test message',
+      })).rejects.toThrow('Write failed');
+    });
+  });
 });
