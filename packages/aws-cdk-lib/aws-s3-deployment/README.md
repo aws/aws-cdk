@@ -497,11 +497,12 @@ By default, the bucket source objects copied to the destination bucket will not 
 ```ts
 import * as cdk from 'aws-cdk-lib';
 
+declare const sourceBucket: s3.Bucket;
 declare const destinationBucket: s3.Bucket;
 
 const myBucketDeployment = new s3deploy.BucketDeployment(this, 'DeployMeWithVersioningSupport', {
-  sources: [s3deploy.Source.bucket(bucket, zipObjectKey, {
-    versionId: versionID,
+  sources: [s3deploy.Source.bucket(sourceBucket, 'object-key', {
+    versionId: '3sL4kqtJlcpXroDTDmJ+rmSpXd3dIbrHY+MTRCxf3vjVBH40Nr8X8gdRQBpUMLUo',
   })],
   destinationBucket,
 });
