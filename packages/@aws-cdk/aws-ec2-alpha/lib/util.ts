@@ -269,7 +269,6 @@ export class CidrBlock {
    * Note: This method assumes that the start and end addresses are valid IPv4 addresses.
    */
   public rangesOverlap(range1: [string, string], range2: [string, string]): boolean {
-    // Convert range strings to IPv4 objects
     const [start1, end1] = range1.map(ip => NetworkUtils.ipToNum(ip));
     const [start2, end2] = range2.map(ip => NetworkUtils.ipToNum(ip));
     // Check if ranges overlap
