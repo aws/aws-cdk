@@ -1,7 +1,7 @@
 import { Expression, FreeFunction, Module, SelectiveModuleImport, Statement, Type, TypeScriptRenderer, code } from '@cdklabs/typewriter';
 import { EsLintRules } from '@cdklabs/typewriter/lib/eslint-rules';
 import * as prettier from 'prettier';
-import { CliConfig, YargsOption } from './yargs-types';
+import { CliConfig, CliOption, YargsOption } from './yargs-types';
 
 export async function renderYargs(config: CliConfig): Promise<string> {
   const scope = new Module('aws-cdk');
@@ -102,37 +102,46 @@ function makeYargs(config: CliConfig): Statement {
   return code.stmt.ret(makeEpilogue(yargsExpr));
 }
 
-function makeOptions(prefix: Expression, options: { [optionName: string]: YargsOption }) {
+function makeOptions(prefix: Expression, options: { [optionName: string]: CliOption }) {
   let optionsExpr = prefix;
   for (const option of Object.keys(options)) {
-    // each option can define at most one middleware call; if we need more, handle a list of these instead
-    let middlewareCallback: Expression | undefined = undefined;
-    const optionProps = options[option];
+    const theOption: CliOption = options[option];
+    const optionProps: YargsOption = structuredClone(theOption);
     const optionArgs: { [key: string]: Expression } = {};
-    for (const optionProp of Object.keys(optionProps)) {
-      if (optionProp === 'negativeAlias') {
-        // middleware is a separate function call, so we can't store it with the regular option arguments, as those will all be treated as parameters:
-        // .option('R', { type: 'boolean', hidden: true }).middleware(yargsNegativeAlias('R', 'rollback'), true)
-        middlewareCallback = code.expr.builtInFn('yargsNegativeAlias', lit(option), lit(optionProps.negativeAlias));
+
+    // Array defaults
+    if (optionProps.type === 'array') {
+      optionProps.nargs = 1;
+      optionProps.requiresArg = true;
+    }
+
+    for (const optionProp of Object.keys(optionProps).filter(opt => !['negativeAlias'].includes(opt))) {
+      const optionValue = (optionProps as any)[optionProp];
+      if (optionValue && optionValue.dynamicType === 'parameter') {
+        optionArgs[optionProp] = code.expr.ident(optionValue.dynamicValue);
+      } else if (optionValue && optionValue.dynamicType === 'function') {
+        const inlineFunction: string = optionValue.dynamicValue;
+        const NUMBER_OF_SPACES_BETWEEN_ARROW_AND_CODE = 3;
+        // this only works with arrow functions, like () =>
+        optionArgs[optionProp] = code.expr.directCode(inlineFunction.substring(inlineFunction.indexOf('=>') + NUMBER_OF_SPACES_BETWEEN_ARROW_AND_CODE));
       } else {
-        const optionValue = (optionProps as any)[optionProp];
-        if (optionValue && optionValue.dynamicType === 'parameter') {
-          optionArgs[optionProp] = code.expr.ident(optionValue.dynamicValue);
-        } else if (optionValue && optionValue.dynamicType === 'function') {
-          const inlineFunction: string = optionValue.dynamicValue.toString();
-          const NUMBER_OF_SPACES_BETWEEN_ARROW_AND_CODE = 3;
-          // this only works with arrow functions, like () =>
-          optionArgs[optionProp] = code.expr.directCode(inlineFunction.substring(inlineFunction.indexOf('=>') + NUMBER_OF_SPACES_BETWEEN_ARROW_AND_CODE));
-        } else {
-          optionArgs[optionProp] = lit(optionValue);
-        }
+        optionArgs[optionProp] = lit(optionValue);
       }
     }
 
+    // Register the option with yargs
     optionsExpr = optionsExpr.callMethod('option', lit(option), code.expr.object(optionArgs));
-    if (middlewareCallback) {
-      optionsExpr = optionsExpr.callMethod('middleware', middlewareCallback, lit(true));
-      middlewareCallback = undefined;
+
+    // Special case for negativeAlias
+    // We need an additional option and a middleware:
+    // .option('R', { type: 'boolean', hidden: true }).middleware(yargsNegativeAlias('R', 'rollback'), true)
+    if (theOption.negativeAlias) {
+      const middleware = code.expr.builtInFn('yargsNegativeAlias', lit(theOption.negativeAlias), lit(option));
+      optionsExpr = optionsExpr.callMethod('middleware', middleware, lit(true));
+      optionsExpr = optionsExpr.callMethod('option', lit(theOption.negativeAlias), code.expr.lit({
+        type: 'boolean',
+        hidden: true,
+      }));
     }
   }
 
