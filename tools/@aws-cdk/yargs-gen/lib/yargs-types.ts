@@ -10,18 +10,6 @@ interface YargsArg {
   variadic: boolean;
 }
 
-interface YargsCommand {
-  description: string;
-  options?: { [optionName: string]: YargsOption };
-  aliases?: string[];
-  arg?: YargsArg;
-}
-
-interface YargsArg {
-  name: string;
-  variadic: boolean;
-}
-
 export interface YargsOption {
   type: 'string' | 'array' | 'number' | 'boolean' | 'count';
   desc?: string;
@@ -37,6 +25,8 @@ export interface YargsOption {
   negativeAlias?: string;
 }
 
+export type CliOption = Omit<YargsOption, 'nargs'>;
+
 export interface Middleware {
   callback: string;
   args: string[];
@@ -44,7 +34,7 @@ export interface Middleware {
 }
 
 export interface CliConfig {
-  globalOptions: { [optionName: string]: YargsOption };
+  globalOptions: { [optionName: string]: CliOption };
   commands: { [commandName: string]: YargsCommand };
 }
 

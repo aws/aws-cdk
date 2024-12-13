@@ -1,7 +1,7 @@
 import { Expression, FreeFunction, Module, SelectiveModuleImport, Statement, Type, TypeScriptRenderer, code } from '@cdklabs/typewriter';
 import { EsLintRules } from '@cdklabs/typewriter/lib/eslint-rules';
 import * as prettier from 'prettier';
-import { CliConfig, YargsOption } from './yargs-types';
+import { CliConfig, CliOption, YargsOption } from './yargs-types';
 
 export async function renderYargs(config: CliConfig): Promise<string> {
   const scope = new Module('aws-cdk');
@@ -102,13 +102,20 @@ function makeYargs(config: CliConfig): Statement {
   return code.stmt.ret(makeEpilogue(yargsExpr));
 }
 
-function makeOptions(prefix: Expression, options: { [optionName: string]: YargsOption }) {
+function makeOptions(prefix: Expression, options: { [optionName: string]: CliOption }) {
   let optionsExpr = prefix;
   for (const option of Object.keys(options)) {
     // each option can define at most one middleware call; if we need more, handle a list of these instead
     let middlewareCallback: Expression | undefined = undefined;
-    const optionProps = options[option];
+    const optionProps: YargsOption = options[option];
     const optionArgs: { [key: string]: Expression } = {};
+
+    // Array defaults
+    if (optionProps.type === 'array') {
+      optionProps.nargs = 1;
+      optionProps.requiresArg = true;
+    }
+
     for (const optionProp of Object.keys(optionProps)) {
       if (optionProp === 'negativeAlias') {
         // middleware is a separate function call, so we can't store it with the regular option arguments, as those will all be treated as parameters:

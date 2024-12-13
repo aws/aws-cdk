@@ -15,8 +15,6 @@ describe('render', () => {
           type: 'array',
           alias: 't',
           desc: 'text for three',
-          nargs: 1,
-          requiresArg: true,
         },
       },
       commands: {},

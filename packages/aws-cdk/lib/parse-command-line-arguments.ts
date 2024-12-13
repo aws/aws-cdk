@@ -39,6 +39,7 @@ export function parseCommandLineArguments(
       alias: 'p',
       desc: 'Name or path of a node package that extend the CDK features. Can be specified multiple times',
       nargs: 1,
+      requiresArg: true,
     })
     .option('trace', {
       type: 'boolean',
@@ -148,6 +149,8 @@ export function parseCommandLineArguments(
       type: 'array',
       desc: 'Opt in to unstable features. The flag indicates that the scope and API of a feature might still change. Otherwise the feature is generally production ready and fully supported. Can be specified multiple times.',
       default: [],
+      nargs: 1,
+      requiresArg: true,
     })
     .command(['list [STACKS..]', 'ls [STACKS..]'], 'Lists all stacks in the app', (yargs: Argv) =>
       yargs
@@ -231,9 +234,9 @@ export function parseCommandLineArguments(
           type: 'array',
           alias: 't',
           desc: 'Tags to add for the stack (KEY=VALUE)',
+          default: [],
           nargs: 1,
           requiresArg: true,
-          default: [],
         })
         .option('execute', {
           type: 'boolean',
@@ -339,9 +342,10 @@ export function parseCommandLineArguments(
         .option('build-exclude', {
           type: 'array',
           alias: 'E',
-          nargs: 1,
           desc: 'Do not rebuild asset with the given ID. Can be specified multiple times',
           default: [],
+          nargs: 1,
+          requiresArg: true,
         })
         .option('exclusively', {
           type: 'boolean',
@@ -391,9 +395,9 @@ export function parseCommandLineArguments(
         .option('parameters', {
           type: 'array',
           desc: 'Additional parameters passed to CloudFormation at deploy time (STACK:KEY=VALUE)',
+          default: {},
           nargs: 1,
           requiresArg: true,
-          default: {},
         })
         .option('outputs-file', {
           type: 'string',
@@ -486,10 +490,10 @@ export function parseCommandLineArguments(
         })
         .option('orphan', {
           type: 'array',
-          nargs: 1,
-          requiresArg: true,
           desc: 'Orphan the given resources, identified by their logical ID (can be specified multiple times)',
           default: [],
+          nargs: 1,
+          requiresArg: true,
         })
     )
     .command('import [STACK]', 'Import existing resource(s) into the given STACK', (yargs: Argv) =>
@@ -535,9 +539,10 @@ export function parseCommandLineArguments(
         .option('build-exclude', {
           type: 'array',
           alias: 'E',
-          nargs: 1,
           desc: 'Do not rebuild asset with the given ID. Can be specified multiple times',
           default: [],
+          nargs: 1,
+          requiresArg: true,
         })
         .option('exclusively', {
           type: 'boolean',
@@ -734,6 +739,8 @@ export function parseCommandLineArguments(
         .option('filter', {
           type: 'array',
           desc: 'Filters the resource scan based on the provided criteria in the following format: "key1=value1,key2=value2"\n This field can be passed multiple times for OR style filtering: \n filtering options: \n resource-identifier: A key-value pair that identifies the target resource. i.e. {"ClusterName", "myCluster"}\n resource-type-prefix: A string that represents a type-name prefix. i.e. "AWS::DynamoDB::"\n tag-key: a string that matches resources with at least one tag with the provided key. i.e. "myTagKey"\n tag-value: a string that matches resources with at least one tag with the provided value. i.e. "myTagValue"',
+          nargs: 1,
+          requiresArg: true,
         })
         .option('compress', {
           type: 'boolean',
