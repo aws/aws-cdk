@@ -76,12 +76,6 @@
     "organization": true
   },
   "license": "Apache-2.0",
-  "bundledDependencies": [
-    "ip-num"
-  ],
-  "dependencies": {
-    "ip-num": "^1.5.1"
-  },
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",

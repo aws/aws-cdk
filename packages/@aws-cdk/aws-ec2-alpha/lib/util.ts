@@ -1,7 +1,6 @@
 /*eslint no-bitwise: ["error", { "allow": ["~", "|", "<<", "&"] }] */
 
 import { ISubnet } from 'aws-cdk-lib/aws-ec2';
-import { IPv4 } from 'ip-num/IPNumber';
 
 /**
  * Return a subnet name from its construct ID
@@ -261,7 +260,7 @@ export class CidrBlock {
   }
 
   /**
-   * Checks if two IP address ranges overlap.
+   * Checks if two IPv4 address ranges overlap.
    *
    * @param range1 The first IP address range represented as an array [start, end].
    * @param range2 The second IP address range represented as an array [start, end].
@@ -271,12 +270,10 @@ export class CidrBlock {
    */
   public rangesOverlap(range1: [string, string], range2: [string, string]): boolean {
     // Convert range strings to IPv4 objects
-    const start1 = IPv4.fromString(range1[0]);
-    const end1 = IPv4.fromString(range1[1]);
-    const start2 = IPv4.fromString(range2[0]);
-    const end2 = IPv4.fromString(range2[1]);
+    const [start1, end1] = range1.map(ip => NetworkUtils.ipToNum(ip));
+    const [start2, end2] = range2.map(ip => NetworkUtils.ipToNum(ip));
     // Check if ranges overlap
-    return start1.isLessThanOrEquals(end2) && start2.isLessThanOrEquals(end1);
+    return start1 <= end2 && start2 <= end1;
   }
 
 }
