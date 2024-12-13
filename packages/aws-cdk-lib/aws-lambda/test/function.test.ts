@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { testDeprecated, bockfs } from '@aws-cdk/cdk-build-tools';
 import * as constructs from 'constructs';
 import * as _ from 'lodash';
 import { Annotations, Match, Template } from '../../assertions';
@@ -4511,6 +4511,235 @@ describe('latest Lambda node runtime', () => {
         Runtime: 'nodejs18.x',
       },
     });
+  });
+});
+
+// Test sourceKMSKeyArn feature
+describe('CMCMK', () => {
+  test('set sourceKMSKeyArn using fromAsset', () => {
+    const stack = new cdk.Stack();
+    const key = new kms.Key(stack, 'myImportedKey', {
+      enableKeyRotation: true,
+    });
+    const option = {
+      sourceKMSKey: key,
+    };
+    // WHEN
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip'), option),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+    });
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Code: {
+          SourceKMSKeyArn: { 'Fn::GetAtt': ['myImportedKey10DE2890', 'Arn'] },
+        },
+        Runtime: 'python3.9',
+        Handler: 'index.handler',
+      },
+    });
+  });
+
+  test('no sourceKMSKey provided using fromAsset', () => {
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Code: {
+          SourceKMSKeyArn: Match.absent(),
+        },
+      },
+    });
+  });
+
+  test('set sourceKMSKeyArn using fromBucket', () => {
+    const stack = new cdk.Stack();
+    // S3 Bucket
+    const key = 'script';
+    let bucket: s3.IBucket;
+    bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'bucketname');
+
+    // KMS
+    const KMSkey = new kms.Key(stack, 'myImportedKey', {
+      enableKeyRotation: true,
+    });
+    const option = {
+      sourceKMSKey: KMSkey,
+    };
+    // WHEN
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromBucketV2(bucket, key, option),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+    });
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Code: {
+          SourceKMSKeyArn: { 'Fn::GetAtt': ['myImportedKey10DE2890', 'Arn'] },
+        },
+        Runtime: 'python3.9',
+        Handler: 'index.handler',
+      },
+    });
+  });
+
+  test('no sourceKMSKey provided using fromBucket', () => {
+    const stack = new cdk.Stack();
+    // S3 Bucket
+    const key = 'script';
+    let bucket: s3.IBucket;
+    bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'bucketname');
+
+    // WHEN
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromBucketV2(bucket, key),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+    });
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Code: {
+          SourceKMSKeyArn: Match.absent(),
+        },
+        Runtime: 'python3.9',
+        Handler: 'index.handler',
+      },
+    });
+  });
+
+  test('set sourceKMSKeyArn using fromCfnParameters', () => {
+    const stack = new cdk.Stack();
+    // KMS
+    const KMSkey = new kms.Key(stack, 'myImportedKey', {
+      enableKeyRotation: true,
+    });
+    // WHEN
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromCfnParameters({
+        sourceKMSKey: KMSkey,
+      }),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+    });
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Code: {
+          SourceKMSKeyArn: { 'Fn::GetAtt': ['myImportedKey10DE2890', 'Arn'] },
+        },
+        Runtime: 'python3.9',
+        Handler: 'index.handler',
+      },
+    });
+  });
+
+  test('no sourceKMSKey provided using fromCfnParameters', () => {
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromCfnParameters(),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+    });
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Code: {
+          SourceKMSKeyArn: Match.absent(),
+        },
+        Runtime: 'python3.9',
+        Handler: 'index.handler',
+      },
+    });
+  });
+
+  test('set sourceKMSKeyArn using fromCustomCommand', () => {
+    const mockCallsites = jest.fn();
+    jest.mock('../lib/util', () => ({
+      ...jest.requireActual('../lib/util'),
+      callsites: () => mockCallsites(),
+    }));
+    bockfs({
+      '/home/project/function.test.handler7.zip': '// nothing',
+    });
+    const bockPath = bockfs.workingDirectory('/home/project');
+    mockCallsites.mockImplementation(() => [
+      { getFunctionName: () => 'NodejsFunction' },
+      { getFileName: () => bockPath`function.test.ts` },
+    ]);
+
+    const stack = new cdk.Stack();
+    // KMS
+    const KMSkey = new kms.Key(stack, 'myImportedKey', {
+      enableKeyRotation: true,
+    });
+    // const command = ;
+    const commandOptions = { sourceKMSKey: KMSkey };
+    // WHEN
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromCustomCommand('function.test.handler7.zip', ['node'], commandOptions),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_18_X,
+    });
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Code: {
+          SourceKMSKeyArn: { 'Fn::GetAtt': ['myImportedKey10DE2890', 'Arn'] },
+        },
+        Runtime: 'nodejs18.x',
+        Handler: 'index.handler',
+      },
+    });
+    bockfs.restore();
+  });
+
+  test('no sourceKMSKey provided using fromCustomCommand', () => {
+    const mockCallsites = jest.fn();
+    jest.mock('../lib/util', () => ({
+      ...jest.requireActual('../lib/util'),
+      callsites: () => mockCallsites(),
+    }));
+    bockfs({
+      '/home/project/function.test.handler7.zip': '// nothing',
+    });
+    const bockPath = bockfs.workingDirectory('/home/project');
+    mockCallsites.mockImplementation(() => [
+      { getFunctionName: () => 'NodejsFunction' },
+      { getFileName: () => bockPath`function.test.ts` },
+    ]);
+
+    const stack = new cdk.Stack();
+    // WHEN
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromCustomCommand('function.test.handler7.zip', ['node']),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_18_X,
+    });
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Code: {
+          SourceKMSKeyArn: Match.absent(),
+        },
+        Runtime: 'nodejs18.x',
+        Handler: 'index.handler',
+      },
+    });
+    bockfs.restore();
   });
 });
 

@@ -1,0 +1,170 @@
+{
+ "Resources": {
+  "acceptorVpc5B7D1670": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default"
+   }
+  },
+  "acceptorVpcVpcPeeringRoleF389E47A": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": "arn:aws:iam::12345678:root"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Restrictive role for VPC peering",
+    "RoleName": "VpcPeeringRole"
+   }
+  },
+  "acceptorVpcVpcPeeringRoleDefaultPolicyE79C72D0": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "ec2:AcceptVpcPeeringConnection",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ec2:us-east-1:234567890123:vpc/",
+          {
+           "Fn::GetAtt": [
+            "acceptorVpc5B7D1670",
+            "VpcId"
+           ]
+          }
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "ec2:AcceptVpcPeeringConnection",
+       "Condition": {
+        "StringEquals": {
+         "ec2:AccepterVpc": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":ec2:us-east-1:234567890123:vpc/",
+            {
+             "Fn::GetAtt": [
+              "acceptorVpc5B7D1670",
+              "VpcId"
+             ]
+            }
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ec2:us-east-1:234567890123:vpc-peering-connection/*"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "acceptorVpcVpcPeeringRoleDefaultPolicyE79C72D0",
+    "Roles": [
+     {
+      "Ref": "acceptorVpcVpcPeeringRoleF389E47A"
+     }
+    ]
+   }
+  },
+  "requestorVpcSameAccountF27E91F7": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.1.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default"
+   }
+  },
+  "requestorVpcSameAccountsameAccountPeeringVPCPeeringConnection4E07C8CD": {
+   "Type": "AWS::EC2::VPCPeeringConnection",
+   "Properties": {
+    "PeerOwnerId": "234567890123",
+    "PeerRegion": "us-east-1",
+    "PeerVpcId": {
+     "Fn::GetAtt": [
+      "acceptorVpc5B7D1670",
+      "VpcId"
+     ]
+    },
+    "VpcId": {
+     "Fn::GetAtt": [
+      "requestorVpcSameAccountF27E91F7",
+      "VpcId"
+     ]
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

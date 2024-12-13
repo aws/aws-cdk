@@ -1,9 +1,20 @@
-import * as cxapi from '@aws-cdk/cx-api';
-import * as AWS from 'aws-sdk';
-import * as cdk_assets from 'cdk-assets';
-import { Mode } from '../api/aws-auth/credentials';
-import { ISDK } from '../api/aws-auth/sdk';
-import { SdkProvider } from '../api/aws-auth/sdk-provider';
+import { type Environment, UNKNOWN_ACCOUNT, UNKNOWN_REGION } from '@aws-cdk/cx-api';
+import {
+  type Account,
+  type AssetManifest,
+  AssetPublishing,
+  ClientOptions,
+  EventType,
+  type IAws,
+  type IECRClient,
+  type IPublishProgress,
+  type IPublishProgressListener,
+  type IS3Client,
+  type ISecretsManagerClient,
+} from 'cdk-assets';
+import type { SDK } from '../api';
+import type { SdkProvider } from '../api/aws-auth/sdk-provider';
+import { Mode } from '../api/plugin';
 import { debug, error, print } from '../logging';
 
 export interface PublishAssetsOptions {
@@ -25,29 +36,34 @@ export interface PublishAssetsOptions {
    * @default true To remain backward compatible.
    */
   readonly parallel?: boolean;
+
+  /**
+   * Whether cdk-assets is allowed to do cross account publishing.
+   */
+  readonly allowCrossAccount: boolean;
 }
 
 /**
  * Use cdk-assets to publish all assets in the given manifest.
  */
 export async function publishAssets(
-  manifest: cdk_assets.AssetManifest,
+  manifest: AssetManifest,
   sdk: SdkProvider,
-  targetEnv: cxapi.Environment,
-  options: PublishAssetsOptions = {},
+  targetEnv: Environment,
+  options: PublishAssetsOptions,
 ) {
   // This shouldn't really happen (it's a programming error), but we don't have
   // the types here to guide us. Do an runtime validation to be super super sure.
   if (
     targetEnv.account === undefined ||
-    targetEnv.account === cxapi.UNKNOWN_ACCOUNT ||
+    targetEnv.account === UNKNOWN_ACCOUNT ||
     targetEnv.region === undefined ||
-    targetEnv.account === cxapi.UNKNOWN_REGION
+    targetEnv.account === UNKNOWN_REGION
   ) {
     throw new Error(`Asset publishing requires resolved account and region, got ${JSON.stringify(targetEnv)}`);
   }
 
-  const publisher = new cdk_assets.AssetPublishing(manifest, {
+  const publisher = new AssetPublishing(manifest, {
     aws: new PublishingAws(sdk, targetEnv),
     progressListener: new PublishingProgressListener(options.quiet ?? false),
     throwOnError: false,
@@ -56,7 +72,7 @@ export async function publishAssets(
     publishAssets: true,
     quiet: options.quiet,
   });
-  await publisher.publish();
+  await publisher.publish({ allowCrossAccount: options.allowCrossAccount });
   if (publisher.hasFailures) {
     throw new Error('Failed to publish one or more assets. See the error messages above for more information.');
   }
@@ -80,23 +96,23 @@ export interface BuildAssetsOptions {
  * Use cdk-assets to build all assets in the given manifest.
  */
 export async function buildAssets(
-  manifest: cdk_assets.AssetManifest,
+  manifest: AssetManifest,
   sdk: SdkProvider,
-  targetEnv: cxapi.Environment,
+  targetEnv: Environment,
   options: BuildAssetsOptions = {},
 ) {
   // This shouldn't really happen (it's a programming error), but we don't have
   // the types here to guide us. Do an runtime validation to be super super sure.
   if (
     targetEnv.account === undefined ||
-    targetEnv.account === cxapi.UNKNOWN_ACCOUNT ||
+    targetEnv.account === UNKNOWN_ACCOUNT ||
     targetEnv.region === undefined ||
-    targetEnv.account === cxapi.UNKNOWN_REGION
+    targetEnv.account === UNKNOWN_REGION
   ) {
     throw new Error(`Asset building requires resolved account and region, got ${JSON.stringify(targetEnv)}`);
   }
 
-  const publisher = new cdk_assets.AssetPublishing(manifest, {
+  const publisher = new AssetPublishing(manifest, {
     aws: new PublishingAws(sdk, targetEnv),
     progressListener: new PublishingProgressListener(options.quiet ?? false),
     throwOnError: false,
@@ -110,8 +126,8 @@ export async function buildAssets(
   }
 }
 
-export class PublishingAws implements cdk_assets.IAws {
-  private sdkCache: Map<String, ISDK> = new Map();
+export class PublishingAws implements IAws {
+  private sdkCache: Map<String, SDK> = new Map();
 
   constructor(
     /**
@@ -122,8 +138,8 @@ export class PublishingAws implements cdk_assets.IAws {
     /**
      * Environment where the stack we're deploying is going
      */
-    private readonly targetEnv: cxapi.Environment) {
-  }
+    private readonly targetEnv: Environment,
+  ) {}
 
   public async discoverPartition(): Promise<string> {
     return (await this.aws.baseCredentialsPartition(this.targetEnv, Mode.ForWriting)) ?? 'aws';
@@ -133,34 +149,36 @@ export class PublishingAws implements cdk_assets.IAws {
     return this.targetEnv.region;
   }
 
-  public async discoverCurrentAccount(): Promise<cdk_assets.Account> {
+  public async discoverCurrentAccount(): Promise<Account> {
     const account = await this.aws.defaultAccount();
-    return account ?? {
-      accountId: '<unknown account>',
-      partition: 'aws',
-    };
+    return (
+      account ?? {
+        accountId: '<unknown account>',
+        partition: 'aws',
+      }
+    );
   }
 
-  public async discoverTargetAccount(options: cdk_assets.ClientOptions): Promise<cdk_assets.Account> {
+  public async discoverTargetAccount(options: ClientOptions): Promise<Account> {
     return (await this.sdk(options)).currentAccount();
   }
 
-  public async s3Client(options: cdk_assets.ClientOptions): Promise<AWS.S3> {
+  public async s3Client(options: ClientOptions): Promise<IS3Client> {
     return (await this.sdk(options)).s3();
   }
 
-  public async ecrClient(options: cdk_assets.ClientOptions): Promise<AWS.ECR> {
+  public async ecrClient(options: ClientOptions): Promise<IECRClient> {
     return (await this.sdk(options)).ecr();
   }
 
-  public async secretsManagerClient(options: cdk_assets.ClientOptions): Promise<AWS.SecretsManager> {
+  public async secretsManagerClient(options: ClientOptions): Promise<ISecretsManagerClient> {
     return (await this.sdk(options)).secretsManager();
   }
 
   /**
    * Get an SDK appropriate for the given client options
    */
-  private async sdk(options: cdk_assets.ClientOptions): Promise<ISDK> {
+  private async sdk(options: ClientOptions): Promise<SDK> {
     const env = {
       ...this.targetEnv,
       region: options.region ?? this.targetEnv.region, // Default: same region as the stack
@@ -184,18 +202,25 @@ export class PublishingAws implements cdk_assets.IAws {
       return maybeSdk;
     }
 
-    const sdk = (await this.aws.forEnvironment(env, Mode.ForWriting, {
-      assumeRoleArn: options.assumeRoleArn,
-      assumeRoleExternalId: options.assumeRoleExternalId,
-      assumeRoleAdditionalOptions: options.assumeRoleAdditionalOptions,
-    }, options.quiet)).sdk;
+    const sdk = (
+      await this.aws.forEnvironment(
+        env,
+        Mode.ForWriting,
+        {
+          assumeRoleArn: options.assumeRoleArn,
+          assumeRoleExternalId: options.assumeRoleExternalId,
+          assumeRoleAdditionalOptions: options.assumeRoleAdditionalOptions,
+        },
+        options.quiet,
+      )
+    ).sdk;
     this.sdkCache.set(cacheKey, sdk);
 
     return sdk;
   }
 }
 
-export const EVENT_TO_LOGGER: Record<cdk_assets.EventType, (x: string) => void> = {
+export const EVENT_TO_LOGGER: Record<EventType, (x: string) => void> = {
   build: debug,
   cached: debug,
   check: debug,
@@ -207,11 +232,10 @@ export const EVENT_TO_LOGGER: Record<cdk_assets.EventType, (x: string) => void> 
   upload: debug,
 };
 
-class PublishingProgressListener implements cdk_assets.IPublishProgressListener {
-  constructor(private readonly quiet: boolean) {
-  }
+class PublishingProgressListener implements IPublishProgressListener {
+  constructor(private readonly quiet: boolean) {}
 
-  public onPublishEvent(type: cdk_assets.EventType, event: cdk_assets.IPublishProgress): void {
+  public onPublishEvent(type: EventType, event: IPublishProgress): void {
     const handler = this.quiet && type !== 'fail' ? debug : EVENT_TO_LOGGER[type];
     handler(`[${event.percentComplete}%] ${type}: ${event.message}`);
   }

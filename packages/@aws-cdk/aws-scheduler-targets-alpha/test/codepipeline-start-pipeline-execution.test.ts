@@ -1,4 +1,4 @@
-import { Schedule, ScheduleExpression } from '@aws-cdk/aws-scheduler-alpha';
+import { Group, Schedule, ScheduleExpression } from '@aws-cdk/aws-scheduler-alpha';
 import { App, Duration, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Artifact, Pipeline } from 'aws-cdk-lib/aws-codepipeline';
@@ -28,6 +28,7 @@ describe('codepipeline start execution', () => {
     ],
   };
   const expr = ScheduleExpression.at(new Date(Date.UTC(1991, 2, 24, 0, 0, 0)));
+  const roleId = 'SchedulerRoleForTarget1b3000F5862F75';
 
   beforeEach(() => {
     app = new App({ context: { '@aws-cdk/aws-iam:minimizePolicies': true } });
@@ -36,7 +37,7 @@ describe('codepipeline start execution', () => {
   });
 
   test('creates IAM role and IAM policy for pipeline target in the same account', () => {
-    const codepipelineTarget = new CodePipelineStartPipelineExecution(codepipeline, {});
+    const codepipelineTarget = new CodePipelineStartPipelineExecution(codepipeline);
 
     new Schedule(stack, 'MyScheduleDummy', {
       schedule: expr,
@@ -48,7 +49,7 @@ describe('codepipeline start execution', () => {
       Properties: {
         Target: {
           Arn: pipelineArn,
-          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget1441a743A31888', 'Arn'] },
+          RoleArn: { 'Fn::GetAtt': [roleId, 'Arn'] },
           RetryPolicy: {},
         },
       },
@@ -64,7 +65,7 @@ describe('codepipeline start execution', () => {
           },
         ],
       },
-      Roles: [{ Ref: 'SchedulerRoleForTarget1441a743A31888' }],
+      Roles: [{ Ref: roleId }],
     });
 
     template.hasResourceProperties('AWS::IAM::Role', {
@@ -73,7 +74,23 @@ describe('codepipeline start execution', () => {
         Statement: [
           {
             Effect: 'Allow',
-            Condition: { StringEquals: { 'aws:SourceAccount': '123456789012' } },
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': '123456789012',
+                'aws:SourceArn': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':scheduler:us-east-1:123456789012:schedule-group/default',
+                    ],
+                  ],
+                },
+              },
+            },
             Principal: {
               Service: 'scheduler.amazonaws.com',
             },
@@ -123,8 +140,8 @@ describe('codepipeline start execution', () => {
     });
   });
 
-  test('reuses IAM role and IAM policy for two schedules from the same account', () => {
-    const codepipelineTarget = new CodePipelineStartPipelineExecution(codepipeline, {});
+  test('reuses IAM role and IAM policy for two schedules with the same target from the same account', () => {
+    const codepipelineTarget = new CodePipelineStartPipelineExecution(codepipeline);
 
     new Schedule(stack, 'MyScheduleDummy1', {
       schedule: expr,
@@ -144,7 +161,23 @@ describe('codepipeline start execution', () => {
         Statement: [
           {
             Effect: 'Allow',
-            Condition: { StringEquals: { 'aws:SourceAccount': '123456789012' } },
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': '123456789012',
+                'aws:SourceArn': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':scheduler:us-east-1:123456789012:schedule-group/default',
+                    ],
+                  ],
+                },
+              },
+            },
             Principal: {
               Service: 'scheduler.amazonaws.com',
             },
@@ -164,7 +197,90 @@ describe('codepipeline start execution', () => {
           },
         ],
       },
-      Roles: [{ Ref: 'SchedulerRoleForTarget1441a743A31888' }],
+      Roles: [{ Ref: roleId }],
+    }, 1);
+  });
+
+  test('creates IAM role and IAM policy for two schedules with the same target but different groups', () => {
+    const codepipelineTarget = new CodePipelineStartPipelineExecution(codepipeline);
+    const group = new Group(stack, 'Group', {
+      groupName: 'mygroup',
+    });
+
+    new Schedule(stack, 'MyScheduleDummy1', {
+      schedule: expr,
+      target: codepipelineTarget,
+    });
+
+    new Schedule(stack, 'MyScheduleDummy2', {
+      schedule: expr,
+      target: codepipelineTarget,
+      group,
+    });
+
+    const template = Template.fromStack(stack);
+
+    template.resourcePropertiesCountIs('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Effect: 'Allow',
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': '123456789012',
+                'aws:SourceArn': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':scheduler:us-east-1:123456789012:schedule-group/default',
+                    ],
+                  ],
+                },
+              },
+            },
+            Principal: {
+              Service: 'scheduler.amazonaws.com',
+            },
+            Action: 'sts:AssumeRole',
+          },
+          {
+            Effect: 'Allow',
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': '123456789012',
+                'aws:SourceArn': {
+                  'Fn::GetAtt': [
+                    'GroupC77FDACD',
+                    'Arn',
+                  ],
+                },
+              },
+            },
+            Principal: {
+              Service: 'scheduler.amazonaws.com',
+            },
+            Action: 'sts:AssumeRole',
+          },
+        ],
+      },
+    }, 1);
+
+    template.resourcePropertiesCountIs('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'codepipeline:StartPipelineExecution',
+            Effect: 'Allow',
+            Resource: pipelineArn,
+          },
+        ],
+      },
+      Roles: [{ Ref: roleId }],
     }, 1);
   });
 
@@ -172,7 +288,7 @@ describe('codepipeline start execution', () => {
     const importedPipelineArn = 'arn:aws:codepipeline:us-east-1:123456789012:MyPipeline';
     const importedPipeline = Pipeline.fromPipelineArn(stack, 'ImportedPipeline', importedPipelineArn);
 
-    const codepipelineTarget = new CodePipelineStartPipelineExecution(importedPipeline, {});
+    const codepipelineTarget = new CodePipelineStartPipelineExecution(importedPipeline);
 
     new Schedule(stack, 'MyScheduleDummy', {
       schedule: expr,
@@ -284,46 +400,7 @@ describe('codepipeline start execution', () => {
     });
   });
 
-  test('throws when pipeline is imported from different account', () => {
-    const anotherAccountId = '123456789015';
-    const importedPipeline = Pipeline.fromPipelineArn(stack, 'ImportedPipeline', `arn:aws:states:us-east-1:${anotherAccountId}:Pipeline/MyPipeline`);
-    const codepipelineTarget = new CodePipelineStartPipelineExecution(importedPipeline, {});
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: codepipelineTarget,
-      })).toThrow(/Both the schedule and the pipeline must be in the same account./);
-  });
-
-  test('throws when pipeline is imported from different region', () => {
-    const anotherRegion = 'eu-central-1';
-    const importedPipeline = Pipeline.fromPipelineArn(stack, 'ImportedPipeline', `arn:aws:states:${anotherRegion}:123456789012:Pipeline/MyPipeline`);
-    const codepipelineTarget = new CodePipelineStartPipelineExecution(importedPipeline, {});
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: codepipelineTarget,
-      })).toThrow(/Both the schedule and the pipeline must be in the same region/);
-  });
-
-  test('throws when IAM role is imported from different account', () => {
-    const anotherAccountId = '123456789015';
-    const importedRole = Role.fromRoleArn(stack, 'ImportedRole', `arn:aws:iam::${anotherAccountId}:role/someRole`);
-
-    const codepipelineTarget = new CodePipelineStartPipelineExecution(codepipeline, {
-      role: importedRole,
-    });
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: codepipelineTarget,
-      })).toThrow(/Both the target and the execution role must be in the same account/);
-  });
-
-  test('adds permissions to DLQ', () => {
+  test('adds permissions to execution role for sending messages to DLQ', () => {
     const dlq = new sqs.Queue(stack, 'DummyDeadLetterQueue');
 
     const codepipelineTarget = new CodePipelineStartPipelineExecution(codepipeline, {
@@ -335,14 +412,16 @@ describe('codepipeline start execution', () => {
       target: codepipelineTarget,
     });
 
-    Template.fromStack(stack).hasResourceProperties('AWS::SQS::QueuePolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
+            Action: 'codepipeline:StartPipelineExecution',
+            Effect: 'Allow',
+            Resource: pipelineArn,
+          },
+          {
             Action: 'sqs:SendMessage',
-            Principal: {
-              Service: 'scheduler.amazonaws.com',
-            },
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': ['DummyDeadLetterQueueCEBF3463', 'Arn'],
@@ -350,34 +429,11 @@ describe('codepipeline start execution', () => {
           },
         ],
       },
-      Queues: [
-        {
-          Ref: 'DummyDeadLetterQueueCEBF3463',
-        },
-      ],
+      Roles: [{ Ref: roleId }],
     });
   });
 
-  test('throws when adding permissions to DLQ from a different region', () => {
-    const stack2 = new Stack(app, 'Stack2', {
-      env: {
-        region: 'eu-west-2',
-      },
-    });
-    const queue = new sqs.Queue(stack2, 'DummyDeadLetterQueue');
-
-    const codepipelineTarget = new CodePipelineStartPipelineExecution(codepipeline, {
-      deadLetterQueue: queue,
-    });
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: codepipelineTarget,
-      })).toThrow(/Both the queue and the schedule must be in the same region./);
-  });
-
-  test('does not create a queue policy when DLQ is imported', () => {
+  test('adds permission to execution role when imported DLQ is in same account', () => {
     const importedQueue = sqs.Queue.fromQueueArn(stack, 'ImportedQueue', 'arn:aws:sqs:us-east-1:123456789012:queue1');
 
     const codepipelineTarget = new CodePipelineStartPipelineExecution(codepipeline, {
@@ -389,31 +445,23 @@ describe('codepipeline start execution', () => {
       target: codepipelineTarget,
     });
 
-    Template.fromStack(stack).resourceCountIs('AWS::SQS::QueuePolicy', 0);
-  });
-
-  test('does not create a queue policy when DLQ is created in a different account', () => {
-    const stack2 = new Stack(app, 'Stack2', {
-      env: {
-        region: 'us-east-1',
-        account: '234567890123',
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'codepipeline:StartPipelineExecution',
+            Effect: 'Allow',
+            Resource: pipelineArn,
+          },
+          {
+            Action: 'sqs:SendMessage',
+            Effect: 'Allow',
+            Resource: importedQueue.queueArn,
+          },
+        ],
       },
+      Roles: [{ Ref: roleId }],
     });
-
-    const queue = new sqs.Queue(stack2, 'DummyDeadLetterQueue', {
-      queueName: 'DummyDeadLetterQueue',
-    });
-
-    const codepipelineTarget = new CodePipelineStartPipelineExecution(codepipeline, {
-      deadLetterQueue: queue,
-    });
-
-    new Schedule(stack, 'MyScheduleDummy', {
-      schedule: expr,
-      target: codepipelineTarget,
-    });
-
-    Template.fromStack(stack).resourceCountIs('AWS::SQS::QueuePolicy', 0);
   });
 
   test('renders expected retry policy', () => {
@@ -431,7 +479,7 @@ describe('codepipeline start execution', () => {
       Properties: {
         Target: {
           Arn: pipelineArn,
-          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget1441a743A31888', 'Arn'] },
+          RoleArn: { 'Fn::GetAtt': [roleId, 'Arn'] },
           RetryPolicy: {
             MaximumEventAgeInSeconds: 10800,
             MaximumRetryAttempts: 5,
@@ -453,16 +501,16 @@ describe('codepipeline start execution', () => {
       })).toThrow(/Maximum event age is 1 day/);
   });
 
-  test('throws when retry policy max age is less than 15 minutes', () => {
+  test('throws when retry policy max age is less than 1 minute', () => {
     const codepipelineTarget = new CodePipelineStartPipelineExecution(codepipeline, {
-      maxEventAge: Duration.minutes(5),
+      maxEventAge: Duration.seconds(59),
     });
 
     expect(() =>
       new Schedule(stack, 'MyScheduleDummy', {
         schedule: expr,
         target: codepipelineTarget,
-      })).toThrow(/Minimum event age is 15 minutes/);
+      })).toThrow(/Minimum event age is 1 minute/);
   });
 
   test('throws when retry policy max retry attempts is out of the allowed limits', () => {

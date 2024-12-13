@@ -4,10 +4,441 @@
     "id": "App",
     "path": "",
     "children": {
+      "aws-cdk-schedule-lambda": {
+        "id": "aws-cdk-schedule-lambda",
+        "path": "aws-cdk-schedule-lambda",
+        "children": {
+          "MyLambda": {
+            "id": "MyLambda",
+            "path": "aws-cdk-schedule-lambda/MyLambda",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "aws-cdk-schedule-lambda/MyLambda/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "aws-cdk-schedule-lambda/MyLambda/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-schedule-lambda/MyLambda/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-cdk-schedule-lambda/MyLambda/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-schedule-lambda/MyLambda/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "lambda:TagResource",
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
+                            "roles": [
+                              {
+                                "Ref": "MyLambdaServiceRole4539ECB6"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "aws-cdk-schedule-lambda/MyLambda/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "aws-cdk-schedule-lambda/MyLambda/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "aws-cdk-schedule-lambda/MyLambda/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-schedule-lambda/MyLambda/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "67412d7336becb4f3cc171ba3cf4ad59c7a45c7f2371ad1745ff38de715411f2.zip"
+                    },
+                    "environment": {
+                      "variables": {
+                        "FUNC_ARN": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "arn:",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              ":lambda:",
+                              {
+                                "Ref": "AWS::Region"
+                              },
+                              ":",
+                              {
+                                "Ref": "AWS::AccountId"
+                              },
+                              ":function:FirstSelfTaggingLambda"
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "functionName": "FirstSelfTaggingLambda",
+                    "handler": "index.handler",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "MyLambdaServiceRole4539ECB6",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "nodejs18.x",
+                    "timeout": 30
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-schedule-lambda/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-schedule-lambda/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
       "aws-cdk-schedule": {
         "id": "aws-cdk-schedule",
         "path": "aws-cdk-schedule",
         "children": {
+          "importedFromFirstStack": {
+            "id": "importedFromFirstStack",
+            "path": "aws-cdk-schedule/importedFromFirstStack",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.FunctionBase",
+              "version": "0.0.0"
+            }
+          },
+          "ScheduleWithImportedLambda": {
+            "id": "ScheduleWithImportedLambda",
+            "path": "aws-cdk-schedule/ScheduleWithImportedLambda",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-schedule/ScheduleWithImportedLambda/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Scheduler::Schedule",
+                  "aws:cdk:cloudformation:props": {
+                    "flexibleTimeWindow": {
+                      "mode": "OFF"
+                    },
+                    "scheduleExpression": "rate(1 minute)",
+                    "scheduleExpressionTimezone": "Etc/UTC",
+                    "state": "ENABLED",
+                    "target": {
+                      "arn": {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":lambda:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":",
+                            {
+                              "Ref": "AWS::AccountId"
+                            },
+                            ":function:FirstSelfTaggingLambda"
+                          ]
+                        ]
+                      },
+                      "roleArn": {
+                        "Fn::GetAtt": [
+                          "SchedulerRoleForTargeted282bDF60C6B6",
+                          "Arn"
+                        ]
+                      },
+                      "input": "{\"tagValue\":\"importedLambdaTagValue\"}",
+                      "retryPolicy": {
+                        "maximumEventAgeInSeconds": 86400,
+                        "maximumRetryAttempts": 185
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_scheduler.CfnSchedule",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-scheduler-alpha.Schedule",
+              "version": "0.0.0"
+            }
+          },
+          "SchedulerRoleForTarget-ed282b": {
+            "id": "SchedulerRoleForTarget-ed282b",
+            "path": "aws-cdk-schedule/SchedulerRoleForTarget-ed282b",
+            "children": {
+              "ImportSchedulerRoleForTarget-ed282b": {
+                "id": "ImportSchedulerRoleForTarget-ed282b",
+                "path": "aws-cdk-schedule/SchedulerRoleForTarget-ed282b/ImportSchedulerRoleForTarget-ed282b",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-schedule/SchedulerRoleForTarget-ed282b/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Condition": {
+                            "StringEquals": {
+                              "aws:SourceAccount": {
+                                "Ref": "AWS::AccountId"
+                              },
+                              "aws:SourceArn": {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":scheduler:",
+                                    {
+                                      "Ref": "AWS::Region"
+                                    },
+                                    ":",
+                                    {
+                                      "Ref": "AWS::AccountId"
+                                    },
+                                    ":schedule-group/default"
+                                  ]
+                                ]
+                              }
+                            }
+                          },
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "scheduler.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "aws-cdk-schedule/SchedulerRoleForTarget-ed282b/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-schedule/SchedulerRoleForTarget-ed282b/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "lambda:InvokeFunction",
+                              "Effect": "Allow",
+                              "Resource": [
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":lambda:",
+                                      {
+                                        "Ref": "AWS::Region"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      ":function:FirstSelfTaggingLambda"
+                                    ]
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":lambda:",
+                                      {
+                                        "Ref": "AWS::Region"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      ":function:FirstSelfTaggingLambda:*"
+                                    ]
+                                  ]
+                                }
+                              ]
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "SchedulerRoleForTargeted282bDefaultPolicyC5F8D00B",
+                        "roles": [
+                          {
+                            "Ref": "SchedulerRoleForTargeted282bDF60C6B6"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Policy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "0.0.0"
+            }
+          },
           "MyLambda": {
             "id": "MyLambda",
             "path": "aws-cdk-schedule/MyLambda",
@@ -144,7 +575,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "7f6fc8a416807b6be0ca2397479cd45d43dfe989a95bc81708f269e993296d34.zip"
+                      "s3Key": "67412d7336becb4f3cc171ba3cf4ad59c7a45c7f2371ad1745ff38de715411f2.zip"
                     },
                     "environment": {
                       "variables": {
@@ -164,13 +595,13 @@
                               {
                                 "Ref": "AWS::AccountId"
                               },
-                              ":function:TestSchedulerLambdaInvokeTarget"
+                              ":function:SecondSelfTaggingLambda"
                             ]
                           ]
                         }
                       }
                     },
-                    "functionName": "TestSchedulerLambdaInvokeTarget",
+                    "functionName": "SecondSelfTaggingLambda",
                     "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
@@ -193,13 +624,13 @@
               "version": "0.0.0"
             }
           },
-          "Schedule": {
-            "id": "Schedule",
-            "path": "aws-cdk-schedule/Schedule",
+          "ScheduleWithSameStackLambda": {
+            "id": "ScheduleWithSameStackLambda",
+            "path": "aws-cdk-schedule/ScheduleWithSameStackLambda",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-schedule/Schedule/Resource",
+                "path": "aws-cdk-schedule/ScheduleWithSameStackLambda/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Scheduler::Schedule",
                   "aws:cdk:cloudformation:props": {
@@ -218,11 +649,11 @@
                       },
                       "roleArn": {
                         "Fn::GetAtt": [
-                          "SchedulerRoleForTarget1441a743A31888",
+                          "SchedulerRoleForTarget637b5173FB8068",
                           "Arn"
                         ]
                       },
-                      "input": "\"test\"",
+                      "input": "{\"tagValue\":\"sameStackLambdaTagValue\"}",
                       "retryPolicy": {
                         "maximumEventAgeInSeconds": 86400,
                         "maximumRetryAttempts": 185
@@ -241,13 +672,13 @@
               "version": "0.0.0"
             }
           },
-          "SchedulerRoleForTarget-1441a7": {
-            "id": "SchedulerRoleForTarget-1441a7",
-            "path": "aws-cdk-schedule/SchedulerRoleForTarget-1441a7",
+          "SchedulerRoleForTarget-637b51": {
+            "id": "SchedulerRoleForTarget-637b51",
+            "path": "aws-cdk-schedule/SchedulerRoleForTarget-637b51",
             "children": {
-              "ImportSchedulerRoleForTarget-1441a7": {
-                "id": "ImportSchedulerRoleForTarget-1441a7",
-                "path": "aws-cdk-schedule/SchedulerRoleForTarget-1441a7/ImportSchedulerRoleForTarget-1441a7",
+              "ImportSchedulerRoleForTarget-637b51": {
+                "id": "ImportSchedulerRoleForTarget-637b51",
+                "path": "aws-cdk-schedule/SchedulerRoleForTarget-637b51/ImportSchedulerRoleForTarget-637b51",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
@@ -255,7 +686,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-schedule/SchedulerRoleForTarget-1441a7/Resource",
+                "path": "aws-cdk-schedule/SchedulerRoleForTarget-637b51/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                   "aws:cdk:cloudformation:props": {
@@ -267,6 +698,26 @@
                             "StringEquals": {
                               "aws:SourceAccount": {
                                 "Ref": "AWS::AccountId"
+                              },
+                              "aws:SourceArn": {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":scheduler:",
+                                    {
+                                      "Ref": "AWS::Region"
+                                    },
+                                    ":",
+                                    {
+                                      "Ref": "AWS::AccountId"
+                                    },
+                                    ":schedule-group/default"
+                                  ]
+                                ]
                               }
                             }
                           },
@@ -287,11 +738,11 @@
               },
               "DefaultPolicy": {
                 "id": "DefaultPolicy",
-                "path": "aws-cdk-schedule/SchedulerRoleForTarget-1441a7/DefaultPolicy",
+                "path": "aws-cdk-schedule/SchedulerRoleForTarget-637b51/DefaultPolicy",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-schedule/SchedulerRoleForTarget-1441a7/DefaultPolicy/Resource",
+                    "path": "aws-cdk-schedule/SchedulerRoleForTarget-637b51/DefaultPolicy/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                       "aws:cdk:cloudformation:props": {
@@ -326,10 +777,10 @@
                           ],
                           "Version": "2012-10-17"
                         },
-                        "policyName": "SchedulerRoleForTarget1441a7DefaultPolicy885B6BFD",
+                        "policyName": "SchedulerRoleForTarget637b51DefaultPolicyBAF35E02",
                         "roles": [
                           {
-                            "Ref": "SchedulerRoleForTarget1441a743A31888"
+                            "Ref": "SchedulerRoleForTarget637b5173FB8068"
                           }
                         ]
                       }
@@ -351,13 +802,13 @@
               "version": "0.0.0"
             }
           },
-          "Schedule2": {
-            "id": "Schedule2",
-            "path": "aws-cdk-schedule/Schedule2",
+          "ScheduleWithStaticDate": {
+            "id": "ScheduleWithStaticDate",
+            "path": "aws-cdk-schedule/ScheduleWithStaticDate",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-schedule/Schedule2/Resource",
+                "path": "aws-cdk-schedule/ScheduleWithStaticDate/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Scheduler::Schedule",
                   "aws:cdk:cloudformation:props": {
@@ -376,13 +827,13 @@
                       },
                       "roleArn": {
                         "Fn::GetAtt": [
-                          "SchedulerRoleForTarget1441a743A31888",
+                          "SchedulerRoleForTarget637b5173FB8068",
                           "Arn"
                         ]
                       },
                       "retryPolicy": {
-                        "maximumEventAgeInSeconds": 86400,
-                        "maximumRetryAttempts": 0
+                        "maximumEventAgeInSeconds": 60,
+                        "maximumRetryAttempts": 1
                       }
                     }
                   }
@@ -396,24 +847,6 @@
             "constructInfo": {
               "fqn": "@aws-cdk/aws-scheduler-alpha.Schedule",
               "version": "0.0.0"
-            }
-          },
-          "Exports": {
-            "id": "Exports",
-            "path": "aws-cdk-schedule/Exports",
-            "children": {
-              "Output{\"Fn::GetAtt\":[\"MyLambdaCCE802FB\",\"Arn\"]}": {
-                "id": "Output{\"Fn::GetAtt\":[\"MyLambdaCCE802FB\",\"Arn\"]}",
-                "path": "aws-cdk-schedule/Exports/Output{\"Fn::GetAtt\":[\"MyLambdaCCE802FB\",\"Arn\"]}",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnOutput",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
             }
           },
           "BootstrapVersion": {
@@ -451,27 +884,27 @@
                 "path": "integtest-lambda-invoke/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
                 "path": "integtest-lambda-invoke/DefaultTest/DeployAssert",
                 "children": {
-                  "AwsApiCallLambdalistTags945cd5006c8a66eb7345b9b56ea54068": {
-                    "id": "AwsApiCallLambdalistTags945cd5006c8a66eb7345b9b56ea54068",
-                    "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTags945cd5006c8a66eb7345b9b56ea54068",
+                  "AwsApiCallLambdalistTagsfa577ce284ecabe6c15ac48d4f4b77f5": {
+                    "id": "AwsApiCallLambdalistTagsfa577ce284ecabe6c15ac48d4f4b77f5",
+                    "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTagsfa577ce284ecabe6c15ac48d4f4b77f5",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTags945cd5006c8a66eb7345b9b56ea54068/SdkProvider",
+                        "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTagsfa577ce284ecabe6c15ac48d4f4b77f5/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTags945cd5006c8a66eb7345b9b56ea54068/SdkProvider/AssertionsProvider",
+                            "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTagsfa577ce284ecabe6c15ac48d4f4b77f5/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -482,11 +915,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTags945cd5006c8a66eb7345b9b56ea54068/Default",
+                        "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTagsfa577ce284ecabe6c15ac48d4f4b77f5/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTags945cd5006c8a66eb7345b9b56ea54068/Default/Default",
+                            "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTagsfa577ce284ecabe6c15ac48d4f4b77f5/Default/Default",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -500,23 +933,23 @@
                       },
                       "WaitFor": {
                         "id": "WaitFor",
-                        "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTags945cd5006c8a66eb7345b9b56ea54068/WaitFor",
+                        "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTagsfa577ce284ecabe6c15ac48d4f4b77f5/WaitFor",
                         "children": {
                           "IsCompleteProvider": {
                             "id": "IsCompleteProvider",
-                            "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTags945cd5006c8a66eb7345b9b56ea54068/WaitFor/IsCompleteProvider",
+                            "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTagsfa577ce284ecabe6c15ac48d4f4b77f5/WaitFor/IsCompleteProvider",
                             "children": {
                               "AssertionsProvider": {
                                 "id": "AssertionsProvider",
-                                "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTags945cd5006c8a66eb7345b9b56ea54068/WaitFor/IsCompleteProvider/AssertionsProvider",
+                                "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTagsfa577ce284ecabe6c15ac48d4f4b77f5/WaitFor/IsCompleteProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.3.0"
+                                  "version": "10.4.2"
                                 }
                               },
                               "Invoke": {
                                 "id": "Invoke",
-                                "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTags945cd5006c8a66eb7345b9b56ea54068/WaitFor/IsCompleteProvider/Invoke",
+                                "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTagsfa577ce284ecabe6c15ac48d4f4b77f5/WaitFor/IsCompleteProvider/Invoke",
                                 "constructInfo": {
                                   "fqn": "aws-cdk-lib.CfnResource",
                                   "version": "0.0.0"
@@ -530,19 +963,19 @@
                           },
                           "TimeoutProvider": {
                             "id": "TimeoutProvider",
-                            "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTags945cd5006c8a66eb7345b9b56ea54068/WaitFor/TimeoutProvider",
+                            "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTagsfa577ce284ecabe6c15ac48d4f4b77f5/WaitFor/TimeoutProvider",
                             "children": {
                               "AssertionsProvider": {
                                 "id": "AssertionsProvider",
-                                "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTags945cd5006c8a66eb7345b9b56ea54068/WaitFor/TimeoutProvider/AssertionsProvider",
+                                "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTagsfa577ce284ecabe6c15ac48d4f4b77f5/WaitFor/TimeoutProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.3.0"
+                                  "version": "10.4.2"
                                 }
                               },
                               "Invoke": {
                                 "id": "Invoke",
-                                "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTags945cd5006c8a66eb7345b9b56ea54068/WaitFor/TimeoutProvider/Invoke",
+                                "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTagsfa577ce284ecabe6c15ac48d4f4b77f5/WaitFor/TimeoutProvider/Invoke",
                                 "constructInfo": {
                                   "fqn": "aws-cdk-lib.CfnResource",
                                   "version": "0.0.0"
@@ -556,7 +989,7 @@
                           },
                           "Role": {
                             "id": "Role",
-                            "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTags945cd5006c8a66eb7345b9b56ea54068/WaitFor/Role",
+                            "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTagsfa577ce284ecabe6c15ac48d4f4b77f5/WaitFor/Role",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -564,7 +997,7 @@
                           },
                           "Resource": {
                             "id": "Resource",
-                            "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTags945cd5006c8a66eb7345b9b56ea54068/WaitFor/Resource",
+                            "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTagsfa577ce284ecabe6c15ac48d4f4b77f5/WaitFor/Resource",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -578,7 +1011,7 @@
                       },
                       "AssertionResults": {
                         "id": "AssertionResults",
-                        "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTags945cd5006c8a66eb7345b9b56ea54068/AssertionResults",
+                        "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTagsfa577ce284ecabe6c15ac48d4f4b77f5/AssertionResults",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnOutput",
                           "version": "0.0.0"
@@ -621,7 +1054,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "LatestNodeRuntimeMap": {
@@ -663,7 +1096,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a": {
@@ -697,7 +1130,139 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
+                    }
+                  },
+                  "AwsApiCallLambdalistTagsc9aff8891471a47d011153d8741b2276": {
+                    "id": "AwsApiCallLambdalistTagsc9aff8891471a47d011153d8741b2276",
+                    "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTagsc9aff8891471a47d011153d8741b2276",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTagsc9aff8891471a47d011153d8741b2276/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTagsc9aff8891471a47d011153d8741b2276/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTagsc9aff8891471a47d011153d8741b2276/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTagsc9aff8891471a47d011153d8741b2276/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "WaitFor": {
+                        "id": "WaitFor",
+                        "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTagsc9aff8891471a47d011153d8741b2276/WaitFor",
+                        "children": {
+                          "IsCompleteProvider": {
+                            "id": "IsCompleteProvider",
+                            "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTagsc9aff8891471a47d011153d8741b2276/WaitFor/IsCompleteProvider",
+                            "children": {
+                              "AssertionsProvider": {
+                                "id": "AssertionsProvider",
+                                "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTagsc9aff8891471a47d011153d8741b2276/WaitFor/IsCompleteProvider/AssertionsProvider",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.4.2"
+                                }
+                              },
+                              "Invoke": {
+                                "id": "Invoke",
+                                "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTagsc9aff8891471a47d011153d8741b2276/WaitFor/IsCompleteProvider/Invoke",
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.CfnResource",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "TimeoutProvider": {
+                            "id": "TimeoutProvider",
+                            "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTagsc9aff8891471a47d011153d8741b2276/WaitFor/TimeoutProvider",
+                            "children": {
+                              "AssertionsProvider": {
+                                "id": "AssertionsProvider",
+                                "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTagsc9aff8891471a47d011153d8741b2276/WaitFor/TimeoutProvider/AssertionsProvider",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.4.2"
+                                }
+                              },
+                              "Invoke": {
+                                "id": "Invoke",
+                                "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTagsc9aff8891471a47d011153d8741b2276/WaitFor/TimeoutProvider/Invoke",
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.CfnResource",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "Role": {
+                            "id": "Role",
+                            "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTagsc9aff8891471a47d011153d8741b2276/WaitFor/Role",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTagsc9aff8891471a47d011153d8741b2276/WaitFor/Resource",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.WaiterStateMachine",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "integtest-lambda-invoke/DefaultTest/DeployAssert/AwsApiCallLambdalistTagsc9aff8891471a47d011153d8741b2276/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
                     }
                   },
                   "BootstrapVersion": {
@@ -739,7 +1304,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },

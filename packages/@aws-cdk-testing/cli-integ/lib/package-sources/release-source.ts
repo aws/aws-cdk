@@ -60,6 +60,10 @@ export class ReleasePackageSource implements IPackageSource {
     return this.version.split('.')[0] as string;
   }
 
+  public requestedCliVersion() {
+    return this.version;
+  }
+
   public requestedFrameworkVersion() {
     return process.env.FRAMEWORK_VERSION!;
   }
