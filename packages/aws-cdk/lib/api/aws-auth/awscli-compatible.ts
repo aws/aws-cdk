@@ -4,6 +4,8 @@ import type { NodeHttpHandlerOptions } from '@smithy/node-http-handler';
 import { loadSharedConfigFiles } from '@smithy/shared-ini-file-loader';
 import { AwsCredentialIdentityProvider, Logger } from '@smithy/types';
 import * as promptly from 'promptly';
+import { ProxyAgent } from 'proxy-agent';
+import { makeCachingProvider } from './provider-caching';
 import type { SdkHttpOptions } from './sdk-provider';
 import { readIfPossible } from './util';
 import { debug } from '../../logging';
@@ -22,10 +24,18 @@ const DEFAULT_TIMEOUT = 300000;
 export class AwsCliCompatible {
   /**
    * Build an AWS CLI-compatible credential chain provider
+   *
+   * The credential chain returned by this function is always caching.
    */
   public static async credentialChainBuilder(
     options: CredentialChainOptions = {},
   ): Promise<AwsCredentialIdentityProvider> {
+    const clientConfig = {
+      requestHandler: AwsCliCompatible.requestHandlerBuilder(options.httpOptions),
+      customUserAgent: 'aws-cdk',
+      logger: options.logger,
+      region: await this.region(options.profile),
+    };
     /**
      * The previous implementation matched AWS CLI behavior:
      *
@@ -36,20 +46,16 @@ export class AwsCliCompatible {
      * environment credentials still take precedence over AWS_PROFILE
      */
     if (options.profile) {
-      return fromIni({
+      return makeCachingProvider(fromIni({
         profile: options.profile,
         ignoreCache: true,
         mfaCodeProvider: tokenCodeFn,
-        clientConfig: {
-          requestHandler: AwsCliCompatible.requestHandlerBuilder(options.httpOptions),
-          customUserAgent: 'aws-cdk',
-          logger: options.logger,
-        },
+        clientConfig,
         logger: options.logger,
-      });
+      }));
     }
 
-    const profile = options.profile || process.env.AWS_PROFILE || process.env.AWS_DEFAULT_PROFILE;
+    const envProfile = process.env.AWS_PROFILE || process.env.AWS_DEFAULT_PROFILE;
 
     /**
      * Env AWS - EnvironmentCredentials with string AWS
@@ -71,15 +77,14 @@ export class AwsCliCompatible {
      * fromContainerMetadata()
      * fromTokenFile()
      * fromInstanceMetadata()
+     *
+     * The NodeProviderChain is already cached.
      */
     const nodeProviderChain = fromNodeProviderChain({
-      profile: profile,
-      clientConfig: {
-        requestHandler: AwsCliCompatible.requestHandlerBuilder(options.httpOptions),
-        customUserAgent: 'aws-cdk',
-        logger: options.logger,
-      },
+      profile: envProfile,
+      clientConfig,
       logger: options.logger,
+      mfaCodeProvider: tokenCodeFn,
       ignoreCache: true,
     });
 
@@ -89,18 +94,23 @@ export class AwsCliCompatible {
   }
 
   public static requestHandlerBuilder(options: SdkHttpOptions = {}): NodeHttpHandlerOptions {
-    const config: NodeHttpHandlerOptions = {
+    // Force it to use the proxy provided through the command line.
+    // Otherwise, let the ProxyAgent auto-detect the proxy using environment variables.
+    const getProxyForUrl = options.proxyAddress != null
+      ? () => Promise.resolve(options.proxyAddress!)
+      : undefined;
+
+    const agent = new ProxyAgent({
+      ca: tryGetCACert(options.caBundlePath),
+      getProxyForUrl: getProxyForUrl,
+    });
+
+    return {
       connectionTimeout: DEFAULT_CONNECTION_TIMEOUT,
       requestTimeout: DEFAULT_TIMEOUT,
-      httpsAgent: {
-        ca: tryGetCACert(options.caBundlePath),
-        localAddress: options.proxyAddress,
-      },
-      httpAgent: {
-        localAddress: options.proxyAddress,
-      },
+      httpsAgent: agent,
+      httpAgent: agent,
     };
-    return config;
   }
 
   /**
@@ -173,7 +183,7 @@ function getRegionFromIniFile(profile: string, data?: any) {
 function tryGetCACert(bundlePath?: string) {
   const path = bundlePath || caBundlePathFromEnvironment();
   if (path) {
-    debug('Using CA bundle path: %s', bundlePath);
+    debug('Using CA bundle path: %s', path);
     return readIfPossible(path);
   }
   return undefined;

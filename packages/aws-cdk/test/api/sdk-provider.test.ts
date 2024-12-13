@@ -5,7 +5,7 @@ import { AssumeRoleCommand, GetCallerIdentityCommand } from '@aws-sdk/client-sts
 import * as promptly from 'promptly';
 import * as uuid from 'uuid';
 import { FakeSts, RegisterRoleOptions, RegisterUserOptions } from './fake-sts';
-import { ConfigurationOptions, SDK, SdkProvider } from '../../lib/api/aws-auth';
+import { ConfigurationOptions, CredentialsOptions, SDK, SdkProvider } from '../../lib/api/aws-auth';
 import { AwsCliCompatible } from '../../lib/api/aws-auth/awscli-compatible';
 import { defaultCliUserAgent } from '../../lib/api/aws-auth/user-agent';
 import { Mode, PluginHost } from '../../lib/api/plugin';
@@ -27,12 +27,8 @@ jest.mock('@aws-sdk/ec2-metadata-service', () => {
   };
 });
 
-jest.mock('promptly', () => ({
-  prompt: jest.fn().mockResolvedValue('1234'),
-}));
-
 let uid: string;
-let pluginQueried = false;
+let pluginQueried: boolean;
 
 beforeEach(() => {
   // Cache busters!
@@ -41,6 +37,7 @@ beforeEach(() => {
   // - We have a cache from account# -> credentials
   // - We have a cache from access key -> account
   uid = `(${uuid.v4()})`;
+  pluginQueried = false;
 
   logging.setLogLevel(logging.LogLevel.TRACE);
 
@@ -68,6 +65,7 @@ beforeEach(() => {
   process.env.AWS_CONFIG_FILE = '/dev/null';
   process.env.AWS_SHARED_CREDENTIALS_FILE = '/dev/null';
 
+  jest.clearAllMocks();
   restoreSdkMocksToDefault();
 });
 
@@ -128,14 +126,14 @@ describe('with intercepted network calls', () => {
 
       // Ask for a different region
       const sdk = (await provider.forEnvironment({ ...env(account), region: 'rgn' }, Mode.ForReading)).sdk;
-      expect(sdkConfig(sdk).credentials!.accessKeyId).toEqual(uniq('access'));
+      expect((await sdkConfig(sdk).credentials()).accessKeyId).toEqual(uniq('access'));
       expect(sdk.currentRegion).toEqual('rgn');
     });
 
     test('throws if no credentials could be found', async () => {
       const account = uniq('11111');
       const provider = await providerFromProfile(undefined);
-      await expect((provider.forEnvironment({ ...env(account), region: 'rgn' }, Mode.ForReading)))
+      await expect(exerciseCredentials(provider, { ...env(account), region: 'rgn' }))
         .rejects
         .toThrow(/Need to perform AWS calls for account .*, but no credentials have been configured, and none of these plugins found any/);
     });
@@ -162,7 +160,7 @@ describe('with intercepted network calls', () => {
       });
       const provider = await providerFromProfile('boo');
 
-      await expect(provider.forEnvironment(env(uniq('some_account_#')), Mode.ForReading)).rejects.toThrow(
+      await expect(exerciseCredentials(provider, env(uniq('some_account_#')))).rejects.toThrow(
         'Need to perform AWS calls',
       );
     });
@@ -187,7 +185,7 @@ describe('with intercepted network calls', () => {
           Mode.ForReading,
         )
       ).sdk;
-      expect(sdkConfig(sdk).credentials!.accessKeyId).toEqual(uniq('access'));
+      expect((await sdkConfig(sdk).credentials()).accessKeyId).toEqual(uniq('access'));
       expect((await sdk.currentAccount()).accountId).toEqual(uniq('11111'));
       expect(sdk.currentRegion).toEqual('eu-bla-5');
     });
@@ -228,7 +226,7 @@ describe('with intercepted network calls', () => {
       await expect(provider.defaultAccount()).resolves.toEqual({ accountId: uniq('22222'), partition: 'aws' });
 
       const sdk = (await provider.forEnvironment(env(uniq('22222')), Mode.ForReading)).sdk;
-      expect(sdkConfig(sdk).credentials!.accessKeyId).toEqual(uniq('fooccess'));
+      expect((await sdkConfig(sdk).credentials()).accessKeyId).toEqual(uniq('fooccess'));
     });
 
     test('supports profile only in config_file', async () => {
@@ -247,7 +245,7 @@ describe('with intercepted network calls', () => {
       await expect(provider.defaultAccount()).resolves.toEqual({ accountId: uniq('22222'), partition: 'aws' });
 
       const sdk = (await provider.forEnvironment(env(uniq('22222')), Mode.ForReading)).sdk;
-      expect(sdkConfig(sdk).credentials!.accessKeyId).toEqual(uniq('fooccess'));
+      expect((await sdkConfig(sdk).credentials()).accessKeyId).toEqual(uniq('fooccess'));
     });
 
     test('can assume-role configured in config', async () => {
@@ -304,6 +302,8 @@ describe('with intercepted network calls', () => {
 
     test('mfa_serial in profile will ask user for token', async () => {
       // GIVEN
+      const mockPrompt = jest.spyOn(promptly, 'prompt').mockResolvedValue('1234');
+
       prepareCreds({
         fakeSts,
         credentials: {
@@ -322,8 +322,6 @@ describe('with intercepted network calls', () => {
       });
       const provider = await providerFromProfile('mfa-role');
 
-      const promptlyMockCalls = (promptly.prompt as jest.Mock).mock.calls.length;
-
       // THEN
       const sdk = (await provider.forEnvironment(env(uniq('66666')), Mode.ForReading)).sdk;
       expect((await sdk.currentAccount()).accountId).toEqual(uniq('66666'));
@@ -334,9 +332,9 @@ describe('with intercepted network calls', () => {
         RoleSessionName: expect.anything(),
       });
 
-      // Mock response was set to fail to make sure we don't call STS
-      // Make sure the MFA mock was called during this test
-      expect((promptly.prompt as jest.Mock).mock.calls.length).toBe(promptlyMockCalls + 1);
+      // Make sure the MFA mock was called during this test, only once
+      // (Credentials need to remain cached)
+      expect(mockPrompt).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -359,7 +357,7 @@ describe('with intercepted network calls', () => {
       const provider = await providerFromProfile(undefined);
 
       // WHEN
-      const promise = provider.forEnvironment(env(uniq('88888')), Mode.ForReading, {
+      const promise = exerciseCredentials(provider, env(uniq('88888')), Mode.ForReading, {
         assumeRoleArn: 'doesnotexist.role.arn',
       });
 
@@ -451,10 +449,7 @@ describe('with intercepted network calls', () => {
         // WHEN
         const provider = await providerFromProfile(undefined);
 
-        const sdk = (
-          await provider.forEnvironment(env(uniq('88888')), Mode.ForReading, { assumeRoleArn: 'arn:aws:role' })
-        ).sdk as SDK;
-        await sdk.currentAccount();
+        await exerciseCredentials(provider, env(uniq('88888')), Mode.ForReading, { assumeRoleArn: 'arn:aws:role' });
 
         // THEN
         expect(mockSTSClient).toHaveReceivedCommandWith(AssumeRoleCommand, {
@@ -516,9 +511,8 @@ describe('with intercepted network calls', () => {
       const provider = await providerFromProfile(undefined);
 
       // WHEN - assumeRole fails with a specific error
-      await expect(async () => {
-        await provider.forEnvironment(env(uniq('88888')), Mode.ForReading, { assumeRoleArn: '<FAIL:ExpiredToken>' });
-      }).rejects.toThrow(error);
+      await expect(exerciseCredentials(provider, env(uniq('88888')), Mode.ForReading, { assumeRoleArn: '<FAIL:ExpiredToken>' }))
+        .rejects.toThrow(error);
     });
   });
 
@@ -531,13 +525,13 @@ describe('with intercepted network calls', () => {
         },
       });
       const provider = await providerFromProfile(undefined);
-      await provider.forEnvironment(env(uniq('11111')), Mode.ForReading);
+      await exerciseCredentials(provider, env(uniq('11111')));
       expect(pluginQueried).toEqual(false);
     });
 
     test('uses plugin for account 99999', async () => {
       const provider = await providerFromProfile(undefined);
-      await provider.forEnvironment(env(uniq('99999')), Mode.ForReading);
+      await exerciseCredentials(provider, env(uniq('99999')));
       expect(pluginQueried).toEqual(true);
     });
 
@@ -545,15 +539,15 @@ describe('with intercepted network calls', () => {
       fakeSts.registerRole(uniq('99999'), 'arn:aws:iam::99999:role/Assumable');
 
       const provider = await providerFromProfile(undefined);
-      await provider.forEnvironment(env(uniq('99999')), Mode.ForReading, {
+      await exerciseCredentials(provider, env(uniq('99999')), Mode.ForReading, {
         assumeRoleArn: 'arn:aws:iam::99999:role/Assumable',
       });
 
+      expect(pluginQueried).toEqual(true);
       expect(mockSTSClient).toHaveReceivedCommandWith(AssumeRoleCommand, {
         RoleArn: 'arn:aws:iam::99999:role/Assumable',
         RoleSessionName: expect.anything(),
       });
-      expect(pluginQueried).toEqual(true);
     });
 
     test('even if AssumeRole fails but current credentials are from a plugin, we will still use them', async () => {
@@ -568,12 +562,26 @@ describe('with intercepted network calls', () => {
 
     test('plugins are still queried even if current credentials are expired (or otherwise invalid)', async () => {
       // GIVEN
+      // WHEN
+      const account = uniq('11111');
+      mockSTSClient.on(GetCallerIdentityCommand).resolves({
+        Account: account,
+        Arn: 'arn:aws-here',
+      });
+      prepareCreds({
+        credentials: {
+          default: { aws_access_key_id: `${uid}akid`, $account: '11111', $fakeStsOptions: { partition: 'aws-here' } },
+        },
+        config: {
+          default: { region: 'eu-bla-5' },
+        },
+      });
       process.env.AWS_ACCESS_KEY_ID = `${uid}akid`;
       process.env.AWS_SECRET_ACCESS_KEY = 'sekrit';
       const provider = await providerFromProfile(undefined);
 
       // WHEN
-      await provider.forEnvironment(env(uniq('99999')), Mode.ForReading);
+      await exerciseCredentials(provider, env(uniq('99999')));
 
       // THEN
       expect(pluginQueried).toEqual(true);
@@ -806,4 +814,10 @@ function isProfileRole(x: ProfileUser | ProfileRole): x is ProfileRole {
 
 async function providerFromProfile(profile: string | undefined) {
   return SdkProvider.withAwsCliCompatibleDefaults({ profile, logger: console });
+}
+
+async function exerciseCredentials(provider: SdkProvider, e: cxapi.Environment, mode: Mode = Mode.ForReading,
+  options?: CredentialsOptions) {
+  const sdk = await provider.forEnvironment(e, mode, options);
+  await sdk.sdk.currentAccount();
 }
