@@ -1,0 +1,136 @@
+{
+  "name": "@aws-cdk/aws-eks-v2-alpha",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The CDK Construct Library for AWS::EKS",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.Eks.V2.Alpha",
+        "packageId": "Amazon.CDK.AWS.Eks.V2.Alpha",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
+      },
+      "java": {
+        "package": "software.amazon.awscdk.services.eks.v2.alpha",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "eks-v2-alpha"
+        }
+      },
+      "python": {
+        "distName": "aws-cdk.aws-eks-v2-alpha",
+        "module": "aws_cdk.aws_eks_v2_alpha",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
+        ]
+      },
+      "go": {
+        "moduleName": "github.com/aws/aws-cdk-go",
+        "packageName": "awscdkeks-v2alpha"
+      }
+    },
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git",
+    "directory": "packages/@aws-cdk/aws-eks-v2-alpha"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "scripts": {
+    "build": "cdk-build",
+    "integ": "integ-runner",
+    "lint": "cdk-lint",
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "pkglint": "pkglint -f",
+    "test": "cdk-test",
+    "watch": "cdk-watch",
+    "build+test": "yarn build && yarn test",
+    "build+test+package": "yarn build+test && yarn package",
+    "compat": "cdk-compat",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract",
+    "build+extract": "yarn build && yarn rosetta:extract",
+    "build+test+extract": "yarn build+test && yarn rosetta:extract"
+  },
+  "cdk-build": {
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::EKS",
+    "aws-eks"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/integ-runner": "0.0.0",
+    "@aws-cdk/integ-tests-alpha": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@aws-cdk/lambda-layer-kubectl-v24": "^2.0.242",
+    "@aws-cdk/lambda-layer-kubectl-v29": "^2.1.0",
+    "@aws-cdk/lambda-layer-kubectl-v30": "^2.0.1",
+    "@aws-cdk/lambda-layer-kubectl-v31": "^2.0.0",
+    "@types/jest": "^29.5.1",
+    "aws-sdk": "^2.1379.0",
+    "aws-cdk-lib": "0.0.0",
+    "constructs": "^10.0.0",
+    "sinon": "^9.2.4",
+    "cdk8s": "2.69.10",
+    "cdk8s-plus-27": "2.9.5"
+  },
+  "dependencies": {
+    "semver": "^7.5.1",
+    "yaml": "1.10.2"
+  },
+  "peerDependencies": {
+    "aws-cdk-lib": "^0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "bundledDependencies": [
+    "semver",
+    "yaml"
+  ],
+  "engines": {
+    "node": ">= 14.15.0"
+  },
+  "stability": "experimental",
+  "maturity": "experimental",
+  "awslint": {
+    "exclude": [
+      "*:*"
+    ]
+  },
+  "awscdkio": {
+    "announce": false
+  },
+  "publishConfig": {
+    "tag": "latest"
+  },
+  "pkglint": {
+    "exclude": [
+      "naming/package-matches-directory",
+      "assert/assert-dependency"
+    ]
+  }
+}
