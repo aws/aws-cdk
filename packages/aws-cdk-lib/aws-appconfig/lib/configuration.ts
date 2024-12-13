@@ -296,6 +296,17 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
   }
 
   /**
+   * Adds an AT_DEPLOYMENT_TICK extension with the provided event destination and
+   * also creates an extension association to an application.
+   *
+   * @param eventDestination The event that occurs during the extension
+   * @param options Options for the extension
+   */
+  public atDeploymentTick(eventDestination: IEventDestination, options?: ExtensionOptions) {
+    this.extensible.atDeploymentTick(eventDestination, options);
+  }
+
+  /**
    * Adds an extension association to the configuration profile.
    *
    * @param extension The extension to create an association for
