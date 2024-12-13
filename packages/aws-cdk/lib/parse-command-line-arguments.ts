@@ -424,7 +424,7 @@ export function parseCommandLineArguments(
           type: 'boolean',
           desc: "Rollback stack to stable state on failure. Defaults to 'true', iterate more rapidly with --no-rollback or -R. Note: do **not** disable this flag for deployments with resource replacements, as that will always fail",
         })
-        .middleware(yargsNegativeAlias('rollback', 'R'), true)
+        .middleware(yargsNegativeAlias('R', 'rollback'), true)
         .option('R', { type: 'boolean', hidden: true })
         .option('hotswap', {
           type: 'boolean',
@@ -570,7 +570,7 @@ export function parseCommandLineArguments(
           type: 'boolean',
           desc: "Rollback stack to stable state on failure. Defaults to 'true', iterate more rapidly with --no-rollback or -R. Note: do **not** disable this flag for deployments with resource replacements, as that will always fail",
         })
-        .middleware(yargsNegativeAlias('rollback', 'R'), true)
+        .middleware(yargsNegativeAlias('R', 'rollback'), true)
         .option('R', { type: 'boolean', hidden: true })
         .option('hotswap', {
           type: 'boolean',

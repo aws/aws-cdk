@@ -116,9 +116,8 @@ describe('render', () => {
                 type: 'boolean',
                 alias: 'o',
                 desc: 'text for one',
-                negativeAlias: 'O',
               })
-              .middleware(yargsNegativeAlias('one', 'O'), true)
+              .middleware(yargsNegativeAlias('O', 'one'), true)
               .option('O', { type: 'boolean', hidden: true })
           )
           .version(version)

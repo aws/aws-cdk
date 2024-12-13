@@ -7,8 +7,8 @@
  * @returns
  */
 export function yargsNegativeAlias<T extends { [x in S | L]: boolean | undefined }, S extends string, L extends string>(
-  optionToNegate: L,
   negativeAlias: S,
+  optionToNegate: L,
 ): (argv: T) => T {
   return (argv: T) => {
     // if R in argv && argv[R]

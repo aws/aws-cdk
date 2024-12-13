@@ -136,7 +136,7 @@ function makeOptions(prefix: Expression, options: { [optionName: string]: CliOpt
     // We need an additional option and a middleware:
     // .option('R', { type: 'boolean', hidden: true }).middleware(yargsNegativeAlias('R', 'rollback'), true)
     if (theOption.negativeAlias) {
-      const middleware = code.expr.builtInFn('yargsNegativeAlias', lit(option), lit(theOption.negativeAlias));
+      const middleware = code.expr.builtInFn('yargsNegativeAlias', lit(theOption.negativeAlias), lit(option));
       optionsExpr = optionsExpr.callMethod('middleware', middleware, lit(true));
       optionsExpr = optionsExpr.callMethod('option', lit(theOption.negativeAlias), code.expr.lit({
         type: 'boolean',
