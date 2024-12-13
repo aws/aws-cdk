@@ -61,27 +61,14 @@ export class UserTablePrivileges extends Construct {
       properties: {
         username: props.user.username,
         tablePrivileges: cdk.Lazy.any({
-          produce: () => {
-            const groupedPrivileges = this.privileges.reduce(
-              (privileges, { table, actions }) => ({
-                ...privileges,
-                [table.node.id]: {
-                  actions: [
-                    ...(privileges[table.node.id]?.actions ?? []),
-                    ...actions,
-                  ],
-                  tableName: table.tableName,
-                },
-              }),
-              {} as Record<string, { tableName: string; actions: TableAction[] }>,
-            );
-
-            return Object.entries(groupedPrivileges).map(([tableId, config]) => ({
-              tableId,
-              tableName: config.tableName,
-              actions: unifyTableActions(config.actions).map(action => TableAction[action]),
-            }));
-          },
+          produce: () =>
+            Object.entries(groupPrivilegesByTable(this.privileges))
+              .map(([tableId, tablePrivileges]) => ({
+                tableId,
+                // The first element always exists since the groupBy element is at least a singleton.
+                tableName: tablePrivileges[0]!.table.tableName,
+                actions: unifyTableActions(tablePrivileges).map(action => TableAction[action]),
+              })),
         }) as any,
       },
     });
@@ -95,8 +82,8 @@ export class UserTablePrivileges extends Construct {
   }
 }
 
-const unifyTableActions = (tableActions: TableAction[]): TableAction[] => {
-  const set = new Set<TableAction>(tableActions);
+const unifyTableActions = (tablePrivileges: TablePrivilege[]): TableAction[] => {
+  const set = new Set<TableAction>(tablePrivileges.flatMap(x => x.actions));
 
   if (set.has(TableAction.ALL)) {
     return [TableAction.ALL];
@@ -107,4 +94,16 @@ const unifyTableActions = (tableActions: TableAction[]): TableAction[] => {
   }
 
   return [...set];
+};
+
+const groupPrivilegesByTable = (privileges: TablePrivilege[]): Record<string, TablePrivilege[]> => {
+  return privileges.reduce((grouped, privilege) => {
+    const { table } = privilege;
+    const tableId = table.node.id;
+    const tablePrivileges = grouped[tableId] ?? [];
+    return {
+      ...grouped,
+      [tableId]: [...tablePrivileges, privilege],
+    };
+  }, {} as Record<string, TablePrivilege[]>);
 };

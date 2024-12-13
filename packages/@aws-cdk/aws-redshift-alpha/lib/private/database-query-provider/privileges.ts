@@ -111,7 +111,7 @@ async function updatePrivileges(
 
 /**
  * We need this normalization logic because some of the `TableName` values
- * are physical IDs generated in the `./util.ts` module.
+ * are physical IDs generated in the {@link makePhysicalId} function.
  * */
 const normalizedTableName = (tableName: string, stackId: string): string => {
   const segments = tableName.split(':');
