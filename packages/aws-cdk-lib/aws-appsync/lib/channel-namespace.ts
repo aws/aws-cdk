@@ -150,7 +150,7 @@ export class ChannelNamespace extends Construct {
    *
    * @param grantee The principal
    */
-  public grantPublishSubscribe(grantee: IGrantable) {
+  public grantPubSub(grantee: IGrantable) {
     return this.api.grant(grantee, IamResource.ofChannelNamespace(this.channelNamespace.name), 'appsync:EventPublish', 'appsync:EventSubscribe');
   }
 

@@ -5,15 +5,15 @@ import { CfnApi, CfnApiKey, CfnDomainName, CfnDomainNameApiAssociation } from '.
 import {
   AuthorizationMode,
   AuthorizationType,
-  ApiKeyConfig,
-  CognitoConfig,
-  LambdaAuthorizerConfig,
-  OpenIdConnectConfig,
+  createAPIKey,
+  setupLambdaAuthorizerConfig,
+  setupOpenIdConnectConfig,
+  setupCognitoConfig,
 } from './auth-config';
 import { ChannelNamespace, ChannelNamespaceOptions } from './channel-namespace';
 import { Grant, IGrantable, ManagedPolicy, ServicePrincipal, Role } from '../../aws-iam';
 import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '../../aws-logs';
-import { IResolvable, Lazy, Names, RemovalPolicy, Stack, Token, Duration } from '../../core';
+import { IResolvable, Lazy, Names, RemovalPolicy, Stack, Token } from '../../core';
 
 /**
  * Authorization configuration for the Event API
@@ -99,7 +99,7 @@ export interface IEventApi extends IApi {
    *
    * @param grantee The principal
    */
-  grantPublishSubscribe(grantee: IGrantable): Grant;
+  grantPubSub(grantee: IGrantable): Grant;
 
   /**
    * Adds an IAM policy statement for EventConnect access to this EventApi to an IAM principal's policy.
@@ -160,7 +160,7 @@ export abstract class EventApiBase extends ApiBase implements IEventApi {
 
   /**
    * Adds an IAM policy statement for EventPublish access to this EventApi to an IAM
-   * principal's policy.
+   * principal's policy. This grants publish permission for all channels within the API.
    *
    * @param grantee The principal
    */
@@ -170,7 +170,7 @@ export abstract class EventApiBase extends ApiBase implements IEventApi {
 
   /**
    * Adds an IAM policy statement for EventSubscribe access to this EventApi to an IAM
-   * principal's policy.
+   * principal's policy. This grants subscribe permission for all channels within the API.
    *
    * @param grantee The principal
    */
@@ -180,10 +180,11 @@ export abstract class EventApiBase extends ApiBase implements IEventApi {
 
   /**
    * Adds an IAM policy statement to publish and subscribe to this API for an IAM principal's policy.
+   * This grants publish & subscribe permission for all channels within the API.
    *
    * @param grantee The principal
    */
-  public grantPublishSubscribe(grantee: IGrantable): Grant {
+  public grantPubSub(grantee: IGrantable): Grant {
     return this.grant(grantee, IamResource.all(), 'appsync:EventPublish', 'appsync:EventSubscribe');
   }
 
@@ -298,10 +299,6 @@ export class EventApi extends EventApiBase {
       public readonly apiArn = arn;
       public readonly dns = attrs.dns;
       public readonly authProviderTypes = attrs.authProviderTypes ?? [];
-
-      constructor(s: Construct, i: string) {
-        super(s, i);
-      }
     }
     return new Import(scope, id);
   }
@@ -421,7 +418,7 @@ export class EventApi extends EventApiBase {
 
     const apiKeyConfigs = authProviders.filter((mode) => mode.authorizationType === AuthorizationType.API_KEY);
     for (const mode of apiKeyConfigs) {
-      this.apiKeys[mode.apiKeyConfig?.name ?? 'Default'] = this.createAPIKey(mode.apiKeyConfig);
+      this.apiKeys[mode.apiKeyConfig?.name ?? 'Default'] = createAPIKey(this, this.apiId, mode.apiKeyConfig);
     }
 
     if (authProviders.some((mode) => mode.authorizationType === AuthorizationType.LAMBDA)) {
@@ -495,34 +492,6 @@ export class EventApi extends EventApiBase {
     };
   }
 
-  private setupOpenIdConnectConfig(config?: OpenIdConnectConfig) {
-    if (!config) return undefined;
-    return {
-      authTtl: config.tokenExpiryFromAuth,
-      clientId: config.clientId,
-      iatTtl: config.tokenExpiryFromIssue,
-      issuer: config.oidcProvider,
-    };
-  }
-
-  private setupCognitoConfig(config?: CognitoConfig) {
-    if (!config) return undefined;
-    return {
-      userPoolId: config.userPool.userPoolId,
-      awsRegion: config.userPool.env.region,
-      appIdClientRegex: config.appIdClientRegex,
-    };
-  }
-
-  private setupLambdaAuthorizerConfig(config?: LambdaAuthorizerConfig) {
-    if (!config) return undefined;
-    return {
-      authorizerResultTtlInSeconds: config.resultsCacheTtl?.toSeconds(),
-      authorizerUri: config.handler.functionArn,
-      identityValidationExpression: config.validationRegex,
-    };
-  }
-
   private setupAuthProviderTypes(authProviders?: AuthorizationMode[]) {
     if (!authProviders || authProviders.length === 0) return [AuthorizationType.API_KEY];
     const modes = authProviders.map((mode) => mode.authorizationType);
@@ -533,9 +502,9 @@ export class EventApi extends EventApiBase {
     return authProviders.reduce<CfnApi.AuthProviderProperty[]>((acc, mode) => {
       acc.push({
         authType: mode.authorizationType,
-        cognitoConfig: this.setupCognitoConfig(mode.cognitoConfig),
-        openIdConnectConfig: this.setupOpenIdConnectConfig(mode.openIdConnectConfig),
-        lambdaAuthorizerConfig: this.setupLambdaAuthorizerConfig(mode.lambdaAuthorizerConfig),
+        cognitoConfig: setupCognitoConfig(mode.cognitoConfig),
+        openIdConnectConfig: setupOpenIdConnectConfig(mode.openIdConnectConfig),
+        lambdaAuthorizerConfig: setupLambdaAuthorizerConfig(mode.lambdaAuthorizerConfig),
       });
       return acc;
     }, []);
@@ -543,18 +512,6 @@ export class EventApi extends EventApiBase {
 
   private mapAuthorizationConfig(authModes: AuthorizationType[]) {
     return authModes.map((mode) => ({ authType: mode }));
-  }
-
-  private createAPIKey(config?: ApiKeyConfig) {
-    if (config?.expires?.isBefore(Duration.days(1)) || config?.expires?.isAfter(Duration.days(365))) {
-      throw Error('API key expiration must be between 1 and 365 days.');
-    }
-    const expires = config?.expires ? config?.expires.toEpoch() : undefined;
-    return new CfnApiKey(this, `${config?.name || 'Default'}ApiKey`, {
-      expires,
-      description: config?.description,
-      apiId: this.apiId,
-    });
   }
 
   private validateAuthorizationProps(authProviders: AuthorizationMode[]) {

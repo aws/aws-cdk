@@ -1,13 +1,21 @@
 import { Construct } from 'constructs';
 import { DomainOptions, LogConfig, FieldLogLevel } from './appsync-common';
 import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema, CfnDomainName, CfnDomainNameApiAssociation, CfnSourceApiAssociation } from './appsync.generated';
-import { AuthorizationMode, AuthorizationType, AuthorizationConfig, ApiKeyConfig, UserPoolConfig, OpenIdConnectConfig, LambdaAuthorizerConfig, UserPoolDefaultAction } from './auth-config';
+import {
+  AuthorizationMode,
+  AuthorizationType,
+  AuthorizationConfig,
+  createAPIKey,
+  setupUserPoolConfig,
+  setupLambdaAuthorizerConfig,
+  setupOpenIdConnectConfig,
+} from './auth-config';
 import { IGraphqlApi, GraphqlApiBase, Visibility } from './graphqlapi-base';
 import { ISchema, SchemaFile } from './schema';
 import { MergeType, addSourceApiAutoMergePermission, addSourceGraphQLPermission } from './source-api-association';
 import { ManagedPolicy, Role, IRole, ServicePrincipal } from '../../aws-iam';
 import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '../../aws-logs';
-import { CfnResource, Duration, FeatureFlags, Lazy, Stack, Token } from '../../core';
+import { CfnResource, FeatureFlags, Lazy, Stack, Token } from '../../core';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -406,9 +414,9 @@ export class GraphqlApi extends GraphqlApiBase {
       name: props.name,
       authenticationType: defaultMode.authorizationType,
       logConfig: this.setupLogConfig(props.logConfig),
-      openIdConnectConfig: this.setupOpenIdConnectConfig(defaultMode.openIdConnectConfig),
-      userPoolConfig: this.setupUserPoolConfig(defaultMode.userPoolConfig),
-      lambdaAuthorizerConfig: this.setupLambdaAuthorizerConfig(defaultMode.lambdaAuthorizerConfig),
+      openIdConnectConfig: setupOpenIdConnectConfig(defaultMode.openIdConnectConfig),
+      userPoolConfig: setupUserPoolConfig(defaultMode.userPoolConfig),
+      lambdaAuthorizerConfig: setupLambdaAuthorizerConfig(defaultMode.lambdaAuthorizerConfig),
       additionalAuthenticationProviders: this.setupAdditionalAuthorizationModes(additionalModes),
       xrayEnabled: props.xrayEnabled,
       visibility: props.visibility,
@@ -451,7 +459,7 @@ export class GraphqlApi extends GraphqlApiBase {
       const config = modes.find((mode: AuthorizationMode) => {
         return mode.authorizationType === AuthorizationType.API_KEY && mode.apiKeyConfig;
       })?.apiKeyConfig;
-      this.apiKeyResource = this.createAPIKey(config);
+      this.apiKeyResource = createAPIKey(this, this.apiId, config);
       if (this.schemaResource) {
         this.apiKeyResource.addDependency(this.schemaResource);
       }
@@ -621,57 +629,16 @@ export class GraphqlApi extends GraphqlApiBase {
     };
   }
 
-  private setupOpenIdConnectConfig(config?: OpenIdConnectConfig) {
-    if (!config) return undefined;
-    return {
-      authTtl: config.tokenExpiryFromAuth,
-      clientId: config.clientId,
-      iatTtl: config.tokenExpiryFromIssue,
-      issuer: config.oidcProvider,
-    };
-  }
-
-  private setupUserPoolConfig(config?: UserPoolConfig) {
-    if (!config) return undefined;
-    return {
-      userPoolId: config.userPool.userPoolId,
-      awsRegion: config.userPool.env.region,
-      appIdClientRegex: config.appIdClientRegex,
-      defaultAction: config.defaultAction || UserPoolDefaultAction.ALLOW,
-    };
-  }
-
-  private setupLambdaAuthorizerConfig(config?: LambdaAuthorizerConfig) {
-    if (!config) return undefined;
-    return {
-      authorizerResultTtlInSeconds: config.resultsCacheTtl?.toSeconds(),
-      authorizerUri: config.handler.functionArn,
-      identityValidationExpression: config.validationRegex,
-    };
-  }
-
   private setupAdditionalAuthorizationModes(modes?: AuthorizationMode[]) {
     if (!modes || modes.length === 0) return undefined;
     return modes.reduce<CfnGraphQLApi.AdditionalAuthenticationProviderProperty[]>((acc, mode) => [
       ...acc, {
         authenticationType: mode.authorizationType,
-        userPoolConfig: this.setupUserPoolConfig(mode.userPoolConfig),
-        openIdConnectConfig: this.setupOpenIdConnectConfig(mode.openIdConnectConfig),
-        lambdaAuthorizerConfig: this.setupLambdaAuthorizerConfig(mode.lambdaAuthorizerConfig),
+        userPoolConfig: setupUserPoolConfig(mode.userPoolConfig),
+        openIdConnectConfig: setupOpenIdConnectConfig(mode.openIdConnectConfig),
+        lambdaAuthorizerConfig: setupLambdaAuthorizerConfig(mode.lambdaAuthorizerConfig),
       },
     ], []);
-  }
-
-  private createAPIKey(config?: ApiKeyConfig) {
-    if (config?.expires?.isBefore(Duration.days(1)) || config?.expires?.isAfter(Duration.days(365))) {
-      throw Error('API key expiration must be between 1 and 365 days.');
-    }
-    const expires = config?.expires ? config?.expires.toEpoch() : undefined;
-    return new CfnApiKey(this, `${config?.name || 'Default'}ApiKey`, {
-      expires,
-      description: config?.description,
-      apiId: this.apiId,
-    });
   }
 
   /**
