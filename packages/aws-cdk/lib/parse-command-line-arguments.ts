@@ -425,10 +425,7 @@ export function parseCommandLineArguments(
           desc: "Rollback stack to stable state on failure. Defaults to 'true', iterate more rapidly with --no-rollback or -R. Note: do **not** disable this flag for deployments with resource replacements, as that will always fail",
         })
         .middleware(yargsNegativeAlias('rollback', 'R'), true)
-        .option('R', {
-          type: 'boolean',
-          hidden: true,
-        })
+        .option('R', { type: 'boolean', hidden: true })
         .option('hotswap', {
           type: 'boolean',
           desc: "Attempts to perform a 'hotswap' deployment, but does not fall back to a full deployment if that is not possible. Instead, changes to any non-hotswappable properties are ignored.Do not use this in production environments",
@@ -573,11 +570,8 @@ export function parseCommandLineArguments(
           type: 'boolean',
           desc: "Rollback stack to stable state on failure. Defaults to 'true', iterate more rapidly with --no-rollback or -R. Note: do **not** disable this flag for deployments with resource replacements, as that will always fail",
         })
-        .middleware(yargsNegativeAlias('rollback', '-R'), true)
-        .option('R', {
-          type: 'boolean',
-          hidden: true,
-        })
+        .middleware(yargsNegativeAlias('rollback', 'R'), true)
+        .option('R', { type: 'boolean', hidden: true })
         .option('hotswap', {
           type: 'boolean',
           desc: "Attempts to perform a 'hotswap' deployment, but does not fall back to a full deployment if that is not possible. Instead, changes to any non-hotswappable properties are ignored.'true' by default, use --no-hotswap to turn off",

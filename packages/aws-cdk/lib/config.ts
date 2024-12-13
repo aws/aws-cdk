@@ -136,11 +136,6 @@ export function makeConfig(): CliConfig {
               'Note: do **not** disable this flag for deployments with resource replacements, as that will always fail',
             negativeAlias: 'R',
           },
-          'R': {
-            type: 'boolean',
-            hidden: true,
-            // Hack to get '-R' as an alias for '--no-rollback', suggested by: https://github.com/yargs/yargs/issues/1729
-          },
           'hotswap': {
             type: 'boolean',
             desc: "Attempts to perform a 'hotswap' deployment, " +
@@ -269,12 +264,7 @@ export function makeConfig(): CliConfig {
             type: 'boolean',
             desc: "Rollback stack to stable state on failure. Defaults to 'true', iterate more rapidly with --no-rollback or -R. " +
               'Note: do **not** disable this flag for deployments with resource replacements, as that will always fail',
-            negativeAlias: '-R',
-          },
-          // same hack for -R as above in 'deploy'
-          'R': {
-            type: 'boolean',
-            hidden: true,
+            negativeAlias: 'R',
           },
           'hotswap': {
             type: 'boolean',
@@ -434,7 +424,7 @@ export class DynamicValue {
   public static fromInline(f: () => any): DynamicResult {
     return {
       dynamicType: 'function',
-      dynamicValue: f,
+      dynamicValue: f.toString(),
     };
   }
 }

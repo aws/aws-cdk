@@ -5,6 +5,10 @@ interface YargsCommand {
   arg?: YargsArg;
 }
 
+interface CliAction extends YargsCommand {
+  options?: { [optionName: string]: CliOption };
+}
+
 interface YargsArg {
   name: string;
   variadic: boolean;
@@ -22,10 +26,11 @@ export interface YargsOption {
   requiresArg?: boolean;
   hidden?: boolean;
   count?: boolean;
-  negativeAlias?: string;
 }
 
-export type CliOption = Omit<YargsOption, 'nargs'>;
+export interface CliOption extends Omit<YargsOption, 'nargs' | 'hidden'> {
+  negativeAlias?: string;
+}
 
 export interface Middleware {
   callback: string;
@@ -35,7 +40,7 @@ export interface Middleware {
 
 export interface CliConfig {
   globalOptions: { [optionName: string]: CliOption };
-  commands: { [commandName: string]: YargsCommand };
+  commands: { [commandName: string]: CliAction };
 }
 
 /**
@@ -43,5 +48,5 @@ export interface CliConfig {
  */
 export interface DynamicResult {
   dynamicType: 'parameter' | 'function';
-  dynamicValue: string | (() => any);
+  dynamicValue: string;
 }
