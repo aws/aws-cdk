@@ -40,6 +40,7 @@ jest.mock('@aws-sdk/client-redshift-data', () => {
 });
 
 import { handler as managePrivileges } from '../../lib/private/database-query-provider/privileges';
+import { makePhysicalId } from '../../lib/private/database-query-provider/util';
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -61,6 +62,31 @@ describe('create', () => {
       Sql: `GRANT INSERT, SELECT ON ${tableName} TO ${username}`,
     }));
   });
+
+  test('serializes properties in statement when tableName in physical resource ID', async () => {
+    const properties = {
+      ...resourceProperties,
+      tablePrivileges: [{
+        tableId,
+        tableName: `${makePhysicalId(tableName, resourceProperties, requestId)}`,
+        actions,
+      }],
+    };
+
+    const event = {
+      ...baseEvent,
+      ResourceProperties: properties,
+      StackId: 'xxxxx:' + requestId,
+    };
+
+    await expect(managePrivileges(properties, event)).resolves.toEqual({
+      PhysicalResourceId: 'clusterName:databaseName:username:requestId',
+    });
+
+    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+      Sql: `GRANT INSERT, SELECT ON ${tableName} TO ${username}`,
+    }));
+  });
 });
 
 describe('delete', () => {
@@ -74,6 +100,29 @@ describe('delete', () => {
     const event = baseEvent;
 
     await managePrivileges(resourceProperties, event);
+
+    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+      Sql: `REVOKE INSERT, SELECT ON ${tableName} FROM ${username}`,
+    }));
+  });
+
+  test('serializes properties in statement when tableName in physical resource ID', async () => {
+    const properties = {
+      ...resourceProperties,
+      tablePrivileges: [{
+        tableId,
+        tableName: `${makePhysicalId(tableName, resourceProperties, requestId)}`,
+        actions,
+      }],
+    };
+
+    const event = {
+      ...baseEvent,
+      ResourceProperties: properties,
+      StackId: 'xxxxx:' + requestId,
+    };
+
+    await managePrivileges(properties, event);
 
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
       Sql: `REVOKE INSERT, SELECT ON ${tableName} FROM ${username}`,
@@ -242,6 +291,52 @@ describe('update', () => {
     // permissions would not need to be granted/revoked, as the table should already exist
     expect(mockExecuteStatement).not.toHaveBeenCalledWith(expect.objectContaining({
       Sql: expect.stringMatching(new RegExp(`.+ ON ${tableName} FROM ${username}`)),
+    }));
+  });
+
+  test('serializes properties in grant statement when tableName in physical resource ID', async () => {
+    const properties = {
+      ...resourceProperties,
+      tablePrivileges: [{
+        tableId,
+        tableName: `${makePhysicalId(tableName, resourceProperties, requestId)}`,
+        actions,
+      }],
+    };
+
+    const newEvent = {
+      ...event,
+      ResourceProperties: properties,
+      StackId: 'xxxxx:' + requestId,
+    };
+
+    await managePrivileges(properties, newEvent);
+
+    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+      Sql: `GRANT INSERT, SELECT ON ${tableName} TO ${username}`,
+    }));
+  });
+
+  test('serializes properties in drop statement when tableName in physical resource ID', async () => {
+    const properties = {
+      ...resourceProperties,
+      tablePrivileges: [{
+        tableId,
+        tableName: `${makePhysicalId(tableName, resourceProperties, requestId)}`,
+        actions: ['DROP'],
+      }],
+    };
+
+    const newEvent = {
+      ...event,
+      ResourceProperties: properties,
+      StackId: 'xxxxx:' + requestId,
+    };
+
+    await managePrivileges(properties, newEvent);
+
+    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+      Sql: `REVOKE INSERT, SELECT ON ${tableName} FROM ${username}`,
     }));
   });
 });

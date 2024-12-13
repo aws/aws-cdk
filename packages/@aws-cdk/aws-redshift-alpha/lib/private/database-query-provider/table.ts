@@ -15,7 +15,7 @@ export async function handler(props: TableAndClusterProps, event: AWSLambda.Clou
 
   if (event.RequestType === 'Create') {
     tableName = await createTable(tableNamePrefix, getTableNameSuffix(props.tableName.generateSuffix), tableColumns, tableAndClusterProps);
-    return { PhysicalResourceId: makePhysicalId(tableNamePrefix, tableAndClusterProps, event.StackId.substring(event.StackId.length - 12)) };
+    return { PhysicalResourceId: makePhysicalId(tableName, tableAndClusterProps, event.StackId.substring(event.StackId.length - 12)) };
   } else if (event.RequestType === 'Delete') {
     await dropTable(
       event.PhysicalResourceId.includes(event.StackId.substring(event.StackId.length - 12)) ? tableName : event.PhysicalResourceId,
