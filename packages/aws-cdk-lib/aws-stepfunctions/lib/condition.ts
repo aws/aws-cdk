@@ -341,8 +341,8 @@ export abstract class Condition {
   /**
    * JSONata expression condition
    */
-  public static jsonata(conditon: string): Condition {
-    return new JsonataCondition(conditon);
+  public static jsonata(condition: string): Condition {
+    return new JsonataCondition(condition);
   }
 
   /**
