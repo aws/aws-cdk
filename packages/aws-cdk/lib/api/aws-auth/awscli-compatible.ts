@@ -34,6 +34,19 @@ export class AwsCliCompatible {
       requestHandler: AwsCliCompatible.requestHandlerBuilder(options.httpOptions),
       customUserAgent: 'aws-cdk',
       logger: options.logger,
+    };
+
+    // Super hacky solution to https://github.com/aws/aws-cdk/issues/32510, proposed by the SDK team.
+    //
+    // Summary of the problem: we were reading the region from the config file and passing it to
+    // the credential providers. However, in the case of SSO, this makes the credential provider
+    // use that region to do the SSO flow, which is incorrect. The region that should be used for
+    // that is the one set in the sso_session section of the config file.
+    //
+    // The idea here: the "clientConfig" is for configuring the inner auth client directly,
+    // and has the highest priority, whereas "parentClientConfig" is the upper data client
+    // and has lower priority than the sso_region but still higher priority than STS global region.
+    const parentClientConfig = {
       region: await this.region(options.profile),
     };
     /**
@@ -51,6 +64,7 @@ export class AwsCliCompatible {
         ignoreCache: true,
         mfaCodeProvider: tokenCodeFn,
         clientConfig,
+        parentClientConfig,
         logger: options.logger,
       }));
     }
@@ -83,6 +97,7 @@ export class AwsCliCompatible {
     const nodeProviderChain = fromNodeProviderChain({
       profile: envProfile,
       clientConfig,
+      parentClientConfig,
       logger: options.logger,
       mfaCodeProvider: tokenCodeFn,
       ignoreCache: true,
