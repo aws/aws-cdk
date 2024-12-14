@@ -1826,10 +1826,19 @@ export class LinuxBuildImage implements IBuildImage {
   /** The Amazon Linux 2023 x86_64 standard image, version `5.0`. */
   public static readonly AMAZON_LINUX_2_5 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:5.0');
 
+  /** The Amazon Linux 2023 x86_64 standard image, version `4.0`. */
+  public static readonly AMAZON_LINUX_2023_4 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux-x86_64-standard:4.0');
+  /** The Amazon Linux 2023 x86_64 standard image, version `5.0`. */
+  public static readonly AMAZON_LINUX_2023_5 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux-x86_64-standard:5.0');
+
   /** The Amazon Coretto 8 image x86_64, based on Amazon Linux 2. */
   public static readonly AMAZON_LINUX_2_CORETTO_8 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:corretto8');
   /** The Amazon Coretto 11 image x86_64, based on Amazon Linux 2. */
   public static readonly AMAZON_LINUX_2_CORETTO_11 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:corretto11');
+  /** The Amazon Coretto 8 image x86_64, based on Amazon Linux 2023. */
+  public static readonly AMAZON_LINUX_2023_CORETTO_8 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux-x86_64-standard:corretto8');
+  /** The Amazon Coretto 11 image x86_64, based on Amazon Linux 2023. */
+  public static readonly AMAZON_LINUX_2023_CORETTO_11 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux-x86_64-standard:corretto11');
 
   /**
    * Image "aws/codebuild/amazonlinux2-aarch64-standard:1.0".
