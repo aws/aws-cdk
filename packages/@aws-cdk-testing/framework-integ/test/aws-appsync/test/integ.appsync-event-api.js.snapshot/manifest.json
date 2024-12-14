@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dd6c721253150f66744a66e2b06d3ad6de15467cc9e53e3c79adf4a813f087f4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/05ef1e9f9a4a77e3d5a592a27babbb013c20962f0af8d7f1727e893542d446ba.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -76,6 +76,12 @@
             "data": "EventApiE141E6C0"
           }
         ],
+        "/appsync-event-api-stack/EventApi/DefaultApiKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiDefaultApiKeyB9AB1E44"
+          }
+        ],
         "/appsync-event-api-stack/EventApi/DomainName": [
           {
             "type": "aws:cdk:logicalId",
@@ -88,22 +94,10 @@
             "data": "EventApiDomainAssociationECB84F09"
           }
         ],
-        "/appsync-event-api-stack/EventApi/DefaultApiKey": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EventApiDefaultApiKeyB9AB1E44"
-          }
-        ],
         "/appsync-event-api-stack/EventApi/LogRetention/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EventApiLogRetention68604E65"
-          }
-        ],
-        "/appsync-event-api-stack/EventApi/AnotherChannelNamespace/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EventApiAnotherChannelNamespace5BC7F3A5"
           }
         ],
         "/appsync-event-api-stack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource": [

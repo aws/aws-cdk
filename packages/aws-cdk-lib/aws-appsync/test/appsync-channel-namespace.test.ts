@@ -27,7 +27,7 @@ describe('Basic channel namespace', () => {
   test('Appsync Event API channel namespace - name overrides id', () => {
     // WHEN
     const api = new appsync.EventApi(stack, 'api', { apiName: 'api' });
-    api.addChannelNamespace('default', { name: 'another' });
+    api.addChannelNamespace('default', { channelNamespaceName: 'another' });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::ChannelNamespace', {

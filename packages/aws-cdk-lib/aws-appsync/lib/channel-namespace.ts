@@ -5,6 +5,19 @@ import { AuthorizationType } from './auth-config';
 import { Code } from './code';
 import { IEventApi } from './eventapi';
 import { IGrantable } from '../../aws-iam';
+import { IResource, Resource, Token } from '../../core';
+
+/**
+ * An AppSync channel namespace
+ */
+export interface IChannelNamespace extends IResource {
+  /**
+   * The ARN of the AppSync channel namespace
+   *
+   * @attribute
+   */
+  readonly channelNamespaceArn: string;
+}
 
 /**
  * Authorization configuration for the Channel Namespace
@@ -32,7 +45,7 @@ export interface BaseChannelNamespaceProps {
    *
    * @default - id of channel namespace
    */
-  readonly name?: string;
+  readonly channelNamespaceName?: string;
 
   /**
    * The Event Handler code
@@ -68,7 +81,7 @@ export interface ChannelNamespaceOptions {
    *
    * @default - the `id` is used if not provided
    */
-  readonly name?: string;
+  readonly channelNamespaceName?: string;
 
   /**
    * The Event Handler code
@@ -88,18 +101,43 @@ export interface ChannelNamespaceOptions {
 /**
  * A Channel Namespace
  */
-export class ChannelNamespace extends Construct {
+export class ChannelNamespace extends Resource implements IChannelNamespace {
+
+  /**
+   * Use an existing channel namespace by ARN
+   */
+  public static fromChannelNamespaceArn(scope: Construct, id: string, channelNamespaceArn: string): IChannelNamespace {
+    class Import extends Resource implements IChannelNamespace {
+      public readonly channelNamespaceArn = channelNamespaceArn;
+    }
+    return new Import(scope, id);
+  }
+
   /**
    * the ARN of the channel namespace
    */
-  public readonly arn: string;
+  public readonly channelNamespaceArn: string;
 
   private channelNamespace: CfnChannelNamespace;
 
   private api: IEventApi;
 
   constructor(scope: Construct, id: string, props: ChannelNamespaceProps) {
-    super(scope, id);
+    if (props.channelNamespaceName !== undefined && !Token.isUnresolved(props.channelNamespaceName)) {
+      if (props.channelNamespaceName.length < 1 || props.channelNamespaceName.length > 50) {
+        throw new Error(`\`channelNamespaceName\` must be between 1 and 50 characters, got: ${props.channelNamespaceName.length} characters.`);
+      }
+
+      const channelNamespaceNamePattern = /^[A-Za-z0-9]+$/;
+
+      if (!channelNamespaceNamePattern.test(props.channelNamespaceName)) {
+        throw new Error(`\`channelNamespaceName\` must contain only alphanumeric characters, got: ${props.channelNamespaceName}`);
+      }
+    }
+
+    super(scope, id, {
+      physicalName: props.channelNamespaceName ?? id,
+    });
 
     const code = props.code?.bind(this);
 
@@ -109,7 +147,7 @@ export class ChannelNamespace extends Construct {
     this.api = props.api;
 
     this.channelNamespace = new CfnChannelNamespace(this, 'Resource', {
-      name: props.name ?? id,
+      name: this.physicalName,
       apiId: props.api.apiId,
       codeHandlers: code?.inlineCode,
       codeS3Location: code?.s3Location,
@@ -121,7 +159,7 @@ export class ChannelNamespace extends Construct {
       })),
     });
 
-    this.arn = this.channelNamespace.attrChannelNamespaceArn;
+    this.channelNamespaceArn = this.channelNamespace.attrChannelNamespaceArn;
   }
 
   /**

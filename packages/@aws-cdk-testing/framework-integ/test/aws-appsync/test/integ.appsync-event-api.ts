@@ -121,7 +121,6 @@ class EventApiStack extends cdk.Stack {
     });
 
     api.addChannelNamespace('AnotherChannelNamespace', {
-      name: 'AnotherChannelNamespace',
       code: appsync.Code.fromInline(`
             export function onPublish(ctx) {
               return ctx.events.filter((event) => event.payload.odds > 0)

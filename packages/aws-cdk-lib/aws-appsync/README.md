@@ -977,6 +977,7 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 declare const handler: lambda.Function;
 
 const api = new appsync.EventApi(this, 'api', {
+  apiName: 'api',
   authorizationConfig: {
     // set auth providers
     authProviders: [
@@ -1050,7 +1051,7 @@ new CfnOutput(this, 'AWS AppSync Events Realtime endpoint', { value: api.customR
 AppSync automatically create a log group with the name `/aws/appsync/apis/<api_id>` upon deployment withlog data set to never expire.
 If you want to set a different expiration period, use the `logConfig.retention` property.
 
-Also you can choose the log level by setting the `eventLogConfig.Loglevel` property.
+Also you can choose the log level by setting the `logConfig.FieldLoglevel` property.
 
 For more information, see [Configuring CloudWatch Logs on Event APIs](https://docs.aws.amazon.com/appsync/latest/eventapi/event-api-monitoring-cw-logs.html).
 
@@ -1077,8 +1078,8 @@ const api = new appsync.EventApi(this, 'api', {
       appsync.AuthorizationType.API_KEY,
     ],
   },
-  eventLogConfig: {
-    logLevel: appsync.LogLevel.INFO,
+  logConfig: {
+    fieldLogLevel: appsync.FieldLogLevel.INFO,
     retention: logs.RetentionDays.ONE_WEEK,
   },
 });
@@ -1092,7 +1093,7 @@ These could affect API availability and performance, compromise security, or con
 For more information, see [Using AWS WAF to protect AWS AppSync Event APIs](https://docs.aws.amazon.com/appsync/latest/eventapi/using-waf-protect-apis.html).
 
 ```ts
-declare const api: appsync.Api;
+declare const api: appsync.EventApi;
 declare const webAcl: wafv2.CfnWebACL;
 
 // Associate waf with Event API
@@ -1126,14 +1127,16 @@ The publishing and subscribing authorization configuration is automatically appl
 You can override this configuration at the namespace.
 
 ```ts
-declare const api: appsync.Api;
+declare const api: appsync.EventApi;
 
 new appsync.ChannelNamespace(this, 'Namespace', {
   api,
-  // Override publishing authorization to API Key
-  publishAuthModeTypes: [appsync.AuthorizationType.API_KEY],
-  // Override subscribing authorization to Lambda
-  subscribeAuthModeTypes: [appsync.AuthorizationType.LAMBDA],
+  authorizationConfig: {
+    // Override publishing authorization to API Key
+    publishAuthModeTypes: [appsync.AuthorizationType.API_KEY],
+    // Override subscribing authorization to Lambda
+    subscribeAuthModeTypes: [appsync.AuthorizationType.LAMBDA],
+  },
 });
 ```
 
@@ -1143,7 +1146,7 @@ You can use an event handler to process published events or process and authoriz
 For more information, see [Channel namespace handlers and event processing](https://docs.aws.amazon.com/appsync/latest/eventapi/channel-namespace-handlers.html).
 
 ```ts
-declare const api: appsync.Api;
+declare const api: appsync.EventApi;
 
 new appsync.ChannelNamespace(this, 'Namespace', {
   api,
