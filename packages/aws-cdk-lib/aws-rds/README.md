@@ -251,6 +251,10 @@ things.
 
 > *Info* More complete details can be found [in the docs](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.setting-capacity.html#aurora-serverless-v2-examples-setting-capacity-range-for-cluster)
 
+You can also set minimum capacity to zero ACUs and automatically pause,
+if they don't have any connections initiated by user activity within a specified time period.
+For more information, see [Scaling to Zero ACUs with automatic pause and resume for Aurora Serverless v2](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2-auto-pause.html).
+
 Another way that you control the capacity/scaling of your serverless v2 reader
 instances is based on the [promotion tier](https://aws.amazon.com/blogs/aws/additional-failover-control-for-amazon-aurora/)
 which can be between 0-15. Any serverless v2 instance in the 0-1 tiers will scale alongside the
@@ -1415,5 +1419,33 @@ new rds.DatabaseCluster(this, 'Cluster', {
   vpc,
   monitoringInterval: Duration.seconds(5),
   monitoringRole,
+});
+```
+
+## Limitless Database Cluster
+
+Amazon Aurora [PostgreSQL Limitless Database](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/limitless.html) provides automated horizontal scaling to process millions of write transactions per second and manages petabytes of data while maintaining the simplicity of operating inside a single database.
+
+The following example shows creating an Aurora PostgreSQL Limitless Database cluster:
+
+```ts
+declare const vpc: ec2.IVpc;
+
+new rds.DatabaseCluster(this, 'LimitlessDatabaseCluster', {
+  engine: rds.DatabaseClusterEngine.auroraPostgres({
+    version: rds.AuroraPostgresEngineVersion.VER_16_4_LIMITLESS,
+  }),
+  vpc,
+  clusterScailabilityType: rds.ClusterScailabilityType.LIMITLESS,
+  // Requires enabling Performance Insights
+  enablePerformanceInsights: true,
+  performanceInsightRetention: rds.PerformanceInsightRetention.MONTHS_1,
+  // Requires enabling Enhanced Monitoring at the cluster level
+  monitoringInterval: Duration.minutes(1),
+  enableClusterLevelEnhancedMonitoring: true,
+  // Requires I/O optimized storage type
+  storageType: rds.DBClusterStorageType.AURORA_IOPT1,
+  // Requires exporting the PostgreSQL log to Amazon CloudWatch Logs.
+  cloudwatchLogsExports: ['postgresql'],
 });
 ```
