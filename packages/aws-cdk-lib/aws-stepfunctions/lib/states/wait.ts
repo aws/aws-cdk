@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { StateType } from './private/state-type';
-import { JsonataCommonOptions, JsonPathCommonOptions, State, StateBaseProps } from './state';
+import { AssignableStateOptions, JsonataCommonOptions, JsonPathCommonOptions, State, StateBaseProps } from './state';
 import * as cdk from '../../../core';
 import { Chain } from '../chain';
 import { IChainable, INextable, QueryLanguage } from '../types';
@@ -67,15 +67,15 @@ interface WaitOptions {
 /**
  * Properties for defining a Wait state that using JSONPath
  */
-export interface WaitJsonPathProps extends StateBaseProps, WaitOptions, JsonPathCommonOptions {}
+export interface WaitJsonPathProps extends StateBaseProps, AssignableStateOptions, WaitOptions, JsonPathCommonOptions {}
 /**
  * Properties for defining a Wait state that using JSONata
  */
-export interface WaitJsonataProps extends StateBaseProps, WaitOptions, JsonataCommonOptions {}
+export interface WaitJsonataProps extends StateBaseProps, AssignableStateOptions, WaitOptions, JsonataCommonOptions {}
 /**
  * Properties for defining a Wait state
  */
-export interface WaitProps extends StateBaseProps, WaitOptions {}
+export interface WaitProps extends StateBaseProps, AssignableStateOptions, WaitOptions {}
 
 /**
  * Define a Wait state in the state machine
@@ -124,13 +124,14 @@ export class Wait extends State implements INextable {
   /**
    * Return the Amazon States Language object for this state
    */
-  public toStateJson(queryLanguage?: QueryLanguage): object {
+  public toStateJson(topLevelQueryLanguage?: QueryLanguage): object {
     return {
       Type: StateType.WAIT,
-      ...this.renderQueryLanguage(queryLanguage),
+      ...this.renderQueryLanguage(topLevelQueryLanguage),
       Comment: this.comment,
       ...this.time._json,
       ...this.renderNextEnd(),
+      ...this.renderAssign(topLevelQueryLanguage),
     };
   }
 }

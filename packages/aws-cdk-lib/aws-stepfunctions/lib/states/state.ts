@@ -129,19 +129,35 @@ export interface JsonataStateOptions extends JsonataCommonOptions {
 }
 
 /**
+ * Option properties for state that can assign variables.
+ */
+export interface AssignableStateOptions {
+  /**
+   * Workflow variables to store in this step.
+   * Using workflow variables, you can store data in a step and retrieve that data in future steps.
+   *
+   * @see
+   * https://docs.aws.amazon.com/ja_jp/step-functions/latest/dg/workflow-variables.html
+   *
+   * @default - Not assign variables
+   */
+  readonly assign?: { [name: string]: any };
+}
+
+/**
  * Properties shared by all states that use JSONPath
  */
-export interface JsonPathStateProps extends StateBaseProps, JsonPathStateOptions {}
+export interface JsonPathStateProps extends StateBaseProps, JsonPathStateOptions, AssignableStateOptions {}
 
 /**
  * Properties shared by all states that use JSONata
  */
-export interface JsonataStateProps extends StateBaseProps, JsonataStateOptions {}
+export interface JsonataStateProps extends StateBaseProps, JsonataStateOptions, AssignableStateOptions {}
 
 /**
  * Properties shared by all states
  */
-export interface StateProps extends StateBaseProps, JsonPathStateOptions, JsonataStateOptions {}
+export interface StateProps extends StateBaseProps, JsonPathStateOptions, JsonataStateOptions, AssignableStateOptions {}
 
 /**
  * Base class for all other state classes
@@ -238,6 +254,7 @@ export abstract class State extends Construct implements IChainable {
   protected readonly queryLanguage?: QueryLanguage;
   protected readonly outputs?: object;
   protected readonly arguments?: object;
+  protected readonly assign?: object;
   protected iteration?: StateGraph;
   protected processorMode?: ProcessorMode = ProcessorMode.INLINE;
   protected processor?: StateGraph;
@@ -283,6 +300,7 @@ export abstract class State extends Construct implements IChainable {
     this.resultSelector = props.resultSelector;
     this.outputs = props.outputs;
     this.arguments = props.arguments;
+    this.assign = props.assign;
 
     this.node.addValidation({ validate: () => this.validateState() });
   }
@@ -572,6 +590,17 @@ export abstract class State extends Construct implements IChainable {
       ? QueryLanguage.JSONATA : undefined;
     return {
       QueryLanguage: queryLanguage,
+    };
+  }
+
+  /**
+   * Render the assign in ASL JSON format
+   */
+  protected renderAssign(topLevelQueryLanguage?: QueryLanguage): any {
+    const queryLanguage = _getActualQueryLanguage(topLevelQueryLanguage, this.queryLanguage);
+    return {
+      Assign: queryLanguage === QueryLanguage.JSON_PATH
+        ? FieldUtils.renderObject(this.assign) : this.assign,
     };
   }
 

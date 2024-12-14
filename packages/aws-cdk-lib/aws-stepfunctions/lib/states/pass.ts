@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { StateType } from './private/state-type';
-import { JsonataCommonOptions, JsonPathCommonOptions, renderJsonPath, State, StateBaseProps } from './state';
+import { AssignableStateOptions, JsonataCommonOptions, JsonPathCommonOptions, renderJsonPath, State, StateBaseProps } from './state';
 import { Chain } from '../chain';
 import { FieldUtils } from '../fields';
 import { IChainable, INextable, QueryLanguage } from '../types';
@@ -86,17 +86,17 @@ interface PassJsonPathOptions extends JsonPathCommonOptions {
 /**
  * Properties for defining a Pass state that using JSONPath
  */
-export interface PassJsonPathProps extends StateBaseProps, PassJsonPathOptions {}
+export interface PassJsonPathProps extends StateBaseProps, AssignableStateOptions, PassJsonPathOptions {}
 
 /**
  * Properties for defining a Pass state that using JSONata
  */
-export interface PassJsonataProps extends StateBaseProps, JsonataCommonOptions {}
+export interface PassJsonataProps extends StateBaseProps, AssignableStateOptions, JsonataCommonOptions {}
 
 /**
  * Properties for defining a Pass state
  */
-export interface PassProps extends StateBaseProps, PassJsonPathOptions, JsonataCommonOptions {}
+export interface PassProps extends StateBaseProps, AssignableStateOptions, PassJsonPathOptions, JsonataCommonOptions {}
 
 /**
  * Define a Pass in the state machine
@@ -145,16 +145,17 @@ export class Pass extends State implements INextable {
   /**
    * Return the Amazon States Language object for this state
    */
-  public toStateJson(queryLanguage?: QueryLanguage): object {
+  public toStateJson(topLevelQueryLanguage?: QueryLanguage): object {
     return {
       Type: StateType.PASS,
-      ...this.renderQueryLanguage(queryLanguage),
+      ...this.renderQueryLanguage(topLevelQueryLanguage),
       Comment: this.comment,
       Result: this.result?.value,
       ResultPath: renderJsonPath(this.resultPath),
       ...this.renderInputOutput(),
       ...this.renderParameters(),
       ...this.renderNextEnd(),
+      ...this.renderAssign(topLevelQueryLanguage),
     };
   }
 

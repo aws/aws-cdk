@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { StateType } from './private/state-type';
-import { JsonataCommonOptions, JsonPathCommonOptions, renderJsonPath, State, StateBaseProps } from './state';
+import { AssignableStateOptions, JsonataCommonOptions, JsonPathCommonOptions, renderJsonPath, State, StateBaseProps } from './state';
 import { Token } from '../../../core';
 import { Chain } from '../chain';
 import { FieldUtils } from '../fields';
@@ -117,7 +117,7 @@ export interface MapBaseOptions {
 /**
  * Properties for defining a Map state
  */
-export interface MapBaseProps extends StateBaseProps, MapBaseOptions, MapBaseJsonPathOptions, MapBaseJsonataOptions {}
+export interface MapBaseProps extends StateBaseProps, AssignableStateOptions, MapBaseOptions, MapBaseJsonPathOptions, MapBaseJsonataOptions {}
 
 /**
  * Returns true if the value passed is a positive integer
@@ -172,10 +172,10 @@ export abstract class MapBase extends State implements INextable {
   /**
    * Return the Amazon States Language object for this state
    */
-  public toStateJson(stateMachineQueryLanguage?: QueryLanguage): object {
+  public toStateJson(topLevelQueryLanguage?: QueryLanguage): object {
     return {
       Type: StateType.MAP,
-      ...this.renderQueryLanguage(stateMachineQueryLanguage),
+      ...this.renderQueryLanguage(topLevelQueryLanguage),
       Comment: this.comment,
       ResultPath: renderJsonPath(this.resultPath),
       ...this.renderNextEnd(),
@@ -188,6 +188,7 @@ export abstract class MapBase extends State implements INextable {
       ...this.renderItemProcessor(),
       ...(this.maxConcurrency && { MaxConcurrency: this.maxConcurrency }),
       ...(this.maxConcurrencyPath && { MaxConcurrencyPath: renderJsonPath(this.maxConcurrencyPath) }),
+      ...this.renderAssign(topLevelQueryLanguage),
     };
   }
 

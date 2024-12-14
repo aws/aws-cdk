@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { JsonataCommonOptions, JsonPathCommonOptions, renderJsonPath, State, StateBaseProps } from './state';
+import { AssignableStateOptions, JsonataCommonOptions, JsonPathCommonOptions, renderJsonPath, State, StateBaseProps } from './state';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as iam from '../../../aws-iam';
 import * as cdk from '../../../core';
@@ -104,17 +104,18 @@ interface TaskStateJsonPathBaseOptions extends JsonPathCommonOptions {
 /**
  * Props that are common to all tasks that using JSONPath
  */
-export interface TaskStateJsonPathBaseProps extends StateBaseProps, TaskStateBaseOptions, TaskStateJsonPathBaseOptions {}
+export interface TaskStateJsonPathBaseProps extends StateBaseProps, TaskStateBaseOptions, AssignableStateOptions, TaskStateJsonPathBaseOptions {}
 
 /**
  * Props that are common to all tasks that using JSONata
  */
-export interface TaskStateJsonataBaseProps extends StateBaseProps, TaskStateBaseOptions, JsonataCommonOptions {}
+export interface TaskStateJsonataBaseProps extends StateBaseProps, TaskStateBaseOptions, AssignableStateOptions, JsonataCommonOptions {}
 
 /**
  * Props that are common to all tasks
  */
-export interface TaskStateBaseProps extends StateBaseProps, TaskStateBaseOptions, TaskStateJsonPathBaseOptions, JsonataCommonOptions {}
+export interface TaskStateBaseProps extends StateBaseProps, TaskStateBaseOptions,
+  AssignableStateOptions, TaskStateJsonPathBaseOptions, JsonataCommonOptions {}
 
 /**
  * Define a Task state in the state machine
@@ -331,7 +332,7 @@ export abstract class TaskStateBase extends State implements INextable {
     return this.credentials ? FieldUtils.renderObject({ Credentials: { RoleArn: this.credentials.role.roleArn } }) : undefined;
   }
 
-  private renderTaskBase() {
+  private renderTaskBase(topLevelQueryLanguage?: QueryLanguage) {
     return {
       Type: 'Task',
       Comment: this.comment,
@@ -346,6 +347,7 @@ export abstract class TaskStateBase extends State implements INextable {
       Output: this.outputs,
       ...this.renderResultSelector(),
       ...this.renderCredentials(),
+      ...this.renderAssign(topLevelQueryLanguage),
     };
   }
 }

@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { StateType } from './private/state-type';
-import { JsonataCommonOptions, JsonPathCommonOptions, renderJsonPath, State, StateBaseProps } from './state';
+import { AssignableStateOptions, JsonataCommonOptions, JsonPathCommonOptions, renderJsonPath, State, StateBaseProps } from './state';
 import { Chain } from '../chain';
 import { StateGraph } from '../state-graph';
 import { CatchProps, IChainable, INextable, QueryLanguage, RetryProps } from '../types';
@@ -45,17 +45,17 @@ interface ParallelJsonataOptions extends JsonataCommonOptions {
 /**
  * Properties for defining a Parallel state that using JSONPath
  */
-export interface ParallelJsonPathProps extends StateBaseProps, ParallelJsonPathOptions {}
+export interface ParallelJsonPathProps extends StateBaseProps, AssignableStateOptions, ParallelJsonPathOptions {}
 
 /**
  * Properties for defining a Parallel state that using JSONata
  */
-export interface ParallelJsonataProps extends StateBaseProps, ParallelJsonataOptions {}
+export interface ParallelJsonataProps extends StateBaseProps, AssignableStateOptions, ParallelJsonataOptions {}
 
 /**
  * Properties for defining a Parallel state
  */
-export interface ParallelProps extends StateBaseProps, ParallelJsonPathOptions, ParallelJsonataOptions {}
+export interface ParallelProps extends StateBaseProps, AssignableStateOptions, ParallelJsonPathOptions, ParallelJsonataOptions {}
 
 /**
  * Define a Parallel state in the state machine
@@ -156,10 +156,10 @@ export class Parallel extends State implements INextable {
   /**
    * Return the Amazon States Language object for this state
    */
-  public toStateJson(queryLanguage?: QueryLanguage): object {
+  public toStateJson(topLevelQueryLanguage?: QueryLanguage): object {
     return {
       Type: StateType.PARALLEL,
-      ...this.renderQueryLanguage(queryLanguage),
+      ...this.renderQueryLanguage(topLevelQueryLanguage),
       Comment: this.comment,
       ResultPath: renderJsonPath(this.resultPath),
       ...this.renderNextEnd(),
@@ -167,6 +167,7 @@ export class Parallel extends State implements INextable {
       ...this.renderRetryCatch(),
       ...this.renderBranches(),
       ...this.renderResultSelector(),
+      ...this.renderAssign(topLevelQueryLanguage),
     };
   }
 

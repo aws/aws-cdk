@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { StateType } from './private/state-type';
-import { ChoiceTransitionOptions, JsonataCommonOptions, JsonPathCommonOptions, State, StateBaseProps } from './state';
+import { AssignableStateOptions, ChoiceTransitionOptions, JsonataCommonOptions, JsonPathCommonOptions, State, StateBaseProps } from './state';
 import { Chain } from '../chain';
 import { Condition } from '../condition';
 import { IChainable, INextable, QueryLanguage } from '../types';
@@ -8,17 +8,17 @@ import { IChainable, INextable, QueryLanguage } from '../types';
 /**
  * Properties for defining a Choice state that using JSONPath
  */
-export interface ChoiceJsonPathProps extends StateBaseProps, JsonPathCommonOptions {}
+export interface ChoiceJsonPathProps extends StateBaseProps, AssignableStateOptions, JsonPathCommonOptions {}
 
 /**
  * Properties for defining a Choice state that using JSONata
  */
-export interface ChoiceJsonataProps extends StateBaseProps, JsonataCommonOptions {}
+export interface ChoiceJsonataProps extends StateBaseProps, AssignableStateOptions, JsonataCommonOptions {}
 
 /**
  * Properties for defining a Choice state
  */
-export interface ChoiceProps extends StateBaseProps, JsonPathCommonOptions, JsonataCommonOptions {}
+export interface ChoiceProps extends StateBaseProps, AssignableStateOptions, JsonPathCommonOptions, JsonataCommonOptions {}
 
 /**
  * Define a Choice in the state machine
@@ -92,13 +92,14 @@ export class Choice extends State {
   /**
    * Return the Amazon States Language object for this state
    */
-  public toStateJson(queryLanguage?: QueryLanguage): object {
+  public toStateJson(topLevelQueryLanguage?: QueryLanguage): object {
     return {
       Type: StateType.CHOICE,
-      ...this.renderQueryLanguage(queryLanguage),
+      ...this.renderQueryLanguage(topLevelQueryLanguage),
       Comment: this.comment,
       ...this.renderInputOutput(),
       ...this.renderChoices(),
+      ...this.renderAssign(topLevelQueryLanguage),
     };
   }
 }
