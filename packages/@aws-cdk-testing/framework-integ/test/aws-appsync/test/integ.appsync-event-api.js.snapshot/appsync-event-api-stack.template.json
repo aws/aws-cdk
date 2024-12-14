@@ -233,7 +233,7 @@
     "CertificateArn": {
      "Ref": "Certificate4E7ABB08"
     },
-    "Description": "domain for my-event-api Event API}",
+    "Description": "domain for my-event-api Event API",
     "DomainName": "api.*.example.com"
    }
   },
@@ -275,6 +275,19 @@
       ]
      ]
     }
+   }
+  },
+  "EventApiAnotherChannelNamespace5BC7F3A5": {
+   "Type": "AWS::AppSync::ChannelNamespace",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "EventApiE141E6C0",
+      "ApiId"
+     ]
+    },
+    "CodeHandlers": "\n            export function onPublish(ctx) {\n              return ctx.events.filter((event) => event.payload.odds > 0)\n            }\n          ",
+    "Name": "AnotherChannelNamespace"
    }
   },
   "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB": {

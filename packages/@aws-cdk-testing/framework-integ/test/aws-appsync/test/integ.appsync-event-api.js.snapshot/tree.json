@@ -379,7 +379,7 @@
                     "certificateArn": {
                       "Ref": "Certificate4E7ABB08"
                     },
-                    "description": "domain for my-event-api Event API}",
+                    "description": "domain for my-event-api Event API",
                     "domainName": "api.*.example.com"
                   }
                 },
@@ -431,6 +431,37 @@
                 "path": "appsync-event-api-stack/EventApi/LogGroup",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "AnotherChannelNamespace": {
+                "id": "AnotherChannelNamespace",
+                "path": "appsync-event-api-stack/EventApi/AnotherChannelNamespace",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "appsync-event-api-stack/EventApi/AnotherChannelNamespace/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::AppSync::ChannelNamespace",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Fn::GetAtt": [
+                            "EventApiE141E6C0",
+                            "ApiId"
+                          ]
+                        },
+                        "codeHandlers": "\n            export function onPublish(ctx) {\n              return ctx.events.filter((event) => event.payload.odds > 0)\n            }\n          ",
+                        "name": "AnotherChannelNamespace"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_appsync.CfnChannelNamespace",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.ChannelNamespace",
                   "version": "0.0.0"
                 }
               }
