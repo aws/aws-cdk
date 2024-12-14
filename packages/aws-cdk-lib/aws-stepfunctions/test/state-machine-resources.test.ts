@@ -771,7 +771,7 @@ describe('State Machine Resources', () => {
     const stack = new cdk.Stack();
     const task = stepfunctions.Pass.jsonata(stack, 'Pass', {
       stateName: 'my-pass-state',
-      output: {
+      outputs: {
         input: '{% $states.input %}',
         stringArgument: 'inital-task',
         numberArgument: 123,

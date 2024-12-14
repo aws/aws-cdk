@@ -90,11 +90,11 @@ export class StepFunctionsInvokeActivity extends sfn.TaskStateBase {
    */
   protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
     const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
+    const paramOrArgProps = this.props.parameters ?? this.props.arguments;
+    const paramOrArg = paramOrArgProps ? this._renderParametersOrArguments(paramOrArgProps, queryLanguage) : undefined;
     return {
       Resource: this.props.activity.activityArn,
-      ...this._renderParametersOrArguments({
-        ...(this.props.parameters ?? this.props.arguments),
-      }, queryLanguage),
+      ...paramOrArg,
     };
   }
 

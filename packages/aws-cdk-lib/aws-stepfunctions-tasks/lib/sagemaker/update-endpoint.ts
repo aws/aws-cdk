@@ -84,7 +84,7 @@ export class SageMakerUpdateEndpoint extends sfn.TaskStateBase {
     const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
     return {
       Resource: integrationResourceArn('sagemaker', 'updateEndpoint', this.integrationPattern),
-      Parameters: this._renderParametersOrArguments(this.renderParameters(), queryLanguage),
+      ...this._renderParametersOrArguments(this.renderParameters(), queryLanguage),
     };
   }
 

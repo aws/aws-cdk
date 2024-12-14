@@ -50,7 +50,7 @@ describe('Task base', () => {
     task = new FakeTask(stack, 'my-exciting-task', {
       queryLanguage: sfn.QueryLanguage.JSONATA,
       comment: 'my exciting task',
-      output: {
+      outputs: {
         FakeName: '{% $states.result.FakeName %}',
       },
     });

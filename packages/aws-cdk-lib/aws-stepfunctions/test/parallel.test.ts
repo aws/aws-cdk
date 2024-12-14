@@ -65,7 +65,7 @@ describe('Parallel State', () => {
 
     // WHEN
     const parallel = stepfunctions.Parallel.jsonata(stack, 'Parallel State', {
-      output: {
+      outputs: {
         foo: '{% $state.input.result[0] %}',
       },
     });

@@ -108,7 +108,7 @@ export interface JsonataCommonOptions {
    *
    * @see https://docs.aws.amazon.com/step-functions/latest/dg/concepts-input-output-filtering.html
    *
-   * @default - None
+   * @default - $states.result or $states.errorOutput
    */
   readonly outputs?: any;
 }
