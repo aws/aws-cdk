@@ -132,7 +132,7 @@
    "Properties": {
     "Command": {
      "Name": "glueetl",
-     "PythonVersion": "3.9",
+     "PythonVersion": "3",
      "ScriptLocation": {
       "Fn::Join": [
        "",
@@ -153,6 +153,7 @@
      "--enable-observability-metrics": "true"
     },
     "GlueVersion": "4.0",
+    "JobRunQueuingEnabled": false,
     "NumberOfWorkers": 2,
     "Role": {
      "Fn::GetAtt": [
@@ -168,7 +169,7 @@
    "Properties": {
     "Command": {
      "Name": "glueetl",
-     "PythonVersion": "3.9",
+     "PythonVersion": "3",
      "ScriptLocation": {
       "Fn::Join": [
        "",
@@ -189,6 +190,7 @@
      "--enable-observability-metrics": "true"
     },
     "GlueVersion": "4.0",
+    "JobRunQueuingEnabled": false,
     "NumberOfWorkers": 2,
     "Role": {
      "Fn::GetAtt": [

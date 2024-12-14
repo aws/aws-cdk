@@ -113,6 +113,7 @@
      "--enable-observability-metrics": "true"
     },
     "GlueVersion": "4.0",
+    "JobRunQueuingEnabled": false,
     "NumberOfWorkers": 3,
     "Role": {
      "Fn::GetAtt": [
@@ -150,6 +151,7 @@
      "--enable-observability-metrics": "true"
     },
     "GlueVersion": "4.0",
+    "JobRunQueuingEnabled": false,
     "Name": "RayJobWith5Workers",
     "NumberOfWorkers": 5,
     "Role": {

@@ -115,6 +115,7 @@
     },
     "ExecutionClass": "FLEX",
     "GlueVersion": "3.0",
+    "JobRunQueuingEnabled": false,
     "NumberOfWorkers": 10,
     "Role": {
      "Fn::GetAtt": [
@@ -155,6 +156,7 @@
     "Description": "Optional Override ScalaSpark Flex Etl Job",
     "ExecutionClass": "FLEX",
     "GlueVersion": "3.0",
+    "JobRunQueuingEnabled": false,
     "Name": "Optional Override ScalaSpark Flex Etl Job",
     "NumberOfWorkers": 20,
     "Role": {

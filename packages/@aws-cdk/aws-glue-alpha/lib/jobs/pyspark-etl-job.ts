@@ -130,7 +130,7 @@ export class PySparkEtlJob extends Job {
       command: {
         name: JobType.ETL,
         scriptLocation: this.codeS3ObjectUrl(props.script),
-        pythonVersion: PythonVersion.THREE_NINE,
+        pythonVersion: PythonVersion.THREE,
       },
       glueVersion: props.glueVersion ?? GlueVersion.V4_0,
       workerType: props.workerType ?? WorkerType.G_1X,

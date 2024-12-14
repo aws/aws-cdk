@@ -199,6 +199,7 @@
                       "--enable-observability-metrics": "true"
                     },
                     "glueVersion": "4.0",
+                    "jobRunQueuingEnabled": false,
                     "numberOfWorkers": 10,
                     "role": {
                       "Fn::GetAtt": [
@@ -256,6 +257,8 @@
                     },
                     "description": "Optional Override PySpark Streaming Job",
                     "glueVersion": "3.0",
+                    "jobRunQueuingEnabled": true,
+                    "maxRetries": 0,
                     "name": "Optional Override PySpark Streaming Job",
                     "numberOfWorkers": 20,
                     "role": {
@@ -317,7 +320,7 @@
                 "path": "aws-glue-job-pyspark-streaming-integ-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -363,7 +366,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },

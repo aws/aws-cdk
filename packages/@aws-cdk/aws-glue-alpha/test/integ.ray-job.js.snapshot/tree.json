@@ -198,6 +198,7 @@
                       "--enable-observability-metrics": "true"
                     },
                     "glueVersion": "4.0",
+                    "jobRunQueuingEnabled": false,
                     "numberOfWorkers": 3,
                     "role": {
                       "Fn::GetAtt": [
@@ -253,6 +254,7 @@
                       "--enable-observability-metrics": "true"
                     },
                     "glueVersion": "4.0",
+                    "jobRunQueuingEnabled": false,
                     "name": "RayJobWith5Workers",
                     "numberOfWorkers": 5,
                     "role": {
@@ -313,7 +315,7 @@
                 "path": "aws-glue-ray-job-integ-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -359,7 +361,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },

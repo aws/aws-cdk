@@ -93,7 +93,7 @@
    "Properties": {
     "Command": {
      "Name": "glueetl",
-     "PythonVersion": "3.9",
+     "PythonVersion": "3",
      "ScriptLocation": {
       "Fn::Join": [
        "",
@@ -114,6 +114,7 @@
      "--enable-observability-metrics": "true"
     },
     "GlueVersion": "4.0",
+    "JobRunQueuingEnabled": false,
     "NumberOfWorkers": 10,
     "Role": {
      "Fn::GetAtt": [
@@ -129,7 +130,7 @@
    "Properties": {
     "Command": {
      "Name": "glueetl",
-     "PythonVersion": "3.9",
+     "PythonVersion": "3",
      "ScriptLocation": {
       "Fn::Join": [
        "",
@@ -153,6 +154,8 @@
     },
     "Description": "Optional Override PySpark ETL Job",
     "GlueVersion": "3.0",
+    "JobRunQueuingEnabled": true,
+    "MaxRetries": 0,
     "Name": "Optional Override PySpark ETL Job",
     "NumberOfWorkers": 20,
     "Role": {

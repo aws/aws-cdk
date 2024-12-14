@@ -272,6 +272,7 @@
                       "--enable-observability-metrics": "true"
                     },
                     "glueVersion": "4.0",
+                    "jobRunQueuingEnabled": false,
                     "numberOfWorkers": 2,
                     "role": {
                       "Fn::GetAtt": [
@@ -326,6 +327,7 @@
                       "--enable-observability-metrics": "true"
                     },
                     "glueVersion": "4.0",
+                    "jobRunQueuingEnabled": false,
                     "numberOfWorkers": 2,
                     "role": {
                       "Fn::GetAtt": [
@@ -390,7 +392,7 @@
                 "path": "aws-cdk-glue-workflow-trigger-integ/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -436,7 +438,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },

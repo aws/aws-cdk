@@ -200,6 +200,7 @@
                       "--enable-observability-metrics": "true"
                     },
                     "glueVersion": "3.0",
+                    "jobRunQueuingEnabled": false,
                     "maxCapacity": 0.0625,
                     "maxRetries": 0,
                     "role": {
@@ -254,6 +255,7 @@
                       "--enable-observability-metrics": "true"
                     },
                     "glueVersion": "1.0",
+                    "jobRunQueuingEnabled": false,
                     "maxCapacity": 0.0625,
                     "maxRetries": 0,
                     "role": {
@@ -312,6 +314,7 @@
                     },
                     "description": "My detailed Python 3.9 Shell Job",
                     "glueVersion": "3.0",
+                    "jobRunQueuingEnabled": true,
                     "maxCapacity": 1,
                     "maxRetries": 0,
                     "name": "My Python 3.9 Shell Job",
@@ -372,7 +375,7 @@
                 "path": "aws-glue-job-python-shell-integ-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -418,7 +421,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },

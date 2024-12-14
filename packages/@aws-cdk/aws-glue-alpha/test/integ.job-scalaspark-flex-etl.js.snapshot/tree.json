@@ -200,6 +200,7 @@
                     },
                     "executionClass": "FLEX",
                     "glueVersion": "3.0",
+                    "jobRunQueuingEnabled": false,
                     "numberOfWorkers": 10,
                     "role": {
                       "Fn::GetAtt": [
@@ -258,6 +259,7 @@
                     "description": "Optional Override ScalaSpark Flex Etl Job",
                     "executionClass": "FLEX",
                     "glueVersion": "3.0",
+                    "jobRunQueuingEnabled": false,
                     "name": "Optional Override ScalaSpark Flex Etl Job",
                     "numberOfWorkers": 20,
                     "role": {
@@ -319,7 +321,7 @@
                 "path": "aws-glue-job-scalasparkflex-etl-integ-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -365,7 +367,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },
