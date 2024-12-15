@@ -1,5 +1,6 @@
 import { IConstruct, Construct, Node } from 'constructs';
 import { Environment } from './environment';
+import { FeatureFlags } from './feature-flags';
 import { PermissionsBoundary } from './permissions-boundary';
 import { synthesize } from './private/synthesis';
 import { IPolicyValidationPluginBeta1 } from './validation';
@@ -224,6 +225,7 @@ export class Stage extends Construct {
       this.assembly = synthesize(this, {
         skipValidation: options.skipValidation,
         validateOnSynthesis: options.validateOnSynthesis,
+        aspectStabilization: options.aspectStabilization ?? FeatureFlags.of(this).isEnabled(cxapi.ASPECT_STABILIZATION) ?? false,
       });
       newConstructPaths = this.listAllConstructPaths(this);
       this.constructPathsCache = newConstructPaths;
@@ -318,4 +320,15 @@ export interface StageSynthesisOptions {
    * @default true
    */
   readonly errorOnDuplicateSynth?: boolean;
+
+  /**
+   * Whether or not run the stabilization loop while invoking Aspects.
+   *
+   * The stabilization loop runs multiple passes of the construct tree when invoking
+   * Aspects. Without the stabilization loop, Aspects that are created by other Aspects
+   * are not run and new nodes that are created at higher points on the construct tree by
+   * an Aspect will not inherit their parent aspects.
+   * @default false
+   */
+  readonly aspectStabilization?: boolean;
 }

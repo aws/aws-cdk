@@ -10,7 +10,7 @@ import {
   LoadBalancerContextProviderPlugin,
 } from '../../lib/context-providers/load-balancers';
 import {
-  FAKE_CREDENTIALS,
+  FAKE_CREDENTIAL_CHAIN,
   MockSdkProvider,
   mockElasticLoadBalancingV2Client,
   restoreSdkMocksToDefault,
@@ -18,7 +18,7 @@ import {
 
 const mockSDK = new (class extends MockSdkProvider {
   public forEnvironment(): Promise<SdkForEnvironment> {
-    return Promise.resolve({ sdk: new SDK(FAKE_CREDENTIALS, mockSDK.defaultRegion, {}), didAssumeRole: false });
+    return Promise.resolve({ sdk: new SDK(FAKE_CREDENTIAL_CHAIN, mockSDK.defaultRegion, {}), didAssumeRole: false });
   }
 })();
 
