@@ -24,7 +24,7 @@ import { MIGRATE_SUPPORTED_LANGUAGES, getMigrateScanType } from '../lib/commands
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
 import { data, debug, error, print, setCI, setLogLevel, LogLevel } from '../lib/logging';
 import { Notices } from '../lib/notices';
-import { Command, Configuration, Settings } from '../lib/settings';
+import { Arguments, Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
 import { SdkToCliLogger } from './api/aws-auth/sdk-logger';
 
@@ -48,12 +48,14 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
   }
 
   const argv = await parseCommandLineArguments(args, makeBrowserDefault(), await availableInitLanguages(), MIGRATE_SUPPORTED_LANGUAGES as string[], version.DISPLAY_VERSION, yargsNegativeAlias);
+  // turns the command line arguments we get into a typed object
+  const typedArgs = createArguments(argv);
 
   // if one -v, log at a DEBUG level
   // if 2 -v, log at a TRACE level
-  if (argv.verbose) {
+  if (typedArgs.verbose) {
     let logLevel: LogLevel;
-    switch (argv.verbose) {
+    switch (typedArgs.verbose) {
       case 1:
         logLevel = LogLevel.DEBUG;
         break;
@@ -66,11 +68,11 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
   }
 
   // Debug should always imply tracing
-  if (argv.debug || argv.verbose > 2) {
+  if (typedArgs.debug || typedArgs.verbose > 2) {
     enableTracing(true);
   }
 
-  if (argv.ci) {
+  if (typedArgs.ci) {
     setCI(true);
   }
 
@@ -81,26 +83,23 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
   }
 
   debug('CDK toolkit version:', version.DISPLAY_VERSION);
-  debug('Command line arguments:', argv);
+  debug('Command line arguments:', typedArgs);
 
   const configuration = new Configuration({
-    commandLineArguments: {
-      ...argv,
-      _: argv._ as [Command, ...string[]], // TypeScript at its best
-    },
+    commandLineArguments: typedArgs,
   });
   await configuration.load();
 
-  const cmd = argv._[0];
+  const cmd = typedArgs._[0];
 
-  const notices = Notices.create({ configuration, includeAcknowledged: cmd === 'notices' ? !argv.unacknowledged : false });
+  const notices = Notices.create({ configuration, includeAcknowledged: cmd === 'notices' ? !typedArgs.unacknowledged : false });
   await notices.refresh();
 
   const sdkProvider = await SdkProvider.withAwsCliCompatibleDefaults({
     profile: configuration.commandLineArgSettings.get(['profile']),
     httpOptions: {
-      proxyAddress: argv.proxy,
-      caBundlePath: argv['ca-bundle-path'],
+      proxyAddress: typedArgs.proxy,
+      caBundlePath: typedArgs['ca-bundle-path'],
     },
     logger: new SdkToCliLogger(),
   });
@@ -155,10 +154,10 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
   }
 
   // Bundle up global objects so the commands have access to them
-  const commandOptions = { args: argv, configuration, aws: sdkProvider };
+  const commandOptions = { args: typedArgs, configuration, aws: sdkProvider };
 
   try {
-    return await main(cmd, argv);
+    return await main(cmd, typedArgs);
   } finally {
     // If we locked the 'cdk.out' directory, release it here.
     await outDirLock?.release();
@@ -168,13 +167,12 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
     if (cmd === 'notices') {
       await notices.refresh({ force: true });
-      notices.display({ showTotal: argv.unacknowledged });
+      notices.display({ showTotal: typedArgs.unacknowledged });
 
     } else if (cmd !== 'version') {
       await notices.refresh();
       notices.display();
     }
-
   }
 
   async function main(command: string, args: any): Promise<number | void> {
@@ -579,4 +577,112 @@ export function cli(args: string[] = process.argv.slice(2)) {
       }
       process.exitCode = 1;
     });
+}
+
+/**
+ * This function turns the command line arguments into a typed Arguments object.
+ *
+ * We ensure that the only arguments that exist after this function are either:
+ * - global options
+ * - command-specific options
+ * - the command name
+ * - STACKS (because of legacy reasons)
+ */
+function createArguments(argv: Record<string, any>): Arguments {
+  // First extract the command-specific options
+  const commandOptions: Partial<Record<Command, Record<string, any>>> = {};
+
+  if (argv._?.[0]) {
+    const command = argv._[0] as Command;
+
+    // Map command-specific options based on command
+    switch (command) {
+      case Command.BOOTSTRAP:
+        commandOptions.bootstrap = {
+          'bootstrap-bucket-name': argv['bootstrap-bucket-name'],
+          'bootstrap-kms-key-id': argv['bootstrap-kms-key-id'],
+          'qualifier': argv.qualifier,
+          'force': argv.force,
+          'template': argv.template,
+          'trust': argv.trust,
+          'trust-for-lookup': argv['trust-for-lookup'],
+          'tags': argv.tags,
+        };
+        break;
+
+      case Command.DEPLOY:
+        commandOptions.deploy = {
+          'rollback': argv.rollback,
+          'asset-parallelism': argv['asset-parallelism'],
+          'requireApproval': argv.requireApproval,
+          'hotswap-fallback': argv['hotswap-fallback'],
+          'force': argv.force,
+          'progress': argv.progress,
+          'ci': argv.ci,
+          'execute': argv.execute,
+          'change-set-name': argv['change-set-name'],
+          'toolkit-stack-name': argv['toolkit-stack-name'],
+        };
+        break;
+
+      case Command.SYNTH:
+      case Command.SYNTHESIZE:
+        commandOptions.synth = {
+          quiet: argv.quiet,
+          validation: argv.validation,
+          output: argv.output,
+        };
+        break;
+
+      case Command.LIST:
+      case Command.LS:
+        commandOptions.list = {
+          'long': argv.long,
+          'show-dependencies': argv['show-dependencies'],
+          'tree': argv.tree,
+        };
+        break;
+
+      case Command.WATCH:
+        commandOptions.watch = {
+          'notify': argv.notify,
+          'auto-approve': argv['auto-approve'],
+          'logs': argv.logs,
+          'logs-retain': argv['logs-retain'],
+        };
+        break;
+    }
+  }
+
+  const globalOptions = {
+    'app': argv.app,
+    'build': argv.build,
+    'context': argv.context,
+    'debug': argv.debug,
+    'plugin': argv.plugin,
+    'profile': argv.profile,
+    'trace': argv.trace,
+    'strict': argv.strict,
+    'ignore-errors': argv['ignore-errors'],
+    'json': argv.json,
+    'verbose': argv.verbose,
+  };
+
+  // Create the Arguments object with global options
+  // TODO: change any to Arguments. lots of issues right now
+  const args: any = {
+    _: argv._ as [Command, ...string[]],
+    STACKS: argv.STACKS,
+
+    // Global options
+    ...globalOptions,
+
+    // Add command-specific options
+    ...commandOptions,
+  };
+
+  // Remove undefined properties
+  return Object.fromEntries(
+    Object.entries(args).filter(([_, value]) => value !== undefined),
+  ) as Arguments;
 }

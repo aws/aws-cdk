@@ -4,6 +4,7 @@ import * as fs from 'fs-extra';
 import { Tag } from './cdk-toolkit';
 import { debug, warning } from './logging';
 import * as util from './util';
+import type { CliConfig } from '@aws-cdk/yargs-gen';
 
 export type SettingsMap = {[key: string]: any};
 
@@ -18,19 +19,32 @@ export const TRANSIENT_CONTEXT_KEY = '$dontSaveContext';
 
 const CONTEXT_KEY = 'context';
 
+// TODO: maybe we generate this instead
 export enum Command {
-  LS = 'ls',
-  LIST = 'list',
-  DIFF = 'diff',
   BOOTSTRAP = 'bootstrap',
   DEPLOY = 'deploy',
   DESTROY = 'destroy',
-  SYNTHESIZE = 'synthesize',
-  SYNTH = 'synth',
+  DIFF = 'diff',
+  DOCTOR = 'doctor',
+  LIST = 'list',
+  LS = 'ls',
   METADATA = 'metadata',
   INIT = 'init',
-  VERSION = 'version',
+  SYNTH = 'synth',
+  SYNTHESIZE = 'synthesize',
   WATCH = 'watch',
+  VERSION = 'version',
+  CONFIG = 'config',
+  CONTEXT = 'context',
+  DOCS = 'docs',
+  ROLLBACK = 'rollback',
+  IMPORT = 'import',
+  HOTSWAP = 'hotswap',
+  TREE = 'tree',
+  NOTICES = 'notices',
+  ACKNOWLEDGE = 'acknowledge',
+  ASSET = 'asset',
+  EVENTS = 'events',
 }
 
 const BUNDLING_COMMANDS = [
@@ -41,13 +55,40 @@ const BUNDLING_COMMANDS = [
   Command.WATCH,
 ];
 
-export type Arguments = {
-  readonly _: [Command, ...string[]];
-  readonly exclusively?: boolean;
-  readonly STACKS?: string[];
-  readonly lookups?: boolean;
-  readonly [name: string]: unknown;
+// Helper types to extract option types from CliConfig
+type OptionType<T> = T extends { type: 'boolean' } ? boolean :
+  T extends { type: 'string' } ? string :
+    T extends { type: 'number' } ? number :
+      T extends { type: 'array' } ? string[] :
+        never;
+
+// Extract command-specific options
+type CommandOptions<T> = {
+  [K in keyof T]: OptionType<T[K]>
 };
+
+// Get all global options
+type GlobalOptions = CommandOptions<CliConfig['globalOptions']>;
+
+// Get command-specific options organized by command
+type CommandSpecificOptions = {
+  [K in keyof CliConfig['commands']]: {
+    [Command in K]: CommandOptions<CliConfig['commands'][K]['options']>
+  }
+}[keyof CliConfig['commands']];
+
+/**
+ * Arguments is a type generated from the CliConfig, which is the source of truth
+ * for all CLI options. Allowed values are:
+ * - the command itself and any additional properties that follow the command, like STACKS
+ * - global options available to all CLI commands
+ * - command-specific options based on which command is called.
+ *
+ * For example, if the command is `docs`, then the command specific options are `browser?: string`.
+ */
+export type Arguments = GlobalOptions & {
+  readonly _: [Command, ...string[]];
+} & Partial<CommandSpecificOptions>;
 
 export interface ConfigurationProps {
   /**
@@ -98,7 +139,7 @@ export class Configuration {
   constructor(private readonly props: ConfigurationProps = {}) {
     this.commandLineArguments = props.commandLineArguments
       ? CommandLineArgSettings.fromCommandLineArguments(props.commandLineArguments)
-      : new CommandLineArgSettings();
+      : new CommandLineArgSettings({ _: [Command.LS] as [Command, ...string[]] });
     this.commandLineContext = this.commandLineArguments.subSettings([CONTEXT_KEY]).makeReadOnly();
   }
 
@@ -364,12 +405,12 @@ export class CommandLineArgSettings extends Settings {
    * @returns a new Settings object.
    */
   public static fromCommandLineArguments(argv: Arguments): CommandLineArgSettings {
-    const context = this.parseStringContextListToObject(argv);
+    // const context = this.parseStringContextListToObject(argv);
     const tags = this.parseStringTagsListToObject(expectStringList(argv.tags));
 
     // Determine bundling stacks
     let bundlingStacks: string[];
-    if (BUNDLING_COMMANDS.includes(argv._[0])) {
+    if (BUNDLING_COMMANDS.includes(argv._![0])) {
     // If we deploy, diff, synth or watch a list of stacks exclusively we skip
     // bundling for all other stacks.
       bundlingStacks = argv.exclusively
@@ -379,44 +420,51 @@ export class CommandLineArgSettings extends Settings {
       bundlingStacks = [];
     }
 
-    return new CommandLineArgSettings({
-      app: argv.app,
-      browser: argv.browser,
-      build: argv.build,
-      context,
-      debug: argv.debug,
-      tags,
-      language: argv.language,
-      pathMetadata: argv.pathMetadata,
-      assetMetadata: argv.assetMetadata,
-      profile: argv.profile,
-      plugin: argv.plugin,
-      requireApproval: argv.requireApproval,
-      toolkitStackName: argv.toolkitStackName,
-      toolkitBucket: {
-        bucketName: argv.bootstrapBucketName,
-        kmsKeyId: argv.bootstrapKmsKeyId,
-      },
-      versionReporting: argv.versionReporting,
-      staging: argv.staging,
-      output: argv.output,
-      outputsFile: argv.outputsFile,
-      progress: argv.progress,
-      bundlingStacks,
-      lookups: argv.lookups,
-      rollback: argv.rollback,
-      notices: argv.notices,
-      assetParallelism: argv['asset-parallelism'],
-      assetPrebuild: argv['asset-prebuild'],
-      ignoreNoStacks: argv['ignore-no-stacks'],
-      hotswap: {
-        ecs: {
-          minimumEcsHealthyPercent: argv.minimumEcsHealthyPercent,
-          maximumEcsHealthyPercent: argv.maximumEcsHealthyPercent,
-        },
-      },
-      unstable: argv.unstable,
-    });
+    // return new CommandLineArgSettings({
+    //   app: argv.app,
+    //   browser: argv.browser,
+    //   build: argv.build,
+    //   // context,
+    //   debug: argv.debug,
+    //   tags,
+    //   language: argv.language,
+    //   pathMetadata: argv.pathMetadata,
+    //   assetMetadata: argv.assetMetadata,
+    //   profile: argv.profile,
+    //   plugin: argv.plugin,
+    //   requireApproval: argv.requireApproval,
+    //   toolkitStackName: argv.toolkitStackName,
+    //   bootstrapBucketName: argv.bootstrapBucketName,
+    //   kmsKeyId: argv.bootstrapKmsKeyId,
+    //   bootstrap: {
+    //     ['bootstrap-bucket-name']: argv.bootstrapBucketName,
+    //     //bootstrapBucketName: argv.bootstrapBucketName,
+    //     // kmsKeyId: argv.bootstrapKmsKeyId,
+    //   },
+    //   // toolkitBucket: {
+    //   //   bucketName: argv.bootstrapBucketName,
+    //   //   kmsKeyId: argv.bootstrapKmsKeyId,
+    //   // },
+    //   versionReporting: argv.versionReporting,
+    //   staging: argv.staging,
+    //   output: argv.output,
+    //   outputsFile: argv.outputsFile,
+    //   progress: argv.progress,
+    //   bundlingStacks,
+    //   lookups: argv.lookups,
+    //   rollback: argv.rollback,
+    //   notices: argv.notices,
+    //   assetParallelism: argv['asset-parallelism'],
+    //   assetPrebuild: argv['asset-prebuild'],
+    //   ignoreNoStacks: argv['ignore-no-stacks'],
+    //   hotswap: {
+    //     ecs: {
+    //       minimumEcsHealthyPercent: argv.minimumEcsHealthyPercent,
+    //       maximumEcsHealthyPercent: argv.maximumEcsHealthyPercent,
+    //     },
+    //   },
+    //   unstable: argv.unstable,
+    // });
   }
 
   private static parseStringContextListToObject(argv: Arguments): any {
@@ -466,8 +514,7 @@ export class CommandLineArgSettings extends Settings {
     return tags.length > 0 ? tags : undefined;
   }
 
-  // TODO: type cliSettings
-  constructor(cliSettings: any = {}, public readonly readOnly = false) {
+  constructor(cliSettings: Arguments, public readonly readOnly = false) {
     super(cliSettings);
   }
 }
