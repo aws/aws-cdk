@@ -82,7 +82,7 @@ You can also create it using the CDK, **but note that only the first application
 
 ```ts
 const slr = new iam.CfnServiceLinkedRole(this, 'Service Linked Role', {
-  awsServiceName: 'es.amazonaws.com',
+  awsServiceName: 'opensearchservice.amazonaws.com',
 });
 ```
 
