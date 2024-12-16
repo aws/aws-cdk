@@ -3,6 +3,11 @@ import { EsLintRules } from '@cdklabs/typewriter/lib/eslint-rules';
 import * as prettier from 'prettier';
 import { CliConfig, CliOption, YargsOption } from './yargs-types';
 
+// to import lodash.clonedeep properly, we would need to set esModuleInterop: true
+// however that setting does not work in the CLI, so we fudge it.
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const cloneDeep = require('lodash.clonedeep');
+
 export async function renderYargs(config: CliConfig): Promise<string> {
   const scope = new Module('aws-cdk');
 
@@ -106,7 +111,7 @@ function makeOptions(prefix: Expression, options: { [optionName: string]: CliOpt
   let optionsExpr = prefix;
   for (const option of Object.keys(options)) {
     const theOption: CliOption = options[option];
-    const optionProps: YargsOption = structuredClone(theOption);
+    const optionProps: YargsOption = cloneDeep(theOption);
     const optionArgs: { [key: string]: Expression } = {};
 
     // Array defaults
