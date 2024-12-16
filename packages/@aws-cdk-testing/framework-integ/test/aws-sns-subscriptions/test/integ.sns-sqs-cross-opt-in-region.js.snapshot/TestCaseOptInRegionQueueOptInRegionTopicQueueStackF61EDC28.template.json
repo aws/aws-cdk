@@ -15,7 +15,7 @@
        "Condition": {
         "ArnEquals": {
          "aws:SourceArn": {
-          "Fn::ImportValue": "TestCaseDefaultRegionQueueDefaultRegionTopicTopicStack3DD93C94:ExportsOutputRefTopicBFC7AF6ECB4A357A"
+          "Fn::ImportValue": "TestCaseOptInRegionQueueOptInRegionTopicTopicStack0561E431:ExportsOutputRefTopicBFC7AF6ECB4A357A"
          }
         }
        },
@@ -40,7 +40,7 @@
     ]
    }
   },
-  "QueueTestCaseDefaultRegionQueueDefaultRegionTopicTopicStackTopic4B65A873A2C0FF98": {
+  "QueueTestCaseOptInRegionQueueOptInRegionTopicTopicStackTopic48828F521516D678": {
    "Type": "AWS::SNS::Subscription",
    "Properties": {
     "Endpoint": {
@@ -51,7 +51,7 @@
     },
     "Protocol": "sqs",
     "TopicArn": {
-     "Fn::ImportValue": "TestCaseDefaultRegionQueueDefaultRegionTopicTopicStack3DD93C94:ExportsOutputRefTopicBFC7AF6ECB4A357A"
+     "Fn::ImportValue": "TestCaseOptInRegionQueueOptInRegionTopicTopicStack0561E431:ExportsOutputRefTopicBFC7AF6ECB4A357A"
     }
    },
    "DependsOn": [

@@ -1,14 +1,17 @@
 {
   "version": "38.0.1",
   "testCases": {
-    "SNS Subscriptions/DefaultTest": {
+    "CrossOptInRegionsSqsSubscriptionTest/DefaultTest": {
       "stacks": [
-        "TestCaseDefaultRegionQueueDefaultRegionTopic/TopicStack",
+        "TestCaseOptInRegionQueueOptInRegionTopic/QueueStack",
+        "TestCaseOptInRegionQueueOptInRegionTopic/TopicStack",
+        "TestCaseOptInRegionQueueDefaultRegionTopic/QueueStack",
         "TestCaseOptInRegionQueueDefaultRegionTopic/TopicStack",
+        "TestCaseDefaultRegionQueueOptInRegionTopic/QueueStack",
         "TestCaseDefaultRegionQueueOptInRegionTopic/TopicStack"
       ],
-      "assertionStack": "SNS Subscriptions/DefaultTest/DeployAssert",
-      "assertionStackName": "SNSSubscriptionsDefaultTestDeployAssertD77125EB"
+      "assertionStack": "CrossOptInRegionsSqsSubscriptionTest/DefaultTest/DeployAssert",
+      "assertionStackName": "CrossOptInRegionsSqsSubscriptionTestDefaultTestDeployAssertA309ED5C"
     }
   }
 }

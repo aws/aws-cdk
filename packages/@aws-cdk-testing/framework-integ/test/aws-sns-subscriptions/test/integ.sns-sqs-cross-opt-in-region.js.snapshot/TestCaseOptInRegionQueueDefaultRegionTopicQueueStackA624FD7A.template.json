@@ -24,7 +24,7 @@
        },
        "Effect": "Allow",
        "Principal": {
-        "Service": "sns.amazonaws.com"
+        "Service": "sns.af-south-1.amazonaws.com"
        },
        "Resource": {
         "Fn::GetAtt": [

@@ -4,21 +4,21 @@
     "id": "App",
     "path": "",
     "children": {
-      "TestCaseDefaultRegionQueueDefaultRegionTopic": {
-        "id": "TestCaseDefaultRegionQueueDefaultRegionTopic",
-        "path": "TestCaseDefaultRegionQueueDefaultRegionTopic",
+      "TestCaseOptInRegionQueueOptInRegionTopic": {
+        "id": "TestCaseOptInRegionQueueOptInRegionTopic",
+        "path": "TestCaseOptInRegionQueueOptInRegionTopic",
         "children": {
           "QueueStack": {
             "id": "QueueStack",
-            "path": "TestCaseDefaultRegionQueueDefaultRegionTopic/QueueStack",
+            "path": "TestCaseOptInRegionQueueOptInRegionTopic/QueueStack",
             "children": {
               "Queue": {
                 "id": "Queue",
-                "path": "TestCaseDefaultRegionQueueDefaultRegionTopic/QueueStack/Queue",
+                "path": "TestCaseOptInRegionQueueOptInRegionTopic/QueueStack/Queue",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "TestCaseDefaultRegionQueueDefaultRegionTopic/QueueStack/Queue/Resource",
+                    "path": "TestCaseOptInRegionQueueOptInRegionTopic/QueueStack/Queue/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
                       "aws:cdk:cloudformation:props": {}
@@ -30,11 +30,11 @@
                   },
                   "Policy": {
                     "id": "Policy",
-                    "path": "TestCaseDefaultRegionQueueDefaultRegionTopic/QueueStack/Queue/Policy",
+                    "path": "TestCaseOptInRegionQueueOptInRegionTopic/QueueStack/Queue/Policy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "TestCaseDefaultRegionQueueDefaultRegionTopic/QueueStack/Queue/Policy/Resource",
+                        "path": "TestCaseOptInRegionQueueOptInRegionTopic/QueueStack/Queue/Policy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::SQS::QueuePolicy",
                           "aws:cdk:cloudformation:props": {
@@ -45,7 +45,7 @@
                                   "Condition": {
                                     "ArnEquals": {
                                       "aws:SourceArn": {
-                                        "Fn::ImportValue": "TestCaseDefaultRegionQueueDefaultRegionTopicTopicStack3DD93C94:ExportsOutputRefTopicBFC7AF6ECB4A357A"
+                                        "Fn::ImportValue": "TestCaseOptInRegionQueueOptInRegionTopicTopicStack0561E431:ExportsOutputRefTopicBFC7AF6ECB4A357A"
                                       }
                                     }
                                   },
@@ -81,13 +81,13 @@
                       "version": "0.0.0"
                     }
                   },
-                  "TestCaseDefaultRegionQueueDefaultRegionTopicTopicStackTopic4B65A873": {
-                    "id": "TestCaseDefaultRegionQueueDefaultRegionTopicTopicStackTopic4B65A873",
-                    "path": "TestCaseDefaultRegionQueueDefaultRegionTopic/QueueStack/Queue/TestCaseDefaultRegionQueueDefaultRegionTopicTopicStackTopic4B65A873",
+                  "TestCaseOptInRegionQueueOptInRegionTopicTopicStackTopic48828F52": {
+                    "id": "TestCaseOptInRegionQueueOptInRegionTopicTopicStackTopic48828F52",
+                    "path": "TestCaseOptInRegionQueueOptInRegionTopic/QueueStack/Queue/TestCaseOptInRegionQueueOptInRegionTopicTopicStackTopic48828F52",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "TestCaseDefaultRegionQueueDefaultRegionTopic/QueueStack/Queue/TestCaseDefaultRegionQueueDefaultRegionTopicTopicStackTopic4B65A873/Resource",
+                        "path": "TestCaseOptInRegionQueueOptInRegionTopic/QueueStack/Queue/TestCaseOptInRegionQueueOptInRegionTopicTopicStackTopic48828F52/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::SNS::Subscription",
                           "aws:cdk:cloudformation:props": {
@@ -99,7 +99,7 @@
                             },
                             "protocol": "sqs",
                             "topicArn": {
-                              "Fn::ImportValue": "TestCaseDefaultRegionQueueDefaultRegionTopicTopicStack3DD93C94:ExportsOutputRefTopicBFC7AF6ECB4A357A"
+                              "Fn::ImportValue": "TestCaseOptInRegionQueueOptInRegionTopicTopicStack0561E431:ExportsOutputRefTopicBFC7AF6ECB4A357A"
                             }
                           }
                         },
@@ -122,7 +122,7 @@
               },
               "BootstrapVersion": {
                 "id": "BootstrapVersion",
-                "path": "TestCaseDefaultRegionQueueDefaultRegionTopic/QueueStack/BootstrapVersion",
+                "path": "TestCaseOptInRegionQueueOptInRegionTopic/QueueStack/BootstrapVersion",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnParameter",
                   "version": "0.0.0"
@@ -130,7 +130,7 @@
               },
               "CheckBootstrapVersion": {
                 "id": "CheckBootstrapVersion",
-                "path": "TestCaseDefaultRegionQueueDefaultRegionTopic/QueueStack/CheckBootstrapVersion",
+                "path": "TestCaseOptInRegionQueueOptInRegionTopic/QueueStack/CheckBootstrapVersion",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnRule",
                   "version": "0.0.0"
@@ -144,15 +144,15 @@
           },
           "TopicStack": {
             "id": "TopicStack",
-            "path": "TestCaseDefaultRegionQueueDefaultRegionTopic/TopicStack",
+            "path": "TestCaseOptInRegionQueueOptInRegionTopic/TopicStack",
             "children": {
               "Topic": {
                 "id": "Topic",
-                "path": "TestCaseDefaultRegionQueueDefaultRegionTopic/TopicStack/Topic",
+                "path": "TestCaseOptInRegionQueueOptInRegionTopic/TopicStack/Topic",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "TestCaseDefaultRegionQueueDefaultRegionTopic/TopicStack/Topic/Resource",
+                    "path": "TestCaseOptInRegionQueueOptInRegionTopic/TopicStack/Topic/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
                       "aws:cdk:cloudformation:props": {}
@@ -170,11 +170,11 @@
               },
               "Exports": {
                 "id": "Exports",
-                "path": "TestCaseDefaultRegionQueueDefaultRegionTopic/TopicStack/Exports",
+                "path": "TestCaseOptInRegionQueueOptInRegionTopic/TopicStack/Exports",
                 "children": {
                   "Output{\"Ref\":\"TopicBFC7AF6E\"}": {
                     "id": "Output{\"Ref\":\"TopicBFC7AF6E\"}",
-                    "path": "TestCaseDefaultRegionQueueDefaultRegionTopic/TopicStack/Exports/Output{\"Ref\":\"TopicBFC7AF6E\"}",
+                    "path": "TestCaseOptInRegionQueueOptInRegionTopic/TopicStack/Exports/Output{\"Ref\":\"TopicBFC7AF6E\"}",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnOutput",
                       "version": "0.0.0"
@@ -188,7 +188,7 @@
               },
               "BootstrapVersion": {
                 "id": "BootstrapVersion",
-                "path": "TestCaseDefaultRegionQueueDefaultRegionTopic/TopicStack/BootstrapVersion",
+                "path": "TestCaseOptInRegionQueueOptInRegionTopic/TopicStack/BootstrapVersion",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnParameter",
                   "version": "0.0.0"
@@ -196,7 +196,7 @@
               },
               "CheckBootstrapVersion": {
                 "id": "CheckBootstrapVersion",
-                "path": "TestCaseDefaultRegionQueueDefaultRegionTopic/TopicStack/CheckBootstrapVersion",
+                "path": "TestCaseOptInRegionQueueOptInRegionTopic/TopicStack/CheckBootstrapVersion",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnRule",
                   "version": "0.0.0"
@@ -264,7 +264,7 @@
                                   },
                                   "Effect": "Allow",
                                   "Principal": {
-                                    "Service": "sns.amazonaws.com"
+                                    "Service": "sns.af-south-1.amazonaws.com"
                                   },
                                   "Resource": {
                                     "Fn::GetAtt": [
@@ -587,7 +587,7 @@
                                   },
                                   "Effect": "Allow",
                                   "Principal": {
-                                    "Service": "sns.amazonaws.com"
+                                    "Service": "sns.af-south-1.amazonaws.com"
                                   },
                                   "Resource": {
                                     "Fn::GetAtt": [
@@ -860,17 +860,17 @@
           "version": "10.4.2"
         }
       },
-      "SNS Subscriptions": {
-        "id": "SNS Subscriptions",
-        "path": "SNS Subscriptions",
+      "CrossOptInRegionsSqsSubscriptionTest": {
+        "id": "CrossOptInRegionsSqsSubscriptionTest",
+        "path": "CrossOptInRegionsSqsSubscriptionTest",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "SNS Subscriptions/DefaultTest",
+            "path": "CrossOptInRegionsSqsSubscriptionTest/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "SNS Subscriptions/DefaultTest/Default",
+                "path": "CrossOptInRegionsSqsSubscriptionTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.4.2"
@@ -878,11 +878,11 @@
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "SNS Subscriptions/DefaultTest/DeployAssert",
+                "path": "CrossOptInRegionsSqsSubscriptionTest/DefaultTest/DeployAssert",
                 "children": {
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
-                    "path": "SNS Subscriptions/DefaultTest/DeployAssert/BootstrapVersion",
+                    "path": "CrossOptInRegionsSqsSubscriptionTest/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
@@ -890,7 +890,7 @@
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
-                    "path": "SNS Subscriptions/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "path": "CrossOptInRegionsSqsSubscriptionTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"
