@@ -422,9 +422,11 @@ export class DynamicValue {
   }
 
   public static fromInline(f: () => any): DynamicResult {
+    const ARROW = '=>';
+    const body = f.toString();
     return {
       dynamicType: 'function',
-      dynamicValue: f.toString(),
+      dynamicValue: body.substring(body.indexOf(ARROW) + ARROW.length).trim(),
     };
   }
 }
