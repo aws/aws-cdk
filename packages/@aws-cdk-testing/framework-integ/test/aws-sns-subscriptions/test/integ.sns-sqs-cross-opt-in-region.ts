@@ -6,8 +6,9 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
 
 // !!!! WARNING !!!!
-// Running this integration requires enabling the optIn Africa (Cape Town) af-south-1 region
-// Using the CLI: aws account get-region-opt-status --region-name af-south-1
+// Running this integration requires enabling the opt-in Africa (Cape Town) af-south-1 region
+// Using the CLI: aws account enable-region --region-name af-south-1
+// As always, you will also need to cdk bootstrap the region once it's enabled
 // !!!! WARNING !!!!
 
 /**
@@ -15,7 +16,7 @@ import { Construct } from 'constructs';
  * Manual integration verification it is:
  *
  * # Deploy this integration with the --no-clean flag
- * $ set CDK_INTEG_ACCOUNT=<account>
+ * $ export CDK_INTEG_ACCOUNT=<account>
  *
  * # Opt-in region topic, opt-in region queue
  * $ AWS_REGION=af-south-1 aws sns publish --topic-arn "arn:aws:sns:af-south-1:$CDK_INTEG_ACCOUNT:TestCaseOptInRegionQueueOptInRegionTopicTopicStack0561E431-TopicBFC7AF6E-MrTkQkFtOVg9" --message "opt-in region, but not cross region"
@@ -122,4 +123,3 @@ new IntegTest(app, 'CrossOptInRegionsSqsSubscriptionTest', {
 });
 
 app.synth();
-

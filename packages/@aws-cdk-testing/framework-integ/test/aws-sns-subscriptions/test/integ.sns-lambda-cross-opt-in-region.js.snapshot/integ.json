@@ -1,0 +1,15 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "CrossOptInRegionsLambdaSubscriptionTest/DefaultTest": {
+      "stacks": [
+        "TestCaseOptInRegionFunctionOptInRegionTopic/FunctionStack",
+        "TestCaseOptInRegionFunctionOptInRegionTopic/TopicStack",
+        "TestCaseDefaultRegionFunctionOptInRegionTopic/FunctionStack",
+        "TestCaseDefaultRegionFunctionOptInRegionTopic/TopicStack"
+      ],
+      "assertionStack": "CrossOptInRegionsLambdaSubscriptionTest/DefaultTest/DeployAssert",
+      "assertionStackName": "CrossOptInRegionsLambdaSubscriptionTestDefaultTestDeployAssertA38035E0"
+    }
+  }
+}
