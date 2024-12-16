@@ -27,6 +27,16 @@ test('default properties', () => {
   });
 });
 
+test('isQueue returns true for queues', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  const q = new sqs.Queue(stack, 'Queue');
+
+  // THEN
+  expect(sqs.Queue.isQueue(q)).toBe(true);
+});
+
 test('with a dead letter queue', () => {
   const stack = new Stack();
   const dlq = new sqs.Queue(stack, 'DLQ');
@@ -172,6 +182,16 @@ describe('export and import', () => {
       ['', ['https://sqs.us-east-1.', { Ref: 'AWS::URLSuffix' }, '/123456789012/queue1']],
     });
     expect(stack.resolve(imports.queueName)).toEqual('queue1');
+  });
+
+  test('isQueue returns true for imported queues', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const imports = sqs.Queue.fromQueueArn(stack, 'Imported', 'arn:aws:sqs:us-east-1:123456789012:queue1');
+
+    // THEN
+    expect(sqs.Queue.isQueue(imports)).toBe(true);
   });
 
   test('importing fifo and standard queues are detected correctly', () => {
