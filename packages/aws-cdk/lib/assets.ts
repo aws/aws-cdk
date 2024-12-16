@@ -6,8 +6,8 @@ import * as chalk from 'chalk';
 import { EnvironmentResources } from './api/environment-resources';
 import { ToolkitInfo } from './api/toolkit-info';
 import { debug } from './logging';
-import { AssetManifestBuilder } from './util/asset-manifest-builder';
 import { ToolkitError } from './toolkit/error';
+import { AssetManifestBuilder } from './util/asset-manifest-builder';
 
 /**
  * Take the metadata assets from the given stack and add them to the given asset manifest

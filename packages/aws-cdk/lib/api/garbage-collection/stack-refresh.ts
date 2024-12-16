@@ -1,7 +1,7 @@
 import { ParameterDeclaration } from '@aws-sdk/client-cloudformation';
 import { debug } from '../../logging';
-import { ICloudFormationClient } from '../aws-auth';
 import { ToolkitError } from '../../toolkit/error';
+import { ICloudFormationClient } from '../aws-auth';
 
 export class ActiveAssetCache {
   private readonly stacks: Set<string> = new Set();

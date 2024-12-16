@@ -1,10 +1,10 @@
 import { Writable } from 'stream';
 import { type FunctionConfiguration, type UpdateFunctionConfigurationCommandInput } from '@aws-sdk/client-lambda';
 import { type ChangeHotswapResult, classifyChanges, type HotswappableChangeCandidate, PropDiffs } from './common';
+import { ToolkitError } from '../../toolkit/error';
 import { flatMap } from '../../util';
 import type { ILambdaClient, SDK } from '../aws-auth';
 import { CfnEvaluationException, type EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
-import { ToolkitError } from '../../toolkit/error';
 
 // namespace object imports won't work in the bundle for function exports
 // eslint-disable-next-line @typescript-eslint/no-require-imports

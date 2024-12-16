@@ -6,11 +6,11 @@ import * as fs from 'fs-extra';
 import * as semver from 'semver';
 import { debug, print, warning, error } from './logging';
 import { Configuration } from './settings';
+import { ToolkitError } from './toolkit/error';
 import { loadTreeFromDir, some } from './tree';
 import { flatMap } from './util';
 import { cdkCacheDir } from './util/directories';
 import { versionNumber } from './version';
-import { ToolkitError } from './toolkit/error';
 
 const CACHE_FILE_PATH = path.join(cdkCacheDir(), 'notices.json');
 

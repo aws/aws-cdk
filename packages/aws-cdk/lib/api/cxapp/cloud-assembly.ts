@@ -3,9 +3,9 @@ import * as chalk from 'chalk';
 import { minimatch } from 'minimatch';
 import * as semver from 'semver';
 import { error, print, warning } from '../../logging';
+import { ToolkitError } from '../../toolkit/error';
 import { flatten } from '../../util';
 import { versionNumber } from '../../version';
-import { ToolkitError } from '../../toolkit/error';
 
 export enum DefaultSelection {
   /**

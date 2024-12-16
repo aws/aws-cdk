@@ -5,8 +5,8 @@ import * as semver from 'semver';
 import { cdkCacheDir, rootDir } from './util/directories';
 import { getLatestVersionFromNpm } from './util/npm';
 import { debug, print } from '../lib/logging';
-import { formatAsBanner } from '../lib/util/console-formatters';
 import { ToolkitError } from './toolkit/error';
+import { formatAsBanner } from '../lib/util/console-formatters';
 
 const ONE_DAY_IN_SECONDS = 1 * 24 * 60 * 60;
 

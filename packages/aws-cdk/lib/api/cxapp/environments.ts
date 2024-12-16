@@ -1,8 +1,8 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { minimatch } from 'minimatch';
 import { StackCollection } from './cloud-assembly';
-import { SdkProvider } from '../aws-auth';
 import { ToolkitError } from '../../toolkit/error';
+import { SdkProvider } from '../aws-auth';
 
 export function looksLikeGlob(environment: string) {
   return environment.indexOf('*') > -1;

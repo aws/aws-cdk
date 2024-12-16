@@ -6,8 +6,8 @@ import { CloudAssembly } from './cloud-assembly';
 import * as contextproviders from '../../context-providers';
 import { debug, warning } from '../../logging';
 import { Configuration } from '../../settings';
-import { SdkProvider } from '../aws-auth';
 import { ToolkitError } from '../../toolkit/error';
+import { SdkProvider } from '../aws-auth';
 
 /**
  * @returns output directory

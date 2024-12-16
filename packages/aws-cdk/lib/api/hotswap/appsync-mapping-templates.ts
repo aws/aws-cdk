@@ -9,10 +9,10 @@ import {
   lowerCaseFirstCharacter,
   transformObjectKeys,
 } from './common';
+import { ToolkitError } from '../../toolkit/error';
 import type { SDK } from '../aws-auth';
 
 import type { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
-import { ToolkitError } from '../../toolkit/error';
 
 export async function isHotswappableAppSyncChange(
   logicalId: string,

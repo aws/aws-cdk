@@ -1,6 +1,6 @@
 import type { PropertyDifference, Resource } from '@aws-cdk/cloudformation-diff';
-import type { SDK } from '../aws-auth';
 import { ToolkitError } from '../../toolkit/error';
+import type { SDK } from '../aws-auth';
 
 export const ICON = '✨';
 

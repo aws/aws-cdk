@@ -3,8 +3,8 @@ import * as fs_path from 'path';
 import * as fs from 'fs-extra';
 import { Tag } from './cdk-toolkit';
 import { debug, warning } from './logging';
-import * as util from './util';
 import { ToolkitError } from './toolkit/error';
+import * as util from './util';
 
 export type SettingsMap = {[key: string]: any};
 

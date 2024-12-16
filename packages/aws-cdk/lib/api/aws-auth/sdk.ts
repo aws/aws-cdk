@@ -319,8 +319,8 @@ import { cachedAsync } from './cached';
 import { Account } from './sdk-provider';
 import { defaultCliUserAgent } from './user-agent';
 import { debug } from '../../logging';
-import { traceMethods } from '../../util/tracing';
 import { AuthenticationError } from '../../toolkit/error';
+import { traceMethods } from '../../util/tracing';
 
 export interface S3ClientOptions {
   /**
