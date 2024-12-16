@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "ClusterAL2023Ami/DefaultTest": {
+      "stacks": [
+        "integ-ecs-al2023-ami"
+      ],
+      "assertionStack": "ClusterAL2023Ami/DefaultTest/DeployAssert",
+      "assertionStackName": "ClusterAL2023AmiDefaultTestDeployAssertD137D68D"
+    }
+  }
+}
