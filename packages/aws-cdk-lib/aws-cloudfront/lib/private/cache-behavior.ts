@@ -47,9 +47,6 @@ export class CacheBehavior {
       cachedMethods: this.props.cachedMethods?.methods,
       cachePolicyId: (this.props.cachePolicy ?? CachePolicy.CACHING_OPTIMIZED).cachePolicyId,
       compress: this.props.compress ?? true,
-      grpcConfig: {
-        enabled: this.props.enableGrpc,
-      },
       originRequestPolicyId: this.props.originRequestPolicy?.originRequestPolicyId,
       realtimeLogConfigArn: this.props?.realtimeLogConfig?.realtimeLogConfigArn,
       responseHeadersPolicyId: this.props.responseHeadersPolicy?.responseHeadersPolicyId,
@@ -65,6 +62,9 @@ export class CacheBehavior {
         includeBody: edgeLambda.includeBody,
       })),
       trustedKeyGroups: this.props.trustedKeyGroups?.map(keyGroup => keyGroup.keyGroupId),
+      grpcConfig: {
+        enabled: this.props.enableGrpc,
+      },
     };
   }
 

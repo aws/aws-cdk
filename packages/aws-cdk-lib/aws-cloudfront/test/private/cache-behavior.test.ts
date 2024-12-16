@@ -62,6 +62,7 @@ test('renders with all properties specified', () => {
       functionVersion: fnVersion,
     }],
     trustedKeyGroups: [keyGroup],
+    enableGrpc: true,
   });
 
   expect(behavior._renderBehavior()).toEqual({
@@ -82,6 +83,9 @@ test('renders with all properties specified', () => {
     trustedKeyGroups: [
       keyGroup.keyGroupId,
     ],
+    grpcConfig: {
+      enabled: true,
+    },
   });
 });
 
