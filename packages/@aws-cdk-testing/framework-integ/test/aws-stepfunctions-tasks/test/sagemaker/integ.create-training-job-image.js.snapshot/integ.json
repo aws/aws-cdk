@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "SfnSMTrainingJobImage/DefaultTest": {
+      "stacks": [
+        "sfn-sm-training-job-image"
+      ],
+      "assertionStack": "SfnSMTrainingJobImage/DefaultTest/DeployAssert",
+      "assertionStackName": "SfnSMTrainingJobImageDefaultTestDeployAssert6629FD8C"
+    }
+  }
+}
