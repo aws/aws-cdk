@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { SubscriptionProps } from './subscription';
+import { Subscription, SubscriptionProps } from './subscription';
 import * as iam from '../../aws-iam';
 import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
@@ -23,8 +23,9 @@ export interface SqsSubscriptionProps extends SubscriptionProps {
 /**
  * Use an SQS queue as a subscription target
  */
-export class SqsSubscription implements sns.ITopicSubscription {
+export class SqsSubscription extends Subscription {
   constructor(private readonly queue: sqs.IQueue, private readonly props: SqsSubscriptionProps = {}) {
+    super(queue);
   }
 
   /**
@@ -36,7 +37,8 @@ export class SqsSubscription implements sns.ITopicSubscription {
     if (!Construct.isConstruct(this.queue)) {
       throw new Error('The supplied Queue object must be an instance of Construct');
     }
-    const snsServicePrincipal = new iam.ServicePrincipal('sns.amazonaws.com');
+
+    const snsServicePrincipal = this.generateGrantPrincipal(topic);
 
     // if the queue is encrypted by AWS managed KMS key (alias/aws/sqs),
     // throw error message
