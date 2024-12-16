@@ -1068,6 +1068,14 @@ export interface AddBehaviorOptions {
    * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PrivateContent.html
    */
   readonly trustedKeyGroups?: IKeyGroup[];
+
+  /**
+   * Enables your CloudFront distribution to receive gRPC requests and to proxy them directly to your origins.
+   *
+   * @default false
+   * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/distribution-using-grpc.html
+   */
+  readonly enableGrpc?: boolean;
 }
 
 /**
