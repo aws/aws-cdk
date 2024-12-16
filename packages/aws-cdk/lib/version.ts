@@ -6,6 +6,7 @@ import { cdkCacheDir, rootDir } from './util/directories';
 import { getLatestVersionFromNpm } from './util/npm';
 import { debug, print } from '../lib/logging';
 import { formatAsBanner } from '../lib/util/console-formatters';
+import { ToolkitError } from './toolkit/error';
 
 const ONE_DAY_IN_SECONDS = 1 * 24 * 60 * 60;
 
@@ -46,7 +47,7 @@ export class VersionCheckTTL {
       fs.mkdirsSync(path.dirname(this.file));
       fs.accessSync(path.dirname(this.file), fs.constants.W_OK);
     } catch {
-      throw new Error(`Directory (${path.dirname(this.file)}) is not writable.`);
+      throw new ToolkitError(`Directory (${path.dirname(this.file)}) is not writable.`);
     }
     this.ttlSecs = ttlSecs || ONE_DAY_IN_SECONDS;
   }
