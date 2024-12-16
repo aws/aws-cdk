@@ -96,6 +96,10 @@ export enum MachineImageType {
    */
   AMAZON_LINUX_2,
   /**
+   * Amazon ECS-optimized Amazon Linux 2023 AMI
+   */
+  AMAZON_LINUX_2023,
+  /**
    * Bottlerocket AMI
    */
   BOTTLEROCKET,
@@ -560,20 +564,7 @@ export class Cluster extends Resource implements ICluster {
           break;
         }
         default:
-          // Amazon ECS-optimized AMI for Amazon Linux 2
-          autoScalingGroup.addUserData(`echo ECS_CLUSTER=${this.clusterName} >> /etc/ecs/ecs.config`);
-          if (!options.canContainersAccessInstanceRole) {
-            // Deny containers access to instance metadata service
-            // Source: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html
-            autoScalingGroup.addUserData('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
-            autoScalingGroup.addUserData('sudo service iptables save');
-            // The following is only for AwsVpc networking mode, but doesn't hurt for the other modes.
-            autoScalingGroup.addUserData('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
-          }
-
-          if (autoScalingGroup.spotPrice && options.spotInstanceDraining) {
-            autoScalingGroup.addUserData('echo ECS_ENABLE_SPOT_INSTANCE_DRAINING=true >> /etc/ecs/ecs.config');
-          }
+          this.configureAmazonECSOptimizedAMIUserData(autoScalingGroup, options);
       }
     }
 
@@ -628,6 +619,31 @@ export class Cluster extends Resource implements ICluster {
         drainTime: options.taskDrainTime,
         topicEncryptionKey: options.topicEncryptionKey,
       });
+    }
+  }
+
+  private configureAmazonECSOptimizedAMIUserData(autoScalingGroup: autoscaling.AutoScalingGroup, options: AddAutoScalingGroupCapacityOptions = {}) {
+    autoScalingGroup.addUserData(`echo ECS_CLUSTER=${this.clusterName} >> /etc/ecs/ecs.config`);
+    if (!options.canContainersAccessInstanceRole) {
+      // Deny containers access to instance metadata service
+      // Source: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html
+      autoScalingGroup.addUserData('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
+
+      switch (options.machineImageType) {
+        case MachineImageType.AMAZON_LINUX_2023: {
+          autoScalingGroup.addUserData('sudo iptables-save');
+          break;
+        }
+        default:
+          autoScalingGroup.addUserData('sudo service iptables save');
+      }
+
+      // The following is only for AwsVpc networking mode, but doesn't hurt for the other modes.
+      autoScalingGroup.addUserData('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
+    }
+
+    if (autoScalingGroup.spotPrice && options.spotInstanceDraining) {
+      autoScalingGroup.addUserData('echo ECS_ENABLE_SPOT_INSTANCE_DRAINING=true >> /etc/ecs/ecs.config');
     }
   }
 
