@@ -11,7 +11,7 @@ Closes #<issue number here>.
 <!--
 What code changes did you make? 
 Have you made any important design decisions?
-What AWS Service feature use cases are you adding (describe if omitting) ?
+What AWS use cases does this change enable? To enable the use cases, which AWS service features are utilized?
 -->
 
 ### Describe any new or updated permissions being added
