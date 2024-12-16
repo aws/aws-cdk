@@ -1,0 +1,524 @@
+{
+  "version": "38.0.1",
+  "artifacts": {
+    "TestCaseDefaultRegionQueueDefaultRegionTopicQueueStack33AD1F0E.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "TestCaseDefaultRegionQueueDefaultRegionTopicQueueStack33AD1F0E.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "TestCaseDefaultRegionQueueDefaultRegionTopicQueueStack33AD1F0E": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://339712719728/us-east-1",
+      "properties": {
+        "templateFile": "TestCaseDefaultRegionQueueDefaultRegionTopicQueueStack33AD1F0E.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::339712719728:role/cdk-hnb659fds-deploy-role-339712719728-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::339712719728:role/cdk-hnb659fds-cfn-exec-role-339712719728-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-339712719728-us-east-1/e9b0591832dcfa154e50931263282e6e91525a81a365b88851a03ad25963fc83.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "TestCaseDefaultRegionQueueDefaultRegionTopicQueueStack33AD1F0E.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::339712719728:role/cdk-hnb659fds-lookup-role-339712719728-us-east-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "TestCaseDefaultRegionQueueDefaultRegionTopicTopicStack3DD93C94",
+        "TestCaseDefaultRegionQueueDefaultRegionTopicQueueStack33AD1F0E.assets"
+      ],
+      "metadata": {
+        "/TestCaseDefaultRegionQueueDefaultRegionTopic/QueueStack/Queue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Queue4A7E3555"
+          }
+        ],
+        "/TestCaseDefaultRegionQueueDefaultRegionTopic/QueueStack/Queue/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueuePolicy25439813"
+          }
+        ],
+        "/TestCaseDefaultRegionQueueDefaultRegionTopic/QueueStack/Queue/TestCaseDefaultRegionQueueDefaultRegionTopicTopicStackTopic4B65A873/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueueTestCaseDefaultRegionQueueDefaultRegionTopicTopicStackTopic4B65A873A2C0FF98"
+          }
+        ],
+        "/TestCaseDefaultRegionQueueDefaultRegionTopic/QueueStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/TestCaseDefaultRegionQueueDefaultRegionTopic/QueueStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "TestCaseDefaultRegionQueueDefaultRegionTopic/QueueStack"
+    },
+    "TestCaseDefaultRegionQueueDefaultRegionTopicTopicStack3DD93C94.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "TestCaseDefaultRegionQueueDefaultRegionTopicTopicStack3DD93C94.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "TestCaseDefaultRegionQueueDefaultRegionTopicTopicStack3DD93C94": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://339712719728/us-east-1",
+      "properties": {
+        "templateFile": "TestCaseDefaultRegionQueueDefaultRegionTopicTopicStack3DD93C94.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::339712719728:role/cdk-hnb659fds-deploy-role-339712719728-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::339712719728:role/cdk-hnb659fds-cfn-exec-role-339712719728-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-339712719728-us-east-1/11798aaf201628999b4fed23922852cf468e140b130326b3bb1ab2559940b54b.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "TestCaseDefaultRegionQueueDefaultRegionTopicTopicStack3DD93C94.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::339712719728:role/cdk-hnb659fds-lookup-role-339712719728-us-east-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "TestCaseDefaultRegionQueueDefaultRegionTopicTopicStack3DD93C94.assets"
+      ],
+      "metadata": {
+        "/TestCaseDefaultRegionQueueDefaultRegionTopic/TopicStack/Topic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TopicBFC7AF6E"
+          }
+        ],
+        "/TestCaseDefaultRegionQueueDefaultRegionTopic/TopicStack/Exports/Output{\"Ref\":\"TopicBFC7AF6E\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefTopicBFC7AF6ECB4A357A"
+          }
+        ],
+        "/TestCaseDefaultRegionQueueDefaultRegionTopic/TopicStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/TestCaseDefaultRegionQueueDefaultRegionTopic/TopicStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "TestCaseDefaultRegionQueueDefaultRegionTopic/TopicStack"
+    },
+    "TestCaseOptInRegionQueueDefaultRegionTopicQueueStackA624FD7A.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "TestCaseOptInRegionQueueDefaultRegionTopicQueueStackA624FD7A.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "TestCaseOptInRegionQueueDefaultRegionTopicQueueStackA624FD7A": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://339712719728/af-south-1",
+      "properties": {
+        "templateFile": "TestCaseOptInRegionQueueDefaultRegionTopicQueueStackA624FD7A.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::339712719728:role/cdk-hnb659fds-deploy-role-339712719728-af-south-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::339712719728:role/cdk-hnb659fds-cfn-exec-role-339712719728-af-south-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-339712719728-af-south-1/b413a07860c1a518e3e067f2b9e2ddaf6e20f15dcda46c304bddb5f7405d57ab.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "TestCaseOptInRegionQueueDefaultRegionTopicQueueStackA624FD7A.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::339712719728:role/cdk-hnb659fds-lookup-role-339712719728-af-south-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "TestCaseOptInRegionQueueDefaultRegionTopicTopicStack3B645352",
+        "TestCaseOptInRegionQueueDefaultRegionTopicQueueStackA624FD7A.assets"
+      ],
+      "metadata": {
+        "/TestCaseOptInRegionQueueDefaultRegionTopic/QueueStack/Queue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Queue4A7E3555"
+          }
+        ],
+        "/TestCaseOptInRegionQueueDefaultRegionTopic/QueueStack/Queue/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueuePolicy25439813"
+          }
+        ],
+        "/TestCaseOptInRegionQueueDefaultRegionTopic/QueueStack/Queue/TestCaseOptInRegionQueueDefaultRegionTopicTopicStackTopic069F68DB/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueueTestCaseOptInRegionQueueDefaultRegionTopicTopicStackTopic069F68DBBB18EEA0"
+          }
+        ],
+        "/TestCaseOptInRegionQueueDefaultRegionTopic/QueueStack/ExportsReader/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsReader8B249524"
+          }
+        ],
+        "/TestCaseOptInRegionQueueDefaultRegionTopic/QueueStack/Custom::CrossRegionExportReaderCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
+        "/TestCaseOptInRegionQueueDefaultRegionTopic/QueueStack/Custom::CrossRegionExportReaderCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD"
+          }
+        ],
+        "/TestCaseOptInRegionQueueDefaultRegionTopic/QueueStack/Custom::CrossRegionExportReaderCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68"
+          }
+        ],
+        "/TestCaseOptInRegionQueueDefaultRegionTopic/QueueStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/TestCaseOptInRegionQueueDefaultRegionTopic/QueueStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "TestCaseOptInRegionQueueDefaultRegionTopic/QueueStack"
+    },
+    "TestCaseOptInRegionQueueDefaultRegionTopicTopicStack3B645352.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "TestCaseOptInRegionQueueDefaultRegionTopicTopicStack3B645352.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "TestCaseOptInRegionQueueDefaultRegionTopicTopicStack3B645352": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://339712719728/us-east-1",
+      "properties": {
+        "templateFile": "TestCaseOptInRegionQueueDefaultRegionTopicTopicStack3B645352.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::339712719728:role/cdk-hnb659fds-deploy-role-339712719728-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::339712719728:role/cdk-hnb659fds-cfn-exec-role-339712719728-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-339712719728-us-east-1/f6b077d39075bfb38687e90756c8426d90cc02b9592d6c1fb2a2266565bb1654.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "TestCaseOptInRegionQueueDefaultRegionTopicTopicStack3B645352.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::339712719728:role/cdk-hnb659fds-lookup-role-339712719728-us-east-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "TestCaseOptInRegionQueueDefaultRegionTopicTopicStack3B645352.assets"
+      ],
+      "metadata": {
+        "/TestCaseOptInRegionQueueDefaultRegionTopic/TopicStack/Topic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TopicBFC7AF6E"
+          }
+        ],
+        "/TestCaseOptInRegionQueueDefaultRegionTopic/TopicStack/ExportsWriterafsouth1E19BDF87/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsWriterafsouth1E19BDF87F4F608E8"
+          }
+        ],
+        "/TestCaseOptInRegionQueueDefaultRegionTopic/TopicStack/Custom::CrossRegionExportWriterCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
+        "/TestCaseOptInRegionQueueDefaultRegionTopic/TopicStack/Custom::CrossRegionExportWriterCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCrossRegionExportWriterCustomResourceProviderRoleC951B1E1"
+          }
+        ],
+        "/TestCaseOptInRegionQueueDefaultRegionTopic/TopicStack/Custom::CrossRegionExportWriterCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A"
+          }
+        ],
+        "/TestCaseOptInRegionQueueDefaultRegionTopic/TopicStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/TestCaseOptInRegionQueueDefaultRegionTopic/TopicStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "TestCaseOptInRegionQueueDefaultRegionTopic/TopicStack"
+    },
+    "TestCaseDefaultRegionQueueOptInRegionTopicQueueStackFB4270A6.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "TestCaseDefaultRegionQueueOptInRegionTopicQueueStackFB4270A6.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "TestCaseDefaultRegionQueueOptInRegionTopicQueueStackFB4270A6": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://339712719728/us-east-1",
+      "properties": {
+        "templateFile": "TestCaseDefaultRegionQueueOptInRegionTopicQueueStackFB4270A6.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::339712719728:role/cdk-hnb659fds-deploy-role-339712719728-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::339712719728:role/cdk-hnb659fds-cfn-exec-role-339712719728-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-339712719728-us-east-1/951b2d29437d7d3f0f5224e94f9734512c16d18b829d483865b310935eb36f31.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "TestCaseDefaultRegionQueueOptInRegionTopicQueueStackFB4270A6.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::339712719728:role/cdk-hnb659fds-lookup-role-339712719728-us-east-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "TestCaseDefaultRegionQueueOptInRegionTopicTopicStack4AB04298",
+        "TestCaseDefaultRegionQueueOptInRegionTopicQueueStackFB4270A6.assets"
+      ],
+      "metadata": {
+        "/TestCaseDefaultRegionQueueOptInRegionTopic/QueueStack/Queue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Queue4A7E3555"
+          }
+        ],
+        "/TestCaseDefaultRegionQueueOptInRegionTopic/QueueStack/Queue/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueuePolicy25439813"
+          }
+        ],
+        "/TestCaseDefaultRegionQueueOptInRegionTopic/QueueStack/Queue/TestCaseDefaultRegionQueueOptInRegionTopicTopicStackTopic0CF3A97A/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueueTestCaseDefaultRegionQueueOptInRegionTopicTopicStackTopic0CF3A97A627F027E"
+          }
+        ],
+        "/TestCaseDefaultRegionQueueOptInRegionTopic/QueueStack/ExportsReader/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsReader8B249524"
+          }
+        ],
+        "/TestCaseDefaultRegionQueueOptInRegionTopic/QueueStack/Custom::CrossRegionExportReaderCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
+        "/TestCaseDefaultRegionQueueOptInRegionTopic/QueueStack/Custom::CrossRegionExportReaderCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD"
+          }
+        ],
+        "/TestCaseDefaultRegionQueueOptInRegionTopic/QueueStack/Custom::CrossRegionExportReaderCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68"
+          }
+        ],
+        "/TestCaseDefaultRegionQueueOptInRegionTopic/QueueStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/TestCaseDefaultRegionQueueOptInRegionTopic/QueueStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "TestCaseDefaultRegionQueueOptInRegionTopic/QueueStack"
+    },
+    "TestCaseDefaultRegionQueueOptInRegionTopicTopicStack4AB04298.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "TestCaseDefaultRegionQueueOptInRegionTopicTopicStack4AB04298.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "TestCaseDefaultRegionQueueOptInRegionTopicTopicStack4AB04298": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://339712719728/af-south-1",
+      "properties": {
+        "templateFile": "TestCaseDefaultRegionQueueOptInRegionTopicTopicStack4AB04298.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::339712719728:role/cdk-hnb659fds-deploy-role-339712719728-af-south-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::339712719728:role/cdk-hnb659fds-cfn-exec-role-339712719728-af-south-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-339712719728-af-south-1/91c7a854c5ef6694ea750cfe99ecd2cfc5041a5603564b3310e1dd63a04378d1.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "TestCaseDefaultRegionQueueOptInRegionTopicTopicStack4AB04298.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::339712719728:role/cdk-hnb659fds-lookup-role-339712719728-af-south-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "TestCaseDefaultRegionQueueOptInRegionTopicTopicStack4AB04298.assets"
+      ],
+      "metadata": {
+        "/TestCaseDefaultRegionQueueOptInRegionTopic/TopicStack/Topic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TopicBFC7AF6E"
+          }
+        ],
+        "/TestCaseDefaultRegionQueueOptInRegionTopic/TopicStack/ExportsWriteruseast10F67B507/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsWriteruseast10F67B507DDE2E818"
+          }
+        ],
+        "/TestCaseDefaultRegionQueueOptInRegionTopic/TopicStack/Custom::CrossRegionExportWriterCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
+        "/TestCaseDefaultRegionQueueOptInRegionTopic/TopicStack/Custom::CrossRegionExportWriterCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCrossRegionExportWriterCustomResourceProviderRoleC951B1E1"
+          }
+        ],
+        "/TestCaseDefaultRegionQueueOptInRegionTopic/TopicStack/Custom::CrossRegionExportWriterCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A"
+          }
+        ],
+        "/TestCaseDefaultRegionQueueOptInRegionTopic/TopicStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/TestCaseDefaultRegionQueueOptInRegionTopic/TopicStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "TestCaseDefaultRegionQueueOptInRegionTopic/TopicStack"
+    },
+    "SNSSubscriptionsDefaultTestDeployAssertD77125EB.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "SNSSubscriptionsDefaultTestDeployAssertD77125EB.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "SNSSubscriptionsDefaultTestDeployAssertD77125EB": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "SNSSubscriptionsDefaultTestDeployAssertD77125EB.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "SNSSubscriptionsDefaultTestDeployAssertD77125EB.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "SNSSubscriptionsDefaultTestDeployAssertD77125EB.assets"
+      ],
+      "metadata": {
+        "/SNS Subscriptions/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/SNS Subscriptions/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "SNS Subscriptions/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

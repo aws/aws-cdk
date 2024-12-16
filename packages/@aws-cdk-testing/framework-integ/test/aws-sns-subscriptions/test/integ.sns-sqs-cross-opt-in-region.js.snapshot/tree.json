@@ -1,0 +1,931 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "TestCaseDefaultRegionQueueDefaultRegionTopic": {
+        "id": "TestCaseDefaultRegionQueueDefaultRegionTopic",
+        "path": "TestCaseDefaultRegionQueueDefaultRegionTopic",
+        "children": {
+          "QueueStack": {
+            "id": "QueueStack",
+            "path": "TestCaseDefaultRegionQueueDefaultRegionTopic/QueueStack",
+            "children": {
+              "Queue": {
+                "id": "Queue",
+                "path": "TestCaseDefaultRegionQueueDefaultRegionTopic/QueueStack/Queue",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "TestCaseDefaultRegionQueueDefaultRegionTopic/QueueStack/Queue/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
+                      "aws:cdk:cloudformation:props": {}
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_sqs.CfnQueue",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Policy": {
+                    "id": "Policy",
+                    "path": "TestCaseDefaultRegionQueueDefaultRegionTopic/QueueStack/Queue/Policy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "TestCaseDefaultRegionQueueDefaultRegionTopic/QueueStack/Queue/Policy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::SQS::QueuePolicy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sqs:SendMessage",
+                                  "Condition": {
+                                    "ArnEquals": {
+                                      "aws:SourceArn": {
+                                        "Fn::ImportValue": "TestCaseDefaultRegionQueueDefaultRegionTopicTopicStack3DD93C94:ExportsOutputRefTopicBFC7AF6ECB4A357A"
+                                      }
+                                    }
+                                  },
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "sns.amazonaws.com"
+                                  },
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "Queue4A7E3555",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "queues": [
+                              {
+                                "Ref": "Queue4A7E3555"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_sqs.CfnQueuePolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_sqs.QueuePolicy",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "TestCaseDefaultRegionQueueDefaultRegionTopicTopicStackTopic4B65A873": {
+                    "id": "TestCaseDefaultRegionQueueDefaultRegionTopicTopicStackTopic4B65A873",
+                    "path": "TestCaseDefaultRegionQueueDefaultRegionTopic/QueueStack/Queue/TestCaseDefaultRegionQueueDefaultRegionTopicTopicStackTopic4B65A873",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "TestCaseDefaultRegionQueueDefaultRegionTopic/QueueStack/Queue/TestCaseDefaultRegionQueueDefaultRegionTopicTopicStackTopic4B65A873/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::SNS::Subscription",
+                          "aws:cdk:cloudformation:props": {
+                            "endpoint": {
+                              "Fn::GetAtt": [
+                                "Queue4A7E3555",
+                                "Arn"
+                              ]
+                            },
+                            "protocol": "sqs",
+                            "topicArn": {
+                              "Fn::ImportValue": "TestCaseDefaultRegionQueueDefaultRegionTopicTopicStack3DD93C94:ExportsOutputRefTopicBFC7AF6ECB4A357A"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_sns.CfnSubscription",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_sns.Subscription",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sqs.Queue",
+                  "version": "0.0.0"
+                }
+              },
+              "BootstrapVersion": {
+                "id": "BootstrapVersion",
+                "path": "TestCaseDefaultRegionQueueDefaultRegionTopic/QueueStack/BootstrapVersion",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnParameter",
+                  "version": "0.0.0"
+                }
+              },
+              "CheckBootstrapVersion": {
+                "id": "CheckBootstrapVersion",
+                "path": "TestCaseDefaultRegionQueueDefaultRegionTopic/QueueStack/CheckBootstrapVersion",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnRule",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Stack",
+              "version": "0.0.0"
+            }
+          },
+          "TopicStack": {
+            "id": "TopicStack",
+            "path": "TestCaseDefaultRegionQueueDefaultRegionTopic/TopicStack",
+            "children": {
+              "Topic": {
+                "id": "Topic",
+                "path": "TestCaseDefaultRegionQueueDefaultRegionTopic/TopicStack/Topic",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "TestCaseDefaultRegionQueueDefaultRegionTopic/TopicStack/Topic/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
+                      "aws:cdk:cloudformation:props": {}
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_sns.CfnTopic",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sns.Topic",
+                  "version": "0.0.0"
+                }
+              },
+              "Exports": {
+                "id": "Exports",
+                "path": "TestCaseDefaultRegionQueueDefaultRegionTopic/TopicStack/Exports",
+                "children": {
+                  "Output{\"Ref\":\"TopicBFC7AF6E\"}": {
+                    "id": "Output{\"Ref\":\"TopicBFC7AF6E\"}",
+                    "path": "TestCaseDefaultRegionQueueDefaultRegionTopic/TopicStack/Exports/Output{\"Ref\":\"TopicBFC7AF6E\"}",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnOutput",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "BootstrapVersion": {
+                "id": "BootstrapVersion",
+                "path": "TestCaseDefaultRegionQueueDefaultRegionTopic/TopicStack/BootstrapVersion",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnParameter",
+                  "version": "0.0.0"
+                }
+              },
+              "CheckBootstrapVersion": {
+                "id": "CheckBootstrapVersion",
+                "path": "TestCaseDefaultRegionQueueDefaultRegionTopic/TopicStack/CheckBootstrapVersion",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnRule",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Stack",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
+        }
+      },
+      "TestCaseOptInRegionQueueDefaultRegionTopic": {
+        "id": "TestCaseOptInRegionQueueDefaultRegionTopic",
+        "path": "TestCaseOptInRegionQueueDefaultRegionTopic",
+        "children": {
+          "QueueStack": {
+            "id": "QueueStack",
+            "path": "TestCaseOptInRegionQueueDefaultRegionTopic/QueueStack",
+            "children": {
+              "Queue": {
+                "id": "Queue",
+                "path": "TestCaseOptInRegionQueueDefaultRegionTopic/QueueStack/Queue",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "TestCaseOptInRegionQueueDefaultRegionTopic/QueueStack/Queue/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
+                      "aws:cdk:cloudformation:props": {}
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_sqs.CfnQueue",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Policy": {
+                    "id": "Policy",
+                    "path": "TestCaseOptInRegionQueueDefaultRegionTopic/QueueStack/Queue/Policy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "TestCaseOptInRegionQueueDefaultRegionTopic/QueueStack/Queue/Policy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::SQS::QueuePolicy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sqs:SendMessage",
+                                  "Condition": {
+                                    "ArnEquals": {
+                                      "aws:SourceArn": {
+                                        "Fn::GetAtt": [
+                                          "ExportsReader8B249524",
+                                          "/cdk/exports/TestCaseOptInRegionQueueDefaultRegionTopicQueueStackA624FD7A/TestCaseOptInRegionQueueDefaultRegionTopicTopicStack3B645352useast1RefTopicBFC7AF6EC2ECCC28"
+                                        ]
+                                      }
+                                    }
+                                  },
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "sns.amazonaws.com"
+                                  },
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "Queue4A7E3555",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "queues": [
+                              {
+                                "Ref": "Queue4A7E3555"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_sqs.CfnQueuePolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_sqs.QueuePolicy",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "TestCaseOptInRegionQueueDefaultRegionTopicTopicStackTopic069F68DB": {
+                    "id": "TestCaseOptInRegionQueueDefaultRegionTopicTopicStackTopic069F68DB",
+                    "path": "TestCaseOptInRegionQueueDefaultRegionTopic/QueueStack/Queue/TestCaseOptInRegionQueueDefaultRegionTopicTopicStackTopic069F68DB",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "TestCaseOptInRegionQueueDefaultRegionTopic/QueueStack/Queue/TestCaseOptInRegionQueueDefaultRegionTopicTopicStackTopic069F68DB/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::SNS::Subscription",
+                          "aws:cdk:cloudformation:props": {
+                            "endpoint": {
+                              "Fn::GetAtt": [
+                                "Queue4A7E3555",
+                                "Arn"
+                              ]
+                            },
+                            "protocol": "sqs",
+                            "region": "us-east-1",
+                            "topicArn": {
+                              "Fn::GetAtt": [
+                                "ExportsReader8B249524",
+                                "/cdk/exports/TestCaseOptInRegionQueueDefaultRegionTopicQueueStackA624FD7A/TestCaseOptInRegionQueueDefaultRegionTopicTopicStack3B645352useast1RefTopicBFC7AF6EC2ECCC28"
+                              ]
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_sns.CfnSubscription",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_sns.Subscription",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sqs.Queue",
+                  "version": "0.0.0"
+                }
+              },
+              "ExportsReader": {
+                "id": "ExportsReader",
+                "path": "TestCaseOptInRegionQueueDefaultRegionTopic/QueueStack/ExportsReader",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "TestCaseOptInRegionQueueDefaultRegionTopic/QueueStack/ExportsReader/Resource",
+                    "children": {
+                      "Default": {
+                        "id": "Default",
+                        "path": "TestCaseOptInRegionQueueDefaultRegionTopic/QueueStack/ExportsReader/Resource/Default",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CustomResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "Custom::CrossRegionExportReaderCustomResourceProvider": {
+                "id": "Custom::CrossRegionExportReaderCustomResourceProvider",
+                "path": "TestCaseOptInRegionQueueDefaultRegionTopic/QueueStack/Custom::CrossRegionExportReaderCustomResourceProvider",
+                "children": {
+                  "Staging": {
+                    "id": "Staging",
+                    "path": "TestCaseOptInRegionQueueDefaultRegionTopic/QueueStack/Custom::CrossRegionExportReaderCustomResourceProvider/Staging",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Role": {
+                    "id": "Role",
+                    "path": "TestCaseOptInRegionQueueDefaultRegionTopic/QueueStack/Custom::CrossRegionExportReaderCustomResourceProvider/Role",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Handler": {
+                    "id": "Handler",
+                    "path": "TestCaseOptInRegionQueueDefaultRegionTopic/QueueStack/Custom::CrossRegionExportReaderCustomResourceProvider/Handler",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CustomResourceProviderBase",
+                  "version": "0.0.0"
+                }
+              },
+              "BootstrapVersion": {
+                "id": "BootstrapVersion",
+                "path": "TestCaseOptInRegionQueueDefaultRegionTopic/QueueStack/BootstrapVersion",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnParameter",
+                  "version": "0.0.0"
+                }
+              },
+              "CheckBootstrapVersion": {
+                "id": "CheckBootstrapVersion",
+                "path": "TestCaseOptInRegionQueueDefaultRegionTopic/QueueStack/CheckBootstrapVersion",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnRule",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Stack",
+              "version": "0.0.0"
+            }
+          },
+          "TopicStack": {
+            "id": "TopicStack",
+            "path": "TestCaseOptInRegionQueueDefaultRegionTopic/TopicStack",
+            "children": {
+              "Topic": {
+                "id": "Topic",
+                "path": "TestCaseOptInRegionQueueDefaultRegionTopic/TopicStack/Topic",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "TestCaseOptInRegionQueueDefaultRegionTopic/TopicStack/Topic/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
+                      "aws:cdk:cloudformation:props": {}
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_sns.CfnTopic",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sns.Topic",
+                  "version": "0.0.0"
+                }
+              },
+              "ExportsWriterafsouth1E19BDF87": {
+                "id": "ExportsWriterafsouth1E19BDF87",
+                "path": "TestCaseOptInRegionQueueDefaultRegionTopic/TopicStack/ExportsWriterafsouth1E19BDF87",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "TestCaseOptInRegionQueueDefaultRegionTopic/TopicStack/ExportsWriterafsouth1E19BDF87/Resource",
+                    "children": {
+                      "Default": {
+                        "id": "Default",
+                        "path": "TestCaseOptInRegionQueueDefaultRegionTopic/TopicStack/ExportsWriterafsouth1E19BDF87/Resource/Default",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CustomResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "Custom::CrossRegionExportWriterCustomResourceProvider": {
+                "id": "Custom::CrossRegionExportWriterCustomResourceProvider",
+                "path": "TestCaseOptInRegionQueueDefaultRegionTopic/TopicStack/Custom::CrossRegionExportWriterCustomResourceProvider",
+                "children": {
+                  "Staging": {
+                    "id": "Staging",
+                    "path": "TestCaseOptInRegionQueueDefaultRegionTopic/TopicStack/Custom::CrossRegionExportWriterCustomResourceProvider/Staging",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Role": {
+                    "id": "Role",
+                    "path": "TestCaseOptInRegionQueueDefaultRegionTopic/TopicStack/Custom::CrossRegionExportWriterCustomResourceProvider/Role",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Handler": {
+                    "id": "Handler",
+                    "path": "TestCaseOptInRegionQueueDefaultRegionTopic/TopicStack/Custom::CrossRegionExportWriterCustomResourceProvider/Handler",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CustomResourceProviderBase",
+                  "version": "0.0.0"
+                }
+              },
+              "BootstrapVersion": {
+                "id": "BootstrapVersion",
+                "path": "TestCaseOptInRegionQueueDefaultRegionTopic/TopicStack/BootstrapVersion",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnParameter",
+                  "version": "0.0.0"
+                }
+              },
+              "CheckBootstrapVersion": {
+                "id": "CheckBootstrapVersion",
+                "path": "TestCaseOptInRegionQueueDefaultRegionTopic/TopicStack/CheckBootstrapVersion",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnRule",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Stack",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
+        }
+      },
+      "TestCaseDefaultRegionQueueOptInRegionTopic": {
+        "id": "TestCaseDefaultRegionQueueOptInRegionTopic",
+        "path": "TestCaseDefaultRegionQueueOptInRegionTopic",
+        "children": {
+          "QueueStack": {
+            "id": "QueueStack",
+            "path": "TestCaseDefaultRegionQueueOptInRegionTopic/QueueStack",
+            "children": {
+              "Queue": {
+                "id": "Queue",
+                "path": "TestCaseDefaultRegionQueueOptInRegionTopic/QueueStack/Queue",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "TestCaseDefaultRegionQueueOptInRegionTopic/QueueStack/Queue/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
+                      "aws:cdk:cloudformation:props": {}
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_sqs.CfnQueue",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Policy": {
+                    "id": "Policy",
+                    "path": "TestCaseDefaultRegionQueueOptInRegionTopic/QueueStack/Queue/Policy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "TestCaseDefaultRegionQueueOptInRegionTopic/QueueStack/Queue/Policy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::SQS::QueuePolicy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sqs:SendMessage",
+                                  "Condition": {
+                                    "ArnEquals": {
+                                      "aws:SourceArn": {
+                                        "Fn::GetAtt": [
+                                          "ExportsReader8B249524",
+                                          "/cdk/exports/TestCaseDefaultRegionQueueOptInRegionTopicQueueStackFB4270A6/TestCaseDefaultRegionQueueOptInRegionTopicTopicStack4AB04298afsouth1RefTopicBFC7AF6EB4087F59"
+                                        ]
+                                      }
+                                    }
+                                  },
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "sns.amazonaws.com"
+                                  },
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "Queue4A7E3555",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "queues": [
+                              {
+                                "Ref": "Queue4A7E3555"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_sqs.CfnQueuePolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_sqs.QueuePolicy",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "TestCaseDefaultRegionQueueOptInRegionTopicTopicStackTopic0CF3A97A": {
+                    "id": "TestCaseDefaultRegionQueueOptInRegionTopicTopicStackTopic0CF3A97A",
+                    "path": "TestCaseDefaultRegionQueueOptInRegionTopic/QueueStack/Queue/TestCaseDefaultRegionQueueOptInRegionTopicTopicStackTopic0CF3A97A",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "TestCaseDefaultRegionQueueOptInRegionTopic/QueueStack/Queue/TestCaseDefaultRegionQueueOptInRegionTopicTopicStackTopic0CF3A97A/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::SNS::Subscription",
+                          "aws:cdk:cloudformation:props": {
+                            "endpoint": {
+                              "Fn::GetAtt": [
+                                "Queue4A7E3555",
+                                "Arn"
+                              ]
+                            },
+                            "protocol": "sqs",
+                            "region": "af-south-1",
+                            "topicArn": {
+                              "Fn::GetAtt": [
+                                "ExportsReader8B249524",
+                                "/cdk/exports/TestCaseDefaultRegionQueueOptInRegionTopicQueueStackFB4270A6/TestCaseDefaultRegionQueueOptInRegionTopicTopicStack4AB04298afsouth1RefTopicBFC7AF6EB4087F59"
+                              ]
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_sns.CfnSubscription",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_sns.Subscription",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sqs.Queue",
+                  "version": "0.0.0"
+                }
+              },
+              "ExportsReader": {
+                "id": "ExportsReader",
+                "path": "TestCaseDefaultRegionQueueOptInRegionTopic/QueueStack/ExportsReader",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "TestCaseDefaultRegionQueueOptInRegionTopic/QueueStack/ExportsReader/Resource",
+                    "children": {
+                      "Default": {
+                        "id": "Default",
+                        "path": "TestCaseDefaultRegionQueueOptInRegionTopic/QueueStack/ExportsReader/Resource/Default",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CustomResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "Custom::CrossRegionExportReaderCustomResourceProvider": {
+                "id": "Custom::CrossRegionExportReaderCustomResourceProvider",
+                "path": "TestCaseDefaultRegionQueueOptInRegionTopic/QueueStack/Custom::CrossRegionExportReaderCustomResourceProvider",
+                "children": {
+                  "Staging": {
+                    "id": "Staging",
+                    "path": "TestCaseDefaultRegionQueueOptInRegionTopic/QueueStack/Custom::CrossRegionExportReaderCustomResourceProvider/Staging",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Role": {
+                    "id": "Role",
+                    "path": "TestCaseDefaultRegionQueueOptInRegionTopic/QueueStack/Custom::CrossRegionExportReaderCustomResourceProvider/Role",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Handler": {
+                    "id": "Handler",
+                    "path": "TestCaseDefaultRegionQueueOptInRegionTopic/QueueStack/Custom::CrossRegionExportReaderCustomResourceProvider/Handler",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CustomResourceProviderBase",
+                  "version": "0.0.0"
+                }
+              },
+              "BootstrapVersion": {
+                "id": "BootstrapVersion",
+                "path": "TestCaseDefaultRegionQueueOptInRegionTopic/QueueStack/BootstrapVersion",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnParameter",
+                  "version": "0.0.0"
+                }
+              },
+              "CheckBootstrapVersion": {
+                "id": "CheckBootstrapVersion",
+                "path": "TestCaseDefaultRegionQueueOptInRegionTopic/QueueStack/CheckBootstrapVersion",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnRule",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Stack",
+              "version": "0.0.0"
+            }
+          },
+          "TopicStack": {
+            "id": "TopicStack",
+            "path": "TestCaseDefaultRegionQueueOptInRegionTopic/TopicStack",
+            "children": {
+              "Topic": {
+                "id": "Topic",
+                "path": "TestCaseDefaultRegionQueueOptInRegionTopic/TopicStack/Topic",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "TestCaseDefaultRegionQueueOptInRegionTopic/TopicStack/Topic/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
+                      "aws:cdk:cloudformation:props": {}
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_sns.CfnTopic",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sns.Topic",
+                  "version": "0.0.0"
+                }
+              },
+              "ExportsWriteruseast10F67B507": {
+                "id": "ExportsWriteruseast10F67B507",
+                "path": "TestCaseDefaultRegionQueueOptInRegionTopic/TopicStack/ExportsWriteruseast10F67B507",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "TestCaseDefaultRegionQueueOptInRegionTopic/TopicStack/ExportsWriteruseast10F67B507/Resource",
+                    "children": {
+                      "Default": {
+                        "id": "Default",
+                        "path": "TestCaseDefaultRegionQueueOptInRegionTopic/TopicStack/ExportsWriteruseast10F67B507/Resource/Default",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CustomResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "Custom::CrossRegionExportWriterCustomResourceProvider": {
+                "id": "Custom::CrossRegionExportWriterCustomResourceProvider",
+                "path": "TestCaseDefaultRegionQueueOptInRegionTopic/TopicStack/Custom::CrossRegionExportWriterCustomResourceProvider",
+                "children": {
+                  "Staging": {
+                    "id": "Staging",
+                    "path": "TestCaseDefaultRegionQueueOptInRegionTopic/TopicStack/Custom::CrossRegionExportWriterCustomResourceProvider/Staging",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Role": {
+                    "id": "Role",
+                    "path": "TestCaseDefaultRegionQueueOptInRegionTopic/TopicStack/Custom::CrossRegionExportWriterCustomResourceProvider/Role",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Handler": {
+                    "id": "Handler",
+                    "path": "TestCaseDefaultRegionQueueOptInRegionTopic/TopicStack/Custom::CrossRegionExportWriterCustomResourceProvider/Handler",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CustomResourceProviderBase",
+                  "version": "0.0.0"
+                }
+              },
+              "BootstrapVersion": {
+                "id": "BootstrapVersion",
+                "path": "TestCaseDefaultRegionQueueOptInRegionTopic/TopicStack/BootstrapVersion",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnParameter",
+                  "version": "0.0.0"
+                }
+              },
+              "CheckBootstrapVersion": {
+                "id": "CheckBootstrapVersion",
+                "path": "TestCaseDefaultRegionQueueOptInRegionTopic/TopicStack/CheckBootstrapVersion",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnRule",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Stack",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
+        }
+      },
+      "SNS Subscriptions": {
+        "id": "SNS Subscriptions",
+        "path": "SNS Subscriptions",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "SNS Subscriptions/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "SNS Subscriptions/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "SNS Subscriptions/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "SNS Subscriptions/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "SNS Subscriptions/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

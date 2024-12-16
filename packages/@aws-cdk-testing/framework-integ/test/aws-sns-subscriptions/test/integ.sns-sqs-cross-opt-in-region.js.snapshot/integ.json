@@ -1,0 +1,14 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "SNS Subscriptions/DefaultTest": {
+      "stacks": [
+        "TestCaseDefaultRegionQueueDefaultRegionTopic/TopicStack",
+        "TestCaseOptInRegionQueueDefaultRegionTopic/TopicStack",
+        "TestCaseDefaultRegionQueueOptInRegionTopic/TopicStack"
+      ],
+      "assertionStack": "SNS Subscriptions/DefaultTest/DeployAssert",
+      "assertionStackName": "SNSSubscriptionsDefaultTestDeployAssertD77125EB"
+    }
+  }
+}
