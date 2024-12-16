@@ -94,7 +94,6 @@ test('inherited aspects get invoked before locally defined aspects, if both have
         });
       }, stabilizeAspects)(app);
     }),
-    { seed: 26648776, path: '5:13:2:6:6', endOnFailure: true },
   ),
 );
 
