@@ -249,8 +249,8 @@ export class Subscription extends Resource {
     deadLetterQueue.addToResourcePolicy(new PolicyStatement({
       resources: [deadLetterQueue.queueArn],
       actions: ['sqs:SendMessage'],
-      // Is not subject to the cross-region delivery constraints for optional regions
-      // given the dead letter queue must be in the same region as the topic
+      // Is not subject to the cross-region delivery constraints for opt-in regions
+      // given the dead letter queue must be in the same region as its associated topic
       // See https://docs.aws.amazon.com/sns/latest/dg/sns-cross-region-delivery.html
       principals: [new ServicePrincipal('sns.amazonaws.com')],
       conditions: {
