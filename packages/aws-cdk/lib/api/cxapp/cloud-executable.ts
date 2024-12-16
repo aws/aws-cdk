@@ -7,6 +7,7 @@ import * as contextproviders from '../../context-providers';
 import { debug, warning } from '../../logging';
 import { Configuration } from '../../settings';
 import { SdkProvider } from '../aws-auth';
+import { ToolkitError } from '../../toolkit/error';
 
 /**
  * @returns output directory
