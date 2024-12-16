@@ -4,6 +4,7 @@ import { type ChangeHotswapResult, classifyChanges, type HotswappableChangeCandi
 import { flatMap } from '../../util';
 import type { ILambdaClient, SDK } from '../aws-auth';
 import { CfnEvaluationException, type EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
+import { ToolkitError } from '../../toolkit/error';
 
 // namespace object imports won't work in the bundle for function exports
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -245,7 +246,7 @@ async function evaluateLambdaFunctionProps(
         break;
       default:
         // we will never get here, but just in case we do throw an error
-        throw new Error(
+        throw new ToolkitError(
           'while apply()ing, found a property that cannot be hotswapped. Please report this at github.com/aws/aws-cdk/issues/new/choose',
         );
     }

@@ -12,6 +12,7 @@ import {
 import type { SDK } from '../aws-auth';
 
 import type { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
+import { ToolkitError } from '../../toolkit/error';
 
 export async function isHotswappableAppSyncChange(
   logicalId: string,
@@ -142,7 +143,7 @@ export async function isHotswappableAppSyncChange(
             schemaCreationResponse = await sdk.appsync().getSchemaCreationStatus(getSchemaCreationStatusRequest);
           }
           if (schemaCreationResponse.status === 'FAILED') {
-            throw new Error(schemaCreationResponse.details);
+            throw new ToolkitError(schemaCreationResponse.details);
           }
         } else {
           //isApiKey
