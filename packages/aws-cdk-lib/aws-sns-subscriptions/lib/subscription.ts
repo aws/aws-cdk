@@ -1,7 +1,7 @@
 import * as iam from '../../aws-iam';
-import { Function } from '../../aws-lambda';
+import * as lambda from '../../aws-lambda';
 import * as sns from '../../aws-sns';
-import { IQueue } from '../../aws-sqs';
+import * as sqs from '../../aws-sqs';
 import { IResource } from '../../core';
 import * as regionInfo from '../../region-info';
 
@@ -28,7 +28,7 @@ export interface SubscriptionProps {
    *
    * @default - No dead letter queue enabled.
    */
-  readonly deadLetterQueue?: IQueue;
+  readonly deadLetterQueue?: sqs.IQueue;
 }
 
 /**
@@ -65,9 +65,9 @@ export abstract class Subscription implements sns.ITopicSubscription {
     }
 
     if (isSubscriberRegionOptIn === 'YES') {
-      if (Function.isFunction(this.subscriber)) {
+      if (lambda.Function.isFunction(this.subscriber)) {
         throw new Error('Cross region delivery is not supported for Lambda functions');
-      } else if (Queue.isQueue(this.subscriber)) {
+      } else if (sqs.Queue.isQueue(this.subscriber)) {
         return new iam.ServicePrincipal(`sns.${subscriberRegion}.amazonaws.com`);
       } else {
         // All SQS queues and Lambda functions should be caught in the above checks
