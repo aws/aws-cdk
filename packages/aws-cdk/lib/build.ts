@@ -19,6 +19,6 @@ export async function buildAllStackAssets(stacks: cxapi.CloudFormationStackArtif
   }
 
   if (buildingErrors.length) {
-    throw ToolkitError(`Building Assets Failed: ${buildingErrors.join(', ')}`);
+    throw new ToolkitError(`Building Assets Failed: ${buildingErrors.join(', ')}`);
   }
 }
