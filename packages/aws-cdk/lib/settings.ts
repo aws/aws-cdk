@@ -1,7 +1,8 @@
 import * as os from 'os';
 import * as fs_path from 'path';
 import * as fs from 'fs-extra';
-import { Tag } from './cdk-toolkit';
+// import { Tag } from './cdk-toolkit';
+import { CliConfigType } from './cli-type';
 import { debug, warning } from './logging';
 import * as util from './util';
 
@@ -18,6 +19,7 @@ export const TRANSIENT_CONTEXT_KEY = '$dontSaveContext';
 
 const CONTEXT_KEY = 'context';
 
+// TODO: replace with a code gened enum
 export enum Command {
   LS = 'ls',
   LIST = 'list',
@@ -33,14 +35,15 @@ export enum Command {
   WATCH = 'watch',
 }
 
-const BUNDLING_COMMANDS = [
-  Command.DEPLOY,
-  Command.DIFF,
-  Command.SYNTH,
-  Command.SYNTHESIZE,
-  Command.WATCH,
-];
+// const BUNDLING_COMMANDS = [
+//   Command.DEPLOY,
+//   Command.DIFF,
+//   Command.SYNTH,
+//   Command.SYNTHESIZE,
+//   Command.WATCH,
+// ];
 
+// TODO: delete, replaced by CliConfigType
 export type Arguments = {
   readonly _: [Command, ...string[]];
   readonly exclusively?: boolean;
@@ -72,7 +75,7 @@ export class Configuration {
   /**
    * Settings that are defined in the CLI arguments
    */
-  public commandLineArgSettings = new CommandLineArgSettings();
+  public commandLineArgSettings = new CommandLineArgSettings({ _: [Command.LS] });
 
   /**
    * Context are special settings specified in:
@@ -98,7 +101,7 @@ export class Configuration {
   constructor(private readonly props: ConfigurationProps = {}) {
     this.commandLineArguments = props.commandLineArguments
       ? CommandLineArgSettings.fromCommandLineArguments(props.commandLineArguments)
-      : new CommandLineArgSettings();
+      : new CommandLineArgSettings({ _: [Command.LS] });
     this.commandLineContext = this.commandLineArguments.subSettings([CONTEXT_KEY]).makeReadOnly();
   }
 
@@ -360,82 +363,47 @@ export class CommandLineArgSettings extends Settings {
    * `$HOME/.cdk.json`. Arguments not listed below and accessed via this object
    * can only be specified on the command line.
    *
-   * @param argv the received CLI arguments.
+   * @param args the received CLI arguments.
    * @returns a new Settings object.
    */
-  public static fromCommandLineArguments(argv: Arguments): CommandLineArgSettings {
-    const context = this.parseStringContextListToObject(argv);
-    const tags = this.parseStringTagsListToObject(expectStringList(argv.tags));
+  public static fromCommandLineArguments(args: Arguments): CommandLineArgSettings {
+    // const context = this.parseStringContextListToObject(config);
+    // const tags = this.parseStringTagsListToObject(expectStringList(config.tags));
 
-    // Determine bundling stacks
-    let bundlingStacks: string[];
-    if (BUNDLING_COMMANDS.includes(argv._[0])) {
-    // If we deploy, diff, synth or watch a list of stacks exclusively we skip
-    // bundling for all other stacks.
-      bundlingStacks = argv.exclusively
-        ? argv.STACKS ?? ['**']
-        : ['**'];
-    } else { // Skip bundling for all stacks
-      bundlingStacks = [];
-    }
+    // TODO: deal with bundling stacks
+    // // Determine bundling stacks
+    // let bundlingStacks: string[];
+    // if (BUNDLING_COMMANDS.includes(config._[0] as Command)) {
+    // // If we deploy, diff, synth or watch a list of stacks exclusively we skip
+    // // bundling for all other stacks.
+    //   bundlingStacks = config.globalOptions?.exclusively
+    //     ? config.STACKS ?? ['**']
+    //     : ['**'];
+    // } else { // Skip bundling for all stacks
+    //   bundlingStacks = [];
+    // }
 
-    return new CommandLineArgSettings({
-      app: argv.app,
-      browser: argv.browser,
-      build: argv.build,
-      context,
-      debug: argv.debug,
-      tags,
-      language: argv.language,
-      pathMetadata: argv.pathMetadata,
-      assetMetadata: argv.assetMetadata,
-      profile: argv.profile,
-      plugin: argv.plugin,
-      requireApproval: argv.requireApproval,
-      toolkitStackName: argv.toolkitStackName,
-      toolkitBucket: {
-        bucketName: argv.bootstrapBucketName,
-        kmsKeyId: argv.bootstrapKmsKeyId,
-      },
-      versionReporting: argv.versionReporting,
-      staging: argv.staging,
-      output: argv.output,
-      outputsFile: argv.outputsFile,
-      progress: argv.progress,
-      bundlingStacks,
-      lookups: argv.lookups,
-      rollback: argv.rollback,
-      notices: argv.notices,
-      assetParallelism: argv['asset-parallelism'],
-      assetPrebuild: argv['asset-prebuild'],
-      ignoreNoStacks: argv['ignore-no-stacks'],
-      hotswap: {
-        ecs: {
-          minimumEcsHealthyPercent: argv.minimumEcsHealthyPercent,
-          maximumEcsHealthyPercent: argv.maximumEcsHealthyPercent,
-        },
-      },
-      unstable: argv.unstable,
-    });
+    // TODO: turn the input into a CliConfigType and drop other things onto the floor
+    return new CommandLineArgSettings(args);
   }
 
-  private static parseStringContextListToObject(argv: Arguments): any {
-    const context: any = {};
+  // private static parseStringContextListToObject(argv: CliConfigType): any {
+  //   const context: any = {};
 
-    for (const assignment of ((argv as any).context || [])) {
-      const parts = assignment.split(/=(.*)/, 2);
-      if (parts.length === 2) {
-        debug('CLI argument context: %s=%s', parts[0], parts[1]);
-        if (parts[0].match(/^aws:.+/)) {
-          throw new Error(`User-provided context cannot use keys prefixed with 'aws:', but ${parts[0]} was provided.`);
-        }
-        context[parts[0]] = parts[1];
-      } else {
-        warning('Context argument is not an assignment (key=value): %s', assignment);
-      }
-    }
-    return context;
-  }
+  //   for (const assignment of ((argv as any).context || [])) {
+  //     const parts = assignment.split(/=(.*)/, 2);
+  //     if (parts.length === 2) {
+  //       debug('CLI argument context: %s=%s', parts[0], parts[1]);
+  //       if (parts[0].match(/^aws:.+/)) {
+  //         throw new Error(`User-provided context cannot use keys prefixed with 'aws:', but ${parts[0]} was provided.`);
+  //       }
+  //       context[parts[0]] = parts[1];
+  //     } else {
+  //       warning('Context argument is not an assignment (key=value): %s', assignment);
+  //     }
+  //   }
+  //   return context;
+  // }
 
   /**
    * Parse tags out of arguments
@@ -443,31 +411,30 @@ export class CommandLineArgSettings extends Settings {
    * Return undefined if no tags were provided, return an empty array if only empty
    * strings were provided
    */
-  private static parseStringTagsListToObject(argTags: string[] | undefined): Tag[] | undefined {
-    if (argTags === undefined) { return undefined; }
-    if (argTags.length === 0) { return undefined; }
-    const nonEmptyTags = argTags.filter(t => t !== '');
-    if (nonEmptyTags.length === 0) { return []; }
+  // private static parseStringTagsListToObject(argTags: string[] | undefined): Tag[] | undefined {
+  //   if (argTags === undefined) { return undefined; }
+  //   if (argTags.length === 0) { return undefined; }
+  //   const nonEmptyTags = argTags.filter(t => t !== '');
+  //   if (nonEmptyTags.length === 0) { return []; }
 
-    const tags: Tag[] = [];
+  //   const tags: Tag[] = [];
 
-    for (const assignment of nonEmptyTags) {
-      const parts = assignment.split(/=(.*)/, 2);
-      if (parts.length === 2) {
-        debug('CLI argument tags: %s=%s', parts[0], parts[1]);
-        tags.push({
-          Key: parts[0],
-          Value: parts[1],
-        });
-      } else {
-        warning('Tags argument is not an assignment (key=value): %s', assignment);
-      }
-    }
-    return tags.length > 0 ? tags : undefined;
-  }
+  //   for (const assignment of nonEmptyTags) {
+  //     const parts = assignment.split(/=(.*)/, 2);
+  //     if (parts.length === 2) {
+  //       debug('CLI argument tags: %s=%s', parts[0], parts[1]);
+  //       tags.push({
+  //         Key: parts[0],
+  //         Value: parts[1],
+  //       });
+  //     } else {
+  //       warning('Tags argument is not an assignment (key=value): %s', assignment);
+  //     }
+  //   }
+  //   return tags.length > 0 ? tags : undefined;
+  // }
 
-  // TODO: type cliSettings
-  constructor(cliSettings: any = {}, public readonly readOnly = false) {
+  constructor(cliSettings: CliConfigType, public readonly readOnly = false) {
     super(cliSettings);
   }
 }
@@ -501,14 +468,14 @@ function isTransientValue(value: any) {
   return typeof value === 'object' && value !== null && (value as any)[TRANSIENT_CONTEXT_KEY];
 }
 
-function expectStringList(x: unknown): string[] | undefined {
-  if (x === undefined) { return undefined; }
-  if (!Array.isArray(x)) {
-    throw new Error(`Expected array, got '${x}'`);
-  }
-  const nonStrings = x.filter(e => typeof e !== 'string');
-  if (nonStrings.length > 0) {
-    throw new Error(`Expected list of strings, found ${nonStrings}`);
-  }
-  return x;
-}
+// function expectStringList(x: unknown): string[] | undefined {
+//   if (x === undefined) { return undefined; }
+//   if (!Array.isArray(x)) {
+//     throw new Error(`Expected array, got '${x}'`);
+//   }
+//   const nonStrings = x.filter(e => typeof e !== 'string');
+//   if (nonStrings.length > 0) {
+//     throw new Error(`Expected list of strings, found ${nonStrings}`);
+//   }
+//   return x;
+// }

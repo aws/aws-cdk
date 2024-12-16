@@ -24,7 +24,7 @@ import { MIGRATE_SUPPORTED_LANGUAGES, getMigrateScanType } from '../lib/commands
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
 import { data, debug, error, print, setCI, setLogLevel, LogLevel } from '../lib/logging';
 import { Notices } from '../lib/notices';
-import { Command, Configuration, Settings } from '../lib/settings';
+import { Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
 import { SdkToCliLogger } from './api/aws-auth/sdk-logger';
 import { yargsNegativeAlias } from './util/yargs-helpers';
@@ -85,10 +85,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
   debug('Command line arguments:', argv);
 
   const configuration = new Configuration({
-    commandLineArguments: {
-      ...argv,
-      _: argv._ as [Command, ...string[]], // TypeScript at its best
-    },
+    commandLineArguments: argv,
   });
   await configuration.load();
 

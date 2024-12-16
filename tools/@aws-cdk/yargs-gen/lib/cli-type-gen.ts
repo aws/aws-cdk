@@ -13,29 +13,38 @@ export async function renderCliType(config: CliConfig): Promise<string> {
 
   const cliType = new StructType(scope, {
     export: true,
-    name: 'cliConfigType',
+    name: 'CliConfigType',
   });
 
   // add required command
   cliType.addProperty({
     name: '_',
-    type: Type.STRING,
+    type: Type.arrayOf(Type.STRING),
   });
 
   // add global options
+  const globalOptionType = new StructType(scope, {
+    export: true,
+    name: 'GlobalOptions',
+  });
   for (const [optionName, option] of Object.entries(config.globalOptions)) {
-    cliType.addProperty({
+    globalOptionType.addProperty({
       name: optionName,
       type: convertType(option.type),
       optional: true,
     });
   }
+  cliType.addProperty({
+    name: 'globalOptions',
+    type: Type.fromName(scope, globalOptionType.name),
+    optional: true,
+  });
 
   // add command-specific options
   for (const [commandName, command] of Object.entries(config.commands)) {
     const commandType = new StructType(scope, {
       export: true,
-      name: `${commandName.replace(/:/g, '_')}Options`,
+      name: `${kebabToPascal(commandName)}Options`,
     });
 
     for (const [optionName, option] of Object.entries(command.options ?? {})) {
@@ -83,4 +92,11 @@ function convertType(type: 'string' | 'array' | 'number' | 'boolean' | 'count'):
     case 'count':
       return Type.NUMBER;
   }
+}
+
+function kebabToPascal(str: string): string {
+  return str
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join('');
 }

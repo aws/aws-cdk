@@ -30,10 +30,7 @@
   "dependencies": {
     "@cdklabs/typewriter": "^0.0.4",
     "lodash.clonedeep": "^4.5.0",
-    "prettier": "^2.8.8",
-    "lodash": {
-      "clonedeep": "^4.5.0"
-    }
+    "prettier": "^2.8.8"
   },
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
@@ -41,10 +38,7 @@
     "@types/jest": "^29.5.12",
     "@types/lodash.clonedeep": "^4.5.0",
     "@types/node": "^18",
-    "jest": "^29.7.0",
-    "@types/lodash": {
-      "clonedeep": "^4.5.0"
-    }
+    "jest": "^29.7.0"
   },
   "keywords": [
     "aws",
