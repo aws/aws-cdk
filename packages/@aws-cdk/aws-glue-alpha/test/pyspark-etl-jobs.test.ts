@@ -68,12 +68,12 @@ describe('Job', () => {
       });
     });
 
-    test('Default Python version should be 3.9', () => {
+    test('Default Python version should be 3', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         Command: {
           Name: glue.JobType.ETL,
           ScriptLocation: 's3://bucketname/script',
-          PythonVersion: glue.PythonVersion.THREE_NINE,
+          PythonVersion: glue.PythonVersion.THREE,
         },
       });
     });
