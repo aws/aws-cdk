@@ -126,9 +126,7 @@ function makeOptions(prefix: Expression, options: { [optionName: string]: CliOpt
         optionArgs[optionProp] = code.expr.ident(optionValue.dynamicValue);
       } else if (optionValue && optionValue.dynamicType === 'function') {
         const inlineFunction: string = optionValue.dynamicValue;
-        const NUMBER_OF_SPACES_BETWEEN_ARROW_AND_CODE = 3;
-        // this only works with arrow functions, like () =>
-        optionArgs[optionProp] = code.expr.directCode(inlineFunction.substring(inlineFunction.indexOf('=>') + NUMBER_OF_SPACES_BETWEEN_ARROW_AND_CODE));
+        optionArgs[optionProp] = code.expr.directCode(inlineFunction);
       } else {
         optionArgs[optionProp] = lit(optionValue);
       }
