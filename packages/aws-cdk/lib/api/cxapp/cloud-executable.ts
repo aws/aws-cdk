@@ -82,7 +82,7 @@ export class CloudExecutable {
         const missingKeys = missingContextKeys(assembly.manifest.missing);
 
         if (!this.canLookup) {
-          throw new Error(
+          throw new ToolkitError(
             'Context lookups have been disabled. '
             + 'Make sure all necessary context is already in \'cdk.context.json\' by running \'cdk synth\' on a machine with sufficient AWS credentials and committing the result. '
             + `Missing context keys: '${Array.from(missingKeys).join(', ')}'`);
@@ -214,7 +214,7 @@ function _makeCdkMetadataAvailableCondition() {
  */
 function _fnOr(operands: any[]): any {
   if (operands.length === 0) {
-    throw new Error('Cannot build `Fn::Or` with zero operands!');
+    throw new ToolkitError('Cannot build `Fn::Or` with zero operands!');
   }
   if (operands.length === 1) {
     return operands[0];

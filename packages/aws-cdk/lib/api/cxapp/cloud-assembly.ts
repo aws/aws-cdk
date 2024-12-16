@@ -5,6 +5,7 @@ import * as semver from 'semver';
 import { error, print, warning } from '../../logging';
 import { flatten } from '../../util';
 import { versionNumber } from '../../version';
+import { ToolkitError } from '../../toolkit/error';
 
 export enum DefaultSelection {
   /**
@@ -110,7 +111,7 @@ export class CloudAssembly {
       if (options.ignoreNoStacks) {
         return new StackCollection(this, []);
       }
-      throw new Error('This app contains no stacks');
+      throw new ToolkitError('This app contains no stacks');
     }
 
     if (allTopLevel) {
@@ -128,7 +129,7 @@ export class CloudAssembly {
     if (topLevelStacks.length > 0) {
       return this.extendStacks(topLevelStacks, stacks, extend);
     } else {
-      throw new Error('No stack found in the main cloud assembly. Use "list" to print manifest');
+      throw new ToolkitError('No stack found in the main cloud assembly. Use "list" to print manifest');
     }
   }
 
@@ -170,11 +171,11 @@ export class CloudAssembly {
         if (topLevelStacks.length === 1) {
           return new StackCollection(this, topLevelStacks);
         } else {
-          throw new Error('Since this app includes more than a single stack, specify which stacks to use (wildcards are supported) or specify `--all`\n' +
+          throw new ToolkitError('Since this app includes more than a single stack, specify which stacks to use (wildcards are supported) or specify `--all`\n' +
           `Stacks: ${stacks.map(x => x.hierarchicalId).join(' · ')}`);
         }
       default:
-        throw new Error(`invalid default behavior: ${defaultSelection}`);
+        throw new ToolkitError(`invalid default behavior: ${defaultSelection}`);
     }
   }
 
@@ -228,7 +229,7 @@ export class StackCollection {
 
   public get firstStack() {
     if (this.stackCount < 1) {
-      throw new Error('StackCollection contains no stack artifacts (trying to access the first one)');
+      throw new ToolkitError('StackCollection contains no stack artifacts (trying to access the first one)');
     }
     return this.stackArtifacts[0];
   }
@@ -277,11 +278,11 @@ export class StackCollection {
     }
 
     if (errors && !options.ignoreErrors) {
-      throw new Error('Found errors');
+      throw new ToolkitError('Found errors');
     }
 
     if (options.strict && warnings) {
-      throw new Error('Found warnings (--strict mode)');
+      throw new ToolkitError('Found warnings (--strict mode)');
     }
 
     function printMessage(logFn: (s: string) => void, prefix: string, id: string, entry: cxapi.MetadataEntry) {
