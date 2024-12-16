@@ -762,7 +762,7 @@ test('queue subscription cross region, queue env agnostic', () => {
 });
 
 describe('queue subscription, cross opt-in region', () => {
-  test('returns default principal if not cross region and both regions are opt-in', () => {
+  test('returns default principal if not cross region and region is opt-in', () => {
     const app = new App();
     const topicStack = new Stack(app, 'TopicStack', {
       env: { region: optInRegion1 },
@@ -1672,7 +1672,7 @@ test('lambda subscription, cross region', () => {
 });
 
 describe('lambda subscription, cross opt-in region', () => {
-  test('returns default principal if not cross region and both regions are opt-in', () => {
+  test('returns default principal if not cross region and region is opt-in', () => {
     const app = new App();
     const topicStack = new Stack(app, 'TopicStack', {
       env: { region: optInRegion1 },
