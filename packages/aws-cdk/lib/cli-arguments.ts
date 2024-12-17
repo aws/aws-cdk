@@ -8,7 +8,7 @@
  *
  * @struct
  */
-export interface CliConfigType {
+export interface CliArguments {
   /**
    * The CLI command name followed by any properties of the command
    */

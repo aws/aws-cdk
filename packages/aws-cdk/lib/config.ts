@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { CliHelpers, type CliConfig } from '@aws-cdk/yargs-gen';
+import { CliHelpers, type CliConfig } from '@aws-cdk/cli-args-gen';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
 import { MIGRATE_SUPPORTED_LANGUAGES } from './commands/migrate';
 import { RequireApproval } from './diff';
@@ -8,7 +8,7 @@ import { availableInitLanguages } from './init';
 export const YARGS_HELPERS = new CliHelpers('./util/yargs-helpers');
 
 /**
- * Source of truth for all CDK CLI commands. `yargs-gen` translates this into the `yargs` definition
+ * Source of truth for all CDK CLI commands. `cli-args-gen` translates this into the `yargs` definition
  * in `lib/parse-command-line-arguments.ts`.
  */
 export async function makeConfig(): Promise<CliConfig> {
