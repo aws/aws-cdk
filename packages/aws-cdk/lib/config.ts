@@ -343,7 +343,7 @@ export async function makeConfig(): Promise<CliConfig> {
         },
       },
       migrate: {
-        description: false as any,
+        description: 'Migrate existing AWS resources into a CDK app',
         options: {
           'stack-name': { type: 'string', alias: 'n', desc: 'The name assigned to the stack created in the new project. The name of the app will be based off this name as well.', requiresArg: true },
           'language': { type: 'string', default: 'typescript', alias: 'l', desc: 'The language to be used for the new project', choices: MIGRATE_SUPPORTED_LANGUAGES },

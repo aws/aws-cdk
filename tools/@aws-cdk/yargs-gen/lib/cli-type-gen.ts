@@ -13,35 +13,71 @@ export async function renderCliType(config: CliConfig): Promise<string> {
 
   const cliType = new StructType(scope, {
     export: true,
-    name: 'cliConfigType',
+    name: 'CliConfigType',
+    docs: {
+      summary: 'The structure of the CLI configuration, generated from packages/aws-cdk/lib/config.ts',
+    },
   });
 
   // add required command
   cliType.addProperty({
     name: '_',
-    type: Type.STRING,
+    type: Type.arrayOf(Type.STRING),
+    docs: {
+      summary: 'The CLI command name followed by any properties of the command',
+    },
   });
 
   // add global options
+  const globalOptionType = new StructType(scope, {
+    export: true,
+    name: 'GlobalOptions',
+    docs: {
+      summary: 'Global options available to all CLI commands',
+    },
+  });
   for (const [optionName, option] of Object.entries(config.globalOptions)) {
-    cliType.addProperty({
+    globalOptionType.addProperty({
       name: optionName,
       type: convertType(option.type),
+      docs: {
+        default: normalizeDefault(option.default),
+        summary: option.desc,
+        deprecated: option.deprecated ? String(option.deprecated) : undefined,
+      },
       optional: true,
     });
   }
+  cliType.addProperty({
+    name: 'globalOptions',
+    type: Type.fromName(scope, globalOptionType.name),
+    docs: {
+      summary: 'Global options available to all CLI commands',
+    },
+    optional: true,
+  });
 
   // add command-specific options
   for (const [commandName, command] of Object.entries(config.commands)) {
     const commandType = new StructType(scope, {
       export: true,
-      name: `${commandName.replace(/:/g, '_')}Options`,
+      name: `${kebabToPascal(commandName)}Options`,
+      docs: {
+        summary: command.description,
+        remarks: command.aliases ? `aliases: ${command.aliases.join(' ')}` : undefined,
+      },
     });
 
     for (const [optionName, option] of Object.entries(command.options ?? {})) {
       commandType.addProperty({
         name: optionName,
         type: convertType(option.type),
+        docs: {
+          default: normalizeDefault(option.default),
+          summary: option.desc,
+          deprecated: option.deprecated ? String(option.deprecated) : undefined,
+          remarks: option.alias ? `aliases: ${Array.isArray(option.alias) ? option.alias.join(' ') : option.alias}` : undefined,
+        },
         optional: true,
       });
     }
@@ -49,6 +85,10 @@ export async function renderCliType(config: CliConfig): Promise<string> {
     cliType.addProperty({
       name: commandName,
       type: Type.fromName(scope, commandType.name),
+      docs: {
+        summary: command.description,
+        remarks: command.aliases ? `aliases: ${command.aliases.join(' ')}` : undefined,
+      },
       optional: true,
     });
   }
@@ -83,4 +123,18 @@ function convertType(type: 'string' | 'array' | 'number' | 'boolean' | 'count'):
     case 'count':
       return Type.NUMBER;
   }
+}
+
+function kebabToPascal(str: string): string {
+  return str
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join('');
+}
+
+function normalizeDefault(defaultValue: any): string {
+  if (typeof defaultValue === 'boolean' || typeof defaultValue === 'string') {
+    return String(defaultValue);
+  }
+  return 'undefined';
 }
