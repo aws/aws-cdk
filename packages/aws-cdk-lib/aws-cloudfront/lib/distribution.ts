@@ -314,6 +314,7 @@ export class Distribution extends Resource implements IDistribution {
   public readonly distributionDomainName: string;
   public readonly distributionId: string;
 
+  private readonly httpVersion: HttpVersion;
   private readonly defaultBehavior: CacheBehavior;
   private readonly additionalBehaviors: CacheBehavior[] = [];
   private readonly boundOrigins: BoundOrigin[] = [];
@@ -346,6 +347,8 @@ export class Distribution extends Resource implements IDistribution {
       });
     }
 
+    this.validateHttpVersion(this.defaultBehavior);
+
     if (props.webAclId) {
       this.validateWebAclId(props.webAclId);
       this.webAclId = props.webAclId;
@@ -354,6 +357,7 @@ export class Distribution extends Resource implements IDistribution {
     this.certificate = props.certificate;
     this.errorResponses = props.errorResponses ?? [];
     this.publishAdditionalMetrics = props.publishAdditionalMetrics;
+    this.httpVersion = props.httpVersion ?? HttpVersion.HTTP2;
 
     // Comments have an undocumented limit of 128 characters
     const trimmedComment =
@@ -372,7 +376,7 @@ export class Distribution extends Resource implements IDistribution {
         comment: trimmedComment,
         customErrorResponses: this.renderErrorResponses(),
         defaultRootObject: props.defaultRootObject,
-        httpVersion: props.httpVersion ?? HttpVersion.HTTP2,
+        httpVersion: this.httpVersion,
         ipv6Enabled: props.enableIpv6 ?? true,
         logging: this.renderLogging(props),
         priceClass: props.priceClass ?? undefined,
@@ -724,7 +728,10 @@ export class Distribution extends Resource implements IDistribution {
 
   private renderCacheBehaviors(): CfnDistribution.CacheBehaviorProperty[] | undefined {
     if (this.additionalBehaviors.length === 0) { return undefined; }
-    return this.additionalBehaviors.map(behavior => behavior._renderBehavior());
+    return this.additionalBehaviors.map(behavior => {
+      this.validateHttpVersion(behavior);
+      return behavior._renderBehavior()
+    });
   }
 
   private renderErrorResponses(): CfnDistribution.CustomErrorResponseProperty[] | undefined {
@@ -786,6 +793,12 @@ export class Distribution extends Resource implements IDistribution {
       minimumProtocolVersion: minimumProtocolVersion,
       sslSupportMethod: sslSupportMethod,
     };
+  }
+
+  private validateHttpVersion(cacheBehavior: CacheBehavior) {
+    if (cacheBehavior.grpcEnabled && ![HttpVersion.HTTP2, HttpVersion.HTTP2_AND_3].includes(this.httpVersion)) {
+      throw new Error(`'httpVersion' must be HttpVersion.HTTP2 or HttpVersion.HTTP2_AND_3 if 'enableGrpc' in 'defaultBehavior' or 'additionalBehaviors' is true, got ${this.httpVersion}`);
+    }
   }
 }
 
