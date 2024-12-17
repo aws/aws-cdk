@@ -3,7 +3,7 @@
   "SubnetTest3296A161": {
    "Type": "AWS::EC2::VPC",
    "Properties": {
-    "CidrBlock": "10.0.0.0/16",
+    "CidrBlock": "10.1.0.0/16",
     "EnableDnsHostnames": true,
     "EnableDnsSupport": true,
     "InstanceTenancy": "default"
@@ -26,7 +26,7 @@
    "Properties": {
     "AssignIpv6AddressOnCreation": false,
     "AvailabilityZone": "us-west-2a",
-    "CidrBlock": "10.0.0.0/24",
+    "CidrBlock": "10.1.0.0/20",
     "VpcId": {
      "Fn::GetAtt": [
       "SubnetTest3296A161",
@@ -221,7 +221,7 @@
    "Properties": {
     "AssignIpv6AddressOnCreation": false,
     "AvailabilityZone": "us-west-2a",
-    "CidrBlock": "10.0.1.0/24",
+    "CidrBlock": "10.1.128.0/20",
     "VpcId": {
      "Fn::GetAtt": [
       "SubnetTest3296A161",
