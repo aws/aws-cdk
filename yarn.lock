@@ -63,12 +63,12 @@
   resolved "https://registry.npmjs.org/@aws-cdk/asset-node-proxy-agent-v6/-/asset-node-proxy-agent-v6-2.1.0.tgz#6d3c7860354d4856a7e75375f2f0ecab313b4989"
   integrity sha512-7bY3J8GCVxLupn/kNmpPc5VJz8grx+4RKfnnJiO1LG+uxkZfANZG3RMHhE+qQxxwkyQ9/MfPtTpf748UhR425A==
 
-"@aws-cdk/aws-service-spec@^0.1.37":
-  version "0.1.37"
-  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.37.tgz#39e78a07079fc276f2f2bfdb31c3c7226939a04a"
-  integrity sha512-WFGAvjslG8Jdj9XmzDtV4JbsWEmLj8K9pA882mc6iNK59l4ocGt2GqS4n3JuzRdzoEpzcVYqfgrqGUuV1ez7vg==
+"@aws-cdk/aws-service-spec@^0.1.38":
+  version "0.1.38"
+  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.38.tgz#76eb52f578a0a0094d33d5b310bd13a9c2755d7e"
+  integrity sha512-Kk1/GEIScI492f9vRIzzZDHnG/pdxAX+AZxFyjBnHa0zVCH9pXOiG5hndd4kq6sDP/ePyrKcBK4iv3nO3WVw2w==
   dependencies:
-    "@aws-cdk/service-spec-types" "^0.0.104"
+    "@aws-cdk/service-spec-types" "^0.0.105"
     "@cdklabs/tskb" "^0.0.3"
 
 "@aws-cdk/cloud-assembly-schema@^38.0.0", "@aws-cdk/cloud-assembly-schema@^38.0.1":
@@ -126,6 +126,13 @@
   version "0.0.104"
   resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.104.tgz#9f7e632ee00c5f6d2c68b3950fa118c663beef64"
   integrity sha512-VMDgWLLmCXV81VzI9tOGZ6AQWOSQvXEGlIemaJZRmO3mK9foZtO068PFZbY92h/5BO0WCUh5JJII5g3pFqKQRQ==
+  dependencies:
+    "@cdklabs/tskb" "^0.0.3"
+
+"@aws-cdk/service-spec-types@^0.0.105":
+  version "0.0.105"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.105.tgz#b39898f6711068bbae016c88a5a6e7b8e1347d13"
+  integrity sha512-HUiKW7clPyaCRxbPmgURtK9ZXOCLarWFlsPbpMvHNbleiqjk+VB0Tgrf5LqJmBZMnKcq1Jx/cE42MiIxI/sRZA==
   dependencies:
     "@cdklabs/tskb" "^0.0.3"
 
@@ -7927,6 +7934,18 @@
   resolved "https://registry.npmjs.org/@types/license-checker/-/license-checker-25.0.6.tgz#c346285ee7e42bac58a4922059453f50a5d4175d"
   integrity sha512-ju/75+YPkNE5vX1iPer+qtI1eI/LqJVYZgOsmSHI1iiEM1bQL5Gh1lEvyjR9T7ZXVE1FwJa2doWJEEmPNwbZkw==
 
+"@types/lodash.clonedeep@^4.5.0":
+  version "4.5.9"
+  resolved "https://registry.npmjs.org/@types/lodash.clonedeep/-/lodash.clonedeep-4.5.9.tgz#ea48276c7cc18d080e00bb56cf965bcceb3f0fc1"
+  integrity sha512-19429mWC+FyaAhOLzsS8kZUsI+/GmBAQ0HFiCPsKGU+7pBXOQWhyrY6xNNDwUSX8SMZMJvuFVMF9O5dQOlQK9Q==
+  dependencies:
+    "@types/lodash" "*"
+
+"@types/lodash@*":
+  version "4.17.13"
+  resolved "https://registry.npmjs.org/@types/lodash/-/lodash-4.17.13.tgz#786e2d67cfd95e32862143abe7463a7f90c300eb"
+  integrity sha512-lfx+dftrEZcdBPczf9d0Qv0x+j/rfNCMuC6OcfXmO8gkfeNAY88PgKUbvG56whcN23gc27yenwF6oJZXGFpYxg==
+
 "@types/lodash@^4.17.12":
   version "4.17.12"
   resolved "https://registry.npmjs.org/@types/lodash/-/lodash-4.17.12.tgz#25d71312bf66512105d71e55d42e22c36bcfc689"
@@ -14258,6 +14277,11 @@ locate-path@^6.0.0:
   integrity sha512-iPZK6eYjbxRu3uB4/WZ3EsEIMJFMqAoopl3R+zuq0UjcAm/MO6KCweDgPfP3elTztoKP3KtnVHxTn2NHBSDVUw==
   dependencies:
     p-locate "^5.0.0"
+
+lodash.clonedeep@^4.5.0:
+  version "4.5.0"
+  resolved "https://registry.npmjs.org/lodash.clonedeep/-/lodash.clonedeep-4.5.0.tgz#e23f3f9c4f8fbdde872529c1071857a086e5ccef"
+  integrity sha512-H5ZhCF25riFd9uB5UCkVKo61m3S/xZk1x4wA6yp/L3RFP6Z/eHH1ymQcGLo7J3GMPfm0V/7m1tryHuGVxpqEBQ==
 
 lodash.defaults@^4.2.0:
   version "4.2.0"
