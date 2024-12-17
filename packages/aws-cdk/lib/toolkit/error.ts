@@ -1,5 +1,3 @@
-// lib/toolkit/errors.ts
-
 /**
  * Represents a general toolkit error in the AWS CDK CLI.
  */
