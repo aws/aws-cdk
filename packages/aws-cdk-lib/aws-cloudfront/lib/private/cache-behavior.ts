@@ -62,9 +62,11 @@ export class CacheBehavior {
         includeBody: edgeLambda.includeBody,
       })),
       trustedKeyGroups: this.props.trustedKeyGroups?.map(keyGroup => keyGroup.keyGroupId),
-      grpcConfig: {
-        enabled: this.props.enableGrpc,
-      },
+      grpcConfig: this.props.enableGrpc !== undefined
+        ? {
+          enabled: this.props.enableGrpc,
+        }
+        : undefined,
     };
   }
 
