@@ -809,7 +809,7 @@ Example:
 new cloudfront.Distribution(this, 'myCdn', {
   defaultBehavior: {
     origin: new origins.HttpOrigin('www.example.com'),
-    allowedMethods: cloudfront.AllowedMethods.ALLOW_ALL, // `AllowedMethods.ALLOW_ALL` is required if specifying `enableGrpc`
+    allowedMethods: cloudfront.AllowedMethods.ALLOW_ALL, // `AllowedMethods.ALLOW_ALL` is required if `enableGrpc` is true
     enableGrpc: true,
   },
 });
