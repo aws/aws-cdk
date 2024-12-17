@@ -3140,26 +3140,12 @@ describe('cluster', () => {
     function message(version: string) {
       return [
         `You created a cluster with Kubernetes Version 1.${version} without specifying the kubectlLayer property.`,
-        'This may cause failures as the kubectl version provided with aws-cdk-lib is 1.20, which is only guaranteed to be compatible with Kubernetes versions 1.19-1.21.',
-        `Please provide a kubectlLayer from @aws-cdk/lambda-layer-kubectl-v${version}. [ack: @aws-cdk/aws-eks:clusterKubectlLayerNotSpecified]`,
+        'The property will become required instead of optional in 2025 Jan. Please update your CDK code to provide a kubectlLayer.',
+        '[ack: @aws-cdk/aws-eks:clusterKubectlLayerNotSpecified]',
       ].join(' ');
     }
 
-    test('not added when version < 1.22 and no kubectl layer provided', () => {
-      // GIVEN
-      const { stack } = testFixture();
-
-      // WHEN
-      new eks.Cluster(stack, 'Cluster1', {
-        version: eks.KubernetesVersion.V1_21,
-        prune: false,
-      });
-
-      // THEN
-      Annotations.fromStack(stack).hasNoWarning('/Stack/Cluster1', message('21'));
-    });
-
-    test('added when version >= 1.22 and no kubectl layer provided', () => {
+    test('no kubectl layer provided', () => {
       // GIVEN
       const { stack } = testFixture();
 
