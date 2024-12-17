@@ -1,0 +1,428 @@
+{
+ "Resources": {
+  "HostedZoneDB99F866": {
+   "Type": "AWS::Route53::HostedZone",
+   "Properties": {
+    "Name": "cdk.test."
+   }
+  },
+  "HealthCheckHttp45CD8FAC": {
+   "Type": "AWS::Route53::HealthCheck",
+   "Properties": {
+    "HealthCheckConfig": {
+     "FailureThreshold": 3,
+     "FullyQualifiedDomainName": "lb.cdk.test",
+     "Inverted": false,
+     "MeasureLatency": false,
+     "Port": 80,
+     "RequestInterval": 30,
+     "ResourcePath": "/health",
+     "Type": "HTTP"
+    }
+   }
+  },
+  "ARecordHttp1E242324": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "HealthCheckId": {
+     "Ref": "HealthCheckHttp45CD8FAC"
+    },
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "cdk.test.",
+    "ResourceRecords": [
+     "1.2.3.4"
+    ],
+    "SetIdentifier": "WEIGHT_100_ID_awscdkroute53healthcheckARecordHttp450B1986",
+    "TTL": "1800",
+    "Type": "A",
+    "Weight": 100
+   }
+  },
+  "ARecordHttp2C99D5094": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "cdk.test.",
+    "ResourceRecords": [
+     "5.6.7.8"
+    ],
+    "SetIdentifier": "WEIGHT_0_ID_awscdkroute53healthcheckARecordHttp22B2DEA01",
+    "TTL": "1800",
+    "Type": "A",
+    "Weight": 0
+   }
+  },
+  "HealthCheckHttpsE7EFCB62": {
+   "Type": "AWS::Route53::HealthCheck",
+   "Properties": {
+    "HealthCheckConfig": {
+     "EnableSNI": true,
+     "FailureThreshold": 3,
+     "FullyQualifiedDomainName": "lb-ssl.cdk.test",
+     "Inverted": false,
+     "MeasureLatency": false,
+     "Port": 443,
+     "RequestInterval": 30,
+     "ResourcePath": "/health",
+     "Type": "HTTPS"
+    }
+   }
+  },
+  "ARecordHttps92EB971E": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "HealthCheckId": {
+     "Ref": "HealthCheckHttpsE7EFCB62"
+    },
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "_foo.cdk.test.",
+    "ResourceRecords": [
+     "1.2.3.4"
+    ],
+    "SetIdentifier": "WEIGHT_100_ID_awscdkroute53healthcheckARecordHttps207C4ED0",
+    "TTL": "1800",
+    "Type": "A",
+    "Weight": 100
+   }
+  },
+  "ARecordHttps2771FA16F": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "_foo.cdk.test.",
+    "ResourceRecords": [
+     "5.6.7.8"
+    ],
+    "SetIdentifier": "WEIGHT_0_ID_awscdkroute53healthcheckARecordHttps25F6F420F",
+    "TTL": "1800",
+    "Type": "A",
+    "Weight": 0
+   }
+  },
+  "HealthCheckTcpC39A45DC": {
+   "Type": "AWS::Route53::HealthCheck",
+   "Properties": {
+    "HealthCheckConfig": {
+     "FailureThreshold": 3,
+     "FullyQualifiedDomainName": "lb-tcp.cdk.test",
+     "Inverted": false,
+     "MeasureLatency": false,
+     "Port": 443,
+     "RequestInterval": 30,
+     "Type": "TCP"
+    }
+   }
+  },
+  "ARecordTcp8F151AA4": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "HealthCheckId": {
+     "Ref": "HealthCheckTcpC39A45DC"
+    },
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "_bar.cdk.test.",
+    "ResourceRecords": [
+     "1.2.3.4"
+    ],
+    "SetIdentifier": "WEIGHT_100_ID_awscdkroute53healthcheckARecordTcpEB5E7F54",
+    "TTL": "1800",
+    "Type": "A",
+    "Weight": 100
+   }
+  },
+  "ARecordTcp21F5B796C": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "_bar.cdk.test.",
+    "ResourceRecords": [
+     "5.6.7.8"
+    ],
+    "SetIdentifier": "WEIGHT_0_ID_awscdkroute53healthcheckARecordTcp2987B773D",
+    "TTL": "1800",
+    "Type": "A",
+    "Weight": 0
+   }
+  },
+  "HealthCheckCalculated4BA910E7": {
+   "Type": "AWS::Route53::HealthCheck",
+   "Properties": {
+    "HealthCheckConfig": {
+     "ChildHealthChecks": [
+      {
+       "Ref": "HealthCheckHttp45CD8FAC"
+      },
+      {
+       "Ref": "HealthCheckHttpsE7EFCB62"
+      }
+     ],
+     "HealthThreshold": 2,
+     "Inverted": false,
+     "Type": "CALCULATED"
+    }
+   }
+  },
+  "ARecordCalculatedFD72BD16": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "HealthCheckId": {
+     "Ref": "HealthCheckCalculated4BA910E7"
+    },
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "_calculated.cdk.test.",
+    "ResourceRecords": [
+     "1.2.3.4"
+    ],
+    "SetIdentifier": "WEIGHT_100_ID_awscdkroute53healthcheckARecordCalculatedBEBD8D95",
+    "TTL": "1800",
+    "Type": "A",
+    "Weight": 100
+   }
+  },
+  "ARecordCalculated22107FE58": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "_calculated.cdk.test.",
+    "ResourceRecords": [
+     "5.6.7.8"
+    ],
+    "SetIdentifier": "WEIGHT_0_ID_awscdkroute53healthcheckARecordCalculated2148CA121",
+    "TTL": "1800",
+    "Type": "A",
+    "Weight": 0
+   }
+  },
+  "LambdaFunctionServiceRoleC555A460": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "LambdaFunctionBF21E41F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "exports.handler = async function(event) { return { statusCode: 200, body: \"OK\" }; }"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "LambdaFunctionServiceRoleC555A460",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs20.x"
+   },
+   "DependsOn": [
+    "LambdaFunctionServiceRoleC555A460"
+   ]
+  },
+  "Alarm7103F465": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "Dimensions": [
+     {
+      "Name": "FunctionName",
+      "Value": {
+       "Ref": "LambdaFunctionBF21E41F"
+      }
+     }
+    ],
+    "EvaluationPeriods": 10,
+    "MetricName": "Errors",
+    "Namespace": "AWS/Lambda",
+    "Period": 60,
+    "Statistic": "Sum",
+    "Threshold": 100
+   }
+  },
+  "HealthCheckCloudWatch996681BB": {
+   "Type": "AWS::Route53::HealthCheck",
+   "Properties": {
+    "HealthCheckConfig": {
+     "AlarmIdentifier": {
+      "Name": {
+       "Ref": "Alarm7103F465"
+      },
+      "Region": {
+       "Ref": "AWS::Region"
+      }
+     },
+     "InsufficientDataHealthStatus": "LastKnownStatus",
+     "Inverted": false,
+     "Type": "CLOUDWATCH_METRIC"
+    }
+   }
+  },
+  "ARecordCloudWatchD1A5EC36": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "HealthCheckId": {
+     "Ref": "HealthCheckCloudWatch996681BB"
+    },
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "_cloudwatch.cdk.test.",
+    "ResourceRecords": [
+     "1.2.3.4"
+    ],
+    "SetIdentifier": "WEIGHT_100_ID_awscdkroute53healthcheckARecordCloudWatchC94706A4",
+    "TTL": "1800",
+    "Type": "A",
+    "Weight": 100
+   }
+  },
+  "ARecordCloudWatch26685731B": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "_cloudwatch.cdk.test.",
+    "ResourceRecords": [
+     "5.6.7.8"
+    ],
+    "SetIdentifier": "WEIGHT_0_ID_awscdkroute53healthcheckARecordCloudWatch20C617D0D",
+    "TTL": "1800",
+    "Type": "A",
+    "Weight": 0
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefHealthCheckHttp45CD8FAC4B1BEEC9": {
+   "Value": {
+    "Ref": "HealthCheckHttp45CD8FAC"
+   },
+   "Export": {
+    "Name": "aws-cdk-route53-health-check:ExportsOutputRefHealthCheckHttp45CD8FAC4B1BEEC9"
+   }
+  },
+  "ExportsOutputRefHealthCheckHttpsE7EFCB6287C5ACD7": {
+   "Value": {
+    "Ref": "HealthCheckHttpsE7EFCB62"
+   },
+   "Export": {
+    "Name": "aws-cdk-route53-health-check:ExportsOutputRefHealthCheckHttpsE7EFCB6287C5ACD7"
+   }
+  },
+  "ExportsOutputRefHealthCheckTcpC39A45DCAEC05583": {
+   "Value": {
+    "Ref": "HealthCheckTcpC39A45DC"
+   },
+   "Export": {
+    "Name": "aws-cdk-route53-health-check:ExportsOutputRefHealthCheckTcpC39A45DCAEC05583"
+   }
+  },
+  "ExportsOutputRefHealthCheckCalculated4BA910E7270DC992": {
+   "Value": {
+    "Ref": "HealthCheckCalculated4BA910E7"
+   },
+   "Export": {
+    "Name": "aws-cdk-route53-health-check:ExportsOutputRefHealthCheckCalculated4BA910E7270DC992"
+   }
+  },
+  "ExportsOutputRefLambdaFunctionBF21E41F66817B40": {
+   "Value": {
+    "Ref": "LambdaFunctionBF21E41F"
+   },
+   "Export": {
+    "Name": "aws-cdk-route53-health-check:ExportsOutputRefLambdaFunctionBF21E41F66817B40"
+   }
+  },
+  "ExportsOutputRefAlarm7103F465225BDD34": {
+   "Value": {
+    "Ref": "Alarm7103F465"
+   },
+   "Export": {
+    "Name": "aws-cdk-route53-health-check:ExportsOutputRefAlarm7103F465225BDD34"
+   }
+  },
+  "ExportsOutputRefHealthCheckCloudWatch996681BBF4DB146D": {
+   "Value": {
+    "Ref": "HealthCheckCloudWatch996681BB"
+   },
+   "Export": {
+    "Name": "aws-cdk-route53-health-check:ExportsOutputRefHealthCheckCloudWatch996681BBF4DB146D"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
