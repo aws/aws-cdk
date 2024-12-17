@@ -464,7 +464,7 @@ export class EventApi extends EventApiBase {
    * Validate ownerContact property
    */
   private validateOwnerContact(ownerContact?: string) {
-    if (ownerContact === undefined || Token.isUnresolved(ownerContact)) return undefined;
+    if (ownerContact === undefined || Token.isUnresolved(ownerContact)) return;
 
     if (ownerContact.length < 1 || ownerContact.length > 256) {
       throw new Error(`\`ownerContact\` must be between 1 and 256 characters, got: ${ownerContact.length} characters.`);
