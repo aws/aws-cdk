@@ -1893,25 +1893,3 @@ taskDefinition.addContainer('TheContainer', {
   }],
 });
 ```
-
-## User data
-
-User data are different between 3 supported OS: Amazon Linux 2023, Amazon Linux 2 and Bottlerocket. You have to specify `machineImageType` accordingly.
-
-```ts
-declare const vpc: ec2.Vpc;
-declare const cluster: ecs.Cluster;
-
-const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'asg', {
-  vpc,
-  instanceType: new ec2.InstanceType('t2.micro'),
-  machineImage: ecs.EcsOptimizedImage.amazonLinux2023(),
-});
-
-const capacityProvider = new ecs.AsgCapacityProvider(this, 'provider', {
-  autoScalingGroup,
-  machineImageType: ecs.MachineImageType.AMAZON_LINUX_2023,
-});
-
-cluster.addAsgCapacityProvider(capacityProvider);
-```
