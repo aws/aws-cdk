@@ -1,4 +1,5 @@
 import { CredentialPlugins } from '../../../lib/api/aws-auth/credential-plugins';
+import { credentialsAboutToExpire } from '../../../lib/api/aws-auth/provider-caching';
 import { CredentialProviderSource, Mode, SDKv3CompatibleCredentials } from '../../../lib/api/plugin/credential-provider-source';
 import { PluginHost, markTesting } from '../../../lib/api/plugin/plugin';
 
@@ -132,6 +133,15 @@ test('plugin must not return something that is not a credential', async () => {
 
   // THEN
   await expect(fetchNow()).rejects.toThrow(/Plugin returned a value that/);
+});
+
+test('token expiration is allowed to be null', () => {
+  expect(credentialsAboutToExpire({
+    accessKeyId: 'key',
+    secretAccessKey: 'secret',
+    // This is not allowed according to the `.d.ts` contract, but it can happen in reality
+    expiration: null as any,
+  })).toEqual(false);
 });
 
 function mockCredentialFunction(p: CredentialProviderSource['getProvider']) {
