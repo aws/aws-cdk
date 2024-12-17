@@ -28,7 +28,6 @@ import { Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
 import { SdkToCliLogger } from './api/aws-auth/sdk-logger';
 import { ToolkitError } from './toolkit/error';
-import { yargsNegativeAlias } from './util/yargs-helpers';
 
 /* eslint-disable max-len */
 /* eslint-disable @typescript-eslint/no-shadow */ // yargs
