@@ -347,7 +347,7 @@ export class Distribution extends Resource implements IDistribution {
       });
     }
 
-    this.validateHttpVersion(this.defaultBehavior);
+    this.validateGrpc(this.defaultBehavior);
 
     if (props.webAclId) {
       this.validateWebAclId(props.webAclId);
@@ -729,7 +729,7 @@ export class Distribution extends Resource implements IDistribution {
   private renderCacheBehaviors(): CfnDistribution.CacheBehaviorProperty[] | undefined {
     if (this.additionalBehaviors.length === 0) { return undefined; }
     return this.additionalBehaviors.map(behavior => {
-      this.validateHttpVersion(behavior);
+      this.validateGrpc(behavior);
       return behavior._renderBehavior()
     });
   }
@@ -795,9 +795,15 @@ export class Distribution extends Resource implements IDistribution {
     };
   }
 
-  private validateHttpVersion(cacheBehavior: CacheBehavior) {
-    if (cacheBehavior.grpcEnabled && ![HttpVersion.HTTP2, HttpVersion.HTTP2_AND_3].includes(this.httpVersion)) {
+  private validateGrpc(cacheBehavior: CacheBehavior) {
+    if (!cacheBehavior.grpcEnabled) {
+      return;
+    }
+    if (![HttpVersion.HTTP2, HttpVersion.HTTP2_AND_3].includes(this.httpVersion)) {
       throw new Error(`'httpVersion' must be HttpVersion.HTTP2 or HttpVersion.HTTP2_AND_3 if 'enableGrpc' in 'defaultBehavior' or 'additionalBehaviors' is true, got ${this.httpVersion}`);
+    }
+    if (this.errorResponses.length > 0) {
+      throw new Error(`'errorResponses' cannot be specified if 'enableGrpc' in 'defaultBehavior' or 'additionalBehaviors' is true, got ${this.httpVersion}`);
     }
   }
 }
