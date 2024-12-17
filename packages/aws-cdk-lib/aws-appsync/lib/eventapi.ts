@@ -13,7 +13,7 @@ import {
 import { ChannelNamespace, ChannelNamespaceOptions } from './channel-namespace';
 import { Grant, IGrantable, ManagedPolicy, ServicePrincipal, Role } from '../../aws-iam';
 import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '../../aws-logs';
-import { IResolvable, Lazy, Names, RemovalPolicy, Stack, Token } from '../../core';
+import { IResolvable, Lazy, Names, Stack, Token } from '../../core';
 
 /**
  * Authorization configuration for the Event API
@@ -99,7 +99,7 @@ export interface IEventApi extends IApi {
    *
    * @param grantee The principal
    */
-  grantPubSub(grantee: IGrantable): Grant;
+  grantPublishAndSubscribe(grantee: IGrantable): Grant;
 
   /**
    * Adds an IAM policy statement for EventConnect access to this EventApi to an IAM principal's policy.
@@ -134,6 +134,7 @@ export abstract class EventApiBase extends ApiBase implements IEventApi {
   public addChannelNamespace(id: string, options?: ChannelNamespaceOptions): ChannelNamespace {
     return new ChannelNamespace(this, id, {
       api: this,
+      channelNamespaceName: options?.channelNamespaceName ?? id,
       ...options,
     });
   }
@@ -184,7 +185,7 @@ export abstract class EventApiBase extends ApiBase implements IEventApi {
    *
    * @param grantee The principal
    */
-  public grantPubSub(grantee: IGrantable): Grant {
+  public grantPublishAndSubscribe(grantee: IGrantable): Grant {
     return this.grant(grantee, IamResource.all(), 'appsync:EventPublish', 'appsync:EventSubscribe');
   }
 
@@ -325,6 +326,11 @@ export class EventApi extends EventApiBase {
   public readonly authProviderTypes: AuthorizationType[];
 
   /**
+   * The connection auth modes for this Event Api
+   */
+  public readonly connectionModeTypes: AuthorizationType[];
+
+  /**
    * The default publish auth modes for this Event Api
    */
   public readonly defaultPublishModeTypes: AuthorizationType[];
@@ -374,27 +380,19 @@ export class EventApi extends EventApiBase {
       }),
     });
 
-    this.validateOwnerContact(props.ownerContact);
-
     this.authProviderTypes = this.setupAuthProviderTypes(props.authorizationConfig?.authProviders);
 
     const authProviders = props.authorizationConfig?.authProviders ?? [{ authorizationType: AuthorizationType.API_KEY }];
-    this.validateAuthorizationProps(authProviders);
 
     const connectionAuthModeType = props.authorizationConfig?.connectionAuthModeTypes ?? this.authProviderTypes;
     const defaultPublishAuthModeTypes = props.authorizationConfig?.defaultPublishAuthModeTypes ?? this.authProviderTypes;
     const defaultSubscribeAuthModeTypes = props.authorizationConfig?.defaultSubscribeAuthModeTypes ?? this.authProviderTypes;
 
-    this.validateAuthorizationConfig(authProviders, connectionAuthModeType);
-    this.validateAuthorizationConfig(authProviders, defaultPublishAuthModeTypes);
-    this.validateAuthorizationConfig(authProviders, defaultSubscribeAuthModeTypes);
-
+    this.connectionModeTypes = connectionAuthModeType;
     this.defaultPublishModeTypes = defaultPublishAuthModeTypes;
     this.defaultSubscribeModeTypes = defaultSubscribeAuthModeTypes;
 
-    if (!Token.isUnresolved(props.ownerContact) && props.ownerContact !== undefined && props.ownerContact.length > 256) {
-      throw new Error('You must specify `ownerContact` as a string of 256 characters or less.');
-    }
+    this.validateEventApiConfiguration(props, authProviders);
 
     this.eventConfig = {
       authProviders: this.mapAuthorizationProviders(authProviders),
@@ -409,8 +407,6 @@ export class EventApi extends EventApiBase {
       ownerContact: props.ownerContact,
       eventConfig: this.eventConfig,
     });
-
-    this.api.applyRemovalPolicy(RemovalPolicy.DESTROY);
 
     this.apiId = this.api.attrApiId;
     this.apiArn = this.api.attrApiArn;
@@ -458,6 +454,17 @@ export class EventApi extends EventApiBase {
     } else {
       this.logGroup = LogGroup.fromLogGroupName(this, 'LogGroup', logGroupName);
     }
+  }
+
+  /**
+   * Validate Event API configuration
+   */
+  private validateEventApiConfiguration(props: EventApiProps, authProviders: AuthorizationMode[]) {
+    this.validateOwnerContact(props.ownerContact);
+    this.validateAuthorizationProps(authProviders);
+    this.validateAuthorizationConfig(authProviders, this.connectionModeTypes);
+    this.validateAuthorizationConfig(authProviders, this.defaultPublishModeTypes);
+    this.validateAuthorizationConfig(authProviders, this.defaultSubscribeModeTypes);
   }
 
   /**

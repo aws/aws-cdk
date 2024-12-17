@@ -5,7 +5,7 @@ import { AuthorizationType } from './auth-config';
 import { Code } from './code';
 import { IEventApi } from './eventapi';
 import { IGrantable } from '../../aws-iam';
-import { IResource, Resource, Token } from '../../core';
+import { IResource, Resource, Token, Lazy, Names } from '../../core';
 
 /**
  * An AppSync channel namespace
@@ -136,7 +136,9 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
     }
 
     super(scope, id, {
-      physicalName: props.channelNamespaceName ?? id,
+      physicalName: props.channelNamespaceName ?? Lazy.string({
+        produce: () => Names.uniqueResourceName(this, { maxLength: 50 }),
+      }),
     });
 
     const code = props.code?.bind(this);
@@ -188,7 +190,7 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
    *
    * @param grantee The principal
    */
-  public grantPubSub(grantee: IGrantable) {
+  public grantPublishAndSubscribe(grantee: IGrantable) {
     return this.api.grant(grantee, IamResource.ofChannelNamespace(this.channelNamespace.name), 'appsync:EventPublish', 'appsync:EventSubscribe');
   }
 
