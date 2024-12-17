@@ -11,6 +11,7 @@ const origin = new TestOrigin('www.example.com');
 const distribution = new cloudfront.Distribution(stack, 'TestDistribution', {
   defaultBehavior: {
     origin,
+    allowedMethods: cloudfront.AllowedMethods.ALLOW_ALL,
     enableGrpc: true,
   },
 });
