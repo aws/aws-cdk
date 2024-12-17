@@ -129,7 +129,7 @@ describe('gRPC config', () => {
     [AllowedMethods.ALLOW_GET_HEAD, ['GET', 'HEAD']],
     [AllowedMethods.ALLOW_GET_HEAD_OPTIONS, ['GET', 'HEAD', 'OPTIONS']],
     [undefined, undefined],
-  ])('throws if allowedMethods is not ALLOW_GET_HEAD but %s and enableGrpc is true', (allowedMethods, methods) => {
+  ])('throws if allowedMethods is not ALLOW_ALL but %s and enableGrpc is true', (allowedMethods, methods) => {
     expect(() => new CacheBehavior('origin_id', {
       pathPattern: '*',
       allowedMethods,
