@@ -212,9 +212,7 @@
     },
     "Name": "my-event-api",
     "OwnerContact": "test-owner-contact"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
+   }
   },
   "EventApiDefaultApiKeyB9AB1E44": {
    "Type": "AWS::AppSync::ApiKey",
@@ -389,7 +387,7 @@
     "CodeS3Location": {
      "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f79e346159c9d109573aa79dac7f882e156f79c4ece518897a558a122e3924fd.js"
     },
-    "Name": "ChannelNamespace",
+    "Name": "appsynceventapistackChannelNamespaceCD3E3067",
     "PublishAuthModes": [
      {
       "AuthType": "AWS_LAMBDA"
