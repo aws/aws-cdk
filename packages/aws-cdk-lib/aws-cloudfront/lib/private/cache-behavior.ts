@@ -28,7 +28,7 @@ export class CacheBehavior {
     this.originId = originId;
 
     if (props.enableGrpc && props.allowedMethods !== AllowedMethods.ALLOW_ALL) {
-      throw new Error('\'allowedMethods\' can only be AllowedMethods.ALLOW_ALL if you set \'enableGrpc\' to true');
+      throw new Error('\'allowedMethods\' can only be AllowedMethods.ALLOW_ALL if \'enableGrpc\' is true');
     }
 
     this.validateEdgeLambdas(props.edgeLambdas);

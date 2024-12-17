@@ -134,6 +134,6 @@ describe('gRPC config', () => {
       pathPattern: '*',
       allowedMethods,
       enableGrpc: true,
-    })).toThrow(/'allowedMethods' can only be AllowedMethods.ALLOW_ALL if you set 'enableGrpc' to true/);
+    })).toThrow(/'allowedMethods' can only be AllowedMethods.ALLOW_ALL if 'enableGrpc' is true/);
   });
 });
