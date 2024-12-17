@@ -1089,7 +1089,7 @@ export interface AddBehaviorOptions {
    * You must specify `AllowedMethods.ALLOW_ALL` including POST method to `allowedMethods` property if you set
    * `enableGrpc` to true because gRPC only supports POST method.
    *
-   * @default - gRPC will be disabled
+   * @default false
    * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/distribution-using-grpc.html
    */
   readonly enableGrpc?: boolean;
