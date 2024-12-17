@@ -29,8 +29,13 @@ export class CacheBehavior {
     this.originId = originId;
     this.grpcEnabled = props.enableGrpc;
 
-    if (this.grpcEnabled && props.allowedMethods !== AllowedMethods.ALLOW_ALL) {
-      throw new Error('\'allowedMethods\' can only be AllowedMethods.ALLOW_ALL if \'enableGrpc\' is true');
+    if (this.grpcEnabled) {
+      if (props.allowedMethods !== AllowedMethods.ALLOW_ALL) {
+        throw new Error('\'allowedMethods\' can only be AllowedMethods.ALLOW_ALL if \'enableGrpc\' is true');
+      }
+      if (props.edgeLambdas !== undefined && props.edgeLambdas.length > 0) {
+        throw new Error('\'edgeLambdas\' cannot be specified if \'enableGrpc\' is true');
+      }
     }
 
     this.validateEdgeLambdas(props.edgeLambdas);
