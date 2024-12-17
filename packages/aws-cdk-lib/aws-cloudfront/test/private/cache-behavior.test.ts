@@ -126,14 +126,14 @@ describe('gRPC config', () => {
   });
 
   test.each([
-    [AllowedMethods.ALLOW_GET_HEAD, ['GET', 'HEAD']],
-    [AllowedMethods.ALLOW_GET_HEAD_OPTIONS, ['GET', 'HEAD', 'OPTIONS']],
-    [undefined, undefined],
-  ])('throws if allowedMethods is not ALLOW_ALL but %s and enableGrpc is true', (allowedMethods, methods) => {
+    AllowedMethods.ALLOW_GET_HEAD,
+    AllowedMethods.ALLOW_GET_HEAD_OPTIONS,
+    undefined,
+  ])('throws if allowedMethods is not ALLOW_ALL but %s and enableGrpc is true', (allowedMethods) => {
     expect(() => new CacheBehavior('origin_id', {
       pathPattern: '*',
       allowedMethods,
       enableGrpc: true,
-    })).toThrow(`'allowedMethods' can only be AllowedMethods.ALLOW_ALL if you set 'enableGrpc' to true, got: ${methods?.join(',')}`);
+    })).toThrow(/'allowedMethods' can only be AllowedMethods.ALLOW_ALL if you set 'enableGrpc' to true/);
   });
 });
