@@ -39,18 +39,21 @@ export abstract class Subscription implements sns.ITopicSubscription {
   }
 
   /**
-   * TODO Doc
+   * Generates the principal to be used for a given subscription and the cross-region relation to the topic.
+   * Depending on the subscriber type and the region setup,
+   * this method will either return the default service principal (`sns.amazonaws.com`),
+   * return a service principal for the subscriber's or topic's opt-in region (`sns.<region>.amazonaws.com`),
+   * or throw an error.
    *
    * @see https://docs.aws.amazon.com/sns/latest/dg/sns-cross-region-delivery.html
    *
    * @param topic The topic to subscribe to
    * @throws Error if the queue and target are in different regions and both of those regions are opt-in
    * @throws Error if the queue and target are in different regions and if the subscriber is a Lambda function in an opt-in region
-   * @returns the grant principal
+   * @returns the generated grant principal for the topic
    */
   public generateGrantPrincipal(topic: sns.ITopic): iam.IPrincipal {
     const [subscriberRegion, topicRegion] = [this.subscriber, topic].map(({ stack }) => stack.region);
-    // TODO check resolved?
     if (subscriberRegion === topicRegion) {
       return new iam.ServicePrincipal('sns.amazonaws.com');
     };
@@ -61,18 +64,18 @@ export abstract class Subscription implements sns.ITopicSubscription {
     ));
 
     if (isSubscriberRegionOptIn === 'YES' && isTopicRegionOptIn === 'YES') {
-      throw new Error('Opt-in to opt-in cross region delivery is not supported');
+      throw new Error('Cross region delivery is not supported if both regions are opt-in');
     }
 
     if (isSubscriberRegionOptIn === 'YES') {
       if (lambda.Function.isFunction(this.subscriber)) {
-        throw new Error('Cross region delivery is not supported for Lambda functions');
+        throw new Error('Cross region delivery is not supported for Lambda functions belonging to an opt-in region');
       } else if (sqs.Queue.isQueue(this.subscriber)) {
         return new iam.ServicePrincipal(`sns.${subscriberRegion}.amazonaws.com`);
       } else {
         // All SQS queues and Lambda functions should be caught in the above checks
         // This is future proofing in case we implement other Subscription targets
-        throw new Error('Unknown subscriber type');
+        throw new Error(`Unknown subscriber type for resource "${this.subscriber.node.id}"`);
       }
     }
 

@@ -3,7 +3,7 @@ import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
-import { App, CfnParameter, Duration, RemovalPolicy, Stack, Token } from '../../core';
+import { App, CfnParameter, Duration, RemovalPolicy, Resource, Stack, Token } from '../../core';
 import * as cxapi from '../../cx-api';
 import * as subs from '../lib';
 
@@ -852,7 +852,7 @@ describe('queue subscription, cross opt-in region', () => {
     const queue = new sqs.Queue(queueStack, 'MyQueue');
 
     expect(() => topic1.addSubscription(new subs.SqsSubscription(queue)))
-      .toThrow(/Opt-in to opt-in cross region delivery is not supported/);
+      .toThrow(/Cross region delivery is not supported if both regions are opt-in/);
   });
 });
 
@@ -1740,7 +1740,7 @@ describe('lambda subscription, cross opt-in region', () => {
     });
 
     expect(() => topic1.addSubscription(new subs.LambdaSubscription(func)))
-      .toThrow(/Cross region delivery is not supported for Lambda functions/);
+      .toThrow(/Cross region delivery is not supported for Lambda functions belonging to an opt-in region/);
   });
 
   test('throws if cross region and both regions are opt-in', () => {
@@ -1763,7 +1763,7 @@ describe('lambda subscription, cross opt-in region', () => {
     });
 
     expect(() => topic1.addSubscription(new subs.LambdaSubscription(func)))
-      .toThrow(/Opt-in to opt-in cross region delivery is not supported/);
+      .toThrow(/Cross region delivery is not supported if both regions are opt-in/);
   });
 });
 
@@ -2329,4 +2329,24 @@ test('sms subscription with unresolved', () => {
       },
     },
   });
+});
+
+test('generateGrantPrincipal throws if subsriber is not recognized as a supported type', () => {
+  class DummyQueue extends Resource {
+  }
+
+  const app = new App();
+  const topicStack = new Stack(app, 'TopicStack');
+  const queueStack = new Stack(app, 'QueueStack', {
+    env: { region: optInRegion2 },
+  });
+
+  const topic1 = new sns.Topic(topicStack, 'Topic', {
+    topicName: 'topicName',
+    displayName: 'displayName',
+  });
+  const queue = new DummyQueue(queueStack, 'MyDummyQueue');
+
+  expect(() => topic1.addSubscription(new subs.SqsSubscription(queue as sqs.Queue)))
+    .toThrow(/Unknown subscriber type for resource "MyDummyQueue"/);
 });
