@@ -15,7 +15,7 @@ import {
   BootstrappedEnvironment,
 } from '../lib/notices';
 import * as version from '../lib/version';
-import { Configuration } from '../lib/settings';
+import { Context, Settings } from '../lib/settings';
 
 const BASIC_BOOTSTRAP_NOTICE = {
   title: 'Exccessive permissions on file asset publishing role',
@@ -523,7 +523,7 @@ describe(Notices, () => {
   describe('addBootstrapVersion', () => {
 
     test('can add multiple values', async () => {
-      const notices = Notices.create({ configuration: new Configuration() });
+      const notices = Notices.create({ context: new Context() });
       notices.addBootstrappedEnvironment({ bootstrapStackVersion: 10, environment: { account: 'account', region: 'region', name: 'env' } });
       notices.addBootstrappedEnvironment({ bootstrapStackVersion: 11, environment: { account: 'account', region: 'region', name: 'env' } });
 
@@ -539,7 +539,7 @@ describe(Notices, () => {
     });
 
     test('deduplicates', async () => {
-      const notices = Notices.create({ configuration: new Configuration() });
+      const notices = Notices.create({ context: new Context() });
       notices.addBootstrappedEnvironment({ bootstrapStackVersion: 10, environment: { account: 'account', region: 'region', name: 'env' } });
       notices.addBootstrappedEnvironment({ bootstrapStackVersion: 10, environment: { account: 'account', region: 'region', name: 'env' } });
 
@@ -577,7 +577,7 @@ describe(Notices, () => {
       // within the affected version range of the notice
       jest.spyOn(version, 'versionNumber').mockImplementation(() => '1.0.0');
 
-      const notices = Notices.create({ configuration: new Configuration() });
+      const notices = Notices.create({ context: new Context() });
       await notices.refresh({
         dataSource: { fetch: async () => [BASIC_NOTICE, BASIC_NOTICE] },
       });
@@ -594,7 +594,7 @@ describe(Notices, () => {
       // within the affected version range of the notice
       jest.spyOn(version, 'versionNumber').mockImplementation(() => '1.0.0');
 
-      const notices = Notices.create({ configuration: new Configuration() });
+      const notices = Notices.create({ context: new Context() });
       await notices.refresh({
         dataSource: { fetch: async () => [] },
       });
@@ -610,7 +610,7 @@ describe(Notices, () => {
 
     test('doesnt throw', async () => {
 
-      const notices = Notices.create({ configuration: new Configuration() });
+      const notices = Notices.create({ context: new Context() });
       await notices.refresh({
         dataSource: {
           fetch: async () => {
@@ -622,14 +622,8 @@ describe(Notices, () => {
     });
 
     test('does nothing when we shouldnt display', async () => {
-
-      const settings: any = { notices: false };
-      const configuration = new Configuration();
-      (configuration.settings as any) = { get: (s_path: string[]) => settings[s_path[0]] };
-
       let refreshCalled = false;
-
-      const notices = Notices.create({ configuration });
+      const notices = Notices.create({ context: new Context(), shouldDisplay: false });
       await notices.refresh({
         dataSource: {
           fetch: async () => {
@@ -644,15 +638,12 @@ describe(Notices, () => {
     });
 
     test('filters out acknowledged notices by default', async () => {
-
       // within the affected version range of both notices
       jest.spyOn(version, 'versionNumber').mockImplementation(() => '1.126.0');
 
-      const context: any = { 'acknowledged-issue-numbers': [MULTIPLE_AFFECTED_VERSIONS_NOTICE.issueNumber] };
-      const configuration = new Configuration();
-      (configuration.context as any) = { get: (key: string) => context[key] };
+      const context = new Context(new Settings({ 'acknowledged-issue-numbers': [MULTIPLE_AFFECTED_VERSIONS_NOTICE.issueNumber] }));
 
-      const notices = Notices.create({ configuration });
+      const notices = Notices.create({ context });
       await notices.refresh({
         dataSource: { fetch: async () => [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE] },
       });
@@ -670,11 +661,9 @@ describe(Notices, () => {
       // within the affected version range of both notices
       jest.spyOn(version, 'versionNumber').mockImplementation(() => '1.126.0');
 
-      const context: any = { 'acknowledged-issue-numbers': [MULTIPLE_AFFECTED_VERSIONS_NOTICE.issueNumber] };
-      const configuration = new Configuration();
-      (configuration.context as any) = { get: (key: string) => context[key] };
+      const context = new Context(new Settings({ 'acknowledged-issue-numbers': [MULTIPLE_AFFECTED_VERSIONS_NOTICE.issueNumber] }));
 
-      const notices = Notices.create({ configuration, includeAcknowledged: true });
+      const notices = Notices.create({ context, includeAcknowledged: true });
       await notices.refresh({
         dataSource: { fetch: async () => [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE] },
       });
@@ -696,7 +685,7 @@ describe(Notices, () => {
       // within the affected version range of the notice
       jest.spyOn(version, 'versionNumber').mockImplementation(() => '1.0.0');
 
-      const notices = Notices.create({ configuration: new Configuration() });
+      const notices = Notices.create({ context: new Context() });
       await notices.refresh({
         dataSource: { fetch: async () => [BASIC_NOTICE, BASIC_NOTICE] },
       });
@@ -714,7 +703,7 @@ describe(Notices, () => {
       // within the affected version range of the notice
       jest.spyOn(version, 'versionNumber').mockImplementation(() => '1.0.0');
 
-      const notices = Notices.create({ configuration: new Configuration() });
+      const notices = Notices.create({ context: new Context() });
       await notices.refresh({
         dataSource: { fetch: async () => [BASIC_NOTICE, BASIC_NOTICE] },
       });
@@ -728,12 +717,7 @@ describe(Notices, () => {
     });
 
     test('does nothing when we shouldnt display', async () => {
-
-      const settings: any = { notices: false };
-      const configuration = new Configuration();
-      (configuration.settings as any) = { get: (s_path: string[]) => settings[s_path[0]] };
-
-      const notices = Notices.create({ configuration });
+      const notices = Notices.create({ context: new Context(), shouldDisplay: false });
       await notices.refresh({ dataSource: { fetch: async () => [BASIC_NOTICE] } });
 
       const print = jest.spyOn(logging, 'print');
@@ -747,7 +731,7 @@ describe(Notices, () => {
 
       const print = jest.spyOn(logging, 'print');
 
-      Notices.create({ configuration: new Configuration() }).display();
+      Notices.create({ context: new Context() }).display();
       expect(print).toHaveBeenCalledTimes(0);
 
     });
@@ -756,7 +740,7 @@ describe(Notices, () => {
 
       const print = jest.spyOn(logging, 'print');
 
-      Notices.create({ configuration: new Configuration() }).display({ showTotal: true });
+      Notices.create({ context: new Context() }).display({ showTotal: true });
       expect(print).toHaveBeenNthCalledWith(2, 'There are 0 unacknowledged notice(s).');
 
     });
@@ -766,7 +750,7 @@ describe(Notices, () => {
       // within the affected version range of the notice
       jest.spyOn(version, 'versionNumber').mockImplementation(() => '1.0.0');
 
-      const notices = Notices.create({ configuration: new Configuration() });
+      const notices = Notices.create({ context: new Context() });
       await notices.refresh({
         dataSource: { fetch: async () => [BASIC_WARNING_NOTICE] },
       });
@@ -784,7 +768,7 @@ describe(Notices, () => {
       // within the affected version range of the notice
       jest.spyOn(version, 'versionNumber').mockImplementation(() => '1.0.0');
 
-      const notices = Notices.create({ configuration: new Configuration() });
+      const notices = Notices.create({ context: new Context() });
       await notices.refresh({
         dataSource: { fetch: async () => [BASIC_ERROR_NOTICE] },
       });
@@ -802,7 +786,7 @@ describe(Notices, () => {
       // within the affected version range of the notice
       jest.spyOn(version, 'versionNumber').mockImplementation(() => '1.0.0');
 
-      const notices = Notices.create({ configuration: new Configuration() });
+      const notices = Notices.create({ context: new Context() });
       await notices.refresh({
         dataSource: { fetch: async () => [BASIC_NOTICE] },
       });
@@ -815,15 +799,12 @@ describe(Notices, () => {
     });
 
     test('only unacknowledged notices', async () => {
-
       // within the affected version range of both notices
       jest.spyOn(version, 'versionNumber').mockImplementation(() => '1.126.0');
 
-      const context: any = { 'acknowledged-issue-numbers': [MULTIPLE_AFFECTED_VERSIONS_NOTICE.issueNumber] };
-      const configuration = new Configuration();
-      (configuration.context as any) = { get: (key: string) => context[key] };
+      const context = new Context(new Settings({ 'acknowledged-issue-numbers': [MULTIPLE_AFFECTED_VERSIONS_NOTICE.issueNumber] }));
 
-      const notices = Notices.create({ configuration });
+      const notices = Notices.create({ context });
       await notices.refresh({
         dataSource: { fetch: async () => [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE] },
       });
@@ -836,15 +817,11 @@ describe(Notices, () => {
     });
 
     test('can include acknowledged notices if requested', async () => {
-
       // within the affected version range of both notices
       jest.spyOn(version, 'versionNumber').mockImplementation(() => '1.126.0');
 
-      const context: any = { 'acknowledged-issue-numbers': [MULTIPLE_AFFECTED_VERSIONS_NOTICE.issueNumber] };
-      const configuration = new Configuration();
-      (configuration.context as any) = { get: (key: string) => context[key] };
-
-      const notices = Notices.create({ configuration, includeAcknowledged: true });
+      const context = new Context(new Settings({ 'acknowledged-issue-numbers': [MULTIPLE_AFFECTED_VERSIONS_NOTICE.issueNumber] }));
+      const notices = Notices.create({ context, includeAcknowledged: true });
       await notices.refresh({
         dataSource: { fetch: async () => [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE] },
       });
