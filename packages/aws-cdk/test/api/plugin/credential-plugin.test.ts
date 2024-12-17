@@ -104,6 +104,26 @@ test('plugin can return V2 compatible credential-provider', async () => {
   expect(getPromise).toHaveBeenCalled();
 });
 
+test('plugin can return V2 compatible credential-provider with initially empty keys', async () => {
+  // GIVEN
+  mockCredentialFunction(() => Promise.resolve({
+    accessKeyId: '',
+    secretAccessKey: '',
+    expired: false,
+    getPromise() {
+      this.accessKeyId = 'keyid';
+      return Promise.resolve({});
+    },
+  }));
+
+  // WHEN
+  const creds = await fetchNow();
+
+  await expect(creds).toEqual(expect.objectContaining({
+    accessKeyId: 'keyid',
+  }));
+});
+
 test('plugin must not return something that is not a credential', async () => {
   // GIVEN
   mockCredentialFunction(() => Promise.resolve({
