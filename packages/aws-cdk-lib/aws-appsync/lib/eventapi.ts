@@ -478,7 +478,7 @@ export class EventApi extends EventApiBase {
   }
 
   private setupLogConfig(config?: LogConfig) {
-    if (!config) return undefined;
+    if (!config) return;
     const logsRoleArn: string =
       config.role?.roleArn ??
       new Role(this, 'ApiLogsRole', {
