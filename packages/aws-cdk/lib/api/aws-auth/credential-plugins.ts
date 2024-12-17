@@ -166,7 +166,7 @@ function isV3Provider(x: PluginProviderResult): x is SDKv3CompatibleCredentialPr
 }
 
 function isV2Credentials(x: PluginProviderResult): x is SDKv2CompatibleCredentials {
-  return !!(x && typeof x === 'object' && x.accessKeyId && (x as SDKv2CompatibleCredentials).getPromise);
+  return !!(x && typeof x === 'object' && (x as SDKv2CompatibleCredentials).getPromise);
 }
 
 function isV3Credentials(x: PluginProviderResult): x is SDKv3CompatibleCredentials {
