@@ -1086,6 +1086,9 @@ export interface AddBehaviorOptions {
   /**
    * Enables your CloudFront distribution to receive gRPC requests and to proxy them directly to your origins.
    *
+   * You must specify `AllowedMethods.ALLOW_ALL` including POST method to `allowedMethods` property if you set
+   * `enableGrpc` to true because gRPC only supports POST method.
+   *
    * @default - gRPC will be disabled
    * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/distribution-using-grpc.html
    */

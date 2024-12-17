@@ -1,7 +1,7 @@
 import * as iam from '../../../aws-iam';
 import { CachePolicy } from '../cache-policy';
 import { CfnDistribution } from '../cloudfront.generated';
-import { AddBehaviorOptions, EdgeLambda, LambdaEdgeEventType, ViewerProtocolPolicy } from '../distribution';
+import { AddBehaviorOptions, AllowedMethods, EdgeLambda, LambdaEdgeEventType, ViewerProtocolPolicy } from '../distribution';
 
 /**
  * Properties for specifying custom behaviors for origins.
@@ -26,6 +26,10 @@ export class CacheBehavior {
 
   constructor(originId: string, private readonly props: CacheBehaviorProps) {
     this.originId = originId;
+
+    if (props.enableGrpc && props.allowedMethods !== AllowedMethods.ALLOW_ALL) {
+      throw new Error(`'allowedMethods' can only be AllowedMethods.ALLOW_ALL if you set 'enableGrpc' to true, got: ${props.allowedMethods?.methods}`);
+    }
 
     this.validateEdgeLambdas(props.edgeLambdas);
     this.grantEdgeLambdaFunctionExecutionRole(props.edgeLambdas);

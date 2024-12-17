@@ -102,22 +102,38 @@ test('throws if edgeLambda includeBody is set for wrong event type', () => {
   })).toThrow(/'includeBody' can only be true for ORIGIN_REQUEST or VIEWER_REQUEST event types./);
 });
 
-test.each([true, false, undefined])('enableGrpc is %s', (enableGrpc) => {
-  const behavior = new CacheBehavior('origin_id', {
-    pathPattern: '*',
-    enableGrpc,
+describe('gRPC config', () => {
+  test.each([true, false, undefined])('enableGrpc is %s', (enableGrpc) => {
+    const behavior = new CacheBehavior('origin_id', {
+      pathPattern: '*',
+      allowedMethods: AllowedMethods.ALLOW_ALL,
+      enableGrpc,
+    });
+
+    expect(behavior._renderBehavior()).toEqual({
+      targetOriginId: 'origin_id',
+      cachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+      compress: true,
+      pathPattern: '*',
+      allowedMethods: ['GET', 'HEAD', 'OPTIONS', 'PUT', 'PATCH', 'POST', 'DELETE'],
+      viewerProtocolPolicy: 'allow-all',
+      grpcConfig: enableGrpc !== undefined
+        ? {
+          enabled: enableGrpc,
+        }
+        : undefined,
+    });
   });
 
-  expect(behavior._renderBehavior()).toEqual({
-    targetOriginId: 'origin_id',
-    cachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
-    compress: true,
-    pathPattern: '*',
-    viewerProtocolPolicy: 'allow-all',
-    grpcConfig: enableGrpc !== undefined
-      ? {
-        enabled: enableGrpc,
-      }
-      : undefined,
+  test.each([
+    [AllowedMethods.ALLOW_GET_HEAD, ['GET', 'HEAD']],
+    [AllowedMethods.ALLOW_GET_HEAD_OPTIONS, ['GET', 'HEAD', 'OPTIONS']],
+    [undefined, undefined],
+  ])('throws if allowedMethods is not ALLOW_GET_HEAD but %s and enableGrpc is true', (allowedMethods, methods) => {
+    expect(() => new CacheBehavior('origin_id', {
+      pathPattern: '*',
+      allowedMethods,
+      enableGrpc: true,
+    })).toThrow(`'allowedMethods' can only be AllowedMethods.ALLOW_ALL if you set 'enableGrpc' to true, got: ${methods?.join(',')}`);
   });
 });
