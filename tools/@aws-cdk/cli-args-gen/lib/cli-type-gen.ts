@@ -11,16 +11,16 @@ export async function renderCliType(config: CliConfig): Promise<string> {
   scope.documentation.push('Do not edit by hand; all changes will be overwritten at build time from the config file.');
   scope.documentation.push('-------------------------------------------------------------------------------------------');
 
-  const cliType = new StructType(scope, {
+  const cliArgType = new StructType(scope, {
     export: true,
-    name: 'CliConfigType',
+    name: 'CliArguments',
     docs: {
       summary: 'The structure of the CLI configuration, generated from packages/aws-cdk/lib/config.ts',
     },
   });
 
   // add required command
-  cliType.addProperty({
+  cliArgType.addProperty({
     name: '_',
     type: Type.arrayOf(Type.STRING),
     docs: {
@@ -48,7 +48,7 @@ export async function renderCliType(config: CliConfig): Promise<string> {
       optional: true,
     });
   }
-  cliType.addProperty({
+  cliArgType.addProperty({
     name: 'globalOptions',
     type: Type.fromName(scope, globalOptionType.name),
     docs: {
@@ -82,7 +82,7 @@ export async function renderCliType(config: CliConfig): Promise<string> {
       });
     }
 
-    cliType.addProperty({
+    cliArgType.addProperty({
       name: commandName,
       type: Type.fromName(scope, commandType.name),
       docs: {
