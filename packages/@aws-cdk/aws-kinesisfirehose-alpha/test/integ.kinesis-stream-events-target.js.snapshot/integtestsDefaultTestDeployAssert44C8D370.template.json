@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallS3listObjectsV278e6820f12131e7733d735f74b9eb1a0": {
+  "AwsApiCallS3listObjectsV29ecd8f92611a4d8b5ce59acec0cde0a7": {
    "Type": "Custom::DeployAssert@SdkCallS3listObjectsV2",
    "Properties": {
     "ServiceToken": {
@@ -13,19 +13,30 @@
     "api": "listObjectsV2",
     "expected": "{\"$ObjectLike\":{\"KeyCount\":1}}",
     "stateMachineArn": {
-     "Ref": "AwsApiCallS3listObjectsV278e6820f12131e7733d735f74b9eb1a0WaitFor400B2A38"
+     "Ref": "AwsApiCallS3listObjectsV29ecd8f92611a4d8b5ce59acec0cde0a7WaitFor44026F5B"
     },
     "parameters": {
-     "Bucket": "\"firehose-delivery-stream-events-target-bucket\"",
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-firehose-delivery-stream-events-target:ExportsOutputRefBucket83908E7781C90AC0"
+        },
+        "\""
+       ]
+      ]
+     },
      "MaxKeys": "1"
     },
     "flattenResponse": "false",
-    "salt": "1734483820774"
+    "salt": "1734558542529"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AwsApiCallS3listObjectsV278e6820f12131e7733d735f74b9eb1a0WaitForIsCompleteProviderInvoke77BB5A46": {
+  "AwsApiCallS3listObjectsV29ecd8f92611a4d8b5ce59acec0cde0a7WaitForIsCompleteProviderInvokeAEF542F2": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -37,13 +48,13 @@
     },
     "Principal": {
      "Fn::GetAtt": [
-      "AwsApiCallS3listObjectsV278e6820f12131e7733d735f74b9eb1a0WaitForRoleB48911FE",
+      "AwsApiCallS3listObjectsV29ecd8f92611a4d8b5ce59acec0cde0a7WaitForRoleE87C1521",
       "Arn"
      ]
     }
    }
   },
-  "AwsApiCallS3listObjectsV278e6820f12131e7733d735f74b9eb1a0WaitForTimeoutProviderInvokeD852D7B8": {
+  "AwsApiCallS3listObjectsV29ecd8f92611a4d8b5ce59acec0cde0a7WaitForTimeoutProviderInvokeC73E31B9": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -55,13 +66,13 @@
     },
     "Principal": {
      "Fn::GetAtt": [
-      "AwsApiCallS3listObjectsV278e6820f12131e7733d735f74b9eb1a0WaitForRoleB48911FE",
+      "AwsApiCallS3listObjectsV29ecd8f92611a4d8b5ce59acec0cde0a7WaitForRoleE87C1521",
       "Arn"
      ]
     }
    }
   },
-  "AwsApiCallS3listObjectsV278e6820f12131e7733d735f74b9eb1a0WaitForRoleB48911FE": {
+  "AwsApiCallS3listObjectsV29ecd8f92611a4d8b5ce59acec0cde0a7WaitForRoleE87C1521": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -106,7 +117,7 @@
     ]
    }
   },
-  "AwsApiCallS3listObjectsV278e6820f12131e7733d735f74b9eb1a0WaitFor400B2A38": {
+  "AwsApiCallS3listObjectsV29ecd8f92611a4d8b5ce59acec0cde0a7WaitFor44026F5B": {
    "Type": "AWS::StepFunctions::StateMachine",
    "Properties": {
     "DefinitionString": {
@@ -133,13 +144,13 @@
     },
     "RoleArn": {
      "Fn::GetAtt": [
-      "AwsApiCallS3listObjectsV278e6820f12131e7733d735f74b9eb1a0WaitForRoleB48911FE",
+      "AwsApiCallS3listObjectsV29ecd8f92611a4d8b5ce59acec0cde0a7WaitForRoleE87C1521",
       "Arn"
      ]
     }
    },
    "DependsOn": [
-    "AwsApiCallS3listObjectsV278e6820f12131e7733d735f74b9eb1a0WaitForRoleB48911FE"
+    "AwsApiCallS3listObjectsV29ecd8f92611a4d8b5ce59acec0cde0a7WaitForRoleE87C1521"
    ]
   },
   "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
@@ -351,10 +362,10 @@
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallS3listObjectsV278e6820f12131e7733d735f74b9eb1a0": {
+  "AssertionResultsAwsApiCallS3listObjectsV29ecd8f92611a4d8b5ce59acec0cde0a7": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallS3listObjectsV278e6820f12131e7733d735f74b9eb1a0",
+     "AwsApiCallS3listObjectsV29ecd8f92611a4d8b5ce59acec0cde0a7",
      "assertion"
     ]
    }

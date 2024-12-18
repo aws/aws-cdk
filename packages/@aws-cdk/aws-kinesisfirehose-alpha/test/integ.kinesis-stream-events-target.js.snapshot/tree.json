@@ -18,7 +18,6 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                   "aws:cdk:cloudformation:props": {
-                    "bucketName": "firehose-delivery-stream-events-target-bucket",
                     "tags": [
                       {
                         "key": "aws-cdk:auto-delete-objects",
@@ -123,6 +122,14 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_s3.Bucket",
+              "version": "0.0.0"
+            }
+          },
+          "LatestNodeRuntimeMap": {
+            "id": "LatestNodeRuntimeMap",
+            "path": "aws-cdk-firehose-delivery-stream-events-target/LatestNodeRuntimeMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
               "version": "0.0.0"
             }
           },
@@ -284,7 +291,6 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::KinesisFirehose::DeliveryStream",
                   "aws:cdk:cloudformation:props": {
-                    "deliveryStreamName": "events-target-delivery-stream",
                     "deliveryStreamType": "DirectPut",
                     "extendedS3DestinationConfiguration": {
                       "bucketArn": {
@@ -463,6 +469,24 @@
               "version": "0.0.0"
             }
           },
+          "Exports": {
+            "id": "Exports",
+            "path": "aws-cdk-firehose-delivery-stream-events-target/Exports",
+            "children": {
+              "Output{\"Ref\":\"Bucket83908E77\"}": {
+                "id": "Output{\"Ref\":\"Bucket83908E77\"}",
+                "path": "aws-cdk-firehose-delivery-stream-events-target/Exports/Output{\"Ref\":\"Bucket83908E77\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "aws-cdk-firehose-delivery-stream-events-target/BootstrapVersion",
@@ -505,17 +529,17 @@
                 "id": "DeployAssert",
                 "path": "integ-tests/DefaultTest/DeployAssert",
                 "children": {
-                  "AwsApiCallS3listObjectsV278e6820f12131e7733d735f74b9eb1a0": {
-                    "id": "AwsApiCallS3listObjectsV278e6820f12131e7733d735f74b9eb1a0",
-                    "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV278e6820f12131e7733d735f74b9eb1a0",
+                  "AwsApiCallS3listObjectsV29ecd8f92611a4d8b5ce59acec0cde0a7": {
+                    "id": "AwsApiCallS3listObjectsV29ecd8f92611a4d8b5ce59acec0cde0a7",
+                    "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV29ecd8f92611a4d8b5ce59acec0cde0a7",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV278e6820f12131e7733d735f74b9eb1a0/SdkProvider",
+                        "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV29ecd8f92611a4d8b5ce59acec0cde0a7/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV278e6820f12131e7733d735f74b9eb1a0/SdkProvider/AssertionsProvider",
+                            "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV29ecd8f92611a4d8b5ce59acec0cde0a7/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.4.2"
@@ -529,11 +553,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV278e6820f12131e7733d735f74b9eb1a0/Default",
+                        "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV29ecd8f92611a4d8b5ce59acec0cde0a7/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV278e6820f12131e7733d735f74b9eb1a0/Default/Default",
+                            "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV29ecd8f92611a4d8b5ce59acec0cde0a7/Default/Default",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -547,15 +571,15 @@
                       },
                       "WaitFor": {
                         "id": "WaitFor",
-                        "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV278e6820f12131e7733d735f74b9eb1a0/WaitFor",
+                        "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV29ecd8f92611a4d8b5ce59acec0cde0a7/WaitFor",
                         "children": {
                           "IsCompleteProvider": {
                             "id": "IsCompleteProvider",
-                            "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV278e6820f12131e7733d735f74b9eb1a0/WaitFor/IsCompleteProvider",
+                            "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV29ecd8f92611a4d8b5ce59acec0cde0a7/WaitFor/IsCompleteProvider",
                             "children": {
                               "AssertionsProvider": {
                                 "id": "AssertionsProvider",
-                                "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV278e6820f12131e7733d735f74b9eb1a0/WaitFor/IsCompleteProvider/AssertionsProvider",
+                                "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV29ecd8f92611a4d8b5ce59acec0cde0a7/WaitFor/IsCompleteProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
                                   "version": "10.4.2"
@@ -563,7 +587,7 @@
                               },
                               "Invoke": {
                                 "id": "Invoke",
-                                "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV278e6820f12131e7733d735f74b9eb1a0/WaitFor/IsCompleteProvider/Invoke",
+                                "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV29ecd8f92611a4d8b5ce59acec0cde0a7/WaitFor/IsCompleteProvider/Invoke",
                                 "constructInfo": {
                                   "fqn": "aws-cdk-lib.CfnResource",
                                   "version": "0.0.0"
@@ -577,11 +601,11 @@
                           },
                           "TimeoutProvider": {
                             "id": "TimeoutProvider",
-                            "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV278e6820f12131e7733d735f74b9eb1a0/WaitFor/TimeoutProvider",
+                            "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV29ecd8f92611a4d8b5ce59acec0cde0a7/WaitFor/TimeoutProvider",
                             "children": {
                               "AssertionsProvider": {
                                 "id": "AssertionsProvider",
-                                "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV278e6820f12131e7733d735f74b9eb1a0/WaitFor/TimeoutProvider/AssertionsProvider",
+                                "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV29ecd8f92611a4d8b5ce59acec0cde0a7/WaitFor/TimeoutProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
                                   "version": "10.4.2"
@@ -589,7 +613,7 @@
                               },
                               "Invoke": {
                                 "id": "Invoke",
-                                "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV278e6820f12131e7733d735f74b9eb1a0/WaitFor/TimeoutProvider/Invoke",
+                                "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV29ecd8f92611a4d8b5ce59acec0cde0a7/WaitFor/TimeoutProvider/Invoke",
                                 "constructInfo": {
                                   "fqn": "aws-cdk-lib.CfnResource",
                                   "version": "0.0.0"
@@ -603,7 +627,7 @@
                           },
                           "Role": {
                             "id": "Role",
-                            "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV278e6820f12131e7733d735f74b9eb1a0/WaitFor/Role",
+                            "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV29ecd8f92611a4d8b5ce59acec0cde0a7/WaitFor/Role",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -611,7 +635,7 @@
                           },
                           "Resource": {
                             "id": "Resource",
-                            "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV278e6820f12131e7733d735f74b9eb1a0/WaitFor/Resource",
+                            "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV29ecd8f92611a4d8b5ce59acec0cde0a7/WaitFor/Resource",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -625,7 +649,7 @@
                       },
                       "AssertionResults": {
                         "id": "AssertionResults",
-                        "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV278e6820f12131e7733d735f74b9eb1a0/AssertionResults",
+                        "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV29ecd8f92611a4d8b5ce59acec0cde0a7/AssertionResults",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnOutput",
                           "version": "0.0.0"

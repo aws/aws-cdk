@@ -10,10 +10,9 @@ import { AwsApiCall, ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alph
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'aws-cdk-firehose-delivery-stream-source-stream', { env: { region: 'us-east-1' } });
+const stack = new cdk.Stack(app, 'aws-cdk-firehose-delivery-stream-source-stream');
 
 const bucket = new s3.Bucket(stack, 'Bucket', {
-  bucketName: 'firehose-delivery-stream-source-stream-bucket',
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   autoDeleteObjects: true,
 });
@@ -36,12 +35,10 @@ const mockS3Destination: firehose.IDestination = {
 };
 
 const sourceStream = new kinesis.Stream(stack, 'Source Stream', {
-  streamName: 'firehose-delivery-stream-source-stream-data-stream',
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
 new firehose.DeliveryStream(stack, 'Delivery Stream', {
-  deliveryStreamName: 'source-stream-delivery-stream',
   destination: mockS3Destination,
   source: new source.KinesisStreamSource(sourceStream),
 });

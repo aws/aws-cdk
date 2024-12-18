@@ -10,10 +10,9 @@ import { AwsApiCall, ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alph
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'aws-cdk-firehose-delivery-stream-events-target', { env: { region: 'us-east-1' } });
+const stack = new cdk.Stack(app, 'aws-cdk-firehose-delivery-stream-events-target');
 
 const bucket = new s3.Bucket(stack, 'Bucket', {
-  bucketName: 'firehose-delivery-stream-events-target-bucket',
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   autoDeleteObjects: true,
 });
@@ -36,7 +35,6 @@ const mockS3Destination: firehose.IDestination = {
 };
 
 const stream = new firehose.DeliveryStream(stack, 'Delivery Stream No Source Or Encryption Key', {
-  deliveryStreamName: 'events-target-delivery-stream',
   destination: mockS3Destination,
 });
 
