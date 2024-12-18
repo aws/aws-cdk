@@ -112,7 +112,7 @@ describe('node group', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       ClusterName: {
-        Ref: 'Cluster9EE0221C',
+        Ref: 'ClusterEB0386A7',
       },
       NodeRole: {
         'Fn::GetAtt': [
@@ -155,7 +155,7 @@ describe('node group', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       ClusterName: {
-        Ref: 'Cluster9EE0221C',
+        Ref: 'ClusterEB0386A7',
       },
       NodeRole: {
         'Fn::GetAtt': [
@@ -199,7 +199,7 @@ describe('node group', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       ClusterName: {
-        Ref: 'Cluster9EE0221C',
+        Ref: 'ClusterEB0386A7',
       },
       NodeRole: {
         'Fn::GetAtt': [
@@ -243,7 +243,7 @@ describe('node group', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       ClusterName: {
-        Ref: 'Cluster9EE0221C',
+        Ref: 'ClusterEB0386A7',
       },
       NodeRole: {
         'Fn::GetAtt': [
@@ -287,7 +287,7 @@ describe('node group', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       ClusterName: {
-        Ref: 'Cluster9EE0221C',
+        Ref: 'ClusterEB0386A7',
       },
       NodeRole: {
         'Fn::GetAtt': [
@@ -338,7 +338,7 @@ describe('node group', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       ClusterName: {
-        Ref: 'Cluster9EE0221C',
+        Ref: 'ClusterEB0386A7',
       },
       NodeRole: {
         'Fn::GetAtt': [
@@ -396,7 +396,7 @@ describe('node group', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       ClusterName: {
-        Ref: 'Cluster9EE0221C',
+        Ref: 'ClusterEB0386A7',
       },
       NodeRole: {
         'Fn::GetAtt': [
@@ -454,7 +454,7 @@ describe('node group', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       ClusterName: {
-        Ref: 'Cluster9EE0221C',
+        Ref: 'ClusterEB0386A7',
       },
       NodeRole: {
         'Fn::GetAtt': [
@@ -512,7 +512,7 @@ describe('node group', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       ClusterName: {
-        Ref: 'Cluster9EE0221C',
+        Ref: 'ClusterEB0386A7',
       },
       NodeRole: {
         'Fn::GetAtt': [
@@ -648,7 +648,7 @@ describe('node group', () => {
         new ec2.InstanceType('p3.large'),
         new ec2.InstanceType('g3.large'),
       ],
-    })).toThrow(/The specified AMI does not match the instance types architecture, either specify one of AL2_X86_64_GPU, BOTTLEROCKET_X86_64_NVIDIA, BOTTLEROCKET_ARM_64_NVIDIA or don't specify any/);
+    })).toThrow(/The specified AMI does not match the instance types architecture, either specify one of AL2_X86_64_GPU, AL2023_X86_64_NEURON, AL2023_X86_64_NVIDIA, BOTTLEROCKET_X86_64_NVIDIA, BOTTLEROCKET_ARM_64_NVIDIA or don't specify any/);
   });
 
   /**
@@ -1064,11 +1064,11 @@ describe('node group', () => {
         ],
       },
       ClusterName: {
-        Ref: 'Cluster9EE0221C',
+        Ref: 'ClusterEB0386A7',
       },
       RoleArn: {
         'Fn::GetAtt': [
-          'ClusterCreationRole360249B6',
+          'ClusterkubectlRole4CCE0069',
           'Arn',
         ],
       },
@@ -1384,7 +1384,7 @@ describe('node group', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       ClusterName: {
-        Ref: 'Cluster9EE0221C',
+        Ref: 'ClusterEB0386A7',
       },
       NodeRole: {
         'Fn::GetAtt': [
@@ -1432,7 +1432,7 @@ describe('node group', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       ClusterName: {
-        Ref: 'Cluster9EE0221C',
+        Ref: 'ClusterEB0386A7',
       },
       Taints: [
         {
