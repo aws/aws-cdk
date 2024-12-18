@@ -20,9 +20,14 @@ export async function renderCliType(config: CliConfig): Promise<string> {
   });
 
   // add required command
+  const yargs = new ExternalModule('yargs');
+  const Command = yargs.type('Command');
+  yargs.importSelective(scope, [Command.toString()]);
+
+  // add required command
   cliArgType.addProperty({
     name: '_',
-    type: Type.arrayOf(Type.STRING),
+    type: Type.ambient(`[${Command}, ...string[]]`),
     docs: {
       summary: 'The CLI command name followed by any properties of the command',
     },
