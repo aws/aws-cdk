@@ -98,7 +98,7 @@ test('throws if edgeLambda includeBody is set for wrong event type', () => {
   })).toThrow(/'includeBody' can only be true for ORIGIN_REQUEST or VIEWER_REQUEST event types./);
 });
 
-describe('gRPC config', () => {
+describe('gRPC', () => {
   test.each([true, false, undefined])('enableGrpc is %s', (enableGrpc) => {
     const behavior = new CacheBehavior('origin_id', {
       pathPattern: '*',
