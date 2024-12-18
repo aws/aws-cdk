@@ -1,5 +1,4 @@
 import { $E, Expression, ExternalModule, FreeFunction, IScope, Module, SelectiveModuleImport, Statement, ThingSymbol, Type, TypeScriptRenderer, code, expr } from '@cdklabs/typewriter';
-import { EsLintRules } from '@cdklabs/typewriter/lib/eslint-rules';
 import * as prettier from 'prettier';
 import { CliConfig, CliOption, YargsOption } from './yargs-types';
 
@@ -47,12 +46,12 @@ export async function renderYargs(config: CliConfig, helpers: CliHelpers): Promi
 
   const ts = new TypeScriptRenderer({
     disabledEsLintRules: [
-      EsLintRules.COMMA_DANGLE,
-      EsLintRules.COMMA_SPACING,
-      EsLintRules.MAX_LEN,
-      EsLintRules.QUOTES,
-      EsLintRules.QUOTE_PROPS,
-    ],
+      '@stylistic/comma-dangle',
+      '@stylistic/comma-spacing',
+      '@stylistic/max-len',
+      '@stylistic/quotes',
+      '@stylistic/quote-props',
+    ] as any, // Force our string[] into EsLintRules[], it will work out at runtime
   }).render(scope);
 
   return prettier.format(ts, {
