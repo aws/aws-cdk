@@ -2,6 +2,47 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.173.2](https://github.com/aws/aws-cdk/compare/v2.173.1...v2.173.2) (2024-12-17)
+
+
+### Bug Fixes
+
+* **cli:** allow credential plugins to return `null` for `expiration` ([#32554](https://github.com/aws/aws-cdk/issues/32554)) ([e59b1db](https://github.com/aws/aws-cdk/commit/e59b1db4d8da5fc11d0e3beeb136593440100325))
+* **cli:** doesn't support plugins that return initially empty credentials ([#32552](https://github.com/aws/aws-cdk/issues/32552)) ([7ee9b90](https://github.com/aws/aws-cdk/commit/7ee9b909695aca317a11aad16ca983dcc6d6f85a))
+
+## [2.173.1](https://github.com/aws/aws-cdk/compare/v2.173.0...v2.173.1) (2024-12-14)
+
+
+### Bug Fixes
+
+* **cli:** getting credentials via SSO fails when the region is set in the profile ([#32520](https://github.com/aws/aws-cdk/issues/32520)) ([01fec04](https://github.com/aws/aws-cdk/commit/01fec04ea8c0e33a406e6727801f8bc133a21196))
+
+## [2.173.0](https://github.com/aws/aws-cdk/compare/v2.172.0...v2.173.0) (2024-12-11)
+
+
+### Features
+
+* **cognito:** user pool feature plans ([#32367](https://github.com/aws/aws-cdk/issues/32367)) ([39c22de](https://github.com/aws/aws-cdk/commit/39c22ded8f7f9b6f08c77113330d6169662094f2)), closes [#32369](https://github.com/aws/aws-cdk/issues/32369)
+* **dynamodb:** add precision timestamp for kinesis stream ([#31863](https://github.com/aws/aws-cdk/issues/31863)) ([625c431](https://github.com/aws/aws-cdk/commit/625c431334730cb7e5d429d39c5a586cc53771a8)), closes [#31761](https://github.com/aws/aws-cdk/issues/31761)
+* **dynamodb:** add warm-throughput to L2 constructs ([#32390](https://github.com/aws/aws-cdk/issues/32390)) ([496bc78](https://github.com/aws/aws-cdk/commit/496bc78a25fc6ad31e22bd93f698f21df1fc44c0)), closes [#32127](https://github.com/aws/aws-cdk/issues/32127)
+* **route53:** added EvaluateTargetHealth to Route53 Alias targets ([#9481](https://github.com/aws/aws-cdk/issues/9481)) ([#30664](https://github.com/aws/aws-cdk/issues/30664)) ([c23be8c](https://github.com/aws/aws-cdk/commit/c23be8c24457e03001c16d3a8804ab558e62e899)), closes [#30739](https://github.com/aws/aws-cdk/issues/30739)
+* **route53:** added L2 construct for Route53's health checks ([#30739](https://github.com/aws/aws-cdk/issues/30739)) ([7fdd974](https://github.com/aws/aws-cdk/commit/7fdd974d08d7a6aa3c8bd8aac0fb99dcdd7d0381)), closes [#9481](https://github.com/aws/aws-cdk/issues/9481) [#30664](https://github.com/aws/aws-cdk/issues/30664)
+* **stepfunctions-tasks:** support dynamic values for Glue Job Worker Type ([#32453](https://github.com/aws/aws-cdk/issues/32453)) ([7df954c](https://github.com/aws/aws-cdk/commit/7df954ca4279fa9734181264af7e55ff1463cbd4))
+* update L1 CloudFormation resource definitions ([#32446](https://github.com/aws/aws-cdk/issues/32446)) ([093c540](https://github.com/aws/aws-cdk/commit/093c54042acff6e362e6cf7eb30254f879b94966))
+
+
+### Bug Fixes
+
+* **autoscaling:** `AutoScalingGroup` requireImdsv2 with launchTemplate or mixedInstancesPolicy throws unclear error ([#32220](https://github.com/aws/aws-cdk/issues/32220)) ([06cdaac](https://github.com/aws/aws-cdk/commit/06cdaacbd3385df51e4632aa8d943ce647855e82)), closes [#27586](https://github.com/aws/aws-cdk/issues/27586) [#27586](https://github.com/aws/aws-cdk/issues/27586)
+* **cli:** assuming a role from the INI file fails in non-commercial regions ([#32456](https://github.com/aws/aws-cdk/issues/32456)) ([7028242](https://github.com/aws/aws-cdk/commit/70282420238a094a7e604f8f6ff25b2f761dc5df))
+* **cloudformation-include:** string arrays inside unknown properties cannot be parsed ([#32461](https://github.com/aws/aws-cdk/issues/32461)) ([0c2f98b](https://github.com/aws/aws-cdk/commit/0c2f98b00f70bae8995f0a593e1853e93b3fb706))
+* **cloudwatch:** `period` of each metric in `usingMetrics` for `MathExpression` is ignored ([#30986](https://github.com/aws/aws-cdk/issues/30986)) ([59e96a3](https://github.com/aws/aws-cdk/commit/59e96a36f559d51467b00e92102bd9450f38a139)), closes [/github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-cloudwatch/lib/metric.ts#L606-L608](https://github.com/aws//github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-cloudwatch/lib/metric.ts/issues/L606-L608) [/github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-cloudwatch/lib/metric.ts#L566](https://github.com/aws//github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-cloudwatch/lib/metric.ts/issues/L566)
+* **elasticloadbalancingv2:** cannot create UDP listener for dual-stack NLB ([#32184](https://github.com/aws/aws-cdk/issues/32184)) ([e9c6e23](https://github.com/aws/aws-cdk/commit/e9c6e23ec49405c2f24b7a78ffb427dff6b72822)), closes [/github.com/aws/aws-cdk/pull/32184#issuecomment-2510536270](https://github.com/aws//github.com/aws/aws-cdk/pull/32184/issues/issuecomment-2510536270)
+* **lambda:** improve validation errors for lambda functions ([#32323](https://github.com/aws/aws-cdk/issues/32323)) ([2607eb3](https://github.com/aws/aws-cdk/commit/2607eb3a905f735b96713dda4f32d28d10d686fd)), closes [#32324](https://github.com/aws/aws-cdk/issues/32324)
+* **rds:** serverlessV2MaxCapacity can be set to 0.5, which is invalid ([#32232](https://github.com/aws/aws-cdk/issues/32232)) ([3fe229d](https://github.com/aws/aws-cdk/commit/3fe229d0eb48fe405e00bf3717face3c4cfc2cc1)), closes [/docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbcluster-serverlessv2scalingconfiguration.html#cfn-rds-dbcluster-serverlessv2](https://github.com/aws//docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbcluster-serverlessv2scalingconfiguration.html/issues/cfn-rds-dbcluster-serverlessv2)
+* **stepfunctions-task:** elasticloadbalancingv2 service policy ([#32419](https://github.com/aws/aws-cdk/issues/32419)) ([2677fce](https://github.com/aws/aws-cdk/commit/2677fce46275c9bdb54c1c6379b04f805c2ec9b2)), closes [#32417](https://github.com/aws/aws-cdk/issues/32417) [/github.com/aws/aws-cdk/blame/2607eb3a905f735b96713dda4f32d28d10d686fd/packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/aws-sdk/call-aws-service.ts#L93-L97](https://github.com/aws//github.com/aws/aws-cdk/blame/2607eb3a905f735b96713dda4f32d28d10d686fd/packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/aws-sdk/call-aws-service.ts/issues/L93-L97)
+* **synthetics:** canary name can be up to 255 characters ([#32385](https://github.com/aws/aws-cdk/issues/32385)) ([231e1bf](https://github.com/aws/aws-cdk/commit/231e1bf98597bcaf90a75632f9e217fbf33d585a)), closes [#32376](https://github.com/aws/aws-cdk/issues/32376)
+
 ## [2.172.0](https://github.com/aws/aws-cdk/compare/v2.171.1...v2.172.0) (2024-12-06)
 
 
