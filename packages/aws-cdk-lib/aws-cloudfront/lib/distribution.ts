@@ -347,8 +347,6 @@ export class Distribution extends Resource implements IDistribution {
       });
     }
 
-    this.validateGrpc(this.defaultBehavior);
-
     if (props.webAclId) {
       this.validateWebAclId(props.webAclId);
       this.webAclId = props.webAclId;
@@ -358,6 +356,8 @@ export class Distribution extends Resource implements IDistribution {
     this.errorResponses = props.errorResponses ?? [];
     this.publishAdditionalMetrics = props.publishAdditionalMetrics;
     this.httpVersion = props.httpVersion ?? HttpVersion.HTTP2;
+
+    this.validateGrpc(this.defaultBehavior);
 
     // Comments have an undocumented limit of 128 characters
     const trimmedComment =
@@ -801,9 +801,6 @@ export class Distribution extends Resource implements IDistribution {
     }
     if (![HttpVersion.HTTP2, HttpVersion.HTTP2_AND_3].includes(this.httpVersion)) {
       throw new Error(`'httpVersion' must be HttpVersion.HTTP2 or HttpVersion.HTTP2_AND_3 if 'enableGrpc' in 'defaultBehavior' or 'additionalBehaviors' is true, got ${this.httpVersion}`);
-    }
-    if (this.errorResponses.length > 0) {
-      throw new Error(`'errorResponses' cannot be specified if 'enableGrpc' in 'defaultBehavior' or 'additionalBehaviors' is true, got ${this.httpVersion}`);
     }
   }
 }
