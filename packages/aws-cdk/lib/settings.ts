@@ -99,7 +99,7 @@ export class Configuration {
     return this._projectConfig;
   }
 
-  private get projectContext() {
+  public get projectContext() {
     if (!this._projectContext) {
       throw new Error('#load has not been called yet!');
     }

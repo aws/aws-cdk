@@ -1,27 +1,68 @@
 import * as chalk from 'chalk';
 import { minimatch } from 'minimatch';
 import * as version from '../../lib/version';
-import { CommandOptions } from '../command-api';
 import { print, error, warning } from '../logging';
-import { Context, PROJECT_CONFIG, PROJECT_CONTEXT, USER_DEFAULTS } from '../settings';
+import { Context, PROJECT_CONFIG, PROJECT_CONTEXT, Settings, USER_DEFAULTS } from '../settings';
 import { renderTable } from '../util';
 
-export async function realHandler(options: CommandOptions): Promise<number> {
-  const { configuration, args } = options;
-  if (args.clear) {
-    configuration.context.clear();
-    await configuration.saveContext();
+/**
+ * Options for the context command
+ */
+export interface ContextOptions {
+  /**
+   * The context object sourced from all context locations
+   */
+  context: Context;
+
+  /**
+   * Context object specific to cdk.context.json
+   */
+  projectContext: Settings;
+
+  /**
+   * The context key (or its index) to reset
+   *
+   * @default undefined
+   */
+  reset?: string;
+
+  /**
+   * Ignore missing key error
+   *
+   * @default false
+   */
+  force?: boolean;
+
+  /**
+   * Clear all context
+   *
+   * @default false
+   */
+  clear?: boolean;
+
+  /**
+   * Use JSON output instead of YAML when templates are printed to STDOUT
+   *
+   * @default false
+   */
+  json?: boolean;
+}
+
+export async function context(options: ContextOptions): Promise<number> {
+  if (options.clear) {
+    options.context.clear();
+    await options.projectContext.save(PROJECT_CONTEXT);
     print('All context values cleared.');
-  } else if (args.reset) {
-    invalidateContext(configuration.context, args.reset as string, args.force as boolean);
-    await configuration.saveContext();
+  } else if (options.reset) {
+    invalidateContext(options.context, options.reset, options.force ?? false);
+    await options.projectContext.save(PROJECT_CONTEXT);
   } else {
     // List -- support '--json' flag
-    if (args.json) {
-      const contextValues = configuration.context.all;
+    if (options.json) {
+      const contextValues = options.context.all;
       process.stdout.write(JSON.stringify(contextValues, undefined, 2));
     } else {
-      listContext(configuration.context);
+      listContext(options.context);
     }
   }
   await version.displayVersionMessage();
@@ -29,8 +70,8 @@ export async function realHandler(options: CommandOptions): Promise<number> {
   return 0;
 }
 
-function listContext(context: Context) {
-  const keys = contextKeys(context);
+function listContext(contextObj: Context) {
+  const keys = contextKeys(contextObj);
 
   if (keys.length === 0) {
     print('This CDK application does not have any saved context values yet.');
@@ -45,7 +86,7 @@ function listContext(context: Context) {
   // Print config by default
   const data: any[] = [[chalk.green('#'), chalk.green('Key'), chalk.green('Value')]];
   for (const [i, key] of keys) {
-    const jsonWithoutNewlines = JSON.stringify(context.all[key], undefined, 2).replace(/\s+/g, ' ');
+    const jsonWithoutNewlines = JSON.stringify(contextObj.all[key], undefined, 2).replace(/\s+/g, ' ');
     data.push([i, key, jsonWithoutNewlines]);
   }
   print('Context found in %s:', chalk.blue(PROJECT_CONFIG));
@@ -56,17 +97,17 @@ function listContext(context: Context) {
   print(`Run ${chalk.blue('cdk context --reset KEY_OR_NUMBER')} to remove a context key. It will be refreshed on the next CDK synthesis run.`);
 }
 
-function invalidateContext(context: Context, key: string, force: boolean) {
+function invalidateContext(contextObj: Context, key: string, force: boolean) {
   const i = parseInt(key, 10);
   if (`${i}` === key) {
     // was a number and we fully parsed it.
-    key = keyByNumber(context, i);
+    key = keyByNumber(contextObj, i);
   }
   // Unset!
-  if (context.has(key)) {
-    context.unset(key);
+  if (contextObj.has(key)) {
+    contextObj.unset(key);
     // check if the value was actually unset.
-    if (!context.has(key)) {
+    if (!contextObj.has(key)) {
       print('Context value %s reset. It will be refreshed on next synthesis', chalk.blue(key));
       return;
     }
@@ -79,15 +120,15 @@ function invalidateContext(context: Context, key: string, force: boolean) {
   }
 
   // check if value is expression matching keys
-  const matches = keysByExpression(context, key);
+  const matches = keysByExpression(contextObj, key);
 
   if (matches.length > 0) {
 
     matches.forEach((match) => {
-      context.unset(match);
+      contextObj.unset(match);
     });
 
-    const { unset, readonly } = getUnsetAndReadonly(context, matches);
+    const { unset, readonly } = getUnsetAndReadonly(contextObj, matches);
 
     // output the reset values
     printUnset(unset);
@@ -105,6 +146,7 @@ function invalidateContext(context: Context, key: string, force: boolean) {
     throw new Error(`No context value matching key: ${key}`);
   }
 }
+
 function printUnset(unset: string[]) {
   if (unset.length === 0) return;
   print('The following matched context values reset. They will be refreshed on next synthesis');
@@ -112,6 +154,7 @@ function printUnset(unset: string[]) {
     print('  %s', match);
   });
 }
+
 function printReadonly(readonly: string[]) {
   if (readonly.length === 0) return;
   warning('The following matched context values could not be reset through the CLI');
@@ -121,13 +164,14 @@ function printReadonly(readonly: string[]) {
   print('');
   print('This usually means they are configured in %s or %s', chalk.blue(PROJECT_CONFIG), chalk.blue(USER_DEFAULTS));
 }
-function keysByExpression(context: Context, expression: string) {
-  return context.keys.filter(minimatch.filter(expression));
+
+function keysByExpression(contextObj: Context, expression: string) {
+  return contextObj.keys.filter(minimatch.filter(expression));
 }
 
-function getUnsetAndReadonly(context: Context, matches: string[]) {
+function getUnsetAndReadonly(contextObj: Context, matches: string[]) {
   return matches.reduce<{ unset: string[]; readonly: string[] }>((acc, match) => {
-    if (context.has(match)) {
+    if (contextObj.has(match)) {
       acc.readonly.push(match);
     } else {
       acc.unset.push(match);
@@ -136,8 +180,8 @@ function getUnsetAndReadonly(context: Context, matches: string[]) {
   }, { unset: [], readonly: [] });
 }
 
-function keyByNumber(context: Context, n: number) {
-  for (const [i, key] of contextKeys(context)) {
+function keyByNumber(contextObj: Context, n: number) {
+  for (const [i, key] of contextKeys(contextObj)) {
     if (n === i) {
       return key;
     }
@@ -148,8 +192,8 @@ function keyByNumber(context: Context, n: number) {
 /**
  * Return enumerated keys in a definitive order
  */
-function contextKeys(context: Context): [number, string][] {
-  const keys = context.keys;
+function contextKeys(contextObj: Context): [number, string][] {
+  const keys = contextObj.keys;
   keys.sort();
   return enumerate1(keys);
 }
