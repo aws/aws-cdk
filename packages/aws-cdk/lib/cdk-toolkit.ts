@@ -436,8 +436,8 @@ export class CdkToolkit {
 
             case 'failpaused-need-rollback-first': {
               const motivation = r.reason === 'replacement'
-                ? 'Stack is in a paused fail state and change includes a replacement which cannot be deployed with "--no-rollback"'
-                : 'Stack is in a paused fail state and command line arguments do not include "--no-rollback"';
+                ? `Stack is in a paused fail state (${r.status}) and change includes a replacement which cannot be deployed with "--no-rollback"`
+                : `Stack is in a paused fail state (${r.status}) and command line arguments do not include "--no-rollback"`;
 
               if (options.force) {
                 warning(`${motivation}. Rolling back first (--force).`);
@@ -461,7 +461,7 @@ export class CdkToolkit {
               break;
             }
 
-            case 'replacement-requires-norollback': {
+            case 'replacement-requires-rollback': {
               const motivation = 'Change includes a replacement which cannot be deployed with "--no-rollback"';
 
               if (options.force) {
@@ -902,21 +902,6 @@ export class CdkToolkit {
         printSerializedObject(obscureTemplate(stacks.firstStack.template), json ?? false);
       }
       return undefined;
-    }
-
-    // This is a slight hack; in integ mode we allow multiple stacks to be synthesized to stdout sequentially.
-    // This is to make it so that we can support multi-stack integ test expectations, without so drastically
-    // having to change the synthesis format that we have to rerun all integ tests.
-    //
-    // Because this feature is not useful to consumers (the output is missing
-    // the stack names), it's not exposed as a CLI flag. Instead, it's hidden
-    // behind an environment variable.
-    const isIntegMode = process.env.CDK_INTEG_MODE === '1';
-    if (isIntegMode) {
-      printSerializedObject(
-        stacks.stackArtifacts.map((s) => obscureTemplate(s.template)),
-        json ?? false,
-      );
     }
 
     // not outputting template to stdout, let's explain things to the user a little bit...

@@ -366,7 +366,6 @@ and [Register targets with your Target
 Group](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/target-group-register-targets.html)
 for more information.
 
-
 ### Dualstack Network Load Balancer
 
 You can create a dualstack Network Load Balancer using the `ipAddressType` property:
@@ -380,7 +379,23 @@ const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
 });
 ```
 
-You cannot add UDP or TCP_UDP listeners to a dualstack Network Load Balancer.
+You can configure whether to use an IPv6 prefix from each subnet for source NAT by setting `enablePrefixForIpv6SourceNat` to `true`.
+This must be enabled if you want to create a dualstack Network Load Balancer with a listener that uses UDP protocol.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
+  vpc,
+  ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+  enablePrefixForIpv6SourceNat: true,
+});
+
+const listener = lb.addListener('Listener', {
+  port: 1229,
+  protocol: elbv2.Protocol.UDP,
+});
+```
 
 ### Network Load Balancer attributes
 
@@ -575,6 +590,46 @@ const targetGroup = new elbv2.ApplicationTargetGroup(this, 'TargetGroup', {
 
   // Whether cross zone load balancing is enabled.
   crossZoneEnabled: true,
+});
+```
+
+### IP Address Type for Target Groups
+
+You can set the IP address type for the target group by setting the `ipAddressType` property for both Application and Network target groups.
+
+If you set the `ipAddressType` property to `IPV6`, the VPC for the target group must have an associated IPv6 CIDR block.
+
+For more information, see IP address type for [Network Load Balancers](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html#target-group-ip-address-type) and [Application Load Balancers](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#target-group-ip-address-type).
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const ipv4ApplicationTargetGroup = new elbv2.ApplicationTargetGroup(this, 'IPv4ApplicationTargetGroup', {
+  vpc,
+  port: 80,
+  targetType: elbv2.TargetType.INSTANCE,
+  ipAddressType: elbv2.TargetGroupIpAddressType.IPV4,
+});
+
+const ipv6ApplicationTargetGroup = new elbv2.ApplicationTargetGroup(this, 'Ipv6ApplicationTargetGroup', {
+  vpc,
+  port: 80,
+  targetType: elbv2.TargetType.INSTANCE,
+  ipAddressType: elbv2.TargetGroupIpAddressType.IPV6,
+});
+
+const ipv4NetworkTargetGroup = new elbv2.NetworkTargetGroup(this, 'IPv4NetworkTargetGroup', {
+  vpc,
+  port: 80,
+  targetType: elbv2.TargetType.INSTANCE,
+  ipAddressType: elbv2.TargetGroupIpAddressType.IPV4,
+});
+
+const ipv6NetworkTargetGroup = new elbv2.NetworkTargetGroup(this, 'Ipv6NetworkTargetGroup', {
+  vpc,
+  port: 80,
+  targetType: elbv2.TargetType.INSTANCE,
+  ipAddressType: elbv2.TargetGroupIpAddressType.IPV6,
 });
 ```
 

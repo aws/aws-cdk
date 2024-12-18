@@ -37,6 +37,7 @@
      }
     ],
     "KinesisStreamSpecification": {
+     "ApproximateCreationDateTimePrecision": "MILLISECOND",
      "StreamArn": {
       "Fn::GetAtt": [
        "Stream790BDEE4",

@@ -1538,6 +1538,19 @@ const host = new ec2.BastionHostLinux(this, 'BastionHost', {
 });
 ```
 
+It's recommended to set the `@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault`
+[feature flag](https://docs.aws.amazon.com/cdk/v2/guide/featureflags.html) to `true` to use Amazon Linux 2023 as the
+bastion host AMI. Without this flag set, the bastion host will default to Amazon Linux 2, which will be unsupported in
+June 2025.
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault": true
+  }
+}
+```
+
 ### Placement Group
 
 Specify `placementGroup` to enable the placement group support:
@@ -2489,3 +2502,26 @@ new ec2.PrefixList(this, 'PrefixList', {
 ```
 
 For more information see [Work with customer-managed prefix lists](https://docs.aws.amazon.com/vpc/latest/userguide/working-with-managed-prefix-lists.html)
+
+### IAM instance profile
+
+Use `instanceProfile` to apply specific IAM Instance Profile. Cannot be used with role
+
+```ts
+declare const instanceType: ec2.InstanceType;
+declare const vpc: ec2.Vpc;
+
+const role = new iam.Role(this, 'Role', {
+  assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+});
+const instanceProfile = new iam.InstanceProfile(this, 'InstanceProfile', {
+  role,
+});
+
+new ec2.Instance(this, 'Instance', {
+  vpc,
+  instanceType,
+  machineImage: ec2.MachineImage.latestAmazonLinux2023(),
+  instanceProfile,
+});
+```

@@ -20,12 +20,13 @@ import { CdkToolkit, AssetBuildTime } from '../lib/cdk-toolkit';
 import { realHandler as context } from '../lib/commands/context';
 import { realHandler as docs } from '../lib/commands/docs';
 import { realHandler as doctor } from '../lib/commands/doctor';
-import { MIGRATE_SUPPORTED_LANGUAGES, getMigrateScanType } from '../lib/commands/migrate';
-import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
-import { data, debug, error, print, setLogLevel, setCI } from '../lib/logging';
+import { getMigrateScanType } from '../lib/commands/migrate';
+import { cliInit, printAvailableTemplates } from '../lib/init';
+import { data, debug, error, print, setCI, setLogLevel, LogLevel } from '../lib/logging';
 import { Notices } from '../lib/notices';
 import { Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
+import { SdkToCliLogger } from './api/aws-auth/sdk-logger';
 
 /* eslint-disable max-len */
 /* eslint-disable @typescript-eslint/no-shadow */ // yargs
@@ -36,20 +37,23 @@ if (!process.stdout.isTTY) {
 }
 
 export async function exec(args: string[], synthesizer?: Synthesizer): Promise<number | void> {
-  function makeBrowserDefault(): string {
-    const defaultBrowserCommand: { [key in NodeJS.Platform]?: string } = {
-      darwin: 'open %u',
-      win32: 'start %u',
-    };
 
-    const cmd = defaultBrowserCommand[process.platform];
-    return cmd ?? 'xdg-open %u';
-  }
+  const argv = await parseCommandLineArguments(args);
 
-  const argv = await parseCommandLineArguments(args, makeBrowserDefault(), await availableInitLanguages(), MIGRATE_SUPPORTED_LANGUAGES as string[], version.DISPLAY_VERSION, yargsNegativeAlias);
-
+  // if one -v, log at a DEBUG level
+  // if 2 -v, log at a TRACE level
   if (argv.verbose) {
-    setLogLevel(argv.verbose);
+    let logLevel: LogLevel;
+    switch (argv.verbose) {
+      case 1:
+        logLevel = LogLevel.DEBUG;
+        break;
+      case 2:
+      default:
+        logLevel = LogLevel.TRACE;
+        break;
+    }
+    setLogLevel(logLevel);
   }
 
   // Debug should always imply tracing
@@ -80,7 +84,12 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
   const cmd = argv._[0];
 
-  const notices = Notices.create({ configuration, includeAcknowledged: cmd === 'notices' ? !argv.unacknowledged : false });
+  const notices = Notices.create({
+    context: configuration.context,
+    output: configuration.settings.get(['outdir']),
+    shouldDisplay: configuration.settings.get(['notices']),
+    includeAcknowledged: cmd === 'notices' ? !argv.unacknowledged : false,
+  });
   await notices.refresh();
 
   const sdkProvider = await SdkProvider.withAwsCliCompatibleDefaults({
@@ -89,6 +98,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
       proxyAddress: argv.proxy,
       caBundlePath: argv['ca-bundle-path'],
     },
+    logger: new SdkToCliLogger(),
   });
 
   let outDirLock: ILock | undefined;
@@ -513,18 +523,6 @@ function arrayFromYargs(xs: string[]): string[] | undefined {
   return xs.filter((x) => x !== '');
 }
 
-function yargsNegativeAlias<T extends { [x in S | L]: boolean | undefined }, S extends string, L extends string>(
-  shortName: S,
-  longName: L,
-): (argv: T) => T {
-  return (argv: T) => {
-    if (shortName in argv && argv[shortName]) {
-      (argv as any)[longName] = false;
-    }
-    return argv;
-  };
-}
-
 function determineHotswapMode(hotswap?: boolean, hotswapFallback?: boolean, watch?: boolean): HotswapMode {
   if (hotswap && hotswapFallback) {
     throw new Error('Can not supply both --hotswap and --hotswap-fallback at the same time');
@@ -547,6 +545,7 @@ function determineHotswapMode(hotswap?: boolean, hotswapFallback?: boolean, watc
   return hotswapMode;
 }
 
+/* istanbul ignore next: we never call this in unit tests */
 export function cli(args: string[] = process.argv.slice(2)) {
   exec(args)
     .then(async (value) => {
@@ -556,7 +555,10 @@ export function cli(args: string[] = process.argv.slice(2)) {
     })
     .catch((err) => {
       error(err.message);
-      if (err.stack) {
+
+      // Log the stack trace if we're on a developer workstation. Otherwise this will be into a minified
+      // file and the printed code line and stack trace are huge and useless.
+      if (err.stack && version.isDeveloperBuild()) {
         debug(err.stack);
       }
       process.exitCode = 1;

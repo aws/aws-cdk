@@ -882,6 +882,20 @@
          "Arn"
         ]
        },
+       "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]},{\\\"rolearn\\\":\\\"",
+       {
+        "Fn::GetAtt": [
+         "ClusterNodegroupMNGAL2023X8664NEURONNodeGroupRoleC0707AE1",
+         "Arn"
+        ]
+       },
+       "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]},{\\\"rolearn\\\":\\\"",
+       {
+        "Fn::GetAtt": [
+         "ClusterNodegroupMNGAL2023X8664NVIDIANodeGroupRole611D278C",
+         "Arn"
+        ]
+       },
        "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]}]\",\"mapUsers\":\"[]\",\"mapAccounts\":\"[]\"}}]"
       ]
      ]
@@ -1072,6 +1086,174 @@
     ]
    }
   },
+  "ClusterNodegroupMNGAL2023X8664NEURONNodeGroupRoleC0707AE1": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ec2.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonEKSWorkerNodePolicy"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonEKS_CNI_Policy"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "ClusterNodegroupMNGAL2023X8664NEURON44201AF9": {
+   "Type": "AWS::EKS::Nodegroup",
+   "Properties": {
+    "AmiType": "AL2023_x86_64_NEURON",
+    "ClusterName": {
+     "Ref": "Cluster9EE0221C"
+    },
+    "ForceUpdateEnabled": true,
+    "NodeRole": {
+     "Fn::GetAtt": [
+      "ClusterNodegroupMNGAL2023X8664NEURONNodeGroupRoleC0707AE1",
+      "Arn"
+     ]
+    },
+    "ScalingConfig": {
+     "DesiredSize": 2,
+     "MaxSize": 2,
+     "MinSize": 1
+    },
+    "Subnets": [
+     {
+      "Ref": "VpcPrivateSubnet1Subnet536B997A"
+     },
+     {
+      "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+     }
+    ]
+   }
+  },
+  "ClusterNodegroupMNGAL2023X8664NVIDIANodeGroupRole611D278C": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ec2.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonEKSWorkerNodePolicy"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonEKS_CNI_Policy"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "ClusterNodegroupMNGAL2023X8664NVIDIAE1B719F2": {
+   "Type": "AWS::EKS::Nodegroup",
+   "Properties": {
+    "AmiType": "AL2023_x86_64_NVIDIA",
+    "ClusterName": {
+     "Ref": "Cluster9EE0221C"
+    },
+    "ForceUpdateEnabled": true,
+    "NodeRole": {
+     "Fn::GetAtt": [
+      "ClusterNodegroupMNGAL2023X8664NVIDIANodeGroupRole611D278C",
+      "Arn"
+     ]
+    },
+    "ScalingConfig": {
+     "DesiredSize": 2,
+     "MaxSize": 2,
+     "MinSize": 1
+    },
+    "Subnets": [
+     {
+      "Ref": "VpcPrivateSubnet1Subnet536B997A"
+     },
+     {
+      "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+     }
+    ]
+   }
+  },
   "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454": {
    "Type": "AWS::CloudFormation::Stack",
    "Properties": {
@@ -1091,7 +1273,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/b59c66f745e83613dbb82872f6a80f1836e60dc270d4a996addaec59b6c48723.json"
+       "/2ec5004b3297d9e9bbb943ab996249a68fd0e8447d1ac7c76f1d4884fe4bb760.json"
       ]
      ]
     }
@@ -1141,7 +1323,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/79cbaf26aa922a95f542628df5997344482c9da45613b7f2df0c0702cf0aa1d2.json"
+       "/fdfbf7bc48a40004830d6dabdffd9c4b52070063c373ccaaac8e7885c82abe70.json"
       ]
      ]
     }
