@@ -8,6 +8,7 @@ import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
 import { App, Aws, Duration, Stack } from '../../core';
 import {
+  AllowedMethods,
   CfnDistribution,
   Distribution,
   Endpoint,
@@ -1432,5 +1433,25 @@ describe('attachWebAclId', () => {
       }).toThrow(/WebACL for CloudFront distributions must be created in the us-east-1 region; received ap-northeast-1/);
     });
   });
+});
 
+describe('gRPC', () => {
+  test.each([
+    HttpVersion.HTTP1_1,
+    HttpVersion.HTTP3,
+  ])('throws if httpVersion is %s and enableGrpc is true', (httpVersion) => {
+    const origin = defaultOrigin();
+    const msg = `'httpVersion' must be HttpVersion.HTTP2 or HttpVersion.HTTP2_AND_3 if 'enableGrpc' in 'defaultBehavior' or 'additionalBehaviors' is true, got ${httpVersion}`;
+
+    expect(() => {
+      new Distribution(stack, 'MyDist', {
+        httpVersion,
+        defaultBehavior: {
+          origin,
+          enableGrpc: true,
+          allowedMethods: AllowedMethods.ALLOW_ALL,
+        },
+      });
+    }).toThrow(msg);
+  });
 });
