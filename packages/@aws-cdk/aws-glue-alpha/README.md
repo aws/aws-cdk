@@ -101,6 +101,8 @@ For the sake of brevity, examples are shown using the pySpark job variety.
 Example with only required parameters:
 
 ```ts
+import * as cdk from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
 declare const stack: cdk.Stack;
 declare const role: iam.IRole;
 declare const script: glue.Code;
@@ -114,6 +116,8 @@ new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
 Example with optional override parameters:
 
 ```ts
+import * as cdk from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
 declare const stack: cdk.Stack;
 declare const role: iam.IRole;
 declare const script: glue.Code;
@@ -157,12 +161,22 @@ these types of jobs.
 Example with only required parameters:
 
 ```ts
+import * as cdk from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
+declare const stack: cdk.Stack;
+declare const role: iam.IRole;
+declare const script: glue.Code;
 new glue.PySparkStreamingJob(stack, 'ImportedJob', { role, script });
 ```
 
 Example with optional override parameters:
 
 ```ts
+import * as cdk from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
+declare const stack: cdk.Stack;
+declare const role: iam.IRole;
+declare const script: glue.Code;
 new glue.PySparkStreamingJob(stack, 'PySparkStreamingJob', {
   jobName: 'PySparkStreamingJobCustomName',
   description: 'This is a description',
@@ -200,12 +214,22 @@ these types of jobs.
 Example with only required parameters:
 
 ```ts
-job = new glue.PySparkFlexEtlJob(stack, 'ImportedJob', { role, script });
+import * as cdk from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
+declare const stack: cdk.Stack;
+declare const role: iam.IRole;
+declare const script: glue.Code;
+new glue.PySparkFlexEtlJob(stack, 'ImportedJob', { role, script });
 ```
 
 Example with optional override parameters:
 
 ```ts
+import * as cdk from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
+declare const stack: cdk.Stack;
+declare const role: iam.IRole;
+declare const script: glue.Code;
 new glue.PySparkEtlJob(stack, 'pySparkEtlJob', {
   jobName: 'pySparkEtlJob',
   description: 'This is a description',
@@ -243,12 +267,22 @@ required-only and optional job parameters when creating these types of jobs.
 Example with only required parameters:
 
 ```ts
-job = new glue.PythonShellJob(stack, 'ImportedJob', { role, script });
+import * as cdk from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
+declare const stack: cdk.Stack;
+declare const role: iam.IRole;
+declare const script: glue.Code;
+new glue.PythonShellJob(stack, 'ImportedJob', { role, script });
 ```
 
 Example with optional override parameters:
 
 ```ts
+import * as cdk from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
+declare const stack: cdk.Stack;
+declare const role: iam.IRole;
+declare const script: glue.Code;
 new glue.PythonShellJob(stack, 'PythonShellJob', {
   jobName: 'PythonShellJobCustomName',
   description: 'This is a description',
