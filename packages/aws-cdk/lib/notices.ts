@@ -5,7 +5,7 @@ import type { Environment } from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import * as semver from 'semver';
 import { debug, print, warning, error } from './logging';
-import { Configuration } from './settings';
+import { Context } from './settings';
 import { loadTreeFromDir, some } from './tree';
 import { flatMap } from './util';
 import { cdkCacheDir } from './util/directories';
@@ -15,9 +15,9 @@ const CACHE_FILE_PATH = path.join(cdkCacheDir(), 'notices.json');
 
 export interface NoticesProps {
   /**
-   * A `Configuration` instance holding CDK context and settings.
+   * CDK context
    */
-  readonly configuration: Configuration;
+  readonly context: Context;
 
   /**
    * Include notices that have already been acknowledged.
@@ -26,6 +26,19 @@ export interface NoticesProps {
    */
   readonly includeAcknowledged?: boolean;
 
+  /**
+   * Global CLI option for output directory for synthesized cloud assembly
+   *
+   * @default 'cdk.out'
+   */
+  readonly output?: string;
+
+  /**
+   * Global CLI option for whether we show notices
+   *
+   * @default true
+   */
+  readonly shouldDisplay?: boolean;
 }
 
 export interface NoticesPrintOptions {
@@ -36,7 +49,6 @@ export interface NoticesPrintOptions {
    * @default false
    */
   readonly showTotal?: boolean;
-
 }
 
 export interface NoticesRefreshOptions {
@@ -63,7 +75,6 @@ export interface NoticesFilterFilterOptions {
 }
 
 export class NoticesFilter {
-
   public static filter(options: NoticesFilterFilterOptions): FilteredNotice[] {
     return [
       ...this.findForCliVersion(options.data, options.cliVersion),
@@ -124,9 +135,7 @@ export class NoticesFilter {
       function compareVersions(pattern: string, target: string | undefined): boolean {
         return semver.satisfies(target ?? '', pattern);
       }
-
     });
-
   }
 
   private static findForBootstrapVersion(data: Notice[], bootstrappedEnvironments: BootstrappedEnvironment[]): FilteredNotice[] {
@@ -159,7 +168,6 @@ export class NoticesFilter {
       filtered.addDynamicValue('ENVIRONMENTS', affected.map(s => s.environment.name).join(','));
 
       return [filtered];
-
     });
   }
 
@@ -178,7 +186,6 @@ export class NoticesFilter {
       }
     });
   }
-
 }
 
 /**
@@ -193,7 +200,6 @@ export interface BootstrappedEnvironment {
  * Provides access to notices the CLI can display.
  */
 export class Notices {
-
   /**
    * Create an instance. Note that this replaces the singleton.
    */
@@ -211,7 +217,9 @@ export class Notices {
 
   private static _instance: Notices | undefined;
 
-  private readonly configuration: Configuration;
+  private readonly context: Context;
+  private readonly output: string;
+  private readonly shouldDisplay: boolean;
   private readonly acknowledgedIssueNumbers: Set<Number>;
   private readonly includeAcknowlegded: boolean;
 
@@ -221,9 +229,11 @@ export class Notices {
   private readonly bootstrappedEnvironments: Map<string, BootstrappedEnvironment> = new Map();
 
   private constructor(props: NoticesProps) {
-    this.configuration = props.configuration;
-    this.acknowledgedIssueNumbers = new Set(this.configuration.context.get('acknowledged-issue-numbers') ?? []);
+    this.context = props.context;
+    this.acknowledgedIssueNumbers = new Set(this.context.get('acknowledged-issue-numbers') ?? []);
     this.includeAcknowlegded = props.includeAcknowledged ?? false;
+    this.output = props.output ?? 'cdk.out';
+    this.shouldDisplay = props.shouldDisplay ?? true;
   }
 
   /**
@@ -248,8 +258,7 @@ export class Notices {
    * If context is configured to not display notices, this will no-op.
    */
   public async refresh(options: NoticesRefreshOptions = {}) {
-
-    if (!this.shouldDisplay()) {
+    if (!this.shouldDisplay) {
       return;
     }
 
@@ -266,15 +275,14 @@ export class Notices {
    * Display the relevant notices (unless context dictates we shouldn't).
    */
   public display(options: NoticesPrintOptions = {}) {
-
-    if (!this.shouldDisplay()) {
+    if (!this.shouldDisplay) {
       return;
     }
 
     const filteredNotices = NoticesFilter.filter({
       data: Array.from(this.data),
       cliVersion: versionNumber(),
-      outDir: this.configuration.settings.get(['output']) ?? 'cdk.out',
+      outDir: this.output,
       bootstrappedEnvironments: Array.from(this.bootstrappedEnvironments.values()),
     });
 
@@ -303,17 +311,7 @@ export class Notices {
       print('');
       print(`There are ${filteredNotices.length} unacknowledged notice(s).`);
     }
-
   }
-
-  /**
-   * Determine whether or not notices should be displayed based on the
-   * configuration provided at instantiation time.
-   */
-  private shouldDisplay(): boolean {
-    return this.configuration.settings.get(['notices']) ?? true;
-  }
-
 }
 
 export interface Component {
@@ -335,7 +333,6 @@ export interface Notice {
  * dynamic values as it has access to the dynamic matching data.
  */
 export class FilteredNotice {
-
   private readonly dynamicValues: { [key: string]: string } = {};
 
   public constructor(public readonly notice: Notice) {}
@@ -353,7 +350,6 @@ export class FilteredNotice {
       `\tAffected versions: ${componentsValue}`,
       `\tMore information at: https://github.com/aws/aws-cdk/issues/${this.notice.issueNumber}`,
     ].join('\n\n') + '\n');
-
   }
 
   private formatOverview() {
@@ -372,7 +368,6 @@ export class FilteredNotice {
     const pattern = new RegExp(Object.keys(this.dynamicValues).join('|'), 'g');
     return input.replace(pattern, (matched) => this.dynamicValues[matched] ?? matched);
   }
-
 }
 
 export interface NoticeDataSource {
