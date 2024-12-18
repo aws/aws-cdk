@@ -387,8 +387,7 @@ Performing any of the above processes helps us to ensure that expectations are c
 Work your magic. Here are some guidelines:
 
 * Coding style.
-  * If your change introduces a new construct, take a look at our [design guidelines](./docs/DESIGN_GUIDELINES.md) for construct libraries.
-    We also have an [example construct library](packages/@aws-cdk/example-construct-library) that showcases a simple construct library with a single construct.
+  * If your change introduces a new construct, take a look at our [design guidelines](./docs/DESIGN_GUIDELINES.md) for construct libraries. We also have an [example construct library](packages/@aws-cdk/example-construct-library) that showcases a simple construct library with a single construct.
   * We have a number of linters that run during standard build that will enforce coding consistency and correctness. Watch out for their error messages and adjust your code accordingly.
 * Every change requires a unit test
 * If you change APIs, make sure to update the module's README file
