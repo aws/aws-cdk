@@ -1,0 +1,89 @@
+{
+ "Resources": {
+  "NestorNestedStackNestorNestedStackResourceAE182597": {
+   "Type": "AWS::CloudFormation::Stack",
+   "Properties": {
+    "TemplateURL": {
+     "Fn::Join": [
+      "",
+      [
+       "https://s3.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".",
+       {
+        "Ref": "AWS::URLSuffix"
+       },
+       "/",
+       {
+        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+       },
+       "/75963f58a8f09248997947c93b9ea053986663d50f7b671d09901915deee5d68.json"
+      ]
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttNestorNestedStackNestorNestedStackResourceAE182597OutputsProducerNestorMyVpcEndpointD62A76ADRef29EEC1CA": {
+   "Value": {
+    "Fn::GetAtt": [
+     "NestorNestedStackNestorNestedStackResourceAE182597",
+     "Outputs.ProducerNestorMyVpcEndpointD62A76ADRef"
+    ]
+   },
+   "Export": {
+    "Name": "Producer:ExportsOutputFnGetAttNestorNestedStackNestorNestedStackResourceAE182597OutputsProducerNestorMyVpcEndpointD62A76ADRef29EEC1CA"
+   }
+  },
+  "ExportsOutputFnGetAttNestorNestedStackNestorNestedStackResourceAE182597OutputsProducerNestorMyVpcEndpointD62A76ADDnsEntries65CA1FBE": {
+   "Value": {
+    "Fn::GetAtt": [
+     "NestorNestedStackNestorNestedStackResourceAE182597",
+     "Outputs.ProducerNestorMyVpcEndpointD62A76ADDnsEntries"
+    ]
+   },
+   "Export": {
+    "Name": "Producer:ExportsOutputFnGetAttNestorNestedStackNestorNestedStackResourceAE182597OutputsProducerNestorMyVpcEndpointD62A76ADDnsEntries65CA1FBE"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

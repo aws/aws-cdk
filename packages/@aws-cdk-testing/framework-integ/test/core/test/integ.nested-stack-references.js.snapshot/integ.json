@@ -1,0 +1,14 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "NestedStackReferences/DefaultTest": {
+      "stacks": [
+        "Producer",
+        "Consumer"
+      ],
+      "diffAssets": true,
+      "assertionStack": "NestedStackReferences/DefaultTest/DeployAssert",
+      "assertionStackName": "NestedStackReferencesDefaultTestDeployAssertFE4F9D3A"
+    }
+  }
+}
