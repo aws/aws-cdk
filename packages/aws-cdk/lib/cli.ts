@@ -84,7 +84,12 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
   const cmd = argv._[0];
 
-  const notices = Notices.create({ configuration, includeAcknowledged: cmd === 'notices' ? !argv.unacknowledged : false });
+  const notices = Notices.create({
+    context: configuration.context,
+    output: configuration.settings.get(['outdir']),
+    shouldDisplay: configuration.settings.get(['notices']),
+    includeAcknowledged: cmd === 'notices' ? !argv.unacknowledged : false,
+  });
   await notices.refresh();
 
   const sdkProvider = await SdkProvider.withAwsCliCompatibleDefaults({
