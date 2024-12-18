@@ -1,4 +1,4 @@
-import { Module, StructType, Type, TypeScriptRenderer } from '@cdklabs/typewriter';
+import { Module, SelectiveModuleImport, StructType, Type, TypeScriptRenderer } from '@cdklabs/typewriter';
 import { EsLintRules } from '@cdklabs/typewriter/lib/eslint-rules';
 import * as prettier from 'prettier';
 import { CliConfig } from './yargs-types';
@@ -20,14 +20,13 @@ export async function renderCliType(config: CliConfig): Promise<string> {
   });
 
   // add required command
-  const yargs = new ExternalModule('yargs');
-  const Command = yargs.type('Command');
-  yargs.importSelective(scope, [Command.toString()]);
+  scope.addImport(new SelectiveModuleImport(scope, './settings', ['Command']));
+  const commandEnum = Type.fromName(scope, 'Command');
 
   // add required command
   cliArgType.addProperty({
     name: '_',
-    type: Type.ambient(`[${Command}, ...string[]]`),
+    type: Type.ambient(`[${commandEnum}, ...string[]]`),
     docs: {
       summary: 'The CLI command name followed by any properties of the command',
     },

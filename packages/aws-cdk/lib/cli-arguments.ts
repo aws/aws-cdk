@@ -3,6 +3,8 @@
 // Do not edit by hand; all changes will be overwritten at build time from the config file.
 // -------------------------------------------------------------------------------------------
 /* eslint-disable @typescript-eslint/comma-dangle, comma-spacing, max-len, quotes, quote-props */
+import { Command } from './settings';
+
 /**
  * The structure of the CLI configuration, generated from packages/aws-cdk/lib/config.ts
  *
@@ -12,7 +14,7 @@ export interface CliArguments {
   /**
    * The CLI command name followed by any properties of the command
    */
-  readonly _: Array<string>;
+  readonly _: [Command, ...string[]];
 
   /**
    * Global options available to all CLI commands
