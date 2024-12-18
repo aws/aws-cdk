@@ -23,7 +23,6 @@ export async function renderCliType(config: CliConfig): Promise<string> {
   scope.addImport(new SelectiveModuleImport(scope, './settings', ['Command']));
   const commandEnum = Type.fromName(scope, 'Command');
 
-  // add required command
   cliArgType.addProperty({
     name: '_',
     type: Type.ambient(`[${commandEnum}, ...string[]]`),
@@ -98,13 +97,7 @@ export async function renderCliType(config: CliConfig): Promise<string> {
   }
 
   const ts = new TypeScriptRenderer({
-    disabledEsLintRules: [
-      EsLintRules.COMMA_DANGLE,
-      EsLintRules.COMMA_SPACING,
-      EsLintRules.MAX_LEN,
-      EsLintRules.QUOTES,
-      EsLintRules.QUOTE_PROPS,
-    ],
+    disabledEsLintRules: [EsLintRules.MAX_LEN], // the default disabled rules result in 'Definition for rule 'prettier/prettier' was not found'
   }).render(scope);
 
   return prettier.format(ts, {

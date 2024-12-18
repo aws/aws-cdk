@@ -2,7 +2,7 @@
 // GENERATED FROM packages/aws-cdk/lib/config.ts.
 // Do not edit by hand; all changes will be overwritten at build time from the config file.
 // -------------------------------------------------------------------------------------------
-/* eslint-disable @typescript-eslint/comma-dangle, comma-spacing, max-len, quotes, quote-props */
+/* eslint-disable max-len */
 import { Command } from './settings';
 
 /**
