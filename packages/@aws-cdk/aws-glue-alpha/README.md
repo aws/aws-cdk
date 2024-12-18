@@ -319,12 +319,22 @@ optional job parameters when creating these types of jobs.
 Example with only required parameters:
 
 ```ts
-job = new glue.RayJob(stack, 'ImportedJob', { role, script });
+import * as cdk from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
+declare const stack: cdk.Stack;
+declare const role: iam.IRole;
+declare const script: glue.Code;
+new glue.RayJob(stack, 'ImportedJob', { role, script });
 ```
 
 Example with optional override parameters:
 
 ```ts
+import * as cdk from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
+declare const stack: cdk.Stack;
+declare const role: iam.IRole;
+declare const script: glue.Code;
 new glue.RayJob(stack, 'ImportedJob', {
   role,
   script,
@@ -353,6 +363,11 @@ AWS Glue job queuing monitors your account level quotas and limits. If quotas or
 Enable job run queuing by setting the `jobRunQueuingEnabled` property to `true`.
 
 ```ts
+import * as cdk from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
+declare const stack: cdk.Stack;
+declare const role: iam.IRole;
+declare const script: glue.Code;
 new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
     role,
     script,
