@@ -1,0 +1,13 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "FleetIntegTest/DefaultTest": {
+      "stacks": [
+        "FleetStack2cpu4gib",
+        "FleetStack4cpu8gib"
+      ],
+      "assertionStack": "FleetIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "FleetIntegTestDefaultTestDeployAssertEA68B6D9"
+    }
+  }
+}

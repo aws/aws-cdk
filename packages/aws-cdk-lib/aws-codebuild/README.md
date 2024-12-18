@@ -460,9 +460,9 @@ For more information, see [Working with reserved capacity in AWS CodeBuild](http
 
 ```ts
 const fleet = new codebuild.Fleet(this, 'Fleet', {
-    computeType: codebuild.FleetComputeType.MEDIUM,
-    environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
-    baseCapacity: 1,
+  computeType: codebuild.FleetComputeType.MEDIUM,
+  environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+  baseCapacity: 1,
 });
 
 new codebuild.Project(this, 'Project', {
@@ -490,6 +490,25 @@ new codebuild.Project(this, 'Project', {
 })
 ```
 
+### Attribute based compute
+
+If the default `FleetComputeType`s do not match your performance or pricing needs, Fleets also allow you to customize the allocated instance type based on a set of requirements. You may provide only some of the available attributes, and the cheapest available instance type will be selected that matches all given constraints.
+
+For more information, see [How does attribute-based compute work?](https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.html#fleets.attribute-compute) in the CodeBuild Fleets documentation.
+
+```ts
+const fleet = new codebuild.Fleet(this, 'Fleet', {
+  environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+  baseCapacity: 1,
+  computeType: codebuild.FleetComputeType.ATTRIBUTE_BASED,
+  computeConfiguration: {
+    disk: 30,
+    memory: 2048,
+    vCpu: 2,
+    machineType: codebuild.FleetComputeConfigurationMachineType.NVME,
+  },
+});
+```
 
 ## Logs
 

@@ -1,0 +1,19 @@
+{
+  "version": "38.0.1",
+  "files": {
+    "4487401448d747c0734694d989d080a8e18bd04ef204e3a053f53cef29b6e66c": {
+      "source": {
+        "path": "FleetStack4cpu8gib.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "4487401448d747c0734694d989d080a8e18bd04ef204e3a053f53cef29b6e66c.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -5,6 +5,49 @@ import { EnvironmentType } from './environment-type';
 import { Arn, ArnFormat, IResource, Resource, Token } from '../../core';
 
 /**
+ * Set of custom requirements that will be used to select the fleet's instance type.
+ * CodeBuild will select the cheapest instance that matches all given requirements.
+ *
+ * @see https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.html#fleets.attribute-compute
+ */
+export interface FleetComputeConfiguration {
+  /**
+   * The machine type of the compute fleet, including general usage or I/O optimized.
+   *
+   * @default - No requirement, the actual value will be based on the other selected configuration properties
+   */
+  readonly machineType?: FleetComputeConfigurationMachineType;
+
+  /**
+   * The minimum amount of disk space (in GiB) to be allocated to the selected instance type.
+   *
+   * @default - No requirement, the actual value will be based on the other selected configuration properties
+   */
+  readonly disk?: number;
+
+  /**
+   * The minimum amount of memory (in GiB) to be allocated to the selected instance type.
+   *
+   * @default - No requirement, the actual value will be based on the other selected configuration properties
+   */
+  readonly memory?: number;
+
+  /**
+   * The minimum number of vCPUs to be allocated to the selected instance type.
+   *
+   * @default - No requirement, the actual value will be based on the other selected configuration properties
+   */
+  readonly vCpu?: number;
+}
+
+// Despite what the CloudFormation schema says, the numeric properties are not optional.
+// An undefined value will cause the CloudFormation deployment to fail, e.g.
+// > Cannot invoke "java.lang.Integer.intValue()" because the return value of "software.amazon.codebuild.fleet.ComputeConfiguration.getMemory()" is null
+const DEFAULT_FLEET_COMPUTE_CONFIGURATION: FleetComputeConfiguration = {
+  disk: 0, memory: 0, vCpu: 0,
+};
+
+/**
  * Construction properties of a CodeBuild {@link Fleet}.
  */
 export interface FleetProps {
@@ -29,6 +72,16 @@ export interface FleetProps {
    * @see https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_codebuild.ComputeType.html
    */
   readonly computeType: FleetComputeType;
+
+  /**
+   * Set of custom requirements that will be used to select the fleet's instance type.
+   * CodeBuild will select the cheapest instance that matches all given requirements.
+   *
+   * May only and must be used if the {@link computeType} is {@link FleetComputeType.ATTRIBUTE_BASED}.
+   *
+   * @default - No custom requirements, only the {@link computeType} will be considered.
+   */
+  readonly computeConfiguration?: FleetComputeConfiguration;
 
   /**
    * The build environment (operating system/architecture/accelerator) type
@@ -59,6 +112,16 @@ export interface IFleet extends IResource {
    * @see https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_codebuild.ComputeType.html
    */
   readonly computeType: FleetComputeType;
+
+  /**
+   * Set of custom requirements that will be used to select the fleet's instance type.
+   * CodeBuild will select the cheapest instance that matches all given requirements.
+   *
+   * May only and must be used if the {@link computeType} is {@link FleetComputeType.ATTRIBUTE_BASED}.
+   *
+   * @default - No custom requirements, only the {@link computeType} will be considered.
+   */
+  readonly computeConfiguration?: FleetComputeConfiguration;
 
   /**
    * The build environment (operating system/architecture/accelerator) type
@@ -92,6 +155,9 @@ export class Fleet extends Resource implements IFleet {
 
       public get computeType(): FleetComputeType {
         throw new Error('Cannot retrieve computeType property from an imported Fleet');
+      }
+      public get computeConfiguration(): FleetComputeConfiguration | undefined {
+        throw new Error('Cannot retrieve computeConfiguration property from an imported Fleet');
       }
       public get environmentType(): EnvironmentType {
         throw new Error('Cannot retrieve environmentType property from an imported Fleet');
@@ -138,12 +204,24 @@ export class Fleet extends Resource implements IFleet {
       throw new Error('baseCapacity must be greater than or equal to 1');
     }
 
+    if (props.computeConfiguration && props.computeType !== FleetComputeType.ATTRIBUTE_BASED) {
+      throw new Error('computeConfiguration can only be specified if computeType is "ATTRIBUTE_BASED"');
+    }
+
+    if (props.computeType === FleetComputeType.ATTRIBUTE_BASED &&
+      (!props.computeConfiguration || Object.keys(props.computeConfiguration).length === 0)) {
+      throw new Error('At least one compute configuration criteria must be specified if computeType is "ATTRIBUTE_BASED"');
+    }
+
     super(scope, id, { physicalName: props.fleetName });
 
     const resource = new CfnFleet(this, 'Resource', {
       name: props.fleetName,
       baseCapacity: props.baseCapacity,
       computeType: props.computeType,
+      computeConfiguration: props.computeConfiguration ?
+        { ...DEFAULT_FLEET_COMPUTE_CONFIGURATION, ...props.computeConfiguration } :
+        undefined,
       environmentType: props.environmentType,
     });
 
@@ -203,4 +281,25 @@ export enum FleetComputeType {
    * for more information.
    **/
   X2_LARGE = ComputeType.X2_LARGE,
+  /**
+   * Customizable compute type. The instance type will be selected based on a given set of attribute requirements.
+   * If selected, a {@link FleetComputeConfiguration} must be specified in the fleet properties.
+   *
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.html#fleets.attribute-compute
+   */
+  ATTRIBUTE_BASED = 'ATTRIBUTE_BASED_COMPUTE',
+}
+
+/**
+ * The machine type of the compute fleet, including general usage or I/O optimized.
+ */
+export enum FleetComputeConfigurationMachineType {
+  /**
+   * General usage instance type
+   */
+  GENERAL = 'GENERAL',
+  /**
+   * I/O optimized instance type with NVMe SSD storage
+   */
+  NVME = 'NVME',
 }
