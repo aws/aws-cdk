@@ -7,6 +7,7 @@ import * as fs from 'fs-extra';
 import * as semver from 'semver';
 import { debug, warning } from '../../logging';
 import { Configuration, PROJECT_CONFIG, USER_DEFAULTS } from '../../settings';
+import { ToolkitError } from '../../toolkit/error';
 import { loadTree, some } from '../../tree';
 import { splitBySize } from '../../util/objects';
 import { versionNumber } from '../../version';
@@ -30,7 +31,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
 
   const app = config.settings.get(['app']);
   if (!app) {
-    throw new Error(`--app is required either in command-line, in ${PROJECT_CONFIG} or in ${USER_DEFAULTS}`);
+    throw new ToolkitError(`--app is required either in command-line, in ${PROJECT_CONFIG} or in ${USER_DEFAULTS}`);
   }
 
   // bypass "synth" if app points to a cloud assembly
@@ -47,15 +48,15 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
 
   const outdir = config.settings.get(['output']);
   if (!outdir) {
-    throw new Error('unexpected: --output is required');
+    throw new ToolkitError('unexpected: --output is required');
   }
   if (typeof outdir !== 'string') {
-    throw new Error(`--output takes a string, got ${JSON.stringify(outdir)}`);
+    throw new ToolkitError(`--output takes a string, got ${JSON.stringify(outdir)}`);
   }
   try {
     await fs.mkdirp(outdir);
   } catch (error: any) {
-    throw new Error(`Could not create output directory ${outdir} (${error.message})`);
+    throw new ToolkitError(`Could not create output directory ${outdir} (${error.message})`);
   }
 
   debug('outdir:', outdir);
@@ -127,7 +128,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
           return ok();
         } else {
           debug('failed command:', commandAndArgs);
-          return fail(new Error(`Subprocess exited with error ${code}`));
+          return fail(new ToolkitError(`Subprocess exited with error ${code}`));
         }
       });
     });
@@ -147,7 +148,7 @@ export function createAssembly(appDir: string) {
     if (error.message.includes(cxschema.VERSION_MISMATCH)) {
       // this means the CLI version is too old.
       // we instruct the user to upgrade.
-      throw new Error(`This CDK CLI is not compatible with the CDK library used by your application. Please upgrade the CLI to the latest version.\n(${error.message})`);
+      throw new ToolkitError(`This CDK CLI is not compatible with the CDK library used by your application. Please upgrade the CLI to the latest version.\n(${error.message})`);
     }
     throw error;
   }

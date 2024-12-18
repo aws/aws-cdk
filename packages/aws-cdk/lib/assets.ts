@@ -6,6 +6,7 @@ import * as chalk from 'chalk';
 import { EnvironmentResources } from './api/environment-resources';
 import { ToolkitInfo } from './api/toolkit-info';
 import { debug } from './logging';
+import { ToolkitError } from './toolkit/error';
 import { AssetManifestBuilder } from './util/asset-manifest-builder';
 
 /**
@@ -26,7 +27,7 @@ export async function addMetadataAssetsToManifest(stack: cxapi.CloudFormationSta
   const toolkitInfo = await envResources.lookupToolkit();
   if (!toolkitInfo.found) {
     // eslint-disable-next-line max-len
-    throw new Error(`This stack uses assets, so the toolkit stack must be deployed to the environment (Run "${chalk.blue('cdk bootstrap ' + stack.environment!.name)}")`);
+    throw new ToolkitError(`This stack uses assets, so the toolkit stack must be deployed to the environment (Run "${chalk.blue('cdk bootstrap ' + stack.environment!.name)}")`);
   }
 
   const params: Record<string, string> = {};
@@ -43,7 +44,7 @@ export async function addMetadataAssetsToManifest(stack: cxapi.CloudFormationSta
 
     debug(`Preparing asset ${asset.id}: ${JSON.stringify(asset)}`);
     if (!stack.assembly) {
-      throw new Error('Unexpected: stack assembly is required in order to find assets in assembly directory');
+      throw new ToolkitError('Unexpected: stack assembly is required in order to find assets in assembly directory');
     }
 
     Object.assign(params, await prepareAsset(asset, assetManifest, envResources, toolkitInfo));
@@ -66,7 +67,7 @@ async function prepareAsset(asset: cxschema.AssetMetadataEntry, assetManifest: A
       return prepareDockerImageAsset(asset, assetManifest, envResources);
     default:
       // eslint-disable-next-line max-len
-      throw new Error(`Unsupported packaging type: ${(asset as any).packaging}. You might need to upgrade your aws-cdk toolkit to support this asset type.`);
+      throw new ToolkitError(`Unsupported packaging type: ${(asset as any).packaging}. You might need to upgrade your aws-cdk toolkit to support this asset type.`);
   }
 }
 
@@ -110,7 +111,7 @@ async function prepareDockerImageAsset(
   // Post-1.21.0, repositoryName will always be specified and it will be a shared repository between
   // all assets, and asset will have imageTag specified as well. Validate the combination.
   if (!asset.imageNameParameter && (!asset.repositoryName || !asset.imageTag)) {
-    throw new Error('Invalid Docker image asset configuration: "repositoryName" and "imageTag" are required when "imageNameParameter" is left out');
+    throw new ToolkitError('Invalid Docker image asset configuration: "repositoryName" and "imageTag" are required when "imageNameParameter" is left out');
   }
 
   const repositoryName = asset.repositoryName ?? 'cdk/' + asset.id.replace(/[:/]/g, '-').toLowerCase();

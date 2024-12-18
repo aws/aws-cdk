@@ -4,6 +4,7 @@ import * as chalk from 'chalk';
 import { type ContextProviderPlugin, isContextProviderPlugin } from './context-provider-plugin';
 import type { CredentialProviderSource } from './credential-provider-source';
 import { error } from '../../logging';
+import { ToolkitError } from '../../toolkit/error';
 
 export let TESTING = false;
 
@@ -59,7 +60,7 @@ export class PluginHost {
 
   constructor() {
     if (!TESTING && PluginHost.instance && PluginHost.instance !== this) {
-      throw new Error('New instances of PluginHost must not be built. Use PluginHost.instance instead!');
+      throw new ToolkitError('New instances of PluginHost must not be built. Use PluginHost.instance instead!');
     }
   }
 
@@ -75,14 +76,14 @@ export class PluginHost {
       /* eslint-enable */
       if (!isPlugin(plugin)) {
         error(`Module ${chalk.green(moduleSpec)} is not a valid plug-in, or has an unsupported version.`);
-        throw new Error(`Module ${moduleSpec} does not define a valid plug-in.`);
+        throw new ToolkitError(`Module ${moduleSpec} does not define a valid plug-in.`);
       }
       if (plugin.init) {
         plugin.init(this);
       }
     } catch (e: any) {
       error(`Unable to load ${chalk.green(moduleSpec)}: ${e.stack}`);
-      throw new Error(`Unable to load plug-in: ${moduleSpec}: ${e}`);
+      throw new ToolkitError(`Unable to load plug-in: ${moduleSpec}: ${e}`);
     }
 
     function isPlugin(x: any): x is Plugin {
@@ -134,7 +135,7 @@ export class PluginHost {
    */
   public registerContextProviderAlpha(pluginProviderName: string, provider: ContextProviderPlugin) {
     if (!isContextProviderPlugin(provider)) {
-      throw new Error(`Object you gave me does not look like a ContextProviderPlugin: ${inspect(provider)}`);
+      throw new ToolkitError(`Object you gave me does not look like a ContextProviderPlugin: ${inspect(provider)}`);
     }
     this.contextProviderPlugins[pluginProviderName] = provider;
   }

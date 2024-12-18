@@ -1,6 +1,7 @@
 import * as child_process from 'child_process';
 import * as chalk from 'chalk';
 import { debug } from './logging';
+import { ToolkitError } from './toolkit/error';
 
 /**
  * OS helpers
@@ -32,7 +33,7 @@ export async function shell(command: string[]): Promise<string> {
       if (code === 0) {
         resolve(Buffer.from(stdout).toString('utf-8'));
       } else {
-        reject(new Error(`${commandLine} exited with error code ${code}`));
+        reject(new ToolkitError(`${commandLine} exited with error code ${code}`));
       }
     });
   });

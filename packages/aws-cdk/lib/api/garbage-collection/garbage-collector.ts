@@ -8,6 +8,7 @@ import { IECRClient, IS3Client, SDK, SdkProvider } from '../aws-auth';
 import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitInfo } from '../toolkit-info';
 import { ProgressPrinter } from './progress-printer';
 import { ActiveAssetCache, BackgroundStackRefresh, refreshStacks } from './stack-refresh';
+import { ToolkitError } from '../../toolkit/error';
 import { Mode } from '../plugin';
 
 // Must use a require() otherwise esbuild complains
@@ -91,14 +92,14 @@ export class ObjectAsset {
 
   private getTag(tag: string) {
     if (!this.cached_tags) {
-      throw new Error('Cannot call getTag before allTags');
+      throw new ToolkitError('Cannot call getTag before allTags');
     }
     return this.cached_tags.find((t: any) => t.Key === tag)?.Value;
   }
 
   private hasTag(tag: string) {
     if (!this.cached_tags) {
-      throw new Error('Cannot call hasTag before allTags');
+      throw new ToolkitError('Cannot call hasTag before allTags');
     }
     return this.cached_tags.some((t: any) => t.Key === tag);
   }
@@ -225,7 +226,7 @@ export class GarbageCollector {
         await this.garbageCollectEcr(sdk, activeAssets, backgroundStackRefresh);
       }
     } catch (err: any) {
-      throw new Error(err);
+      throw new ToolkitError(err);
     } finally {
       backgroundStackRefresh.stop();
     }
@@ -298,7 +299,7 @@ export class GarbageCollector {
         printer.reportScannedAsset(batch.length);
       }
     } catch (err: any) {
-      throw new Error(err);
+      throw new ToolkitError(err);
     } finally {
       printer.stop();
     }
@@ -374,7 +375,7 @@ export class GarbageCollector {
         printer.reportScannedAsset(batch.length);
       }
     } catch (err: any) {
-      throw new Error(err);
+      throw new ToolkitError(err);
     } finally {
       printer.stop();
     }
@@ -727,7 +728,7 @@ export class GarbageCollector {
 
       // Anything other than yes/y/delete-all is treated as no
       if (!response || !['yes', 'y', 'delete-all'].includes(response.toLowerCase())) {
-        throw new Error('Deletion aborted by user');
+        throw new ToolkitError('Deletion aborted by user');
       } else if (response.toLowerCase() == 'delete-all') {
         this.confirm = false;
       }
