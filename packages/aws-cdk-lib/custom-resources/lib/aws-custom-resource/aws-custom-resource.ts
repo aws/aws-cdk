@@ -421,6 +421,11 @@ export interface AwsCustomResourceProps {
   /**
    * The maximum time that can elapse before a custom resource operation times out.
    *
+   * You should not need to set this property. It is intended to allow quick turnaround
+   * even if the implementor of the custom resource forgets to include a `try/catch`.
+   * We have included the `try/catch`, and AWS service calls usually do not take an hour
+   * to complete.
+   *
    * The value must be between 1 second and 3600 seconds.
    *
    * @default Duration.seconds(3600)
