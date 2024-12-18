@@ -101,6 +101,9 @@ For the sake of brevity, examples are shown using the pySpark job variety.
 Example with only required parameters:
 
 ```ts
+declare const stack: cdk.Stack;
+declare const role: iam.IRole;
+declare const script: glue.Code;
 new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
   role,
   script,
@@ -111,6 +114,9 @@ new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
 Example with optional override parameters:
 
 ```ts
+declare const stack: cdk.Stack;
+declare const role: iam.IRole;
+declare const script: glue.Code;
 new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
         jobName: 'PySparkETLJobCustomName',
         description: 'This is a description',
