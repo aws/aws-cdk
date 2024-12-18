@@ -877,7 +877,6 @@ describe('create model customization job', () => {
       vpcConfig: {
         securityGroups: Array(6).fill(new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc })),
         subnets: vpc.privateSubnets,
-        vpc,
       },
     })).toThrow('securityGroups must be between 1 and 5 items long, got: 6');
   });
@@ -916,7 +915,6 @@ describe('create model customization job', () => {
       vpcConfig: {
         securityGroups: [new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc })],
         subnets: Array(17).fill(vpc.privateSubnets[0]),
-        vpc,
       },
     })).toThrow('subnets must be between 1 and 16 items long, got: 17');
   });
