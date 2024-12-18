@@ -730,7 +730,7 @@ export class Distribution extends Resource implements IDistribution {
     if (this.additionalBehaviors.length === 0) { return undefined; }
     return this.additionalBehaviors.map(behavior => {
       this.validateGrpc(behavior);
-      return behavior._renderBehavior()
+      return behavior._renderBehavior();
     });
   }
 
