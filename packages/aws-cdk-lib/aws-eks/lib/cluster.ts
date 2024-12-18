@@ -1,7 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Construct, Node } from 'constructs';
-import * as semver from 'semver';
 import * as YAML from 'yaml';
 import { IAccessPolicy, IAccessEntry, AccessEntry, AccessPolicy, AccessScopeType } from './access-entry';
 import { IAddon, Addon } from './addon';
@@ -1579,9 +1578,8 @@ export class Cluster extends ClusterBase {
     this.prune = props.prune ?? true;
     this.vpc = props.vpc || new ec2.Vpc(this, 'DefaultVpc');
 
-    const kubectlVersion = new semver.SemVer(`${props.version.version}.0`);
-    if (semver.gte(kubectlVersion, '1.22.0') && !props.kubectlLayer) {
-      Annotations.of(this).addWarningV2('@aws-cdk/aws-eks:clusterKubectlLayerNotSpecified', `You created a cluster with Kubernetes Version ${props.version.version} without specifying the kubectlLayer property. This may cause failures as the kubectl version provided with aws-cdk-lib is 1.20, which is only guaranteed to be compatible with Kubernetes versions 1.19-1.21. Please provide a kubectlLayer from @aws-cdk/lambda-layer-kubectl-v${kubectlVersion.minor}.`);
+    if (!props.kubectlLayer) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-eks:clusterKubectlLayerNotSpecified', `You created a cluster with Kubernetes Version ${props.version.version} without specifying the kubectlLayer property. The property will become required instead of optional in 2025 Jan. Please update your CDK code to provide a kubectlLayer.`);
     };
     this.version = props.version;
 

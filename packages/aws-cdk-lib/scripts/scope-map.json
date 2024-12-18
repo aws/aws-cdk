@@ -353,6 +353,9 @@
   "aws-internetmonitor": [
     "AWS::InternetMonitor"
   ],
+  "aws-invoicing": [
+    "AWS::Invoicing"
+  ],
   "aws-iot": [
     "AWS::IoT"
   ],
@@ -632,6 +635,9 @@
   ],
   "aws-s3outposts": [
     "AWS::S3Outposts"
+  ],
+  "aws-s3tables": [
+    "AWS::S3Tables"
   ],
   "aws-sagemaker": [
     "AWS::SageMaker"

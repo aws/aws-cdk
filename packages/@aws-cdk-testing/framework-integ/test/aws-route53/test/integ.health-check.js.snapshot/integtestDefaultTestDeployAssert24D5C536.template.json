@@ -1,0 +1,503 @@
+{
+ "Resources": {
+  "AwsApiCallRoute53GetHealthChecke703dc6d05d05c4321d908749223003a": {
+   "Type": "Custom::DeployAssert@SdkCallRoute53GetHealthCheck",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Route53",
+    "api": "GetHealthCheck",
+    "expected": "{\"$ObjectLike\":{\"HealthCheck\":{\"HealthCheckConfig\":{\"Type\":\"HTTP\",\"FullyQualifiedDomainName\":\"lb.cdk.test\",\"ResourcePath\":\"/health\",\"RequestInterval\":30,\"Port\":80,\"FailureThreshold\":3,\"Inverted\":false,\"MeasureLatency\":false,\"Disabled\":false}}}}",
+    "parameters": {
+     "HealthCheckId": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-route53-health-check:ExportsOutputRefHealthCheckHttp45CD8FAC4B1BEEC9"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1720680926516"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "route53:GetHealthCheck"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "route53:GetHealthCheck"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "route53:GetHealthCheck"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "route53:GetHealthCheck"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "route53:GetHealthCheck"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": {
+     "Fn::FindInMap": [
+      "LatestNodeRuntimeMap",
+      {
+       "Ref": "AWS::Region"
+      },
+      "value"
+     ]
+    },
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "eafc02f6925151c95ac6a6ae81a3e36d4cf4e77db52eec8e467ce2a69454a41a.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "AwsApiCallRoute53GetHealthCheck59aead14a34993b682cea1d898034d58": {
+   "Type": "Custom::DeployAssert@SdkCallRoute53GetHealthCheck",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Route53",
+    "api": "GetHealthCheck",
+    "expected": "{\"$ObjectLike\":{\"HealthCheck\":{\"HealthCheckConfig\":{\"Type\":\"HTTPS\",\"FullyQualifiedDomainName\":\"lb-ssl.cdk.test\",\"ResourcePath\":\"/health\",\"RequestInterval\":30,\"Port\":443,\"FailureThreshold\":3,\"Inverted\":false,\"MeasureLatency\":false,\"Disabled\":false}}}}",
+    "parameters": {
+     "HealthCheckId": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-route53-health-check:ExportsOutputRefHealthCheckHttpsE7EFCB6287C5ACD7"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1720680926517"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallRoute53GetHealthCheck41bc31ce3714b56f4c7e78c19a7a71b1": {
+   "Type": "Custom::DeployAssert@SdkCallRoute53GetHealthCheck",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Route53",
+    "api": "GetHealthCheck",
+    "expected": "{\"$ObjectLike\":{\"HealthCheck\":{\"HealthCheckConfig\":{\"Type\":\"TCP\",\"FullyQualifiedDomainName\":\"lb-tcp.cdk.test\",\"RequestInterval\":30,\"Port\":443,\"FailureThreshold\":3,\"Inverted\":false,\"MeasureLatency\":false,\"Disabled\":false}}}}",
+    "parameters": {
+     "HealthCheckId": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-route53-health-check:ExportsOutputRefHealthCheckTcpC39A45DCAEC05583"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1720680926517"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallRoute53GetHealthCheckec626502c4461fdda680dcd1f5d79f38": {
+   "Type": "Custom::DeployAssert@SdkCallRoute53GetHealthCheck",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Route53",
+    "api": "GetHealthCheck",
+    "expected": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"$ObjectLike\":{\"HealthCheck\":{\"HealthCheckConfig\":{\"Type\":\"CALCULATED\",\"ChildHealthChecks\":{\"$ArrayWith\":[\"",
+       {
+        "Fn::ImportValue": "aws-cdk-route53-health-check:ExportsOutputRefHealthCheckHttp45CD8FAC4B1BEEC9"
+       },
+       "\",\"",
+       {
+        "Fn::ImportValue": "aws-cdk-route53-health-check:ExportsOutputRefHealthCheckHttpsE7EFCB6287C5ACD7"
+       },
+       "\"]},\"HealthThreshold\":2,\"Inverted\":false,\"Disabled\":false}}}}"
+      ]
+     ]
+    },
+    "parameters": {
+     "HealthCheckId": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-route53-health-check:ExportsOutputRefHealthCheckCalculated4BA910E7270DC992"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1720680926517"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallRoute53GetHealthCheck975176a65fd10720efee025ea51c61a1": {
+   "Type": "Custom::DeployAssert@SdkCallRoute53GetHealthCheck",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Route53",
+    "api": "GetHealthCheck",
+    "expected": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"$ObjectLike\":{\"HealthCheck\":{\"CloudWatchAlarmConfiguration\":{\"ComparisonOperator\":\"GreaterThanOrEqualToThreshold\",\"EvaluationPeriods\":10,\"MetricName\":\"Errors\",\"Namespace\":\"AWS/Lambda\",\"Period\":60,\"Statistic\":\"Sum\",\"Threshold\":100,\"Dimensions\":[{\"Name\":\"FunctionName\",\"Value\":\"",
+       {
+        "Fn::ImportValue": "aws-cdk-route53-health-check:ExportsOutputRefLambdaFunctionBF21E41F66817B40"
+       },
+       "\"}]},\"HealthCheckConfig\":{\"Type\":\"CLOUDWATCH_METRIC\",\"AlarmIdentifier\":{\"Region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"Name\":\"",
+       {
+        "Fn::ImportValue": "aws-cdk-route53-health-check:ExportsOutputRefAlarm7103F465225BDD34"
+       },
+       "\"},\"InsufficientDataHealthStatus\":\"LastKnownStatus\",\"Inverted\":false,\"Disabled\":false}}}}"
+      ]
+     ]
+    },
+    "parameters": {
+     "HealthCheckId": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-route53-health-check:ExportsOutputRefHealthCheckCloudWatch996681BBF4DB146D"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1720680926517"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallRoute53GetHealthChecke703dc6d05d05c4321d908749223003a": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallRoute53GetHealthChecke703dc6d05d05c4321d908749223003a",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallRoute53GetHealthCheck59aead14a34993b682cea1d898034d58": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallRoute53GetHealthCheck59aead14a34993b682cea1d898034d58",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallRoute53GetHealthCheck41bc31ce3714b56f4c7e78c19a7a71b1": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallRoute53GetHealthCheck41bc31ce3714b56f4c7e78c19a7a71b1",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallRoute53GetHealthCheckec626502c4461fdda680dcd1f5d79f38": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallRoute53GetHealthCheckec626502c4461fdda680dcd1f5d79f38",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallRoute53GetHealthCheck975176a65fd10720efee025ea51c61a1": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallRoute53GetHealthCheck975176a65fd10720efee025ea51c61a1",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Mappings": {
+  "LatestNodeRuntimeMap": {
+   "af-south-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-east-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-3": {
+    "value": "nodejs20.x"
+   },
+   "ap-south-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-south-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-3": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-4": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-5": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-7": {
+    "value": "nodejs20.x"
+   },
+   "ca-central-1": {
+    "value": "nodejs20.x"
+   },
+   "ca-west-1": {
+    "value": "nodejs20.x"
+   },
+   "cn-north-1": {
+    "value": "nodejs18.x"
+   },
+   "cn-northwest-1": {
+    "value": "nodejs18.x"
+   },
+   "eu-central-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-central-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-isoe-west-1": {
+    "value": "nodejs18.x"
+   },
+   "eu-north-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-south-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-south-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-3": {
+    "value": "nodejs20.x"
+   },
+   "il-central-1": {
+    "value": "nodejs20.x"
+   },
+   "me-central-1": {
+    "value": "nodejs20.x"
+   },
+   "me-south-1": {
+    "value": "nodejs20.x"
+   },
+   "mx-central-1": {
+    "value": "nodejs20.x"
+   },
+   "sa-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-east-2": {
+    "value": "nodejs20.x"
+   },
+   "us-gov-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-gov-west-1": {
+    "value": "nodejs18.x"
+   },
+   "us-iso-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-iso-west-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-west-1": {
+    "value": "nodejs20.x"
+   },
+   "us-west-2": {
+    "value": "nodejs20.x"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
