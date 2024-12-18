@@ -82,7 +82,7 @@
                       ]
                     },
                     "state": "ENABLED",
-                    "type": "unmanaged"
+                    "type": "UNMANAGED"
                   }
                 },
                 "constructInfo": {
@@ -479,7 +479,7 @@
                 "path": "BatchUniqueNameTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -525,7 +525,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.3.0"
         }
       }
     },
