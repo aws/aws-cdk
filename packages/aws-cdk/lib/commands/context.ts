@@ -2,7 +2,7 @@ import * as chalk from 'chalk';
 import { minimatch } from 'minimatch';
 import * as version from '../../lib/version';
 import { print, error, warning } from '../logging';
-import { Context, PROJECT_CONFIG, PROJECT_CONTEXT, Settings, USER_DEFAULTS } from '../settings';
+import { Context, PROJECT_CONFIG, PROJECT_CONTEXT, USER_DEFAULTS } from '../settings';
 import { renderTable } from '../util';
 
 /**
@@ -13,11 +13,6 @@ export interface ContextOptions {
    * The context object sourced from all context locations
    */
   context: Context;
-
-  /**
-   * Context object specific to cdk.context.json
-   */
-  projectContext: Settings;
 
   /**
    * The context key (or its index) to reset
@@ -51,11 +46,11 @@ export interface ContextOptions {
 export async function context(options: ContextOptions): Promise<number> {
   if (options.clear) {
     options.context.clear();
-    await options.projectContext.save(PROJECT_CONTEXT);
+    await options.context.save(PROJECT_CONTEXT);
     print('All context values cleared.');
   } else if (options.reset) {
     invalidateContext(options.context, options.reset, options.force ?? false);
-    await options.projectContext.save(PROJECT_CONTEXT);
+    await options.context.save(PROJECT_CONTEXT);
   } else {
     // List -- support '--json' flag
     if (options.json) {
