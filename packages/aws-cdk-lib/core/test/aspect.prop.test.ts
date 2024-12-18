@@ -350,9 +350,12 @@ function arbConstructTreeFactory(): fc.Arbitrary<ConstructFactory> {
  */
 class PrettyApp {
   private readonly initialTree: Set<string>;
+  private readonly initialAspects: Map<string, Set<string>>;
 
   constructor(public readonly cdkApp: App, public readonly executionState: ExecutionState) {
-    this.initialTree = new Set(cdkApp.node.findAll().map(c => c.node.path));
+    const constructs = cdkApp.node.findAll();
+    this.initialTree = new Set(constructs.map(c => c.node.path));
+    this.initialAspects = new Map(constructs.map(c => [c.node.path, new Set(renderAspects(c))]));
   }
 
   /**
@@ -402,7 +405,14 @@ class PrettyApp {
     }
 
     function recurse(construct: Construct) {
-      const aspects = Aspects.of(construct).applied.map(a => `${a.aspect}@${a.priority}`);
+      const aspects = renderAspects(construct);
+
+      for (let i = 0; i < aspects.length; i++) {
+        if (!(self.initialAspects.get(construct.node.path) ?? new Set()).has(aspects[i])) {
+          aspects[i] += ' (added)';
+        }
+      }
+
       line([
         '+-',
         ...self.initialTree.has(construct.node.path) ? [] : ['(added)'],
@@ -417,6 +427,21 @@ class PrettyApp {
       prefixes.pop();
     }
   }
+}
+
+function renderAspects(c: Construct) {
+  return unique(Aspects.of(c).applied.map(a => `${a.aspect}@${a.priority}`));
+}
+
+function unique(xs: string[]): string[] {
+  const seen = new Set<string>();
+  const ret: string[] = [];
+  for (const x of xs) {
+    if (seen.has(x)) { continue; }
+    ret.push(x);
+    seen.add(x);
+  }
+  return ret;
 }
 
 interface AspectVisit {

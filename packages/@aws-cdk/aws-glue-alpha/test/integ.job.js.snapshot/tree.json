@@ -203,13 +203,13 @@
                   "version": "0.0.0"
                 }
               },
-              "Code0afe53ab7e601c42a4b87c9022cbe434": {
-                "id": "Code0afe53ab7e601c42a4b87c9022cbe434",
-                "path": "aws-glue-job/EtlJob2.0/Code0afe53ab7e601c42a4b87c9022cbe434",
+              "Codecc31fe5213ff3688a52934fe07b8224f": {
+                "id": "Codecc31fe5213ff3688a52934fe07b8224f",
+                "path": "aws-glue-job/EtlJob2.0/Codecc31fe5213ff3688a52934fe07b8224f",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "aws-glue-job/EtlJob2.0/Code0afe53ab7e601c42a4b87c9022cbe434/Stage",
+                    "path": "aws-glue-job/EtlJob2.0/Codecc31fe5213ff3688a52934fe07b8224f/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -217,7 +217,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "aws-glue-job/EtlJob2.0/Code0afe53ab7e601c42a4b87c9022cbe434/AssetBucket",
+                    "path": "aws-glue-job/EtlJob2.0/Codecc31fe5213ff3688a52934fe07b8224f/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
@@ -1804,6 +1804,596 @@
               "version": "0.0.0"
             }
           },
+          "EtlJob5.0": {
+            "id": "EtlJob5.0",
+            "path": "aws-glue-job/EtlJob5.0",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "aws-glue-job/EtlJob5.0/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "aws-glue-job/EtlJob5.0/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-glue-job/EtlJob5.0/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "glue.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSGlueServiceRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-glue-job/EtlJob5.0/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-glue-job/EtlJob5.0/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "s3:Abort*",
+                                    "s3:DeleteObject*",
+                                    "s3:GetBucket*",
+                                    "s3:GetObject*",
+                                    "s3:List*",
+                                    "s3:PutObject",
+                                    "s3:PutObjectLegalHold",
+                                    "s3:PutObjectRetention",
+                                    "s3:PutObjectTagging",
+                                    "s3:PutObjectVersionTagging"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "EtlJob50SparkUIBucket28E6EA39",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          {
+                                            "Fn::GetAtt": [
+                                              "EtlJob50SparkUIBucket28E6EA39",
+                                              "Arn"
+                                            ]
+                                          },
+                                          "/*"
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "Action": [
+                                    "s3:GetBucket*",
+                                    "s3:GetObject*",
+                                    "s3:List*"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":s3:::",
+                                          {
+                                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                          },
+                                          "/*"
+                                        ]
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":s3:::",
+                                          {
+                                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                          }
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "EtlJob50ServiceRoleDefaultPolicyD67CA798",
+                            "roles": [
+                              {
+                                "Ref": "EtlJob50ServiceRole3F950524"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "SparkUIBucket": {
+                "id": "SparkUIBucket",
+                "path": "aws-glue-job/EtlJob5.0/SparkUIBucket",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-glue-job/EtlJob5.0/SparkUIBucket/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                      "aws:cdk:cloudformation:props": {}
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.Bucket",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-glue-job/EtlJob5.0/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Glue::Job",
+                  "aws:cdk:cloudformation:props": {
+                    "command": {
+                      "name": "glueetl",
+                      "scriptLocation": {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "s3://",
+                            {
+                              "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                            },
+                            "/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py"
+                          ]
+                        ]
+                      },
+                      "pythonVersion": "3"
+                    },
+                    "defaultArguments": {
+                      "--job-language": "python",
+                      "--enable-continuous-cloudwatch-log": "true",
+                      "--enable-continuous-log-filter": "true",
+                      "--continuous-log-logStreamPrefix": "EtlJob",
+                      "--enable-spark-ui": "true",
+                      "--spark-event-logs-path": {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "s3://",
+                            {
+                              "Ref": "EtlJob50SparkUIBucket28E6EA39"
+                            },
+                            "/"
+                          ]
+                        ]
+                      },
+                      "arg1": "value1",
+                      "arg2": "value2",
+                      "--conf": "valueConf"
+                    },
+                    "executionClass": "STANDARD",
+                    "executionProperty": {
+                      "maxConcurrentRuns": 2
+                    },
+                    "glueVersion": "5.0",
+                    "maxRetries": 2,
+                    "name": "EtlJob5.0",
+                    "notificationProperty": {
+                      "notifyDelayAfter": 1
+                    },
+                    "numberOfWorkers": 10,
+                    "role": {
+                      "Fn::GetAtt": [
+                        "EtlJob50ServiceRole3F950524",
+                        "Arn"
+                      ]
+                    },
+                    "tags": {
+                      "key": "value"
+                    },
+                    "timeout": 5,
+                    "workerType": "G.1X"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_glue.CfnJob",
+                  "version": "0.0.0"
+                }
+              },
+              "SuccessMetricRule": {
+                "id": "SuccessMetricRule",
+                "path": "aws-glue-job/EtlJob5.0/SuccessMetricRule",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-glue-job/EtlJob5.0/SuccessMetricRule/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Events::Rule",
+                      "aws:cdk:cloudformation:props": {
+                        "description": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "Rule triggered when Glue job ",
+                              {
+                                "Ref": "EtlJob502E3517AF"
+                              },
+                              " is in SUCCEEDED state"
+                            ]
+                          ]
+                        },
+                        "eventPattern": {
+                          "source": [
+                            "aws.glue"
+                          ],
+                          "detail-type": [
+                            "Glue Job State Change",
+                            "Glue Job Run Status"
+                          ],
+                          "detail": {
+                            "jobName": [
+                              {
+                                "Ref": "EtlJob502E3517AF"
+                              }
+                            ],
+                            "state": [
+                              "SUCCEEDED"
+                            ]
+                          }
+                        },
+                        "state": "ENABLED"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_events.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_events.Rule",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-glue-alpha.Job",
+              "version": "0.0.0"
+            }
+          },
+          "StreamingJob5.0": {
+            "id": "StreamingJob5.0",
+            "path": "aws-glue-job/StreamingJob5.0",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "aws-glue-job/StreamingJob5.0/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "aws-glue-job/StreamingJob5.0/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-glue-job/StreamingJob5.0/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "glue.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSGlueServiceRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-glue-job/StreamingJob5.0/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-glue-job/StreamingJob5.0/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "s3:Abort*",
+                                    "s3:DeleteObject*",
+                                    "s3:GetBucket*",
+                                    "s3:GetObject*",
+                                    "s3:List*",
+                                    "s3:PutObject",
+                                    "s3:PutObjectLegalHold",
+                                    "s3:PutObjectRetention",
+                                    "s3:PutObjectTagging",
+                                    "s3:PutObjectVersionTagging"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "StreamingJob50SparkUIBucket31964232",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          {
+                                            "Fn::GetAtt": [
+                                              "StreamingJob50SparkUIBucket31964232",
+                                              "Arn"
+                                            ]
+                                          },
+                                          "/*"
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "Action": [
+                                    "s3:GetBucket*",
+                                    "s3:GetObject*",
+                                    "s3:List*"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":s3:::",
+                                          {
+                                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                          },
+                                          "/*"
+                                        ]
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":s3:::",
+                                          {
+                                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                          }
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "StreamingJob50ServiceRoleDefaultPolicy815A506E",
+                            "roles": [
+                              {
+                                "Ref": "StreamingJob50ServiceRoleE8945CAE"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "SparkUIBucket": {
+                "id": "SparkUIBucket",
+                "path": "aws-glue-job/StreamingJob5.0/SparkUIBucket",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-glue-job/StreamingJob5.0/SparkUIBucket/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                      "aws:cdk:cloudformation:props": {}
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.Bucket",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-glue-job/StreamingJob5.0/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Glue::Job",
+                  "aws:cdk:cloudformation:props": {
+                    "command": {
+                      "name": "gluestreaming",
+                      "scriptLocation": {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "s3://",
+                            {
+                              "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                            },
+                            "/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py"
+                          ]
+                        ]
+                      },
+                      "pythonVersion": "3"
+                    },
+                    "defaultArguments": {
+                      "--job-language": "python",
+                      "--enable-spark-ui": "true",
+                      "--spark-event-logs-path": {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "s3://",
+                            {
+                              "Ref": "StreamingJob50SparkUIBucket31964232"
+                            },
+                            "/"
+                          ]
+                        ]
+                      },
+                      "arg1": "value1",
+                      "arg2": "value2"
+                    },
+                    "glueVersion": "5.0",
+                    "name": "StreamingJob5.0",
+                    "numberOfWorkers": 10,
+                    "role": {
+                      "Fn::GetAtt": [
+                        "StreamingJob50ServiceRoleE8945CAE",
+                        "Arn"
+                      ]
+                    },
+                    "tags": {
+                      "key": "value"
+                    },
+                    "workerType": "G.025X"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_glue.CfnJob",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-glue-alpha.Job",
+              "version": "0.0.0"
+            }
+          },
           "ShellJob": {
             "id": "ShellJob",
             "path": "aws-glue-job/ShellJob",
@@ -2314,13 +2904,13 @@
                   "version": "0.0.0"
                 }
               },
-              "Code7cb6f530344016d269e3d4643b46e988": {
-                "id": "Code7cb6f530344016d269e3d4643b46e988",
-                "path": "aws-glue-job/RayJob/Code7cb6f530344016d269e3d4643b46e988",
+              "Code50e1efc20448ce2ab46601fe58b428a6": {
+                "id": "Code50e1efc20448ce2ab46601fe58b428a6",
+                "path": "aws-glue-job/RayJob/Code50e1efc20448ce2ab46601fe58b428a6",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "aws-glue-job/RayJob/Code7cb6f530344016d269e3d4643b46e988/Stage",
+                    "path": "aws-glue-job/RayJob/Code50e1efc20448ce2ab46601fe58b428a6/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -2328,7 +2918,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "aws-glue-job/RayJob/Code7cb6f530344016d269e3d4643b46e988/AssetBucket",
+                    "path": "aws-glue-job/RayJob/Code50e1efc20448ce2ab46601fe58b428a6/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
@@ -2340,13 +2930,13 @@
                   "version": "0.0.0"
                 }
               },
-              "Code7fed4fdaae1c2239a27034492f66d212": {
-                "id": "Code7fed4fdaae1c2239a27034492f66d212",
-                "path": "aws-glue-job/RayJob/Code7fed4fdaae1c2239a27034492f66d212",
+              "Code56ba4602155dc0a716e99f3ef481df41": {
+                "id": "Code56ba4602155dc0a716e99f3ef481df41",
+                "path": "aws-glue-job/RayJob/Code56ba4602155dc0a716e99f3ef481df41",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "aws-glue-job/RayJob/Code7fed4fdaae1c2239a27034492f66d212/Stage",
+                    "path": "aws-glue-job/RayJob/Code56ba4602155dc0a716e99f3ef481df41/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -2354,7 +2944,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "aws-glue-job/RayJob/Code7fed4fdaae1c2239a27034492f66d212/AssetBucket",
+                    "path": "aws-glue-job/RayJob/Code56ba4602155dc0a716e99f3ef481df41/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
@@ -2827,7 +3417,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },

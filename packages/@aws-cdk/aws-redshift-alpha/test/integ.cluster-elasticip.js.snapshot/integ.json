@@ -1,5 +1,5 @@
 {
-  "version": "29.0.0",
+  "version": "38.0.1",
   "testCases": {
     "aws-cdk-redshift-elastic-ip-test/DefaultTest": {
       "stacks": [
