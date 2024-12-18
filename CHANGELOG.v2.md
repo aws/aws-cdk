@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.173.2](https://github.com/aws/aws-cdk/compare/v2.173.1...v2.173.2) (2024-12-17)
+
+
+### Bug Fixes
+
+* **cli:** allow credential plugins to return `null` for `expiration` ([#32554](https://github.com/aws/aws-cdk/issues/32554)) ([e59b1db](https://github.com/aws/aws-cdk/commit/e59b1db4d8da5fc11d0e3beeb136593440100325))
+* **cli:** doesn't support plugins that return initially empty credentials ([#32552](https://github.com/aws/aws-cdk/issues/32552)) ([7ee9b90](https://github.com/aws/aws-cdk/commit/7ee9b909695aca317a11aad16ca983dcc6d6f85a))
+
+## [2.173.1](https://github.com/aws/aws-cdk/compare/v2.173.0...v2.173.1) (2024-12-14)
+
+
+### Bug Fixes
+
+* **cli:** getting credentials via SSO fails when the region is set in the profile ([#32520](https://github.com/aws/aws-cdk/issues/32520)) ([01fec04](https://github.com/aws/aws-cdk/commit/01fec04ea8c0e33a406e6727801f8bc133a21196))
+
 ## [2.173.0](https://github.com/aws/aws-cdk/compare/v2.172.0...v2.173.0) (2024-12-11)
 
 
