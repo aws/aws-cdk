@@ -616,6 +616,8 @@ export class AuroraMysqlEngineVersion {
   public static readonly VER_3_04_1 = AuroraMysqlEngineVersion.builtIn_8_0('3.04.1');
   /** Version "8.0.mysql_aurora.3.04.2". */
   public static readonly VER_3_04_2 = AuroraMysqlEngineVersion.builtIn_8_0('3.04.2');
+  /** Version "8.0.mysql_aurora.3.04.3". */
+  public static readonly VER_3_04_3 = AuroraMysqlEngineVersion.builtIn_8_0('3.04.3');
   /**
    * Version "8.0.mysql_aurora.3.05.0"
    * @deprecated Aurora MySQL 8.0.mysql_aurora.3.05.0 is no longer supported by Amazon RDS.
@@ -1078,6 +1080,8 @@ export class AuroraPostgresEngineVersion {
   public static readonly VER_16_3 = AuroraPostgresEngineVersion.of('16.3', '16', { s3Import: true, s3Export: true });
   /** Version "16.4". */
   public static readonly VER_16_4 = AuroraPostgresEngineVersion.of('16.4', '16', { s3Import: true, s3Export: true });
+  /** Version "16.4 limitless" */
+  public static readonly VER_16_4_LIMITLESS = AuroraPostgresEngineVersion.of('16.4-limitless', '16', { s3Import: true, s3Export: true });
   /** Version "16.5". */
   public static readonly VER_16_5 = AuroraPostgresEngineVersion.of('16.5', '16', { s3Import: true, s3Export: true });
   /** Version "16.6". */

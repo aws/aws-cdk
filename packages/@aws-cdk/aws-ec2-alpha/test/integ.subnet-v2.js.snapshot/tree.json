@@ -18,7 +18,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
                   "aws:cdk:cloudformation:props": {
-                    "cidrBlock": "10.0.0.0/16",
+                    "cidrBlock": "10.1.0.0/16",
                     "enableDnsHostnames": true,
                     "enableDnsSupport": true,
                     "instanceTenancy": "default"
@@ -77,7 +77,7 @@
                   "aws:cdk:cloudformation:props": {
                     "assignIpv6AddressOnCreation": false,
                     "availabilityZone": "us-west-2a",
-                    "cidrBlock": "10.0.0.0/24",
+                    "cidrBlock": "10.1.0.0/20",
                     "vpcId": {
                       "Fn::GetAtt": [
                         "SubnetTest3296A161",
@@ -457,7 +457,7 @@
                   "aws:cdk:cloudformation:props": {
                     "assignIpv6AddressOnCreation": false,
                     "availabilityZone": "us-west-2a",
-                    "cidrBlock": "10.0.1.0/24",
+                    "cidrBlock": "10.1.128.0/20",
                     "vpcId": {
                       "Fn::GetAtt": [
                         "SubnetTest3296A161",
@@ -542,7 +542,7 @@
                 "path": "integtest-model/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -588,7 +588,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },
