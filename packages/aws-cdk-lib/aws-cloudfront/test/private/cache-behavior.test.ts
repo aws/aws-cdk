@@ -62,7 +62,6 @@ test('renders with all properties specified', () => {
       functionVersion: fnVersion,
     }],
     trustedKeyGroups: [keyGroup],
-    enableGrpc: true,
   });
 
   expect(behavior._renderBehavior()).toEqual({
@@ -83,9 +82,6 @@ test('renders with all properties specified', () => {
     trustedKeyGroups: [
       keyGroup.keyGroupId,
     ],
-    grpcConfig: {
-      enabled: true,
-    },
   });
 });
 
@@ -135,5 +131,19 @@ describe('gRPC config', () => {
       allowedMethods,
       enableGrpc: true,
     })).toThrow(/'allowedMethods' can only be AllowedMethods.ALLOW_ALL if 'enableGrpc' is true/);
+  });
+
+  test('throws if edgeLambda is set and enableGrpc is true', () => {
+    const fnVersion = lambda.Version.fromVersionArn(stack, 'Version', 'arn:aws:lambda:testregion:111111111111:function:myTestFun:v1');
+
+    expect(() => new CacheBehavior('origin_id', {
+      pathPattern: '*',
+      allowedMethods: AllowedMethods.ALLOW_ALL,
+      enableGrpc: true,
+      edgeLambdas: [{
+        eventType: LambdaEdgeEventType.ORIGIN_RESPONSE,
+        functionVersion: fnVersion,
+      }],
+    })).toThrow(/'edgeLambdas' cannot be specified if 'enableGrpc' is true/);
   });
 });
