@@ -1,41 +1,6 @@
 {
  "Resources": {
-  "customkmskey377C6F9A": {
-   "Type": "AWS::KMS::Key",
-   "Properties": {
-    "KeyPolicy": {
-     "Statement": [
-      {
-       "Action": "kms:*",
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
-          ]
-         ]
-        }
-       },
-       "Resource": "*"
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "Vpc8378EB38": {
+  "VPCB9E5F0B4": {
    "Type": "AWS::EC2::VPC",
    "Properties": {
     "CidrBlock": "10.0.0.0/16",
@@ -45,14 +10,14 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-redshift-cluster-database/Vpc"
+      "Value": "single-provider-role-integ/VPC"
      }
     ]
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "VpcPublicSubnet1Subnet5C2D37C4": {
+  "VPCPublicSubnet1SubnetB4246D30": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
     "AvailabilityZone": {
@@ -76,103 +41,103 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet1"
+      "Value": "single-provider-role-integ/VPC/PublicSubnet1"
      }
     ],
     "VpcId": {
-     "Ref": "Vpc8378EB38"
+     "Ref": "VPCB9E5F0B4"
     }
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "VpcPublicSubnet1RouteTable6C95E38E": {
+  "VPCPublicSubnet1RouteTableFEE4B781": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet1"
+      "Value": "single-provider-role-integ/VPC/PublicSubnet1"
      }
     ],
     "VpcId": {
-     "Ref": "Vpc8378EB38"
+     "Ref": "VPCB9E5F0B4"
     }
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "VpcPublicSubnet1RouteTableAssociation97140677": {
+  "VPCPublicSubnet1RouteTableAssociation0B0896DC": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
    "Properties": {
     "RouteTableId": {
-     "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
+     "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
     },
     "SubnetId": {
-     "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
+     "Ref": "VPCPublicSubnet1SubnetB4246D30"
     }
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "VpcPublicSubnet1DefaultRoute3DA9E72A": {
+  "VPCPublicSubnet1DefaultRoute91CEF279": {
    "Type": "AWS::EC2::Route",
    "Properties": {
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
-     "Ref": "VpcIGWD7BA715C"
+     "Ref": "VPCIGWB7E252D3"
     },
     "RouteTableId": {
-     "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
+     "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
     }
    },
    "DependsOn": [
-    "VpcVPCGWBF912B6E"
+    "VPCVPCGW99B986DC"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "VpcPublicSubnet1EIPD7E02669": {
+  "VPCPublicSubnet1EIP6AD938E8": {
    "Type": "AWS::EC2::EIP",
    "Properties": {
     "Domain": "vpc",
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet1"
+      "Value": "single-provider-role-integ/VPC/PublicSubnet1"
      }
     ]
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "VpcPublicSubnet1NATGateway4D7517AA": {
+  "VPCPublicSubnet1NATGatewayE0556630": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
     "AllocationId": {
      "Fn::GetAtt": [
-      "VpcPublicSubnet1EIPD7E02669",
+      "VPCPublicSubnet1EIP6AD938E8",
       "AllocationId"
      ]
     },
     "SubnetId": {
-     "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
+     "Ref": "VPCPublicSubnet1SubnetB4246D30"
     },
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet1"
+      "Value": "single-provider-role-integ/VPC/PublicSubnet1"
      }
     ]
    },
    "DependsOn": [
-    "VpcPublicSubnet1DefaultRoute3DA9E72A",
-    "VpcPublicSubnet1RouteTableAssociation97140677"
+    "VPCPublicSubnet1DefaultRoute91CEF279",
+    "VPCPublicSubnet1RouteTableAssociation0B0896DC"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "VpcPublicSubnet2Subnet691E08A3": {
+  "VPCPublicSubnet2Subnet74179F39": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
     "AvailabilityZone": {
@@ -196,103 +161,103 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet2"
+      "Value": "single-provider-role-integ/VPC/PublicSubnet2"
      }
     ],
     "VpcId": {
-     "Ref": "Vpc8378EB38"
+     "Ref": "VPCB9E5F0B4"
     }
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "VpcPublicSubnet2RouteTable94F7E489": {
+  "VPCPublicSubnet2RouteTable6F1A15F1": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet2"
+      "Value": "single-provider-role-integ/VPC/PublicSubnet2"
      }
     ],
     "VpcId": {
-     "Ref": "Vpc8378EB38"
+     "Ref": "VPCB9E5F0B4"
     }
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "VpcPublicSubnet2RouteTableAssociationDD5762D8": {
+  "VPCPublicSubnet2RouteTableAssociation5A808732": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
    "Properties": {
     "RouteTableId": {
-     "Ref": "VpcPublicSubnet2RouteTable94F7E489"
+     "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
     },
     "SubnetId": {
-     "Ref": "VpcPublicSubnet2Subnet691E08A3"
+     "Ref": "VPCPublicSubnet2Subnet74179F39"
     }
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "VpcPublicSubnet2DefaultRoute97F91067": {
+  "VPCPublicSubnet2DefaultRouteB7481BBA": {
    "Type": "AWS::EC2::Route",
    "Properties": {
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
-     "Ref": "VpcIGWD7BA715C"
+     "Ref": "VPCIGWB7E252D3"
     },
     "RouteTableId": {
-     "Ref": "VpcPublicSubnet2RouteTable94F7E489"
+     "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
     }
    },
    "DependsOn": [
-    "VpcVPCGWBF912B6E"
+    "VPCVPCGW99B986DC"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "VpcPublicSubnet2EIP3C605A87": {
+  "VPCPublicSubnet2EIP4947BC00": {
    "Type": "AWS::EC2::EIP",
    "Properties": {
     "Domain": "vpc",
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet2"
+      "Value": "single-provider-role-integ/VPC/PublicSubnet2"
      }
     ]
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "VpcPublicSubnet2NATGateway9182C01D": {
+  "VPCPublicSubnet2NATGateway3C070193": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
     "AllocationId": {
      "Fn::GetAtt": [
-      "VpcPublicSubnet2EIP3C605A87",
+      "VPCPublicSubnet2EIP4947BC00",
       "AllocationId"
      ]
     },
     "SubnetId": {
-     "Ref": "VpcPublicSubnet2Subnet691E08A3"
+     "Ref": "VPCPublicSubnet2Subnet74179F39"
     },
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet2"
+      "Value": "single-provider-role-integ/VPC/PublicSubnet2"
      }
     ]
    },
    "DependsOn": [
-    "VpcPublicSubnet2DefaultRoute97F91067",
-    "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+    "VPCPublicSubnet2DefaultRouteB7481BBA",
+    "VPCPublicSubnet2RouteTableAssociation5A808732"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "VpcPrivateSubnet1Subnet536B997A": {
+  "VPCPrivateSubnet1Subnet8BCA10E0": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
     "AvailabilityZone": {
@@ -316,60 +281,60 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet1"
+      "Value": "single-provider-role-integ/VPC/PrivateSubnet1"
      }
     ],
     "VpcId": {
-     "Ref": "Vpc8378EB38"
+     "Ref": "VPCB9E5F0B4"
     }
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "VpcPrivateSubnet1RouteTableB2C5B500": {
+  "VPCPrivateSubnet1RouteTableBE8A6027": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet1"
+      "Value": "single-provider-role-integ/VPC/PrivateSubnet1"
      }
     ],
     "VpcId": {
-     "Ref": "Vpc8378EB38"
+     "Ref": "VPCB9E5F0B4"
     }
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "VpcPrivateSubnet1RouteTableAssociation70C59FA6": {
+  "VPCPrivateSubnet1RouteTableAssociation347902D1": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
    "Properties": {
     "RouteTableId": {
-     "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
+     "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
     },
     "SubnetId": {
-     "Ref": "VpcPrivateSubnet1Subnet536B997A"
+     "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
     }
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "VpcPrivateSubnet1DefaultRouteBE02A9ED": {
+  "VPCPrivateSubnet1DefaultRouteAE1D6490": {
    "Type": "AWS::EC2::Route",
    "Properties": {
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
-     "Ref": "VpcPublicSubnet1NATGateway4D7517AA"
+     "Ref": "VPCPublicSubnet1NATGatewayE0556630"
     },
     "RouteTableId": {
-     "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
+     "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
     }
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "VpcPrivateSubnet2Subnet3788AAA1": {
+  "VPCPrivateSubnet2SubnetCFCDAA7A": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
     "AvailabilityZone": {
@@ -393,80 +358,80 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet2"
+      "Value": "single-provider-role-integ/VPC/PrivateSubnet2"
      }
     ],
     "VpcId": {
-     "Ref": "Vpc8378EB38"
+     "Ref": "VPCB9E5F0B4"
     }
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "VpcPrivateSubnet2RouteTableA678073B": {
+  "VPCPrivateSubnet2RouteTable0A19E10E": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet2"
+      "Value": "single-provider-role-integ/VPC/PrivateSubnet2"
      }
     ],
     "VpcId": {
-     "Ref": "Vpc8378EB38"
+     "Ref": "VPCB9E5F0B4"
     }
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "VpcPrivateSubnet2RouteTableAssociationA89CAD56": {
+  "VPCPrivateSubnet2RouteTableAssociation0C73D413": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
    "Properties": {
     "RouteTableId": {
-     "Ref": "VpcPrivateSubnet2RouteTableA678073B"
+     "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
     },
     "SubnetId": {
-     "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+     "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
     }
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "VpcPrivateSubnet2DefaultRoute060D2087": {
+  "VPCPrivateSubnet2DefaultRouteF4F5CFD2": {
    "Type": "AWS::EC2::Route",
    "Properties": {
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
-     "Ref": "VpcPublicSubnet2NATGateway9182C01D"
+     "Ref": "VPCPublicSubnet2NATGateway3C070193"
     },
     "RouteTableId": {
-     "Ref": "VpcPrivateSubnet2RouteTableA678073B"
+     "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
     }
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "VpcIGWD7BA715C": {
+  "VPCIGWB7E252D3": {
    "Type": "AWS::EC2::InternetGateway",
    "Properties": {
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-redshift-cluster-database/Vpc"
+      "Value": "single-provider-role-integ/VPC"
      }
     ]
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "VpcVPCGWBF912B6E": {
+  "VPCVPCGW99B986DC": {
    "Type": "AWS::EC2::VPCGatewayAttachment",
    "Properties": {
     "InternetGatewayId": {
-     "Ref": "VpcIGWD7BA715C"
+     "Ref": "VPCIGWB7E252D3"
     },
     "VpcId": {
-     "Ref": "Vpc8378EB38"
+     "Ref": "VPCB9E5F0B4"
     }
    },
    "UpdateReplacePolicy": "Delete",
@@ -478,10 +443,10 @@
     "Description": "Subnets for Cluster Redshift cluster",
     "SubnetIds": [
      {
-      "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
+      "Ref": "VPCPublicSubnet1SubnetB4246D30"
      },
      {
-      "Ref": "VpcPublicSubnet2Subnet691E08A3"
+      "Ref": "VPCPublicSubnet2Subnet74179F39"
      }
     ]
    },
@@ -500,7 +465,7 @@
      }
     ],
     "VpcId": {
-     "Ref": "Vpc8378EB38"
+     "Ref": "VPCB9E5F0B4"
     }
    },
    "UpdateReplacePolicy": "Delete",
@@ -542,11 +507,8 @@
      "Ref": "ClusterSubnetsDCFA5CB7"
     },
     "ClusterType": "multi-node",
-    "DBName": "my_db",
+    "DBName": "single-provider-role-integ-test.db",
     "Encrypted": true,
-    "KmsKeyId": {
-     "Ref": "customkmskey377C6F9A"
-    },
     "MasterUserPassword": {
      "Fn::Join": [
       "",
@@ -573,7 +535,7 @@
     },
     "NodeType": "dc2.large",
     "NumberOfNodes": 2,
-    "PubliclyAccessible": true,
+    "PubliclyAccessible": false,
     "VpcSecurityGroupIds": [
      {
       "Fn::GetAtt": [
@@ -586,7 +548,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "TableProviderframeworkonEvent97F3951A": {
+  "Table0ProviderframeworkonEvent51303D7B": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
@@ -595,7 +557,7 @@
      },
      "S3Key": "fe4094cd52f099e46f858f05efdde02f5de79288c9c783676b3fa53a494d04b5.zip"
     },
-    "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-redshift-cluster-database/Table/Resource/Provider)",
+    "Description": "AWS CDK resource provider framework - onEvent (single-provider-role-integ/Table0/Resource/Provider)",
     "Environment": {
      "Variables": {
       "USER_ON_EVENT_FUNCTION_ARN": {
@@ -631,12 +593,12 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "Table7ABB320E": {
+  "Table008D2B29D": {
    "Type": "Custom::RedshiftDatabaseQuery",
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
-      "TableProviderframeworkonEvent97F3951A",
+      "Table0ProviderframeworkonEvent51303D7B",
       "Arn"
      ]
     },
@@ -647,29 +609,38 @@
     "adminUserArn": {
      "Ref": "ClusterSecretAttachment769E6258"
     },
-    "databaseName": "my_db",
+    "databaseName": "single-provider-role-integ-test.db",
     "tableName": {
-     "prefix": "awscdkredshiftclusterdatabaseTable24923533",
+     "prefix": "singleproviderroleintegTable0D850B242",
      "generateSuffix": "true"
     },
     "tableColumns": [
      {
-      "id": "col1",
       "name": "col1",
-      "dataType": "varchar(4)"
+      "dataType": "varchar(4)",
+      "distKey": true,
+      "comment": "A test column",
+      "encoding": "LZO",
+      "id": "col1"
      },
      {
-      "id": "col2",
       "name": "col2",
-      "dataType": "float"
+      "dataType": "float",
+      "sortKey": true,
+      "comment": "A test column",
+      "id": "col2"
      },
      {
       "name": "col3",
       "dataType": "float",
+      "comment": "A test column",
+      "encoding": "RAW",
       "id": "col3"
      }
     ],
-    "sortStyle": "AUTO",
+    "distStyle": "KEY",
+    "sortStyle": "INTERLEAVED",
+    "tableComment": "A test table #0",
     "useColumnIds": true
    },
    "UpdateReplacePolicy": "Delete",
@@ -769,7 +740,7 @@
       "value"
      ]
     },
-    "Timeout": 300
+    "Timeout": 60
    },
    "DependsOn": [
     "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fServiceRoleDefaultPolicyDDD1388D",
@@ -851,6 +822,202 @@
       "Ref": "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRoleB78E4FFA"
      }
     ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Table1ProviderframeworkonEvent98C8C64A": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "fe4094cd52f099e46f858f05efdde02f5de79288c9c783676b3fa53a494d04b5.zip"
+    },
+    "Description": "AWS CDK resource provider framework - onEvent (single-provider-role-integ/Table1/Resource/Provider)",
+    "Environment": {
+     "Variables": {
+      "USER_ON_EVENT_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "QueryRedshiftDatabase3de5bea727da479686625efb56431b5f3DF81997",
+        "Arn"
+       ]
+      }
+     }
+    },
+    "Handler": "framework.onEvent",
+    "Role": {
+     "Fn::GetAtt": [
+      "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRoleB78E4FFA",
+      "Arn"
+     ]
+    },
+    "Runtime": {
+     "Fn::FindInMap": [
+      "LatestNodeRuntimeMap",
+      {
+       "Ref": "AWS::Region"
+      },
+      "value"
+     ]
+    },
+    "Timeout": 900
+   },
+   "DependsOn": [
+    "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRoleDefaultPolicy8C45E853",
+    "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRoleB78E4FFA"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Table1737A9D79": {
+   "Type": "Custom::RedshiftDatabaseQuery",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "Table1ProviderframeworkonEvent98C8C64A",
+      "Arn"
+     ]
+    },
+    "handler": "table",
+    "clusterName": {
+     "Ref": "ClusterEB0386A7"
+    },
+    "adminUserArn": {
+     "Ref": "ClusterSecretAttachment769E6258"
+    },
+    "databaseName": "single-provider-role-integ-test.db",
+    "tableName": {
+     "prefix": "singleproviderroleintegTable1E9274FA4",
+     "generateSuffix": "true"
+    },
+    "tableColumns": [
+     {
+      "name": "col1",
+      "dataType": "varchar(4)",
+      "distKey": true,
+      "comment": "A test column",
+      "encoding": "LZO",
+      "id": "col1"
+     },
+     {
+      "name": "col2",
+      "dataType": "float",
+      "sortKey": true,
+      "comment": "A test column",
+      "id": "col2"
+     },
+     {
+      "name": "col3",
+      "dataType": "float",
+      "comment": "A test column",
+      "encoding": "RAW",
+      "id": "col3"
+     }
+    ],
+    "distStyle": "KEY",
+    "sortStyle": "INTERLEAVED",
+    "tableComment": "A test table #1",
+    "useColumnIds": true
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Table2ProviderframeworkonEvent3247C6D6": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "fe4094cd52f099e46f858f05efdde02f5de79288c9c783676b3fa53a494d04b5.zip"
+    },
+    "Description": "AWS CDK resource provider framework - onEvent (single-provider-role-integ/Table2/Resource/Provider)",
+    "Environment": {
+     "Variables": {
+      "USER_ON_EVENT_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "QueryRedshiftDatabase3de5bea727da479686625efb56431b5f3DF81997",
+        "Arn"
+       ]
+      }
+     }
+    },
+    "Handler": "framework.onEvent",
+    "Role": {
+     "Fn::GetAtt": [
+      "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRoleB78E4FFA",
+      "Arn"
+     ]
+    },
+    "Runtime": {
+     "Fn::FindInMap": [
+      "LatestNodeRuntimeMap",
+      {
+       "Ref": "AWS::Region"
+      },
+      "value"
+     ]
+    },
+    "Timeout": 900
+   },
+   "DependsOn": [
+    "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRoleDefaultPolicy8C45E853",
+    "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRoleB78E4FFA"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Table21EC9C6AD": {
+   "Type": "Custom::RedshiftDatabaseQuery",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "Table2ProviderframeworkonEvent3247C6D6",
+      "Arn"
+     ]
+    },
+    "handler": "table",
+    "clusterName": {
+     "Ref": "ClusterEB0386A7"
+    },
+    "adminUserArn": {
+     "Ref": "ClusterSecretAttachment769E6258"
+    },
+    "databaseName": "single-provider-role-integ-test.db",
+    "tableName": {
+     "prefix": "singleproviderroleintegTable2921A057C",
+     "generateSuffix": "true"
+    },
+    "tableColumns": [
+     {
+      "name": "col1",
+      "dataType": "varchar(4)",
+      "distKey": true,
+      "comment": "A test column",
+      "encoding": "LZO",
+      "id": "col1"
+     },
+     {
+      "name": "col2",
+      "dataType": "float",
+      "sortKey": true,
+      "comment": "A test column",
+      "id": "col2"
+     },
+     {
+      "name": "col3",
+      "dataType": "float",
+      "comment": "A test column",
+      "encoding": "RAW",
+      "id": "col3"
+     }
+    ],
+    "distStyle": "KEY",
+    "sortStyle": "INTERLEAVED",
+    "tableComment": "A test table #2",
+    "useColumnIds": true
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

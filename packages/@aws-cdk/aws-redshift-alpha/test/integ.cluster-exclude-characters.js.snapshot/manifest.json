@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7b8d2dedda432de023f03f880a44a293c30f67b52abd2778f835a7806238c2f0.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ea2cb3799506df898d994520683d9eafe30ac4edd066578e43df6c7ba0a34817.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -214,18 +214,6 @@
             "data": "UserSecretAttachment02022609"
           }
         ],
-        "/redshift-exclude-characters-integ/User/Resource/Provider/framework-onEvent/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "UserProviderframeworkonEventServiceRole8FBA2FBD"
-          }
-        ],
-        "/redshift-exclude-characters-integ/User/Resource/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "UserProviderframeworkonEventServiceRoleDefaultPolicy9A9E044F"
-          }
-        ],
         "/redshift-exclude-characters-integ/User/Resource/Provider/framework-onEvent/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -260,6 +248,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "QueryRedshiftDatabase3de5bea727da479686625efb56431b5f3DF81997"
+          }
+        ],
+        "/redshift-exclude-characters-integ/Query Redshift Database3de5bea727da479686625efb56431b5fProviderRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRoleB78E4FFA"
+          }
+        ],
+        "/redshift-exclude-characters-integ/Query Redshift Database3de5bea727da479686625efb56431b5fProviderRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRoleDefaultPolicy8C45E853"
           }
         ],
         "/redshift-exclude-characters-integ/BootstrapVersion": [

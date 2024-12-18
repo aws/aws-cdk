@@ -112,6 +112,8 @@ abstract class UserBase extends Construct implements IUser {
         ...this.databaseProps,
         user: this,
       });
+
+      this.privileges.node.addDependency(table);
     }
 
     this.privileges.addPrivileges(table, ...actions);

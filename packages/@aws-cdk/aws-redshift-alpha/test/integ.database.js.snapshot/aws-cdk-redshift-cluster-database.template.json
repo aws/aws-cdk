@@ -631,83 +631,6 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "UserProviderframeworkonEventServiceRole8FBA2FBD": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-       ]
-      ]
-     }
-    ]
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "UserProviderframeworkonEventServiceRoleDefaultPolicy9A9E044F": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "lambda:InvokeFunction",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "QueryRedshiftDatabase3de5bea727da479686625efb56431b5f3DF81997",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "QueryRedshiftDatabase3de5bea727da479686625efb56431b5f3DF81997",
-             "Arn"
-            ]
-           },
-           ":*"
-          ]
-         ]
-        }
-       ]
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "UserProviderframeworkonEventServiceRoleDefaultPolicy9A9E044F",
-    "Roles": [
-     {
-      "Ref": "UserProviderframeworkonEventServiceRole8FBA2FBD"
-     }
-    ]
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
   "UserProviderframeworkonEvent4EC32885": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
@@ -731,7 +654,7 @@
     "Handler": "framework.onEvent",
     "Role": {
      "Fn::GetAtt": [
-      "UserProviderframeworkonEventServiceRole8FBA2FBD",
+      "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRoleB78E4FFA",
       "Arn"
      ]
     },
@@ -747,8 +670,8 @@
     "Timeout": 900
    },
    "DependsOn": [
-    "UserProviderframeworkonEventServiceRoleDefaultPolicy9A9E044F",
-    "UserProviderframeworkonEventServiceRole8FBA2FBD"
+    "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRoleDefaultPolicy8C45E853",
+    "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRoleB78E4FFA"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -778,83 +701,6 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "UserTablePrivilegesProviderframeworkonEventServiceRole56BAEC9A": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-       ]
-      ]
-     }
-    ]
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "UserTablePrivilegesProviderframeworkonEventServiceRoleDefaultPolicy3B6EF50C": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "lambda:InvokeFunction",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "QueryRedshiftDatabase3de5bea727da479686625efb56431b5f3DF81997",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "QueryRedshiftDatabase3de5bea727da479686625efb56431b5f3DF81997",
-             "Arn"
-            ]
-           },
-           ":*"
-          ]
-         ]
-        }
-       ]
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "UserTablePrivilegesProviderframeworkonEventServiceRoleDefaultPolicy3B6EF50C",
-    "Roles": [
-     {
-      "Ref": "UserTablePrivilegesProviderframeworkonEventServiceRole56BAEC9A"
-     }
-    ]
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
   "UserTablePrivilegesProviderframeworkonEvent3F5C1851": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
@@ -878,7 +724,7 @@
     "Handler": "framework.onEvent",
     "Role": {
      "Fn::GetAtt": [
-      "UserTablePrivilegesProviderframeworkonEventServiceRole56BAEC9A",
+      "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRoleB78E4FFA",
       "Arn"
      ]
     },
@@ -894,8 +740,10 @@
     "Timeout": 900
    },
    "DependsOn": [
-    "UserTablePrivilegesProviderframeworkonEventServiceRoleDefaultPolicy3B6EF50C",
-    "UserTablePrivilegesProviderframeworkonEventServiceRole56BAEC9A"
+    "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRoleDefaultPolicy8C45E853",
+    "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRoleB78E4FFA",
+    "TableProviderframeworkonEvent97F3951A",
+    "Table7ABB320E"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -946,6 +794,10 @@
      }
     ]
    },
+   "DependsOn": [
+    "TableProviderframeworkonEvent97F3951A",
+    "Table7ABB320E"
+   ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
@@ -1057,7 +909,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "TableProviderframeworkonEventServiceRoleC3128F67": {
+  "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRoleB78E4FFA": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -1090,7 +942,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "TableProviderframeworkonEventServiceRoleDefaultPolicyAD08715D": {
+  "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRoleDefaultPolicy8C45E853": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -1124,10 +976,10 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "TableProviderframeworkonEventServiceRoleDefaultPolicyAD08715D",
+    "PolicyName": "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRoleDefaultPolicy8C45E853",
     "Roles": [
      {
-      "Ref": "TableProviderframeworkonEventServiceRoleC3128F67"
+      "Ref": "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRoleB78E4FFA"
      }
     ]
    },
@@ -1157,7 +1009,7 @@
     "Handler": "framework.onEvent",
     "Role": {
      "Fn::GetAtt": [
-      "TableProviderframeworkonEventServiceRoleC3128F67",
+      "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRoleB78E4FFA",
       "Arn"
      ]
     },
@@ -1173,8 +1025,8 @@
     "Timeout": 900
    },
    "DependsOn": [
-    "TableProviderframeworkonEventServiceRoleDefaultPolicyAD08715D",
-    "TableProviderframeworkonEventServiceRoleC3128F67"
+    "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRoleDefaultPolicy8C45E853",
+    "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRoleB78E4FFA"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1232,83 +1084,6 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "TableWithAutoGeneratedNameProviderframeworkonEventServiceRole9F1876DB": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-       ]
-      ]
-     }
-    ]
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "TableWithAutoGeneratedNameProviderframeworkonEventServiceRoleDefaultPolicy6C272C6F": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "lambda:InvokeFunction",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "QueryRedshiftDatabase3de5bea727da479686625efb56431b5f3DF81997",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "QueryRedshiftDatabase3de5bea727da479686625efb56431b5f3DF81997",
-             "Arn"
-            ]
-           },
-           ":*"
-          ]
-         ]
-        }
-       ]
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "TableWithAutoGeneratedNameProviderframeworkonEventServiceRoleDefaultPolicy6C272C6F",
-    "Roles": [
-     {
-      "Ref": "TableWithAutoGeneratedNameProviderframeworkonEventServiceRole9F1876DB"
-     }
-    ]
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
   "TableWithAutoGeneratedNameProviderframeworkonEventF802C14E": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
@@ -1332,7 +1107,7 @@
     "Handler": "framework.onEvent",
     "Role": {
      "Fn::GetAtt": [
-      "TableWithAutoGeneratedNameProviderframeworkonEventServiceRole9F1876DB",
+      "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRoleB78E4FFA",
       "Arn"
      ]
     },
@@ -1348,8 +1123,8 @@
     "Timeout": 900
    },
    "DependsOn": [
-    "TableWithAutoGeneratedNameProviderframeworkonEventServiceRoleDefaultPolicy6C272C6F",
-    "TableWithAutoGeneratedNameProviderframeworkonEventServiceRole9F1876DB"
+    "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRoleDefaultPolicy8C45E853",
+    "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRoleB78E4FFA"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

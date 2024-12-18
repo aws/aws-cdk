@@ -3,7 +3,8 @@
   "testCases": {
     "IamRoleInteg/DefaultTest": {
       "stacks": [
-        "redshift-iamrole-integ"
+        "redshift-iamrole-integ",
+        "single-provider-role-integ"
       ],
       "assertionStack": "IamRoleInteg/DefaultTest/DeployAssert",
       "assertionStackName": "IamRoleIntegDefaultTestDeployAssertBEF20992"
