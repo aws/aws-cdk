@@ -27,6 +27,14 @@ export enum CustomizationType {
    * Provide unlabeled data to pre-train a foundation model by familiarizing it with certain types of inputs.
    */
   CONTINUED_PRE_TRAINING = 'CONTINUED_PRE_TRAINING',
+
+  /**
+   * Distillation
+   *
+   * With Model Distillation, you can generate synthetic responses from a large foundation model (teacher)
+   * and use that data to train a smaller model (student) for your specific use-case.
+   */
+  DISTILLATION = 'DISTILLATION',
 }
 
 /**
@@ -242,6 +250,13 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
         actions: ['kms:Decrypt', 'kms:GenerateDataKey', 'kms:DescribeKey', 'kms:CreateGrant'],
         resources: ['*'],
         principals: [new iam.ArnPrincipal(this._role.roleArn)],
+        conditions: {
+          StringEquals: {
+            'kms:ViaService': [
+              `bedrock.${Stack.of(this).region}.amazonaws.com`,
+            ],
+          },
+        },
       }));
     }
   }
