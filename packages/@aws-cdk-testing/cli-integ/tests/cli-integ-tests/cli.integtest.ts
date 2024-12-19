@@ -23,7 +23,6 @@ import { InvokeCommand } from '@aws-sdk/client-lambda';
 import { PutObjectLockConfigurationCommand } from '@aws-sdk/client-s3';
 import { CreateTopicCommand, DeleteTopicCommand } from '@aws-sdk/client-sns';
 import { AssumeRoleCommand, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
-import { cdkCacheDir } from 'aws-cdk/lib/util/directories';
 import * as mockttp from 'mockttp';
 import { CompletedRequest } from 'mockttp';
 import {
@@ -2824,9 +2823,6 @@ integTest('requests go through a proxy when configured',
     await fs.writeFile(keyPath, key);
     await fs.writeFile(certPath, cert);
 
-    // To force the notices to be fetched from the remote source
-    await fs.rm(path.join(cdkCacheDir(), 'notices.json'));
-
     const proxyServer = mockttp.getLocal({
       https: { keyPath, certPath },
     });
@@ -2849,6 +2845,9 @@ integTest('requests go through a proxy when configured',
           '--proxy', proxyServer.url,
           '--ca-bundle-path', certPath,
         ],
+        modEnv: {
+          CDK_HOME: fixture.integTestDir,
+        },
       });
     } finally {
       await fs.rm(certDir, { recursive: true, force: true });
@@ -2857,7 +2856,8 @@ integTest('requests go through a proxy when configured',
 
     const requests = await endpoint.getSeenRequests();
 
-    expectNoticesFetchedThroughProxy(requests);
+    expect(requests.map(req => req.url))
+      .toContain('https://cli.cdk.dev-tools.aws.dev/notices.json');
 
     const actionsUsed = actions(requests);
     expect(actionsUsed).toContain('AssumeRole');
@@ -2871,9 +2871,4 @@ function actions(requests: CompletedRequest[]): string[] {
     .map(body => querystring.decode(body))
     .map(x => x.Action as string)
     .filter(action => action != null))];
-}
-
-function expectNoticesFetchedThroughProxy(requests: CompletedRequest[]) {
-  expect(requests.map(req => req.url))
-    .toContain('https://cli.cdk.dev-tools.aws.dev/notices.json');
 }
