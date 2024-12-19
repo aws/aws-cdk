@@ -9,17 +9,19 @@ import { RemovalPolicy } from './removal-policy';
 export interface RemovalPolicyProps {
   /**
    * Apply the removal policy only to specific resource types.
-   * Specify the CloudFormation resource type (e.g., 'AWS::S3::Bucket').
+   * Can be a CloudFormation resource type string (e.g., 'AWS::S3::Bucket')
+   * or a class that extends CfnResource (e.g., TestBucketResource).
    * @default - apply to all resources
    */
-  readonly applyToResourceTypes?: string[];
+  readonly applyToResourceTypes?: (string | typeof CfnResource)[];
 
   /**
    * Exclude specific resource types from the removal policy.
-   * Specify the CloudFormation resource type (e.g., 'AWS::S3::Bucket').
+   * Can be a CloudFormation resource type string (e.g., 'AWS::S3::Bucket')
+   * or a class that extends CfnResource.
    * @default - no exclusions
    */
-  readonly excludeResourceTypes?: string[];
+  readonly excludeResourceTypes?: (string | typeof CfnResource)[];
 }
 
 /**
@@ -31,8 +33,31 @@ class RemovalPolicyAspect implements IAspect {
     private readonly props: RemovalPolicyProps = {},
   ) {}
 
-  private matchesResourceType(resourceType: string, patterns?: string[]): boolean {
-    return patterns ? patterns.includes(resourceType) : false;
+  /**
+   * Converts pattern (string or class) to resource type string
+   */
+  private convertPatternToResourceType(pattern: string | typeof CfnResource): string {
+    if (typeof pattern === 'string') {
+      return pattern;
+    } else {
+      const cfnType = (pattern as any).CFN_RESOURCE_TYPE_NAME;
+      if (typeof cfnType !== 'string') {
+        throw new Error(`Class ${pattern.name} must have a static CFN_RESOURCE_TYPE_NAME property.`);
+      }
+      return cfnType;
+    }
+  }
+
+  /**
+   * Checks if the given resource type matches any of the patterns
+   */
+  private resourceTypeMatchesPatterns(resourceType: string, patterns?: (string | typeof CfnResource)[]): boolean {
+    if (!patterns || patterns.length === 0) {
+      return false;
+    }
+
+    const resourceTypeStrings = patterns.map(pattern => this.convertPatternToResourceType(pattern));
+    return resourceTypeStrings.includes(resourceType);
   }
 
   public visit(node: IConstruct): void {
@@ -44,20 +69,27 @@ class RemovalPolicyAspect implements IAspect {
     const resourceType = cfnResource.cfnResourceType;
 
     // Skip if resource type is excluded
-    if (this.matchesResourceType(resourceType, this.props.excludeResourceTypes)) {
+    if (this.resourceTypeMatchesPatterns(resourceType, this.props.excludeResourceTypes)) {
       return;
     }
 
     // Skip if specific resource types are specified and this one isn't included
     if (
-      this.props.applyToResourceTypes?.length &&
-      !this.matchesResourceType(resourceType, this.props.applyToResourceTypes)
+      this.props.applyToResourceTypes &&
+      this.props.applyToResourceTypes.length > 0 &&
+      !this.resourceTypeMatchesPatterns(resourceType, this.props.applyToResourceTypes)
     ) {
       return;
     }
 
     // Apply the removal policy
-    cfnResource.applyRemovalPolicy(this.policy);
+    try {
+      cfnResource.applyRemovalPolicy(this.policy);
+    } catch (error) {
+      // 例えば、Snapshot がサポートされていないリソースに対して適用しようとした場合
+      // エラーメッセージを詳細にする
+      throw new Error(`Failed to apply removal policy to resource type ${resourceType}: ${error.message}`);
+    }
   }
 }
 
