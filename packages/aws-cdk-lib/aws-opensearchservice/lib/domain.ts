@@ -2120,7 +2120,7 @@ function extractNameFromEndpoint(domainEndpoint: string) {
 }
 
 /**
- * Converts an engine version into a into a decimal number with major and minor version i.e x.y.
+ * Converts an engine version into a decimal number with major and minor version i.e x.y.
  *
  * @param version The engine version object
  */
