@@ -151,7 +151,7 @@ function diffRequiresApproval(diff: TemplateDiff, requireApproval: RequireApprov
     case RequireApproval.Never: return false;
     case RequireApproval.AnyChange: return diff.permissionsAnyChanges;
     case RequireApproval.Broadening: return diff.permissionsBroadened;
-    default: throw new AuthenticationError(`Unrecognized approval level: ${requireApproval}`);
+    default: throw new ToolkitError(`Unrecognized approval level: ${requireApproval}`);
   }
 }
 
