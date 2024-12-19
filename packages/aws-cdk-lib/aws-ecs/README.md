@@ -85,12 +85,12 @@ const cluster = new ecs.Cluster(this, 'Cluster', {
 });
 ```
 
-To encrypt the fargate ephemeral storage configure a KMS key. 
+To encrypt the fargate ephemeral storage configure a KMS key.
 ```ts
 declare const key: kms.Key;
 
-const cluster = new ecs.Cluster(this, 'Cluster', { 
-  managedStorageConfiguration: { 
+const cluster = new ecs.Cluster(this, 'Cluster', {
+  managedStorageConfiguration: {
     fargateEphemeralStorageKmsKey: key,
   },
 });
@@ -643,6 +643,22 @@ taskDefinition.addContainer('container', {
   enableRestartPolicy: true,
   restartIgnoredExitCodes: [0, 127],
   restartAttemptPeriod: Duration.seconds(360),
+});
+```
+
+### Enable Fault Injection
+You can utilize fault injection with Amazon ECS on both Amazon EC2 and Fargate to test how their application responds to certain impairment scenarios. These tests provide information you can use to optimize your application's performance and resiliency.
+
+When fault injection is enabled, the Amazon ECS container agent allows tasks access to new fault injection endpoints.
+Fault injection only works with tasks using the awsvpc or host network modes.
+
+For more infomation, see [Use fault injection with your Amazon ECS and Fargate workloads](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fault-injection.html).
+
+To enable Fault Injection for the task definiton, set `enableFaultInjection` to true.
+
+```ts
+new ecs.Ec2TaskDefinition(this, 'Ec2TaskDefinition', {
+  enableFaultInjection: true,
 });
 ```
 
