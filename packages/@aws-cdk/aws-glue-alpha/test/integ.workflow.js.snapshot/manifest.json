@@ -1,0 +1,239 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "aws-cdk-glue-workflow.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-glue-workflow.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-glue-workflow": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-glue-workflow.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/085a2e2b10fd8c98d1a4d022657be795839a4fe0286e2c41082219f45aecbbec.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-glue-workflow.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-glue-workflow.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-glue-workflow/MyWorkflowTask/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyWorkflowTask5BAF3B32"
+          }
+        ],
+        "/aws-cdk-glue-workflow/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Role1ABCC5F0"
+          }
+        ],
+        "/aws-cdk-glue-workflow/MyJob/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyJobServiceRoleE6853162"
+          }
+        ],
+        "/aws-cdk-glue-workflow/MyJob/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyJobServiceRoleDefaultPolicy3BDBBD28"
+          }
+        ],
+        "/aws-cdk-glue-workflow/MyJob/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyJob8719E923"
+          }
+        ],
+        "/aws-cdk-glue-workflow/MyCrawler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyCrawler"
+          }
+        ],
+        "/aws-cdk-glue-workflow/MyPredicateJob/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPredicateJobServiceRoleE1F838CC"
+          }
+        ],
+        "/aws-cdk-glue-workflow/MyPredicateJob/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPredicateJobServiceRoleDefaultPolicy87CB55E2"
+          }
+        ],
+        "/aws-cdk-glue-workflow/MyPredicateJob/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPredicateJobF30A7B45"
+          }
+        ],
+        "/aws-cdk-glue-workflow/MyPredicateCrawler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyPredicateCrawler"
+          }
+        ],
+        "/aws-cdk-glue-workflow/MySecurityConfiguration/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MySecurityConfiguration4AB9DD39"
+          }
+        ],
+        "/aws-cdk-glue-workflow/MyWorkflow/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyWorkflowBA72662B"
+          }
+        ],
+        "/aws-cdk-glue-workflow/MyWorkflow/MyOnDemandTrigger": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyWorkflowMyOnDemandTrigger2A682A63"
+          }
+        ],
+        "/aws-cdk-glue-workflow/MyWorkflow/MyConditionalTrigger": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyWorkflowMyConditionalTrigger389C8949"
+          }
+        ],
+        "/aws-cdk-glue-workflow/MyDailyWorkflow/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyDailyWorkflow3684C8E1"
+          }
+        ],
+        "/aws-cdk-glue-workflow/MyDailyWorkflow/MyDailySchedule": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyDailyWorkflowMyDailySchedule2DF51EB8"
+          }
+        ],
+        "/aws-cdk-glue-workflow/MyWeeklyWorkflow/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyWeeklyWorkflowFC4A11C3"
+          }
+        ],
+        "/aws-cdk-glue-workflow/MyWeeklyWorkflow/MyWeeklySchedule": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyWeeklyWorkflowMyWeeklySchedule66671664"
+          }
+        ],
+        "/aws-cdk-glue-workflow/MyMonthlyWorkflow/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyMonthlyWorkflow5B4B0907"
+          }
+        ],
+        "/aws-cdk-glue-workflow/MyMonthlyWorkflow/MyMonthlySchedule": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyMonthlyWorkflowMyMonthlySchedule14F546AC"
+          }
+        ],
+        "/aws-cdk-glue-workflow/MyEventWorkflow/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyEventWorkflow0AA02AF3"
+          }
+        ],
+        "/aws-cdk-glue-workflow/MyEventWorkflow/MyNotifyEvent": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyEventWorkflowMyNotifyEvent4590A017"
+          }
+        ],
+        "/aws-cdk-glue-workflow/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-glue-workflow/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-glue-workflow"
+    },
+    "awscdkgluetableintegDefaultTestDeployAssert8BFB5B70.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "awscdkgluetableintegDefaultTestDeployAssert8BFB5B70.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "awscdkgluetableintegDefaultTestDeployAssert8BFB5B70": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "awscdkgluetableintegDefaultTestDeployAssert8BFB5B70.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "awscdkgluetableintegDefaultTestDeployAssert8BFB5B70.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "awscdkgluetableintegDefaultTestDeployAssert8BFB5B70.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-glue-table-integ/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-glue-table-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-glue-table-integ/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
