@@ -782,9 +782,7 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
 
   // ...
 
-  availabilityZoneDistribution: {
-    capacityDistributionStrategy: autoscaling.CapacityDistributionStrategy.BALANCED_BEST_EFFORT,
-  }
+  azCapacityDistributionStrategy: autoscaling.CapacityDistributionStrategy.BALANCED_ONLY,
 });
 ```
 

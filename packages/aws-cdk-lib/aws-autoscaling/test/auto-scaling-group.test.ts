@@ -2807,9 +2807,7 @@ describe('InstanceMaintenancePolicy', () => {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
-      availabilityZoneDistribution: {
-        capacityDistributionStrategy: autoscaling.CapacityDistributionStrategy.BALANCED_ONLY,
-      },
+      azCapacityDistributionStrategy: autoscaling.CapacityDistributionStrategy.BALANCED_ONLY,
     });
 
     // THEN

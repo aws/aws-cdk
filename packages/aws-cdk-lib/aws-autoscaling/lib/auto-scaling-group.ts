@@ -413,10 +413,10 @@ export interface CommonAutoScalingGroupProps {
   readonly ssmSessionPermissions?: boolean;
 
   /**
-   * The instance capacity distribution across Availability Zones.
-   * @default { capacityDistributionStrategy: CapacityDistributionStrategy.BALANCED_BEST_EFFORT }
+   * The strategy for distributing instances across Availability Zones.
+   * @default BALANCED_BEST_EFFORT
    */
-  readonly availabilityZoneDistribution?: AvailabilityZoneDistribution;
+  readonly azCapacityDistributionStrategy?: CapacityDistributionStrategy;
 }
 
 /**
@@ -1118,17 +1118,6 @@ export enum CapacityDistributionStrategy {
   BALANCED_BEST_EFFORT= 'balanced-best-effort',
 }
 
-/**
- * Configuration for distributing instances across Availability Zones.
- */
-export interface AvailabilityZoneDistribution {
-  /**
-   * The strategy for distributing instances across Availability Zones.
-   * @default BALANCED_BEST_EFFORT
-   */
-  readonly capacityDistributionStrategy: CapacityDistributionStrategy;
-}
-
 abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGroup {
 
   public abstract autoScalingGroupName: string;
@@ -1561,7 +1550,9 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
     const asgProps: CfnAutoScalingGroupProps = {
       autoScalingGroupName: this.physicalName,
-      availabilityZoneDistribution: props.availabilityZoneDistribution,
+      availabilityZoneDistribution: props.azCapacityDistributionStrategy
+        ? { capacityDistributionStrategy: props.azCapacityDistributionStrategy }
+        : undefined,
       cooldown: props.cooldown?.toSeconds().toString(),
       minSize: Tokenization.stringifyNumber(minCapacity),
       maxSize: Tokenization.stringifyNumber(maxCapacity),

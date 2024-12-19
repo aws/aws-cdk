@@ -16,9 +16,7 @@ new autoscaling.AutoScalingGroup(stack, 'CapacityDistributionStrategy', {
   vpc,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
   machineImage: new ec2.AmazonLinuxImage({ generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 }),
-  availabilityZoneDistribution: {
-    capacityDistributionStrategy: autoscaling.CapacityDistributionStrategy.BALANCED_ONLY,
-  },
+  azCapacityDistributionStrategy: autoscaling.CapacityDistributionStrategy.BALANCED_ONLY,
 });
 
 new integ.IntegTest(app, 'CapacityDistributionStrategyTest', {
