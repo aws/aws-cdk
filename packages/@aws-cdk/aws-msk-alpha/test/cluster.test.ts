@@ -44,6 +44,9 @@ describe('MSK Cluster', () => {
     [msk.KafkaVersion.V3_3_2, '3.3.2'],
     [msk.KafkaVersion.V3_4_0, '3.4.0'],
     [msk.KafkaVersion.V3_5_1, '3.5.1'],
+    [msk.KafkaVersion.V3_6_0, '3.6.0'],
+    [msk.KafkaVersion.V3_7_X, '3.7.x'],
+    [msk.KafkaVersion.V3_7_X_KRAFT, '3.7.x.kraft'],
   ],
   )('created with expected Kafka version %j', (parameter, result) => {
     new msk.Cluster(stack, 'Cluster', {
@@ -794,6 +797,8 @@ describe('MSK Cluster', () => {
         expect(msk.KafkaVersion.V2_8_2_TIERED.isTieredStorageCompatible()).toBeTruthy();
         expect(msk.KafkaVersion.V3_5_1.isTieredStorageCompatible()).toBeFalsy();
         expect(msk.KafkaVersion.V3_6_0.isTieredStorageCompatible()).toBeTruthy();
+        expect(msk.KafkaVersion.V3_7_X.isTieredStorageCompatible()).toBeTruthy();
+        expect(msk.KafkaVersion.V3_7_X_KRAFT.isTieredStorageCompatible()).toBeTruthy();
       });
 
       test('create a cluster with tiered storage mode', () => {
