@@ -1,0 +1,404 @@
+{
+ "Resources": {
+  "AwsApiCallSageMakerRuntimeinvokeEndpointa040a09dd9efac27565300e27c736440": {
+   "Type": "Custom::DeployAssert@SdkCallSageMakerRuntimeinvokeEndpoint",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "SageMakerRuntime",
+    "api": "invokeEndpoint",
+    "expected": "{\"$StringLike\":\"Artifact info:.*This file exists for test purposes only and is not a real SageMaker Model artifact\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "EndpointName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-sagemaker-model-data:ExportsOutputFnGetAttEndpoint8024A810EndpointNameC77E4EFF"
+        },
+        "\""
+       ]
+      ]
+     },
+     "TargetVariant": "\"uncompressed-directory\"",
+     "Body": "\"any string\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1721919735945"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "sagemaker:InvokeEndpoint"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": "sagemaker:InvokeEndpoint",
+         "Resource": "*"
+        },
+        {
+         "Action": [
+          "sagemaker:InvokeEndpoint"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": "sagemaker:InvokeEndpoint",
+         "Resource": "*"
+        },
+        {
+         "Action": [
+          "sagemaker:InvokeEndpoint"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": "sagemaker:InvokeEndpoint",
+         "Resource": "*"
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": {
+     "Fn::FindInMap": [
+      "LatestNodeRuntimeMap",
+      {
+       "Ref": "AWS::Region"
+      },
+      "value"
+     ]
+    },
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "3cef2cdbb46b3821e641ffb8b9af9731af5f7e4a9e857ab633dbcd9023de724d.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "AwsApiCallSageMakerRuntimeinvokeEndpoint26c32df0473449e7771ea865ca6cb42f": {
+   "Type": "Custom::DeployAssert@SdkCallSageMakerRuntimeinvokeEndpoint",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "SageMakerRuntime",
+    "api": "invokeEndpoint",
+    "expected": "{\"$StringLike\":\"Artifact info:.*This file exists for test purposes only and is not a real SageMaker Model artifact\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "EndpointName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-sagemaker-model-data:ExportsOutputFnGetAttEndpoint8024A810EndpointNameC77E4EFF"
+        },
+        "\""
+       ]
+      ]
+     },
+     "TargetVariant": "\"uncompressed-file\"",
+     "Body": "\"any string\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1721919735946"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallSageMakerRuntimeinvokeEndpoint20e9d68a54e3b92538116bbcfd465311": {
+   "Type": "Custom::DeployAssert@SdkCallSageMakerRuntimeinvokeEndpoint",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "SageMakerRuntime",
+    "api": "invokeEndpoint",
+    "expected": "{\"$StringLike\":\"Artifact info:.*This file exists for test purposes only and is not a real SageMaker Model artifact\"}",
+    "actualPath": "Body",
+    "parameters": {
+     "EndpointName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-sagemaker-model-data:ExportsOutputFnGetAttEndpoint8024A810EndpointNameC77E4EFF"
+        },
+        "\""
+       ]
+      ]
+     },
+     "TargetVariant": "\"targz\"",
+     "Body": "\"any string\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1721919735946"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallSageMakerRuntimeinvokeEndpointa040a09dd9efac27565300e27c736440": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallSageMakerRuntimeinvokeEndpointa040a09dd9efac27565300e27c736440",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallSageMakerRuntimeinvokeEndpoint26c32df0473449e7771ea865ca6cb42f": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallSageMakerRuntimeinvokeEndpoint26c32df0473449e7771ea865ca6cb42f",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallSageMakerRuntimeinvokeEndpoint20e9d68a54e3b92538116bbcfd465311": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallSageMakerRuntimeinvokeEndpoint20e9d68a54e3b92538116bbcfd465311",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Mappings": {
+  "LatestNodeRuntimeMap": {
+   "af-south-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-east-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-3": {
+    "value": "nodejs20.x"
+   },
+   "ap-south-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-south-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-3": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-4": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-5": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-7": {
+    "value": "nodejs20.x"
+   },
+   "ca-central-1": {
+    "value": "nodejs20.x"
+   },
+   "ca-west-1": {
+    "value": "nodejs20.x"
+   },
+   "cn-north-1": {
+    "value": "nodejs18.x"
+   },
+   "cn-northwest-1": {
+    "value": "nodejs18.x"
+   },
+   "eu-central-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-central-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-isoe-west-1": {
+    "value": "nodejs18.x"
+   },
+   "eu-north-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-south-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-south-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-3": {
+    "value": "nodejs20.x"
+   },
+   "il-central-1": {
+    "value": "nodejs20.x"
+   },
+   "me-central-1": {
+    "value": "nodejs20.x"
+   },
+   "me-south-1": {
+    "value": "nodejs20.x"
+   },
+   "mx-central-1": {
+    "value": "nodejs20.x"
+   },
+   "sa-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-east-2": {
+    "value": "nodejs20.x"
+   },
+   "us-gov-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-gov-west-1": {
+    "value": "nodejs18.x"
+   },
+   "us-iso-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-iso-west-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-west-1": {
+    "value": "nodejs20.x"
+   },
+   "us-west-2": {
+    "value": "nodejs20.x"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
