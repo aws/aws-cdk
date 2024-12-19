@@ -109,16 +109,7 @@ export class AwsCliCompatible {
   }
 
   public static requestHandlerBuilder(options: SdkHttpOptions = {}): NodeHttpHandlerOptions {
-    // Force it to use the proxy provided through the command line.
-    // Otherwise, let the ProxyAgent auto-detect the proxy using environment variables.
-    const getProxyForUrl = options.proxyAddress != null
-      ? () => Promise.resolve(options.proxyAddress!)
-      : undefined;
-
-    const agent = new ProxyAgent({
-      ca: tryGetCACert(options.caBundlePath),
-      getProxyForUrl: getProxyForUrl,
-    });
+    const agent = this.proxyAgent(options);
 
     return {
       connectionTimeout: DEFAULT_CONNECTION_TIMEOUT,
@@ -126,6 +117,19 @@ export class AwsCliCompatible {
       httpsAgent: agent,
       httpAgent: agent,
     };
+  }
+
+  public static proxyAgent(options: SdkHttpOptions) {
+    // Force it to use the proxy provided through the command line.
+    // Otherwise, let the ProxyAgent auto-detect the proxy using environment variables.
+    const getProxyForUrl = options.proxyAddress != null
+      ? () => Promise.resolve(options.proxyAddress!)
+      : undefined;
+
+    return new ProxyAgent({
+      ca: tryGetCACert(options.caBundlePath),
+      getProxyForUrl,
+    });
   }
 
   /**
