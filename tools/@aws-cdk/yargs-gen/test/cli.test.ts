@@ -1,23 +1,23 @@
-import { $E, expr, ThingSymbol } from '@cdklabs/typewriter';
-import { CliConfig, CliHelpers, renderYargs } from '../lib';
+import { $E, expr, ThingSymbol } from "@cdklabs/typewriter";
+import { CliConfig, CliHelpers, renderYargs } from "../lib";
 
-const YARGS_HELPERS = new CliHelpers('./util/yargs-helpers');
+const YARGS_HELPERS = new CliHelpers("./util/yargs-helpers");
 
-describe('render', () => {
-  test('can generate global options', async () => {
+describe("render", () => {
+  test("can generate global options", async () => {
     const config: CliConfig = {
       globalOptions: {
         one: {
-          type: 'string',
-          alias: 'o',
-          desc: 'text for one',
+          type: "string",
+          alias: "o",
+          desc: "text for one",
           requiresArg: true,
         },
-        two: { type: 'number', desc: 'text for two' },
+        two: { type: "number", desc: "text for two" },
         three: {
-          type: 'array',
-          alias: 't',
-          desc: 'text for three',
+          type: "array",
+          alias: "t",
+          desc: "text for three",
         },
       },
       commands: {},
@@ -28,7 +28,7 @@ describe('render', () => {
       // GENERATED FROM packages/aws-cdk/lib/config.ts.
       // Do not edit by hand; all changes will be overwritten at build time from the config file.
       // -------------------------------------------------------------------------------------------
-      /* eslint-disable @stylistic/comma-dangle, comma-spacing, max-len, quotes, quote-props */
+      /* eslint-disable @stylistic/comma-dangle, @stylistic/comma-spacing, @stylistic/max-len, @stylistic/quotes, @stylistic/quote-props */
       import { Argv } from 'yargs';
       import * as helpers from './util/yargs-helpers';
 
@@ -69,18 +69,18 @@ describe('render', () => {
     `);
   });
 
-  test('can generate negativeAlias', async () => {
+  test("can generate negativeAlias", async () => {
     const config: CliConfig = {
       globalOptions: {},
       commands: {
         test: {
-          description: 'the action under test',
+          description: "the action under test",
           options: {
             one: {
-              type: 'boolean',
-              alias: 'o',
-              desc: 'text for one',
-              negativeAlias: 'O',
+              type: "boolean",
+              alias: "o",
+              desc: "text for one",
+              negativeAlias: "O",
             },
           },
         },
@@ -92,7 +92,7 @@ describe('render', () => {
       // GENERATED FROM packages/aws-cdk/lib/config.ts.
       // Do not edit by hand; all changes will be overwritten at build time from the config file.
       // -------------------------------------------------------------------------------------------
-      /* eslint-disable @stylistic/comma-dangle, comma-spacing, max-len, quotes, quote-props */
+      /* eslint-disable @stylistic/comma-dangle, @stylistic/comma-spacing, @stylistic/max-len, @stylistic/quotes, @stylistic/quote-props */
       import { Argv } from 'yargs';
       import * as helpers from './util/yargs-helpers';
 
@@ -126,19 +126,19 @@ describe('render', () => {
     `);
   });
 
-  test('can pass-through expression unchanged', async () => {
+  test("can pass-through expression unchanged", async () => {
     const config: CliConfig = {
       globalOptions: {},
       commands: {
         test: {
-          description: 'the action under test',
+          description: "the action under test",
           options: {
             one: {
-              type: 'boolean',
+              type: "boolean",
               default: $E(
                 expr
-                  .sym(new ThingSymbol('banana', YARGS_HELPERS))
-                  .call(expr.lit(1), expr.lit(2), expr.lit(3)),
+                  .sym(new ThingSymbol("banana", YARGS_HELPERS))
+                  .call(expr.lit(1), expr.lit(2), expr.lit(3))
               ),
             },
           },
@@ -146,6 +146,8 @@ describe('render', () => {
       },
     };
 
-    expect(await renderYargs(config, YARGS_HELPERS)).toContain('default: helpers.banana(1, 2, 3)');
+    expect(await renderYargs(config, YARGS_HELPERS)).toContain(
+      "default: helpers.banana(1, 2, 3)"
+    );
   });
 });
