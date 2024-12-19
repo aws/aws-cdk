@@ -908,7 +908,7 @@ describe('add partition index', () => {
     expect(() => table.addPartitionIndex({
       indexName: 'my-part',
       keyNames: ['part'],
-    })).toThrowError(/The table must have partition keys to create a partition index/);
+    })).toThrow(/The table must have partition keys to create a partition index/);
   });
 
   test('fails if partition index does not match partition keys', () => {
@@ -931,7 +931,7 @@ describe('add partition index', () => {
     expect(() => table.addPartitionIndex({
       indexName: 'my-part',
       keyNames: ['not-part'],
-    })).toThrowError(/All index keys must also be partition keys/);
+    })).toThrow(/All index keys must also be partition keys/);
   });
 
   test('fails with index name < 1 character', () => {
@@ -954,7 +954,7 @@ describe('add partition index', () => {
     expect(() => table.addPartitionIndex({
       indexName: '',
       keyNames: ['part'],
-    })).toThrowError(/Index name must be between 1 and 255 characters, but got 0/);
+    })).toThrow(/Index name must be between 1 and 255 characters, but got 0/);
   });
 
   test('fails with > 3 indexes', () => {
@@ -987,7 +987,7 @@ describe('add partition index', () => {
       }],
       partitionIndexes: indexes,
       dataFormat: glue.DataFormat.JSON,
-    })).toThrowError('Maximum number of partition indexes allowed is 3');
+    })).toThrow('Maximum number of partition indexes allowed is 3');
   });
 });
 
@@ -1379,7 +1379,7 @@ describe('validate', () => {
       createTable({
         columns: [],
       });
-    }).toThrowError('you must specify at least one column for the table');
+    }).toThrow('you must specify at least one column for the table');
 
   });
 
@@ -1394,7 +1394,7 @@ describe('validate', () => {
           type: glue.Schema.STRING,
         }],
       });
-    }).toThrowError("column names and partition keys must be unique, but 'col1' is duplicated");
+    }).toThrow("column names and partition keys must be unique, but 'col1' is duplicated");
 
   });
 
@@ -1413,7 +1413,7 @@ describe('validate', () => {
           type: glue.Schema.STRING,
         }],
       });
-    }).toThrowError("column names and partition keys must be unique, but 'p1' is duplicated");
+    }).toThrow("column names and partition keys must be unique, but 'p1' is duplicated");
 
   });
 
@@ -1429,7 +1429,7 @@ describe('validate', () => {
           type: glue.Schema.STRING,
         }],
       });
-    }).toThrowError("column names and partition keys must be unique, but 'col1' is duplicated");
+    }).toThrow("column names and partition keys must be unique, but 'col1' is duplicated");
 
   });
 
@@ -1443,7 +1443,7 @@ describe('validate', () => {
         bucket: new s3.Bucket(new cdk.Stack(), 'Bucket'),
         encryption: glue.TableEncryption.KMS,
       });
-    }).toThrowError('you can not specify encryption settings if you also provide a bucket');
+    }).toThrow('you can not specify encryption settings if you also provide a bucket');
   });
 
   test('can explicitly pass bucket if Encryption undefined', () => {
@@ -1497,7 +1497,7 @@ describe('validate', () => {
         glue.StorageParameter.custom('foo', 'bar'),
         glue.StorageParameter.custom(glue.StorageParameters.COMPRESSION_TYPE, 'true'),
       ],
-    })).toThrowError('Duplicate storage parameter key: compression_type');
+    })).toThrow('Duplicate storage parameter key: compression_type');
   });
 });
 
