@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "aws-cdk-route53-classic-load-balancer-integ-test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-route53-classic-load-balancer-integ"
+      ],
+      "assertionStack": "aws-cdk-route53-classic-load-balancer-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkroute53classicloadbalancerintegtestDefaultTestDeployAssertD70739F1"
+    }
+  }
+}
