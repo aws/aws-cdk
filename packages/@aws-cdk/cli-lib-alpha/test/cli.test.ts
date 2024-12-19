@@ -1,26 +1,17 @@
 import { join } from 'path';
-import * as core from 'aws-cdk-lib/core';
 import * as cli from 'aws-cdk/lib';
+import * as core from 'aws-cdk-lib';
 import { AwsCdkCli } from '../lib';
 
 // These tests synthesize an actual CDK app and take a bit longer
 jest.setTimeout(60_000);
 
-jest.mock('aws-cdk/lib', () => {
-  const original = jest.requireActual('aws-cdk/lib');
-  return {
-    ...original,
-    exec: jest.fn(original.exec),
-  };
-});
-const stdoutMock = jest.spyOn(process.stdout, 'write').mockImplementation(() => { return true; });
+let stdoutMock = jest.spyOn(process.stdout, 'write').mockReturnValue(true);
+let exec = jest.spyOn(cli, 'exec');
 
 beforeEach(() => {
-  stdoutMock.mockClear();
-  jest.mocked(cli.exec).mockClear();
+  jest.clearAllMocks();
 });
-
-afterAll(() => jest.clearAllMocks());
 
 describe('fromCloudAssemblyDirectoryProducer', () => {
   const testEnv = jest.fn();
@@ -36,16 +27,12 @@ describe('fromCloudAssemblyDirectoryProducer', () => {
     },
   });
 
-  beforeEach(() => {
-    testEnv.mockClear();
-  });
-
   test('can list all stacks in app', async () => {
     // WHEN
     await cdk.list();
 
     // THEN
-    expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(
+    expect(exec).toHaveBeenCalledWith(
       ['ls', '--all'],
       expect.anything(),
     );
@@ -78,7 +65,7 @@ describe('fromDirectory', () => {
     await cdk.list();
 
     // THEN
-    expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(
+    expect(exec).toHaveBeenCalledWith(
       ['ls', '--all'],
     );
     expect(stdoutMock.mock.calls[0][0]).toContain('AppStack1');
@@ -97,7 +84,7 @@ describe('fromDirectory with config', () => {
     await cdk.list();
 
     // THEN
-    expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(
+    expect(exec).toHaveBeenCalledWith(
       [
         'ls', '--all',
         '--app', 'node -r ts-node/register app.ts',
