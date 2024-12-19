@@ -48,7 +48,7 @@ import { listStacks } from './list-stacks';
 import { data, debug, error, highlight, print, success, warning, withCorkedLogging } from './logging';
 import { deserializeStructure, serializeStructure } from './serialize';
 import { Configuration, PROJECT_CONFIG } from './settings';
-import { AuthenticationError, ToolkitError } from './toolkit/error';
+import { ToolkitError } from './toolkit/error';
 import { numberFromBool, partition } from './util';
 import { validateSnsTopicArn } from './util/validate-notification-arn';
 import { Concurrency, WorkGraph } from './util/work-graph';
