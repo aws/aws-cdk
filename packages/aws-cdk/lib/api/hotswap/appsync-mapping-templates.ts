@@ -144,7 +144,7 @@ export async function isHotswappableAppSyncChange(
             schemaCreationResponse = await sdk.appsync().getSchemaCreationStatus(getSchemaCreationStatusRequest);
           }
           if (schemaCreationResponse.status === 'FAILED') {
-            throw new ToolkitError(schemaCreationResponse.details ?? '');
+            throw new ToolkitError(schemaCreationResponse.details ?? 'Schema creation has failed.');
           }
         } else {
           //isApiKey
