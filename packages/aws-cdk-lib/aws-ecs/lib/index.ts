@@ -3,6 +3,7 @@ export * from './base/scalable-task-count';
 export * from './base/task-definition';
 export * from './base/service-managed-volume';
 
+export * from './availability-zone-rebalancing';
 export * from './container-definition';
 export * from './container-image';
 export * from './amis';
