@@ -7,7 +7,7 @@ import { IKeyGroup } from './key-group';
 import { IOrigin, OriginBindConfig, OriginBindOptions } from './origin';
 import { IOriginRequestPolicy } from './origin-request-policy';
 import { CacheBehavior } from './private/cache-behavior';
-import { formatDistributionArn } from './private/utils';
+import { formatDistributionArn, getDefaultWAFWebAclProps } from './private/utils';
 import { IRealtimeLogConfig } from './realtime-log-config';
 import { IResponseHeadersPolicy } from './response-headers-policy';
 import * as acm from '../../aws-certificatemanager';
@@ -15,6 +15,7 @@ import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
+import * as aws_wafv2 from '../../aws-wafv2';
 import { ArnFormat, IResource, Lazy, Resource, Stack, Token, Duration, Names, FeatureFlags, Annotations } from '../../core';
 import { CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 } from '../../cx-api';
 
@@ -232,6 +233,19 @@ export interface DistributionProps {
   readonly webAclId?: string;
 
   /**
+   * Enable or disable WAF one-click security protections.
+   *
+   * Can only be used in US East (N. Virginia) Region (us-east-1).
+   *
+   * Cannot be used with webAclId.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/distribution-web-awswaf.html
+   *
+   * @default false
+   */
+  readonly enableWafCoreProtections?: boolean;
+
+  /**
    * How CloudFront should handle requests that are not successful (e.g., PageNotFound).
    *
    * @default - No custom error responses.
@@ -327,6 +341,10 @@ export class Distribution extends Resource implements IDistribution {
   constructor(scope: Construct, id: string, props: DistributionProps) {
     super(scope, id);
 
+    if (props.webAclId && props.enableWafCoreProtections) {
+      throw new Error('Cannot specify both webAclId and enableWafCoreProtections');
+    }
+
     if (props.certificate) {
       const certificateRegion = Stack.of(this).splitArn(props.certificate.certificateArn, ArnFormat.SLASH_RESOURCE_NAME).region;
       if (!Token.isUnresolved(certificateRegion) && certificateRegion !== 'us-east-1') {
@@ -355,6 +373,14 @@ export class Distribution extends Resource implements IDistribution {
     this.errorResponses = props.errorResponses ?? [];
     this.publishAdditionalMetrics = props.publishAdditionalMetrics;
 
+    if (props.enableWafCoreProtections) {
+      const regionIsUsEast1 = !Token.isUnresolved(this.env.region) && this.env.region === 'us-east-1';
+      if (!regionIsUsEast1) {
+        throw new Error(`To enable WAF core protection, the stack must be in the us-east-1 region but you are in ${this.env.region}.`);
+      }
+      this.addWafCoreProtection();
+    }
+
     // Comments have an undocumented limit of 128 characters
     const trimmedComment =
       props.comment && props.comment.length > 128
@@ -379,7 +405,7 @@ export class Distribution extends Resource implements IDistribution {
         restrictions: this.renderRestrictions(props.geoRestriction),
         viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate,
           props.minimumProtocolVersion, props.sslSupportMethod) : undefined,
-        webAclId: Lazy.string({ produce: () => this.webAclId }),
+        webAclId: props.enableWafCoreProtections ? this.webAclId : Lazy.string({ produce: () => this.webAclId }),
       },
     });
 
@@ -619,6 +645,23 @@ export class Distribution extends Resource implements IDistribution {
    */
   public grantCreateInvalidation(identity: iam.IGrantable): iam.Grant {
     return this.grant(identity, 'cloudfront:CreateInvalidation');
+  }
+
+  /**
+   * Adds WAF security protection.
+   *
+   * @param props WAF WebAcl options
+   */
+  private addWafCoreProtection(props?: aws_wafv2.CfnWebACLProps) {
+    if (this.webAclId) {
+      throw new Error('This distribution already had WAF WebAcl attached');
+    }
+
+    const webAclName = `CreatedByCloudFront-${Names.uniqueId(this)}`;
+
+    const webAcl = new aws_wafv2.CfnWebACL(this, 'WebAcl', props ?? getDefaultWAFWebAclProps(webAclName));
+
+    this.attachWebAclId(webAcl.attrArn);
   }
 
   /**

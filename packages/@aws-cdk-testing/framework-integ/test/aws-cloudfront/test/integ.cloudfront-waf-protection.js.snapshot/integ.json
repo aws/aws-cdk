@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "integ-cloudfront-waf-protection-test/DefaultTest": {
+      "stacks": [
+        "cloudfront-waf-protection"
+      ],
+      "assertionStack": "integ-cloudfront-waf-protection-test/DefaultTest/DeployAssert",
+      "assertionStackName": "integcloudfrontwafprotectiontestDefaultTestDeployAssert9F601634"
+    }
+  }
+}
