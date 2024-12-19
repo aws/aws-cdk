@@ -13,7 +13,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
 import { NestedStackTemplates } from './api/nested-stack-helpers';
 import { print, warning } from './logging';
-import { AuthenticationError } from './toolkit/error';
+import { ToolkitError } from './toolkit/error';
 
 /**
  * Pretty-prints the differences between two template states to the console.
