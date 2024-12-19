@@ -1463,8 +1463,6 @@ new lambda.Function(this, 'MyFunction', {
   runtime: lambda.Runtime.NODEJS_18_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
-  tracingConfig: {
-    mode: lambda.TracingMode.ACTIVE
-  }
+  tracingMode: lambda.TracingMode.ACTIVE,
 });
 ```

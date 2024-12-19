@@ -10,9 +10,7 @@ new lambda.Function(stack, 'Lambda', {
   code: lambda.Code.fromInline('foo'),
   handler: 'index.handler',
   runtime: lambda.Runtime.NODEJS_20_X,
-  tracingConfig: {
-    mode: lambda.TracingMode.ACTIVE,
-  },
+  tracingMode: lambda.TracingMode.ACTIVE,
 });
 
 new IntegTest(app, 'LambdaTest', {
