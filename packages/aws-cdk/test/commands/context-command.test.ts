@@ -1,5 +1,5 @@
 /* eslint-disable import/order */
-import { context } from '../../lib/commands/context';
+import { contextHandler } from '../../lib/commands/context';
 import { Configuration, Settings, Context } from '../../lib/settings';
 
 describe('context --list', () => {
@@ -13,7 +13,7 @@ describe('context --list', () => {
     });
 
     // WHEN
-    await context({
+    await contextHandler({
       context: configuration.context,
     });
   });
@@ -32,7 +32,7 @@ describe('context --reset', () => {
     });
 
     // WHEN
-    await context({
+    await contextHandler({
       context: configuration.context,
       reset: 'foo',
     });
@@ -55,7 +55,7 @@ describe('context --reset', () => {
     });
 
     // WHEN
-    await context({
+    await contextHandler({
       context: configuration.context,
       reset: '1',
     });
@@ -80,7 +80,7 @@ describe('context --reset', () => {
     });
 
     // WHEN
-    await context({
+    await contextHandler({
       context: configuration.context,
       reset: 'match-*',
     });
@@ -103,7 +103,7 @@ describe('context --reset', () => {
     });
 
     // WHEN
-    await context({
+    await contextHandler({
       context: configuration.context,
       reset: 'fo*',
     });
@@ -125,7 +125,7 @@ describe('context --reset', () => {
     configuration.context.set('match-b', 'quux');
 
     // When
-    await expect(context({
+    await expect(contextHandler({
       context: configuration.context,
       reset: 'match-*',
     }));
@@ -147,7 +147,7 @@ describe('context --reset', () => {
     });
 
     // THEN
-    await expect(context({
+    await expect(contextHandler({
       context: configuration.context,
       reset: 'baz',
     })).rejects.toThrow(/No context value matching key/);
@@ -163,7 +163,7 @@ describe('context --reset', () => {
     });
 
     // THEN
-    await expect(context({
+    await expect(contextHandler({
       context: configuration.context,
       reset: 'baz',
       force: true,
@@ -180,7 +180,7 @@ describe('context --reset', () => {
     });
 
     // THEN
-    await expect(context({
+    await expect(contextHandler({
       context: configuration.context,
       reset: '2',
     })).rejects.toThrow(/No context key with number/);
@@ -199,7 +199,7 @@ describe('context --reset', () => {
     });
 
     // THEN
-    await expect(context({
+    await expect(contextHandler({
       context: configuration.context,
       reset: 'foo',
     })).rejects.toThrow(/Cannot reset readonly context value with key/);
@@ -222,7 +222,7 @@ describe('context --reset', () => {
     });
 
     // THEN
-    await expect(context({
+    await expect(contextHandler({
       context: configuration.context,
       reset: 'match-*',
     })).rejects.toThrow(/None of the matched context values could be reset/);

@@ -43,7 +43,7 @@ export interface ContextOptions {
   json?: boolean;
 }
 
-export async function context(options: ContextOptions): Promise<number> {
+export async function contextHandler(options: ContextOptions): Promise<number> {
   if (options.clear) {
     options.context.clear();
     await options.context.save(PROJECT_CONTEXT);
@@ -65,8 +65,8 @@ export async function context(options: ContextOptions): Promise<number> {
   return 0;
 }
 
-function listContext(contextObj: Context) {
-  const keys = contextKeys(contextObj);
+function listContext(context: Context) {
+  const keys = contextKeys(context);
 
   if (keys.length === 0) {
     print('This CDK application does not have any saved context values yet.');
@@ -81,7 +81,7 @@ function listContext(contextObj: Context) {
   // Print config by default
   const data: any[] = [[chalk.green('#'), chalk.green('Key'), chalk.green('Value')]];
   for (const [i, key] of keys) {
-    const jsonWithoutNewlines = JSON.stringify(contextObj.all[key], undefined, 2).replace(/\s+/g, ' ');
+    const jsonWithoutNewlines = JSON.stringify(context.all[key], undefined, 2).replace(/\s+/g, ' ');
     data.push([i, key, jsonWithoutNewlines]);
   }
   print('Context found in %s:', chalk.blue(PROJECT_CONFIG));
@@ -92,17 +92,17 @@ function listContext(contextObj: Context) {
   print(`Run ${chalk.blue('cdk context --reset KEY_OR_NUMBER')} to remove a context key. It will be refreshed on the next CDK synthesis run.`);
 }
 
-function invalidateContext(contextObj: Context, key: string, force: boolean) {
+function invalidateContext(context: Context, key: string, force: boolean) {
   const i = parseInt(key, 10);
   if (`${i}` === key) {
     // was a number and we fully parsed it.
-    key = keyByNumber(contextObj, i);
+    key = keyByNumber(context, i);
   }
   // Unset!
-  if (contextObj.has(key)) {
-    contextObj.unset(key);
+  if (context.has(key)) {
+    context.unset(key);
     // check if the value was actually unset.
-    if (!contextObj.has(key)) {
+    if (!context.has(key)) {
       print('Context value %s reset. It will be refreshed on next synthesis', chalk.blue(key));
       return;
     }
@@ -115,15 +115,15 @@ function invalidateContext(contextObj: Context, key: string, force: boolean) {
   }
 
   // check if value is expression matching keys
-  const matches = keysByExpression(contextObj, key);
+  const matches = keysByExpression(context, key);
 
   if (matches.length > 0) {
 
     matches.forEach((match) => {
-      contextObj.unset(match);
+      context.unset(match);
     });
 
-    const { unset, readonly } = getUnsetAndReadonly(contextObj, matches);
+    const { unset, readonly } = getUnsetAndReadonly(context, matches);
 
     // output the reset values
     printUnset(unset);
@@ -160,13 +160,13 @@ function printReadonly(readonly: string[]) {
   print('This usually means they are configured in %s or %s', chalk.blue(PROJECT_CONFIG), chalk.blue(USER_DEFAULTS));
 }
 
-function keysByExpression(contextObj: Context, expression: string) {
-  return contextObj.keys.filter(minimatch.filter(expression));
+function keysByExpression(context: Context, expression: string) {
+  return context.keys.filter(minimatch.filter(expression));
 }
 
-function getUnsetAndReadonly(contextObj: Context, matches: string[]) {
+function getUnsetAndReadonly(context: Context, matches: string[]) {
   return matches.reduce<{ unset: string[]; readonly: string[] }>((acc, match) => {
-    if (contextObj.has(match)) {
+    if (context.has(match)) {
       acc.readonly.push(match);
     } else {
       acc.unset.push(match);
@@ -175,8 +175,8 @@ function getUnsetAndReadonly(contextObj: Context, matches: string[]) {
   }, { unset: [], readonly: [] });
 }
 
-function keyByNumber(contextObj: Context, n: number) {
-  for (const [i, key] of contextKeys(contextObj)) {
+function keyByNumber(context: Context, n: number) {
+  for (const [i, key] of contextKeys(context)) {
     if (n === i) {
       return key;
     }
@@ -187,8 +187,8 @@ function keyByNumber(contextObj: Context, n: number) {
 /**
  * Return enumerated keys in a definitive order
  */
-function contextKeys(contextObj: Context): [number, string][] {
-  const keys = contextObj.keys;
+function contextKeys(context: Context): [number, string][] {
+  const keys = context.keys;
   keys.sort();
   return enumerate1(keys);
 }

@@ -122,11 +122,11 @@ export class Configuration {
 
     const contextSources = [
       { bag: this.commandLineContext },
-      { name: PROJECT_CONFIG, bag: this.projectConfig.subSettings([CONTEXT_KEY]).makeReadOnly() },
-      { name: PROJECT_CONTEXT, bag: this.projectContext },
+      { fileName: PROJECT_CONFIG, bag: this.projectConfig.subSettings([CONTEXT_KEY]).makeReadOnly() },
+      { fileName: PROJECT_CONTEXT, bag: this.projectContext },
     ];
     if (readUserContext) {
-      contextSources.push({ name: USER_DEFAULTS, bag: userConfig.subSettings([CONTEXT_KEY]).makeReadOnly() });
+      contextSources.push({ fileName: USER_DEFAULTS, bag: userConfig.subSettings([CONTEXT_KEY]).makeReadOnly() });
     }
 
     this.context = new Context(...contextSources);
@@ -166,6 +166,19 @@ async function loadAndLog(fileName: string): Promise<Settings> {
   return ret;
 }
 
+interface ContextBag {
+  /**
+   * The file name of the context. Will be used to potentially
+   * save new context back to the original file.
+   */
+  fileName?: string;
+
+  /**
+   * The context values.
+   */
+  bag: Settings;
+}
+
 /**
  * Class that supports overlaying property bags
  *
@@ -178,9 +191,9 @@ export class Context {
   private readonly bags: Settings[];
   private readonly fileNames: (string|undefined)[];
 
-  constructor(...bags: ({name?: string; bag: Settings})[]) {
+  constructor(...bags: ContextBag[]) {
     this.bags = bags.length > 0 ? bags.map(b => b.bag) : [new Settings()];
-    this.fileNames = bags.length > 0 ? bags.map(b => b.name) : ['default'];
+    this.fileNames = bags.length > 0 ? bags.map(b => b.fileName) : ['default'];
   }
 
   public get keys(): string[] {

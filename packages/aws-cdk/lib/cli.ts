@@ -17,7 +17,7 @@ import { Deployments } from '../lib/api/deployments';
 import { PluginHost } from '../lib/api/plugin';
 import { ToolkitInfo } from '../lib/api/toolkit-info';
 import { CdkToolkit, AssetBuildTime } from '../lib/cdk-toolkit';
-import { context } from '../lib/commands/context';
+import { contextHandler as context } from '../lib/commands/context';
 import { docs } from '../lib/commands/docs';
 import { doctor } from '../lib/commands/doctor';
 import { getMigrateScanType } from '../lib/commands/migrate';
