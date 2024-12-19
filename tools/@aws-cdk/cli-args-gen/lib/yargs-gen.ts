@@ -116,7 +116,10 @@ function makeYargs(config: CliConfig, helpers: CliHelpers): Statement {
 function makeOptions(prefix: Expression, options: { [optionName: string]: CliOption }, helpers: CliHelpers) {
   let optionsExpr = prefix;
   for (const option of Object.keys(options)) {
-    const theOption: CliOption = options[option];
+    const theOption: CliOption = {
+      default: undefined, // make the default explicit (overridden if the option includes an actual default)
+      ...options[option],
+    };
     const optionProps: YargsOption = cloneDeep(theOption);
     const optionArgs: { [key: string]: Expression } = {};
 
