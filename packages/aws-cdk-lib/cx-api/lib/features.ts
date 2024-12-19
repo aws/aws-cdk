@@ -1296,7 +1296,7 @@ export const FLAGS: Record<string, FlagInfo> = {
 
     If the flag is set to false then a custom resource will be created when using \`UserPoolDomainTarget\`.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.174.0' },
     recommendedValue: true,
   },
 };
