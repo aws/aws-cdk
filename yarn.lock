@@ -5743,10 +5743,25 @@
     chalk "^4.1.2"
     semver "^7.6.3"
 
+"@jsii/check-node@1.106.0":
+  version "1.106.0"
+  resolved "https://registry.npmjs.org/@jsii/check-node/-/check-node-1.106.0.tgz#5deb20b0bbe0a506c4bd9edf60b17b0a93f83834"
+  integrity sha512-/T/TUsbHdEbZRFR4Rem9+UXVvgMYncEkrIeC52oIHJ8BDSgqlDsIARio/Eu5DOftF4avSLV/sshR6n19mpK1oA==
+  dependencies:
+    chalk "^4.1.2"
+    semver "^7.6.3"
+
 "@jsii/spec@1.104.0", "@jsii/spec@^1.103.1", "@jsii/spec@^1.104.0":
   version "1.104.0"
   resolved "https://registry.npmjs.org/@jsii/spec/-/spec-1.104.0.tgz#9f1206b3712808ad7cbbdbf6cf333a77a8f3df8c"
   integrity sha512-7jxU8iRowA3O7Dpn8XAsX8o4Y8Fy8plbEVg0CnjvIQsJh3puI3KFHspXur70OOccfGkoL1TWnXBZ+BwCcvhu1g==
+  dependencies:
+    ajv "^8.17.1"
+
+"@jsii/spec@^1.106.0":
+  version "1.106.0"
+  resolved "https://registry.npmjs.org/@jsii/spec/-/spec-1.106.0.tgz#f40010ec8cde14b7a003dd5b6a46480d9d7e222f"
+  integrity sha512-pAIvqEGf0YLmtzFtUKWNEGkCmXMHENy7k+rzCD147wnM4jHhvEL1mEvxi99aA2VcmvLYaAYNOs/XozT+s+kLqQ==
   dependencies:
     ajv "^8.17.1"
 
@@ -13722,23 +13737,22 @@ jsii@~5.4.0:
     typescript "~5.4"
     yargs "^17.7.2"
 
-jsii@~5.5.8:
-  version "5.5.8"
-  resolved "https://registry.npmjs.org/jsii/-/jsii-5.5.8.tgz#c265cecf0f0880e5f47b29df305298adb75115d1"
-  integrity sha512-4pdeYtJmbUnrzhWroZ4vLwVLmP9bfyDzy1UypWpuvN6YrWYcwrQj94WY8uNMbgNDb7LeL/ERzNXW3zDpj6MGsw==
+jsii@~5.6.0:
+  version "5.6.4"
+  resolved "https://registry.npmjs.org/jsii/-/jsii-5.6.4.tgz#105774013380a51469528aad127bc3508df41e9c"
+  integrity sha512-ZfrnPJeuIQJscs3NN8jAYy246DByFcgTIRomoAOM0PY9nfRx/8qXLkWI2LZ49Zmh7WNzqVt8dBCJ6+z1CUqdpQ==
   dependencies:
-    "@jsii/check-node" "1.104.0"
-    "@jsii/spec" "^1.104.0"
+    "@jsii/check-node" "1.106.0"
+    "@jsii/spec" "^1.106.0"
     case "^1.6.3"
     chalk "^4"
-    downlevel-dts "^0.11.0"
     fast-deep-equal "^3.1.3"
     log4js "^6.9.1"
     semver "^7.6.3"
     semver-intersect "^1.5.0"
     sort-json "^2.0.1"
     spdx-license-list "^6.9.0"
-    typescript "~5.5"
+    typescript "~5.6"
     yargs "^17.7.2"
 
 json-buffer@3.0.1:
@@ -18381,7 +18395,7 @@ typescript-json-schema@^0.65.1:
     typescript "~5.5.0"
     yargs "^17.1.1"
 
-"typescript@>=3 < 6":
+"typescript@>=3 < 6", typescript@~5.6, typescript@~5.6.3:
   version "5.6.3"
   resolved "https://registry.npmjs.org/typescript/-/typescript-5.6.3.tgz#5f3449e31c9d94febb17de03cc081dd56d81db5b"
   integrity sha512-hjcS1mhfuyi4WW8IWtjP7brDrG2cuDZukyrYrSauoXGNgx0S7zceP07adYkJycEr56BOUTNPzbInooiN3fn1qw==
@@ -18401,7 +18415,7 @@ typescript@~5.4:
   resolved "https://registry.npmjs.org/typescript/-/typescript-5.4.5.tgz#42ccef2c571fdbd0f6718b1d1f5e6e5ef006f611"
   integrity sha512-vcI4UpRgg81oIRUFwR0WSIHKt11nJ7SAVlYNIu+QpqeyXP+gpQJy/Z4+F0aGxSE4MqwjyXvW/TzgkLAx2AGHwQ==
 
-typescript@~5.5, typescript@~5.5.0, typescript@~5.5.2:
+typescript@~5.5.0, typescript@~5.5.2:
   version "5.5.4"
   resolved "https://registry.npmjs.org/typescript/-/typescript-5.5.4.tgz#d9852d6c82bad2d2eda4fd74a5762a8f5909e9ba"
   integrity sha512-Mtq29sKDAEYP7aljRgtPOpTvOfbwRWlS6dPRzwjdE+C0R4brX/GUyhHSecbHMFLNBLcJIPt9nl9yG5TZ1weH+Q==
