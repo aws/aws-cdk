@@ -228,3 +228,26 @@ describe('context --reset', () => {
     })).rejects.toThrow(/None of the matched context values could be reset/);
   });
 });
+
+describe('context --clear', () => {
+  test('can clear all context keys', async () => {
+    // GIVEN
+    const configuration = new Configuration();
+    configuration.context.set('foo', 'bar');
+    configuration.context.set('baz', 'quux');
+
+    expect(configuration.context.all).toEqual({
+      foo: 'bar',
+      baz: 'quux',
+    });
+
+    // WHEN
+    await contextHandler({
+      context: configuration.context,
+      clear: true,
+    });
+
+    // THEN
+    expect(configuration.context.all).toEqual({});
+  });
+});
