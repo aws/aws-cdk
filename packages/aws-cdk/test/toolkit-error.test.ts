@@ -8,8 +8,10 @@ describe('toolkit error', () => {
     expect(authError.type).toBe('authentication');
   });
 
-  test('isToolkitError function works', () => {
+  test('isToolkitError and isAuthenticationError functions work', () => {
     expect(ToolkitError.isToolkitError(toolkitError)).toBe(true);
     expect(ToolkitError.isToolkitError(authError)).toBe(true);
+    expect(ToolkitError.isAuthenticationError(toolkitError)).toBe(false);
+    expect(ToolkitError.isAuthenticationError(authError)).toBe(true);
   });
 });
