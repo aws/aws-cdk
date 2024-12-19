@@ -200,10 +200,10 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
       case 'context':
         return context({
           context: configuration.context,
-          clear: configuration.settings.get(['clear']),
-          json: configuration.settings.get(['json']),
-          force: configuration.settings.get(['force']),
-          reset: configuration.settings.get(['reset']),
+          clear: argv.clear,
+          json: argv.json,
+          force: argv.force,
+          reset: argv.reset,
         });
 
       case 'docs':
