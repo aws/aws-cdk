@@ -20,8 +20,8 @@ import { CdkToolkit, AssetBuildTime } from '../lib/cdk-toolkit';
 import { realHandler as context } from '../lib/commands/context';
 import { realHandler as docs } from '../lib/commands/docs';
 import { realHandler as doctor } from '../lib/commands/doctor';
-import { MIGRATE_SUPPORTED_LANGUAGES, getMigrateScanType } from '../lib/commands/migrate';
-import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
+import { getMigrateScanType } from '../lib/commands/migrate';
+import { cliInit, printAvailableTemplates } from '../lib/init';
 import { data, debug, error, print, setCI, setLogLevel, LogLevel } from '../lib/logging';
 import { Notices } from '../lib/notices';
 import { Command, Configuration, Settings } from '../lib/settings';
@@ -37,17 +37,8 @@ if (!process.stdout.isTTY) {
 }
 
 export async function exec(args: string[], synthesizer?: Synthesizer): Promise<number | void> {
-  function makeBrowserDefault(): string {
-    const defaultBrowserCommand: { [key in NodeJS.Platform]?: string } = {
-      darwin: 'open %u',
-      win32: 'start %u',
-    };
 
-    const cmd = defaultBrowserCommand[process.platform];
-    return cmd ?? 'xdg-open %u';
-  }
-
-  const argv = await parseCommandLineArguments(args, makeBrowserDefault(), await availableInitLanguages(), MIGRATE_SUPPORTED_LANGUAGES as string[], version.DISPLAY_VERSION, yargsNegativeAlias);
+  const argv = await parseCommandLineArguments(args);
 
   // if one -v, log at a DEBUG level
   // if 2 -v, log at a TRACE level
@@ -93,7 +84,12 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
   const cmd = argv._[0];
 
-  const notices = Notices.create({ configuration, includeAcknowledged: cmd === 'notices' ? !argv.unacknowledged : false });
+  const notices = Notices.create({
+    context: configuration.context,
+    output: configuration.settings.get(['outdir']),
+    shouldDisplay: configuration.settings.get(['notices']),
+    includeAcknowledged: cmd === 'notices' ? !argv.unacknowledged : false,
+  });
   await notices.refresh();
 
   const sdkProvider = await SdkProvider.withAwsCliCompatibleDefaults({
@@ -525,18 +521,6 @@ function arrayFromYargs(xs: string[]): string[] | undefined {
     return undefined;
   }
   return xs.filter((x) => x !== '');
-}
-
-function yargsNegativeAlias<T extends { [x in S | L]: boolean | undefined }, S extends string, L extends string>(
-  shortName: S,
-  longName: L,
-): (argv: T) => T {
-  return (argv: T) => {
-    if (shortName in argv && argv[shortName]) {
-      (argv as any)[longName] = false;
-    }
-    return argv;
-  };
 }
 
 function determineHotswapMode(hotswap?: boolean, hotswapFallback?: boolean, watch?: boolean): HotswapMode {

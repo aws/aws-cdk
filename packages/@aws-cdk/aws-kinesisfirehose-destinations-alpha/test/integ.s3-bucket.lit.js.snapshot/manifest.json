@@ -1,5 +1,5 @@
 {
-  "version": "36.0.5",
+  "version": "38.0.1",
   "artifacts": {
     "aws-cdk-firehose-delivery-stream-s3-all-properties.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0994670221a3e12bcff10578ef09a1723bb8b19a59cfebe2254f8cab1b4cf730.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ede2ab5578e03d3191a201f4a9d089b9f1c85da2b12ee02295f6e2889ee5adff.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,22 +34,22 @@
         "aws-cdk-firehose-delivery-stream-s3-all-properties.assets"
       ],
       "metadata": {
-        "/aws-cdk-firehose-delivery-stream-s3-all-properties/Bucket/Resource": [
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/FirehoseDeliveryStreamS3AllPropertiesBucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Bucket83908E77"
+            "data": "FirehoseDeliveryStreamS3AllPropertiesBucketD6F6CA75"
           }
         ],
-        "/aws-cdk-firehose-delivery-stream-s3-all-properties/Bucket/Policy/Resource": [
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/FirehoseDeliveryStreamS3AllPropertiesBucket/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "BucketPolicyE9A3008A"
+            "data": "FirehoseDeliveryStreamS3AllPropertiesBucketPolicy54E94186"
           }
         ],
-        "/aws-cdk-firehose-delivery-stream-s3-all-properties/Bucket/AutoDeleteObjectsCustomResource/Default": [
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/FirehoseDeliveryStreamS3AllPropertiesBucket/AutoDeleteObjectsCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "BucketAutoDeleteObjectsCustomResourceBAFD23C2"
+            "data": "FirehoseDeliveryStreamS3AllPropertiesBucketAutoDeleteObjectsCustomResource07F20A45"
           }
         ],
         "/aws-cdk-firehose-delivery-stream-s3-all-properties/LatestNodeRuntimeMap": [
@@ -76,22 +76,22 @@
             "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
           }
         ],
-        "/aws-cdk-firehose-delivery-stream-s3-all-properties/BackupBucket/Resource": [
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/FirehoseDeliveryStreamS3AllPropertiesBackupBucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "BackupBucket26B8E51C"
+            "data": "FirehoseDeliveryStreamS3AllPropertiesBackupBucket9AE03327"
           }
         ],
-        "/aws-cdk-firehose-delivery-stream-s3-all-properties/BackupBucket/Policy/Resource": [
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/FirehoseDeliveryStreamS3AllPropertiesBackupBucket/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "BackupBucketPolicy8C403F71"
+            "data": "FirehoseDeliveryStreamS3AllPropertiesBackupBucketPolicyD385A017"
           }
         ],
-        "/aws-cdk-firehose-delivery-stream-s3-all-properties/BackupBucket/AutoDeleteObjectsCustomResource/Default": [
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/FirehoseDeliveryStreamS3AllPropertiesBackupBucket/AutoDeleteObjectsCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "BackupBucketAutoDeleteObjectsCustomResourceD2F511C5"
+            "data": "FirehoseDeliveryStreamS3AllPropertiesBackupBucketAutoDeleteObjectsCustomResource3EC1F4CD"
           }
         ],
         "/aws-cdk-firehose-delivery-stream-s3-all-properties/LogGroup/Resource": [
@@ -130,34 +130,34 @@
             "data": "BackupKey60B97760"
           }
         ],
-        "/aws-cdk-firehose-delivery-stream-s3-all-properties/Delivery Stream/S3 Destination Role/Resource": [
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/DeliveryStream/S3 Destination Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DeliveryStreamS3DestinationRole500FC089"
+            "data": "DeliveryStreamS3DestinationRoleD96B8345"
           }
         ],
-        "/aws-cdk-firehose-delivery-stream-s3-all-properties/Delivery Stream/S3 Destination Role/DefaultPolicy/Resource": [
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/DeliveryStream/S3 Destination Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DeliveryStreamS3DestinationRoleDefaultPolicy3015D8C7"
+            "data": "DeliveryStreamS3DestinationRoleDefaultPolicyF652AD65"
           }
         ],
-        "/aws-cdk-firehose-delivery-stream-s3-all-properties/Delivery Stream/LogGroup/Resource": [
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/DeliveryStream/LogGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DeliveryStreamLogGroup9D8FA3BB"
+            "data": "DeliveryStreamLogGroupA92E8EA0"
           }
         ],
-        "/aws-cdk-firehose-delivery-stream-s3-all-properties/Delivery Stream/LogGroup/S3Backup/Resource": [
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/DeliveryStream/LogGroup/S3Backup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DeliveryStreamLogGroupS3BackupD5DF41B2"
+            "data": "DeliveryStreamLogGroupS3BackupD848C05F"
           }
         ],
-        "/aws-cdk-firehose-delivery-stream-s3-all-properties/Delivery Stream/Resource": [
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/DeliveryStream/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DeliveryStreamF6D5572D"
+            "data": "DeliveryStream58CF96DB"
           }
         ],
         "/aws-cdk-firehose-delivery-stream-s3-all-properties/@aws-cdk--aws-kinesisfirehose.CidrBlocks": [
@@ -196,6 +196,18 @@
             "data": "ZeroBufferingDeliveryStream7C2555C9"
           }
         ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/Exports/Output{\"Ref\":\"DeliveryStream58CF96DB\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefDeliveryStream58CF96DB919FEA68"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/Exports/Output{\"Ref\":\"FirehoseDeliveryStreamS3AllPropertiesBucketD6F6CA75\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefFirehoseDeliveryStreamS3AllPropertiesBucketD6F6CA7545A7B036"
+          }
+        ],
         "/aws-cdk-firehose-delivery-stream-s3-all-properties/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -210,6 +222,139 @@
         ]
       },
       "displayName": "aws-cdk-firehose-delivery-stream-s3-all-properties"
+    },
+    "integtestsDefaultTestDeployAssert44C8D370.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integtestsDefaultTestDeployAssert44C8D370.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integtestsDefaultTestDeployAssert44C8D370": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integtestsDefaultTestDeployAssert44C8D370.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b2de7501c22ded9bd36ed279c086eee92d277b843396f1af55c0373ee63bb52a.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integtestsDefaultTestDeployAssert44C8D370.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-firehose-delivery-stream-s3-all-properties",
+        "integtestsDefaultTestDeployAssert44C8D370.assets"
+      ],
+      "metadata": {
+        "/integ-tests/DefaultTest/DeployAssert/AwsApiCallFirehoseputRecord44585e4a4193ab6938b5675835d76f5f/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallFirehoseputRecord44585e4a4193ab6938b5675835d76f5f"
+          }
+        ],
+        "/integ-tests/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/integ-tests/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/integ-tests/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2ce1c85ff85b0db4aaa6f0d3dd453a7ea/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallS3listObjectsV2ce1c85ff85b0db4aaa6f0d3dd453a7ea"
+          }
+        ],
+        "/integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2ce1c85ff85b0db4aaa6f0d3dd453a7ea/WaitFor/IsCompleteProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallS3listObjectsV2ce1c85ff85b0db4aaa6f0d3dd453a7eaWaitForIsCompleteProviderInvoke446666EB"
+          }
+        ],
+        "/integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2ce1c85ff85b0db4aaa6f0d3dd453a7ea/WaitFor/TimeoutProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallS3listObjectsV2ce1c85ff85b0db4aaa6f0d3dd453a7eaWaitForTimeoutProviderInvokeC3141BCC"
+          }
+        ],
+        "/integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2ce1c85ff85b0db4aaa6f0d3dd453a7ea/WaitFor/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallS3listObjectsV2ce1c85ff85b0db4aaa6f0d3dd453a7eaWaitForRole2A08C77F"
+          }
+        ],
+        "/integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2ce1c85ff85b0db4aaa6f0d3dd453a7ea/WaitFor/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallS3listObjectsV2ce1c85ff85b0db4aaa6f0d3dd453a7eaWaitFor9E1FB374"
+          }
+        ],
+        "/integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2ce1c85ff85b0db4aaa6f0d3dd453a7ea/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallS3listObjectsV2ce1c85ff85b0db4aaa6f0d3dd453a7ea"
+          }
+        ],
+        "/integ-tests/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
+          }
+        ],
+        "/integ-tests/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
+          }
+        ],
+        "/integ-tests/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
+          }
+        ],
+        "/integ-tests/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
+          }
+        ],
+        "/integ-tests/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-tests/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-tests/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

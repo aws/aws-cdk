@@ -1,14 +1,15 @@
 {
-  "version": "36.0.5",
+  "version": "38.0.1",
   "testCases": {
-    "integ.s3-bucket.lit": {
+    "integ-tests/DefaultTest": {
       "stacks": [
         "aws-cdk-firehose-delivery-stream-s3-all-properties"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "regions": [
+        "us-east-1"
+      ],
+      "assertionStack": "integ-tests/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestsDefaultTestDeployAssert44C8D370"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

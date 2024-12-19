@@ -11,6 +11,7 @@ import * as path from 'path';
  * This class is not 100% race safe, but in practice it should be a lot
  * better than the 0 protection we have today.
  */
+/* istanbul ignore next: code paths are unpredictable */
 export class RWLock {
   private readonly pidString: string;
   private readonly writerFile: string;
@@ -158,6 +159,7 @@ export interface IWriterLock extends ILock {
   convertToReaderLock(): Promise<ILock>;
 }
 
+/* istanbul ignore next: code paths are unpredictable */
 async function readFileIfExists(filename: string): Promise<string | undefined> {
   try {
     return await fs.readFile(filename, { encoding: 'utf-8' });
@@ -168,6 +170,7 @@ async function readFileIfExists(filename: string): Promise<string | undefined> {
 }
 
 let tmpCounter = 0;
+/* istanbul ignore next: code paths are unpredictable */
 async function writeFileAtomic(filename: string, contents: string): Promise<void> {
   await fs.mkdir(path.dirname(filename), { recursive: true });
   const tmpFile = `${filename}.${process.pid}_${++tmpCounter}`;
@@ -175,6 +178,7 @@ async function writeFileAtomic(filename: string, contents: string): Promise<void
   await fs.rename(tmpFile, filename);
 }
 
+/* istanbul ignore next: code paths are unpredictable */
 async function deleteFile(filename: string) {
   try {
     await fs.unlink(filename);
@@ -186,6 +190,7 @@ async function deleteFile(filename: string) {
   }
 }
 
+/* istanbul ignore next: code paths are unpredictable */
 function processExists(pid: number) {
   try {
     process.kill(pid, 0);

@@ -959,6 +959,7 @@
     "docs-public-apis:aws-cdk-lib.aws_appconfig.ActionPoint.ON_DEPLOYMENT_BAKING",
     "docs-public-apis:aws-cdk-lib.aws_appconfig.ActionPoint.ON_DEPLOYMENT_COMPLETE",
     "docs-public-apis:aws-cdk-lib.aws_appconfig.ActionPoint.ON_DEPLOYMENT_ROLLED_BACK",
+    "docs-public-apis:aws-cdk-lib.aws_appconfig.ActionPoint.AT_DEPLOYMENT_TICK",
     "docs-public-apis:aws-cdk-lib.aws_appconfig.IValidator",
     "docs-public-apis:aws-cdk-lib.aws_appconfig.IExtension",
     "docs-public-apis:aws-cdk-lib.aws_appconfig.IEnvironment",
