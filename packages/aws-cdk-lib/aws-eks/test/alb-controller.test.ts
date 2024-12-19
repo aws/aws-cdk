@@ -101,7 +101,7 @@ test('throws when a policy is not defined for a custom version', () => {
   expect(() => AlbController.create(stack, {
     cluster,
     version: AlbControllerVersion.of('custom'),
-  })).toThrowError("'albControllerOptions.policy' is required when using a custom controller version");
+  })).toThrow("'albControllerOptions.policy' is required when using a custom controller version");
 });
 
 test.each(['us-gov-west-1', 'cn-north-1'])('stack does not include hard-coded partition', (region) => {

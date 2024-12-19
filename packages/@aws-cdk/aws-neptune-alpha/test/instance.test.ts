@@ -156,7 +156,7 @@ describe('DatabaseInstance', () => {
   });
 
   test('instance type from string throws if missing db prefix', () => {
-    expect(() => { InstanceType.of('r5.xlarge');}).toThrowError(/instance type must start with 'db.'/);
+    expect(() => { InstanceType.of('r5.xlarge');}).toThrow(/instance type must start with 'db.'/);
   });
 
   test('metric - constructs metric with correct namespace and dimension and inputs', () => {

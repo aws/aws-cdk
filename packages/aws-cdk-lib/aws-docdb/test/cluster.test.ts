@@ -112,7 +112,7 @@ describe('DatabaseCluster', () => {
         vpc,
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
       });
-    }).toThrowError('At least one instance is required');
+    }).toThrow('At least one instance is required');
   });
 
   test('errors when only one subnet is specified', () => {
@@ -135,7 +135,7 @@ describe('DatabaseCluster', () => {
           subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
         },
       });
-    }).toThrowError('Cluster requires at least 2 subnets, got 1');
+    }).toThrow('Cluster requires at least 2 subnets, got 1');
   });
 
   test('secret attachment target type is correct', () => {

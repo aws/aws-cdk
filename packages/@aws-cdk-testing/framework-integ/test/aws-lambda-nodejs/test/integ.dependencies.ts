@@ -9,7 +9,7 @@ import { Construct } from 'constructs';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 class SdkV3TestStack extends Stack {
-  public lambdaFunction: IFunction
+  public lambdaFunction: IFunction;
 
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
@@ -35,7 +35,7 @@ class SdkV3TestStack extends Stack {
 }
 
 class SdkV3BundledStack extends Stack {
-  public lambdaFunction: IFunction
+  public lambdaFunction: IFunction;
 
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);

@@ -250,7 +250,7 @@ describe('FSx for Lustre File System', () => {
             vpc,
             vpcSubnet,
           });
-        }).toThrowError('The importPath and exportPath must each be Tokens or not Tokens, you cannot use a mix');
+        }).toThrow('The importPath and exportPath must each be Tokens or not Tokens, you cannot use a mix');
       });
 
       test('only import path is Token', () => {
@@ -270,7 +270,7 @@ describe('FSx for Lustre File System', () => {
             vpc,
             vpcSubnet,
           });
-        }).toThrowError('The importPath and exportPath must each be Tokens or not Tokens, you cannot use a mix');
+        }).toThrow('The importPath and exportPath must each be Tokens or not Tokens, you cannot use a mix');
       });
 
       test('invalid export path length', () => {
@@ -291,7 +291,7 @@ describe('FSx for Lustre File System', () => {
             vpc,
             vpcSubnet,
           });
-        }).toThrowError(`The export path "${exportPath}" exceeds the maximum length of 900 characters`);
+        }).toThrow(`The export path "${exportPath}" exceeds the maximum length of 900 characters`);
       });
 
       test('export path does not start with import path', () => {
@@ -311,7 +311,7 @@ describe('FSx for Lustre File System', () => {
             vpc,
             vpcSubnet,
           });
-        }).toThrowError(`The export path "${exportPath}" is invalid. Expecting the format: s3://{IMPORT_PATH}/optional-prefix`);
+        }).toThrow(`The export path "${exportPath}" is invalid. Expecting the format: s3://{IMPORT_PATH}/optional-prefix`);
       });
 
       test('export path with no import path', () => {
@@ -329,7 +329,7 @@ describe('FSx for Lustre File System', () => {
             vpc,
             vpcSubnet,
           });
-        }).toThrowError('Cannot define an export path without also defining an import path');
+        }).toThrow('Cannot define an export path without also defining an import path');
       });
     });
 
@@ -350,7 +350,7 @@ describe('FSx for Lustre File System', () => {
             vpc,
             vpcSubnet,
           });
-        }).toThrowError('autoImportPolicy is not supported with PERSISTENT_2 deployments');
+        }).toThrow('autoImportPolicy is not supported with PERSISTENT_2 deployments');
       });
 
       test('autoImportPath requires importPath', () => {
@@ -367,7 +367,7 @@ describe('FSx for Lustre File System', () => {
             vpc,
             vpcSubnet,
           });
-        }).toThrowError('autoImportPolicy requires importPath to be defined');
+        }).toThrow('autoImportPolicy requires importPath to be defined');
       });
     });
 
@@ -444,7 +444,7 @@ describe('FSx for Lustre File System', () => {
             vpc,
             vpcSubnet,
           });
-        }).toThrowError(`importedFileChunkSize cannot be ${size} MiB. It must be a value from 1 to 512,000 MiB`);
+        }).toThrow(`importedFileChunkSize cannot be ${size} MiB. It must be a value from 1 to 512,000 MiB`);
       });
     });
 
@@ -508,7 +508,7 @@ describe('FSx for Lustre File System', () => {
             vpc,
             vpcSubnet,
           });
-        }).toThrowError(`The import path "${importPath}" is invalid. Expecting the format: s3://{BUCKET_NAME}/optional-prefix`);
+        }).toThrow(`The import path "${importPath}" is invalid. Expecting the format: s3://{BUCKET_NAME}/optional-prefix`);
       });
 
       test('invalid import path length', () => {
@@ -527,7 +527,7 @@ describe('FSx for Lustre File System', () => {
             vpc,
             vpcSubnet,
           });
-        }).toThrowError(`The import path "${importPath}" exceeds the maximum length of 900 characters`);
+        }).toThrow(`The import path "${importPath}" exceeds the maximum length of 900 characters`);
       });
     });
 
@@ -599,7 +599,7 @@ describe('FSx for Lustre File System', () => {
             vpc,
             vpcSubnet,
           });
-        }).toThrowError('perUnitStorageThroughput must be 50, 100, or 200 MB/s/TiB for PERSISTENT_1 SSD storage, got: ' + invalidValue);
+        }).toThrow('perUnitStorageThroughput must be 50, 100, or 200 MB/s/TiB for PERSISTENT_1 SSD storage, got: ' + invalidValue);
       });
 
       test.each([12, 40])('valid perUnitStorageThroughput of %d for HDD storage', (validValue: number) => {
@@ -656,7 +656,7 @@ describe('FSx for Lustre File System', () => {
             vpc,
             vpcSubnet,
           });
-        }).toThrowError('perUnitStorageThroughput can only be set for the PERSISTENT_1/PERSISTENT_2 deployment types');
+        }).toThrow('perUnitStorageThroughput can only be set for the PERSISTENT_1/PERSISTENT_2 deployment types');
       });
     });
 
@@ -706,7 +706,7 @@ describe('FSx for Lustre File System', () => {
             vpc,
             vpcSubnet,
           });
-        }).toThrowError('perUnitStorageThroughput must be 125, 250, 500 or 1000 MB/s/TiB for PERSISTENT_2 deployment type, got: ' + invalidValue);
+        }).toThrow('perUnitStorageThroughput must be 125, 250, 500 or 1000 MB/s/TiB for PERSISTENT_2 deployment type, got: ' + invalidValue);
       });
     });
 
@@ -760,7 +760,7 @@ describe('FSx for Lustre File System', () => {
             vpc,
             vpcSubnet,
           });
-        }).toThrowError(/storageCapacity must be 1,200, 2,400, or a multiple of 2,400/);
+        }).toThrow(/storageCapacity must be 1,200, 2,400, or a multiple of 2,400/);
       });
 
       test.each([1200, 2400, 3600, 7200])('proper multiple for storage capacity using %d with SCRATCH_1', (validValue: number) => {
@@ -795,7 +795,7 @@ describe('FSx for Lustre File System', () => {
             vpc,
             vpcSubnet,
           });
-        }).toThrowError(/storageCapacity must be 1,200, 2,400, 3,600, or a multiple of 3,600/);
+        }).toThrow(/storageCapacity must be 1,200, 2,400, 3,600, or a multiple of 3,600/);
       });
 
       test.each([

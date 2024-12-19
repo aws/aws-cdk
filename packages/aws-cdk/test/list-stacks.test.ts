@@ -514,5 +514,5 @@ class MockStack {
         },
       ],
     },
-  }
+  };
 }

@@ -687,6 +687,6 @@ describe('IntegTest watchIntegTest', () => {
         }),
       });
     // THEN
-    }).toThrowError('xxxxx.test-with-error is a new test. Please use the IntegTest construct to configure the test\nhttps://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/integ-tests-alpha');
+    }).toThrow('xxxxx.test-with-error is a new test. Please use the IntegTest construct to configure the test\nhttps://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/integ-tests-alpha');
   });
 });

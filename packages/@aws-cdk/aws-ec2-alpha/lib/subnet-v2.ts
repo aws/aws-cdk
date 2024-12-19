@@ -164,7 +164,7 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
       /**
       *  Current route table associated with this subnet
       */
-      public readonly routeTable: IRouteTable = { routeTableId: attrs.routeTableId! }
+      public readonly routeTable: IRouteTable = { routeTableId: attrs.routeTableId! };
 
       /**
       * Associate a Network ACL with this subnet

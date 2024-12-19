@@ -369,7 +369,7 @@ describe('', () => {
         assembly.getStackByName('PipelineStackA-support-eu-south-1');
         expect(() => {
           assembly.getStackByName('PipelineStackB-support-eu-south-1');
-        }).toThrowError(/Unable to find stack with stack name/);
+        }).toThrow(/Unable to find stack with stack name/);
 
       });
 

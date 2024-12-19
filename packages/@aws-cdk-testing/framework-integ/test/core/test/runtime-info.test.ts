@@ -120,17 +120,17 @@ describe('constructInfoForStack', () => {
 
         new class extends Stack {
           // @ts-ignore
-          private static readonly [JSII_RUNTIME_SYMBOL] = { fqn: '@aws-cdk/test.TestStackInsideStack', version: localCdkVersion() }
+          private static readonly [JSII_RUNTIME_SYMBOL] = { fqn: '@aws-cdk/test.TestStackInsideStack', version: localCdkVersion() };
         }(this, 'StackInsideStack');
 
         new class extends NestedStack {
           // @ts-ignore
-          private static readonly [JSII_RUNTIME_SYMBOL] = { fqn: '@aws-cdk/test.TestNestedStackInsideStack', version: localCdkVersion() }
+          private static readonly [JSII_RUNTIME_SYMBOL] = { fqn: '@aws-cdk/test.TestNestedStackInsideStack', version: localCdkVersion() };
         }(this, 'NestedStackInsideStack');
 
         new class extends Stage {
           // @ts-ignore
-          private static readonly [JSII_RUNTIME_SYMBOL] = { fqn: '@aws-cdk/test.TestStageInsideStack', version: localCdkVersion() }
+          private static readonly [JSII_RUNTIME_SYMBOL] = { fqn: '@aws-cdk/test.TestStageInsideStack', version: localCdkVersion() };
         }(this, 'StageInsideStack');
       }
     }(stack, 'ParentConstruct');
@@ -165,7 +165,7 @@ describe('constructInfoForStack', () => {
 
 class TestConstruct extends Construct {
   // @ts-ignore
-  private static readonly [JSII_RUNTIME_SYMBOL] = { fqn: '@aws-cdk/test.TestConstruct', version: localCdkVersion() }
+  private static readonly [JSII_RUNTIME_SYMBOL] = { fqn: '@aws-cdk/test.TestConstruct', version: localCdkVersion() };
 }
 
 /**

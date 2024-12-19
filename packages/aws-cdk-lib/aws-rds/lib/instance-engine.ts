@@ -416,20 +416,20 @@ export class MariaDbEngineVersion {
    * Version "10.4.27"
    * @deprecated MariaDB 10.4.27 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_10_4_27 = MariaDbEngineVersion.of('10.4.27', '10.4')
+  public static readonly VER_10_4_27 = MariaDbEngineVersion.of('10.4.27', '10.4');
   /**
    * Version "10.4.28"
    * @deprecated MariaDB 10.4.28 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_10_4_28 = MariaDbEngineVersion.of('10.4.28', '10.4')
+  public static readonly VER_10_4_28 = MariaDbEngineVersion.of('10.4.28', '10.4');
   /** Version "10.4.29". */
-  public static readonly VER_10_4_29 = MariaDbEngineVersion.of('10.4.29', '10.4')
+  public static readonly VER_10_4_29 = MariaDbEngineVersion.of('10.4.29', '10.4');
   /** Version "10.4.30". */
-  public static readonly VER_10_4_30 = MariaDbEngineVersion.of('10.4.30', '10.4')
+  public static readonly VER_10_4_30 = MariaDbEngineVersion.of('10.4.30', '10.4');
   /** Version "10.4.31". */
-  public static readonly VER_10_4_31 = MariaDbEngineVersion.of('10.4.31', '10.4')
+  public static readonly VER_10_4_31 = MariaDbEngineVersion.of('10.4.31', '10.4');
   /** Version "10.4.32". */
-  public static readonly VER_10_4_32 = MariaDbEngineVersion.of('10.4.32', '10.4')
+  public static readonly VER_10_4_32 = MariaDbEngineVersion.of('10.4.32', '10.4');
   /** Version "10.4.33". */
   public static readonly VER_10_4_33 = MariaDbEngineVersion.of('10.4.33', '10.4');
   /** Version "10.4.34". */

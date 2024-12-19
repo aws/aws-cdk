@@ -7,7 +7,7 @@ import { stackVariableNamespace } from '../private/identifiers';
  * Translate stack outputs to CodePipeline variable references
  */
 export class StackOutputsMap {
-  private queries: PipelineQueries
+  private queries: PipelineQueries;
 
   constructor(pipeline: PipelineBase) {
     this.queries = new PipelineQueries(pipeline);

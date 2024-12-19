@@ -378,7 +378,7 @@ describe('WorkGraph', () => {
     const graph = new WorkGraph();
     addTestArtifactsToGraph(toDeploy, graph);
 
-    await expect(graph.doParallel(concurrency, callbacks)).rejects.toThrowError(expectedError);
+    await expect(graph.doParallel(concurrency, callbacks)).rejects.toThrow(expectedError);
 
     expect(actionedAssets).toStrictEqual(expected);
   });
@@ -414,7 +414,7 @@ describe('WorkGraph', () => {
     const graph = new WorkGraph();
     addTestArtifactsToGraph(toDeploy, graph);
 
-    await expect(graph.doParallel(1, callbacks)).rejects.toThrowError(new RegExp(`Unable to make progress.*${expectedError}`));
+    await expect(graph.doParallel(1, callbacks)).rejects.toThrow(new RegExp(`Unable to make progress.*${expectedError}`));
   });
 });
 

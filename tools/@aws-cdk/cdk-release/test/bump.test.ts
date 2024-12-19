@@ -38,7 +38,7 @@ describe('stable versions', () => {
 
     const versionPath = path.join(process.cwd(), 'version.json');
     const version = '{\n  "version": "1.3.0"\n}';
-    expect(mockWriteFile).toBeCalledWith(expect.any(Object), versionPath, version);
+    expect(mockWriteFile).toHaveBeenCalledWith(expect.any(Object), versionPath, version);
   });
 
 });
@@ -81,7 +81,7 @@ describe('alpha versions', () => {
 
     const versionPath = path.join(process.cwd(), 'version.json');
     const version = '{\n  "version": "1.3.0",\n  "alphaVersion": "1.3.0-alpha.0"\n}';
-    expect(mockWriteFile).toBeCalledWith(expect.any(Object), versionPath, version);
+    expect(mockWriteFile).toHaveBeenCalledWith(expect.any(Object), versionPath, version);
   });
 
 });
