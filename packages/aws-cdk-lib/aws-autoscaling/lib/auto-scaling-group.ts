@@ -1115,7 +1115,7 @@ export enum CapacityDistributionStrategy {
   /**
    * If launches fail in an Availability Zone, Auto Scaling will attempt to launch in another healthy Availability Zone instead.
    */
-  BALANCED_BEST_EFFORT= 'balanced-best-effort',
+  BALANCED_BEST_EFFORT = 'balanced-best-effort',
 }
 
 abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGroup {
