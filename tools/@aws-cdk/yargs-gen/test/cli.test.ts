@@ -1,4 +1,7 @@
-import { CliConfig, renderYargs } from '../lib';
+import { $E, expr, ThingSymbol } from '@cdklabs/typewriter';
+import { CliConfig, CliHelpers, renderYargs } from '../lib';
+
+const YARGS_HELPERS = new CliHelpers('./util/yargs-helpers');
 
 describe('render', () => {
   test('can generate global options', async () => {
@@ -15,30 +18,22 @@ describe('render', () => {
           type: 'array',
           alias: 't',
           desc: 'text for three',
-          nargs: 1,
-          requiresArg: true,
         },
       },
       commands: {},
     };
 
-    expect(await renderYargs(config)).toMatchInlineSnapshot(`
+    expect(await renderYargs(config, YARGS_HELPERS)).toMatchInlineSnapshot(`
       "// -------------------------------------------------------------------------------------------
       // GENERATED FROM packages/aws-cdk/lib/config.ts.
       // Do not edit by hand; all changes will be overwritten at build time from the config file.
       // -------------------------------------------------------------------------------------------
-      /* eslint-disable @typescript-eslint/comma-dangle, comma-spacing, max-len, quotes, quote-props */
+      /* eslint-disable @stylistic/comma-dangle, @stylistic/comma-spacing, @stylistic/max-len, @stylistic/quotes, @stylistic/quote-props */
       import { Argv } from 'yargs';
+      import * as helpers from './util/yargs-helpers';
 
       // @ts-ignore TS6133
-      export function parseCommandLineArguments(
-        args: Array<string>,
-        browserDefault: string,
-        availableInitLanguages: Array<string>,
-        migrateSupportedLanguages: Array<string>,
-        version: string,
-        yargsNegativeAlias: any
-      ): any {
+      export function parseCommandLineArguments(args: Array<string>): any {
         return yargs
           .env('CDK')
           .usage('Usage: cdk -a <cdk-app> COMMAND')
@@ -59,7 +54,7 @@ describe('render', () => {
             nargs: 1,
             requiresArg: true,
           })
-          .version(version)
+          .version(helpers.cliVersion())
           .demandCommand(1, '')
           .recommendCommands()
           .help()
@@ -72,5 +67,87 @@ describe('render', () => {
       const yargs = require('yargs');
       "
     `);
+  });
+
+  test('can generate negativeAlias', async () => {
+    const config: CliConfig = {
+      globalOptions: {},
+      commands: {
+        test: {
+          description: 'the action under test',
+          options: {
+            one: {
+              type: 'boolean',
+              alias: 'o',
+              desc: 'text for one',
+              negativeAlias: 'O',
+            },
+          },
+        },
+      },
+    };
+
+    expect(await renderYargs(config, YARGS_HELPERS)).toMatchInlineSnapshot(`
+      "// -------------------------------------------------------------------------------------------
+      // GENERATED FROM packages/aws-cdk/lib/config.ts.
+      // Do not edit by hand; all changes will be overwritten at build time from the config file.
+      // -------------------------------------------------------------------------------------------
+      /* eslint-disable @stylistic/comma-dangle, @stylistic/comma-spacing, @stylistic/max-len, @stylistic/quotes, @stylistic/quote-props */
+      import { Argv } from 'yargs';
+      import * as helpers from './util/yargs-helpers';
+
+      // @ts-ignore TS6133
+      export function parseCommandLineArguments(args: Array<string>): any {
+        return yargs
+          .env('CDK')
+          .usage('Usage: cdk -a <cdk-app> COMMAND')
+          .command('test', 'the action under test', (yargs: Argv) =>
+            yargs
+              .option('one', {
+                type: 'boolean',
+                alias: 'o',
+                desc: 'text for one',
+              })
+              .option('O', { type: 'boolean', hidden: true })
+              .middleware(helpers.yargsNegativeAlias('O', 'one'), true)
+          )
+          .version(helpers.cliVersion())
+          .demandCommand(1, '')
+          .recommendCommands()
+          .help()
+          .alias('h', 'help')
+          .epilogue(
+            'If your app has a single stack, there is no need to specify the stack name\\n\\nIf one of cdk.json or ~/.cdk.json exists, options specified there will be used as defaults. Settings in cdk.json take precedence.'
+          )
+          .parse(args);
+      } // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const yargs = require('yargs');
+      "
+    `);
+  });
+
+  test('can pass-through expression unchanged', async () => {
+    const config: CliConfig = {
+      globalOptions: {},
+      commands: {
+        test: {
+          description: 'the action under test',
+          options: {
+            one: {
+              type: 'boolean',
+              default: $E(
+                expr
+                  .sym(new ThingSymbol('banana', YARGS_HELPERS))
+                  .call(expr.lit(1), expr.lit(2), expr.lit(3)),
+              ),
+            },
+          },
+        },
+      },
+    };
+
+    expect(await renderYargs(config, YARGS_HELPERS)).toContain(
+      'default: helpers.banana(1, 2, 3)',
+    );
   });
 });

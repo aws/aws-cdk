@@ -5,6 +5,7 @@ import { loadSharedConfigFiles } from '@smithy/shared-ini-file-loader';
 import { AwsCredentialIdentityProvider, Logger } from '@smithy/types';
 import * as promptly from 'promptly';
 import { ProxyAgent } from 'proxy-agent';
+import { makeCachingProvider } from './provider-caching';
 import type { SdkHttpOptions } from './sdk-provider';
 import { readIfPossible } from './util';
 import { debug } from '../../logging';
@@ -23,6 +24,8 @@ const DEFAULT_TIMEOUT = 300000;
 export class AwsCliCompatible {
   /**
    * Build an AWS CLI-compatible credential chain provider
+   *
+   * The credential chain returned by this function is always caching.
    */
   public static async credentialChainBuilder(
     options: CredentialChainOptions = {},
@@ -33,6 +36,19 @@ export class AwsCliCompatible {
       logger: options.logger,
     };
 
+    // Super hacky solution to https://github.com/aws/aws-cdk/issues/32510, proposed by the SDK team.
+    //
+    // Summary of the problem: we were reading the region from the config file and passing it to
+    // the credential providers. However, in the case of SSO, this makes the credential provider
+    // use that region to do the SSO flow, which is incorrect. The region that should be used for
+    // that is the one set in the sso_session section of the config file.
+    //
+    // The idea here: the "clientConfig" is for configuring the inner auth client directly,
+    // and has the highest priority, whereas "parentClientConfig" is the upper data client
+    // and has lower priority than the sso_region but still higher priority than STS global region.
+    const parentClientConfig = {
+      region: await this.region(options.profile),
+    };
     /**
      * The previous implementation matched AWS CLI behavior:
      *
@@ -43,13 +59,14 @@ export class AwsCliCompatible {
      * environment credentials still take precedence over AWS_PROFILE
      */
     if (options.profile) {
-      return fromIni({
+      return makeCachingProvider(fromIni({
         profile: options.profile,
         ignoreCache: true,
         mfaCodeProvider: tokenCodeFn,
         clientConfig,
+        parentClientConfig,
         logger: options.logger,
-      });
+      }));
     }
 
     const envProfile = process.env.AWS_PROFILE || process.env.AWS_DEFAULT_PROFILE;
@@ -74,10 +91,13 @@ export class AwsCliCompatible {
      * fromContainerMetadata()
      * fromTokenFile()
      * fromInstanceMetadata()
+     *
+     * The NodeProviderChain is already cached.
      */
     const nodeProviderChain = fromNodeProviderChain({
       profile: envProfile,
       clientConfig,
+      parentClientConfig,
       logger: options.logger,
       mfaCodeProvider: tokenCodeFn,
       ignoreCache: true,
