@@ -1,16 +1,25 @@
 import * as childProcess from 'child_process';
 import * as chalk from 'chalk';
 import { debug, print, warning } from '../../lib/logging';
-import { CommandOptions } from '../command-api';
 
 export const command = 'docs';
 export const describe = 'Opens the reference documentation in a browser';
 export const aliases = ['doc'];
 
-export async function realHandler(options: CommandOptions): Promise<number> {
+/**
+ * Options for the docs command
+ */
+export interface DocsOptions {
+  /**
+   * The command to use to open the browser
+   */
+  browser: string;
+}
+
+export async function docs(options: DocsOptions): Promise<number> {
   const url = 'https://docs.aws.amazon.com/cdk/api/v2/';
   print(chalk.green(url));
-  const browserCommand = (options.args.browser as string).replace(/%u/g, url);
+  const browserCommand = (options.browser).replace(/%u/g, url);
   debug(`Opening documentation ${chalk.green(browserCommand)}`);
   return new Promise<number>((resolve, _reject) => {
     childProcess.exec(browserCommand, (err, stdout, stderr) => {
