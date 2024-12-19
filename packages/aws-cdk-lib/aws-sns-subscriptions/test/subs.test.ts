@@ -3,7 +3,7 @@ import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
-import { App, CfnParameter, Duration, RemovalPolicy, Stack, Token } from '../../core';
+import { App, CfnParameter, Duration, RemovalPolicy, Resource, Stack, Token } from '../../core';
 import * as cxapi from '../../cx-api';
 import * as subs from '../lib';
 
@@ -11,6 +11,8 @@ import * as subs from '../lib';
 const restrictSqsDescryption = { [cxapi.SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY]: true };
 let stack: Stack;
 let topic: sns.Topic;
+
+const [optInRegion1, optInRegion2] = ['af-south-1', 'ap-east-1'];
 
 beforeEach(() => {
   stack = new Stack();
@@ -758,6 +760,102 @@ test('queue subscription cross region, queue env agnostic', () => {
     },
   });
 });
+
+describe('queue subscription, cross opt-in region', () => {
+  test('returns default principal if not cross region and region is opt-in', () => {
+    const app = new App();
+    const topicStack = new Stack(app, 'TopicStack', {
+      env: { region: optInRegion1 },
+    });
+    const queueStack = new Stack(app, 'QueueStack', {
+      env: { region: optInRegion1 },
+    });
+
+    const topic1 = new sns.Topic(topicStack, 'Topic', {
+      topicName: 'topicName',
+      displayName: 'displayName',
+    });
+    const queue = new sqs.Queue(queueStack, 'MyQueue');
+
+    topic1.addSubscription(new subs.SqsSubscription(queue));
+
+    Template.fromStack(queueStack).hasResourceProperties('AWS::SQS::QueuePolicy', {
+      PolicyDocument: {
+        Statement: [
+          { Principal: { Service: 'sns.amazonaws.com' } },
+        ],
+      },
+    });
+  });
+
+  test('returns opt-in principal if cross region and topic region is opt-in', () => {
+    const app = new App();
+    const topicStack = new Stack(app, 'TopicStack', {
+      env: { region: optInRegion1 },
+    });
+    const queueStack = new Stack(app, 'QueueStack');
+
+    const topic1 = new sns.Topic(topicStack, 'Topic', {
+      topicName: 'topicName',
+      displayName: 'displayName',
+    });
+    const queue = new sqs.Queue(queueStack, 'MyQueue');
+
+    topic1.addSubscription(new subs.SqsSubscription(queue));
+
+    Template.fromStack(queueStack).hasResourceProperties('AWS::SQS::QueuePolicy', {
+      PolicyDocument: {
+        Statement: [
+          { Principal: { Service: `sns.${optInRegion1}.amazonaws.com` } },
+        ],
+      },
+    });
+  });
+
+  test('returns opt-in principal if cross region and queue region is opt-in', () => {
+    const app = new App();
+    const topicStack = new Stack(app, 'TopicStack');
+    const queueStack = new Stack(app, 'QueueStack', {
+      env: { region: optInRegion1 },
+    });
+
+    const topic1 = new sns.Topic(topicStack, 'Topic', {
+      topicName: 'topicName',
+      displayName: 'displayName',
+    });
+    const queue = new sqs.Queue(queueStack, 'MyQueue');
+
+    topic1.addSubscription(new subs.SqsSubscription(queue));
+
+    Template.fromStack(queueStack).hasResourceProperties('AWS::SQS::QueuePolicy', {
+      PolicyDocument: {
+        Statement: [
+          { Principal: { Service: `sns.${optInRegion1}.amazonaws.com` } },
+        ],
+      },
+    });
+  });
+
+  test('throws if cross region and both regions are opt-in', () => {
+    const app = new App();
+    const topicStack = new Stack(app, 'TopicStack', {
+      env: { region: optInRegion1 },
+    });
+    const queueStack = new Stack(app, 'QueueStack', {
+      env: { region: optInRegion2 },
+    });
+
+    const topic1 = new sns.Topic(topicStack, 'Topic', {
+      topicName: 'topicName',
+      displayName: 'displayName',
+    });
+    const queue = new sqs.Queue(queueStack, 'MyQueue');
+
+    expect(() => topic1.addSubscription(new subs.SqsSubscription(queue)))
+      .toThrow(/Cross region delivery is not supported if both regions are opt-in/);
+  });
+});
+
 test('queue subscription with user provided dlq', () => {
   const queue = new sqs.Queue(stack, 'MyQueue');
   const dlQueue = new sqs.Queue(stack, 'DeadLetterQueue', {
@@ -1573,6 +1671,102 @@ test('lambda subscription, cross region', () => {
   });
 });
 
+describe('lambda subscription, cross opt-in region', () => {
+  test('returns default principal if not cross region and region is opt-in', () => {
+    const app = new App();
+    const topicStack = new Stack(app, 'TopicStack', {
+      env: { region: optInRegion1 },
+    });
+    const lambdaStack = new Stack(app, 'LambdaStack', {
+      env: { region: optInRegion1 },
+    });
+
+    const topic1 = new sns.Topic(topicStack, 'Topic', {
+      topicName: 'topicName',
+      displayName: 'displayName',
+    });
+    const func = new lambda.Function(lambdaStack, 'MyFunc', {
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
+    });
+
+    topic1.addSubscription(new subs.LambdaSubscription(func));
+
+    Template.fromStack(lambdaStack).hasResourceProperties('AWS::Lambda::Permission', {
+      Principal: 'sns.amazonaws.com',
+    });
+  });
+
+  test('returns opt-in principal if cross region and topic region is opt-in', () => {
+    const app = new App();
+    const topicStack = new Stack(app, 'TopicStack', {
+      env: { region: optInRegion1 },
+    });
+    const lambdaStack = new Stack(app, 'LambdaStack');
+
+    const topic1 = new sns.Topic(topicStack, 'Topic', {
+      topicName: 'topicName',
+      displayName: 'displayName',
+    });
+    const func = new lambda.Function(lambdaStack, 'MyFunc', {
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
+    });
+
+    topic1.addSubscription(new subs.LambdaSubscription(func));
+
+    Template.fromStack(lambdaStack).hasResourceProperties('AWS::Lambda::Permission', {
+      Principal: `sns.${optInRegion1}.amazonaws.com`,
+    });
+  });
+
+  test('throws if cross region and lambda region is opt-in', () => {
+    const app = new App();
+    const topicStack = new Stack(app, 'TopicStack');
+    const lambdaStack = new Stack(app, 'LambdaStack', {
+      env: { region: optInRegion1 },
+    });
+
+    const topic1 = new sns.Topic(topicStack, 'Topic', {
+      topicName: 'topicName',
+      displayName: 'displayName',
+    });
+    const func = new lambda.Function(lambdaStack, 'MyFunc', {
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
+    });
+
+    expect(() => topic1.addSubscription(new subs.LambdaSubscription(func)))
+      .toThrow(/Cross region delivery is not supported for Lambda functions belonging to an opt-in region/);
+  });
+
+  test('throws if cross region and both regions are opt-in', () => {
+    const app = new App();
+    const topicStack = new Stack(app, 'TopicStack', {
+      env: { region: optInRegion1 },
+    });
+    const lambdaStack = new Stack(app, 'LambdaStack', {
+      env: { region: optInRegion2 },
+    });
+
+    const topic1 = new sns.Topic(topicStack, 'Topic', {
+      topicName: 'topicName',
+      displayName: 'displayName',
+    });
+    const func = new lambda.Function(lambdaStack, 'MyFunc', {
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
+    });
+
+    expect(() => topic1.addSubscription(new subs.LambdaSubscription(func)))
+      .toThrow(/Cross region delivery is not supported if both regions are opt-in/);
+  });
+});
+
 test('email subscription', () => {
   topic.addSubscription(new subs.EmailSubscription('foo@bar.com'));
 
@@ -2135,4 +2329,24 @@ test('sms subscription with unresolved', () => {
       },
     },
   });
+});
+
+test('generateGrantPrincipal throws if subsriber is not recognized as a supported type', () => {
+  class DummyQueue extends Resource {
+  }
+
+  const app = new App();
+  const topicStack = new Stack(app, 'TopicStack');
+  const queueStack = new Stack(app, 'QueueStack', {
+    env: { region: optInRegion2 },
+  });
+
+  const topic1 = new sns.Topic(topicStack, 'Topic', {
+    topicName: 'topicName',
+    displayName: 'displayName',
+  });
+  const queue = new DummyQueue(queueStack, 'MyDummyQueue');
+
+  expect(() => topic1.addSubscription(new subs.SqsSubscription(queue as sqs.Queue)))
+    .toThrow(/Unknown subscriber type for resource "MyDummyQueue"/);
 });

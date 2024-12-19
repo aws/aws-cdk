@@ -33,6 +33,8 @@ import { Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn, IAspec
 import { ValidationError } from '../../core/lib/errors';
 import { LAMBDA_RECOGNIZE_LAYER_VERSION } from '../../cx-api';
 
+const FUNCTION_SYMBOL = Symbol.for('@aws-cdk/aws-lambda.Function');
+
 /**
  * X-Ray Tracing Modes (https://docs.aws.amazon.com/lambda/latest/dg/API_TracingConfig.html)
  */
@@ -699,6 +701,13 @@ export class Function extends FunctionBase {
   }
 
   /**
+   * Returns whether the given resource is a Function.
+   */
+  public static isFunction(x: any): x is Function {
+    return FUNCTION_SYMBOL in x;
+  }
+
+  /**
    * Import a lambda function into the CDK using its name
    */
   public static fromFunctionName(scope: Construct, id: string, functionName: string): IFunction {
@@ -755,6 +764,8 @@ export class Function extends FunctionBase {
         super(s, i, {
           environmentFromArn: functionArn,
         });
+
+        Object.defineProperty(this, FUNCTION_SYMBOL, { value: true });
 
         this.grantPrincipal = role || new iam.UnknownPrincipal({ resource: this });
 
@@ -915,6 +926,8 @@ export class Function extends FunctionBase {
     super(scope, id, {
       physicalName: props.functionName,
     });
+
+    Object.defineProperty(this, FUNCTION_SYMBOL, { value: true });
 
     if (props.functionName && !Token.isUnresolved(props.functionName)) {
       if (props.functionName.length > 64) {
