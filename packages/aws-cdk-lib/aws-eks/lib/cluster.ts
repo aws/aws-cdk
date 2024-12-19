@@ -21,6 +21,7 @@ import { ServiceAccount, ServiceAccountOptions } from './service-account';
 import { LifecycleLabel, renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
 import * as autoscaling from '../../aws-autoscaling';
 import * as ec2 from '../../aws-ec2';
+import { CidrBlock } from '../../aws-ec2/lib/network-util';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
@@ -702,6 +703,19 @@ export interface ClusterOptions extends CommonClusterOptions {
    * @default AuthenticationMode.CONFIG_MAP
    */
   readonly authenticationMode?: AuthenticationMode;
+
+  /**
+   * IPv4 CIDR blocks defining the expected address range of hybrid nodes
+   * that will join the cluster.
+   * @default - none
+   */
+  readonly remoteNodeNetworks?: RemoteNodeNetwork[];
+
+  /**
+   * IPv4 CIDR blocks for Pods running Kubernetes webhooks on hybrid nodes.
+   * @default - none
+   */
+  readonly remotePodNetworks?: RemotePodNetwork[];
 }
 
 /**
@@ -1666,6 +1680,74 @@ export class Cluster extends ClusterBase {
       throw new Error('Cannot specify serviceIpv4Cidr with ipFamily equal to IpFamily.IP_V6');
     }
 
+    if (props.remoteNodeNetworks) {
+      // validate that no two CIDRs overlap within the same remote node network
+      for (let i = 0; i < props.remoteNodeNetworks.length; i++) {
+        if (props.remoteNodeNetworks[i].cidrs.length > 1) {
+          for (let j = 0; j < props.remoteNodeNetworks[i].cidrs.length; j++) {
+            for (let k = j + 1; k < props.remoteNodeNetworks[i].cidrs.length; k++) {
+              const overlap = validateCidrPairOverlap(props.remoteNodeNetworks[i].cidrs[j], props.remoteNodeNetworks[i].cidrs[k]);
+              if (overlap) {
+                throw new Error(`CIDR ${props.remoteNodeNetworks[i].cidrs[j]} should not overlap with CIDR ${props.remoteNodeNetworks[i].cidrs[k]} in remote node network #${i+1}`);
+              }
+            }
+          }
+        }
+      }
+
+      // validate that no two CIDRs overlap across different remote node networks
+      for (let i = 0; i < props.remoteNodeNetworks.length; i++) {
+        for (let j = i + 1; j < props.remoteNodeNetworks.length; j++) {
+          const [overlap, remoteNodeCidr1, remoteNodeCidr2] = validateCidrBlocksOverlap(
+            props.remoteNodeNetworks[i].cidrs,
+            props.remoteNodeNetworks[j].cidrs,
+          );
+          if (overlap) {
+            throw new Error(`CIDR block ${remoteNodeCidr1} in remote node network #${i+1} should not overlap with CIDR block ${remoteNodeCidr2} in remote node network #${j+1}`);
+          }
+        }
+      }
+
+      if (props.remotePodNetworks) {
+        // validate that no two CIDRs overlap within the same remote pod network
+        for (let i = 0; i < props.remotePodNetworks.length; i++) {
+          if (props.remotePodNetworks[i].cidrs.length > 1) {
+            for (let j = 0; j < props.remotePodNetworks[i].cidrs.length; j++) {
+              for (let k = j + 1; k < props.remotePodNetworks[i].cidrs.length; k++) {
+                const overlap = validateCidrPairOverlap(props.remotePodNetworks[i].cidrs[j], props.remotePodNetworks[i].cidrs[k]);
+                if (overlap) {
+                  throw new Error(`CIDR ${props.remotePodNetworks[i].cidrs[j]} should not overlap with CIDR ${props.remotePodNetworks[i].cidrs[k]} in remote pod network #${i+1}`);
+                }
+              }
+            }
+          }
+        }
+
+        // validate that no two CIDRs overlap across different remote pod networks
+        for (let i = 0; i < props.remotePodNetworks.length; i++) {
+          for (let j = i + 1; j < props.remotePodNetworks.length; j++) {
+            const [overlap, remotePodCidr1, remotePodCidr2] = validateCidrBlocksOverlap(
+              props.remotePodNetworks[i].cidrs,
+              props.remotePodNetworks[j].cidrs,
+            );
+            if (overlap) {
+              throw new Error(`CIDR block ${remotePodCidr1} in remote pod network #${i} should not overlap with CIDR block ${remotePodCidr2} in remote pod network #${j}`);
+            }
+          }
+        }
+
+        // validate that no two CIDRs overlap between a given remote node network and remote pod network
+        for (const nodeNetwork of props.remoteNodeNetworks) {
+          for (const podNetwork of props.remotePodNetworks) {
+            const [overlap, remoteNodeCidr, remotePodCidr] = validateCidrBlocksOverlap(nodeNetwork.cidrs, podNetwork.cidrs);
+            if (overlap) {
+              throw new Error(`Remote node network CIDR block ${remoteNodeCidr} should not overlap with remote pod network CIDR block ${remotePodCidr}`);
+            }
+          }
+        }
+      }
+    }
+
     this.authenticationMode = props.authenticationMode;
 
     const resource = this._clusterResource = new ClusterResource(this, 'Resource', {
@@ -1677,6 +1759,14 @@ export class Cluster extends ClusterBase {
         authenticationMode: props.authenticationMode,
         bootstrapClusterCreatorAdminPermissions: props.bootstrapClusterCreatorAdminPermissions,
       },
+      ...(props.remoteNodeNetworks ? {
+        remoteNetworkConfig: {
+          remoteNodeNetworks: props.remoteNodeNetworks,
+          ...(props.remotePodNetworks ? {
+            remotePodNetworks: props.remotePodNetworks,
+          }: {}),
+        },
+      } : {}),
       resourcesVpcConfig: {
         securityGroupIds: [securityGroup.securityGroupId],
         subnetIds,
@@ -2391,6 +2481,30 @@ export interface AutoScalingGroupOptions {
 }
 
 /**
+ * Network configuration of nodes run on-premises with EKS Hybrid Nodes.
+ */
+export interface RemoteNodeNetwork {
+  /**
+   * Specifies the list of remote node CIDRs.
+   *
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-eks-cluster-remotenodenetwork.html#cfn-eks-cluster-remotenodenetwork-cidrs
+   */
+  readonly cidrs: string[];
+}
+
+/**
+ * Network configuration of pods run on-premises with EKS Hybrid Nodes.
+ */
+export interface RemotePodNetwork {
+  /**
+   * Specifies the list of remote pod CIDRs.
+   *
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-eks-cluster-remotepodnetwork.html#cfn-eks-cluster-remotepodnetwork-cidrs
+   */
+  readonly cidrs: string[];
+}
+
+/**
  * Import a cluster to use in another stack
  */
 class ImportedCluster extends ClusterBase {
@@ -2672,4 +2786,35 @@ function cpuArchForInstanceType(instanceType: ec2.InstanceType) {
 
 function flatten<A>(xss: A[][]): A[] {
   return Array.prototype.concat.call([], ...xss);
+}
+
+function validateCidrBlocksOverlap(cidrBlocks1: string[], cidrBlocks2: string[]): [boolean, string, string] {
+  for (const cidr1 of cidrBlocks1) {
+    for (const cidr2 of cidrBlocks2) {
+      const overlap = validateCidrPairOverlap(cidr1, cidr2);
+      if (overlap) {
+        return [true, cidr1, cidr2];
+      }
+    }
+  }
+
+  return [false, '', ''];
+}
+
+function validateCidrPairOverlap(cidr1: string, cidr2: string): boolean {
+  const cidr1Range = new CidrBlock(cidr1);
+  const cidr1IpRange: [string, string] = [cidr1Range.minIp(), cidr1Range.maxIp()];
+
+  const cidr2Range = new CidrBlock(cidr2);
+  const cidr2IpRange: [string, string] = [cidr2Range.minIp(), cidr2Range.maxIp()];
+
+  return rangesOverlap(cidr1IpRange, cidr2IpRange);
+}
+
+function rangesOverlap(range1: [string, string], range2: [string, string]): boolean {
+  const [start1, end1] = range1;
+  const [start2, end2] = range2;
+
+  // Check if ranges overlap
+  return start1 <= end2 && start2 <= end1;
 }
