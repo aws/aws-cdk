@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "RemovalPoliciesTest/DefaultTest": {
+      "stacks": [
+        "TestStack"
+      ],
+      "assertionStack": "RemovalPoliciesTest/DefaultTest/DeployAssert",
+      "assertionStackName": "RemovalPoliciesTestDefaultTestDeployAssertF0ACFC0A"
+    }
+  }
+}

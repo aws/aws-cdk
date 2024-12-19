@@ -9,19 +9,17 @@ import { RemovalPolicy } from './removal-policy';
 export interface RemovalPolicyProps {
   /**
    * Apply the removal policy only to specific resource types.
-   * You can specify either the CloudFormation resource type (e.g., 'AWS::S3::Bucket')
-   * or the CDK resource class (e.g., CfnBucket).
+   * Specify the CloudFormation resource type (e.g., 'AWS::S3::Bucket').
    * @default - apply to all resources
    */
-  readonly applyToResourceTypes?: Array<string | { new (...args: any[]): CfnResource }>;
+  readonly applyToResourceTypes?: string[];
 
   /**
    * Exclude specific resource types from the removal policy.
-   * You can specify either the CloudFormation resource type (e.g., 'AWS::S3::Bucket')
-   * or the CDK resource class (e.g., CfnBucket).
+   * Specify the CloudFormation resource type (e.g., 'AWS::S3::Bucket').
    * @default - no exclusions
    */
-  readonly excludeResourceTypes?: Array<string | { new (...args: any[]): CfnResource }>;
+  readonly excludeResourceTypes?: string[];
 }
 
 /**
@@ -33,22 +31,8 @@ class RemovalPolicyAspect implements IAspect {
     private readonly props: RemovalPolicyProps = {},
   ) {}
 
-  private getResourceTypeFromClass(resourceClass: { new (...args: any[]): CfnResource }): string {
-    // Create a prototype instance to get the type without instantiating
-    const prototype = resourceClass.prototype;
-    if ('cfnResourceType' in prototype) {
-      return prototype.cfnResourceType;
-    }
-    // Fallback to checking constructor properties
-    const instance = Object.create(prototype);
-    return instance.constructor.CFN_RESOURCE_TYPE_NAME ?? '';
-  }
-
-  private matchesResourceType(resourceType: string, pattern: string | { new (...args: any[]): CfnResource }): boolean {
-    if (typeof pattern === 'string') {
-      return resourceType === pattern;
-    }
-    return resourceType === this.getResourceTypeFromClass(pattern);
+  private matchesResourceType(resourceType: string, patterns?: string[]): boolean {
+    return patterns ? patterns.includes(resourceType) : false;
   }
 
   public visit(node: IConstruct): void {
@@ -60,13 +44,15 @@ class RemovalPolicyAspect implements IAspect {
     const resourceType = cfnResource.cfnResourceType;
 
     // Skip if resource type is excluded
-    if (this.props.excludeResourceTypes?.some(pattern => this.matchesResourceType(resourceType, pattern))) {
+    if (this.matchesResourceType(resourceType, this.props.excludeResourceTypes)) {
       return;
     }
 
     // Skip if specific resource types are specified and this one isn't included
-    if (this.props.applyToResourceTypes?.length &&
-        !this.props.applyToResourceTypes.some(pattern => this.matchesResourceType(resourceType, pattern))) {
+    if (
+      this.props.applyToResourceTypes?.length &&
+      !this.matchesResourceType(resourceType, this.props.applyToResourceTypes)
+    ) {
       return;
     }
 
