@@ -1,5 +1,5 @@
 /**
- * Represents a general toolkit error in the AWS CDK CLI.
+ * Represents a general toolkit error in the AWS CDK Toolkit.
  */
 class ToolkitError extends Error {
   /**
