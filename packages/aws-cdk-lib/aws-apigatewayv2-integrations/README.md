@@ -11,6 +11,7 @@
 - [WebSocket APIs](#websocket-apis)
   - [Lambda WebSocket Integration](#lambda-websocket-integration)
   - [AWS WebSocket Integration](#aws-websocket-integration)
+  - [Mock WebSocket Integration](#mock-websocket-integration)
 - [Import Issues](#import-issues)
   - [DotNet Namespace](#dotnet-namespace)
   - [Java Package](#java-package)
@@ -311,6 +312,30 @@ webSocketApi.addRoute('$connect', {
 
 You can also set additional properties to change the behavior of your integration, such as `contentHandling`.
 See [Working with binary media types for WebSocket APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-develop-binary-media-types.html).
+
+### Mock WebSocket Integration
+
+API Gateway also allows the creation of mock integrations, allowing you to generate API responses without the need for an integration backend. These responses can range in complexity from a static message to a templated response with parameters extracted from the input request or the integration's context. See [Set up data mapping for WebSocket APIs in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-mapping-template-reference.html) and [WebSocket API mapping template reference for API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-mapping-template-reference.html) for more information.
+
+```ts
+import { WebSocketMockIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
+
+const webSocketApi = new apigwv2.WebSocketApi(this, 'mywsapi');
+new apigwv2.WebSocketStage(this, 'mystage', {
+  webSocketApi,
+  stageName: 'dev',
+  autoDeploy: true,
+});
+
+
+webSocketApi.addRoute('sendMessage', {
+  integration: new WebSocketMockIntegration('DefaultIntegration', {
+    requestTemplates: { 'application/json': JSON.stringify({ statusCode: 200 }) },
+    templateSelectionExpression: '\\$default',
+  }),
+  returnResponse: true,
+});
+```
 
 ## Import Issues
 
