@@ -101,6 +101,18 @@
             "data": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
+        "/aws-cdk-ec2-lt-metadata-1/LTWithNetworkInterfaces/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LTWithNetworkInterfacesC793C8F4"
+          }
+        ],
+        "/aws-cdk-ec2-lt-metadata-1/SsmParameterValue:--aws--service--ami-amazon-linux-latest--al2023-ami-kernel-6.1-x86_64:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ],
         "/aws-cdk-ec2-lt-metadata-1/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
