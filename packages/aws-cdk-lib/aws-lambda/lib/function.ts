@@ -647,8 +647,6 @@ export interface FunctionProps extends FunctionOptions {
    *
    * To sample and record incoming requests, set tracingMode to Active
    *
-   * @default TracingMode.PASS_THROUGH
-   *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-tracingconfig.html#cfn-lambda-function-tracingconfig-mode
    */
   readonly tracingMode?: TracingMode;
@@ -1098,7 +1096,7 @@ export class Function extends FunctionBase {
       snapStart: this.configureSnapStart(props),
       loggingConfig: this.getLoggingConfig(props),
       recursiveLoop: props.recursiveLoop,
-      tracingConfig: props.tracingMode ? { mode: props.tracingMode } : { mode: TracingMode.PASS_THROUGH },
+      tracingConfig: props.tracingMode ? { mode: props.tracingMode } : undefined,
     });
 
     if ((props.tracing !== undefined) || (props.adotInstrumentation !== undefined)) {

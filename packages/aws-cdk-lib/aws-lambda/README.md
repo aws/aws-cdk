@@ -1454,7 +1454,7 @@ new lambda.Function(this, 'Function', {
 Lambda functions support X-Ray tracing configuration through the `tracingMode` property. You can specify one of two tracing modes:
 
 * `ACTIVE` - Sets the X-Ray tracing mode to active.
-* `PASS_THROUGH` (default) - Sets the X-Ray tracing mode to pass-through.
+* `PASS_THROUGH` - Sets the X-Ray tracing mode to pass-through.
 
 Example:
 
