@@ -56,7 +56,7 @@ export interface EcsDeployActionProps extends codepipeline.CommonAwsActionProps 
  */
 export class EcsDeployAction extends Action {
   private readonly props: EcsDeployActionProps;
-  private readonly deploymentTimeout?: number
+  private readonly deploymentTimeout?: number;
 
   constructor(props: EcsDeployActionProps) {
     super({

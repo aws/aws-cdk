@@ -1,4 +1,17 @@
 /**
+ * Available features for a given Kafka version
+ */
+export interface KafkaVersionFeatures {
+  /**
+   * Whether the Kafka version supports tiered storage mode.
+   *
+   * @see https://docs.aws.amazon.com/msk/latest/developerguide/msk-tiered-storage.html#msk-tiered-storage-requirements
+   * @default false
+  */
+  readonly tieredStorage?: boolean;
+}
+
+/**
  * Kafka cluster version
  */
 export class KafkaVersion {
@@ -22,11 +35,15 @@ export class KafkaVersion {
 
   /**
    * Kafka version 2.2.1
+   *
+   * @deprecated use the latest runtime instead
    */
   public static readonly V2_2_1 = KafkaVersion.of('2.2.1');
 
   /**
    * Kafka version 2.3.1
+   *
+   * @deprecated use the latest runtime instead
    */
   public static readonly V2_3_1 = KafkaVersion.of('2.3.1');
 
@@ -40,12 +57,16 @@ export class KafkaVersion {
   public static readonly V2_4_1 = KafkaVersion.of('2.4.1');
 
   /**
-   * Kafka version 2.4.1
+   * Kafka version 2.4.1.1
+   *
+   * @deprecated use the latest runtime instead
    */
   public static readonly V2_4_1_1 = KafkaVersion.of('2.4.1.1');
 
   /**
    * Kafka version 2.5.1
+   *
+   * @deprecated use the latest runtime instead
    */
   public static readonly V2_5_1 = KafkaVersion.of('2.5.1');
 
@@ -97,7 +118,7 @@ export class KafkaVersion {
   /**
    * AWS MSK Kafka version 2.8.2.tiered
    */
-  public static readonly V2_8_2_TIERED = KafkaVersion.of('2.8.2.tiered');
+  public static readonly V2_8_2_TIERED = KafkaVersion.of('2.8.2.tiered', { tieredStorage: true });
 
   /**
    * Kafka version 3.1.1
@@ -132,36 +153,41 @@ export class KafkaVersion {
   /**
    * Kafka version 3.6.0
    */
-  public static readonly V3_6_0 = KafkaVersion.of('3.6.0');
+  public static readonly V3_6_0 = KafkaVersion.of('3.6.0', { tieredStorage: true });
+
+  /**
+   * Kafka version 3.7.x with ZooKeeper metadata mode support
+   *
+   * @see https://docs.aws.amazon.com/msk/latest/developerguide/metadata-management.html#msk-get-connection-string
+   */
+  public static readonly V3_7_X = KafkaVersion.of('3.7.x', { tieredStorage: true });
+
+  /**
+   * Kafka version 3.7.x with KRaft (Apache Kafka Raft) metadata mode support
+   *
+   * @see https://docs.aws.amazon.com/msk/latest/developerguide/metadata-management.html#kraft-intro
+   */
+  public static readonly V3_7_X_KRAFT = KafkaVersion.of('3.7.x.kraft', { tieredStorage: true });
 
   /**
    * Custom cluster version
    * @param version custom version number
    */
-  public static of(version: string) {
-    return new KafkaVersion(version);
+  public static of(version: string, features?: KafkaVersionFeatures) {
+    return new KafkaVersion(version, features);
   }
-
-  /**
-   * List of Kafka versions that support tiered storage
-   *
-   * @see https://docs.aws.amazon.com/msk/latest/developerguide/msk-tiered-storage.html#msk-tiered-storage-requirements
-   */
-  private static readonly TIERED_STORAGE_COMPATIBLE_VERSIONS = [
-    KafkaVersion.V2_8_2_TIERED,
-    KafkaVersion.V3_6_0,
-  ].map(({ version }) => version);
 
   /**
    *
    * @param version cluster version number
+   * @param features features for the cluster version
    */
-  private constructor(public readonly version: string) {}
+  private constructor(public readonly version: string, public readonly features?: KafkaVersionFeatures) {}
 
   /**
    * Checks if the cluster version supports tiered storage mode.
    */
-  public isTieredStorageCompatible() {
-    return KafkaVersion.TIERED_STORAGE_COMPATIBLE_VERSIONS.includes(this.version);
+  public isTieredStorageCompatible(): boolean {
+    return this.features?.tieredStorage ?? false;
   };
 }

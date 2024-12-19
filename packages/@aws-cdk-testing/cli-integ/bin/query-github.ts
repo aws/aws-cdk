@@ -1,4 +1,3 @@
-// eslint-disable-next-line jest/no-jest-import
 import * as yargs from 'yargs';
 import { fetchPreviousVersion } from '../lib/github';
 
