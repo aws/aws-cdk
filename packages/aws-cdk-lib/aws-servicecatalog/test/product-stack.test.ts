@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import * as os from 'os';
 import * as path from 'path';
 import { Construct } from 'constructs';
 import { Match, Template } from '../../assertions';
@@ -501,3 +502,46 @@ class ProductWithAnAsset extends servicecatalog.ProductStack {
     });
   }
 }
+
+test('Adding new version to product stack history', () => {
+  const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-product-stack-snapshots'));
+  const createProduct = (currentVersion: string, previousVersion?: string) => {
+    const app = new cdk.App();
+    const mainStack = new cdk.Stack(app, 'MainStack');
+    const productStack = new servicecatalog.ProductStack(mainStack, 'ProductStack');
+    new s3.Bucket(productStack, `Bucket${currentVersion}`);
+    const productStackHistory = new servicecatalog.ProductStackHistory(mainStack, 'ProductStackHistory', {
+      currentVersionLocked: true,
+      currentVersionName: currentVersion,
+      productStack,
+      directory: tmpdir,
+    });
+    const productVersions = new Array<servicecatalog.CloudFormationProductVersion>();
+    if (previousVersion) {
+      productVersions.push(productStackHistory.versionFromSnapshot(previousVersion));
+    }
+    productVersions.push(productStackHistory.currentVersion());
+    const product = new servicecatalog.CloudFormationProduct(mainStack, 'Product', {
+      productName: 'Product',
+      owner: 'Owner',
+      productVersions,
+    });
+    app.synth();
+    const template = Template.fromStack(mainStack);
+    const productsInTemplate = template.findResources('AWS::ServiceCatalog::CloudFormationProduct');
+    expect(Object.values(productsInTemplate).length).toEqual(1);
+    return Object.values(productsInTemplate)[0]
+      .Properties
+      .ProvisioningArtifactParameters[0]
+      .Info
+      .LoadTemplateFromURL['Fn::Sub']
+      .replace(/^.*\//, '');
+  };
+  try {
+    const assetHash1 = createProduct('V1');
+    const assetHash2 = createProduct('V2', 'V1');
+    expect(assetHash1).toEqual(assetHash2);
+  } finally {
+    fs.rmSync(tmpdir, { recursive: true });
+  }
+});
