@@ -44,7 +44,7 @@ class CustomStep extends Step implements ICodePipelineActionFactory {
 }
 
 class AppStage extends Stage {
-  public readonly output: CfnOutput
+  public readonly output: CfnOutput;
 
   constructor(scope: Construct, id: string, props?: StageProps) {
     super(scope, id, props);

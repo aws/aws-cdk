@@ -825,7 +825,7 @@ export class ManagedRuleIdentifiers {
    * greater for viewer connections.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/cloudfront-security-policy-check.html
    */
-  public static readonly CLOUDFRONT_SECURITY_POLICY_CHECK = 'CLOUDFRONT_SECURITY_POLICY_CHECK'
+  public static readonly CLOUDFRONT_SECURITY_POLICY_CHECK = 'CLOUDFRONT_SECURITY_POLICY_CHECK';
   /**
    * Checks if Amazon CloudFront distributions are using a custom SSL certificate and are configured
    * to use SNI to serve HTTPS requests.

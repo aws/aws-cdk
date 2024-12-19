@@ -14,9 +14,9 @@ describe(Match, () => {
       { 'anything-but': ['foo', 'bar'] },
     ]);
 
-    expect(() => stack.resolve(Match.anythingBut(1, 'foo'))).toThrowError(/only strings or only numbers/);
-    expect(() => stack.resolve(Match.anythingBut({ foo: 42 }))).toThrowError(/only strings or only numbers/);
-    expect(() => stack.resolve(Match.anythingBut())).toThrowError(/must be non-empty lists/);
+    expect(() => stack.resolve(Match.anythingBut(1, 'foo'))).toThrow(/only strings or only numbers/);
+    expect(() => stack.resolve(Match.anythingBut({ foo: 42 }))).toThrow(/only strings or only numbers/);
+    expect(() => stack.resolve(Match.anythingBut())).toThrow(/must be non-empty lists/);
   });
 
   test('anythingButPrefix', () => {
@@ -28,7 +28,7 @@ describe(Match, () => {
       { 'anything-but': { prefix: ['foo', 'bar'] } },
     ]);
 
-    expect(() => stack.resolve(Match.anythingButPrefix())).toThrowError(/must be non-empty lists/);
+    expect(() => stack.resolve(Match.anythingButPrefix())).toThrow(/must be non-empty lists/);
   });
 
   test('anythingButSuffix', () => {
@@ -40,7 +40,7 @@ describe(Match, () => {
       { 'anything-but': { suffix: ['foo', 'bar'] } },
     ]);
 
-    expect(() => stack.resolve(Match.anythingButPrefix())).toThrowError(/must be non-empty lists/);
+    expect(() => stack.resolve(Match.anythingButPrefix())).toThrow(/must be non-empty lists/);
   });
 
   test('anythingButWildcard', () => {
@@ -52,7 +52,7 @@ describe(Match, () => {
       { 'anything-but': { wildcard: ['*.txt', '*.json'] } },
     ]);
 
-    expect(() => stack.resolve(Match.anythingButPrefix())).toThrowError(/must be non-empty lists/);
+    expect(() => stack.resolve(Match.anythingButPrefix())).toThrow(/must be non-empty lists/);
   });
 
   test('anythingButEqualsIgnoreCase', () => {
@@ -64,7 +64,7 @@ describe(Match, () => {
       { 'anything-but': { 'equals-ignore-case': ['foo', 'bar'] } },
     ]);
 
-    expect(() => stack.resolve(Match.anythingButPrefix())).toThrowError(/must be non-empty lists/);
+    expect(() => stack.resolve(Match.anythingButPrefix())).toThrow(/must be non-empty lists/);
   });
 
   test('numeric', () => {
@@ -72,7 +72,7 @@ describe(Match, () => {
       { numeric: ['>', -100, '<=', 200] },
     ]);
 
-    expect(() => stack.resolve(Match.allOf())).toThrowError(/A list of matchers must contain at least one element/);
+    expect(() => stack.resolve(Match.allOf())).toThrow(/A list of matchers must contain at least one element/);
   });
 
   test('interval', () => {
@@ -80,7 +80,7 @@ describe(Match, () => {
       { numeric: ['>=', 0, '<=', 100] },
     ]);
 
-    expect(() => stack.resolve(Match.interval(1, 0))).toThrowError('Invalid interval: [1, 0]');
+    expect(() => stack.resolve(Match.interval(1, 0))).toThrow('Invalid interval: [1, 0]');
   });
 
   test('cidr', () => {

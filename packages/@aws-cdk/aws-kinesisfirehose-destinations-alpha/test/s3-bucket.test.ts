@@ -408,7 +408,7 @@ describe('S3 destination', () => {
           bufferingInterval: cdk.Duration.minutes(16),
           bufferingSize: cdk.Size.mebibytes(1),
         }),
-      })).toThrowError('Buffering interval must be less than 900 seconds. Buffering interval provided was 960 seconds.');
+      })).toThrow('Buffering interval must be less than 900 seconds. Buffering interval provided was 960 seconds.');
     });
 
     it('validates bufferingSize', () => {
@@ -418,14 +418,14 @@ describe('S3 destination', () => {
           bufferingSize: cdk.Size.mebibytes(0),
 
         }),
-      })).toThrowError('Buffering size must be between 1 and 128 MiBs. Buffering size provided was 0 MiBs');
+      })).toThrow('Buffering size must be between 1 and 128 MiBs. Buffering size provided was 0 MiBs');
 
       expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream2', {
         destination: new firehosedestinations.S3Bucket(bucket, {
           bufferingInterval: cdk.Duration.minutes(1),
           bufferingSize: cdk.Size.mebibytes(256),
         }),
-      })).toThrowError('Buffering size must be between 1 and 128 MiBs. Buffering size provided was 256 MiBs');
+      })).toThrow('Buffering size must be between 1 and 128 MiBs. Buffering size provided was 256 MiBs');
     });
   });
 
@@ -536,7 +536,7 @@ describe('S3 destination', () => {
         s3Backup: {
           mode: firehosedestinations.BackupMode.FAILED,
         },
-      })).toThrowError('S3 destinations do not support BackupMode.FAILED');
+      })).toThrow('S3 destinations do not support BackupMode.FAILED');
     });
 
     it('by default does not create resources', () => {

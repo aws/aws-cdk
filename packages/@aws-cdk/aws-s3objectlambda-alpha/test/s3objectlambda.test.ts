@@ -289,50 +289,50 @@ test('Validates the access point name', () => {
     bucket,
     handler,
     accessPointName: 'aa',
-  })).toThrowError(/name must be between 3 and 50 characters long/);
+  })).toThrow(/name must be between 3 and 50 characters long/);
   expect(() => new AccessPoint(stack, 'MyObjectLambda2', {
     bucket,
     handler,
     accessPointName: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-  })).toThrowError(/name must be between 3 and 50 characters long/);
+  })).toThrow(/name must be between 3 and 50 characters long/);
   expect(() => new AccessPoint(stack, 'MyObjectLambda3', {
     bucket,
     handler,
     accessPointName: 'aaaa-s3alias',
-  })).toThrowError(/name cannot end with the suffix -s3alias/);
+  })).toThrow(/name cannot end with the suffix -s3alias/);
   expect(() => new AccessPoint(stack, 'MyObjectLambda4', {
     bucket,
     handler,
     accessPointName: '-aaaaa',
-  })).toThrowError(/name cannot begin or end with a dash/);
+  })).toThrow(/name cannot begin or end with a dash/);
   expect(() => new AccessPoint(stack, 'MyObjectLambda5', {
     bucket,
     handler,
     accessPointName: 'aaaaa-',
-  })).toThrowError(/name cannot begin or end with a dash/);
+  })).toThrow(/name cannot begin or end with a dash/);
   expect(() => new AccessPoint(stack, 'MyObjectLambda6', {
     bucket,
     handler,
     accessPointName: 'Aaaaa',
-  })).toThrowError(/name must begin with a number or lowercase letter and not contain underscores, uppercase letters, or periods/);
+  })).toThrow(/name must begin with a number or lowercase letter and not contain underscores, uppercase letters, or periods/);
   expect(() => new AccessPoint(stack, 'MyObjectLambda7', {
     bucket,
     handler,
     accessPointName: '$aaaaa',
-  })).toThrowError(/name must begin with a number or lowercase letter and not contain underscores, uppercase letters, or periods/);
+  })).toThrow(/name must begin with a number or lowercase letter and not contain underscores, uppercase letters, or periods/);
   expect(() => new AccessPoint(stack, 'MyObjectLambda8', {
     bucket,
     handler,
     accessPointName: 'aaaAaaa',
-  })).toThrowError(/name must begin with a number or lowercase letter and not contain underscores, uppercase letters, or periods/);
+  })).toThrow(/name must begin with a number or lowercase letter and not contain underscores, uppercase letters, or periods/);
   expect(() => new AccessPoint(stack, 'MyObjectLambda9', {
     bucket,
     handler,
     accessPointName: 'aaa_aaa',
-  })).toThrowError(/name must begin with a number or lowercase letter and not contain underscores, uppercase letters, or periods/);
+  })).toThrow(/name must begin with a number or lowercase letter and not contain underscores, uppercase letters, or periods/);
   expect(() => new AccessPoint(stack, 'MyObjectLambda10', {
     bucket,
     handler,
     accessPointName: 'aaa.aaa',
-  })).toThrowError(/name must begin with a number or lowercase letter and not contain underscores, uppercase letters, or periods/);
+  })).toThrow(/name must begin with a number or lowercase letter and not contain underscores, uppercase letters, or periods/);
 });

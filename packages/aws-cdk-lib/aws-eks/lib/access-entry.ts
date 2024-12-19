@@ -206,7 +206,7 @@ export class AccessPolicy implements IAccessPolicy {
       public readonly accessScope: AccessScope = {
         type: options.accessScopeType,
         namespaces: options.namespaces,
-      }
+      };
     }
     return new Import();
   }

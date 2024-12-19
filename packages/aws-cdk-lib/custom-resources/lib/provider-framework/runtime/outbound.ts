@@ -76,7 +76,7 @@ async function defaultInvokeFunction(req: InvokeCommandInput): Promise<Invocatio
     }, {
       FunctionName: req.FunctionName,
     });
-    return await lambda.invoke(req);
+    return lambda.invoke(req);
   }
 }
 

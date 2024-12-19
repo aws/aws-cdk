@@ -34,7 +34,7 @@ export abstract class StageBase extends Resource implements IStage {
    * The created ApiMapping if domain mapping has been added
    * @internal
    */
-  protected _apiMapping?: ApiMapping
+  protected _apiMapping?: ApiMapping;
 
   /**
    * The URL to this stage.

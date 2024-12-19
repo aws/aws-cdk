@@ -1153,7 +1153,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
         idleTimeout: cdk.Duration.seconds(5000),
         desiredCount: 2,
       });
-    }).toThrowError();
+    }).toThrow();
   });
 
   test('errors when idleTimeout is under 1 seconds', () => {
@@ -1180,7 +1180,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
         idleTimeout: cdk.Duration.seconds(0),
         desiredCount: 2,
       });
-    }).toThrowError();
+    }).toThrow();
   });
 
   test('passes when idleTimeout is between 1 and 4000 seconds', () => {

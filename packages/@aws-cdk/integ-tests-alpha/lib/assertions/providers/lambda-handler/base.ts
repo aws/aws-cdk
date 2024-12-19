@@ -9,7 +9,6 @@ interface HandlerResponse {
   readonly data?: any;
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types
 export abstract class CustomResourceHandler<Request extends object, Response extends object> {
   public readonly physicalResourceId: string;
   private readonly timeout: NodeJS.Timeout;

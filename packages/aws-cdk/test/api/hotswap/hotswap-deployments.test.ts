@@ -550,7 +550,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     const deployStackResult = hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
     // THEN
-    await expect(deployStackResult).rejects.toThrowError(CfnEvaluationException);
+    await expect(deployStackResult).rejects.toThrow(CfnEvaluationException);
     expect(mockStepFunctionsClient).not.toHaveReceivedCommand(UpdateStateMachineCommand);
     expect(mockLambdaClient).not.toHaveReceivedCommand(UpdateFunctionCodeCommand);
   });

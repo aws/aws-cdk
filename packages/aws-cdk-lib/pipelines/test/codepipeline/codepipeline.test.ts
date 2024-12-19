@@ -41,7 +41,7 @@ describe('CodePipeline support stack reuse', () => {
     assembly.getStackByName(`PipelineStackA-support-${testStageEnv.region}`);
     expect(() => {
       assembly.getStackByName(`PipelineStackB-support-${testStageEnv.region}`);
-    }).toThrowError(/Unable to find stack with stack name/);
+    }).toThrow(/Unable to find stack with stack name/);
   });
 
   test('CodePipeline generates the unique support stack containing the replication Bucket without the need to bootstrap in that environment for multiple pipelines', () => {
@@ -81,22 +81,22 @@ describe('Providing codePipeline parameter and prop(s) of codePipeline parameter
   test('Providing codePipeline parameter and pipelineName parameter should throw error', () => {
     expect(() => new CodePipelinePropsCheckTest(app, 'CodePipeline', {
       pipelineName: 'randomName',
-    }).create()).toThrowError('Cannot set \'pipelineName\' if an existing CodePipeline is given using \'codePipeline\'');
+    }).create()).toThrow('Cannot set \'pipelineName\' if an existing CodePipeline is given using \'codePipeline\'');
   });
   test('Providing codePipeline parameter and enableKeyRotation parameter should throw error', () => {
     expect(() => new CodePipelinePropsCheckTest(app, 'CodePipeline', {
       enableKeyRotation: true,
-    }).create()).toThrowError('Cannot set \'enableKeyRotation\' if an existing CodePipeline is given using \'codePipeline\'');
+    }).create()).toThrow('Cannot set \'enableKeyRotation\' if an existing CodePipeline is given using \'codePipeline\'');
   });
   test('Providing codePipeline parameter and crossAccountKeys parameter should throw error', () => {
     expect(() => new CodePipelinePropsCheckTest(app, 'CodePipeline', {
       crossAccountKeys: true,
-    }).create()).toThrowError('Cannot set \'crossAccountKeys\' if an existing CodePipeline is given using \'codePipeline\'');
+    }).create()).toThrow('Cannot set \'crossAccountKeys\' if an existing CodePipeline is given using \'codePipeline\'');
   });
   test('Providing codePipeline parameter and reuseCrossRegionSupportStacks parameter should throw error', () => {
     expect(() => new CodePipelinePropsCheckTest(app, 'CodePipeline', {
       reuseCrossRegionSupportStacks: true,
-    }).create()).toThrowError('Cannot set \'reuseCrossRegionSupportStacks\' if an existing CodePipeline is given using \'codePipeline\'');
+    }).create()).toThrow('Cannot set \'reuseCrossRegionSupportStacks\' if an existing CodePipeline is given using \'codePipeline\'');
   });
   test('Providing codePipeline parameter and role parameter should throw error', () => {
     const stack = new Stack(app, 'Stack');
@@ -105,7 +105,7 @@ describe('Providing codePipeline parameter and prop(s) of codePipeline parameter
       role: new iam.Role(stack, 'Role', {
         assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
       }),
-    }).create()).toThrowError('Cannot set \'role\' if an existing CodePipeline is given using \'codePipeline\'');
+    }).create()).toThrow('Cannot set \'role\' if an existing CodePipeline is given using \'codePipeline\'');
   });
 });
 
@@ -273,7 +273,7 @@ test('CodePipeline throws when key rotation is enabled without enabling cross ac
         'npx cdk synth',
       ],
     }),
-  }).buildPipeline()).toThrowError('Setting \'enableKeyRotation\' to true also requires \'crossAccountKeys\' to be enabled');
+  }).buildPipeline()).toThrow('Setting \'enableKeyRotation\' to true also requires \'crossAccountKeys\' to be enabled');
 });
 
 test('CodePipeline enables key rotation on cross account keys', ()=>{

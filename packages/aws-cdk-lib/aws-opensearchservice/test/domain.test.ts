@@ -53,7 +53,7 @@ each(testedOpenSearchVersions).test('connections throws if domain is not placed 
     new Domain(stack, 'Domain', {
       version: engineVersion,
     }).connections;
-  }).toThrowError("Connections are only available on VPC enabled domains. Use the 'vpc' property to place a domain inside a VPC");
+  }).toThrow("Connections are only available on VPC enabled domains. Use the 'vpc' property to place a domain inside a VPC");
 });
 
 each(testedOpenSearchVersions).test('subnets and security groups can be provided when vpc is used', (engineVersion) => {

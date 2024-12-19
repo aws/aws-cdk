@@ -57,5 +57,5 @@ function mockChangelogOnceForVersion(version: string, body: string) {
 
 function expectReleaseNotes(contents: string | string[]) {
   const data = (typeof contents === 'string') ? contents : contents.join('\n');
-  expect(mockWriteFile).toBeCalledWith(expect.any(Object), 'RELEASE_NOTES.md', data);
+  expect(mockWriteFile).toHaveBeenCalledWith(expect.any(Object), 'RELEASE_NOTES.md', data);
 }

@@ -1,6 +1,5 @@
 /* eslint-disable no-console */
 import * as path from 'path';
-// eslint-disable-next-line jest/no-jest-import
 import * as jest from 'jest';
 import * as yargs from 'yargs';
 import { ReleasePackageSourceSetup } from '../lib/package-sources/release-source';

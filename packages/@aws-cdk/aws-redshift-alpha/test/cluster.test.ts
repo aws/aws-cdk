@@ -411,7 +411,7 @@ describe('parameter group', () => {
     // WHEN
     expect(() => cluster.addToParameterGroup('param', 'value2'))
       // THEN
-      .toThrowError('Cannot add a parameter to an imported parameter group');
+      .toThrow('Cannot add a parameter to an imported parameter group');
   });
 
 });
@@ -555,7 +555,7 @@ test('throws when trying to add rotation to a cluster without secret', () => {
   // THEN
   expect(() => {
     cluster.addRotationSingleUser();
-  }).toThrowError();
+  }).toThrow();
 
 });
 
@@ -576,7 +576,7 @@ test('throws validation error when trying to set encryptionKey without enabling 
   // THEN
   expect(() => {
     new Cluster(stack, 'Redshift', props);
-  }).toThrowError();
+  }).toThrow();
 
 });
 
@@ -595,7 +595,7 @@ test('throws when trying to add single user rotation multiple times', () => {
   // THEN
   expect(() => {
     cluster.addRotationSingleUser();
-  }).toThrowError();
+  }).toThrow();
 });
 
 test('can use existing cluster subnet group', () => {
@@ -799,7 +799,7 @@ describe('reboot for Parameter Changes', () => {
     // WHEN
     expect(() => Template.fromStack(stack))
       // THEN
-      .toThrowError(/Cannot enable reboot for parameter changes/);
+      .toThrow(/Cannot enable reboot for parameter changes/);
   });
 
   test('throw error for cluster with imported parameter group', () => {
@@ -815,7 +815,7 @@ describe('reboot for Parameter Changes', () => {
     // WHEN
     expect(() => Template.fromStack(stack))
       // THEN
-      .toThrowError(/Cannot enable reboot for parameter changes/);
+      .toThrow(/Cannot enable reboot for parameter changes/);
   });
 
   test('not throw error when parameter group is created after enabling reboots', () => {
@@ -831,7 +831,7 @@ describe('reboot for Parameter Changes', () => {
     // WHEN
     expect(() => Template.fromStack(stack))
       // THEN
-      .not.toThrowError(/Cannot enable reboot for parameter changes/);
+      .not.toThrow(/Cannot enable reboot for parameter changes/);
   });
 
   test('not create duplicate resources when reboot feature is enabled multiple times on a cluster', () => {

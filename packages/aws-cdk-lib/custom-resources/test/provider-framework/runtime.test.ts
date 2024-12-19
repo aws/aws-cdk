@@ -361,7 +361,7 @@ describe('ResponseURL is passed to user function', () => {
 
     // THEN
     expect(invokeFunctionSpy).toHaveBeenCalledTimes(1);
-    expect(invokeFunctionSpy).toBeCalledWith(expect.objectContaining({
+    expect(invokeFunctionSpy).toHaveBeenCalledWith(expect.objectContaining({
       Payload: expect.stringContaining(`"ResponseURL":"${mocks.MOCK_REQUEST.ResponseURL}"`),
     }));
   });

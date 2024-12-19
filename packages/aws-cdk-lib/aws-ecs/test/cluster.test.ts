@@ -2516,7 +2516,7 @@ describe('cluster', () => {
         autoScalingGroup,
         enableManagedScaling: false,
       });
-    }).toThrowError('Cannot enable Managed Termination Protection on a Capacity Provider when Managed Scaling is disabled. Either enable Managed Scaling or disable Managed Termination Protection.');
+    }).toThrow('Cannot enable Managed Termination Protection on a Capacity Provider when Managed Scaling is disabled. Either enable Managed Scaling or disable Managed Termination Protection.');
   });
 
   test('throws error, when Managed Scaling is disabled and Managed Termination Protection is enabled.', () => {
@@ -2537,7 +2537,7 @@ describe('cluster', () => {
         enableManagedScaling: false,
         enableManagedTerminationProtection: true,
       });
-    }).toThrowError('Cannot enable Managed Termination Protection on a Capacity Provider when Managed Scaling is disabled. Either enable Managed Scaling or disable Managed Termination Protection.');
+    }).toThrow('Cannot enable Managed Termination Protection on a Capacity Provider when Managed Scaling is disabled. Either enable Managed Scaling or disable Managed Termination Protection.');
   });
 
   test('capacity provider enables ASG new instance scale-in protection by default', () => {
@@ -2984,7 +2984,7 @@ describe('cluster', () => {
     // THEN
     expect(() => {
       ecs.Cluster.fromClusterArn(stack, 'Cluster', 'arn:aws:ecs:service-region:service-account:cluster');
-    }).toThrowError(/Missing required Cluster Name from Cluster ARN: /);
+    }).toThrow(/Missing required Cluster Name from Cluster ARN: /);
   });
 });
 

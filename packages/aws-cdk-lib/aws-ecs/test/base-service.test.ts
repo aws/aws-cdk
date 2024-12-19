@@ -38,13 +38,13 @@ describe('When import an ECS Service', () => {
   test('throws an expection if no resourceName provided on fromServiceArnWithCluster', () => {
     expect(() => {
       ecs.BaseService.fromServiceArnWithCluster(stack, 'Service', 'arn:aws:ecs:service-region:service-account:service');
-    }).toThrowError(/Expected resource name in ARN, didn't find one: 'arn:aws:ecs:service-region:service-account:service'/);
+    }).toThrow(/Expected resource name in ARN, didn't find one: 'arn:aws:ecs:service-region:service-account:service'/);
   });
 
   test('throws an expection if not using cluster arn format on fromServiceArnWithCluster', () => {
     expect(() => {
       ecs.BaseService.fromServiceArnWithCluster(stack, 'Service', 'arn:aws:ecs:service-region:service-account:service/my-http-service');
-    }).toThrowError(/is not using the ARN cluster format/);
+    }).toThrow(/is not using the ARN cluster format/);
   });
 
   test('skip validation for tokenized values', () => {

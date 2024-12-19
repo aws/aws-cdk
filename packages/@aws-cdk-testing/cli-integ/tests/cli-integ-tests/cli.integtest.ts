@@ -1114,7 +1114,7 @@ integTest(
     await diffShouldSucceedWith({ fail: undefined, enableDiffNoFail: true });
 
     async function diffShouldSucceedWith(props: DiffParameters) {
-      await expect(diff(props)).resolves.not.toThrowError();
+      await expect(diff(props)).resolves.not.toThrow();
     }
 
     async function diffShouldFailWith(props: DiffParameters) {

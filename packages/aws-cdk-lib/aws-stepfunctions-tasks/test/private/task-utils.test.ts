@@ -19,7 +19,7 @@ describe('Task utils', () => {
 
       expect( () => {
         validatePatternSupported(IntegrationPattern.WAIT_FOR_TASK_TOKEN, supportedPatterns);
-      }).toThrowError(/Unsupported service integration pattern. Supported Patterns: RUN_JOB. Received: WAIT_FOR_TASK_TOKEN/);
+      }).toThrow(/Unsupported service integration pattern. Supported Patterns: RUN_JOB. Received: WAIT_FOR_TASK_TOKEN/);
     });
   });
 

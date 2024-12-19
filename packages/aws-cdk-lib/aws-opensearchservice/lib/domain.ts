@@ -1380,9 +1380,9 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
 
   private readonly domain: CfnDomain;
 
-  private accessPolicy?: OpenSearchAccessPolicy
+  private accessPolicy?: OpenSearchAccessPolicy;
 
-  private encryptionAtRestOptions?: EncryptionAtRestOptions
+  private encryptionAtRestOptions?: EncryptionAtRestOptions;
 
   private readonly _connections: ec2.Connections | undefined;
 

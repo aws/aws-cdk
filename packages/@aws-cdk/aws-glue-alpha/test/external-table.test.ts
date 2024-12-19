@@ -273,7 +273,7 @@ describe('add partition index', () => {
     expect(() => table.addPartitionIndex({
       indexName: 'my-part',
       keyNames: ['part'],
-    })).toThrowError(/The table must have partition keys to create a partition index/);
+    })).toThrow(/The table must have partition keys to create a partition index/);
   });
 
   test('fails if partition index does not match partition keys', () => {
@@ -307,7 +307,7 @@ describe('add partition index', () => {
     expect(() => table.addPartitionIndex({
       indexName: 'my-part',
       keyNames: ['not-part'],
-    })).toThrowError(/All index keys must also be partition keys/);
+    })).toThrow(/All index keys must also be partition keys/);
   });
 
   test('fails with index name < 1 character', () => {
@@ -341,7 +341,7 @@ describe('add partition index', () => {
     expect(() => table.addPartitionIndex({
       indexName: '',
       keyNames: ['part'],
-    })).toThrowError(/Index name must be between 1 and 255 characters, but got 0/);
+    })).toThrow(/Index name must be between 1 and 255 characters, but got 0/);
   });
 
   test('fails with > 3 indexes', () => {
@@ -385,7 +385,7 @@ describe('add partition index', () => {
       dataFormat: glue.DataFormat.JSON,
       connection,
       externalDataLocation,
-    })).toThrowError('Maximum number of partition indexes allowed is 3');
+    })).toThrow('Maximum number of partition indexes allowed is 3');
   });
 });
 
@@ -703,7 +703,7 @@ describe('validate', () => {
       createTable({
         columns: [],
       });
-    }).toThrowError('you must specify at least one column for the table');
+    }).toThrow('you must specify at least one column for the table');
   });
 
   test('unique column names', () => {
@@ -717,7 +717,7 @@ describe('validate', () => {
           type: glue.Schema.STRING,
         }],
       });
-    }).toThrowError("column names and partition keys must be unique, but 'col1' is duplicated");
+    }).toThrow("column names and partition keys must be unique, but 'col1' is duplicated");
   });
 
   test('unique partition keys', () => {
@@ -735,7 +735,7 @@ describe('validate', () => {
           type: glue.Schema.STRING,
         }],
       });
-    }).toThrowError("column names and partition keys must be unique, but 'p1' is duplicated");
+    }).toThrow("column names and partition keys must be unique, but 'p1' is duplicated");
   });
 
   test('column names and partition keys are all unique', () => {
@@ -750,7 +750,7 @@ describe('validate', () => {
           type: glue.Schema.STRING,
         }],
       });
-    }).toThrowError("column names and partition keys must be unique, but 'col1' is duplicated");
+    }).toThrow("column names and partition keys must be unique, but 'col1' is duplicated");
   });
 
   test('unique storage descriptor parameters', () => {
@@ -782,7 +782,7 @@ describe('validate', () => {
       ],
       connection,
       externalDataLocation,
-    })).toThrowError('Duplicate storage parameter key: compression_type');
+    })).toThrow('Duplicate storage parameter key: compression_type');
   });
 });
 
@@ -804,7 +804,7 @@ describe('Table.fromTableArn', () => {
     const stack = new cdk.Stack();
 
     // THEN
-    expect(() => glue.ExternalTable.fromTableArn(stack, 'boom', '')).toThrowError(/ARNs must start with \"arn:\" and have at least 6 components: /);
+    expect(() => glue.ExternalTable.fromTableArn(stack, 'boom', '')).toThrow(/ARNs must start with \"arn:\" and have at least 6 components: /);
   });
 });
 

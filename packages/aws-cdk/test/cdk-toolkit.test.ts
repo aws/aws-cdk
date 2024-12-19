@@ -18,8 +18,8 @@ const fakeChokidarWatcherOn = {
   },
 
   get fileEventCallback(): (
-    event: 'add' | 'addDir' | 'change' | 'unlink' | 'unlinkDir',
-    path: string,
+  event: 'add' | 'addDir' | 'change' | 'unlink' | 'unlinkDir',
+  path: string,
   ) => Promise<void> {
     expect(mockChokidarWatcherOn.mock.calls.length).toBeGreaterThanOrEqual(2);
     const secondCall = mockChokidarWatcherOn.mock.calls[1];
@@ -1264,7 +1264,7 @@ describe('synth', () => {
           stackName: 'bad-cloudformation-source',
           fromStack: true,
         }),
-      ).rejects.toThrowError('Stack does not exist in this environment');
+      ).rejects.toThrow('Stack does not exist in this environment');
       expect(stderrMock.mock.calls[1][0]).toContain(
         ' ❌  Migrate failed for `bad-cloudformation-source`: Stack does not exist in this environment',
       );
@@ -1278,7 +1278,7 @@ describe('synth', () => {
           fromPath: path.join(__dirname, 'commands', 'test-resources', 'templates', 'sqs-template.json'),
           language: 'rust',
         }),
-      ).rejects.toThrowError(
+      ).rejects.toThrow(
         'CannotGenerateTemplateStack could not be generated because rust is not a supported language',
       );
       expect(stderrMock.mock.calls[1][0]).toContain(

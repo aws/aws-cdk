@@ -160,7 +160,7 @@ class SubnetIdSubnetFilter extends SubnetFilter {
  * Chooses subnets based on the CIDR Netmask
  */
 class CidrMaskSubnetFilter extends SubnetFilter {
-  private readonly mask: number
+  private readonly mask: number;
 
   constructor(mask: number) {
     super();
@@ -183,7 +183,7 @@ class CidrMaskSubnetFilter extends SubnetFilter {
   */
 class CidrRangesSubnetFilter extends SubnetFilter {
 
-  private readonly cidrRanges: string[]
+  private readonly cidrRanges: string[];
 
   constructor(cidrRanges: string[]) {
     super();

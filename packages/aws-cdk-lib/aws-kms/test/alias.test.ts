@@ -326,7 +326,7 @@ test('throws error when alias contains illegal characters', () => {
     new Key(stack, 'Key', {
       alias: `MyK*y${Aws.ACCOUNT_ID}`,
     });
-  }).toThrowError();
+  }).toThrow();
 });
 
 test('does not add alias if starts with token', () => {

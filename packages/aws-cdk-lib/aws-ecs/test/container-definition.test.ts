@@ -2508,7 +2508,7 @@ describe('container definition', () => {
       const swappinessValues = [-1, 30.5, 101];
       swappinessValues.forEach(swappiness => expect(() =>
         new ecs.LinuxParameters(stack, `LinuxParametersWithSwappiness(${swappiness})`, { swappiness }))
-        .toThrowError(`swappiness: Must be an integer between 0 and 100; received ${swappiness}.`));
+        .toThrow(`swappiness: Must be an integer between 0 and 100; received ${swappiness}.`));
     });
 
     test('with only required properties set, it correctly sets default properties', () => {

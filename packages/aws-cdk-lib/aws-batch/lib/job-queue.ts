@@ -247,10 +247,10 @@ export class JobQueue extends Resource implements IJobQueue {
     return new Import(scope, id);
   }
 
-  public readonly computeEnvironments: OrderedComputeEnvironment[]
-  public readonly priority: number
-  public readonly enabled?: boolean
-  public readonly schedulingPolicy?: ISchedulingPolicy
+  public readonly computeEnvironments: OrderedComputeEnvironment[];
+  public readonly priority: number;
+  public readonly enabled?: boolean;
+  public readonly schedulingPolicy?: ISchedulingPolicy;
 
   public readonly jobQueueArn: string;
   public readonly jobQueueName: string;

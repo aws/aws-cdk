@@ -121,7 +121,7 @@ export abstract class IntegRunner {
     pathMetadata: false,
     assetMetadata: false,
     versionReporting: false,
-  }
+  };
 
   /**
    * The directory where the CDK will be synthed to

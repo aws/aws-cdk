@@ -37,7 +37,7 @@ describeDeprecated('ecs-tasks', () => {
       memoryLimitMiB: 256,
     });
 
-    expect(() => new tasks.RunEcsFargateTask({ cluster, taskDefinition })).toThrowError(/not configured for compatibility with Fargate/);
+    expect(() => new tasks.RunEcsFargateTask({ cluster, taskDefinition })).toThrow(/not configured for compatibility with Fargate/);
   });
 
   test('Cannot create a Fargate task without a default container', () => {
@@ -46,7 +46,7 @@ describeDeprecated('ecs-tasks', () => {
       cpu: '256',
       compatibility: ecs.Compatibility.FARGATE,
     });
-    expect(() => new tasks.RunEcsFargateTask({ cluster, taskDefinition })).toThrowError(/must have at least one essential container/);
+    expect(() => new tasks.RunEcsFargateTask({ cluster, taskDefinition })).toThrow(/must have at least one essential container/);
   });
 
   test('Running a Fargate Task', () => {
@@ -407,7 +407,7 @@ describeDeprecated('ecs-tasks', () => {
         integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
         taskDefinition,
       }),
-    ).toThrowError(/Task Token is required in at least one `containerOverrides.environment`/);
+    ).toThrow(/Task Token is required in at least one `containerOverrides.environment`/);
   });
 
   test('Running a task with WAIT_FOR_TASK_TOKEN and task token in environment', () => {

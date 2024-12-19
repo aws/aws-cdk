@@ -21,7 +21,7 @@ describe('buildAllStackAssets', () => {
       .resolves
       .toBeUndefined();
 
-    expect(buildStackAssets).toBeCalledTimes(3);
+    expect(buildStackAssets).toHaveBeenCalledTimes(3);
     expect(buildStackAssets).toHaveBeenCalledWith(A);
     expect(buildStackAssets).toHaveBeenCalledWith(B);
     expect(buildStackAssets).toHaveBeenCalledWith(C);
