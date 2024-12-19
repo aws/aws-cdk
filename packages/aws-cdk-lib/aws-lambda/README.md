@@ -1449,12 +1449,12 @@ new lambda.Function(this, 'Function', {
 });
 ```
 
-## Tracing Configuration
+## Tracing Mode
 
-Lambda functions support X-Ray tracing configuration through the `tracingConfig` property. You can specify one of two tracing modes:
+Lambda functions support X-Ray tracing configuration through the `tracingMode` property. You can specify one of two tracing modes:
 
-* `TracingMode.ACTIVE` - Sets the X-Ray tracing mode to active.
-* `TracingMode.PASS_THROUGH` - Sets the X-Ray tracing mode to pass-through.
+* `ACTIVE` - Sets the X-Ray tracing mode to active.
+* `PASS_THROUGH` (default) - Sets the X-Ray tracing mode to pass-through.
 
 Example:
 
