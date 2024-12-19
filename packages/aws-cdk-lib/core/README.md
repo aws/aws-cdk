@@ -1688,5 +1688,27 @@ Creates a new instance of RemovalPolicys for the given scope.
 - `snapshot(props?: RemovalPolicyProps)`: Apply SNAPSHOT removal policy
 - `retainOnUpdateOrDelete(props?: RemovalPolicyProps)`: Apply RETAIN_ON_UPDATE_OR_DELETE removal policy
 
+#### `RemovalPolicyProps` Interface
+
+Additional configuration options for applying removal policies.
+
+- **`applyToResourceTypes?`**: _(optional)_  
+  Array of CloudFormation resource types (e.g., `'AWS::S3::Bucket'`) to which the removal policy should be applied.  
+  Defaults to applying to all resources.
+
+- **`excludeResourceTypes?`**: _(optional)_  
+  Array of CloudFormation resource types to exclude from applying the removal policy.  
+  Defaults to no exclusions.
+
+- **`overwrite?`**: _(optional)_  
+  If `true`, the removal policy will overwrite any existing policy already set on the resource. Defaults to `false`.
+
+#### Behavior Summary
+
+- When `overwrite` is `false` (default):  
+  - Existing `removalPolicy` set by the user is preserved. The aspect will skip applying the policy to such resources.
+
+- When `overwrite` is `true`:  
+  - The existing `removalPolicy` is ignored, and the specified policy is applied unconditionally.
 
 <!--END CORE DOCUMENTATION-->

@@ -22,6 +22,14 @@ export interface RemovalPolicyProps {
    * @default - no exclusions
    */
   readonly excludeResourceTypes?: (string | typeof CfnResource)[];
+
+  /**
+   * If true, overwrite any user-specified removal policy that has been previously set.
+   * This means even if the user has already called `applyRemovalPolicy()` on the resource,
+   * this aspect will override it.
+   * @default false - do not overwrite user-specified policies
+   */
+  readonly overwrite?: boolean;
 }
 
 /**
@@ -68,15 +76,19 @@ class RemovalPolicyAspect implements IAspect {
     const cfnResource = node as CfnResource;
     const resourceType = cfnResource.cfnResourceType;
 
-    // Skip if resource type is excluded
+    const userAlreadySetPolicy = cfnResource.cfnOptions.deletionPolicy !== undefined ||
+                                 cfnResource.cfnOptions.updateReplacePolicy !== undefined;
+
+    if (!this.props.overwrite && userAlreadySetPolicy) {
+      return;
+    }
+
     if (this.resourceTypeMatchesPatterns(resourceType, this.props.excludeResourceTypes)) {
       return;
     }
 
-    // Skip if specific resource types are specified and this one isn't included
     if (
-      this.props.applyToResourceTypes &&
-      this.props.applyToResourceTypes.length > 0 &&
+      this.props.applyToResourceTypes?.length &&
       !this.resourceTypeMatchesPatterns(resourceType, this.props.applyToResourceTypes)
     ) {
       return;
