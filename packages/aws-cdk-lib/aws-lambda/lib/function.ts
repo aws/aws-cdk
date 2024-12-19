@@ -647,6 +647,8 @@ export interface FunctionProps extends FunctionOptions {
    *
    * To sample and record incoming requests, set tracingMode to Active
    *
+   * @default TracingMode.PASS_THROUGH
+   *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-tracingconfig.html#cfn-lambda-function-tracingconfig-mode
    */
   readonly tracingMode?: TracingMode;
