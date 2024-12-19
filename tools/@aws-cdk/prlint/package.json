@@ -30,7 +30,7 @@
     "eslint-import-resolver-node": "^0.3.9",
     "eslint-import-resolver-typescript": "^2.7.1",
     "eslint-plugin-import": "^2.31.0",
-    "eslint-plugin-jest": "^24.7.0"
+    "eslint-plugin-jest": "^28"
   },
   "jest": {
     "testMatch": [
