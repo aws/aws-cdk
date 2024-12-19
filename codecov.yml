@@ -30,3 +30,5 @@ component_management:
       name: packages/aws-cdk # display name that can change freely
       paths:
         - packages/aws-cdk/**
+  ignore:
+    - packages/aws-cdk/lib/parse-command-line-arguments.ts # this file is generated and some lines cannot be tested
