@@ -23,7 +23,7 @@ class ToolkitError extends Error {
 }
 
 /**
- * Represents an authentication-specific error in the AWS CDK CLI.
+ * Represents an authentication-specific error in the AWS CDK Toolkit.
  */
 class AuthenticationError extends ToolkitError {
   constructor(message: string) {
