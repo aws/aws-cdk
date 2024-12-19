@@ -2145,6 +2145,8 @@ export class ResourceType {
   public static readonly CLOUDWATCH_ALARM = new ResourceType('AWS::CloudWatch::Alarm');
   /** Amazon CloudWatch RUM */
   public static readonly CLOUDWATCH_RUM_APP_MONITOR = new ResourceType('AWS::RUM::AppMonitor');
+  /** Amazon Cognito IdentityPool */
+  public static readonly COGNITO_IDENTITY_POOL = new ResourceType('AWS::Cognito::IdentityPool');
   /** Amazon DynamoDB Table */
   public static readonly DYNAMODB_TABLE = new ResourceType('AWS::DynamoDB::Table');
   /** Elastic Block Store (EBS) volume */
@@ -2253,6 +2255,8 @@ export class ResourceType {
   public static readonly IVS_PLAYBACK_KEYPAIR = new ResourceType('AWS::IVS::PlaybackKeyPair');
   /** Amazon OpenSearch domain */
   public static readonly OPENSEARCH_DOMAIN = new ResourceType('AWS::OpenSearch::Domain');
+  /** Amazon OpenSearch Serverless VPC Endpoint */
+  public static readonly OPENSEARCH_SERVERLESS_VPC_ENDPOINT = new ResourceType('AWS::OpenSearchServerless::VpcEndpoint');
   /** Amazon QLDB ledger */
   public static readonly QLDB_LEDGER = new ResourceType('AWS::QLDB::Ledger');
   /** Amazon Kinesis stream */
@@ -2814,6 +2818,8 @@ export class ResourceType {
   public static readonly MEDIACONNECT_FLOW_ENTITLEMENT = new ResourceType('AWS::MediaConnect::FlowEntitlement');
   /** AWS Elemental MediaConnect FlowVpcInterface */
   public static readonly MEDIACONNECT_FLOW_VPC_INTERFACE = new ResourceType('AWS::MediaConnect::FlowVpcInterface');
+  /** AWS Elemental MediaConnect Gateway */
+  public static readonly MEDIACONNECT_GATEWAY = new ResourceType('AWS::MediaConnect::Gateway');
   /** AWS Elemental MediaTailor PlaybackConfiguration */
   public static readonly MEDIATAILOR_PLAYBACK_CONFIGURATION = new ResourceType('AWS::MediaTailor::PlaybackConfiguration');
   /** Amazon MSK Configuration */
