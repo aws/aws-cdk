@@ -2841,6 +2841,36 @@ describe('vpc', () => {
       ipv6Addresses: Ipv6Addresses.amazonProvided(),
     })).toThrow();
   });
+
+  describe('when importing subnets', () => {
+    test('warning is not given when not specifying routeTableId', () => {
+      // GIVEN
+      const app = new App();
+      const stack = new Stack(app, 'SubnetStack');
+
+      // WHEN
+      const subnet = Subnet.fromSubnetAttributes(stack, "Subnet", {
+        subnetId: "someid",
+      })
+      
+      // THEN
+      Annotations.fromStack(stack).hasNoWarning('/SubnetStack/Subnet', /routeTableId/);
+    });
+
+    test('error is thrown routeTable is read and routeTableId was not specified', () => {
+      // GIVEN
+      const app = new App();
+      const stack = new Stack(app, 'SubnetStack');
+
+      // WHEN
+      const subnet = Subnet.fromSubnetAttributes(stack, "Subnet", {
+        subnetId: "someid",
+      })
+      
+      // THEN
+      expect(() => subnet.routeTable).toThrow(/routeTableId/);
+    });
+  });
 });
 
 function getTestStack(): Stack {
