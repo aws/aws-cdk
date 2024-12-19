@@ -1792,4 +1792,65 @@ warning by the `id`.
 Annotations.of(this).acknowledgeWarning('IAM:Group:MaxPoliciesExceeded', 'Account has quota increased to 20');
 ```
 
+## RemovalPolicys
+
+The `RemovalPolicys` class provides a convenient way to manage removal policies for AWS CDK resources within a construct scope. It allows you to apply removal policies to multiple resources at once, with options to include or exclude specific resource types.
+
+### Usage
+
+```typescript
+import { RemovalPolicys } from 'aws-cdk-lib';
+
+// Apply DESTROY policy to all resources in a scope
+RemovalPolicys.of(scope).destroy();
+
+// Apply RETAIN policy only to specific resource types
+RemovalPolicys.of(scope).retain({
+  applyToResourceTypes: ['AWS::S3::Bucket', 'AWS::DynamoDB::Table'],
+});
+
+// Apply SNAPSHOT policy excluding specific resource types
+RemovalPolicys.of(scope).snapshot({
+  excludeResourceTypes: ['AWS::Test::Resource'],
+});
+
+// Apply RETAIN_ON_UPDATE_OR_DELETE policy
+RemovalPolicys.of(scope).retainOnUpdateOrDelete();
+```
+
+### RemovalPolicys.of(scope)
+
+Creates a new instance of RemovalPolicys for the given scope.
+
+#### Methods
+
+- `apply(policy: RemovalPolicy, props?: RemovalPolicyProps)`: Apply a custom removal policy
+- `destroy(props?: RemovalPolicyProps)`: Apply DESTROY removal policy
+- `retain(props?: RemovalPolicyProps)`: Apply RETAIN removal policy
+- `snapshot(props?: RemovalPolicyProps)`: Apply SNAPSHOT removal policy
+- `retainOnUpdateOrDelete(props?: RemovalPolicyProps)`: Apply RETAIN_ON_UPDATE_OR_DELETE removal policy
+
+#### `RemovalPolicyProps` Interface
+
+Additional configuration options for applying removal policies.
+
+- **`applyToResourceTypes?`**: _(optional)_  
+  Array of CloudFormation resource types (e.g., `'AWS::S3::Bucket'`) to which the removal policy should be applied.  
+  Defaults to applying to all resources.
+
+- **`excludeResourceTypes?`**: _(optional)_  
+  Array of CloudFormation resource types to exclude from applying the removal policy.  
+  Defaults to no exclusions.
+
+- **`overwrite?`**: _(optional)_  
+  If `true`, the removal policy will overwrite any existing policy already set on the resource. Defaults to `false`.
+
+#### Behavior Summary
+
+- When `overwrite` is `false` (default):  
+  - Existing `removalPolicy` set by the user is preserved. The aspect will skip applying the policy to such resources.
+
+- When `overwrite` is `true`:  
+  - The existing `removalPolicy` is ignored, and the specified policy is applied unconditionally.
+
 <!--END CORE DOCUMENTATION-->
