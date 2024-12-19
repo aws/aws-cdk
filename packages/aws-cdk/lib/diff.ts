@@ -13,6 +13,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
 import { NestedStackTemplates } from './api/nested-stack-helpers';
 import { print, warning } from './logging';
+import { ToolkitError } from './toolkit/error';
 
 /**
  * Pretty-prints the differences between two template states to the console.
@@ -150,7 +151,7 @@ function diffRequiresApproval(diff: TemplateDiff, requireApproval: RequireApprov
     case RequireApproval.Never: return false;
     case RequireApproval.AnyChange: return diff.permissionsAnyChanges;
     case RequireApproval.Broadening: return diff.permissionsBroadened;
-    default: throw new Error(`Unrecognized approval level: ${requireApproval}`);
+    default: throw new ToolkitError(`Unrecognized approval level: ${requireApproval}`);
   }
 }
 
