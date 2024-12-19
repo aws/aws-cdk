@@ -99,6 +99,13 @@ export interface CommonTaskDefinitionProps {
    * @default - No volumes are passed to the Docker daemon on a container instance.
    */
   readonly volumes?: Volume[];
+
+  /**
+   * Enables fault injection and allows for fault injection requests to be accepted from the task's containers.
+   *
+   * @default false
+   */
+  readonly enableFaultInjection?: boolean;
 }
 
 /**
@@ -514,6 +521,7 @@ export class TaskDefinition extends TaskDefinitionBase {
         cpuArchitecture: this.runtimePlatform?.cpuArchitecture?._cpuArchitecture,
         operatingSystemFamily: this.runtimePlatform?.operatingSystemFamily?._operatingSystemFamily,
       } : undefined,
+      enableFaultInjection: props.enableFaultInjection,
     });
 
     if (props.placementConstraints) {
