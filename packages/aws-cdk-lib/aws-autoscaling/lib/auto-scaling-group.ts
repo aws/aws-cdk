@@ -414,7 +414,7 @@ export interface CommonAutoScalingGroupProps {
 
   /**
    * The strategy for distributing instances across Availability Zones.
-   * @default BALANCED_BEST_EFFORT
+   * @default CapacityDistributionStrategy.BALANCED_BEST_EFFORT
    */
   readonly azCapacityDistributionStrategy?: CapacityDistributionStrategy;
 }
