@@ -623,418 +623,6 @@
               "version": "0.0.0"
             }
           },
-          "ClusterVersion2-2-1": {
-            "id": "ClusterVersion2-2-1",
-            "path": "KafkaVersionTestStack/ClusterVersion2-2-1",
-            "children": {
-              "SecurityGroup": {
-                "id": "SecurityGroup",
-                "path": "KafkaVersionTestStack/ClusterVersion2-2-1/SecurityGroup",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "KafkaVersionTestStack/ClusterVersion2-2-1/SecurityGroup/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
-                      "aws:cdk:cloudformation:props": {
-                        "groupDescription": "MSK security group",
-                        "securityGroupEgress": [
-                          {
-                            "cidrIp": "0.0.0.0/0",
-                            "description": "Allow all outbound traffic by default",
-                            "ipProtocol": "-1"
-                          }
-                        ],
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-                  "version": "0.0.0"
-                }
-              },
-              "Resource": {
-                "id": "Resource",
-                "path": "KafkaVersionTestStack/ClusterVersion2-2-1/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::MSK::Cluster",
-                  "aws:cdk:cloudformation:props": {
-                    "brokerNodeGroupInfo": {
-                      "instanceType": "kafka.m5.large",
-                      "clientSubnets": [
-                        {
-                          "Ref": "VpcPrivateSubnet1Subnet536B997A"
-                        },
-                        {
-                          "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
-                        }
-                      ],
-                      "securityGroups": [
-                        {
-                          "Fn::GetAtt": [
-                            "ClusterVersion221SecurityGroup7D79A634",
-                            "GroupId"
-                          ]
-                        }
-                      ],
-                      "storageInfo": {
-                        "ebsStorageInfo": {
-                          "volumeSize": 1000
-                        }
-                      }
-                    },
-                    "clusterName": "cluster-v2-2-1",
-                    "encryptionInfo": {
-                      "encryptionInTransit": {
-                        "clientBroker": "TLS",
-                        "inCluster": true
-                      }
-                    },
-                    "kafkaVersion": "2.2.1",
-                    "loggingInfo": {
-                      "brokerLogs": {
-                        "cloudWatchLogs": {
-                          "enabled": false
-                        },
-                        "firehose": {
-                          "enabled": false
-                        },
-                        "s3": {
-                          "enabled": false
-                        }
-                      }
-                    },
-                    "numberOfBrokerNodes": 2
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_msk.CfnCluster",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-msk-alpha.Cluster",
-              "version": "0.0.0"
-            }
-          },
-          "ClusterVersion2-3-1": {
-            "id": "ClusterVersion2-3-1",
-            "path": "KafkaVersionTestStack/ClusterVersion2-3-1",
-            "children": {
-              "SecurityGroup": {
-                "id": "SecurityGroup",
-                "path": "KafkaVersionTestStack/ClusterVersion2-3-1/SecurityGroup",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "KafkaVersionTestStack/ClusterVersion2-3-1/SecurityGroup/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
-                      "aws:cdk:cloudformation:props": {
-                        "groupDescription": "MSK security group",
-                        "securityGroupEgress": [
-                          {
-                            "cidrIp": "0.0.0.0/0",
-                            "description": "Allow all outbound traffic by default",
-                            "ipProtocol": "-1"
-                          }
-                        ],
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-                  "version": "0.0.0"
-                }
-              },
-              "Resource": {
-                "id": "Resource",
-                "path": "KafkaVersionTestStack/ClusterVersion2-3-1/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::MSK::Cluster",
-                  "aws:cdk:cloudformation:props": {
-                    "brokerNodeGroupInfo": {
-                      "instanceType": "kafka.m5.large",
-                      "clientSubnets": [
-                        {
-                          "Ref": "VpcPrivateSubnet1Subnet536B997A"
-                        },
-                        {
-                          "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
-                        }
-                      ],
-                      "securityGroups": [
-                        {
-                          "Fn::GetAtt": [
-                            "ClusterVersion231SecurityGroup9CC906F6",
-                            "GroupId"
-                          ]
-                        }
-                      ],
-                      "storageInfo": {
-                        "ebsStorageInfo": {
-                          "volumeSize": 1000
-                        }
-                      }
-                    },
-                    "clusterName": "cluster-v2-3-1",
-                    "encryptionInfo": {
-                      "encryptionInTransit": {
-                        "clientBroker": "TLS",
-                        "inCluster": true
-                      }
-                    },
-                    "kafkaVersion": "2.3.1",
-                    "loggingInfo": {
-                      "brokerLogs": {
-                        "cloudWatchLogs": {
-                          "enabled": false
-                        },
-                        "firehose": {
-                          "enabled": false
-                        },
-                        "s3": {
-                          "enabled": false
-                        }
-                      }
-                    },
-                    "numberOfBrokerNodes": 2
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_msk.CfnCluster",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-msk-alpha.Cluster",
-              "version": "0.0.0"
-            }
-          },
-          "ClusterVersion2-4-1-1": {
-            "id": "ClusterVersion2-4-1-1",
-            "path": "KafkaVersionTestStack/ClusterVersion2-4-1-1",
-            "children": {
-              "SecurityGroup": {
-                "id": "SecurityGroup",
-                "path": "KafkaVersionTestStack/ClusterVersion2-4-1-1/SecurityGroup",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "KafkaVersionTestStack/ClusterVersion2-4-1-1/SecurityGroup/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
-                      "aws:cdk:cloudformation:props": {
-                        "groupDescription": "MSK security group",
-                        "securityGroupEgress": [
-                          {
-                            "cidrIp": "0.0.0.0/0",
-                            "description": "Allow all outbound traffic by default",
-                            "ipProtocol": "-1"
-                          }
-                        ],
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-                  "version": "0.0.0"
-                }
-              },
-              "Resource": {
-                "id": "Resource",
-                "path": "KafkaVersionTestStack/ClusterVersion2-4-1-1/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::MSK::Cluster",
-                  "aws:cdk:cloudformation:props": {
-                    "brokerNodeGroupInfo": {
-                      "instanceType": "kafka.m5.large",
-                      "clientSubnets": [
-                        {
-                          "Ref": "VpcPrivateSubnet1Subnet536B997A"
-                        },
-                        {
-                          "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
-                        }
-                      ],
-                      "securityGroups": [
-                        {
-                          "Fn::GetAtt": [
-                            "ClusterVersion2411SecurityGroup1C6605A8",
-                            "GroupId"
-                          ]
-                        }
-                      ],
-                      "storageInfo": {
-                        "ebsStorageInfo": {
-                          "volumeSize": 1000
-                        }
-                      }
-                    },
-                    "clusterName": "cluster-v2-4-1-1",
-                    "encryptionInfo": {
-                      "encryptionInTransit": {
-                        "clientBroker": "TLS",
-                        "inCluster": true
-                      }
-                    },
-                    "kafkaVersion": "2.4.1.1",
-                    "loggingInfo": {
-                      "brokerLogs": {
-                        "cloudWatchLogs": {
-                          "enabled": false
-                        },
-                        "firehose": {
-                          "enabled": false
-                        },
-                        "s3": {
-                          "enabled": false
-                        }
-                      }
-                    },
-                    "numberOfBrokerNodes": 2
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_msk.CfnCluster",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-msk-alpha.Cluster",
-              "version": "0.0.0"
-            }
-          },
-          "ClusterVersion2-5-1": {
-            "id": "ClusterVersion2-5-1",
-            "path": "KafkaVersionTestStack/ClusterVersion2-5-1",
-            "children": {
-              "SecurityGroup": {
-                "id": "SecurityGroup",
-                "path": "KafkaVersionTestStack/ClusterVersion2-5-1/SecurityGroup",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "KafkaVersionTestStack/ClusterVersion2-5-1/SecurityGroup/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
-                      "aws:cdk:cloudformation:props": {
-                        "groupDescription": "MSK security group",
-                        "securityGroupEgress": [
-                          {
-                            "cidrIp": "0.0.0.0/0",
-                            "description": "Allow all outbound traffic by default",
-                            "ipProtocol": "-1"
-                          }
-                        ],
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-                  "version": "0.0.0"
-                }
-              },
-              "Resource": {
-                "id": "Resource",
-                "path": "KafkaVersionTestStack/ClusterVersion2-5-1/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::MSK::Cluster",
-                  "aws:cdk:cloudformation:props": {
-                    "brokerNodeGroupInfo": {
-                      "instanceType": "kafka.m5.large",
-                      "clientSubnets": [
-                        {
-                          "Ref": "VpcPrivateSubnet1Subnet536B997A"
-                        },
-                        {
-                          "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
-                        }
-                      ],
-                      "securityGroups": [
-                        {
-                          "Fn::GetAtt": [
-                            "ClusterVersion251SecurityGroup54D25418",
-                            "GroupId"
-                          ]
-                        }
-                      ],
-                      "storageInfo": {
-                        "ebsStorageInfo": {
-                          "volumeSize": 1000
-                        }
-                      }
-                    },
-                    "clusterName": "cluster-v2-5-1",
-                    "encryptionInfo": {
-                      "encryptionInTransit": {
-                        "clientBroker": "TLS",
-                        "inCluster": true
-                      }
-                    },
-                    "kafkaVersion": "2.5.1",
-                    "loggingInfo": {
-                      "brokerLogs": {
-                        "cloudWatchLogs": {
-                          "enabled": false
-                        },
-                        "firehose": {
-                          "enabled": false
-                        },
-                        "s3": {
-                          "enabled": false
-                        }
-                      }
-                    },
-                    "numberOfBrokerNodes": 2
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_msk.CfnCluster",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-msk-alpha.Cluster",
-              "version": "0.0.0"
-            }
-          },
           "ClusterVersion2-6-0": {
             "id": "ClusterVersion2-6-0",
             "path": "KafkaVersionTestStack/ClusterVersion2-6-0",
@@ -2683,6 +2271,315 @@
               "version": "0.0.0"
             }
           },
+          "ClusterVersion3-6-0": {
+            "id": "ClusterVersion3-6-0",
+            "path": "KafkaVersionTestStack/ClusterVersion3-6-0",
+            "children": {
+              "SecurityGroup": {
+                "id": "SecurityGroup",
+                "path": "KafkaVersionTestStack/ClusterVersion3-6-0/SecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "KafkaVersionTestStack/ClusterVersion3-6-0/SecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "MSK security group",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "description": "Allow all outbound traffic by default",
+                            "ipProtocol": "-1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "KafkaVersionTestStack/ClusterVersion3-6-0/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::MSK::Cluster",
+                  "aws:cdk:cloudformation:props": {
+                    "brokerNodeGroupInfo": {
+                      "instanceType": "kafka.m5.large",
+                      "clientSubnets": [
+                        {
+                          "Ref": "VpcPrivateSubnet1Subnet536B997A"
+                        },
+                        {
+                          "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+                        }
+                      ],
+                      "securityGroups": [
+                        {
+                          "Fn::GetAtt": [
+                            "ClusterVersion360SecurityGroupDE3FDA4D",
+                            "GroupId"
+                          ]
+                        }
+                      ],
+                      "storageInfo": {
+                        "ebsStorageInfo": {
+                          "volumeSize": 1000
+                        }
+                      }
+                    },
+                    "clusterName": "cluster-v3-6-0",
+                    "encryptionInfo": {
+                      "encryptionInTransit": {
+                        "clientBroker": "TLS",
+                        "inCluster": true
+                      }
+                    },
+                    "kafkaVersion": "3.6.0",
+                    "loggingInfo": {
+                      "brokerLogs": {
+                        "cloudWatchLogs": {
+                          "enabled": false
+                        },
+                        "firehose": {
+                          "enabled": false
+                        },
+                        "s3": {
+                          "enabled": false
+                        }
+                      }
+                    },
+                    "numberOfBrokerNodes": 2
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_msk.CfnCluster",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-msk-alpha.Cluster",
+              "version": "0.0.0"
+            }
+          },
+          "ClusterVersion3-7-x": {
+            "id": "ClusterVersion3-7-x",
+            "path": "KafkaVersionTestStack/ClusterVersion3-7-x",
+            "children": {
+              "SecurityGroup": {
+                "id": "SecurityGroup",
+                "path": "KafkaVersionTestStack/ClusterVersion3-7-x/SecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "KafkaVersionTestStack/ClusterVersion3-7-x/SecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "MSK security group",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "description": "Allow all outbound traffic by default",
+                            "ipProtocol": "-1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "KafkaVersionTestStack/ClusterVersion3-7-x/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::MSK::Cluster",
+                  "aws:cdk:cloudformation:props": {
+                    "brokerNodeGroupInfo": {
+                      "instanceType": "kafka.m5.large",
+                      "clientSubnets": [
+                        {
+                          "Ref": "VpcPrivateSubnet1Subnet536B997A"
+                        },
+                        {
+                          "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+                        }
+                      ],
+                      "securityGroups": [
+                        {
+                          "Fn::GetAtt": [
+                            "ClusterVersion37xSecurityGroup907921C2",
+                            "GroupId"
+                          ]
+                        }
+                      ],
+                      "storageInfo": {
+                        "ebsStorageInfo": {
+                          "volumeSize": 1000
+                        }
+                      }
+                    },
+                    "clusterName": "cluster-v3-7-x",
+                    "encryptionInfo": {
+                      "encryptionInTransit": {
+                        "clientBroker": "TLS",
+                        "inCluster": true
+                      }
+                    },
+                    "kafkaVersion": "3.7.x",
+                    "loggingInfo": {
+                      "brokerLogs": {
+                        "cloudWatchLogs": {
+                          "enabled": false
+                        },
+                        "firehose": {
+                          "enabled": false
+                        },
+                        "s3": {
+                          "enabled": false
+                        }
+                      }
+                    },
+                    "numberOfBrokerNodes": 2
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_msk.CfnCluster",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-msk-alpha.Cluster",
+              "version": "0.0.0"
+            }
+          },
+          "ClusterVersion3-7-x-kraft": {
+            "id": "ClusterVersion3-7-x-kraft",
+            "path": "KafkaVersionTestStack/ClusterVersion3-7-x-kraft",
+            "children": {
+              "SecurityGroup": {
+                "id": "SecurityGroup",
+                "path": "KafkaVersionTestStack/ClusterVersion3-7-x-kraft/SecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "KafkaVersionTestStack/ClusterVersion3-7-x-kraft/SecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "MSK security group",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "description": "Allow all outbound traffic by default",
+                            "ipProtocol": "-1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "KafkaVersionTestStack/ClusterVersion3-7-x-kraft/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::MSK::Cluster",
+                  "aws:cdk:cloudformation:props": {
+                    "brokerNodeGroupInfo": {
+                      "instanceType": "kafka.m5.large",
+                      "clientSubnets": [
+                        {
+                          "Ref": "VpcPrivateSubnet1Subnet536B997A"
+                        },
+                        {
+                          "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+                        }
+                      ],
+                      "securityGroups": [
+                        {
+                          "Fn::GetAtt": [
+                            "ClusterVersion37xkraftSecurityGroupD9C2010F",
+                            "GroupId"
+                          ]
+                        }
+                      ],
+                      "storageInfo": {
+                        "ebsStorageInfo": {
+                          "volumeSize": 1000
+                        }
+                      }
+                    },
+                    "clusterName": "cluster-v3-7-x-kraft",
+                    "encryptionInfo": {
+                      "encryptionInTransit": {
+                        "clientBroker": "TLS",
+                        "inCluster": true
+                      }
+                    },
+                    "kafkaVersion": "3.7.x.kraft",
+                    "loggingInfo": {
+                      "brokerLogs": {
+                        "cloudWatchLogs": {
+                          "enabled": false
+                        },
+                        "firehose": {
+                          "enabled": false
+                        },
+                        "s3": {
+                          "enabled": false
+                        }
+                      }
+                    },
+                    "numberOfBrokerNodes": 2
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_msk.CfnCluster",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-msk-alpha.Cluster",
+              "version": "0.0.0"
+            }
+          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "KafkaVersionTestStack/BootstrapVersion",
@@ -2718,7 +2615,7 @@
                 "path": "KafkaVersionIntegTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -2764,7 +2661,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.4.2"
         }
       }
     },
