@@ -2,7 +2,7 @@
 // GENERATED FROM packages/aws-cdk/lib/config.ts.
 // Do not edit by hand; all changes will be overwritten at build time from the config file.
 // -------------------------------------------------------------------------------------------
-/* eslint-disable @stylistic/comma-dangle, comma-spacing, max-len, quotes, quote-props */
+/* eslint-disable @stylistic/comma-dangle, @stylistic/comma-spacing, @stylistic/max-len, @stylistic/quotes, @stylistic/quote-props */
 import { Argv } from 'yargs';
 import * as helpers from './util/yargs-helpers';
 
