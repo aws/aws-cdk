@@ -337,7 +337,7 @@ export class CdkToolkit {
 
       if (!stack.environment) {
         // eslint-disable-next-line max-len
-        throw new AuthenticationError(
+        throw new ToolkitError(
           `Stack ${stack.displayName} does not define an environment, and AWS credentials could not be obtained from standard locations or no region was configured.`,
         );
       }
