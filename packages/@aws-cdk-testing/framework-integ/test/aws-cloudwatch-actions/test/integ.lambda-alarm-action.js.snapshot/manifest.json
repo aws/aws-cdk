@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "38.0.1",
   "artifacts": {
     "LambdaAlarmActionIntegrationTestStackWithFeatureFlag.assets": {
       "type": "cdk:asset-manifest",
@@ -16,9 +16,10 @@
         "templateFile": "LambdaAlarmActionIntegrationTestStackWithFeatureFlag.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/db34b72b17af5b7d83e311e6552b5f6cc3c82caf16943655fcbabc28a5c9b826.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b98110f17efd8ffb88b58cbc7790046b770c602a6dd1424ed01a82ec7af14234.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -76,16 +77,16 @@
             "data": "alarmLambdaFeatureCurrentVersionCF39751979501d2f67eaf906b2ef0c378303873b"
           }
         ],
-        "/LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/CurrentVersion/AlarmAlarmPermission": [
+        "/LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/CurrentVersion/AlarmPermissionc839815366f89d600e305dce0e4b2c2649b88d149f": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "alarmLambdaFeatureCurrentVersionAlarmAlarmPermissionA0D80E66"
+            "data": "alarmLambdaFeatureCurrentVersionAlarmPermissionc839815366f89d600e305dce0e4b2c2649b88d149fFE9BCD61"
           }
         ],
-        "/LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/CurrentVersion/AlarmFeatureAlarmPermission": [
+        "/LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/CurrentVersion/AlarmPermissionc8fd750d46aac54e6b133c9fd25ddeb5ae7a63f3e2": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "alarmLambdaFeatureCurrentVersionAlarmFeatureAlarmPermission192451B4"
+            "data": "alarmLambdaFeatureCurrentVersionAlarmPermissionc8fd750d46aac54e6b133c9fd25ddeb5ae7a63f3e2E7579DBC"
           }
         ],
         "/LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/AliasaliasName/Resource": [
@@ -94,28 +95,28 @@
             "data": "alarmLambdaFeatureAliasaliasName16F91D34"
           }
         ],
-        "/LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/AliasaliasName/AlarmAlarmPermission": [
+        "/LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/AliasaliasName/AlarmPermissionc839815366f89d600e305dce0e4b2c2649b88d149f": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "alarmLambdaFeatureAliasaliasNameAlarmAlarmPermissionE344338D"
+            "data": "alarmLambdaFeatureAliasaliasNameAlarmPermissionc839815366f89d600e305dce0e4b2c2649b88d149f4AA638E2"
           }
         ],
-        "/LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/AliasaliasName/AlarmFeatureAlarmPermission": [
+        "/LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/AliasaliasName/AlarmPermissionc8fd750d46aac54e6b133c9fd25ddeb5ae7a63f3e2": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "alarmLambdaFeatureAliasaliasNameAlarmFeatureAlarmPermission6A0A5797"
+            "data": "alarmLambdaFeatureAliasaliasNameAlarmPermissionc8fd750d46aac54e6b133c9fd25ddeb5ae7a63f3e234A5664E"
           }
         ],
-        "/LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/AlarmAlarmPermission": [
+        "/LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/AlarmPermissionc839815366f89d600e305dce0e4b2c2649b88d149f": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "alarmLambdaFeatureAlarmAlarmPermissionCF637A1C"
+            "data": "alarmLambdaFeatureAlarmPermissionc839815366f89d600e305dce0e4b2c2649b88d149fD42829A6"
           }
         ],
-        "/LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/AlarmFeatureAlarmPermission": [
+        "/LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/AlarmPermissionc8fd750d46aac54e6b133c9fd25ddeb5ae7a63f3e2": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "alarmLambdaFeatureAlarmFeatureAlarmPermission7032FB2D"
+            "data": "alarmLambdaFeatureAlarmPermissionc8fd750d46aac54e6b133c9fd25ddeb5ae7a63f3e2351343EE"
           }
         ],
         "/LambdaAlarmActionIntegrationTestStackWithFeatureFlag/AlarmFeature/Resource": [
@@ -134,6 +135,60 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "alarmLambdaFeatureCurrentVersionAlarmAlarmPermissionA0D80E66": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "alarmLambdaFeatureCurrentVersionAlarmAlarmPermissionA0D80E66",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "alarmLambdaFeatureCurrentVersionAlarmFeatureAlarmPermission192451B4": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "alarmLambdaFeatureCurrentVersionAlarmFeatureAlarmPermission192451B4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "alarmLambdaFeatureAliasaliasNameAlarmAlarmPermissionE344338D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "alarmLambdaFeatureAliasaliasNameAlarmAlarmPermissionE344338D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "alarmLambdaFeatureAliasaliasNameAlarmFeatureAlarmPermission6A0A5797": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "alarmLambdaFeatureAliasaliasNameAlarmFeatureAlarmPermission6A0A5797",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "alarmLambdaFeatureAlarmAlarmPermissionCF637A1C": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "alarmLambdaFeatureAlarmAlarmPermissionCF637A1C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "alarmLambdaFeatureAlarmFeatureAlarmPermission7032FB2D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "alarmLambdaFeatureAlarmFeatureAlarmPermission7032FB2D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
@@ -154,6 +209,7 @@
         "templateFile": "LambdaAlarmActionIntegrationTestWithFeatureFlagDefaultTestDeployAssertB72D1A4A.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",

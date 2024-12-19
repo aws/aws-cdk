@@ -288,9 +288,9 @@
                       "version": "0.0.0"
                     }
                   },
-                  "AlarmAlarmPermission": {
-                    "id": "AlarmAlarmPermission",
-                    "path": "LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/CurrentVersion/AlarmAlarmPermission",
+                  "AlarmPermissionc839815366f89d600e305dce0e4b2c2649b88d149f": {
+                    "id": "AlarmPermissionc839815366f89d600e305dce0e4b2c2649b88d149f",
+                    "path": "LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/CurrentVersion/AlarmPermissionc839815366f89d600e305dce0e4b2c2649b88d149f",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
                       "aws:cdk:cloudformation:props": {
@@ -315,9 +315,9 @@
                       "version": "0.0.0"
                     }
                   },
-                  "AlarmFeatureAlarmPermission": {
-                    "id": "AlarmFeatureAlarmPermission",
-                    "path": "LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/CurrentVersion/AlarmFeatureAlarmPermission",
+                  "AlarmPermissionc8fd750d46aac54e6b133c9fd25ddeb5ae7a63f3e2": {
+                    "id": "AlarmPermissionc8fd750d46aac54e6b133c9fd25ddeb5ae7a63f3e2",
+                    "path": "LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/CurrentVersion/AlarmPermissionc8fd750d46aac54e6b133c9fd25ddeb5ae7a63f3e2",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
                       "aws:cdk:cloudformation:props": {
@@ -383,9 +383,9 @@
                       "version": "0.0.0"
                     }
                   },
-                  "AlarmAlarmPermission": {
-                    "id": "AlarmAlarmPermission",
-                    "path": "LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/AliasaliasName/AlarmAlarmPermission",
+                  "AlarmPermissionc839815366f89d600e305dce0e4b2c2649b88d149f": {
+                    "id": "AlarmPermissionc839815366f89d600e305dce0e4b2c2649b88d149f",
+                    "path": "LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/AliasaliasName/AlarmPermissionc839815366f89d600e305dce0e4b2c2649b88d149f",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
                       "aws:cdk:cloudformation:props": {
@@ -410,9 +410,9 @@
                       "version": "0.0.0"
                     }
                   },
-                  "AlarmFeatureAlarmPermission": {
-                    "id": "AlarmFeatureAlarmPermission",
-                    "path": "LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/AliasaliasName/AlarmFeatureAlarmPermission",
+                  "AlarmPermissionc8fd750d46aac54e6b133c9fd25ddeb5ae7a63f3e2": {
+                    "id": "AlarmPermissionc8fd750d46aac54e6b133c9fd25ddeb5ae7a63f3e2",
+                    "path": "LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/AliasaliasName/AlarmPermissionc8fd750d46aac54e6b133c9fd25ddeb5ae7a63f3e2",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
                       "aws:cdk:cloudformation:props": {
@@ -443,9 +443,9 @@
                   "version": "0.0.0"
                 }
               },
-              "AlarmAlarmPermission": {
-                "id": "AlarmAlarmPermission",
-                "path": "LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/AlarmAlarmPermission",
+              "AlarmPermissionc839815366f89d600e305dce0e4b2c2649b88d149f": {
+                "id": "AlarmPermissionc839815366f89d600e305dce0e4b2c2649b88d149f",
+                "path": "LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/AlarmPermissionc839815366f89d600e305dce0e4b2c2649b88d149f",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
                   "aws:cdk:cloudformation:props": {
@@ -473,9 +473,9 @@
                   "version": "0.0.0"
                 }
               },
-              "AlarmFeatureAlarmPermission": {
-                "id": "AlarmFeatureAlarmPermission",
-                "path": "LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/AlarmFeatureAlarmPermission",
+              "AlarmPermissionc8fd750d46aac54e6b133c9fd25ddeb5ae7a63f3e2": {
+                "id": "AlarmPermissionc8fd750d46aac54e6b133c9fd25ddeb5ae7a63f3e2",
+                "path": "LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/AlarmPermissionc8fd750d46aac54e6b133c9fd25ddeb5ae7a63f3e2",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
                   "aws:cdk:cloudformation:props": {
@@ -626,7 +626,7 @@
                 "path": "LambdaAlarmActionIntegrationTestWithFeatureFlag/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -672,7 +672,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },
