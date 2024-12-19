@@ -70,13 +70,13 @@ export class Packaging {
       dependenciesFile: DependenciesFile.POETRY,
       // Export dependencies with credentials available in the bundling image.
       exportCommand: [
-	    'poetry', 'export',
+        'poetry', 'export',
         ...props?.poetryIncludeHashes ? [] : ['--without-hashes'],
         ...props?.poetryWithoutUrls ? ['--without-urls'] : [],
         '--with-credentials',
         '--format', DependenciesFile.PIP,
         '--output', DependenciesFile.PIP,
-	  ].join(' '),
+      ].join(' '),
     });
   }
 
