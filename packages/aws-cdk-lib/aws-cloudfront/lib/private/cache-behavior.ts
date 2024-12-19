@@ -1,7 +1,7 @@
 import * as iam from '../../../aws-iam';
 import { CachePolicy } from '../cache-policy';
 import { CfnDistribution } from '../cloudfront.generated';
-import { AddBehaviorOptions, EdgeLambda, LambdaEdgeEventType, ViewerProtocolPolicy } from '../distribution';
+import { AddBehaviorOptions, AllowedMethods, EdgeLambda, LambdaEdgeEventType, ViewerProtocolPolicy } from '../distribution';
 
 /**
  * Properties for specifying custom behaviors for origins.
@@ -22,10 +22,21 @@ export interface CacheBehaviorProps extends AddBehaviorOptions {
  * CloudFrontWebDistribution implementation.
  */
 export class CacheBehavior {
+  public readonly grpcEnabled?: boolean;
   private readonly originId: string;
 
   constructor(originId: string, private readonly props: CacheBehaviorProps) {
     this.originId = originId;
+    this.grpcEnabled = props.enableGrpc;
+
+    if (this.grpcEnabled) {
+      if (props.allowedMethods !== AllowedMethods.ALLOW_ALL) {
+        throw new Error('\'allowedMethods\' can only be AllowedMethods.ALLOW_ALL if \'enableGrpc\' is true');
+      }
+      if (props.edgeLambdas !== undefined && props.edgeLambdas.length > 0) {
+        throw new Error('\'edgeLambdas\' cannot be specified if \'enableGrpc\' is true');
+      }
+    }
 
     this.validateEdgeLambdas(props.edgeLambdas);
     this.grantEdgeLambdaFunctionExecutionRole(props.edgeLambdas);
@@ -62,6 +73,11 @@ export class CacheBehavior {
         includeBody: edgeLambda.includeBody,
       })),
       trustedKeyGroups: this.props.trustedKeyGroups?.map(keyGroup => keyGroup.keyGroupId),
+      grpcConfig: this.grpcEnabled !== undefined
+        ? {
+          enabled: this.grpcEnabled,
+        }
+        : undefined,
     };
   }
 
