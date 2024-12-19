@@ -8,6 +8,7 @@ import { debug, warning } from '../../logging';
 import { Configuration } from '../../settings';
 import { ToolkitError } from '../../toolkit/error';
 import { SdkProvider } from '../aws-auth';
+import { ICloudAssemblySource } from '../../toolkit/cloud-assembly-source';
 
 /**
  * @returns output directory
@@ -41,34 +42,14 @@ export interface CloudExecutableProps {
 /**
  * Represent the Cloud Executable and the synthesis we can do on it
  */
-export class CloudExecutable {
-  private _cloudAssembly?: CloudAssembly;
-
+export class CloudExecutable implements ICloudAssemblySource {
   constructor(private readonly props: CloudExecutableProps) {
   }
 
   /**
-   * Return whether there is an app command from the configuration
+   * Produce a Cloud Assembly, i.e. a set of stacks
    */
-  public get hasApp() {
-    return !!this.props.configuration.settings.get(['app']);
-  }
-
-  /**
-   * Synthesize a set of stacks.
-   *
-   * @param cacheCloudAssembly whether to cache the Cloud Assembly after it has been first synthesized.
-   *   This is 'true' by default, and only set to 'false' for 'cdk watch',
-   *   which needs to re-synthesize the Assembly each time it detects a change to the project files
-   */
-  public async synthesize(cacheCloudAssembly: boolean = true): Promise<CloudAssembly> {
-    if (!this._cloudAssembly || !cacheCloudAssembly) {
-      this._cloudAssembly = await this.doSynthesize();
-    }
-    return this._cloudAssembly;
-  }
-
-  private async doSynthesize(): Promise<CloudAssembly> {
+  public async produce(): Promise<cxapi.CloudAssembly> {
     const trackVersions: boolean = this.props.configuration.settings.get(['versionReporting']);
 
     // We may need to run the cloud executable multiple times in order to satisfy all missing context
@@ -120,7 +101,7 @@ export class CloudExecutable {
         await this.addMetadataResource(assembly);
       }
 
-      return new CloudAssembly(assembly);
+      return assembly;
     }
   }
 

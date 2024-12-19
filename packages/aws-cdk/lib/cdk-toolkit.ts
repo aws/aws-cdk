@@ -55,6 +55,7 @@ import { Concurrency, WorkGraph } from './util/work-graph';
 import { WorkGraphBuilder } from './util/work-graph-builder';
 import { AssetBuildNode, AssetPublishNode, StackNode } from './util/work-graph-types';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob } from '../lib/api/cxapp/environments';
+import { CachedCloudAssemblySource, ICloudAssemblySource } from './toolkit/cloud-assembly-source';
 
 // Must use a require() otherwise esbuild complains about calling a namespace
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -136,8 +137,9 @@ export enum AssetBuildTime {
 export class CdkToolkit {
   constructor(private readonly props: CdkToolkitProps) {}
 
-  public async metadata(stackName: string, json: boolean) {
-    const stacks = await this.selectSingleStackByName(stackName);
+  public async metadata(assemblySource: ICloudAssemblySource, stackName: string, json: boolean) {
+    const assembly = await this.assemblyFromSource(assemblySource);
+    const stacks = await this.selectSingleStackByName(assembly, stackName);
     printSerializedObject(stacks.firstStack.manifest.metadata ?? {}, json);
   }
 
@@ -148,8 +150,9 @@ export class CdkToolkit {
     await this.props.configuration.saveContext();
   }
 
-  public async diff(options: DiffOptions): Promise<number> {
-    const stacks = await this.selectStacksForDiff(options.stackNames, options.exclusively);
+  public async diff(assemblySource: ICloudAssemblySource, options: DiffOptions): Promise<number> {
+    const assembly = await this.assemblyFromSource(assemblySource);
+    const stacks = await this.selectStacksForDiff(assembly, options.stackNames, options.exclusively);
 
     const strict = !!options.strict;
     const contextLines = options.contextLines || 3;
@@ -261,16 +264,21 @@ export class CdkToolkit {
     return diffs && options.fail ? 1 : 0;
   }
 
-  public async deploy(options: DeployOptions) {
+  public async deploy(assemblySource: ICloudAssemblySource, options: DeployOptions) {
     if (options.watch) {
-      return this.watch(options);
+      return this.watch(assemblySource, options);
     }
 
+    const assembly = await this.assemblyFromSource(assemblySource);
+    return this._deployHelper(assembly, options);
+  }
+
+  private async _deployHelper(assembly: CloudAssembly, options: DeployOptions) {
     const startSynthTime = new Date().getTime();
     const stackCollection = await this.selectStacksForDeploy(
+      assembly,
       options.selector,
       options.exclusively,
-      options.cacheCloudAssembly,
       options.ignoreNoStacks,
     );
     const elapsedSynthTime = new Date().getTime() - startSynthTime;
@@ -348,7 +356,7 @@ export class CdkToolkit {
           warning('%s: stack has no resources, skipping deployment.', chalk.bold(stack.displayName));
         } else {
           warning('%s: stack has no resources, deleting existing stack.', chalk.bold(stack.displayName));
-          await this.destroy({
+          await this.destroy(assembly, {
             selector: { patterns: [stack.hierarchicalId] },
             exclusively: true,
             force: true,
@@ -451,7 +459,7 @@ export class CdkToolkit {
               }
 
               // Perform a rollback
-              await this.rollback({
+              await this.rollback(assembly, {
                 selector: { patterns: [stack.hierarchicalId] },
                 toolkitStackName: options.toolkitStackName,
                 force: options.force,
@@ -571,9 +579,10 @@ export class CdkToolkit {
   /**
    * Roll back the given stack or stacks.
    */
-  public async rollback(options: RollbackOptions) {
+  public async rollback(assemblySource: ICloudAssemblySource, options: RollbackOptions) {
+    const assembly = await this.assemblyFromSource(assemblySource);
     const startSynthTime = new Date().getTime();
-    const stackCollection = await this.selectStacksForDeploy(options.selector, true);
+    const stackCollection = await this.selectStacksForDeploy(assembly, options.selector, true);
     const elapsedSynthTime = new Date().getTime() - startSynthTime;
     print('\n✨  Synthesis time: %ss\n', formatTime(elapsedSynthTime));
 
@@ -612,7 +621,7 @@ export class CdkToolkit {
     }
   }
 
-  public async watch(options: WatchOptions) {
+  public async watch(assemblySource: ICloudAssemblySource, options: WatchOptions) {
     const rootDir = path.dirname(path.resolve(PROJECT_CONFIG));
     debug("root directory used for 'watch' is: %s", rootDir);
 
@@ -667,7 +676,7 @@ export class CdkToolkit {
       latch = 'deploying';
       cloudWatchLogMonitor?.deactivate();
 
-      await this.invokeDeployFromWatch(options, cloudWatchLogMonitor);
+      await this.invokeDeployFromWatch(assemblySource, options, cloudWatchLogMonitor);
 
       // If latch is still 'deploying' after the 'await', that's fine,
       // but if it's 'queued', that means we need to deploy again
@@ -676,7 +685,7 @@ export class CdkToolkit {
         // and thinks the above 'while' condition is always 'false' without the cast
         latch = 'deploying';
         print("Detected file changes during deployment. Invoking 'cdk deploy' again");
-        await this.invokeDeployFromWatch(options, cloudWatchLogMonitor);
+        await this.invokeDeployFromWatch(assemblySource, options, cloudWatchLogMonitor);
       }
       latch = 'open';
       cloudWatchLogMonitor?.activate();
@@ -713,8 +722,9 @@ export class CdkToolkit {
       });
   }
 
-  public async import(options: ImportOptions) {
-    const stacks = await this.selectStacksForDeploy(options.selector, true, true, false);
+  public async import(assemblySource: ICloudAssemblySource, options: ImportOptions) {
+    const assembly = await this.assemblyFromSource(assemblySource);
+    const stacks = await this.selectStacksForDeploy(assembly, options.selector, true, false);
 
     if (stacks.stackCount > 1) {
       throw new ToolkitError(
@@ -796,8 +806,9 @@ export class CdkToolkit {
     }
   }
 
-  public async destroy(options: DestroyOptions) {
-    let stacks = await this.selectStacksForDestroy(options.selector, options.exclusively);
+  public async destroy(assemblySource: ICloudAssemblySource, options: DestroyOptions) {
+    const assembly = await this.assemblyFromSource(assemblySource);
+    let stacks = await this.selectStacksForDestroy(assembly, options.selector, options.exclusively);
 
     // The stacks will have been ordered for deployment, so reverse them for deletion.
     stacks = stacks.reversed();
@@ -889,18 +900,16 @@ export class CdkToolkit {
    * should be supplied, where the templates will be written.
    */
   public async synth(
-    stackNames: string[],
-    exclusively: boolean,
-    quiet: boolean,
-    autoValidate?: boolean,
-    json?: boolean,
+    assemblySource: ICloudAssemblySource,
+    options: SynthOptions,
   ): Promise<any> {
-    const stacks = await this.selectStacksForDiff(stackNames, exclusively, autoValidate);
+    const assembly = await this.assemblyFromSource(assemblySource);
+    const stacks = await this.selectStacksForDiff(assembly, options.stackNames, options.exclusively, options.autoValidate);
 
     // if we have a single stack, print it to STDOUT
     if (stacks.stackCount === 1) {
-      if (!quiet) {
-        printSerializedObject(obscureTemplate(stacks.firstStack.template), json ?? false);
+      if (!options.quiet) {
+        printSerializedObject(obscureTemplate(stacks.firstStack.template), options.json ?? false);
       }
       return undefined;
     }
@@ -929,7 +938,7 @@ export class CdkToolkit {
     // If there is an '--app' argument and an environment looks like a glob, we
     // select the environments from the app. Otherwise, use what the user said.
 
-    const environments = await this.defineEnvironments(userEnvironmentSpecs);
+    const environments = await this.defineEnvironments(userEnvironmentSpecs, assembly);
 
     const limit = pLimit(20);
 
@@ -953,8 +962,9 @@ export class CdkToolkit {
    * Garbage collects assets from a CDK app's environment
    * @param options Options for Garbage Collection
    */
-  public async garbageCollect(userEnvironmentSpecs: string[], options: GarbageCollectionOptions) {
-    const environments = await this.defineEnvironments(userEnvironmentSpecs);
+  public async garbageCollect(assemblySource: ICloudAssemblySource, userEnvironmentSpecs: string[], options: GarbageCollectionOptions) {
+    const assembly = await this.assemblyFromSource(assemblySource);
+    const environments = await this.defineEnvironments(userEnvironmentSpecs, assembly);
 
     for (const environment of environments) {
       success(' ⏳  Garbage Collecting environment %s...', chalk.blue(environment.name));
@@ -972,13 +982,31 @@ export class CdkToolkit {
     };
   }
 
-  private async defineEnvironments(userEnvironmentSpecs: string[]): Promise<cxapi.Environment[]> {
+  /**
+   * Creates a Toolkit internal CloudAssembly from a CloudAssemblySource.
+   * @param assemblySource the source for the cloud assembly
+   * @param cache if the assembly should be cached, default: `true`
+   * @returns the CloudAssembly object
+   */
+  private async assemblyFromSource(assemblySource: ICloudAssemblySource, cache: boolean = true): Promise<CloudAssembly> {
+    if (assemblySource instanceof CloudAssembly) {
+      return assemblySource;
+    }
+
+    if (cache) {
+      return new CloudAssembly(await new CachedCloudAssemblySource(assemblySource).produce());
+    }
+
+    return new CloudAssembly(await assemblySource.produce());
+  }
+
+  private async defineEnvironments(userEnvironmentSpecs: string[], assembly?: CloudAssembly): Promise<cxapi.Environment[]> {
     // By default, glob for everything
     const environmentSpecs = userEnvironmentSpecs.length > 0 ? [...userEnvironmentSpecs] : ['**'];
 
     // Partition into globs and non-globs (this will mutate environmentSpecs).
     const globSpecs = partition(environmentSpecs, looksLikeGlob);
-    if (globSpecs.length > 0 && !this.props.cloudExecutable.hasApp) {
+    if (globSpecs.length > 0 && !assembly) {
       if (userEnvironmentSpecs.length > 0) {
         // User did request this glob
         throw new ToolkitError(
@@ -995,9 +1023,9 @@ export class CdkToolkit {
     const environments: cxapi.Environment[] = [...environmentsFromDescriptors(environmentSpecs)];
 
     // If there is an '--app' argument, select the environments from the app.
-    if (this.props.cloudExecutable.hasApp) {
+    if (assembly) {
       environments.push(
-        ...(await globEnvironmentsFromStacks(await this.selectStacksForList([]), globSpecs, this.props.sdkProvider)),
+        ...(await globEnvironmentsFromStacks(await this.selectStacksForList(assembly, []), globSpecs, this.props.sdkProvider)),
       );
     }
 
@@ -1096,22 +1124,17 @@ export class CdkToolkit {
     }
   }
 
-  private async selectStacksForList(patterns: string[]) {
-    const assembly = await this.assembly();
+  private async selectStacksForList(assembly: CloudAssembly, patterns: string[]) {
     const stacks = await assembly.selectStacks({ patterns }, { defaultBehavior: DefaultSelection.AllStacks });
-
-    // No validation
-
     return stacks;
   }
 
   private async selectStacksForDeploy(
+    assembly: CloudAssembly,
     selector: StackSelector,
     exclusively?: boolean,
-    cacheCloudAssembly?: boolean,
     ignoreNoStacks?: boolean,
   ): Promise<StackCollection> {
-    const assembly = await this.assembly(cacheCloudAssembly);
     const stacks = await assembly.selectStacks(selector, {
       extend: exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Upstream,
       defaultBehavior: DefaultSelection.OnlySingle,
@@ -1125,12 +1148,11 @@ export class CdkToolkit {
   }
 
   private async selectStacksForDiff(
+    assembly: CloudAssembly,
     stackNames: string[],
     exclusively?: boolean,
     autoValidate?: boolean,
   ): Promise<StackCollection> {
-    const assembly = await this.assembly();
-
     const selectedForDiff = await assembly.selectStacks(
       { patterns: stackNames },
       {
@@ -1139,7 +1161,7 @@ export class CdkToolkit {
       },
     );
 
-    const allStacks = await this.selectStacksForList([]);
+    const allStacks = await this.selectStacksForList(assembly, []);
     const autoValidateStacks = autoValidate
       ? allStacks.filter((art) => art.validateOnSynth ?? false)
       : new StackCollection(assembly, []);
@@ -1150,8 +1172,7 @@ export class CdkToolkit {
     return selectedForDiff;
   }
 
-  private async selectStacksForDestroy(selector: StackSelector, exclusively?: boolean) {
-    const assembly = await this.assembly();
+  private async selectStacksForDestroy(assembly: CloudAssembly, selector: StackSelector, exclusively?: boolean) {
     const stacks = await assembly.selectStacks(selector, {
       extend: exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Downstream,
       defaultBehavior: DefaultSelection.OnlySingle,
@@ -1185,9 +1206,7 @@ export class CdkToolkit {
   /**
    * Select a single stack by its name
    */
-  private async selectSingleStackByName(stackName: string) {
-    const assembly = await this.assembly();
-
+  private async selectSingleStackByName(assembly: CloudAssembly, stackName: string) {
     const stacks = await assembly.selectStacks(
       { patterns: [stackName] },
       {
@@ -1204,10 +1223,6 @@ export class CdkToolkit {
     return assembly.stackById(stacks.firstStack.id);
   }
 
-  public assembly(cacheCloudAssembly?: boolean): Promise<CloudAssembly> {
-    return this.props.cloudExecutable.synthesize(cacheCloudAssembly);
-  }
-
   private patternsArrayForWatch(
     patterns: string | string[] | undefined,
     options: { rootDir: string; returnRootDirIfEmpty: boolean },
@@ -1217,6 +1232,7 @@ export class CdkToolkit {
   }
 
   private async invokeDeployFromWatch(
+    assemblySource: ICloudAssemblySource,
     options: WatchOptions,
     cloudWatchLogMonitor?: CloudWatchLogEventMonitor,
   ): Promise<void> {
@@ -1228,14 +1244,14 @@ export class CdkToolkit {
       // as that would lead to a cycle
       watch: false,
       cloudWatchLogMonitor,
-      cacheCloudAssembly: false,
       hotswap: options.hotswap,
       extraUserAgent: `cdk-watch/hotswap-${options.hotswap !== HotswapMode.FALL_BACK ? 'on' : 'off'}`,
       concurrency: options.concurrency,
     };
 
     try {
-      await this.deploy(deployOptions);
+      const assembly = await this.assemblyFromSource(assemblySource, false);
+      await this._deployHelper(assembly, deployOptions);
     } catch {
       // just continue - deploy will show the error
     }
@@ -1324,6 +1340,38 @@ export class CdkToolkit {
  */
 function printSerializedObject(obj: any, json: boolean) {
   data(serializeStructure(obj, json));
+}
+
+export interface SynthOptions {
+  /**
+   * Stack names to synth
+   */
+  stackNames: string[];
+
+  /**
+   * Only select the given stack
+   *
+   * @default false
+   */
+  exclusively: boolean;
+
+  /**
+   * Do not output CloudFormation Template to stdout
+   *
+   * @default false
+   */
+  quiet: boolean;
+
+  /**
+   * After synthesis, validate stacks with the "validateOnSynth" attribute set (can also be controlled with CDK_VALIDATION)
+   * @default true
+   */
+  autoValidate?: boolean;
+
+  /**
+   * Print as JSON instead of YAML.
+   */
+  json?: boolean;
 }
 
 export interface DiffOptions {
@@ -1577,15 +1625,6 @@ export interface DeployOptions extends CfnDeployOptions, WatchOptions {
    * @default false
    */
   readonly watch?: boolean;
-
-  /**
-   * Whether we should cache the Cloud Assembly after the first time it has been synthesized.
-   * The default is 'true', we only don't want to do it in case the deployment is triggered by
-   * 'cdk watch'.
-   *
-   * @default true
-   */
-  readonly cacheCloudAssembly?: boolean;
 
   /**
    * Allows adding CloudWatch log groups to the log monitor via
