@@ -1,11 +1,13 @@
-# yargs-gen
+# cli-args-gen
 
-Generates CDK CLI `yargs` configuration from the source of truth in `packages/aws-cdk/lib/config.ts`
+Generates CDK CLI configurations from the source of truth in `packages/aws-cdk/lib/config.ts`.
+Currently generates `yargs` config into `packages/aws-cdk/lib/parse-command-line-arguments.ts` and
+strongly-typed CLI arguments interface into `packages/aws-cdk-lib/cli-arguments.ts`.
 
 ## Usage
 
 ```ts
-import { renderYargs } from '@aws-cdk/yargs-gen';
+import { renderYargs } from '@aws-cdk/cli-args-gen';
 
 declare const config: CliConfig;
 

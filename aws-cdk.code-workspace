@@ -31,7 +31,7 @@
         "name": "aws-custom-resource-sdk-adapter",
         "rootPath": "packages/@aws-cdk/aws-custom-resource-sdk-adapter"
       },
-      { "name": "yargs-gen", "rootPath": "tools/@aws-cdk/yargs-gen" }
+      { "name": "cli-args-gen", "rootPath": "tools/@aws-cdk/cli-args-gen" }
     ]
   },
   "extensions": {
