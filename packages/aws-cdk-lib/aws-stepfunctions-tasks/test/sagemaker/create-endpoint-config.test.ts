@@ -128,7 +128,7 @@ test('Cannot create a SageMaker create enpoint config task with empty production
     endpointConfigName: 'MyEndpointConfig',
     productionVariants: [],
   }))
-    .toThrowError(/Must specify from 1 to 10 production variants per endpoint configuration/);
+    .toThrow(/Must specify from 1 to 10 production variants per endpoint configuration/);
 });
 
 test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration pattern', () => {
@@ -142,6 +142,6 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration patt
       variantName: 'awesome-variant',
     }],
   }))
-    .toThrowError(/Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE. Received: WAIT_FOR_TASK_TOKEN/i);
+    .toThrow(/Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE. Received: WAIT_FOR_TASK_TOKEN/i);
 });
 
