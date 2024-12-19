@@ -1552,7 +1552,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       autoScalingGroupName: this.physicalName,
       availabilityZoneDistribution: props.azCapacityDistributionStrategy
         ? { capacityDistributionStrategy: props.azCapacityDistributionStrategy }
-        : undefined,
+        : { capacityDistributionStrategy: CapacityDistributionStrategy.BALANCED_BEST_EFFORT },
       cooldown: props.cooldown?.toSeconds().toString(),
       minSize: Tokenization.stringifyNumber(minCapacity),
       maxSize: Tokenization.stringifyNumber(maxCapacity),
