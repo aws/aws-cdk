@@ -1964,7 +1964,7 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
     })).toThrow(/Node-to-node encryption requires Elasticsearch version 6.0 or later or OpenSearch version 1.0 or later/);
   });
 
-  test('error when I3, R6GD, I4G, and IM4GN instance types are specified with EBS enabled', () => {
+  test('error when I3, R6GD, I4G, I4I, IM4GN or R7GD instance types are specified with EBS enabled', () => {
     expect(() => new Domain(stack, 'Domain2', {
       version: engineVersion,
       capacity: {
@@ -1974,7 +1974,7 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
         volumeSize: 100,
         volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
       },
-    })).toThrow(/I3, R6GD, I4G, and IM4GN instance types do not support EBS storage volumes./);
+    })).toThrow(/I3, R6GD, I4G, I4I, IM4GN and R7GD instance types do not support EBS storage volumes./);
     expect(() => new Domain(stack, 'Domain3', {
       version: engineVersion,
       capacity: {
@@ -1984,7 +1984,7 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
         volumeSize: 100,
         volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
       },
-    })).toThrow(/I3, R6GD, I4G, and IM4GN instance types do not support EBS storage volumes./);
+    })).toThrow(/I3, R6GD, I4G, I4I, IM4GN and R7GD instance types do not support EBS storage volumes./);
     expect(() => new Domain(stack, 'Domain4', {
       version: engineVersion,
       capacity: {
@@ -1994,7 +1994,7 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
         volumeSize: 100,
         volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
       },
-    })).toThrow(/I3, R6GD, I4G, and IM4GN instance types do not support EBS storage volumes./);
+    })).toThrow(/I3, R6GD, I4G, I4I, IM4GN and R7GD instance types do not support EBS storage volumes./);
     expect(() => new Domain(stack, 'Domain5', {
       version: engineVersion,
       capacity: {
@@ -2004,7 +2004,27 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
         volumeSize: 100,
         volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
       },
-    })).toThrow(/I3, R6GD, I4G, and IM4GN instance types do not support EBS storage volumes./);
+    })).toThrow(/I3, R6GD, I4G, I4I, IM4GN and R7GD instance types do not support EBS storage volumes./);
+    expect(() => new Domain(stack, 'Domain6', {
+      version: engineVersion,
+      capacity: {
+        dataNodeInstanceType: 'i4i.xlarge.search',
+      },
+      ebs: {
+        volumeSize: 100,
+        volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
+      },
+    })).toThrow(/I3, R6GD, I4G, I4I, IM4GN and R7GD instance types do not support EBS storage volumes./);
+    expect(() => new Domain(stack, 'Domain7', {
+      version: engineVersion,
+      capacity: {
+        dataNodeInstanceType: 'r7gd.xlarge.search',
+      },
+      ebs: {
+        volumeSize: 100,
+        volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
+      },
+    })).toThrow(/I3, R6GD, I4G, I4I, IM4GN and R7GD instance types do not support EBS storage volumes./);
   });
 
   test('error when m3, r3, or t2 instance types are specified with encryption at rest enabled', () => {
@@ -2047,7 +2067,7 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
     })).toThrow(/t2.micro.search instance type supports only Elasticsearch versions 1.5 and 2.3/);
   });
 
-  test('error when any instance type other than R3, I3, R6GD, I4G, or IM4GN are specified without EBS enabled', () => {
+  test('error when any instance type other than R3, I3, R6GD, I4I, I4G, IM4GN or R7GD are specified without EBS enabled', () => {
     expect(() => new Domain(stack, 'Domain1', {
       version: engineVersion,
       ebs: {
@@ -2056,7 +2076,7 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
       capacity: {
         masterNodeInstanceType: 'm5.large.search',
       },
-    })).toThrow(/EBS volumes are required when using instance types other than R3, I3, R6GD, I4G, or IM4GN./);
+    })).toThrow(/EBS volumes are required when using instance types other than R3, I3, R6GD, I4G, I4I, M4GN or R7GD./);
     expect(() => new Domain(stack, 'Domain2', {
       version: engineVersion,
       ebs: {
@@ -2065,7 +2085,7 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
       capacity: {
         dataNodeInstanceType: 'r5.large.search',
       },
-    })).toThrow(/EBS volumes are required when using instance types other than R3, I3, R6GD, I4G, or IM4GN./);
+    })).toThrow(/EBS volumes are required when using instance types other than R3, I3, R6GD, I4G, I4I, M4GN or R7GD./);
   });
 
   test('can use compatible master instance types that does not have local storage when data node type is i3 or r6gd', () => {
