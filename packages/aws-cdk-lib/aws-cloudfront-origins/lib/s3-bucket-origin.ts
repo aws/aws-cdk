@@ -6,10 +6,16 @@ import { IKey } from '../../aws-kms';
 import { IBucket } from '../../aws-s3';
 import { Annotations, Aws, Names, Stack } from '../../core';
 
-const BUCKET_ACTIONS: Record<string, string[]> = {
-  READ: ['s3:GetObject'],
-  WRITE: ['s3:PutObject'],
-  DELETE: ['s3:DeleteObject'],
+interface BucketPolicyAction {
+  readonly action: string;
+  readonly needsBucketArn?: boolean;
+}
+
+const BUCKET_ACTIONS: Record<string, BucketPolicyAction[]> = {
+  READ: [{ action: 's3:GetObject' }],
+  LIST: [{ action: 's3:ListBucket', needsBucketArn: true }],
+  WRITE: [{ action: 's3:PutObject' }],
+  DELETE: [{ action: 's3:DeleteObject' }],
 };
 
 const KEY_ACTIONS: Record<string, string[]> = {
@@ -118,6 +124,13 @@ class S3BucketOriginWithOAC extends S3BucketOrigin {
 
     const distributionId = options.distributionId;
     const accessLevels = new Set(this.originAccessLevels ?? [cloudfront.AccessLevel.READ]);
+    if (accessLevels.has(AccessLevel.LIST)) {
+      Annotations.of(scope).addWarningV2('@aws-cdk/aws-cloudfront-origins:listBucketSecurityRisk',
+        'When the origin with AccessLevel.LIST is associated to the default behavior, '+
+        'it is strongly recommended to ensure the distribution\'s defaultRootObject is specified,\n'+
+        'See the "Setting up OAC with LIST permission" section of module\'s README for more info.');
+    }
+
     const bucketPolicyActions = this.getBucketPolicyActions(accessLevels);
     const bucketPolicyResult = this.grantDistributionAccessToBucket(distributionId!, bucketPolicyActions);
 
@@ -151,32 +164,25 @@ class S3BucketOriginWithOAC extends S3BucketOrigin {
     };
   }
 
-  private getBucketPolicyActions(accessLevels: Set<cloudfront.AccessLevel>): string[] {
-    let actions: string[] = [];
-    for (const accessLevel of accessLevels) {
-      actions = actions.concat(BUCKET_ACTIONS[accessLevel]);
-    }
-    return actions;
+  private getBucketPolicyActions(accessLevels: Set<cloudfront.AccessLevel>): BucketPolicyAction[] {
+    return [...accessLevels].flatMap((accessLevel) => BUCKET_ACTIONS[accessLevel] ?? []);
   }
 
   private getKeyPolicyActions(accessLevels: Set<cloudfront.AccessLevel>): string[] {
-    let actions: string[] = [];
-    for (const accessLevel of accessLevels) {
-      // Filter out DELETE since delete permissions are not applicable to KMS key actions
-      if (accessLevel !== AccessLevel.DELETE) {
-        actions = actions.concat(KEY_ACTIONS[accessLevel]);
-      }
-    }
-    return actions;
+    return [...accessLevels].flatMap((accessLevel) => KEY_ACTIONS[accessLevel] ?? []);
   }
 
-  private grantDistributionAccessToBucket(distributionId: string, actions: string[]): iam.AddToResourcePolicyResult {
+  private grantDistributionAccessToBucket(distributionId: string, policyActions: BucketPolicyAction[]): iam.AddToResourcePolicyResult {
+    const resources = [this.bucket.arnForObjects('*')];
+    if (policyActions.some((pa) => pa.needsBucketArn)) {
+      resources.push(this.bucket.bucketArn);
+    }
     const oacBucketPolicyStatement = new iam.PolicyStatement(
       {
         effect: iam.Effect.ALLOW,
         principals: [new iam.ServicePrincipal('cloudfront.amazonaws.com')],
-        actions,
-        resources: [this.bucket.arnForObjects('*')],
+        actions: policyActions.map((pa) => pa.action),
+        resources,
         conditions: {
           StringEquals: {
             'AWS:SourceArn': `arn:${Aws.PARTITION}:cloudfront::${Aws.ACCOUNT_ID}:distribution/${distributionId}`,
