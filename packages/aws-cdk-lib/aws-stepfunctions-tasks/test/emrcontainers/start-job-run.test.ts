@@ -668,7 +668,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
             },
           },
         });
-      }).toThrow('Entry point arguments must be a string array or an encoded JSON path but received object');
+      }).toThrow('Entry point arguments must be a string array or an encoded JSON path or JSONata expression but received object.');
 
       // THEN
       expect(() => {
@@ -681,7 +681,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
             },
           },
         });
-      }).toThrow('Entry point arguments must be a string array or an encoded JSON path, but received a non JSON path string');
+      }).toThrow('Entry point arguments must be a string array or an encoded JSON path or JSONata expression, but received a non JSON path or JSONata expression string');
 
       // THEN
       expect(() => {

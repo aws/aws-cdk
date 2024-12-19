@@ -1,13 +1,11 @@
 import { Construct } from 'constructs';
-import { MapBase, MapBaseProps } from './map-base';
+import { MapBase, MapBaseJsonataOptions, MapBaseJsonPathOptions, MapBaseOptions, MapBaseProps } from './map-base';
 import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
-import { CatchProps, IChainable, INextable, ProcessorConfig, ProcessorMode, RetryProps } from '../types';
+import { CatchProps, IChainable, INextable, ProcessorConfig, ProcessorMode, QueryLanguage, RetryProps } from '../types';
+import { StateBaseProps } from './state';
 
-/**
- * Properties for defining a Map state
- */
-export interface MapProps extends MapBaseProps {
+interface MapOptions extends MapBaseOptions {
   /**
    * The JSON that you want to override your default iteration input (mutually exclusive  with `itemSelector`).
    *
@@ -21,6 +19,20 @@ export interface MapProps extends MapBaseProps {
    */
   readonly parameters?: { [key: string]: any };
 }
+/**
+ * Properties for defining a Map state that using JSONPath
+ */
+export interface MapJsonPathProps extends StateBaseProps, MapOptions, MapBaseJsonPathOptions {}
+
+/**
+ * Properties for defining a Map state that using JSONata
+ */
+export interface MapJsonataProps extends StateBaseProps, MapOptions, MapBaseJsonataOptions {}
+
+/**
+ * Properties for defining a Map state
+ */
+export interface MapProps extends MapBaseProps, MapOptions {}
 
 /**
  * Define a Map state in the state machine
@@ -34,6 +46,37 @@ export interface MapProps extends MapBaseProps {
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-map-state.html
  */
 export class Map extends MapBase implements INextable {
+  /**
+   * Define a Map state using JSONPath in the state machine
+   *
+   * A `Map` state can be used to run a set of steps for each element of an input array.
+   * A Map state will execute the same steps for multiple entries of an array in the state input.
+   *
+   * While the Parallel state executes multiple branches of steps using the same input, a Map state
+   * will execute the same steps for multiple entries of an array in the state input.
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-map-state.html
+   */
+  public static jsonPath(scope: Construct, id: string, props: MapJsonPathProps = {}) {
+    return new Map(scope, id, props);
+  }
+  /**
+   * Define a Map state using JSONata in the state machine
+   *
+   * A `Map` state can be used to run a set of steps for each element of an input array.
+   * A Map state will execute the same steps for multiple entries of an array in the state input.
+   *
+   * While the Parallel state executes multiple branches of steps using the same input, a Map state
+   * will execute the same steps for multiple entries of an array in the state input.
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-map-state.html
+   */
+  public static jsonata(scope: Construct, id: string, props: MapJsonataProps = {}) {
+    return new Map(scope, id, {
+      ...props,
+      queryLanguage: QueryLanguage.JSONATA,
+    });
+  }
   constructor(scope: Construct, id: string, props: MapProps = {}) {
     super(scope, id, props);
     this.processorMode = ProcessorMode.INLINE;
@@ -55,9 +98,9 @@ export class Map extends MapBase implements INextable {
   /**
    * Return the Amazon States Language object for this state
    */
-  public toStateJson(): object {
+  public toStateJson(queryLanguage?: QueryLanguage): object {
     return {
-      ...super.toStateJson(),
+      ...super.toStateJson(queryLanguage),
       ...this.renderParameters(),
       ...this.renderIterator(),
     };
