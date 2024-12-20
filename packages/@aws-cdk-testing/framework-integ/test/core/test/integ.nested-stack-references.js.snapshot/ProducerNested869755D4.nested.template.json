@@ -1,0 +1,45 @@
+{
+ "Resources": {
+  "RequiredResourceA026AF42": {
+   "Type": "AWS::S3::Bucket",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  }
+ },
+ "Parameters": {
+  "NestedString": {
+   "Type": "String",
+   "Default": "foo"
+  },
+  "NestedNumber": {
+   "Type": "Number",
+   "Default": "123"
+  },
+  "NestedList": {
+   "Type": "CommaDelimitedList",
+   "Default": "foo,bar"
+  }
+ },
+ "Outputs": {
+  "ProducerNestedNestedString6B1C0634Ref": {
+   "Value": {
+    "Ref": "NestedString"
+   }
+  },
+  "ProducerNestedNestedNumberEF88914ERef": {
+   "Value": {
+    "Ref": "NestedNumber"
+   }
+  },
+  "ProducerNestedNestedListCF0BC56DRef": {
+   "Value": {
+    "Fn::Join": [
+     "||",
+     {
+      "Ref": "NestedList"
+     }
+    ]
+   }
+  }
+ }
+}
