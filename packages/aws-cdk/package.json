@@ -7,7 +7,7 @@
   },
   "scripts": {
     "build": "cdk-build",
-    "yargs-gen": "ts-node --preferTsExts scripts/yargs-gen.ts",
+    "cli-args-gen": "ts-node --preferTsExts scripts/cli-args-gen.ts",
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "pkglint": "pkglint -f",
@@ -29,7 +29,7 @@
   },
   "cdk-build": {
     "pre": [
-      "yarn yargs-gen"
+      "yarn cli-args-gen"
     ],
     "post": [
       "cp ../../node_modules/cdk-from-cfn/index_bg.wasm ./lib/",
@@ -69,7 +69,7 @@
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@aws-cdk/yargs-gen": "0.0.0",
+    "@aws-cdk/cli-args-gen": "0.0.0",
     "@octokit/rest": "^18.12.0",
     "@types/archiver": "^5.3.4",
     "@types/fs-extra": "^9.0.13",
@@ -126,7 +126,7 @@
     "@aws-sdk/credential-providers": "3.699.0",
     "@aws-sdk/ec2-metadata-service": "3.699.0",
     "@aws-sdk/lib-storage": "3.699.0",
-    "@jsii/check-node": "1.104.0",
+    "@jsii/check-node": "1.106.0",
     "@smithy/middleware-endpoint": "3.1.4",
     "@smithy/node-http-handler": "3.2.4",
     "@smithy/property-provider": "3.1.10",

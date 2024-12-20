@@ -685,7 +685,7 @@ export function parseCommandLineArguments(args: Array<string>): any {
           desc: 'If true, only generates project files, without executing additional operations such as setting up a git repo, installing dependencies or compiling the project',
         })
     )
-    .command('migrate', false, (yargs: Argv) =>
+    .command('migrate', 'Migrate existing AWS resources into a CDK app', (yargs: Argv) =>
       yargs
         .option('stack-name', {
           type: 'string',
@@ -742,6 +742,7 @@ export function parseCommandLineArguments(args: Array<string>): any {
           desc: 'The context key (or its index) to reset',
           type: 'string',
           requiresArg: true,
+          default: undefined,
         })
         .option('force', {
           alias: 'f',
@@ -752,6 +753,7 @@ export function parseCommandLineArguments(args: Array<string>): any {
         .option('clear', {
           desc: 'Clear all context',
           type: 'boolean',
+          default: false,
         })
     )
     .command(['docs', 'doc'], 'Opens the reference documentation in a browser', (yargs: Argv) =>
