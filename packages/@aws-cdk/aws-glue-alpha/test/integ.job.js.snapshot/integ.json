@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "36.0.0",
   "testCases": {
     "integ.job": {
       "stacks": [
