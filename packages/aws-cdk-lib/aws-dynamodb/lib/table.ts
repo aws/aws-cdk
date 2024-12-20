@@ -8,7 +8,7 @@ import { ScalableTableAttribute } from './scalable-table-attribute';
 import {
   Operation, OperationsMetricOptions, SystemErrorsForOperationsMetricOptions,
   Attribute, BillingMode, ProjectionType, ITable, SecondaryIndexProps, TableClass,
-  LocalSecondaryIndexProps, TableEncryption, StreamViewType, WarmThroughput,
+  LocalSecondaryIndexProps, TableEncryption, StreamViewType, WarmThroughput, ApproximateCreationDateTimePrecision,
 } from './shared';
 import * as appscaling from '../../aws-applicationautoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
@@ -206,23 +206,6 @@ export interface ImportSourceSpecification {
    * @default - no value
    */
   readonly keyPrefix?: string;
-}
-
-/**
- * The precision associated with the DynamoDB write timestamps that will be replicated to Kinesis.
- * The default setting for record timestamp precision is microseconds. You can change this setting at any time.
- * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-table-kinesisstreamspecification.html#aws-properties-dynamodb-table-kinesisstreamspecification-properties
- */
-export enum ApproximateCreationDateTimePrecision {
-  /**
-   * Millisecond precision
-   */
-  MILLISECOND = 'MILLISECOND',
-
-  /**
-   * Microsecond precision
-   */
-  MICROSECOND = 'MICROSECOND',
 }
 
 /**
