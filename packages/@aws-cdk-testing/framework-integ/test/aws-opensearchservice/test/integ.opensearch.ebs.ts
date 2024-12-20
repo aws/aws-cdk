@@ -10,7 +10,7 @@ class TestStack extends Stack {
     const instanceTypes = ['i4g.large.search', 'i4i.xlarge.search', 'r7gd.xlarge.search'];
 
     instanceTypes.forEach((instanceType, index) => {
-      const domainProps: opensearch.DomainProps = {
+      new opensearch.Domain(this, `Domain${index + 1}`, {
         removalPolicy: RemovalPolicy.DESTROY,
         version: opensearch.EngineVersion.OPENSEARCH_2_17,
         // specify the instance type that supports instance store
@@ -23,9 +23,7 @@ class TestStack extends Stack {
         ebs: {
           enabled: false,
         },
-      };
-
-      new opensearch.Domain(this, `Domain${index + 1}`, domainProps);
+      });
     });
   }
 }

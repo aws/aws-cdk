@@ -1574,10 +1574,24 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       }
     }
 
+    const unSupportEbsInstanceType = [
+      ec2.InstanceClass.I3,
+      ec2.InstanceClass.R6GD,
+      ec2.InstanceClass.I4G,
+      ec2.InstanceClass.I4I,
+      ec2.InstanceClass.IM4GN,
+      ec2.InstanceClass.R7GD,
+    ];
+
+    const supportInstanceStorageInstanceType = [
+      ec2.InstanceClass.R3,
+      ...unSupportEbsInstanceType,
+    ];
+
     // Validate against instance type restrictions, per
     // https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-instance-types.html
-    if (isSomeInstanceType('i3', 'r6gd', 'i4g', 'i4i', 'im4gn', 'r7gd') && ebsEnabled) {
-      throw new Error('I3, R6GD, I4G, I4I, IM4GN and R7GD instance types do not support EBS storage volumes.');
+    if (isSomeInstanceType(...unSupportEbsInstanceType) && ebsEnabled) {
+      throw new Error(`${formatInstanceTypesList(unSupportEbsInstanceType, 'and')} instance types do not support EBS storage volumes.`);
     }
 
     if (isSomeInstanceType('m3', 'r3', 't2') && encryptionAtRestEnabled) {
@@ -1594,8 +1608,8 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
 
     // Only R3, I3, R6GD, I4G, I4I, IM4GN and R7GD support instance storage, per
     // https://aws.amazon.com/opensearch-service/pricing/
-    if (!ebsEnabled && !isEveryDatanodeInstanceType('r3', 'i3', 'r6gd', 'i4g', 'i4i', 'im4gn', 'r7gd')) {
-      throw new Error('EBS volumes are required when using instance types other than R3, I3, R6GD, I4G, I4I, M4GN or R7GD.');
+    if (!ebsEnabled && !isEveryDatanodeInstanceType(...supportInstanceStorageInstanceType)) {
+      throw new Error(`EBS volumes are required when using instance types other than ${formatInstanceTypesList(supportInstanceStorageInstanceType, 'or')}.`);
     }
 
     // Only for a valid ebs volume configuration, per
@@ -1898,7 +1912,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         identityPoolId: props.cognitoDashboardsAuth?.identityPoolId,
         roleArn: props.cognitoDashboardsAuth?.role.roleArn,
         userPoolId: props.cognitoDashboardsAuth?.userPoolId,
-      }: undefined,
+      } : undefined,
       vpcOptions: cfnVpcOptions,
       snapshotOptions: props.automatedSnapshotStartHour
         ? { automatedSnapshotStartHour: props.automatedSnapshotStartHour }
@@ -2187,4 +2201,15 @@ function initializeInstanceType(defaultInstanceType: string, instanceType?: stri
   } else {
     return defaultInstanceType;
   }
+}
+
+/**
+ * Format instance types list for error messages.
+ *
+ * @param instanceTypes List of instance types to format
+ * @param conjunction Word to use as the conjunction (e.g., 'and', 'or')
+ * @returns Formatted instance types list for error messages
+ */
+function formatInstanceTypesList(instanceTypes: string[], conjunction: string): string {
+  return instanceTypes.map((type) => type.toUpperCase()).join(', ').replace(/, ([^,]*)$/, ` ${conjunction} $1`);
 }
