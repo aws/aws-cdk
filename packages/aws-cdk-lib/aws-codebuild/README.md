@@ -490,7 +490,7 @@ new codebuild.Project(this, 'Project', {
 })
 ```
 
-### Attribute based compute
+### Attribute-based compute
 
 You can use [attribute-based compute](https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.html#fleets.attribute-compute) for your fleet by setting the `computeType` to `ATTRIBUTE_BASED_COMPUTE`.
 This allows you to specify the attributes in `computeConfiguration` such as vCPUs, memory, disk space, and the machineType.
