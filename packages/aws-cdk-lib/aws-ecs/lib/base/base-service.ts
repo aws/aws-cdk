@@ -254,6 +254,37 @@ export interface ServiceConnectService {
    * @default - Duration.seconds(15)
    */
   readonly perRequestTimeout?: Duration;
+
+  /**
+   * A reference to an object that represents a Transport Layer Security (TLS) configuration.
+   * 
+   * @default - none
+   */
+  readonly tls?: ServiceConnectTlsConfiguration;
+}
+
+/**
+ * TLS configuration for Service Connect service
+ */
+export interface ServiceConnectTlsConfiguration {
+  /**
+   * The ARN of the AWS Private Certificate Authority certificate.
+   */
+  readonly awsPcaAuthorityArn: string;
+
+  /**
+   * The AWS Key Management Service key.
+   * 
+   * @default - none
+   */
+  readonly kmsKey?: string;
+
+  /**
+   * The Amazon Resource Name (ARN) of the IAM role that's associated with the Service Connect TLS.
+   * 
+   * @default - none
+   */
+  readonly roleArn?: string;
 }
 
 /**
