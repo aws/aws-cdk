@@ -1046,13 +1046,13 @@ const api = new appsync.EventApi(this, 'api', {
       apiKeyProvider,
     ],
     connectionAuthModeTypes: [
-      appsync.AuthorizationType.API_KEY,
+      appsync.AppSyncAuthorizationType.API_KEY,
     ],
     defaultPublishAuthModeTypes: [
-      appsync.AuthorizationType.API_KEY,
+      appsync.AppSyncAuthorizationType.API_KEY,
     ],
     defaultSubscribeAuthModeTypes: [
-      appsync.AuthorizationType.API_KEY,
+      appsync.AppSyncAuthorizationType.API_KEY,
     ],
   },
   // Custom Domain Settings
