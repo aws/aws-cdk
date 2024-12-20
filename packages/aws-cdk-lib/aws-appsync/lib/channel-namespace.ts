@@ -158,7 +158,6 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
     this.channelNamespaceArn = this.channelNamespace.attrChannelNamespaceArn;
   }
 
-
   /**
    * Adds an IAM policy statement for EventSubscribe access to this channel namespace to an IAM
    * principal's policy.
