@@ -885,12 +885,12 @@ function cdkModuleName(name: string) {
     '@aws-cdk/assertions': 'assertions',
     '@aws-cdk/assertions-alpha': 'assertions-alpha',
   };
-  /* eslint-disable @typescript-eslint/indent */
+  /* eslint-disable @stylistic/indent */
   const mavenArtifactId =
     name in mavenIdMap ? mavenIdMap[name] :
     (suffix.startsWith('aws-') || suffix.startsWith('alexa-')) ? suffix.replace(/aws-/, '') :
     suffix.startsWith('cdk-') ? suffix : `cdk-${suffix}`;
-  /* eslint-enable @typescript-eslint/indent */
+  /* eslint-enable @stylistic/indent */
 
   return {
     javaPackage: `software.amazon.awscdk${isLegacyCdkPkg ? '' : `.${suffix.replace(/aws-/, 'services-').replace(/-/g, '.')}`}`,
@@ -1370,7 +1370,7 @@ export class AllVersionsTheSame extends ValidationRule {
 
   private validateDep(pkg: PackageJson, depField: string, dep: string) {
     if (dep in this.ourPackages) {
-      expectJSON(this.name, pkg, depField + '.' + dep, this.ourPackages[dep]);
+      expectJSON(this.name, pkg, [depField, dep], this.ourPackages[dep]);
       return;
     }
 
@@ -1380,7 +1380,7 @@ export class AllVersionsTheSame extends ValidationRule {
 
     const versions = this.usedDeps[dep];
     versions.sort((a, b) => b.count - a.count);
-    expectJSON(this.name, pkg, depField + '.' + dep, versions[0].version);
+    expectJSON(this.name, pkg, [depField, dep], versions[0].version);
   }
 }
 

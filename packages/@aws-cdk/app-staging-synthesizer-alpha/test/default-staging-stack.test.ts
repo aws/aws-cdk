@@ -18,7 +18,7 @@ describe('default staging stack', () => {
         appId: 'a'.repeat(21),
         qualifier: 'qualifier',
         stagingBucketEncryption: BucketEncryption.S3_MANAGED,
-      })).toThrowError(/appId expected no more than 20 characters but got 21 characters./);
+      })).toThrow(/appId expected no more than 20 characters but got 21 characters./);
     });
 
     test('when uppercase characters are used', () => {
@@ -27,7 +27,7 @@ describe('default staging stack', () => {
         appId: 'ABCDEF',
         qualifier: 'qualifier',
         stagingBucketEncryption: BucketEncryption.S3_MANAGED,
-      })).toThrowError(/appId only accepts lowercase characters./);
+      })).toThrow(/appId only accepts lowercase characters./);
     });
 
     test('when symbols are used', () => {
@@ -36,7 +36,7 @@ describe('default staging stack', () => {
         appId: 'ca$h',
         qualifier: 'qualifier',
         stagingBucketEncryption: BucketEncryption.S3_MANAGED,
-      })).toThrowError(/appId expects only letters, numbers, and dashes \('-'\)/);
+      })).toThrow(/appId expects only letters, numbers, and dashes \('-'\)/);
     });
 
     test('when multiple rules broken at once', () => {
@@ -46,7 +46,7 @@ describe('default staging stack', () => {
         appId,
         qualifier: 'qualifier',
         stagingBucketEncryption: BucketEncryption.S3_MANAGED,
-      })).toThrowError([
+      })).toThrow([
         `appId ${appId} has errors:`,
         'appId expected no more than 20 characters but got 40 characters.',
         'appId only accepts lowercase characters.',
