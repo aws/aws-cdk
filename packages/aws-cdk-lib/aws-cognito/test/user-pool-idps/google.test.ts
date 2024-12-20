@@ -82,8 +82,8 @@ describe('UserPoolIdentityProvider', () => {
           address: ProviderAttribute.other('google-address'),
           emailVerified: ProviderAttribute.GOOGLE_EMAIL_VERIFIED,
           custom: {
-            customAttr1: ProviderAttribute.GOOGLE_EMAIL,
-            customAttr2: ProviderAttribute.other('google-custom-attr'),
+            'custom:customAttr1': ProviderAttribute.GOOGLE_EMAIL,
+            'customAttr2': ProviderAttribute.other('google-custom-attr'),
           },
         },
       });
@@ -91,10 +91,10 @@ describe('UserPoolIdentityProvider', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolIdentityProvider', {
         AttributeMapping: {
-          given_name: 'name',
-          address: 'google-address',
-          customAttr1: 'email',
-          customAttr2: 'google-custom-attr',
+          'given_name': 'name',
+          'address': 'google-address',
+          'custom:customAttr1': 'email',
+          'custom:customAttr2': 'google-custom-attr',
         },
       });
     });
