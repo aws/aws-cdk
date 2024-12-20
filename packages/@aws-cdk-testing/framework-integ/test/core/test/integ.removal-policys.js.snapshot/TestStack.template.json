@@ -2,8 +2,8 @@
  "Resources": {
   "TestBucket560B80BC": {
    "Type": "AWS::S3::Bucket",
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "TestTable5769773A": {
    "Type": "AWS::DynamoDB::Table",
@@ -25,8 +25,8 @@
      "WriteCapacityUnits": 5
     }
    },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "TestUser6A619381": {
    "Type": "AWS::IAM::User",
