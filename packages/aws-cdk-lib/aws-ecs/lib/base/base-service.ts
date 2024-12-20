@@ -270,7 +270,7 @@ export interface ServiceConnectTlsConfiguration {
   /**
    * The ARN of the AWS Private Certificate Authority certificate.
    */
-  readonly awsPcaAuthorityArn: string;
+  readonly awsPcaAuthorityArn?: string;
 
   /**
    * The AWS Key Management Service key.
@@ -947,12 +947,21 @@ export abstract class BaseService extends Resource
         dnsName: svc.dnsName,
       };
 
+      const tls: CfnService.ServiceConnectTlsConfigurationProperty | undefined = svc.tls ? {
+        issuerCertificateAuthority: {
+          awsPcaAuthorityArn: svc.tls?.awsPcaAuthorityArn,
+        },
+        kmsKey: svc.tls?.kmsKey,
+        roleArn: svc.tls?.roleArn,
+      } : undefined;
+
       return {
         portName: svc.portMappingName,
         discoveryName: svc.discoveryName,
         ingressPortOverride: svc.ingressPortOverride,
         clientAliases: [alias],
         timeout: this.renderTimeout(svc.idleTimeout, svc.perRequestTimeout),
+        tls,
       } as CfnService.ServiceConnectServiceProperty;
     });
 
