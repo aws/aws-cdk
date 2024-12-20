@@ -494,7 +494,7 @@ new codebuild.Project(this, 'Project', {
 
 You can use [attribute-based compute](https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.html#fleets.attribute-compute) for your fleet by setting the `computeType` to `ATTRIBUTE_BASED_COMPUTE`.
 This allows you to specify the attributes in `computeConfiguration` such as vCPUs, memory, disk space, and the machineType.
-After specifying one or some of the available attributes, CodeBuild will choose a compute type from the available supported instance types as the finalized `computeConfiguration`.
+After specifying some or all of the available attributes, CodeBuild will select the cheapest compute type from available instance types as that at least matches all given criteria.
 
 ```ts
 import { Size } from 'aws-cdk-lib';
