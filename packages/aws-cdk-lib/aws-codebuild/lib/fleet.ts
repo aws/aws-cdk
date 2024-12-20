@@ -1,8 +1,87 @@
 import { Construct } from 'constructs';
+import * as ec2 from '../../aws-ec2';
+import { Arn, ArnFormat, IResource, Resource, Token } from '../../core';
 import { CfnFleet } from './codebuild.generated';
 import { ComputeType } from './compute-type';
 import { EnvironmentType } from './environment-type';
-import { Arn, ArnFormat, IResource, Resource, Token } from '../../core';
+
+/**
+ * FleetProxyConfiguration helper class
+ */
+export class FleetProxyConfiguration {
+  private readonly _rules: CfnFleet.FleetProxyRuleProperty[] = [];
+
+  /**
+   * FleetProxyConfiguration helper constructor.
+   * @param defaultBehavior The default behavior for the fleet proxy configuration.
+   */
+  constructor(public readonly defaultBehavior: FleetProxyDefaultBehavior) {
+  }
+
+  /**
+   * The proxy configuration for the fleet.
+   */
+  public get configuration(): CfnFleet.ProxyConfigurationProperty {
+    return {
+      defaultBehavior: this.defaultBehavior,
+      orderedProxyRules: this._rules,
+    };
+  }
+
+  /**
+   * Important: The order of rules is significant. The first rule that matches the traffic is applied.
+   *
+   * @param effect Whether the rule allows or denies traffic
+   * @param ipAddresses IPv4 and IPv6 addresses in CIDR notation
+   * @returns the current FleetProxyConfiguration to allow method chaining
+   */
+  public addIpRule(effect: FleetProxyRuleEffect, ...ipAddresses: string[]): FleetProxyConfiguration {
+    this._rules.push({
+      effect,
+      entities: ipAddresses,
+      type: 'IP',
+    });
+
+    return this;
+  }
+
+  /**
+   * Important: The order of rules is significant. The first rule that matches the traffic is applied.
+   *
+   * @param effect Whether the rule allows or denies traffic
+   * @param domains Domain names
+   * @returns the current FleetProxyConfiguration to allow method chaining
+   */
+  public addDomainRule(effect: FleetProxyRuleEffect, ...domains: string[]): FleetProxyConfiguration {
+    this._rules.push({
+      effect,
+      entities: domains,
+      type: 'DOMAIN',
+    });
+
+    return this;
+  }
+}
+
+/**
+ * TODO
+ */
+export interface FleetVpcConfiguration {
+  /**
+   * TODO
+   */
+  readonly vpc: ec2.IVpc;
+
+  /**
+   * TODO
+   */
+  readonly subnets: ec2.ISubnet[];
+
+  /**
+   * TODO
+   */
+  readonly securityGroups: ec2.ISecurityGroup[];
+}
 
 /**
  * Construction properties of a CodeBuild {@link Fleet}.
@@ -35,6 +114,16 @@ export interface FleetProps {
    * made available to projects using this fleet
    */
   readonly environmentType: EnvironmentType;
+
+  /**
+   * TODO
+   */
+  readonly proxyConfiguration?: FleetProxyConfiguration;
+
+  /**
+   * TODO
+   */
+  readonly vpcConfiguration?: FleetVpcConfiguration;
 }
 
 /**
@@ -65,6 +154,16 @@ export interface IFleet extends IResource {
    * made available to projects using this fleet
    */
   readonly environmentType: EnvironmentType;
+
+  /**
+   * TODO
+   */
+  readonly proxyConfiguration?: FleetProxyConfiguration;
+
+  /**
+   * TODO
+   */
+  readonly vpcConfiguration?: FleetVpcConfiguration;
 }
 
 /**
@@ -138,13 +237,40 @@ export class Fleet extends Resource implements IFleet {
       throw new Error('baseCapacity must be greater than or equal to 1');
     }
 
+    if (props.proxyConfiguration) {
+      if (![EnvironmentType.LINUX_CONTAINER, EnvironmentType.LINUX_GPU_CONTAINER].includes(props.environmentType)) {
+        throw new Error('proxyConfiguration can only be used if environmentType is "LINUX_CONTAINER" or "LINUX_GPU_CONTAINER"');
+      }
+
+      if (props.vpcConfiguration) {
+        throw new Error('proxyConfiguration and vpcConfiguration cannot be used concurrently');
+      }
+    }
+
     super(scope, id, { physicalName: props.fleetName });
+
+    let fleetVpcConfig: CfnFleet.VpcConfigProperty | undefined;
+    if (props.vpcConfiguration) {
+      const { vpc, subnets, securityGroups } = props.vpcConfiguration;
+      if (!Token.isUnresolved(vpc.stack.account) && !Token.isUnresolved(this.stack.account) &&
+        vpc.stack.account !== this.stack.account) {
+        throw new Error('VPC must be in the same account as its associated fleet');
+      }
+
+      fleetVpcConfig = {
+        vpcId: vpc.vpcId,
+        subnets: subnets.map(({ subnetId }) => subnetId),
+        securityGroupIds: securityGroups.map(({ securityGroupId }) => securityGroupId),
+      };
+    }
 
     const resource = new CfnFleet(this, 'Resource', {
       name: props.fleetName,
       baseCapacity: props.baseCapacity,
       computeType: props.computeType,
       environmentType: props.environmentType,
+      fleetProxyConfiguration: props.proxyConfiguration?.configuration,
+      fleetVpcConfig,
     });
 
     this.fleetArn = this.getResourceArnAttribute(resource.attrArn, {
@@ -203,4 +329,32 @@ export enum FleetComputeType {
    * for more information.
    **/
   X2_LARGE = ComputeType.X2_LARGE,
+}
+
+/**
+ * TODO
+ */
+export enum FleetProxyDefaultBehavior {
+  /**
+   * TODO
+   */
+  ALLOW_ALL = 'ALLOW_ALL',
+  /**
+   * TODO
+   */
+  DENY_ALL = 'DENY_ALL',
+}
+
+/**
+ * TODO
+ */
+export enum FleetProxyRuleEffect {
+  /**
+   * TODO
+   */
+  ALLOW = 'ALLOW',
+  /**
+   * TODO
+   */
+  DENY = 'DENY',
 }
