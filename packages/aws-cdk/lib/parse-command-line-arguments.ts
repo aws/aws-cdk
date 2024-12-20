@@ -742,6 +742,7 @@ export function parseCommandLineArguments(args: Array<string>): any {
           desc: 'The context key (or its index) to reset',
           type: 'string',
           requiresArg: true,
+          default: undefined,
         })
         .option('force', {
           alias: 'f',
@@ -752,6 +753,7 @@ export function parseCommandLineArguments(args: Array<string>): any {
         .option('clear', {
           desc: 'Clear all context',
           type: 'boolean',
+          default: false,
         })
     )
     .command(['docs', 'doc'], 'Opens the reference documentation in a browser', (yargs: Argv) =>
