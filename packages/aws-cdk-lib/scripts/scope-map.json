@@ -546,6 +546,9 @@
   "aws-pcaconnectorscep": [
     "AWS::PCAConnectorSCEP"
   ],
+  "aws-pcs": [
+    "AWS::PCS"
+  ],
   "aws-personalize": [
     "AWS::Personalize"
   ],
