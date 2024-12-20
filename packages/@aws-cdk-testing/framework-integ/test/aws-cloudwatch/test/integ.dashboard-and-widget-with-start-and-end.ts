@@ -11,6 +11,8 @@ class TestStack extends Stack {
     const testMetric = new Metric({
       namespace: 'CDK/Test',
       metricName: 'Metric',
+      account: '1234',
+      region: 'us-north-5',
     });
 
     const singleValueWidget = new SingleValueWidget({
