@@ -1893,3 +1893,39 @@ taskDefinition.addContainer('TheContainer', {
   }],
 });
 ```
+
+## Service Connect TLS
+
+Service Connect TLS is a feature that allows you to secure the communication between services using TLS.
+
+You can specify the `tls` option in the `services` array of the `serviceConnectConfiguration` property.
+
+The `tls` property is an object with the following properties:
+
+- `role`: The IAM role that's associated with the Service Connect TLS.
+- `awsPcaAuthorityArn`: The ARN of the certificate root authority that secures your service.
+- `kmsKey`: The KMS key used for encryption and decryption.
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+declare const kmsKey: kms.IKey;
+declare const role: iam.IRole;
+
+const service = new ecs.FargateService(this, 'FargateService', {
+  cluster,
+  taskDefinition,
+  serviceConnectConfiguration: {
+    services: [
+      {
+        // ...
+        tls: {
+          role,
+          kmsKey,
+          awsPcaAuthorityArn: 'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/123456789012',
+        },
+      },
+    ],
+  },
+});
+```
