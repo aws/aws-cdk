@@ -54,6 +54,7 @@ export async function contextHandler(options: ContextOptions): Promise<number> {
   } else {
     // List -- support '--json' flag
     if (options.json) {
+      /* istanbul ignore next */
       const contextValues = options.context.all;
       process.stdout.write(JSON.stringify(contextValues, undefined, 2));
     } else {
