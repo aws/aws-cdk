@@ -98,9 +98,13 @@ class RemovalPolicyAspect implements IAspect {
     try {
       cfnResource.applyRemovalPolicy(this.policy);
     } catch (error) {
-      // 例えば、Snapshot がサポートされていないリソースに対して適用しようとした場合
-      // エラーメッセージを詳細にする
-      throw new Error(`Failed to apply removal policy to resource type ${resourceType}: ${error.message}`);
+      // Check if the error is an instance of the built-in Error class
+      if (error instanceof Error) {
+        throw new Error(`Failed to apply removal policy to resource type ${resourceType}: ${error.message}`);
+      } else {
+        // If it's not an Error instance, convert it to a string for the message
+        throw new Error(`Failed to apply removal policy to resource type ${resourceType}: ${String(error)}`);
+      }
     }
   }
 }
