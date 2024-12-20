@@ -41,7 +41,7 @@ describe('Basic channel namespace', () => {
     function configNameSpace() {
       api.addChannelNamespace('default', {
         authorizationConfig: {
-          subscribeAuthModeTypes: [appsync.AuthorizationType.IAM],
+          subscribeAuthModeTypes: [appsync.AppSyncAuthorizationType.IAM],
         },
       });
     }
@@ -55,7 +55,7 @@ describe('Basic channel namespace', () => {
     const api = new appsync.EventApi(stack, 'api', {
       apiName: 'api',
       authorizationConfig: {
-        authProviders: [{ authorizationType: appsync.AuthorizationType.IAM }],
+        authProviders: [{ authorizationType: appsync.AppSyncAuthorizationType.IAM }],
       },
     });
     const cn = api.addChannelNamespace('default');
@@ -100,7 +100,7 @@ describe('Basic channel namespace', () => {
     const api = new appsync.EventApi(stack, 'api', {
       apiName: 'api',
       authorizationConfig: {
-        authProviders: [{ authorizationType: appsync.AuthorizationType.IAM }],
+        authProviders: [{ authorizationType: appsync.AppSyncAuthorizationType.IAM }],
       },
     });
     const cn = api.addChannelNamespace('default');

@@ -59,42 +59,50 @@ class EventApiStack extends cdk.Stack {
       handler: 'index.handler',
     });
 
+    const cognitoProvider: appsync.AppSyncAuthProvider = {
+      authorizationType: appsync.AppSyncAuthorizationType.USER_POOL,
+      cognitoConfig: {
+        userPool: userPool,
+      },
+    };
+
+    const lambdaProvider: appsync.AppSyncAuthProvider = {
+      authorizationType: appsync.AppSyncAuthorizationType.LAMBDA,
+      lambdaAuthorizerConfig: {
+        handler: authorizer,
+      },
+    };
+
+    const apiKeyProvider: appsync.AppSyncAuthProvider = {
+      authorizationType: appsync.AppSyncAuthorizationType.API_KEY,
+    };
+
+    const iamProvider: appsync.AppSyncAuthProvider = {
+      authorizationType: appsync.AppSyncAuthorizationType.IAM,
+    };
+
     const api = new appsync.EventApi(this, 'EventApi', {
       apiName: 'my-event-api',
       ownerContact: 'test-owner-contact',
       authorizationConfig: {
         authProviders: [
-          {
-            authorizationType: appsync.AuthorizationType.USER_POOL,
-            cognitoConfig: {
-              userPool: userPool,
-            },
-          },
-          {
-            authorizationType: appsync.AuthorizationType.LAMBDA,
-            lambdaAuthorizerConfig: {
-              handler: authorizer,
-            },
-          },
-          {
-            authorizationType: appsync.AuthorizationType.API_KEY,
-          },
-          {
-            authorizationType: appsync.AuthorizationType.IAM,
-          },
+          cognitoProvider,
+          lambdaProvider,
+          apiKeyProvider,
+          iamProvider,
         ],
         connectionAuthModeTypes: [
-          appsync.AuthorizationType.API_KEY,
+          appsync.AppSyncAuthorizationType.API_KEY,
         ],
         defaultPublishAuthModeTypes: [
-          appsync.AuthorizationType.USER_POOL,
+          appsync.AppSyncAuthorizationType.USER_POOL,
         ],
         defaultSubscribeAuthModeTypes: [
-          appsync.AuthorizationType.IAM,
+          appsync.AppSyncAuthorizationType.IAM,
         ],
       },
       logConfig: {
-        fieldLogLevel: appsync.FieldLogLevel.ERROR,
+        fieldLogLevel: appsync.AppSyncFieldLogLevel.ERROR,
       },
       domainName: {
         certificate,
@@ -107,10 +115,10 @@ class EventApiStack extends cdk.Stack {
       api,
       authorizationConfig: {
         publishAuthModeTypes: [
-          appsync.AuthorizationType.LAMBDA,
+          appsync.AppSyncAuthorizationType.LAMBDA,
         ],
         subscribeAuthModeTypes: [
-          appsync.AuthorizationType.LAMBDA,
+          appsync.AppSyncAuthorizationType.LAMBDA,
         ],
       },
       code: appsync.Code.fromAsset(path.join(

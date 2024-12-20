@@ -1,48 +1,18 @@
 import { EventApiBase } from './eventapi';
-import { GraphqlApiBase } from './graphqlapi-base';
 import { ICertificate } from '../../aws-certificatemanager';
 import { IRole } from '../../aws-iam';
 import { RetentionDays } from '../../aws-logs';
-import { IResolvable, Stack, ArnFormat } from '../../core';
+import { Stack, ArnFormat } from '../../core';
 
 /**
- * A class used to generate resource arns for AppSync
+ * A class used to generate resource arns for AppSync Event APIs
  */
-export class IamResource {
-  /**
-   * Generate the resource names given custom arns
-   *
-   * @param arns The custom arns that need to be permissioned
-   *
-   * Example: custom('/types/Query/fields/getExample')
-   */
-  public static custom(...arns: string[]): IamResource {
-    if (arns.length === 0) {
-      throw new Error('At least 1 custom ARN must be provided.');
-    }
-    return new IamResource(arns);
-  }
-
+export class AppSyncEventIamResource {
   /**
    * Generate a resource for the calling API
    */
-  public static forAPI(): IamResource {
-    return new IamResource([]);
-  }
-
-  /**
-   * Generate the resource names given a type and fields
-   *
-   * @param type The type that needs to be allowed
-   * @param fields The fields that need to be allowed, if empty grant permissions to ALL fields
-   *
-   * Example: ofType('Query', 'GetExample')
-   */
-  public static ofType(type: string, ...fields: string[]): IamResource {
-    const arns = fields.length
-      ? fields.map((field) => `types/${type}/fields/${field}`)
-      : [`types/${type}/*`];
-    return new IamResource(arns);
+  public static forAPI(): AppSyncEventIamResource {
+    return new AppSyncEventIamResource(['']);
   }
 
   /**
@@ -52,16 +22,16 @@ export class IamResource {
    *
    * Example: ofChannelNamespace('default')
    */
-  public static ofChannelNamespace(channelNamespace: string): IamResource {
+  public static ofChannelNamespace(channelNamespace: string): AppSyncEventIamResource {
     const arns = [`channelNamespace/${channelNamespace}`];
-    return new IamResource(arns);
+    return new AppSyncEventIamResource(arns);
   }
 
   /**
    * Generate the resource names that accepts all types: `*`
    */
-  public static all(): IamResource {
-    return new IamResource(['*']);
+  public static all(): AppSyncEventIamResource {
+    return new AppSyncEventIamResource(['*']);
   }
 
   private arns: string[];
@@ -75,16 +45,7 @@ export class IamResource {
    *
    * @param api The AppSync API to give permissions
    */
-  public resourceArns(api: GraphqlApiBase | EventApiBase): string[] {
-    if (this.arns.length === 0) {
-      return [
-        Stack.of(api).formatArn({
-          service: 'appsync',
-          resource: `apis/${api.apiId}`,
-          arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
-        }),
-      ];
-    }
+  public resourceArns(api: EventApiBase): string[] {
     return this.arns.map((arn) =>
       Stack.of(api).formatArn({
         service: 'appsync',
@@ -99,7 +60,7 @@ export class IamResource {
 /**
  * log-level for fields in AppSync
  */
-export enum FieldLogLevel {
+export enum AppSyncFieldLogLevel {
   /**
    * Resolver logging is disabled
    */
@@ -125,19 +86,19 @@ export enum FieldLogLevel {
 /**
  * Logging configuration for AppSync
  */
-export interface LogConfig {
+export interface AppSyncLogConfig {
   /**
    * exclude verbose content
    *
    * @default false
    */
-  readonly excludeVerboseContent?: boolean | IResolvable;
+  readonly excludeVerboseContent?: boolean;
   /**
    * log level for fields
    *
    * @default - Use AppSync default
    */
-  readonly fieldLogLevel?: FieldLogLevel;
+  readonly fieldLogLevel?: AppSyncFieldLogLevel;
 
   /**
    * The role for CloudWatch Logs
@@ -160,7 +121,7 @@ export interface LogConfig {
 /**
  * Domain name configuration for AppSync
  */
-export interface DomainOptions {
+export interface AppSyncDomainOptions {
   /**
    * The certificate to use with the domain name.
    */

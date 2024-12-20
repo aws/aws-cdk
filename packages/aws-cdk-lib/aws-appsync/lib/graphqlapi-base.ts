@@ -1,5 +1,3 @@
-import { IamResource } from './appsync-common';
-import { AuthorizationType } from './auth-config';
 import {
   DynamoDbDataSource,
   HttpDataSource,
@@ -20,7 +18,7 @@ import { IFunction } from '../../aws-lambda';
 import { IDomain as IOpenSearchDomain } from '../../aws-opensearchservice';
 import { IDatabaseCluster, IServerlessCluster } from '../../aws-rds';
 import { ISecret } from '../../aws-secretsmanager';
-import { CfnResource, IResource, Resource } from '../../core';
+import { ArnFormat, CfnResource, IResource, Resource, Stack } from '../../core';
 
 /**
  * Optional configuration for data sources
@@ -54,6 +52,67 @@ export interface HttpDataSourceOptions extends DataSourceOptions {
 }
 
 /**
+ * A class used to generate resource arns for AppSync
+ */
+export class IamResource {
+  /**
+   * Generate the resource names given custom arns
+   *
+   * @param arns The custom arns that need to be permissioned
+   *
+   * Example: custom('/types/Query/fields/getExample')
+   */
+  public static custom(...arns: string[]): IamResource {
+    if (arns.length === 0) {
+      throw new Error('At least 1 custom ARN must be provided.');
+    }
+    return new IamResource(arns);
+  }
+
+  /**
+   * Generate the resource names given a type and fields
+   *
+   * @param type The type that needs to be allowed
+   * @param fields The fields that need to be allowed, if empty grant permissions to ALL fields
+   *
+   * Example: ofType('Query', 'GetExample')
+   */
+  public static ofType(type: string, ...fields: string[]): IamResource {
+    const arns = fields.length ? fields.map((field) => `types/${type}/fields/${field}`) : [`types/${type}/*`];
+    return new IamResource(arns);
+  }
+
+  /**
+   * Generate the resource names that accepts all types: `*`
+   */
+  public static all(): IamResource {
+    return new IamResource(['*']);
+  }
+
+  private arns: string[];
+
+  private constructor(arns: string[]) {
+    this.arns = arns;
+  }
+
+  /**
+   * Return the Resource ARN
+   *
+   * @param api The GraphQL API to give permissions
+   */
+  public resourceArns(api: GraphqlApiBase): string[] {
+    return this.arns.map((arn) =>
+      Stack.of(api).formatArn({
+        service: 'appsync',
+        resource: `apis/${api.apiId}`,
+        arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+        resourceName: `${arn}`,
+      }),
+    );
+  }
+}
+
+/**
  * Visibility type for a GraphQL API
  */
 export enum Visibility {
@@ -66,6 +125,32 @@ export enum Visibility {
    * Only accessible through a VPC
    */
   PRIVATE = 'PRIVATE',
+}
+
+/**
+ * enum with all possible values for AppSync authorization type
+ */
+export enum AuthorizationType {
+  /**
+   * API Key authorization type
+   */
+  API_KEY = 'API_KEY',
+  /**
+   * AWS IAM authorization type. Can be used with Cognito Identity Pool federated credentials
+   */
+  IAM = 'AWS_IAM',
+  /**
+   * Cognito User Pool authorization type
+   */
+  USER_POOL = 'AMAZON_COGNITO_USER_POOLS',
+  /**
+   * OpenID Connect authorization type
+   */
+  OIDC = 'OPENID_CONNECT',
+  /**
+   * Lambda authorization type
+   */
+  LAMBDA = 'AWS_LAMBDA',
 }
 
 /**

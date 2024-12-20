@@ -9,70 +9,39 @@ import { Duration, Expiration } from '../../core';
  *
  * @see https://docs.aws.amazon.com/appsync/latest/eventapi/configure-event-api-auth.html
  */
-export class AuthProvider {
+export interface AppSyncAuthProvider {
   /**
-   * Enable API Key authorization. API Key will be automatically created.
+   * One of possible authorization types AppSync supports
    *
-   * @param apiKeyConfig API Key config
+   * @default - `AuthorizationType.API_KEY`
    */
-  public static apiKeyAuth(apiKeyConfig?: ApiKeyConfig): AuthProvider {
-    return new AuthProvider(AuthorizationType.API_KEY, apiKeyConfig);
-  }
-
+  readonly authorizationType: AppSyncAuthorizationType;
   /**
-   * Enable IAM authorization.
+   * If authorizationType is `AuthorizationType.USER_POOL`, this option is required.
+   * @default - none
    */
-  public static iamAuth(): AuthProvider {
-    return new AuthProvider(AuthorizationType.IAM);
-  }
-
+  readonly cognitoConfig?: AppSyncCognitoConfig;
   /**
-   * Enable Cognito authorization.
-   *
-   * @param cognitoConfig Cognito authorization config
+   * If authorizationType is `AuthorizationType.API_KEY`, this option can be configured.
+   * @default - name: 'DefaultAPIKey'
    */
-  public static cognitoAuth(cognitoConfig: CognitoConfig): AuthProvider {
-    return new AuthProvider(AuthorizationType.USER_POOL, undefined, cognitoConfig);
-  }
-
+  readonly apiKeyConfig?: AppSyncApiKeyConfig;
   /**
-   * Enable Open ID Connect authorization.
-   *
-   * @param openIdConnectConfig Open ID Connect authorization config
+   * If authorizationType is `AuthorizationType.OIDC`, this option is required.
+   * @default - none
    */
-  public static oidcAuth(openIdConnectConfig: OpenIdConnectConfig): AuthProvider {
-    return new AuthProvider(AuthorizationType.OIDC, undefined, undefined, openIdConnectConfig);
-  }
-
+  readonly openIdConnectConfig?: AppSyncOpenIdConnectConfig;
   /**
-   * Enable Lambda authorization.
-   *
-   * @param lambdaAuthorizerConfig Lambda authorization config
+   * If authorizationType is `AuthorizationType.LAMBDA`, this option is required.
+   * @default - none
    */
-  public static lambdaAuth(lambdaAuthorizerConfig: LambdaAuthorizerConfig): AuthProvider {
-    return new AuthProvider(AuthorizationType.LAMBDA, undefined, undefined, undefined, lambdaAuthorizerConfig);
-  }
-
-  /**
-   * @param authorizationType AppSync authorization type
-   * @param apiKeyConfig API Key config
-   * @param cognitoConfig Cognito authorization config
-   * @param openIdConnectConfig Open ID Connect authorization config
-   * @param lambdaAuthorizerConfig Lambda authorization config
-   */
-  private constructor(
-    readonly authorizationType: AuthorizationType,
-    readonly apiKeyConfig?: ApiKeyConfig,
-    readonly cognitoConfig?: CognitoConfig,
-    readonly openIdConnectConfig?: OpenIdConnectConfig,
-    readonly lambdaAuthorizerConfig?: LambdaAuthorizerConfig,
-  ) { }
+  readonly lambdaAuthorizerConfig?: AppSyncLambdaAuthorizerConfig;
 }
 
 /**
  * enum with all possible values for AppSync authorization type
  */
-export enum AuthorizationType {
+export enum AppSyncAuthorizationType {
   /**
    * API Key authorization type
    */
@@ -96,86 +65,9 @@ export enum AuthorizationType {
 }
 
 /**
- * Interface to specify default or additional authorization(s)
- */
-export interface AuthorizationMode {
-  /**
-   * One of possible four values AppSync supports
-   *
-   * @see https://docs.aws.amazon.com/appsync/latest/devguide/security.html
-   *
-   * @default - `AuthorizationType.API_KEY`
-   */
-  readonly authorizationType: AuthorizationType;
-  /**
-   * If authorizationType is `AuthorizationType.USER_POOL`, this option is required
-   * for GraphQL APIs.
-   * @default - none
-   */
-  readonly userPoolConfig?: UserPoolConfig;
-  /**
-   * If authorizationType is `AuthorizationType.USER_POOL`, this option is required
-   * for Event APIs.
-   * @default - none
-   */
-  readonly cognitoConfig?: CognitoConfig;
-  /**
-   * If authorizationType is `AuthorizationType.API_KEY`, this option can be configured.
-   * @default - name: 'DefaultAPIKey' | description: 'Default API Key created by CDK'
-   */
-  readonly apiKeyConfig?: ApiKeyConfig;
-  /**
-   * If authorizationType is `AuthorizationType.OIDC`, this option is required.
-   * @default - none
-   */
-  readonly openIdConnectConfig?: OpenIdConnectConfig;
-  /**
-   * If authorizationType is `AuthorizationType.LAMBDA`, this option is required.
-   * @default - none
-   */
-  readonly lambdaAuthorizerConfig?: LambdaAuthorizerConfig;
-}
-
-/**
- * enum with all possible values for Cognito user-pool default actions
- */
-export enum UserPoolDefaultAction {
-  /**
-   * ALLOW access to API
-   */
-  ALLOW = 'ALLOW',
-  /**
-   * DENY access to API
-   */
-  DENY = 'DENY',
-}
-
-/**
- * Configuration for Cognito user-pools in AppSync
- */
-export interface UserPoolConfig {
-  /**
-   * The Cognito user pool to use as identity source
-   */
-  readonly userPool: IUserPool;
-  /**
-   * the optional app id regex
-   *
-   * @default -  None
-   */
-  readonly appIdClientRegex?: string;
-  /**
-   * Default auth action
-   *
-   * @default ALLOW
-   */
-  readonly defaultAction?: UserPoolDefaultAction;
-}
-
-/**
  * Configuration for Cognito user-pools in AppSync for Api
  */
-export interface CognitoConfig {
+export interface AppSyncCognitoConfig {
   /**
    * The Cognito user pool to use as identity source
    */
@@ -191,7 +83,7 @@ export interface CognitoConfig {
 /**
  * Configuration for API Key authorization in AppSync
  */
-export interface ApiKeyConfig {
+export interface AppSyncApiKeyConfig {
   /**
    * Unique name of the API Key
    * @default - 'DefaultAPIKey'
@@ -216,7 +108,7 @@ export interface ApiKeyConfig {
 /**
  * Configuration for OpenID Connect authorization in AppSync
  */
-export interface OpenIdConnectConfig {
+export interface AppSyncOpenIdConnectConfig {
   /**
    * The number of milliseconds an OIDC token is valid after being authenticated by OIDC provider.
    * `auth_time` claim in OIDC token is required for this validation to work.
@@ -245,7 +137,7 @@ export interface OpenIdConnectConfig {
 /**
  * Configuration for Lambda authorization in AppSync. Note that you can only have a single AWS Lambda function configured to authorize your API.
  */
-export interface LambdaAuthorizerConfig {
+export interface AppSyncLambdaAuthorizerConfig {
   /**
    * The authorizer lambda function.
    *
@@ -270,28 +162,9 @@ export interface LambdaAuthorizerConfig {
 }
 
 /**
- * Configuration of the API authorization modes.
- */
-export interface AuthorizationConfig {
-  /**
-   * Optional authorization configuration
-   *
-   * @default - API Key authorization
-   */
-  readonly defaultAuthorization?: AuthorizationMode;
-
-  /**
-   * Additional authorization modes
-   *
-   * @default - No other modes
-   */
-  readonly additionalAuthorizationModes?: AuthorizationMode[];
-}
-
-/**
  * Set up OIDC Authorization configuration for GraphQL APIs and Event APIs
  */
-export function setupOpenIdConnectConfig(config?: OpenIdConnectConfig) {
+export function setupOpenIdConnectConfig(config?: AppSyncOpenIdConnectConfig) {
   if (!config) return undefined;
   return {
     authTtl: config.tokenExpiryFromAuth,
@@ -302,22 +175,9 @@ export function setupOpenIdConnectConfig(config?: OpenIdConnectConfig) {
 }
 
 /**
- * Set up Cognito Authorization configuration for GraphQL APIs
- */
-export function setupUserPoolConfig(config?: UserPoolConfig) {
-  if (!config) return undefined;
-  return {
-    userPoolId: config.userPool.userPoolId,
-    awsRegion: config.userPool.env.region,
-    appIdClientRegex: config.appIdClientRegex,
-    defaultAction: config.defaultAction || UserPoolDefaultAction.ALLOW,
-  };
-}
-
-/**
  * Set up Cognito Authorization configuration for Event APIs
  */
-export function setupCognitoConfig(config?: CognitoConfig) {
+export function setupCognitoConfig(config?: AppSyncCognitoConfig) {
   if (!config) return undefined;
   return {
     userPoolId: config.userPool.userPoolId,
@@ -329,7 +189,7 @@ export function setupCognitoConfig(config?: CognitoConfig) {
 /**
  * Set up Lambda Authorization configuration for GraphQL APIs and Event APIs
  */
-export function setupLambdaAuthorizerConfig(config?: LambdaAuthorizerConfig) {
+export function setupLambdaAuthorizerConfig(config?: AppSyncLambdaAuthorizerConfig) {
   if (!config) return undefined;
   return {
     authorizerResultTtlInSeconds: config.resultsCacheTtl?.toSeconds(),
@@ -341,7 +201,7 @@ export function setupLambdaAuthorizerConfig(config?: LambdaAuthorizerConfig) {
 /**
  * Create an API Key for GraphQL APIs and Event APIs
  */
-export function createAPIKey(scope: Construct, apiId: string, config?: ApiKeyConfig) {
+export function createAPIKey(scope: Construct, apiId: string, config?: AppSyncApiKeyConfig) {
   if (config?.expires?.isBefore(Duration.days(1)) || config?.expires?.isAfter(Duration.days(365))) {
     throw Error('API key expiration must be between 1 and 365 days.');
   }

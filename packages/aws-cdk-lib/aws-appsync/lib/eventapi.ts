@@ -1,14 +1,19 @@
 import { Construct } from 'constructs';
 import { IApi, ApiBase } from './api-base';
-import { IamResource, LogConfig, FieldLogLevel, DomainOptions } from './appsync-common';
+import {
+  AppSyncLogConfig,
+  AppSyncFieldLogLevel,
+  AppSyncDomainOptions,
+  AppSyncEventIamResource,
+} from './appsync-common';
 import { CfnApi, CfnApiKey, CfnDomainName, CfnDomainNameApiAssociation } from './appsync.generated';
 import {
-  AuthorizationMode,
-  AuthorizationType,
   createAPIKey,
   setupLambdaAuthorizerConfig,
   setupOpenIdConnectConfig,
   setupCognitoConfig,
+  AppSyncAuthorizationType,
+  AppSyncAuthProvider,
 } from './auth-config';
 import { ChannelNamespace, ChannelNamespaceOptions } from './channel-namespace';
 import { Grant, IGrantable, ManagedPolicy, ServicePrincipal, Role } from '../../aws-iam';
@@ -24,24 +29,24 @@ export interface EventApiAuthConfig {
    * publish, and subscribe operations.
    * @default - API Key authorization
    */
-  readonly authProviders?: AuthorizationMode[];
+  readonly authProviders?: AppSyncAuthProvider[];
   /**
    * Connection auth modes
    * @default - API Key authorization
    */
-  readonly connectionAuthModeTypes?: AuthorizationType[];
+  readonly connectionAuthModeTypes?: AppSyncAuthorizationType[];
 
   /**
    * Default publish auth modes
    * @default - API Key authorization
    */
-  readonly defaultPublishAuthModeTypes?: AuthorizationType[];
+  readonly defaultPublishAuthModeTypes?: AppSyncAuthorizationType[];
 
   /**
    * Default subscribe auth modes
    * @default - API Key authorization
    */
-  readonly defaultSubscribeAuthModeTypes?: AuthorizationType[];
+  readonly defaultSubscribeAuthModeTypes?: AppSyncAuthorizationType[];
 }
 
 /**
@@ -51,7 +56,7 @@ export interface IEventApi extends IApi {
   /**
    * The Authorization Types for this Event Api
    */
-  readonly authProviderTypes: AuthorizationType[];
+  readonly authProviderTypes: AppSyncAuthorizationType[];
 
   /**
    * The domain name of the Api's endpoints.
@@ -76,7 +81,7 @@ export interface IEventApi extends IApi {
    * @param resources The set of resources to allow (i.e. ...:[region]:[accountId]:apis/EventApiId/...)
    * @param actions The actions that should be granted to the principal (i.e. appsync:EventPublish )
    */
-  grant(grantee: IGrantable, resources: IamResource, ...actions: string[]): Grant;
+  grant(grantee: IGrantable, resources: AppSyncEventIamResource, ...actions: string[]): Grant;
 
   /**
    * Adds an IAM policy statement for EventPublish access to this EventApi to an IAM
@@ -126,7 +131,7 @@ export abstract class EventApiBase extends ApiBase implements IEventApi {
   /**
    * The Authorization Types for this Event Api
    */
-  public abstract readonly authProviderTypes: AuthorizationType[];
+  public abstract readonly authProviderTypes: AppSyncAuthorizationType[];
 
   /**
    * add a new Channel Namespace to this API
@@ -147,8 +152,8 @@ export abstract class EventApiBase extends ApiBase implements IEventApi {
    * @param resources The set of resources to allow (i.e. ...:[region]:[accountId]:apis/EventApiId/...)
    * @param actions The actions that should be granted to the principal (i.e. appsync:EventPublish )
    */
-  public grant(grantee: IGrantable, resources: IamResource, ...actions: string[]): Grant {
-    if (!this.authProviderTypes.includes(AuthorizationType.IAM)) {
+  public grant(grantee: IGrantable, resources: AppSyncEventIamResource, ...actions: string[]): Grant {
+    if (!this.authProviderTypes.includes(AppSyncAuthorizationType.IAM)) {
       throw new Error('IAM Authorization mode is not configured on this API.');
     }
     return Grant.addToPrincipal({
@@ -166,7 +171,7 @@ export abstract class EventApiBase extends ApiBase implements IEventApi {
    * @param grantee The principal
    */
   public grantPublish(grantee: IGrantable): Grant {
-    return this.grant(grantee, IamResource.all(), 'appsync:EventPublish');
+    return this.grant(grantee, AppSyncEventIamResource.all(), 'appsync:EventPublish');
   }
 
   /**
@@ -176,7 +181,7 @@ export abstract class EventApiBase extends ApiBase implements IEventApi {
    * @param grantee The principal
    */
   public grantSubscribe(grantee: IGrantable): Grant {
-    return this.grant(grantee, IamResource.all(), 'appsync:EventSubscribe');
+    return this.grant(grantee, AppSyncEventIamResource.all(), 'appsync:EventSubscribe');
   }
 
   /**
@@ -186,7 +191,7 @@ export abstract class EventApiBase extends ApiBase implements IEventApi {
    * @param grantee The principal
    */
   public grantPublishAndSubscribe(grantee: IGrantable): Grant {
-    return this.grant(grantee, IamResource.all(), 'appsync:EventPublish', 'appsync:EventSubscribe');
+    return this.grant(grantee, AppSyncEventIamResource.all(), 'appsync:EventPublish', 'appsync:EventSubscribe');
   }
 
   /**
@@ -195,7 +200,7 @@ export abstract class EventApiBase extends ApiBase implements IEventApi {
    * @param grantee The principal
    */
   public grantConnect(grantee: IGrantable): Grant {
-    return this.grant(grantee, IamResource.forAPI(), 'appsync:EventConnect');
+    return this.grant(grantee, AppSyncEventIamResource.forAPI(), 'appsync:EventConnect');
   }
 }
 
@@ -220,7 +225,7 @@ export interface EventApiProps {
    *
    * @default - None
    */
-  readonly logConfig?: LogConfig;
+  readonly logConfig?: AppSyncLogConfig;
 
   /**
    * The owner contact information for an API resource.
@@ -239,7 +244,7 @@ export interface EventApiProps {
    *
    * @default - no domain name
    */
-  readonly domainName?: DomainOptions;
+  readonly domainName?: AppSyncDomainOptions;
 }
 
 /**
@@ -271,7 +276,7 @@ export interface EventApiAttributes {
    * The Authorization Types for this Event Api
    * @default - none, required to construct event rules from imported APIs
    */
-  readonly authProviderTypes?: AuthorizationType[];
+  readonly authProviderTypes?: AppSyncAuthorizationType[];
 }
 
 /**
@@ -323,22 +328,22 @@ export class EventApi extends EventApiBase {
   /**
    * The Authorization Types for this Event Api
    */
-  public readonly authProviderTypes: AuthorizationType[];
+  public readonly authProviderTypes: AppSyncAuthorizationType[];
 
   /**
    * The connection auth modes for this Event Api
    */
-  public readonly connectionModeTypes: AuthorizationType[];
+  public readonly connectionModeTypes: AppSyncAuthorizationType[];
 
   /**
    * The default publish auth modes for this Event Api
    */
-  public readonly defaultPublishModeTypes: AuthorizationType[];
+  public readonly defaultPublishModeTypes: AppSyncAuthorizationType[];
 
   /**
    * The default subscribe auth modes for this Event Api
    */
-  public readonly defaultSubscribeModeTypes: AuthorizationType[];
+  public readonly defaultSubscribeModeTypes: AppSyncAuthorizationType[];
 
   /**
    * the configured API keys, if present
@@ -362,12 +367,6 @@ export class EventApi extends EventApiBase {
       if (props.apiName.length < 1 || props.apiName.length > 50) {
         throw new Error(`\`apiName\` must be between 1 and 50 characters, got: ${props.apiName.length} characters.`);
       }
-
-      const apiNamePattern = /^[A-Za-z0-9_\-\ ]+$/;
-
-      if (!apiNamePattern.test(props.apiName)) {
-        throw new Error(`\`apiName\` must contain only alphanumeric characters, underscores, hyphens, and spaces, got: ${props.apiName}`);
-      }
     }
 
     super(scope, id, {
@@ -380,15 +379,20 @@ export class EventApi extends EventApiBase {
       }),
     });
 
-    this.authProviderTypes = this.setupAuthProviderTypes(props.authorizationConfig?.authProviders);
+    const defaultAuthType: AppSyncAuthorizationType = AppSyncAuthorizationType.API_KEY;
+    const defaultAuthProviders: AppSyncAuthProvider[] = [{ authorizationType: defaultAuthType }];
+    const authProviders = props.authorizationConfig?.authProviders ?? defaultAuthProviders;
 
-    const authProviders = props.authorizationConfig?.authProviders ?? [{ authorizationType: AuthorizationType.API_KEY }];
+    this.authProviderTypes = this.setupAuthProviderTypes(authProviders);
 
-    const connectionAuthModeType = props.authorizationConfig?.connectionAuthModeTypes ?? this.authProviderTypes;
-    const defaultPublishAuthModeTypes = props.authorizationConfig?.defaultPublishAuthModeTypes ?? this.authProviderTypes;
-    const defaultSubscribeAuthModeTypes = props.authorizationConfig?.defaultSubscribeAuthModeTypes ?? this.authProviderTypes;
+    const connectionAuthModeTypes: AppSyncAuthorizationType[] =
+      props.authorizationConfig?.connectionAuthModeTypes ?? this.authProviderTypes;
+    const defaultPublishAuthModeTypes: AppSyncAuthorizationType[] =
+      props.authorizationConfig?.defaultPublishAuthModeTypes ?? this.authProviderTypes;
+    const defaultSubscribeAuthModeTypes: AppSyncAuthorizationType[] =
+      props.authorizationConfig?.defaultSubscribeAuthModeTypes ?? this.authProviderTypes;
 
-    this.connectionModeTypes = connectionAuthModeType;
+    this.connectionModeTypes = connectionAuthModeTypes;
     this.defaultPublishModeTypes = defaultPublishAuthModeTypes;
     this.defaultSubscribeModeTypes = defaultSubscribeAuthModeTypes;
 
@@ -396,7 +400,7 @@ export class EventApi extends EventApiBase {
 
     this.eventConfig = {
       authProviders: this.mapAuthorizationProviders(authProviders),
-      connectionAuthModes: this.mapAuthorizationConfig(connectionAuthModeType),
+      connectionAuthModes: this.mapAuthorizationConfig(connectionAuthModeTypes),
       defaultPublishAuthModes: this.mapAuthorizationConfig(defaultPublishAuthModeTypes),
       defaultSubscribeAuthModes: this.mapAuthorizationConfig(defaultSubscribeAuthModeTypes),
       logConfig: this.setupLogConfig(props.logConfig),
@@ -412,14 +416,14 @@ export class EventApi extends EventApiBase {
     this.apiArn = this.api.attrApiArn;
     this.dns = this.api.attrDns;
 
-    const apiKeyConfigs = authProviders.filter((mode) => mode.authorizationType === AuthorizationType.API_KEY);
+    const apiKeyConfigs = authProviders.filter((mode) => mode.authorizationType === AppSyncAuthorizationType.API_KEY);
     for (const mode of apiKeyConfigs) {
       this.apiKeys[mode.apiKeyConfig?.name ?? 'Default'] = createAPIKey(this, this.apiId, mode.apiKeyConfig);
     }
 
-    if (authProviders.some((mode) => mode.authorizationType === AuthorizationType.LAMBDA)) {
-      const config = authProviders.find((mode: AuthorizationMode) => {
-        return mode.authorizationType === AuthorizationType.LAMBDA && mode.lambdaAuthorizerConfig;
+    if (authProviders.some((mode) => mode.authorizationType === AppSyncAuthorizationType.LAMBDA)) {
+      const config = authProviders.find((mode: AppSyncAuthProvider) => {
+        return mode.authorizationType === AppSyncAuthorizationType.LAMBDA && mode.lambdaAuthorizerConfig;
       })?.lambdaAuthorizerConfig;
 
       config?.handler.addPermission(`${id}-appsync`, {
@@ -459,7 +463,7 @@ export class EventApi extends EventApiBase {
   /**
    * Validate Event API configuration
    */
-  private validateEventApiConfiguration(props: EventApiProps, authProviders: AuthorizationMode[]) {
+  private validateEventApiConfiguration(props: EventApiProps, authProviders: AppSyncAuthProvider[]) {
     this.validateOwnerContact(props.ownerContact);
     this.validateAuthorizationProps(authProviders);
     this.validateAuthorizationConfig(authProviders, this.connectionModeTypes);
@@ -484,7 +488,7 @@ export class EventApi extends EventApiBase {
     }
   }
 
-  private setupLogConfig(config?: LogConfig) {
+  private setupLogConfig(config?: AppSyncLogConfig) {
     if (!config) return;
     const logsRoleArn: string =
       config.role?.roleArn ??
@@ -492,20 +496,20 @@ export class EventApi extends EventApiBase {
         assumedBy: new ServicePrincipal('appsync.amazonaws.com'),
         managedPolicies: [ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSAppSyncPushToCloudWatchLogs')],
       }).roleArn;
-    const fieldLogLevel: FieldLogLevel = config.fieldLogLevel ?? FieldLogLevel.NONE;
+    const fieldLogLevel: AppSyncFieldLogLevel = config.fieldLogLevel ?? AppSyncFieldLogLevel.NONE;
     return {
       cloudWatchLogsRoleArn: logsRoleArn,
       logLevel: fieldLogLevel,
     };
   }
 
-  private setupAuthProviderTypes(authProviders?: AuthorizationMode[]) {
-    if (!authProviders || authProviders.length === 0) return [AuthorizationType.API_KEY];
+  private setupAuthProviderTypes(authProviders?: AppSyncAuthProvider[]) {
+    if (!authProviders || authProviders.length === 0) return [AppSyncAuthorizationType.API_KEY];
     const modes = authProviders.map((mode) => mode.authorizationType);
     return modes;
   }
 
-  private mapAuthorizationProviders(authProviders: AuthorizationMode[]) {
+  private mapAuthorizationProviders(authProviders: AppSyncAuthProvider[]) {
     return authProviders.reduce<CfnApi.AuthProviderProperty[]>((acc, mode) => {
       acc.push({
         authType: mode.authorizationType,
@@ -517,44 +521,44 @@ export class EventApi extends EventApiBase {
     }, []);
   }
 
-  private mapAuthorizationConfig(authModes: AuthorizationType[]) {
+  private mapAuthorizationConfig(authModes: AppSyncAuthorizationType[]) {
     return authModes.map((mode) => ({ authType: mode }));
   }
 
-  private validateAuthorizationProps(authProviders: AuthorizationMode[]) {
-    const keyConfigs = authProviders.filter((mode) => mode.authorizationType === AuthorizationType.API_KEY);
+  private validateAuthorizationProps(authProviders: AppSyncAuthProvider[]) {
+    const keyConfigs = authProviders.filter((mode) => mode.authorizationType === AppSyncAuthorizationType.API_KEY);
     const someWithNoNames = keyConfigs.some((config) => !config.apiKeyConfig?.name);
     if (keyConfigs.length > 1 && someWithNoNames) {
       throw new Error('You must specify key names when configuring more than 1 API key.');
     }
 
-    if (authProviders.filter((authProvider) => authProvider.authorizationType === AuthorizationType.LAMBDA).length > 1) {
+    if (authProviders.filter((authProvider) => authProvider.authorizationType === AppSyncAuthorizationType.LAMBDA).length > 1) {
       throw new Error(
         'You can only have a single AWS Lambda function configured to authorize your API. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html',
       );
     }
 
-    if (authProviders.filter((authProvider) => authProvider.authorizationType === AuthorizationType.IAM).length > 1) {
+    if (authProviders.filter((authProvider) => authProvider.authorizationType === AppSyncAuthorizationType.IAM).length > 1) {
       throw new Error("You can't duplicate IAM configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html");
     }
 
     authProviders.map((authProvider) => {
-      if (authProvider.authorizationType === AuthorizationType.OIDC && !authProvider.openIdConnectConfig) {
-        throw new Error('Missing OIDC Configuration');
+      if (authProvider.authorizationType === AppSyncAuthorizationType.OIDC && !authProvider.openIdConnectConfig) {
+        throw new Error('OPENID_CONNECT authorization type is specified but OIDC Authorizer Configuration is missing in the AuthProvider');
       }
-      if (authProvider.authorizationType === AuthorizationType.USER_POOL && !authProvider.cognitoConfig) {
-        throw new Error('Missing Cognito Configuration');
+      if (authProvider.authorizationType === AppSyncAuthorizationType.USER_POOL && !authProvider.cognitoConfig) {
+        throw new Error('AMAZON_COGNITO_USER_POOLS authorization type is specified but Cognito Authorizer Configuration is missing in the AuthProvider');
       }
-      if (authProvider.authorizationType === AuthorizationType.LAMBDA && !authProvider.lambdaAuthorizerConfig) {
-        throw new Error('Missing Lambda Configuration');
+      if (authProvider.authorizationType === AppSyncAuthorizationType.LAMBDA && !authProvider.lambdaAuthorizerConfig) {
+        throw new Error('AWS_LAMBDA authorization type is specified but Lambda Authorizer Configuration is missing in the AuthProvider');
       }
     });
   }
 
-  private validateAuthorizationConfig(authProviders: AuthorizationMode[], authModes: AuthorizationType[]) {
-    for (const mode of authModes) {
-      if (!authProviders.find((authProvider) => authProvider.authorizationType === mode)) {
-        throw new Error(`Missing authorization configuration for ${mode}`);
+  private validateAuthorizationConfig(authProviders: AppSyncAuthProvider[], authTypes: AppSyncAuthorizationType[]) {
+    for (const authType of authTypes) {
+      if (!authProviders.find((authProvider) => authProvider.authorizationType === authType)) {
+        throw new Error(`Missing authorization configuration for ${authType}`);
       }
     }
   }

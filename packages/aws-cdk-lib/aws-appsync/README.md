@@ -935,21 +935,25 @@ AWS AppSync Events lets you create secure and performant serverless WebSocket AP
 without you having to manage connections or resource scaling.
 
 ```ts
+const apiKeyProvider: appsync.AppSyncAuthProvider = {
+  authorizationType: appsync.AppSyncAuthorizationType.API_KEY,
+};
+
 const api = new appsync.EventApi(this, 'api', {
   apiName: 'Api',
   ownerContact: 'OwnerContact',
   authorizationConfig: {
     authProviders: [
-      appsync.AuthProvider.apiKeyAuth(),
+      apiKeyProvider,
     ],
     connectionAuthModeTypes: [
-      appsync.AuthorizationType.API_KEY,
+      appsync.AppSyncAuthorizationType.API_KEY,
     ],
     defaultPublishAuthModeTypes: [
-      appsync.AuthorizationType.API_KEY,
+      appsync.AppSyncAuthorizationType.API_KEY,
     ],
     defaultSubscribeAuthModeTypes: [
-      appsync.AuthorizationType.API_KEY,
+      appsync.AppSyncAuthorizationType.API_KEY,
     ],
   },
 });
@@ -960,11 +964,11 @@ const api = new appsync.EventApi(this, 'api', {
 AWS AppSync Events offers the following authorization types to secure Event APIs: API keys, Lambda, IAM, OpenID Connect, and Amazon Cognito user pools.
 Each option provides a different method of security:
 
-- API Keys (`AuthProvider.apiKeyAuth()`)
-- Amazon Cognito User Pools (`appsync.AuthProvider.cognitoAuth()`)
-- OpenID Connect (`appsync.AuthProvider.oidcAuth()`)
-- AWS Identity and Access Management (`appsync.AuthProvider.iamAuth()`)
-- AWS Lambda (`appsync.AuthProvider.lambdaAuth()`)
+- API Keys (`AppSyncAuthorizationType.API_KEY`)
+- Amazon Cognito User Pools (`AppSyncAuthorizationType.USER_POOL`)
+- OpenID Connect (`AppSyncAuthorizationType.OPENID_CONNECT`)
+- AWS Identity and Access Management (`AppSyncAuthorizationType.AWS_IAM`)
+- AWS Lambda (`AppSyncAuthorizationType.AWS_LAMBDA`)
 
 When you define your API, you configure the authorization mode to connect to your Event API WebSocket.
 You also configure the default authorization modes to use when publishing and subscribing to messages.
@@ -976,27 +980,40 @@ For mor information, see [Configuring authorization and authentication to secure
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 declare const handler: lambda.Function;
 
+const iamProvider: appsync.AppSyncAuthProvider = {
+  authorizationType: appsync.AppSyncAuthorizationType.IAM,
+};
+
+const apiKeyProvider: appsync.AppSyncAuthProvider = {
+  authorizationType: appsync.AppSyncAuthorizationType.API_KEY,
+};
+
+const lambdaProvider: appsync.AppSyncAuthProvider = {
+  authorizationType: appsync.AppSyncAuthorizationType.LAMBDA,
+  lambdaAuthorizerConfig: {
+    handler,
+    resultsCacheTtl: Duration.minutes(6),
+    validationRegex: 'test',
+  },
+};
+
 const api = new appsync.EventApi(this, 'api', {
   apiName: 'api',
   authorizationConfig: {
     // set auth providers
     authProviders: [
-      appsync.AuthProvider.iamAuth(),
-      appsync.AuthProvider.apiKeyAuth(),
-      appsync.AuthProvider.lambdaAuth({
-        handler,
-        resultsCacheTtl: Duration.minutes(6),
-        validationRegex: 'test',
-      }),
+      iamProvider,
+      apiKeyProvider,
+      lambdaProvider,
     ],
     connectionAuthModeTypes: [
-      appsync.AuthorizationType.IAM,  // IAM authorization to connect
+      appsync.AppSyncAuthorizationType.IAM,  // IAM authorization to connect
     ],
     defaultPublishAuthModeTypes: [
-      appsync.AuthorizationType.API_KEY,  // API key authorization to publish
+      appsync.AppSyncAuthorizationType.API_KEY,  // API key authorization to publish
     ],
     defaultSubscribeAuthModeTypes: [
-      appsync.AuthorizationType.LAMBDA,  // Lambda authorization to subscribe
+      appsync.AppSyncAuthorizationType.LAMBDA,  // Lambda authorization to subscribe
     ],
   }
 });
@@ -1017,12 +1034,16 @@ import * as route53 from 'aws-cdk-lib/aws-route53';
 const myDomainName = 'api.example.com';
 const certificate = new acm.Certificate(this, 'cert', { domainName: myDomainName });
 
+const apiKeyProvider: appsync.AppSyncAuthProvider = {
+  authorizationType: appsync.AppSyncAuthorizationType.API_KEY,
+};
+
 const api = new appsync.EventApi(this, 'api', {
   apiName: 'Api',
   ownerContact: 'OwnerContact',
   authorizationConfig: {
     authProviders: [
-      appsync.AuthProvider.apiKeyAuth(),
+      apiKeyProvider,
     ],
     connectionAuthModeTypes: [
       appsync.AuthorizationType.API_KEY,
@@ -1048,10 +1069,10 @@ new CfnOutput(this, 'AWS AppSync Events Realtime endpoint', { value: api.customR
 
 ### Log Group
 
-AppSync automatically create a log group with the name `/aws/appsync/apis/<api_id>` upon deployment withlog data set to never expire.
+AppSync automatically create a log group with the name `/aws/appsync/apis/<api_id>` upon deployment with log data set to never expire.
 If you want to set a different expiration period, use the `logConfig.retention` property.
 
-Also you can choose the log level by setting the `logConfig.FieldLoglevel` property.
+Also you can choose the log level by setting the `logConfig.fieldLogLevel` property.
 
 For more information, see [Configuring CloudWatch Logs on Event APIs](https://docs.aws.amazon.com/appsync/latest/eventapi/event-api-monitoring-cw-logs.html).
 
@@ -1061,25 +1082,29 @@ To obtain the Event API's log group as a `logs.ILogGroup` use the `logGroup` pro
 ```ts
 import * as logs from 'aws-cdk-lib/aws-logs';
 
+const apiKeyProvider: appsync.AppSyncAuthProvider = {
+  authorizationType: appsync.AppSyncAuthorizationType.API_KEY,
+};
+
 const api = new appsync.EventApi(this, 'api', {
   apiName: 'Api',
   ownerContact: 'OwnerContact',
   authorizationConfig: {
     authProviders: [
-      appsync.AuthProvider.apiKeyAuth(),
+      apiKeyProvider,
     ],
     connectionAuthModeTypes: [
-      appsync.AuthorizationType.API_KEY,
+      appsync.AppSyncAuthorizationType.API_KEY,
     ],
     defaultPublishAuthModeTypes: [
-      appsync.AuthorizationType.API_KEY,
+      appsync.AppSyncAuthorizationType.API_KEY,
     ],
     defaultSubscribeAuthModeTypes: [
-      appsync.AuthorizationType.API_KEY,
+      appsync.AppSyncAuthorizationType.API_KEY,
     ],
   },
   logConfig: {
-    fieldLogLevel: appsync.FieldLogLevel.INFO,
+    fieldLogLevel: appsync.AppSyncFieldLogLevel.INFO,
     retention: logs.RetentionDays.ONE_WEEK,
   },
 });
@@ -1119,12 +1144,13 @@ new appsync.ChannelNamespace(this, 'Namespace', {
   api,
 });
 
-// You can also create by addChannelNamespace method
+// You can also create a namespace through the addChannelNamespace method
 api.addChannelNamespace('AnotherNameSpace', {});
 ```
 
-The publishing and subscribing authorization configuration is automatically applied to all namespaces.
-You can override this configuration at the namespace.
+The API's publishing and subscribing authorization configuration is automatically applied to all namespaces.
+You can override this configuration at the namespace level. **Note**: the authorization type you select as 
+overviews, must be defined as an authorization provider at the API level.
 
 ```ts
 declare const api: appsync.EventApi;
@@ -1133,9 +1159,9 @@ new appsync.ChannelNamespace(this, 'Namespace', {
   api,
   authorizationConfig: {
     // Override publishing authorization to API Key
-    publishAuthModeTypes: [appsync.AuthorizationType.API_KEY],
+    publishAuthModeTypes: [appsync.AppSyncAuthorizationType.API_KEY],
     // Override subscribing authorization to Lambda
-    subscribeAuthModeTypes: [appsync.AuthorizationType.LAMBDA],
+    subscribeAuthModeTypes: [appsync.AppSyncAuthorizationType.LAMBDA],
   },
 });
 ```

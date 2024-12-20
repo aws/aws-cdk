@@ -1,11 +1,11 @@
 import { Construct } from 'constructs';
-import { IamResource } from './appsync-common';
+import { AppSyncEventIamResource } from './appsync-common';
 import { CfnChannelNamespace } from './appsync.generated';
-import { AuthorizationType } from './auth-config';
+import { AppSyncAuthorizationType } from './auth-config';
 import { Code } from './code';
 import { IEventApi } from './eventapi';
 import { IGrantable } from '../../aws-iam';
-import { IResource, Resource, Token, Lazy, Names } from '../../core';
+import { IResource, Resource, Token } from '../../core';
 
 /**
  * An AppSync channel namespace
@@ -27,13 +27,13 @@ export interface NamespaceAuthConfig {
    * The publish auth modes for this Event Api
    * @default - API Key authorization
    */
-  readonly publishAuthModeTypes?: AuthorizationType[];
+  readonly publishAuthModeTypes?: AppSyncAuthorizationType[];
 
   /**
    * The subscribe auth modes for this Event Api
    * @default - API Key authorization
    */
-  readonly subscribeAuthModeTypes?: AuthorizationType[];
+  readonly subscribeAuthModeTypes?: AppSyncAuthorizationType[];
 }
 
 /**
@@ -43,7 +43,7 @@ export interface BaseChannelNamespaceProps {
   /**
    * the name of the channel namespace
    *
-   * @default - id of channel namespace
+   * @default - the construct's id will be used
    */
   readonly channelNamespaceName?: string;
 
@@ -79,7 +79,7 @@ export interface ChannelNamespaceOptions {
   /**
    * The Channel Namespace name
    *
-   * @default - the `id` is used if not provided
+   * @default - the construct's id will be used
    */
   readonly channelNamespaceName?: string;
 
@@ -127,18 +127,10 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
       if (props.channelNamespaceName.length < 1 || props.channelNamespaceName.length > 50) {
         throw new Error(`\`channelNamespaceName\` must be between 1 and 50 characters, got: ${props.channelNamespaceName.length} characters.`);
       }
-
-      const channelNamespaceNamePattern = /^[A-Za-z0-9]+$/;
-
-      if (!channelNamespaceNamePattern.test(props.channelNamespaceName)) {
-        throw new Error(`\`channelNamespaceName\` must contain only alphanumeric characters, got: ${props.channelNamespaceName}`);
-      }
     }
 
     super(scope, id, {
-      physicalName: props.channelNamespaceName ?? Lazy.string({
-        produce: () => Names.uniqueResourceName(this, { maxLength: 50 }),
-      }),
+      physicalName: props.channelNamespaceName ?? id,
     });
 
     const code = props.code?.bind(this);
@@ -171,7 +163,7 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
    * @param grantee The principal
    */
   public grantSubscribe(grantee: IGrantable) {
-    return this.api.grant(grantee, IamResource.ofChannelNamespace(this.channelNamespace.name), 'appsync:EventSubscribe');
+    return this.api.grant(grantee, AppSyncEventIamResource.ofChannelNamespace(this.channelNamespace.name), 'appsync:EventSubscribe');
   }
 
   /**
@@ -181,7 +173,7 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
    * @param grantee The principal
    */
   public grantPublish(grantee: IGrantable) {
-    return this.api.grant(grantee, IamResource.ofChannelNamespace(this.channelNamespace.name), 'appsync:EventPublish');
+    return this.api.grant(grantee, AppSyncEventIamResource.ofChannelNamespace(this.channelNamespace.name), 'appsync:EventPublish');
   }
 
   /**
@@ -191,12 +183,12 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
    * @param grantee The principal
    */
   public grantPublishAndSubscribe(grantee: IGrantable) {
-    return this.api.grant(grantee, IamResource.ofChannelNamespace(this.channelNamespace.name), 'appsync:EventPublish', 'appsync:EventSubscribe');
+    return this.api.grant(grantee, AppSyncEventIamResource.ofChannelNamespace(this.channelNamespace.name), 'appsync:EventPublish', 'appsync:EventSubscribe');
   }
 
-  private validateAuthorizationConfig(authProviderTypes: AuthorizationType[], authModeTypes: AuthorizationType[]) {
-    for (const mode of authModeTypes) {
-      if (!authProviderTypes.find((authProvider) => authProvider === mode)) {
+  private validateAuthorizationConfig(apiAuthProviders: AppSyncAuthorizationType[], channelAuthModeTypes: AppSyncAuthorizationType[]) {
+    for (const mode of channelAuthModeTypes) {
+      if (!apiAuthProviders.find((authProvider) => authProvider === mode)) {
         throw new Error(`API is missing authorization configuration for ${mode}`);
       }
     }

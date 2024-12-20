@@ -29,7 +29,7 @@ describe('Appsync Event API Key Authorization', () => {
     new appsync.EventApi(stack, 'api', {
       apiName: 'api',
       authorizationConfig: {
-        authProviders: [{ authorizationType: appsync.AuthorizationType.API_KEY }],
+        authProviders: [{ authorizationType: appsync.AppSyncAuthorizationType.API_KEY }],
       },
     });
 
@@ -43,8 +43,8 @@ describe('Appsync Event API Key Authorization', () => {
       apiName: 'api',
       authorizationConfig: {
         authProviders: [
-          { authorizationType: appsync.AuthorizationType.API_KEY, apiKeyConfig: { name: 'first' } },
-          { authorizationType: appsync.AuthorizationType.API_KEY, apiKeyConfig: { name: 'second' } },
+          { authorizationType: appsync.AppSyncAuthorizationType.API_KEY, apiKeyConfig: { name: 'first' } },
+          { authorizationType: appsync.AppSyncAuthorizationType.API_KEY, apiKeyConfig: { name: 'second' } },
         ],
       },
     });
@@ -60,8 +60,8 @@ describe('Appsync Event API Key Authorization', () => {
         apiName: 'api',
         authorizationConfig: {
           authProviders: [
-            { authorizationType: appsync.AuthorizationType.API_KEY },
-            { authorizationType: appsync.AuthorizationType.API_KEY, apiKeyConfig: { name: 'second' } },
+            { authorizationType: appsync.AppSyncAuthorizationType.API_KEY },
+            { authorizationType: appsync.AppSyncAuthorizationType.API_KEY, apiKeyConfig: { name: 'second' } },
           ],
         },
       });
@@ -75,7 +75,7 @@ describe('AppSync Event Api auth configuration', () => {
     new appsync.EventApi(stack, 'api', {
       apiName: 'apiWithMultipleProviders',
       authorizationConfig: {
-        authProviders: [{ authorizationType: appsync.AuthorizationType.API_KEY }, { authorizationType: appsync.AuthorizationType.IAM }],
+        authProviders: [{ authorizationType: appsync.AppSyncAuthorizationType.API_KEY }, { authorizationType: appsync.AppSyncAuthorizationType.IAM }],
       },
     });
 
@@ -83,9 +83,9 @@ describe('AppSync Event Api auth configuration', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Api', {
       Name: 'apiWithMultipleProviders',
       EventConfig: {
-        ConnectionAuthModes: [{ AuthType: appsync.AuthorizationType.API_KEY }, { AuthType: appsync.AuthorizationType.IAM }],
-        DefaultPublishAuthModes: [{ AuthType: appsync.AuthorizationType.API_KEY }, { AuthType: appsync.AuthorizationType.IAM }],
-        DefaultSubscribeAuthModes: [{ AuthType: appsync.AuthorizationType.API_KEY }, { AuthType: appsync.AuthorizationType.IAM }],
+        ConnectionAuthModes: [{ AuthType: appsync.AppSyncAuthorizationType.API_KEY }, { AuthType: appsync.AppSyncAuthorizationType.IAM }],
+        DefaultPublishAuthModes: [{ AuthType: appsync.AppSyncAuthorizationType.API_KEY }, { AuthType: appsync.AppSyncAuthorizationType.IAM }],
+        DefaultSubscribeAuthModes: [{ AuthType: appsync.AppSyncAuthorizationType.API_KEY }, { AuthType: appsync.AppSyncAuthorizationType.IAM }],
       },
     });
   });
@@ -104,7 +104,7 @@ describe('AppSync Event Api auth configuration', () => {
       authorizationConfig: {
         authProviders: [
           {
-            authorizationType: appsync.AuthorizationType.LAMBDA,
+            authorizationType: appsync.AppSyncAuthorizationType.LAMBDA,
             lambdaAuthorizerConfig: {
               handler: func,
             },
@@ -117,9 +117,9 @@ describe('AppSync Event Api auth configuration', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Api', {
       Name: 'apiWithMultipleProviders',
       EventConfig: {
-        ConnectionAuthModes: [{ AuthType: appsync.AuthorizationType.LAMBDA }],
-        DefaultPublishAuthModes: [{ AuthType: appsync.AuthorizationType.LAMBDA }],
-        DefaultSubscribeAuthModes: [{ AuthType: appsync.AuthorizationType.LAMBDA }],
+        ConnectionAuthModes: [{ AuthType: appsync.AppSyncAuthorizationType.LAMBDA }],
+        DefaultPublishAuthModes: [{ AuthType: appsync.AppSyncAuthorizationType.LAMBDA }],
+        DefaultSubscribeAuthModes: [{ AuthType: appsync.AppSyncAuthorizationType.LAMBDA }],
       },
     });
   });
@@ -129,8 +129,8 @@ describe('AppSync Event Api auth configuration', () => {
     new appsync.EventApi(stack, 'api', {
       apiName: 'apiWithMultipleProviders',
       authorizationConfig: {
-        authProviders: [{ authorizationType: appsync.AuthorizationType.API_KEY }, { authorizationType: appsync.AuthorizationType.IAM }],
-        connectionAuthModeTypes: [appsync.AuthorizationType.IAM],
+        authProviders: [{ authorizationType: appsync.AppSyncAuthorizationType.API_KEY }, { authorizationType: appsync.AppSyncAuthorizationType.IAM }],
+        connectionAuthModeTypes: [appsync.AppSyncAuthorizationType.IAM],
       },
     });
 
@@ -138,9 +138,9 @@ describe('AppSync Event Api auth configuration', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Api', {
       Name: 'apiWithMultipleProviders',
       EventConfig: {
-        ConnectionAuthModes: [{ AuthType: appsync.AuthorizationType.IAM }],
-        DefaultPublishAuthModes: [{ AuthType: appsync.AuthorizationType.API_KEY }, { AuthType: appsync.AuthorizationType.IAM }],
-        DefaultSubscribeAuthModes: [{ AuthType: appsync.AuthorizationType.API_KEY }, { AuthType: appsync.AuthorizationType.IAM }],
+        ConnectionAuthModes: [{ AuthType: appsync.AppSyncAuthorizationType.IAM }],
+        DefaultPublishAuthModes: [{ AuthType: appsync.AppSyncAuthorizationType.API_KEY }, { AuthType: appsync.AppSyncAuthorizationType.IAM }],
+        DefaultSubscribeAuthModes: [{ AuthType: appsync.AppSyncAuthorizationType.API_KEY }, { AuthType: appsync.AppSyncAuthorizationType.IAM }],
       },
     });
   });
@@ -151,8 +151,11 @@ describe('AppSync Event Api auth configuration', () => {
       new appsync.EventApi(stack, 'api', {
         apiName: 'apiWithMultipleProviders',
         authorizationConfig: {
-          authProviders: [{ authorizationType: appsync.AuthorizationType.API_KEY }, { authorizationType: appsync.AuthorizationType.IAM }],
-          connectionAuthModeTypes: [appsync.AuthorizationType.USER_POOL],
+          authProviders: [
+            { authorizationType: appsync.AppSyncAuthorizationType.API_KEY },
+            { authorizationType: appsync.AppSyncAuthorizationType.IAM },
+          ],
+          connectionAuthModeTypes: [appsync.AppSyncAuthorizationType.USER_POOL],
         },
       });
     }
@@ -168,15 +171,15 @@ describe('AppSync Event Api auth configuration', () => {
       authorizationConfig: {
         authProviders: [
           {
-            authorizationType: appsync.AuthorizationType.USER_POOL,
+            authorizationType: appsync.AppSyncAuthorizationType.USER_POOL,
             cognitoConfig: { userPool: new cognito.UserPool(stack, 'myPool') },
           },
           {
-            authorizationType: appsync.AuthorizationType.OIDC,
+            authorizationType: appsync.AppSyncAuthorizationType.OIDC,
             openIdConnectConfig: { oidcProvider: 'test' },
           },
         ],
-        connectionAuthModeTypes: [appsync.AuthorizationType.USER_POOL],
+        connectionAuthModeTypes: [appsync.AppSyncAuthorizationType.USER_POOL],
       },
     });
 
@@ -184,9 +187,9 @@ describe('AppSync Event Api auth configuration', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Api', {
       Name: 'apiWithUserPool',
       EventConfig: {
-        ConnectionAuthModes: [{ AuthType: appsync.AuthorizationType.USER_POOL }],
-        DefaultPublishAuthModes: [{ AuthType: appsync.AuthorizationType.USER_POOL }, { AuthType: appsync.AuthorizationType.OIDC }],
-        DefaultSubscribeAuthModes: [{ AuthType: appsync.AuthorizationType.USER_POOL }, { AuthType: appsync.AuthorizationType.OIDC }],
+        ConnectionAuthModes: [{ AuthType: appsync.AppSyncAuthorizationType.USER_POOL }],
+        DefaultPublishAuthModes: [{ AuthType: appsync.AppSyncAuthorizationType.USER_POOL }, { AuthType: appsync.AppSyncAuthorizationType.OIDC }],
+        DefaultSubscribeAuthModes: [{ AuthType: appsync.AppSyncAuthorizationType.USER_POOL }, { AuthType: appsync.AppSyncAuthorizationType.OIDC }],
       },
     });
   });
@@ -319,7 +322,7 @@ describe('grants', () => {
     const api = new appsync.EventApi(stack, 'api', {
       apiName: 'api',
       authorizationConfig: {
-        authProviders: [{ authorizationType: appsync.AuthorizationType.IAM }],
+        authProviders: [{ authorizationType: appsync.AppSyncAuthorizationType.IAM }],
       },
     });
     api.grantConnect(func);
@@ -343,6 +346,7 @@ describe('grants', () => {
                   { Ref: 'AWS::AccountId' },
                   ':apis/',
                   { 'Fn::GetAtt': ['apiC8550315', 'ApiId'] },
+                  '/',
                 ],
               ],
             },
