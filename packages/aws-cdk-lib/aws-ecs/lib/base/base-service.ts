@@ -269,14 +269,14 @@ export interface ServiceConnectService {
  */
 export interface ServiceConnectTlsConfiguration {
   /**
-   * The ARN of the AWS Private Certificate Authority certificate.
+   * The ARN of the certificate root authority that secures your service.
    *
    * @default - none
    */
   readonly awsPcaAuthorityArn?: string;
 
   /**
-   * The AWS Key Management Service key.
+   * The KMS key used for encryption and decryption.
    *
    * @default - none
    */
