@@ -211,8 +211,36 @@ describe('constructs version', () => {
     expect(await fs.pathExists(path.join(workDir, 'bin'))).toBeTruthy();
   });
 
-  test('verify "future flags" are added to cdk.json', async () => {
+  cliTest('CLI uses recommended feature flags from data file to initialize context', async (workDir) => {
+    const recommendedFlagsFile = path.join(__dirname, '..', 'lib', 'init-templates', '.recommended-feature-flags.json');
+    await withReplacedFile(recommendedFlagsFile, JSON.stringify({ banana: 'yellow' }), () => cliInit({
+      type: 'app',
+      language: 'typescript',
+      canUseNetwork: false,
+      generateOnly: true,
+      workDir,
+    }));
 
+    const cdkFile = await fs.readJson(path.join(workDir, 'cdk.json'));
+    expect(cdkFile.context).toEqual({ banana: 'yellow' });
+  });
+
+  cliTest('CLI uses init versions file to initialize template', async (workDir) => {
+    const recommendedFlagsFile = path.join(__dirname, '..', 'lib', 'init-templates', '.init-version.json');
+    await withReplacedFile(recommendedFlagsFile, JSON.stringify({ 'aws-cdk-lib': '100.1.1', 'constructs': '^200.2.2' }), () => cliInit({
+      type: 'app',
+      language: 'typescript',
+      canUseNetwork: false,
+      generateOnly: true,
+      workDir,
+    }));
+
+    const packageJson = await fs.readJson(path.join(workDir, 'package.json'));
+    expect(packageJson.dependencies['aws-cdk-lib']).toEqual('100.1.1');
+    expect(packageJson.dependencies.constructs).toEqual('^200.2.2');
+  });
+
+  test('verify "future flags" are added to cdk.json', async () => {
     for (const templ of await availableInitTemplates()) {
       for (const lang of templ.languages) {
         await withTempDir(async tmpDir => {
@@ -305,5 +333,15 @@ async function recursiveListFiles(rdir: string): Promise<string[]> {
         ret.push(fullPath);
       }
     }
+  }
+}
+
+async function withReplacedFile(fileName: string, contents: any, cb: () => Promise<void>): Promise<void> {
+  const oldContents = await fs.readFile(fileName, 'utf8');
+  await fs.writeFile(fileName, contents);
+  try {
+    await cb();
+  } finally {
+    await fs.writeFile(fileName, oldContents);
   }
 }
