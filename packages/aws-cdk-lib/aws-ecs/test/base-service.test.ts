@@ -186,6 +186,75 @@ describe('When import an ECS Service', () => {
       });
     });
   });
+
+
+  test('throws an error when roleArn is not an ARN', () => {
+    // GIVEN
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+    taskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      portMappings: [
+        {
+          containerPort: 100,
+          name: 'abc',
+        },
+      ],
+    });
+
+    expect(() => {
+      new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        serviceConnectConfiguration: {
+          services:[
+            {
+              tls: {
+                roleArn: 'invalid-arn',
+              },
+              portMappingName: 'abc',
+            },
+          ],
+          namespace: 'test namespace',
+        }
+      });
+    }).toThrow(/roleArn must start with "arn:" and have at least 6 components; received invalid-arn/);
+  });
+
+  test('awsPcaAuthorityArn is not an ARN', () => {
+    // GIVEN
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+    taskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      portMappings: [
+        {
+          containerPort: 100,
+          name: 'abc',
+        },
+      ],
+    });
+
+    expect(() => {
+      new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        serviceConnectConfiguration: {
+          services:[
+            {
+              tls: {
+                awsPcaAuthorityArn: 'invalid-arn',
+              },
+              portMappingName: 'abc',
+            },
+          ],
+          namespace: 'test namespace',
+        }
+      });
+    }).toThrow(/awsPcaAuthorityArn must start with "arn:" and have at least 6 components; received invalid-arn/);
+  });
 });
 
 describe('For alarm-based rollbacks', () => {

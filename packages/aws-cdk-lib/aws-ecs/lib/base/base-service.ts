@@ -1032,6 +1032,16 @@ export abstract class BaseService extends Resource
         !this.isValidPort(serviceConnectService.port)) {
         throw new Error(`Client Alias port ${serviceConnectService.port} is not valid.`);
       }
+
+      const tls = serviceConnectService.tls;
+      // tls.roleArn should be an ARN
+      if(tls?.roleArn && !Token.isUnresolved(tls.roleArn) && !tls.roleArn.startsWith('arn:')) {
+        throw new Error(`roleArn must start with "arn:" and have at least 6 components; received ${tls.roleArn}`);
+      }
+      // tls.awsPcaAuthorityArn should be an ARN
+      if(tls?.awsPcaAuthorityArn && !Token.isUnresolved(tls.awsPcaAuthorityArn) && !tls.awsPcaAuthorityArn.startsWith('arn:')) {
+        throw new Error(`awsPcaAuthorityArn must start with "arn:" and have at least 6 components; received ${tls.awsPcaAuthorityArn}`);
+      }
     });
   }
 
