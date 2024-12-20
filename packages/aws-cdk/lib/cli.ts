@@ -89,6 +89,10 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
     output: configuration.settings.get(['outdir']),
     shouldDisplay: configuration.settings.get(['notices']),
     includeAcknowledged: cmd === 'notices' ? !argv.unacknowledged : false,
+    httpOptions: {
+      proxyAddress: configuration.settings.get(['proxy']),
+      caBundlePath: configuration.settings.get(['caBundlePath']),
+    },
   });
   await notices.refresh();
 

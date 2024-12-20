@@ -1,10 +1,13 @@
 import { ClientRequest } from 'http';
-import * as https from 'https';
+import { RequestOptions } from 'https';
+import * as https from 'node:https';
 import * as path from 'path';
 import type { Environment } from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import * as semver from 'semver';
-import { debug, print, warning, error } from './logging';
+import { SdkHttpOptions } from './api';
+import { AwsCliCompatible } from './api/aws-auth/awscli-compatible';
+import { debug, error, print, warning } from './logging';
 import { Context } from './settings';
 import { loadTreeFromDir, some } from './tree';
 import { flatMap } from './util';
@@ -39,6 +42,11 @@ export interface NoticesProps {
    * @default true
    */
   readonly shouldDisplay?: boolean;
+
+  /**
+   * Options for the HTTP request
+   */
+  readonly httpOptions?: SdkHttpOptions;
 }
 
 export interface NoticesPrintOptions {
@@ -189,7 +197,7 @@ export class NoticesFilter {
 }
 
 /**
- * Infomration about a bootstrapped environment.
+ * Information about a bootstrapped environment.
  */
 export interface BootstrappedEnvironment {
   readonly bootstrapStackVersion: number;
@@ -222,6 +230,7 @@ export class Notices {
   private readonly shouldDisplay: boolean;
   private readonly acknowledgedIssueNumbers: Set<Number>;
   private readonly includeAcknowlegded: boolean;
+  private readonly httpOptions: SdkHttpOptions;
 
   private data: Set<Notice> = new Set();
 
@@ -234,6 +243,7 @@ export class Notices {
     this.includeAcknowlegded = props.includeAcknowledged ?? false;
     this.output = props.output ?? 'cdk.out';
     this.shouldDisplay = props.shouldDisplay ?? true;
+    this.httpOptions = props.httpOptions ?? {};
   }
 
   /**
@@ -263,7 +273,8 @@ export class Notices {
     }
 
     try {
-      const dataSource = new CachedDataSource(CACHE_FILE_PATH, options.dataSource ?? new WebsiteNoticeDataSource(), options.force ?? false);
+      const underlyingDataSource = options.dataSource ?? new WebsiteNoticeDataSource(this.httpOptions);
+      const dataSource = new CachedDataSource(CACHE_FILE_PATH, underlyingDataSource, options.force ?? false);
       const notices = await dataSource.fetch();
       this.data = new Set(this.includeAcknowlegded ? notices : notices.filter(n => !this.acknowledgedIssueNumbers.has(n.issueNumber)));
     } catch (e: any) {
@@ -375,6 +386,12 @@ export interface NoticeDataSource {
 }
 
 export class WebsiteNoticeDataSource implements NoticeDataSource {
+  private readonly options: SdkHttpOptions;
+
+  constructor(options: SdkHttpOptions = {}) {
+    this.options = options;
+  }
+
   fetch(): Promise<Notice[]> {
     const timeout = 3000;
     return new Promise((resolve, reject) => {
@@ -388,8 +405,13 @@ export class WebsiteNoticeDataSource implements NoticeDataSource {
 
       timer.unref();
 
+      const options: RequestOptions = {
+        agent: AwsCliCompatible.proxyAgent(this.options),
+      };
+
       try {
         req = https.get('https://cli.cdk.dev-tools.aws.dev/notices.json',
+          options,
           res => {
             if (res.statusCode === 200) {
               res.setEncoding('utf8');
