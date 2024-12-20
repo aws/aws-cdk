@@ -504,7 +504,7 @@ async function loadInitVersions(): Promise<Versions> {
  *
  * These have been built into the CLI at build time.
  */
-async function currentlyRecommendedAwsCdkLibFlags() {
+export async function currentlyRecommendedAwsCdkLibFlags() {
   const recommendedFlagsFile = path.join(__dirname, './init-templates/.recommended-feature-flags.json');
   return JSON.parse(await fs.readFile(recommendedFlagsFile, { encoding: 'utf-8' }));
 }

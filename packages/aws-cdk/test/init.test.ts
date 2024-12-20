@@ -2,7 +2,7 @@ import * as os from 'os';
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
-import { availableInitLanguages, availableInitTemplates, cliInit, printAvailableTemplates } from '../lib/init';
+import { availableInitLanguages, availableInitTemplates, cliInit, currentlyRecommendedAwsCdkLibFlags, printAvailableTemplates } from '../lib/init';
 
 describe('constructs version', () => {
   cliTest('create a TypeScript library project', async (workDir) => {
@@ -259,9 +259,10 @@ describe('constructs version', () => {
 
           const config = await fs.readJson(path.join(tmpDir, 'cdk.json'));
           const context = config.context || {};
+          const recommendedFlags = await currentlyRecommendedAwsCdkLibFlags();
           for (const [key, actual] of Object.entries(context)) {
-            expect(key in cxapi.NEW_PROJECT_CONTEXT).toBeTruthy();
-            expect(cxapi.NEW_PROJECT_CONTEXT[key]).toEqual(actual);
+            expect(key in recommendedFlags).toBeTruthy();
+            expect(recommendedFlags[key]).toEqual(actual);
           }
 
           // assert that expired future flags are not part of the cdk.json

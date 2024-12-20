@@ -1317,8 +1317,11 @@ export const CURRENT_VERSION_EXPIRED_FLAGS: string[] = Object.entries(FLAGS)
  * Add a flag in here (typically with the value `true`), to enable
  * backwards-breaking behavior changes only for new projects.  New projects
  * generated through `cdk init` will include these flags in their generated
+ * project config.
  *
  * Tests must cover the default (disabled) case and the future (enabled) case.
+ *
+ * Going forward, this should *NOT* be consumed directly anymore.
  */
 export const CURRENTLY_RECOMMENDED_FLAGS = Object.fromEntries(
   Object.entries(FLAGS)
