@@ -202,7 +202,7 @@ describe('AppSync GraphQL API Key Authorization', () => {
           ],
         },
       });
-    }).toThrow("You can't duplicate API_KEY configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html");
+    }).toThrow('You can\'t duplicate API_KEY configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
   });
 
   test('AppSync GraphQL API - appsync fails when multiple API_KEY auth modes', () => {
@@ -220,7 +220,7 @@ describe('AppSync GraphQL API Key Authorization', () => {
           ],
         },
       });
-    }).toThrow("You can't duplicate API_KEY configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html");
+    }).toThrow('You can\'t duplicate API_KEY configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
   });
 
   test('AppSync GraphQL API - appsync fails when multiple API_KEY auth modes in additionalXxx', () => {
@@ -237,7 +237,7 @@ describe('AppSync GraphQL API Key Authorization', () => {
           ],
         },
       });
-    }).toThrow("You can't duplicate API_KEY configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html");
+    }).toThrow('You can\'t duplicate API_KEY configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
   });
 });
 
@@ -493,7 +493,7 @@ describe('AppSync GraphQL API IAM Authorization', () => {
           additionalAuthorizationModes: [{ authorizationType: appsync.AuthorizationType.IAM }],
         },
       });
-    }).toThrow("You can't duplicate IAM configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html");
+    }).toThrow('You can\'t duplicate IAM configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
   });
 
   test('AppSync GraphQL API fails when multiple IAM auth modes in additionalXxx', () => {
@@ -509,7 +509,7 @@ describe('AppSync GraphQL API IAM Authorization', () => {
           ],
         },
       });
-    }).toThrow("You can't duplicate IAM configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html");
+    }).toThrow('You can\'t duplicate IAM configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
   });
 });
 
