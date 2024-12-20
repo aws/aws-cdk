@@ -297,7 +297,6 @@
                             "awsRegion": {
                               "Ref": "AWS::Region"
                             }
-                            }
                           }
                         },
                         {
@@ -310,12 +309,6 @@
                               ]
                             }
                           }
-                        },
-                        {
-                          "authType": "API_KEY"
-                        },
-                        {
-                          "authType": "AWS_IAM"
                         },
                         {
                           "authType": "API_KEY"
@@ -355,25 +348,6 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_appsync.CfnApi",
-                  "version": "0.0.0"
-                }
-              },
-              "DefaultApiKey": {
-                "id": "DefaultApiKey",
-                "path": "appsync-event-api-stack/EventApi/DefaultApiKey",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::AppSync::ApiKey",
-                  "aws:cdk:cloudformation:props": {
-                    "apiId": {
-                      "Fn::GetAtt": [
-                        "EventApiE141E6C0",
-                        "ApiId"
-                      ]
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.CfnApiKey",
                   "version": "0.0.0"
                 }
               },
@@ -457,6 +431,37 @@
                 "path": "appsync-event-api-stack/EventApi/LogGroup",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "AnotherChannelNamespace": {
+                "id": "AnotherChannelNamespace",
+                "path": "appsync-event-api-stack/EventApi/AnotherChannelNamespace",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "appsync-event-api-stack/EventApi/AnotherChannelNamespace/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::AppSync::ChannelNamespace",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Fn::GetAtt": [
+                            "EventApiE141E6C0",
+                            "ApiId"
+                          ]
+                        },
+                        "codeHandlers": "\n            export function onPublish(ctx) {\n              return ctx.events.filter((event) => event.payload.odds > 0)\n            }\n          ",
+                        "name": "AnotherChannelNamespace"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_appsync.CfnChannelNamespace",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.ChannelNamespace",
                   "version": "0.0.0"
                 }
               }
@@ -662,7 +667,6 @@
                     "codeS3Location": {
                       "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f79e346159c9d109573aa79dac7f882e156f79c4ece518897a558a122e3924fd.js"
                     },
-                    "name": "ChannelNamespace",
                     "name": "ChannelNamespace",
                     "publishAuthModes": [
                       {

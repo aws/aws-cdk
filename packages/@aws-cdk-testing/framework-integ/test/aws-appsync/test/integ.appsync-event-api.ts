@@ -16,7 +16,7 @@ interface EventApiStackProps extends cdk.StackProps {
 }
 
 class EventApiStack extends cdk.Stack {
-  public readonly eventApi: appsync.EventApi
+  public readonly eventApi: appsync.EventApi;
   constructor(scope: Construct, id: string, props: EventApiStackProps) {
     super(scope, id);
 
