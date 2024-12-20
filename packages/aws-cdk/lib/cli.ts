@@ -242,15 +242,15 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         });
 
       case 'bootstrap':
-        const source: BootstrapSource = determineBootstrapVersion(args, configuration);
-
-        const bootstrapper = new Bootstrapper(source);
+        const source: BootstrapSource = determineBootstrapVersion(args);
 
         if (args.showTemplate) {
+          const bootstrapper = new Bootstrapper(source);
           return bootstrapper.showTemplate(args.json);
         }
 
-        return cli.bootstrap(args.ENVIRONMENTS, bootstrapper, {
+        return cli.bootstrap(args.ENVIRONMENTS, {
+          source,
           roleArn: args.roleArn,
           force: argv.force,
           toolkitStackName: toolkitStackName,
@@ -468,32 +468,8 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
 /**
  * Determine which version of bootstrapping
- * (legacy, or "new") should be used.
  */
-function determineBootstrapVersion(args: { template?: string }, configuration: Configuration): BootstrapSource {
-  const isV1 = version.DISPLAY_VERSION.startsWith('1.');
-  return isV1 ? determineV1BootstrapSource(args, configuration) : determineV2BootstrapSource(args);
-}
-
-function determineV1BootstrapSource(args: { template?: string }, configuration: Configuration): BootstrapSource {
-  let source: BootstrapSource;
-  if (args.template) {
-    print(`Using bootstrapping template from ${args.template}`);
-    source = { source: 'custom', templateFile: args.template };
-  } else if (process.env.CDK_NEW_BOOTSTRAP) {
-    print('CDK_NEW_BOOTSTRAP set, using new-style bootstrapping');
-    source = { source: 'default' };
-  } else if (isFeatureEnabled(configuration, cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT)) {
-    print(`'${cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT}' context set, using new-style bootstrapping`);
-    source = { source: 'default' };
-  } else {
-    // in V1, the "legacy" bootstrapping is the default
-    source = { source: 'legacy' };
-  }
-  return source;
-}
-
-function determineV2BootstrapSource(args: { template?: string }): BootstrapSource {
+function determineBootstrapVersion(args: { template?: string }): BootstrapSource {
   let source: BootstrapSource;
   if (args.template) {
     print(`Using bootstrapping template from ${args.template}`);
