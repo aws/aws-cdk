@@ -2311,7 +2311,7 @@ describe('stack', () => {
       new Stack(app, 'Stack', {
         env: envConfig,
       });
-    }).toThrowError('Account id of stack environment must be a \'string\' but received \'number\'');
+    }).toThrow('Account id of stack environment must be a \'string\' but received \'number\'');
   });
 
   test('region passed in stack environment must be a string', () => {
@@ -2328,7 +2328,7 @@ describe('stack', () => {
       new Stack(app, 'Stack', {
         env: envConfig,
       });
-    }).toThrowError('Region of stack environment must be a \'string\' but received \'number\'');
+    }).toThrow('Region of stack environment must be a \'string\' but received \'number\'');
   });
 
   test('indent templates when suppressTemplateIndentation is not set', () => {

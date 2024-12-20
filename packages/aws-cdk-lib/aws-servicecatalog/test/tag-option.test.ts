@@ -30,7 +30,7 @@ describe('TagOptions', () => {
             '': ['value1', 'value2'],
           },
         });
-      }).toThrowError(/Invalid TagOption key for resource/);
+      }).toThrow(/Invalid TagOption key for resource/);
     }),
 
     test('fails to create tag option with invalid maxium key length', () => {
@@ -40,7 +40,7 @@ describe('TagOptions', () => {
             ['longKey'.repeat(1000)]: ['value1', 'value2'],
           },
         });
-      }).toThrowError(/Invalid TagOption key for resource/);
+      }).toThrow(/Invalid TagOption key for resource/);
     }),
 
     test('fails to create tag option with invalid value length', () => {
@@ -50,7 +50,7 @@ describe('TagOptions', () => {
             key: ['tagOptionValue'.repeat(1000)],
           },
         });
-      }).toThrowError(/Invalid TagOption value for resource/);
+      }).toThrow(/Invalid TagOption value for resource/);
     }),
 
     test('fails to create tag options with no tag keys or values', () => {
@@ -58,7 +58,7 @@ describe('TagOptions', () => {
         new servicecatalog.TagOptions(stack, 'TagOptions', {
           allowedValuesForTags: {},
         });
-      }).toThrowError(/No tag option keys or values were provided/);
+      }).toThrow(/No tag option keys or values were provided/);
     }),
 
     test('fails to create tag options for tag key with no values', () => {
@@ -69,7 +69,7 @@ describe('TagOptions', () => {
             key2: [],
           },
         });
-      }).toThrowError(/No tag option values were provided for tag option key/);
+      }).toThrow(/No tag option values were provided for tag option key/);
     }),
 
     test('associate tag options', () => {
