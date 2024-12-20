@@ -1,0 +1,530 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "aws-cdk-cloudfront-function-find-replace": {
+        "id": "aws-cdk-cloudfront-function-find-replace",
+        "path": "aws-cdk-cloudfront-function-find-replace",
+        "children": {
+          "KeyValueStore": {
+            "id": "KeyValueStore",
+            "path": "aws-cdk-cloudfront-function-find-replace/KeyValueStore",
+            "children": {
+              "ImportSource": {
+                "id": "ImportSource",
+                "path": "aws-cdk-cloudfront-function-find-replace/KeyValueStore/ImportSource",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "aws-cdk-cloudfront-function-find-replace/KeyValueStore/ImportSource/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "aws-cdk-cloudfront-function-find-replace/KeyValueStore/ImportSource/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-cloudfront-function-find-replace/KeyValueStore/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudFront::KeyValueStore",
+                  "aws:cdk:cloudformation:props": {
+                    "importSource": {
+                      "sourceType": "S3",
+                      "sourceArn": {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":s3:::",
+                            {
+                              "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                            },
+                            "/47ae18762663e5017f1b901bfe0a06cb436df2476a53b49e1db53fc36a08a793.json"
+                          ]
+                        ]
+                      }
+                    },
+                    "name": "awscdkcloudfrontfunctionfindreplaceKeyValueStore8D3A5570"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_cloudfront.CfnKeyValueStore",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_cloudfront.KeyValueStore",
+              "version": "0.0.0"
+            }
+          },
+          "Function": {
+            "id": "Function",
+            "path": "aws-cdk-cloudfront-function-find-replace/Function",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-cloudfront-function-find-replace/Function/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudFront::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "autoPublish": true,
+                    "functionCode": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "\n      import cf from 'cloudfront';\n      const kvsId = \"",
+                          {
+                            "Fn::GetAtt": [
+                              "KeyValueStoreA7449E89",
+                              "Id"
+                            ]
+                          },
+                          "\";\n      const kvsHandle = cf.kvs(kvsId);\n      async function handler(event) {\n        const meta = await kvsHandle.meta()\n        const keyCount = meta.keyCount;\n        return {\n          statusCode: 200, statusDescription: 'OK',\n          headers: { 'content-type': { value: 'application/json' } },  \n          body: JSON.stringify({ keyCount }),\n        };\n      }\n    "
+                        ]
+                      ]
+                    },
+                    "functionConfig": {
+                      "comment": {
+                        "Fn::Join": [
+                          "",
+                          [
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            "aws-cdk-cloudfro-replaceFunctionA2285C0B"
+                          ]
+                        ]
+                      },
+                      "runtime": "cloudfront-js-2.0",
+                      "keyValueStoreAssociations": [
+                        {
+                          "keyValueStoreArn": {
+                            "Fn::GetAtt": [
+                              "KeyValueStoreA7449E89",
+                              "Arn"
+                            ]
+                          }
+                        }
+                      ]
+                    },
+                    "name": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          "aws-cdk-cloudfro-replaceFunctionA2285C0B"
+                        ]
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_cloudfront.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_cloudfront.Function",
+              "version": "0.0.0"
+            }
+          },
+          "Distribution": {
+            "id": "Distribution",
+            "path": "aws-cdk-cloudfront-function-find-replace/Distribution",
+            "children": {
+              "Origin1": {
+                "id": "Origin1",
+                "path": "aws-cdk-cloudfront-function-find-replace/Distribution/Origin1",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-cloudfront-function-find-replace/Distribution/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudFront::Distribution",
+                  "aws:cdk:cloudformation:props": {
+                    "distributionConfig": {
+                      "enabled": true,
+                      "origins": [
+                        {
+                          "domainName": "www.example.com",
+                          "id": "awscdkcloudfrontfunctionfindreplaceDistributionOrigin12EFB7DFF",
+                          "customOriginConfig": {
+                            "originProtocolPolicy": "https-only"
+                          }
+                        }
+                      ],
+                      "defaultCacheBehavior": {
+                        "pathPattern": "*",
+                        "targetOriginId": "awscdkcloudfrontfunctionfindreplaceDistributionOrigin12EFB7DFF",
+                        "cachePolicyId": "4135ea2d-6df8-44a3-9df3-4b5a84be39ad",
+                        "compress": true,
+                        "viewerProtocolPolicy": "allow-all",
+                        "functionAssociations": [
+                          {
+                            "functionArn": {
+                              "Fn::GetAtt": [
+                                "Function76856677",
+                                "FunctionARN"
+                              ]
+                            },
+                            "eventType": "viewer-request"
+                          }
+                        ]
+                      },
+                      "httpVersion": "http2",
+                      "ipv6Enabled": true
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_cloudfront.CfnDistribution",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_cloudfront.Distribution",
+              "version": "0.0.0"
+            }
+          },
+          "IntegrationTest": {
+            "id": "IntegrationTest",
+            "path": "aws-cdk-cloudfront-function-find-replace/IntegrationTest",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "aws-cdk-cloudfront-function-find-replace/IntegrationTest/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "aws-cdk-cloudfront-function-find-replace/IntegrationTest/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-cloudfront-function-find-replace/IntegrationTest/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-cloudfront-function-find-replace/IntegrationTest/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "zipFile": "exports.handler = async (event) => {\n        const distributionDomainName = process.env.DISTRIBUTION_DOMAIN_NAME;\n        const response = await fetch(`https://${ distributionDomainName }/`);\n        return await response.json();\n      }"
+                    },
+                    "environment": {
+                      "variables": {
+                        "DISTRIBUTION_DOMAIN_NAME": {
+                          "Fn::GetAtt": [
+                            "Distribution830FAC52",
+                            "DomainName"
+                          ]
+                        }
+                      }
+                    },
+                    "handler": "index.handler",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "IntegrationTestServiceRole30442675",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "nodejs20.x"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "Exports": {
+            "id": "Exports",
+            "path": "aws-cdk-cloudfront-function-find-replace/Exports",
+            "children": {
+              "Output{\"Ref\":\"IntegrationTestEE002965\"}": {
+                "id": "Output{\"Ref\":\"IntegrationTestEE002965\"}",
+                "path": "aws-cdk-cloudfront-function-find-replace/Exports/Output{\"Ref\":\"IntegrationTestEE002965\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-cloudfront-function-find-replace/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-cloudfront-function-find-replace/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "CloudFrontFunctionFindReplace": {
+        "id": "CloudFrontFunctionFindReplace",
+        "path": "CloudFrontFunctionFindReplace",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "CloudFrontFunctionFindReplace/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "CloudFrontFunctionFindReplace/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "CloudFrontFunctionFindReplace/DefaultTest/DeployAssert",
+                "children": {
+                  "LambdaInvoke96317dde7da6f087b3e0d4e1496bd09e": {
+                    "id": "LambdaInvoke96317dde7da6f087b3e0d4e1496bd09e",
+                    "path": "CloudFrontFunctionFindReplace/DefaultTest/DeployAssert/LambdaInvoke96317dde7da6f087b3e0d4e1496bd09e",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "CloudFrontFunctionFindReplace/DefaultTest/DeployAssert/LambdaInvoke96317dde7da6f087b3e0d4e1496bd09e/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "CloudFrontFunctionFindReplace/DefaultTest/DeployAssert/LambdaInvoke96317dde7da6f087b3e0d4e1496bd09e/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "CloudFrontFunctionFindReplace/DefaultTest/DeployAssert/LambdaInvoke96317dde7da6f087b3e0d4e1496bd09e/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "CloudFrontFunctionFindReplace/DefaultTest/DeployAssert/LambdaInvoke96317dde7da6f087b3e0d4e1496bd09e/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Invoke": {
+                        "id": "Invoke",
+                        "path": "CloudFrontFunctionFindReplace/DefaultTest/DeployAssert/LambdaInvoke96317dde7da6f087b3e0d4e1496bd09e/Invoke",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "CloudFrontFunctionFindReplace/DefaultTest/DeployAssert/LambdaInvoke96317dde7da6f087b3e0d4e1496bd09e/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.LambdaInvokeFunction",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "SingletonFunction1488541a7b23466481b69b4408076b81": {
+                    "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "path": "CloudFrontFunctionFindReplace/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "CloudFrontFunctionFindReplace/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "CloudFrontFunctionFindReplace/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "CloudFrontFunctionFindReplace/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "LatestNodeRuntimeMap": {
+                    "id": "LatestNodeRuntimeMap",
+                    "path": "CloudFrontFunctionFindReplace/DefaultTest/DeployAssert/LatestNodeRuntimeMap",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnMapping",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "CloudFrontFunctionFindReplace/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "CloudFrontFunctionFindReplace/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}
