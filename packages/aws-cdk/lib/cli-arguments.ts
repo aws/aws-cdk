@@ -1224,7 +1224,7 @@ export interface ContextOptions {
   /**
    * Clear all context
    *
-   * @default - undefined
+   * @default - false
    */
   readonly clear?: boolean;
 }

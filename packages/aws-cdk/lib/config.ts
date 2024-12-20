@@ -373,9 +373,9 @@ export async function makeConfig(): Promise<CliConfig> {
       context: {
         description: 'Manage cached context values',
         options: {
-          reset: { alias: 'e', desc: 'The context key (or its index) to reset', type: 'string', requiresArg: true },
+          reset: { alias: 'e', desc: 'The context key (or its index) to reset', type: 'string', requiresArg: true, default: undefined },
           force: { alias: 'f', desc: 'Ignore missing key error', type: 'boolean', default: false },
-          clear: { desc: 'Clear all context', type: 'boolean' },
+          clear: { desc: 'Clear all context', type: 'boolean', default: false },
         },
       },
       docs: {
