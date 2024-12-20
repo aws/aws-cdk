@@ -99,7 +99,7 @@ export class Configuration {
     return this._projectConfig;
   }
 
-  private get projectContext() {
+  public get projectContext() {
     if (!this._projectContext) {
       throw new Error('#load has not been called yet!');
     }
@@ -121,12 +121,12 @@ export class Configuration {
     }
 
     const contextSources = [
-      this.commandLineContext,
-      this.projectConfig.subSettings([CONTEXT_KEY]).makeReadOnly(),
-      this.projectContext,
+      { bag: this.commandLineContext },
+      { fileName: PROJECT_CONFIG, bag: this.projectConfig.subSettings([CONTEXT_KEY]).makeReadOnly() },
+      { fileName: PROJECT_CONTEXT, bag: this.projectContext },
     ];
     if (readUserContext) {
-      contextSources.push(userConfig.subSettings([CONTEXT_KEY]).makeReadOnly());
+      contextSources.push({ fileName: USER_DEFAULTS, bag: userConfig.subSettings([CONTEXT_KEY]).makeReadOnly() });
     }
 
     this.context = new Context(...contextSources);
@@ -166,6 +166,19 @@ async function loadAndLog(fileName: string): Promise<Settings> {
   return ret;
 }
 
+interface ContextBag {
+  /**
+   * The file name of the context. Will be used to potentially
+   * save new context back to the original file.
+   */
+  fileName?: string;
+
+  /**
+   * The context values.
+   */
+  bag: Settings;
+}
+
 /**
  * Class that supports overlaying property bags
  *
@@ -176,9 +189,11 @@ async function loadAndLog(fileName: string): Promise<Settings> {
  */
 export class Context {
   private readonly bags: Settings[];
+  private readonly fileNames: (string|undefined)[];
 
-  constructor(...bags: Settings[]) {
-    this.bags = bags.length > 0 ? bags : [new Settings()];
+  constructor(...bags: ContextBag[]) {
+    this.bags = bags.length > 0 ? bags.map(b => b.bag) : [new Settings()];
+    this.fileNames = bags.length > 0 ? bags.map(b => b.fileName) : ['default'];
   }
 
   public get keys(): string[] {
@@ -226,6 +241,26 @@ export class Context {
     for (const key of this.keys) {
       this.unset(key);
     }
+  }
+
+  /**
+   * Save a specific context file
+   */
+  public async save(fileName: string): Promise<this> {
+    const index = this.fileNames.indexOf(fileName);
+
+    // File not found, don't do anything in this scenario
+    if (index === -1) {
+      return this;
+    }
+
+    const bag = this.bags[index];
+    if (bag.readOnly) {
+      throw new Error(`Context file ${fileName} is read only!`);
+    }
+
+    await bag.save(fileName);
+    return this;
   }
 }
 
