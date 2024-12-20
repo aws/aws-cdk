@@ -25,7 +25,7 @@ const script = glue.Code.fromAsset(path.join(__dirname, 'job-script', 'hello_wor
 const scriptResolveOptions = glue.Code.fromAsset(path.join(__dirname, 'job-script', 'resolve_options.py'));
 const moduleUtils = glue.Code.fromAsset(path.join(__dirname, 'module', 'utils.zip'));
 
-[glue.GlueVersion.V2_0, glue.GlueVersion.V3_0, glue.GlueVersion.V4_0].forEach((glueVersion) => {
+[glue.GlueVersion.V2_0, glue.GlueVersion.V3_0, glue.GlueVersion.V4_0, glue.GlueVersion.V5_0].forEach((glueVersion) => {
   const etlJob = new glue.Job(stack, 'EtlJob' + glueVersion.name, {
     jobName: 'EtlJob' + glueVersion.name,
     executable: glue.JobExecutable.pythonEtl({
@@ -142,6 +142,16 @@ new glue.Job(stack, 'EtlJobWithFLEX', {
   workerType: glue.WorkerType.G_1X,
   workerCount: 10,
   executionClass: glue.ExecutionClass.FLEX,
+});
+
+new glue.Job(stack, 'EtlJobWithRunQueuing', {
+  jobName: 'EtlJobWithRunQueuing',
+  executable: glue.JobExecutable.pythonEtl({
+    glueVersion: glue.GlueVersion.V4_0,
+    pythonVersion: glue.PythonVersion.THREE,
+    script,
+  }),
+  jobRunQueuingEnabled: true,
 });
 
 app.synth();

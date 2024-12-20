@@ -1332,7 +1332,16 @@ const stack = new Stack(app, 'StackName', {
 });
 ```
 
-Stack events will be sent to any SNS Topics in this list.
+Stack events will be sent to any SNS Topics in this list. These ARNs are added to those specified using
+the `--notification-arns` command line option.
+
+Note that in order to do delete notification ARNs entirely, you must pass an empty array ([]) instead of omitting it.
+If you omit the property, no action on existing ARNs will take place.
+
+> [!NOTICE]
+> Adding the `notificationArns` property (or using the `--notification-arns` CLI options) will **override**
+> any existing ARNs configured on the stack. If you have an external system managing notification ARNs,
+> either migrate to use this mechanism, or avoid specfying notification ARNs with the CDK.
 
 ### CfnJson
 
@@ -1619,6 +1628,148 @@ scenarios are (non-exhaustive list):
 - Warn if the user configuration might not follow best practices (but is still
   valid)
 - Warn if the user is using a deprecated API
+
+## Aspects
+
+[Aspects](https://docs.aws.amazon.com/cdk/v2/guide/aspects.html) is a feature in CDK that allows you to apply operations or transformations across all
+constructs in a construct tree. Common use cases include tagging resources, enforcing encryption on S3 Buckets, or applying specific security or
+compliance rules to all resources in a stack.
+
+Conceptually, there are two types of Aspects:
+
+- **Read-only aspects** scan the construct tree but do not make changes to the tree. Common use cases of read-only aspects include performing validations
+(for example, enforcing that all S3 Buckets have versioning enabled) and logging (for example, collecting information about all deployed resources for
+audits or compliance).
+- **Mutating aspects** either (1.) add new nodes or (2.) mutate existing nodes of the tree in-place. One commonly used mutating Aspect is adding Tags to
+resources. An example of an Aspect that adds a node is one that automatically adds a security group to every EC2 instance in the construct tree if
+no default is specified.
+
+Here is a simple example of creating and applying an Aspect on a Stack to enable versioning on all S3 Buckets:
+
+```ts
+import { IAspect, IConstruct, Tags, Stack } from 'aws-cdk-lib';
+
+class EnableBucketVersioning implements IAspect {
+  visit(node: IConstruct) {
+    if (node instanceof CfnBucket) {
+      node.versioningConfiguration = {
+        status: 'Enabled'
+      };
+    }
+  }
+}
+
+const app = new App();
+const stack = new MyStack(app, 'MyStack');
+
+// Apply the aspect to enable versioning on all S3 Buckets
+Aspects.of(stack).add(new EnableBucketVersioning());
+```
+
+### Aspect Stabilization
+
+The modern behavior is that Aspects automatically run on newly added nodes to the construct tree. This is controlled by the
+flag `@aws-cdk/core:aspectStabilization`, which is default for new projects (since version 2.172.0).
+
+The old behavior of Aspects (without stabilization) was that Aspect invocation runs once on the entire construct
+tree. This meant that nested Aspects (Aspects that create new Aspects) are not invoked and nodes created by Aspects at a higher level of the construct tree are not visited.
+
+To enable the stabilization behavior for older versions, use this feature by putting the following into your `cdk.context.json`:
+
+```json
+{
+  "@aws-cdk/core:aspectStabilization": true
+}
+```
+
+### Aspect Priorities
+
+Users can specify the order in which Aspects are applied on a construct by using the optional priority parameter when applying an Aspect. Priority
+values must be non-negative integers, where a higher number means the Aspect will be applied later, and a lower number means it will be applied sooner.
+
+By default, newly created nodes always inherit aspects. Priorities are mainly for ordering between mutating aspects on the construct tree.
+
+CDK provides standard priority values for mutating and readonly aspects to help ensure consistency across different construct libraries:
+
+```ts
+/**
+ * Default Priority values for Aspects.
+ */
+export class AspectPriority {
+  /**
+   * Suggested priority for Aspects that mutate the construct tree.
+   */
+  static readonly MUTATING: number = 200;
+
+  /**
+   * Suggested priority for Aspects that only read the construct tree.
+   */
+  static readonly READONLY: number = 1000;
+
+  /**
+   * Default priority for Aspects that are applied without a priority.
+   */
+  static readonly DEFAULT: number = 500;
+}
+```
+
+If no priority is provided, the default value will be 500. This ensures that aspects without a specified priority run after mutating aspects but before
+any readonly aspects.
+
+Correctly applying Aspects with priority values ensures that mutating aspects (such as adding tags or resources) run before validation aspects. This allows users to avoid misconfigurations and ensure that the final
+construct tree is fully validated before being synthesized.
+
+### Applying Aspects with Priority
+
+```ts
+import { Aspects, Stack, IAspect, Tags } from 'aws-cdk-lib';
+import { Bucket } from 'aws-cdk-lib/aws-s3';
+
+class MyAspect implements IAspect {
+  visit(node: IConstruct) {
+    // Modifies a resource in some way
+  }
+}
+
+class ValidationAspect implements IAspect {
+  visit(node: IConstruct) {
+    // Perform some readonly validation on the cosntruct tree
+  }
+}
+
+const stack = new Stack();
+
+Aspects.of(stack).add(new MyAspect(), { priority: AspectPriority.MUTATING } );  // Run first (mutating aspects)
+Aspects.of(stack).add(new ValidationAspect(), { priority: AspectPriority.READONLY } );  // Run later (readonly aspects)
+```
+
+### Inspecting applied aspects and changing priorities
+
+We also give customers the ability to view all of their applied aspects and override the priority on these aspects.
+The `AspectApplication` class represents an Aspect that is applied to a node of the construct tree with a priority.
+
+Users can access AspectApplications on a node by calling `applied` from the Aspects class as follows:
+
+```ts
+const app = new App();
+const stack = new MyStack(app, 'MyStack');
+
+Aspects.of(stack).add(new MyAspect());
+
+let aspectApplications: AspectApplication[] = Aspects.of(root).applied;
+
+for (const aspectApplication of aspectApplications) {
+  // The aspect we are applying
+  console.log(aspectApplication.aspect);
+  // The construct we are applying the aspect to
+  console.log(aspectApplication.construct);
+  // The priority it was applied with
+  console.log(aspectApplication.priority);
+
+  // Change the priority
+  aspectApplication.priority = 700;
+}
+```
 
 ### Acknowledging Warnings
 

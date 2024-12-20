@@ -41,7 +41,7 @@ An ETL job processes data in batches using Apache Spark.
 declare const bucket: s3.Bucket;
 new glue.Job(this, 'ScalaSparkEtlJob', {
   executable: glue.JobExecutable.scalaEtl({
-    glueVersion: glue.GlueVersion.V4_0,
+    glueVersion: glue.GlueVersion.V5_0,
     script: glue.Code.fromBucket(bucket, 'src/com/example/HelloWorld.scala'),
     className: 'com.example.HelloWorld',
     extraJars: [glue.Code.fromBucket(bucket, 'jars/HelloWorld.jar')],
@@ -58,7 +58,7 @@ A Streaming job is similar to an ETL job, except that it performs ETL on data st
 ```ts
 new glue.Job(this, 'PythonSparkStreamingJob', {
   executable: glue.JobExecutable.pythonStreaming({
-    glueVersion: glue.GlueVersion.V4_0,
+    glueVersion: glue.GlueVersion.V5_0,
     pythonVersion: glue.PythonVersion.THREE,
     script: glue.Code.fromAsset(path.join(__dirname, 'job-script', 'hello_world.py')),
   }),
@@ -94,7 +94,7 @@ These jobs run in a Ray environment managed by AWS Glue.
 ```ts
 new glue.Job(this, 'RayJob', {
   executable: glue.JobExecutable.pythonRay({
-    glueVersion: glue.GlueVersion.V4_0,
+    glueVersion: glue.GlueVersion.V5_0,
     pythonVersion: glue.PythonVersion.THREE_NINE,
     runtime: glue.Runtime.RAY_TWO_FOUR,
     script: glue.Code.fromAsset(path.join(__dirname, 'job-script', 'hello_world.py')),
@@ -126,6 +126,24 @@ new glue.Job(this, 'EnableSparkUI', {
 The `sparkUI` property also allows the specification of an s3 bucket and a bucket prefix.
 
 See [documentation](https://docs.aws.amazon.com/glue/latest/dg/add-job.html) for more information on adding jobs in Glue.
+
+### Enable Job Run Queuing
+
+AWS Glue job queuing monitors your account level quotas and limits. If quotas or limits are insufficient to start a Glue job run, AWS Glue will automatically queue the job and wait for limits to free up. Once limits become available, AWS Glue will retry the job run. Glue jobs will queue for limits like max concurrent job runs per account, max concurrent Data Processing Units (DPU), and resource unavailable due to IP address exhaustion in Amazon Virtual Private Cloud (Amazon VPC).
+
+Enable job run queuing by setting the `jobRunQueuingEnabled` property to `true`.
+
+```ts
+new glue.Job(this, 'EnableRunQueuing', {
+  jobName: 'EtlJobWithRunQueuing',
+  executable: glue.JobExecutable.pythonEtl({
+    glueVersion: glue.GlueVersion.V5_0,
+    pythonVersion: glue.PythonVersion.THREE,
+    script: glue.Code.fromAsset(path.join(__dirname, 'job-script', 'hello_world.py')),
+  }),
+  jobRunQueuingEnabled: true,
+});
+```
 
 ## Connection
 
@@ -470,7 +488,7 @@ new glue.S3Table(this, 'MyTable', {
 declare const myDatabase: glue.Database;
 // KMS key is created automatically
 new glue.S3Table(this, 'MyTable', {
-  encryption: glue.TableEncryption.CLIENT_SIDE_KMS, 
+  encryption: glue.TableEncryption.CLIENT_SIDE_KMS,
   // ...
   database: myDatabase,
   columns: [{
@@ -528,7 +546,7 @@ new glue.S3Table(this, 'MyTable', {
   // ...
   database: myDatabase,
   dataFormat: glue.DataFormat.JSON,
-});  
+});
 ```
 
 ### Primitives

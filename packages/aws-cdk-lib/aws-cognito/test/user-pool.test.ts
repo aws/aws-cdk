@@ -5,7 +5,7 @@ import { Role, ServicePrincipal } from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import { CfnParameter, Duration, Stack, Tags } from '../../core';
-import { AccountRecovery, Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolIdentityProvider, UserPoolOperation, VerificationEmailStyle, UserPoolEmail, AdvancedSecurityMode, LambdaVersion } from '../lib';
+import { AccountRecovery, Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolIdentityProvider, UserPoolOperation, VerificationEmailStyle, UserPoolEmail, AdvancedSecurityMode, LambdaVersion, FeaturePlan } from '../lib';
 
 describe('User Pool', () => {
   test('default setup', () => {
@@ -313,7 +313,7 @@ describe('User Pool', () => {
     // WHEN
     expect(() => {
       UserPool.fromUserPoolArn(stack, 'userpool', userPoolArn);
-    }).toThrowError(/invalid user pool ARN/);
+    }).toThrow(/invalid user pool ARN/);
   });
 
   test('import from different account region using arn', () => {
@@ -2188,6 +2188,36 @@ test('deletion protection', () => {
   });
 });
 
+test.each([
+  [FeaturePlan.LITE, 'LITE'],
+  [FeaturePlan.ESSENTIALS, 'ESSENTIALS'],
+  [FeaturePlan.PLUS, 'PLUS'],
+])('feature plan is configured correctly when set to (%s)', (featurePlan, compareString) => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new UserPool(stack, 'Pool', { featurePlan });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+    UserPoolTier: compareString,
+  });
+});
+
+test('feature plan is not present if option is not provided', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new UserPool(stack, 'Pool', {});
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+    UserPoolTier: Match.absent(),
+  });
+});
+
 test.each(
   [
     [AdvancedSecurityMode.ENFORCED, 'ENFORCED'],
@@ -2220,6 +2250,126 @@ test('advanced security is not present if option is not provided', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
     UserPoolAddOns: Match.absent(),
+  });
+});
+
+test.each([
+  [FeaturePlan.ESSENTIALS, AdvancedSecurityMode.AUDIT],
+  [FeaturePlan.ESSENTIALS, AdvancedSecurityMode.ENFORCED],
+  [FeaturePlan.PLUS, AdvancedSecurityMode.AUDIT],
+  [FeaturePlan.PLUS, AdvancedSecurityMode.ENFORCED],
+])('throws when feature plan is %s and advanced security mode is %s', (featurePlan, advancedSecurityMode) => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  expect(() => {
+    new UserPool(stack, 'Pool', { featurePlan, advancedSecurityMode });
+  }).toThrow('you cannot enable Advanced Security Mode when feature plan is Essentials or higher.');
+});
+
+describe('email MFA test', () => {
+  test('email MFA enabled', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'myuserpool', {
+      email: UserPoolEmail.withSES({
+        sesRegion: 'us-east-1',
+        fromEmail: 'noreply@example.com',
+        fromName: 'myname@mycompany.com',
+        replyTo: 'support@example.com',
+        sesVerifiedDomain: 'example.com',
+      }),
+      mfa: Mfa.REQUIRED,
+      mfaSecondFactor: {
+        sms: true,
+        otp: false,
+        email: true,
+      },
+      featurePlan: FeaturePlan.ESSENTIALS,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+      EnabledMfas: ['SMS_MFA', 'EMAIL_OTP'],
+    });
+  });
+
+  test('throws when email MFA is enabled with no email settings.', () => {
+    const stack = new Stack();
+
+    expect(() => new UserPool(stack, 'Pool1', {
+      mfa: Mfa.REQUIRED,
+      mfaSecondFactor: {
+        sms: true,
+        otp: false,
+        email: true,
+      },
+      featurePlan: FeaturePlan.ESSENTIALS,
+    })).toThrow('To enable email-based MFA, set `email` property to the Amazon SES email-sending configuration.');
+  });
+
+  test('throws when email MFA is enabled with not SES email settings.', () => {
+    const stack = new Stack();
+
+    expect(() => new UserPool(stack, 'Pool1', {
+      mfa: Mfa.REQUIRED,
+      email: UserPoolEmail.withCognito(),
+      mfaSecondFactor: {
+        sms: true,
+        otp: false,
+        email: true,
+      },
+      featurePlan: FeaturePlan.ESSENTIALS,
+    })).toThrow('To enable email-based MFA, set `email` property to the Amazon SES email-sending configuration.');
+  });
+
+  test.each([
+    AdvancedSecurityMode.AUDIT,
+    AdvancedSecurityMode.ENFORCED,
+  ])('email MFA with Lite feature plan and %s Advanced Security Mode', (advancedSecurityMode) => {
+    const stack = new Stack();
+
+    expect(() => new UserPool(stack, 'Pool1', {
+      email: UserPoolEmail.withSES({
+        sesRegion: 'us-east-1',
+        fromEmail: 'noreply@example.com',
+        fromName: 'myname@mycompany.com',
+        replyTo: 'support@example.com',
+        sesVerifiedDomain: 'example.com',
+      }),
+      mfa: Mfa.REQUIRED,
+      mfaSecondFactor: {
+        sms: true,
+        otp: false,
+        email: true,
+      },
+      featurePlan: FeaturePlan.LITE,
+      advancedSecurityMode,
+    })).not.toThrow();
+  });
+
+  test('throws when email MFA is enabled with Lite feature plan', () => {
+    const stack = new Stack();
+
+    expect(() => new UserPool(stack, 'Pool1', {
+      email: UserPoolEmail.withSES({
+        sesRegion: 'us-east-1',
+        fromEmail: 'noreply@example.com',
+        fromName: 'myname@mycompany.com',
+        replyTo: 'support@example.com',
+        sesVerifiedDomain: 'example.com',
+      }),
+      mfa: Mfa.REQUIRED,
+      mfaSecondFactor: {
+        sms: true,
+        otp: false,
+        email: true,
+      },
+      featurePlan: FeaturePlan.LITE,
+    })).toThrow('To enable email-based MFA, set `featurePlan` to `FeaturePlan.ESSENTIALS` or `FeaturePlan.PLUS`.');
   });
 });
 
