@@ -7,6 +7,7 @@ import * as ec2 from '../../../aws-ec2';
 import * as elb from '../../../aws-elasticloadbalancing';
 import * as elbv2 from '../../../aws-elasticloadbalancingv2';
 import * as iam from '../../../aws-iam';
+import * as kms from '../../../aws-kms';
 import * as cloudmap from '../../../aws-servicediscovery';
 import {
   Annotations,
@@ -257,7 +258,7 @@ export interface ServiceConnectService {
 
   /**
    * A reference to an object that represents a Transport Layer Security (TLS) configuration.
-   * 
+   *
    * @default - none
    */
   readonly tls?: ServiceConnectTlsConfiguration;
@@ -269,22 +270,24 @@ export interface ServiceConnectService {
 export interface ServiceConnectTlsConfiguration {
   /**
    * The ARN of the AWS Private Certificate Authority certificate.
+   *
+   * @default - none
    */
   readonly awsPcaAuthorityArn?: string;
 
   /**
    * The AWS Key Management Service key.
-   * 
+   *
    * @default - none
    */
-  readonly kmsKey?: string;
+  readonly kmsKey?: kms.IKey;
 
   /**
-   * The Amazon Resource Name (ARN) of the IAM role that's associated with the Service Connect TLS.
-   * 
+   * The IAM role that's associated with the Service Connect TLS.
+   *
    * @default - none
    */
-  readonly roleArn?: string;
+  readonly role?: iam.IRole;
 }
 
 /**
@@ -951,8 +954,8 @@ export abstract class BaseService extends Resource
         issuerCertificateAuthority: {
           awsPcaAuthorityArn: svc.tls?.awsPcaAuthorityArn,
         },
-        kmsKey: svc.tls?.kmsKey,
-        roleArn: svc.tls?.roleArn,
+        kmsKey: svc.tls?.kmsKey?.keyArn,
+        roleArn: svc.tls?.role?.roleArn,
       } : undefined;
 
       return {
@@ -1032,15 +1035,10 @@ export abstract class BaseService extends Resource
         !this.isValidPort(serviceConnectService.port)) {
         throw new Error(`Client Alias port ${serviceConnectService.port} is not valid.`);
       }
-
-      const tls = serviceConnectService.tls;
-      // tls.roleArn should be an ARN
-      if(tls?.roleArn && !Token.isUnresolved(tls.roleArn) && !tls.roleArn.startsWith('arn:')) {
-        throw new Error(`roleArn must start with "arn:" and have at least 6 components; received ${tls.roleArn}`);
-      }
       // tls.awsPcaAuthorityArn should be an ARN
-      if(tls?.awsPcaAuthorityArn && !Token.isUnresolved(tls.awsPcaAuthorityArn) && !tls.awsPcaAuthorityArn.startsWith('arn:')) {
-        throw new Error(`awsPcaAuthorityArn must start with "arn:" and have at least 6 components; received ${tls.awsPcaAuthorityArn}`);
+      const awsPcaAuthorityArn = serviceConnectService.tls?.awsPcaAuthorityArn;
+      if (awsPcaAuthorityArn && !Token.isUnresolved(awsPcaAuthorityArn) && !awsPcaAuthorityArn.startsWith('arn:')) {
+        throw new Error(`awsPcaAuthorityArn must start with "arn:" and have at least 6 components; received ${awsPcaAuthorityArn}`);
       }
     });
   }

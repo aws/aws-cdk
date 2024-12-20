@@ -1,6 +1,7 @@
 import { Template, Match } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
+import * as kms from '../../aws-kms';
 import * as cdk from '../../core';
 import { App, Stack } from '../../core';
 import * as cxapi from '../../cx-api';
@@ -81,8 +82,12 @@ describe('When import an ECS Service', () => {
   });
 
   describe('should add tls configuration to service connect service', () => {
-    test("when tls configuration is specified using `enableServiceConnect`", () => {
+    test('when tls configuration is specified using `enableServiceConnect`', () => {
       // GIVEN
+      const kmsKey = new kms.Key(stack, 'KmsKey');
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+      });
       const vpc = new ec2.Vpc(stack, 'Vpc');
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
@@ -102,12 +107,12 @@ describe('When import an ECS Service', () => {
 
       // WHEN
       service.enableServiceConnect({
-        services:[
+        services: [
           {
             tls: {
               awsPcaAuthorityArn: 'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/123456789012',
-              kmsKey: 'kms-key-id',
-              roleArn: 'arn:aws:iam::111122223333:role/my-role',
+              kmsKey,
+              role,
             },
             portMappingName: 'abc',
           },
@@ -124,8 +129,8 @@ describe('When import an ECS Service', () => {
                 IssuerCertificateAuthority: {
                   AwsPcaAuthorityArn: 'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/123456789012',
                 },
-                KmsKey: 'kms-key-id',
-                RoleArn: 'arn:aws:iam::111122223333:role/my-role',
+                KmsKey: stack.resolve(kmsKey.keyArn),
+                RoleArn: stack.resolve(role.roleArn),
               },
             },
           ],
@@ -133,8 +138,12 @@ describe('When import an ECS Service', () => {
       });
     });
 
-    test("when tls configuration is specified using `constructor`", () => {
+    test('when tls configuration is specified using `constructor`', () => {
       // GIVEN
+      const kmsKey = new kms.Key(stack, 'KmsKey');
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+      });
       const vpc = new ec2.Vpc(stack, 'Vpc');
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
@@ -153,20 +162,19 @@ describe('When import an ECS Service', () => {
         cluster,
         taskDefinition,
         serviceConnectConfiguration: {
-          services:[
+          services: [
             {
               tls: {
                 awsPcaAuthorityArn: 'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/123456789012',
-                kmsKey: 'kms-key-id',
-                roleArn: 'arn:aws:iam::111122223333:role/my-role',
+                kmsKey,
+                role,
               },
               portMappingName: 'abc',
             },
           ],
           namespace: 'test namespace',
-        }
+        },
       });
-      
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
@@ -177,49 +185,14 @@ describe('When import an ECS Service', () => {
                 IssuerCertificateAuthority: {
                   AwsPcaAuthorityArn: 'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/123456789012',
                 },
-                KmsKey: 'kms-key-id',
-                RoleArn: 'arn:aws:iam::111122223333:role/my-role',
+                KmsKey: stack.resolve(kmsKey.keyArn),
+                RoleArn: stack.resolve(role.roleArn),
               },
             },
           ],
         },
       });
     });
-  });
-
-
-  test('throws an error when roleArn is not an ARN', () => {
-    // GIVEN
-    const vpc = new ec2.Vpc(stack, 'Vpc');
-    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
-    taskDefinition.addContainer('web', {
-      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-      portMappings: [
-        {
-          containerPort: 100,
-          name: 'abc',
-        },
-      ],
-    });
-
-    expect(() => {
-      new ecs.FargateService(stack, 'FargateService', {
-        cluster,
-        taskDefinition,
-        serviceConnectConfiguration: {
-          services:[
-            {
-              tls: {
-                roleArn: 'invalid-arn',
-              },
-              portMappingName: 'abc',
-            },
-          ],
-          namespace: 'test namespace',
-        }
-      });
-    }).toThrow(/roleArn must start with "arn:" and have at least 6 components; received invalid-arn/);
   });
 
   test('awsPcaAuthorityArn is not an ARN', () => {
@@ -242,7 +215,7 @@ describe('When import an ECS Service', () => {
         cluster,
         taskDefinition,
         serviceConnectConfiguration: {
-          services:[
+          services: [
             {
               tls: {
                 awsPcaAuthorityArn: 'invalid-arn',
@@ -251,7 +224,7 @@ describe('When import an ECS Service', () => {
             },
           ],
           namespace: 'test namespace',
-        }
+        },
       });
     }).toThrow(/awsPcaAuthorityArn must start with "arn:" and have at least 6 components; received invalid-arn/);
   });
