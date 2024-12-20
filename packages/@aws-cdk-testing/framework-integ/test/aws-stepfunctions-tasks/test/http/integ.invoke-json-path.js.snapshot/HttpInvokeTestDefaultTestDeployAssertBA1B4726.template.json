@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa": {
+  "AwsApiCallStepFunctionsstartExecution6889d16cb95f6b788d9ce305167f8e14": {
    "Type": "Custom::DeployAssert@SdkCallStepFunctionsstartExecution",
    "Properties": {
     "ServiceToken": {
@@ -18,18 +18,19 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "aws-stepfunctions-tasks-http-invoke-integ:ExportsOutputRefStateMachine2E01A3A5BA46F753"
+         "Fn::ImportValue": "aws-stepfunctions-tasks-http-invoke-json-path-integ:ExportsOutputRefStateMachine2E01A3A5BA46F753"
         },
         "\""
        ]
       ]
-     }
+     },
+     "input": "\"{\\\"endpointPath\\\":\\\"test-json-path\\\"}\""
     },
     "flattenResponse": "true",
     "outputPaths": [
      "executionArn"
     ],
-    "salt": "1731620245901"
+    "salt": "1731616832995"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -112,7 +113,7 @@
     }
    }
   },
-  "AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868": {
+  "AwsApiCallStepFunctionsdescribeExecution884e7f76ad5a29cd349843b05b0c4c1e": {
    "Type": "Custom::DeployAssert@SdkCallStepFunctionsdescribeExecution",
    "Properties": {
     "ServiceToken": {
@@ -132,7 +133,7 @@
         "\"",
         {
          "Fn::GetAtt": [
-          "AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa",
+          "AwsApiCallStepFunctionsstartExecution6889d16cb95f6b788d9ce305167f8e14",
           "apiCallResponse.executionArn"
          ]
         },
@@ -142,7 +143,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1731620245902"
+    "salt": "1731616832996"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -273,10 +274,10 @@
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868": {
+  "AssertionResultsAwsApiCallStepFunctionsdescribeExecution884e7f76ad5a29cd349843b05b0c4c1e": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868",
+     "AwsApiCallStepFunctionsdescribeExecution884e7f76ad5a29cd349843b05b0c4c1e",
      "assertion"
     ]
    }
