@@ -67,6 +67,59 @@ test('Call an EKS endpoint', () => {
   });
 });
 
+test('Call an EKS endpoint - using JSONata', () => {
+  // WHEN
+  const task = EksCall.jsonata(stack, 'Call', {
+    cluster: cluster,
+    httpMethod: HttpMethods.GET,
+    httpPath: 'path',
+    requestBody: sfn.TaskInput.fromObject({
+      Body: 'requestBody',
+    }),
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    QueryLanguage: 'JSONata',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::eks:call',
+        ],
+      ],
+    },
+    End: true,
+    Arguments: {
+      ClusterName: {
+        Ref: 'Cluster9EE0221C',
+      },
+      CertificateAuthority: {
+        'Fn::GetAtt': [
+          'Cluster9EE0221C',
+          'CertificateAuthorityData',
+        ],
+      },
+      Endpoint: {
+        'Fn::GetAtt': [
+          'Cluster9EE0221C',
+          'Endpoint',
+        ],
+      },
+      Method: 'GET',
+      Path: 'path',
+      RequestBody: {
+        Body: 'requestBody',
+      },
+    },
+  });
+});
+
 test('Call an EKS endpoint with requestBody as a string', () => {
   // WHEN
   const task = new EksCall(stack, 'Call', {

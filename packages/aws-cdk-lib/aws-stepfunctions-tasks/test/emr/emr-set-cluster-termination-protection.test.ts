@@ -40,6 +40,37 @@ test('Set termination protection with static ClusterId and TerminationProtected'
   });
 });
 
+test('Set termination protection with static ClusterId and TerminationProtected - using JSONata', () => {
+  // WHEN
+  const task = tasks.EmrSetClusterTerminationProtection.jsonata(stack, 'Task', {
+    clusterId: 'ClusterId',
+    terminationProtected: false,
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    QueryLanguage: 'JSONata',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::elasticmapreduce:setClusterTerminationProtection',
+        ],
+      ],
+    },
+    End: true,
+    Arguments: {
+      ClusterId: 'ClusterId',
+      TerminationProtected: false,
+    },
+  });
+});
+
 test('task policies are generated', () => {
   // WHEN
   const task = new tasks.EmrSetClusterTerminationProtection(stack, 'Task', {

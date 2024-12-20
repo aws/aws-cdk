@@ -562,7 +562,7 @@ function validateJsonPath(path: string) {
   ];
   const intrinsicFunctionFullNames = intrinsicFunctionNames.map((fn) => `States.${fn}`);
   if (path !== '$'
-    && !path.startsWith('$.')
+    && !path.startsWith('$')
     && path !== '$$'
     && !path.startsWith('$$.')
     && !path.startsWith('$[')
@@ -570,15 +570,15 @@ function validateJsonPath(path: string) {
   ) {
     const lastItem = intrinsicFunctionFullNames.pop();
     const intrinsicFunctionsStr = intrinsicFunctionFullNames.join(', ') + ', or ' + lastItem;
-    throw new Error(`JSON path values must be exactly '$', '$$', start with '$.', start with '$$.', start with '$[', or start with an intrinsic function: ${intrinsicFunctionsStr}. Received: ${path}`);
+    throw new Error(`JSON path values must be exactly '$', '$$', start with '$', start with '$$.', start with '$[', or start with an intrinsic function: ${intrinsicFunctionsStr}. Received: ${path}`);
   }
 }
 
 function validateDataPath(path: string) {
   if (path !== '$'
     && !path.startsWith('$[')
-    && !path.startsWith('$.')) {
-    throw new Error("Data JSON path values must either be exactly equal to '$', start with '$[' or start with '$.'");
+    && !path.startsWith('$')) {
+    throw new Error("Data JSON path values must either be exactly equal to '$', start with '$[' or start with '$'");
   }
 }
 

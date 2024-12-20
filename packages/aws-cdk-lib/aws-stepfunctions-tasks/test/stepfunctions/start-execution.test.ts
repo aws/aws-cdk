@@ -52,6 +52,47 @@ test('Execute State Machine - Default - Request Response', () => {
   });
 });
 
+test('Execute State Machine - Default - using JSONata', () => {
+  const task = StepFunctionsStartExecution.jsonata(stack, 'ChildTask', {
+    stateMachine: child,
+    input: sfn.TaskInput.fromObject({
+      foo: 'bar',
+    }),
+    name: 'myExecutionName',
+  });
+
+  new sfn.StateMachine(stack, 'ParentStateMachine', {
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
+  });
+
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    QueryLanguage: 'JSONata',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::states:startExecution',
+        ],
+      ],
+    },
+    End: true,
+    Arguments: {
+      Input: {
+        foo: 'bar',
+      },
+      Name: 'myExecutionName',
+      StateMachineArn: {
+        Ref: 'ChildStateMachine9133117F',
+      },
+    },
+  });
+});
+
 test('Execute State Machine - Run Job', () => {
   const task = new StepFunctionsStartExecution(stack, 'ChildTask', {
     stateMachine: child,

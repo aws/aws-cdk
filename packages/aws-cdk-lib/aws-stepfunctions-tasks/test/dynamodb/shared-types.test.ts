@@ -175,6 +175,31 @@ describe('DynamoAttributeValue', () => {
     });
   });
 
+  test('map from JSONata expression', () => {
+    // GIVEN
+    const m = '{% $path %}';
+
+    // WHEN
+    const attribute = tasks.DynamoAttributeValue.mapFromJsonata(m);
+
+    // THEN
+    expect(sfn.FieldUtils.renderObject(attribute)).toEqual({
+      attributeValue: {
+        M: m,
+      },
+    });
+  });
+
+  test('map from invalid JSONata expression throws', () => {
+    // GIVEN
+    const m = 'invalid';
+
+    // WHEN / THEN
+    expect(() => {
+      tasks.DynamoAttributeValue.mapFromJsonata(m);
+    }).toThrow("Data JSONata expression values must either be exactly start with '{%' and end with '%}'");
+  });
+
   test('map from json path', () => {
     // GIVEN
     const m = '$.path';
@@ -222,6 +247,22 @@ describe('DynamoAttributeValue', () => {
     });
   });
 
+  test('from list with JSONata expression', () => {
+    // GIVEN
+    const m = '{% $list %}';
+    // WHEN
+    const attribute = tasks.DynamoAttributeValue.listFromJsonata(
+      m,
+    );
+
+    // THEN
+    expect(sfn.FieldUtils.renderObject(attribute)).toEqual({
+      attributeValue: {
+        L: m,
+      },
+    });
+  });
+
   test('from list with json path', () => {
     // GIVEN
     const m = '$.path';
@@ -246,6 +287,30 @@ describe('DynamoAttributeValue', () => {
     expect(sfn.FieldUtils.renderObject(attribute)).toEqual({
       attributeValue: {
         NULL: true,
+      },
+    });
+  });
+
+  test('from invalid boolean with JSONata expression', () => {
+    // GIVEN
+    const m = 'invalid';
+
+    // WHEN / THEN
+    expect(() => {
+      tasks.DynamoAttributeValue.booleanFromJsonata(m);
+    }).toThrow("Data JSONata expression values must either be exactly start with '{%' and end with '%}'");
+  });
+
+  test('from boolean with JSONata expression', () => {
+    // GIVEN
+    const m = '{% $bool %}';
+    // WHEN
+    const attribute = tasks.DynamoAttributeValue.booleanFromJsonata(m);
+
+    // THEN
+    expect(sfn.FieldUtils.renderObject(attribute)).toEqual({
+      attributeValue: {
+        BOOL: m,
       },
     });
   });

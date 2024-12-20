@@ -164,7 +164,8 @@ export class GlueStartJobRun extends sfn.TaskStateBase {
   /**
    * @internal
    */
-  protected _renderTask(): any {
+  protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
+    const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
     const notificationProperty = this.props.notifyDelayAfter ? { NotifyDelayAfter: this.props.notifyDelayAfter.toMinutes() } : null;
 
     let timeout: number | undefined = undefined;
@@ -189,7 +190,7 @@ export class GlueStartJobRun extends sfn.TaskStateBase {
 
     return {
       Resource: integrationResourceArn('glue', 'startJobRun', this.integrationPattern),
-      Parameters: sfn.FieldUtils.renderObject({
+      ...this._renderParametersOrArguments({
         JobName: this.props.glueJobName,
         Arguments: this.jobArguments?.value,
         Timeout: timeout,
@@ -198,7 +199,7 @@ export class GlueStartJobRun extends sfn.TaskStateBase {
         WorkerType: workerType,
         NumberOfWorkers: this.props.workerConfiguration?.numberOfWorkers,
         ExecutionClass: this.props.executionClass,
-      }),
+      }, queryLanguage),
       TimeoutSeconds: undefined,
       TimeoutSecondsPath: undefined,
     };

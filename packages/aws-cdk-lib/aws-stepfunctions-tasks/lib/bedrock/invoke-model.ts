@@ -329,14 +329,14 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
    *
    * @internal
    */
-  protected _renderTask(): any {
-
+  protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
+    const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
     const useNewS3UriParamsForTask = FeatureFlags.of(this).isEnabled(cxapi.USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK);
     const inputSource = this.getInputSource(this.props.input, this.props.inputPath, useNewS3UriParamsForTask);
     const outputSource = this.getOutputSource(this.props.output, this.props.outputPath, useNewS3UriParamsForTask);
     return {
       Resource: integrationResourceArn('bedrock', 'invokeModel'),
-      Parameters: sfn.FieldUtils.renderObject({
+      ...this._renderParametersOrArguments({
         ModelId: this.props.model.modelArn,
         Accept: this.props.accept,
         ContentType: this.props.contentType,
@@ -350,7 +350,7 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
           : this.props.traceEnabled
             ? 'ENABLED'
             : 'DISABLED',
-      }),
+      }, queryLanguage),
     };
   };
 

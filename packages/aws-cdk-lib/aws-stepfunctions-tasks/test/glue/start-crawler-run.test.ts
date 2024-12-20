@@ -74,3 +74,69 @@ test('Invoke glue crawler with crawler name', () => {
     },
   }));
 });
+
+test('Invoke glue crawler with crawler name - using JSONata', () => {
+  const task = GlueStartCrawlerRun.jsonata(stack, 'Task', {
+    crawlerName,
+  });
+
+  new sfn.StateMachine(stack, 'StateMachine', {
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
+  });
+
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    QueryLanguage: 'JSONata',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::aws-sdk:glue:startCrawler',
+        ],
+      ],
+    },
+    End: true,
+    Arguments: {
+      Name: crawlerName,
+    },
+  });
+
+  const template = Template.fromStack(stack);
+  expect(template.hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: [
+            'glue:StartCrawler',
+            'glue:GetCrawler',
+          ],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':glue:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                `:crawler/${crawlerName}`,
+              ],
+            ],
+          },
+        },
+      ],
+    },
+  }));
+});

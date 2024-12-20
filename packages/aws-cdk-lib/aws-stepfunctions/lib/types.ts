@@ -183,6 +183,7 @@ export interface CatchProps {
   readonly resultPath?: string;
 
   /**
+   * This option for JSONata only. When you use JSONPath, then the state ignores this property.
    * Used to specify and transform output from the state.
    * When specified, the value overrides the state output default.
    * The output field accepts any JSON value (object, array, string, number, boolean, null).
@@ -192,9 +193,20 @@ export interface CatchProps {
    *
    * @see https://docs.aws.amazon.com/step-functions/latest/dg/concepts-input-output-filtering.html
    *
-   * @default - None
+   * @default - $states.result or $states.errorOutput
    */
-  readonly output?: { [key: string]: any };
+  readonly outputs?: any;
+
+  /**
+   * Workflow variables to store in this step.
+   * Using workflow variables, you can store data in a step and retrieve that data in future steps.
+   *
+   * @see
+   * https://docs.aws.amazon.com/ja_jp/step-functions/latest/dg/workflow-variables.html
+   *
+   * @default - Not assign variables
+   */
+  readonly assign?: { [name: string]: any };
 }
 
 /**

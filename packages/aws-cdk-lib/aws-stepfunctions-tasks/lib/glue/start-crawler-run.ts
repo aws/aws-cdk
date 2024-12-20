@@ -78,12 +78,13 @@ export class GlueStartCrawlerRun extends sfn.TaskStateBase {
   /**
    * @internal
    */
-  protected _renderTask(): any {
+  protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
+    const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
     return {
       Resource: integrationResourceArn('aws-sdk:glue', 'startCrawler', this.integrationPattern),
-      Parameters: {
+      ...this._renderParametersOrArguments({
         Name: this.props.crawlerName,
-      },
+      }, queryLanguage),
     };
   }
 }

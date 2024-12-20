@@ -52,6 +52,40 @@ describe('AWS::StepFunctions::Tasks::HttpInvoke', () => {
     });
   });
 
+  test('invoke with default props - using JSONata', () => {
+    const task = lib.HttpInvoke.jsonata(stack, 'Task', {
+      apiRoot: 'https://api.example.com',
+      apiEndpoint: sfn.TaskInput.fromText('path/to/resource'),
+      connection,
+      method: sfn.TaskInput.fromText('POST'),
+    });
+
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      QueryLanguage: 'JSONata',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::http:invoke',
+          ],
+        ],
+      },
+      End: true,
+      Arguments: {
+        ApiEndpoint: 'https://api.example.com/path/to/resource',
+        Authentication: {
+          ConnectionArn: stack.resolve(connection.connectionArn),
+        },
+        Method: 'POST',
+      },
+    });
+  });
+
   test('invoke with all props', () => {
     const task = new lib.HttpInvoke(stack, 'Task', {
       apiRoot: 'https://api.example.com',

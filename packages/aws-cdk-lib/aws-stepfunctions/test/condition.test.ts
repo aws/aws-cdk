@@ -7,6 +7,9 @@ describe('Condition Variables', () => {
   test('Condition variables can start with $.', () => {
     expect(() => stepfunctions.Condition.stringEquals('$.a', 'b')).not.toThrow();
   }),
+  test('Condition variables can start with $', () => {
+    expect(() => stepfunctions.Condition.stringEquals('$var', 'v')).not.toThrow();
+  }),
   test('Condition variables can start with $[', () => {
     expect(() => stepfunctions.Condition.stringEquals('$[0]', 'a')).not.toThrow();
   }),
@@ -118,6 +121,26 @@ describe('Condition Variables', () => {
       [stepfunctions.Condition.isPresent('$.a'), { Variable: '$.a', IsPresent: true }],
       [stepfunctions.Condition.isNotPresent('$.a'), { Variable: '$.a', IsPresent: false }],
       [stepfunctions.Condition.stringMatches('$.a', 'foo'), { Variable: '$.a', StringMatches: 'foo' }],
+    ];
+
+    for (const [cond, expected] of cases) {
+      assertRendersTo(cond, expected);
+    }
+  }),
+
+  test('JSONata condition must start with {% and end with %}', () => {
+    expect(() => stepfunctions.Condition.jsonata('true')).toThrow();
+    expect(() => stepfunctions.Condition.jsonata('{% true')).toThrow();
+    expect(() => stepfunctions.Condition.jsonata('true %}')).toThrow();
+    expect(() => stepfunctions.Condition.jsonata('{% true %}')).not.toThrow();
+  }),
+
+  test('JSONata conditions as is render', () => {
+    const cases: Array<[stepfunctions.Condition, object]> = [
+      [stepfunctions.Condition.jsonata('{% true %}'), { Condition: '{% true %}' }],
+      [stepfunctions.Condition.jsonata('{% $isJsonata %}'), { Condition: '{% $isJsonata %}' }],
+      [stepfunctions.Condition.jsonata('{% $foo = 1 %}'), { Condition: '{% $foo = 1 %}' }],
+      [stepfunctions.Condition.jsonata("{% $type = 'local' %}"), { Condition: "{% $type = 'local' %}" }],
     ];
 
     for (const [cond, expected] of cases) {

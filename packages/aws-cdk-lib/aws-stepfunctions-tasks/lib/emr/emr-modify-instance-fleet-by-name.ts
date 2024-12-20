@@ -35,6 +35,16 @@ interface EmrModifyInstanceFleetByNameOptions {
 }
 
 /**
+ * Properties for EmrModifyInstanceFleetByName using JSONPath
+ */
+export interface EmrModifyInstanceFleetByNameJsonPathProps extends sfn.TaskStateJsonPathBaseProps, EmrModifyInstanceFleetByNameOptions {}
+
+/**
+ * Properties for EmrModifyInstanceFleetByName using JSONata
+ */
+export interface EmrModifyInstanceFleetByNameJsonataProps extends sfn.TaskStateJsonataBaseProps, EmrModifyInstanceFleetByNameOptions {}
+
+/**
  * Properties for EmrModifyInstanceFleetByName
  *
  */
@@ -45,6 +55,24 @@ export interface EmrModifyInstanceFleetByNameProps extends sfn.TaskStateBaseProp
  *
  */
 export class EmrModifyInstanceFleetByName extends sfn.TaskStateBase {
+
+  /**
+     * A Step Functions Task using JSONPath to to modify an InstanceFleet on an EMR Cluster.
+     *
+     */
+  public static jsonPath(scope: Construct, id: string, props: EmrModifyInstanceFleetByNameJsonPathProps) {
+    return new EmrModifyInstanceFleetByName(scope, id, props);
+  }
+  /**
+     * A Step Functions Task using JSONata to to modify an InstanceFleet on an EMR Cluster.
+     *
+     */
+  public static jsonata(scope: Construct, id: string, props: EmrModifyInstanceFleetByNameJsonataProps) {
+    return new EmrModifyInstanceFleetByName(scope, id, {
+      ...props,
+      queryLanguage: sfn.QueryLanguage.JSONATA,
+    });
+  }
 
   protected readonly taskPolicies?: iam.PolicyStatement[];
   protected readonly taskMetrics?: sfn.TaskMetricsConfig;
@@ -72,18 +100,19 @@ export class EmrModifyInstanceFleetByName extends sfn.TaskStateBase {
   /**
    * @internal
    */
-  protected _renderTask(): any {
+  protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
+    const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
     return {
       Resource: integrationResourceArn('elasticmapreduce', 'modifyInstanceFleetByName',
         sfn.IntegrationPattern.REQUEST_RESPONSE),
-      Parameters: sfn.FieldUtils.renderObject({
+      ...this._renderParametersOrArguments({
         ClusterId: this.props.clusterId,
         InstanceFleetName: this.props.instanceFleetName,
         InstanceFleet: {
           TargetOnDemandCapacity: this.props.targetOnDemandCapacity,
           TargetSpotCapacity: this.props.targetSpotCapacity,
         },
-      }),
+      }, queryLanguage),
     };
   }
 }

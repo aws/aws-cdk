@@ -486,9 +486,10 @@ export abstract class State extends Construct implements IChainable {
   /**
    * Render the choices in ASL JSON format
    */
-  protected renderChoices(): any {
+  protected renderChoices(topLevelQueryLanguage?: QueryLanguage): any {
+    const queryLanguage = _getActualQueryLanguage(topLevelQueryLanguage, this.queryLanguage);
     return {
-      Choices: renderList(this.choices, renderChoice),
+      Choices: renderList(this.choices, (x) => renderChoice(x, queryLanguage)),
       Default: this.defaultChoice?.stateId,
     };
   }
@@ -528,10 +529,11 @@ export abstract class State extends Construct implements IChainable {
   /**
    * Render error recovery options in ASL JSON format
    */
-  protected renderRetryCatch(): any {
+  protected renderRetryCatch(topLevelQueryLanguage?: QueryLanguage): any {
+    const queryLanguage = _getActualQueryLanguage(topLevelQueryLanguage, this.queryLanguage);
     return {
       Retry: renderList(this.retries, renderRetry, (a, b) => compareErrors(a.errors, b.errors)),
-      Catch: renderList(this.catches, renderCatch, (a, b) => compareErrors(a.props.errors, b.props.errors)),
+      Catch: renderList(this.catches, (x) => renderCatch(x, queryLanguage), (a, b) => compareErrors(a.props.errors, b.props.errors)),
     };
   }
 
@@ -669,21 +671,43 @@ interface ChoiceTransition extends ChoiceTransitionOptions {
 /**
  * Options for Choice Transition
  */
-export interface ChoiceTransitionOptions {
+export interface ChoiceTransitionOptions extends AssignableStateOptions {
   /**
    * An optional description for the choice transition
    *
    * @default No comment
    */
   readonly comment?: string;
+
+  /**
+   * This option for JSONata only. When you use JSONPath, then the state ignores this property.
+   * Used to specify and transform output from the state.
+   * When specified, the value overrides the state output default.
+   * The output field accepts any JSON value (object, array, string, number, boolean, null).
+   * Any string value, including those inside objects or arrays,
+   * will be evaluated as JSONata if surrounded by {% %} characters.
+   * Output also accepts a JSONata expression directly.
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/concepts-input-output-filtering.html
+   *
+   * @default - $states.result or $states.errorOutput
+   */
+  readonly outputs?: any;
 }
 
 /**
  * Render a choice transition
  */
-function renderChoice(c: ChoiceTransition) {
+function renderChoice(c: ChoiceTransition, queryLanguage: QueryLanguage) {
+  const optionsByLanguage = queryLanguage === QueryLanguage.JSONATA ? {
+    Output: c.outputs,
+    Assign: c.assign,
+  } : {
+    Assign: FieldUtils.renderObject(c.assign),
+  };
   return {
     ...c.condition.renderCondition(),
+    ...optionsByLanguage,
     Next: c.next.stateId,
     Comment: c.comment,
   };
@@ -721,11 +745,17 @@ function renderRetry(retry: RetryProps) {
 /**
  * Render a Catch object to ASL
  */
-function renderCatch(c: CatchTransition) {
+function renderCatch(c: CatchTransition, queryLanguage: QueryLanguage) {
+  const optionsByLanguage = queryLanguage === QueryLanguage.JSONATA ? {
+    Output: c.props.outputs,
+    Assign: c.props.assign,
+  } : {
+    Assign: FieldUtils.renderObject(c.props.assign),
+  };
   return {
+    ...optionsByLanguage,
     ErrorEquals: c.props.errors,
     ResultPath: renderJsonPath(c.props.resultPath),
-    Output: c.props.output,
     Next: c.next.stateId,
   };
 }

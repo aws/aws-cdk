@@ -26,6 +26,39 @@ beforeEach(() => {
 });
 
 describe('Invoke EMR Containers Start Job Run with ', () => {
+  test('using JSONata', () => {
+    // WHEN
+    const task = EmrContainersStartJobRun.jsonata(stack, 'EMR Containers Start Job Run', {
+      ...defaultProps,
+      integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toMatchObject({
+      Type: 'Task',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::emr-containers:startJobRun',
+          ],
+        ],
+      },
+      Arguments: {
+        ReleaseLabel: 'emr-6.2.0-latest',
+        JobDriver: {
+          SparkSubmitJobDriver: {
+            EntryPoint: 'local:///usr/lib/spark/examples/src/main/python/pi.py',
+            SparkSubmitParameters: '--conf spark.executor.instances=2',
+          },
+        },
+      },
+    });
+  });
   test('Request/Response integration pattern', () => {
     // WHEN
     const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
