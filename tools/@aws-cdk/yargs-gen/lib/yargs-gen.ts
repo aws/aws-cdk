@@ -1,25 +1,9 @@
-import { $E, Expression, ExternalModule, FreeFunction, IScope, Module, SelectiveModuleImport, Statement, ThingSymbol, Type, TypeScriptRenderer, code, expr } from '@cdklabs/typewriter';
+import { Expression, FreeFunction, Module, SelectiveModuleImport, Statement, Type, TypeScriptRenderer, code } from '@cdklabs/typewriter';
 import { EsLintRules } from '@cdklabs/typewriter/lib/eslint-rules';
 import * as prettier from 'prettier';
-import { CliConfig, CliOption, YargsOption } from './yargs-types';
+import { CliConfig, YargsOption } from './yargs-types';
 
-// to import lodash.clonedeep properly, we would need to set esModuleInterop: true
-// however that setting does not work in the CLI, so we fudge it.
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const cloneDeep = require('lodash.clonedeep');
-
-export class CliHelpers extends ExternalModule {
-  public readonly browserForPlatform = makeCallableExpr(this, 'browserForPlatform');
-  public readonly cliVersion = makeCallableExpr(this, 'cliVersion');
-  public readonly isCI = makeCallableExpr(this, 'isCI');
-  public readonly yargsNegativeAlias = makeCallableExpr(this, 'yargsNegativeAlias');
-}
-
-function makeCallableExpr(scope: IScope, name: string) {
-  return $E(expr.sym(new ThingSymbol(name, scope)));
-}
-
-export async function renderYargs(config: CliConfig, helpers: CliHelpers): Promise<string> {
+export async function renderYargs(config: CliConfig): Promise<string> {
   const scope = new Module('aws-cdk');
 
   scope.documentation.push( '-------------------------------------------------------------------------------------------');
@@ -28,7 +12,6 @@ export async function renderYargs(config: CliConfig, helpers: CliHelpers): Promi
   scope.documentation.push('-------------------------------------------------------------------------------------------');
 
   scope.addImport(new SelectiveModuleImport(scope, 'yargs', ['Argv']));
-  helpers.import(scope, 'helpers');
 
   // 'https://github.com/yargs/yargs/issues/1929',
   // 'https://github.com/evanw/esbuild/issues/1492',
@@ -41,9 +24,14 @@ export async function renderYargs(config: CliConfig, helpers: CliHelpers): Promi
     returnType: Type.ANY,
     parameters: [
       { name: 'args', type: Type.arrayOf(Type.STRING) },
+      { name: 'browserDefault', type: Type.STRING },
+      { name: 'availableInitLanguages', type: Type.arrayOf(Type.STRING) },
+      { name: 'migrateSupportedLanguages', type: Type.arrayOf(Type.STRING) },
+      { name: 'version', type: Type.STRING },
+      { name: 'yargsNegativeAlias', type: Type.ANY },
     ],
   });
-  parseCommandLineArguments.addBody(makeYargs(config, helpers));
+  parseCommandLineArguments.addBody(makeYargs(config));
 
   const ts = new TypeScriptRenderer({
     disabledEsLintRules: [
@@ -74,14 +62,14 @@ export async function renderYargs(config: CliConfig, helpers: CliHelpers): Promi
 // By using the config above, every --arg will only consume one argument, so you can do the following:
 //
 //   ./prog --arg one --arg two position  =>  will parse to  { arg: ['one', 'two'], _: ['positional'] }.
-function makeYargs(config: CliConfig, helpers: CliHelpers): Statement {
+function makeYargs(config: CliConfig): Statement {
   let yargsExpr: Expression = code.expr.ident('yargs');
   yargsExpr = yargsExpr
     .callMethod('env', lit('CDK'))
     .callMethod('usage', lit('Usage: cdk -a <cdk-app> COMMAND'));
 
   // we must compute global options first, as they are not part of an argument to a command call
-  yargsExpr = makeOptions(yargsExpr, config.globalOptions, helpers);
+  yargsExpr = makeOptions(yargsExpr, config.globalOptions);
 
   for (const command of Object.keys(config.commands)) {
     const commandFacts = config.commands[command];
@@ -94,7 +82,7 @@ function makeYargs(config: CliConfig, helpers: CliHelpers): Statement {
 
     // must compute options before we compute the full command, because in yargs, the options are an argument to the command call.
     let optionsExpr: Expression = code.expr.directCode('(yargs: Argv) => yargs');
-    optionsExpr = makeOptions(optionsExpr, commandFacts.options ?? {}, helpers);
+    optionsExpr = makeOptions(optionsExpr, commandFacts.options ?? {});
 
     const commandCallArgs: Array<Expression> = [];
     if (aliases) {
@@ -111,52 +99,48 @@ function makeYargs(config: CliConfig, helpers: CliHelpers): Statement {
     yargsExpr = yargsExpr.callMethod('command', ...commandCallArgs);
   }
 
-  return code.stmt.ret(makeEpilogue(yargsExpr, helpers));
+  return code.stmt.ret(makeEpilogue(yargsExpr));
 }
 
-function makeOptions(prefix: Expression, options: { [optionName: string]: CliOption }, helpers: CliHelpers) {
+function makeOptions(prefix: Expression, options: { [optionName: string]: YargsOption }) {
   let optionsExpr = prefix;
   for (const option of Object.keys(options)) {
-    const theOption: CliOption = options[option];
-    const optionProps: YargsOption = cloneDeep(theOption);
+    // each option can define at most one middleware call; if we need more, handle a list of these instead
+    let middlewareCallback: Expression | undefined = undefined;
+    const optionProps = options[option];
     const optionArgs: { [key: string]: Expression } = {};
-
-    // Array defaults
-    if (optionProps.type === 'array') {
-      optionProps.nargs = 1;
-      optionProps.requiresArg = true;
-    }
-
-    for (const optionProp of Object.keys(optionProps).filter(opt => !['negativeAlias'].includes(opt))) {
-      const optionValue = (optionProps as any)[optionProp];
-      if (optionValue instanceof Expression) {
-        optionArgs[optionProp] = optionValue;
+    for (const optionProp of Object.keys(optionProps)) {
+      if (optionProp === 'negativeAlias') {
+        // middleware is a separate function call, so we can't store it with the regular option arguments, as those will all be treated as parameters:
+        // .option('R', { type: 'boolean', hidden: true }).middleware(yargsNegativeAlias('R', 'rollback'), true)
+        middlewareCallback = code.expr.builtInFn('yargsNegativeAlias', lit(option), lit(optionProps.negativeAlias));
       } else {
-        optionArgs[optionProp] = lit(optionValue);
+        const optionValue = (optionProps as any)[optionProp];
+        if (optionValue && optionValue.dynamicType === 'parameter') {
+          optionArgs[optionProp] = code.expr.ident(optionValue.dynamicValue);
+        } else if (optionValue && optionValue.dynamicType === 'function') {
+          const inlineFunction: string = optionValue.dynamicValue.toString();
+          const NUMBER_OF_SPACES_BETWEEN_ARROW_AND_CODE = 3;
+          // this only works with arrow functions, like () =>
+          optionArgs[optionProp] = code.expr.directCode(inlineFunction.substring(inlineFunction.indexOf('=>') + NUMBER_OF_SPACES_BETWEEN_ARROW_AND_CODE));
+        } else {
+          optionArgs[optionProp] = lit(optionValue);
+        }
       }
     }
 
-    // Register the option with yargs
     optionsExpr = optionsExpr.callMethod('option', lit(option), code.expr.object(optionArgs));
-
-    // Special case for negativeAlias
-    // We need an additional option and a middleware:
-    // .option('R', { type: 'boolean', hidden: true }).middleware(yargsNegativeAlias('R', 'rollback'), true)
-    if (theOption.negativeAlias) {
-      const middleware = helpers.yargsNegativeAlias.call(lit(theOption.negativeAlias), lit(option));
-      optionsExpr = optionsExpr.callMethod('option', lit(theOption.negativeAlias), code.expr.lit({
-        type: 'boolean',
-        hidden: true,
-      }));
-      optionsExpr = optionsExpr.callMethod('middleware', middleware, lit(true));
+    if (middlewareCallback) {
+      optionsExpr = optionsExpr.callMethod('middleware', middlewareCallback, lit(true));
+      middlewareCallback = undefined;
     }
   }
 
   return optionsExpr;
 }
 
-function makeEpilogue(prefix: Expression, helpers: CliHelpers) {
-  let completeDefinition = prefix.callMethod('version', helpers.cliVersion());
+function makeEpilogue(prefix: Expression) {
+  let completeDefinition = prefix.callMethod('version', code.expr.ident('version'));
   completeDefinition = completeDefinition.callMethod('demandCommand', lit(1), lit('')); // just print help
   completeDefinition = completeDefinition.callMethod('recommendCommands');
   completeDefinition = completeDefinition.callMethod('help');

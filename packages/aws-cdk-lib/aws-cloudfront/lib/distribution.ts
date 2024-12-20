@@ -45,13 +45,6 @@ export interface IDistribution extends IResource {
   readonly distributionId: string;
 
   /**
-   * The distribution ARN for this distribution.
-   *
-   * @attribute
-   */
-  readonly distributionArn: string;
-
-  /**
    * Adds an IAM policy statement associated with this distribution to an IAM
    * principal's policy.
    *
@@ -298,9 +291,6 @@ export class Distribution extends Resource implements IDistribution {
         this.distributionId = attrs.distributionId;
       }
 
-      public get distributionArn(): string {
-        return formatDistributionArn(this);
-      }
       public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
         return iam.Grant.addToPrincipal({ grantee, actions, resourceArns: [formatDistributionArn(this)] });
       }
@@ -397,10 +387,6 @@ export class Distribution extends Resource implements IDistribution {
         },
       });
     }
-  }
-
-  public get distributionArn(): string {
-    return formatDistributionArn(this);
   }
 
   /**

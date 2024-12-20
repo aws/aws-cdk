@@ -1,3 +1,3 @@
 {
-  "app": "ts-node app.ts"
+  "app": "node app.js"
 }
