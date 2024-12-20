@@ -508,6 +508,7 @@
     "./pipelines/.warnings.jsii.js": "./pipelines/.warnings.jsii.js",
     "./pipelines/lib/helpers-internal": "./pipelines/lib/helpers-internal/index.js",
     "./pipelines/package.json": "./pipelines/package.json",
+    "./recommended-feature-flags.json": "./recommended-feature-flags.json",
     "./region-info": "./region-info/index.js",
     "./triggers": "./triggers/index.js"
   },

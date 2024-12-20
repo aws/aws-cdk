@@ -1,6 +1,5 @@
 import * as childProcess from 'child_process';
 import * as path from 'path';
-import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
 import { invokeBuiltinHooks } from './init-hooks';
@@ -126,6 +125,7 @@ export class InitTemplate {
     const projectInfo: ProjectInfo = {
       name: decamelize(path.basename(path.resolve(targetDirectory))),
       stackName,
+      versions: await loadInitVersions(),
     };
 
     const sourceDirectory = path.join(this.basePath, language);
@@ -173,11 +173,9 @@ export class InitTemplate {
   }
 
   private expand(template: string, language: string, project: ProjectInfo) {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const manifest = require(path.join(rootDir(), 'package.json'));
-    const MATCH_VER_BUILD = /\+[a-f0-9]+$/; // Matches "+BUILD" in "x.y.z-beta+BUILD"
-    const cdkVersion = manifest.version.replace(MATCH_VER_BUILD, '');
-    let constructsVersion = manifest.devDependencies.constructs.replace(MATCH_VER_BUILD, '');
+    const cdkVersion = project.versions['aws-cdk-lib'];
+    let constructsVersion = project.versions.constructs;
+
     switch (language) {
       case 'java':
       case 'csharp':
@@ -222,7 +220,7 @@ export class InitTemplate {
     const config = await fs.readJson(cdkJson);
     config.context = {
       ...config.context,
-      ...cxapi.NEW_PROJECT_CONTEXT,
+      ...await currentlyRecommendedAwsCdkLibFlags(),
     };
 
     await fs.writeJson(cdkJson, config, { spaces: 2 });
@@ -248,6 +246,8 @@ interface ProjectInfo {
   /** The value used for %name% */
   readonly name: string;
   readonly stackName?: string;
+
+  readonly versions: Versions;
 }
 
 export async function availableInitTemplates(): Promise<InitTemplate[]> {
@@ -470,4 +470,41 @@ async function execute(cmd: string, args: string[], { cwd }: { cwd: string }) {
       }
     });
   });
+}
+
+interface Versions {
+  ['aws-cdk-lib']: string;
+  constructs: string;
+}
+
+/**
+ * Return the 'aws-cdk-lib' version we will init
+ *
+ * This has been built into the CLI at build time.
+ */
+async function loadInitVersions(): Promise<Versions> {
+  const recommendedFlagsFile = path.join(__dirname, './init-templates/.init-version.json');
+  const contents = JSON.parse(await fs.readFile(recommendedFlagsFile, { encoding: 'utf-8' }));
+
+  const ret = {
+    'aws-cdk-lib': contents['aws-cdk-lib'],
+    'constructs': contents.constructs,
+  };
+  for (const [key, value] of Object.entries(ret)) {
+    if (!value) {
+      throw new Error(`Missing init version from ${recommendedFlagsFile}: ${key}`);
+    }
+  }
+
+  return ret;
+}
+
+/**
+ * Return the currently recommended flags for `aws-cdk-lib`.
+ *
+ * These have been built into the CLI at build time.
+ */
+async function currentlyRecommendedAwsCdkLibFlags() {
+  const recommendedFlagsFile = path.join(__dirname, './init-templates/.recommended-feature-flags.json');
+  return JSON.parse(await fs.readFile(recommendedFlagsFile, { encoding: 'utf-8' }));
 }
