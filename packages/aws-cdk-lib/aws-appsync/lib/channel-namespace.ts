@@ -5,7 +5,6 @@ import { AppSyncAuthorizationType } from './auth-config';
 import { Code } from './code';
 import { IEventApi } from './eventapi';
 import { IGrantable } from '../../aws-iam';
-import { IGrantable } from '../../aws-iam';
 import { IResource, Resource, Token } from '../../core';
 
 /**
@@ -120,8 +119,6 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
   public readonly channelNamespaceArn: string;
 
   private channelNamespace: CfnChannelNamespace;
-
-  private api: IEventApi;
 
   private api: IEventApi;
 

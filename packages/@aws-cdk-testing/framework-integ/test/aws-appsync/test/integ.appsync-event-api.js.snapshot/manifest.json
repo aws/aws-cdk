@@ -82,6 +82,12 @@
             "data": "EventApiDefaultApiKeyB9AB1E44"
           }
         ],
+        "/appsync-event-api-stack/EventApi/DefaultApiKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiDefaultApiKeyB9AB1E44"
+          }
+        ],
         "/appsync-event-api-stack/EventApi/DomainName": [
           {
             "type": "aws:cdk:logicalId",
@@ -98,12 +104,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "EventApiLogRetention68604E65"
-          }
-        ],
-        "/appsync-event-api-stack/EventApi/AnotherChannelNamespace/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EventApiAnotherChannelNamespace5BC7F3A5"
           }
         ],
         "/appsync-event-api-stack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource": [
