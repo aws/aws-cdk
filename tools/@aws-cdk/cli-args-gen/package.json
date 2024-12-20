@@ -1,12 +1,12 @@
 {
-  "name": "@aws-cdk/yargs-gen",
+  "name": "@aws-cdk/cli-args-gen",
   "private": true,
   "version": "0.0.0",
-  "description": "Generate yargs",
+  "description": "Generate CLI arguments",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
-    "directory": "tools/@aws-cdk/yargs-gen"
+    "directory": "tools/@aws-cdk/cli-args-gen"
   },
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
