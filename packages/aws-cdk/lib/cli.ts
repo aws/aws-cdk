@@ -17,9 +17,9 @@ import { Deployments } from '../lib/api/deployments';
 import { PluginHost } from '../lib/api/plugin';
 import { ToolkitInfo } from '../lib/api/toolkit-info';
 import { CdkToolkit, AssetBuildTime } from '../lib/cdk-toolkit';
-import { realHandler as context } from '../lib/commands/context';
-import { realHandler as docs } from '../lib/commands/docs';
-import { realHandler as doctor } from '../lib/commands/doctor';
+import { contextHandler as context } from '../lib/commands/context';
+import { docs } from '../lib/commands/docs';
+import { doctor } from '../lib/commands/doctor';
 import { getMigrateScanType } from '../lib/commands/migrate';
 import { cliInit, printAvailableTemplates } from '../lib/init';
 import { data, debug, error, print, setCI, setLogLevel, LogLevel } from '../lib/logging';
@@ -37,7 +37,6 @@ if (!process.stdout.isTTY) {
 }
 
 export async function exec(args: string[], synthesizer?: Synthesizer): Promise<number | void> {
-
   const argv = await parseCommandLineArguments(args);
 
   // if one -v, log at a DEBUG level
@@ -154,9 +153,6 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
     throw new Error(`First argument should be a string. Got: ${cmd} (${typeof(cmd)})`);
   }
 
-  // Bundle up global objects so the commands have access to them
-  const commandOptions = { args: argv, configuration, aws: sdkProvider };
-
   try {
     return await main(cmd, argv);
   } finally {
@@ -174,7 +170,6 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
       await notices.refresh();
       notices.display();
     }
-
   }
 
   async function main(command: string, args: any): Promise<number | void> {
@@ -207,13 +202,19 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
     switch (command) {
       case 'context':
-        return context(commandOptions);
+        return context({
+          context: configuration.context,
+          clear: argv.clear,
+          json: argv.json,
+          force: argv.force,
+          reset: argv.reset,
+        });
 
       case 'docs':
-        return docs(commandOptions);
+        return docs({ browser: configuration.settings.get(['browser']) });
 
       case 'doctor':
-        return doctor(commandOptions);
+        return doctor();
 
       case 'ls':
       case 'list':
