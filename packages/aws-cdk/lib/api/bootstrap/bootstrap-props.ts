@@ -1,3 +1,4 @@
+import { BootstrapSource } from './bootstrap-environment';
 import { Tag } from '../../cdk-toolkit';
 import { StringWithoutPlaceholders } from '../util/placeholders';
 
@@ -21,6 +22,13 @@ export interface BootstrapEnvironmentOptions {
   readonly roleArn?: StringWithoutPlaceholders;
   readonly parameters?: BootstrappingParameters;
   readonly force?: boolean;
+
+  /**
+   * The source of the bootstrap stack
+   *
+   * @default - modern v2-style bootstrapping
+   */
+  readonly source?: BootstrapSource;
 
   /**
    * Whether to execute the changeset or only create it and leave it in review.

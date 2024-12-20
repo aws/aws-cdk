@@ -918,14 +918,13 @@ export class CdkToolkit {
    *
    * @param userEnvironmentSpecs environment names that need to have toolkit support
    *             provisioned, as a glob filter. If none is provided, all stacks are implicitly selected.
-   * @param bootstrapper Legacy or modern.
    * @param options The name, role ARN, bootstrapping parameters, etc. to be used for the CDK Toolkit stack.
    */
   public async bootstrap(
     userEnvironmentSpecs: string[],
-    bootstrapper: Bootstrapper,
     options: BootstrapEnvironmentOptions,
   ): Promise<void> {
+    const bootstrapper = new Bootstrapper(options.source);
     // If there is an '--app' argument and an environment looks like a glob, we
     // select the environments from the app. Otherwise, use what the user said.
 
