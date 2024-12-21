@@ -60,7 +60,10 @@ describe('removal-policys', () => {
 
     // WHEN
     RemovalPolicies.of(parent).retain({
-      applyToResourceTypes: ['AWS::S3::Bucket', 'AWS::DynamoDB::Table'],
+      applyToResourceTypes: [
+        bucket.cfnResourceType, // 'AWS::S3::Bucket'
+        TestTableResource.CFN_RESOURCE_TYPE_NAME, // 'AWS::DynamoDB::Table'
+      ],
     });
 
     // THEN
@@ -80,7 +83,10 @@ describe('removal-policys', () => {
 
     // WHEN
     RemovalPolicies.of(parent).retain({
-      applyToResourceTypes: [TestBucketResource, TestTableResource],
+      applyToResourceTypes: [
+        TestBucketResource.CFN_RESOURCE_TYPE_NAME, // 'AWS::S3::Bucket'
+        table.cfnResourceType, // 'AWS::DynamoDB::Table'
+      ],
     });
 
     // THEN
@@ -100,7 +106,9 @@ describe('removal-policys', () => {
 
     // WHEN
     RemovalPolicies.of(parent).snapshot({
-      excludeResourceTypes: ['AWS::Test::Resource'],
+      excludeResourceTypes: [
+        TestResource.CFN_RESOURCE_TYPE_NAME, // 'AWS::Test::Resource'
+      ],
     });
 
     // THEN
@@ -120,7 +128,9 @@ describe('removal-policys', () => {
 
     // WHEN
     RemovalPolicies.of(parent).snapshot({
-      excludeResourceTypes: [TestResource],
+      excludeResourceTypes: [
+        resource.cfnResourceType,
+      ],
     });
 
     // THEN

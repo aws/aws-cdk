@@ -1663,9 +1663,14 @@ import { RemovalPolicys } from 'aws-cdk-lib';
 RemovalPolicys.of(scope).destroy();
 
 // Apply RETAIN policy only to specific resource types
-RemovalPolicys.of(scope).retain({
-  applyToResourceTypes: ['AWS::S3::Bucket', 'AWS::DynamoDB::Table'],
+RemovalPolicies.of(parent).retain({
+  applyToResourceTypes: [
+    'AWS::DynamoDB::Table',
+    bucket.cfnResourceType, // 'AWS::S3::Bucket'
+  ],
 });
+
+
 
 // Apply SNAPSHOT policy excluding specific resource types
 RemovalPolicys.of(scope).snapshot({

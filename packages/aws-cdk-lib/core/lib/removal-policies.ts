@@ -9,19 +9,17 @@ import { RemovalPolicy } from './removal-policy';
 export interface RemovalPolicyProps {
   /**
    * Apply the removal policy only to specific resource types.
-   * Can be a CloudFormation resource type string (e.g., 'AWS::S3::Bucket')
-   * or a class that extends CfnResource (e.g., TestBucketResource).
+   * Can be a CloudFormation resource type string (e.g., 'AWS::S3::Bucket').
    * @default - apply to all resources
    */
-  readonly applyToResourceTypes?: (string | typeof CfnResource)[];
+  readonly applyToResourceTypes?: string[];
 
   /**
    * Exclude specific resource types from the removal policy.
-   * Can be a CloudFormation resource type string (e.g., 'AWS::S3::Bucket')
-   * or a class that extends CfnResource.
+   * Can be a CloudFormation resource type string (e.g., 'AWS::S3::Bucket').
    * @default - no exclusions
    */
-  readonly excludeResourceTypes?: (string | typeof CfnResource)[];
+  readonly excludeResourceTypes?: string[];
 
   /**
    * If true, overwrite any user-specified removal policy that has been previously set.
@@ -42,30 +40,14 @@ class RemovalPolicyAspect implements IAspect {
   ) {}
 
   /**
-   * Converts pattern (string or class) to resource type string
-   */
-  private convertPatternToResourceType(pattern: string | typeof CfnResource): string {
-    if (typeof pattern === 'string') {
-      return pattern;
-    } else {
-      const cfnType = (pattern as any).CFN_RESOURCE_TYPE_NAME;
-      if (typeof cfnType !== 'string') {
-        throw new Error(`Class ${pattern.name} must have a static CFN_RESOURCE_TYPE_NAME property.`);
-      }
-      return cfnType;
-    }
-  }
-
-  /**
    * Checks if the given resource type matches any of the patterns
    */
-  private resourceTypeMatchesPatterns(resourceType: string, patterns?: (string | typeof CfnResource)[]): boolean {
+  private resourceTypeMatchesPatterns(resourceType: string, patterns?: string[]): boolean {
     if (!patterns || patterns.length === 0) {
       return false;
     }
 
-    const resourceTypeStrings = patterns.map(pattern => this.convertPatternToResourceType(pattern));
-    return resourceTypeStrings.includes(resourceType);
+    return patterns.includes(resourceType);
   }
 
   public visit(node: IConstruct): void {
@@ -76,8 +58,9 @@ class RemovalPolicyAspect implements IAspect {
     const cfnResource = node as CfnResource;
     const resourceType = cfnResource.cfnResourceType;
 
-    const userAlreadySetPolicy = cfnResource.cfnOptions.deletionPolicy !== undefined ||
-                                 cfnResource.cfnOptions.updateReplacePolicy !== undefined;
+    const userAlreadySetPolicy =
+      cfnResource.cfnOptions.deletionPolicy !== undefined ||
+      cfnResource.cfnOptions.updateReplacePolicy !== undefined;
 
     if (!this.props.overwrite && userAlreadySetPolicy) {
       return;
