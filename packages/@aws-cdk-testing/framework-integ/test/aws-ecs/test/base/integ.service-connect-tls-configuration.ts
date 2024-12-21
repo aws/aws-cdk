@@ -5,26 +5,29 @@ import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as acm from 'aws-cdk-lib/aws-acmpca';
+import * as cloudmap from 'aws-cdk-lib/aws-servicediscovery';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-ecs-integ');
+const stack = new cdk.Stack(app, 'aws-ecs-service-connect-tls-configuration-integ');
 const vpc = new ec2.Vpc(stack, 'Vpc');
 const cluster = new ecs.Cluster(stack, 'EcsCluster', {
   vpc,
-  defaultCloudMapNamespace: {
-    name: 'api.com',
-    useForServiceConnect: true,
-  },
 });
 
 const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
 
+const namespace = new cloudmap.PrivateDnsNamespace(stack, 'ns', {
+  name: 'foobar.com',
+  vpc,
+});
+
 const ca = acm.CertificateAuthority.fromCertificateAuthorityArn(stack, 'CA',
-  'arn:aws:acm-pca:us-east-1:1234567890:certificate-authority/xxxxxx',
+  'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/123456789012',
 );
 
 const kmsKey = new kms.Key(stack, 'KmsKey', {
   enableKeyRotation: true,
+  enabled: true,
 });
 kmsKey.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
 
@@ -44,9 +47,25 @@ const role = new iam.Role(stack, 'Role', {
     iam.ManagedPolicy.fromAwsManagedPolicyName('AWSPrivateCAFullAccess'),
   ],
 });
-role.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
 
-kmsKey.grant(role, 'kms:GenerateDataKeyPair');
+role.addToPolicy(new iam.PolicyStatement({
+  actions: [
+    'secretsmanager:CreateSecret',
+    'secretsmanager:DeleteSecret',
+    'secretsmanager:GetSecretValue',
+    'secretsmanager:PutSecretValue',
+    'secretsmanager:TagResource',
+    'secretsmanager:RotateSecret',
+  ],
+  resources: ['*'],
+}));
+
+kmsKey.grant(role,
+  'kms:Decrypt',
+  'kms:Encrypt',
+  'kms:GenerateDataKey',
+  'kms:GenerateDataKeyPair',
+);
 
 new ecs.FargateService(stack, 'FargateService', {
   cluster,
@@ -64,6 +83,7 @@ new ecs.FargateService(stack, 'FargateService', {
         },
       },
     ],
+    namespace: namespace.namespaceArn,
   },
 });
 
