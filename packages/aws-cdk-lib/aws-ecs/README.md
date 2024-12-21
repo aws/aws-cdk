@@ -342,8 +342,8 @@ cluster.addCapacity('ASGEncryptedSNS', {
 
 ### Container Insights
 
-On a cluster, you can enable the CloudWatch Container Insights feature by setting the `containerInsightsV2` property. [Cpntainer Insights](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cloudwatch-container-insights.html) 
-can be `ecs.ContainerInsights.DISABLED`, `ecs.ContainerInsights.ENABLED`, or `ecs.ContainerInsights.ENHANCED`. Omitting the property will not default any setting, and the cluster will inherit Container Insights configuration from the account level. 
+On a cluster, CloudWatch Container Insights can be enabled by setting the `containerInsightsV2` property. [Container Insights](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cloudwatch-container-insights.html) 
+can be disabled, enabled, or enhanced. Omitting the property will not default any setting, and the cluster will inherit its Container Insights configuration from the account level Container Insights settings. 
 
 ```ts
 const cluster = new ecs.Cluster(this, 'Cluster', {
