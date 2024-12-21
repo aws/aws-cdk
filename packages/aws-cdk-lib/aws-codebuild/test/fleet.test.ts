@@ -1,5 +1,6 @@
 import { Match, Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
+import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 import * as codebuild from '../lib';
 
@@ -130,6 +131,53 @@ test('throws if trying to retrieve properties from an imported Fleet', () => {
   expect(() => {
     return fleet.environmentType;
   }).toThrow(/Cannot retrieve environmentType property from an imported Fleet/);
+});
+
+describe('fleet service role', () => {
+  test('default service role is created if not specified', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Fleet(stack, 'Fleet', {
+      computeType: codebuild.FleetComputeType.SMALL,
+      environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+      baseCapacity: 1,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Fleet', {
+      BaseCapacity: 1,
+      ComputeType: 'BUILD_GENERAL1_SMALL',
+      EnvironmentType: 'LINUX_CONTAINER',
+      FleetServiceRole: { 'Fn::GetAtt': ['FleetServiceRole02EA2190', 'Arn'] },
+    });
+  });
+
+  test('can specify a service role prop', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const serviceRole = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
+    });
+
+    // WHEN
+    new codebuild.Fleet(stack, 'Fleet', {
+      computeType: codebuild.FleetComputeType.SMALL,
+      environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+      baseCapacity: 1,
+      serviceRole,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Fleet', {
+      BaseCapacity: 1,
+      ComputeType: 'BUILD_GENERAL1_SMALL',
+      EnvironmentType: 'LINUX_CONTAINER',
+      FleetServiceRole: { 'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'] },
+    });
+  });
+
 });
 
 describe('fleet proxy configuration', () => {

@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import * as ec2 from '../../aws-ec2';
-import { Arn, ArnFormat, IResource, Resource, Token } from '../../core';
+import * as iam from '../../aws-iam';
+import { Arn, ArnFormat, Aws, IResource, Lazy, PhysicalName, Resource, Token } from '../../core';
 import { CfnFleet } from './codebuild.generated';
 import { ComputeType } from './compute-type';
 import { EnvironmentType } from './environment-type';
@@ -124,6 +125,11 @@ export interface FleetProps {
    * TODO
    */
   readonly vpcConfiguration?: FleetVpcConfiguration;
+
+  /**
+   * TODO
+   */
+  readonly serviceRole?: iam.IRole;
 }
 
 /**
@@ -154,16 +160,6 @@ export interface IFleet extends IResource {
    * made available to projects using this fleet
    */
   readonly environmentType: EnvironmentType;
-
-  /**
-   * TODO
-   */
-  readonly proxyConfiguration?: FleetProxyConfiguration;
-
-  /**
-   * TODO
-   */
-  readonly vpcConfiguration?: FleetVpcConfiguration;
 }
 
 /**
@@ -176,7 +172,7 @@ export interface IFleet extends IResource {
  *
  * @see https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.html
  */
-export class Fleet extends Resource implements IFleet {
+export class Fleet extends Resource implements IFleet, iam.IGrantable {
   /**
    * Creates a Fleet construct that represents an external fleet.
    *
@@ -223,6 +219,16 @@ export class Fleet extends Resource implements IFleet {
    */
   public readonly environmentType: EnvironmentType;
 
+  /**
+   * The principal to grant permissions to.
+   */
+  public readonly grantPrincipal: iam.IPrincipal;
+
+  /**
+   * The service role associated with the fleet.
+   */
+  private readonly serviceRole: iam.IRole;
+
   constructor(scope: Construct, id: string, props: FleetProps) {
     if (props.fleetName && !Token.isUnresolved(props.fleetName)) {
       if (props.fleetName.length < 2) {
@@ -249,6 +255,12 @@ export class Fleet extends Resource implements IFleet {
 
     super(scope, id, { physicalName: props.fleetName });
 
+    this.serviceRole = props.serviceRole ?? new iam.Role(this, 'ServiceRole', {
+      assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
+      roleName: PhysicalName.GENERATE_IF_NEEDED,
+    });
+    this.grantPrincipal = this.serviceRole;
+
     let fleetVpcConfig: CfnFleet.VpcConfigProperty | undefined;
     if (props.vpcConfiguration) {
       const { vpc, subnets, securityGroups } = props.vpcConfiguration;
@@ -262,6 +274,8 @@ export class Fleet extends Resource implements IFleet {
         subnets: subnets.map(({ subnetId }) => subnetId),
         securityGroupIds: securityGroups.map(({ securityGroupId }) => securityGroupId),
       };
+
+      this.grantVpcPermissionsToServiceRole(props.vpcConfiguration);
     }
 
     const resource = new CfnFleet(this, 'Resource', {
@@ -271,6 +285,7 @@ export class Fleet extends Resource implements IFleet {
       environmentType: props.environmentType,
       fleetProxyConfiguration: props.proxyConfiguration?.configuration,
       fleetVpcConfig,
+      fleetServiceRole: this.serviceRole.roleArn,
     });
 
     this.fleetArn = this.getResourceArnAttribute(resource.attrArn, {
@@ -282,6 +297,54 @@ export class Fleet extends Resource implements IFleet {
     this.fleetName = this.getResourceNameAttribute(resource.ref);
     this.computeType = props.computeType;
     this.environmentType = props.environmentType;
+  }
+
+  /**
+   *
+   * Generated following the recommendations from the CodeBuild documentation
+   *
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/auth-and-access-control-iam-identity-based-access-control.html#customer-managed-policies-example-permission-policy-fleet-service-role
+   * @param vpcConfiguration Fleet VPC configuration from props
+   */
+  private grantVpcPermissionsToServiceRole({ vpc, subnets, securityGroups }: FleetVpcConfiguration) {
+    const subnetIds = subnets.map(({ subnetId }) => subnetId);
+    const securityGroupIds = securityGroups.map(({ securityGroupId }) => securityGroupId);
+
+    this.serviceRole.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: ['ec2:CreateNetworkInterface'],
+      resources: [
+        ...subnetIds.map(subnetId =>
+          Arn.format({ service: 'ec2', resource: 'subnet', resourceName: subnetId }, this.stack),
+        ),
+        ...securityGroupIds.map(securityGroupId =>
+          Arn.format({ service: 'ec2', resource: 'security-group', resourceName: securityGroupId }, this.stack),
+        ),
+        Arn.format({ service: 'ec2', resource: 'network-interface', resourceName: '*' }, this.stack),
+      ],
+    }));
+    this.serviceRole.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: [
+        'ec2:DescribeDhcpOptions',
+        'ec2:DescribeNetworkInterfaces',
+        'ec2:DescribeSecurityGroups',
+        'ec2:DescribeSubnets',
+        'ec2:DescribeVpcs',
+        'ec2:ModifyNetworkInterfaceAttribute',
+        'ec2:DeleteNetworkInterface',
+      ],
+      resources: ['*'],
+    }));
+    this.serviceRole.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: ['ec2:CreateNetworkInterfacePermission'],
+      resources: [Arn.format({ service: 'ec2', resource: 'network-interface', resourceName: '*' }, this.stack)],
+      conditions: {
+        StringEquals: {
+          'ec2:Subnet': subnetIds.map(subnetId =>
+            Arn.format({ service: 'ec2', resource: 'subnet', resourceName: subnetId }, this.stack),
+          ),
+        },
+      },
+    }));
   }
 }
 
