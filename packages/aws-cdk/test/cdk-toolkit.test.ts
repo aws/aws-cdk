@@ -18,8 +18,8 @@ const fakeChokidarWatcherOn = {
   },
 
   get fileEventCallback(): (
-    event: 'add' | 'addDir' | 'change' | 'unlink' | 'unlinkDir',
-    path: string,
+  event: 'add' | 'addDir' | 'change' | 'unlink' | 'unlinkDir',
+  path: string,
   ) => Promise<void> {
     expect(mockChokidarWatcherOn.mock.calls.length).toBeGreaterThanOrEqual(2);
     const secondCall = mockChokidarWatcherOn.mock.calls[1];
@@ -76,7 +76,7 @@ import {
   mockSSMClient,
   restoreSdkMocksToDefault,
 } from './util/mock-sdk';
-import { Bootstrapper } from '../lib/api/bootstrap';
+import { Bootstrapper, type BootstrapSource } from '../lib/api/bootstrap';
 import { DeployStackResult, SuccessfulDeployStackResult } from '../lib/api/deploy-stack';
 import {
   Deployments,
@@ -97,8 +97,9 @@ markTesting();
 
 process.env.CXAPI_DISABLE_SELECT_BY_ID = '1';
 
+const defaultBootstrapSource: BootstrapSource = { source: 'default' };
+const bootstrapEnvironmentMock = jest.spyOn(Bootstrapper.prototype, 'bootstrapEnvironment');
 let cloudExecutable: MockCloudExecutable;
-let bootstrapper: jest.Mocked<Bootstrapper>;
 let stderrMock: jest.SpyInstance;
 beforeEach(() => {
   jest.resetAllMocks();
@@ -108,11 +109,12 @@ beforeEach(() => {
   // on() in chokidar's Watcher returns 'this'
   mockChokidarWatcherOn.mockReturnValue(fakeChokidarWatcher);
 
-  bootstrapper = instanceMockFrom(Bootstrapper);
-  bootstrapper.bootstrapEnvironment.mockResolvedValue({
+  bootstrapEnvironmentMock.mockResolvedValue({
     noOp: false,
     outputs: {},
-  } as any);
+    type: 'did-deploy-stack',
+    stackArn: 'fake-arn',
+  });
 
   cloudExecutable = new MockCloudExecutable({
     stacks: [MockStack.MOCK_STACK_A, MockStack.MOCK_STACK_B],
@@ -539,17 +541,19 @@ describe('bootstrap', () => {
     configuration.context.set('@aws-cdk/core:bootstrapQualifier', 'abcde');
 
     // WHEN
-    await toolkit.bootstrap(['aws://56789/south-pole'], bootstrapper, {
+    await toolkit.bootstrap(['aws://56789/south-pole'], {
+      source: defaultBootstrapSource,
       parameters: {
         qualifier: configuration.context.get('@aws-cdk/core:bootstrapQualifier'),
       },
     });
 
     // THEN
-    expect(bootstrapper.bootstrapEnvironment).toHaveBeenCalledWith(expect.anything(), expect.anything(), {
+    expect(bootstrapEnvironmentMock).toHaveBeenCalledWith(expect.anything(), expect.anything(), {
       parameters: {
         qualifier: 'abcde',
       },
+      source: defaultBootstrapSource,
     });
   });
 });
@@ -868,10 +872,12 @@ describe('deploy', () => {
     const toolkit = defaultToolkitSetup();
 
     // WHEN
-    await toolkit.bootstrap(['aws://56789/south-pole'], bootstrapper, {});
+    await toolkit.bootstrap(['aws://56789/south-pole'], {
+      source: defaultBootstrapSource,
+    });
 
     // THEN
-    expect(bootstrapper.bootstrapEnvironment).toHaveBeenCalledWith(
+    expect(bootstrapEnvironmentMock).toHaveBeenCalledWith(
       {
         account: '56789',
         region: 'south-pole',
@@ -880,7 +886,7 @@ describe('deploy', () => {
       expect.anything(),
       expect.anything(),
     );
-    expect(bootstrapper.bootstrapEnvironment).toHaveBeenCalledTimes(1);
+    expect(bootstrapEnvironmentMock).toHaveBeenCalledTimes(1);
   });
 
   test('globby bootstrap uses whats in the stacks', async () => {
@@ -889,10 +895,12 @@ describe('deploy', () => {
     cloudExecutable.configuration.settings.set(['app'], 'something');
 
     // WHEN
-    await toolkit.bootstrap(['aws://*/bermuda-triangle-1'], bootstrapper, {});
+    await toolkit.bootstrap(['aws://*/bermuda-triangle-1'], {
+      source: defaultBootstrapSource,
+    });
 
     // THEN
-    expect(bootstrapper.bootstrapEnvironment).toHaveBeenCalledWith(
+    expect(bootstrapEnvironmentMock).toHaveBeenCalledWith(
       {
         account: '123456789012',
         region: 'bermuda-triangle-1',
@@ -901,7 +909,7 @@ describe('deploy', () => {
       expect.anything(),
       expect.anything(),
     );
-    expect(bootstrapper.bootstrapEnvironment).toHaveBeenCalledTimes(1);
+    expect(bootstrapEnvironmentMock).toHaveBeenCalledTimes(1);
   });
 
   test('bootstrap can be invoked without the --app argument', async () => {
@@ -913,10 +921,12 @@ describe('deploy', () => {
     const toolkit = defaultToolkitSetup();
 
     // WHEN
-    await toolkit.bootstrap(['aws://123456789012/west-pole'], bootstrapper, {});
+    await toolkit.bootstrap(['aws://123456789012/west-pole'], {
+      source: defaultBootstrapSource,
+    });
 
     // THEN
-    expect(bootstrapper.bootstrapEnvironment).toHaveBeenCalledWith(
+    expect(bootstrapEnvironmentMock).toHaveBeenCalledWith(
       {
         account: '123456789012',
         region: 'west-pole',
@@ -925,7 +935,7 @@ describe('deploy', () => {
       expect.anything(),
       expect.anything(),
     );
-    expect(bootstrapper.bootstrapEnvironment).toHaveBeenCalledTimes(1);
+    expect(bootstrapEnvironmentMock).toHaveBeenCalledTimes(1);
 
     expect(cloudExecutable.hasApp).toEqual(false);
     expect(mockSynthesize).not.toHaveBeenCalled();
@@ -1264,7 +1274,7 @@ describe('synth', () => {
           stackName: 'bad-cloudformation-source',
           fromStack: true,
         }),
-      ).rejects.toThrowError('Stack does not exist in this environment');
+      ).rejects.toThrow('Stack does not exist in this environment');
       expect(stderrMock.mock.calls[1][0]).toContain(
         ' ❌  Migrate failed for `bad-cloudformation-source`: Stack does not exist in this environment',
       );
@@ -1278,7 +1288,7 @@ describe('synth', () => {
           fromPath: path.join(__dirname, 'commands', 'test-resources', 'templates', 'sqs-template.json'),
           language: 'rust',
         }),
-      ).rejects.toThrowError(
+      ).rejects.toThrow(
         'CannotGenerateTemplateStack could not be generated because rust is not a supported language',
       );
       expect(stderrMock.mock.calls[1][0]).toContain(
