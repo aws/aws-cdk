@@ -22,8 +22,7 @@ const namespace = new servicediscovery.PrivateDnsNamespace(stack, 'ns', {
 });
 
 const certificateAuthority = acm.CertificateAuthority.fromCertificateAuthorityArn(stack, 'PrivateCA',
-  // 'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/123456789012',
-  'arn:aws:acm-pca:ap-northeast-1:852045161734:certificate-authority/96c220ca-4b5b-4e6c-8420-67df70c822b2',
+  'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/123456789012',
 );
 
 const kmsKey = new kms.Key(stack, 'KmsKey', {
