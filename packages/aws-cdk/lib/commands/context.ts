@@ -1,27 +1,64 @@
 import * as chalk from 'chalk';
 import { minimatch } from 'minimatch';
 import * as version from '../../lib/version';
-import { CommandOptions } from '../command-api';
 import { print, error, warning } from '../logging';
 import { Context, PROJECT_CONFIG, PROJECT_CONTEXT, USER_DEFAULTS } from '../settings';
 import { renderTable } from '../util';
 
-export async function realHandler(options: CommandOptions): Promise<number> {
-  const { configuration, args } = options;
-  if (args.clear) {
-    configuration.context.clear();
-    await configuration.saveContext();
+/**
+ * Options for the context command
+ */
+export interface ContextOptions {
+  /**
+   * The context object sourced from all context locations
+   */
+  context: Context;
+
+  /**
+   * The context key (or its index) to reset
+   *
+   * @default undefined
+   */
+  reset?: string;
+
+  /**
+   * Ignore missing key error
+   *
+   * @default false
+   */
+  force?: boolean;
+
+  /**
+   * Clear all context
+   *
+   * @default false
+   */
+  clear?: boolean;
+
+  /**
+   * Use JSON output instead of YAML when templates are printed to STDOUT
+   *
+   * @default false
+   */
+  json?: boolean;
+}
+
+export async function contextHandler(options: ContextOptions): Promise<number> {
+  if (options.clear) {
+    options.context.clear();
+    await options.context.save(PROJECT_CONTEXT);
     print('All context values cleared.');
-  } else if (args.reset) {
-    invalidateContext(configuration.context, args.reset as string, args.force as boolean);
-    await configuration.saveContext();
+  } else if (options.reset) {
+    invalidateContext(options.context, options.reset, options.force ?? false);
+    await options.context.save(PROJECT_CONTEXT);
   } else {
     // List -- support '--json' flag
-    if (args.json) {
-      const contextValues = configuration.context.all;
+    if (options.json) {
+      /* istanbul ignore next */
+      const contextValues = options.context.all;
       process.stdout.write(JSON.stringify(contextValues, undefined, 2));
     } else {
-      listContext(configuration.context);
+      listContext(options.context);
     }
   }
   await version.displayVersionMessage();
@@ -105,6 +142,7 @@ function invalidateContext(context: Context, key: string, force: boolean) {
     throw new Error(`No context value matching key: ${key}`);
   }
 }
+
 function printUnset(unset: string[]) {
   if (unset.length === 0) return;
   print('The following matched context values reset. They will be refreshed on next synthesis');
@@ -112,6 +150,7 @@ function printUnset(unset: string[]) {
     print('  %s', match);
   });
 }
+
 function printReadonly(readonly: string[]) {
   if (readonly.length === 0) return;
   warning('The following matched context values could not be reset through the CLI');
@@ -121,6 +160,7 @@ function printReadonly(readonly: string[]) {
   print('');
   print('This usually means they are configured in %s or %s', chalk.blue(PROJECT_CONFIG), chalk.blue(USER_DEFAULTS));
 }
+
 function keysByExpression(context: Context, expression: string) {
   return context.keys.filter(minimatch.filter(expression));
 }
