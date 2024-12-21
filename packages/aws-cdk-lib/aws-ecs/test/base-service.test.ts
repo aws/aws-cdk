@@ -139,23 +139,23 @@ describe('When import an ECS Service', () => {
     });
   });
 
-  test('awsPcaAuthorityArn is not an ARN', () => {
+  test('throws an error when awsPcaAuthorityArn is not an ARN', () => {
     // GIVEN
     const vpc = new ec2.Vpc(stack, 'Vpc');
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
-    taskDefinition.addContainer('web', {
+    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+    taskDefinition.addContainer('Web', {
       image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
       portMappings: [
         {
-          containerPort: 100,
-          name: 'abc',
+          name: 'api',
+          containerPort: 80,
         },
       ],
     });
 
     expect(() => {
-      new ecs.FargateService(stack, 'FargateService', {
+      new ecs.FargateService(stack, 'Service', {
         cluster,
         taskDefinition,
         serviceConnectConfiguration: {
@@ -164,7 +164,7 @@ describe('When import an ECS Service', () => {
               tls: {
                 awsPcaAuthorityArn: 'invalid-arn',
               },
-              portMappingName: 'abc',
+              portMappingName: 'api',
             },
           ],
           namespace: 'test namespace',
