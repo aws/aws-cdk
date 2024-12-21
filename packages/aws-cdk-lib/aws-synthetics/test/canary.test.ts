@@ -36,6 +36,30 @@ test('Basic canary properties work', () => {
   });
 });
 
+test('Specify handler path for playwright canary', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    canaryName: 'mycanary',
+    test: synthetics.Test.custom({
+      handler: 'playwright/canary.handler',
+      code: synthetics.Code.fromAsset(path.join(__dirname, 'canaries')),
+    }),
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT_1_0,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+    Name: 'mycanary',
+    Code: {
+      Handler: 'playwright/canary.handler',
+    },
+    RuntimeVersion: 'syn-nodejs-playwright-1.0',
+  });
+});
+
 test('cleanup.LAMBDA introduces custom resource to delete lambda', () => {
   // GIVEN
   const stack = new Stack();
@@ -1089,6 +1113,6 @@ describe('artifact encryption test', () => {
         }),
         artifactS3EncryptionMode: synthetics.ArtifactsEncryptionMode.S3_MANAGED,
       });
-    }).toThrow('Artifact encryption is only supported for canaries that use Synthetics runtime version \`syn-nodejs-puppeteer-3.3\` or later and the Playwright runtime, got `syn-python-selenium-3.0`.');
+    }).toThrow('Artifact encryption is only supported for canaries that use Synthetics runtime version \`syn-nodejs-puppeteer-3.3\` or later and the Playwright runtime, got syn-python-selenium-3.0.');
   });
 });

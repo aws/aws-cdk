@@ -84,7 +84,7 @@ const zipAsset = new Canary(stack, 'ZipAsset', {
 
 const kebabToPascal = (text:string) => text.replace(/(^\w|[-./]\w)/g, (v) => v.replace(/[-./]/, '').toUpperCase());
 const createCanaryByRuntimes = (runtime: Runtime, handler?: string) =>
-  new Canary(stack, kebabToPascal(runtime.name + handler), {
+  new Canary(stack, kebabToPascal(runtime.name + (handler ?? '')), {
     test: Test.custom({
       handler: handler ?? 'canary.handler',
       code: Code.fromAsset(path.join(__dirname, 'canaries')),
