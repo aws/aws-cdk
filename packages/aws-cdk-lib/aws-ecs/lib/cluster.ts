@@ -69,8 +69,16 @@ export interface ClusterProps {
    * If true CloudWatch Container Insights will be enabled for the cluster
    *
    * @default - Container Insights will be disabled for this cluster.
+   * @deprecated See `containerInsightsLevel`
    */
   readonly containerInsights?: boolean;
+
+  /**
+   * The CloudWatch Container Insights level for the cluster
+   *
+   * @default - Container Insights not be set for the cluster
+   */
+  readonly containerInsightsLevel?: ContainerInsights;
 
   /**
    * The execute command configuration for the cluster
@@ -224,6 +232,10 @@ export class Cluster extends Resource implements ICluster {
       physicalName: props.clusterName,
     });
 
+    if ((props.containerInsights !== undefined) && props.containerInsightsLevel) {
+      throw new Error('You can only specify either containerInsights or containerInsightsLevel. Alternatively, you can leave both blank');
+    }
+
     /**
      * clusterSettings needs to be undefined if containerInsights is not explicitly set in order to allow any
      * containerInsights settings on the account to apply.  See:
@@ -234,6 +246,11 @@ export class Cluster extends Resource implements ICluster {
       clusterSettings = [{
         name: 'containerInsights',
         value: props.containerInsights ? ContainerInsights.ENABLED : ContainerInsights.DISABLED,
+      }];
+    } else if (props.containerInsightsLevel !== undefined) {
+      clusterSettings = [{
+        name: 'containerInsights',
+        value: props.containerInsightsLevel,
       }];
     }
 
@@ -1096,17 +1113,26 @@ export interface CloudMapNamespaceOptions {
 
 }
 
-enum ContainerInsights {
+/**
+ * The CloudWatch Container Insights setting
+ *
+ * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cloudwatch-container-insights.html
+ */
+export enum ContainerInsights {
   /**
    * Enable CloudWatch Container Insights for the cluster
    */
-
   ENABLED = 'enabled',
 
   /**
    * Disable CloudWatch Container Insights for the cluster
    */
   DISABLED = 'disabled',
+
+  /**
+   * Enable CloudWatch Container Insights with enhanced observability for the cluster
+   */
+  ENHANCED = 'enhanced',
 }
 
 /**

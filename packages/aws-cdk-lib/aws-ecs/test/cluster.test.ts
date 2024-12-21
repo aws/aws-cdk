@@ -8,7 +8,6 @@ import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cloudmap from '../../aws-servicediscovery';
 import * as cdk from '../../core';
-import { getWarnings } from '../../core/test/util';
 import * as cxapi from '../../cx-api';
 import * as ecs from '../lib';
 
@@ -1742,6 +1741,90 @@ describe('cluster', () => {
       ],
     });
 
+  });
+
+  test('disabled container insights', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    new ecs.Cluster(stack, 'EcsCluster', { containerInsightsLevel: ecs.ContainerInsights.DISABLED });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Cluster', {
+      ClusterSettings: [
+        {
+          Name: 'containerInsights',
+          Value: 'disabled',
+        },
+      ],
+    });
+  });
+
+  test('enabled container insights', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    new ecs.Cluster(stack, 'EcsCluster', { containerInsightsLevel: ecs.ContainerInsights.ENABLED });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Cluster', {
+      ClusterSettings: [
+        {
+          Name: 'containerInsights',
+          Value: 'enabled',
+        },
+      ],
+    });
+  });
+
+  test('enhanced container insights', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    new ecs.Cluster(stack, 'EcsCluster', { containerInsightsLevel: ecs.ContainerInsights.ENHANCED });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Cluster', {
+      ClusterSettings: [
+        {
+          Name: 'containerInsights',
+          Value: 'enhanced',
+        },
+      ],
+    });
+  });
+
+  test('should throw an error if containerInsights and containerInsightsLevel are both set', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    // THEN
+    expect(() => {
+      new ecs.Cluster(stack, 'EcsCluster',
+        {
+          containerInsights: true,
+          containerInsightsLevel: ecs.ContainerInsights.ENHANCED,
+        });
+    }).toThrow('You can only specify either containerInsights or containerInsightsLevel. Alternatively, you can leave both blank');
+  });
+
+  test('should throw an error if containerInsights and containerInsightsLevel are both set, even if containerInsights is false', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    // THEN
+    expect(() => {
+      new ecs.Cluster(stack, 'EcsCluster',
+        {
+          containerInsights: true,
+          containerInsightsLevel: ecs.ContainerInsights.ENHANCED,
+        });
+    }).toThrow('You can only specify either containerInsights or containerInsightsLevel. Alternatively, you can leave both blank');
   });
 
   test('default container insights is undefined', () => {
