@@ -1,0 +1,281 @@
+{
+  "version": "38.0.1",
+  "artifacts": {
+    "integ-ecs-enhanced-container-insights.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-ecs-enhanced-container-insights.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integ-ecs-enhanced-container-insights": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-ecs-enhanced-container-insights.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b6b2a6711c1bf85d302b828cdf560c0d33688bbb796055ff1b9974457c38cac2.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-ecs-enhanced-container-insights.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integ-ecs-enhanced-container-insights.assets"
+      ],
+      "metadata": {
+        "/integ-ecs-enhanced-container-insights/Cluster/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterEB0386A7"
+          }
+        ],
+        "/integ-ecs-enhanced-container-insights/Cluster/Vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVpcFAA3CEDF"
+          }
+        ],
+        "/integ-ecs-enhanced-container-insights/Cluster/Vpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVpcPublicSubnet1SubnetA9F7E0A5"
+          }
+        ],
+        "/integ-ecs-enhanced-container-insights/Cluster/Vpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVpcPublicSubnet1RouteTable5594A636"
+          }
+        ],
+        "/integ-ecs-enhanced-container-insights/Cluster/Vpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVpcPublicSubnet1RouteTableAssociation0FBEF1F4"
+          }
+        ],
+        "/integ-ecs-enhanced-container-insights/Cluster/Vpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVpcPublicSubnet1DefaultRoute62DA4B4B"
+          }
+        ],
+        "/integ-ecs-enhanced-container-insights/Cluster/Vpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVpcPublicSubnet1EIP433C56EE"
+          }
+        ],
+        "/integ-ecs-enhanced-container-insights/Cluster/Vpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVpcPublicSubnet1NATGateway0693C346"
+          }
+        ],
+        "/integ-ecs-enhanced-container-insights/Cluster/Vpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVpcPublicSubnet2Subnet059113C4"
+          }
+        ],
+        "/integ-ecs-enhanced-container-insights/Cluster/Vpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVpcPublicSubnet2RouteTable7B43F18C"
+          }
+        ],
+        "/integ-ecs-enhanced-container-insights/Cluster/Vpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVpcPublicSubnet2RouteTableAssociation8446B27D"
+          }
+        ],
+        "/integ-ecs-enhanced-container-insights/Cluster/Vpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVpcPublicSubnet2DefaultRoute97446C8A"
+          }
+        ],
+        "/integ-ecs-enhanced-container-insights/Cluster/Vpc/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVpcPublicSubnet2EIP203DF3E5"
+          }
+        ],
+        "/integ-ecs-enhanced-container-insights/Cluster/Vpc/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVpcPublicSubnet2NATGateway00B24686"
+          }
+        ],
+        "/integ-ecs-enhanced-container-insights/Cluster/Vpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVpcPrivateSubnet1SubnetA4EB481A"
+          }
+        ],
+        "/integ-ecs-enhanced-container-insights/Cluster/Vpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVpcPrivateSubnet1RouteTable5AAEDA3F"
+          }
+        ],
+        "/integ-ecs-enhanced-container-insights/Cluster/Vpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVpcPrivateSubnet1RouteTableAssociation9B8A88D9"
+          }
+        ],
+        "/integ-ecs-enhanced-container-insights/Cluster/Vpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVpcPrivateSubnet1DefaultRoute3B4D40DD"
+          }
+        ],
+        "/integ-ecs-enhanced-container-insights/Cluster/Vpc/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVpcPrivateSubnet2SubnetBD1ECB6E"
+          }
+        ],
+        "/integ-ecs-enhanced-container-insights/Cluster/Vpc/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVpcPrivateSubnet2RouteTable73064A66"
+          }
+        ],
+        "/integ-ecs-enhanced-container-insights/Cluster/Vpc/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVpcPrivateSubnet2RouteTableAssociationFB21349E"
+          }
+        ],
+        "/integ-ecs-enhanced-container-insights/Cluster/Vpc/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVpcPrivateSubnet2DefaultRoute011666AF"
+          }
+        ],
+        "/integ-ecs-enhanced-container-insights/Cluster/Vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVpcIGW1E358A6E"
+          }
+        ],
+        "/integ-ecs-enhanced-container-insights/Cluster/Vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVpcVPCGW47AC17E9"
+          }
+        ],
+        "/integ-ecs-enhanced-container-insights/Cluster/Vpc/RestrictDefaultSecurityGroupCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVpcRestrictDefaultSecurityGroupCustomResourceA87DC6B5"
+          }
+        ],
+        "/integ-ecs-enhanced-container-insights/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/integ-ecs-enhanced-container-insights/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
+        "/integ-ecs-enhanced-container-insights/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+          }
+        ],
+        "/integ-ecs-enhanced-container-insights/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+          }
+        ],
+        "/integ-ecs-enhanced-container-insights/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-ecs-enhanced-container-insights/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-ecs-enhanced-container-insights"
+    },
+    "ClusterNeuronAmiDefaultTestDeployAssert0A9C16F8.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "ClusterNeuronAmiDefaultTestDeployAssert0A9C16F8.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "ClusterNeuronAmiDefaultTestDeployAssert0A9C16F8": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "ClusterNeuronAmiDefaultTestDeployAssert0A9C16F8.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "ClusterNeuronAmiDefaultTestDeployAssert0A9C16F8.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "ClusterNeuronAmiDefaultTestDeployAssert0A9C16F8.assets"
+      ],
+      "metadata": {
+        "/ClusterNeuronAmi/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/ClusterNeuronAmi/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "ClusterNeuronAmi/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

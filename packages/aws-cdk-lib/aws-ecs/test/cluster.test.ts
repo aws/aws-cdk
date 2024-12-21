@@ -1748,7 +1748,7 @@ describe('cluster', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
 
-    new ecs.Cluster(stack, 'EcsCluster', { containerInsightsLevel: ecs.ContainerInsights.DISABLED });
+    new ecs.Cluster(stack, 'EcsCluster', { containerInsightsV2: ecs.ContainerInsights.DISABLED });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::Cluster', {
@@ -1766,7 +1766,7 @@ describe('cluster', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
 
-    new ecs.Cluster(stack, 'EcsCluster', { containerInsightsLevel: ecs.ContainerInsights.ENABLED });
+    new ecs.Cluster(stack, 'EcsCluster', { containerInsightsV2: ecs.ContainerInsights.ENABLED });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::Cluster', {
@@ -1784,7 +1784,7 @@ describe('cluster', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
 
-    new ecs.Cluster(stack, 'EcsCluster', { containerInsightsLevel: ecs.ContainerInsights.ENHANCED });
+    new ecs.Cluster(stack, 'EcsCluster', { containerInsightsV2: ecs.ContainerInsights.ENHANCED });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::Cluster', {
@@ -1807,7 +1807,7 @@ describe('cluster', () => {
       new ecs.Cluster(stack, 'EcsCluster',
         {
           containerInsights: true,
-          containerInsightsLevel: ecs.ContainerInsights.ENHANCED,
+          containerInsightsV2: ecs.ContainerInsights.ENHANCED,
         });
     }).toThrow('You can only specify either containerInsights or containerInsightsLevel. Alternatively, you can leave both blank');
   });
@@ -1822,7 +1822,7 @@ describe('cluster', () => {
       new ecs.Cluster(stack, 'EcsCluster',
         {
           containerInsights: true,
-          containerInsightsLevel: ecs.ContainerInsights.ENHANCED,
+          containerInsightsV2: ecs.ContainerInsights.ENHANCED,
         });
     }).toThrow('You can only specify either containerInsights or containerInsightsLevel. Alternatively, you can leave both blank');
   });

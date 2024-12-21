@@ -74,11 +74,11 @@ export interface ClusterProps {
   readonly containerInsights?: boolean;
 
   /**
-   * The CloudWatch Container Insights level for the cluster
+   * The CloudWatch Container Insights configuration for the cluster
    *
-   * @default - Container Insights not be set for the cluster
+   * @default - Container Insights configuration will not be set for the cluster
    */
-  readonly containerInsightsLevel?: ContainerInsights;
+  readonly containerInsightsV2?: ContainerInsights;
 
   /**
    * The execute command configuration for the cluster
@@ -232,7 +232,7 @@ export class Cluster extends Resource implements ICluster {
       physicalName: props.clusterName,
     });
 
-    if ((props.containerInsights !== undefined) && props.containerInsightsLevel) {
+    if ((props.containerInsights !== undefined) && props.containerInsightsV2) {
       throw new Error('You can only specify either containerInsights or containerInsightsLevel. Alternatively, you can leave both blank');
     }
 
@@ -247,10 +247,10 @@ export class Cluster extends Resource implements ICluster {
         name: 'containerInsights',
         value: props.containerInsights ? ContainerInsights.ENABLED : ContainerInsights.DISABLED,
       }];
-    } else if (props.containerInsightsLevel !== undefined) {
+    } else if (props.containerInsightsV2 !== undefined) {
       clusterSettings = [{
         name: 'containerInsights',
-        value: props.containerInsightsLevel,
+        value: props.containerInsightsV2,
       }];
     }
 
