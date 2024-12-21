@@ -952,10 +952,10 @@ export abstract class BaseService extends Resource
 
       const tls: CfnService.ServiceConnectTlsConfigurationProperty | undefined = svc.tls ? {
         issuerCertificateAuthority: {
-          awsPcaAuthorityArn: svc.tls?.awsPcaAuthorityArn,
+          awsPcaAuthorityArn: svc.tls.awsPcaAuthorityArn,
         },
-        kmsKey: svc.tls?.kmsKey?.keyArn,
-        roleArn: svc.tls?.role?.roleArn,
+        kmsKey: svc.tls.kmsKey?.keyArn,
+        roleArn: svc.tls.role?.roleArn,
       } : undefined;
 
       return {
@@ -1035,6 +1035,7 @@ export abstract class BaseService extends Resource
         !this.isValidPort(serviceConnectService.port)) {
         throw new Error(`Client Alias port ${serviceConnectService.port} is not valid.`);
       }
+
       // tls.awsPcaAuthorityArn should be an ARN
       const awsPcaAuthorityArn = serviceConnectService.tls?.awsPcaAuthorityArn;
       if (awsPcaAuthorityArn && !Token.isUnresolved(awsPcaAuthorityArn) && !awsPcaAuthorityArn.startsWith('arn:')) {
