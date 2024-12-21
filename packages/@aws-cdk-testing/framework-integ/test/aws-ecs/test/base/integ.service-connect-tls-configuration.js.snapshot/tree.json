@@ -4,17 +4,17 @@
     "id": "App",
     "path": "",
     "children": {
-      "aws-ecs-service-connect-tls-configuration-integ": {
-        "id": "aws-ecs-service-connect-tls-configuration-integ",
-        "path": "aws-ecs-service-connect-tls-configuration-integ",
+      "aws-ecs-integ": {
+        "id": "aws-ecs-integ",
+        "path": "aws-ecs-integ",
         "children": {
           "Vpc": {
             "id": "Vpc",
-            "path": "aws-ecs-service-connect-tls-configuration-integ/Vpc",
+            "path": "aws-ecs-integ/Vpc",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-ecs-service-connect-tls-configuration-integ/Vpc/Resource",
+                "path": "aws-ecs-integ/Vpc/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
                   "aws:cdk:cloudformation:props": {
@@ -25,7 +25,7 @@
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "aws-ecs-service-connect-tls-configuration-integ/Vpc"
+                        "value": "aws-ecs-integ/Vpc"
                       }
                     ]
                   }
@@ -37,11 +37,11 @@
               },
               "PublicSubnet1": {
                 "id": "PublicSubnet1",
-                "path": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PublicSubnet1",
+                "path": "aws-ecs-integ/Vpc/PublicSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PublicSubnet1/Subnet",
+                    "path": "aws-ecs-integ/Vpc/PublicSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -66,7 +66,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PublicSubnet1"
+                            "value": "aws-ecs-integ/Vpc/PublicSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -81,7 +81,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PublicSubnet1/Acl",
+                    "path": "aws-ecs-integ/Vpc/PublicSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -89,14 +89,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PublicSubnet1/RouteTable",
+                    "path": "aws-ecs-integ/Vpc/PublicSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PublicSubnet1"
+                            "value": "aws-ecs-integ/Vpc/PublicSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -111,7 +111,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PublicSubnet1/RouteTableAssociation",
+                    "path": "aws-ecs-integ/Vpc/PublicSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -130,7 +130,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PublicSubnet1/DefaultRoute",
+                    "path": "aws-ecs-integ/Vpc/PublicSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -150,7 +150,7 @@
                   },
                   "EIP": {
                     "id": "EIP",
-                    "path": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PublicSubnet1/EIP",
+                    "path": "aws-ecs-integ/Vpc/PublicSubnet1/EIP",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                       "aws:cdk:cloudformation:props": {
@@ -158,7 +158,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PublicSubnet1"
+                            "value": "aws-ecs-integ/Vpc/PublicSubnet1"
                           }
                         ]
                       }
@@ -170,7 +170,7 @@
                   },
                   "NATGateway": {
                     "id": "NATGateway",
-                    "path": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PublicSubnet1/NATGateway",
+                    "path": "aws-ecs-integ/Vpc/PublicSubnet1/NATGateway",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
@@ -186,7 +186,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PublicSubnet1"
+                            "value": "aws-ecs-integ/Vpc/PublicSubnet1"
                           }
                         ]
                       }
@@ -204,11 +204,11 @@
               },
               "PublicSubnet2": {
                 "id": "PublicSubnet2",
-                "path": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PublicSubnet2",
+                "path": "aws-ecs-integ/Vpc/PublicSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PublicSubnet2/Subnet",
+                    "path": "aws-ecs-integ/Vpc/PublicSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -233,7 +233,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PublicSubnet2"
+                            "value": "aws-ecs-integ/Vpc/PublicSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -248,7 +248,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PublicSubnet2/Acl",
+                    "path": "aws-ecs-integ/Vpc/PublicSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -256,14 +256,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PublicSubnet2/RouteTable",
+                    "path": "aws-ecs-integ/Vpc/PublicSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PublicSubnet2"
+                            "value": "aws-ecs-integ/Vpc/PublicSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -278,7 +278,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PublicSubnet2/RouteTableAssociation",
+                    "path": "aws-ecs-integ/Vpc/PublicSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -297,7 +297,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PublicSubnet2/DefaultRoute",
+                    "path": "aws-ecs-integ/Vpc/PublicSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -317,7 +317,7 @@
                   },
                   "EIP": {
                     "id": "EIP",
-                    "path": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PublicSubnet2/EIP",
+                    "path": "aws-ecs-integ/Vpc/PublicSubnet2/EIP",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                       "aws:cdk:cloudformation:props": {
@@ -325,7 +325,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PublicSubnet2"
+                            "value": "aws-ecs-integ/Vpc/PublicSubnet2"
                           }
                         ]
                       }
@@ -337,7 +337,7 @@
                   },
                   "NATGateway": {
                     "id": "NATGateway",
-                    "path": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PublicSubnet2/NATGateway",
+                    "path": "aws-ecs-integ/Vpc/PublicSubnet2/NATGateway",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
@@ -353,7 +353,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PublicSubnet2"
+                            "value": "aws-ecs-integ/Vpc/PublicSubnet2"
                           }
                         ]
                       }
@@ -371,11 +371,11 @@
               },
               "PrivateSubnet1": {
                 "id": "PrivateSubnet1",
-                "path": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PrivateSubnet1",
+                "path": "aws-ecs-integ/Vpc/PrivateSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PrivateSubnet1/Subnet",
+                    "path": "aws-ecs-integ/Vpc/PrivateSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -400,7 +400,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PrivateSubnet1"
+                            "value": "aws-ecs-integ/Vpc/PrivateSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -415,7 +415,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PrivateSubnet1/Acl",
+                    "path": "aws-ecs-integ/Vpc/PrivateSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -423,14 +423,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PrivateSubnet1/RouteTable",
+                    "path": "aws-ecs-integ/Vpc/PrivateSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PrivateSubnet1"
+                            "value": "aws-ecs-integ/Vpc/PrivateSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -445,7 +445,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PrivateSubnet1/RouteTableAssociation",
+                    "path": "aws-ecs-integ/Vpc/PrivateSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -464,7 +464,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PrivateSubnet1/DefaultRoute",
+                    "path": "aws-ecs-integ/Vpc/PrivateSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -490,11 +490,11 @@
               },
               "PrivateSubnet2": {
                 "id": "PrivateSubnet2",
-                "path": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PrivateSubnet2",
+                "path": "aws-ecs-integ/Vpc/PrivateSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PrivateSubnet2/Subnet",
+                    "path": "aws-ecs-integ/Vpc/PrivateSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -519,7 +519,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PrivateSubnet2"
+                            "value": "aws-ecs-integ/Vpc/PrivateSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -534,7 +534,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PrivateSubnet2/Acl",
+                    "path": "aws-ecs-integ/Vpc/PrivateSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -542,14 +542,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PrivateSubnet2/RouteTable",
+                    "path": "aws-ecs-integ/Vpc/PrivateSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PrivateSubnet2"
+                            "value": "aws-ecs-integ/Vpc/PrivateSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -564,7 +564,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PrivateSubnet2/RouteTableAssociation",
+                    "path": "aws-ecs-integ/Vpc/PrivateSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -583,7 +583,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PrivateSubnet2/DefaultRoute",
+                    "path": "aws-ecs-integ/Vpc/PrivateSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -609,14 +609,14 @@
               },
               "IGW": {
                 "id": "IGW",
-                "path": "aws-ecs-service-connect-tls-configuration-integ/Vpc/IGW",
+                "path": "aws-ecs-integ/Vpc/IGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::InternetGateway",
                   "aws:cdk:cloudformation:props": {
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "aws-ecs-service-connect-tls-configuration-integ/Vpc"
+                        "value": "aws-ecs-integ/Vpc"
                       }
                     ]
                   }
@@ -628,7 +628,7 @@
               },
               "VPCGW": {
                 "id": "VPCGW",
-                "path": "aws-ecs-service-connect-tls-configuration-integ/Vpc/VPCGW",
+                "path": "aws-ecs-integ/Vpc/VPCGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                   "aws:cdk:cloudformation:props": {
@@ -647,11 +647,11 @@
               },
               "RestrictDefaultSecurityGroupCustomResource": {
                 "id": "RestrictDefaultSecurityGroupCustomResource",
-                "path": "aws-ecs-service-connect-tls-configuration-integ/Vpc/RestrictDefaultSecurityGroupCustomResource",
+                "path": "aws-ecs-integ/Vpc/RestrictDefaultSecurityGroupCustomResource",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "aws-ecs-service-connect-tls-configuration-integ/Vpc/RestrictDefaultSecurityGroupCustomResource/Default",
+                    "path": "aws-ecs-integ/Vpc/RestrictDefaultSecurityGroupCustomResource/Default",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnResource",
                       "version": "0.0.0"
@@ -671,7 +671,7 @@
           },
           "LatestNodeRuntimeMap": {
             "id": "LatestNodeRuntimeMap",
-            "path": "aws-ecs-service-connect-tls-configuration-integ/LatestNodeRuntimeMap",
+            "path": "aws-ecs-integ/LatestNodeRuntimeMap",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnMapping",
               "version": "0.0.0"
@@ -679,11 +679,11 @@
           },
           "Custom::VpcRestrictDefaultSGCustomResourceProvider": {
             "id": "Custom::VpcRestrictDefaultSGCustomResourceProvider",
-            "path": "aws-ecs-service-connect-tls-configuration-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider",
+            "path": "aws-ecs-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider",
             "children": {
               "Staging": {
                 "id": "Staging",
-                "path": "aws-ecs-service-connect-tls-configuration-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider/Staging",
+                "path": "aws-ecs-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider/Staging",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.AssetStaging",
                   "version": "0.0.0"
@@ -691,7 +691,7 @@
               },
               "Role": {
                 "id": "Role",
-                "path": "aws-ecs-service-connect-tls-configuration-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role",
+                "path": "aws-ecs-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnResource",
                   "version": "0.0.0"
@@ -699,7 +699,7 @@
               },
               "Handler": {
                 "id": "Handler",
-                "path": "aws-ecs-service-connect-tls-configuration-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler",
+                "path": "aws-ecs-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnResource",
                   "version": "0.0.0"
@@ -713,11 +713,11 @@
           },
           "EcsCluster": {
             "id": "EcsCluster",
-            "path": "aws-ecs-service-connect-tls-configuration-integ/EcsCluster",
+            "path": "aws-ecs-integ/EcsCluster",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-ecs-service-connect-tls-configuration-integ/EcsCluster/Resource",
+                "path": "aws-ecs-integ/EcsCluster/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ECS::Cluster",
                   "aws:cdk:cloudformation:props": {}
@@ -735,15 +735,15 @@
           },
           "TaskDef": {
             "id": "TaskDef",
-            "path": "aws-ecs-service-connect-tls-configuration-integ/TaskDef",
+            "path": "aws-ecs-integ/TaskDef",
             "children": {
               "TaskRole": {
                 "id": "TaskRole",
-                "path": "aws-ecs-service-connect-tls-configuration-integ/TaskDef/TaskRole",
+                "path": "aws-ecs-integ/TaskDef/TaskRole",
                 "children": {
                   "ImportTaskRole": {
                     "id": "ImportTaskRole",
-                    "path": "aws-ecs-service-connect-tls-configuration-integ/TaskDef/TaskRole/ImportTaskRole",
+                    "path": "aws-ecs-integ/TaskDef/TaskRole/ImportTaskRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -751,7 +751,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-ecs-service-connect-tls-configuration-integ/TaskDef/TaskRole/Resource",
+                    "path": "aws-ecs-integ/TaskDef/TaskRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -782,7 +782,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-ecs-service-connect-tls-configuration-integ/TaskDef/Resource",
+                "path": "aws-ecs-integ/TaskDef/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ECS::TaskDefinition",
                   "aws:cdk:cloudformation:props": {
@@ -801,7 +801,7 @@
                       }
                     ],
                     "cpu": "256",
-                    "family": "awsecsserviceconnecttlsconfigurationintegTaskDef7C41B4F0",
+                    "family": "awsecsintegTaskDef6FDFB69A",
                     "memory": "512",
                     "networkMode": "awsvpc",
                     "requiresCompatibilities": [
@@ -822,7 +822,7 @@
               },
               "container": {
                 "id": "container",
-                "path": "aws-ecs-service-connect-tls-configuration-integ/TaskDef/container",
+                "path": "aws-ecs-integ/TaskDef/container",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ecs.ContainerDefinition",
                   "version": "0.0.0"
@@ -836,11 +836,11 @@
           },
           "ns": {
             "id": "ns",
-            "path": "aws-ecs-service-connect-tls-configuration-integ/ns",
+            "path": "aws-ecs-integ/ns",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-ecs-service-connect-tls-configuration-integ/ns/Resource",
+                "path": "aws-ecs-integ/ns/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ServiceDiscovery::PrivateDnsNamespace",
                   "aws:cdk:cloudformation:props": {
@@ -861,9 +861,9 @@
               "version": "0.0.0"
             }
           },
-          "CA": {
-            "id": "CA",
-            "path": "aws-ecs-service-connect-tls-configuration-integ/CA",
+          "PrivateCA": {
+            "id": "PrivateCA",
+            "path": "aws-ecs-integ/PrivateCA",
             "constructInfo": {
               "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
@@ -871,11 +871,11 @@
           },
           "KmsKey": {
             "id": "KmsKey",
-            "path": "aws-ecs-service-connect-tls-configuration-integ/KmsKey",
+            "path": "aws-ecs-integ/KmsKey",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-ecs-service-connect-tls-configuration-integ/KmsKey/Resource",
+                "path": "aws-ecs-integ/KmsKey/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::KMS::Key",
                   "aws:cdk:cloudformation:props": {
@@ -924,11 +924,11 @@
           },
           "Role": {
             "id": "Role",
-            "path": "aws-ecs-service-connect-tls-configuration-integ/Role",
+            "path": "aws-ecs-integ/Role",
             "children": {
               "ImportRole": {
                 "id": "ImportRole",
-                "path": "aws-ecs-service-connect-tls-configuration-integ/Role/ImportRole",
+                "path": "aws-ecs-integ/Role/ImportRole",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
@@ -936,7 +936,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-ecs-service-connect-tls-configuration-integ/Role/Resource",
+                "path": "aws-ecs-integ/Role/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                   "aws:cdk:cloudformation:props": {
@@ -975,35 +975,23 @@
               },
               "DefaultPolicy": {
                 "id": "DefaultPolicy",
-                "path": "aws-ecs-service-connect-tls-configuration-integ/Role/DefaultPolicy",
+                "path": "aws-ecs-integ/Role/DefaultPolicy",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-ecs-service-connect-tls-configuration-integ/Role/DefaultPolicy/Resource",
+                    "path": "aws-ecs-integ/Role/DefaultPolicy/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                       "aws:cdk:cloudformation:props": {
                         "policyDocument": {
                           "Statement": [
                             {
-                              "Action": [
-                                "secretsmanager:CreateSecret",
-                                "secretsmanager:DeleteSecret",
-                                "secretsmanager:GetSecretValue",
-                                "secretsmanager:PutSecretValue",
-                                "secretsmanager:RotateSecret",
-                                "secretsmanager:TagResource"
-                              ],
+                              "Action": "secretsmanager:*",
                               "Effect": "Allow",
                               "Resource": "*"
                             },
                             {
-                              "Action": [
-                                "kms:Decrypt",
-                                "kms:Encrypt",
-                                "kms:GenerateDataKey",
-                                "kms:GenerateDataKeyPair"
-                              ],
+                              "Action": "kms:*",
                               "Effect": "Allow",
                               "Resource": {
                                 "Fn::GetAtt": [
@@ -1042,11 +1030,11 @@
           },
           "FargateService": {
             "id": "FargateService",
-            "path": "aws-ecs-service-connect-tls-configuration-integ/FargateService",
+            "path": "aws-ecs-integ/FargateService",
             "children": {
               "Service": {
                 "id": "Service",
-                "path": "aws-ecs-service-connect-tls-configuration-integ/FargateService/Service",
+                "path": "aws-ecs-integ/FargateService/Service",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ECS::Service",
                   "aws:cdk:cloudformation:props": {
@@ -1129,15 +1117,15 @@
               },
               "SecurityGroup": {
                 "id": "SecurityGroup",
-                "path": "aws-ecs-service-connect-tls-configuration-integ/FargateService/SecurityGroup",
+                "path": "aws-ecs-integ/FargateService/SecurityGroup",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-ecs-service-connect-tls-configuration-integ/FargateService/SecurityGroup/Resource",
+                    "path": "aws-ecs-integ/FargateService/SecurityGroup/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                       "aws:cdk:cloudformation:props": {
-                        "groupDescription": "aws-ecs-service-connect-tls-configuration-integ/FargateService/SecurityGroup",
+                        "groupDescription": "aws-ecs-integ/FargateService/SecurityGroup",
                         "securityGroupEgress": [
                           {
                             "cidrIp": "0.0.0.0/0",
@@ -1169,7 +1157,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "aws-ecs-service-connect-tls-configuration-integ/BootstrapVersion",
+            "path": "aws-ecs-integ/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -1177,7 +1165,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "aws-ecs-service-connect-tls-configuration-integ/CheckBootstrapVersion",
+            "path": "aws-ecs-integ/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"

@@ -10,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-service-connect-tls-configuration-integ/Vpc"
+      "Value": "aws-ecs-integ/Vpc"
      }
     ]
    }
@@ -39,7 +39,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PublicSubnet1"
+      "Value": "aws-ecs-integ/Vpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -53,7 +53,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PublicSubnet1"
+      "Value": "aws-ecs-integ/Vpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -94,7 +94,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PublicSubnet1"
+      "Value": "aws-ecs-integ/Vpc/PublicSubnet1"
      }
     ]
    }
@@ -114,7 +114,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PublicSubnet1"
+      "Value": "aws-ecs-integ/Vpc/PublicSubnet1"
      }
     ]
    },
@@ -147,7 +147,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PublicSubnet2"
+      "Value": "aws-ecs-integ/Vpc/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -161,7 +161,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PublicSubnet2"
+      "Value": "aws-ecs-integ/Vpc/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -202,7 +202,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PublicSubnet2"
+      "Value": "aws-ecs-integ/Vpc/PublicSubnet2"
      }
     ]
    }
@@ -222,7 +222,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PublicSubnet2"
+      "Value": "aws-ecs-integ/Vpc/PublicSubnet2"
      }
     ]
    },
@@ -255,7 +255,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PrivateSubnet1"
+      "Value": "aws-ecs-integ/Vpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -269,7 +269,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PrivateSubnet1"
+      "Value": "aws-ecs-integ/Vpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -324,7 +324,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PrivateSubnet2"
+      "Value": "aws-ecs-integ/Vpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -338,7 +338,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-service-connect-tls-configuration-integ/Vpc/PrivateSubnet2"
+      "Value": "aws-ecs-integ/Vpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -375,7 +375,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-service-connect-tls-configuration-integ/Vpc"
+      "Value": "aws-ecs-integ/Vpc"
      }
     ]
    }
@@ -553,7 +553,7 @@
      }
     ],
     "Cpu": "256",
-    "Family": "awsecsserviceconnecttlsconfigurationintegTaskDef7C41B4F0",
+    "Family": "awsecsintegTaskDef6FDFB69A",
     "Memory": "512",
     "NetworkMode": "awsvpc",
     "RequiresCompatibilities": [
@@ -642,7 +642,9 @@
       ]
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "RoleDefaultPolicy5FFB7DAB": {
    "Type": "AWS::IAM::Policy",
@@ -650,24 +652,12 @@
     "PolicyDocument": {
      "Statement": [
       {
-       "Action": [
-        "secretsmanager:CreateSecret",
-        "secretsmanager:DeleteSecret",
-        "secretsmanager:GetSecretValue",
-        "secretsmanager:PutSecretValue",
-        "secretsmanager:RotateSecret",
-        "secretsmanager:TagResource"
-       ],
+       "Action": "secretsmanager:*",
        "Effect": "Allow",
        "Resource": "*"
       },
       {
-       "Action": [
-        "kms:Decrypt",
-        "kms:Encrypt",
-        "kms:GenerateDataKey",
-        "kms:GenerateDataKeyPair"
-       ],
+       "Action": "kms:*",
        "Effect": "Allow",
        "Resource": {
         "Fn::GetAtt": [
@@ -768,7 +758,7 @@
   "FargateServiceSecurityGroup0A0E79CB": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "aws-ecs-service-connect-tls-configuration-integ/FargateService/SecurityGroup",
+    "GroupDescription": "aws-ecs-integ/FargateService/SecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",

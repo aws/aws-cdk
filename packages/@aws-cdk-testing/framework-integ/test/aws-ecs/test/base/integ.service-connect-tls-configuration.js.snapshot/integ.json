@@ -3,7 +3,7 @@
   "testCases": {
     "aws-ecs-service-connect-tls-configuration/DefaultTest": {
       "stacks": [
-        "aws-ecs-service-connect-tls-configuration-integ"
+        "aws-ecs-integ"
       ],
       "assertionStack": "aws-ecs-service-connect-tls-configuration/DefaultTest/DeployAssert",
       "assertionStackName": "awsecsserviceconnecttlsconfigurationDefaultTestDeployAssert1362C68C"
