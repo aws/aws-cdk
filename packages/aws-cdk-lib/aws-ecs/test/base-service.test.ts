@@ -81,117 +81,61 @@ describe('When import an ECS Service', () => {
     });
   });
 
-  describe('should add tls configuration to service connect service', () => {
-    test('when tls configuration is specified using `enableServiceConnect`', () => {
-      // GIVEN
-      const kmsKey = new kms.Key(stack, 'KmsKey');
-      const role = new iam.Role(stack, 'Role', {
-        assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
-      });
-      const vpc = new ec2.Vpc(stack, 'Vpc');
-      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
-      taskDefinition.addContainer('web', {
-        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-        portMappings: [
-          {
-            containerPort: 100,
-            name: 'abc',
-          },
-        ],
-      });
-      const service = new ecs.FargateService(stack, 'FargateService', {
-        cluster,
-        taskDefinition,
-      });
-
-      // WHEN
-      service.enableServiceConnect({
-        services: [
-          {
-            tls: {
-              awsPcaAuthorityArn: 'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/123456789012',
-              kmsKey,
-              role,
-            },
-            portMappingName: 'abc',
-          },
-        ],
-        namespace: 'test namespace',
-      });
-
-      // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
-        ServiceConnectConfiguration: {
-          Services: [
-            {
-              Tls: {
-                IssuerCertificateAuthority: {
-                  AwsPcaAuthorityArn: 'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/123456789012',
-                },
-                KmsKey: stack.resolve(kmsKey.keyArn),
-                RoleArn: stack.resolve(role.roleArn),
-              },
-            },
-          ],
+  test('should add tls configuration to service connect service', () => {
+    // GIVEN
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+    const kmsKey = new kms.Key(stack, 'KmsKey');
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
+    });
+    taskDefinition.addContainer('Web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      portMappings: [
+        {
+          name: 'api',
+          containerPort: 80,
         },
-      });
+      ],
+    });
+    const service = new ecs.FargateService(stack, 'Service', {
+      cluster,
+      taskDefinition,
     });
 
-    test('when tls configuration is specified using `constructor`', () => {
-      // GIVEN
-      const kmsKey = new kms.Key(stack, 'KmsKey');
-      const role = new iam.Role(stack, 'Role', {
-        assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
-      });
-      const vpc = new ec2.Vpc(stack, 'Vpc');
-      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
-      taskDefinition.addContainer('web', {
-        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-        portMappings: [
+    // WHEN
+    service.enableServiceConnect({
+      services: [
+        {
+          tls: {
+            awsPcaAuthorityArn:
+              'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/123456789012',
+            kmsKey,
+            role,
+          },
+          portMappingName: 'api',
+        },
+      ],
+      namespace: 'test namespace',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      ServiceConnectConfiguration: {
+        Services: [
           {
-            containerPort: 100,
-            name: 'abc',
+            Tls: {
+              IssuerCertificateAuthority: {
+                AwsPcaAuthorityArn:
+                  'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/123456789012',
+              },
+              KmsKey: stack.resolve(kmsKey.keyArn),
+              RoleArn: stack.resolve(role.roleArn),
+            },
           },
         ],
-      });
-
-      // WHEN
-      const service = new ecs.FargateService(stack, 'FargateService', {
-        cluster,
-        taskDefinition,
-        serviceConnectConfiguration: {
-          services: [
-            {
-              tls: {
-                awsPcaAuthorityArn: 'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/123456789012',
-                kmsKey,
-                role,
-              },
-              portMappingName: 'abc',
-            },
-          ],
-          namespace: 'test namespace',
-        },
-      });
-
-      // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
-        ServiceConnectConfiguration: {
-          Services: [
-            {
-              Tls: {
-                IssuerCertificateAuthority: {
-                  AwsPcaAuthorityArn: 'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/123456789012',
-                },
-                KmsKey: stack.resolve(kmsKey.keyArn),
-                RoleArn: stack.resolve(role.roleArn),
-              },
-            },
-          ],
-        },
-      });
+      },
     });
   });
 
