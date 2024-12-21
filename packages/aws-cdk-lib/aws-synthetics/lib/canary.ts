@@ -689,7 +689,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
 
     // Only check runtime family is Node.js because versions prior to `syn-nodejs-puppeteer-3.3` are deprecated and can no longer be configured.
     if (!isNodeRuntime && props.artifactS3EncryptionMode) {
-      throw new Error(`Artifact encryption is only supported for canaries that use Synthetics runtime version \`syn-nodejs-puppeteer-3.3\` or later, got \`${props.runtime.name}\`.`);
+      throw new Error(`Artifact encryption is only supported for canaries that use Synthetics runtime version \`syn-nodejs-puppeteer-3.3\` or later and the Playwright runtime, got ${props.runtime.name}.`);
     }
 
     const encryptionMode = props.artifactS3EncryptionMode ? props.artifactS3EncryptionMode :

@@ -1089,6 +1089,6 @@ describe('artifact encryption test', () => {
         }),
         artifactS3EncryptionMode: synthetics.ArtifactsEncryptionMode.S3_MANAGED,
       });
-    }).toThrow('Artifact encryption is only supported for canaries that use Synthetics runtime version `syn-nodejs-puppeteer-3.3` or later, got `syn-python-selenium-3.0`.');
+    }).toThrow('Artifact encryption is only supported for canaries that use Synthetics runtime version \`syn-nodejs-puppeteer-3.3\` or later and the Playwright runtime, got `syn-python-selenium-3.0`.');
   });
 });
