@@ -1001,6 +1001,10 @@ const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
 You can also set a destination bucket from a different account as the replication destination.
 
 In this case, the bucket policy for the destination bucket is required, to configure it through CDK use  `addReplicationPolicy()` method to add bucket policy on destination bucket.
+In a cross-account scenario, where the source and destination buckets are owned by different AWS accounts, you can use a KMS key to encrypt object replicas. However, the KMS key owner must grant the source bucket owner permission to use the KMS key.
+For more information, please refer to https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-walkthrough-2.html .
+> **NOTE:** AWS managed keys don't allow cross-account use, and therefore can't be used to perform cross-account replication.
+
 If you need to ovveride the bucket ownership to destination account pass the account value to the method to provide permissions to override bucket owner.
 `addReplicationPolicy(bucket.replicationRoleArn, true, '11111111111')`;
 
