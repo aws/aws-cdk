@@ -660,7 +660,14 @@
                 "path": "integ-ecs-enhanced-container-insights/Cluster/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ECS::Cluster",
-                  "aws:cdk:cloudformation:props": {}
+                  "aws:cdk:cloudformation:props": {
+                    "clusterSettings": [
+                      {
+                        "name": "containerInsights",
+                        "value": "enhanced"
+                      }
+                    ]
+                  }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ecs.CfnCluster",
