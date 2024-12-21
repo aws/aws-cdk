@@ -1,4 +1,4 @@
-import { App, RemovalPolicys, Stack } from 'aws-cdk-lib';
+import { App, RemovalPolicies, Stack } from 'aws-cdk-lib';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
@@ -15,7 +15,7 @@ new dynamodb.Table(stack, 'TestTable', {
 new iam.User(stack, 'TestUser');
 
 // Apply different removal policies to demonstrate functionality
-RemovalPolicys.of(stack).destroy();
+RemovalPolicies.of(stack).destroy();
 
 new integ.IntegTest(app, 'RemovalPoliciesTest', {
   testCases: [stack],

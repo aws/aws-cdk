@@ -112,13 +112,13 @@ class RemovalPolicyAspect implements IAspect {
 /**
  * Manages removal policies for all resources within a construct scope
  */
-export class RemovalPolicys {
+export class RemovalPolicies {
   /**
    * Returns the removal policies API for the given scope
    * @param scope The scope
    */
-  public static of(scope: IConstruct): RemovalPolicys {
-    return new RemovalPolicys(scope);
+  public static of(scope: IConstruct): RemovalPolicies {
+    return new RemovalPolicies(scope);
   }
 
   private constructor(private readonly scope: IConstruct) {}

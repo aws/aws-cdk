@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnResource, CfnDeletionPolicy, Stack } from '../lib';
 import { synthesize } from '../lib/private/synthesis';
-import { RemovalPolicys } from '../lib/removal-policys';
+import { RemovalPolicies } from '../lib/removal-policies';
 
 class TestResource extends CfnResource {
   public static readonly CFN_RESOURCE_TYPE_NAME = 'AWS::Test::Resource';
@@ -42,7 +42,7 @@ describe('removal-policys', () => {
     const resource2 = new TestResource(parent, 'Resource2');
 
     // WHEN
-    RemovalPolicys.of(parent).destroy();
+    RemovalPolicies.of(parent).destroy();
 
     // THEN
     synthesize(stack);
@@ -59,7 +59,7 @@ describe('removal-policys', () => {
     const resource = new TestResource(parent, 'Resource');
 
     // WHEN
-    RemovalPolicys.of(parent).retain({
+    RemovalPolicies.of(parent).retain({
       applyToResourceTypes: ['AWS::S3::Bucket', 'AWS::DynamoDB::Table'],
     });
 
@@ -79,7 +79,7 @@ describe('removal-policys', () => {
     const resource = new TestResource(parent, 'Resource');
 
     // WHEN
-    RemovalPolicys.of(parent).retain({
+    RemovalPolicies.of(parent).retain({
       applyToResourceTypes: [TestBucketResource, TestTableResource],
     });
 
@@ -99,7 +99,7 @@ describe('removal-policys', () => {
     const resource = new TestResource(parent, 'Resource');
 
     // WHEN
-    RemovalPolicys.of(parent).snapshot({
+    RemovalPolicies.of(parent).snapshot({
       excludeResourceTypes: ['AWS::Test::Resource'],
     });
 
@@ -119,7 +119,7 @@ describe('removal-policys', () => {
     const resource = new TestResource(parent, 'Resource');
 
     // WHEN
-    RemovalPolicys.of(parent).snapshot({
+    RemovalPolicies.of(parent).snapshot({
       excludeResourceTypes: [TestResource],
     });
 
@@ -139,10 +139,10 @@ describe('removal-policys', () => {
     const retainOnUpdate = new TestResource(stack, 'RetainOnUpdateResource');
 
     // WHEN
-    RemovalPolicys.of(destroy).destroy();
-    RemovalPolicys.of(retain).retain();
-    RemovalPolicys.of(snapshot).snapshot();
-    RemovalPolicys.of(retainOnUpdate).retainOnUpdateOrDelete();
+    RemovalPolicies.of(destroy).destroy();
+    RemovalPolicies.of(retain).retain();
+    RemovalPolicies.of(snapshot).snapshot();
+    RemovalPolicies.of(retainOnUpdate).retainOnUpdateOrDelete();
 
     // THEN
     synthesize(stack);
@@ -158,15 +158,15 @@ describe('removal-policys', () => {
     const resource = new TestResource(stack, 'Resource');
 
     // WHEN
-    RemovalPolicys.of(resource).destroy();
+    RemovalPolicies.of(resource).destroy();
     synthesize(stack);
     expect(resource.cfnOptions.deletionPolicy).toBe('Delete');
 
-    RemovalPolicys.of(resource).retain();
+    RemovalPolicies.of(resource).retain();
     synthesize(stack);
     expect(resource.cfnOptions.deletionPolicy).toBe('Delete');
 
-    RemovalPolicys.of(resource).snapshot({ overwrite: true });
+    RemovalPolicies.of(resource).snapshot({ overwrite: true });
     synthesize(stack);
     expect(resource.cfnOptions.deletionPolicy).toBe('Snapshot');
   });
@@ -180,15 +180,15 @@ describe('removal-policys', () => {
     const childResource = new TestResource(child, 'ChildResource');
 
     // WHEN
-    RemovalPolicys.of(parent).destroy();
-    RemovalPolicys.of(child).retain();
+    RemovalPolicies.of(parent).destroy();
+    RemovalPolicies.of(child).retain();
 
     // THEN
     synthesize(stack);
     expect(parentResource.cfnOptions.deletionPolicy).toBe('Delete');
     expect(childResource.cfnOptions.deletionPolicy).toBe('Delete');
 
-    RemovalPolicys.of(child).retain({ overwrite: true });
+    RemovalPolicies.of(child).retain({ overwrite: true });
     synthesize(stack);
     expect(childResource.cfnOptions.deletionPolicy).toBe('Retain');
   });
@@ -204,7 +204,7 @@ describe('removal-policys', () => {
     expect(bucket.cfnOptions.deletionPolicy).toBe('Retain');
 
     const table = new TestTableResource(parent, 'Table');
-    RemovalPolicys.of(parent).retainOnUpdateOrDelete();
+    RemovalPolicies.of(parent).retainOnUpdateOrDelete();
 
     synthesize(stack);
     expect(bucket.cfnOptions.deletionPolicy).toBe('Retain');
