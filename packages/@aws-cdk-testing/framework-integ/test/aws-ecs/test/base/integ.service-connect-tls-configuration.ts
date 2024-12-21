@@ -5,10 +5,10 @@ import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as acm from 'aws-cdk-lib/aws-acmpca';
-import * as cloudmap from 'aws-cdk-lib/aws-servicediscovery';
+import * as servicediscovery from 'aws-cdk-lib/aws-servicediscovery';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-ecs-service-connect-tls-configuration-integ');
+const stack = new cdk.Stack(app, 'aws-ecs');
 const vpc = new ec2.Vpc(stack, 'Vpc');
 const cluster = new ecs.Cluster(stack, 'EcsCluster', {
   vpc,
@@ -16,13 +16,14 @@ const cluster = new ecs.Cluster(stack, 'EcsCluster', {
 
 const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
 
-const namespace = new cloudmap.PrivateDnsNamespace(stack, 'ns', {
+const namespace = new servicediscovery.PrivateDnsNamespace(stack, 'ns', {
   name: 'foobar.com',
   vpc,
 });
 
-const ca = acm.CertificateAuthority.fromCertificateAuthorityArn(stack, 'CA',
-  'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/123456789012',
+const certificateAuthority = acm.CertificateAuthority.fromCertificateAuthorityArn(stack, 'PrivateCA',
+  // 'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/123456789012',
+  'arn:aws:acm-pca:ap-northeast-1:852045161734:certificate-authority/96c220ca-4b5b-4e6c-8420-67df70c822b2',
 );
 
 const kmsKey = new kms.Key(stack, 'KmsKey', {
@@ -47,25 +48,13 @@ const role = new iam.Role(stack, 'Role', {
     iam.ManagedPolicy.fromAwsManagedPolicyName('AWSPrivateCAFullAccess'),
   ],
 });
-
+role.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
 role.addToPolicy(new iam.PolicyStatement({
-  actions: [
-    'secretsmanager:CreateSecret',
-    'secretsmanager:DeleteSecret',
-    'secretsmanager:GetSecretValue',
-    'secretsmanager:PutSecretValue',
-    'secretsmanager:TagResource',
-    'secretsmanager:RotateSecret',
-  ],
+  actions: ['secretsmanager:*'],
   resources: ['*'],
 }));
 
-kmsKey.grant(role,
-  'kms:Decrypt',
-  'kms:Encrypt',
-  'kms:GenerateDataKey',
-  'kms:GenerateDataKeyPair',
-);
+kmsKey.grant(role, 'kms:*');
 
 new ecs.FargateService(stack, 'FargateService', {
   cluster,
@@ -77,7 +66,7 @@ new ecs.FargateService(stack, 'FargateService', {
         dnsName: 'api',
         port: 80,
         tls: {
-          awsPcaAuthorityArn: ca.certificateAuthorityArn,
+          awsPcaAuthorityArn: certificateAuthority.certificateAuthorityArn,
           role,
           kmsKey,
         },
@@ -85,6 +74,8 @@ new ecs.FargateService(stack, 'FargateService', {
     ],
     namespace: namespace.namespaceArn,
   },
+  minHealthyPercent: 0,
+  maxHealthyPercent: 100,
 });
 
 new integ.IntegTest(app, 'aws-ecs-service-connect-tls-configuration', {
