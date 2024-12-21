@@ -589,8 +589,13 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
     }
 
     // Only check runtime family is nodejs because versions prior to syn-nodejs-2.0 are deprecated and can no longer be configured.
-    if (props.activeTracing && !cdk.Token.isUnresolved(props.runtime.family) && props.runtime.family !== RuntimeFamily.NODEJS) {
-      throw new Error('You can only enable active tracing for canaries that use canary runtime version `syn-nodejs-2.0` or later.');
+    if (
+      props.activeTracing &&
+      !cdk.Token.isUnresolved(props.runtime.family) &&
+      !cdk.Token.isUnresolved(props.runtime.name) &&
+      (props.runtime.family !== RuntimeFamily.NODEJS || props.runtime.name.includes('playwright'))
+    ) {
+      throw new Error(`You can only enable active tracing for canaries that use canary runtime version 'syn-nodejs-2.0' or later and are not using the Playwright runtime, got ${props.runtime.name}.`);
     }
 
     let memoryInMb: number | undefined;

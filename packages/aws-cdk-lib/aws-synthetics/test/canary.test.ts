@@ -260,7 +260,10 @@ test.each([true, false])('activeTracing can be set to %s', (activeTracing: boole
   });
 });
 
-test('throws when activeTracing is enabled with an unsupported runtime', () => {
+test.each([
+  synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_2_1,
+  synthetics.Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT_1_0,
+])('throws when activeTracing is enabled with an unsupported runtime', (runtime) => {
   // GIVEN
   const stack = new Stack();
 
@@ -270,10 +273,10 @@ test('throws when activeTracing is enabled with an unsupported runtime', () => {
       handler: 'index.handler',
       code: synthetics.Code.fromInline('# Synthetics handler code'),
     }),
-    runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_2_1,
+    runtime,
     activeTracing: true,
   }))
-    .toThrow('You can only enable active tracing for canaries that use canary runtime version `syn-nodejs-2.0` or later.');
+    .toThrow(`You can only enable active tracing for canaries that use canary runtime version 'syn-nodejs-2.0' or later and are not using the Playwright runtime, got ${runtime.name}.`);
 });
 
 test('environment variables can be specified', () => {
