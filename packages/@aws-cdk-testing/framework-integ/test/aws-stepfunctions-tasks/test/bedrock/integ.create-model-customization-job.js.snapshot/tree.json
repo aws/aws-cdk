@@ -32,7 +32,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "IsolatedSubnet1": {
@@ -76,7 +76,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "Acl": {
@@ -84,7 +84,7 @@
                     "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/Vpc/IsolatedSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "RouteTable": {
@@ -106,7 +106,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "RouteTableAssociation": {
@@ -125,13 +125,13 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "IsolatedSubnet2": {
@@ -175,7 +175,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "Acl": {
@@ -183,7 +183,7 @@
                     "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/Vpc/IsolatedSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "RouteTable": {
@@ -205,7 +205,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "RouteTableAssociation": {
@@ -224,13 +224,13 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "PublicSubnet1": {
@@ -274,7 +274,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "Acl": {
@@ -282,7 +282,7 @@
                     "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/Vpc/PublicSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "RouteTable": {
@@ -304,7 +304,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "RouteTableAssociation": {
@@ -323,7 +323,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "DefaultRoute": {
@@ -343,13 +343,13 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "PublicSubnet2": {
@@ -393,7 +393,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "Acl": {
@@ -401,7 +401,7 @@
                     "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/Vpc/PublicSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "RouteTable": {
@@ -423,7 +423,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "RouteTableAssociation": {
@@ -442,7 +442,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "DefaultRoute": {
@@ -462,13 +462,13 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "IGW": {
@@ -487,7 +487,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "VPCGW": {
@@ -506,7 +506,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "RestrictDefaultSecurityGroupCustomResource": {
@@ -518,19 +518,19 @@
                     "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/Vpc/RestrictDefaultSecurityGroupCustomResource/Default",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "LatestNodeRuntimeMap": {
@@ -538,7 +538,7 @@
             "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/LatestNodeRuntimeMap",
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "Custom::VpcRestrictDefaultSGCustomResourceProvider": {
@@ -550,7 +550,7 @@
                 "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider/Staging",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "Role": {
@@ -558,7 +558,7 @@
                 "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "Handler": {
@@ -566,13 +566,13 @@
                 "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "OutputBucket": {
@@ -588,13 +588,13 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "TrainingBucket": {
@@ -610,13 +610,13 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "ValidationBucket": {
@@ -632,13 +632,13 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "KmsKey": {
@@ -683,6 +683,24 @@
                             "kms:DescribeKey",
                             "kms:GenerateDataKey"
                           ],
+                          "Condition": {
+                            "StringEquals": {
+                              "kms:ViaService": [
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "bedrock.",
+                                      {
+                                        "Ref": "AWS::Region"
+                                      },
+                                      ".amazonaws.com"
+                                    ]
+                                  ]
+                                }
+                              ]
+                            }
+                          },
                           "Effect": "Allow",
                           "Principal": {
                             "AWS": [
@@ -709,13 +727,13 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "SecurityGroup": {
@@ -743,13 +761,13 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "CreateModelCustomizationJob1": {
@@ -765,7 +783,7 @@
                     "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/CreateModelCustomizationJob1/BedrockRole/ImportBedrockRole",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "Resource": {
@@ -1146,19 +1164,19 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "CreateModelCustomizationJob2": {
@@ -1174,7 +1192,7 @@
                     "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/CreateModelCustomizationJob2/BedrockRole/ImportBedrockRole",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "Resource": {
@@ -1288,19 +1306,19 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "Start": {
@@ -1308,7 +1326,7 @@
             "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/Start",
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "Done": {
@@ -1316,7 +1334,7 @@
             "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/Done",
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "StateMachine": {
@@ -1332,7 +1350,7 @@
                     "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/StateMachine/Role/ImportRole",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "Resource": {
@@ -1357,7 +1375,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "DefaultPolicy": {
@@ -1468,19 +1486,19 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "version": "10.4.2"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "Resource": {
@@ -1606,13 +1624,13 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "Exports": {
@@ -1624,13 +1642,13 @@
                 "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/Exports/Output{\"Ref\":\"StateMachine2E01A3A5\"}",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "BootstrapVersion": {
@@ -1638,7 +1656,7 @@
             "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/BootstrapVersion",
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "CheckBootstrapVersion": {
@@ -1646,13 +1664,13 @@
             "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           }
         },
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       },
       "CreateModelCustomizationJob": {
@@ -1668,7 +1686,7 @@
                 "path": "CreateModelCustomizationJob/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -1688,7 +1706,7 @@
                             "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -1706,13 +1724,13 @@
                             "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/Default/Default",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "version": "10.4.2"
                         }
                       },
                       "WaitFor": {
@@ -1728,7 +1746,7 @@
                                 "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/WaitFor/IsCompleteProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.3.0"
+                                  "version": "10.4.2"
                                 }
                               },
                               "Invoke": {
@@ -1736,7 +1754,7 @@
                                 "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/WaitFor/IsCompleteProvider/Invoke",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.3.0"
+                                  "version": "10.4.2"
                                 }
                               }
                             },
@@ -1754,7 +1772,7 @@
                                 "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/WaitFor/TimeoutProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.3.0"
+                                  "version": "10.4.2"
                                 }
                               },
                               "Invoke": {
@@ -1762,7 +1780,7 @@
                                 "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/WaitFor/TimeoutProvider/Invoke",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.3.0"
+                                  "version": "10.4.2"
                                 }
                               }
                             },
@@ -1776,7 +1794,7 @@
                             "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/WaitFor/Role",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           },
                           "Resource": {
@@ -1784,7 +1802,7 @@
                             "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/WaitFor/Resource",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -1808,7 +1826,7 @@
                         "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "version": "10.4.2"
                         }
                       },
                       "Role": {
@@ -1816,7 +1834,7 @@
                         "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "version": "10.4.2"
                         }
                       },
                       "Handler": {
@@ -1824,13 +1842,13 @@
                         "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "version": "10.4.2"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "LatestNodeRuntimeMap": {
@@ -1838,7 +1856,7 @@
                     "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/LatestNodeRuntimeMap",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "SingletonFunction76b3e830a873425f8453eddd85c86925": {
@@ -1850,7 +1868,7 @@
                         "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Staging",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "version": "10.4.2"
                         }
                       },
                       "Role": {
@@ -1858,7 +1876,7 @@
                         "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "version": "10.4.2"
                         }
                       },
                       "Handler": {
@@ -1866,13 +1884,13 @@
                         "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "version": "10.4.2"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a": {
@@ -1884,7 +1902,7 @@
                         "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Staging",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "version": "10.4.2"
                         }
                       },
                       "Role": {
@@ -1892,7 +1910,7 @@
                         "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "version": "10.4.2"
                         }
                       },
                       "Handler": {
@@ -1900,13 +1918,13 @@
                         "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "version": "10.4.2"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "BootstrapVersion": {
@@ -1914,7 +1932,7 @@
                     "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "CheckBootstrapVersion": {
@@ -1922,13 +1940,13 @@
                     "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               }
             },
@@ -1948,13 +1966,13 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },
     "constructInfo": {
       "fqn": "constructs.Construct",
-      "version": "10.3.0"
+      "version": "10.4.2"
     }
   }
 }
