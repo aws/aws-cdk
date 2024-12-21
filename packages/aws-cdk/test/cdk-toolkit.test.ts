@@ -95,8 +95,6 @@ import { flatten } from '../lib/util';
 
 markTesting();
 
-process.env.CXAPI_DISABLE_SELECT_BY_ID = '1';
-
 const defaultBootstrapSource: BootstrapSource = { source: 'default' };
 const bootstrapEnvironmentMock = jest.spyOn(Bootstrapper.prototype, 'bootstrapEnvironment');
 let cloudExecutable: MockCloudExecutable;
