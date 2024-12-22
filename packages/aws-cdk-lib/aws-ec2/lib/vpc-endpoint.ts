@@ -774,6 +774,38 @@ export interface InterfaceVpcEndpointOptions {
    * @default false
    */
   readonly lookupSupportedAzs?: boolean;
+
+  /**
+   * The supported IP address types.
+   *
+   * @default IpAddressType.IPV4
+   */
+  readonly ipAddressType?: IpAddressType
+}
+
+/**
+ * The supported IP address types.
+ */
+export enum IpAddressType {
+  /**
+   * Use only IPv4 addresses
+   */
+  IPV4 = 'ipv4',
+
+  /**
+   * Use only IPv6 addresses
+   */
+  IPV6 = 'ipv6',
+
+  /**
+   * Use IPv4 and IPv6 addresses
+   */
+  DUAL_STACK = 'dualstack',
+
+  /**
+   * not specified
+   */
+  NOT_SPECIFIED = 'not-specified'
 }
 
 /**
@@ -892,6 +924,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
       vpcEndpointType: VpcEndpointType.INTERFACE,
       subnetIds,
       vpcId: props.vpc.vpcId,
+      ipAddressType: props.ipAddressType,
     });
 
     this.vpcEndpointId = endpoint.ref;
