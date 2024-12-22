@@ -1667,6 +1667,7 @@ RemovalPolicies.of(parent).retain({
   applyToResourceTypes: [
     'AWS::DynamoDB::Table',
     bucket.cfnResourceType, // 'AWS::S3::Bucket'
+    CfnDBInstance.CFN_RESOURCE_TYPE_NAME, // 'AWS::RDS::DBInstance'
   ],
 });
 
