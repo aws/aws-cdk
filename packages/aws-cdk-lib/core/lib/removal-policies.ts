@@ -78,17 +78,7 @@ class RemovalPolicyAspect implements IAspect {
     }
 
     // Apply the removal policy
-    try {
-      cfnResource.applyRemovalPolicy(this.policy);
-    } catch (error) {
-      // Check if the error is an instance of the built-in Error class
-      if (error instanceof Error) {
-        throw new Error(`Failed to apply removal policy to resource type ${resourceType}: ${error.message}`);
-      } else {
-        // If it's not an Error instance, convert it to a string for the message
-        throw new Error(`Failed to apply removal policy to resource type ${resourceType}: ${String(error)}`);
-      }
-    }
+    cfnResource.applyRemovalPolicy(this.policy);
   }
 }
 
