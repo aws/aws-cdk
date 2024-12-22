@@ -1,26 +1,27 @@
-/* eslint-disable import/order */
 import * as fs from 'fs';
 import * as path from 'path';
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { AssetManifest } from '@aws-cdk/cloud-assembly-schema';
-import * as cxapi from '@aws-cdk/cx-api';
+import { ArtifactMetadataEntryType, ArtifactType, type AssetManifest, type AssetMetadataEntry, type AwsCloudFormationStackProperties, type MetadataEntry, type MissingContext } from '@aws-cdk/cloud-assembly-schema';
+import { type CloudAssembly, CloudAssemblyBuilder, type CloudFormationStackArtifact, type StackMetadata } from '@aws-cdk/cx-api';
 import { MockSdkProvider } from './util/mock-sdk';
 import { CloudExecutable } from '../lib/api/cxapp/cloud-executable';
 import { Configuration } from '../lib/settings';
+import { cxapiAssemblyWithForcedVersion } from './api/assembly-versions';
 
 export const DEFAULT_FAKE_TEMPLATE = { No: 'Resources' };
+
+const SOME_RECENT_SCHEMA_VERSION = '30.0.0';
 
 export interface TestStackArtifact {
   stackName: string;
   template?: any;
   env?: string;
   depends?: string[];
-  metadata?: cxapi.StackMetadata;
+  metadata?: StackMetadata;
   notificationArns?: string[];
 
   /** Old-style assets */
-  assets?: cxschema.AssetMetadataEntry[];
-  properties?: Partial<cxschema.AwsCloudFormationStackProperties>;
+  assets?: AssetMetadataEntry[];
+  properties?: Partial<AwsCloudFormationStackProperties>;
   terminationProtection?: boolean;
   displayName?: string;
 
@@ -30,8 +31,9 @@ export interface TestStackArtifact {
 
 export interface TestAssembly {
   stacks: TestStackArtifact[];
-  missing?: cxschema.MissingContext[];
+  missing?: MissingContext[];
   nestedAssemblies?: TestAssembly[];
+  schemaVersion?: string;
 }
 
 export class MockCloudExecutable extends CloudExecutable {
@@ -57,7 +59,7 @@ function clone(obj: any) {
   return JSON.parse(JSON.stringify(obj));
 }
 
-function addAttributes(assembly: TestAssembly, builder: cxapi.CloudAssemblyBuilder) {
+function addAttributes(assembly: TestAssembly, builder: CloudAssemblyBuilder) {
   for (const stack of assembly.stacks) {
     const templateFile = `${stack.stackName}.template.json`;
     const template = stack.template ?? DEFAULT_FAKE_TEMPLATE;
@@ -66,25 +68,23 @@ function addAttributes(assembly: TestAssembly, builder: cxapi.CloudAssemblyBuild
 
     // we call patchStackTags here to simulate the tags formatter
     // that is used when building real manifest files.
-    const metadata: { [path: string]: cxschema.MetadataEntry[] } = patchStackTags({ ...stack.metadata });
+    const metadata: { [path: string]: MetadataEntry[] } = patchStackTags({ ...stack.metadata });
     for (const asset of stack.assets || []) {
-      metadata[asset.id] = [
-        { type: cxschema.ArtifactMetadataEntryType.ASSET, data: asset },
-      ];
+      metadata[asset.id] = [{ type: ArtifactMetadataEntryType.ASSET, data: asset }];
     }
 
     for (const missing of assembly.missing || []) {
       builder.addMissing(missing);
     }
 
-    const dependencies = [...stack.depends ?? []];
+    const dependencies = [...(stack.depends ?? [])];
 
     if (stack.assetManifest) {
       const manifestFile = `${stack.stackName}.assets.json`;
       fs.writeFileSync(path.join(builder.outdir, manifestFile), JSON.stringify(stack.assetManifest, undefined, 2));
       dependencies.push(`${stack.stackName}.assets`);
       builder.addArtifact(`${stack.stackName}.assets`, {
-        type: cxschema.ArtifactType.ASSET_MANIFEST,
+        type: ArtifactType.ASSET_MANIFEST,
         environment: stack.env || 'aws://123456789012/here',
         properties: {
           file: manifestFile,
@@ -93,7 +93,7 @@ function addAttributes(assembly: TestAssembly, builder: cxapi.CloudAssemblyBuild
     }
 
     builder.addArtifact(stack.stackName, {
-      type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
+      type: ArtifactType.AWS_CLOUDFORMATION_STACK,
       environment: stack.env || 'aws://123456789012/here',
 
       dependencies,
@@ -106,7 +106,6 @@ function addAttributes(assembly: TestAssembly, builder: cxapi.CloudAssemblyBuild
       },
       displayName: stack.displayName,
     });
-
   }
 }
 
@@ -129,8 +128,8 @@ function addNestedStacks(templatePath: string, outdir: string, rootStackTemplate
   }
 }
 
-export function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
-  const builder = new cxapi.CloudAssemblyBuilder();
+export function testAssembly(assembly: TestAssembly): CloudAssembly {
+  const builder = new CloudAssemblyBuilder();
   addAttributes(assembly, builder);
 
   if (assembly.nestedAssemblies != null && assembly.nestedAssemblies.length > 0) {
@@ -141,7 +140,8 @@ export function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
     });
   }
 
-  return builder.buildAssembly();
+  const asm = builder.buildAssembly();
+  return cxapiAssemblyWithForcedVersion(asm, assembly.schemaVersion ?? SOME_RECENT_SCHEMA_VERSION);
 }
 
 /**
@@ -151,14 +151,14 @@ export function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
  *
  * @see aws-cdk-lib/lib/stack.ts
  */
-function patchStackTags(metadata: { [path: string]: cxschema.MetadataEntry[] }): { [path: string]: cxschema.MetadataEntry[] } {
-
-  const cloned = clone(metadata) as { [path: string]: cxschema.MetadataEntry[] };
+function patchStackTags(metadata: { [path: string]: MetadataEntry[] }): {
+  [path: string]: MetadataEntry[];
+} {
+  const cloned = clone(metadata) as { [path: string]: MetadataEntry[] };
 
   for (const metadataEntries of Object.values(cloned)) {
     for (const metadataEntry of metadataEntries) {
-      if (metadataEntry.type === cxschema.ArtifactMetadataEntryType.STACK_TAGS && metadataEntry.data) {
-
+      if (metadataEntry.type === ArtifactMetadataEntryType.STACK_TAGS && metadataEntry.data) {
         const metadataAny = metadataEntry as any;
 
         metadataAny.data = metadataAny.data.map((t: any) => {
@@ -170,7 +170,7 @@ function patchStackTags(metadata: { [path: string]: cxschema.MetadataEntry[] }):
   return cloned;
 }
 
-export function testStack(stack: TestStackArtifact): cxapi.CloudFormationStackArtifact {
+export function testStack(stack: TestStackArtifact): CloudFormationStackArtifact {
   const assembly = testAssembly({ stacks: [stack] });
   return assembly.getStackByName(stack.stackName);
 }
@@ -193,34 +193,11 @@ export function instanceMockFrom<A>(ctr: new (...args: any[]) => A): jest.Mocked
   return ret;
 }
 
-/**
- * Run an async block with a class (constructor) replaced with a mock
- *
- * The class constructor will be replaced with a constructor that returns
- * a singleton, and the singleton will be passed to the block so that its
- * methods can be mocked individually.
- *
- * Uses `instanceMockFrom` so is subject to the same limitations that hold
- * for that function.
- */
-export async function withMockedClassSingleton<A extends object, K extends keyof A, B>(
+export function withMocked<A extends object, K extends keyof A, B>(
   obj: A,
   key: K,
-  cb: (mock: A[K] extends jest.Constructable ? jest.Mocked<InstanceType<A[K]>> : never) => Promise<B>,
-): Promise<B> {
-
-  const original = obj[key];
-  try {
-    const mock = instanceMockFrom(original as any);
-    obj[key] = jest.fn().mockReturnValue(mock) as any;
-    const ret = await cb(mock as any);
-    return ret;
-  } finally {
-    obj[key] = original;
-  }
-}
-
-export function withMocked<A extends object, K extends keyof A, B>(obj: A, key: K, block: (fn: jest.Mocked<A>[K]) => B): B {
+  block: (fn: jest.Mocked<A>[K]) => B,
+): B {
   const original = obj[key];
   const mockFn = jest.fn();
   (obj as any)[key] = mockFn;
@@ -228,10 +205,14 @@ export function withMocked<A extends object, K extends keyof A, B>(obj: A, key: 
   let asyncFinally: boolean = false;
   try {
     const ret = block(mockFn as any);
-    if (!isPromise(ret)) { return ret; }
+    if (!isPromise(ret)) {
+      return ret;
+    }
 
     asyncFinally = true;
-    return ret.finally(() => { obj[key] = original; }) as any;
+    return ret.finally(() => {
+      obj[key] = original;
+    }) as any;
   } finally {
     if (!asyncFinally) {
       obj[key] = original;
@@ -244,5 +225,5 @@ function isPromise<A>(object: any): object is Promise<A> {
 }
 
 export async function sleep(ms: number) {
-  return new Promise(ok => setTimeout(ok, ms));
+  return new Promise((ok) => setTimeout(ok, ms));
 }

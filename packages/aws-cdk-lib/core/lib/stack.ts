@@ -4,7 +4,7 @@ import { IConstruct, Construct, Node } from 'constructs';
 import { Annotations } from './annotations';
 import { App } from './app';
 import { Arn, ArnComponents, ArnFormat } from './arn';
-import { Aspects } from './aspect';
+import { AspectPriority, Aspects } from './aspect';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from './assets';
 import { CfnElement } from './cfn-element';
 import { Fn } from './cfn-fn';
@@ -376,7 +376,7 @@ export class Stack extends Construct implements ITaggable {
    *
    * @internal
    */
-  public readonly _notificationArns: string[];
+  public readonly _notificationArns?: string[];
 
   /**
    * Logical ID generation strategy
@@ -471,7 +471,7 @@ export class Stack extends Construct implements ITaggable {
       }
     }
 
-    this._notificationArns = props.notificationArns ?? [];
+    this._notificationArns = props.notificationArns;
 
     if (!VALID_STACK_NAME_REGEX.test(this.stackName)) {
       throw new Error(`Stack name must match the regular expression: ${VALID_STACK_NAME_REGEX.toString()}, got '${this.stackName}'`);
@@ -583,7 +583,7 @@ export class Stack extends Construct implements ITaggable {
             node.addPropertyOverride('PermissionsBoundary', permissionsBoundaryArn);
           }
         },
-      });
+      }, { priority: AspectPriority.MUTATING });
 
     }
   }

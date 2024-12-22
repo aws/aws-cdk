@@ -1,9 +1,11 @@
-import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate } from './common';
-import { ISDK } from '../aws-auth';
-import { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
+import { type ChangeHotswapResult, classifyChanges, type HotswappableChangeCandidate } from './common';
+import type { SDK } from '../aws-auth';
+import type { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
 
 export async function isHotswappableStateMachineChange(
-  logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
+  logicalId: string,
+  change: HotswappableChangeCandidate,
+  evaluateCfnTemplate: EvaluateCloudFormationTemplate,
 ): Promise<ChangeHotswapResult> {
   if (change.newValue.Type !== 'AWS::StepFunctions::StateMachine') {
     return [];
@@ -17,7 +19,9 @@ export async function isHotswappableStateMachineChange(
     const stateMachineNameInCfnTemplate = change.newValue?.Properties?.StateMachineName;
     const stateMachineArn = stateMachineNameInCfnTemplate
       ? await evaluateCfnTemplate.evaluateCfnExpression({
-        'Fn::Sub': 'arn:${AWS::Partition}:states:${AWS::Region}:${AWS::AccountId}:stateMachine:' + stateMachineNameInCfnTemplate,
+        'Fn::Sub':
+            'arn:${AWS::Partition}:states:${AWS::Region}:${AWS::AccountId}:stateMachine:' +
+            stateMachineNameInCfnTemplate,
       })
       : await evaluateCfnTemplate.findPhysicalNameFor(logicalId);
     ret.push({
@@ -26,7 +30,7 @@ export async function isHotswappableStateMachineChange(
       propsChanged: namesOfHotswappableChanges,
       service: 'stepfunctions-service',
       resourceNames: [`${change.newValue.Type} '${stateMachineArn?.split(':')[6]}'`],
-      apply: async (sdk: ISDK) => {
+      apply: async (sdk: SDK) => {
         if (!stateMachineArn) {
           return;
         }
@@ -35,7 +39,7 @@ export async function isHotswappableStateMachineChange(
         await sdk.stepFunctions().updateStateMachine({
           stateMachineArn,
           definition: await evaluateCfnTemplate.evaluateCfnExpression(change.propertyUpdates.DefinitionString.newValue),
-        }).promise();
+        });
       },
     });
   }

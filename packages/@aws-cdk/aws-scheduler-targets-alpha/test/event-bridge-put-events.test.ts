@@ -27,7 +27,7 @@ describe('eventBridge put events', () => {
   });
 
   test('creates IAM role and IAM policy for event bus put events target in the same account', () => {
-    const eventBusTarget = new EventBridgePutEvents(eventBusEventEntry, {});
+    const eventBusTarget = new EventBridgePutEvents(eventBusEventEntry);
 
     new Schedule(stack, 'MyScheduleDummy', {
       schedule: expr,
@@ -162,7 +162,7 @@ describe('eventBridge put events', () => {
   });
 
   test('reuses IAM role and IAM policy for two schedules with the same target from the same account', () => {
-    const eventBusTarget = new EventBridgePutEvents(eventBusEventEntry, {});
+    const eventBusTarget = new EventBridgePutEvents(eventBusEventEntry);
 
     new Schedule(stack, 'MyScheduleDummy1', {
       schedule: expr,
@@ -228,7 +228,7 @@ describe('eventBridge put events', () => {
   });
 
   test('creates IAM role and IAM policy for two schedules with the same target but different groups', () => {
-    const eventBusTarget = new EventBridgePutEvents(eventBusEventEntry, {});
+    const eventBusTarget = new EventBridgePutEvents(eventBusEventEntry);
     const group = new Group(stack, 'Group', {
       groupName: 'mygroup',
     });
@@ -322,7 +322,7 @@ describe('eventBridge put events', () => {
       eventBus: importedEventBus,
     };
 
-    const eventBusTarget = new EventBridgePutEvents(entry, {});
+    const eventBusTarget = new EventBridgePutEvents(entry);
 
     new Schedule(stack, 'MyScheduleDummy', {
       schedule: expr,
@@ -466,55 +466,6 @@ describe('eventBridge put events', () => {
     });
   });
 
-  test('throws when eventBus is imported from different account', () => {
-    const anotherAccountId = '123456789015';
-    const importedEventBusArnFromAnotherAccount = `arn:aws:events:us-east-1:${anotherAccountId}:event-bus/MyEventBus`;
-    const importedEventBus = events.EventBus.fromEventBusArn(stack, 'ImportedEventBus', importedEventBusArnFromAnotherAccount);
-    const entry: EventBridgePutEventsEntry = {
-      ...eventBusEventEntry,
-      eventBus: importedEventBus,
-    };
-    const eventBusTarget = new EventBridgePutEvents(entry, {});
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: eventBusTarget,
-      })).toThrow(/Both the schedule and the eventBus must be in the same account./);
-  });
-
-  test('throws when eventBus is imported from different region', () => {
-    const anotherRegion = 'eu-central-1';
-    const importedEventBusArnFromAnotherRegion = `arn:aws:events:${anotherRegion}:123456789012:event-bus/MyEventBus`;
-    const importedEventBus = events.EventBus.fromEventBusArn(stack, 'ImportedEventBus', importedEventBusArnFromAnotherRegion);
-    const entry: EventBridgePutEventsEntry = {
-      ...eventBusEventEntry,
-      eventBus: importedEventBus,
-    };
-    const eventBusTarget = new EventBridgePutEvents(entry, {});
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: eventBusTarget,
-      })).toThrow(/Both the schedule and the eventBus must be in the same region/);
-  });
-
-  test('throws when IAM role is imported from different account', () => {
-    const anotherAccountId = '123456789015';
-    const importedRole = Role.fromRoleArn(stack, 'ImportedRole', `arn:aws:iam::${anotherAccountId}:role/someRole`);
-
-    const eventBusTarget = new EventBridgePutEvents(eventBusEventEntry, {
-      role: importedRole,
-    });
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: eventBusTarget,
-      })).toThrow(/Both the target and the execution role must be in the same account/);
-  });
-
   test('adds permissions to execution role for sending messages to DLQ', () => {
     const dlq = new sqs.Queue(stack, 'DummyDeadLetterQueue');
 
@@ -636,16 +587,16 @@ describe('eventBridge put events', () => {
       })).toThrow(/Maximum event age is 1 day/);
   });
 
-  test('throws when retry policy max age is less than 15 minutes', () => {
+  test('throws when retry policy max age is less than 1 minute', () => {
     const eventBusTarget = new EventBridgePutEvents(eventBusEventEntry, {
-      maxEventAge: Duration.minutes(5),
+      maxEventAge: Duration.seconds(59),
     });
 
     expect(() =>
       new Schedule(stack, 'MyScheduleDummy', {
         schedule: expr,
         target: eventBusTarget,
-      })).toThrow(/Minimum event age is 15 minutes/);
+      })).toThrow(/Minimum event age is 1 minute/);
   });
 
   test('throws when retry policy max retry attempts is out of the allowed limits', () => {

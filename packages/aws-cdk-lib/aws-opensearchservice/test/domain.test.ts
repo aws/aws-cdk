@@ -44,6 +44,7 @@ const testedOpenSearchVersions = [
   EngineVersion.OPENSEARCH_2_11,
   EngineVersion.OPENSEARCH_2_13,
   EngineVersion.OPENSEARCH_2_15,
+  EngineVersion.OPENSEARCH_2_17,
 ];
 
 each(testedOpenSearchVersions).test('connections throws if domain is not placed inside a vpc', (engineVersion) => {
@@ -52,7 +53,7 @@ each(testedOpenSearchVersions).test('connections throws if domain is not placed 
     new Domain(stack, 'Domain', {
       version: engineVersion,
     }).connections;
-  }).toThrowError("Connections are only available on VPC enabled domains. Use the 'vpc' property to place a domain inside a VPC");
+  }).toThrow("Connections are only available on VPC enabled domains. Use the 'vpc' property to place a domain inside a VPC");
 });
 
 each(testedOpenSearchVersions).test('subnets and security groups can be provided when vpc is used', (engineVersion) => {
@@ -211,6 +212,7 @@ each([
   [EngineVersion.OPENSEARCH_2_11, 'OpenSearch_2.11'],
   [EngineVersion.OPENSEARCH_2_13, 'OpenSearch_2.13'],
   [EngineVersion.OPENSEARCH_2_15, 'OpenSearch_2.15'],
+  [EngineVersion.OPENSEARCH_2_17, 'OpenSearch_2.17'],
 ]).test('minimal example renders correctly', (engineVersion, expectedCfVersion) => {
   new Domain(stack, 'Domain', { version: engineVersion });
 

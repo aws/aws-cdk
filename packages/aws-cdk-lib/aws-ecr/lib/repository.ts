@@ -18,8 +18,6 @@ import {
   TokenComparison,
   CustomResource,
   Aws,
-  CfnCondition,
-  Fn,
 } from '../../core';
 import { AutoDeleteImagesProvider } from '../../custom-resource-handlers/dist/aws-ecr/auto-delete-images-provider.generated';
 
@@ -50,6 +48,15 @@ export interface IRepository extends IResource {
    * @attribute
    */
   readonly repositoryUri: string;
+
+  /**
+   * The URI of this repository's registry:
+   *
+   *    ACCOUNT.dkr.ecr.REGION.amazonaws.com
+   *
+   * @attribute
+   */
+  readonly registryUri: string;
 
   /**
    * Returns the URI of the repository for a certain tag. Can be used in `docker push/pull`.
@@ -168,11 +175,6 @@ export abstract class RepositoryBase extends Resource implements IRepository {
     'ecr:PutImage',
   ];
 
-  // a map to make sure that we do not add more than one condition for the same Token
-  private tokenConditions: { [id: string]: CfnCondition } = { };
-  // Used to make sure that the condition logical id is unique
-  private conditionsNumber: number = 0;
-
   /**
    * The name of the repository
    */
@@ -196,6 +198,17 @@ export abstract class RepositoryBase extends Resource implements IRepository {
    */
   public get repositoryUri() {
     return this.repositoryUriForTag();
+  }
+
+  /**
+   * The URI of this repository's registry:
+   *
+   *    ACCOUNT.dkr.ecr.REGION.amazonaws.com
+   *
+   */
+  public get registryUri(): string {
+    const parts = this.stack.splitArn(this.repositoryArn, ArnFormat.SLASH_RESOURCE_NAME);
+    return `${parts.account}.dkr.ecr.${parts.region}.${this.stack.urlSuffix}`;
   }
 
   /**
@@ -231,34 +244,10 @@ export abstract class RepositoryBase extends Resource implements IRepository {
    * @param tagOrDigest Optional image tag or digest (digests must start with `sha256:`)
    */
   public repositoryUriForTagOrDigest(tagOrDigest?: string): string {
-    if (tagOrDigest && Token.isUnresolved(tagOrDigest)) {
-
-      let isInputDigestCondition;
-
-      // Use the existing condition of the Token if it already exists, and if not create a new one
-      if (tagOrDigest in this.tokenConditions) {
-        isInputDigestCondition = this.tokenConditions[tagOrDigest];
-      } else {
-        this.conditionsNumber += 1;
-        isInputDigestCondition = new CfnCondition(this, `IsInputDigest${this.conditionsNumber}`, {
-          // we split the value of the Token using the delimiter : to check if the first element equals sha256
-          // in order to determine if it is a digest or an image tag.
-          expression: Fn.conditionEquals(Fn.select(0, Fn.split(':', tagOrDigest)), 'sha256'),
-        });
-        this.tokenConditions[tagOrDigest] = isInputDigestCondition;
-      }
-
-      const imageTagWithPrefix = `:${tagOrDigest}`;
-      const imageDigestWithPrefix = `@${tagOrDigest}`;
-
-      const suffix = Fn.conditionIf(isInputDigestCondition.logicalId, imageDigestWithPrefix, imageTagWithPrefix).toString();
-      return this.repositoryUriWithSuffix(suffix);
+    if (tagOrDigest?.startsWith('sha256:')) {
+      return this.repositoryUriForDigest(tagOrDigest);
     } else {
-      if (tagOrDigest?.startsWith('sha256:')) {
-        return this.repositoryUriForDigest(tagOrDigest);
-      } else {
-        return this.repositoryUriForTag(tagOrDigest);
-      }
+      return this.repositoryUriForTag(tagOrDigest);
     }
   }
 
