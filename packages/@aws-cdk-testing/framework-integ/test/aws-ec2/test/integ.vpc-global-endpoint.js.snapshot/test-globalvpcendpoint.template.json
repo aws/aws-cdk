@@ -366,6 +366,12 @@
       "Ref": "MyVpcPrivateSubnet2Subnet0040C983"
      }
     ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "test-globalvpcendpoint/MyVpc"
+     }
+    ],
     "VpcEndpointType": "Interface",
     "VpcId": {
      "Ref": "MyVpcF9F0CA6F"

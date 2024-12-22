@@ -445,7 +445,7 @@ describe('fargate task definition', () => {
             operatingSystemFamily: ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_CORE,
           },
         });
-      }).toThrowError(`If operatingSystemFamily is ${ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_CORE._operatingSystemFamily}, then cpu must be in 1024 (1 vCPU), 2048 (2 vCPU), or 4096 (4 vCPU).`);
+      }).toThrow(`If operatingSystemFamily is ${ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_CORE._operatingSystemFamily}, then cpu must be in 1024 (1 vCPU), 2048 (2 vCPU), or 4096 (4 vCPU).`);
 
       // Memory is not in 1 GB increments.
       expect(() => {
@@ -457,7 +457,7 @@ describe('fargate task definition', () => {
             operatingSystemFamily: ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_CORE,
           },
         });
-      }).toThrowError('If provided cpu is 1024, then memoryMiB must have a min of 1024 and a max of 8192, in 1024 increments. Provided memoryMiB was 1025.');
+      }).toThrow('If provided cpu is 1024, then memoryMiB must have a min of 1024 and a max of 8192, in 1024 increments. Provided memoryMiB was 1025.');
 
       // Check runtimePlatform was been defined ,but not undefined cpu and memoryLimitMiB.
       expect(() => {
@@ -467,7 +467,7 @@ describe('fargate task definition', () => {
             operatingSystemFamily: ecs.OperatingSystemFamily.WINDOWS_SERVER_2004_CORE,
           },
         });
-      }).toThrowError('If operatingSystemFamily is WINDOWS_SERVER_2004_CORE, then cpu must be in 1024 (1 vCPU), 2048 (2 vCPU), or 4096 (4 vCPU). Provided value was: 256');
+      }).toThrow('If operatingSystemFamily is WINDOWS_SERVER_2004_CORE, then cpu must be in 1024 (1 vCPU), 2048 (2 vCPU), or 4096 (4 vCPU). Provided value was: 256');
 
     });
 
