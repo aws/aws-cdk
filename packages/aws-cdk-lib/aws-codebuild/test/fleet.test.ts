@@ -139,7 +139,7 @@ describe('attribute based compute', () => {
     // WHEN
     new codebuild.Fleet(stack, 'Fleet', {
       baseCapacity: 1,
-      computeType: codebuild.FleetComputeType.ATTRIBUTE_BASED_COMPUTE,
+      computeType: codebuild.FleetComputeType.ATTRIBUTE_BASED,
       environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
       computeConfiguration: {
         vCpu: 2,
@@ -152,7 +152,7 @@ describe('attribute based compute', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Fleet', {
       BaseCapacity: 1,
-      ComputeType: 'ATTRIBUTE_BASED_COMPUTE',
+      ComputeType: 'ATTRIBUTE_BASED',
       EnvironmentType: 'LINUX_CONTAINER',
       ComputeConfiguration: {
         vCpu: 2,
@@ -170,7 +170,7 @@ describe('attribute based compute', () => {
     // WHEN
     new codebuild.Fleet(stack, 'Fleet', {
       baseCapacity: 1,
-      computeType: codebuild.FleetComputeType.ATTRIBUTE_BASED_COMPUTE,
+      computeType: codebuild.FleetComputeType.ATTRIBUTE_BASED,
       environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
       computeConfiguration: {
         machineType: codebuild.MachineType.GENERAL,
@@ -180,7 +180,7 @@ describe('attribute based compute', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Fleet', {
       BaseCapacity: 1,
-      ComputeType: 'ATTRIBUTE_BASED_COMPUTE',
+      ComputeType: 'ATTRIBUTE_BASED',
       EnvironmentType: 'LINUX_CONTAINER',
       ComputeConfiguration: {
         vCpu: 0,
@@ -214,7 +214,7 @@ describe('attribute based compute', () => {
           machineType: codebuild.MachineType.GENERAL,
         },
       });
-    }).toThrow(`'computeConfiguration' can only be specified if 'computeType' is 'ATTRIBUTE_BASED_COMPUTE', got: ${computeType}`);
+    }).toThrow(`'computeConfiguration' can only be specified if 'computeType' is 'ATTRIBUTE_BASED', got: ${computeType}`);
   });
 
   test('throw error for invalid disk size', () => {
@@ -225,7 +225,7 @@ describe('attribute based compute', () => {
     expect(() => {
       new codebuild.Fleet(stack, 'Fleet', {
         baseCapacity: 1,
-        computeType: codebuild.FleetComputeType.ATTRIBUTE_BASED_COMPUTE,
+        computeType: codebuild.FleetComputeType.ATTRIBUTE_BASED,
         environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
         computeConfiguration: {
           disk: cdk.Size.gibibytes(1.5),
@@ -242,7 +242,7 @@ describe('attribute based compute', () => {
     expect(() => {
       new codebuild.Fleet(stack, 'Fleet', {
         baseCapacity: 1,
-        computeType: codebuild.FleetComputeType.ATTRIBUTE_BASED_COMPUTE,
+        computeType: codebuild.FleetComputeType.ATTRIBUTE_BASED,
         environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
         computeConfiguration: {
           memory: cdk.Size.gibibytes(1.5),
@@ -259,12 +259,26 @@ describe('attribute based compute', () => {
     expect(() => {
       new codebuild.Fleet(stack, 'Fleet', {
         baseCapacity: 1,
-        computeType: codebuild.FleetComputeType.ATTRIBUTE_BASED_COMPUTE,
+        computeType: codebuild.FleetComputeType.ATTRIBUTE_BASED,
         environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
         computeConfiguration: {
           vCpu,
         },
       });
     }).toThrow(`vCPU count must be a positive integer, got: ${vCpu}`);
+  });
+
+  test('throw error for not specifying all of compute configuration properties', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    expect(() => {
+      new codebuild.Fleet(stack, 'Fleet', {
+        baseCapacity: 1,
+        computeType: codebuild.FleetComputeType.ATTRIBUTE_BASED,
+        environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+      });
+    }).toThrow('At least one compute configuration criteria must be specified if computeType is "ATTRIBUTE_BASED"');
   });
 });

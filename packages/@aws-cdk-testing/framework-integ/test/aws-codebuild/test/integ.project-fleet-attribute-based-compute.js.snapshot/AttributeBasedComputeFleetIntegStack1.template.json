@@ -11,8 +11,7 @@
      "vCpu": 2
     },
     "ComputeType": "ATTRIBUTE_BASED_COMPUTE",
-    "EnvironmentType": "LINUX_CONTAINER",
-    "Name": "MyFleet"
+    "EnvironmentType": "LINUX_CONTAINER"
    }
   },
   "MyProjectRole9BBE5233": {
@@ -151,14 +150,6 @@
     "EncryptionKey": "alias/aws/s3",
     "Environment": {
      "ComputeType": "BUILD_GENERAL1_SMALL",
-     "Fleet": {
-      "FleetArn": {
-       "Fn::GetAtt": [
-        "MyFleet1E628396",
-        "Arn"
-       ]
-      }
-     },
      "Image": "aws/codebuild/standard:7.0",
      "ImagePullCredentialsType": "CODEBUILD",
      "PrivilegedMode": false,
@@ -186,7 +177,7 @@
     ]
    },
    "Export": {
-    "Name": "AttributeBasedComputeFleetIntegStack:ExportsOutputFnGetAttMyFleet1E628396Arn64216BDA"
+    "Name": "AttributeBasedComputeFleetIntegStack1:ExportsOutputFnGetAttMyFleet1E628396Arn64216BDA"
    }
   },
   "ExportsOutputRefMyProject39F7B0AE1CE3CA42": {
@@ -194,7 +185,7 @@
     "Ref": "MyProject39F7B0AE"
    },
    "Export": {
-    "Name": "AttributeBasedComputeFleetIntegStack:ExportsOutputRefMyProject39F7B0AE1CE3CA42"
+    "Name": "AttributeBasedComputeFleetIntegStack1:ExportsOutputRefMyProject39F7B0AE1CE3CA42"
    }
   }
  },

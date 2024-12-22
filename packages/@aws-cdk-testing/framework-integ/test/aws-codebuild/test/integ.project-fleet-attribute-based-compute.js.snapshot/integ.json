@@ -3,7 +3,8 @@
   "testCases": {
     "AttributeBasedComputeFleetIntegTest/DefaultTest": {
       "stacks": [
-        "AttributeBasedComputeFleetIntegStack"
+        "AttributeBasedComputeFleetIntegStack0",
+        "AttributeBasedComputeFleetIntegStack1"
       ],
       "assertionStack": "AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert",
       "assertionStackName": "AttributeBasedComputeFleetIntegTestDefaultTestDeployAssertDD94353E"

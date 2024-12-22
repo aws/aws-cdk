@@ -1,28 +1,28 @@
 {
   "version": "38.0.1",
   "artifacts": {
-    "AttributeBasedComputeFleetIntegStack.assets": {
+    "AttributeBasedComputeFleetIntegStack0.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "AttributeBasedComputeFleetIntegStack.assets.json",
+        "file": "AttributeBasedComputeFleetIntegStack0.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "AttributeBasedComputeFleetIntegStack": {
+    "AttributeBasedComputeFleetIntegStack0": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "AttributeBasedComputeFleetIntegStack.template.json",
+        "templateFile": "AttributeBasedComputeFleetIntegStack0.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/45baa903fe6528fe87ddd4b1c91fb913d3a4f7d6bdcc7f9e93f5595188909142.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1b42f4d0c0fcf45cae4d51a9ede9467a8cb283be84f6b2cb42e5d5349b8cadb9.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "AttributeBasedComputeFleetIntegStack.assets"
+          "AttributeBasedComputeFleetIntegStack0.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,59 +31,137 @@
         }
       },
       "dependencies": [
-        "AttributeBasedComputeFleetIntegStack.assets"
+        "AttributeBasedComputeFleetIntegStack0.assets"
       ],
       "metadata": {
-        "/AttributeBasedComputeFleetIntegStack/MyFleet/Resource": [
+        "/AttributeBasedComputeFleetIntegStack0/MyFleet/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyFleet1E628396"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack/MyProject/Role/Resource": [
+        "/AttributeBasedComputeFleetIntegStack0/MyProject/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyProjectRole9BBE5233"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack/MyProject/Role/DefaultPolicy/Resource": [
+        "/AttributeBasedComputeFleetIntegStack0/MyProject/Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyProjectRoleDefaultPolicyB19B7C29"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack/MyProject/Resource": [
+        "/AttributeBasedComputeFleetIntegStack0/MyProject/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyProject39F7B0AE"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack/Exports/Output{\"Fn::GetAtt\":[\"MyFleet1E628396\",\"Arn\"]}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputFnGetAttMyFleet1E628396Arn64216BDA"
-          }
-        ],
-        "/AttributeBasedComputeFleetIntegStack/Exports/Output{\"Ref\":\"MyProject39F7B0AE\"}": [
+        "/AttributeBasedComputeFleetIntegStack0/Exports/Output{\"Ref\":\"MyProject39F7B0AE\"}": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ExportsOutputRefMyProject39F7B0AE1CE3CA42"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack/BootstrapVersion": [
+        "/AttributeBasedComputeFleetIntegStack0/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack/CheckBootstrapVersion": [
+        "/AttributeBasedComputeFleetIntegStack0/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "AttributeBasedComputeFleetIntegStack"
+      "displayName": "AttributeBasedComputeFleetIntegStack0"
+    },
+    "AttributeBasedComputeFleetIntegStack1.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "AttributeBasedComputeFleetIntegStack1.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "AttributeBasedComputeFleetIntegStack1": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "AttributeBasedComputeFleetIntegStack1.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/84d9e3b251d744d9fe3b682d5071b25e46860804469386262649a838b95b34f9.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "AttributeBasedComputeFleetIntegStack1.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "AttributeBasedComputeFleetIntegStack1.assets"
+      ],
+      "metadata": {
+        "/AttributeBasedComputeFleetIntegStack1/MyFleet/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFleet1E628396"
+          }
+        ],
+        "/AttributeBasedComputeFleetIntegStack1/MyProject/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProjectRole9BBE5233"
+          }
+        ],
+        "/AttributeBasedComputeFleetIntegStack1/MyProject/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProjectRoleDefaultPolicyB19B7C29"
+          }
+        ],
+        "/AttributeBasedComputeFleetIntegStack1/MyProject/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProject39F7B0AE"
+          }
+        ],
+        "/AttributeBasedComputeFleetIntegStack1/Exports/Output{\"Fn::GetAtt\":[\"MyFleet1E628396\",\"Arn\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttMyFleet1E628396Arn64216BDA"
+          }
+        ],
+        "/AttributeBasedComputeFleetIntegStack1/Exports/Output{\"Ref\":\"MyProject39F7B0AE\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefMyProject39F7B0AE1CE3CA42"
+          }
+        ],
+        "/AttributeBasedComputeFleetIntegStack1/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/AttributeBasedComputeFleetIntegStack1/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "AttributeBasedComputeFleetIntegStack1"
     },
     "AttributeBasedComputeFleetIntegTestDefaultTestDeployAssertDD94353E.assets": {
       "type": "cdk:asset-manifest",
@@ -102,7 +180,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8809b6ecb7febe5235221d359fe34173725c281446d90c4de4cb5e6fa23b2e2d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/832ac4b5eb4a0674afb3424ab28895fe9d6ec9b6bf9ddf969124cc9ebcccdd7d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -115,7 +193,8 @@
         }
       },
       "dependencies": [
-        "AttributeBasedComputeFleetIntegStack",
+        "AttributeBasedComputeFleetIntegStack1",
+        "AttributeBasedComputeFleetIntegStack0",
         "AttributeBasedComputeFleetIntegTestDefaultTestDeployAssertDD94353E.assets"
       ],
       "metadata": {
@@ -213,6 +292,48 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
+          }
+        ],
+        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodebuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce621/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodebuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce621"
+          }
+        ],
+        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsda1195a100722c70b6fe83a772aa5516/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodeBuildbatchGetBuildsda1195a100722c70b6fe83a772aa5516"
+          }
+        ],
+        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsda1195a100722c70b6fe83a772aa5516/WaitFor/IsCompleteProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodeBuildbatchGetBuildsda1195a100722c70b6fe83a772aa5516WaitForIsCompleteProviderInvoke4EF142D2"
+          }
+        ],
+        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsda1195a100722c70b6fe83a772aa5516/WaitFor/TimeoutProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodeBuildbatchGetBuildsda1195a100722c70b6fe83a772aa5516WaitForTimeoutProviderInvoke11E4D647"
+          }
+        ],
+        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsda1195a100722c70b6fe83a772aa5516/WaitFor/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodeBuildbatchGetBuildsda1195a100722c70b6fe83a772aa5516WaitForRole0A79F0D3"
+          }
+        ],
+        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsda1195a100722c70b6fe83a772aa5516/WaitFor/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodeBuildbatchGetBuildsda1195a100722c70b6fe83a772aa5516WaitForAEBEEA78"
+          }
+        ],
+        "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsda1195a100722c70b6fe83a772aa5516/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallCodeBuildbatchGetBuildsda1195a100722c70b6fe83a772aa5516"
           }
         ],
         "/AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [

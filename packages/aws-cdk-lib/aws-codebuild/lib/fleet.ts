@@ -159,6 +159,9 @@ export class Fleet extends Resource implements IFleet {
       public get environmentType(): EnvironmentType {
         throw new Error('Cannot retrieve environmentType property from an imported Fleet');
       }
+      public get computeConfiguration(): ComputeConfiguration | undefined {
+        throw new Error('Cannot retrieve computeConfiguration property from an imported Fleet');
+      }
     }
 
     return new Import(scope, id);
@@ -188,6 +191,7 @@ export class Fleet extends Resource implements IFleet {
   public readonly environmentType: EnvironmentType;
 
   constructor(scope: Construct, id: string, props: FleetProps) {
+    super(scope, id, { physicalName: props.fleetName });
     if (props.fleetName && !Token.isUnresolved(props.fleetName)) {
       if (props.fleetName.length < 2) {
         throw new Error(`Fleet name can not be shorter than 2 characters but has ${props.fleetName.length} characters.`);
@@ -201,29 +205,26 @@ export class Fleet extends Resource implements IFleet {
       throw new Error('baseCapacity must be greater than or equal to 1');
     }
 
-    let diskGiB = 0;
-    let memoryGiB = 0;
-    let vCpu = 0;
-
-    if (props.computeConfiguration) {
-      if (props.computeType !== FleetComputeType.ATTRIBUTE_BASED_COMPUTE) {
-        throw new Error(`'computeConfiguration' can only be specified if 'computeType' is 'ATTRIBUTE_BASED_COMPUTE', got: ${props.computeType}`);
-      }
-      diskGiB = props.computeConfiguration.disk?.toGibibytes() ?? diskGiB;
-      if (diskGiB < 0 || !Number.isInteger(diskGiB)) {
-        throw new Error(`disk size must be a positive integer, got: ${diskGiB} GiB`);
-      }
-      memoryGiB = props.computeConfiguration.memory?.toGibibytes() ?? memoryGiB;
-      if (memoryGiB < 0 || !Number.isInteger(memoryGiB)) {
-        throw new Error(`memory size must be a positive integer, got: ${memoryGiB} GiB`);
-      }
-      vCpu = props.computeConfiguration.vCpu ?? vCpu;
-      if (!Token.isUnresolved(vCpu) && !Number.isInteger(vCpu) || vCpu < 0) {
-        throw new Error(`vCPU count must be a positive integer, got: ${vCpu}`);
-      }
+    if (
+      props.computeType === FleetComputeType.ATTRIBUTE_BASED &&
+      (!props.computeConfiguration || Object.keys(props.computeConfiguration).length === 0)
+    ) {
+      throw new Error('At least one compute configuration criteria must be specified if computeType is "ATTRIBUTE_BASED"');
+    }
+    if (props.computeConfiguration && props.computeType !== FleetComputeType.ATTRIBUTE_BASED) {
+      throw new Error(`'computeConfiguration' can only be specified if 'computeType' is 'ATTRIBUTE_BASED_COMPUTE', got: ${props.computeType}`);
     }
 
-    super(scope, id, { physicalName: props.fleetName });
+    const computeConfig = props.computeConfiguration;
+    const diskGiB = computeConfig?.disk?.toGibibytes() ?? 0;
+    const memoryGiB = computeConfig?.memory?.toGibibytes() ?? 0;
+    const vCpu = computeConfig?.vCpu ?? 0;
+
+    this.validatePositiveInteger(diskGiB, 'disk size');
+    this.validatePositiveInteger(memoryGiB, 'memory size');
+    if (!Token.isUnresolved(vCpu)) {
+      this.validatePositiveInteger(vCpu, 'vCPU count');
+    }
 
     const resource = new CfnFleet(this, 'Resource', {
       name: props.fleetName,
@@ -247,6 +248,12 @@ export class Fleet extends Resource implements IFleet {
     this.fleetName = this.getResourceNameAttribute(resource.ref);
     this.computeType = props.computeType;
     this.environmentType = props.environmentType;
+  }
+
+  private validatePositiveInteger(value: number, fieldName: string) {
+    if (value < 0 || !Number.isInteger(value)) {
+      throw new Error(`${fieldName} must be a positive integer, got: ${value}`);
+    }
   }
 }
 
@@ -302,5 +309,5 @@ export enum FleetComputeType {
    *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html#environment-reserved-capacity.types
    */
-  ATTRIBUTE_BASED_COMPUTE = ComputeType.ATTRIBUTE_BASED,
+  ATTRIBUTE_BASED = ComputeType.ATTRIBUTE_BASED,
 }
