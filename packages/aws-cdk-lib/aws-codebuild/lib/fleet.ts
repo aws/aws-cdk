@@ -293,5 +293,5 @@ export enum FleetComputeType {
    *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html#environment-reserved-capacity.types
    */
-  ATTRIBUTE_BASED_COMPUTE = ComputeType.ATTRIBUTE_BASED_COMPUTE,
+  ATTRIBUTE_BASED_COMPUTE = ComputeType.ATTRIBUTE_BASED,
 }
