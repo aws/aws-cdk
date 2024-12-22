@@ -1650,17 +1650,17 @@ warning by the `id`.
 Annotations.of(this).acknowledgeWarning('IAM:Group:MaxPoliciesExceeded', 'Account has quota increased to 20');
 ```
 
-## RemovalPolicys
+## RemovalPolicies
 
-The `RemovalPolicys` class provides a convenient way to manage removal policies for AWS CDK resources within a construct scope. It allows you to apply removal policies to multiple resources at once, with options to include or exclude specific resource types.
+The `RemovalPolicies` class provides a convenient way to manage removal policies for AWS CDK resources within a construct scope. It allows you to apply removal policies to multiple resources at once, with options to include or exclude specific resource types.
 
 ### Usage
 
 ```typescript
-import { RemovalPolicys } from 'aws-cdk-lib';
+import { RemovalPolicies } from 'aws-cdk-lib';
 
 // Apply DESTROY policy to all resources in a scope
-RemovalPolicys.of(scope).destroy();
+RemovalPolicies.of(scope).destroy();
 
 // Apply RETAIN policy only to specific resource types
 RemovalPolicies.of(parent).retain({
@@ -1673,17 +1673,17 @@ RemovalPolicies.of(parent).retain({
 
 
 // Apply SNAPSHOT policy excluding specific resource types
-RemovalPolicys.of(scope).snapshot({
+RemovalPolicies.of(scope).snapshot({
   excludeResourceTypes: ['AWS::Test::Resource'],
 });
 
 // Apply RETAIN_ON_UPDATE_OR_DELETE policy
-RemovalPolicys.of(scope).retainOnUpdateOrDelete();
+RemovalPolicies.of(scope).retainOnUpdateOrDelete();
 ```
 
-### RemovalPolicys.of(scope)
+### RemovalPolicies.of(scope)
 
-Creates a new instance of RemovalPolicys for the given scope.
+Creates a new instance of RemovalPolicies for the given scope.
 
 #### Methods
 
