@@ -1078,6 +1078,18 @@ new ec2.InterfaceVpcEndpoint(this, 'VPC Endpoint', {
 });
 ```
 
+You can choose ip address type by setting `ipAddressType` property:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+new ec2.InterfaceVpcEndpoint(this, 'VPC Endpoint', {
+  vpc,
+  service: ec2.InterfaceVpcEndpointAwsService.EC2,
+  ipAddressType: ec2.IpAddressType.IPV6,  // ip address type
+});
+```
+
 #### Security groups for interface VPC endpoints
 
 By default, interface VPC endpoints create a new security group and all traffic to the endpoint from within the VPC will be automatically allowed.

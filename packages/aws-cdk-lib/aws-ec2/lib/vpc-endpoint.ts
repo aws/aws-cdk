@@ -756,7 +756,7 @@ export interface InterfaceVpcEndpointOptions {
   readonly securityGroups?: ISecurityGroup[];
 
   /**
-   * Whether to automatically allow VPC traffic to the endpoint
+   * Whether to automatically allow VPC traffic to the endpoint when ipAddressType is IPv4 or Dual-stack.
    *
    * If enabled, all traffic to the endpoint from within the VPC will be
    * automatically allowed. This is done based on the VPC's CIDR range.
@@ -774,6 +774,43 @@ export interface InterfaceVpcEndpointOptions {
    * @default false
    */
   readonly lookupSupportedAzs?: boolean;
+
+  /**
+   * The supported IP address types.
+   *
+   * @default IpAddressType.IPV4
+   */
+  readonly ipAddressType?: IpAddressType;
+}
+
+/**
+ * The supported IP address types.
+ *
+ * @see https://docs.aws.amazon.com/vpc/latest/privatelink/create-interface-endpoint.html#create-interface-endpoint-aws
+ */
+export enum IpAddressType {
+  /**
+   * Assign IPv4 addresses to the endpoint network interfaces.
+   * This option is supported only if all selected subnets have IPv4 address ranges and the service accepts IPv4 requests.
+   */
+  IPV4 = 'ipv4',
+
+  /**
+   * Assign IPv6 addresses to the endpoint network interfaces.
+   * This option is supported only if all selected subnets are IPv6 only subnets and the service accepts IPv6 requests.
+   */
+  IPV6 = 'ipv6',
+
+  /**
+   * Assign both IPv4 and IPv6 addresses to the endpoint network interfaces.
+   * This option is supported only if all selected subnets have both IPv4 and IPv6 address ranges and the service accepts both IPv4 and IPv6 requests.
+   */
+  DUAL_STACK = 'dualstack',
+
+  /**
+   * not specified
+   */
+  NOT_SPECIFIED = 'not-specified',
 }
 
 /**
@@ -878,7 +915,9 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
     });
 
     if (props.open !== false) {
-      this.connections.allowDefaultPortFrom(Peer.ipv4(props.vpc.vpcCidrBlock));
+      if (props.ipAddressType === undefined || [IpAddressType.IPV4, IpAddressType.DUAL_STACK].includes(props.ipAddressType)) {
+        this.connections.allowDefaultPortFrom(Peer.ipv4(props.vpc.vpcCidrBlock));
+      }
     }
 
     // Determine which subnets to place the endpoint in
@@ -892,6 +931,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
       vpcEndpointType: VpcEndpointType.INTERFACE,
       subnetIds,
       vpcId: props.vpc.vpcId,
+      ipAddressType: props.ipAddressType,
     });
 
     this.vpcEndpointId = endpoint.ref;
