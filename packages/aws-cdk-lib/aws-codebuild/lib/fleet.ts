@@ -64,12 +64,17 @@ export enum MachineType {
 
 /**
  * The compute configuration for the fleet.
+ *
+ *  Despite what the CloudFormation schema says, the numeric properties (disk, memory, vCpu) are not optional.
+ *  An `undefined` value will cause the CloudFormation deployment to fail, e.g.
+ *  > Cannot invoke "java.lang.Integer.intValue()" because the return value of "software.amazon.codebuild.fleet.ComputeConfiguration.getMemory()" is null
+ * Therefore, these properties default value is set to 0.
  */
 export interface ComputeConfiguration {
   /**
    * The amount of disk space of the instance type included in your fleet.
    *
-   * @default - do not specify a disk size
+   * @default 0
    */
   readonly disk?: Size;
 
@@ -83,14 +88,14 @@ export interface ComputeConfiguration {
   /**
    * The amount of memory of the instance type included in your fleet.
    *
-   * @default - do not specify memory
+   * @default 0
    */
   readonly memory?: Size;
 
   /**
    * The number of vCPUs of the instance type included in your fleet.
    *
-   * @default - do not specify vCPUs
+   * @default 0
    */
   readonly vCpu?: number;
 }
@@ -196,21 +201,25 @@ export class Fleet extends Resource implements IFleet {
       throw new Error('baseCapacity must be greater than or equal to 1');
     }
 
+    let diskGiB = 0;
+    let memoryGiB = 0;
+    let vCpu = 0;
+
     if (props.computeConfiguration) {
       if (props.computeType !== FleetComputeType.ATTRIBUTE_BASED_COMPUTE) {
         throw new Error(`'computeConfiguration' can only be specified if 'computeType' is 'ATTRIBUTE_BASED_COMPUTE', got: ${props.computeType}`);
       }
-      const diskGiB = props.computeConfiguration.disk?.toGibibytes();
-      if (diskGiB !== undefined && (diskGiB < 1 || !Number.isInteger(diskGiB))) {
-        throw new Error(`disk size must be greater than 1 GiB and an integer, got: ${diskGiB} GiB`);
+      diskGiB = props.computeConfiguration.disk?.toGibibytes() ?? diskGiB;
+      if (diskGiB < 0 || !Number.isInteger(diskGiB)) {
+        throw new Error(`disk size must be a positive integer, got: ${diskGiB} GiB`);
       }
-      const memoryGiB = props.computeConfiguration.memory?.toGibibytes();
-      if (memoryGiB !== undefined && (memoryGiB < 1 || !Number.isInteger(memoryGiB))) {
-        throw new Error(`memory size must be greater than 1 GiB and an integer, got: ${memoryGiB} GiB`);
+      memoryGiB = props.computeConfiguration.memory?.toGibibytes() ?? memoryGiB;
+      if (memoryGiB < 0 || !Number.isInteger(memoryGiB)) {
+        throw new Error(`memory size must be a positive integer, got: ${memoryGiB} GiB`);
       }
-      const vCpu = props.computeConfiguration.vCpu;
-      if (vCpu !== undefined && !Token.isUnresolved(vCpu) && !Number.isInteger(vCpu)) {
-        throw new Error(`vCPU count must be an integer, got: ${vCpu}`);
+      vCpu = props.computeConfiguration.vCpu ?? vCpu;
+      if (!Token.isUnresolved(vCpu) && !Number.isInteger(vCpu) || vCpu < 0) {
+        throw new Error(`vCPU count must be a positive integer, got: ${vCpu}`);
       }
     }
 
@@ -222,10 +231,10 @@ export class Fleet extends Resource implements IFleet {
       computeType: props.computeType,
       environmentType: props.environmentType,
       computeConfiguration: props.computeConfiguration ? {
-        disk: props.computeConfiguration.disk?.toGibibytes(),
+        disk: diskGiB,
         machineType: props.computeConfiguration.machineType,
-        memory: props.computeConfiguration.memory?.toGibibytes(),
-        vCpu: props.computeConfiguration.vCpu,
+        memory: memoryGiB,
+        vCpu,
       } : undefined,
     });
 

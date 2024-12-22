@@ -163,6 +163,34 @@ describe('attribute based compute', () => {
     });
   });
 
+  test('specify only machine type', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Fleet(stack, 'Fleet', {
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.ATTRIBUTE_BASED_COMPUTE,
+      environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+      computeConfiguration: {
+        machineType: codebuild.MachineType.GENERAL,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Fleet', {
+      BaseCapacity: 1,
+      ComputeType: 'ATTRIBUTE_BASED_COMPUTE',
+      EnvironmentType: 'LINUX_CONTAINER',
+      ComputeConfiguration: {
+        vCpu: 0,
+        memory: 0,
+        disk: 0,
+        machineType: 'GENERAL',
+      },
+    });
+  });
+
   test.each([
     codebuild.FleetComputeType.SMALL,
     codebuild.FleetComputeType.MEDIUM,
@@ -189,7 +217,7 @@ describe('attribute based compute', () => {
     }).toThrow(`'computeConfiguration' can only be specified if 'computeType' is 'ATTRIBUTE_BASED_COMPUTE', got: ${computeType}`);
   });
 
-  test.each([0, 0.9, 1.5])('throw error for invalid disk size %s', (diskSize) => {
+  test('throw error for invalid disk size', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -200,13 +228,13 @@ describe('attribute based compute', () => {
         computeType: codebuild.FleetComputeType.ATTRIBUTE_BASED_COMPUTE,
         environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
         computeConfiguration: {
-          disk: cdk.Size.gibibytes(diskSize),
+          disk: cdk.Size.gibibytes(1.5),
         },
       });
-    }).toThrow(`disk size must be greater than 1 GiB and an integer, got: ${diskSize} GiB`);
+    }).toThrow('disk size must be a positive integer, got: 1.5 GiB');
   });
 
-  test.each([0, 0.9, 1.5])('throw error for invalid memory size %s', (memorySize) => {
+  test('throw error for invalid memory size', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -217,13 +245,13 @@ describe('attribute based compute', () => {
         computeType: codebuild.FleetComputeType.ATTRIBUTE_BASED_COMPUTE,
         environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
         computeConfiguration: {
-          memory: cdk.Size.gibibytes(memorySize),
+          memory: cdk.Size.gibibytes(1.5),
         },
       });
-    }).toThrow(`memory size must be greater than 1 GiB and an integer, got: ${memorySize} GiB`);
+    }).toThrow('memory size must be a positive integer, got: 1.5 GiB');
   });
 
-  test.each([1.5, 2.5, NaN])('throw error for invalid vCPU count %s', (vCpu) => {
+  test.each([-1, 1.5, 2.5, NaN])('throw error for invalid vCPU count %s', (vCpu) => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -237,6 +265,6 @@ describe('attribute based compute', () => {
           vCpu,
         },
       });
-    }).toThrow(`vCPU count must be an integer, got: ${vCpu}`);
+    }).toThrow(`vCPU count must be a positive integer, got: ${vCpu}`);
   });
 });
