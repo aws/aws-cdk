@@ -58,7 +58,7 @@ export abstract class Code {
    *
    * @returns a bound `CodeConfig`.
    */
-  public abstract bind(scope: Construct, handler: string, family: Runtime): CodeConfig;
+  public abstract bind(scope: Construct, handler: string, family: Runtime | RuntimeFamily): CodeConfig;
 }
 
 /**
@@ -97,7 +97,8 @@ export class AssetCode extends Code {
     }
   }
 
-  public bind(scope: Construct, handler: string, runtime: Runtime): CodeConfig {
+  // To maintain backward compatibility, it is also designed to accept `RuntimeFamily` for `runtime` prop.
+  public bind(scope: Construct, handler: string, runtime: Runtime | RuntimeFamily): CodeConfig {
     // If the same AssetCode is used multiple times, retain only the first instantiation.
     if (!this.asset) {
       this.asset = new s3_assets.Asset(scope, 'Code', {
@@ -121,12 +122,13 @@ export class AssetCode extends Code {
    * must be found in the file structure `nodejs/node_modules/index.js`.
    *
    * Requires path to be either zip file or directory.
-   * Requires asset directory to have the structure 'nodejs/node_modules'.
-   * Requires canary file to be directly inside node_modules folder.
+   * Requires asset directory to have the structure 'nodejs/node_modules' for puppeteer runtime.
+   * Requires asset directory to have the structure 'python' for python runtime.
+   * Requires asset directory to have the extension '.js', '.mjs', or '.cjs' for playwright runtime.
    * Requires canary file name matches the handler name.
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary.html
    */
-  private validateCanaryAsset(scope: Construct, handler: string, runtime: Runtime) {
+  private validateCanaryAsset(scope: Construct, handler: string, runtime: Runtime | RuntimeFamily) {
     if (!this.asset) {
       throw new Error("'validateCanaryAsset' must be called after 'this.asset' is instantiated");
     }
@@ -140,19 +142,33 @@ export class AssetCode extends Code {
       if (!fs.lstatSync(assetPath).isDirectory()) {
         throw new Error(`Asset must be a .zip file or a directory (${this.assetPath})`);
       }
-      const filename = handler.split('.')[0];
-      const nodeFilename = `${filename}.js`;
-      const pythonFilename = `${filename}.py`;
-      const playwrightValidExtensions = ['.cjs', '.mjs', '.js'];
-      const hasValidExtension = playwrightValidExtensions.some(ext => fs.existsSync(path.join(assetPath, `${filename}${ext}`)));
-      if (runtime.family === RuntimeFamily.NODEJS && runtime.name.includes('puppeteer') && !fs.existsSync(path.join(assetPath, 'nodejs', 'node_modules', nodeFilename))) {
-        throw new Error(`The canary resource requires that the handler is present at "nodejs/node_modules/${nodeFilename}" but not found at ${this.assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Nodejs.html)`);
-      }
-      if (runtime.family === RuntimeFamily.NODEJS && runtime.name.includes('playwright') && !hasValidExtension) {
-        throw new Error(`The canary resource requires that the handler is present at one of the following extensions: ${playwrightValidExtensions.join(', ')} but not found at ${this.assetPath}`);
-      }
-      if (runtime.family === RuntimeFamily.PYTHON && !fs.existsSync(path.join(assetPath, 'python', pythonFilename))) {
-        throw new Error(`The canary resource requires that the handler is present at "python/${pythonFilename}" but not found at ${this.assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Python.html)`);
+      // Validation can be performed using only `Runtime` type arguments,
+      // but for backward compatibility of `Code.bind()`, it is also designed to accept `RuntimeFamily`.
+      if (runtime instanceof Runtime) {
+        const filename = handler.split('.')[0];
+        const nodeFilename = `${filename}.js`;
+        const pythonFilename = `${filename}.py`;
+        const playwrightValidExtensions = ['.cjs', '.mjs', '.js'];
+        const hasValidExtension = playwrightValidExtensions.some(ext => fs.existsSync(path.join(assetPath, `${filename}${ext}`)));
+        if (runtime.family === RuntimeFamily.NODEJS && runtime.name.includes('puppeteer') && !fs.existsSync(path.join(assetPath, 'nodejs', 'node_modules', nodeFilename))) {
+          throw new Error(`The canary resource requires that the handler is present at "nodejs/node_modules/${nodeFilename}" but not found at ${this.assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Nodejs.html)`);
+        }
+        if (runtime.family === RuntimeFamily.NODEJS && runtime.name.includes('playwright') && !hasValidExtension) {
+          throw new Error(`The canary resource requires that the handler is present at one of the following extensions: ${playwrightValidExtensions.join(', ')} but not found at ${this.assetPath}`);
+        }
+        if (runtime.family === RuntimeFamily.PYTHON && !fs.existsSync(path.join(assetPath, 'python', pythonFilename))) {
+          throw new Error(`The canary resource requires that the handler is present at "python/${pythonFilename}" but not found at ${this.assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Python.html)`);
+        }
+      } else {
+        const filename = handler.split('.')[0];
+        const nodeFilename = `${filename}.js`;
+        const pythonFilename = `${filename}.py`;
+        if (runtime === RuntimeFamily.NODEJS && !fs.existsSync(path.join(assetPath, 'nodejs', 'node_modules', nodeFilename))) {
+          throw new Error(`The canary resource requires that the handler is present at "nodejs/node_modules/${nodeFilename}" but not found at ${this.assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Nodejs.html)`);
+        }
+        if (runtime === RuntimeFamily.PYTHON && !fs.existsSync(path.join(assetPath, 'python', pythonFilename))) {
+          throw new Error(`The canary resource requires that the handler is present at "python/${pythonFilename}" but not found at ${this.assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Python.html)`);
+        }
       }
     }
   }
@@ -170,7 +186,7 @@ export class InlineCode extends Code {
     }
   }
 
-  public bind(_scope: Construct, handler: string, _family: Runtime): CodeConfig {
+  public bind(_scope: Construct, handler: string, _family: Runtime | RuntimeFamily): CodeConfig {
 
     if (handler !== 'index.handler') {
       throw new Error(`The handler for inline code must be "index.handler" (got "${handler}")`);
@@ -190,7 +206,7 @@ export class S3Code extends Code {
     super();
   }
 
-  public bind(_scope: Construct, _handler: string, _family: Runtime): CodeConfig {
+  public bind(_scope: Construct, _handler: string, _family: Runtime | RuntimeFamily): CodeConfig {
     return {
       s3Location: {
         bucketName: this.bucket.bucketName,
