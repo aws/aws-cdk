@@ -2,10 +2,10 @@
 import * as path from 'path';
 import * as jest from 'jest';
 import * as yargs from 'yargs';
-import { ReleasePackageSourceSetup } from '../lib/package-sources/release-source';
-import { RepoPackageSourceSetup, autoFindRoot } from '../lib/package-sources/repo-source';
-import { IPackageSourceSetup } from '../lib/package-sources/source';
-import { serializeForSubprocess } from '../lib/package-sources/subprocess';
+import { ReleasePackageSourceSetup } from '../package-sources/release-source';
+import { RepoPackageSourceSetup, autoFindRoot } from '../package-sources/repo-source';
+import { IPackageSourceSetup } from '../package-sources/source';
+import { serializeForSubprocess } from '../package-sources/subprocess';
 
 async function main() {
   const args = await yargs
@@ -126,7 +126,7 @@ async function main() {
       ...args.verbose ? ['--verbose'] : [],
       ...passWithNoTests ? ['--passWithNoTests'] : [],
       ...args['test-file'] ? [args['test-file']] : [],
-    ], path.resolve(__dirname, '..', 'resources', 'integ.jest.config.js'));
+    ], path.resolve(__dirname, '..', '..', 'resources', 'integ.jest.config.js'));
 
   } finally {
     await packageSource.cleanup();
