@@ -18,8 +18,8 @@ const fakeChokidarWatcherOn = {
   },
 
   get fileEventCallback(): (
-  event: 'add' | 'addDir' | 'change' | 'unlink' | 'unlinkDir',
-  path: string,
+    event: 'add' | 'addDir' | 'change' | 'unlink' | 'unlinkDir',
+    path: string,
   ) => Promise<void> {
     expect(mockChokidarWatcherOn.mock.calls.length).toBeGreaterThanOrEqual(2);
     const secondCall = mockChokidarWatcherOn.mock.calls[1];
