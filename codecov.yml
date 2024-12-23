@@ -30,6 +30,10 @@ component_management:
       name: packages/aws-cdk # display name that can change freely
       paths:
         - packages/aws-cdk/**
+    - component_id: packages_aws_cdk_lib_core  # identifier that should not be changed
+      name: packages/aws-cdk-lib/core # display name that can change freely
+      paths:
+        - packages/aws-cdk-lib/core/**
 
 # https://docs.codecov.com/docs/ignoring-paths
 ignore:
