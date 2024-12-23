@@ -980,7 +980,7 @@ describe('destroy', () => {
     }).resolves;
   });
 
-  test('does not throw even if there are only non-existent stacks and force option is false', async () => {
+  test('exits without prompt if there are only non-existent stacks and force option is false', async () => {
     const toolkit = defaultToolkitSetup();
 
     await expect(() => {
