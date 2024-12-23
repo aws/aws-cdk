@@ -9,7 +9,7 @@ on:
 jobs:
   collect:
     name: collect
-    if: github.repository == 'aws/aws-cdk'
+    if: github.repository == 'iliapolo/aws-cdk'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
