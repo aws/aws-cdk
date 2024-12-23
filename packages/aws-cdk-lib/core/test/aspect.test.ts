@@ -316,11 +316,8 @@ describe('aspect', () => {
   ])('Error is not thrown if Aspects.applied does not exist (stabilization: $stabilization)', ({ stabilization }) => {
     const app = new App({ context: { '@aws-cdk/core:aspectStabilization': stabilization } });
     const root = new Stack(app, 'My-Stack');
-    const child = new Bucket(root, 'my-bucket', {
-      bucketName: 'my-bucket',
-    });
 
-    Aspects.of(root).add(new Tag('AspectA', 'Visited'), { priority: 10 });
+    Aspects.of(root).add(new Tag('AspectA', 'Visited'));
 
     // "Monkey patching" - Override `applied` to simulate its absence
     Object.defineProperty(Aspects.prototype, 'applied', {
