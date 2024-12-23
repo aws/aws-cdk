@@ -44,7 +44,7 @@ export async function renderCliType(config: CliConfig): Promise<string> {
       name: optionName,
       type: convertType(option.type),
       docs: {
-        default: normalizeDefault(option.default),
+        default: normalizeDefault(option.default, option.type),
         summary: option.desc,
         deprecated: option.deprecated ? String(option.deprecated) : undefined,
       },
@@ -76,7 +76,7 @@ export async function renderCliType(config: CliConfig): Promise<string> {
         name: optionName,
         type: convertType(option.type),
         docs: {
-          default: normalizeDefault(option.default),
+          default: normalizeDefault(option.default, option.type),
           summary: option.desc,
           deprecated: option.deprecated ? String(option.deprecated) : undefined,
           remarks: option.alias ? `aliases: ${Array.isArray(option.alias) ? option.alias.join(' ') : option.alias}` : undefined,
@@ -129,12 +129,12 @@ function kebabToPascal(str: string): string {
     .join('');
 }
 
-function normalizeDefault(defaultValue: any): string {
+function normalizeDefault(defaultValue: any, type: string): string {
   const validDefaults = ['boolean', 'string', 'number', 'object'];
   if (validDefaults.includes(typeof defaultValue)) {
     return JSON.stringify(defaultValue);
   }
 
-  // We don't know what this default is, but it's likely one of these: 'YARGS_HELPERS.isCI()'
-  return 'undefined';
+  // We don't know what the default is, and only arrays get a special default
+  return type === 'array' ? '[]' : 'undefined';
 }

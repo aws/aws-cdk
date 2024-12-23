@@ -143,14 +143,14 @@ export interface GlobalOptions {
   /**
    * Add contextual string parameter (KEY=VALUE)
    *
-   * @default - undefined
+   * @default - []
    */
   readonly context?: Array<string>;
 
   /**
    * Name or path of a node package that extend the CDK features. Can be specified multiple times
    *
-   * @default - undefined
+   * @default - []
    */
   readonly plugin?: Array<string>;
 
@@ -596,7 +596,7 @@ export interface DeployOptions {
   /**
    * ARNs of SNS topics that CloudFormation will notify with stack related events. These will be added to ARNs specified with the 'notificationArns' stack property.
    *
-   * @default - undefined
+   * @default - []
    */
   readonly 'notification-arns'?: Array<string>;
 
@@ -605,7 +605,7 @@ export interface DeployOptions {
    *
    * aliases: t
    *
-   * @default - undefined
+   * @default - []
    */
   readonly tags?: Array<string>;
 
@@ -1185,7 +1185,7 @@ export interface MigrateOptions {
    *  tag-key: a string that matches resources with at least one tag with the provided key. i.e. "myTagKey"
    *  tag-value: a string that matches resources with at least one tag with the provided value. i.e. "myTagValue"
    *
-   * @default - undefined
+   * @default - []
    */
   readonly filter?: Array<string>;
 

@@ -19,6 +19,10 @@ describe('render', () => {
           alias: 'c',
           desc: 'context values',
         },
+        plugin: {
+          type: 'array',
+          desc: 'plugins to load',
+        },
       },
       commands: {
         deploy: {
@@ -43,66 +47,73 @@ describe('render', () => {
       import { Command } from './settings';
 
       /**
-      * The structure of the CLI configuration, generated from packages/aws-cdk/lib/config.ts
-      *
-      * @struct
-      */
+       * The structure of the CLI configuration, generated from packages/aws-cdk/lib/config.ts
+       *
+       * @struct
+       */
       export interface CliArguments {
         /**
-        * The CLI command name followed by any properties of the command
-        */
+         * The CLI command name followed by any properties of the command
+         */
         readonly _: [Command, ...string[]];
 
         /**
-        * Global options available to all CLI commands
-        */
+         * Global options available to all CLI commands
+         */
         readonly globalOptions?: GlobalOptions;
 
         /**
-        * Deploy a stack
-        */
+         * Deploy a stack
+         */
         readonly deploy?: DeployOptions;
       }
 
       /**
-      * Global options available to all CLI commands
-      *
-      * @struct
-      */
+       * Global options available to all CLI commands
+       *
+       * @struct
+       */
       export interface GlobalOptions {
         /**
-        * REQUIRED: Command-line for executing your app
-        *
-        * @default - undefined
-        */
+         * REQUIRED: Command-line for executing your app
+         *
+         * @default - undefined
+         */
         readonly app?: string;
 
         /**
-        * Enable debug logging
-        *
-        * @default - false
-        */
+         * Enable debug logging
+         *
+         * @default - false
+         */
         readonly debug?: boolean;
 
         /**
-        * context values
-        *
-        * @default - []
-        */
+         * context values
+         *
+         * @default - []
+         */
         readonly context?: Array<string>;
+
+        /**
+         * plugins to load
+         *
+         * @default - []
+         */
+        readonly plugin?: Array<string>;
       }
 
       /**
-      * Deploy a stack
-      *
-      * @struct
-      */
+       * Deploy a stack
+       *
+       * @struct
+       */
       export interface DeployOptions {
         /**
-        * Deploy all stacks
-        *
-        * @default - false
-        */
+         * Deploy all stacks
+         *
+         * @default - false
+         */
         readonly all?: boolean;
       }
       "
