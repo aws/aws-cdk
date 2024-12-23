@@ -797,16 +797,24 @@ export class CdkToolkit {
   }
 
   public async destroy(options: DestroyOptions) {
-    let stacks = await this.selectStacksForDestroy(options.selector, options.exclusively);
+    const assembly = await this.assembly();
+    let stacks = await this.selectStacksForDestroy(options.selector, assembly, options.exclusively);
+
+    await this.suggestStacks({
+      selector: options.selector,
+      assembly,
+      stacks,
+      exclusively: options.exclusively,
+    });
+    if (stacks.stackArtifacts.length === 0) {
+      warning(`No stacks match the name(s): ${chalk.red(options.selector.patterns.join(', '))}`);
+      return;
+    }
 
     // The stacks will have been ordered for deployment, so reverse them for deletion.
     stacks = stacks.reversed();
 
     if (!options.force) {
-      if (stacks.stackArtifacts.length === 0) {
-        warning(`No stacks match the name(s): ${chalk.red(options.selector.patterns.join(', '))}`);
-        return;
-      }
       // eslint-disable-next-line max-len
       const confirmed = await promptly.confirm(
         `Are you sure you want to delete: ${chalk.blue(stacks.stackArtifacts.map((s) => s.hierarchicalId).join(', '))} (y/n)?`,
@@ -1154,25 +1162,33 @@ export class CdkToolkit {
     return selectedForDiff;
   }
 
-  private async selectStacksForDestroy(selector: StackSelector, exclusively?: boolean) {
-    const assembly = await this.assembly();
+  private async selectStacksForDestroy(selector: StackSelector, assembly: CloudAssembly, exclusively?: boolean) {
     const stacks = await assembly.selectStacks(selector, {
       extend: exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Downstream,
       defaultBehavior: DefaultSelection.OnlySingle,
     });
 
+    return stacks;
+  }
+
+  private async suggestStacks(props: {
+    selector: StackSelector;
+    assembly: CloudAssembly;
+    stacks: StackCollection;
+    exclusively?: boolean;
+  }) {
     const selectorWithoutPatterns: StackSelector = {
-      ...selector,
+      ...props.selector,
       allTopLevel: true,
       patterns: [],
     };
-    const stacksWithoutPatterns = await assembly.selectStacks(selectorWithoutPatterns, {
-      extend: exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Downstream,
+    const stacksWithoutPatterns = await props.assembly.selectStacks(selectorWithoutPatterns, {
+      extend: props.exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Downstream,
       defaultBehavior: DefaultSelection.OnlySingle,
     });
 
-    const patterns = selector.patterns.map(pattern => {
-      const notExist = !stacks.stackArtifacts.find(stack =>
+    const patterns = props.selector.patterns.map(pattern => {
+      const notExist = !props.stacks.stackArtifacts.find(stack =>
         minimatch(stack.hierarchicalId, pattern),
       );
 
@@ -1182,6 +1198,7 @@ export class CdkToolkit {
         }
         return;
       }).filter((stack): stack is string => stack !== undefined) : [];
+
       return {
         pattern,
         notExist,
@@ -1189,13 +1206,12 @@ export class CdkToolkit {
       };
     });
 
-    patterns.forEach(pattern => {
+    for (const pattern of patterns) {
       if (pattern.notExist) {
         const closelyMatched = pattern.closelyMatched.length > 0 ? ` Do you mean ${chalk.blue(pattern.closelyMatched.join(', '))}?` : '';
         warning(`${chalk.red(pattern.pattern)} does not exist.${closelyMatched}`);
       }
-    });
-    return stacks;
+    };
   }
 
   /**
