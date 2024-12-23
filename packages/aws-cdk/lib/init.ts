@@ -491,7 +491,7 @@ async function loadInitVersions(): Promise<Versions> {
     'constructs': contents.constructs,
   };
   for (const [key, value] of Object.entries(ret)) {
-    if (!value) {
+    if (!value) /* istanbul ignore next */ {
       throw new Error(`Missing init version from ${recommendedFlagsFile}: ${key}`);
     }
   }
