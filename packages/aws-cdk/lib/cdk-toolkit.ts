@@ -6,7 +6,6 @@ import * as chokidar from 'chokidar';
 import * as fs from 'fs-extra';
 import { minimatch } from 'minimatch';
 import * as promptly from 'promptly';
-import * as semver from 'semver';
 import * as uuid from 'uuid';
 import { DeploymentMethod, SuccessfulDeployStackResult } from './api';
 import { SdkProvider } from './api/aws-auth';
@@ -55,7 +54,6 @@ import { validateSnsTopicArn } from './util/validate-notification-arn';
 import { Concurrency, WorkGraph } from './util/work-graph';
 import { WorkGraphBuilder } from './util/work-graph-builder';
 import { AssetBuildNode, AssetPublishNode, StackNode } from './util/work-graph-types';
-import { versionNumber } from './version';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob } from '../lib/api/cxapp/environments';
 
 // Must use a require() otherwise esbuild complains about calling a namespace
@@ -1174,15 +1172,12 @@ export class CdkToolkit {
 
     const patterns = selector.patterns.map(pattern => {
       const notExist = !stacks.stackArtifacts.find(stack =>
-        minimatch(stack.hierarchicalId, pattern) || (stack.id === pattern && semver.major(versionNumber()) < 2),
+        minimatch(stack.hierarchicalId, pattern),
       );
 
       const closelyMatched = notExist ? stacksWithoutPatterns.stackArtifacts.map(stack => {
         if (minimatch(stack.hierarchicalId.toLowerCase(), pattern.toLowerCase())) {
           return stack.hierarchicalId;
-        }
-        if (stack.id.toLowerCase() === pattern.toLowerCase() && semver.major(versionNumber()) < 2) {
-          return stack.id;
         }
         return;
       }).filter((stack): stack is string => stack !== undefined) : [];
