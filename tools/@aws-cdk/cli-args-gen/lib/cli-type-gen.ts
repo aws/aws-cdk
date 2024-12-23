@@ -1,6 +1,7 @@
 import { Module, SelectiveModuleImport, StructType, Type, TypeScriptRenderer } from '@cdklabs/typewriter';
 import { EsLintRules } from '@cdklabs/typewriter/lib/eslint-rules';
 import * as prettier from 'prettier';
+import { generateDefault } from './util';
 import { CliConfig } from './yargs-types';
 
 export async function renderCliType(config: CliConfig): Promise<string> {
@@ -136,5 +137,6 @@ function normalizeDefault(defaultValue: any, type: string): string {
   }
 
   // We don't know what the default is, and only arrays get a special default
-  return type === 'array' ? '[]' : 'undefined';
+  const generatedDefault = generateDefault(type);
+  return generatedDefault ? JSON.stringify(generatedDefault) : 'undefined';
 }

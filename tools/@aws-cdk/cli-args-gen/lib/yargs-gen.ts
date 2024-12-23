@@ -1,6 +1,7 @@
 import { $E, Expression, ExternalModule, FreeFunction, IScope, Module, SelectiveModuleImport, Statement, ThingSymbol, Type, TypeScriptRenderer, code, expr } from '@cdklabs/typewriter';
 import { EsLintRules } from '@cdklabs/typewriter/lib/eslint-rules';
 import * as prettier from 'prettier';
+import { generateDefault } from './util';
 import { CliConfig, CliOption, YargsOption } from './yargs-types';
 
 // to import lodash.clonedeep properly, we would need to set esModuleInterop: true
@@ -113,7 +114,7 @@ function makeOptions(prefix: Expression, options: { [optionName: string]: CliOpt
   let optionsExpr = prefix;
   for (const option of Object.keys(options)) {
     const theOption: CliOption = {
-      default: options[option].type === 'array' ? [] : undefined, // make the default explicit (overridden if the option includes an actual default)
+      default: generateDefault(options[option].type), // make the default explicit (overridden if the option includes an actual default)
       ...options[option],
     };
     const optionProps: YargsOption = cloneDeep(theOption);
