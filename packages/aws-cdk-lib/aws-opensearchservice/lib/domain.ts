@@ -1380,9 +1380,9 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
 
   private readonly domain: CfnDomain;
 
-  private accessPolicy?: OpenSearchAccessPolicy
+  private accessPolicy?: OpenSearchAccessPolicy;
 
-  private encryptionAtRestOptions?: EncryptionAtRestOptions
+  private encryptionAtRestOptions?: EncryptionAtRestOptions;
 
   private readonly _connections: ec2.Connections | undefined;
 
@@ -2134,7 +2134,7 @@ function extractNameFromEndpoint(domainEndpoint: string) {
 }
 
 /**
- * Converts an engine version into a into a decimal number with major and minor version i.e x.y.
+ * Converts an engine version into a decimal number with major and minor version i.e x.y.
  *
  * @param version The engine version object
  */

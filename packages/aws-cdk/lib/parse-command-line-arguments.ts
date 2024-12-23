@@ -2,7 +2,7 @@
 // GENERATED FROM packages/aws-cdk/lib/config.ts.
 // Do not edit by hand; all changes will be overwritten at build time from the config file.
 // -------------------------------------------------------------------------------------------
-/* eslint-disable @typescript-eslint/comma-dangle, comma-spacing, max-len, quotes, quote-props */
+/* eslint-disable @stylistic/comma-dangle, @stylistic/comma-spacing, @stylistic/max-len, @stylistic/quotes, @stylistic/quote-props */
 import { Argv } from 'yargs';
 import * as helpers from './util/yargs-helpers';
 
@@ -685,7 +685,7 @@ export function parseCommandLineArguments(args: Array<string>): any {
           desc: 'If true, only generates project files, without executing additional operations such as setting up a git repo, installing dependencies or compiling the project',
         })
     )
-    .command('migrate', false, (yargs: Argv) =>
+    .command('migrate', 'Migrate existing AWS resources into a CDK app', (yargs: Argv) =>
       yargs
         .option('stack-name', {
           type: 'string',
@@ -742,6 +742,7 @@ export function parseCommandLineArguments(args: Array<string>): any {
           desc: 'The context key (or its index) to reset',
           type: 'string',
           requiresArg: true,
+          default: undefined,
         })
         .option('force', {
           alias: 'f',
@@ -752,6 +753,7 @@ export function parseCommandLineArguments(args: Array<string>): any {
         .option('clear', {
           desc: 'Clear all context',
           type: 'boolean',
+          default: false,
         })
     )
     .command(['docs', 'doc'], 'Opens the reference documentation in a browser', (yargs: Argv) =>
