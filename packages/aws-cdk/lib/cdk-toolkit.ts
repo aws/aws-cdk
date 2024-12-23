@@ -804,6 +804,7 @@ export class CdkToolkit {
 
     if (!options.force) {
       if (stacks.stackArtifacts.length === 0) {
+        warning(`No stacks match the name(s): ${chalk.red(options.selector.patterns.join(', '))}`);
         return;
       }
       // eslint-disable-next-line max-len
@@ -1190,8 +1191,8 @@ export class CdkToolkit {
 
     patterns.forEach(pattern => {
       if (pattern.notExist) {
-        const closelyMatched = pattern.closelyMatched.length > 0 ? ` Do you mean ${pattern.closelyMatched.join(', ')}?` : '';
-        warning(`${pattern.pattern} does not exist.${closelyMatched}`);
+        const closelyMatched = pattern.closelyMatched.length > 0 ? ` Do you mean ${chalk.blue(pattern.closelyMatched.join(', '))}?` : '';
+        warning(`${chalk.red(pattern.pattern)} does not exist.${closelyMatched}`);
       }
     });
     return stacks;
