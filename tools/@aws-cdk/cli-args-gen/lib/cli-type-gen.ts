@@ -130,8 +130,13 @@ function kebabToPascal(str: string): string {
 }
 
 function normalizeDefault(defaultValue: any): string {
-  if (typeof defaultValue === 'boolean' || typeof defaultValue === 'string') {
-    return String(defaultValue);
+  // eslint-disable-next-line no-console
+  console.log(defaultValue, typeof defaultValue);
+  const validDefaults = ['boolean', 'string', 'number', 'object'];
+  if (validDefaults.includes(typeof defaultValue)) {
+    return JSON.stringify(defaultValue);
   }
+
+  // We don't know what this default is, but it's likely one of these: 'YARGS_HELPERS.isCI()'
   return 'undefined';
 }

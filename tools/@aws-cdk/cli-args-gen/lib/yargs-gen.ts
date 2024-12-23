@@ -1,4 +1,5 @@
 import { $E, Expression, ExternalModule, FreeFunction, IScope, Module, SelectiveModuleImport, Statement, ThingSymbol, Type, TypeScriptRenderer, code, expr } from '@cdklabs/typewriter';
+import { EsLintRules } from '@cdklabs/typewriter/lib/eslint-rules';
 import * as prettier from 'prettier';
 import { CliConfig, CliOption, YargsOption } from './yargs-types';
 
@@ -45,19 +46,14 @@ export async function renderYargs(config: CliConfig, helpers: CliHelpers): Promi
   parseCommandLineArguments.addBody(makeYargs(config, helpers));
 
   const ts = new TypeScriptRenderer({
-    disabledEsLintRules: [
-      '@stylistic/comma-dangle',
-      '@stylistic/comma-spacing',
-      '@stylistic/max-len',
-      '@stylistic/quotes',
-      '@stylistic/quote-props',
-    ] as any, // Force our string[] into EsLintRules[], it will work out at runtime
+    disabledEsLintRules: [EsLintRules.MAX_LEN], // the default disabled rules result in 'Definition for rule 'prettier/prettier' was not found'
   }).render(scope);
 
   return prettier.format(ts, {
     parser: 'typescript',
     printWidth: 150,
     singleQuote: true,
+    trailingComma: 'all',
   });
 }
 
@@ -117,7 +113,7 @@ function makeOptions(prefix: Expression, options: { [optionName: string]: CliOpt
   let optionsExpr = prefix;
   for (const option of Object.keys(options)) {
     const theOption: CliOption = {
-      default: undefined, // make the default explicit (overridden if the option includes an actual default)
+      default: options[option].type === 'array' ? [] : undefined, // make the default explicit (overridden if the option includes an actual default)
       ...options[option],
     };
     const optionProps: YargsOption = cloneDeep(theOption);

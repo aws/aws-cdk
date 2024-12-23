@@ -2,7 +2,7 @@
 // GENERATED FROM packages/aws-cdk/lib/config.ts.
 // Do not edit by hand; all changes will be overwritten at build time from the config file.
 // -------------------------------------------------------------------------------------------
-/* eslint-disable @stylistic/comma-dangle, @stylistic/comma-spacing, @stylistic/max-len, @stylistic/quotes, @stylistic/quote-props */
+/* eslint-disable max-len */
 import { Argv } from 'yargs';
 import * as helpers from './util/yargs-helpers';
 
@@ -24,7 +24,7 @@ export function parseCommandLineArguments(args: Array<string>): any {
       desc: 'Command-line for a pre-synth build',
     })
     .option('context', {
-      default: undefined,
+      default: [],
       type: 'array',
       alias: 'c',
       desc: 'Add contextual string parameter (KEY=VALUE)',
@@ -32,7 +32,7 @@ export function parseCommandLineArguments(args: Array<string>): any {
       requiresArg: true,
     })
     .option('plugin', {
-      default: undefined,
+      default: [],
       type: 'array',
       alias: 'p',
       desc: 'Name or path of a node package that extend the CDK features. Can be specified multiple times',
@@ -170,7 +170,7 @@ export function parseCommandLineArguments(args: Array<string>): any {
           type: 'boolean',
           alias: 'd',
           desc: 'Display stack dependency information for each stack',
-        })
+        }),
     )
     .command(['synthesize [STACKS..]', 'synth [STACKS..]'], 'Synthesizes and prints the CloudFormation template for this stack', (yargs: Argv) =>
       yargs
@@ -190,7 +190,7 @@ export function parseCommandLineArguments(args: Array<string>): any {
           type: 'boolean',
           alias: 'q',
           desc: 'Do not output CloudFormation Template to stdout',
-        })
+        }),
     )
     .command('bootstrap [ENVIRONMENTS..]', 'Deploys the CDK toolkit stack into an AWS environment', (yargs: Argv) =>
       yargs
@@ -302,7 +302,7 @@ export function parseCommandLineArguments(args: Array<string>): any {
           default: true,
           type: 'boolean',
           desc: 'Use previous values for existing parameters (you must specify all parameters on every deployment if this is disabled)',
-        })
+        }),
     )
     .command(
       'gc [ENVIRONMENTS..]',
@@ -339,7 +339,7 @@ export function parseCommandLineArguments(args: Array<string>): any {
             type: 'string',
             desc: 'The name of the CDK toolkit stack, if different from the default "CDKToolkit"',
             requiresArg: true,
-          })
+          }),
     )
     .command('deploy [STACKS..]', 'Deploys the stack(s) named STACKS into your AWS account', (yargs: Argv) =>
       yargs
@@ -369,14 +369,14 @@ export function parseCommandLineArguments(args: Array<string>): any {
           desc: 'What security-sensitive changes need manual approval',
         })
         .option('notification-arns', {
-          default: undefined,
+          default: [],
           type: 'array',
           desc: "ARNs of SNS topics that CloudFormation will notify with stack related events. These will be added to ARNs specified with the 'notificationArns' stack property.",
           nargs: 1,
           requiresArg: true,
         })
         .option('tags', {
-          default: undefined,
+          default: [],
           type: 'array',
           alias: 't',
           desc: 'Tags to add to the stack (KEY=VALUE), overrides tags from Cloud Assembly (deprecated)',
@@ -486,7 +486,7 @@ export function parseCommandLineArguments(args: Array<string>): any {
           default: false,
           type: 'boolean',
           desc: 'Whether to deploy if the app contains no stacks',
-        })
+        }),
     )
     .command('rollback [STACKS..]', 'Rolls back the stack(s) named STACKS to their last stable state', (yargs: Argv) =>
       yargs
@@ -518,7 +518,7 @@ export function parseCommandLineArguments(args: Array<string>): any {
           desc: 'Orphan the given resources, identified by their logical ID (can be specified multiple times)',
           nargs: 1,
           requiresArg: true,
-        })
+        }),
     )
     .command('import [STACK]', 'Import existing resource(s) into the given STACK', (yargs: Argv) =>
       yargs
@@ -562,7 +562,7 @@ export function parseCommandLineArguments(args: Array<string>): any {
           alias: 'm',
           requiresArg: true,
           desc: 'If specified, CDK will use the given file to map physical resources to CDK resources for import, instead of interactively asking the user. Can be run from scripts',
-        })
+        }),
     )
     .command('watch [STACKS..]', "Shortcut for 'deploy --watch'", (yargs: Argv) =>
       yargs
@@ -630,7 +630,7 @@ export function parseCommandLineArguments(args: Array<string>): any {
           type: 'number',
           desc: 'Maximum number of simultaneous deployments (dependency permitting) to execute.',
           requiresArg: true,
-        })
+        }),
     )
     .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', (yargs: Argv) =>
       yargs
@@ -650,7 +650,7 @@ export function parseCommandLineArguments(args: Array<string>): any {
           type: 'boolean',
           alias: 'f',
           desc: 'Do not ask for confirmation before destroying the stacks',
-        })
+        }),
     )
     .command(
       'diff [STACKS..]',
@@ -706,7 +706,7 @@ export function parseCommandLineArguments(args: Array<string>): any {
             type: 'boolean',
             alias: 'changeset',
             desc: 'Whether to create a changeset to analyze resource replacements. In this mode, diff will use the deploy role instead of the lookup role.',
-          })
+          }),
     )
     .command('metadata [STACK]', 'Returns all metadata associated with this stack')
     .command(['acknowledge [ID]', 'ack [ID]'], 'Acknowledge a notice so that it does not show up anymore')
@@ -716,7 +716,7 @@ export function parseCommandLineArguments(args: Array<string>): any {
         type: 'boolean',
         alias: 'u',
         desc: 'Returns a list of unacknowledged notices',
-      })
+      }),
     )
     .command('init [TEMPLATE]', 'Create a new, empty CDK project from a template.', (yargs: Argv) =>
       yargs
@@ -736,7 +736,7 @@ export function parseCommandLineArguments(args: Array<string>): any {
           default: false,
           type: 'boolean',
           desc: 'If true, only generates project files, without executing additional operations such as setting up a git repo, installing dependencies or compiling the project',
-        })
+        }),
     )
     .command('migrate', 'Migrate existing AWS resources into a CDK app', (yargs: Argv) =>
       yargs
@@ -785,7 +785,7 @@ export function parseCommandLineArguments(args: Array<string>): any {
           desc: 'Determines if a new scan should be created, or the last successful existing scan should be used \n options are "new" or "most-recent"',
         })
         .option('filter', {
-          default: undefined,
+          default: [],
           type: 'array',
           desc: 'Filters the resource scan based on the provided criteria in the following format: "key1=value1,key2=value2"\n This field can be passed multiple times for OR style filtering: \n filtering options: \n resource-identifier: A key-value pair that identifies the target resource. i.e. {"ClusterName", "myCluster"}\n resource-type-prefix: A string that represents a type-name prefix. i.e. "AWS::DynamoDB::"\n tag-key: a string that matches resources with at least one tag with the provided key. i.e. "myTagKey"\n tag-value: a string that matches resources with at least one tag with the provided value. i.e. "myTagValue"',
           nargs: 1,
@@ -795,7 +795,7 @@ export function parseCommandLineArguments(args: Array<string>): any {
           default: undefined,
           type: 'boolean',
           desc: 'Use this flag to zip the generated CDK app',
-        })
+        }),
     )
     .command('context', 'Manage cached context values', (yargs: Argv) =>
       yargs
@@ -816,7 +816,7 @@ export function parseCommandLineArguments(args: Array<string>): any {
           default: undefined,
           desc: 'Clear all context',
           type: 'boolean',
-        })
+        }),
     )
     .command(['docs', 'doc'], 'Opens the reference documentation in a browser', (yargs: Argv) =>
       yargs.option('browser', {
@@ -824,7 +824,7 @@ export function parseCommandLineArguments(args: Array<string>): any {
         alias: 'b',
         desc: 'the command to use to open the browser, using %u as a placeholder for the path of the file to open',
         type: 'string',
-      })
+      }),
     )
     .command('doctor', 'Check your set-up for potential problems')
     .version(helpers.cliVersion())
@@ -833,7 +833,7 @@ export function parseCommandLineArguments(args: Array<string>): any {
     .help()
     .alias('h', 'help')
     .epilogue(
-      'If your app has a single stack, there is no need to specify the stack name\n\nIf one of cdk.json or ~/.cdk.json exists, options specified there will be used as defaults. Settings in cdk.json take precedence.'
+      'If your app has a single stack, there is no need to specify the stack name\n\nIf one of cdk.json or ~/.cdk.json exists, options specified there will be used as defaults. Settings in cdk.json take precedence.',
     )
     .parse(args);
 } // eslint-disable-next-line @typescript-eslint/no-require-imports

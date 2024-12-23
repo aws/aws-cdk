@@ -28,7 +28,7 @@ describe('render', () => {
       // GENERATED FROM packages/aws-cdk/lib/config.ts.
       // Do not edit by hand; all changes will be overwritten at build time from the config file.
       // -------------------------------------------------------------------------------------------
-      /* eslint-disable @stylistic/comma-dangle, @stylistic/comma-spacing, @stylistic/max-len, @stylistic/quotes, @stylistic/quote-props */
+      /* eslint-disable max-len */
       import { Argv } from 'yargs';
       import * as helpers from './util/yargs-helpers';
 
@@ -50,7 +50,7 @@ describe('render', () => {
             desc: 'text for two',
           })
           .option('three', {
-            default: undefined,
+            default: [],
             type: 'array',
             alias: 't',
             desc: 'text for three',
@@ -63,7 +63,7 @@ describe('render', () => {
           .help()
           .alias('h', 'help')
           .epilogue(
-            'If your app has a single stack, there is no need to specify the stack name\\n\\nIf one of cdk.json or ~/.cdk.json exists, options specified there will be used as defaults. Settings in cdk.json take precedence.'
+            'If your app has a single stack, there is no need to specify the stack name\\n\\nIf one of cdk.json or ~/.cdk.json exists, options specified there will be used as defaults. Settings in cdk.json take precedence.',
           )
           .parse(args);
       } // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -95,7 +95,7 @@ describe('render', () => {
       // GENERATED FROM packages/aws-cdk/lib/config.ts.
       // Do not edit by hand; all changes will be overwritten at build time from the config file.
       // -------------------------------------------------------------------------------------------
-      /* eslint-disable @stylistic/comma-dangle, @stylistic/comma-spacing, @stylistic/max-len, @stylistic/quotes, @stylistic/quote-props */
+      /* eslint-disable max-len */
       import { Argv } from 'yargs';
       import * as helpers from './util/yargs-helpers';
 
@@ -113,7 +113,7 @@ describe('render', () => {
                 desc: 'text for one',
               })
               .option('O', { type: 'boolean', hidden: true })
-              .middleware(helpers.yargsNegativeAlias('O', 'one'), true)
+              .middleware(helpers.yargsNegativeAlias('O', 'one'), true),
           )
           .version(helpers.cliVersion())
           .demandCommand(1, '')
@@ -121,7 +121,7 @@ describe('render', () => {
           .help()
           .alias('h', 'help')
           .epilogue(
-            'If your app has a single stack, there is no need to specify the stack name\\n\\nIf one of cdk.json or ~/.cdk.json exists, options specified there will be used as defaults. Settings in cdk.json take precedence.'
+            'If your app has a single stack, there is no need to specify the stack name\\n\\nIf one of cdk.json or ~/.cdk.json exists, options specified there will be used as defaults. Settings in cdk.json take precedence.',
           )
           .parse(args);
       } // eslint-disable-next-line @typescript-eslint/no-require-imports
