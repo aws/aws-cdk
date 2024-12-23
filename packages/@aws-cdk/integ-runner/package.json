@@ -8,6 +8,7 @@
     "integ-runner": "bin/integ-runner"
   },
   "scripts": {
+    "gen": "./build-tools/generate.sh",
     "build": "cdk-build",
     "lint": "cdk-lint",
     "package": "cdk-package",
