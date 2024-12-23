@@ -904,21 +904,6 @@ export class CdkToolkit {
       return undefined;
     }
 
-    // This is a slight hack; in integ mode we allow multiple stacks to be synthesized to stdout sequentially.
-    // This is to make it so that we can support multi-stack integ test expectations, without so drastically
-    // having to change the synthesis format that we have to rerun all integ tests.
-    //
-    // Because this feature is not useful to consumers (the output is missing
-    // the stack names), it's not exposed as a CLI flag. Instead, it's hidden
-    // behind an environment variable.
-    const isIntegMode = process.env.CDK_INTEG_MODE === '1';
-    if (isIntegMode) {
-      printSerializedObject(
-        stacks.stackArtifacts.map((s) => obscureTemplate(s.template)),
-        json ?? false,
-      );
-    }
-
     // not outputting template to stdout, let's explain things to the user a little bit...
     success(`Successfully synthesized to ${chalk.blue(path.resolve(stacks.assembly.directory))}`);
     print(
@@ -933,14 +918,13 @@ export class CdkToolkit {
    *
    * @param userEnvironmentSpecs environment names that need to have toolkit support
    *             provisioned, as a glob filter. If none is provided, all stacks are implicitly selected.
-   * @param bootstrapper Legacy or modern.
    * @param options The name, role ARN, bootstrapping parameters, etc. to be used for the CDK Toolkit stack.
    */
   public async bootstrap(
     userEnvironmentSpecs: string[],
-    bootstrapper: Bootstrapper,
     options: BootstrapEnvironmentOptions,
   ): Promise<void> {
+    const bootstrapper = new Bootstrapper(options.source);
     // If there is an '--app' argument and an environment looks like a glob, we
     // select the environments from the app. Otherwise, use what the user said.
 
