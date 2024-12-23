@@ -126,7 +126,7 @@
     "@aws-sdk/credential-providers": "3.699.0",
     "@aws-sdk/ec2-metadata-service": "3.699.0",
     "@aws-sdk/lib-storage": "3.699.0",
-    "@jsii/check-node": "1.106.0",
+    "@jsii/check-node": "1.104.0",
     "@smithy/middleware-endpoint": "3.1.4",
     "@smithy/node-http-handler": "3.2.4",
     "@smithy/property-provider": "3.1.10",
