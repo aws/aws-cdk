@@ -945,6 +945,32 @@ describe('destroy', () => {
       });
     }).resolves;
   });
+
+  test('does not throw even if there is a non-existent stack and the other exists', async () => {
+    const toolkit = defaultToolkitSetup();
+
+    await expect(() => {
+      return toolkit.destroy({
+        selector: { patterns: ['Test-Stack-X', 'Test-Stack-A/Test-Stack-C'] },
+        exclusively: true,
+        force: true,
+        fromDeploy: true,
+      });
+    }).resolves;
+  });
+
+  test('does not throw even if there are only non-existent stacks', async () => {
+    const toolkit = defaultToolkitSetup();
+
+    await expect(() => {
+      return toolkit.destroy({
+        selector: { patterns: ['Test-Stack-X', 'Test-Stack-Y'] },
+        exclusively: true,
+        force: true,
+        fromDeploy: true,
+      });
+    }).resolves;
+  });
 });
 
 describe('watch', () => {
