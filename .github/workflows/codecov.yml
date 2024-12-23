@@ -21,10 +21,16 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
+      - name: Build Library
+        run: npx lerna run build --scope=aws-cdk-lib
+
       - name: Build CLI
         run: npx lerna run build --scope=aws-cdk
 
-      - name: Run tests
+      - name: Run Library tests
+        run: cd packages/aws-cdk && yarn test
+
+      - name: Run CLI tests
         run: cd packages/aws-cdk && yarn test
 
       - name: Upload results to Codecov
