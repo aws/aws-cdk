@@ -41,7 +41,6 @@ import {
   withSamIntegrationFixture,
   withSpecificFixture,
 } from '../../lib';
-import { options } from 'yargs';
 
 jest.setTimeout(2 * 60 * 60_000); // Includes the time to acquire locks, worst-case single-threaded runtime
 
