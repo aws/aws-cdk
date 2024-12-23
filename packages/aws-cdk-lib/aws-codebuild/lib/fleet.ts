@@ -39,7 +39,7 @@ export interface FleetProps {
   /**
    * The compute configuration of the compute fleet.
    *
-   * This is only required if `computeType` is set to ATTRIBUTE_BASED_COMPUTE.
+   * This is only required if `computeType` is set to ATTRIBUTE_BASED.
    *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html#environment-reserved-capacity.types
    *
@@ -212,7 +212,7 @@ export class Fleet extends Resource implements IFleet {
       throw new Error('At least one compute configuration criteria must be specified if computeType is "ATTRIBUTE_BASED"');
     }
     if (props.computeConfiguration && props.computeType !== FleetComputeType.ATTRIBUTE_BASED) {
-      throw new Error(`'computeConfiguration' can only be specified if 'computeType' is 'ATTRIBUTE_BASED_COMPUTE', got: ${props.computeType}`);
+      throw new Error(`'computeConfiguration' can only be specified if 'computeType' is 'ATTRIBUTE_BASED', got: ${props.computeType}`);
     }
 
     const computeConfig = props.computeConfiguration;
