@@ -130,8 +130,6 @@ function kebabToPascal(str: string): string {
 }
 
 function normalizeDefault(defaultValue: any): string {
-  // eslint-disable-next-line no-console
-  console.log(defaultValue, typeof defaultValue);
   const validDefaults = ['boolean', 'string', 'number', 'object'];
   if (validDefaults.includes(typeof defaultValue)) {
     return JSON.stringify(defaultValue);
