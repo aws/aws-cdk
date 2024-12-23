@@ -32,7 +32,7 @@ describe('every aspect gets invoked exactly once', () => {
           for (const aspectApplication of originalAspectApplications) {
             // Check that each original AspectApplication also visited all child nodes of its original scope:
             for (const construct of originalConstructsOnApp) {
-              if (ancestorOf(aspectApplication.construct, construct)) {
+              if (isAncestorOf(aspectApplication.construct, construct)) {
                 if (!visitsMap.get(construct)!.includes(aspectApplication.aspect)) {
                   throw new Error(`Aspect ${aspectApplication.aspect.constructor.name} applied on ${aspectApplication.construct.node.path} did not visit construct ${construct.node.path} in its original scope.`);
                 }
@@ -56,7 +56,7 @@ describe('every aspect gets invoked exactly once', () => {
           for (const aspectApplication of allAspectApplications) {
             // Check that each AspectApplication also visited all child nodes of its scope:
             for (const construct of allConstructsOnApp) {
-              if (ancestorOf(aspectApplication.construct, construct)) {
+              if (isAncestorOf(aspectApplication.construct, construct)) {
                 if (!visitsMap.get(construct)!.includes(aspectApplication.aspect)) {
                   throw new Error(`Aspect ${aspectApplication.aspect.constructor.name} applied on ${aspectApplication.construct.node.path} did not visit construct ${construct.node.path} in its scope.`);
                 }
@@ -107,7 +107,11 @@ test('for every construct, lower priorities go before higher priorities', () =>
           const aPrio = lowestAspectPrioFor(a.aspect, a.construct);
           const bPrio = lowestAspectPrioFor(b.aspect, b.construct);
 
-          if (!implies(aPrio < bPrio, a.index < b.index)) {
+          // But only if the application of aspect A exists at least as long as the application of aspect B
+          const aAppliedT = aspectAppliedT(testApp, a.aspect, a.construct);
+          const bAppliedT = aspectAppliedT(testApp, b.aspect, b.construct);
+
+          if (!implies(aPrio < bPrio && aAppliedT <= bAppliedT, a.index < b.index)) {
             throw new Error(
               `Aspect ${a.aspect}@${aPrio} at ${a.index} should have been before ${b.aspect}@${bPrio} at ${b.index}, but was after`,
             );
@@ -250,7 +254,7 @@ function sameAspect(a: AspectVisit, b: AspectVisit) {
 /**
  * Returns whether `a` is an ancestor of `b` (or if they are the same construct)
  */
-function ancestorOf(a: Construct, b: Construct) {
+function isAncestorOf(a: Construct, b: Construct) {
   return b.node.path === a.node.path || b.node.path.startsWith(a.node.path + '/');
 }
 
@@ -280,6 +284,19 @@ function allAncestorAspects(a: IConstruct): IAspect[] {
  */
 function allAspectApplicationsInScope(a: Construct): AspectApplication[] {
   return ancestors(a).flatMap((c) => Aspects.of(c).applied);
+}
+
+/**
+ * Find the lowest timestamp that could lead to the execution of the given aspect on the given construct
+ *
+ * Take the minimum of all added applications that could lead to this execution.
+ */
+function aspectAppliedT(prettyApp: PrettyApp, a: IAspect, c: Construct): number {
+  const potentialTimes = [...prettyApp.initialAspects, ...prettyApp.addedAspects].filter((appl) => {
+    return appl.aspect === a && isAncestorOf(appl.construct, c);
+  }).map((appl) => appl.t);
+
+  return Math.min(...potentialTimes);
 }
 
 /**
@@ -350,9 +367,20 @@ function arbConstructTreeFactory(): fc.Arbitrary<ConstructFactory> {
  */
 class PrettyApp {
   private readonly initialTree: Set<string>;
+  private readonly _initialAspects: Map<string, Set<string>>;
+  public readonly initialAspects: RecordedAspectApplication[];
 
   constructor(public readonly cdkApp: App, public readonly executionState: ExecutionState) {
-    this.initialTree = new Set(cdkApp.node.findAll().map(c => c.node.path));
+    const constructs = cdkApp.node.findAll();
+    this.initialTree = new Set(constructs.map(c => c.node.path));
+    this._initialAspects = new Map(constructs.map(c => [c.node.path, new Set(renderAspects(c))]));
+
+    this.initialAspects = constructs.flatMap(c => Aspects.of(c).applied.map(a => ({
+      aspect: a.aspect,
+      construct: a.construct,
+      priority: a.priority,
+      t: 0,
+    } as RecordedAspectApplication)));
   }
 
   /**
@@ -402,7 +430,14 @@ class PrettyApp {
     }
 
     function recurse(construct: Construct) {
-      const aspects = Aspects.of(construct).applied.map(a => `${a.aspect}@${a.priority}`);
+      const aspects = renderAspects(construct);
+
+      for (let i = 0; i < aspects.length; i++) {
+        if (!(self._initialAspects.get(construct.node.path) ?? new Set()).has(aspects[i])) {
+          aspects[i] += ' (added)';
+        }
+      }
+
       line([
         '+-',
         ...self.initialTree.has(construct.node.path) ? [] : ['(added)'],
@@ -417,6 +452,21 @@ class PrettyApp {
       prefixes.pop();
     }
   }
+}
+
+function renderAspects(c: Construct) {
+  return unique(Aspects.of(c).applied.map(a => `${a.aspect}@${a.priority}`));
+}
+
+function unique(xs: string[]): string[] {
+  const seen = new Set<string>();
+  const ret: string[] = [];
+  for (const x of xs) {
+    if (seen.has(x)) { continue; }
+    ret.push(x);
+    seen.add(x);
+  }
+  return ret;
 }
 
 interface AspectVisit {
@@ -668,6 +718,7 @@ interface TestAspectApplication extends PartialTestAspectApplication {
  * An aspect application added by another aspect, during execution
  */
 interface RecordedAspectApplication extends PartialTestAspectApplication {
+  t: number;
   construct: Construct;
 }
 
@@ -690,7 +741,9 @@ class NodeAddingAspect extends TracingAspect {
     const newConstruct = new ArbConstruct(scope, this.loc.id);
     for (const { aspect, priority } of this.newAspects) {
       Aspects.of(newConstruct).add(aspect, { priority });
-      this.executionState(node).addedAspects.push({
+      const executionState = this.executionState(node);
+      executionState.addedAspects.push({
+        t: executionState.visitLog.length,
         construct: newConstruct,
         aspect,
         priority,
@@ -719,7 +772,9 @@ class AspectAddingAspect extends TracingAspect {
     const constructs = this.newAspect.constructPaths.map((p) => findConstructDeep(node.node.root, p));
     for (const construct of constructs) {
       Aspects.of(construct).add(this.newAspect.aspect, { priority: this.newAspect.priority });
-      this.executionState(node).addedAspects.push({
+      const executionState = this.executionState(node);
+      executionState.addedAspects.push({
+        t: executionState.visitLog.length,
         construct,
         aspect: this.newAspect.aspect,
         priority: this.newAspect.priority,

@@ -185,12 +185,12 @@ const JSII_RUNTIME_SYMBOL = Symbol.for('jsii.rtti');
 
 class TestConstruct extends Construct {
   // @ts-ignore
-  private static readonly [JSII_RUNTIME_SYMBOL] = { fqn: '@amzn/core.TestConstruct', version: 'FakeVersion.2.3' }
+  private static readonly [JSII_RUNTIME_SYMBOL] = { fqn: '@amzn/core.TestConstruct', version: 'FakeVersion.2.3' };
 }
 
 class TestThirdPartyConstruct extends Construct {
   // @ts-ignore
-  private static readonly [JSII_RUNTIME_SYMBOL] = { fqn: 'mycoolthing.TestConstruct', version: '1.2.3' }
+  private static readonly [JSII_RUNTIME_SYMBOL] = { fqn: 'mycoolthing.TestConstruct', version: '1.2.3' };
 }
 
 class ValidationPlugin implements IPolicyValidationPluginBeta1 {
