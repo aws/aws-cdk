@@ -979,6 +979,19 @@ describe('destroy', () => {
       });
     }).resolves;
   });
+
+  test('does not throw even if there are only non-existent stacks and force option is false', async () => {
+    const toolkit = defaultToolkitSetup();
+
+    await expect(() => {
+      return toolkit.destroy({
+        selector: { patterns: ['Test-Stack-X', 'Test-Stack-Y'] },
+        exclusively: true,
+        force: false,
+        fromDeploy: true,
+      });
+    }).resolves;
+  });
 });
 
 describe('watch', () => {
