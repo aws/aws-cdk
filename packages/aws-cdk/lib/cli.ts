@@ -17,9 +17,9 @@ import { Deployments } from '../lib/api/deployments';
 import { PluginHost } from '../lib/api/plugin';
 import { ToolkitInfo } from '../lib/api/toolkit-info';
 import { CdkToolkit, AssetBuildTime } from '../lib/cdk-toolkit';
-import { realHandler as context } from '../lib/commands/context';
-import { realHandler as docs } from '../lib/commands/docs';
-import { realHandler as doctor } from '../lib/commands/doctor';
+import { contextHandler as context } from '../lib/commands/context';
+import { docs } from '../lib/commands/docs';
+import { doctor } from '../lib/commands/doctor';
 import { getMigrateScanType } from '../lib/commands/migrate';
 import { cliInit, printAvailableTemplates } from '../lib/init';
 import { data, debug, error, print, setCI, setLogLevel, LogLevel } from '../lib/logging';
@@ -37,7 +37,6 @@ if (!process.stdout.isTTY) {
 }
 
 export async function exec(args: string[], synthesizer?: Synthesizer): Promise<number | void> {
-
   const argv = await parseCommandLineArguments(args);
 
   // if one -v, log at a DEBUG level
@@ -89,6 +88,10 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
     output: configuration.settings.get(['outdir']),
     shouldDisplay: configuration.settings.get(['notices']),
     includeAcknowledged: cmd === 'notices' ? !argv.unacknowledged : false,
+    httpOptions: {
+      proxyAddress: configuration.settings.get(['proxy']),
+      caBundlePath: configuration.settings.get(['caBundlePath']),
+    },
   });
   await notices.refresh();
 
@@ -150,9 +153,6 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
     throw new Error(`First argument should be a string. Got: ${cmd} (${typeof(cmd)})`);
   }
 
-  // Bundle up global objects so the commands have access to them
-  const commandOptions = { args: argv, configuration, aws: sdkProvider };
-
   try {
     return await main(cmd, argv);
   } finally {
@@ -170,7 +170,6 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
       await notices.refresh();
       notices.display();
     }
-
   }
 
   async function main(command: string, args: any): Promise<number | void> {
@@ -203,13 +202,19 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
     switch (command) {
       case 'context':
-        return context(commandOptions);
+        return context({
+          context: configuration.context,
+          clear: argv.clear,
+          json: argv.json,
+          force: argv.force,
+          reset: argv.reset,
+        });
 
       case 'docs':
-        return docs(commandOptions);
+        return docs({ browser: configuration.settings.get(['browser']) });
 
       case 'doctor':
-        return doctor(commandOptions);
+        return doctor();
 
       case 'ls':
       case 'list':
@@ -237,15 +242,15 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         });
 
       case 'bootstrap':
-        const source: BootstrapSource = determineBootstrapVersion(args, configuration);
-
-        const bootstrapper = new Bootstrapper(source);
+        const source: BootstrapSource = determineBootstrapVersion(args);
 
         if (args.showTemplate) {
+          const bootstrapper = new Bootstrapper(source);
           return bootstrapper.showTemplate(args.json);
         }
 
-        return cli.bootstrap(args.ENVIRONMENTS, bootstrapper, {
+        return cli.bootstrap(args.ENVIRONMENTS, {
+          source,
           roleArn: args.roleArn,
           force: argv.force,
           toolkitStackName: toolkitStackName,
@@ -463,32 +468,8 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
 /**
  * Determine which version of bootstrapping
- * (legacy, or "new") should be used.
  */
-function determineBootstrapVersion(args: { template?: string }, configuration: Configuration): BootstrapSource {
-  const isV1 = version.DISPLAY_VERSION.startsWith('1.');
-  return isV1 ? determineV1BootstrapSource(args, configuration) : determineV2BootstrapSource(args);
-}
-
-function determineV1BootstrapSource(args: { template?: string }, configuration: Configuration): BootstrapSource {
-  let source: BootstrapSource;
-  if (args.template) {
-    print(`Using bootstrapping template from ${args.template}`);
-    source = { source: 'custom', templateFile: args.template };
-  } else if (process.env.CDK_NEW_BOOTSTRAP) {
-    print('CDK_NEW_BOOTSTRAP set, using new-style bootstrapping');
-    source = { source: 'default' };
-  } else if (isFeatureEnabled(configuration, cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT)) {
-    print(`'${cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT}' context set, using new-style bootstrapping`);
-    source = { source: 'default' };
-  } else {
-    // in V1, the "legacy" bootstrapping is the default
-    source = { source: 'legacy' };
-  }
-  return source;
-}
-
-function determineV2BootstrapSource(args: { template?: string }): BootstrapSource {
+function determineBootstrapVersion(args: { template?: string }): BootstrapSource {
   let source: BootstrapSource;
   if (args.template) {
     print(`Using bootstrapping template from ${args.template}`);
