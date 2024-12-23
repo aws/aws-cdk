@@ -3,13 +3,13 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as glob from 'glob';
 import * as yargs from 'yargs';
-import { shell } from '../lib';
-import { TestRepository } from '../lib/staging/codeartifact';
-import { uploadJavaPackages, mavenLogin } from '../lib/staging/maven';
-import { uploadNpmPackages, npmLogin } from '../lib/staging/npm';
-import { uploadDotnetPackages, nugetLogin } from '../lib/staging/nuget';
-import { uploadPythonPackages, pypiLogin } from '../lib/staging/pypi';
-import { UsageDir } from '../lib/staging/usage-dir';
+import { shell } from '..';
+import { TestRepository } from '../staging/codeartifact';
+import { uploadJavaPackages, mavenLogin } from '../staging/maven';
+import { uploadNpmPackages, npmLogin } from '../staging/npm';
+import { uploadDotnetPackages, nugetLogin } from '../staging/nuget';
+import { uploadPythonPackages, pypiLogin } from '../staging/pypi';
+import { UsageDir } from '../staging/usage-dir';
 
 async function main() {
   await yargs
