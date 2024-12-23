@@ -28,7 +28,7 @@ jobs:
         run: npx lerna run build --scope=aws-cdk
 
       - name: Run Library tests
-        run: cd packages/aws-cdk && yarn test
+        run: cd packages/aws-cdk-lib && yarn test
 
       - name: Run CLI tests
         run: cd packages/aws-cdk && yarn test
