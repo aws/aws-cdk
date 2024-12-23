@@ -805,6 +805,7 @@ export function parseCommandLineArguments(args: Array<string>): any {
           desc: 'The context key (or its index) to reset',
           type: 'string',
           requiresArg: true,
+          default: undefined,
         })
         .option('force', {
           default: false,
@@ -813,7 +814,7 @@ export function parseCommandLineArguments(args: Array<string>): any {
           type: 'boolean',
         })
         .option('clear', {
-          default: undefined,
+          default: false,
           desc: 'Clear all context',
           type: 'boolean',
         }),
