@@ -22,7 +22,7 @@ export enum StackSelectionStrategy {
   /**
    * Throws an exception if the app doesn't contain at least one stack.
    */
-  AtLeastOne = 'at-lest-one',
+  AtLeastOne = 'at-least-one',
 
   /**
    * Returns all stacks in the main (top level) assembly only.

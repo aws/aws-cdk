@@ -30,7 +30,6 @@ export interface CdkAppDirectoryProps {
 }
 
 export class CloudAssemblySource implements ICloudAssemblySource {
-
   /**
    * Use a directory containing an AWS CDK app as source.
    * @param directory the directory of the AWS CDK app. Defaults to the current working directory.
@@ -50,7 +49,7 @@ export class CloudAssemblySource implements ICloudAssemblySource {
 }
 
 /**
- * A CloudAssemblySource that is caching it's result once produced.
+ * A CloudAssemblySource that is caching its result once produced.
  *
  * Most Toolkit interactions should use a cached source.
  * Not caching is relevant when the source changes frequently
