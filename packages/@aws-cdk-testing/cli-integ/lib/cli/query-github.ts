@@ -1,5 +1,5 @@
 import * as yargs from 'yargs';
-import { fetchPreviousVersion } from '../lib/github';
+import { fetchPreviousVersion } from '../github';
 
 async function main() {
   const args = await yargs
