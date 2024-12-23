@@ -7,17 +7,18 @@ import * as logs from 'aws-cdk-lib/aws-logs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
 import * as destinations from '../lib';
+import { AwsApiCall, ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-firehose-delivery-stream-s3-all-properties');
 
-const bucket = new s3.Bucket(stack, 'Bucket', {
+const bucket = new s3.Bucket(stack, 'FirehoseDeliveryStreamS3AllPropertiesBucket', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   autoDeleteObjects: true,
 });
 
-const backupBucket = new s3.Bucket(stack, 'BackupBucket', {
+const backupBucket = new s3.Bucket(stack, 'FirehoseDeliveryStreamS3AllPropertiesBackupBucket', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   autoDeleteObjects: true,
 });
@@ -44,7 +45,7 @@ const backupKey = new kms.Key(stack, 'BackupKey', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
-new firehose.DeliveryStream(stack, 'Delivery Stream', {
+const deliveryStream = new firehose.DeliveryStream(stack, 'DeliveryStream', {
   destination: new destinations.S3Bucket(bucket, {
     loggingConfig: new destinations.EnableLogging(logGroup),
     processor: processor,
@@ -76,4 +77,32 @@ new firehose.DeliveryStream(stack, 'ZeroBufferingDeliveryStream', {
   }),
 });
 
-app.synth();
+const testCase = new IntegTest(app, 'integ-tests', {
+  testCases: [stack],
+  regions: ['us-east-1'],
+});
+
+testCase.assertions.awsApiCall('Firehose', 'putRecord', {
+  DeliveryStreamName: deliveryStream.deliveryStreamName,
+  Record: {
+    Data: 'testData123',
+  },
+});
+
+const s3ApiCall = testCase.assertions.awsApiCall('S3', 'listObjectsV2', {
+  Bucket: bucket.bucketName,
+  MaxKeys: 1,
+}).expect(ExpectedResult.objectLike({
+  KeyCount: 1,
+})).waitForAssertions({
+  interval: cdk.Duration.seconds(30),
+  totalTimeout: cdk.Duration.minutes(10),
+});
+
+if (s3ApiCall instanceof AwsApiCall && s3ApiCall.waiterProvider) {
+  s3ApiCall.waiterProvider.addToRolePolicy({
+    Effect: 'Allow',
+    Action: ['s3:GetObject', 's3:ListBucket'],
+    Resource: ['*'],
+  });
+}

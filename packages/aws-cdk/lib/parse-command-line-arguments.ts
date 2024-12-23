@@ -2,18 +2,12 @@
 // GENERATED FROM packages/aws-cdk/lib/config.ts.
 // Do not edit by hand; all changes will be overwritten at build time from the config file.
 // -------------------------------------------------------------------------------------------
-/* eslint-disable @typescript-eslint/comma-dangle, comma-spacing, max-len, quotes, quote-props */
+/* eslint-disable @stylistic/comma-dangle, @stylistic/comma-spacing, @stylistic/max-len, @stylistic/quotes, @stylistic/quote-props */
 import { Argv } from 'yargs';
+import * as helpers from './util/yargs-helpers';
 
 // @ts-ignore TS6133
-export function parseCommandLineArguments(
-  args: Array<string>,
-  browserDefault: string,
-  availableInitLanguages: Array<string>,
-  migrateSupportedLanguages: Array<string>,
-  version: string,
-  yargsNegativeAlias: any
-): any {
+export function parseCommandLineArguments(args: Array<string>): any {
   return yargs
     .env('CDK')
     .usage('Usage: cdk -a <cdk-app> COMMAND')
@@ -143,7 +137,7 @@ export function parseCommandLineArguments(
     .option('ci', {
       type: 'boolean',
       desc: 'Force CI detection. If CI=true then logs will be sent to stdout instead of stderr',
-      default: process.env.CI !== undefined,
+      default: helpers.isCI(),
     })
     .option('unstable', {
       type: 'array',
@@ -424,8 +418,8 @@ export function parseCommandLineArguments(
           type: 'boolean',
           desc: "Rollback stack to stable state on failure. Defaults to 'true', iterate more rapidly with --no-rollback or -R. Note: do **not** disable this flag for deployments with resource replacements, as that will always fail",
         })
-        .middleware(yargsNegativeAlias('R', 'rollback'), true)
         .option('R', { type: 'boolean', hidden: true })
+        .middleware(helpers.yargsNegativeAlias('R', 'rollback'), true)
         .option('hotswap', {
           type: 'boolean',
           desc: "Attempts to perform a 'hotswap' deployment, but does not fall back to a full deployment if that is not possible. Instead, changes to any non-hotswappable properties are ignored.Do not use this in production environments",
@@ -570,8 +564,8 @@ export function parseCommandLineArguments(
           type: 'boolean',
           desc: "Rollback stack to stable state on failure. Defaults to 'true', iterate more rapidly with --no-rollback or -R. Note: do **not** disable this flag for deployments with resource replacements, as that will always fail",
         })
-        .middleware(yargsNegativeAlias('R', 'rollback'), true)
         .option('R', { type: 'boolean', hidden: true })
+        .middleware(helpers.yargsNegativeAlias('R', 'rollback'), true)
         .option('hotswap', {
           type: 'boolean',
           desc: "Attempts to perform a 'hotswap' deployment, but does not fall back to a full deployment if that is not possible. Instead, changes to any non-hotswappable properties are ignored.'true' by default, use --no-hotswap to turn off",
@@ -679,7 +673,7 @@ export function parseCommandLineArguments(
           type: 'string',
           alias: 'l',
           desc: 'The language to be used for the new project (default can be configured in ~/.cdk.json)',
-          choices: availableInitLanguages,
+          choices: ['csharp', 'fsharp', 'go', 'java', 'javascript', 'python', 'typescript'],
         })
         .option('list', {
           type: 'boolean',
@@ -691,7 +685,7 @@ export function parseCommandLineArguments(
           desc: 'If true, only generates project files, without executing additional operations such as setting up a git repo, installing dependencies or compiling the project',
         })
     )
-    .command('migrate', false, (yargs: Argv) =>
+    .command('migrate', 'Migrate existing AWS resources into a CDK app', (yargs: Argv) =>
       yargs
         .option('stack-name', {
           type: 'string',
@@ -704,7 +698,7 @@ export function parseCommandLineArguments(
           default: 'typescript',
           alias: 'l',
           desc: 'The language to be used for the new project',
-          choices: migrateSupportedLanguages,
+          choices: ['typescript', 'go', 'java', 'python', 'csharp'],
         })
         .option('account', {
           type: 'string',
@@ -748,6 +742,7 @@ export function parseCommandLineArguments(
           desc: 'The context key (or its index) to reset',
           type: 'string',
           requiresArg: true,
+          default: undefined,
         })
         .option('force', {
           alias: 'f',
@@ -758,6 +753,7 @@ export function parseCommandLineArguments(
         .option('clear', {
           desc: 'Clear all context',
           type: 'boolean',
+          default: false,
         })
     )
     .command(['docs', 'doc'], 'Opens the reference documentation in a browser', (yargs: Argv) =>
@@ -765,11 +761,11 @@ export function parseCommandLineArguments(
         alias: 'b',
         desc: 'the command to use to open the browser, using %u as a placeholder for the path of the file to open',
         type: 'string',
-        default: browserDefault,
+        default: helpers.browserForPlatform(),
       })
     )
     .command('doctor', 'Check your set-up for potential problems')
-    .version(version)
+    .version(helpers.cliVersion())
     .demandCommand(1, '')
     .recommendCommands()
     .help()

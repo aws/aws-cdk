@@ -885,12 +885,12 @@ function cdkModuleName(name: string) {
     '@aws-cdk/assertions': 'assertions',
     '@aws-cdk/assertions-alpha': 'assertions-alpha',
   };
-  /* eslint-disable @typescript-eslint/indent */
+  /* eslint-disable @stylistic/indent */
   const mavenArtifactId =
     name in mavenIdMap ? mavenIdMap[name] :
     (suffix.startsWith('aws-') || suffix.startsWith('alexa-')) ? suffix.replace(/aws-/, '') :
     suffix.startsWith('cdk-') ? suffix : `cdk-${suffix}`;
-  /* eslint-enable @typescript-eslint/indent */
+  /* eslint-enable @stylistic/indent */
 
   return {
     javaPackage: `software.amazon.awscdk${isLegacyCdkPkg ? '' : `.${suffix.replace(/aws-/, 'services-').replace(/-/g, '.')}`}`,
@@ -1411,7 +1411,7 @@ export class PackageInJsiiPackageNoRuntimeDeps extends ValidationRule {
   public readonly name = 'lambda-packages-no-runtime-deps';
 
   public validate(pkg: PackageJson) {
-    if (!isJSII(pkg)) { return; }
+    if (!isJSII(pkg) || pkg.packageName === '@aws-cdk/cli-lib-alpha') { return; }
 
     for (const inner of findInnerPackages(pkg.packageRoot)) {
       const innerPkg = PackageJson.fromDirectory(inner);
