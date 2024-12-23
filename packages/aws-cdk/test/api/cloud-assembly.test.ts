@@ -4,9 +4,6 @@ import { DefaultSelection } from '../../lib/api/cxapp/cloud-assembly';
 import { MockCloudExecutable } from '../util';
 import { cliAssemblyWithForcedVersion } from './assembly-versions';
 
-// behave like v2
-process.env.CXAPI_DISABLE_SELECT_BY_ID = '1';
-
 test('do not throw when selecting stack without errors', async () => {
   // GIVEN
   const cxasm = await testCloudAssembly();
