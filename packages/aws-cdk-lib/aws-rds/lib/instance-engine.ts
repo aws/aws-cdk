@@ -416,20 +416,20 @@ export class MariaDbEngineVersion {
    * Version "10.4.27"
    * @deprecated MariaDB 10.4.27 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_10_4_27 = MariaDbEngineVersion.of('10.4.27', '10.4')
+  public static readonly VER_10_4_27 = MariaDbEngineVersion.of('10.4.27', '10.4');
   /**
    * Version "10.4.28"
    * @deprecated MariaDB 10.4.28 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_10_4_28 = MariaDbEngineVersion.of('10.4.28', '10.4')
+  public static readonly VER_10_4_28 = MariaDbEngineVersion.of('10.4.28', '10.4');
   /** Version "10.4.29". */
-  public static readonly VER_10_4_29 = MariaDbEngineVersion.of('10.4.29', '10.4')
+  public static readonly VER_10_4_29 = MariaDbEngineVersion.of('10.4.29', '10.4');
   /** Version "10.4.30". */
-  public static readonly VER_10_4_30 = MariaDbEngineVersion.of('10.4.30', '10.4')
+  public static readonly VER_10_4_30 = MariaDbEngineVersion.of('10.4.30', '10.4');
   /** Version "10.4.31". */
-  public static readonly VER_10_4_31 = MariaDbEngineVersion.of('10.4.31', '10.4')
+  public static readonly VER_10_4_31 = MariaDbEngineVersion.of('10.4.31', '10.4');
   /** Version "10.4.32". */
-  public static readonly VER_10_4_32 = MariaDbEngineVersion.of('10.4.32', '10.4')
+  public static readonly VER_10_4_32 = MariaDbEngineVersion.of('10.4.32', '10.4');
   /** Version "10.4.33". */
   public static readonly VER_10_4_33 = MariaDbEngineVersion.of('10.4.33', '10.4');
   /** Version "10.4.34". */
@@ -496,6 +496,8 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_5_25 = MariaDbEngineVersion.of('10.5.25', '10.5');
   /** Version "10.5.26". */
   public static readonly VER_10_5_26 = MariaDbEngineVersion.of('10.5.26', '10.5');
+  /** Version "10.5.27". */
+  public static readonly VER_10_5_27 = MariaDbEngineVersion.of('10.5.27', '10.5');
 
   /** Version "10.6" (only a major version, without a specific minor version). */
   public static readonly VER_10_6 = MariaDbEngineVersion.of('10.6', '10.6');
@@ -543,6 +545,8 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_6_18 = MariaDbEngineVersion.of('10.6.18', '10.6');
   /** Version "10.6.19". */
   public static readonly VER_10_6_19 = MariaDbEngineVersion.of('10.6.19', '10.6');
+  /** Version "10.6.20". */
+  public static readonly VER_10_6_20 = MariaDbEngineVersion.of('10.6.20', '10.6');
 
   /** Version "10.11" (only a major version, without a specific minor version). */
   public static readonly VER_10_11 = MariaDbEngineVersion.of('10.11', '10.11');
@@ -558,8 +562,12 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_11_8 = MariaDbEngineVersion.of('10.11.8', '10.11');
   /** Version "10.11.9". */
   public static readonly VER_10_11_9 = MariaDbEngineVersion.of('10.11.9', '10.11');
+  /** Version "10.11.10". */
+  public static readonly VER_10_11_10 = MariaDbEngineVersion.of('10.11.10', '10.11');
   /** Version "11.4.3". */
   public static readonly VER_11_4_3 = MariaDbEngineVersion.of('11.4.3', '11.4');
+  /** Version "11.4.4". */
+  public static readonly VER_11_4_4 = MariaDbEngineVersion.of('11.4.4', '11.4');
 
   /**
    * Create a new MariaDbEngineVersion with an arbitrary version.
@@ -1467,6 +1475,10 @@ export class PostgresEngineVersion {
    * Version "11.22-rds.20240808"
    */
   public static readonly VER_11_22_RDS_20240808 = PostgresEngineVersion.of('11.22-RDS.20240808', '11', { s3Import: true, s3Export: true });
+  /**
+   * Version "11.22-RDS.20241121"
+   */
+  public static readonly VER_11_22_RDS_20241121 = PostgresEngineVersion.of('11.22-RDS.20241121', '11', { s3Import: true, s3Export: true });
 
   /** Version "12" (only a major version, without a specific minor version). */
   public static readonly VER_12 = PostgresEngineVersion.of('12', '12', { s3Import: true });

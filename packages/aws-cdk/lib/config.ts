@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { CliHelpers, type CliConfig } from '@aws-cdk/yargs-gen';
+import { CliHelpers, type CliConfig } from '@aws-cdk/cli-args-gen';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
 import { MIGRATE_SUPPORTED_LANGUAGES } from './commands/migrate';
 import { RequireApproval } from './diff';
@@ -8,7 +8,7 @@ import { availableInitLanguages } from './init';
 export const YARGS_HELPERS = new CliHelpers('./util/yargs-helpers');
 
 /**
- * Source of truth for all CDK CLI commands. `yargs-gen` translates this into the `yargs` definition
+ * Source of truth for all CDK CLI commands. `cli-args-gen` translates this into the `yargs` definition
  * in `lib/parse-command-line-arguments.ts`.
  */
 export async function makeConfig(): Promise<CliConfig> {
@@ -343,7 +343,7 @@ export async function makeConfig(): Promise<CliConfig> {
         },
       },
       migrate: {
-        description: false as any,
+        description: 'Migrate existing AWS resources into a CDK app',
         options: {
           'stack-name': { type: 'string', alias: 'n', desc: 'The name assigned to the stack created in the new project. The name of the app will be based off this name as well.', requiresArg: true },
           'language': { type: 'string', default: 'typescript', alias: 'l', desc: 'The language to be used for the new project', choices: MIGRATE_SUPPORTED_LANGUAGES },
@@ -373,9 +373,9 @@ export async function makeConfig(): Promise<CliConfig> {
       context: {
         description: 'Manage cached context values',
         options: {
-          reset: { alias: 'e', desc: 'The context key (or its index) to reset', type: 'string', requiresArg: true },
+          reset: { alias: 'e', desc: 'The context key (or its index) to reset', type: 'string', requiresArg: true, default: undefined },
           force: { alias: 'f', desc: 'Ignore missing key error', type: 'boolean', default: false },
-          clear: { desc: 'Clear all context', type: 'boolean' },
+          clear: { desc: 'Clear all context', type: 'boolean', default: false },
         },
       },
       docs: {

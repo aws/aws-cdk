@@ -273,7 +273,7 @@ describe('Product', () => {
     });
     expect(() => {
       app.synth();
-    }).toThrowError('Template has changed for ProductStack Version v1');
+    }).toThrow('Template has changed for ProductStack Version v1');
   }),
 
   test('product test from product stack history when template changes and unlocked', () => {
@@ -345,7 +345,7 @@ describe('Product', () => {
           productStackHistory.versionFromSnapshot('v3'),
         ],
       });
-    }).toThrowError('Template StackMyProductStackHistory8F05371C.StackProductStack190B56DE.v3.product.template.json cannot be found in product-stack-snapshots');
+    }).toThrow('Template StackMyProductStackHistory8F05371C.StackProductStack190B56DE.v3.product.template.json cannot be found in product-stack-snapshots');
   }),
 
   test('product test from multiple sources', () => {
@@ -390,7 +390,7 @@ describe('Product', () => {
   test('fails product from attributes without resource name in arn', () => {
     expect(() => {
       servicecatalog.Product.fromProductArn(stack, 'MyProduct', 'arn:aws:catalog:region:account-id:product');
-    }).toThrowError('Missing required Portfolio ID from Portfolio ARN: arn:aws:catalog:region:account-id:product');
+    }).toThrow('Missing required Portfolio ID from Portfolio ARN: arn:aws:catalog:region:account-id:product');
   }),
 
   test('fails product creation with invalid email', () => {
@@ -405,7 +405,7 @@ describe('Product', () => {
         ],
         supportEmail: 'invalid email',
       });
-    }).toThrowError(/Invalid support email for resource Stack\/MyProduct/);
+    }).toThrow(/Invalid support email for resource Stack\/MyProduct/);
   }),
 
   test('fails product creation with invalid url', () => {
@@ -419,7 +419,7 @@ describe('Product', () => {
           },
         ],
       });
-    }).toThrowError(/Invalid provisioning template url for resource Stack\/MyProduct/);
+    }).toThrow(/Invalid provisioning template url for resource Stack\/MyProduct/);
   }),
 
   test('fails product creation with empty productVersions', () => {
@@ -429,7 +429,7 @@ describe('Product', () => {
         owner: 'testOwner',
         productVersions: [],
       });
-    }).toThrowError(/Invalid product versions for resource Stack\/MyProduct/);
+    }).toThrow(/Invalid product versions for resource Stack\/MyProduct/);
   }),
 
   describe('adding and associating TagOptions to a product', () => {
