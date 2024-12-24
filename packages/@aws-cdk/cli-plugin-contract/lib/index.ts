@@ -1,16 +1,17 @@
 /**
  * The basic contract for plug-ins to adhere to::
  *
- *   import { CustomCredentialProviderSource, CredentialProviderSourceRepository, Plugin } from '@aws-cdk/cli-plugin-contract';
+ * ```ts
+ * import { CustomCredentialProviderSource, IPluginHost, Plugin } from '@aws-cdk/cli-plugin-contract';
  *
- *   export default class FooCDKPlugIn implements Plugin {
- *     public readonly version = '1';
+ * export default class FooCDKPlugIn implements Plugin {
+ *   public readonly version = '1';
  *
- *     public init(host: CredentialProviderSourceRepository) {
- *       host.registerCredentialProviderSource(new CustomCredentialProviderSource());
- *     }
+ *   public init(host: IPluginHost) {
+ *     host.registerCredentialProviderSource(new CustomCredentialProviderSource());
  *   }
- *
+ * }
+ * ```
  */
 export interface Plugin {
   /**
@@ -25,7 +26,7 @@ export interface Plugin {
    * `CredentialProviderSourceRepository` instance it receives to register new
    * `CredentialProviderSource` instances.
    */
-  init?: (host: CredentialProviderSourceRepository) => void;
+  init?: (host: IPluginHost) => void;
 }
 
 export interface AwsCredentials {
@@ -44,21 +45,6 @@ export interface AwsCredentials {
    * present for temporary credentials.
    */
   readonly sessionToken?: string;
-
-  /**
-   * AWS credential scope for this set of credentials.
-   */
-  readonly credentialScope?: string;
-
-  /**
-   * AWS accountId.
-   */
-  readonly accountId?: string;
-
-  /**
-   *   A Date when the identity or credential will no longer be accepted.
-   */
-  readonly expiration?:	Date;
 
   /**
    * Refreshes the current credentials.
@@ -97,14 +83,17 @@ export interface CredentialProviderSource {
    * Construct a credential provider for the given account and the given access mode
    *
    * Guaranteed to be called only if canProvideCredentails() returned true at some point.
+   *
+   * While it is possible for the plugin to return a static set of credentials, it is
+   * recommended to return a provider.
    */
-  getProvider(accountId: string, mode: Mode): Promise<AwsCredentials>;
+  getProvider(accountId: string, mode: Mode, options?: PluginProviderOptions): Promise<AwsCredentials>;
 }
 
 /**
  * A list of credential provider sources
  */
-export interface CredentialProviderSourceRepository {
+export interface IPluginHost {
 
   /**
    * Registers a credential provider source. If, in the authentication process,
@@ -112,4 +101,96 @@ export interface CredentialProviderSourceRepository {
    * sources registered in this way, in the same order as they were registered.
    */
   registerCredentialProviderSource(source: CredentialProviderSource): void;
+}
+
+/**
+ * Options for the `getProvider()` function of a CredentialProviderSource
+ */
+export interface PluginProviderOptions {
+  /**
+   * Whether or not this implementation of the CLI will recognize the `SDKv3CompatibleCredentialProvider` return variant
+   *
+   * Unless otherwise indicated, the CLI version will only support SDKv3
+   * credentials, not SDKv3 providers. You should avoid returning types that the
+   * consuming CLI will not understand, because it will most likely crash.
+   *
+   * @default false
+   */
+  readonly supportsV3Providers?: boolean;
+}
+
+export type PluginProviderResult = SDKv2CompatibleCredentials | SDKv3CompatibleCredentialProvider | SDKv3CompatibleCredentials;
+
+/**
+ * SDKv2-compatible credential provider.
+ *
+ * Based on the `Credentials` class in SDKv2. This object is a set of credentials
+ * and a credential provider in one (it is a set of credentials that remember
+ * where they came from and can refresh themselves).
+ */
+export interface SDKv2CompatibleCredentials {
+  /**
+   * AWS access key ID.
+   */
+  accessKeyId: string;
+  /**
+    * Whether the credentials have been expired and require a refresh.
+    * Used in conjunction with expireTime.
+    */
+  expired: boolean;
+  /**
+    * Time when credentials should be considered expired.
+    * Used in conjunction with expired.
+    */
+  expireTime: Date;
+  /**
+    * AWS secret access key.
+    */
+  secretAccessKey: string;
+  /**
+    * AWS session token.
+    */
+  sessionToken: string;
+
+  /**
+   * Gets the existing credentials, refreshing them if necessary, and returns
+   * a promise that will be fulfilled immediately (if no refresh is necessary)
+   * or when the refresh has completed.
+   */
+  getPromise(): Promise<void>;
+}
+
+/**
+ * Provider for credentials
+ *
+ * Based on the `AwsCredentialIdentityProvider` type from SDKv3. This type
+ * is only a credential factory. It may or may not be cached; that is,
+ * calling the provider twice may do 2 API requests, or it may do one
+ * if the result from the first call can be reused.
+ */
+export type SDKv3CompatibleCredentialProvider = (identityProperties?: Record<string, any>) => Promise<SDKv3CompatibleCredentials>;
+
+/**
+ * Based on the `AwsCredentialIdentity` type from SDKv3.
+ *
+ * This is a static set of credentials.
+ */
+export interface SDKv3CompatibleCredentials {
+  /**
+   * AWS access key ID
+   */
+  readonly accessKeyId: string;
+  /**
+   * AWS secret access key
+   */
+  readonly secretAccessKey: string;
+  /**
+   * A security or session token to use with these credentials. Usually
+   * present for temporary credentials.
+   */
+  readonly sessionToken?: string;
+  /**
+   * A `Date` when the identity or credential will no longer be accepted.
+   */
+  readonly expiration?: Date;
 }

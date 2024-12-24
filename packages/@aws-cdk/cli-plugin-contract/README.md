@@ -36,7 +36,7 @@ argument. The value of this argument should be a JavaScript file that, when
 
 Once the CLI gets an instance of a plugin, it first initializes plugin by
 calling the `Plugin.init()` method, if one is defined. The CLI uses this method
-to pass an instance of `CredentialProviderSourceRepository` to the plugin. The
+to pass an instance of `IPluginHost` to the plugin. The
 plugin, in turn, can use the repository to register one or more instances of
 `CredentialProviderSource`, which is where the actual logic for providing
 credentials is located.

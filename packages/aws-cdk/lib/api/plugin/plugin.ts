@@ -1,5 +1,5 @@
 import { inspect } from 'util';
-import { CredentialProviderSource, CredentialProviderSourceRepository, Plugin } from '@aws-cdk/cli-plugin-contract';
+import { CredentialProviderSource, IPluginHost, Plugin } from '@aws-cdk/cli-plugin-contract';
 import * as chalk from 'chalk';
 
 import { type ContextProviderPlugin, isContextProviderPlugin } from './context-provider-plugin';
@@ -15,7 +15,7 @@ export function markTesting() {
  * A utility to manage plug-ins.
  *
  */
-export class PluginHost implements CredentialProviderSourceRepository {
+export class PluginHost implements IPluginHost {
   public static instance = new PluginHost();
 
   /**

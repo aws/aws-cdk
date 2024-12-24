@@ -14,7 +14,7 @@ import type { SuccessfulDeployStackResult } from '../deploy-stack';
 export type BootstrapSource = { source: 'legacy' } | { source: 'default' } | { source: 'custom'; templateFile: string };
 
 export class Bootstrapper {
-  constructor(private readonly source: BootstrapSource) {}
+  constructor(private readonly source: BootstrapSource = { source: 'default' }) {}
 
   public bootstrapEnvironment(
     environment: cxapi.Environment,
