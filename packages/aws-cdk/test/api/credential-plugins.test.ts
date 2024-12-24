@@ -1,4 +1,4 @@
-import type { PluginProviderResult } from '@aws-cdk/cli-plugin-contract';
+import type { PluginProviderResult, SDKv2CompatibleCredentials } from '@aws-cdk/cli-plugin-contract';
 import { CredentialPlugins } from '../../lib/api/aws-auth/credential-plugins';
 import { PluginHost } from '../../lib/api/plugin';
 import { Mode } from '../../lib/api/plugin/mode';
@@ -9,7 +9,7 @@ test('returns credential from plugin', async () => {
     accessKeyId: 'aaa',
     secretAccessKey: 'bbb',
     getPromise: () => Promise.resolve(),
-  };
+  } satisfies SDKv2CompatibleCredentials;
   const host = PluginHost.instance;
 
   host.registerCredentialProviderSource({
@@ -34,8 +34,8 @@ test('returns credential from plugin', async () => {
   const pluginCredentials = await plugins.fetchCredentialsFor('aaa', Mode.ForReading);
 
   // THEN
-  expect(pluginCredentials).toEqual({
-    credentials: creds,
-    pluginName: 'Fake',
-  });
+  await expect(pluginCredentials?.credentials()).resolves.toEqual(expect.objectContaining({
+    accessKeyId: 'aaa',
+    secretAccessKey: 'bbb',
+  }));
 });

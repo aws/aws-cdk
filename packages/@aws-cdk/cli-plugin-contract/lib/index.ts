@@ -158,24 +158,22 @@ export interface SDKv2CompatibleCredentials {
    * AWS access key ID.
    */
   accessKeyId: string;
+
   /**
-    * Whether the credentials have been expired and require a refresh.
-    * Used in conjunction with expireTime.
-    */
-  expired: boolean;
+   * Time when credentials should be considered expired.
+   * Used in conjunction with expired.
+   */
+  expireTime?: Date | null;
+
   /**
-    * Time when credentials should be considered expired.
-    * Used in conjunction with expired.
-    */
-  expireTime: Date;
-  /**
-    * AWS secret access key.
-    */
+   * AWS secret access key.
+   */
   secretAccessKey: string;
+
   /**
-    * AWS session token.
-    */
-  sessionToken: string;
+   * AWS session token.
+   */
+  sessionToken?: string;
 
   /**
    * Gets the existing credentials, refreshing them if necessary, and returns
@@ -205,15 +203,18 @@ export interface SDKv3CompatibleCredentials {
    * AWS access key ID
    */
   readonly accessKeyId: string;
+
   /**
    * AWS secret access key
    */
   readonly secretAccessKey: string;
+
   /**
    * A security or session token to use with these credentials. Usually
    * present for temporary credentials.
    */
   readonly sessionToken?: string;
+
   /**
    * A `Date` when the identity or credential will no longer be accepted.
    */
