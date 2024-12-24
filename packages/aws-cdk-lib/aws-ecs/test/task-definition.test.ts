@@ -488,7 +488,7 @@ describe('task definition', () => {
           enableFaultInjection: true,
           networkMode: ecs.NetworkMode.BRIDGE,
         });
-      }).toThrow('Only AWSVPC and HOST Network Modes are supported for enabling Fault Injection, got bridge mode.');
+      }).toThrow('Only AWS_VPC and HOST Network Modes are supported for enabling Fault Injection, got bridge mode.');
     });
   });
 
