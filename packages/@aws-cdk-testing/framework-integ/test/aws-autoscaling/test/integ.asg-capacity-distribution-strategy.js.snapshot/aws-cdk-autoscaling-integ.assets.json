@@ -1,15 +1,15 @@
 {
   "version": "38.0.1",
   "files": {
-    "beaba38779e7193b6d3c7408d8074a8cd0116f3852856626918653267cd4a392": {
+    "a643cafaa61b340deef4096ccf40301e5f43084ee2c5a526616001bba857530d": {
       "source": {
-        "path": "cdk-integ-opensearch-instance-store.template.json",
+        "path": "aws-cdk-autoscaling-integ.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "beaba38779e7193b6d3c7408d8074a8cd0116f3852856626918653267cd4a392.json",
+          "objectKey": "a643cafaa61b340deef4096ccf40301e5f43084ee2c5a526616001bba857530d.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
