@@ -369,7 +369,6 @@ export function parseCommandLineArguments(args: Array<string>): any {
           desc: 'What security-sensitive changes need manual approval',
         })
         .option('notification-arns', {
-          default: [],
           type: 'array',
           desc: "ARNs of SNS topics that CloudFormation will notify with stack related events. These will be added to ARNs specified with the 'notificationArns' stack property.",
           nargs: 1,
@@ -805,7 +804,6 @@ export function parseCommandLineArguments(args: Array<string>): any {
           desc: 'The context key (or its index) to reset',
           type: 'string',
           requiresArg: true,
-          default: undefined,
         })
         .option('force', {
           default: false,

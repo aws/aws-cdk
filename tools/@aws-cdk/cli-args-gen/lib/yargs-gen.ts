@@ -114,7 +114,10 @@ function makeOptions(prefix: Expression, options: { [optionName: string]: CliOpt
   let optionsExpr = prefix;
   for (const option of Object.keys(options)) {
     const theOption: CliOption = {
-      default: generateDefault(options[option].type), // make the default explicit (overridden if the option includes an actual default)
+      // Make the default explicit (overridden if the option includes an actual default)
+      // 'notification-arns' is a special snowflake that should be defaulted to 'undefined', but https://github.com/yargs/yargs/issues/2443
+      // prevents us from doing so. This should be changed if the issue is resolved.
+      ...(option === 'notification-arns' ? {} : { default: generateDefault(options[option].type) }),
       ...options[option],
     };
     const optionProps: YargsOption = cloneDeep(theOption);
