@@ -69,7 +69,7 @@ describe('render', () => {
       } // eslint-disable-next-line @typescript-eslint/no-require-imports
       const yargs = require('yargs');
       "
-`);
+      `);
   });
 
   test('can generate negativeAlias', async () => {
@@ -127,7 +127,7 @@ describe('render', () => {
       } // eslint-disable-next-line @typescript-eslint/no-require-imports
       const yargs = require('yargs');
       "
-`);
+      `);
   });
 
   test('can pass-through expression unchanged', async () => {
@@ -217,6 +217,6 @@ describe('render', () => {
       } // eslint-disable-next-line @typescript-eslint/no-require-imports
       const yargs = require('yargs');
       "
-`);
+      `);
   });
 });
