@@ -954,43 +954,68 @@ describe('destroy', () => {
     }).resolves;
   });
 
-  test('does not throw even if there is a non-existent stack and the other exists', async () => {
+  test('does not throw and warns if there are only non-existent stacks', async () => {
     const toolkit = defaultToolkitSetup();
 
-    await expect(() => {
-      return toolkit.destroy({
-        selector: { patterns: ['Test-Stack-X', 'Test-Stack-A/Test-Stack-C'] },
-        exclusively: true,
-        force: true,
-        fromDeploy: true,
-      });
-    }).resolves;
+    await toolkit.destroy({
+      selector: { patterns: ['Test-Stack-X', 'Test-Stack-Y'] },
+      exclusively: true,
+      force: true,
+      fromDeploy: true,
+    });
+
+    expect(flatten(stderrMock.mock.calls)).toEqual(
+      expect.arrayContaining([
+        expect.stringMatching(/Test-Stack-X does not exist./),
+        expect.stringMatching(/Test-Stack-Y does not exist./),
+        expect.stringMatching(/No stacks match the name\(s\): Test-Stack-X, Test-Stack-Y/),
+      ]),
+    );
   });
 
-  test('does not throw even if there are only non-existent stacks', async () => {
+  test('does not throw and warns if there is a non-existent stack and the other exists', async () => {
     const toolkit = defaultToolkitSetup();
 
-    await expect(() => {
-      return toolkit.destroy({
-        selector: { patterns: ['Test-Stack-X', 'Test-Stack-Y'] },
-        exclusively: true,
-        force: true,
-        fromDeploy: true,
-      });
-    }).resolves;
+    await toolkit.destroy({
+      selector: { patterns: ['Test-Stack-X', 'Test-Stack-B'] },
+      exclusively: true,
+      force: true,
+      fromDeploy: true,
+    });
+
+    expect(flatten(stderrMock.mock.calls)).toEqual(
+      expect.arrayContaining([
+        expect.stringMatching(/Test-Stack-X does not exist./),
+      ]),
+    );
+    expect(flatten(stderrMock.mock.calls)).not.toEqual(
+      expect.arrayContaining([
+        expect.stringMatching(/Test-Stack-B does not exist./),
+      ]),
+    );
+    expect(flatten(stderrMock.mock.calls)).not.toEqual(
+      expect.arrayContaining([
+        expect.stringMatching(/No stacks match the name\(s\)/),
+      ]),
+    );
   });
 
-  test('exits without prompt if there are only non-existent stacks and force option is false', async () => {
+  test('does not throw and suggests valid names if there is a non-existent but closely matching stack', async () => {
     const toolkit = defaultToolkitSetup();
 
-    await expect(() => {
-      return toolkit.destroy({
-        selector: { patterns: ['Test-Stack-X', 'Test-Stack-Y'] },
-        exclusively: true,
-        force: false,
-        fromDeploy: true,
-      });
-    }).resolves;
+    await toolkit.destroy({
+      selector: { patterns: ['test-stack-b'] },
+      exclusively: true,
+      force: true,
+      fromDeploy: true,
+    });
+
+    expect(flatten(stderrMock.mock.calls)).toEqual(
+      expect.arrayContaining([
+        expect.stringMatching(/test-stack-b does not exist. Do you mean Test-Stack-B?/),
+        expect.stringMatching(/No stacks match the name\(s\): test-stack-b/),
+      ]),
+    );
   });
 });
 
