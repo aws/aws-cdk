@@ -7,8 +7,9 @@ import * as fs from 'fs-extra';
 import * as semver from 'semver';
 import { SdkHttpOptions } from './api';
 import { AwsCliCompatible } from './api/aws-auth/awscli-compatible';
-import { debug, error, print, warning } from './logging';
+import { debug, print, warning, error } from './logging';
 import { Context } from './settings';
+import { ToolkitError } from './toolkit/error';
 import { loadTreeFromDir, some } from './tree';
 import { flatMap } from './util';
 import { cdkCacheDir } from './util/directories';
@@ -399,7 +400,7 @@ export class WebsiteNoticeDataSource implements NoticeDataSource {
 
       let timer = setTimeout(() => {
         if (req) {
-          req.destroy(new Error('Request timed out'));
+          req.destroy(new ToolkitError('Request timed out'));
         }
       }, timeout);
 
@@ -423,24 +424,24 @@ export class WebsiteNoticeDataSource implements NoticeDataSource {
                 try {
                   const data = JSON.parse(rawData).notices as Notice[];
                   if (!data) {
-                    throw new Error("'notices' key is missing");
+                    throw new ToolkitError("'notices' key is missing");
                   }
                   debug('Notices refreshed');
                   resolve(data ?? []);
                 } catch (e: any) {
-                  reject(new Error(`Failed to parse notices: ${e.message}`));
+                  reject(new ToolkitError(`Failed to parse notices: ${e.message}`));
                 }
               });
               res.on('error', e => {
-                reject(new Error(`Failed to fetch notices: ${e.message}`));
+                reject(new ToolkitError(`Failed to fetch notices: ${e.message}`));
               });
             } else {
-              reject(new Error(`Failed to fetch notices. Status code: ${res.statusCode}`));
+              reject(new ToolkitError(`Failed to fetch notices. Status code: ${res.statusCode}`));
             }
           });
         req.on('error', reject);
       } catch (e: any) {
-        reject(new Error(`HTTPS 'get' call threw an error: ${e.message}`));
+        reject(new ToolkitError(`HTTPS 'get' call threw an error: ${e.message}`));
       }
     });
   }
