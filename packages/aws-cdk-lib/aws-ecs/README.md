@@ -650,7 +650,7 @@ taskDefinition.addContainer('container', {
 You can utilize fault injection with Amazon ECS on both Amazon EC2 and Fargate to test how their application responds to certain impairment scenarios. These tests provide information you can use to optimize your application's performance and resiliency.
 
 When fault injection is enabled, the Amazon ECS container agent allows tasks access to new fault injection endpoints.
-Fault injection only works with tasks using the awsvpc or host network modes.
+Fault injection only works with tasks using the `AWS_VPC` or `HOST` network modes.
 
 For more infomation, see [Use fault injection with your Amazon ECS and Fargate workloads](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fault-injection.html).
 
