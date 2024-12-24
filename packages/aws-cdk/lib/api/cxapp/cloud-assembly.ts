@@ -5,7 +5,6 @@ import * as semver from 'semver';
 import { error, print, warning } from '../../logging';
 import { ToolkitError } from '../../toolkit/error';
 import { flatten } from '../../util';
-import { versionNumber } from '../../version';
 
 export enum DefaultSelection {
   /**
@@ -123,9 +122,11 @@ export class CloudAssembly {
     }
   }
 
-  private selectTopLevelStacks(stacks: cxapi.CloudFormationStackArtifact[],
+  private selectTopLevelStacks(
+    stacks: cxapi.CloudFormationStackArtifact[],
     topLevelStacks: cxapi.CloudFormationStackArtifact[],
-    extend: ExtendedStackSelection = ExtendedStackSelection.None): StackCollection {
+    extend: ExtendedStackSelection = ExtendedStackSelection.None,
+  ): StackCollection {
     if (topLevelStacks.length > 0) {
       return this.extendStacks(topLevelStacks, stacks, extend);
     } else {
@@ -133,33 +134,23 @@ export class CloudAssembly {
     }
   }
 
-  private selectMatchingStacks(stacks: cxapi.CloudFormationStackArtifact[],
+  private selectMatchingStacks(
+    stacks: cxapi.CloudFormationStackArtifact[],
     patterns: string[],
-    extend: ExtendedStackSelection = ExtendedStackSelection.None): StackCollection {
+    extend: ExtendedStackSelection = ExtendedStackSelection.None,
+  ): StackCollection {
 
-    // cli tests use this to ensure tests do not depend on legacy behavior
-    // (otherwise they will fail in v2)
-    const disableLegacy = process.env.CXAPI_DISABLE_SELECT_BY_ID === '1';
-
-    const matchingPattern = (pattern: string) => (stack: cxapi.CloudFormationStackArtifact) => {
-      if (minimatch(stack.hierarchicalId, pattern)) {
-        return true;
-      } else if (!disableLegacy && stack.id === pattern && semver.major(versionNumber()) < 2) {
-        warning('Selecting stack by identifier "%s". This identifier is deprecated and will be removed in v2. Please use "%s" instead.', chalk.bold(stack.id), chalk.bold(stack.hierarchicalId));
-        warning('Run "cdk ls" to see a list of all stack identifiers');
-        return true;
-      }
-      return false;
-    };
-
+    const matchingPattern = (pattern: string) => (stack: cxapi.CloudFormationStackArtifact) => minimatch(stack.hierarchicalId, pattern);
     const matchedStacks = flatten(patterns.map(pattern => stacks.filter(matchingPattern(pattern))));
 
     return this.extendStacks(matchedStacks, stacks, extend);
   }
 
-  private selectDefaultStacks(stacks: cxapi.CloudFormationStackArtifact[],
+  private selectDefaultStacks(
+    stacks: cxapi.CloudFormationStackArtifact[],
     topLevelStacks: cxapi.CloudFormationStackArtifact[],
-    defaultSelection: DefaultSelection) {
+    defaultSelection: DefaultSelection,
+  ) {
     switch (defaultSelection) {
       case DefaultSelection.MainAssembly:
         return new StackCollection(this, topLevelStacks);
@@ -179,9 +170,11 @@ export class CloudAssembly {
     }
   }
 
-  private extendStacks(matched: cxapi.CloudFormationStackArtifact[],
+  private extendStacks(
+    matched: cxapi.CloudFormationStackArtifact[],
     all: cxapi.CloudFormationStackArtifact[],
-    extend: ExtendedStackSelection = ExtendedStackSelection.None) {
+    extend: ExtendedStackSelection = ExtendedStackSelection.None,
+  ) {
     const allStacks = new Map<string, cxapi.CloudFormationStackArtifact>();
     for (const stack of all) {
       allStacks.set(stack.hierarchicalId, stack);
