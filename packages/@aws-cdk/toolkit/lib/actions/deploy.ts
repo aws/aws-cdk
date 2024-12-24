@@ -39,12 +39,12 @@ export enum AssetBuildTime {
    * This is intended for expensive Docker image builds; so that if the Docker image build
    * fails, no stacks are unnecessarily deployed (with the attendant wait time).
    */
-  ALL_BEFORE_DEPLOY,
+  ALL_BEFORE_DEPLOY = 'all-before-deploy',
 
   /**
    * Build assets just-in-time, before publishing
    */
-  JUST_IN_TIME,
+  JUST_IN_TIME = 'just-in-time',
 }
 
 export interface Tag {
@@ -53,9 +53,9 @@ export interface Tag {
 }
 
 export enum RequireApproval {
-  Never = 'never',
-  AnyChange = 'any-change',
-  Broadening = 'broadening',
+  NEVER = 'never',
+  ANY_CHANGE = 'any-change',
+  BROADENING = 'broadening',
 }
 
 export enum HotswapMode {

@@ -11,29 +11,29 @@ export enum StackSelectionStrategy {
   /**
    * Returns an empty selection in case there are no stacks.
    */
-  None = 'none',
+  NONE = 'none',
 
   /**
    * If the app includes a single stack, returns it. Otherwise throws an exception.
    * This behavior is used by "deploy".
    */
-  OnlySingle = 'single',
+  ONLY_SINGLE = 'single',
 
   /**
    * Throws an exception if the app doesn't contain at least one stack.
    */
-  AtLeastOne = 'at-least-one',
+  AT_LEAST_ONE = 'at-least-one',
 
   /**
    * Returns all stacks in the main (top level) assembly only.
    */
-  MainAssembly = 'main',
+  MAIN_ASSEMBLY = 'main',
 
   /**
    * If no selectors are provided, returns all stacks in the app,
    * including stacks inside nested assemblies.
    */
-  AllStacks = 'all',
+  ALL_STACKS = 'all',
 }
 
 /**
@@ -43,17 +43,17 @@ export enum ExtendedStackSelection {
   /**
    * Don't select any extra stacks
    */
-  None,
+  NONE = 'none',
 
   /**
    * Include stacks that this stack depends on
    */
-  Upstream,
+  UPSTREAM = 'upstream',
 
   /**
    * Include stacks that depend on this stack
    */
-  Downstream,
+  DOWNSTREAM = 'downstream',
 }
 
 /**
