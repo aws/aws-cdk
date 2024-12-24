@@ -1588,6 +1588,17 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       ...unSupportEbsInstanceType,
     ];
 
+    const unSupportEncryptionAtRestInstanceType=[
+      ec2.InstanceClass.M3,
+      ec2.InstanceClass.R3,
+      ec2.InstanceClass.T2,
+    ];
+
+    const unSupportUltraWarmInstanceType=[
+      ec2.InstanceClass.T2,
+      ec2.InstanceClass.T3,
+    ];
+
     // Validate against instance type restrictions, per
     // https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-instance-types.html
     if (isSomeInstanceType(...unSupportEbsInstanceType) && ebsEnabled) {
@@ -1595,7 +1606,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     }
 
     if (isSomeInstanceType('m3', 'r3', 't2') && encryptionAtRestEnabled) {
-      throw new Error('M3, R3, and T2 instance types do not support encryption of data at rest.');
+      throw new Error(`${formatInstanceTypesList(unSupportEncryptionAtRestInstanceType, 'and')} instance types do not support encryption of data at rest.`);
     }
 
     if (isInstanceType('t2.micro') && !(isElasticsearchVersion && versionNum <= 2.3)) {
@@ -1603,7 +1614,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     }
 
     if (isSomeInstanceType('t2', 't3') && warmEnabled) {
-      throw new Error('T2 and T3 instance types do not support UltraWarm storage.');
+      throw new Error(`${formatInstanceTypesList(unSupportUltraWarmInstanceType, 'and')} instance types do not support UltraWarm storage.`);
     }
 
     // Only R3, I3, R6GD, I4G, I4I, IM4GN and R7GD support instance storage, per
