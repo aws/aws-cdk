@@ -517,6 +517,20 @@ export enum InstanceClass {
   C7G = 'c7g',
 
   /**
+   * Compute optimized instances for high performance computing, 8th generation with Graviton4 processors
+   *
+   * This instance class is currently only available in US East (Ohio), US East (N. Virginia), US West (Oregon), and Europe (Frankfurt).
+   */
+  COMPUTE8_GRAVITON4 = 'compute8-graviton4',
+
+  /**
+   * Compute optimized instances for high performance computing, 8th generation with Graviton4 processors
+   *
+   * This instance class is currently only available in US East (Ohio), US East (N. Virginia), US West (Oregon), and Europe (Frankfurt).
+   */
+  C8G = 'c8g',
+
+  /**
    * Compute optimized instances for high performance computing, 6th generation with Graviton2 processors
    * and local NVME drive
    */
@@ -1065,6 +1079,20 @@ export enum InstanceClass {
   M7G = 'm7g',
 
   /**
+   * Standard instances, 8th generation with Graviton4 processors
+   *
+   * This instance class is currently only available in US East (Ohio), US East (N. Virginia), US West (Oregon), and Europe (Frankfurt).
+   */
+  STANDARD8_GRAVITON = 'standard8-graviton',
+
+  /**
+   * Standard instances, 8th generation with Graviton4 processors
+   *
+   * This instance class is currently only available in US East (Ohio), US East (N. Virginia), US West (Oregon), and Europe (Frankfurt).
+   */
+  M8G = 'm8g',
+
+  /**
    * Standard instances, 7th generation with Graviton3 processors and local NVME drive
    *
    * This instance class is currently only available in US East (Ohio), US East (N. Virginia), US West (Oregon), and Europe (Ireland).
@@ -1546,6 +1574,8 @@ export class InstanceType {
       [InstanceClass.C7I]: 'c7i',
       [InstanceClass.COMPUTE7_AMD]: 'c7a',
       [InstanceClass.C7A]: 'c7a',
+      [InstanceClass.COMPUTE8_GRAVITON4]: 'c8g',
+      [InstanceClass.C8G]: 'c8g',
       [InstanceClass.STORAGE2]: 'd2',
       [InstanceClass.D2]: 'd2',
       [InstanceClass.STORAGE3]: 'd3',
@@ -1632,6 +1662,8 @@ export class InstanceType {
       [InstanceClass.M6GD]: 'm6gd',
       [InstanceClass.STANDARD7_GRAVITON]: 'm7g',
       [InstanceClass.M7G]: 'm7g',
+      [InstanceClass.STANDARD8_GRAVITON]: 'm8g',
+      [InstanceClass.M8G]: 'm8g',
       [InstanceClass.STANDARD7_GRAVITON3_NVME_DRIVE]: 'm7gd',
       [InstanceClass.M7GD]: 'm7gd',
       [InstanceClass.STANDARD7_INTEL]: 'm7i',
