@@ -10,33 +10,29 @@ interface IoMessage {
   action: IoAction;
   code: string;
   message: string;
-  // Specify Chalk style for stdout/stderr, if TTY is enabled
+  // Optionally specify Chalk style for stdout/stderr, if TTY is enabled
   style?: ((str: string) => string);
 }
 
-enum IoMessageLevel {
-  ERROR = 'error',
-  WARN = 'warn',
-  INFO = 'info',
-  DEBUG = 'debug',
-  TRACE = 'trace',
-}
+export type IoMessageLevel = 'error' | 'warn' | 'info' | 'debug' | 'trace';
 
-enum IoAction {
-  SYNTH = 'synth',
-  LIST = 'list',
-  DEPLOY = 'deploy',
-  DESTROY = 'destroy',
+export type IoAction = 'synth' | 'list' | 'deploy' | 'destroy';
+
+interface CliIoHostOptions {
+  useTTY?: boolean;
+  ci?: boolean;
 }
 
 /**
  * A simple IO host for the CLI that writes messages to the console.
  */
-class CliIoHost {
-  private readonly useTTY: boolean;
+export class CliIoHost {
+  private readonly pretty_messages: boolean;
 
-  constructor(options: { useTTY?: boolean } = {}) {
-    this.useTTY = options.useTTY ?? process.stdout.isTTY ?? false;
+  constructor(options: CliIoHostOptions = {}) {
+    this.pretty_messages = 
+    options.useTTY ?? 
+    (options.ci ? false : (process.stdout.isTTY ?? false));
   }
 
   /**
@@ -46,7 +42,7 @@ class CliIoHost {
   async notify(msg: IoMessage): Promise<void> {
     const output = this.formatMessage(msg);
 
-    const stream = msg.level === 'error' ? process.stderr : process.stdout;
+    const stream = this.getStream(msg.level, msg.action === 'synth');
 
     return new Promise((resolve, reject) => {
       stream.write(output + '\n', (err) => {
@@ -60,16 +56,27 @@ class CliIoHost {
   }
 
   /**
+   * Determines which output stream to use based on log level and configuration.
+   */
+  private getStream(level: IoMessageLevel, forceStdout: boolean) {
+    if (level === 'error' || forceStdout) {
+      return process.stderr;
+    } else {
+      return process.stdout;
+    }
+  }
+
+  /**
    * Formats a message for console output with optional color support
    */
   private formatMessage(msg: IoMessage): string {
     // apply provided style or a default style if we're in TTY mode
-    let output = this.useTTY
+    let output = this.pretty_messages
       ? (msg.style?.(msg.message) ?? styleMap[msg.level](msg.message))
       : msg.message;
 
     // prepend timestamp if IoMessageLevel is DEBUG or TRACE
-    return (msg.level === IoMessageLevel.DEBUG || msg.level === IoMessageLevel.TRACE)
+    return (msg.level === 'debug' || msg.level === 'trace')
       ? `[${this.formatTime(msg.time)}] ${output}`
       : output;
   }
@@ -85,22 +92,9 @@ class CliIoHost {
 }
 
 const styleMap: Record<IoMessageLevel, (str: string) => string> = {
-  [IoMessageLevel.ERROR]: chalk.red,
-  [IoMessageLevel.WARN]: chalk.yellow,
-  [IoMessageLevel.INFO]: chalk.white,
-  [IoMessageLevel.DEBUG]: chalk.gray,
-  [IoMessageLevel.TRACE]: chalk.gray,
+  'error': chalk.red,
+  'warn': chalk.yellow,
+  'info': chalk.white,
+  'debug': chalk.gray,
+  'trace': chalk.gray,
 };
-
-/**
- * @internal
- * Used by the toolkit unit tests.
- * These APIs are not part of the public interface and will change without notice.
- * Do Not Use.
- *
- */
-export const _private = {
-  CliIoHost,
-  IoMessageLevel,
-  IoAction,
-} as const;

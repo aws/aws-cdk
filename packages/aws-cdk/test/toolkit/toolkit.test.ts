@@ -1,9 +1,5 @@
 import * as chalk from 'chalk';
-import { _private } from '../../toolkit/toolkit';
-
-const CliIoHost = _private.CliIoHost;
-const IoMessageLevel = _private.IoMessageLevel;
-const IoAction = _private.IoAction;
+import { CliIoHost } from '../../toolkit/lib/cli-io-host';
 
 describe('CliIoHost', () => {
   let mockStdout: jest.Mock;
@@ -40,8 +36,8 @@ describe('CliIoHost', () => {
       const host = new CliIoHost({ useTTY: true });
       await host.notify({
         time: new Date(),
-        level: IoMessageLevel.INFO,
-        action: IoAction.SYNTH,
+        level: 'info',
+        action: 'synth',
         code: 'TEST',
         message: 'test message',
       });
@@ -54,8 +50,8 @@ describe('CliIoHost', () => {
       const host = new CliIoHost({ useTTY: true });
       await host.notify({
         time: new Date(),
-        level: IoMessageLevel.ERROR,
-        action: IoAction.SYNTH,
+        level: 'error',
+        action: 'synth',
         code: 'TEST',
         message: 'error message',
       });
@@ -70,8 +66,8 @@ describe('CliIoHost', () => {
       const host = new CliIoHost({ useTTY: true });
       await host.notify({
         time: new Date(),
-        level: IoMessageLevel.INFO,
-        action: IoAction.SYNTH,
+        level: 'info',
+        action: 'synth',
         code: 'TEST',
         message: 'green message',
         style: chalk.green,
@@ -86,8 +82,8 @@ describe('CliIoHost', () => {
 
       await host.notify({
         time: new Date(),
-        level: IoMessageLevel.INFO,
-        action: IoAction.SYNTH,
+        level: 'info',
+        action: 'synth',
         code: 'TEST',
         message: 'styled message',
         style: customStyle,
@@ -100,8 +96,8 @@ describe('CliIoHost', () => {
       const host = new CliIoHost({ useTTY: true });
       await host.notify({
         time: new Date(),
-        level: IoMessageLevel.WARN,
-        action: IoAction.SYNTH,
+        level: 'warn',
+        action: 'synth',
         code: 'TEST',
         message: 'warning message',
       });
@@ -113,8 +109,8 @@ describe('CliIoHost', () => {
       const host = new CliIoHost({ useTTY: false });
       await host.notify({
         time: new Date(),
-        level: IoMessageLevel.INFO,
-        action: IoAction.SYNTH,
+        level: 'info',
+        action: 'synth',
         code: 'TEST',
         message: 'unstyled message',
       });
@@ -126,8 +122,8 @@ describe('CliIoHost', () => {
       const host = new CliIoHost({ useTTY: false });
       await host.notify({
         time: new Date(),
-        level: IoMessageLevel.INFO,
-        action: IoAction.SYNTH,
+        level: 'info',
+        action: 'synth',
         code: 'TEST',
         message: 'unstyled message',
         style: chalk.green,
@@ -144,8 +140,8 @@ describe('CliIoHost', () => {
 
       await host.notify({
         time: testDate,
-        level: IoMessageLevel.DEBUG,
-        action: IoAction.SYNTH,
+        level: 'debug',
+        action: 'synth',
         code: 'TEST',
         message: 'debug message',
       });
@@ -159,8 +155,8 @@ describe('CliIoHost', () => {
 
       await host.notify({
         time: testDate,
-        level: IoMessageLevel.TRACE,
-        action: IoAction.SYNTH,
+        level: 'trace',
+        action: 'synth',
         code: 'TEST',
         message: 'trace message',
       });
@@ -174,8 +170,8 @@ describe('CliIoHost', () => {
 
       await host.notify({
         time: testDate,
-        level: IoMessageLevel.INFO,
-        action: IoAction.SYNTH,
+        level: 'info',
+        action: 'synth',
         code: 'TEST',
         message: 'info message',
       });
@@ -194,8 +190,8 @@ describe('CliIoHost', () => {
       const host = new CliIoHost({ useTTY: true });
       await expect(host.notify({
         time: new Date(),
-        level: IoMessageLevel.INFO,
-        action: IoAction.SYNTH,
+        level: 'info',
+        action: 'synth',
         code: 'TEST',
         message: 'test message',
       })).rejects.toThrow('Write failed');
