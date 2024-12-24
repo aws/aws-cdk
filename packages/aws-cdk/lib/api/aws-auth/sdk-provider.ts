@@ -8,10 +8,10 @@ import { AwsCredentialIdentityProvider, Logger } from '@smithy/types';
 import { AwsCliCompatible } from './awscli-compatible';
 import { cached } from './cached';
 import { CredentialPlugins } from './credential-plugins';
+import { makeCachingProvider } from './provider-caching';
 import { SDK } from './sdk';
 import { debug, warning } from '../../logging';
 import { traceMethods } from '../../util/tracing';
-import { makeCachingProvider } from './provider-caching';
 import { Mode } from '../plugin/mode';
 
 export type AssumeRoleAdditionalOptions = Partial<Omit<AssumeRoleCommandInput, 'ExternalId' | 'RoleArn'>>;

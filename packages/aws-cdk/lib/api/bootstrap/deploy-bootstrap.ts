@@ -14,8 +14,8 @@ import * as logging from '../../logging';
 import type { SDK, SdkProvider } from '../aws-auth';
 import { assertIsSuccessfulDeployStackResult, deployStack, SuccessfulDeployStackResult } from '../deploy-stack';
 import { NoBootstrapStackEnvironmentResources } from '../environment-resources';
-import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitInfo } from '../toolkit-info';
 import { Mode } from '../plugin/mode';
+import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitInfo } from '../toolkit-info';
 
 /**
  * A class to hold state around stack bootstrapping

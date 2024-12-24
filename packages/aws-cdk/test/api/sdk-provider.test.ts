@@ -9,10 +9,10 @@ import { ConfigurationOptions, CredentialsOptions, SDK, SdkProvider } from '../.
 import { AwsCliCompatible } from '../../lib/api/aws-auth/awscli-compatible';
 import { defaultCliUserAgent } from '../../lib/api/aws-auth/user-agent';
 import { PluginHost } from '../../lib/api/plugin';
+import { Mode } from '../../lib/api/plugin/mode';
 import * as logging from '../../lib/logging';
 import { withMocked } from '../util';
 import { mockSTSClient, restoreSdkMocksToDefault } from '../util/mock-sdk';
-import { Mode } from '../../lib/api/plugin/mode';
 
 let mockFetchMetadataToken = jest.fn();
 let mockRequest = jest.fn();

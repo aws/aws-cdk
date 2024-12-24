@@ -1,4 +1,3 @@
-import { Mode } from './plugin/mode';
 import * as cfn_diff from '@aws-cdk/cloudformation-diff';
 import * as cxapi from '@aws-cdk/cx-api';
 import { WaiterResult } from '@smithy/util-waiter';
@@ -28,6 +27,7 @@ import {
 } from './hotswap/s3-bucket-deployments';
 import { isHotswappableStateMachineChange } from './hotswap/stepfunctions-state-machines';
 import { NestedStackTemplates, loadCurrentTemplateWithNestedStacks } from './nested-stack-helpers';
+import { Mode } from './plugin/mode';
 import { CloudFormationStack } from './util/cloudformation';
 
 // Must use a require() otherwise esbuild complains about calling a namespace

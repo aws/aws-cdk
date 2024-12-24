@@ -1,10 +1,10 @@
-import type { AwsCredentialIdentity, AwsCredentialIdentityProvider } from '@smithy/types';
-import { debug, warning } from '../../logging';
-import type { CredentialProviderSource, ForReading, ForWriting, PluginProviderResult, SDKv2CompatibleCredentials, SDKv3CompatibleCredentialProvider, SDKv3CompatibleCredentials } from '@aws-cdk/cli-plugin-contract';
 import { inspect } from 'util';
+import type { CredentialProviderSource, ForReading, ForWriting, PluginProviderResult, SDKv2CompatibleCredentials, SDKv3CompatibleCredentialProvider, SDKv3CompatibleCredentials } from '@aws-cdk/cli-plugin-contract';
+import type { AwsCredentialIdentity, AwsCredentialIdentityProvider } from '@smithy/types';
 import { credentialsAboutToExpire, makeCachingProvider } from './provider-caching';
-import { PluginHost } from '../plugin/plugin';
+import { debug, warning } from '../../logging';
 import { Mode } from '../plugin/mode';
+import { PluginHost } from '../plugin/plugin';
 
 /**
  * Cache for credential providers.
