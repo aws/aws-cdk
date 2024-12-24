@@ -7,23 +7,24 @@ class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    // deploy the latest opensearch domain with instance store only (no EBS)
-    const domainProps: opensearch.DomainProps = {
-      removalPolicy: RemovalPolicy.DESTROY,
-      version: opensearch.EngineVersion.OPENSEARCH_2_5,
-      // specify the instance type that supports instance store
-      capacity: {
-        multiAzWithStandbyEnabled: false,
-        dataNodeInstanceType: 'i4g.large.search',
-        dataNodes: 1,
-      },
-      // force ebs configuration to be disabled
-      ebs: {
-        enabled: false,
-      },
-    };
+    const instanceTypes = ['i4g.large.search', 'i4i.xlarge.search', 'r7gd.xlarge.search'];
 
-    new opensearch.Domain(this, 'Domain', domainProps);
+    instanceTypes.forEach((instanceType, index) => {
+      new opensearch.Domain(this, `Domain${index + 1}`, {
+        removalPolicy: RemovalPolicy.DESTROY,
+        version: opensearch.EngineVersion.OPENSEARCH_2_17,
+        // specify the instance type that supports instance store
+        capacity: {
+          multiAzWithStandbyEnabled: false,
+          dataNodeInstanceType: instanceType,
+          dataNodes: 1,
+        },
+        // force ebs configuration to be disabled
+        ebs: {
+          enabled: false,
+        },
+      });
+    });
   }
 }
 
