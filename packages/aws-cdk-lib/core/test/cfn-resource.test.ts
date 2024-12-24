@@ -134,7 +134,7 @@ describe('cfn resource', () => {
       });
 
       // THEN
-      expect(() => resource.applyRemovalPolicy(core.RemovalPolicy.SNAPSHOT)).toThrowError('AWS::Lambda::Function does not support snapshot removal policy');
+      expect(() => resource.applyRemovalPolicy(core.RemovalPolicy.SNAPSHOT)).toThrow('AWS::Lambda::Function does not support snapshot removal policy');
     });
   });
 

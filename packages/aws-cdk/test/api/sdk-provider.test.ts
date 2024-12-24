@@ -300,7 +300,19 @@ describe('with intercepted network calls', () => {
       expect((await provider.defaultAccount())?.accountId).toEqual(uniq('22222'));
     });
 
-    test('mfa_serial in profile will ask user for token', async () => {
+    const providersForMfa = [
+      (() => providerFromProfile('mfa-role')),
+      (async () => {
+        // The profile is not passed explicitly. Should be picked from the environment variable
+        process.env.AWS_PROFILE = 'mfa-role';
+        // Awaiting to make sure the environment variable is only deleted after it's used
+        const provider = await SdkProvider.withAwsCliCompatibleDefaults({ logger: console });
+        delete process.env.AWS_PROFILE;
+        return Promise.resolve(provider);
+      }),
+    ];
+
+    test.each(providersForMfa)('mfa_serial in profile will ask user for token', async (metaProvider: () => Promise<SdkProvider>) => {
       // GIVEN
       const mockPrompt = jest.spyOn(promptly, 'prompt').mockResolvedValue('1234');
 
@@ -320,7 +332,8 @@ describe('with intercepted network calls', () => {
           },
         },
       });
-      const provider = await providerFromProfile('mfa-role');
+
+      const provider = await metaProvider();
 
       // THEN
       const sdk = (await provider.forEnvironment(env(uniq('66666')), Mode.ForReading)).sdk;

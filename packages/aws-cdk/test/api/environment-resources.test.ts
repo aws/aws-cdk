@@ -2,7 +2,7 @@ import { GetParameterCommand } from '@aws-sdk/client-ssm';
 import { ToolkitInfo } from '../../lib/api';
 import { EnvironmentResourcesRegistry } from '../../lib/api/environment-resources';
 import { CachedDataSource, Notices, NoticesFilter } from '../../lib/notices';
-import { Configuration } from '../../lib/settings';
+import { Context } from '../../lib/settings';
 import * as version from '../../lib/version';
 import { MockSdk, mockBootstrapStack, mockSSMClient } from '../util/mock-sdk';
 import { MockToolkitInfo } from '../util/mock-toolkitinfo';
@@ -98,7 +98,7 @@ describe('validateversion without bootstrap stack', () => {
     jest.spyOn(version, 'versionNumber').mockImplementation(() => '1.0.0');
 
     // THEN
-    const notices = Notices.create({ configuration: new Configuration() });
+    const notices = Notices.create({ context: new Context() });
     await notices.refresh({ dataSource: { fetch: async () => [] } });
     await expect(envResources().validateVersion(8, '/abc')).resolves.toBeUndefined();
 
