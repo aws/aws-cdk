@@ -139,6 +139,10 @@ function normalizeDefault(defaultValue: any, type: string): string {
     case 'object':
       return JSON.stringify(defaultValue);
 
+    // In these cases we cannot use the given defaultValue, so we then check the type
+    // of the option to determine the default value
+    case 'undefined':
+    case 'function':
     default:
       const generatedDefault = generateDefault(type);
       return generatedDefault ? JSON.stringify(generatedDefault) : 'undefined';
