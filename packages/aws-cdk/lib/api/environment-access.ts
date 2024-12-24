@@ -1,10 +1,10 @@
-import { Mode } from '@aws-cdk/cli-plugin-contract';
 import * as cxapi from '@aws-cdk/cx-api';
 import { SDK } from './aws-auth';
 import { warning } from '../logging';
 import { CredentialsOptions, SdkForEnvironment, SdkProvider } from './aws-auth/sdk-provider';
 import { EnvironmentResources, EnvironmentResourcesRegistry } from './environment-resources';
 import { replaceEnvPlaceholders, StringWithoutPlaceholders } from './util/placeholders';
+import { Mode } from './plugin/mode';
 
 /**
  * Access particular AWS resources, based on information from the CX manifest

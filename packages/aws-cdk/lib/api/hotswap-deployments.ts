@@ -1,4 +1,4 @@
-import { Mode } from '@aws-cdk/cli-plugin-contract';
+import { Mode } from './plugin/mode';
 import * as cfn_diff from '@aws-cdk/cloudformation-diff';
 import * as cxapi from '@aws-cdk/cx-api';
 import { WaiterResult } from '@smithy/util-waiter';

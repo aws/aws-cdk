@@ -1,6 +1,5 @@
 import * as os from 'os';
 import * as path from 'path';
-import { Mode } from '@aws-cdk/cli-plugin-contract';
 import { ArtifactType } from '@aws-cdk/cloud-assembly-schema';
 import { CloudAssemblyBuilder, Environment, EnvironmentUtils } from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
@@ -16,6 +15,7 @@ import type { SDK, SdkProvider } from '../aws-auth';
 import { assertIsSuccessfulDeployStackResult, deployStack, SuccessfulDeployStackResult } from '../deploy-stack';
 import { NoBootstrapStackEnvironmentResources } from '../environment-resources';
 import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitInfo } from '../toolkit-info';
+import { Mode } from '../plugin/mode';
 
 /**
  * A class to hold state around stack bootstrapping

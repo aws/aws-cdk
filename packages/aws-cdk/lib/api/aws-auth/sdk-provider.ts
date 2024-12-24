@@ -1,5 +1,4 @@
 import * as os from 'os';
-import { Mode } from '@aws-cdk/cli-plugin-contract';
 import { ContextLookupRoleOptions } from '@aws-cdk/cloud-assembly-schema';
 import { Environment, EnvironmentUtils, UNKNOWN_ACCOUNT, UNKNOWN_REGION } from '@aws-cdk/cx-api';
 import { AssumeRoleCommandInput } from '@aws-sdk/client-sts';
@@ -13,6 +12,7 @@ import { SDK } from './sdk';
 import { debug, warning } from '../../logging';
 import { traceMethods } from '../../util/tracing';
 import { makeCachingProvider } from './provider-caching';
+import { Mode } from '../plugin/mode';
 
 export type AssumeRoleAdditionalOptions = Partial<Omit<AssumeRoleCommandInput, 'ExternalId' | 'RoleArn'>>;
 

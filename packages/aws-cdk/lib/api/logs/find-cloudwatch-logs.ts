@@ -1,4 +1,3 @@
-import { Mode } from '@aws-cdk/cli-plugin-contract';
 import type { CloudFormationStackArtifact, Environment } from '@aws-cdk/cx-api';
 import type { StackResourceSummary } from '@aws-sdk/client-cloudformation';
 import { debug } from '../../logging';
@@ -6,6 +5,7 @@ import type { SDK, SdkProvider } from '../aws-auth';
 import { EnvironmentAccess } from '../environment-access';
 import { EvaluateCloudFormationTemplate, LazyListStackResources } from '../evaluate-cloudformation-template';
 import { DEFAULT_TOOLKIT_STACK_NAME } from '../toolkit-info';
+import { Mode } from '../plugin/mode';
 
 // resource types that have associated CloudWatch Log Groups that should _not_ be monitored
 const IGNORE_LOGS_RESOURCE_TYPES = ['AWS::EC2::FlowLog', 'AWS::CloudTrail::Trail', 'AWS::CodeBuild::Project'];

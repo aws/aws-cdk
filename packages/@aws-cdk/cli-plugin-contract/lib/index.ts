@@ -29,38 +29,63 @@ export interface Plugin {
   init?: (host: IPluginHost) => void;
 }
 
-export interface AwsCredentials {
-  /**
-   * AWS access key ID
-   */
-  readonly accessKeyId: string;
+/**
+ * Indicates that we want to query read-only credentials
+ *
+ * This type definition replaces the legacy `Mode.ForReading` enum value. We
+ * don't want to use that enum definition anymore, because it requires run-time
+ * code and we want this library to be a types-only package with no runtime
+ * implications.
+ *
+ * By all rights this should have been a string (`'for-reading'`), but due to
+ * legacy reasons this is now an integer value.
+ *
+ * Use as follows:
+ *
+ * ```ts
+ * 0 satisfies ForReading
+ * ```
+ *
+ * If this bothers you a lot, you can copy/paste the following into your own
+ * plugin codebase:
+ *
+ * ```ts
+ * enum Mode {
+ *   ForReading = 0,
+ *   ForWriting = 1,
+ * }
+ * ```
+ */
+export type ForReading = 0;
 
-  /**
-   * AWS secret access key
-   */
-  readonly secretAccessKey: string;
-
-  /**
-   * A security or session token to use with these credentials. Usually
-   * present for temporary credentials.
-   */
-  readonly sessionToken?: string;
-
-  /**
-   * Refreshes the current credentials.
-   */
-  getPromise?: () => Promise<void>;
-
-  /**
-   * Returns a Promise of AwsCredentials.
-   */
-  resolvePromise?: () => Promise<AwsCredentials>;
-}
-
-export enum Mode {
-  ForReading,
-  ForWriting,
-}
+/**
+ * Indicates that we want to query for read-write credentials
+ *
+ * This type definition replaces the legacy `Mode.ForWriting` enum value. We
+ * don't want to use that enum definition anymore, because it requires run-time
+ * code and we want this library to be a types-only package with no runtime
+ * implications.
+ *
+ * By all rights this should have been a string (`'for-writing'`), but due to
+ * legacy reasons this is now an integer value.
+ *
+ * Use as follows:
+ *
+ * ```ts
+ * 1 satisfies ForWriting
+ * ```
+ *
+ * If this bothers you a lot, you can copy/paste the following into your own
+ * plugin codebase:
+ *
+ * ```ts
+ * enum Mode {
+ *   ForReading = 0,
+ *   ForWriting = 1,
+ * }
+ * ```
+ */
+export type ForWriting = 1;
 
 /**
  */
@@ -87,7 +112,7 @@ export interface CredentialProviderSource {
    * While it is possible for the plugin to return a static set of credentials, it is
    * recommended to return a provider.
    */
-  getProvider(accountId: string, mode: Mode, options?: PluginProviderOptions): Promise<AwsCredentials>;
+  getProvider(accountId: string, mode: ForReading | ForWriting, options?: PluginProviderOptions): Promise<PluginProviderResult>;
 }
 
 /**

@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import * as fs from 'fs';
 import * as path from 'path';
-import { Mode } from '@aws-cdk/cli-plugin-contract';
+import { ForReading } from '@aws-cdk/cli-plugin-contract';
 import { Environment, UNKNOWN_ACCOUNT, UNKNOWN_REGION } from '@aws-cdk/cx-api';
 import type {
   DescribeGeneratedTemplateCommandOutput,
@@ -141,7 +141,7 @@ export async function readFromStack(
   sdkProvider: SdkProvider,
   environment: Environment,
 ): Promise<string | undefined> {
-  const cloudFormation = (await sdkProvider.forEnvironment(environment, Mode.ForReading)).sdk.cloudFormation();
+  const cloudFormation = (await sdkProvider.forEnvironment(environment, 0 satisfies ForReading)).sdk.cloudFormation();
 
   const stack = await CloudFormationStack.lookup(cloudFormation, stackName, true);
   if (stack.stackStatus.isDeploySuccess || stack.stackStatus.isRollbackSuccess) {
@@ -603,7 +603,7 @@ export function buildGenertedTemplateOutput(
  * @returns A CloudFormation sdk client
  */
 export async function buildCfnClient(sdkProvider: SdkProvider, environment: Environment) {
-  const sdk = (await sdkProvider.forEnvironment(environment, Mode.ForReading)).sdk;
+  const sdk = (await sdkProvider.forEnvironment(environment, 0 satisfies ForReading)).sdk;
   sdk.appendCustomUserAgent('cdk-migrate');
   return sdk.cloudFormation();
 }

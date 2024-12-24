@@ -1,4 +1,3 @@
-import { Mode } from '@aws-cdk/cli-plugin-contract';
 import * as cxapi from '@aws-cdk/cx-api';
 import { ImageIdentifier } from '@aws-sdk/client-ecr';
 import { Tag } from '@aws-sdk/client-s3';
@@ -9,6 +8,7 @@ import { IECRClient, IS3Client, SDK, SdkProvider } from '../aws-auth';
 import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitInfo } from '../toolkit-info';
 import { ProgressPrinter } from './progress-printer';
 import { ActiveAssetCache, BackgroundStackRefresh, refreshStacks } from './stack-refresh';
+import { Mode } from '../plugin/mode';
 
 // Must use a require() otherwise esbuild complains
 // eslint-disable-next-line @typescript-eslint/no-require-imports

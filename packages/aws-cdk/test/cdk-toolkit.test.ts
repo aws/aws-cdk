@@ -60,7 +60,6 @@ jest.setTimeout(30_000);
 import 'aws-sdk-client-mock';
 import * as os from 'os';
 import * as path from 'path';
-import { Mode } from '@aws-cdk/cli-plugin-contract';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Manifest } from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
@@ -92,6 +91,7 @@ import { CdkToolkit, markTesting, Tag } from '../lib/cdk-toolkit';
 import { RequireApproval } from '../lib/diff';
 import { Configuration } from '../lib/settings';
 import { flatten } from '../lib/util';
+import { Mode } from '../lib/api/plugin/mode';
 
 markTesting();
 
