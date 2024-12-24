@@ -468,7 +468,7 @@ export class TaskDefinition extends TaskDefinitionBase {
     }
 
     if (props.enableFaultInjection && ![NetworkMode.AWS_VPC, NetworkMode.HOST].includes(this.networkMode)) {
-      throw new Error(`Only AWSVPC and HOST Network Modes are supported for enabling Fault Injection, got ${this.networkMode} mode.`);
+      throw new Error(`Only AWS_VPC and HOST Network Modes are supported for enabling Fault Injection, got ${this.networkMode} mode.`);
     }
 
     this._executionRole = props.executionRole;
