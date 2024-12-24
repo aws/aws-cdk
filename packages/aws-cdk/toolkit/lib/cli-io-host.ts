@@ -30,8 +30,8 @@ export class CliIoHost {
   private readonly pretty_messages: boolean;
 
   constructor(options: CliIoHostOptions = {}) {
-    this.pretty_messages = 
-    options.useTTY ?? 
+    this.pretty_messages =
+    options.useTTY ??
     (options.ci ? false : (process.stdout.isTTY ?? false));
   }
 
@@ -92,9 +92,9 @@ export class CliIoHost {
 }
 
 const styleMap: Record<IoMessageLevel, (str: string) => string> = {
-  'error': chalk.red,
-  'warn': chalk.yellow,
-  'info': chalk.white,
-  'debug': chalk.gray,
-  'trace': chalk.gray,
+  error: chalk.red,
+  warn: chalk.yellow,
+  info: chalk.white,
+  debug: chalk.gray,
+  trace: chalk.gray,
 };
