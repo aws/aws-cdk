@@ -117,7 +117,7 @@ describe('render', () => {
         readonly all?: boolean;
       }
       "
-      `);
+    `);
   });
 
   test('special notification-arn option gets undefined default', async () => {
@@ -198,6 +198,6 @@ describe('render', () => {
         readonly 'other-array'?: Array<string>;
       }
       "
-      `);
+    `);
   });
 });
