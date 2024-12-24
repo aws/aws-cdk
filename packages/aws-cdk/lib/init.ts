@@ -4,6 +4,7 @@ import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
 import { invokeBuiltinHooks } from './init-hooks';
 import { error, print, warning } from './logging';
+import { ToolkitError } from './toolkit/error';
 import { cdkHomeDir, rootDir } from './util/directories';
 import { rangeFromSemver } from './util/version-range';
 
@@ -40,7 +41,7 @@ export async function cliInit(options: CliInitOptions) {
   const template = (await availableInitTemplates()).find((t) => t.hasName(type!));
   if (!template) {
     await printAvailableTemplates(options.language);
-    throw new Error(`Unknown init template: ${type}`);
+    throw new ToolkitError(`Unknown init template: ${type}`);
   }
   if (!options.language && template.languages.length === 1) {
     const language = template.languages[0];
@@ -50,7 +51,7 @@ export async function cliInit(options: CliInitOptions) {
   }
   if (!options.language) {
     print(`Available languages for ${chalk.green(type)}: ${template.languages.map((l) => chalk.blue(l)).join(', ')}`);
-    throw new Error('No language was selected');
+    throw new ToolkitError('No language was selected');
   }
 
   await initializeProject(
@@ -119,7 +120,7 @@ export class InitTemplate {
         `The ${chalk.blue(language)} language is not supported for ${chalk.green(this.name)} ` +
           `(it supports: ${this.languages.map((l) => chalk.blue(l)).join(', ')})`,
       );
-      throw new Error(`Unsupported language: ${language}`);
+      throw new ToolkitError(`Unsupported language: ${language}`);
     }
 
     const projectInfo: ProjectInfo = {
@@ -340,7 +341,7 @@ async function initializeProject(
 async function assertIsEmptyDirectory(workDir: string) {
   const files = await fs.readdir(workDir);
   if (files.filter((f) => !f.startsWith('.')).length !== 0) {
-    throw new Error('`cdk init` cannot be run in a non-empty directory!');
+    throw new ToolkitError('`cdk init` cannot be run in a non-empty directory!');
   }
 }
 
@@ -466,7 +467,7 @@ async function execute(cmd: string, args: string[], { cwd }: { cwd: string }) {
         return ok(stdout);
       } else {
         process.stderr.write(stdout);
-        return fail(new Error(`${cmd} exited with status ${status}`));
+        return fail(new ToolkitError(`${cmd} exited with status ${status}`));
       }
     });
   });

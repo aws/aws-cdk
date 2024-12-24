@@ -13,6 +13,7 @@ import { debug, warning } from '../../logging';
 import { traceMethods } from '../../util/tracing';
 import { Mode } from '../plugin';
 import { makeCachingProvider } from './provider-caching';
+import { AuthenticationError } from '../../toolkit/error';
 
 export type AssumeRoleAdditionalOptions = Partial<Omit<AssumeRoleCommandInput, 'ExternalId' | 'RoleArn'>>;
 
@@ -158,14 +159,14 @@ export class SdkProvider {
 
     // At this point, we need at least SOME credentials
     if (baseCreds.source === 'none') {
-      throw new Error(fmtObtainCredentialsError(env.account, baseCreds));
+      throw new AuthenticationError(fmtObtainCredentialsError(env.account, baseCreds));
     }
 
     // Simple case is if we don't need to "assumeRole" here. If so, we must now have credentials for the right
     // account.
     if (options?.assumeRoleArn === undefined) {
       if (baseCreds.source === 'incorrectDefault') {
-        throw new Error(fmtObtainCredentialsError(env.account, baseCreds));
+        throw new AuthenticationError(fmtObtainCredentialsError(env.account, baseCreds));
       }
 
       // Our current credentials must be valid and not expired. Confirm that before we get into doing
@@ -240,7 +241,7 @@ export class SdkProvider {
     const account = env.account !== UNKNOWN_ACCOUNT ? env.account : (await this.defaultAccount())?.accountId;
 
     if (!account) {
-      throw new Error(
+      throw new AuthenticationError(
         'Unable to resolve AWS account to use. It must be either configured when you define your CDK Stack, or through the environment',
       );
     }
@@ -377,7 +378,7 @@ export class SdkProvider {
       }
 
       debug(`Assuming role failed: ${err.message}`);
-      throw new Error(
+      throw new AuthenticationError(
         [
           'Could not assume role in target account',
           ...(sourceDescription ? [`using ${sourceDescription}`] : []),

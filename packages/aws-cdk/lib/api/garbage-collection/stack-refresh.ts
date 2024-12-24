@@ -1,5 +1,6 @@
 import { ParameterDeclaration } from '@aws-sdk/client-cloudformation';
 import { debug } from '../../logging';
+import { ToolkitError } from '../../toolkit/error';
 import { ICloudFormationClient } from '../aws-auth';
 
 export class ActiveAssetCache {
@@ -103,7 +104,7 @@ export async function refreshStacks(cfn: ICloudFormationClient, activeAssets: Ac
       activeAssets.rememberStack(stack);
     }
   } catch (err) {
-    throw new Error(`Error refreshing stacks: ${err}`);
+    throw new ToolkitError(`Error refreshing stacks: ${err}`);
   }
 }
 
@@ -180,7 +181,7 @@ export class BackgroundStackRefresh {
     // We will wait for the latest refresh to land or reject if it takes too long
     return Promise.race([
       new Promise(resolve => this.queuedPromises.push(resolve)),
-      new Promise((_, reject) => setTimeout(() => reject(new Error('refreshStacks took too long; the background thread likely threw an error')), ms)),
+      new Promise((_, reject) => setTimeout(() => reject(new ToolkitError('refreshStacks took too long; the background thread likely threw an error')), ms)),
     ]);
   }
 
