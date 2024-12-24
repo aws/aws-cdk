@@ -204,7 +204,7 @@ test('Exception when throughput mode is set to ELASTIC, performance mode cannot 
       throughputMode: ThroughputMode.ELASTIC,
       performanceMode: PerformanceMode.MAX_IO,
     });
-  }).toThrowError(/ThroughputMode ELASTIC is not supported for file systems with performanceMode MAX_IO/);
+  }).toThrow(/ThroughputMode ELASTIC is not supported for file systems with performanceMode MAX_IO/);
 });
 
 test('Exception when throughput mode is set to PROVISIONED, but provisioned throughput is not set', () => {
@@ -213,7 +213,7 @@ test('Exception when throughput mode is set to PROVISIONED, but provisioned thro
       vpc,
       throughputMode: ThroughputMode.PROVISIONED,
     });
-  }).toThrowError(/Property provisionedThroughputPerSecond is required when throughputMode is PROVISIONED/);
+  }).toThrow(/Property provisionedThroughputPerSecond is required when throughputMode is PROVISIONED/);
 });
 
 test('fails when provisioned throughput is less than the valid range', () => {
@@ -231,7 +231,7 @@ test('fails when provisioned throughput is not a whole number of mebibytes', () 
       throughputMode: ThroughputMode.PROVISIONED,
       provisionedThroughputPerSecond: Size.kibibytes(2050),
     });
-  }).toThrowError(/cannot be converted into a whole number/);
+  }).toThrow(/cannot be converted into a whole number/);
 });
 
 test('file system is created correctly with provisioned throughput mode', () => {
