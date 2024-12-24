@@ -10,6 +10,7 @@ interface IoMessage {
   action: IoAction;
   code: string;
   message: string;
+  forceStdout?: boolean;
   // Optionally specify Chalk style for stdout/stderr, if TTY is enabled
   style?: ((str: string) => string);
 }
@@ -28,11 +29,11 @@ interface CliIoHostOptions {
  */
 export class CliIoHost {
   private readonly pretty_messages: boolean;
+  private readonly ci: boolean;
 
-  constructor(options: CliIoHostOptions = {}) {
-    this.pretty_messages =
-    options.useTTY ??
-    (options.ci ? false : (process.stdout.isTTY ?? false));
+  constructor(options: CliIoHostOptions) {
+    this.pretty_messages = options.useTTY ?? process.stdout.isTTY ?? false;
+    this.ci = options.ci ?? false;
   }
 
   /**
@@ -42,7 +43,7 @@ export class CliIoHost {
   async notify(msg: IoMessage): Promise<void> {
     const output = this.formatMessage(msg);
 
-    const stream = this.getStream(msg.level, msg.action === 'synth');
+    const stream = this.getStream(msg.level, msg.forceStdout ?? false);
 
     return new Promise((resolve, reject) => {
       stream.write(output + '\n', (err) => {
@@ -59,11 +60,11 @@ export class CliIoHost {
    * Determines which output stream to use based on log level and configuration.
    */
   private getStream(level: IoMessageLevel, forceStdout: boolean) {
-    if (level === 'error' || forceStdout) {
-      return process.stderr;
-    } else {
+    if (forceStdout) {
       return process.stdout;
     }
+    if (level == 'error') return process.stderr;
+    return this.ci ? process.stdout : process.stderr;
   }
 
   /**
