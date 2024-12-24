@@ -205,6 +205,12 @@ export interface CDKPackageOptions {
    * Should this package be bundled. (and if so, how)
    */
   bundle?: Omit<BundleProps, 'packageDir'>;
+
+  /**
+   * Also package private packages for local usage.
+   * @default false
+   */
+  private?: boolean;
 }
 
 /**
