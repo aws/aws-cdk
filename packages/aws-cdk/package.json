@@ -188,8 +188,5 @@
   "maturity": "stable",
   "publishConfig": {
     "tag": "latest"
-  },
-  "peerDependencies": {
-    "@aws-cdk/cli-plugin-contract": "0.0.0"
   }
 }
