@@ -77,7 +77,8 @@ export async function renderCliType(config: CliConfig): Promise<string> {
         name: optionName,
         type: convertType(option.type),
         docs: {
-          default: normalizeDefault(option.default, option.type),
+          // Notification Arns is a special property where undefined and [] mean different things
+          default: optionName === 'notification-arns' ? 'undefined' : normalizeDefault(option.default, option.type),
           summary: option.desc,
           deprecated: option.deprecated ? String(option.deprecated) : undefined,
           remarks: option.alias ? `aliases: ${Array.isArray(option.alias) ? option.alias.join(' ') : option.alias}` : undefined,
@@ -131,12 +132,15 @@ function kebabToPascal(str: string): string {
 }
 
 function normalizeDefault(defaultValue: any, type: string): string {
-  const validDefaults = ['boolean', 'string', 'number', 'object'];
-  if (validDefaults.includes(typeof defaultValue)) {
-    return JSON.stringify(defaultValue);
-  }
+  switch (typeof defaultValue) {
+    case 'boolean':
+    case 'string':
+    case 'number':
+    case 'object':
+      return JSON.stringify(defaultValue);
 
-  // We don't know what the default is, and only arrays get a special default
-  const generatedDefault = generateDefault(type);
-  return generatedDefault ? JSON.stringify(generatedDefault) : 'undefined';
+    default:
+      const generatedDefault = generateDefault(type);
+      return generatedDefault ? JSON.stringify(generatedDefault) : 'undefined';
+  }
 }

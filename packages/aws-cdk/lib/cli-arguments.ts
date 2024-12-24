@@ -596,7 +596,7 @@ export interface DeployOptions {
   /**
    * ARNs of SNS topics that CloudFormation will notify with stack related events. These will be added to ARNs specified with the 'notificationArns' stack property.
    *
-   * @default - []
+   * @default - undefined
    */
   readonly 'notification-arns'?: Array<string>;
 
