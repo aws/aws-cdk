@@ -103,7 +103,7 @@ export interface CommonTaskDefinitionProps {
   /**
    * Enables fault injection and allows for fault injection requests to be accepted from the task's containers.
    *
-   * Fault injection only works with tasks using the awsvpc or host network modes.
+   * Fault injection only works with tasks using the {@link NetworkMode.AWS_VPC} or {@link NetworkMode.HOST} network modes.
    *
    * @default false
    */
