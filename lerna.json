@@ -10,7 +10,7 @@
     "packages/@aws-cdk-testing/*",
     "packages/@aws-cdk/*/lambda-packages/*",
     "tools/@aws-cdk/cdk-build-tools",
-    "tools/@aws-cdk/yargs-gen",
+    "tools/@aws-cdk/cli-args-gen",
     "tools/@aws-cdk/cdk-release",
     "tools/@aws-cdk/node-bundle",
     "tools/@aws-cdk/pkglint",
@@ -19,6 +19,7 @@
     "tools/@aws-cdk/spec2cdk",
     "tools/@aws-cdk/yarn-cling",
     "tools/@aws-cdk/lazify",
+    "tools/@aws-cdk/lambda-integration-test-updater",
     "scripts/@aws-cdk/script-tests"
   ],
   "rejectCycles": true,

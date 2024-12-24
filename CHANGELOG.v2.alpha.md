@@ -2,6 +2,62 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.173.2-alpha.0](https://github.com/aws/aws-cdk/compare/v2.173.1-alpha.0...v2.173.2-alpha.0) (2024-12-17)
+
+## [2.173.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.173.0-alpha.0...v2.173.1-alpha.0) (2024-12-14)
+
+## [2.173.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.172.0-alpha.0...v2.173.0-alpha.0) (2024-12-11)
+
+
+### Features
+
+* **redshift-alpha:** add support for RA3.large node type ([#31637](https://github.com/aws/aws-cdk/issues/31637)) ([ce0e09f](https://github.com/aws/aws-cdk/commit/ce0e09fea17c78d40026df114796bc89ad365d18)), closes [#31634](https://github.com/aws/aws-cdk/issues/31634)
+
+## [2.172.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.171.1-alpha.0...v2.172.0-alpha.0) (2024-12-06)
+
+
+### Features
+
+* **ec2:** default BastionHostLinux to use Amazon Linux 2023 (under feature flag) ([#31996](https://github.com/aws/aws-cdk/issues/31996)) ([bf77e51](https://github.com/aws/aws-cdk/commit/bf77e51c90e3da972c464430d579695163160a13)), closes [#29493](https://github.com/aws/aws-cdk/issues/29493) [#29493](https://github.com/aws/aws-cdk/issues/29493)
+* **ec2:** instance support passing IAM instance profile ([#32073](https://github.com/aws/aws-cdk/issues/32073)) ([cf89d0f](https://github.com/aws/aws-cdk/commit/cf89d0f67f6d03bdeec38a4ffb48d3cda59db7cc)), closes [#8348](https://github.com/aws/aws-cdk/issues/8348)
+* **neptune:** auto minor version upgrade for an instance ([#31988](https://github.com/aws/aws-cdk/issues/31988)) ([d95db49](https://github.com/aws/aws-cdk/commit/d95db491f7c1fd11dd42299f99d40fd94b0d642f))
+* **pipes:** add LogDestination implementation ([#31672](https://github.com/aws/aws-cdk/issues/31672)) ([af5345e](https://github.com/aws/aws-cdk/commit/af5345e9ed2528bde2af6cd4b2428654b096eb93)), closes [#31671](https://github.com/aws/aws-cdk/issues/31671)
+* **pipes-targets:** add API Gateway ([#31954](https://github.com/aws/aws-cdk/issues/31954)) ([c77536f](https://github.com/aws/aws-cdk/commit/c77536f8999e221c8d6dae5742f484a04b05bac5))
+* **redshift:** execute resource action ([#31995](https://github.com/aws/aws-cdk/issues/31995)) ([40835a0](https://github.com/aws/aws-cdk/commit/40835a01536509daefa44e5e4cad5d8829d8dd1c))
+
+
+### Bug Fixes
+
+* **scheduler-targets-alpha:** incorrect validation of maximumEventAge ([#32284](https://github.com/aws/aws-cdk/issues/32284)) ([2eebc59](https://github.com/aws/aws-cdk/commit/2eebc5913966f0266efbad65c3f137c07c75270b))
+
+## [2.171.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.171.0-alpha.0...v2.171.1-alpha.0) (2024-11-27)
+
+## [2.171.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.170.0-alpha.0...v2.171.0-alpha.0) (2024-11-25)
+
+## [2.170.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.169.0-alpha.0...v2.170.0-alpha.0) (2024-11-22)
+
+## [2.169.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.168.0-alpha.0...v2.169.0-alpha.0) (2024-11-21)
+
+
+### Features
+
+* **location:** support Map ([#30648](https://github.com/aws/aws-cdk/issues/30648)) ([98b801c](https://github.com/aws/aws-cdk/commit/98b801cae9c7a957469ef61121878d81a09f4cfe)), closes [#30647](https://github.com/aws/aws-cdk/issues/30647)
+* **scheduler:** `scheduler` and `scheduler-targets` modules are now in Developer Preview ([#32207](https://github.com/aws/aws-cdk/issues/32207)) ([8776832](https://github.com/aws/aws-cdk/commit/877683233f1af9674cd2e715411eed6ebc4e3e11)), closes [#31785](https://github.com/aws/aws-cdk/issues/31785)
+
+
+### Bug Fixes
+
+* **location:** underscores are not allowed in the name ([#32046](https://github.com/aws/aws-cdk/issues/32046)) ([f6ad9c9](https://github.com/aws/aws-cdk/commit/f6ad9c99db902064ab62e236fec3d7fbfcca828a))
+
+## [2.168.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.167.2-alpha.0...v2.168.0-alpha.0) (2024-11-20)
+
+
+### Bug Fixes
+
+* **scheduler-targets-alpha:** imported target resources as schedule target throws synth error ([#32105](https://github.com/aws/aws-cdk/issues/32105)) ([1a8306f](https://github.com/aws/aws-cdk/commit/1a8306fab7d746fb66019979e8f353e17499cfbf)), closes [#31785](https://github.com/aws/aws-cdk/issues/31785) [/github.com/aws/aws-cdk/pull/29615#issuecomment-2417858246](https://github.com/aws//github.com/aws/aws-cdk/pull/29615/issues/issuecomment-2417858246)
+* **scheduler-targets-alpha:** kinesis data firehose target uses l1 instead of l2 ([#32150](https://github.com/aws/aws-cdk/issues/32150)) ([11384f0](https://github.com/aws/aws-cdk/commit/11384f0718947aebe519e346ffe31429289a9a63)), closes [#31785](https://github.com/aws/aws-cdk/issues/31785)
+* **scheduler-targets-alpha:** scope down permissions for sqs and kinesis stream targets ([#32122](https://github.com/aws/aws-cdk/issues/32122)) ([6bb142e](https://github.com/aws/aws-cdk/commit/6bb142e805fdd754755cc54c31c0e6e7970be7f9)), closes [#31785](https://github.com/aws/aws-cdk/issues/31785)
+
 ## [2.167.2-alpha.0](https://github.com/aws/aws-cdk/compare/v2.167.1-alpha.0...v2.167.2-alpha.0) (2024-11-18)
 
 ## [2.167.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.167.0-alpha.0...v2.167.1-alpha.0) (2024-11-14)
@@ -54,7 +110,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Bug Fixes
 
-* **location:** remove base class from PlaceIndex class ([#31287](https://github.com/aws/aws-cdk/issues/31287)) ([bc67866](https://github.com/aws/aws-cdk/commit/bc67866f579c401556d427eb150bcd118d69bd17)), closes [#30711](https://github.com/aws/aws-cdk/issues/30711) [#30682](https://github.com/aws/aws-cdk/issues/30682) 
+* **location:** remove base class from PlaceIndex class ([#31287](https://github.com/aws/aws-cdk/issues/31287)) ([bc67866](https://github.com/aws/aws-cdk/commit/bc67866f579c401556d427eb150bcd118d69bd17)), closes [#30711](https://github.com/aws/aws-cdk/issues/30711) [#30682](https://github.com/aws/aws-cdk/issues/30682)
 * **scheduler-alpha:** scheduler input always get transformed to string with extra double quotes ([#31894](https://github.com/aws/aws-cdk/issues/31894)) ([186b8ab](https://github.com/aws/aws-cdk/commit/186b8abfab8452b31cba13b56998242f63c43159))
 * **scheduler-alpha:** too many KMS permissions granted ([#31923](https://github.com/aws/aws-cdk/issues/31923)) ([06678a3](https://github.com/aws/aws-cdk/commit/06678a39e029582af14c8b021f946b9ce9cac9be)), closes [#31785](https://github.com/aws/aws-cdk/issues/31785)
 
@@ -122,10 +178,10 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
 
-* **kinesisfirehose-destinations:** the `logging` and `logGroup` properties in `DestinationLoggingProps` have been removed and replaced with a single optional property `loggingConfig` which accepts a class of type `LoggingConfig`. 
+* **kinesisfirehose-destinations:** the `logging` and `logGroup` properties in `DestinationLoggingProps` have been removed and replaced with a single optional property `loggingConfig` which accepts a class of type `LoggingConfig`.
 
 #### Details
-Combine the `logging` and `logGroup` properties into a single new optional property called `loggingConfig` which accepts a class of type `LoggingConfig`. 
+Combine the `logging` and `logGroup` properties into a single new optional property called `loggingConfig` which accepts a class of type `LoggingConfig`.
 
 `LoggingConfig` is an abstract class which can be instantiated through either an instance of `EnableLogging` or `DisableLogging` which can be used in the following 3 ways:
 
@@ -196,7 +252,7 @@ unit + integ test
 
 ### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
 
-* **kinesisfirehose-alpha:** `encryptionKey` property is removed and `encryption` property type has changed from the `StreamEncryption` enum to the `StreamEncryption` class. 
+* **kinesisfirehose-alpha:** `encryptionKey` property is removed and `encryption` property type has changed from the `StreamEncryption` enum to the `StreamEncryption` class.
 
 To pass in a KMS key for the customer managed key case, use `StreamEncryption.customerManagedKey(key)`
 
@@ -208,12 +264,12 @@ StreamEncryption.awsOwnedKey()
 StreamEncryption.customerManagedKey(key?: IKey)
 ```
 
-This makes it so it's not longer possible to pass in a key when the encryption type is AWS owned or unencrypted. The `key` is an optional parameter in `StreamEncryption.customerManagedKey(key?: IKey)` so following the previous behaviour, if a key is provided it will be used, otherwise a key will be created for the user. 
+This makes it so it's not longer possible to pass in a key when the encryption type is AWS owned or unencrypted. The `key` is an optional parameter in `StreamEncryption.customerManagedKey(key?: IKey)` so following the previous behaviour, if a key is provided it will be used, otherwise a key will be created for the user.
 ### Description of how you validated changes
 
-Generated templates do not change so behaviour remains the same. 
+Generated templates do not change so behaviour remains the same.
 
-Updated integ/unit tests. 
+Updated integ/unit tests.
 
 ### Checklist
 - [x] My code adheres to the [CONTRIBUTING GUIDE](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and [DESIGN GUIDELINES](https://github.com/aws/aws-cdk/blob/main/docs/DESIGN_GUIDELINES.md)

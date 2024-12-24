@@ -1,4 +1,5 @@
-import { promises as fs, existsSync } from 'fs';
+import { existsSync, promises as fs } from 'fs';
+import * as querystring from 'node:querystring';
 import * as os from 'os';
 import * as path from 'path';
 import {
@@ -22,21 +23,23 @@ import { InvokeCommand } from '@aws-sdk/client-lambda';
 import { PutObjectLockConfigurationCommand } from '@aws-sdk/client-s3';
 import { CreateTopicCommand, DeleteTopicCommand } from '@aws-sdk/client-sns';
 import { AssumeRoleCommand, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
+import * as mockttp from 'mockttp';
+import { CompletedRequest } from 'mockttp';
 import {
-  integTest,
   cloneDirectory,
-  shell,
-  withDefaultFixture,
-  retry,
-  sleep,
+  integTest,
   randomInteger,
-  withSamIntegrationFixture,
-  RESOURCES_DIR,
-  withCDKMigrateFixture,
-  withExtendedTimeoutFixture,
   randomString,
-  withSpecificFixture,
+  RESOURCES_DIR,
+  retry,
+  shell,
+  sleep,
+  withCDKMigrateFixture,
+  withDefaultFixture,
+  withExtendedTimeoutFixture,
   withoutBootstrap,
+  withSamIntegrationFixture,
+  withSpecificFixture,
 } from '../../lib';
 
 jest.setTimeout(2 * 60 * 60_000); // Includes the time to acquire locks, worst-case single-threaded runtime
@@ -1111,7 +1114,7 @@ integTest(
     await diffShouldSucceedWith({ fail: undefined, enableDiffNoFail: true });
 
     async function diffShouldSucceedWith(props: DiffParameters) {
-      await expect(diff(props)).resolves.not.toThrowError();
+      await expect(diff(props)).resolves.not.toThrow();
     }
 
     async function diffShouldFailWith(props: DiffParameters) {
@@ -2809,3 +2812,63 @@ integTest('cdk notices are displayed correctly', withDefaultFixture(async (fixtu
   expect(output).toContain(`AffectedEnvironments:<aws://${await fixture.aws.account()}/${fixture.aws.region}>`);
 
 }));
+
+integTest('requests go through a proxy when configured',
+  withDefaultFixture(async (fixture) => {
+    // Set up key and certificate
+    const { key, cert } = await mockttp.generateCACertificate();
+    const certDir = await fs.mkdtemp(path.join(os.tmpdir(), 'cdk-'));
+    const certPath = path.join(certDir, 'cert.pem');
+    const keyPath = path.join(certDir, 'key.pem');
+    await fs.writeFile(keyPath, key);
+    await fs.writeFile(certPath, cert);
+
+    const proxyServer = mockttp.getLocal({
+      https: { keyPath, certPath },
+    });
+
+    // We don't need to modify any request, so the proxy
+    // passes through all requests to the target host.
+    const endpoint = await proxyServer
+      .forAnyRequest()
+      .thenPassThrough();
+
+    proxyServer.enableDebug();
+    await proxyServer.start();
+
+    // The proxy is now ready to intercept requests
+
+    try {
+      await fixture.cdkDeploy('test-2', {
+        captureStderr: true,
+        options: [
+          '--proxy', proxyServer.url,
+          '--ca-bundle-path', certPath,
+        ],
+        modEnv: {
+          CDK_HOME: fixture.integTestDir,
+        },
+      });
+    } finally {
+      await fs.rm(certDir, { recursive: true, force: true });
+      await proxyServer.stop();
+    }
+
+    const requests = await endpoint.getSeenRequests();
+
+    expect(requests.map(req => req.url))
+      .toContain('https://cli.cdk.dev-tools.aws.dev/notices.json');
+
+    const actionsUsed = actions(requests);
+    expect(actionsUsed).toContain('AssumeRole');
+    expect(actionsUsed).toContain('CreateChangeSet');
+  }),
+);
+
+function actions(requests: CompletedRequest[]): string[] {
+  return [...new Set(requests
+    .map(req => req.body.buffer.toString('utf-8'))
+    .map(body => querystring.decode(body))
+    .map(x => x.Action as string)
+    .filter(action => action != null))];
+}

@@ -1,6 +1,6 @@
 import { Construct, IConstruct } from 'constructs';
 import { Annotations } from './annotations';
-import { IAspect, Aspects } from './aspect';
+import { IAspect, Aspects, AspectPriority } from './aspect';
 import { ITaggable, ITaggableV2, TagManager } from './tag-manager';
 
 /**
@@ -161,14 +161,14 @@ export class Tags {
    * add tags to the node of a construct and all its the taggable children
    */
   public add(key: string, value: string, props: TagProps = {}) {
-    Aspects.of(this.scope).add(new Tag(key, value, props));
+    Aspects.of(this.scope).add(new Tag(key, value, props)), { priority: AspectPriority.MUTATING };
   }
 
   /**
    * remove tags to the node of a construct and all its the taggable children
    */
   public remove(key: string, props: TagProps = {}) {
-    Aspects.of(this.scope).add(new RemoveTag(key, props));
+    Aspects.of(this.scope).add(new RemoveTag(key, props), { priority: AspectPriority.MUTATING });
   }
 }
 

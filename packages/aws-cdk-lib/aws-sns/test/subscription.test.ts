@@ -264,6 +264,81 @@ describe('Subscription', () => {
 
   });
 
+  test('with delivery policy', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const topic = new sns.Topic(stack, 'Topic');
+
+    // WHEN
+    new sns.Subscription(stack, 'Subscription', {
+      endpoint: 'endpoint',
+      deliveryPolicy: {
+        healthyRetryPolicy: {
+          minDelayTarget: cdk.Duration.seconds(5),
+          maxDelayTarget: cdk.Duration.seconds(10),
+          numRetries: 6,
+          backoffFunction: sns.BackoffFunction.EXPONENTIAL,
+        },
+        throttlePolicy: {
+          maxReceivesPerSecond: 10,
+        },
+        requestPolicy: {
+          headerContentType: 'application/json',
+        },
+      },
+      protocol: sns.SubscriptionProtocol.HTTPS,
+      topic,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
+      DeliveryPolicy: {
+        healthyRetryPolicy: {
+          minDelayTarget: 5,
+          maxDelayTarget: 10,
+          numRetries: 6,
+          backoffFunction: sns.BackoffFunction.EXPONENTIAL,
+        },
+        throttlePolicy: {
+          maxReceivesPerSecond: 10,
+        },
+        requestPolicy: {
+          headerContentType: 'application/json',
+        },
+      },
+    });
+  });
+
+  test('sets correct healthyRetryPolicy defaults for attributes required by Cloudformation', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const topic = new sns.Topic(stack, 'Topic');
+
+    // WHEN
+    new sns.Subscription(stack, 'Subscription', {
+      endpoint: 'endpoint',
+      deliveryPolicy: {
+        healthyRetryPolicy: {
+          backoffFunction: sns.BackoffFunction.EXPONENTIAL,
+        },
+      },
+      protocol: sns.SubscriptionProtocol.HTTPS,
+      topic,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
+      DeliveryPolicy: {
+        healthyRetryPolicy: {
+          minDelayTarget: 20,
+          maxDelayTarget: 20,
+          numRetries: 3,
+          backoffFunction: sns.BackoffFunction.EXPONENTIAL,
+        },
+      },
+    });
+  });
+
   test.each(
     [
       SubscriptionProtocol.LAMBDA,
@@ -356,5 +431,239 @@ describe('Subscription', () => {
       protocol: sns.SubscriptionProtocol.FIREHOSE,
       topic,
     })).toThrow(/Subscription role arn is required field for subscriptions with a firehose protocol./);
+  });
+
+  test.each([
+    sns.SubscriptionProtocol.APPLICATION,
+    sns.SubscriptionProtocol.EMAIL,
+    sns.SubscriptionProtocol.EMAIL_JSON,
+    sns.SubscriptionProtocol.FIREHOSE,
+    sns.SubscriptionProtocol.LAMBDA,
+    sns.SubscriptionProtocol.SMS,
+    sns.SubscriptionProtocol.SQS,
+  ])('throws an error when deliveryPolicy is specified with protocol %s', (protocol) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const topic = new sns.Topic(stack, 'Topic');
+
+    //THEN
+    expect(() => new sns.Subscription(stack, 'Subscription', {
+      endpoint: 'endpoint',
+      deliveryPolicy: {
+        healthyRetryPolicy: {
+          minDelayTarget: cdk.Duration.seconds(11),
+          maxDelayTarget: cdk.Duration.seconds(10),
+          numRetries: 6,
+        },
+      },
+      protocol: protocol,
+      subscriptionRoleArn: '???',
+      topic,
+    })).toThrow(new RegExp(`Delivery policy is only supported for HTTP and HTTPS subscriptions, got: ${protocol}`));
+  });
+
+  test('throws an error when deliveryPolicy minDelayTarget exceeds maxDelayTarget', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const topic = new sns.Topic(stack, 'Topic');
+
+    //THEN
+    expect(() => new sns.Subscription(stack, 'Subscription', {
+      endpoint: 'endpoint',
+      deliveryPolicy: {
+        healthyRetryPolicy: {
+          minDelayTarget: cdk.Duration.seconds(11),
+          maxDelayTarget: cdk.Duration.seconds(10),
+          numRetries: 6,
+        },
+      },
+      protocol: sns.SubscriptionProtocol.HTTPS,
+      topic,
+    })).toThrow(/minDelayTarget must not exceed maxDelayTarget/);
+  });
+
+  const delayTestCases = [
+    {
+      prop: 'minDelayTarget',
+      invalidDeliveryPolicy: {
+        healthyRetryPolicy: {
+          minDelayTarget: cdk.Duration.seconds(0),
+          maxDelayTarget: cdk.Duration.seconds(10),
+          numRetries: 6,
+        },
+      },
+    },
+    {
+      prop: 'maxDelayTarget',
+      invalidDeliveryPolicy: {
+        healthyRetryPolicy: {
+          minDelayTarget: cdk.Duration.seconds(10),
+          maxDelayTarget: cdk.Duration.seconds(0),
+          numRetries: 6,
+        },
+      },
+    },
+    {
+      prop: 'minDelayTarget',
+      invalidDeliveryPolicy: {
+        healthyRetryPolicy: {
+          minDelayTarget: cdk.Duration.seconds(3601),
+          maxDelayTarget: cdk.Duration.seconds(10),
+          numRetries: 6,
+        },
+      },
+    },
+    {
+      prop: 'maxDelayTarget',
+      invalidDeliveryPolicy: {
+        healthyRetryPolicy: {
+          minDelayTarget: cdk.Duration.seconds(10),
+          maxDelayTarget: cdk.Duration.seconds(3601),
+          numRetries: 6,
+        },
+      },
+    },
+  ];
+
+  delayTestCases.forEach(({ prop, invalidDeliveryPolicy }) => {
+    const invalidValue = invalidDeliveryPolicy.healthyRetryPolicy[prop];
+    test(`throws an error when ${prop} is ${invalidValue}`, () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const topic = new sns.Topic(stack, 'Topic');
+
+      //THEN
+      expect(() => new sns.Subscription(stack, 'Subscription', {
+        endpoint: 'endpoint',
+        deliveryPolicy: invalidDeliveryPolicy,
+        protocol: sns.SubscriptionProtocol.HTTPS,
+        topic,
+      })).toThrow(new RegExp(`${prop} must be between 1 and 3600 seconds inclusive`));
+    });
+  });
+
+  test.each([-1, 101])('throws an error when deliveryPolicy numRetries is %d', (invalidValue: number) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const topic = new sns.Topic(stack, 'Topic');
+
+    //THEN
+    expect(() => new sns.Subscription(stack, 'Subscription', {
+      endpoint: 'endpoint',
+      deliveryPolicy: {
+        healthyRetryPolicy: {
+          minDelayTarget: cdk.Duration.seconds(10),
+          maxDelayTarget: cdk.Duration.seconds(10),
+          numRetries: invalidValue,
+        },
+      },
+      protocol: sns.SubscriptionProtocol.HTTPS,
+      topic,
+    })).toThrow(/numRetries must be between 0 and 100 inclusive/);
+  });
+
+  test.each([
+    {
+      invalidDeliveryPolicy: {
+        healthyRetryPolicy: {
+          minDelayTarget: cdk.Duration.seconds(1),
+          maxDelayTarget: cdk.Duration.seconds(10),
+          numRetries: 6,
+          numNoDelayRetries: -1,
+        },
+      },
+      prop: 'numNoDelayRetries',
+      value: -1,
+    },
+    {
+      invalidDeliveryPolicy: {
+        healthyRetryPolicy: {
+          minDelayTarget: cdk.Duration.seconds(1),
+          maxDelayTarget: cdk.Duration.seconds(10),
+          numRetries: 6,
+          numMinDelayRetries: -1,
+        },
+      },
+      prop: 'numMinDelayRetries',
+      value: -1,
+    },
+    {
+      invalidDeliveryPolicy: {
+        healthyRetryPolicy: {
+          minDelayTarget: cdk.Duration.seconds(1),
+          maxDelayTarget: cdk.Duration.seconds(10),
+          numRetries: 6,
+          numMaxDelayRetries: -1,
+        },
+      },
+      prop: 'numMaxDelayRetries',
+      value: -1,
+    },
+    {
+      invalidDeliveryPolicy: {
+        healthyRetryPolicy: {
+          minDelayTarget: cdk.Duration.seconds(1),
+          maxDelayTarget: cdk.Duration.seconds(10),
+          numRetries: 6,
+          numNoDelayRetries: 1.5,
+        },
+      },
+      prop: 'numNoDelayRetries',
+      value: 1.5,
+    },
+    {
+      invalidDeliveryPolicy: {
+        healthyRetryPolicy: {
+          minDelayTarget: cdk.Duration.seconds(1),
+          maxDelayTarget: cdk.Duration.seconds(10),
+          numRetries: 6,
+          numMinDelayRetries: 1.5,
+        },
+      },
+      prop: 'numMinDelayRetries',
+      value: 1.5,
+    },
+    {
+      invalidDeliveryPolicy: {
+        healthyRetryPolicy: {
+          minDelayTarget: cdk.Duration.seconds(1),
+          maxDelayTarget: cdk.Duration.seconds(10),
+          numRetries: 6,
+          numMaxDelayRetries: 1.5,
+        },
+      },
+      prop: 'numMaxDelayRetries',
+      value: 1.5,
+    },
+  ])('throws an error when $prop = $value', ({ invalidDeliveryPolicy, prop }) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const topic = new sns.Topic(stack, 'Topic');
+
+    //THEN
+    expect(() => new sns.Subscription(stack, 'Subscription', {
+      endpoint: 'endpoint',
+      deliveryPolicy: invalidDeliveryPolicy,
+      protocol: sns.SubscriptionProtocol.HTTPS,
+      topic,
+    })).toThrow(new RegExp(`${prop} must be an integer zero or greater`));
+  });
+
+  test('throws an error when throttlePolicy < 1', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const topic = new sns.Topic(stack, 'Topic');
+
+    //THEN
+    expect(() => new sns.Subscription(stack, 'Subscription', {
+      endpoint: 'endpoint',
+      deliveryPolicy: {
+        throttlePolicy: {
+          maxReceivesPerSecond: 0,
+        },
+      },
+      protocol: sns.SubscriptionProtocol.HTTPS,
+      topic,
+    })).toThrow(/maxReceivesPerSecond must be an integer greater than zero/);
   });
 });
