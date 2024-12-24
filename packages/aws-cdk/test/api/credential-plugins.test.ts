@@ -1,4 +1,4 @@
-import { PluginProviderResult } from '@aws-cdk/cli-plugin-contract';
+import type { PluginProviderResult } from '@aws-cdk/cli-plugin-contract';
 import { CredentialPlugins } from '../../lib/api/aws-auth/credential-plugins';
 import { PluginHost } from '../../lib/api/plugin';
 import { Mode } from '../../lib/api/plugin/mode';

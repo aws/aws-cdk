@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import * as fs from 'fs';
 import * as path from 'path';
-import { ForReading } from '@aws-cdk/cli-plugin-contract';
+import type { ForReading } from '@aws-cdk/cli-plugin-contract';
 import { Environment, UNKNOWN_ACCOUNT, UNKNOWN_REGION } from '@aws-cdk/cx-api';
 import type {
   DescribeGeneratedTemplateCommandOutput,

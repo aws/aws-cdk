@@ -1,4 +1,4 @@
-import { CredentialProviderSource } from '@aws-cdk/cli-plugin-contract';
+import type { CredentialProviderSource } from '@aws-cdk/cli-plugin-contract';
 import { ContextProviderPlugin, PluginHost, markTesting } from '../../../lib/api/plugin';
 
 markTesting();

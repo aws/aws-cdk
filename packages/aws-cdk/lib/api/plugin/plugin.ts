@@ -1,5 +1,5 @@
 import { inspect } from 'util';
-import { CredentialProviderSource, IPluginHost, Plugin } from '@aws-cdk/cli-plugin-contract';
+import type { CredentialProviderSource, IPluginHost, Plugin } from '@aws-cdk/cli-plugin-contract';
 import * as chalk from 'chalk';
 
 import { type ContextProviderPlugin, isContextProviderPlugin } from './context-provider-plugin';
