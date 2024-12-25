@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "ClusterKernel/DefaultTest": {
+      "stacks": [
+        "integ-ecs-kernel"
+      ],
+      "assertionStack": "ClusterKernel/DefaultTest/DeployAssert",
+      "assertionStackName": "ClusterKernelDefaultTestDeployAssert7C45B695"
+    }
+  }
+}
