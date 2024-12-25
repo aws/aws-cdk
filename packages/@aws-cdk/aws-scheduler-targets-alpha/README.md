@@ -34,7 +34,7 @@ The following targets are supported:
 9. `targets.KinesisDataFirehosePutRecord`: [Put a record to a Kinesis Data Firehose](#put-a-record-to-a-kinesis-data-firehose)
 10. `targets.CodePipelineStartPipelineExecution`: [Start a CodePipeline execution](#start-a-codepipeline-execution)
 11. `targets.SageMakerStartPipelineExecution`: [Start a SageMaker pipeline execution](#start-a-sagemaker-pipeline-execution)
-12. `targets.AwsApi`: [Invoke a wider set of AWS API](#invoke-a-wider-set-of-aws-api)
+12. `targets.Universal`: [Invoke a wider set of AWS API](#invoke-a-wider-set-of-aws-api)
 
 ## Invoke a Lambda function
 
@@ -316,7 +316,7 @@ new Schedule(this, 'Schedule', {
 
 ## Invoke a wider set of AWS API
 
-Use the `AwsApi` target to invoke AWS API.
+Use the `Universal` target to invoke AWS API.
 
 The code snippet below creates an event rule with AWS API as the target which is
 called at midnight every day by EventBridge Scheduler.
@@ -327,7 +327,7 @@ new Schedule(this, 'Schedule', {
     minute: '0',
     hour: '0',
   }),
-  target: new targets.AwsApi({
+  target: new targets.Universal({
     service: 'rds',
     action: 'stopDBCluster',
     input: ScheduleTargetInput.fromObject({
@@ -344,7 +344,7 @@ You can also set any Action and Resource in the EventBridge Scheduler's IAM Poli
 ```ts
 new Schedule(this, 'Schedule', {
   schedule: ScheduleExpression.rate(Duration.minutes(60)),
-  target: new targets.AwsApi({
+  target: new targets.Universal({
     service: 'lambda',
     action: 'invoke',
     iamAction: 'lambda:InvokeFunction',

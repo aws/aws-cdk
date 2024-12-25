@@ -3,7 +3,7 @@
   "files": {
     "e18d02e9cedc54730d7d992dc806b57b9cc51f5f608a29447a443c5d90526804": {
       "source": {
-        "path": "AwsSchedulerTargetsAwsApi.template.json",
+        "path": "AwsSchedulerTargetsUniversal.template.json",
         "packaging": "file"
       },
       "destinations": {

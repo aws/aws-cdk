@@ -4,9 +4,9 @@ import { App, Duration, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
-import { AwsApi } from '../lib/aws-api';
+import { Universal } from '../lib/universal';
 
-describe('aws api schedule target', () => {
+describe('Universal schedule target', () => {
   let app: App;
   let stack: Stack;
   const scheduleExpression = scheduler.ScheduleExpression.at(new Date(Date.UTC(1969, 10, 20, 0, 0, 0)));
@@ -18,7 +18,7 @@ describe('aws api schedule target', () => {
   });
 
   test('creates IAM role and IAM policy for aws api in the same account', () => {
-    const target = new AwsApi({
+    const target = new Universal({
       service: 'sqs',
       action: 'createQueue',
       input: scheduler.ScheduleTargetInput.fromObject({
@@ -112,7 +112,7 @@ describe('aws api schedule target', () => {
       assumedBy: new iam.AccountRootPrincipal(),
     });
 
-    const target = new AwsApi({
+    const target = new Universal({
       service: 'sqs',
       action: 'createQueue',
       input: scheduler.ScheduleTargetInput.fromObject({
@@ -171,7 +171,7 @@ describe('aws api schedule target', () => {
   });
 
   test('reuses IAM role and IAM policy for two schedulers from the same account', () => {
-    const target = new AwsApi({
+    const target = new Universal({
       service: 'sqs',
       action: 'createQueue',
       input: scheduler.ScheduleTargetInput.fromObject({
@@ -244,7 +244,7 @@ describe('aws api schedule target', () => {
   });
 
   test('creates IAM role and IAM policy for two schedules with the same target but different groups', () => {
-    const target = new AwsApi({
+    const target = new Universal({
       service: 'sqs',
       action: 'createQueue',
       input: scheduler.ScheduleTargetInput.fromObject({
@@ -341,7 +341,7 @@ describe('aws api schedule target', () => {
   test('creates IAM policy for imported role for sns topic in the same account', () => {
     const importedRole = iam.Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/my-role');
 
-    const target = new AwsApi({
+    const target = new Universal({
       service: 'sqs',
       action: 'createQueue',
       input: scheduler.ScheduleTargetInput.fromObject({
@@ -395,7 +395,7 @@ describe('aws api schedule target', () => {
   test('adds permissions to execution role for sending messages to DLQ', () => {
     const dlq = new sqs.Queue(stack, 'DeadLetterQueue');
 
-    const target = new AwsApi({
+    const target = new Universal({
       service: 'sqs',
       action: 'createQueue',
       input: scheduler.ScheduleTargetInput.fromObject({
@@ -435,7 +435,7 @@ describe('aws api schedule target', () => {
   test('adds permission to execution role when imported DLQ is in same account', () => {
     const importedQueue = sqs.Queue.fromQueueArn(stack, 'ImportedQueue', 'arn:aws:sqs:us-east-1:123456789012:my-queue');
 
-    const target = new AwsApi({
+    const target = new Universal({
       service: 'sqs',
       action: 'createQueue',
       input: scheduler.ScheduleTargetInput.fromObject({
@@ -470,7 +470,7 @@ describe('aws api schedule target', () => {
   });
 
   test('renders expected retry policy', () => {
-    const target = new AwsApi({
+    const target = new Universal({
       service: 'sqs',
       action: 'createQueue',
       input: scheduler.ScheduleTargetInput.fromObject({
@@ -515,7 +515,7 @@ describe('aws api schedule target', () => {
   });
 
   test('throws when retry policy max age is more than 1 day', () => {
-    const target = new AwsApi({
+    const target = new Universal({
       service: 'sqs',
       action: 'createQueue',
       input: scheduler.ScheduleTargetInput.fromObject({
@@ -532,7 +532,7 @@ describe('aws api schedule target', () => {
   });
 
   test('throws when retry policy max age is less than 1 minute', () => {
-    const target = new AwsApi({
+    const target = new Universal({
       service: 'sqs',
       action: 'createQueue',
       input: scheduler.ScheduleTargetInput.fromObject({
@@ -549,7 +549,7 @@ describe('aws api schedule target', () => {
   });
 
   test('throws when retry policy max retry attempts is out of the allowed limits', () => {
-    const target = new AwsApi({
+    const target = new Universal({
       service: 'sqs',
       action: 'createQueue',
       input: scheduler.ScheduleTargetInput.fromObject({
@@ -567,7 +567,7 @@ describe('aws api schedule target', () => {
 
   test('throws when service is not in lower case', () => {
     expect(() =>
-      new AwsApi({
+      new Universal({
         service: 'SQS',
         action: 'createQueue',
         input: scheduler.ScheduleTargetInput.fromObject({
@@ -579,7 +579,7 @@ describe('aws api schedule target', () => {
 
   test('throws when action is not in camelCase', () => {
     expect(() =>
-      new AwsApi({
+      new Universal({
         service: 'sqs',
         action: 'CreateQueue',
         input: scheduler.ScheduleTargetInput.fromObject({
@@ -591,7 +591,7 @@ describe('aws api schedule target', () => {
 
   test('throws when action is read-only API', () => {
     expect(() =>
-      new AwsApi({
+      new Universal({
         service: 'sqs',
         action: 'getQueueUrl',
         input: scheduler.ScheduleTargetInput.fromObject({
@@ -602,7 +602,7 @@ describe('aws api schedule target', () => {
   });
 
   test('specify iamAction and iamResources', () => {
-    const target = new AwsApi({
+    const target = new Universal({
       service: 'lambda',
       action: 'invoke',
       iamAction: 'lambda:InvokeFunction',

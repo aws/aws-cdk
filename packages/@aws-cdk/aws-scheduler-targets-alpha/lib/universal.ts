@@ -38,9 +38,9 @@ const NOT_SUPPORTED_ACTION_PREFIX = [
 ];
 
 /**
- * Properties for a AWS API Target
+ * Properties for a Universal Target
  */
-export interface AwsApiProps extends ScheduleTargetBaseProps {
+export interface UniversalProps extends ScheduleTargetBaseProps {
   /**
    * The AWS service to call.
    *
@@ -79,11 +79,13 @@ export interface AwsApiProps extends ScheduleTargetBaseProps {
 }
 
 /**
- * Send an event to an AWS EventBridge by AWS EventBridge Scheduler.
+ * Use a wider set of AWS API as a target for AWS EventBridge Scheduler.
+ *
+ * @see https://docs.aws.amazon.com/scheduler/latest/UserGuide/managing-targets-universal.html
  */
-export class AwsApi extends ScheduleTargetBase implements IScheduleTarget {
+export class Universal extends ScheduleTargetBase implements IScheduleTarget {
   constructor(
-    private readonly props: AwsApiProps,
+    private readonly props: UniversalProps,
   ) {
     const service = props.service;
     const action = props.action;

@@ -1,14 +1,14 @@
 import * as schedule from '@aws-cdk/aws-scheduler-alpha';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
-import { AwsApi } from '../lib/aws-api';
+import { Universal } from '../lib/universal';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'AwsSchedulerTargetsAwsApi');
+const stack = new cdk.Stack(app, 'AwsSchedulerTargetsUniversal');
 
 new schedule.Schedule(stack, 'Schedule', {
   schedule: schedule.ScheduleExpression.rate(cdk.Duration.minutes(1)),
-  target: new AwsApi({
+  target: new Universal({
     service: 'sqs',
     action: 'createQueue',
     input: schedule.ScheduleTargetInput.fromObject({
@@ -17,7 +17,7 @@ new schedule.Schedule(stack, 'Schedule', {
   }),
 });
 
-const integ = new IntegTest(app, 'IntegTestAwsApi', {
+const integ = new IntegTest(app, 'IntegTestUniversal', {
   testCases: [stack],
   stackUpdateWorkflow: false,
 });
