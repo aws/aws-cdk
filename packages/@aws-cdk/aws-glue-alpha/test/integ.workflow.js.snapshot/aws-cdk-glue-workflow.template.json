@@ -1,0 +1,642 @@
+{
+ "Resources": {
+  "MyWorkflowTask5BAF3B32": {
+   "Type": "AWS::Glue::Workflow"
+  },
+  "Role1ABCC5F0": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "glue.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "MyJobServiceRoleE6853162": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "glue.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSGlueServiceRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "MyJobServiceRoleDefaultPolicy3BDBBD28": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           },
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           }
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyJobServiceRoleDefaultPolicy3BDBBD28",
+    "Roles": [
+     {
+      "Ref": "MyJobServiceRoleE6853162"
+     }
+    ]
+   }
+  },
+  "MyJob8719E923": {
+   "Type": "AWS::Glue::Job",
+   "Properties": {
+    "Command": {
+     "Name": "pythonshell",
+     "PythonVersion": "3",
+     "ScriptLocation": {
+      "Fn::Join": [
+       "",
+       [
+        "s3://",
+        {
+         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+        },
+        "/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py"
+       ]
+      ]
+     }
+    },
+    "DefaultArguments": {
+     "--job-language": "python"
+    },
+    "GlueVersion": "1.0",
+    "Role": {
+     "Fn::GetAtt": [
+      "MyJobServiceRoleE6853162",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "MyCrawler": {
+   "Type": "AWS::Glue::Crawler",
+   "Properties": {
+    "DatabaseName": "my_database",
+    "Role": {
+     "Fn::GetAtt": [
+      "Role1ABCC5F0",
+      "Arn"
+     ]
+    },
+    "Targets": {
+     "S3Targets": [
+      {
+       "Path": "s3://my_bucket"
+      }
+     ]
+    }
+   }
+  },
+  "MyPredicateJobServiceRoleE1F838CC": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "glue.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSGlueServiceRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "MyPredicateJobServiceRoleDefaultPolicy87CB55E2": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           },
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           }
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyPredicateJobServiceRoleDefaultPolicy87CB55E2",
+    "Roles": [
+     {
+      "Ref": "MyPredicateJobServiceRoleE1F838CC"
+     }
+    ]
+   }
+  },
+  "MyPredicateJobF30A7B45": {
+   "Type": "AWS::Glue::Job",
+   "Properties": {
+    "Command": {
+     "Name": "pythonshell",
+     "PythonVersion": "3",
+     "ScriptLocation": {
+      "Fn::Join": [
+       "",
+       [
+        "s3://",
+        {
+         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+        },
+        "/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py"
+       ]
+      ]
+     }
+    },
+    "DefaultArguments": {
+     "--job-language": "python"
+    },
+    "GlueVersion": "1.0",
+    "Role": {
+     "Fn::GetAtt": [
+      "MyPredicateJobServiceRoleE1F838CC",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "MyPredicateCrawler": {
+   "Type": "AWS::Glue::Crawler",
+   "Properties": {
+    "DatabaseName": "my_database",
+    "Role": {
+     "Fn::GetAtt": [
+      "Role1ABCC5F0",
+      "Arn"
+     ]
+    },
+    "Targets": {
+     "S3Targets": [
+      {
+       "Path": "s3://my_bucket"
+      }
+     ]
+    }
+   }
+  },
+  "MySecurityConfiguration4AB9DD39": {
+   "Type": "AWS::Glue::SecurityConfiguration",
+   "Properties": {
+    "EncryptionConfiguration": {
+     "S3Encryptions": [
+      {
+       "S3EncryptionMode": "SSE-S3"
+      }
+     ]
+    },
+    "Name": "awscdkglueworkflowMySecurityConfigurationBBF7B904"
+   }
+  },
+  "MyWorkflowBA72662B": {
+   "Type": "AWS::Glue::Workflow",
+   "Properties": {
+    "Description": "my_on_demand_workflow_description",
+    "Name": "my_on_demand_workflow"
+   }
+  },
+  "MyWorkflowMyOnDemandTrigger2A682A63": {
+   "Type": "AWS::Glue::Trigger",
+   "Properties": {
+    "Actions": [
+     {
+      "Arguments": {
+       "--arg1": "value1"
+      },
+      "JobName": {
+       "Ref": "MyJob8719E923"
+      },
+      "NotificationProperty": {},
+      "SecurityConfiguration": {
+       "Ref": "MySecurityConfiguration4AB9DD39"
+      },
+      "Timeout": 10
+     },
+     {
+      "CrawlerName": {
+       "Ref": "MyCrawler"
+      },
+      "NotificationProperty": {},
+      "SecurityConfiguration": {
+       "Ref": "MySecurityConfiguration4AB9DD39"
+      },
+      "Timeout": 10
+     }
+    ],
+    "Name": "my_on_demand_trigger",
+    "Type": "ON_DEMAND",
+    "WorkflowName": {
+     "Ref": "MyWorkflowBA72662B"
+    }
+   }
+  },
+  "MyWorkflowMyConditionalTrigger389C8949": {
+   "Type": "AWS::Glue::Trigger",
+   "Properties": {
+    "Actions": [
+     {
+      "Arguments": {
+       "--arg1": "value1"
+      },
+      "JobName": {
+       "Ref": "MyJob8719E923"
+      },
+      "NotificationProperty": {
+       "NotifyDelayAfter": 5
+      },
+      "SecurityConfiguration": {
+       "Ref": "MySecurityConfiguration4AB9DD39"
+      },
+      "Timeout": 10
+     },
+     {
+      "CrawlerName": {
+       "Ref": "MyCrawler"
+      },
+      "NotificationProperty": {
+       "NotifyDelayAfter": 5
+      },
+      "SecurityConfiguration": {
+       "Ref": "MySecurityConfiguration4AB9DD39"
+      },
+      "Timeout": 10
+     }
+    ],
+    "Name": "my_conditional_trigger",
+    "Predicate": {
+     "Conditions": [
+      {
+       "JobName": {
+        "Ref": "MyPredicateJobF30A7B45"
+       },
+       "LogicalOperator": "EQUALS",
+       "State": "SUCCEEDED"
+      },
+      {
+       "CrawlState": "SUCCEEDED",
+       "CrawlerName": {
+        "Ref": "MyPredicateCrawler"
+       },
+       "LogicalOperator": "EQUALS"
+      }
+     ],
+     "Logical": "AND"
+    },
+    "StartOnCreation": true,
+    "Type": "CONDITIONAL",
+    "WorkflowName": {
+     "Ref": "MyWorkflowBA72662B"
+    }
+   }
+  },
+  "MyDailyWorkflow3684C8E1": {
+   "Type": "AWS::Glue::Workflow",
+   "Properties": {
+    "Description": "my_daily_workflow_description",
+    "Name": "my_daily_workflow"
+   }
+  },
+  "MyDailyWorkflowMyDailySchedule2DF51EB8": {
+   "Type": "AWS::Glue::Trigger",
+   "Properties": {
+    "Actions": [
+     {
+      "Arguments": {
+       "--arg1": "value1"
+      },
+      "JobName": {
+       "Ref": "MyJob8719E923"
+      },
+      "NotificationProperty": {
+       "NotifyDelayAfter": 5
+      },
+      "SecurityConfiguration": {
+       "Ref": "MySecurityConfiguration4AB9DD39"
+      },
+      "Timeout": 10
+     },
+     {
+      "CrawlerName": {
+       "Ref": "MyCrawler"
+      },
+      "NotificationProperty": {
+       "NotifyDelayAfter": 5
+      },
+      "SecurityConfiguration": {
+       "Ref": "MySecurityConfiguration4AB9DD39"
+      },
+      "Timeout": 10
+     }
+    ],
+    "Name": "my_daily_schedule",
+    "Schedule": "cron(0 1 * * ? *)",
+    "StartOnCreation": true,
+    "Type": "SCHEDULED",
+    "WorkflowName": {
+     "Ref": "MyDailyWorkflow3684C8E1"
+    }
+   }
+  },
+  "MyWeeklyWorkflowFC4A11C3": {
+   "Type": "AWS::Glue::Workflow",
+   "Properties": {
+    "Description": "my_weekly_workflow_description",
+    "Name": "my_weekly_workflow"
+   }
+  },
+  "MyWeeklyWorkflowMyWeeklySchedule66671664": {
+   "Type": "AWS::Glue::Trigger",
+   "Properties": {
+    "Actions": [
+     {
+      "Arguments": {
+       "--arg1": "value1"
+      },
+      "JobName": {
+       "Ref": "MyJob8719E923"
+      },
+      "NotificationProperty": {
+       "NotifyDelayAfter": 5
+      },
+      "SecurityConfiguration": {
+       "Ref": "MySecurityConfiguration4AB9DD39"
+      },
+      "Timeout": 10
+     },
+     {
+      "CrawlerName": {
+       "Ref": "MyCrawler"
+      },
+      "NotificationProperty": {
+       "NotifyDelayAfter": 5
+      },
+      "SecurityConfiguration": {
+       "Ref": "MySecurityConfiguration4AB9DD39"
+      },
+      "Timeout": 10
+     }
+    ],
+    "Name": "my_weekly_schedule",
+    "Schedule": "cron(0 1 ? * MON *)",
+    "StartOnCreation": true,
+    "Type": "SCHEDULED",
+    "WorkflowName": {
+     "Ref": "MyWeeklyWorkflowFC4A11C3"
+    }
+   }
+  },
+  "MyMonthlyWorkflow5B4B0907": {
+   "Type": "AWS::Glue::Workflow",
+   "Properties": {
+    "Description": "my_monthly_workflow_description",
+    "Name": "my_monthly_workflow"
+   }
+  },
+  "MyMonthlyWorkflowMyMonthlySchedule14F546AC": {
+   "Type": "AWS::Glue::Trigger",
+   "Properties": {
+    "Actions": [
+     {
+      "Arguments": {
+       "--arg1": "value1"
+      },
+      "JobName": {
+       "Ref": "MyJob8719E923"
+      },
+      "NotificationProperty": {
+       "NotifyDelayAfter": 5
+      },
+      "SecurityConfiguration": {
+       "Ref": "MySecurityConfiguration4AB9DD39"
+      },
+      "Timeout": 10
+     },
+     {
+      "CrawlerName": {
+       "Ref": "MyCrawler"
+      },
+      "NotificationProperty": {
+       "NotifyDelayAfter": 5
+      },
+      "SecurityConfiguration": {
+       "Ref": "MySecurityConfiguration4AB9DD39"
+      },
+      "Timeout": 10
+     }
+    ],
+    "Name": "my_monthly_schedule",
+    "Schedule": "cron(0 1 1 * ? *)",
+    "StartOnCreation": true,
+    "Type": "SCHEDULED",
+    "WorkflowName": {
+     "Ref": "MyMonthlyWorkflow5B4B0907"
+    }
+   }
+  },
+  "MyEventWorkflow0AA02AF3": {
+   "Type": "AWS::Glue::Workflow",
+   "Properties": {
+    "Description": "my_event_workflow_description",
+    "Name": "my_event_workflow"
+   }
+  },
+  "MyEventWorkflowMyNotifyEvent4590A017": {
+   "Type": "AWS::Glue::Trigger",
+   "Properties": {
+    "Actions": [
+     {
+      "Arguments": {
+       "--arg1": "value1"
+      },
+      "JobName": {
+       "Ref": "MyJob8719E923"
+      },
+      "NotificationProperty": {
+       "NotifyDelayAfter": 5
+      },
+      "SecurityConfiguration": {
+       "Ref": "MySecurityConfiguration4AB9DD39"
+      },
+      "Timeout": 10
+     },
+     {
+      "CrawlerName": {
+       "Ref": "MyCrawler"
+      },
+      "NotificationProperty": {
+       "NotifyDelayAfter": 5
+      },
+      "SecurityConfiguration": {
+       "Ref": "MySecurityConfiguration4AB9DD39"
+      },
+      "Timeout": 10
+     }
+    ],
+    "EventBatchingCondition": {
+     "BatchSize": 10,
+     "BatchWindow": 600
+    },
+    "Name": "my_notify_event",
+    "Type": "EVENT",
+    "WorkflowName": {
+     "Ref": "MyEventWorkflow0AA02AF3"
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
