@@ -291,6 +291,85 @@ describe('external service', () => {
 
   });
 
+  test('errors if daemon and desiredCount both specified', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    addDefaultCapacityProvider(cluster, stack, vpc);
+    const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'TaskDef');
+    taskDefinition.addContainer('BaseContainer', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      memoryReservationMiB: 10,
+    });
+
+    // THEN
+    expect(() => {
+      new ecs.ExternalService(stack, 'ExternalService', {
+        cluster,
+        taskDefinition,
+        daemon: true,
+        desiredCount: 2,
+      });
+    }).toThrow(/Don't supply desiredCount/);
+
+  });
+
+  test('errors if daemon and maximumPercent not 100', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    addDefaultCapacityProvider(cluster, stack, vpc);
+    const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'TaskDef');
+    taskDefinition.addContainer('BaseContainer', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      memoryReservationMiB: 10,
+    });
+
+    // THEN
+    expect(() => {
+      new ecs.ExternalService(stack, 'ExternalService', {
+        cluster,
+        taskDefinition,
+        daemon: true,
+        maxHealthyPercent: 300,
+      });
+    }).toThrow(/Maximum percent must be 100 for daemon mode./);
+
+  });
+
+  test('sets daemon scheduling strategy', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    addDefaultCapacityProvider(cluster, stack, vpc);
+    const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'TaskDef');
+    taskDefinition.addContainer('BaseContainer', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      memoryReservationMiB: 10,
+    });
+
+    new ecs.ExternalService(stack, 'ExternalService', {
+      cluster,
+      taskDefinition,
+      daemon: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      SchedulingStrategy: 'DAEMON',
+      DeploymentConfiguration: {
+        MaximumPercent: 100,
+        MinimumHealthyPercent: 0,
+      },
+      EnableECSManagedTags: false,
+      LaunchType: LaunchType.EXTERNAL,
+    });
+
+  });
+
   test('errors if minimum not less than maximum', () => {
     // GIVEN
     const stack = new cdk.Stack();
