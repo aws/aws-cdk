@@ -12,6 +12,8 @@ export interface ClusterResourceProps {
   readonly resourcesVpcConfig: CfnCluster.ResourcesVpcConfigProperty;
   readonly roleArn: string;
   readonly encryptionConfig?: Array<CfnCluster.EncryptionConfigProperty>;
+  readonly computeConfig?: CfnCluster.ComputeConfigProperty;
+  readonly storageConfig?: CfnCluster.StorageConfigProperty;
   readonly kubernetesNetworkConfig?: CfnCluster.KubernetesNetworkConfigProperty;
   readonly name: string;
   readonly version?: string;
@@ -80,6 +82,8 @@ export class ClusterResource extends Construct {
           roleArn: props.roleArn,
           encryptionConfig: props.encryptionConfig,
           kubernetesNetworkConfig: props.kubernetesNetworkConfig,
+          computeConfig: props.computeConfig,
+          storageConfig: props.storageConfig,
           resourcesVpcConfig: {
             subnetIds: (props.resourcesVpcConfig as CfnCluster.ResourcesVpcConfigProperty).subnetIds,
             securityGroupIds: (props.resourcesVpcConfig as CfnCluster.ResourcesVpcConfigProperty).securityGroupIds,
@@ -98,7 +102,7 @@ export class ClusterResource extends Construct {
         // doesn't contain XXX key in object" (see #8276) by incrementing this
         // number, you will effectively cause a "no-op update" to the cluster
         // which will return the new set of attribute.
-        AttributesRevision: 3,
+        AttributesRevision: 4,
       },
     });
 

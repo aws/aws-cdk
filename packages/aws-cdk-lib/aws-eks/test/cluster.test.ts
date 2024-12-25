@@ -3366,4 +3366,53 @@ describe('cluster', () => {
 
   });
 
+  describe('Automode', () => {
+    test('compute config configured properly, automode cluster can be created', () => {
+      // GIVEN
+      const { stack, vpc } = testFixture();
+      // WHEN
+      const nodeRole = new iam.Role(stack, 'nodeRole', { assumedBy: new iam.AccountRootPrincipal() });
+      new eks.Cluster(stack, 'Cluster', {
+        vpc,
+        version: CLUSTER_VERSION,
+        computeConfig: {
+          enabled: true,
+          nodePools: ['system'],
+          nodeRoleArn: nodeRole.roleArn,
+        },
+        storageConfig: {
+          blockStorage: {
+            enabled: true,
+          },
+        },
+        elasticLoadBalancing: {
+          enabled: true,
+        },
+        authenticationMode: eks.AuthenticationMode.API_AND_CONFIG_MAP,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
+        Config: {
+          accessConfig: {
+            authenticationMode: eks.AuthenticationMode.API_AND_CONFIG_MAP,
+          },
+          kubernetesNetworkConfig: {
+            elasticLoadBalancing: {
+              enabled: true,
+            },
+            ipFamily: 'ipv4',
+          },
+          computeConfig: {
+            enabled: true,
+          },
+          storageConfig: {
+            blockStorage: {
+              enabled: true,
+            },
+          },
+        },
+      });
+    });
+  });
 });

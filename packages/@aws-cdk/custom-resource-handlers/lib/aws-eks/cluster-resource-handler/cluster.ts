@@ -43,6 +43,8 @@ export class ClusterResourceHandler extends ResourceHandler {
 
     const resp = await this.eks.createCluster({
       ...this.newProps,
+      computeConfig: this.newProps.computeConfig,
+      storageConfig: this.newProps.storageConfig,
       name: clusterName,
     });
 
@@ -134,6 +136,7 @@ export class ClusterResourceHandler extends ResourceHandler {
       updateAccess: boolean;
       updateVpc: boolean;
       updateAuthMode: boolean;
+      updateAutoMode: boolean;
     };
     // validate updates
     const updateTypes = Object.keys(updates) as (keyof UpdateTypes)[];
@@ -202,7 +205,7 @@ export class ClusterResourceHandler extends ResourceHandler {
       return this.updateClusterVersion(this.newProps.version);
     }
 
-    if (updates.updateLogging || updates.updateAccess || updates.updateVpc || updates.updateAuthMode) {
+    if (updates.updateLogging || updates.updateAccess || updates.updateVpc || updates.updateAuthMode || updates.updateAutoMode) {
       const config: EKS.UpdateClusterConfigCommandInput = {
         name: this.clusterName,
       };
@@ -266,6 +269,20 @@ export class ClusterResourceHandler extends ResourceHandler {
           subnetIds: this.newProps.resourcesVpcConfig?.subnetIds,
           securityGroupIds: this.newProps.resourcesVpcConfig?.securityGroupIds,
         };
+      }
+      const updateAutoMode = updates.updateAutoMode
+      if (updateAutoMode) {
+        if (updateAutoMode.updateComputeConfig) {
+          config.computeConfig = this.newProps.computeConfig
+        }
+
+        if (updateAutoMode.updateStorageConfig) {
+          config.storageConfig = this.newProps.storageConfig!;
+        }
+
+        if (updateAutoMode.updateElasticLoadBalancing) {
+          config.kubernetesNetworkConfig!.elasticLoadBalancing = this.newProps.kubernetesNetworkConfig!.elasticLoadBalancing!;
+        }
       }
 
       const updateResponse = await this.eks.updateClusterConfig(config);
@@ -407,6 +424,17 @@ function parseProps(props: any): EKS.CreateClusterCommandInput {
     parsed.logging.clusterLogging[0].enabled = parsed.logging.clusterLogging[0].enabled === 'true';
   }
 
+  if (typeof (parsed.computeConfig?.enabled) === 'string') {
+    parsed.computeConfig.enabled = parsed.computeConfig.enabled === 'true';
+  }
+
+  if (typeof (parsed.storageConfig?.blockStorage?.enabled) === 'string') {
+    parsed.storageConfig.blockStorage.enabled = parsed.storageConfig.blockStorage.enabled === 'true';
+  }
+
+  if (typeof (parsed.kubernetesNetworkConfig?.elasticLoadBalancing?.enabled) === 'string') {
+    parsed.kubernetesNetworkConfig.elasticLoadBalancing.enabled = parsed.kubernetesNetworkConfig.elasticLoadBalancing.enabled === 'true';
+  }
   return parsed;
 
 }
@@ -423,6 +451,13 @@ interface UpdateMap {
   updateBootstrapClusterCreatorAdminPermissions: boolean; // accessConfig.bootstrapClusterCreatorAdminPermissions
   updateVpc: boolean; // resourcesVpcConfig.subnetIds and securityGroupIds
   updateTags: boolean; // tags
+  updateAutoMode: AutoModeUpdateMap;
+}
+
+interface AutoModeUpdateMap {
+  updateComputeConfig: boolean, //computeConfig.enabled and computeConfig.nodePools
+  updateStorageConfig: boolean, //storageConfig.blockStorage.enabled
+  updateElasticLoadBalancing: boolean, //kubernetesNetworkConfig.elasticLoadBalancing.enabled
 }
 
 function analyzeUpdate(oldProps: Partial<EKS.CreateClusterCommandInput>, newProps: EKS.CreateClusterCommandInput): UpdateMap {
@@ -438,6 +473,16 @@ function analyzeUpdate(oldProps: Partial<EKS.CreateClusterCommandInput>, newProp
   const oldEnc = oldProps.encryptionConfig || {};
   const newAccessConfig = newProps.accessConfig || {};
   const oldAccessConfig = oldProps.accessConfig || {};
+
+  const newComputeConfig = newProps.computeConfig || {};
+  const oldComputeConfig = oldProps.computeConfig || {};
+  const newStorageConfig = newProps.storageConfig || {};
+  const oldStorageConfig = oldProps.storageConfig || {};
+  const newKubernetesNetworkConfig = newProps.kubernetesNetworkConfig || {};
+  const oldKubernetesNetworkConfig = oldProps.kubernetesNetworkConfig || {};
+
+  const needsUpdate = (newValue: any, oldValue: any) =>
+    newValue !== undefined && JSON.stringify(newValue) !== JSON.stringify(oldValue);
 
   return {
     replaceName: newProps.name !== oldProps.name,
@@ -456,7 +501,13 @@ function analyzeUpdate(oldProps: Partial<EKS.CreateClusterCommandInput>, newProp
     updateBootstrapClusterCreatorAdminPermissions: JSON.stringify(newAccessConfig.bootstrapClusterCreatorAdminPermissions) !==
       JSON.stringify(oldAccessConfig.bootstrapClusterCreatorAdminPermissions),
     updateTags: JSON.stringify(newProps.tags) !== JSON.stringify(oldProps.tags),
-  };
+    //when the new value is not none and differ from old value, it need to be updated
+    updateAutoMode: {
+      updateComputeConfig: needsUpdate(newComputeConfig, oldComputeConfig),
+      updateStorageConfig: needsUpdate(newStorageConfig, oldStorageConfig),
+      updateElasticLoadBalancing: needsUpdate(newKubernetesNetworkConfig.elasticLoadBalancing?.enabled, oldKubernetesNetworkConfig.elasticLoadBalancing?.enabled),
+    },
+    };
 }
 
 function setsEqual(first: Set<string>, second: Set<string>) {

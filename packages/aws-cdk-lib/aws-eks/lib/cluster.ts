@@ -155,6 +155,30 @@ export interface ICluster extends IResource, ec2.IConnectable {
   readonly ipFamily?: IpFamily;
 
   /**
+ * Request to enable or disable the load balancing capability on your EKS Auto Mode cluster
+ *
+ * @default - none
+ * @see https://docs.aws.amazon.com/eks/latest/APIReference/API_KubernetesNetworkConfigRequest.html#AmazonEKS-Type-KubernetesNetworkConfigRequest-elasticLoadBalancing
+ */
+  readonly elasticLoadBalancing?: ElasticLoadBalancing;
+
+  /**
+   * The computeConfig for EKS Auto Mode cluster
+   *
+   * @default - none
+   * @see https://docs.aws.amazon.com/eks/latest/APIReference/API_ComputeConfigRequest.html
+   */
+  readonly computeConfig?: ComputeConfig;
+
+  /**
+   * Indicates the storageConfig for EKS Auto Mode cluster
+   *
+   * @default - none
+   * @see https://docs.aws.amazon.com/eks/latest/APIReference/API_StorageConfigRequest.html
+   */
+  readonly storageConfig?: StorageConfig;
+
+  /**
    * An AWS Lambda layer that contains the `aws` CLI.
    *
    * If not defined, a default layer will be used containing the AWS CLI 1.x.
@@ -314,6 +338,30 @@ export interface ClusterAttributes {
    * @see https://docs.aws.amazon.com/eks/latest/APIReference/API_KubernetesNetworkConfigRequest.html#AmazonEKS-Type-KubernetesNetworkConfigRequest-ipFamily
    */
   readonly ipFamily?: IpFamily;
+
+  /**
+   * Request to enable or disable the load balancing capability on your EKS Auto Mode cluster
+   *
+   * @default - none
+   * @see https://docs.aws.amazon.com/eks/latest/APIReference/API_KubernetesNetworkConfigRequest.html#AmazonEKS-Type-KubernetesNetworkConfigRequest-elasticLoadBalancing
+   */
+  readonly elasticLoadBalancing?: ElasticLoadBalancing;
+
+  /**
+   * The computeConfig for EKS Auto Mode cluster
+   *
+   * @default - none
+   * @see https://docs.aws.amazon.com/eks/latest/APIReference/API_ComputeConfigRequest.html
+   */
+  readonly computeConfig?: ComputeConfig;
+
+  /**
+   * Indicates the storageConfig for EKS Auto Mode cluster
+   *
+   * @default - none
+   * @see https://docs.aws.amazon.com/eks/latest/APIReference/API_StorageConfigRequest.html
+   */
+  readonly storageConfig?: StorageConfig;
 
   /**
    * Additional security groups associated with this cluster.
@@ -666,6 +714,14 @@ export interface ClusterOptions extends CommonClusterOptions {
   readonly secretsEncryptionKey?: kms.IKey;
 
   /**
+   * Request to enable or disable the load balancing capability on your EKS Auto Mode cluster
+   *
+   * @default - none
+   * @see https://docs.aws.amazon.com/eks/latest/APIReference/API_KubernetesNetworkConfigRequest.html#AmazonEKS-Type-KubernetesNetworkConfigRequest-elasticLoadBalancing
+   */
+  readonly elasticLoadBalancing?: ElasticLoadBalancing;
+
+  /**
    * Specify which IP family is used to assign Kubernetes pod and service IP addresses.
    *
    * @default - IpFamily.IP_V4
@@ -702,6 +758,22 @@ export interface ClusterOptions extends CommonClusterOptions {
    * @default AuthenticationMode.CONFIG_MAP
    */
   readonly authenticationMode?: AuthenticationMode;
+
+  /**
+   * The computeConfig for EKS Auto Mode cluster
+   *
+   * @default - none
+   * @see https://docs.aws.amazon.com/eks/latest/APIReference/API_ComputeConfigRequest.html
+   */
+  readonly computeConfig?: ComputeConfig;
+
+  /**
+   * Indicates the storageConfig for EKS Auto Mode cluster
+   *
+   * @default - none
+   * @see https://docs.aws.amazon.com/eks/latest/APIReference/API_StorageConfigRequest.html
+   */
+  readonly storageConfig?: StorageConfig;
 }
 
 /**
@@ -852,6 +924,65 @@ export interface ClusterProps extends ClusterOptions {
    * @default - none
    */
   readonly tags?: { [key: string]: string };
+}
+
+/**
+ * Indicates the current configuration of the compute capability on your EKS Auto Mode cluster.
+ */
+export interface ComputeConfig {
+  /**
+   * Request to enable or disable the compute capability on your EKS Auto Mode cluster. If the compute capability is enabled, EKS Auto Mode will create and delete EC2 Managed Instances in your AWS account.
+   *
+   * @default false
+   */
+  readonly enabled?: boolean;
+
+  /**
+   * Configuration for node pools that defines the compute resources for your EKS Auto Mode cluster.
+   *
+   * @default - No node pools
+   */
+  readonly nodePools?: string[];
+
+  /**
+   * The ARN of the IAM Role EKS will assign to EC2 Managed Instances in your EKS Auto Mode cluster. This value cannot be changed after the compute capability of EKS Auto Mode is enabled
+   * @default - none
+   */
+  readonly nodeRoleArn?: string;
+}
+
+/**
+ * Indicates the configuration of the storage capability of your EKS Auto Mode cluster.
+ */
+export interface StorageConfig {
+  /**
+   * EBS Block Storage settings for your EKS Auto Mode cluster.
+   * @default - none
+   */
+  readonly blockStorage?: BlockStorage;
+}
+
+/**
+ * Indicates the current configuration of the load balancing capability on your EKS Auto Mode cluster.
+ */
+export interface ElasticLoadBalancing {
+  /**
+   * Indicates if the load balancing capability is enabled on your EKS Auto Mode cluster.
+   * @default none
+   */
+  readonly enabled?: boolean;
+}
+
+/**
+ * Indicates the current configuration of the block storage capability on your EKS Auto Mode cluster
+ */
+export interface BlockStorage {
+  /**
+   * Indicates if the block storage capability is enabled on your EKS Auto Mode cluster. If the block storage capability is enabled, EKS Auto Mode will create and delete EBS volumes in your AWS account.
+   *
+   * @default none
+   */
+  readonly enabled?: boolean;
 }
 
 /**
@@ -1080,6 +1211,9 @@ abstract class ClusterBase extends Resource implements ICluster {
   public abstract readonly clusterSecurityGroupId: string;
   public abstract readonly clusterSecurityGroup: ec2.ISecurityGroup;
   public abstract readonly clusterEncryptionConfigKeyArn: string;
+  public abstract readonly computeConfig?: ComputeConfig;
+  public abstract readonly elasticLoadBalancing?: ElasticLoadBalancing;
+  public abstract readonly storageConfig?: StorageConfig;
   public abstract readonly ipFamily?: IpFamily;
   public abstract readonly kubectlRole?: iam.IRole;
   public abstract readonly kubectlLambdaRole?: iam.IRole;
@@ -1450,6 +1584,30 @@ export class Cluster extends ClusterBase {
   public readonly ipFamily?: IpFamily;
 
   /**
+   * Request to enable or disable the load balancing capability on your EKS Auto Mode cluster
+   *
+   * @default - none
+   * @see https://docs.aws.amazon.com/eks/latest/APIReference/API_KubernetesNetworkConfigRequest.html#AmazonEKS-Type-KubernetesNetworkConfigRequest-elasticLoadBalancing
+   */
+  public readonly elasticLoadBalancing?: ElasticLoadBalancing;
+
+  /**
+   * The computeConfig for EKS Auto Mode cluster
+   *
+   * @default - none
+   * @see https://docs.aws.amazon.com/eks/latest/APIReference/API_ComputeConfigRequest.html
+   */
+  public readonly computeConfig?: ComputeConfig;
+
+  /**
+   * Indicates the storageConfig for EKS Auto Mode cluster
+   *
+   * @default - none
+   * @see https://docs.aws.amazon.com/eks/latest/APIReference/API_StorageConfigRequest.html
+   */
+  public readonly storageConfig?: StorageConfig;
+
+  /**
    * An IAM role with administrative permissions to create or update the
    * cluster. This role also has `systems:master` permissions.
    */
@@ -1666,6 +1824,30 @@ export class Cluster extends ClusterBase {
       throw new Error('Cannot specify serviceIpv4Cidr with ipFamily equal to IpFamily.IP_V6');
     }
 
+    if (props.computeConfig?.enabled) {
+      if (!props.computeConfig.nodePools || props.computeConfig.nodePools.length == 0) {
+        throw new Error('Nodepools is required when computeConfig is enabled');
+      }
+      if (!props.computeConfig.nodeRoleArn) {
+        throw new Error('NodeRoleArn is required when computeConfig is enabled');
+      }
+    }
+    this.computeConfig = props.computeConfig?.enabled ? {
+      enabled: true,
+      nodePools: props.computeConfig.nodePools,
+      nodeRoleArn: props.computeConfig.nodeRoleArn,
+    } : {};
+
+    this.storageConfig = props.storageConfig?.blockStorage?.enabled ? {
+      blockStorage: {
+        enabled: true,
+      },
+    } : {};
+
+    this.elasticLoadBalancing = props.elasticLoadBalancing?.enabled ? {
+      enabled: true,
+    } : {};
+
     this.authenticationMode = props.authenticationMode;
 
     const resource = this._clusterResource = new ClusterResource(this, 'Resource', {
@@ -1692,6 +1874,7 @@ export class Cluster extends ClusterBase {
       kubernetesNetworkConfig: {
         ipFamily: this.ipFamily,
         serviceIpv4Cidr: props.serviceIpv4Cidr,
+        elasticLoadBalancing: this.elasticLoadBalancing,
       },
       endpointPrivateAccess: this.endpointAccess._config.privateAccess,
       endpointPublicAccess: this.endpointAccess._config.publicAccess,
@@ -1703,6 +1886,8 @@ export class Cluster extends ClusterBase {
       onEventLayer: this.onEventLayer,
       tags: props.tags,
       logging: this.logging,
+      computeConfig: this.computeConfig,
+      storageConfig: this.storageConfig,
     });
 
     if (this.endpointAccess._config.privateAccess && privateSubnets.length !== 0) {
@@ -2404,6 +2589,9 @@ class ImportedCluster extends ClusterBase {
   public readonly kubectlPrivateSubnets?: ec2.ISubnet[] | undefined;
   public readonly kubectlLayer?: lambda.ILayerVersion;
   public readonly ipFamily?: IpFamily;
+  public readonly computeConfig?: ComputeConfig;
+  public readonly elasticLoadBalancing?: ElasticLoadBalancing;
+  public readonly storageConfig?: StorageConfig;
   public readonly awscliLayer?: lambda.ILayerVersion;
   public readonly kubectlProvider?: IKubectlProvider;
   public readonly onEventLayer?: lambda.ILayerVersion;
@@ -2433,6 +2621,9 @@ class ImportedCluster extends ClusterBase {
     this.kubectlProvider = props.kubectlProvider;
     this.onEventLayer = props.onEventLayer;
     this.prune = props.prune ?? true;
+    this.computeConfig = props.computeConfig;
+    this.storageConfig = props.storageConfig;
+    this.elasticLoadBalancing = props.elasticLoadBalancing;
 
     let i = 1;
     for (const sgid of props.securityGroupIds ?? []) {
