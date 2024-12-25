@@ -1933,6 +1933,21 @@ const cluster = new eks.Cluster(this, 'Cluster', {
 });
 ```
 
+## NodeGroup Repair Config
+
+You can enable Managed Node Group auto-repair config using `nodeRepairConfig`
+property. For example:
+
+```ts
+declare const cluster: eks.Cluster;
+
+cluster.addNodegroupCapacity('NodeGroup', {
+  nodeRepairConfig: {
+    enabled: true,
+  },
+});
+```
+
 ## Known Issues and Limitations
 
 * [One cluster per stack](https://github.com/aws/aws-cdk/issues/10073)
