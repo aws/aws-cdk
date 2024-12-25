@@ -339,7 +339,9 @@ new Schedule(this, 'Schedule', {
 
 The `service` must be in lowercase and the `action` must be in camelCase.
 
-You can also set iam policy statements for the Scheduler.
+By default, IAM policies for the Scheduler are extracted from the API call.
+
+You can also provide custom IAM policy statements to the Scheduler.
 
 This is useful when you want to control the permissions of the Scheduler.
 
