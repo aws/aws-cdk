@@ -60,7 +60,7 @@ export interface UniversalProps extends ScheduleTargetBaseProps {
   /**
    * The IAM policy statements to allow the API call.
    *
-   * This policies will be added to the role that is used to invoke the API.
+   * These policies will be added to the role used to invoke the API.
    *
    * @default - extract the permission from the API call
    */
@@ -94,7 +94,7 @@ export class Universal extends ScheduleTargetBase implements IScheduleTarget {
   }
 
   protected addTargetActionToRole(role: IRole): void {
-    // If policyStatements is not provided or empty, add a policy statement extracted from the API call
+    // If policyStatements are not provided or are empty, add a policy statement extracted from the API call
     if (!this.props.policyStatements || !this.props.policyStatements.length) {
       role.addToPrincipalPolicy(new PolicyStatement({
         actions: [awsSdkToIamAction(this.props.service, this.props.action)],

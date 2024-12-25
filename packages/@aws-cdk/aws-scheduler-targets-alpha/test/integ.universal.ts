@@ -19,7 +19,7 @@ new schedule.Schedule(stack, 'Schedule', {
 
 const integ = new IntegTest(app, 'IntegTestUniversal', {
   testCases: [stack],
-  stackUpdateWorkflow: false,
+  stackUpdateWorkflow: false, // this would cause the schedule to trigger with the old code
 });
 
 const getQueueUrlAssertion = integ.assertions.awsApiCall('SQS', 'getQueueUrl', {

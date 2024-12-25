@@ -565,7 +565,7 @@ describe('Universal schedule target', () => {
       })).toThrow(/Number of retry attempts should be less or equal than 185/);
   });
 
-  test('throws when service is not in lower case', () => {
+  test('throws when service is not in lowercase', () => {
     expect(() =>
       new Universal({
         service: 'SQS',

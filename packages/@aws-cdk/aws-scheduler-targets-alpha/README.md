@@ -337,7 +337,7 @@ new Schedule(this, 'Schedule', {
 });
 ```
 
-The `service` must be in lower case and the `action` must be in camelCase.
+The `service` must be in lowercase and the `action` must be in camelCase.
 
 You can also set iam policy statements for the Scheduler.
 
