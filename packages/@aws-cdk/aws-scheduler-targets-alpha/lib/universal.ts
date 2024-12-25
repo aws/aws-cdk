@@ -52,7 +52,6 @@ export interface UniversalProps extends ScheduleTargetBaseProps {
    * The API action to call.
    *
    * You cannot use read-only API actions such as common GET operations.
-   * For more information, see the {@link https://docs.aws.amazon.com/scheduler/latest/UserGuide/managing-targets-universal.html}.
    *
    * Also, This must be in camelCase.
    */
