@@ -76,6 +76,9 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
       if (type === undefined && routeTables.hasRouteToTransitGateway(subnet.SubnetId)) {
         type = SubnetType.Private;
       }
+      if (type === undefined && routeTables.hasRouteToCloudWAN(subnet.SubnetId)) {
+        type = SubnetType.Private;
+      }
       if (type === undefined) {
         type = SubnetType.Isolated;
       }
@@ -231,6 +234,17 @@ class RouteTables {
 
     return (
       !!table && !!table.Routes && table.Routes.some((route) => !!route.GatewayId && route.GatewayId.startsWith('igw-'))
+    );
+  }
+
+  /**
+   * Whether the given subnet has a route to a CloudWAN Network
+   */
+  public hasRouteToCloudWAN(subnetId: string | undefined): boolean {
+    const table = this.tableForSubnet(subnetId) || this.mainRouteTable;
+
+    return (
+      !!table && !!table.Routes && table.Routes.some((route) => !!route.CoreNetworkArn && route.DestinationCidrBlock === '0.0.0.0/0')
     );
   }
 
