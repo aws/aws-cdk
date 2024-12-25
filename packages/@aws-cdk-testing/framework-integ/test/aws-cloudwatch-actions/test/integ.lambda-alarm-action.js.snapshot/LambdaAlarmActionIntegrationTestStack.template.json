@@ -174,7 +174,7 @@
     }
    }
   },
-  "alarmLambdaFeatureCurrentVersionAlarmAlarmPermissionA0D80E66": {
+  "alarmLambdaFeatureCurrentVersionAlarmPermissionc8faa289f331a8be3e0ffefd68015f008ddff4c770821DCA76": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -193,7 +193,7 @@
     }
    }
   },
-  "alarmLambdaFeatureCurrentVersionAlarmFeatureAlarmPermission192451B4": {
+  "alarmLambdaFeatureCurrentVersionAlarmPermissionc819bc419a0c7d865ce6c0dc0578a3e9ea5c9503b8058421C3": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -227,7 +227,7 @@
     "Name": "aliasName"
    }
   },
-  "alarmLambdaFeatureAliasaliasNameAlarmAlarmPermissionE344338D": {
+  "alarmLambdaFeatureAliasaliasNameAlarmPermissionc8faa289f331a8be3e0ffefd68015f008ddff4c7702FE903C8": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -246,7 +246,7 @@
     }
    }
   },
-  "alarmLambdaFeatureAliasaliasNameAlarmFeatureAlarmPermission6A0A5797": {
+  "alarmLambdaFeatureAliasaliasNameAlarmPermissionc819bc419a0c7d865ce6c0dc0578a3e9ea5c9503b812B22798": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -265,7 +265,7 @@
     }
    }
   },
-  "alarmLambdaFeatureAlarmAlarmPermissionCF637A1C": {
+  "alarmLambdaFeatureAlarmPermissionc8faa289f331a8be3e0ffefd68015f008ddff4c7703F679BA4": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -287,7 +287,7 @@
     }
    }
   },
-  "alarmLambdaFeatureAlarmFeatureAlarmPermission7032FB2D": {
+  "alarmLambdaFeatureAlarmPermissionc819bc419a0c7d865ce6c0dc0578a3e9ea5c9503b8117ED344": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
