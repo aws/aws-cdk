@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "DistributionGrpc/DefaultTest": {
+      "stacks": [
+        "integ-distribution-grpc"
+      ],
+      "assertionStack": "DistributionGrpc/DefaultTest/DeployAssert",
+      "assertionStackName": "DistributionGrpcDefaultTestDeployAssertE740300C"
+    }
+  }
+}
