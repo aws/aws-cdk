@@ -4,6 +4,7 @@ import * as cxschema from '../../cloud-assembly-schema';
 import { ContextProvider, Fn, Stack } from '../../core';
 // eslint-disable-next-line max-len
 import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, InterfaceVpcEndpoint, InterfaceVpcEndpointAwsService, InterfaceVpcEndpointService, SecurityGroup, SubnetFilter, SubnetType, Vpc } from '../lib';
+import { IpAddressType } from '../lib/vpc-endpoint';
 
 describe('vpc endpoint', () => {
   describe('gateway endpoint', () => {
@@ -952,6 +953,62 @@ describe('vpc endpoint', () => {
         VpcId: stack.resolve(vpc.vpcId),
         PrivateDnsEnabled: false,
         VpcEndpointType: 'Interface',
+      });
+    });
+
+    test.each([
+      IpAddressType.IPV4,
+      IpAddressType.IPV6,
+      IpAddressType.DUAL_STACK,
+      IpAddressType.NOT_SPECIFIED,
+    ])('test vpc interface endpoint when ip address type is %s.', (ipAddressType) => {
+      //GIVEN
+      const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-west-2' } });
+      const vpc = new Vpc(stack, 'VPC');
+
+      //WHEN
+      vpc.addInterfaceEndpoint('EC2 Endpoint', {
+        service: InterfaceVpcEndpointAwsService.EC2,
+        privateDnsEnabled: false,
+        ipAddressType,
+      });
+
+      //THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        ServiceName: 'com.amazonaws.us-west-2.ec2',
+        VpcId: stack.resolve(vpc.vpcId),
+        PrivateDnsEnabled: false,
+        VpcEndpointType: 'Interface',
+        IpAddressType: ipAddressType,
+      });
+    });
+
+    test.each([
+      IpAddressType.IPV4,
+      IpAddressType.DUAL_STACK,
+    ])('test security group with vpc interface endpoint when ip address type is %s.', (ipAddressType) => {
+      //GIVEN
+      const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-west-2' } });
+      const vpc = new Vpc(stack, 'VPC');
+
+      //WHEN
+      vpc.addInterfaceEndpoint('EC2 Endpoint', {
+        service: InterfaceVpcEndpointAwsService.EC2,
+        privateDnsEnabled: false,
+        ipAddressType,
+        open: true,
+      });
+
+      //THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
+        SecurityGroupIngress: [
+          {
+            CidrIp: stack.resolve(vpc.vpcCidrBlock),
+            FromPort: 443,
+            IpProtocol: 'tcp',
+            ToPort: 443,
+          },
+        ],
       });
     });
   });
