@@ -1,0 +1,19 @@
+{
+  "version": "36.0.24",
+  "files": {
+    "5b03308f06b20146e76f6daa09de9a08fc68965ef04f25ee997b2e0387d3e8b2": {
+      "source": {
+        "path": "aws-ecs-patterns-alb-with-additional-security-group.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "5b03308f06b20146e76f6daa09de9a08fc68965ef04f25ee997b2e0387d3e8b2.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
