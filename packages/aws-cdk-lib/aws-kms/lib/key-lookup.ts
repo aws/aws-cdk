@@ -22,4 +22,11 @@ export interface KeyLookupOptions {
    * @default false
    */
   readonly returnDummyKeyOnMissing?: boolean;
+
+  /**
+   * Adds an additional discriminator to the `cdk.context.json` cache key.
+   *
+   * @default - no additional cache key
+   */
+  readonly additionalCacheKey?: string;
 }
