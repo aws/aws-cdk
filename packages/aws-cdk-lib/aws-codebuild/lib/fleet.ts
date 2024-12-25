@@ -1,8 +1,88 @@
 import { Construct } from 'constructs';
+import * as ec2 from '../../aws-ec2';
+import * as iam from '../../aws-iam';
+import { Arn, ArnFormat, Aws, IResource, Lazy, PhysicalName, Resource, Token } from '../../core';
 import { CfnFleet } from './codebuild.generated';
 import { ComputeType } from './compute-type';
 import { EnvironmentType } from './environment-type';
-import { Arn, ArnFormat, IResource, Resource, Token } from '../../core';
+
+/**
+ * FleetProxyConfiguration helper class
+ */
+export class FleetProxyConfiguration {
+  private readonly _rules: CfnFleet.FleetProxyRuleProperty[] = [];
+
+  /**
+   * FleetProxyConfiguration helper constructor.
+   * @param defaultBehavior The default behavior for the fleet proxy configuration.
+   */
+  constructor(public readonly defaultBehavior: FleetProxyDefaultBehavior) {
+  }
+
+  /**
+   * The proxy configuration for the fleet.
+   */
+  public get configuration(): CfnFleet.ProxyConfigurationProperty {
+    return {
+      defaultBehavior: this.defaultBehavior,
+      orderedProxyRules: this._rules,
+    };
+  }
+
+  /**
+   * Important: The order of rules is significant. The first rule that matches the traffic is applied.
+   *
+   * @param effect Whether the rule allows or denies traffic
+   * @param ipAddresses IPv4 and IPv6 addresses in CIDR notation
+   * @returns the current FleetProxyConfiguration to allow method chaining
+   */
+  public addIpRule(effect: FleetProxyRuleEffect, ...ipAddresses: string[]): FleetProxyConfiguration {
+    this._rules.push({
+      effect,
+      entities: ipAddresses,
+      type: 'IP',
+    });
+
+    return this;
+  }
+
+  /**
+   * Important: The order of rules is significant. The first rule that matches the traffic is applied.
+   *
+   * @param effect Whether the rule allows or denies traffic
+   * @param domains Domain names
+   * @returns the current FleetProxyConfiguration to allow method chaining
+   */
+  public addDomainRule(effect: FleetProxyRuleEffect, ...domains: string[]): FleetProxyConfiguration {
+    this._rules.push({
+      effect,
+      entities: domains,
+      type: 'DOMAIN',
+    });
+
+    return this;
+  }
+}
+
+/**
+ * TODO
+ */
+export interface FleetVpcConfiguration {
+  /**
+   * TODO
+   */
+  readonly vpc: ec2.IVpc;
+
+  /**
+   * TODO
+   */
+  readonly subnets: ec2.ISubnet[];
+
+  /**
+   * TODO
+   */
+  readonly securityGroups: ec2.ISecurityGroup[];
+}
 
 /**
  * Construction properties of a CodeBuild {@link Fleet}.
@@ -35,6 +115,21 @@ export interface FleetProps {
    * made available to projects using this fleet
    */
   readonly environmentType: EnvironmentType;
+
+  /**
+   * TODO
+   */
+  readonly proxyConfiguration?: FleetProxyConfiguration;
+
+  /**
+   * TODO
+   */
+  readonly vpcConfiguration?: FleetVpcConfiguration;
+
+  /**
+   * TODO
+   */
+  readonly serviceRole?: iam.IRole;
 }
 
 /**
@@ -77,7 +172,7 @@ export interface IFleet extends IResource {
  *
  * @see https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.html
  */
-export class Fleet extends Resource implements IFleet {
+export class Fleet extends Resource implements IFleet, iam.IGrantable {
   /**
    * Creates a Fleet construct that represents an external fleet.
    *
@@ -124,6 +219,16 @@ export class Fleet extends Resource implements IFleet {
    */
   public readonly environmentType: EnvironmentType;
 
+  /**
+   * The principal to grant permissions to.
+   */
+  public readonly grantPrincipal: iam.IPrincipal;
+
+  /**
+   * The service role associated with the fleet.
+   */
+  private readonly serviceRole: iam.IRole;
+
   constructor(scope: Construct, id: string, props: FleetProps) {
     if (props.fleetName && !Token.isUnresolved(props.fleetName)) {
       if (props.fleetName.length < 2) {
@@ -138,13 +243,49 @@ export class Fleet extends Resource implements IFleet {
       throw new Error('baseCapacity must be greater than or equal to 1');
     }
 
+    if (props.proxyConfiguration) {
+      if (![EnvironmentType.LINUX_CONTAINER, EnvironmentType.LINUX_GPU_CONTAINER].includes(props.environmentType)) {
+        throw new Error('proxyConfiguration can only be used if environmentType is "LINUX_CONTAINER" or "LINUX_GPU_CONTAINER"');
+      }
+
+      if (props.vpcConfiguration) {
+        throw new Error('proxyConfiguration and vpcConfiguration cannot be used concurrently');
+      }
+    }
+
     super(scope, id, { physicalName: props.fleetName });
+
+    this.serviceRole = props.serviceRole ?? new iam.Role(this, 'ServiceRole', {
+      assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
+      roleName: PhysicalName.GENERATE_IF_NEEDED,
+    });
+    this.grantPrincipal = this.serviceRole;
+
+    let fleetVpcConfig: CfnFleet.VpcConfigProperty | undefined;
+    if (props.vpcConfiguration) {
+      const { vpc, subnets, securityGroups } = props.vpcConfiguration;
+      if (!Token.isUnresolved(vpc.stack.account) && !Token.isUnresolved(this.stack.account) &&
+        vpc.stack.account !== this.stack.account) {
+        throw new Error('VPC must be in the same account as its associated fleet');
+      }
+
+      fleetVpcConfig = {
+        vpcId: vpc.vpcId,
+        subnets: subnets.map(({ subnetId }) => subnetId),
+        securityGroupIds: securityGroups.map(({ securityGroupId }) => securityGroupId),
+      };
+
+      this.grantVpcPermissionsToServiceRole(props.vpcConfiguration);
+    }
 
     const resource = new CfnFleet(this, 'Resource', {
       name: props.fleetName,
       baseCapacity: props.baseCapacity,
       computeType: props.computeType,
       environmentType: props.environmentType,
+      fleetProxyConfiguration: props.proxyConfiguration?.configuration,
+      fleetVpcConfig,
+      fleetServiceRole: this.serviceRole.roleArn,
     });
 
     this.fleetArn = this.getResourceArnAttribute(resource.attrArn, {
@@ -156,6 +297,54 @@ export class Fleet extends Resource implements IFleet {
     this.fleetName = this.getResourceNameAttribute(resource.ref);
     this.computeType = props.computeType;
     this.environmentType = props.environmentType;
+  }
+
+  /**
+   *
+   * Generated following the recommendations from the CodeBuild documentation
+   *
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/auth-and-access-control-iam-identity-based-access-control.html#customer-managed-policies-example-permission-policy-fleet-service-role
+   * @param vpcConfiguration Fleet VPC configuration from props
+   */
+  private grantVpcPermissionsToServiceRole({ vpc, subnets, securityGroups }: FleetVpcConfiguration) {
+    const subnetIds = subnets.map(({ subnetId }) => subnetId);
+    const securityGroupIds = securityGroups.map(({ securityGroupId }) => securityGroupId);
+
+    this.serviceRole.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: ['ec2:CreateNetworkInterface'],
+      resources: [
+        ...subnetIds.map(subnetId =>
+          Arn.format({ service: 'ec2', resource: 'subnet', resourceName: subnetId }, this.stack),
+        ),
+        ...securityGroupIds.map(securityGroupId =>
+          Arn.format({ service: 'ec2', resource: 'security-group', resourceName: securityGroupId }, this.stack),
+        ),
+        Arn.format({ service: 'ec2', resource: 'network-interface', resourceName: '*' }, this.stack),
+      ],
+    }));
+    this.serviceRole.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: [
+        'ec2:DescribeDhcpOptions',
+        'ec2:DescribeNetworkInterfaces',
+        'ec2:DescribeSecurityGroups',
+        'ec2:DescribeSubnets',
+        'ec2:DescribeVpcs',
+        'ec2:ModifyNetworkInterfaceAttribute',
+        'ec2:DeleteNetworkInterface',
+      ],
+      resources: ['*'],
+    }));
+    this.serviceRole.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: ['ec2:CreateNetworkInterfacePermission'],
+      resources: [Arn.format({ service: 'ec2', resource: 'network-interface', resourceName: '*' }, this.stack)],
+      conditions: {
+        StringEquals: {
+          'ec2:Subnet': subnetIds.map(subnetId =>
+            Arn.format({ service: 'ec2', resource: 'subnet', resourceName: subnetId }, this.stack),
+          ),
+        },
+      },
+    }));
   }
 }
 
@@ -203,4 +392,32 @@ export enum FleetComputeType {
    * for more information.
    **/
   X2_LARGE = ComputeType.X2_LARGE,
+}
+
+/**
+ * TODO
+ */
+export enum FleetProxyDefaultBehavior {
+  /**
+   * TODO
+   */
+  ALLOW_ALL = 'ALLOW_ALL',
+  /**
+   * TODO
+   */
+  DENY_ALL = 'DENY_ALL',
+}
+
+/**
+ * TODO
+ */
+export enum FleetProxyRuleEffect {
+  /**
+   * TODO
+   */
+  ALLOW = 'ALLOW',
+  /**
+   * TODO
+   */
+  DENY = 'DENY',
 }
