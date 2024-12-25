@@ -45,6 +45,7 @@ export abstract class ContainerImage {
   public static fromDockerImageAsset(asset: DockerImageAsset): ContainerImage {
     return {
       bind(_scope: Construct, containerDefinition: ContainerDefinition): ContainerImageConfig {
+        containerDefinition._defaultDisableVersionConsistency?.();
         asset.repository.grantPull(containerDefinition.taskDefinition.obtainExecutionRole());
         return {
           imageName: asset.imageUri,
