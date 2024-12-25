@@ -6,6 +6,8 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { Duration, RemovalPolicy, Stack, Token, ArnFormat, Annotations } from '../../core';
 
+const QUEUE_SYMBOL = Symbol.for('@aws-cdk/aws-sqs.Queue');
+
 /**
  * Properties for creating a new Queue
  */
@@ -281,6 +283,12 @@ export enum RedrivePermission {
  * A new Amazon SQS queue
  */
 export class Queue extends QueueBase {
+  /**
+   * Returns whether the given resource is a Queue.
+   */
+  public static isQueue(x: any): x is Queue {
+    return QUEUE_SYMBOL in x;
+  }
 
   /**
    * Import an existing SQS queue provided an ARN
@@ -316,6 +324,14 @@ export class Queue extends QueueBase {
 
       protected readonly autoCreatePolicy = false;
 
+      constructor(s: Construct, i: string) {
+        super(s, i, {
+          environmentFromArn: attrs.queueArn,
+        });
+
+        Object.defineProperty(this, QUEUE_SYMBOL, { value: true });
+      }
+
       /**
        * Determine fifo flag based on queueName and fifo attribute
        */
@@ -336,9 +352,7 @@ export class Queue extends QueueBase {
       }
     }
 
-    return new Import(scope, id, {
-      environmentFromArn: attrs.queueArn,
-    });
+    return new Import(scope, id);
   }
 
   /**
@@ -382,6 +396,8 @@ export class Queue extends QueueBase {
     super(scope, id, {
       physicalName: props.queueName,
     });
+
+    Object.defineProperty(this, QUEUE_SYMBOL, { value: true });
 
     validateProps(props);
 
