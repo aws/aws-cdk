@@ -107,7 +107,7 @@ export class Bundling implements cdk.BundlingOptions {
   public readonly command: string[];
   public readonly environment?: { [key: string]: string };
   public readonly local?: cdk.ILocalBundling;
-  public readonly entrypoint?: string[]
+  public readonly entrypoint?: string[];
   public readonly volumes?: cdk.DockerVolume[];
   public readonly volumesFrom?: string[];
   public readonly workingDirectory?: string;
