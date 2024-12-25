@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "aws-cdk-glue-workflow-trigger-integ/DefaultTest": {
+      "stacks": [
+        "GlueWorkflowTriggerStack"
+      ],
+      "assertionStack": "aws-cdk-glue-workflow-trigger-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkglueworkflowtriggerintegDefaultTestDeployAssert43E79173"
+    }
+  }
+}

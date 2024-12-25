@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "aws-glue-job-pysparkflex-etl-integ-test/DefaultTest": {
+      "stacks": [
+        "aws-glue-job-pysparkflex-etl"
+      ],
+      "assertionStack": "aws-glue-job-pysparkflex-etl-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "awsgluejobpysparkflexetlintegtestDefaultTestDeployAssert3F3EC951"
+    }
+  }
+}

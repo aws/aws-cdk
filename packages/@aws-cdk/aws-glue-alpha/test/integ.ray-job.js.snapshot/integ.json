@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "aws-glue-ray-job-integ-test/DefaultTest": {
+      "stacks": [
+        "aws-glue-ray-job"
+      ],
+      "assertionStack": "aws-glue-ray-job-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "awsgluerayjobintegtestDefaultTestDeployAssert7A3FC747"
+    }
+  }
+}
