@@ -339,16 +339,26 @@ new Schedule(this, 'Schedule', {
 
 The `service` is must be in lower case and the `action` is must be in camelCase.
 
-You can also set any Action and Resource in the EventBridge Scheduler's IAM Policy by specifying `iamAction` and `iamResources`.
+You can also set iam policy statements for the Scheduler.
+
+This is useful when you want to control the permissions of the Scheduler.
 
 ```ts
 new Schedule(this, 'Schedule', {
   schedule: ScheduleExpression.rate(Duration.minutes(60)),
   target: new targets.Universal({
-    service: 'lambda',
-    action: 'invoke',
-    iamAction: 'lambda:InvokeFunction',
-    iamResources: ['arn:aws:lambda:us-east-1:111111111111:function:my-function'],
+    service: 'sqs',
+    action: 'sendMessage',
+    policyStatements: [
+      new iam.PolicyStatement({
+        actions: ['sqs:SendMessage'],
+        resources: ['arn:aws:sqs:us-east-1:123456789012:my_queue'],
+      }),
+      new iam.PolicyStatement({
+        actions: ['kms:Decrypt', 'kms:GenerateDataKey*'],
+        resources: ['arn:aws:kms:us-west-1:123456789012:key/0987dcba-09fe-87dc-65ba-ab0987654321'],
+      }),
+    ],
   }),
 });
 ```

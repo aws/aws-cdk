@@ -59,23 +59,13 @@ export interface UniversalProps extends ScheduleTargetBaseProps {
   readonly action: string;
 
   /**
-   * The resource ARNs for the IAM statement that will be added to
-   * the execution role's policy to allow the scheduler to make the API call.
+   * The IAM policy statements to allow the API call.
    *
-   * @default - ['*']
+   * This policies will be added to the role that is used to invoke the API.
+   *
+   * @default - extract the permission from the API call
    */
-  readonly iamResources?: string[];
-
-  /**
-   * The action for the IAM statement that will be added to
-   * the execution role's policy to allow the scheduler to make the API call.
-   *
-   * Use in the case where the IAM action name does not match with the
-   * API service/action name, e.g. `s3:listObjectV2` requires `s3:ListBucket`.
-   *
-   * @default - service:action
-   */
-  readonly iamAction?: string;
+  readonly policyStatements?: PolicyStatement[];
 }
 
 /**
@@ -105,9 +95,17 @@ export class Universal extends ScheduleTargetBase implements IScheduleTarget {
   }
 
   protected addTargetActionToRole(role: IRole): void {
-    role.addToPrincipalPolicy(new PolicyStatement({
-      actions: [this.props.iamAction ?? awsSdkToIamAction(this.props.service, this.props.action)],
-      resources: this.props.iamResources ?? ['*'],
-    }));
+    // If policyStatements is not provided or empty, add a policy statement extracted from the API call
+    if (!this.props.policyStatements || !this.props.policyStatements.length) {
+      role.addToPrincipalPolicy(new PolicyStatement({
+        actions: [awsSdkToIamAction(this.props.service, this.props.action)],
+        resources: ['*'],
+      }));
+      return;
+    }
+
+    for (const policyStatement of this.props.policyStatements) {
+      role.addToPrincipalPolicy(policyStatement);
+    }
   }
 }

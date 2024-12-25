@@ -601,12 +601,20 @@ describe('Universal schedule target', () => {
       })).toThrow(/Read-only API action is not supported by EventBridge Scheduler: sqs:getQueueUrl/);
   });
 
-  test('specify iamAction and iamResources', () => {
+  test('specify policyStatements', () => {
     const target = new Universal({
-      service: 'lambda',
-      action: 'invoke',
-      iamAction: 'lambda:InvokeFunction',
-      iamResources: ['arn:aws:lambda:us-east-1:111111111111:function:my-function'],
+      service: 'sqs',
+      action: 'sendMessage',
+      policyStatements: [
+        new iam.PolicyStatement({
+          actions: ['sqs:SendMessage'],
+          resources: ['arn:aws:sqs:us-east-1:123456789012:my_queue'],
+        }),
+        new iam.PolicyStatement({
+          actions: ['kms:Decrypt', 'kms:GenerateDataKey*'],
+          resources: ['arn:aws:kms:us-west-1:123456789012:key/0987dcba-09fe-87dc-65ba-ab0987654321'],
+        }),
+      ],
     });
 
     new scheduler.Schedule(stack, 'Schedule', {
@@ -627,7 +635,7 @@ describe('Universal schedule target', () => {
                 {
                   Ref: 'AWS::Partition',
                 },
-                ':scheduler:::aws-sdk:lambda:invoke',
+                ':scheduler:::aws-sdk:sqs:sendMessage',
               ],
             ],
           },
@@ -639,9 +647,14 @@ describe('Universal schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: 'lambda:InvokeFunction',
+            Action: 'sqs:SendMessage',
             Effect: 'Allow',
-            Resource: 'arn:aws:lambda:us-east-1:111111111111:function:my-function',
+            Resource: 'arn:aws:sqs:us-east-1:123456789012:my_queue',
+          },
+          {
+            Action: ['kms:Decrypt', 'kms:GenerateDataKey*'],
+            Effect: 'Allow',
+            Resource: 'arn:aws:kms:us-west-1:123456789012:key/0987dcba-09fe-87dc-65ba-ab0987654321',
           },
         ],
       },
