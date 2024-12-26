@@ -1603,6 +1603,11 @@ export enum InstanceSize {
   XLARGE224 = '224xlarge',
 
   /**
+   * Instance size XLARGE480 (480xlarge)
+   */
+  XLARGE480 = '480xlarge',
+
+  /**
    * Instance size METAL (metal)
    */
   METAL = 'metal',
