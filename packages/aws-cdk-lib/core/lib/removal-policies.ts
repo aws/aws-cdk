@@ -38,6 +38,9 @@ export interface RemovalPolicyProps {
   readonly priority?: number;
 }
 
+/**
+ * The RemovalPolicyAspect handles applying a removal policy to resources
+ */
 class RemovalPolicyAspect implements IAspect {
   constructor(
     private readonly policy: RemovalPolicy,

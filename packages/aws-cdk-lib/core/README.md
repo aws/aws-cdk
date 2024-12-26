@@ -1798,11 +1798,21 @@ The `RemovalPolicies` class provides a convenient way to manage removal policies
 
 ### Usage
 
+Creates a new instance of RemovalPolicies for the given scope.
+
 ```typescript
 import { RemovalPolicies } from 'aws-cdk-lib';
 
 // Apply DESTROY policy to all resources in a scope
 RemovalPolicies.of(scope).destroy();
+
+// Apply DESTROY policy (overwrited)
+RemovalPolicies.of(scope).snapshot();
+RemovalPolicies.of(scope).destroy({ overwrite: true }));
+
+// Apply DESTROY policy (priority)
+RemovalPolicies.of(stack).retainOnUpdateOrDelete({ priority: 250 });
+RemovalPolicies.of(stack).destroy({ priority: 10 });
 
 // Apply RETAIN policy only to specific resource types
 RemovalPolicies.of(parent).retain({
@@ -1813,43 +1823,11 @@ RemovalPolicies.of(parent).retain({
   ],
 });
 
-
-
 // Apply SNAPSHOT policy excluding specific resource types
 RemovalPolicies.of(scope).snapshot({
   excludeResourceTypes: ['AWS::Test::Resource'],
 });
-
-// Apply RETAIN_ON_UPDATE_OR_DELETE policy
-RemovalPolicies.of(scope).retainOnUpdateOrDelete();
 ```
-
-### RemovalPolicies.of(scope)
-
-Creates a new instance of RemovalPolicies for the given scope.
-
-#### Methods
-
-- `apply(policy: RemovalPolicy, props?: RemovalPolicyProps)`: Apply a custom removal policy
-- `destroy(props?: RemovalPolicyProps)`: Apply DESTROY removal policy
-- `retain(props?: RemovalPolicyProps)`: Apply RETAIN removal policy
-- `snapshot(props?: RemovalPolicyProps)`: Apply SNAPSHOT removal policy
-- `retainOnUpdateOrDelete(props?: RemovalPolicyProps)`: Apply RETAIN_ON_UPDATE_OR_DELETE removal policy
-
-#### `RemovalPolicyProps` Interface
-
-Additional configuration options for applying removal policies.
-
-- **`applyToResourceTypes?`**: _(optional)_  
-  Array of CloudFormation resource types (e.g., `'AWS::S3::Bucket'`) to which the removal policy should be applied.  
-  Defaults to applying to all resources.
-
-- **`excludeResourceTypes?`**: _(optional)_  
-  Array of CloudFormation resource types to exclude from applying the removal policy.  
-  Defaults to no exclusions.
-
-- **`overwrite?`**: _(optional)_  
-  If `true`, the removal policy will overwrite any existing policy already set on the resource. Defaults to `false`.
 
 #### Behavior Summary
 
