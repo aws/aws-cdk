@@ -117,7 +117,6 @@ export const LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES = '@aws-cdk/aws-lambda
 export const STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY = '@aws-cdk/aws-stepfunctions-tasks:fixRunEcsTaskPolicy';
 export const BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT = '@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault';
 export const ASPECT_STABILIZATION = '@aws-cdk/core:aspectStabilization';
-export const USER_POOL_DOMAIN_NAME_METHOD_WITHOUT_CUSTOM_RESOURCE = '@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1283,20 +1282,6 @@ export const FLAGS: Record<string, FlagInfo> = {
     `,
     defaults: { v2: true },
     introducedIn: { v2: '2.172.0' },
-    recommendedValue: true,
-  },
-
-  //////////////////////////////////////////////////////////////////////
-  [USER_POOL_DOMAIN_NAME_METHOD_WITHOUT_CUSTOM_RESOURCE]: {
-    type: FlagType.BugFix,
-    summary: 'When enabled, use a new method for DNS Name of user pool domain target without creating a custom resource.',
-    detailsMd: `
-    When this feature flag is enabled, a new method will be used to get the DNS Name of the user pool domain target. The old method
-    creates a custom resource internally, but the new method doesn't need a custom resource.
-
-    If the flag is set to false then a custom resource will be created when using \`UserPoolDomainTarget\`.
-    `,
-    introducedIn: { v2: '2.174.0' },
     recommendedValue: true,
   },
 };

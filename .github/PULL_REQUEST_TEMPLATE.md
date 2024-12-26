@@ -8,16 +8,7 @@ Closes #<issue number here>.
 
 ### Description of changes
 
-<!--
-What code changes did you make? 
-Have you made any important design decisions?
-What AWS use cases does this change enable? To enable the use cases, which AWS service features are utilized?
--->
-
-### Describe any new or updated permissions being added
-
-<!— What new or updated IAM permissions are needed to support the changes being introduced ? -->
-
+<!--What code changes did you make? Have you made any important design decisions?-->
 
 ### Description of how you validated changes
 

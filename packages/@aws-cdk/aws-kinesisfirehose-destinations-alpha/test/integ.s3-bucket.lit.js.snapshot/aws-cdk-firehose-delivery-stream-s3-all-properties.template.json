@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "FirehoseDeliveryStreamS3AllPropertiesBucketD6F6CA75": {
+  "Bucket83908E77": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
     "Tags": [
@@ -13,11 +13,11 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "FirehoseDeliveryStreamS3AllPropertiesBucketPolicy54E94186": {
+  "BucketPolicyE9A3008A": {
    "Type": "AWS::S3::BucketPolicy",
    "Properties": {
     "Bucket": {
-     "Ref": "FirehoseDeliveryStreamS3AllPropertiesBucketD6F6CA75"
+     "Ref": "Bucket83908E77"
     },
     "PolicyDocument": {
      "Statement": [
@@ -40,7 +40,7 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "FirehoseDeliveryStreamS3AllPropertiesBucketD6F6CA75",
+          "Bucket83908E77",
           "Arn"
          ]
         },
@@ -50,7 +50,7 @@
           [
            {
             "Fn::GetAtt": [
-             "FirehoseDeliveryStreamS3AllPropertiesBucketD6F6CA75",
+             "Bucket83908E77",
              "Arn"
             ]
            },
@@ -65,7 +65,7 @@
     }
    }
   },
-  "FirehoseDeliveryStreamS3AllPropertiesBucketAutoDeleteObjectsCustomResource07F20A45": {
+  "BucketAutoDeleteObjectsCustomResourceBAFD23C2": {
    "Type": "Custom::S3AutoDeleteObjects",
    "Properties": {
     "ServiceToken": {
@@ -75,11 +75,11 @@
      ]
     },
     "BucketName": {
-     "Ref": "FirehoseDeliveryStreamS3AllPropertiesBucketD6F6CA75"
+     "Ref": "Bucket83908E77"
     }
    },
    "DependsOn": [
-    "FirehoseDeliveryStreamS3AllPropertiesBucketPolicy54E94186"
+    "BucketPolicyE9A3008A"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -139,7 +139,7 @@
       [
        "Lambda function for auto-deleting objects in ",
        {
-        "Ref": "FirehoseDeliveryStreamS3AllPropertiesBucketD6F6CA75"
+        "Ref": "Bucket83908E77"
        },
        " S3 bucket."
       ]
@@ -150,7 +150,7 @@
     "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
    ]
   },
-  "FirehoseDeliveryStreamS3AllPropertiesBackupBucket9AE03327": {
+  "BackupBucket26B8E51C": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
     "Tags": [
@@ -163,11 +163,11 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "FirehoseDeliveryStreamS3AllPropertiesBackupBucketPolicyD385A017": {
+  "BackupBucketPolicy8C403F71": {
    "Type": "AWS::S3::BucketPolicy",
    "Properties": {
     "Bucket": {
-     "Ref": "FirehoseDeliveryStreamS3AllPropertiesBackupBucket9AE03327"
+     "Ref": "BackupBucket26B8E51C"
     },
     "PolicyDocument": {
      "Statement": [
@@ -190,7 +190,7 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "FirehoseDeliveryStreamS3AllPropertiesBackupBucket9AE03327",
+          "BackupBucket26B8E51C",
           "Arn"
          ]
         },
@@ -200,7 +200,7 @@
           [
            {
             "Fn::GetAtt": [
-             "FirehoseDeliveryStreamS3AllPropertiesBackupBucket9AE03327",
+             "BackupBucket26B8E51C",
              "Arn"
             ]
            },
@@ -215,7 +215,7 @@
     }
    }
   },
-  "FirehoseDeliveryStreamS3AllPropertiesBackupBucketAutoDeleteObjectsCustomResource3EC1F4CD": {
+  "BackupBucketAutoDeleteObjectsCustomResourceD2F511C5": {
    "Type": "Custom::S3AutoDeleteObjects",
    "Properties": {
     "ServiceToken": {
@@ -225,11 +225,11 @@
      ]
     },
     "BucketName": {
-     "Ref": "FirehoseDeliveryStreamS3AllPropertiesBackupBucket9AE03327"
+     "Ref": "BackupBucket26B8E51C"
     }
    },
    "DependsOn": [
-    "FirehoseDeliveryStreamS3AllPropertiesBackupBucketPolicyD385A017"
+    "BackupBucketPolicy8C403F71"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -376,7 +376,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "DeliveryStreamS3DestinationRoleD96B8345": {
+  "DeliveryStreamS3DestinationRole500FC089": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -393,7 +393,7 @@
     }
    }
   },
-  "DeliveryStreamS3DestinationRoleDefaultPolicyF652AD65": {
+  "DeliveryStreamS3DestinationRoleDefaultPolicy3015D8C7": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -415,13 +415,13 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "FirehoseDeliveryStreamS3AllPropertiesBackupBucket9AE03327",
+          "BackupBucket26B8E51C",
           "Arn"
          ]
         },
         {
          "Fn::GetAtt": [
-          "FirehoseDeliveryStreamS3AllPropertiesBucketD6F6CA75",
+          "Bucket83908E77",
           "Arn"
          ]
         },
@@ -431,7 +431,7 @@
           [
            {
             "Fn::GetAtt": [
-             "FirehoseDeliveryStreamS3AllPropertiesBackupBucket9AE03327",
+             "BackupBucket26B8E51C",
              "Arn"
             ]
            },
@@ -445,7 +445,7 @@
           [
            {
             "Fn::GetAtt": [
-             "FirehoseDeliveryStreamS3AllPropertiesBucketD6F6CA75",
+             "Bucket83908E77",
              "Arn"
             ]
            },
@@ -464,7 +464,7 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "DeliveryStreamLogGroupA92E8EA0",
+          "DeliveryStreamLogGroup9D8FA3BB",
           "Arn"
          ]
         },
@@ -528,15 +528,15 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "DeliveryStreamS3DestinationRoleDefaultPolicyF652AD65",
+    "PolicyName": "DeliveryStreamS3DestinationRoleDefaultPolicy3015D8C7",
     "Roles": [
      {
-      "Ref": "DeliveryStreamS3DestinationRoleD96B8345"
+      "Ref": "DeliveryStreamS3DestinationRole500FC089"
      }
     ]
    }
   },
-  "DeliveryStreamLogGroupA92E8EA0": {
+  "DeliveryStreamLogGroup9D8FA3BB": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
     "RetentionInDays": 731
@@ -544,24 +544,24 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "DeliveryStreamLogGroupS3BackupD848C05F": {
+  "DeliveryStreamLogGroupS3BackupD5DF41B2": {
    "Type": "AWS::Logs::LogStream",
    "Properties": {
     "LogGroupName": {
-     "Ref": "DeliveryStreamLogGroupA92E8EA0"
+     "Ref": "DeliveryStreamLogGroup9D8FA3BB"
     }
    },
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "DeliveryStream58CF96DB": {
+  "DeliveryStreamF6D5572D": {
    "Type": "AWS::KinesisFirehose::DeliveryStream",
    "Properties": {
     "DeliveryStreamType": "DirectPut",
     "ExtendedS3DestinationConfiguration": {
      "BucketARN": {
       "Fn::GetAtt": [
-       "FirehoseDeliveryStreamS3AllPropertiesBucketD6F6CA75",
+       "Bucket83908E77",
        "Arn"
       ]
      },
@@ -600,7 +600,7 @@
           "ParameterName": "RoleArn",
           "ParameterValue": {
            "Fn::GetAtt": [
-            "DeliveryStreamS3DestinationRoleD96B8345",
+            "DeliveryStreamS3DestinationRole500FC089",
             "Arn"
            ]
           }
@@ -633,14 +633,14 @@
      },
      "RoleARN": {
       "Fn::GetAtt": [
-       "DeliveryStreamS3DestinationRoleD96B8345",
+       "DeliveryStreamS3DestinationRole500FC089",
        "Arn"
       ]
      },
      "S3BackupConfiguration": {
       "BucketARN": {
        "Fn::GetAtt": [
-        "FirehoseDeliveryStreamS3AllPropertiesBackupBucket9AE03327",
+        "BackupBucket26B8E51C",
         "Arn"
        ]
       },
@@ -651,10 +651,10 @@
       "CloudWatchLoggingOptions": {
        "Enabled": true,
        "LogGroupName": {
-        "Ref": "DeliveryStreamLogGroupA92E8EA0"
+        "Ref": "DeliveryStreamLogGroup9D8FA3BB"
        },
        "LogStreamName": {
-        "Ref": "DeliveryStreamLogGroupS3BackupD848C05F"
+        "Ref": "DeliveryStreamLogGroupS3BackupD5DF41B2"
        }
       },
       "CompressionFormat": "ZIP",
@@ -672,7 +672,7 @@
       "Prefix": "backupPrefix",
       "RoleARN": {
        "Fn::GetAtt": [
-        "DeliveryStreamS3DestinationRoleD96B8345",
+        "DeliveryStreamS3DestinationRole500FC089",
         "Arn"
        ]
       }
@@ -681,7 +681,7 @@
     }
    },
    "DependsOn": [
-    "DeliveryStreamS3DestinationRoleDefaultPolicyF652AD65"
+    "DeliveryStreamS3DestinationRoleDefaultPolicy3015D8C7"
    ]
   },
   "ZeroBufferingDeliveryStreamS3DestinationRole606BB6E3": {
@@ -723,7 +723,7 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "FirehoseDeliveryStreamS3AllPropertiesBucketD6F6CA75",
+          "Bucket83908E77",
           "Arn"
          ]
         },
@@ -733,7 +733,7 @@
           [
            {
             "Fn::GetAtt": [
-             "FirehoseDeliveryStreamS3AllPropertiesBucketD6F6CA75",
+             "Bucket83908E77",
              "Arn"
             ]
            },
@@ -792,7 +792,7 @@
     "ExtendedS3DestinationConfiguration": {
      "BucketARN": {
       "Fn::GetAtt": [
-       "FirehoseDeliveryStreamS3AllPropertiesBucketD6F6CA75",
+       "Bucket83908E77",
        "Arn"
       ]
      },
@@ -1047,24 +1047,6 @@
    },
    "us-west-2": {
     "FirehoseCidrBlock": "52.89.255.224/27"
-   }
-  }
- },
- "Outputs": {
-  "ExportsOutputRefDeliveryStream58CF96DB919FEA68": {
-   "Value": {
-    "Ref": "DeliveryStream58CF96DB"
-   },
-   "Export": {
-    "Name": "aws-cdk-firehose-delivery-stream-s3-all-properties:ExportsOutputRefDeliveryStream58CF96DB919FEA68"
-   }
-  },
-  "ExportsOutputRefFirehoseDeliveryStreamS3AllPropertiesBucketD6F6CA7545A7B036": {
-   "Value": {
-    "Ref": "FirehoseDeliveryStreamS3AllPropertiesBucketD6F6CA75"
-   },
-   "Export": {
-    "Name": "aws-cdk-firehose-delivery-stream-s3-all-properties:ExportsOutputRefFirehoseDeliveryStreamS3AllPropertiesBucketD6F6CA7545A7B036"
    }
   }
  },

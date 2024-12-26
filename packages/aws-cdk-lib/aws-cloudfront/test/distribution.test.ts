@@ -6,7 +6,7 @@ import * as iam from '../../aws-iam';
 import * as kinesis from '../../aws-kinesis';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
-import { App, Aws, Duration, Stack } from '../../core';
+import { App, Duration, Stack } from '../../core';
 import {
   CfnDistribution,
   Distribution,
@@ -36,7 +36,7 @@ beforeEach(() => {
 
 test('minimal example renders correctly', () => {
   const origin = defaultOrigin();
-  const dist = new Distribution(stack, 'MyDist', { defaultBehavior: { origin } });
+  new Distribution(stack, 'MyDist', { defaultBehavior: { origin } });
 
   Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
     DistributionConfig: {
@@ -58,19 +58,6 @@ test('minimal example renders correctly', () => {
       }],
     },
   });
-
-  expect(dist.distributionArn).toEqual(`arn:${Aws.PARTITION}:cloudfront::1234:distribution/${dist.distributionId}`);
-});
-
-test('existing distributions can be imported', () => {
-  const dist = Distribution.fromDistributionAttributes(stack, 'ImportedDist', {
-    domainName: 'd111111abcdef8.cloudfront.net',
-    distributionId: '012345ABCDEF',
-  });
-
-  expect(dist.distributionDomainName).toEqual('d111111abcdef8.cloudfront.net');
-  expect(dist.distributionId).toEqual('012345ABCDEF');
-  expect(dist.distributionArn).toEqual(`arn:${Aws.PARTITION}:cloudfront::1234:distribution/012345ABCDEF`);
 });
 
 test('exhaustive example of props renders correctly and SSL method sni-only', () => {

@@ -147,15 +147,6 @@ export interface IApplication extends cdk.IResource {
   onDeploymentRolledBack(eventDestination: IEventDestination, options?: ExtensionOptions): void;
 
   /**
-   * Adds an AT_DEPLOYMENT_TICK extension with the provided event destination and
-   * also creates an extension association to an application.
-   *
-   * @param eventDestination The event that occurs during the extension
-   * @param options Options for the extension
-   */
-  atDeploymentTick(eventDestination: IEventDestination, options?: ExtensionOptions): void;
-
-  /**
    * Adds an extension association to the application.
    *
    * @param extension The extension to create an association for
@@ -304,17 +295,6 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication, IEx
    */
   public onDeploymentRolledBack(eventDestination: IEventDestination, options?: ExtensionOptions) {
     this.extensible.onDeploymentRolledBack(eventDestination, options);
-  }
-
-  /**
-   * Adds an AT_DEPLOYMENT_TICK extension with the provided event destination and
-   * also creates an extension association to an application.
-   *
-   * @param eventDestination The event that occurs during the extension
-   * @param options Options for the extension
-   */
-  public atDeploymentTick(eventDestination: IEventDestination, options?: ExtensionOptions) {
-    this.extensible.atDeploymentTick(eventDestination, options);
   }
 
   /**

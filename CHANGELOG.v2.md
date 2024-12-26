@@ -2,33 +2,6 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [2.174.0](https://github.com/aws/aws-cdk/compare/v2.173.2...v2.174.0) (2024-12-19)
-
-
-### Features
-
-* **appconfig:** add atDeploymentTick extension action point to L2 Constructs ([#32490](https://github.com/aws/aws-cdk/issues/32490)) ([225d261](https://github.com/aws/aws-cdk/commit/225d261bf2d8f4ada3ac06de9f9f11e4586510b2))
-* **cloudfront:** distribution ARN property ([#32531](https://github.com/aws/aws-cdk/issues/32531)) ([b7e6141](https://github.com/aws/aws-cdk/commit/b7e6141dbb6b55a36bb3590a0cdadef2c478a348)), closes [#32530](https://github.com/aws/aws-cdk/issues/32530)
-* **codebuild:** support auto retry limit for Project ([#32507](https://github.com/aws/aws-cdk/issues/32507)) ([2c109cf](https://github.com/aws/aws-cdk/commit/2c109cf3b5bff9cb53ba70889ee60aaa602430f1)), closes [#32446](https://github.com/aws/aws-cdk/issues/32446)
-* **ecs:** machineImageType support AL2023 ([#32509](https://github.com/aws/aws-cdk/issues/32509)) ([4b696bc](https://github.com/aws/aws-cdk/commit/4b696bc338ec0048e202201273f5220ff40a7e8f)), closes [#32496](https://github.com/aws/aws-cdk/issues/32496) [#32469](https://github.com/aws/aws-cdk/issues/32469)
-* update L1 CloudFormation resource definitions ([#32540](https://github.com/aws/aws-cdk/issues/32540)) ([2e3b2ac](https://github.com/aws/aws-cdk/commit/2e3b2ac51c459e4d8a4bc7e6f488e2bab433cea7))
-
-
-### Bug Fixes
-
-* **cdk:** changed retry mechanism for hotswapping AppSync.function ([#32179](https://github.com/aws/aws-cdk/issues/32179)) ([d14d784](https://github.com/aws/aws-cdk/commit/d14d784c30bb0cb70beb2405b1042157aaa0a4e1))
-* **cli:** allow credential plugins to return `null` for `expiration` ([#32554](https://github.com/aws/aws-cdk/issues/32554)) ([d4f6946](https://github.com/aws/aws-cdk/commit/d4f6946dbc97161749a33d3e89514a8f7ca4aa0a))
-* **cli:** cdk deploy -R does not disable rollback ([#32514](https://github.com/aws/aws-cdk/issues/32514)) ([2e75924](https://github.com/aws/aws-cdk/commit/2e759243cfb7a6c2e72f57abf31703ea8ed9ac12)), closes [#31850](https://github.com/aws/aws-cdk/issues/31850)
-* **cli:** doesn't support plugins that return initially empty credentials ([#32552](https://github.com/aws/aws-cdk/issues/32552)) ([38116b0](https://github.com/aws/aws-cdk/commit/38116b0ce7afda179c0067dfc5f19f24409f7fbe))
-* **cli:** getting credentials via SSO fails when the region is set in the profile ([#32520](https://github.com/aws/aws-cdk/issues/32520)) ([bf026bd](https://github.com/aws/aws-cdk/commit/bf026bdd8557305d427510af49f1bc538d439cb6))
-* **lambda:** add [@deprecated](https://github.com/deprecated) tag to python3.8 ([#32162](https://github.com/aws/aws-cdk/issues/32162)) ([27619cc](https://github.com/aws/aws-cdk/commit/27619cc401829a851f211e0b7e81fcf84c5cbd44))
-* **route53-targets:** deprecated method for dns name is used in userpool domain target (under feature flag) ([#31403](https://github.com/aws/aws-cdk/issues/31403)) ([5e73dd0](https://github.com/aws/aws-cdk/commit/5e73dd089360a999cd86920b6d42bf69b1c0ded1))
-
-
-### Reverts
-
-* **ecs:** machineImageType support AL2023 ([#32550](https://github.com/aws/aws-cdk/issues/32550)) ([e8d8237](https://github.com/aws/aws-cdk/commit/e8d823797c5020193bfe2c6fef39369057717298)), closes [aws/aws-cdk#32509](https://github.com/aws/aws-cdk/issues/32509)
-
 ## [2.173.2](https://github.com/aws/aws-cdk/compare/v2.173.1...v2.173.2) (2024-12-17)
 
 

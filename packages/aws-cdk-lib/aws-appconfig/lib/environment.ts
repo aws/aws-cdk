@@ -113,10 +113,6 @@ abstract class EnvironmentBase extends Resource implements IEnvironment, IExtens
     this.extensible.onDeploymentRolledBack(eventDestination, options);
   }
 
-  public atDeploymentTick(eventDestination: IEventDestination, options?: ExtensionOptions) {
-    this.extensible.atDeploymentTick(eventDestination, options);
-  }
-
   public addExtension(extension: IExtension) {
     this.extensible.addExtension(extension);
   }
@@ -559,15 +555,6 @@ export interface IEnvironment extends IResource {
    * @param options Options for the extension
    */
   onDeploymentRolledBack(eventDestination: IEventDestination, options?: ExtensionOptions): void;
-
-  /**
-   * Adds an AT_DEPLOYMENT_TICK extension with the provided event destination and
-   * also creates an extension association to an application.
-   *
-   * @param eventDestination The event that occurs during the extension
-   * @param options Options for the extension
-   */
-  atDeploymentTick(eventDestination: IEventDestination, options?: ExtensionOptions): void;
 
   /**
    * Adds an extension association to the environment.
