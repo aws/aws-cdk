@@ -57,41 +57,41 @@ export interface UniversalProps extends ScheduleTargetBaseProps {
    */
   readonly action: string;
 
-/**
- * The resources for the IAM policy statement that will be added to the scheduler role's policy
- * to allow the scheduler to make the API call.
- *
- * We recommend specifying the resources to the minimum required for the API call.
- *
- * @default ['*']
- */
-readonly iamResources?: string[];
+  /**
+   * The resources for the IAM policy statement that will be added to the scheduler role's policy
+   * to allow the scheduler to make the API call.
+   *
+   * We recommend specifying the resources to the minimum required for the API call.
+   *
+   * @default ['*']
+   */
+  readonly iamResources?: string[];
 
-/**
- * The action for the IAM policy statement that will be added to the scheduler role's policy
- * to allow the scheduler to make the API call.
- *
- * Use this in cases where the IAM action name does not match the
- * API service/action name, e.g., `lambda:invoke` requires `lambda:InvokeFunction` permission.
- *
- * @default - service:action
- */
-readonly iamAction?: string;
+  /**
+   * The action for the IAM policy statement that will be added to the scheduler role's policy
+   * to allow the scheduler to make the API call.
+   *
+   * Use this in cases where the IAM action name does not match the
+   * API service/action name, e.g., `lambda:invoke` requires `lambda:InvokeFunction` permission.
+   *
+   * @default - service:action
+   */
+  readonly iamAction?: string;
 
-/**
- * The conditions for the IAM policy statement that will be added to the scheduler role's policy
- * to allow the scheduler to make the API call.
- *
- * @default - no conditions
- */
-readonly iamConditions?: { [key: string]: any };
+  /**
+   * The conditions for the IAM policy statement that will be added to the scheduler role's policy
+   * to allow the scheduler to make the API call.
+   *
+   * @default - no conditions
+   */
+  readonly iamConditions?: { [key: string]: any };
 
-/**
- * Additional IAM policy statements that will be added to the scheduler role's policy.
- *
- * @default - no additional policy statements
- */
-readonly additionalPolicyStatements?: PolicyStatement[];
+  /**
+   * Additional IAM policy statements that will be added to the scheduler role's policy.
+   *
+   * @default - no additional policy statements
+   */
+  readonly additionalPolicyStatements?: PolicyStatement[];
 }
 
 /**
