@@ -95,7 +95,7 @@ export class Universal extends ScheduleTargetBase implements IScheduleTarget {
 
   protected addTargetActionToRole(role: IRole): void {
     // If policyStatements are not provided or are empty, add a policy statement extracted from the API call
-    if (!this.props.policyStatements || !this.props.policyStatements.length) {
+    if (!this.props.policyStatements?.length) {
       role.addToPrincipalPolicy(new PolicyStatement({
         actions: [awsSdkToIamAction(this.props.service, this.props.action)],
         resources: ['*'],
