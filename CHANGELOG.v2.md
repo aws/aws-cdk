@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.173.3](https://github.com/aws/aws-cdk/compare/v2.173.2...v2.173.3) (2024-12-26)
+
+
+### Bug Fixes
+
+* **aspects:** "localAspects is not iterable" error ([#32647](https://github.com/aws/aws-cdk/issues/32647)) ([8948ecb](https://github.com/aws/aws-cdk/commit/8948ecb22627ef57498e68fb721b0598aaa530ee)), closes [#32470](https://github.com/aws/aws-cdk/issues/32470)
+
 ## [2.173.2](https://github.com/aws/aws-cdk/compare/v2.173.1...v2.173.2) (2024-12-17)
 
 
