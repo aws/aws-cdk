@@ -3,13 +3,13 @@
 
 ---
 
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
+![cdk-constructs: Developer Preview](https://img.shields.io/badge/cdk--constructs-developer--preview-informational.svg?style=for-the-badge)
 
-> The APIs of higher level constructs in this module are experimental and under active development.
-> They are subject to non-backward compatible changes or removal in any future version. These are
-> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
-> announced in the release notes. This means that while you may use them, you may need to update
-> your source code when upgrading to a newer version of this package.
+> The APIs of higher level constructs in this module are in **developer preview** before they
+> become stable. We will only make breaking changes to address unforeseen API issues. Therefore,
+> these APIs are not subject to [Semantic Versioning](https://semver.org/), and breaking changes
+> will be announced in release notes. This means that while you may use them, you may need to
+> update your source code when upgrading to a newer version of this package.
 
 ---
 
@@ -257,8 +257,8 @@ The code snippet below creates an event rule with a delivery stream as a target
 called every hour by EventBridge Scheduler with a custom payload.
 
 ```ts
-import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
-declare const deliveryStream: firehose.CfnDeliveryStream;
+import * as firehose from '@aws-cdk/aws-kinesisfirehose-alpha';
+declare const deliveryStream: firehose.IDeliveryStream;
 
 const payload = {
   Data: "record",

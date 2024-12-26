@@ -15,7 +15,7 @@ import {
   BootstrappedEnvironment,
 } from '../lib/notices';
 import * as version from '../lib/version';
-import { Configuration } from '../lib/settings';
+import { Context, Settings } from '../lib/settings';
 
 const BASIC_BOOTSTRAP_NOTICE = {
   title: 'Exccessive permissions on file asset publishing role',
@@ -152,11 +152,8 @@ const NOTICE_FOR_APIGATEWAYV2_CFN_STAGE = {
 };
 
 describe(FilteredNotice, () => {
-
   describe('format', () => {
-
     test('resolves dynamic values', () => {
-
       const filteredNotice = new FilteredNotice(BASIC_DYNAMIC_NOTICE);
       filteredNotice.addDynamicValue('DYNAMIC1', 'dynamic-value1');
       filteredNotice.addDynamicValue('DYNAMIC2', 'dynamic-value2');
@@ -175,7 +172,6 @@ describe(FilteredNotice, () => {
     });
 
     test('single version range', () => {
-
       expect(new FilteredNotice(BASIC_NOTICE).format()).toMatchInlineSnapshot(`
 "16603	Toggling off auto_delete_objects for Bucket empties the bucket
 
@@ -192,7 +188,6 @@ describe(FilteredNotice, () => {
     });
 
     test('multiple version ranges', () => {
-
       expect(new FilteredNotice(MULTIPLE_AFFECTED_VERSIONS_NOTICE).format()).toMatchInlineSnapshot(`
 "17061	Error when building EKS cluster with monocdk import
 
@@ -206,17 +201,12 @@ describe(FilteredNotice, () => {
 "
 `);
     });
-
   });
-
 });
 
 describe(NoticesFilter, () => {
-
   describe('filter', () => {
-
     test('cli', async () => {
-
       const notices = [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE];
 
       // doesn't matter for this test because our data only has CLI notices
@@ -226,11 +216,9 @@ describe(NoticesFilter, () => {
       expect(NoticesFilter.filter({ data: notices, bootstrappedEnvironments: [], outDir, cliVersion: '1.129.0' }).map(f => f.notice)).toEqual([MULTIPLE_AFFECTED_VERSIONS_NOTICE]);
       expect(NoticesFilter.filter({ data: notices, bootstrappedEnvironments: [], outDir, cliVersion: '1.126.0' }).map(f => f.notice)).toEqual([BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE]);
       expect(NoticesFilter.filter({ data: notices, bootstrappedEnvironments: [], outDir, cliVersion: '1.130.0' }).map(f => f.notice)).toEqual([]);
-
     });
 
     test('framework', () => {
-
       const notices = [FRAMEWORK_2_1_0_AFFECTED_NOTICE];
 
       // doesn't matter for this test because our data only has framework notices
@@ -238,11 +226,9 @@ describe(NoticesFilter, () => {
 
       expect(NoticesFilter.filter({ data: notices, cliVersion, bootstrappedEnvironments: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'built-with-2_12_0') }).map(f => f.notice)).toEqual([]);
       expect(NoticesFilter.filter({ data: notices, cliVersion, bootstrappedEnvironments: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'built-with-1_144_0') }).map(f => f.notice)).toEqual([FRAMEWORK_2_1_0_AFFECTED_NOTICE]);
-
     });
 
     test('module', () => {
-
       // doesn't matter for this test because our data only has framework notices
       const cliVersion = '1.0.0';
 
@@ -257,11 +243,9 @@ describe(NoticesFilter, () => {
 
       // construct-level match
       expect(NoticesFilter.filter({ data: [NOTICE_FOR_APIGATEWAYV2_CFN_STAGE], cliVersion, bootstrappedEnvironments: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'experimental-module') }).map(f => f.notice)).toEqual([NOTICE_FOR_APIGATEWAYV2_CFN_STAGE]);
-
     });
 
     test('bootstrap', () => {
-
       // doesn't matter for this test because our data only has bootstrap notices
       const outDir = path.join(__dirname, 'cloud-assembly-trees', 'built-with-2_12_0');
       const cliVersion = '1.0.0';
@@ -302,11 +286,9 @@ describe(NoticesFilter, () => {
         outDir,
         bootstrappedEnvironments: bootstrappedEnvironments,
       }).map(f => f.notice)).toEqual([BASIC_BOOTSTRAP_NOTICE]);
-
     });
 
     test('ignores invalid bootstrap versions', () => {
-
       // doesn't matter for this test because our data only has bootstrap notices
       const outDir = path.join(__dirname, 'cloud-assembly-trees', 'built-with-2_12_0');
       const cliVersion = '1.0.0';
@@ -317,11 +299,8 @@ describe(NoticesFilter, () => {
         outDir,
         bootstrappedEnvironments: [{ bootstrapStackVersion: NaN, environment: { account: 'account', region: 'region', name: 'env' } }],
       }).map(f => f.notice)).toEqual([]);
-
     });
-
   });
-
 });
 
 describe(WebsiteNoticeDataSource, () => {
@@ -455,23 +434,20 @@ describe(CachedDataSource, () => {
   });
 
   test('retrieves data from the delegate when the file cannot be read', async () => {
-    const debugSpy = jest.spyOn(logging, 'debug');
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-test'));
+    try {
+      const debugSpy = jest.spyOn(logging, 'debug');
 
-    if (fs.existsSync('does-not-exist.json')) {
-      fs.unlinkSync('does-not-exist.json');
-    }
+      const dataSource = dataSourceWithDelegateReturning(freshData, `${tmpDir}/does-not-exist.json`);
 
-    const dataSource = dataSourceWithDelegateReturning(freshData, 'does-not-exist.json');
+      const notices = await dataSource.fetch();
 
-    const notices = await dataSource.fetch();
+      expect(notices).toEqual(freshData);
+      expect(debugSpy).not.toHaveBeenCalled();
 
-    expect(notices).toEqual(freshData);
-    expect(debugSpy).not.toHaveBeenCalled();
-
-    debugSpy.mockRestore();
-
-    if (fs.existsSync('does-not-exist.json')) {
-      fs.unlinkSync('does-not-exist.json');
+      debugSpy.mockRestore();
+    } finally {
+      fs.rmSync(tmpDir, { recursive: true, force: true });
     }
   });
 
@@ -512,22 +488,19 @@ describe(CachedDataSource, () => {
 });
 
 describe(Notices, () => {
-
   beforeEach(() => {
     // disable caching
     jest.spyOn(CachedDataSource.prototype as any, 'save').mockImplementation((_: any) => Promise.resolve());
     jest.spyOn(CachedDataSource.prototype as any, 'load').mockImplementation(() => Promise.resolve({ expiration: 0, notices: [] }));
-
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    jest.restoreAllMocks();
   });
 
   describe('addBootstrapVersion', () => {
-
     test('can add multiple values', async () => {
-      const notices = Notices.create({ configuration: new Configuration() });
+      const notices = Notices.create({ context: new Context() });
       notices.addBootstrappedEnvironment({ bootstrapStackVersion: 10, environment: { account: 'account', region: 'region', name: 'env' } });
       notices.addBootstrappedEnvironment({ bootstrapStackVersion: 11, environment: { account: 'account', region: 'region', name: 'env' } });
 
@@ -540,11 +513,10 @@ describe(Notices, () => {
       notices.display();
       expect(print).toHaveBeenCalledWith(new FilteredNotice(BOOTSTRAP_NOTICE_V10).format());
       expect(print).toHaveBeenCalledWith(new FilteredNotice(BOOTSTRAP_NOTICE_V11).format());
-
     });
 
     test('deduplicates', async () => {
-      const notices = Notices.create({ configuration: new Configuration() });
+      const notices = Notices.create({ context: new Context() });
       notices.addBootstrappedEnvironment({ bootstrapStackVersion: 10, environment: { account: 'account', region: 'region', name: 'env' } });
       notices.addBootstrappedEnvironment({ bootstrapStackVersion: 10, environment: { account: 'account', region: 'region', name: 'env' } });
 
@@ -570,19 +542,15 @@ describe(Notices, () => {
         data: [],
         outDir: 'cdk.out',
       });
-
     });
-
   });
 
   describe('refresh', () => {
-
     test('deduplicates notices', async () => {
-
       // within the affected version range of the notice
       jest.spyOn(version, 'versionNumber').mockImplementation(() => '1.0.0');
 
-      const notices = Notices.create({ configuration: new Configuration() });
+      const notices = Notices.create({ context: new Context() });
       await notices.refresh({
         dataSource: { fetch: async () => [BASIC_NOTICE, BASIC_NOTICE] },
       });
@@ -591,15 +559,13 @@ describe(Notices, () => {
 
       notices.display();
       expect(print).toHaveBeenCalledWith(new FilteredNotice(BASIC_NOTICE).format());
-
     });
 
     test('clears notices if empty', async () => {
-
       // within the affected version range of the notice
       jest.spyOn(version, 'versionNumber').mockImplementation(() => '1.0.0');
 
-      const notices = Notices.create({ configuration: new Configuration() });
+      const notices = Notices.create({ context: new Context() });
       await notices.refresh({
         dataSource: { fetch: async () => [] },
       });
@@ -610,12 +576,10 @@ describe(Notices, () => {
       expect(print).toHaveBeenNthCalledWith(1, '');
       expect(print).toHaveBeenNthCalledWith(2, 'There are 0 unacknowledged notice(s).');
       expect(print).toHaveBeenCalledTimes(2);
-
     });
 
     test('doesnt throw', async () => {
-
-      const notices = Notices.create({ configuration: new Configuration() });
+      const notices = Notices.create({ context: new Context() });
       await notices.refresh({
         dataSource: {
           fetch: async () => {
@@ -623,18 +587,11 @@ describe(Notices, () => {
           },
         },
       });
-
     });
 
     test('does nothing when we shouldnt display', async () => {
-
-      const settings: any = { notices: false };
-      const configuration = new Configuration();
-      (configuration.settings as any) = { get: (s_path: string[]) => settings[s_path[0]] };
-
       let refreshCalled = false;
-
-      const notices = Notices.create({ configuration });
+      const notices = Notices.create({ context: new Context(), shouldDisplay: false });
       await notices.refresh({
         dataSource: {
           fetch: async () => {
@@ -645,19 +602,15 @@ describe(Notices, () => {
       });
 
       expect(refreshCalled).toBeFalsy();
-
     });
 
     test('filters out acknowledged notices by default', async () => {
-
       // within the affected version range of both notices
       jest.spyOn(version, 'versionNumber').mockImplementation(() => '1.126.0');
 
-      const context: any = { 'acknowledged-issue-numbers': [MULTIPLE_AFFECTED_VERSIONS_NOTICE.issueNumber] };
-      const configuration = new Configuration();
-      (configuration.context as any) = { get: (key: string) => context[key] };
+      const context = new Context({ bag: new Settings({ 'acknowledged-issue-numbers': [MULTIPLE_AFFECTED_VERSIONS_NOTICE.issueNumber] }) });
 
-      const notices = Notices.create({ configuration });
+      const notices = Notices.create({ context });
       await notices.refresh({
         dataSource: { fetch: async () => [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE] },
       });
@@ -667,19 +620,15 @@ describe(Notices, () => {
       notices.display();
       expect(print).toHaveBeenNthCalledWith(4, new FilteredNotice(BASIC_NOTICE).format());
       expect(print).toHaveBeenNthCalledWith(6, 'If you don’t want to see a notice anymore, use \"cdk acknowledge <id>\". For example, \"cdk acknowledge 16603\".');
-
     });
 
     test('preserves acknowledged notices if requested', async () => {
-
       // within the affected version range of both notices
       jest.spyOn(version, 'versionNumber').mockImplementation(() => '1.126.0');
 
-      const context: any = { 'acknowledged-issue-numbers': [MULTIPLE_AFFECTED_VERSIONS_NOTICE.issueNumber] };
-      const configuration = new Configuration();
-      (configuration.context as any) = { get: (key: string) => context[key] };
+      const context = new Context({ bag: new Settings({ 'acknowledged-issue-numbers': [MULTIPLE_AFFECTED_VERSIONS_NOTICE.issueNumber] }) });
 
-      const notices = Notices.create({ configuration, includeAcknowledged: true });
+      const notices = Notices.create({ context, includeAcknowledged: true });
       await notices.refresh({
         dataSource: { fetch: async () => [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE] },
       });
@@ -689,19 +638,15 @@ describe(Notices, () => {
       notices.display();
       expect(print).toHaveBeenCalledWith(new FilteredNotice(BASIC_NOTICE).format());
       expect(print).toHaveBeenCalledWith(new FilteredNotice(MULTIPLE_AFFECTED_VERSIONS_NOTICE).format());
-
     });
-
   });
 
   describe('display', () => {
-
     test('notices envelop', async () => {
-
       // within the affected version range of the notice
       jest.spyOn(version, 'versionNumber').mockImplementation(() => '1.0.0');
 
-      const notices = Notices.create({ configuration: new Configuration() });
+      const notices = Notices.create({ context: new Context() });
       await notices.refresh({
         dataSource: { fetch: async () => [BASIC_NOTICE, BASIC_NOTICE] },
       });
@@ -711,15 +656,13 @@ describe(Notices, () => {
       notices.display();
       expect(print).toHaveBeenNthCalledWith(2, 'NOTICES         (What\'s this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)');
       expect(print).toHaveBeenNthCalledWith(6, 'If you don’t want to see a notice anymore, use \"cdk acknowledge <id>\". For example, \"cdk acknowledge 16603\".');
-
     });
 
     test('deduplicates notices', async () => {
-
       // within the affected version range of the notice
       jest.spyOn(version, 'versionNumber').mockImplementation(() => '1.0.0');
 
-      const notices = Notices.create({ configuration: new Configuration() });
+      const notices = Notices.create({ context: new Context() });
       await notices.refresh({
         dataSource: { fetch: async () => [BASIC_NOTICE, BASIC_NOTICE] },
       });
@@ -729,49 +672,37 @@ describe(Notices, () => {
       notices.display();
       expect(print).toHaveBeenNthCalledWith(4, new FilteredNotice(BASIC_NOTICE).format());
       expect(print).toHaveBeenNthCalledWith(6, 'If you don’t want to see a notice anymore, use \"cdk acknowledge <id>\". For example, \"cdk acknowledge 16603\".');
-
     });
 
     test('does nothing when we shouldnt display', async () => {
-
-      const settings: any = { notices: false };
-      const configuration = new Configuration();
-      (configuration.settings as any) = { get: (s_path: string[]) => settings[s_path[0]] };
-
-      const notices = Notices.create({ configuration });
+      const notices = Notices.create({ context: new Context(), shouldDisplay: false });
       await notices.refresh({ dataSource: { fetch: async () => [BASIC_NOTICE] } });
 
       const print = jest.spyOn(logging, 'print');
 
       notices.display();
       expect(print).toHaveBeenCalledTimes(0);
-
     });
 
     test('nothing when there are no notices', async () => {
-
       const print = jest.spyOn(logging, 'print');
 
-      Notices.create({ configuration: new Configuration() }).display();
+      Notices.create({ context: new Context() }).display();
       expect(print).toHaveBeenCalledTimes(0);
-
     });
 
     test('total count when show total is true', async () => {
-
       const print = jest.spyOn(logging, 'print');
 
-      Notices.create({ configuration: new Configuration() }).display({ showTotal: true });
+      Notices.create({ context: new Context() }).display({ showTotal: true });
       expect(print).toHaveBeenNthCalledWith(2, 'There are 0 unacknowledged notice(s).');
-
     });
 
     test('warning', async () => {
-
       // within the affected version range of the notice
       jest.spyOn(version, 'versionNumber').mockImplementation(() => '1.0.0');
 
-      const notices = Notices.create({ configuration: new Configuration() });
+      const notices = Notices.create({ context: new Context() });
       await notices.refresh({
         dataSource: { fetch: async () => [BASIC_WARNING_NOTICE] },
       });
@@ -781,15 +712,13 @@ describe(Notices, () => {
       notices.display();
       expect(warning).toHaveBeenNthCalledWith(1, new FilteredNotice(BASIC_NOTICE).format());
       expect(warning).toHaveBeenCalledTimes(1);
-
     });
 
     test('error', async () => {
-
       // within the affected version range of the notice
       jest.spyOn(version, 'versionNumber').mockImplementation(() => '1.0.0');
 
-      const notices = Notices.create({ configuration: new Configuration() });
+      const notices = Notices.create({ context: new Context() });
       await notices.refresh({
         dataSource: { fetch: async () => [BASIC_ERROR_NOTICE] },
       });
@@ -799,15 +728,13 @@ describe(Notices, () => {
       notices.display();
       expect(error).toHaveBeenNthCalledWith(1, new FilteredNotice(BASIC_NOTICE).format());
       expect(error).toHaveBeenCalledTimes(1);
-
     });
 
     test('only relevant notices', async () => {
-
       // within the affected version range of the notice
       jest.spyOn(version, 'versionNumber').mockImplementation(() => '1.0.0');
 
-      const notices = Notices.create({ configuration: new Configuration() });
+      const notices = Notices.create({ context: new Context() });
       await notices.refresh({
         dataSource: { fetch: async () => [BASIC_NOTICE] },
       });
@@ -816,19 +743,15 @@ describe(Notices, () => {
 
       notices.display();
       expect(print).toHaveBeenNthCalledWith(4, new FilteredNotice(BASIC_NOTICE).format());
-
     });
 
     test('only unacknowledged notices', async () => {
-
       // within the affected version range of both notices
       jest.spyOn(version, 'versionNumber').mockImplementation(() => '1.126.0');
 
-      const context: any = { 'acknowledged-issue-numbers': [MULTIPLE_AFFECTED_VERSIONS_NOTICE.issueNumber] };
-      const configuration = new Configuration();
-      (configuration.context as any) = { get: (key: string) => context[key] };
+      const context = new Context({ bag: new Settings({ 'acknowledged-issue-numbers': [MULTIPLE_AFFECTED_VERSIONS_NOTICE.issueNumber] }) });
 
-      const notices = Notices.create({ configuration });
+      const notices = Notices.create({ context });
       await notices.refresh({
         dataSource: { fetch: async () => [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE] },
       });
@@ -837,19 +760,14 @@ describe(Notices, () => {
 
       notices.display();
       expect(print).toHaveBeenNthCalledWith(4, new FilteredNotice(BASIC_NOTICE).format());
-
     });
 
     test('can include acknowledged notices if requested', async () => {
-
       // within the affected version range of both notices
       jest.spyOn(version, 'versionNumber').mockImplementation(() => '1.126.0');
 
-      const context: any = { 'acknowledged-issue-numbers': [MULTIPLE_AFFECTED_VERSIONS_NOTICE.issueNumber] };
-      const configuration = new Configuration();
-      (configuration.context as any) = { get: (key: string) => context[key] };
-
-      const notices = Notices.create({ configuration, includeAcknowledged: true });
+      const context = new Context({ bag: new Settings({ 'acknowledged-issue-numbers': [MULTIPLE_AFFECTED_VERSIONS_NOTICE.issueNumber] }) });
+      const notices = Notices.create({ context, includeAcknowledged: true });
       await notices.refresh({
         dataSource: { fetch: async () => [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE] },
       });
@@ -859,8 +777,6 @@ describe(Notices, () => {
       notices.display();
       expect(print).toHaveBeenNthCalledWith(4, new FilteredNotice(BASIC_NOTICE).format());
       expect(print).toHaveBeenNthCalledWith(6, new FilteredNotice(MULTIPLE_AFFECTED_VERSIONS_NOTICE).format());
-
     });
-
   });
 });

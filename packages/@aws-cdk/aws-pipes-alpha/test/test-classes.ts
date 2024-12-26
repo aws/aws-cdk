@@ -5,11 +5,9 @@ import { IQueue, Queue } from 'aws-cdk-lib/aws-sqs';
 import {
   EnrichmentParametersConfig,
   IEnrichment,
-  ILogDestination,
   IPipe,
   ISource,
   ITarget,
-  LogDestinationConfig,
   SourceConfig,
   SourceParameters,
   SourceWithDeadLetterTarget,
@@ -73,7 +71,7 @@ export class TestTarget implements ITarget {
 }
 
 export class TestEnrichment implements IEnrichment {
-  readonly enrichmentArn= 'enrichment-arn'
+  readonly enrichmentArn= 'enrichment-arn';
   private enrichmentParameters = {};
   public grantInvoke = jest.fn();
 
@@ -85,20 +83,4 @@ export class TestEnrichment implements IEnrichment {
   bind = (_pipe: IPipe)=>({
     enrichmentParameters: this.enrichmentParameters,
   });
-}
-
-export class TestLogDestination implements ILogDestination {
-  logDestinationArn = 'log-destination-arn';
-  parameters = {
-    cloudwatchLogsLogDestination: {
-      logGroupArn: 'arn:aws:logs:us-east-1:123456789012:log-group:/aws/events/pipes/TestPipe',
-    },
-  };
-  public grantPush = jest.fn();
-  bind(_pipe: IPipe): LogDestinationConfig {
-    return {
-      parameters: this.parameters,
-    };
-  }
-
 }

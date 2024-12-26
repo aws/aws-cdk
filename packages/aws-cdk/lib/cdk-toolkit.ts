@@ -48,6 +48,7 @@ import { listStacks } from './list-stacks';
 import { data, debug, error, highlight, print, success, warning, withCorkedLogging } from './logging';
 import { deserializeStructure, serializeStructure } from './serialize';
 import { Configuration, PROJECT_CONFIG } from './settings';
+import { ToolkitError } from './toolkit/error';
 import { numberFromBool, partition } from './util';
 import { validateSnsTopicArn } from './util/validate-notification-arn';
 import { Concurrency, WorkGraph } from './util/work-graph';
@@ -161,13 +162,13 @@ export class CdkToolkit {
     if (options.templatePath !== undefined) {
       // Compare single stack against fixed template
       if (stacks.stackCount !== 1) {
-        throw new Error(
+        throw new ToolkitError(
           'Can only select one stack when comparing to fixed template. Use --exclusively to avoid selecting multiple stacks.',
         );
       }
 
       if (!(await fs.pathExists(options.templatePath))) {
-        throw new Error(`There is no file at ${options.templatePath}`);
+        throw new ToolkitError(`There is no file at ${options.templatePath}`);
       }
 
       const template = deserializeStructure(await fs.readFile(options.templatePath, { encoding: 'UTF-8' }));
@@ -336,7 +337,7 @@ export class CdkToolkit {
 
       if (!stack.environment) {
         // eslint-disable-next-line max-len
-        throw new Error(
+        throw new ToolkitError(
           `Stack ${stack.displayName} does not define an environment, and AWS credentials could not be obtained from standard locations or no region was configured.`,
         );
       }
@@ -370,15 +371,20 @@ export class CdkToolkit {
         }
       }
 
-      let notificationArns: string[] = [];
-      notificationArns = notificationArns.concat(options.notificationArns ?? []);
-      notificationArns = notificationArns.concat(stack.notificationArns);
+      // Following are the same semantics we apply with respect to Notification ARNs (dictated by the SDK)
+      //
+      //  - undefined  =>  cdk ignores it, as if it wasn't supported (allows external management).
+      //  - []:        =>  cdk manages it, and the user wants to wipe it out.
+      //  - ['arn-1']  =>  cdk manages it, and the user wants to set it to ['arn-1'].
+      const notificationArns = (!!options.notificationArns || !!stack.notificationArns)
+        ? (options.notificationArns ?? []).concat(stack.notificationArns ?? [])
+        : undefined;
 
-      notificationArns.map((arn) => {
-        if (!validateSnsTopicArn(arn)) {
-          throw new Error(`Notification arn ${arn} is not a valid arn for an SNS topic`);
+      for (const notificationArn of notificationArns ?? []) {
+        if (!validateSnsTopicArn(notificationArn)) {
+          throw new ToolkitError(`Notification arn ${notificationArn} is not a valid arn for an SNS topic`);
         }
-      });
+      }
 
       const stackIndex = stacks.indexOf(stack) + 1;
       print('%s: deploying... [%s/%s]', chalk.bold(stack.displayName), stackIndex, stackCollection.stackCount);
@@ -397,7 +403,7 @@ export class CdkToolkit {
         let iteration = 0;
         while (!deployResult) {
           if (++iteration > 2) {
-            throw new Error('This loop should have stabilized in 2 iterations, but didn\'t. If you are seeing this error, please report it at https://github.com/aws/aws-cdk/issues/new/choose');
+            throw new ToolkitError('This loop should have stabilized in 2 iterations, but didn\'t. If you are seeing this error, please report it at https://github.com/aws/aws-cdk/issues/new/choose');
           }
 
           const r = await this.props.deployments.deployStack({
@@ -431,8 +437,8 @@ export class CdkToolkit {
 
             case 'failpaused-need-rollback-first': {
               const motivation = r.reason === 'replacement'
-                ? 'Stack is in a paused fail state and change includes a replacement which cannot be deployed with "--no-rollback"'
-                : 'Stack is in a paused fail state and command line arguments do not include "--no-rollback"';
+                ? `Stack is in a paused fail state (${r.status}) and change includes a replacement which cannot be deployed with "--no-rollback"`
+                : `Stack is in a paused fail state (${r.status}) and command line arguments do not include "--no-rollback"`;
 
               if (options.force) {
                 warning(`${motivation}. Rolling back first (--force).`);
@@ -456,7 +462,7 @@ export class CdkToolkit {
               break;
             }
 
-            case 'replacement-requires-norollback': {
+            case 'replacement-requires-rollback': {
               const motivation = 'Change includes a replacement which cannot be deployed with "--no-rollback"';
 
               if (options.force) {
@@ -475,7 +481,7 @@ export class CdkToolkit {
             }
 
             default:
-              throw new Error(`Unexpected result type from deployStack: ${JSON.stringify(r)}. If you are seeing this error, please report it at https://github.com/aws/aws-cdk/issues/new/choose`);
+              throw new ToolkitError(`Unexpected result type from deployStack: ${JSON.stringify(r)}. If you are seeing this error, please report it at https://github.com/aws/aws-cdk/issues/new/choose`);
           }
         }
 
@@ -504,7 +510,7 @@ export class CdkToolkit {
       } catch (e: any) {
         // It has to be exactly this string because an integration test tests for
         // "bold(stackname) failed: ResourceNotReady: <error>"
-        throw new Error(
+        throw new ToolkitError(
           [`❌  ${chalk.bold(stack.stackName)} failed:`, ...(e.name ? [`${e.name}:`] : []), e.message].join(' '),
         );
       } finally {
@@ -598,11 +604,11 @@ export class CdkToolkit {
         print('\n✨  Rollback time: %ss\n', formatTime(elapsedRollbackTime));
       } catch (e: any) {
         error('\n ❌  %s failed: %s', chalk.bold(stack.displayName), e.message);
-        throw new Error('Rollback failed (use --force to orphan failing resources)');
+        throw new ToolkitError('Rollback failed (use --force to orphan failing resources)');
       }
     }
     if (!anyRollbackable) {
-      throw new Error('No stacks were in a state that could be rolled back');
+      throw new ToolkitError('No stacks were in a state that could be rolled back');
     }
   }
 
@@ -613,7 +619,7 @@ export class CdkToolkit {
     const watchSettings: { include?: string | string[]; exclude: string | string[] } | undefined =
       this.props.configuration.settings.get(['watch']);
     if (!watchSettings) {
-      throw new Error(
+      throw new ToolkitError(
         "Cannot use the 'watch' command without specifying at least one directory to monitor. " +
           'Make sure to add a "watch" key to your cdk.json',
       );
@@ -711,13 +717,13 @@ export class CdkToolkit {
     const stacks = await this.selectStacksForDeploy(options.selector, true, true, false);
 
     if (stacks.stackCount > 1) {
-      throw new Error(
+      throw new ToolkitError(
         `Stack selection is ambiguous, please choose a specific stack for import [${stacks.stackArtifacts.map((x) => x.id).join(', ')}]`,
       );
     }
 
     if (!process.stdout.isTTY && !options.resourceMappingFile) {
-      throw new Error('--resource-mapping is required when input is not a terminal');
+      throw new ToolkitError('--resource-mapping is required when input is not a terminal');
     }
 
     const stack = stacks.stackArtifacts[0];
@@ -899,21 +905,6 @@ export class CdkToolkit {
       return undefined;
     }
 
-    // This is a slight hack; in integ mode we allow multiple stacks to be synthesized to stdout sequentially.
-    // This is to make it so that we can support multi-stack integ test expectations, without so drastically
-    // having to change the synthesis format that we have to rerun all integ tests.
-    //
-    // Because this feature is not useful to consumers (the output is missing
-    // the stack names), it's not exposed as a CLI flag. Instead, it's hidden
-    // behind an environment variable.
-    const isIntegMode = process.env.CDK_INTEG_MODE === '1';
-    if (isIntegMode) {
-      printSerializedObject(
-        stacks.stackArtifacts.map((s) => obscureTemplate(s.template)),
-        json ?? false,
-      );
-    }
-
     // not outputting template to stdout, let's explain things to the user a little bit...
     success(`Successfully synthesized to ${chalk.blue(path.resolve(stacks.assembly.directory))}`);
     print(
@@ -928,14 +919,13 @@ export class CdkToolkit {
    *
    * @param userEnvironmentSpecs environment names that need to have toolkit support
    *             provisioned, as a glob filter. If none is provided, all stacks are implicitly selected.
-   * @param bootstrapper Legacy or modern.
    * @param options The name, role ARN, bootstrapping parameters, etc. to be used for the CDK Toolkit stack.
    */
   public async bootstrap(
     userEnvironmentSpecs: string[],
-    bootstrapper: Bootstrapper,
     options: BootstrapEnvironmentOptions,
   ): Promise<void> {
+    const bootstrapper = new Bootstrapper(options.source);
     // If there is an '--app' argument and an environment looks like a glob, we
     // select the environments from the app. Otherwise, use what the user said.
 
@@ -991,12 +981,12 @@ export class CdkToolkit {
     if (globSpecs.length > 0 && !this.props.cloudExecutable.hasApp) {
       if (userEnvironmentSpecs.length > 0) {
         // User did request this glob
-        throw new Error(
+        throw new ToolkitError(
           `'${globSpecs}' is not an environment name. Specify an environment name like 'aws://123456789012/us-east-1', or run in a directory with 'cdk.json' to use wildcards.`,
         );
       } else {
         // User did not request anything
-        throw new Error(
+        throw new ToolkitError(
           "Specify an environment name like 'aws://123456789012/us-east-1', or run in a directory with 'cdk.json'.",
         );
       }
@@ -1064,7 +1054,7 @@ export class CdkToolkit {
       } else if (scanType == TemplateSourceOptions.STACK) {
         const template = await readFromStack(options.stackName, this.props.sdkProvider, environment);
         if (!template) {
-          throw new Error(`No template found for stack-name: ${options.stackName}`);
+          throw new ToolkitError(`No template found for stack-name: ${options.stackName}`);
         }
         generateTemplateOutput = {
           migrateJson: {
@@ -1074,7 +1064,7 @@ export class CdkToolkit {
         };
       } else {
         // We shouldn't ever get here, but just in case.
-        throw new Error(`Invalid source option provided: ${scanType}`);
+        throw new ToolkitError(`Invalid source option provided: ${scanType}`);
       }
       const stack = generateStack(generateTemplateOutput.migrateJson.templateBody, options.stackName, language);
       success(' ⏳  Generating CDK app for %s...', chalk.blue(options.stackName));
@@ -1188,7 +1178,7 @@ export class CdkToolkit {
    */
   private validateStacksSelected(stacks: StackCollection, stackNames: string[]) {
     if (stackNames.length != 0 && stacks.stackCount == 0) {
-      throw new Error(`No stacks match the name(s) ${stackNames}`);
+      throw new ToolkitError(`No stacks match the name(s) ${stackNames}`);
     }
   }
 
@@ -1208,7 +1198,7 @@ export class CdkToolkit {
 
     // Could have been a glob so check that we evaluated to exactly one
     if (stacks.stackCount > 1) {
-      throw new Error(`This command requires exactly one stack and we matched more than one: ${stacks.stackIds}`);
+      throw new ToolkitError(`This command requires exactly one stack and we matched more than one: ${stacks.stackIds}`);
     }
 
     return assembly.stackById(stacks.firstStack.id);
@@ -1950,15 +1940,15 @@ async function askUserConfirmation(
   await withCorkedLogging(async () => {
     // only talk to user if STDIN is a terminal (otherwise, fail)
     if (!TESTING && !process.stdin.isTTY) {
-      throw new Error(`${motivation}, but terminal (TTY) is not attached so we are unable to get a confirmation from the user`);
+      throw new ToolkitError(`${motivation}, but terminal (TTY) is not attached so we are unable to get a confirmation from the user`);
     }
 
     // only talk to user if concurrency is 1 (otherwise, fail)
     if (concurrency > 1) {
-      throw new Error(`${motivation}, but concurrency is greater than 1 so we are unable to get a confirmation from the user`);
+      throw new ToolkitError(`${motivation}, but concurrency is greater than 1 so we are unable to get a confirmation from the user`);
     }
 
     const confirmed = await promptly.confirm(`${chalk.cyan(question)} (y/n)?`);
-    if (!confirmed) { throw new Error('Aborted by user'); }
+    if (!confirmed) { throw new ToolkitError('Aborted by user'); }
   });
 }

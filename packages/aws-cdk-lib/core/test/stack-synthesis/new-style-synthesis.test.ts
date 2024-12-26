@@ -329,7 +329,7 @@ describe('new style synthesis', () => {
           ABC: '123',
         },
       });
-    }).toThrowError(/Exactly one of 'directoryName' or 'executable' is required/);
+    }).toThrow(/Exactly one of 'directoryName' or 'executable' is required/);
 
     expect(() => {
       stack.synthesizer.addDockerImageAsset({
@@ -338,7 +338,7 @@ describe('new style synthesis', () => {
           DEF: '456',
         },
       });
-    }).toThrowError(/Exactly one of 'directoryName' or 'executable' is required/);
+    }).toThrow(/Exactly one of 'directoryName' or 'executable' is required/);
   });
 
   test('synthesis', () => {

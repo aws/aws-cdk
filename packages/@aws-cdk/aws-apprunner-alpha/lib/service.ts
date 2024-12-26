@@ -45,17 +45,17 @@ export class Cpu {
   /**
    * 1 vCPU
    */
-  public static readonly ONE_VCPU = Cpu.of('1 vCPU')
+  public static readonly ONE_VCPU = Cpu.of('1 vCPU');
 
   /**
    * 2 vCPU
    */
-  public static readonly TWO_VCPU = Cpu.of('2 vCPU')
+  public static readonly TWO_VCPU = Cpu.of('2 vCPU');
 
   /**
    * 4 vCPU
    */
-  public static readonly FOUR_VCPU = Cpu.of('4 vCPU')
+  public static readonly FOUR_VCPU = Cpu.of('4 vCPU');
 
   /**
    * Custom CPU unit
@@ -92,47 +92,47 @@ export class Memory {
   /**
    * 0.5 GB(for 0.25 vCPU)
    */
-  public static readonly HALF_GB = Memory.of('0.5 GB')
+  public static readonly HALF_GB = Memory.of('0.5 GB');
 
   /**
    * 1 GB(for 0.25 or 0.5 vCPU)
    */
-  public static readonly ONE_GB = Memory.of('1 GB')
+  public static readonly ONE_GB = Memory.of('1 GB');
 
   /**
    * 2 GB(for 1 vCPU)
    */
-  public static readonly TWO_GB = Memory.of('2 GB')
+  public static readonly TWO_GB = Memory.of('2 GB');
 
   /**
    * 3 GB(for 1 vCPU)
    */
-  public static readonly THREE_GB = Memory.of('3 GB')
+  public static readonly THREE_GB = Memory.of('3 GB');
 
   /**
    * 4 GB(for 1 or 2 vCPU)
    */
-  public static readonly FOUR_GB = Memory.of('4 GB')
+  public static readonly FOUR_GB = Memory.of('4 GB');
 
   /**
    * 6 GB(for 2 vCPU)
    */
-  public static readonly SIX_GB = Memory.of('6 GB')
+  public static readonly SIX_GB = Memory.of('6 GB');
 
   /**
    * 8 GB(for 4 vCPU)
    */
-  public static readonly EIGHT_GB = Memory.of('8 GB')
+  public static readonly EIGHT_GB = Memory.of('8 GB');
 
   /**
    * 10 GB(for 4 vCPU)
    */
-  public static readonly TEN_GB = Memory.of('10 GB')
+  public static readonly TEN_GB = Memory.of('10 GB');
 
   /**
    * 12 GB(for 4 vCPU)
    */
-  public static readonly TWELVE_GB = Memory.of('12 GB')
+  public static readonly TWELVE_GB = Memory.of('12 GB');
 
   /**
    * Custom Memory unit
@@ -170,62 +170,62 @@ export class Runtime {
   /**
    * CORRETTO 8
    */
-  public static readonly CORRETTO_8 = Runtime.of('CORRETTO_8')
+  public static readonly CORRETTO_8 = Runtime.of('CORRETTO_8');
 
   /**
    * CORRETTO 11
    */
-  public static readonly CORRETTO_11 = Runtime.of('CORRETTO_11')
+  public static readonly CORRETTO_11 = Runtime.of('CORRETTO_11');
 
   /**
    * .NET 6
    */
-  public static readonly DOTNET_6 = Runtime.of('DOTNET_6')
+  public static readonly DOTNET_6 = Runtime.of('DOTNET_6');
 
   /**
    * Go 1.18
    */
-  public static readonly GO_1 = Runtime.of('GO_1')
+  public static readonly GO_1 = Runtime.of('GO_1');
 
   /**
    * NodeJS 12
    */
-  public static readonly NODEJS_12 = Runtime.of('NODEJS_12')
+  public static readonly NODEJS_12 = Runtime.of('NODEJS_12');
 
   /**
    * NodeJS 14
    */
-  public static readonly NODEJS_14 = Runtime.of('NODEJS_14')
+  public static readonly NODEJS_14 = Runtime.of('NODEJS_14');
 
   /**
    * NodeJS 16
    */
-  public static readonly NODEJS_16 = Runtime.of('NODEJS_16')
+  public static readonly NODEJS_16 = Runtime.of('NODEJS_16');
 
   /**
    * NodeJS 18
    */
-  public static readonly NODEJS_18 = Runtime.of('NODEJS_18')
+  public static readonly NODEJS_18 = Runtime.of('NODEJS_18');
 
   /**
    * PHP 8.1
    */
-  public static readonly PHP_81 = Runtime.of('PHP_81')
+  public static readonly PHP_81 = Runtime.of('PHP_81');
 
   /**
    * Python 3
    */
-  public static readonly PYTHON_3 = Runtime.of('PYTHON_3')
+  public static readonly PYTHON_3 = Runtime.of('PYTHON_3');
 
   /**
    * Python 3.11
    */
-  public static readonly PYTHON_311 = Runtime.of('PYTHON_311')
+  public static readonly PYTHON_311 = Runtime.of('PYTHON_311');
 
   /**
    * Ruby 3.1
    */
-  public static readonly RUBY_31 = Runtime.of('RUBY_31')
+  public static readonly RUBY_31 = Runtime.of('RUBY_31');
 
   /**
    * Other runtimes
@@ -444,7 +444,7 @@ export abstract class Source {
  * Represents the service source from a Github repository.
  */
 export class GithubSource extends Source {
-  private readonly props: GithubRepositoryProps
+  private readonly props: GithubRepositoryProps;
   constructor(props: GithubRepositoryProps) {
     super();
     this.props = props;
@@ -471,7 +471,7 @@ export class GithubSource extends Source {
  * Represents the service source from ECR.
  */
 export class EcrSource extends Source {
-  private readonly props: EcrProps
+  private readonly props: EcrProps;
   constructor(props: EcrProps) {
     super();
     this.props = props;
@@ -514,7 +514,7 @@ export class EcrPublicSource extends Source {
  * Represents the source from local assets.
  */
 export class AssetSource extends Source {
-  private readonly props: AssetProps
+  private readonly props: AssetProps;
   constructor(props: AssetProps) {
     super();
     this.props = props;
@@ -907,7 +907,7 @@ export class GitHubConnection {
   /**
    * The ARN of the Connection for App Runner service to connect to the repository.
    */
-  public readonly connectionArn: string
+  public readonly connectionArn: string;
   constructor(arn: string) {
     this.connectionArn = arn;
   }
@@ -1189,7 +1189,7 @@ export class Service extends cdk.Resource implements iam.IGrantable {
         resource: 'service',
         service: 'apprunner',
         resourceName: serviceName,
-      })
+      });
     }
     return new Import(scope, id);
   }
@@ -1204,10 +1204,10 @@ export class Service extends cdk.Resource implements iam.IGrantable {
     const serviceStatus = attrs.serviceStatus;
 
     class Import extends cdk.Resource {
-      public readonly serviceArn = serviceArn
-      public readonly serviceName = serviceName
-      public readonly serviceUrl = serviceUrl
-      public readonly serviceStatus = serviceStatus
+      public readonly serviceArn = serviceArn;
+      public readonly serviceName = serviceName;
+      public readonly serviceUrl = serviceUrl;
+      public readonly serviceStatus = serviceStatus;
     }
 
     return new Import(scope, id);
@@ -1228,12 +1228,12 @@ export class Service extends cdk.Resource implements iam.IGrantable {
   /**
    * Environment secrets for this service.
    */
-  private readonly secrets: EnvironmentSecret[] = []
+  private readonly secrets: EnvironmentSecret[] = [];
 
   /**
    * Environment variables for this service.
    */
-  private readonly variables: EnvironmentVariable[] = []
+  private readonly variables: EnvironmentVariable[] = [];
 
   /**
    * The ARN of the Service.
@@ -1291,6 +1291,21 @@ export class Service extends cdk.Resource implements iam.IGrantable {
     if (this.source.codeRepository?.codeConfiguration.configurationSource == ConfigurationSourceType.REPOSITORY &&
       this.source.codeRepository?.codeConfiguration.configurationValues) {
       throw new Error('configurationValues cannot be provided if the ConfigurationSource is Repository');
+    }
+
+    if (props.serviceName !== undefined && !cdk.Token.isUnresolved(props.serviceName)) {
+
+      if (props.serviceName.length < 4 || props.serviceName.length > 40) {
+        throw new Error(
+          `\`serviceName\` must be between 4 and 40 characters, got: ${props.serviceName.length} characters.`,
+        );
+      }
+
+      if (!/^[A-Za-z0-9][A-Za-z0-9\-_]*$/.test(props.serviceName)) {
+        throw new Error(
+          `\`serviceName\` must start with an alphanumeric character and contain only alphanumeric characters, hyphens, or underscores after that, got: ${props.serviceName}.`,
+        );
+      }
     }
 
     const resource = new CfnService(this, 'Resource', {

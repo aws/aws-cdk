@@ -2097,6 +2097,21 @@ describe('stack', () => {
     ]);
   });
 
+  test('stack notification arns defaults to undefined', () => {
+
+    const app = new App({ stackTraces: false });
+    const stack1 = new Stack(app, 'stack1', {});
+
+    const asm = app.synth();
+
+    // It must be undefined and not [] because:
+    //
+    //  - undefined  =>  cdk ignores it entirely, as if it wasn't supported (allows external management).
+    //  - []:        =>  cdk manages it, and the user wants to wipe it out.
+    //  - ['arn-1']  =>  cdk manages it, and the user wants to set it to ['arn-1'].
+    expect(asm.getStackArtifact(stack1.artifactId).notificationArns).toBeUndefined();
+  });
+
   test('stack notification arns are reflected in the stack artifact properties', () => {
     // GIVEN
     const NOTIFICATION_ARNS = ['arn:aws:sns:bermuda-triangle-1337:123456789012:MyTopic'];
@@ -2237,7 +2252,7 @@ describe('stack', () => {
       new Stack(app, 'Stack', {
         env: envConfig,
       });
-    }).toThrowError('Account id of stack environment must be a \'string\' but received \'number\'');
+    }).toThrow('Account id of stack environment must be a \'string\' but received \'number\'');
   });
 
   test('region passed in stack environment must be a string', () => {
@@ -2254,7 +2269,7 @@ describe('stack', () => {
       new Stack(app, 'Stack', {
         env: envConfig,
       });
-    }).toThrowError('Region of stack environment must be a \'string\' but received \'number\'');
+    }).toThrow('Region of stack environment must be a \'string\' but received \'number\'');
   });
 
   test('indent templates when suppressTemplateIndentation is not set', () => {

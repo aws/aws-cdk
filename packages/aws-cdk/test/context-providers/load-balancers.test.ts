@@ -10,7 +10,7 @@ import {
   LoadBalancerContextProviderPlugin,
 } from '../../lib/context-providers/load-balancers';
 import {
-  FAKE_CREDENTIALS,
+  FAKE_CREDENTIAL_CHAIN,
   MockSdkProvider,
   mockElasticLoadBalancingV2Client,
   restoreSdkMocksToDefault,
@@ -18,7 +18,7 @@ import {
 
 const mockSDK = new (class extends MockSdkProvider {
   public forEnvironment(): Promise<SdkForEnvironment> {
-    return Promise.resolve({ sdk: new SDK(FAKE_CREDENTIALS, mockSDK.defaultRegion, {}), didAssumeRole: false });
+    return Promise.resolve({ sdk: new SDK(FAKE_CREDENTIAL_CHAIN, mockSDK.defaultRegion, {}), didAssumeRole: false });
   }
 })();
 
@@ -197,6 +197,52 @@ describe('load balancer context provider plugin', () => {
     expect(mockElasticLoadBalancingV2Client).toHaveReceivedCommandWith(DescribeTagsCommand, {
       ResourceArns: ['arn:load-balancer1', 'arn:load-balancer2'],
     });
+  });
+
+  test('looks up by tags - query by subset', async () => {
+    // GIVEN
+    mockElasticLoadBalancingV2Client
+      .on(DescribeLoadBalancersCommand)
+      .resolves({
+        LoadBalancers: [
+          {
+            IpAddressType: 'ipv4',
+            LoadBalancerArn: 'arn:load-balancer2',
+            DNSName: 'dns2.example.com',
+            CanonicalHostedZoneId: 'Z1234',
+            SecurityGroups: ['sg-1234'],
+            VpcId: 'vpc-1234',
+            Type: 'application',
+          },
+        ],
+      })
+      .on(DescribeTagsCommand)
+      .resolves({
+        TagDescriptions: [
+          {
+            ResourceArn: 'arn:load-balancer2',
+            Tags: [
+              // Load balancer has two tags...
+              { Key: 'some', Value: 'tag' },
+              { Key: 'second', Value: 'tag2' },
+            ],
+          },
+        ],
+      });
+    const provider = new LoadBalancerContextProviderPlugin(mockSDK);
+
+    // WHEN
+    const result = await provider.getValue({
+      account: '1234',
+      region: 'us-east-1',
+      loadBalancerType: LoadBalancerType.APPLICATION,
+      loadBalancerTags: [
+        // ...but we are querying for only one of them
+        { key: 'second', value: 'tag2' },
+      ],
+    });
+
+    expect(result.loadBalancerArn).toEqual('arn:load-balancer2');
   });
 
   test('filters by type', async () => {

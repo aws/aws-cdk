@@ -115,7 +115,7 @@ describe('database query', () => {
       expect(() => new DatabaseQuery(stack, 'Query', {
         ...minimalProps,
         cluster,
-      })).toThrowError('Administrative access to the Redshift cluster is required but an admin user secret was not provided and the cluster did not generate admin user credentials (they were provided explicitly)');
+      })).toThrow('Administrative access to the Redshift cluster is required but an admin user secret was not provided and the cluster did not generate admin user credentials (they were provided explicitly)');
     });
 
     it('throws error if admin user not provided and cluster was imported', () => {
@@ -128,7 +128,7 @@ describe('database query', () => {
       expect(() => new DatabaseQuery(stack, 'Query', {
         ...minimalProps,
         cluster,
-      })).toThrowError('Administrative access to the Redshift cluster is required but an admin user secret was not provided and the cluster was imported');
+      })).toThrow('Administrative access to the Redshift cluster is required but an admin user secret was not provided and the cluster was imported');
     });
   });
 

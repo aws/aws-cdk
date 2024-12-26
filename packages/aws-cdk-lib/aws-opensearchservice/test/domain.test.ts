@@ -44,6 +44,7 @@ const testedOpenSearchVersions = [
   EngineVersion.OPENSEARCH_2_11,
   EngineVersion.OPENSEARCH_2_13,
   EngineVersion.OPENSEARCH_2_15,
+  EngineVersion.OPENSEARCH_2_17,
 ];
 
 each(testedOpenSearchVersions).test('connections throws if domain is not placed inside a vpc', (engineVersion) => {
@@ -52,7 +53,7 @@ each(testedOpenSearchVersions).test('connections throws if domain is not placed 
     new Domain(stack, 'Domain', {
       version: engineVersion,
     }).connections;
-  }).toThrowError("Connections are only available on VPC enabled domains. Use the 'vpc' property to place a domain inside a VPC");
+  }).toThrow("Connections are only available on VPC enabled domains. Use the 'vpc' property to place a domain inside a VPC");
 });
 
 each(testedOpenSearchVersions).test('subnets and security groups can be provided when vpc is used', (engineVersion) => {
@@ -211,6 +212,7 @@ each([
   [EngineVersion.OPENSEARCH_2_11, 'OpenSearch_2.11'],
   [EngineVersion.OPENSEARCH_2_13, 'OpenSearch_2.13'],
   [EngineVersion.OPENSEARCH_2_15, 'OpenSearch_2.15'],
+  [EngineVersion.OPENSEARCH_2_17, 'OpenSearch_2.17'],
 ]).test('minimal example renders correctly', (engineVersion, expectedCfVersion) => {
   new Domain(stack, 'Domain', { version: engineVersion });
 
@@ -1962,78 +1964,41 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
     })).toThrow(/Node-to-node encryption requires Elasticsearch version 6.0 or later or OpenSearch version 1.0 or later/);
   });
 
-  test('error when I3, R6GD, I4G, and IM4GN instance types are specified with EBS enabled', () => {
+  test.each([
+    'i3.2xlarge.search',
+    'r6gd.large.search',
+    'im4gn.2xlarge.search',
+    'i4g.large.search',
+    'i4i.xlarge.search',
+    'r7gd.xlarge.search',
+  ])('error when %s instance type is specified with EBS enabled', (dataNodeInstanceType) => {
     expect(() => new Domain(stack, 'Domain2', {
       version: engineVersion,
       capacity: {
-        dataNodeInstanceType: 'i3.2xlarge.search',
+        dataNodeInstanceType,
       },
       ebs: {
         volumeSize: 100,
         volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
       },
-    })).toThrow(/I3, R6GD, I4G, and IM4GN instance types do not support EBS storage volumes./);
-    expect(() => new Domain(stack, 'Domain3', {
-      version: engineVersion,
-      capacity: {
-        dataNodeInstanceType: 'r6gd.large.search',
-      },
-      ebs: {
-        volumeSize: 100,
-        volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
-      },
-    })).toThrow(/I3, R6GD, I4G, and IM4GN instance types do not support EBS storage volumes./);
-    expect(() => new Domain(stack, 'Domain4', {
-      version: engineVersion,
-      capacity: {
-        dataNodeInstanceType: 'im4gn.2xlarge.search',
-      },
-      ebs: {
-        volumeSize: 100,
-        volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
-      },
-    })).toThrow(/I3, R6GD, I4G, and IM4GN instance types do not support EBS storage volumes./);
-    expect(() => new Domain(stack, 'Domain5', {
-      version: engineVersion,
-      capacity: {
-        dataNodeInstanceType: 'i4g.large.search',
-      },
-      ebs: {
-        volumeSize: 100,
-        volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
-      },
-    })).toThrow(/I3, R6GD, I4G, and IM4GN instance types do not support EBS storage volumes./);
+    })).toThrow(/I3, R6GD, I4G, I4I, IM4GN and R7GD instance types do not support EBS storage volumes./);
   });
 
-  test('error when m3, r3, or t2 instance types are specified with encryption at rest enabled', () => {
-    const error = /M3, R3, and T2 instance types do not support encryption of data at rest/;
+  test.each([
+    'm3.2xlarge.search',
+    'r3.2xlarge.search',
+    't2.2xlarge.search',
+  ])
+  ('error when %s instance type is specified with encryption at rest enabled', (masterNodeInstanceType) => {
     expect(() => new Domain(stack, 'Domain1', {
       version: engineVersion,
       capacity: {
-        masterNodeInstanceType: 'm3.2xlarge.search',
+        masterNodeInstanceType,
       },
       encryptionAtRest: {
         enabled: true,
       },
-    })).toThrow(error);
-    expect(() => new Domain(stack, 'Domain2', {
-      version: engineVersion,
-      capacity: {
-        dataNodeInstanceType: 'r3.2xlarge.search',
-      },
-      encryptionAtRest: {
-        enabled: true,
-      },
-    })).toThrow(error);
-    expect(() => new Domain(stack, 'Domain3', {
-      version: engineVersion,
-      capacity: {
-        masterNodeInstanceType: 't2.2xlarge.search',
-      },
-      encryptionAtRest: {
-        enabled: true,
-      },
-    })).toThrow(error);
+    })).toThrow(/M3, R3 and T2 instance types do not support encryption of data at rest/);
   });
 
   test('error when t2.micro is specified with Elasticsearch version > 2.3', () => {
@@ -2045,25 +2010,19 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
     })).toThrow(/t2.micro.search instance type supports only Elasticsearch versions 1.5 and 2.3/);
   });
 
-  test('error when any instance type other than R3, I3, R6GD, I4G, or IM4GN are specified without EBS enabled', () => {
+  test.each([
+    'm5.large.search',
+    'r5.large.search',
+  ])('error when any instance type other than R3, I3, R6GD, I4I, I4G, IM4GN or R7GD are specified without EBS enabled', (masterNodeInstanceType) => {
     expect(() => new Domain(stack, 'Domain1', {
       version: engineVersion,
       ebs: {
         enabled: false,
       },
       capacity: {
-        masterNodeInstanceType: 'm5.large.search',
+        masterNodeInstanceType,
       },
-    })).toThrow(/EBS volumes are required when using instance types other than R3, I3, R6GD, I4G, or IM4GN./);
-    expect(() => new Domain(stack, 'Domain2', {
-      version: engineVersion,
-      ebs: {
-        enabled: false,
-      },
-      capacity: {
-        dataNodeInstanceType: 'r5.large.search',
-      },
-    })).toThrow(/EBS volumes are required when using instance types other than R3, I3, R6GD, I4G, or IM4GN./);
+    })).toThrow(/EBS volumes are required when using instance types other than R3, I3, R6GD, I4G, I4I, IM4GN or R7GD./);
   });
 
   test('can use compatible master instance types that does not have local storage when data node type is i3 or r6gd', () => {
@@ -2187,22 +2146,18 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
     });
   });
 
-  test('error when t2 or t3 instance types are specified with UltramWarm enabled', () => {
-    const error = /T2 and T3 instance types do not support UltraWarm storage/;
+  test.each([
+    't2.2xlarge.search',
+    't3.2xlarge.search',
+  ])
+  ('error when %s instance types is specified with UltramWarm enabled', (masterNodeInstanceType) => {
     expect(() => new Domain(stack, 'Domain1', {
       version: engineVersion,
       capacity: {
-        masterNodeInstanceType: 't2.2xlarge.search',
+        masterNodeInstanceType,
         warmNodes: 1,
       },
-    })).toThrow(error);
-    expect(() => new Domain(stack, 'Domain2', {
-      version: engineVersion,
-      capacity: {
-        masterNodeInstanceType: 't3.2xlarge.search',
-        warmNodes: 1,
-      },
-    })).toThrow(error);
+    })).toThrow(/T2 and T3 instance types do not support UltraWarm storage/);
   });
 
   test('error when UltraWarm instance is used and no dedicated master instance specified', () => {
