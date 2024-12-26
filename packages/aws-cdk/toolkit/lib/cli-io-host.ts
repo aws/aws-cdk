@@ -12,12 +12,12 @@ import * as chalk from 'chalk';
  * @param forceStdout If true, the message will be written to stdout regardless of log level.
  */
 interface IoMessage {
-  time: Date;
-  level: IoMessageLevel;
-  action: IoAction;
-  code: string;
-  message: string;
-  forceStdout?: boolean;
+  readonly time: Date;
+  readonly level: IoMessageLevel;
+  readonly action: IoAction;
+  readonly code: string;
+  readonly message: string;
+  readonly forceStdout?: boolean;
 }
 
 export type IoMessageLevel = 'error' | 'warn' | 'info' | 'debug' | 'trace';

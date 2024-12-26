@@ -87,8 +87,8 @@ describe('CliIoHost', () => {
         message: chalk.green('[green prefix message]') + ' regular info level text',
         forceStdout: true,
       });
-      
-      const expected_text = styleMap['info'](chalk.green('[green prefix message]') + ' regular info level text');
+
+      const expected_text = styleMap.info(chalk.green('[green prefix message]') + ' regular info level text');
       expect(mockStdout).toHaveBeenCalledWith(expected_text + '\n');
     });
 
@@ -105,7 +105,7 @@ describe('CliIoHost', () => {
         forceStdout: true,
       });
 
-      const expected_text = styleMap['info'](customStyle('styled message'));
+      const expected_text = styleMap.info(customStyle('styled message'));
       expect(mockStdout).toHaveBeenCalledWith(expected_text + '\n');
     });
 
