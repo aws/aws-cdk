@@ -54,6 +54,8 @@ interface CliIoHostOptions {
   /**
    * @param ci Flag representing whether the current process is running in a CI environment,
    * If true, the host will write all messages to stdout.
+   *
+   * @default false
    */
   ci?: boolean;
 }
