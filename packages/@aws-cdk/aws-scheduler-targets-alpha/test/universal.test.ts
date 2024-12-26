@@ -601,15 +601,69 @@ describe('Universal schedule target', () => {
       })).toThrow(/Read-only API action is not supported by EventBridge Scheduler: sqs:getQueueUrl/);
   });
 
-  test('specify policyStatements', () => {
+  test('specify iamResources, iamAction, and iamConditions', () => {
+    const target = new Universal({
+      service: 'lambda',
+      action: 'invoke',
+      iamResources: ['arn:aws:lambda:us-east-1:123456789012:function:my-function'],
+      iamAction: 'lambda:InvokeFunction',
+      iamConditions: {
+        StringEquals: {
+          'aws:Test': 'Test',
+        },
+      },
+    });
+
+    new scheduler.Schedule(stack, 'Schedule', {
+      schedule: scheduleExpression,
+      target,
+    });
+
+    const template = Template.fromStack(stack);
+
+    template.hasResource('AWS::Scheduler::Schedule', {
+      Properties: {
+        Target: {
+          Arn: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':scheduler:::aws-sdk:lambda:invoke',
+              ],
+            ],
+          },
+        },
+      },
+    });
+
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'lambda:InvokeFunction',
+            Effect: 'Allow',
+            Resource: 'arn:aws:lambda:us-east-1:123456789012:function:my-function',
+            Condition: {
+              StringEquals: {
+                'aws:Test': 'Test',
+              },
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  test('specify additionalPolicyStatements', () => {
     const target = new Universal({
       service: 'sqs',
       action: 'sendMessage',
-      policyStatements: [
-        new iam.PolicyStatement({
-          actions: ['sqs:SendMessage'],
-          resources: ['arn:aws:sqs:us-east-1:123456789012:my_queue'],
-        }),
+      iamResources: ['arn:aws:sqs:us-east-1:123456789012:my_queue'],
+      additionalPolicyStatements: [
         new iam.PolicyStatement({
           actions: ['kms:Decrypt', 'kms:GenerateDataKey*'],
           resources: ['arn:aws:kms:us-west-1:123456789012:key/0987dcba-09fe-87dc-65ba-ab0987654321'],

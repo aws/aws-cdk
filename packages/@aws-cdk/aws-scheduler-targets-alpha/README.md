@@ -351,16 +351,29 @@ new Schedule(this, 'Schedule', {
   target: new targets.Universal({
     service: 'sqs',
     action: 'sendMessage',
-    policyStatements: [
-      new iam.PolicyStatement({
-        actions: ['sqs:SendMessage'],
-        resources: ['arn:aws:sqs:us-east-1:123456789012:my_queue'],
-      }),
+    // We recommend using the `iamResources` property to specify the resources that the Scheduler can access.
+    iamResources: ['arn:aws:sqs:us-east-1:123456789012:my_queue'],
+    additionalPolicyStatements: [
       new iam.PolicyStatement({
         actions: ['kms:Decrypt', 'kms:GenerateDataKey*'],
         resources: ['arn:aws:kms:us-west-1:123456789012:key/0987dcba-09fe-87dc-65ba-ab0987654321'],
       }),
     ],
+  }),
+});
+```
+
+In cases where iam action name differs from the API action name, you can provide the `iamAction` property
+to specify the IAM action name.
+
+```ts
+new Schedule(this, 'Schedule', {
+  schedule: ScheduleExpression.rate(Duration.minutes(60)),
+  target: new targets.Universal({
+    service: 'lambda',
+    action: 'invoke',
+    iamResources: ['arn:aws:lambda:us-east-1:123456789012:function:my-function'],
+    iamAction: 'lambda:InvokeFunction',
   }),
 });
 ```
