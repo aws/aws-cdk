@@ -84,8 +84,7 @@ describe('CliIoHost', () => {
         level: 'info',
         action: 'synth',
         code: 'TEST',
-        message: 'green message',
-        style: chalk.green,
+        message: chalk.green('green message'),
         forceStdout: true,
       });
 
@@ -101,8 +100,7 @@ describe('CliIoHost', () => {
         level: 'info',
         action: 'synth',
         code: 'TEST',
-        message: 'styled message',
-        style: customStyle,
+        message: customStyle('styled message'),
         forceStdout: true,
       });
 
@@ -144,8 +142,7 @@ describe('CliIoHost', () => {
         level: 'info',
         action: 'synth',
         code: 'TEST',
-        message: 'unstyled message',
-        style: chalk.green,
+        message: chalk.green('unstyled message'),
         forceStdout: true,
       });
 

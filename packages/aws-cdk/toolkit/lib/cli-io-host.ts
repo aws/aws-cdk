@@ -3,6 +3,13 @@ import * as chalk from 'chalk';
 /**
  * Basic message structure for toolkit notifications.
  * Messages are emitted by the toolkit and handled by the IoHost.
+ * 
+ * @param time The time the message was emitted.
+ * @param level The log level of the message.
+ * @param action The action that triggered the message.
+ * @param code A short code to identify the message.
+ * @param message The message text.
+ * @param forceStdout If true, the message will be written to stdout regardless of log level.
  */
 interface IoMessage {
   time: Date;
@@ -11,14 +18,19 @@ interface IoMessage {
   code: string;
   message: string;
   forceStdout?: boolean;
-  // Optionally specify Chalk style for stdout/stderr, if TTY is enabled
-  style?: ((str: string) => string);
 }
 
 export type IoMessageLevel = 'error' | 'warn' | 'info' | 'debug' | 'trace';
 
 export type IoAction = 'synth' | 'list' | 'deploy' | 'destroy';
 
+/**
+ * Options for the CLI IO host.
+ * 
+ * @param useTTY If true, the host will use TTY features like color.
+ * @param ci Flag representing whether the current process is running in a CI environment, 
+ * If true, the host will write all messages to stdout.
+ */
 interface CliIoHostOptions {
   useTTY?: boolean;
   ci?: boolean;
@@ -57,7 +69,7 @@ export class CliIoHost {
   }
 
   /**
-   * Determines which output stream to use based on log level and configuration.
+   * Determines which output stream to use based on log level and configuration. 
    */
   private getStream(level: IoMessageLevel, forceStdout: boolean) {
     if (forceStdout) {
@@ -72,14 +84,14 @@ export class CliIoHost {
    */
   private formatMessage(msg: IoMessage): string {
     // apply provided style or a default style if we're in TTY mode
-    let output = this.pretty_messages
-      ? (msg.style?.(msg.message) ?? styleMap[msg.level](msg.message))
+    let message_text = this.pretty_messages
+      ? styleMap[msg.level](msg.message)
       : msg.message;
 
-    // prepend timestamp if IoMessageLevel is DEBUG or TRACE
-    return (msg.level === 'debug' || msg.level === 'trace')
-      ? `[${this.formatTime(msg.time)}] ${output}`
-      : output;
+    // prepend timestamp if IoMessageLevel is DEBUG or TRACE. Postpend a newline.
+    return ((msg.level === 'debug' || msg.level === 'trace')
+      ? `[${this.formatTime(msg.time)}] ${message_text}`
+      : message_text) + '\n';
   }
 
   /**
@@ -89,7 +101,6 @@ export class CliIoHost {
     const pad = (n: number): string => n.toString().padStart(2, '0');
     return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
   }
-
 }
 
 const styleMap: Record<IoMessageLevel, (str: string) => string> = {
