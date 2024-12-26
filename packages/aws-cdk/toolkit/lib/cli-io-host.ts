@@ -3,20 +3,38 @@ import * as chalk from 'chalk';
 /**
  * Basic message structure for toolkit notifications.
  * Messages are emitted by the toolkit and handled by the IoHost.
- *
- * @param time The time the message was emitted.
- * @param level The log level of the message.
- * @param action The action that triggered the message.
- * @param code A short code to identify the message.
- * @param message The message text.
- * @param forceStdout If true, the message will be written to stdout regardless of log level.
  */
 interface IoMessage {
+  /**
+   * @param time The time the message was emitted.
+   */
   readonly time: Date;
+
+  /**
+   * @param level The log level of the message.
+   */
   readonly level: IoMessageLevel;
+
+  /**
+   * @param action The action that triggered the message.
+   */
   readonly action: IoAction;
+
+  /**
+   * @param code A short code to identify the message.
+   */
   readonly code: string;
+
+  /**
+   * @param message The message text.
+   */
   readonly message: string;
+
+  /**
+   * @param forceStdout If true, the message will be written to stdout regardless of log level.
+   * 
+   * @default false
+   */
   readonly forceStdout?: boolean;
 }
 
@@ -26,13 +44,17 @@ export type IoAction = 'synth' | 'list' | 'deploy' | 'destroy';
 
 /**
  * Options for the CLI IO host.
- *
- * @param useTTY If true, the host will use TTY features like color.
- * @param ci Flag representing whether the current process is running in a CI environment,
- * If true, the host will write all messages to stdout.
  */
 interface CliIoHostOptions {
+  /**
+   * @param useTTY If true, the host will use TTY features like color.
+   */
   useTTY?: boolean;
+
+  /**
+   * @param ci Flag representing whether the current process is running in a CI environment,
+   * If true, the host will write all messages to stdout.
+   */
   ci?: boolean;
 }
 
@@ -71,11 +93,14 @@ export class CliIoHost {
   /**
    * Determines which output stream to use based on log level and configuration.
    *
-   * Most logging functions with the exception of `data()` will default to stderr,
-   * however some CI environments will immediately fail if stderr is written to.
-   * In these cases, we detect if we are in a CI environment and write all messages to
-   * stdout instead.
+   * For legacy purposes all log streams are written to stderr by default, unless
+   * specified otherwise, by passing `forceStdout`, which is used by the `data()` logging function, or
+   * if the CDK is running in a CI environment. This is because some CI environments will immediately 
+   * fail if stderr is written to. In these cases, we detect if we are in a CI environment and 
+   * write all messages to stdout instead.
    *
+   * @param level The log level of the message, returns stderr for if level is 'error'
+   * @param forceStdout Forces to stdout regardless of log level.
    */
   private getStream(level: IoMessageLevel, forceStdout: boolean) {
     if (forceStdout) {

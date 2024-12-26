@@ -232,18 +232,18 @@ describe('CliIoHost', () => {
       expect(mockStdout).not.toHaveBeenCalled();
     });
 
-    test('writes to stdout when forceStdout is true, and not in CI mode', async () => {
-      const host = new CliIoHost({ useTTY: true });
+    test('writes to stdout for error level in CI mode with forceStdOut', async () => {
+      const host = new CliIoHost({ useTTY: true, ci: true });
       await host.notify({
         time: new Date(),
-        level: 'info',
+        level: 'error',
         action: 'synth',
         code: 'TEST',
-        message: 'forced message',
+        message: 'ci error message',
         forceStdout: true,
       });
 
-      expect(mockStdout).toHaveBeenCalledWith(chalk.white('forced message') + '\n');
+      expect(mockStdout).toHaveBeenCalledWith(chalk.red('ci error message') + '\n');
       expect(mockStderr).not.toHaveBeenCalled();
     });
   });
