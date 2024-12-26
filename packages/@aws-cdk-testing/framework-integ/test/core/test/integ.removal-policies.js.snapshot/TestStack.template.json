@@ -30,8 +30,8 @@
   },
   "TestUser6A619381": {
    "Type": "AWS::IAM::User",
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   }
  },
  "Parameters": {
