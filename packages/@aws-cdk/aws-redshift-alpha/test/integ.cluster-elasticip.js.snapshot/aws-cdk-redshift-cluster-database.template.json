@@ -25,6 +25,9 @@
   "VpcPublicSubnet1Subnet5C2D37C4": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -48,10 +51,7 @@
       "Key": "Name",
       "Value": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet1"
      }
-    ],
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    }
+    ]
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -59,15 +59,15 @@
   "VpcPublicSubnet1RouteTable6C95E38E": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet1"
      }
-    ],
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    }
+    ]
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -88,12 +88,12 @@
   "VpcPublicSubnet1DefaultRoute3DA9E72A": {
    "Type": "AWS::EC2::Route",
    "Properties": {
+    "RouteTableId": {
+     "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
+    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "VpcIGWD7BA715C"
-    },
-    "RouteTableId": {
-     "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
     }
    },
    "DependsOn": [
@@ -119,14 +119,14 @@
   "VpcPublicSubnet1NATGateway4D7517AA": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
+    "SubnetId": {
+     "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
+    },
     "AllocationId": {
      "Fn::GetAtt": [
       "VpcPublicSubnet1EIPD7E02669",
       "AllocationId"
      ]
-    },
-    "SubnetId": {
-     "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
     },
     "Tags": [
      {
@@ -145,6 +145,9 @@
   "VpcPublicSubnet2Subnet691E08A3": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -168,10 +171,7 @@
       "Key": "Name",
       "Value": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet2"
      }
-    ],
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    }
+    ]
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -179,15 +179,15 @@
   "VpcPublicSubnet2RouteTable94F7E489": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet2"
      }
-    ],
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    }
+    ]
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -208,12 +208,12 @@
   "VpcPublicSubnet2DefaultRoute97F91067": {
    "Type": "AWS::EC2::Route",
    "Properties": {
+    "RouteTableId": {
+     "Ref": "VpcPublicSubnet2RouteTable94F7E489"
+    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "VpcIGWD7BA715C"
-    },
-    "RouteTableId": {
-     "Ref": "VpcPublicSubnet2RouteTable94F7E489"
     }
    },
    "DependsOn": [
@@ -239,14 +239,14 @@
   "VpcPublicSubnet2NATGateway9182C01D": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
+    "SubnetId": {
+     "Ref": "VpcPublicSubnet2Subnet691E08A3"
+    },
     "AllocationId": {
      "Fn::GetAtt": [
       "VpcPublicSubnet2EIP3C605A87",
       "AllocationId"
      ]
-    },
-    "SubnetId": {
-     "Ref": "VpcPublicSubnet2Subnet691E08A3"
     },
     "Tags": [
      {
@@ -265,6 +265,9 @@
   "VpcPrivateSubnet1Subnet536B997A": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -288,10 +291,7 @@
       "Key": "Name",
       "Value": "aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet1"
      }
-    ],
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    }
+    ]
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -299,15 +299,15 @@
   "VpcPrivateSubnet1RouteTableB2C5B500": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet1"
      }
-    ],
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    }
+    ]
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -328,12 +328,12 @@
   "VpcPrivateSubnet1DefaultRouteBE02A9ED": {
    "Type": "AWS::EC2::Route",
    "Properties": {
+    "RouteTableId": {
+     "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
+    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "VpcPublicSubnet1NATGateway4D7517AA"
-    },
-    "RouteTableId": {
-     "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
     }
    },
    "UpdateReplacePolicy": "Delete",
@@ -342,6 +342,9 @@
   "VpcPrivateSubnet2Subnet3788AAA1": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -365,10 +368,7 @@
       "Key": "Name",
       "Value": "aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet2"
      }
-    ],
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    }
+    ]
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -376,15 +376,15 @@
   "VpcPrivateSubnet2RouteTableA678073B": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet2"
      }
-    ],
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    }
+    ]
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -405,12 +405,12 @@
   "VpcPrivateSubnet2DefaultRoute060D2087": {
    "Type": "AWS::EC2::Route",
    "Properties": {
+    "RouteTableId": {
+     "Ref": "VpcPrivateSubnet2RouteTableA678073B"
+    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "VpcPublicSubnet2NATGateway9182C01D"
-    },
-    "RouteTableId": {
-     "Ref": "VpcPrivateSubnet2RouteTableA678073B"
     }
    },
    "UpdateReplacePolicy": "Delete",
@@ -432,11 +432,11 @@
   "VpcVPCGWBF912B6E": {
    "Type": "AWS::EC2::VPCGatewayAttachment",
    "Properties": {
-    "InternetGatewayId": {
-     "Ref": "VpcIGWD7BA715C"
-    },
     "VpcId": {
      "Ref": "Vpc8378EB38"
+    },
+    "InternetGatewayId": {
+     "Ref": "VpcIGWD7BA715C"
     }
    },
    "UpdateReplacePolicy": "Delete",
@@ -506,29 +506,8 @@
   "ClusterEB0386A7": {
    "Type": "AWS::Redshift::Cluster",
    "Properties": {
-    "AllowVersionUpgrade": true,
-    "AutomatedSnapshotRetentionPeriod": 1,
-    "ClusterSubnetGroupName": {
-     "Ref": "ClusterSubnetsDCFA5CB7"
-    },
     "ClusterType": "multi-node",
     "DBName": "default_db",
-    "ElasticIp": {
-     "Ref": "ElasticIPAddress"
-    },
-    "Encrypted": true,
-    "MasterUserPassword": {
-     "Fn::Join": [
-      "",
-      [
-       "{{resolve:secretsmanager:",
-       {
-        "Ref": "ClusterSecret6368BD0F"
-       },
-       ":SecretString:password::}}"
-      ]
-     ]
-    },
     "MasterUsername": {
      "Fn::Join": [
       "",
@@ -541,7 +520,28 @@
       ]
      ]
     },
+    "MasterUserPassword": {
+     "Fn::Join": [
+      "",
+      [
+       "{{resolve:secretsmanager:",
+       {
+        "Ref": "ClusterSecret6368BD0F"
+       },
+       ":SecretString:password::}}"
+      ]
+     ]
+    },
     "NodeType": "dc2.large",
+    "AllowVersionUpgrade": true,
+    "AutomatedSnapshotRetentionPeriod": 1,
+    "ClusterSubnetGroupName": {
+     "Ref": "ClusterSubnetsDCFA5CB7"
+    },
+    "ElasticIp": {
+     "Ref": "ElasticIPAddress"
+    },
+    "Encrypted": true,
     "NumberOfNodes": 2,
     "PubliclyAccessible": true,
     "VpcSecurityGroupIds": [
