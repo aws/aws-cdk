@@ -308,30 +308,6 @@ describe('repository', () => {
     });
   });
 
-  test('calculate registry URI', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const repo = new ecr.Repository(stack, 'Repo');
-
-    new cdk.CfnOutput(stack, 'RegistryUri', {
-      value: repo.registryUri,
-    });
-
-    // THEN
-    const arnSplit = { 'Fn::Split': [':', { 'Fn::GetAtt': ['Repo02AC86CF', 'Arn'] }] };
-    Template.fromStack(stack).hasOutput('*', {
-      'Value': {
-        'Fn::Join': ['', [
-          { 'Fn::Select': [4, arnSplit] },
-          '.dkr.ecr.',
-          { 'Fn::Select': [3, arnSplit] },
-          '.',
-          { Ref: 'AWS::URLSuffix' },
-        ]],
-      },
-    });
-  });
-
   test('import with concrete arn', () => {
     // GIVEN
     const stack = new cdk.Stack();

@@ -761,9 +761,6 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
         this.distributionId = attrs.distributionId;
       }
 
-      public get distributionArn(): string {
-        return formatDistributionArn(this);
-      }
       public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
         return iam.Grant.addToPrincipal({ grantee, actions, resourceArns: [formatDistributionArn(this)] });
       }
@@ -993,10 +990,6 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
     this.domainName = distribution.attrDomainName;
     this.distributionDomainName = distribution.attrDomainName;
     this.distributionId = distribution.ref;
-  }
-
-  public get distributionArn(): string {
-    return formatDistributionArn(this);
   }
 
   /**
