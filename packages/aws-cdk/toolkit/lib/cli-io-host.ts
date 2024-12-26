@@ -3,7 +3,7 @@ import * as chalk from 'chalk';
 /**
  * Basic message structure for toolkit notifications.
  * Messages are emitted by the toolkit and handled by the IoHost.
- * 
+ *
  * @param time The time the message was emitted.
  * @param level The log level of the message.
  * @param action The action that triggered the message.
@@ -26,9 +26,9 @@ export type IoAction = 'synth' | 'list' | 'deploy' | 'destroy';
 
 /**
  * Options for the CLI IO host.
- * 
+ *
  * @param useTTY If true, the host will use TTY features like color.
- * @param ci Flag representing whether the current process is running in a CI environment, 
+ * @param ci Flag representing whether the current process is running in a CI environment,
  * If true, the host will write all messages to stdout.
  */
 interface CliIoHostOptions {
@@ -58,7 +58,7 @@ export class CliIoHost {
     const stream = this.getStream(msg.level, msg.forceStdout ?? false);
 
     return new Promise((resolve, reject) => {
-      stream.write(output + '\n', (err) => {
+      stream.write(output, (err) => {
         if (err) {
           reject(err);
         } else {
@@ -69,7 +69,13 @@ export class CliIoHost {
   }
 
   /**
-   * Determines which output stream to use based on log level and configuration. 
+   * Determines which output stream to use based on log level and configuration.
+   *
+   * Most logging functions with the exception of `data()` will default to stderr,
+   * however some CI environments will immediately fail if stderr is written to.
+   * In these cases, we detect if we are in a CI environment and write all messages to
+   * stdout instead.
+   *
    */
   private getStream(level: IoMessageLevel, forceStdout: boolean) {
     if (forceStdout) {
@@ -103,7 +109,7 @@ export class CliIoHost {
   }
 }
 
-const styleMap: Record<IoMessageLevel, (str: string) => string> = {
+export const styleMap: Record<IoMessageLevel, (str: string) => string> = {
   error: chalk.red,
   warn: chalk.yellow,
   info: chalk.white,

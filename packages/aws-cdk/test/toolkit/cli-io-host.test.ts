@@ -1,5 +1,5 @@
 import * as chalk from 'chalk';
-import { CliIoHost, IoAction } from '../../toolkit/lib/cli-io-host';
+import { CliIoHost, IoAction, styleMap } from '../../toolkit/lib/cli-io-host';
 
 describe('CliIoHost', () => {
   let mockStdout: jest.Mock;
@@ -77,18 +77,19 @@ describe('CliIoHost', () => {
   });
 
   describe('TTY formatting', () => {
-    test('accepts custom chalk styles', async () => {
+    test('accepts inlined chalk styles', async () => {
       const host = new CliIoHost({ useTTY: true });
       await host.notify({
         time: new Date(),
         level: 'info',
         action: 'synth',
         code: 'TEST',
-        message: chalk.green('green message'),
+        message: chalk.green('[green prefix message]') + ' regular info level text',
         forceStdout: true,
       });
-
-      expect(mockStdout).toHaveBeenCalledWith(chalk.green('green message') + '\n');
+      
+      const expected_text = styleMap['info'](chalk.green('[green prefix message]') + ' regular info level text');
+      expect(mockStdout).toHaveBeenCalledWith(expected_text + '\n');
     });
 
     test('applies custom style in TTY mode', async () => {
@@ -104,7 +105,8 @@ describe('CliIoHost', () => {
         forceStdout: true,
       });
 
-      expect(mockStdout).toHaveBeenCalledWith(customStyle('styled message') + '\n');
+      const expected_text = styleMap['info'](customStyle('styled message'));
+      expect(mockStdout).toHaveBeenCalledWith(expected_text + '\n');
     });
 
     test('applies default style by message level in TTY mode', async () => {
@@ -129,20 +131,6 @@ describe('CliIoHost', () => {
         action: 'synth',
         code: 'TEST',
         message: 'unstyled message',
-        forceStdout: true,
-      });
-
-      expect(mockStdout).toHaveBeenCalledWith('unstyled message\n');
-    });
-
-    test('does not apply styles in non-TTY mode with style provided', async () => {
-      const host = new CliIoHost({ useTTY: false });
-      await host.notify({
-        time: new Date(),
-        level: 'info',
-        action: 'synth',
-        code: 'TEST',
-        message: chalk.green('unstyled message'),
         forceStdout: true,
       });
 
@@ -215,19 +203,48 @@ describe('CliIoHost', () => {
       expect(mockStderr).not.toHaveBeenCalled();
     });
 
-    test('respects forceStdout:false in CI mode', async () => {
+    test('writes to stdout in CI mode with forceStdout', async () => {
+      const host = new CliIoHost({ useTTY: true, ci: true });
+      await host.notify({
+        time: new Date(),
+        level: 'info',
+        action: 'synth',
+        code: 'TEST',
+        message: 'ci message',
+        forceStdout: true,
+      });
+
+      expect(mockStdout).toHaveBeenCalledWith(chalk.white('ci message') + '\n');
+      expect(mockStderr).not.toHaveBeenCalled();
+    });
+
+    test('writes to stderr for error level in CI mode', async () => {
       const host = new CliIoHost({ useTTY: true, ci: true });
       await host.notify({
         time: new Date(),
         level: 'error',
         action: 'synth',
         code: 'TEST',
-        message: 'forced stderr message',
-        forceStdout: false,
+        message: 'ci error message',
       });
 
-      expect(mockStderr).toHaveBeenCalledWith(chalk.red('forced stderr message') + '\n');
+      expect(mockStderr).toHaveBeenCalledWith(chalk.red('ci error message') + '\n');
       expect(mockStdout).not.toHaveBeenCalled();
+    });
+
+    test('writes to stdout when forceStdout is true, and not in CI mode', async () => {
+      const host = new CliIoHost({ useTTY: true });
+      await host.notify({
+        time: new Date(),
+        level: 'info',
+        action: 'synth',
+        code: 'TEST',
+        message: 'forced message',
+        forceStdout: true,
+      });
+
+      expect(mockStdout).toHaveBeenCalledWith(chalk.white('forced message') + '\n');
+      expect(mockStderr).not.toHaveBeenCalled();
     });
   });
 
