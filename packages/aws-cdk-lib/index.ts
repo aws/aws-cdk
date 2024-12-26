@@ -234,7 +234,6 @@ export * as aws_s3_notifications from './aws-s3-notifications';
 export * as aws_s3express from './aws-s3express';
 export * as aws_s3objectlambda from './aws-s3objectlambda';
 export * as aws_s3outposts from './aws-s3outposts';
-export * as aws_s3tables from './aws-s3tables';
 export * as aws_sagemaker from './aws-sagemaker';
 export * as aws_sam from './aws-sam';
 export * as aws_scheduler from './aws-scheduler';
