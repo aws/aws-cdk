@@ -363,7 +363,7 @@ new Schedule(this, 'Schedule', {
 });
 ```
 
-In cases where iam action name differs from the API action name, you can provide the `iamAction` property
+In cases where IAM action name differs from the API action name, you can provide the `iamAction` property
 to specify the IAM action name.
 
 ```ts
