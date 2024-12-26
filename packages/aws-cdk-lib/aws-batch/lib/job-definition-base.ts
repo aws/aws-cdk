@@ -211,14 +211,14 @@ export class Reason {
    */
   static readonly CANNOT_PULL_CONTAINER: Reason = {
     onReason: 'CannotPullContainerError:*',
-  }
+  };
 
   /**
    * Will only match if the Spot instance executing the job was reclaimed
    */
   static readonly SPOT_INSTANCE_RECLAIMED: Reason = {
     onStatusReason: 'Host EC2*',
-  }
+  };
 
   /**
    * A custom Reason that can match on multiple conditions.

@@ -1,4 +1,5 @@
 import { existsSync, promises as fs } from 'fs';
+import * as querystring from 'node:querystring';
 import * as os from 'os';
 import * as path from 'path';
 import {
@@ -23,6 +24,7 @@ import { PutObjectLockConfigurationCommand } from '@aws-sdk/client-s3';
 import { CreateTopicCommand, DeleteTopicCommand } from '@aws-sdk/client-sns';
 import { AssumeRoleCommand, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
 import * as mockttp from 'mockttp';
+import { CompletedRequest } from 'mockttp';
 import {
   cloneDirectory,
   integTest,
@@ -1112,7 +1114,7 @@ integTest(
     await diffShouldSucceedWith({ fail: undefined, enableDiffNoFail: true });
 
     async function diffShouldSucceedWith(props: DiffParameters) {
-      await expect(diff(props)).resolves.not.toThrowError();
+      await expect(diff(props)).resolves.not.toThrow();
     }
 
     async function diffShouldFailWith(props: DiffParameters) {
@@ -2826,7 +2828,7 @@ integTest('requests go through a proxy when configured',
     });
 
     // We don't need to modify any request, so the proxy
-    // passes through all requests to the host.
+    // passes through all requests to the target host.
     const endpoint = await proxyServer
       .forAnyRequest()
       .thenPassThrough();
@@ -2843,13 +2845,30 @@ integTest('requests go through a proxy when configured',
           '--proxy', proxyServer.url,
           '--ca-bundle-path', certPath,
         ],
+        modEnv: {
+          CDK_HOME: fixture.integTestDir,
+        },
       });
     } finally {
       await fs.rm(certDir, { recursive: true, force: true });
+      await proxyServer.stop();
     }
 
-    // Checking that there was some interaction with the proxy
     const requests = await endpoint.getSeenRequests();
-    expect(requests.length).toBeGreaterThan(0);
+
+    expect(requests.map(req => req.url))
+      .toContain('https://cli.cdk.dev-tools.aws.dev/notices.json');
+
+    const actionsUsed = actions(requests);
+    expect(actionsUsed).toContain('AssumeRole');
+    expect(actionsUsed).toContain('CreateChangeSet');
   }),
 );
+
+function actions(requests: CompletedRequest[]): string[] {
+  return [...new Set(requests
+    .map(req => req.body.buffer.toString('utf-8'))
+    .map(body => querystring.decode(body))
+    .map(x => x.Action as string)
+    .filter(action => action != null))];
+}

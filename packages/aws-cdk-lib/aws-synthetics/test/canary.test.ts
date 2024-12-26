@@ -104,23 +104,23 @@ test('Throws when name is specified incorrectly', () => {
     }),
     runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_8_0,
   }))
-    .toThrowError('Canary name must be lowercase, numbers, hyphens, or underscores (got "My Canary")');
+    .toThrow('Canary name must be lowercase, numbers, hyphens, or underscores (got "My Canary")');
 });
 
-test('Throws when name has more than 21 characters', () => {
+test('Throws when name has more than 255 characters', () => {
   // GIVEN
   const stack = new Stack();
 
   // THEN
   expect(() => new synthetics.Canary(stack, 'Canary', {
-    canaryName: 'a'.repeat(22),
+    canaryName: 'a'.repeat(256),
     test: synthetics.Test.custom({
       handler: 'index.handler',
       code: synthetics.Code.fromInline('/* Synthetics handler code */'),
     }),
     runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_8_0,
   }))
-    .toThrowError(`Canary name is too large, must be between 1 and 21 characters, but is 22 (got "${'a'.repeat(22)}")`);
+    .toThrow(`Canary name is too large, must be between 1 and 255 characters, but is 256 (got "${'a'.repeat(256)}")`);
 });
 
 test('An existing role can be specified instead of auto-created', () => {
@@ -561,7 +561,7 @@ test('Throws when rate above 60 minutes', () => {
     }),
     runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_8_0,
   }))
-    .toThrowError('Schedule duration must be between 1 and 60 minutes');
+    .toThrow('Schedule duration must be between 1 and 60 minutes');
 });
 
 test('Throws when rate above is not a whole number of minutes', () => {
@@ -577,7 +577,7 @@ test('Throws when rate above is not a whole number of minutes', () => {
     }),
     runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_8_0,
   }))
-    .toThrowError('\'59 seconds\' cannot be converted into a whole number of minutes.');
+    .toThrow('\'59 seconds\' cannot be converted into a whole number of minutes.');
 });
 
 test('Can share artifacts bucket between canaries', () => {
