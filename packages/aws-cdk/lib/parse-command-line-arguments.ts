@@ -4,10 +4,16 @@
 // -------------------------------------------------------------------------------------------
 /* eslint-disable @typescript-eslint/comma-dangle, comma-spacing, max-len, quotes, quote-props */
 import { Argv } from 'yargs';
-import * as helpers from './util/yargs-helpers';
 
 // @ts-ignore TS6133
-export function parseCommandLineArguments(args: Array<string>): any {
+export function parseCommandLineArguments(
+  args: Array<string>,
+  browserDefault: string,
+  availableInitLanguages: Array<string>,
+  migrateSupportedLanguages: Array<string>,
+  version: string,
+  yargsNegativeAlias: any
+): any {
   return yargs
     .env('CDK')
     .usage('Usage: cdk -a <cdk-app> COMMAND')
@@ -33,7 +39,6 @@ export function parseCommandLineArguments(args: Array<string>): any {
       alias: 'p',
       desc: 'Name or path of a node package that extend the CDK features. Can be specified multiple times',
       nargs: 1,
-      requiresArg: true,
     })
     .option('trace', {
       type: 'boolean',
@@ -137,14 +142,12 @@ export function parseCommandLineArguments(args: Array<string>): any {
     .option('ci', {
       type: 'boolean',
       desc: 'Force CI detection. If CI=true then logs will be sent to stdout instead of stderr',
-      default: helpers.isCI(),
+      default: process.env.CI !== undefined,
     })
     .option('unstable', {
       type: 'array',
       desc: 'Opt in to unstable features. The flag indicates that the scope and API of a feature might still change. Otherwise the feature is generally production ready and fully supported. Can be specified multiple times.',
       default: [],
-      nargs: 1,
-      requiresArg: true,
     })
     .command(['list [STACKS..]', 'ls [STACKS..]'], 'Lists all stacks in the app', (yargs: Argv) =>
       yargs
@@ -228,9 +231,9 @@ export function parseCommandLineArguments(args: Array<string>): any {
           type: 'array',
           alias: 't',
           desc: 'Tags to add for the stack (KEY=VALUE)',
-          default: [],
           nargs: 1,
           requiresArg: true,
+          default: [],
         })
         .option('execute', {
           type: 'boolean',
@@ -336,10 +339,9 @@ export function parseCommandLineArguments(args: Array<string>): any {
         .option('build-exclude', {
           type: 'array',
           alias: 'E',
+          nargs: 1,
           desc: 'Do not rebuild asset with the given ID. Can be specified multiple times',
           default: [],
-          nargs: 1,
-          requiresArg: true,
         })
         .option('exclusively', {
           type: 'boolean',
@@ -389,9 +391,9 @@ export function parseCommandLineArguments(args: Array<string>): any {
         .option('parameters', {
           type: 'array',
           desc: 'Additional parameters passed to CloudFormation at deploy time (STACK:KEY=VALUE)',
-          default: {},
           nargs: 1,
           requiresArg: true,
+          default: {},
         })
         .option('outputs-file', {
           type: 'string',
@@ -418,8 +420,11 @@ export function parseCommandLineArguments(args: Array<string>): any {
           type: 'boolean',
           desc: "Rollback stack to stable state on failure. Defaults to 'true', iterate more rapidly with --no-rollback or -R. Note: do **not** disable this flag for deployments with resource replacements, as that will always fail",
         })
-        .option('R', { type: 'boolean', hidden: true })
-        .middleware(helpers.yargsNegativeAlias('R', 'rollback'), true)
+        .middleware(yargsNegativeAlias('rollback', 'R'), true)
+        .option('R', {
+          type: 'boolean',
+          hidden: true,
+        })
         .option('hotswap', {
           type: 'boolean',
           desc: "Attempts to perform a 'hotswap' deployment, but does not fall back to a full deployment if that is not possible. Instead, changes to any non-hotswappable properties are ignored.Do not use this in production environments",
@@ -481,10 +486,10 @@ export function parseCommandLineArguments(args: Array<string>): any {
         })
         .option('orphan', {
           type: 'array',
-          desc: 'Orphan the given resources, identified by their logical ID (can be specified multiple times)',
-          default: [],
           nargs: 1,
           requiresArg: true,
+          desc: 'Orphan the given resources, identified by their logical ID (can be specified multiple times)',
+          default: [],
         })
     )
     .command('import [STACK]', 'Import existing resource(s) into the given STACK', (yargs: Argv) =>
@@ -530,10 +535,9 @@ export function parseCommandLineArguments(args: Array<string>): any {
         .option('build-exclude', {
           type: 'array',
           alias: 'E',
+          nargs: 1,
           desc: 'Do not rebuild asset with the given ID. Can be specified multiple times',
           default: [],
-          nargs: 1,
-          requiresArg: true,
         })
         .option('exclusively', {
           type: 'boolean',
@@ -564,8 +568,11 @@ export function parseCommandLineArguments(args: Array<string>): any {
           type: 'boolean',
           desc: "Rollback stack to stable state on failure. Defaults to 'true', iterate more rapidly with --no-rollback or -R. Note: do **not** disable this flag for deployments with resource replacements, as that will always fail",
         })
-        .option('R', { type: 'boolean', hidden: true })
-        .middleware(helpers.yargsNegativeAlias('R', 'rollback'), true)
+        .middleware(yargsNegativeAlias('rollback', '-R'), true)
+        .option('R', {
+          type: 'boolean',
+          hidden: true,
+        })
         .option('hotswap', {
           type: 'boolean',
           desc: "Attempts to perform a 'hotswap' deployment, but does not fall back to a full deployment if that is not possible. Instead, changes to any non-hotswappable properties are ignored.'true' by default, use --no-hotswap to turn off",
@@ -673,7 +680,7 @@ export function parseCommandLineArguments(args: Array<string>): any {
           type: 'string',
           alias: 'l',
           desc: 'The language to be used for the new project (default can be configured in ~/.cdk.json)',
-          choices: ['csharp', 'fsharp', 'go', 'java', 'javascript', 'python', 'typescript'],
+          choices: availableInitLanguages,
         })
         .option('list', {
           type: 'boolean',
@@ -698,7 +705,7 @@ export function parseCommandLineArguments(args: Array<string>): any {
           default: 'typescript',
           alias: 'l',
           desc: 'The language to be used for the new project',
-          choices: ['typescript', 'go', 'java', 'python', 'csharp'],
+          choices: migrateSupportedLanguages,
         })
         .option('account', {
           type: 'string',
@@ -727,8 +734,6 @@ export function parseCommandLineArguments(args: Array<string>): any {
         .option('filter', {
           type: 'array',
           desc: 'Filters the resource scan based on the provided criteria in the following format: "key1=value1,key2=value2"\n This field can be passed multiple times for OR style filtering: \n filtering options: \n resource-identifier: A key-value pair that identifies the target resource. i.e. {"ClusterName", "myCluster"}\n resource-type-prefix: A string that represents a type-name prefix. i.e. "AWS::DynamoDB::"\n tag-key: a string that matches resources with at least one tag with the provided key. i.e. "myTagKey"\n tag-value: a string that matches resources with at least one tag with the provided value. i.e. "myTagValue"',
-          nargs: 1,
-          requiresArg: true,
         })
         .option('compress', {
           type: 'boolean',
@@ -759,11 +764,11 @@ export function parseCommandLineArguments(args: Array<string>): any {
         alias: 'b',
         desc: 'the command to use to open the browser, using %u as a placeholder for the path of the file to open',
         type: 'string',
-        default: helpers.browserForPlatform(),
+        default: browserDefault,
       })
     )
     .command('doctor', 'Check your set-up for potential problems')
-    .version(helpers.cliVersion())
+    .version(version)
     .demandCommand(1, '')
     .recommendCommands()
     .help()

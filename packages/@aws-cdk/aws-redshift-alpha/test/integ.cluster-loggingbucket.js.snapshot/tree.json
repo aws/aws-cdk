@@ -4,6 +4,14 @@
     "id": "App",
     "path": "",
     "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      },
       "redshift-loggingbucket-integ": {
         "id": "redshift-loggingbucket-integ",
         "path": "redshift-loggingbucket-integ",
@@ -31,7 +39,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPC",
+                  "fqn": "@aws-cdk/aws-ec2.CfnVPC",
                   "version": "0.0.0"
                 }
               },
@@ -45,6 +53,9 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             0,
@@ -68,14 +79,11 @@
                             "key": "Name",
                             "value": "redshift-loggingbucket-integ/VPC/PublicSubnet1"
                           }
-                        ],
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        }
+                        ]
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -83,8 +91,8 @@
                     "id": "Acl",
                     "path": "redshift-loggingbucket-integ/VPC/PublicSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
@@ -93,19 +101,19 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "redshift-loggingbucket-integ/VPC/PublicSubnet1"
                           }
-                        ],
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        }
+                        ]
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
+                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
                       "version": "0.0.0"
                     }
                   },
@@ -124,7 +132,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
                       "version": "0.0.0"
                     }
                   },
@@ -134,17 +142,17 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
+                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "gatewayId": {
                           "Ref": "VPCIGWB7E252D3"
-                        },
-                        "routeTableId": {
-                          "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
+                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
                       "version": "0.0.0"
                     }
                   },
@@ -164,7 +172,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnEIP",
+                      "fqn": "@aws-cdk/aws-ec2.CfnEIP",
                       "version": "0.0.0"
                     }
                   },
@@ -174,14 +182,14 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
+                        "subnetId": {
+                          "Ref": "VPCPublicSubnet1SubnetB4246D30"
+                        },
                         "allocationId": {
                           "Fn::GetAtt": [
                             "VPCPublicSubnet1EIP6AD938E8",
                             "AllocationId"
                           ]
-                        },
-                        "subnetId": {
-                          "Ref": "VPCPublicSubnet1SubnetB4246D30"
                         },
                         "tags": [
                           {
@@ -192,13 +200,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnNatGateway",
+                      "fqn": "@aws-cdk/aws-ec2.CfnNatGateway",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
+                  "fqn": "@aws-cdk/aws-ec2.PublicSubnet",
                   "version": "0.0.0"
                 }
               },
@@ -212,6 +220,9 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             1,
@@ -235,14 +246,11 @@
                             "key": "Name",
                             "value": "redshift-loggingbucket-integ/VPC/PublicSubnet2"
                           }
-                        ],
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        }
+                        ]
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -250,8 +258,8 @@
                     "id": "Acl",
                     "path": "redshift-loggingbucket-integ/VPC/PublicSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
@@ -260,19 +268,19 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "redshift-loggingbucket-integ/VPC/PublicSubnet2"
                           }
-                        ],
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        }
+                        ]
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
+                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
                       "version": "0.0.0"
                     }
                   },
@@ -291,7 +299,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
                       "version": "0.0.0"
                     }
                   },
@@ -301,17 +309,17 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
+                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "gatewayId": {
                           "Ref": "VPCIGWB7E252D3"
-                        },
-                        "routeTableId": {
-                          "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
+                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
                       "version": "0.0.0"
                     }
                   },
@@ -331,7 +339,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnEIP",
+                      "fqn": "@aws-cdk/aws-ec2.CfnEIP",
                       "version": "0.0.0"
                     }
                   },
@@ -341,14 +349,14 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
+                        "subnetId": {
+                          "Ref": "VPCPublicSubnet2Subnet74179F39"
+                        },
                         "allocationId": {
                           "Fn::GetAtt": [
                             "VPCPublicSubnet2EIP4947BC00",
                             "AllocationId"
                           ]
-                        },
-                        "subnetId": {
-                          "Ref": "VPCPublicSubnet2Subnet74179F39"
                         },
                         "tags": [
                           {
@@ -359,13 +367,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnNatGateway",
+                      "fqn": "@aws-cdk/aws-ec2.CfnNatGateway",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
+                  "fqn": "@aws-cdk/aws-ec2.PublicSubnet",
                   "version": "0.0.0"
                 }
               },
@@ -379,6 +387,9 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             0,
@@ -402,14 +413,11 @@
                             "key": "Name",
                             "value": "redshift-loggingbucket-integ/VPC/PrivateSubnet1"
                           }
-                        ],
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        }
+                        ]
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -417,8 +425,8 @@
                     "id": "Acl",
                     "path": "redshift-loggingbucket-integ/VPC/PrivateSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
@@ -427,19 +435,19 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "redshift-loggingbucket-integ/VPC/PrivateSubnet1"
                           }
-                        ],
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        }
+                        ]
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
+                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
                       "version": "0.0.0"
                     }
                   },
@@ -458,7 +466,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
                       "version": "0.0.0"
                     }
                   },
@@ -468,23 +476,23 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
+                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "natGatewayId": {
                           "Ref": "VPCPublicSubnet1NATGatewayE0556630"
-                        },
-                        "routeTableId": {
-                          "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
+                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
+                  "fqn": "@aws-cdk/aws-ec2.PrivateSubnet",
                   "version": "0.0.0"
                 }
               },
@@ -498,6 +506,9 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             1,
@@ -521,14 +532,11 @@
                             "key": "Name",
                             "value": "redshift-loggingbucket-integ/VPC/PrivateSubnet2"
                           }
-                        ],
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        }
+                        ]
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -536,8 +544,8 @@
                     "id": "Acl",
                     "path": "redshift-loggingbucket-integ/VPC/PrivateSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
@@ -546,19 +554,19 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "redshift-loggingbucket-integ/VPC/PrivateSubnet2"
                           }
-                        ],
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        }
+                        ]
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
+                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
                       "version": "0.0.0"
                     }
                   },
@@ -577,7 +585,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
                       "version": "0.0.0"
                     }
                   },
@@ -587,23 +595,23 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
+                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "natGatewayId": {
                           "Ref": "VPCPublicSubnet2NATGateway3C070193"
-                        },
-                        "routeTableId": {
-                          "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
+                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
+                  "fqn": "@aws-cdk/aws-ec2.PrivateSubnet",
                   "version": "0.0.0"
                 }
               },
@@ -622,7 +630,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnInternetGateway",
+                  "fqn": "@aws-cdk/aws-ec2.CfnInternetGateway",
                   "version": "0.0.0"
                 }
               },
@@ -632,22 +640,22 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                   "aws:cdk:cloudformation:props": {
-                    "internetGatewayId": {
-                      "Ref": "VPCIGWB7E252D3"
-                    },
                     "vpcId": {
                       "Ref": "VPCB9E5F0B4"
+                    },
+                    "internetGatewayId": {
+                      "Ref": "VPCIGWB7E252D3"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPCGatewayAttachment",
+                  "fqn": "@aws-cdk/aws-ec2.CfnVPCGatewayAttachment",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_ec2.Vpc",
+              "fqn": "@aws-cdk/aws-ec2.Vpc",
               "version": "0.0.0"
             }
           },
@@ -663,7 +671,7 @@
                   "aws:cdk:cloudformation:props": {}
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                  "fqn": "@aws-cdk/aws-s3.CfnBucket",
                   "version": "0.0.0"
                 }
               },
@@ -720,19 +728,19 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3.CfnBucketPolicy",
+                      "fqn": "@aws-cdk/aws-s3.CfnBucketPolicy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_s3.BucketPolicy",
+                  "fqn": "@aws-cdk/aws-s3.BucketPolicy",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_s3.Bucket",
+              "fqn": "@aws-cdk/aws-s3.Bucket",
               "version": "0.0.0"
             }
           },
@@ -762,13 +770,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_redshift.CfnClusterSubnetGroup",
+                      "fqn": "@aws-cdk/aws-redshift.CfnClusterSubnetGroup",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-redshift-alpha.ClusterSubnetGroup",
+                  "fqn": "@aws-cdk/aws-redshift.ClusterSubnetGroup",
                   "version": "0.0.0"
                 }
               },
@@ -796,13 +804,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
+                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
+                  "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
                   "version": "0.0.0"
                 }
               },
@@ -825,7 +833,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_secretsmanager.CfnSecret",
+                      "fqn": "@aws-cdk/aws-secretsmanager.CfnSecret",
                       "version": "0.0.0"
                     }
                   },
@@ -849,19 +857,19 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_secretsmanager.CfnSecretTargetAttachment",
+                          "fqn": "@aws-cdk/aws-secretsmanager.CfnSecretTargetAttachment",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_secretsmanager.SecretTargetAttachment",
+                      "fqn": "@aws-cdk/aws-secretsmanager.SecretTargetAttachment",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-redshift-alpha.DatabaseSecret",
+                  "fqn": "@aws-cdk/aws-redshift.DatabaseSecret",
                   "version": "0.0.0"
                 }
               },
@@ -871,20 +879,8 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Redshift::Cluster",
                   "aws:cdk:cloudformation:props": {
-                    "allowVersionUpgrade": true,
-                    "automatedSnapshotRetentionPeriod": 1,
-                    "clusterSubnetGroupName": {
-                      "Ref": "ClusterSubnetsDCFA5CB7"
-                    },
                     "clusterType": "multi-node",
                     "dbName": "default_db",
-                    "encrypted": true,
-                    "loggingProperties": {
-                      "bucketName": {
-                        "Ref": "S3486F821D"
-                      },
-                      "s3KeyPrefix": "prefix"
-                    },
                     "masterUsername": {
                       "Fn::Join": [
                         "",
@@ -910,6 +906,18 @@
                       ]
                     },
                     "nodeType": "dc2.large",
+                    "allowVersionUpgrade": true,
+                    "automatedSnapshotRetentionPeriod": 1,
+                    "clusterSubnetGroupName": {
+                      "Ref": "ClusterSubnetsDCFA5CB7"
+                    },
+                    "encrypted": true,
+                    "loggingProperties": {
+                      "bucketName": {
+                        "Ref": "S3486F821D"
+                      },
+                      "s3KeyPrefix": "prefix"
+                    },
                     "numberOfNodes": 2,
                     "publiclyAccessible": false,
                     "vpcSecurityGroupIds": [
@@ -923,36 +931,20 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_redshift.CfnCluster",
+                  "fqn": "@aws-cdk/aws-redshift.CfnCluster",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-redshift-alpha.Cluster",
-              "version": "0.0.0"
-            }
-          },
-          "BootstrapVersion": {
-            "id": "BootstrapVersion",
-            "path": "redshift-loggingbucket-integ/BootstrapVersion",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnParameter",
-              "version": "0.0.0"
-            }
-          },
-          "CheckBootstrapVersion": {
-            "id": "CheckBootstrapVersion",
-            "path": "redshift-loggingbucket-integ/CheckBootstrapVersion",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnRule",
+              "fqn": "@aws-cdk/aws-redshift.Cluster",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "aws-cdk-lib.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       },
       "LoggingBucketInteg": {
@@ -968,59 +960,33 @@
                 "path": "LoggingBucketInteg/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.4.2"
+                  "version": "10.1.85"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
                 "path": "LoggingBucketInteg/DefaultTest/DeployAssert",
-                "children": {
-                  "BootstrapVersion": {
-                    "id": "BootstrapVersion",
-                    "path": "LoggingBucketInteg/DefaultTest/DeployAssert/BootstrapVersion",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "CheckBootstrapVersion": {
-                    "id": "CheckBootstrapVersion",
-                    "path": "LoggingBucketInteg/DefaultTest/DeployAssert/CheckBootstrapVersion",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnRule",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Stack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
-        }
-      },
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.4.2"
         }
       }
     },
     "constructInfo": {
-      "fqn": "aws-cdk-lib.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }
