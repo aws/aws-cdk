@@ -1,5 +1,5 @@
 import { IConstruct } from 'constructs';
-import { Aspects, IAspect } from './aspect';
+import { Aspects, IAspect, AspectPriority } from './aspect';
 import { CfnResource } from './cfn-resource';
 import { RemovalPolicy } from './removal-policy';
 
@@ -28,11 +28,16 @@ export interface RemovalPolicyProps {
    * @default false - do not overwrite user-specified policies
    */
   readonly overwrite?: boolean;
+
+  /**
+   * The priority to use when applying this aspect.
+   * If multiple aspects apply conflicting settings, the one with the higher priority wins.
+   *
+   * @default - AspectPriority.MUTATING
+   */
+  readonly priority?: number;
 }
 
-/**
- * The RemovalPolicyAspect handles applying a removal policy to resources
- */
 class RemovalPolicyAspect implements IAspect {
   constructor(
     private readonly policy: RemovalPolicy,
@@ -46,7 +51,6 @@ class RemovalPolicyAspect implements IAspect {
     if (!patterns || patterns.length === 0) {
       return false;
     }
-
     return patterns.includes(resourceType);
   }
 
@@ -103,7 +107,9 @@ export class RemovalPolicies {
    * @param props Configuration options
    */
   public apply(policy: RemovalPolicy, props: RemovalPolicyProps = {}) {
-    Aspects.of(this.scope).add(new RemovalPolicyAspect(policy, props));
+    Aspects.of(this.scope).add(new RemovalPolicyAspect(policy, props), {
+      priority: props.priority ?? AspectPriority.MUTATING,
+    });
   }
 
   /**

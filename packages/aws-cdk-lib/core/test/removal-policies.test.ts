@@ -220,4 +220,18 @@ describe('removal-policys', () => {
     expect(bucket.cfnOptions.deletionPolicy).toBe('Retain');
     expect(table.cfnOptions.deletionPolicy).toBe('RetainExceptOnCreate');
   });
+
+  test('higher priority removal policy overrides lower priority removal policy', () => {
+    // GIVEN
+    const stack = new Stack();
+    const resource = new TestResource(stack, 'PriorityResource');
+
+    // WHEN
+    RemovalPolicies.of(stack).retainOnUpdateOrDelete({ priority: 250 });
+    RemovalPolicies.of(stack).destroy({ priority: 10 });
+
+    // THEN
+    synthesize(stack);
+    expect(resource.cfnOptions.deletionPolicy).toBe('Delete');
+  });
 });
