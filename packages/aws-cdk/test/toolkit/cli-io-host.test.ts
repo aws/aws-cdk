@@ -189,7 +189,7 @@ describe('CliIoHost', () => {
   });
 
   describe('CI mode behavior', () => {
-    test('writes to stdout in CI mode regardless of level', async () => {
+    test('writes to stdout in CI mode when level is not error'), async () => {
       const host = new CliIoHost({ useTTY: true, ci: true });
       await host.notify({
         time: new Date(),
