@@ -1,6 +1,7 @@
 import { Module, SelectiveModuleImport, StructType, Type, TypeScriptRenderer } from '@cdklabs/typewriter';
 import { EsLintRules } from '@cdklabs/typewriter/lib/eslint-rules';
 import * as prettier from 'prettier';
+import { generateDefault } from './util';
 import { CliConfig } from './yargs-types';
 
 export async function renderCliType(config: CliConfig): Promise<string> {
@@ -44,7 +45,7 @@ export async function renderCliType(config: CliConfig): Promise<string> {
       name: optionName,
       type: convertType(option.type),
       docs: {
-        default: normalizeDefault(option.default),
+        default: normalizeDefault(option.default, option.type),
         summary: option.desc,
         deprecated: option.deprecated ? String(option.deprecated) : undefined,
       },
@@ -76,7 +77,8 @@ export async function renderCliType(config: CliConfig): Promise<string> {
         name: optionName,
         type: convertType(option.type),
         docs: {
-          default: normalizeDefault(option.default),
+          // Notification Arns is a special property where undefined and [] mean different things
+          default: optionName === 'notification-arns' ? 'undefined' : normalizeDefault(option.default, option.type),
           summary: option.desc,
           deprecated: option.deprecated ? String(option.deprecated) : undefined,
           remarks: option.alias ? `aliases: ${Array.isArray(option.alias) ? option.alias.join(' ') : option.alias}` : undefined,
@@ -129,9 +131,20 @@ function kebabToPascal(str: string): string {
     .join('');
 }
 
-function normalizeDefault(defaultValue: any): string {
-  if (typeof defaultValue === 'boolean' || typeof defaultValue === 'string') {
-    return String(defaultValue);
+function normalizeDefault(defaultValue: any, type: string): string {
+  switch (typeof defaultValue) {
+    case 'boolean':
+    case 'string':
+    case 'number':
+    case 'object':
+      return JSON.stringify(defaultValue);
+
+    // In these cases we cannot use the given defaultValue, so we then check the type
+    // of the option to determine the default value
+    case 'undefined':
+    case 'function':
+    default:
+      const generatedDefault = generateDefault(type);
+      return generatedDefault ? JSON.stringify(generatedDefault) : 'undefined';
   }
-  return 'undefined';
 }
