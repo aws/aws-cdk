@@ -1,22 +1,21 @@
 import * as os from 'os';
-import * as path from 'path';
-import * as cxapi from '@aws-cdk/cx-api';
-import * as AWS from 'aws-sdk';
-import type { ConfigurationOptions } from 'aws-sdk/lib/config-base';
-import * as fs from 'fs-extra';
-import { debug, warning } from './_env';
+import { ContextLookupRoleOptions } from '@aws-cdk/cloud-assembly-schema';
+import { Environment, EnvironmentUtils, UNKNOWN_ACCOUNT, UNKNOWN_REGION } from '@aws-cdk/cx-api';
+import { AssumeRoleCommandInput } from '@aws-sdk/client-sts';
+import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
+import type { NodeHttpHandlerOptions } from '@smithy/node-http-handler';
+import { AwsCredentialIdentityProvider, Logger } from '@smithy/types';
 import { AwsCliCompatible } from './awscli-compatible';
 import { cached } from './cached';
 import { CredentialPlugins } from './credential-plugins';
-import { Mode } from './credentials';
-import { ISDK, SDK, isUnrecoverableAwsError } from './sdk';
-import { rootDir } from '../../util/directories';
+import { SDK } from './sdk';
+import { debug, warning } from '../../logging';
 import { traceMethods } from '../../util/tracing';
+import { Mode } from '../plugin';
+import { makeCachingProvider } from './provider-caching';
+import { AuthenticationError } from '../../toolkit/error';
 
-// Some configuration that can only be achieved by setting
-// environment variables.
-process.env.AWS_STS_REGIONAL_ENDPOINTS = 'regional';
-process.env.AWS_NODEJS_CONNECTION_REUSE_ENABLED = '1';
+export type AssumeRoleAdditionalOptions = Partial<Omit<AssumeRoleCommandInput, 'ExternalId' | 'RoleArn'>>;
 
 /**
  * Options for the default SDK provider
@@ -30,23 +29,14 @@ export interface SdkProviderOptions {
   readonly profile?: string;
 
   /**
-   * Whether we should check for EC2 credentials
-   *
-   * @default - Autodetect
-   */
-  readonly ec2creds?: boolean;
-
-  /**
-   * Whether we should check for container credentials
-   *
-   * @default - Autodetect
-   */
-  readonly containerCreds?: boolean;
-
-  /**
    * HTTP options for SDK
    */
   readonly httpOptions?: SdkHttpOptions;
+
+  /**
+   * The logger for sdk calls.
+   */
+  readonly logger?: Logger;
 }
 
 /**
@@ -66,17 +56,9 @@ export interface SdkHttpOptions {
    * @default No certificate bundle
    */
   readonly caBundlePath?: string;
-
-  /**
-   * The custom user agent to use.
-   *
-   * @default - <package-name>/<package-version>
-   */
-  readonly userAgent?: string;
 }
 
 const CACHED_ACCOUNT = Symbol('cached_account');
-const CACHED_DEFAULT_CREDENTIALS = Symbol('cached_default_credentials');
 
 /**
  * SDK configuration for a given environment
@@ -94,7 +76,7 @@ export interface SdkForEnvironment {
   /**
    * The SDK for the given environment
    */
-  readonly sdk: ISDK;
+  readonly sdk: SDK;
 
   /**
    * Whether or not the assume role was successful.
@@ -137,32 +119,28 @@ export class SdkProvider {
    * class `AwsCliCompatible` for the details.
    */
   public static async withAwsCliCompatibleDefaults(options: SdkProviderOptions = {}) {
-    const sdkOptions = parseHttpOptions(options.httpOptions ?? {});
-
-    const chain = await AwsCliCompatible.credentialChain({
+    const credentialProvider = await AwsCliCompatible.credentialChainBuilder({
       profile: options.profile,
-      ec2instance: options.ec2creds,
-      containerCreds: options.containerCreds,
-      httpOptions: sdkOptions.httpOptions,
-    });
-    const region = await AwsCliCompatible.region({
-      profile: options.profile,
-      ec2instance: options.ec2creds,
+      httpOptions: options.httpOptions,
+      logger: options.logger,
     });
 
-    return new SdkProvider(chain, region, sdkOptions);
+    const region = await AwsCliCompatible.region(options.profile);
+    const requestHandler = AwsCliCompatible.requestHandlerBuilder(options.httpOptions);
+    return new SdkProvider(credentialProvider, region, requestHandler, options.logger);
   }
 
   private readonly plugins = new CredentialPlugins();
 
   public constructor(
-    private readonly defaultChain: AWS.CredentialProviderChain,
+    private readonly defaultCredentialProvider: AwsCredentialIdentityProvider,
     /**
      * Default region
      */
     public readonly defaultRegion: string,
-    private readonly sdkOptions: ConfigurationOptions = {}) {
-  }
+    private readonly requestHandler: NodeHttpHandlerOptions = {},
+    private readonly logger?: Logger,
+  ) {}
 
   /**
    * Return an SDK which can do operations in the given environment
@@ -170,7 +148,7 @@ export class SdkProvider {
    * The `environment` parameter is resolved first (see `resolveEnvironment()`).
    */
   public async forEnvironment(
-    environment: cxapi.Environment,
+    environment: Environment,
     mode: Mode,
     options?: CredentialsOptions,
     quiet = false,
@@ -180,31 +158,38 @@ export class SdkProvider {
     const baseCreds = await this.obtainBaseCredentials(env.account, mode);
 
     // At this point, we need at least SOME credentials
-    if (baseCreds.source === 'none') { throw new Error(fmtObtainCredentialsError(env.account, baseCreds)); }
+    if (baseCreds.source === 'none') {
+      throw new AuthenticationError(fmtObtainCredentialsError(env.account, baseCreds));
+    }
 
     // Simple case is if we don't need to "assumeRole" here. If so, we must now have credentials for the right
     // account.
     if (options?.assumeRoleArn === undefined) {
-      if (baseCreds.source === 'incorrectDefault') { throw new Error(fmtObtainCredentialsError(env.account, baseCreds)); }
+      if (baseCreds.source === 'incorrectDefault') {
+        throw new AuthenticationError(fmtObtainCredentialsError(env.account, baseCreds));
+      }
 
       // Our current credentials must be valid and not expired. Confirm that before we get into doing
       // actual CloudFormation calls, which might take a long time to hang.
-      const sdk = new SDK(baseCreds.credentials, env.region, this.sdkOptions);
+      const sdk = new SDK(baseCreds.credentials, env.region, this.requestHandler, this.logger);
       await sdk.validateCredentials();
       return { sdk, didAssumeRole: false };
     }
 
-    // We will proceed to AssumeRole using whatever we've been given.
-    const sdk = await this.withAssumedRole(baseCreds, options.assumeRoleArn, options.assumeRoleExternalId, env.region);
-
-    // Exercise the AssumeRoleCredentialsProvider we've gotten at least once so
-    // we can determine whether the AssumeRole call succeeds or not.
     try {
-      await sdk.forceCredentialRetrieval();
+      // We will proceed to AssumeRole using whatever we've been given.
+      const sdk = await this.withAssumedRole(
+        baseCreds,
+        options.assumeRoleArn,
+        options.assumeRoleExternalId,
+        options.assumeRoleAdditionalOptions,
+        env.region,
+      );
+
       return { sdk, didAssumeRole: true };
-    } catch (e: any) {
-      if (isUnrecoverableAwsError(e)) {
-        throw e;
+    } catch (err: any) {
+      if (err.name === 'ExpiredToken') {
+        throw err;
       }
 
       // AssumeRole failed. Proceed and warn *if and only if* the baseCredentials were already for the right account
@@ -212,13 +197,18 @@ export class SdkProvider {
       // feed the CLI credentials which are sufficient by themselves. Prefer to assume the correct role if we can,
       // but if we can't then let's just try with available credentials anyway.
       if (baseCreds.source === 'correctDefault' || baseCreds.source === 'plugin') {
-        debug(e.message);
+        debug(err.message);
         const logger = quiet ? debug : warning;
-        logger(`${fmtObtainedCredentials(baseCreds)} could not be used to assume '${options.assumeRoleArn}', but are for the right account. Proceeding anyway.`);
-        return { sdk: new SDK(baseCreds.credentials, env.region, this.sdkOptions), didAssumeRole: false };
+        logger(
+          `${fmtObtainedCredentials(baseCreds)} could not be used to assume '${options.assumeRoleArn}', but are for the right account. Proceeding anyway.`,
+        );
+        return {
+          sdk: new SDK(baseCreds.credentials, env.region, this.requestHandler, this.logger),
+          didAssumeRole: false,
+        };
       }
 
-      throw e;
+      throw err;
     }
   }
 
@@ -227,11 +217,13 @@ export class SdkProvider {
    *
    * Returns `undefined` if there are no base credentials.
    */
-  public async baseCredentialsPartition(environment: cxapi.Environment, mode: Mode): Promise<string | undefined> {
+  public async baseCredentialsPartition(environment: Environment, mode: Mode): Promise<string | undefined> {
     const env = await this.resolveEnvironment(environment);
     const baseCreds = await this.obtainBaseCredentials(env.account, mode);
-    if (baseCreds.source === 'none') { return undefined; }
-    return (await new SDK(baseCreds.credentials, env.region, this.sdkOptions).currentAccount()).partition;
+    if (baseCreds.source === 'none') {
+      return undefined;
+    }
+    return (await new SDK(baseCreds.credentials, env.region, this.requestHandler, this.logger).currentAccount()).partition;
   }
 
   /**
@@ -244,18 +236,20 @@ export class SdkProvider {
    * It is an error if `UNKNOWN_ACCOUNT` is used but the user hasn't configured
    * any SDK credentials.
    */
-  public async resolveEnvironment(env: cxapi.Environment): Promise<cxapi.Environment> {
-    const region = env.region !== cxapi.UNKNOWN_REGION ? env.region : this.defaultRegion;
-    const account = env.account !== cxapi.UNKNOWN_ACCOUNT ? env.account : (await this.defaultAccount())?.accountId;
+  public async resolveEnvironment(env: Environment): Promise<Environment> {
+    const region = env.region !== UNKNOWN_REGION ? env.region : this.defaultRegion;
+    const account = env.account !== UNKNOWN_ACCOUNT ? env.account : (await this.defaultAccount())?.accountId;
 
     if (!account) {
-      throw new Error('Unable to resolve AWS account to use. It must be either configured when you define your CDK Stack, or through the environment');
+      throw new AuthenticationError(
+        'Unable to resolve AWS account to use. It must be either configured when you define your CDK Stack, or through the environment',
+      );
     }
 
     return {
       region,
       account,
-      name: cxapi.EnvironmentUtils.format(account, region),
+      name: EnvironmentUtils.format(account, region),
     };
   }
 
@@ -272,27 +266,22 @@ export class SdkProvider {
    *
    * Uses a cache to avoid STS calls if we don't need 'em.
    */
-  public defaultAccount(): Promise<Account | undefined> {
+  public async defaultAccount(): Promise<Account | undefined> {
     return cached(this, CACHED_ACCOUNT, async () => {
       try {
-        const creds = await this.defaultCredentials();
-
-        const accessKeyId = creds.accessKeyId;
-        if (!accessKeyId) {
-          throw new Error('Unable to resolve AWS credentials (setup with "aws configure")');
-        }
-
-        return await new SDK(creds, this.defaultRegion, this.sdkOptions).currentAccount();
+        return await new SDK(this.defaultCredentialProvider, this.defaultRegion, this.requestHandler, this.logger).currentAccount();
       } catch (e: any) {
         // Treat 'ExpiredToken' specially. This is a common situation that people may find themselves in, and
         // they are complaining about if we fail 'cdk synth' on them. We loudly complain in order to show that
         // the current situation is probably undesirable, but we don't fail.
-        if (e.code === 'ExpiredToken') {
-          warning('There are expired AWS credentials in your environment. The CDK app will synth without current account information.');
+        if (e.name === 'ExpiredToken') {
+          warning(
+            'There are expired AWS credentials in your environment. The CDK app will synth without current account information.',
+          );
           return undefined;
         }
 
-        debug(`Unable to determine the default AWS account (${e.code}): ${e.message}`);
+        debug(`Unable to determine the default AWS account (${e.name}): ${e.message}`);
         return undefined;
       }
     });
@@ -311,7 +300,10 @@ export class SdkProvider {
     // First try 'current' credentials
     const defaultAccountId = (await this.defaultAccount())?.accountId;
     if (defaultAccountId === accountId) {
-      return { source: 'correctDefault', credentials: await this.defaultCredentials() };
+      return {
+        source: 'correctDefault',
+        credentials: await this.defaultCredentialProvider,
+      };
     }
 
     // Then try the plugins
@@ -325,7 +317,7 @@ export class SdkProvider {
       return {
         source: 'incorrectDefault',
         accountId: defaultAccountId,
-        credentials: await this.defaultCredentials(),
+        credentials: await this.defaultCredentialProvider,
         unusedPlugins: this.plugins.availablePluginNames,
       };
     }
@@ -338,16 +330,6 @@ export class SdkProvider {
   }
 
   /**
-   * Resolve the default chain to the first set of credentials that is available
-   */
-  private defaultCredentials(): Promise<AWS.Credentials> {
-    return cached(this, CACHED_DEFAULT_CREDENTIALS, () => {
-      debug('Resolving default credentials');
-      return this.defaultChain.resolvePromise();
-    });
-  }
-
-  /**
    * Return an SDK which uses assumed role credentials
    *
    * The base credentials used to retrieve the assumed role credentials will be the
@@ -355,30 +337,57 @@ export class SdkProvider {
    * otherwise it will be the current credentials.
    */
   private async withAssumedRole(
-    masterCredentials: Exclude<ObtainBaseCredentialsResult, { source: 'none' }>,
+    mainCredentials: Exclude<ObtainBaseCredentialsResult, { source: 'none' }>,
     roleArn: string,
-    externalId: string | undefined,
-    region: string | undefined) {
+    externalId?: string,
+    additionalOptions?: AssumeRoleAdditionalOptions,
+    region?: string,
+  ): Promise<SDK> {
     debug(`Assuming role '${roleArn}'.`);
 
     region = region ?? this.defaultRegion;
 
-    const creds = new AWS.ChainableTemporaryCredentials({
-      params: {
-        RoleArn: roleArn,
-        ...externalId ? { ExternalId: externalId } : {},
-        RoleSessionName: `aws-cdk-${safeUsername()}`,
-      },
-      stsConfig: {
-        region,
-        ...this.sdkOptions,
-      },
-      masterCredentials: masterCredentials.credentials,
-    });
+    const sourceDescription = fmtObtainedCredentials(mainCredentials);
 
-    return new SDK(creds, region, this.sdkOptions, {
-      assumeRoleCredentialsSourceDescription: fmtObtainedCredentials(masterCredentials),
-    });
+    try {
+      const credentials = await makeCachingProvider(fromTemporaryCredentials({
+        masterCredentials: mainCredentials.credentials,
+        params: {
+          RoleArn: roleArn,
+          ExternalId: externalId,
+          RoleSessionName: `aws-cdk-${safeUsername()}`,
+          ...additionalOptions,
+          TransitiveTagKeys: additionalOptions?.Tags ? additionalOptions.Tags.map((t) => t.Key!) : undefined,
+        },
+        clientConfig: {
+          region,
+          requestHandler: this.requestHandler,
+          customUserAgent: 'aws-cdk',
+          logger: this.logger,
+        },
+        logger: this.logger,
+      }));
+
+      // Call the provider at least once here, to catch an error if it occurs
+      await credentials();
+
+      return new SDK(credentials, region, this.requestHandler, this.logger);
+    } catch (err: any) {
+      if (err.name === 'ExpiredToken') {
+        throw err;
+      }
+
+      debug(`Assuming role failed: ${err.message}`);
+      throw new AuthenticationError(
+        [
+          'Could not assume role in target account',
+          ...(sourceDescription ? [`using ${sourceDescription}`] : []),
+          err.message,
+          ". Please make sure that this role exists in the account. If it doesn't exist, (re)-bootstrap the environment " +
+            "with the right '--trust', using the latest version of the CDK CLI.",
+        ].join(' '),
+      );
+    }
   }
 }
 
@@ -398,93 +407,6 @@ export interface Account {
    * The partition ('aws' or 'aws-cn' or otherwise)
    */
   readonly partition: string;
-}
-
-const DEFAULT_CONNECTION_TIMEOUT = 10000;
-const DEFAULT_TIMEOUT = 300000;
-
-/**
- * Get HTTP options for the SDK
- *
- * Read from user input or environment variables.
- *
- * Returns a complete `ConfigurationOptions` object because that's where
- * `customUserAgent` lives, but `httpOptions` is the most important attribute.
- */
-function parseHttpOptions(options: SdkHttpOptions) {
-  const config: ConfigurationOptions = {};
-  config.httpOptions = {};
-
-  config.httpOptions.connectTimeout = DEFAULT_CONNECTION_TIMEOUT;
-  config.httpOptions.timeout = DEFAULT_TIMEOUT;
-
-  let userAgent = options.userAgent;
-  if (userAgent == null) {
-    userAgent = defaultCliUserAgent();
-  }
-  config.customUserAgent = userAgent;
-
-  const caBundlePath = options.caBundlePath || caBundlePathFromEnvironment();
-  if (caBundlePath) {
-    debug('Using CA bundle path: %s', caBundlePath);
-    (config.httpOptions as any).ca = readIfPossible(caBundlePath);
-  }
-
-  if (options.proxyAddress) {
-    debug('Proxy server from command-line arguments: %s', options.proxyAddress);
-  }
-
-  // Configure the proxy agent. By default, this will use HTTPS?_PROXY and
-  // NO_PROXY environment variables to determine which proxy to use for each
-  // request.
-  //
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { ProxyAgent } = require('proxy-agent');
-  config.httpOptions.agent = new ProxyAgent(options.proxyAddress);
-
-  return config;
-}
-
-/**
- * Find the package.json from the main toolkit.
- *
- * If we can't read it for some reason, try to do something reasonable anyway.
- * Fall back to argv[1], or a standard string if that is undefined for some reason.
- */
-export function defaultCliUserAgent() {
-  const root = rootDir(false);
-  const pkg = JSON.parse((root ? readIfPossible(path.join(root, 'package.json')) : undefined) ?? '{}');
-  const name = pkg.name ?? path.basename(process.argv[1] ?? 'cdk-cli');
-  const version = pkg.version ?? '<unknown>';
-  return `${name}/${version}`;
-}
-
-/**
- * Find and return a CA certificate bundle path to be passed into the SDK.
- */
-function caBundlePathFromEnvironment(): string | undefined {
-  if (process.env.aws_ca_bundle) {
-    return process.env.aws_ca_bundle;
-  }
-  if (process.env.AWS_CA_BUNDLE) {
-    return process.env.AWS_CA_BUNDLE;
-  }
-  return undefined;
-}
-
-/**
- * Read a file if it exists, or return undefined
- *
- * Not async because it is used in the constructor
- */
-function readIfPossible(filename: string): string | undefined {
-  try {
-    if (!fs.pathExistsSync(filename)) { return undefined; }
-    return fs.readFileSync(filename, { encoding: 'utf-8' });
-  } catch (e: any) {
-    debug(e);
-    return undefined;
-  }
 }
 
 /**
@@ -513,15 +435,25 @@ export interface CredentialsOptions {
    * External ID required to assume the given role.
    */
   readonly assumeRoleExternalId?: string;
+
+  /**
+   * Session tags required to assume the given role.
+   */
+  readonly assumeRoleAdditionalOptions?: AssumeRoleAdditionalOptions;
 }
 
 /**
  * Result of obtaining base credentials
  */
 type ObtainBaseCredentialsResult =
-  { source: 'correctDefault'; credentials: AWS.Credentials }
-  | { source: 'plugin'; pluginName: string; credentials: AWS.Credentials }
-  | { source: 'incorrectDefault'; credentials: AWS.Credentials; accountId: string; unusedPlugins: string[] }
+  | { source: 'correctDefault'; credentials: AwsCredentialIdentityProvider }
+  | { source: 'plugin'; pluginName: string; credentials: AwsCredentialIdentityProvider }
+  | {
+    source: 'incorrectDefault';
+    credentials: AwsCredentialIdentityProvider;
+    accountId: string;
+    unusedPlugins: string[];
+  }
   | { source: 'none'; unusedPlugins: string[] };
 
 /**
@@ -532,7 +464,12 @@ type ObtainBaseCredentialsResult =
  * - No credentials are available at all
  * - Default credentials are for the wrong account
  */
-function fmtObtainCredentialsError(targetAccountId: string, obtainResult: ObtainBaseCredentialsResult & { source: 'none' | 'incorrectDefault' }): string {
+function fmtObtainCredentialsError(
+  targetAccountId: string,
+  obtainResult: ObtainBaseCredentialsResult & {
+    source: 'none' | 'incorrectDefault';
+  },
+): string {
   const msg = [`Need to perform AWS calls for account ${targetAccountId}`];
   switch (obtainResult.source) {
     case 'incorrectDefault':
@@ -556,8 +493,7 @@ function fmtObtainCredentialsError(targetAccountId: string, obtainResult: Obtain
  * - Default credentials for the wrong account
  * - Credentials returned from a plugin
  */
-function fmtObtainedCredentials(
-  obtainResult: Exclude<ObtainBaseCredentialsResult, { source: 'none' }>): string {
+function fmtObtainedCredentials(obtainResult: Exclude<ObtainBaseCredentialsResult, { source: 'none' }>): string {
   switch (obtainResult.source) {
     case 'correctDefault':
       return 'current credentials';
@@ -574,4 +510,21 @@ function fmtObtainedCredentials(
 
       return msg.join('');
   }
+}
+
+/**
+ * Instantiate an SDK for context providers. This function ensures that all
+ * lookup assume role options are used when context providers perform lookups.
+ */
+export async function initContextProviderSdk(aws: SdkProvider, options: ContextLookupRoleOptions): Promise<SDK> {
+  const account = options.account;
+  const region = options.region;
+
+  const creds: CredentialsOptions = {
+    assumeRoleArn: options.lookupRoleArn,
+    assumeRoleExternalId: options.lookupRoleExternalId,
+    assumeRoleAdditionalOptions: options.assumeRoleAdditionalOptions,
+  };
+
+  return (await aws.forEnvironment(EnvironmentUtils.make(account, region), Mode.ForReading, creds)).sdk;
 }

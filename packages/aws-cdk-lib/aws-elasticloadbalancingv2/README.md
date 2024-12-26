@@ -298,13 +298,14 @@ const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
 });
 ```
 
-By setting `DUAL_STACK_WITHOUT_PUBLIC_IPV4`, you can provision load balancers without public IPv4s
+By setting `DUAL_STACK_WITHOUT_PUBLIC_IPV4`, you can provision load balancers without public IPv4s:
 
 ```ts
 declare const vpc: ec2.Vpc;
 
 const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
   vpc,
+  internetFacing: true,
   ipAddressType: elbv2.IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4,
 });
 ```
@@ -366,7 +367,6 @@ and [Register targets with your Target
 Group](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/target-group-register-targets.html)
 for more information.
 
-
 ### Dualstack Network Load Balancer
 
 You can create a dualstack Network Load Balancer using the `ipAddressType` property:
@@ -380,7 +380,23 @@ const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
 });
 ```
 
-You cannot add UDP or TCP_UDP listeners to a dualstack Network Load Balancer.
+You can configure whether to use an IPv6 prefix from each subnet for source NAT by setting `enablePrefixForIpv6SourceNat` to `true`.
+This must be enabled if you want to create a dualstack Network Load Balancer with a listener that uses UDP protocol.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
+  vpc,
+  ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+  enablePrefixForIpv6SourceNat: true,
+});
+
+const listener = lb.addListener('Listener', {
+  port: 1229,
+  protocol: elbv2.Protocol.UDP,
+});
+```
 
 ### Network Load Balancer attributes
 
@@ -402,7 +418,44 @@ const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
 
   // Indicates how traffic is distributed among the load balancer Availability Zones.
   clientRoutingPolicy: elbv2.ClientRoutingPolicy.AVAILABILITY_ZONE_AFFINITY,
+
+  // Indicates whether zonal shift is enabled.
+  zonalShift: true,
 });
+```
+
+### Network Load Balancer Listener attributes
+
+You can modify attributes of Network Load Balancer Listener:
+
+```ts
+declare const lb: elbv2.NetworkLoadBalancer;
+declare const group: elbv2.NetworkTargetGroup;
+
+const listener = lb.addListener('Listener', {
+  port: 80,
+  defaultAction: elbv2.NetworkListenerAction.forward([group]),
+
+  // The tcp idle timeout value. The valid range is 60-6000 seconds. The default is 350 seconds.
+  tcpIdleTimeout: Duration.seconds(100),
+});
+```
+
+### Network Load Balancer and EC2 IConnectable interface
+Network Load Balancer implements EC2 `IConnectable` and exposes `connections` property. EC2 Connections allows manage the allowed network connections for constructs with Security Groups. This class makes it easy to allow network connections to and from security groups, and between security groups individually. One thing to keep in mind is that network load balancers do not have security groups, and no automatic security group configuration is done for you. You will have to configure the security groups of the target yourself to allow traffic by clients and/or load balancer instances, depending on your target types.
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const sg1: ec2.ISecurityGroup;
+declare const sg2: ec2.ISecurityGroup;
+
+const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
+  vpc,
+  internetFacing: true,
+  securityGroups: [sg1],
+});
+lb.addSecurityGroup(sg2);
+lb.connections.allowFromAnyIpv4(ec2.Port.tcp(80));
 ```
 
 ## Targets and Target Groups
@@ -517,6 +570,67 @@ const tg = new elbv2.ApplicationTargetGroup(this, 'TargetGroup', {
   vpc,
   loadBalancingAlgorithmType: elbv2.TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM,
   enableAnomalyMitigation: true,
+});
+```
+
+### Target Group level cross-zone load balancing setting for Application Load Balancers and Network Load Balancers
+
+You can set cross-zone load balancing setting at the target group level by setting `crossZone` property.
+
+If not specified, it will use the load balancer's configuration.
+
+For more infomation, see [How Elastic Load Balancing works](https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/how-elastic-load-balancing-works.html).
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const targetGroup = new elbv2.ApplicationTargetGroup(this, 'TargetGroup', {
+  vpc,
+  port: 80,
+  targetType: elbv2.TargetType.INSTANCE,
+
+  // Whether cross zone load balancing is enabled.
+  crossZoneEnabled: true,
+});
+```
+
+### IP Address Type for Target Groups
+
+You can set the IP address type for the target group by setting the `ipAddressType` property for both Application and Network target groups.
+
+If you set the `ipAddressType` property to `IPV6`, the VPC for the target group must have an associated IPv6 CIDR block.
+
+For more information, see IP address type for [Network Load Balancers](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html#target-group-ip-address-type) and [Application Load Balancers](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#target-group-ip-address-type).
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const ipv4ApplicationTargetGroup = new elbv2.ApplicationTargetGroup(this, 'IPv4ApplicationTargetGroup', {
+  vpc,
+  port: 80,
+  targetType: elbv2.TargetType.INSTANCE,
+  ipAddressType: elbv2.TargetGroupIpAddressType.IPV4,
+});
+
+const ipv6ApplicationTargetGroup = new elbv2.ApplicationTargetGroup(this, 'Ipv6ApplicationTargetGroup', {
+  vpc,
+  port: 80,
+  targetType: elbv2.TargetType.INSTANCE,
+  ipAddressType: elbv2.TargetGroupIpAddressType.IPV6,
+});
+
+const ipv4NetworkTargetGroup = new elbv2.NetworkTargetGroup(this, 'IPv4NetworkTargetGroup', {
+  vpc,
+  port: 80,
+  targetType: elbv2.TargetType.INSTANCE,
+  ipAddressType: elbv2.TargetGroupIpAddressType.IPV4,
+});
+
+const ipv6NetworkTargetGroup = new elbv2.NetworkTargetGroup(this, 'Ipv6NetworkTargetGroup', {
+  vpc,
+  port: 80,
+  targetType: elbv2.TargetType.INSTANCE,
+  ipAddressType: elbv2.TargetGroupIpAddressType.IPV6,
 });
 ```
 

@@ -2,7 +2,7 @@ import * as os from 'os';
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
-import { availableInitTemplates, cliInit } from '../lib/init';
+import { availableInitLanguages, availableInitTemplates, cliInit, currentlyRecommendedAwsCdkLibFlags, printAvailableTemplates } from '../lib/init';
 
 describe('constructs version', () => {
   cliTest('create a TypeScript library project', async (workDir) => {
@@ -15,6 +15,21 @@ describe('constructs version', () => {
     // Check that package.json and lib/ got created in the current directory
     expect(await fs.pathExists(path.join(workDir, 'package.json'))).toBeTruthy();
     expect(await fs.pathExists(path.join(workDir, 'lib'))).toBeTruthy();
+  });
+
+  cliTest('asking for a nonexistent template fails', async (workDir) => {
+    await expect(cliInit({
+      type: 'banana',
+      language: 'typescript',
+      workDir,
+    })).rejects.toThrow(/Unknown init template/);
+  });
+
+  cliTest('asking for a template but no language prints and throws', async (workDir) => {
+    await expect(cliInit({
+      type: 'app',
+      workDir,
+    })).rejects.toThrow(/No language/);
   });
 
   cliTest('create a TypeScript app project', async (workDir) => {
@@ -196,8 +211,36 @@ describe('constructs version', () => {
     expect(await fs.pathExists(path.join(workDir, 'bin'))).toBeTruthy();
   });
 
-  test('verify "future flags" are added to cdk.json', async () => {
+  cliTest('CLI uses recommended feature flags from data file to initialize context', async (workDir) => {
+    const recommendedFlagsFile = path.join(__dirname, '..', 'lib', 'init-templates', '.recommended-feature-flags.json');
+    await withReplacedFile(recommendedFlagsFile, JSON.stringify({ banana: 'yellow' }), () => cliInit({
+      type: 'app',
+      language: 'typescript',
+      canUseNetwork: false,
+      generateOnly: true,
+      workDir,
+    }));
 
+    const cdkFile = await fs.readJson(path.join(workDir, 'cdk.json'));
+    expect(cdkFile.context).toEqual({ banana: 'yellow' });
+  });
+
+  cliTest('CLI uses init versions file to initialize template', async (workDir) => {
+    const recommendedFlagsFile = path.join(__dirname, '..', 'lib', 'init-templates', '.init-version.json');
+    await withReplacedFile(recommendedFlagsFile, JSON.stringify({ 'aws-cdk-lib': '100.1.1', 'constructs': '^200.2.2' }), () => cliInit({
+      type: 'app',
+      language: 'typescript',
+      canUseNetwork: false,
+      generateOnly: true,
+      workDir,
+    }));
+
+    const packageJson = await fs.readJson(path.join(workDir, 'package.json'));
+    expect(packageJson.dependencies['aws-cdk-lib']).toEqual('100.1.1');
+    expect(packageJson.dependencies.constructs).toEqual('^200.2.2');
+  });
+
+  test('verify "future flags" are added to cdk.json', async () => {
     for (const templ of await availableInitTemplates()) {
       for (const lang of templ.languages) {
         await withTempDir(async tmpDir => {
@@ -216,9 +259,10 @@ describe('constructs version', () => {
 
           const config = await fs.readJson(path.join(tmpDir, 'cdk.json'));
           const context = config.context || {};
+          const recommendedFlags = await currentlyRecommendedAwsCdkLibFlags();
           for (const [key, actual] of Object.entries(context)) {
-            expect(key in cxapi.NEW_PROJECT_CONTEXT).toBeTruthy();
-            expect(cxapi.NEW_PROJECT_CONTEXT[key]).toEqual(actual);
+            expect(key in recommendedFlags).toBeTruthy();
+            expect(recommendedFlags[key]).toEqual(actual);
           }
 
           // assert that expired future flags are not part of the cdk.json
@@ -235,6 +279,16 @@ describe('constructs version', () => {
 
 test('when no version number is present (e.g., local development), the v2 templates are chosen by default', async () => {
   expect((await availableInitTemplates()).length).toBeGreaterThan(0);
+});
+
+test('check available init languages', async () => {
+  const langs = await availableInitLanguages();
+  expect(langs.length).toBeGreaterThan(0);
+  expect(langs).toContain('typescript');
+});
+
+test('exercise printing available templates', async () => {
+  await printAvailableTemplates();
 });
 
 function cliTest(name: string, handler: (dir: string) => void | Promise<any>): void {
@@ -280,5 +334,15 @@ async function recursiveListFiles(rdir: string): Promise<string[]> {
         ret.push(fullPath);
       }
     }
+  }
+}
+
+async function withReplacedFile(fileName: string, contents: any, cb: () => Promise<void>): Promise<void> {
+  const oldContents = await fs.readFile(fileName, 'utf8');
+  await fs.writeFile(fileName, contents);
+  try {
+    await cb();
+  } finally {
+    await fs.writeFile(fileName, oldContents);
   }
 }

@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { AliasRecordTargetConfig, IAliasRecordTarget } from './alias-record-target';
 import { GeoLocation } from './geo-location';
+import { IHealthCheck } from './health-check';
 import { IHostedZone } from './hosted-zone-ref';
 import { CfnRecordSet } from './route53.generated';
 import { determineFullyQualifiedDomainName } from './util';
@@ -66,6 +67,15 @@ export enum RecordType {
   DS = 'DS',
 
   /**
+   * An HTTPS resource record is a form of the Service Binding (SVCB) DNS record that provides extended configuration information,
+   * enabling a client to easily and securely connect to a service with an HTTP protocol.
+   * The configuration information is provided in parameters that allow the connection in one DNS query, rather than necessitating multiple DNS queries.
+   *
+   * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/ResourceRecordTypes.html#HTTPSFormat
+   */
+  HTTPS = 'HTTPS',
+
+  /**
    * An MX record specifies the names of your mail servers and, if you have two or more mail servers,
    * the priority order.
    *
@@ -119,6 +129,30 @@ export enum RecordType {
    * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/ResourceRecordTypes.html#SRVFormat
    */
   SRV = 'SRV',
+
+  /**
+   * A Secure Shell fingerprint record (SSHFP) identifies SSH keys associated with the domain name.
+   * SSHFP records must be secured with DNSSEC for a chain of trust to be established.
+   *
+   * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/ResourceRecordTypes.html#SSHFPFormat
+   */
+  SSHFP = 'SSHFP',
+
+  /**
+   * You use an SVCB record to deliver configuration information for accessing service endpoints.
+   * The SVCB is a generic DNS record and can be used to negotiate parameters for a variety of application protocols.
+   *
+   * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/ResourceRecordTypes.html#SVCBFormat
+   */
+  SVCB = 'SVCB',
+
+  /**
+   * You use a TLSA record to use DNS-Based Authentication of Named Entities (DANE).
+   * A TLSA record associates a certificate/public key with a Transport Layer Security (TLS) endpoint, and clients can validate the certificate/public key using a TLSA record signed with DNSSEC.
+   *
+   * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/ResourceRecordTypes.html#TLSAFormat
+   */
+  TLSA = 'TLSA',
 
   /**
    * A TXT record contains one or more strings that are enclosed in double quotation marks (").
@@ -231,6 +265,15 @@ export interface RecordSetOptions {
    * @default - Auto generated string
    */
   readonly setIdentifier?: string;
+
+  /**
+   * The health check to associate with the record set.
+   *
+   * Route53 will return this record set in response to DNS queries only if the health check is passing.
+   *
+   * @default - No health check configured
+   */
+  readonly healthCheck?: IHealthCheck;
 }
 
 /**
@@ -296,7 +339,7 @@ export class RecordSet extends Resource implements IRecordSet {
   constructor(scope: Construct, id: string, props: RecordSetProps) {
     super(scope, id);
 
-    if (props.weight && (props.weight < 0 || props.weight > 255)) {
+    if (props.weight && !Token.isUnresolved(props.weight) && (props.weight < 0 || props.weight > 255)) {
       throw new Error(`weight must be between 0 and 255 inclusive, got: ${props.weight}`);
     }
     if (props.setIdentifier && (props.setIdentifier.length < 1 || props.setIdentifier.length > 128)) {
@@ -345,6 +388,7 @@ export class RecordSet extends Resource implements IRecordSet {
       setIdentifier: props.setIdentifier ?? this.configureSetIdentifier(),
       weight: props.weight,
       region: props.region,
+      healthCheckId: props.healthCheck?.healthCheckId,
     });
 
     this.domainName = recordSet.ref;
@@ -406,8 +450,15 @@ export class RecordSet extends Resource implements IRecordSet {
     }
 
     if (this.weight !== undefined) {
-      const idPrefix = `WEIGHT_${this.weight}_ID_`;
-      return this.createIdentifier(idPrefix);
+      if (Token.isUnresolved(this.weight)) {
+        const replacement = 'XXX'; // XXX simply because 255 is the highest value for a record weight
+        const idPrefix = `WEIGHT_${replacement}_ID_`;
+        const idTemplate = this.createIdentifier(idPrefix);
+        return idTemplate.replace(replacement, Token.asString(this.weight));
+      } else {
+        const idPrefix = `WEIGHT_${this.weight}_ID_`;
+        return this.createIdentifier(idPrefix);
+      }
     }
 
     if (this.region) {

@@ -10,7 +10,8 @@ import { ISecurityGroup } from './security-group';
 import { BlockDevice } from './volume';
 import { IVpc, SubnetSelection } from './vpc';
 import { IPrincipal, IRole, PolicyStatement } from '../../aws-iam';
-import { CfnOutput, Resource, Stack } from '../../core';
+import { CfnOutput, FeatureFlags, Resource, Stack } from '../../core';
+import { BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT } from '../../cx-api';
 
 /**
  * Properties of the bastion host
@@ -63,7 +64,7 @@ export interface BastionHostLinuxProps {
   /**
    * The machine image to use, assumed to have SSM Agent preinstalled.
    *
-   * @default - An Amazon Linux 2 image which is kept up-to-date automatically (the instance
+   * @default - An Amazon Linux 2023 image if the `@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault` feature flag is enabled. Otherwise, an Amazon Linux 2 image. In both cases, the image is kept up-to-date automatically (the instance
    * may be replaced on every deployment) and already has SSM Agent installed.
    */
   readonly machineImage?: IMachineImage;
@@ -104,6 +105,25 @@ export interface BastionHostLinuxProps {
    * @default - false
    */
   readonly requireImdsv2?: boolean;
+
+  /**
+  * Determines whether changes to the UserData will force instance replacement.
+  *
+  * Depending on the EC2 instance type, modifying the UserData may either restart
+  * or replace the instance:
+  *
+  * - Instance store-backed instances are replaced.
+  * - EBS-backed instances are restarted.
+  *
+  * Note that by default, restarting does not execute the updated UserData, so an alternative
+  * mechanism is needed to ensure the instance re-executes the UserData.
+  *
+  * When set to `true`, the instance's Logical ID will depend on the UserData, causing
+  * CloudFormation to replace the instance if the UserData changes.
+  *
+  * @default - `true` if `initOptions` is specified, otherwise `false`.
+  */
+  readonly userDataCausesReplacement?: boolean;
 }
 
 /**
@@ -180,14 +200,13 @@ export class BastionHostLinux extends Resource implements IInstance {
       securityGroup: props.securityGroup,
       instanceName: props.instanceName ?? 'BastionHost',
       instanceType,
-      machineImage: props.machineImage ?? MachineImage.latestAmazonLinux2({
-        cpuType: this.toAmazonLinuxCpuType(instanceType.architecture),
-      }),
+      machineImage: this.getMachineImage(this, instanceType, props),
       vpcSubnets: props.subnetSelection ?? {},
       blockDevices: props.blockDevices ?? undefined,
       init: props.init,
       initOptions: props.initOptions,
       requireImdsv2: props.requireImdsv2 ?? false,
+      userDataCausesReplacement: props.userDataCausesReplacement,
     });
     this.instance.addToRolePolicy(new PolicyStatement({
       actions: [
@@ -237,5 +256,20 @@ export class BastionHostLinux extends Resource implements IInstance {
     peer.forEach(p => {
       this.connections.allowFrom(p, Port.tcp(22), 'SSH access');
     });
+  }
+
+  /**
+   * Returns the machine image to use for the bastion host, respecting the feature flag
+   * to default to Amazon Linux 2023 if enabled, otherwise defaulting to Amazon Linux 2.
+   */
+  private getMachineImage(scope: Construct, instanceType: InstanceType, props: BastionHostLinuxProps): IMachineImage {
+    const defaultMachineImage = FeatureFlags.of(scope).isEnabled(BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT)
+      ? MachineImage.latestAmazonLinux2023({
+        cpuType: this.toAmazonLinuxCpuType(instanceType.architecture),
+      })
+      : MachineImage.latestAmazonLinux2({
+        cpuType: this.toAmazonLinuxCpuType(instanceType.architecture),
+      });
+    return props.machineImage ?? defaultMachineImage;
   }
 }

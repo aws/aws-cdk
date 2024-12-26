@@ -1763,6 +1763,110 @@ describe('cluster', () => {
 
   });
 
+  test('enable fargate ephemeral storage encryption on cluster with random name', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const key = new kms.Key(stack, 'key', { policy: new iam.PolicyDocument() });
+    new ecs.Cluster(stack, 'EcsCluster', { managedStorageConfiguration: { fargateEphemeralStorageKmsKey: key } });
+
+    // THEN
+    const output = Template.fromStack(stack);
+    output.hasResourceProperties('AWS::ECS::Cluster', {
+      Configuration: {
+        ManagedStorageConfiguration: {
+          FargateEphemeralStorageKmsKeyId: {
+            Ref: 'keyFEDD6EC0',
+          },
+        },
+      },
+    });
+    output.hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: [
+          {
+            Resource: '*',
+            Effect: 'Allow',
+            Action: 'kms:GenerateDataKeyWithoutPlaintext',
+            Principal: { Service: 'fargate.amazonaws.com' },
+            Condition: {
+              StringEquals: {
+                'kms:EncryptionContext:aws:ecs:clusterAccount': [{ Ref: 'AWS::AccountId' }],
+              },
+            },
+          },
+          {
+            Resource: '*',
+            Effect: 'Allow',
+            Action: 'kms:CreateGrant',
+            Principal: { Service: 'fargate.amazonaws.com' },
+            Condition: {
+              'StringEquals': {
+                'kms:EncryptionContext:aws:ecs:clusterAccount': [{ Ref: 'AWS::AccountId' }],
+              },
+              'ForAllValues:StringEquals': {
+                'kms:GrantOperations': ['Decrypt'],
+              },
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  test('enable fargate ephemeral storage encryption on cluster with defined name', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const key = new kms.Key(stack, 'key', { policy: new iam.PolicyDocument() });
+    new ecs.Cluster(stack, 'EcsCluster', { clusterName: 'cluster-name', managedStorageConfiguration: { fargateEphemeralStorageKmsKey: key } });
+
+    // THEN
+    const output = Template.fromStack(stack);
+    output.hasResourceProperties('AWS::ECS::Cluster', {
+      Configuration: {
+        ManagedStorageConfiguration: {
+          FargateEphemeralStorageKmsKeyId: {
+            Ref: 'keyFEDD6EC0',
+          },
+        },
+      },
+    });
+    output.hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: [
+          {
+            Resource: '*',
+            Effect: 'Allow',
+            Action: 'kms:GenerateDataKeyWithoutPlaintext',
+            Principal: { Service: 'fargate.amazonaws.com' },
+            Condition: {
+              StringEquals: {
+                'kms:EncryptionContext:aws:ecs:clusterAccount': [{ Ref: 'AWS::AccountId' }],
+                'kms:EncryptionContext:aws:ecs:clusterName': ['cluster-name'],
+              },
+            },
+          },
+          {
+            Resource: '*',
+            Effect: 'Allow',
+            Action: 'kms:CreateGrant',
+            Principal: { Service: 'fargate.amazonaws.com' },
+            Condition: {
+              'StringEquals': {
+                'kms:EncryptionContext:aws:ecs:clusterAccount': [{ Ref: 'AWS::AccountId' }],
+                'kms:EncryptionContext:aws:ecs:clusterName': ['cluster-name'],
+              },
+              'ForAllValues:StringEquals': {
+                'kms:GrantOperations': ['Decrypt'],
+              },
+            },
+          },
+        ],
+      },
+    });
+  });
+
   test('BottleRocketImage() returns correct AMI', () => {
     // GIVEN
     const app = new cdk.App();
@@ -2412,7 +2516,7 @@ describe('cluster', () => {
         autoScalingGroup,
         enableManagedScaling: false,
       });
-    }).toThrowError('Cannot enable Managed Termination Protection on a Capacity Provider when Managed Scaling is disabled. Either enable Managed Scaling or disable Managed Termination Protection.');
+    }).toThrow('Cannot enable Managed Termination Protection on a Capacity Provider when Managed Scaling is disabled. Either enable Managed Scaling or disable Managed Termination Protection.');
   });
 
   test('throws error, when Managed Scaling is disabled and Managed Termination Protection is enabled.', () => {
@@ -2433,7 +2537,7 @@ describe('cluster', () => {
         enableManagedScaling: false,
         enableManagedTerminationProtection: true,
       });
-    }).toThrowError('Cannot enable Managed Termination Protection on a Capacity Provider when Managed Scaling is disabled. Either enable Managed Scaling or disable Managed Termination Protection.');
+    }).toThrow('Cannot enable Managed Termination Protection on a Capacity Provider when Managed Scaling is disabled. Either enable Managed Scaling or disable Managed Termination Protection.');
   });
 
   test('capacity provider enables ASG new instance scale-in protection by default', () => {
@@ -2880,7 +2984,7 @@ describe('cluster', () => {
     // THEN
     expect(() => {
       ecs.Cluster.fromClusterArn(stack, 'Cluster', 'arn:aws:ecs:service-region:service-account:cluster');
-    }).toThrowError(/Missing required Cluster Name from Cluster ARN: /);
+    }).toThrow(/Missing required Cluster Name from Cluster ARN: /);
   });
 });
 

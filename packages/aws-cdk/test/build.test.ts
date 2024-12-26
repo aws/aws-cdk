@@ -21,10 +21,10 @@ describe('buildAllStackAssets', () => {
       .resolves
       .toBeUndefined();
 
-    expect(buildStackAssets).toBeCalledTimes(3);
-    expect(buildStackAssets).toBeCalledWith(A);
-    expect(buildStackAssets).toBeCalledWith(B);
-    expect(buildStackAssets).toBeCalledWith(C);
+    expect(buildStackAssets).toHaveBeenCalledTimes(3);
+    expect(buildStackAssets).toHaveBeenCalledWith(A);
+    expect(buildStackAssets).toHaveBeenCalledWith(B);
+    expect(buildStackAssets).toHaveBeenCalledWith(C);
   });
 
   test('errors', async () => {

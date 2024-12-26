@@ -392,3 +392,124 @@ _cdk.json_
   }
 }
 ```
+
+* `@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions`
+
+Currently, we will automatically add a number of cloudwatch permissions to the task role when no cloudwatch log group is
+specified as logConfiguration and it will grant 'Resources': ['*'] to the task role.
+
+When this feature flag is enabled, we will only grant the necessary permissions when users specify cloudwatch log group.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": true
+  }
+}
+```
+
+* `@aws-cdk/aws-ec2:ec2SumTImeoutEnabled`
+
+Currently is both initOptions.timeout and resourceSignalTimeout are both specified in the options for creating an EC2 Instance, only the value from 'resourceSignalTimeout' will be used. 
+      
+When this feature flag is enabled, if both initOptions.timeout and resourceSignalTimeout are specified, the values will to be summed together.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-ec2:ec2SumTImeoutEnabled": true
+  }
+}
+```
+
+* `@aws-cdk/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission`
+
+Currently, when using a Lambda authorizer with an AppSync GraphQL API, the AWS CDK automatically generates the necessary AWS::Lambda::Permission to allow the AppSync API to invoke the Lambda authorizer. This permission is overly permissive because it lacks a SourceArn, meaning it allows invocations from any source.
+
+When this feature flag is enabled, the AWS::Lambda::Permission will be properly scoped with the SourceArn corresponding to the specific AppSync GraphQL API.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-ec2:appSyncGraphQLAPIScopeLambdaPermission": true
+  }
+}
+```
+
+* `@aws-cdk/aws-rds:setCorrectValueForDatabaseInstanceReadReplicaInstanceResourceId`
+
+When enabled, the value of property `instanceResourceId` in construct `DatabaseInstanceReadReplica` will be set to the correct value which is `DbiResourceId` instead of currently `DbInstanceArn`* (fix)
+
+When this feature flag is enabled, the value of that property will be as expected set to `DbiResourceId` attribute, and that will fix the grantConnect method.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-rds:setCorrectValueForDatabaseInstanceReadReplicaInstanceResourceId": true
+  }
+}
+```
+
+* `@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages`
+
+Currently, when bundling Lambda functions with the non-latest runtime that supports AWS SDK JavaScript (v3), only the `@aws-sdk/*` packages are excluded by default.
+However, this can cause version mismatches between the `@aws-sdk/*` and `@smithy/*` packages, as they are tightly coupled dependencies in AWS SDK v3.
+
+When this feature flag is enabled, both `@aws-sdk/*` and `@smithy/*` packages will be excluded during the bundling process. This ensures that no mismatches
+occur between these tightly coupled dependencies when using the AWS SDK v3 in Lambda functions.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages": true
+  }
+}
+```
+
+* `@aws-cdk/aws-dynamodb:resourcePolicyPerReplica`
+
+If this flag is not set, the default behavior for \`TableV2\` is to use a different \`resourcePolicy\` for each replica. 
+
+If this flag is set to false, the behavior is that each replica shares the same \`resourcePolicy\` as the source table.
+This will prevent you from creating a new table which has an additional replica and a resource policy.
+
+This is a feature flag as the old behavior was technically incorrect but users may have come to depend on it.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-dynamodb:resourcePolicyPerReplica": false,
+  },
+}
+```
+
+* `@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource`
+
+When enabled, use a new method for DNS Name of user pool domain target without creating a custom resource.
+
+When this feature flag is enabled, a new method will be used to get the DNS Name of the user pool domain target. The old method
+creates a custom resource internally, but the new method doesn't need a custom resource.
+
+If the flag is set to false then a custom resource will be created when using `UserPoolDomainTarget`.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource": true
+  }
+}
+```

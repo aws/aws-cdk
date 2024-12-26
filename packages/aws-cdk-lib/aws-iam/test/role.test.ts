@@ -249,7 +249,7 @@ describe('customizeRoles', () => {
     // THEN
     expect(() => {
       role.applyRemovalPolicy(RemovalPolicy.DESTROY);
-    }).toThrow(/Cannot apply RemovalPolicy/);
+    }).not.toThrow(/Cannot apply RemovalPolicy/);
     expect(() => {
       new CfnResource(stack, 'MyResource2', {
         type: 'AWS::Custom',
@@ -609,7 +609,7 @@ describe('IAM role', () => {
 
     const assumedBy = new ServicePrincipal('bla');
 
-    expect(() => new Role(stack, 'MyRole', { assumedBy, path: '/' })).not.toThrowError();
+    expect(() => new Role(stack, 'MyRole', { assumedBy, path: '/' })).not.toThrow();
   });
 
   test('role path cannot be empty', () => {

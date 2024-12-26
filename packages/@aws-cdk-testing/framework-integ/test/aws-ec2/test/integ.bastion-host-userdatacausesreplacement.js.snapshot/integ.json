@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "bastionhost-userdatacausesreplacement-test/DefaultTest": {
+      "stacks": [
+        "integ-bastionhost-userdatacausesreplacement"
+      ],
+      "assertionStack": "bastionhost-userdatacausesreplacement-test/DefaultTest/DeployAssert",
+      "assertionStackName": "bastionhostuserdatacausesreplacementtestDefaultTestDeployAssert7991717B"
+    }
+  }
+}

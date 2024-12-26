@@ -1,34 +1,9 @@
-import {
-  Template,
-} from 'aws-cdk-lib/assertions';
-import {
-  UserPool,
-  UserPoolIdentityProvider,
-} from 'aws-cdk-lib/aws-cognito';
-import {
-  Role,
-  ServicePrincipal,
-  ArnPrincipal,
-  AnyPrincipal,
-  OpenIdConnectProvider,
-  SamlProvider,
-  SamlMetadataDocument,
-  PolicyStatement,
-  Effect,
-  PolicyDocument,
-} from 'aws-cdk-lib/aws-iam';
-import {
-  Fn,
-  Lazy,
-  Stack,
-} from 'aws-cdk-lib';
-import {
-  IdentityPool,
-  IdentityPoolProviderUrl,
-} from '../lib/identitypool';
-import {
-  RoleMappingMatchType,
-} from '../lib/identitypool-role-attachment';
+import { Template } from 'aws-cdk-lib/assertions';
+import { UserPool, UserPoolClient, UserPoolIdentityProvider } from 'aws-cdk-lib/aws-cognito';
+import { Role, ServicePrincipal, ArnPrincipal, AnyPrincipal, OpenIdConnectProvider, SamlProvider, SamlMetadataDocument, PolicyStatement, Effect, PolicyDocument } from 'aws-cdk-lib/aws-iam';
+import { Fn, Lazy, Stack } from 'aws-cdk-lib';
+import { IdentityPool, IdentityPoolProviderUrl } from '../lib/identitypool';
+import { RoleMappingMatchType } from '../lib/identitypool-role-attachment';
 import { UserPoolAuthenticationProvider } from '../lib/identitypool-user-pool-authentication-provider';
 
 describe('identity pool', () => {
@@ -458,7 +433,7 @@ describe('role mappings', () => {
         providerUrl: IdentityPoolProviderUrl.custom(providerUrl),
         useToken: true,
       }],
-    })).toThrowError('mappingKey must be provided when providerUrl.value is a token');
+    })).toThrow('mappingKey must be provided when providerUrl.value is a token');
   });
 
   test('mappingKey respected when identity provider is a token', () => {
@@ -542,7 +517,7 @@ describe('role mappings', () => {
       roleMappings: [{
         providerUrl: IdentityPoolProviderUrl.AMAZON,
       }],
-    })).toThrowError('IdentityPoolRoleMapping.rules is required when useToken is false');
+    })).toThrow('IdentityPoolRoleMapping.rules is required when useToken is false');
   });
 
   test('role mapping with rules configuration', () => {
@@ -724,6 +699,41 @@ describe('role mappings', () => {
             ],
           },
           Type: 'Rules',
+        },
+      },
+    });
+  });
+
+  test('role mapping with an imported user pool and client', () => {
+    const stack = new Stack();
+    const importedPool = UserPool.fromUserPoolArn(stack, 'ImportedPool', 'arn:aws:cognito-idp:us-east-1:0123456789012:userpool/test-user-pool');
+    const importedClient = UserPoolClient.fromUserPoolClientId(stack, 'ImportedPoolClient', 'client-id');
+    new IdentityPool(stack, 'TestIdentityPoolRoleMappingRules', {
+      roleMappings: [{
+        mappingKey: 'cognito',
+        providerUrl: IdentityPoolProviderUrl.userPool(importedPool, importedClient),
+        useToken: true,
+      }],
+    });
+    const temp = Template.fromStack(stack);
+    temp.resourceCountIs('AWS::Cognito::IdentityPoolRoleAttachment', 1);
+    temp.hasResourceProperties('AWS::Cognito::IdentityPoolRoleAttachment', {
+      IdentityPoolId: {
+        Ref: 'TestIdentityPoolRoleMappingRulesC8C07BC3',
+      },
+      RoleMappings: {
+        cognito: {
+          IdentityProvider: {
+            'Fn::Join': [
+              '',
+              [
+                'cognito-idp.us-east-1.',
+                { Ref: 'AWS::URLSuffix' },
+                '/test-user-pool:client-id',
+              ],
+            ],
+          },
+          Type: 'Token',
         },
       },
     });

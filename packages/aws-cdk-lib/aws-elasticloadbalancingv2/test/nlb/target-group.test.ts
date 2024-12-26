@@ -1,4 +1,4 @@
-import { Template } from '../../../assertions';
+import { Match, Template } from '../../../assertions';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
 import * as cdk from '../../../core';
@@ -161,6 +161,24 @@ describe('tests', () => {
     expect(() => {
       app.synth();
     }).toThrow('Health check interval must be greater than or equal to the timeout; received interval 10, timeout 20.');
+  });
+
+  test.each([
+    elbv2.TargetGroupIpAddressType.IPV4,
+    elbv2.TargetGroupIpAddressType.IPV6,
+  ])('configure IP address type %s', (ipAddressType) => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    new elbv2.NetworkTargetGroup(stack, 'Group', {
+      vpc,
+      port: 80,
+      ipAddressType,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      IpAddressType: ipAddressType,
+    });
   });
 
   // for backwards compatibility these can be equal, see discussion in https://github.com/aws/aws-cdk/pull/26031
@@ -371,7 +389,7 @@ describe('tests', () => {
       // THEN
       expect(() => {
         app.synth();
-      }).not.toThrowError();
+      }).not.toThrow();
     });
 
   test.each([elbv2.Protocol.HTTP, elbv2.Protocol.HTTPS, elbv2.Protocol.TCP])(
@@ -394,7 +412,7 @@ describe('tests', () => {
       // THEN
       expect(() => {
         app.synth();
-      }).not.toThrowError();
+      }).not.toThrow();
     });
 
   test.each([elbv2.Protocol.TCP, elbv2.Protocol.HTTPS])(
@@ -419,7 +437,7 @@ describe('tests', () => {
       // THEN
       expect(() => {
         app.synth();
-      }).not.toThrowError();
+      }).not.toThrow();
     });
 
   test.each([elbv2.Protocol.TCP, elbv2.Protocol.HTTPS])(
@@ -444,7 +462,7 @@ describe('tests', () => {
       // THEN
       expect(() => {
         app.synth();
-      }).not.toThrowError();
+      }).not.toThrow();
     });
 
   test.each([elbv2.Protocol.UDP, elbv2.Protocol.TCP_UDP, elbv2.Protocol.TLS])(
@@ -516,7 +534,7 @@ describe('tests', () => {
       // THEN
       expect(() => {
         app.synth();
-      }).not.toThrowError();
+      }).not.toThrow();
     });
 
   test.each([elbv2.Protocol.HTTP, elbv2.Protocol.HTTPS])(
@@ -540,7 +558,7 @@ describe('tests', () => {
       // THEN
       expect(() => {
         app.synth();
-      }).not.toThrowError();
+      }).not.toThrow();
     });
 
   test('Throws error for invalid health check healthy threshold', () => {
@@ -734,5 +752,48 @@ describe('tests', () => {
     });
 
     expect(() => targetGroup.metrics.custom('MetricName')).toThrow();
+  });
+
+  // test cases for crossZoneEnabled
+  describe('crossZoneEnabled', () => {
+    test.each([true, false])('crossZoneEnabled can be %s', (crossZoneEnabled) => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+      // WHEN
+      new elbv2.NetworkTargetGroup(stack, 'LB', {
+        crossZoneEnabled,
+        vpc,
+        port: 80,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+        TargetGroupAttributes: [
+          {
+            Key: 'load_balancing.cross_zone.enabled',
+            Value: `${crossZoneEnabled}`,
+          },
+        ],
+      });
+    });
+
+    test('load_balancing.cross_zone.enabled is not set when crossZoneEnabled is not specified', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+      // WHEN
+      new elbv2.NetworkTargetGroup(stack, 'LB', {
+        vpc,
+        port: 80,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+        TargetGroupAttributes: Match.absent(),
+      });
+    });
   });
 });

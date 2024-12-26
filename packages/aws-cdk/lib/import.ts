@@ -6,11 +6,13 @@ import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
 import { DeploymentMethod } from './api';
+import { assertIsSuccessfulDeployStackResult } from './api/deploy-stack';
 import { Deployments } from './api/deployments';
 import { ResourceIdentifierProperties, ResourcesToImport } from './api/util/cloudformation';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
 import { Tag } from './cdk-toolkit';
 import { error, print, success, warning } from './logging';
+import { ToolkitError } from './toolkit/error';
 
 export interface ImportDeploymentOptions extends DeployOptions {
   deploymentMethod?: DeploymentMethod;
@@ -153,6 +155,8 @@ export class ResourceImporter {
         resourcesToImport,
       });
 
+      assertIsSuccessfulDeployStackResult(result);
+
       const message = result.noOp
         ? ' ✅  %s (no changes)'
         : ' ✅  %s';
@@ -190,7 +194,7 @@ export class ResourceImporter {
       if (allowNonAdditions) {
         warning(`Ignoring updated/deleted resources (--force): ${offendingResources.join(', ')}`);
       } else {
-        throw new Error('No resource updates or deletes are allowed on import operation. Make sure to resolve pending changes ' +
+        throw new ToolkitError('No resource updates or deletes are allowed on import operation. Make sure to resolve pending changes ' +
           `to existing resources, before attempting an import. Updated/deleted resources: ${offendingResources.join(', ')} (--force to override)`);
       }
     }

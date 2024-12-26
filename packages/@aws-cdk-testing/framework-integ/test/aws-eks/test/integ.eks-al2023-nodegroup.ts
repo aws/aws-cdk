@@ -28,7 +28,7 @@ class EksClusterStack extends Stack {
       vpc: this.vpc,
       mastersRole,
       defaultCapacity: 0,
-      ...getClusterVersionConfig(this, eks.KubernetesVersion.V1_30),
+      ...getClusterVersionConfig(this, eks.KubernetesVersion.V1_31),
     });
 
     // create nodegroup with AL2023_X86_64_STANDARD
@@ -39,6 +39,16 @@ class EksClusterStack extends Stack {
     // create nodegroup with AL2023_ARM_64_STANDARD
     this.cluster.addNodegroupCapacity('MNG_AL2023_ARM_64_STANDARD', {
       amiType: NodegroupAmiType.AL2023_ARM_64_STANDARD,
+    });
+
+    // create nodegroup with AL2023_X86_64_NEURON
+    this.cluster.addNodegroupCapacity('MNG_AL2023_X86_64_NEURON', {
+      amiType: NodegroupAmiType.AL2023_X86_64_NEURON,
+    });
+
+    // create nodegroup with AL2023_X86_64_NVIDIA
+    this.cluster.addNodegroupCapacity('MNG_AL2023_X86_64_NVIDIA', {
+      amiType: NodegroupAmiType.AL2023_X86_64_NVIDIA,
     });
   }
 }

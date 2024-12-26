@@ -1,0 +1,38 @@
+{
+  "Conditions": {
+    "SomeCondition": {
+      "Fn::Equals": [
+        2,
+        2
+      ]
+    }
+  },
+  "Resources": {
+    "ASG": {
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "Properties": {
+        "MaxSize": 10,
+        "MinSize": 1
+      },
+      "UpdatePolicy": {
+        "AutoScalingRollingUpdate": {
+          "Fn::If": [
+            "SomeCondition",
+            {
+              "MinInstancesInService": 1,
+              "MaxBatchSize": 2,
+              "PauseTime": "PT5M",
+              "WaitOnResourceSignals": "true"
+            },
+            {
+              "MinInstancesInService": 1,
+              "MaxBatchSize": 2,
+              "PauseTime": "PT5M",
+              "WaitOnResourceSignals": "true"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

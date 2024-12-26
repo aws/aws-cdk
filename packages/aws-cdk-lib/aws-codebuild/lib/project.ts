@@ -563,7 +563,7 @@ export interface CommonProjectProps {
   /**
    * Build environment to use for the build.
    *
-   * @default BuildEnvironment.LinuxBuildImage.STANDARD_1_0
+   * @default BuildEnvironment.LinuxBuildImage.STANDARD_7_0
    */
   readonly environment?: BuildEnvironment;
 
@@ -734,6 +734,14 @@ export interface CommonProjectProps {
    * @default - no visibility is set
    */
   readonly visibility?: ProjectVisibility;
+
+  /**
+   * CodeBuild will automatically call retry build using the project's service role up to the auto-retry limit.
+   * `autoRetryLimit` must be between 0 and 10.
+   *
+   * @default - no retry
+   */
+  readonly autoRetryLimit?: number;
 }
 
 export interface ProjectProps extends CommonProjectProps {
@@ -1060,7 +1068,7 @@ export class Project extends ProjectBase {
     });
     this.grantPrincipal = this.role;
 
-    this.buildImage = (props.environment && props.environment.buildImage) || LinuxBuildImage.STANDARD_1_0;
+    this.buildImage = (props.environment && props.environment.buildImage) || LinuxBuildImage.STANDARD_7_0;
 
     // let source "bind" to the project. this usually involves granting permissions
     // for the code build role to interact with the source.
@@ -1107,6 +1115,12 @@ export class Project extends ProjectBase {
       this.addFileSystemLocation(fileSystemLocation);
     }
 
+    if (!Token.isUnresolved(props.autoRetryLimit) && (props.autoRetryLimit !== undefined)) {
+      if (props.autoRetryLimit < 0 || props.autoRetryLimit > 10) {
+        throw new Error(`autoRetryLimit must be a value between 0 and 10, got ${props.autoRetryLimit}.`);
+      };
+    };
+
     const resource = new CfnProject(this, 'Resource', {
       description: props.description,
       source: {
@@ -1143,6 +1157,7 @@ export class Project extends ProjectBase {
           return config;
         },
       }),
+      autoRetryLimit: props.autoRetryLimit,
     });
 
     this.addVpcRequiredPermissions(props, resource);
@@ -1624,7 +1639,7 @@ export interface BuildEnvironment {
   /**
    * The image used for the builds.
    *
-   * @default LinuxBuildImage.STANDARD_1_0
+   * @default LinuxBuildImage.STANDARD_7_0
    */
   readonly buildImage?: IBuildImage;
 
