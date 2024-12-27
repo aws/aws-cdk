@@ -25,6 +25,7 @@ enum Exemption {
   CLI_INTEG_TESTED = 'pr-linter/cli-integ-tested',
   REQUEST_CLARIFICATION = 'pr/reviewer-clarification-requested',
   REQUEST_EXEMPTION = 'pr-linter/exemption-requested',
+  CODECOV = "pr-linter/exempt-codecov",
 }
 
 export interface GithubStatusEvent {
@@ -340,20 +341,40 @@ export class PullRequestLinter {
     return this.checkStatusSucceeded(sha, CODE_BUILD_CONTEXT);
   }
 
+  /**
+   * Whether or not the codecov/patch job for the given commit is successful
+   *
+   * @param sha the commit sha to evaluate
+   */
   private async codecovPatchSucceeded(sha: string): Promise<boolean> {
-    return this.checkStatusSucceeded(sha, 'codecov/patch');
+    return this.checkStatusSucceeded(sha, `${CODECOV_PREFIX}patch`);
   }
 
+  /**
+   * Whether or not the codecov/patch/packages/aws-cdk job for the given commit is successful
+   *
+   * @param sha the commit sha to evaluate
+   */
   private async codecovPatchPackagesAwsCdkSucceeded(sha: string): Promise<boolean> {
-    return this.checkStatusSucceeded(sha, 'codecov/patch/packages/aws-cdk');
+    return this.checkStatusSucceeded(sha, `${CODECOV_PREFIX}patch/packages/aws-cdk`);
   }
 
+  /**
+   * Whether or not the codecov/project job for the given commit is successful
+   *
+   * @param sha the commit sha to evaluate
+   */
   private async codecovProjectSucceeded(sha: string): Promise<boolean> {
-    return this.checkStatusSucceeded(sha, 'codecov/project');
+    return this.checkStatusSucceeded(sha, `${CODECOV_PREFIX}project`);
   }
 
-  private async codecovProjectPackagesAwsCdk(sha: string): Promise<boolean> {
-    return this.checkStatusSucceeded(sha, 'codecov/project/packages/aws-cdk');
+  /**
+   * Whether or not the codecov/project/packages/aws-cdk job for the given commit is successful
+   *
+   * @param sha the commit sha to evaluate
+   */
+  private async codecovProjectPackagesAwsCdkSucceeded(sha: string): Promise<boolean> {
+    return this.checkStatusSucceeded(sha, `${CODECOV_PREFIX}project/packages/aws-cdk`);
   }
 
   /**
@@ -362,14 +383,14 @@ export class PullRequestLinter {
    * @param sha the commit sha to evaluate
    */
   private async checkStatusSucceeded(sha: string, context: string): Promise<boolean> {
-    const statuses = await this.client.repos.listCommitStatusesForRef({
+    const statuses = await this.client.paginate(this.client.repos.listCommitStatusesForRef, {
       owner: this.prParams.owner,
       repo: this.prParams.repo,
       ref: sha,
     });
-    let status = statuses.data.filter(status => status.context === context).map(status => status.state);
+    let status = statuses.filter(status => status.context === context).map(status => status.state);
     console.log(`${context} statuses: ${status}`);
-    return statuses.data.some(status => status.context === context && status.state === 'success');
+    return statuses.some(status => status.context === context && status.state === 'success');
   }
 
   public async validateStatusEvent(pr: GitHubPr, status: StatusEvent): Promise<void> {
@@ -601,6 +622,39 @@ export class PullRequestLinter {
       ],
     });
 
+    const codecovResults = {
+      patch: await this.codecovPatchSucceeded(sha),
+      patchPackages: await this.codecovPatchPackagesAwsCdkSucceeded(sha),
+      project: await this.codecovProjectSucceeded(sha),
+      projectPackages: await this.codecovProjectPackagesAwsCdkSucceeded(sha),
+    };
+
+    validationCollector.validateRuleSet({
+      exemption: shouldExemptCodecov,
+      testRuleSet: [
+        { test: () => {
+          const result = new TestResult();
+          result.assessFailure(codecovResults.patch, 'codecov/patch job is not succeeding');
+          return result;
+        }},
+        { test: () => {
+          const result = new TestResult();
+          result.assessFailure(codecovResults.patchPackages, 'codecov/patch/packages/aws-cdk job is not succeeding');
+          return result;
+        }},
+        { test: () => {
+          const result = new TestResult();
+          result.assessFailure(codecovResults.project, 'codecov/project job is not succeeding');
+          return result;
+        }},
+        { test: () => {
+          const result = new TestResult();
+          result.assessFailure(codecovResults.projectPackages, 'codecov/project/packages/aws-cdk job is not succeeding');
+          return result;
+        }},
+      ],
+    });
+
     console.log("Deleting PR Linter Comment now");
     await this.deletePRLinterComment();
     try {
@@ -680,6 +734,10 @@ function fixContainsIntegTest(pr: GitHubPr, files: GitHubFile[]): TestResult {
   result.assessFailure(isFix(pr) && (!integTestChanged(files) || !integTestSnapshotChanged(files)),
     'Fixes must contain a change to an integration test file and the resulting snapshot.');
   return result;
+}
+
+function shouldExemptCodecov(pr: GitHubPr): boolean {
+  return hasLabel(pr, Exemption.CODECOV);
 }
 
 function shouldExemptReadme(pr: GitHubPr): boolean {
