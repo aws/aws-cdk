@@ -15,7 +15,8 @@ export function makeCachingProvider(provider: AwsCredentialIdentityProvider): Aw
   return memoize(
     provider,
     credentialsAboutToExpire,
-    (token) => token.expiration !== undefined);
+    (token) => !!token.expiration,
+  );
 }
 
 export function credentialsAboutToExpire(token: AwsCredentialIdentity) {
