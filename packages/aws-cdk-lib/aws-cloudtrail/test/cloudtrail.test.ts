@@ -763,7 +763,7 @@ describe('cloudtrail', () => {
 
         expect(() => {
           Template.fromStack(stack);
-        }).toThrowError(/At least one event selector must be added when management event recording is set to None/);
+        }).toThrow(/At least one event selector must be added when management event recording is set to None/);
       });
 
       test('defaults to not include management events when managementEvents set to None', () => {

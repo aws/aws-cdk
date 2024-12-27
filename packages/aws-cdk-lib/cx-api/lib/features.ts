@@ -117,6 +117,7 @@ export const LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES = '@aws-cdk/aws-lambda
 export const STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY = '@aws-cdk/aws-stepfunctions-tasks:fixRunEcsTaskPolicy';
 export const BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT = '@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault';
 export const ASPECT_STABILIZATION = '@aws-cdk/core:aspectStabilization';
+export const USER_POOL_DOMAIN_NAME_METHOD_WITHOUT_CUSTOM_RESOURCE = '@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1265,7 +1266,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       When this feature flag is enabled, if you do not pass the machineImage property to the BastionHost construct,
       the latest Amazon Linux 2023 version will be used instead of Amazon Linux 2.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.172.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag or explicitly pass an Amazon Linux 2 machine image to the BastionHost construct.',
   },
@@ -1281,6 +1282,20 @@ export const FLAGS: Record<string, FlagInfo> = {
       When this feature flag is enabled, a stabilization loop is run to recurse the construct tree multiple times when invoking Aspects.
     `,
     defaults: { v2: true },
+    introducedIn: { v2: '2.172.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [USER_POOL_DOMAIN_NAME_METHOD_WITHOUT_CUSTOM_RESOURCE]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, use a new method for DNS Name of user pool domain target without creating a custom resource.',
+    detailsMd: `
+    When this feature flag is enabled, a new method will be used to get the DNS Name of the user pool domain target. The old method
+    creates a custom resource internally, but the new method doesn't need a custom resource.
+
+    If the flag is set to false then a custom resource will be created when using \`UserPoolDomainTarget\`.
+    `,
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
   },
@@ -1302,10 +1317,13 @@ export const CURRENT_VERSION_EXPIRED_FLAGS: string[] = Object.entries(FLAGS)
  * Add a flag in here (typically with the value `true`), to enable
  * backwards-breaking behavior changes only for new projects.  New projects
  * generated through `cdk init` will include these flags in their generated
+ * project config.
  *
  * Tests must cover the default (disabled) case and the future (enabled) case.
+ *
+ * Going forward, this should *NOT* be consumed directly anymore.
  */
-export const NEW_PROJECT_CONTEXT = Object.fromEntries(
+export const CURRENTLY_RECOMMENDED_FLAGS = Object.fromEntries(
   Object.entries(FLAGS)
     .filter(([_, flag]) => flag.recommendedValue !== flag.defaults?.[CURRENT_MV] && flag.introducedIn[CURRENT_MV])
     .map(([name, flag]) => [name, flag.recommendedValue]),
@@ -1337,10 +1355,10 @@ export function futureFlagDefault(flag: string): boolean {
 /** @deprecated use CURRENT_VERSION_EXPIRED_FLAGS instead */
 export const FUTURE_FLAGS_EXPIRED = CURRENT_VERSION_EXPIRED_FLAGS;
 
-/** @deprecated use NEW_PROJECT_CONTEXT instead */
-export const FUTURE_FLAGS = Object.fromEntries(Object.entries(NEW_PROJECT_CONTEXT)
+/** @deprecated do not use at all! */
+export const FUTURE_FLAGS = Object.fromEntries(Object.entries(CURRENTLY_RECOMMENDED_FLAGS)
   .filter(([_, v]) => typeof v === 'boolean'));
 
-/** @deprecated use NEW_PROJECT_CONTEXT instead */
-export const NEW_PROJECT_DEFAULT_CONTEXT = Object.fromEntries(Object.entries(NEW_PROJECT_CONTEXT)
+/** @deprecated do not use at all! */
+export const NEW_PROJECT_DEFAULT_CONTEXT = Object.fromEntries(Object.entries(CURRENTLY_RECOMMENDED_FLAGS)
   .filter(([_, v]) => typeof v !== 'boolean'));
