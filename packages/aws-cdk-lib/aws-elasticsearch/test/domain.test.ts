@@ -37,7 +37,7 @@ testDeprecated('connections throws if domain is placed inside a vpc', () => {
     new Domain(stack, 'Domain', {
       version: ElasticsearchVersion.V7_1,
     }).connections;
-  }).toThrowError("Connections are only available on VPC enabled domains. Use the 'vpc' property to place a domain inside a VPC");
+  }).toThrow("Connections are only available on VPC enabled domains. Use the 'vpc' property to place a domain inside a VPC");
 });
 
 testDeprecated('subnets and security groups can be provided when vpc is used', () => {

@@ -93,7 +93,7 @@ describe('Fields', () => {
   test('cannot have JsonPath fields in arrays', () => {
     expect(() => FieldUtils.renderObject({
       deep: [JsonPath.stringAt('$.hello')],
-    })).toThrowError(/Cannot use JsonPath fields in an array/);
+    })).toThrow(/Cannot use JsonPath fields in an array/);
   }),
   test('datafield path must be correct', () => {
     expect(JsonPath.stringAt('$')).toBeDefined();
@@ -173,7 +173,7 @@ describe('Fields', () => {
   test('fields cannot be used somewhere in a string interpolation', () => {
     expect(() => FieldUtils.renderObject({
       field: `contains ${JsonPath.stringAt('$.hello')}`,
-    })).toThrowError(/Field references must be the entire string/);
+    })).toThrow(/Field references must be the entire string/);
   });
   test('infinitely recursive object graphs do not break referenced path finding', () => {
     const deepObject = {

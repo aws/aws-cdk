@@ -106,7 +106,7 @@ describe('invokeFunction tests', () => {
     expectedFunctionStates.push('Pending');
     expectedFunctionStates.push('Pending');
 
-    await expect(invokeFunction(req)).rejects.toThrowError(new Error('Not today'));
+    await expect(invokeFunction(req)).rejects.toThrow(new Error('Not today'));
     expect(invokeCount).toEqual(1);
     expect(receivedFunctionStates).toEqual(['Pending', 'Pending', 'Inactive']);
   });
@@ -125,7 +125,7 @@ describe('invokeFunction tests', () => {
     expectedFunctionStates.push('Pending');
     expectedFunctionStates.push('Pending');
 
-    await expect(invokeFunction(req)).rejects.toThrowError(new Error('Broken'));
+    await expect(invokeFunction(req)).rejects.toThrow(new Error('Broken'));
     expect(invokeCount).toEqual(1);
     expect(receivedFunctionStates).toEqual(['Pending', 'Pending', 'Failed']);
   });
@@ -144,7 +144,7 @@ describe('invokeFunction tests', () => {
     expectedFunctionStates.push('Pending');
     expectedFunctionStates.push('Pending');
 
-    await expect(invokeFunction(req)).rejects.toThrowError(new Error('State is confused'));
+    await expect(invokeFunction(req)).rejects.toThrow(new Error('State is confused'));
     expect(invokeCount).toEqual(1);
     expect(receivedFunctionStates).toEqual(['Pending', 'Pending', 'NewFunctionWhoDis']);
   });
@@ -165,7 +165,7 @@ describe('invokeFunction tests', () => {
     expectedFunctionStates.push('Pending');
     expectedFunctionStates.push('Pending');
 
-    await expect(invokeFunction(req)).rejects.toThrowError(new Error('Not today'));
+    await expect(invokeFunction(req)).rejects.toThrow(new Error('Not today'));
     expect(invokeCount).toEqual(1);
     expect(receivedFunctionStates).toEqual(['Pending', 'Pending', 'Inactive']);
   });

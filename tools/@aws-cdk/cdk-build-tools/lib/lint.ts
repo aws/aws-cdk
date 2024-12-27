@@ -13,8 +13,15 @@ export async function lintCurrentPackage(
   const fixOption = compilers.fix ? ['--fix'] : [];
 
   if (!options.eslint?.disable) {
+    let eslintPath = compilers.eslint;
+    if (!eslintPath) {
+      const eslintPj = require.resolve('eslint/package.json');
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      eslintPath = path.resolve(eslintPj, '..', require(eslintPj).bin.eslint);
+    }
+
     await shell([
-      compilers.eslint || require.resolve('eslint/bin/eslint'),
+      eslintPath,
       '.',
       '--ext=.ts',
       `--resolve-plugins-relative-to=${__dirname}`,

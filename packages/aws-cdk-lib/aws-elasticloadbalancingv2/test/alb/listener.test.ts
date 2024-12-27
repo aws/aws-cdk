@@ -107,6 +107,43 @@ describe('tests', () => {
     });
   });
 
+  test('Listener default to open - IPv6 (dual stack without public IPV4)', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const loadBalancer = new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+      vpc,
+      internetFacing: true,
+      ipAddressType: elbv2.IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4,
+    });
+
+    // WHEN
+    loadBalancer.addListener('MyListener', {
+      port: 80,
+      defaultTargetGroups: [new elbv2.ApplicationTargetGroup(stack, 'Group', { vpc, port: 80 })],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
+      SecurityGroupIngress: [
+        {
+          Description: 'Allow from anyone on port 80',
+          CidrIp: '0.0.0.0/0',
+          FromPort: 80,
+          IpProtocol: 'tcp',
+          ToPort: 80,
+        },
+        {
+          Description: 'Allow from anyone on port 80',
+          CidrIpv6: '::/0',
+          FromPort: 80,
+          IpProtocol: 'tcp',
+          ToPort: 80,
+        },
+      ],
+    });
+  });
+
   test('HTTPS listener requires certificate', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -1174,7 +1211,7 @@ describe('tests', () => {
       listener,
       priority: 0,
       conditions: [elbv2.ListenerCondition.pathPatterns(['/hello'])],
-    })).toThrowError('Priority must have value greater than or equal to 1');
+    })).toThrow('Priority must have value greater than or equal to 1');
   });
 
   test('Accepts unresolved priority', () => {
@@ -1196,7 +1233,7 @@ describe('tests', () => {
       fixedResponse: {
         statusCode: '500',
       },
-    })).not.toThrowError('Priority must have value greater than or equal to 1');
+    })).not.toThrow('Priority must have value greater than or equal to 1');
   });
 
   testDeprecated('Throws when specifying both target groups and redirect response', () => {
@@ -1381,7 +1418,7 @@ describe('tests', () => {
       priority: 10,
       pathPatterns: ['/test/path/1', '/test/path/2'],
       pathPattern: '/test/path/3',
-    })).toThrowError('Both `pathPatterns` and `pathPattern` are specified, specify only one');
+    })).toThrow('Both `pathPatterns` and `pathPattern` are specified, specify only one');
   });
 
   test('Add additional condition to listener rule', () => {

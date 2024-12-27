@@ -3,6 +3,7 @@ import type { AwsCredentialIdentity, AwsCredentialIdentityProvider } from '@smit
 import { debug, warning } from '../../logging';
 import { CredentialProviderSource, PluginProviderResult, Mode, PluginHost, SDKv2CompatibleCredentials, SDKv3CompatibleCredentialProvider, SDKv3CompatibleCredentials } from '../plugin';
 import { credentialsAboutToExpire, makeCachingProvider } from './provider-caching';
+import { AuthenticationError } from '../../toolkit/error';
 
 /**
  * Cache for credential providers.
@@ -124,7 +125,7 @@ async function v3ProviderFromPlugin(producer: () => Promise<PluginProviderResult
     // V2 credentials that refresh and cache themselves
     return v3ProviderFromV2Credentials(initial);
   } else {
-    throw new Error(`Plugin returned a value that doesn't resemble AWS credentials: ${inspect(initial)}`);
+    throw new AuthenticationError(`Plugin returned a value that doesn't resemble AWS credentials: ${inspect(initial)}`);
   }
 }
 
@@ -152,7 +153,7 @@ function refreshFromPluginProvider(current: AwsCredentialIdentity, producer: () 
     if (credentialsAboutToExpire(current)) {
       const newCreds = await producer();
       if (!isV3Credentials(newCreds)) {
-        throw new Error(`Plugin initially returned static V3 credentials but now returned something else: ${inspect(newCreds)}`);
+        throw new AuthenticationError(`Plugin initially returned static V3 credentials but now returned something else: ${inspect(newCreds)}`);
       }
       current = newCreds;
     }
@@ -165,7 +166,7 @@ function isV3Provider(x: PluginProviderResult): x is SDKv3CompatibleCredentialPr
 }
 
 function isV2Credentials(x: PluginProviderResult): x is SDKv2CompatibleCredentials {
-  return !!(x && typeof x === 'object' && x.accessKeyId && (x as SDKv2CompatibleCredentials).getPromise);
+  return !!(x && typeof x === 'object' && (x as SDKv2CompatibleCredentials).getPromise);
 }
 
 function isV3Credentials(x: PluginProviderResult): x is SDKv3CompatibleCredentials {

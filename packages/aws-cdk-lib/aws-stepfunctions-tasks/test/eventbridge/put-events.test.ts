@@ -184,7 +184,7 @@ describe('Put Events', () => {
         }],
       });
       // THEN
-    }).toThrowError('Task Token is required in `entries`. Use JsonPath.taskToken to set the token.');
+    }).toThrow('Task Token is required in `entries`. Use JsonPath.taskToken to set the token.');
   });
 
   test('fails when RUN_JOB integration pattern is used', () => {
@@ -199,7 +199,7 @@ describe('Put Events', () => {
         }],
       });
       // THEN
-    }).toThrowError('Unsupported service integration pattern');
+    }).toThrow('Unsupported service integration pattern');
   });
 
   test('event source cannot start with "aws."', () => {
@@ -280,7 +280,7 @@ describe('Put Events', () => {
       });
     })
       // THEN
-      .toThrowError('Value for property `entries` must be a non-empty array.');
+      .toThrow('Value for property `entries` must be a non-empty array.');
   });
 
   test('Validate task policy', () => {

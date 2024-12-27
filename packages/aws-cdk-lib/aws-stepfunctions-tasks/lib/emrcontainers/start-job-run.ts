@@ -218,7 +218,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
       Properties: property.properties ? cdk.objectToCloudFormation(property.properties) : undefined,
       Configurations: property.nestedConfig ? cdk.listMapper(this.applicationConfigPropertyToJson)(property.nestedConfig) : undefined,
     };
-  }
+  };
 
   private validateAppConfigPropertiesLength(appConfig: ApplicationConfiguration) {
     if (appConfig?.properties === undefined) {
@@ -295,7 +295,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
     } else {
       return (this.props.monitoring?.logging ? new logs.LogGroup(this, 'Monitoring Log Group') : undefined);
     }
-  }
+  };
 
   private assignLogBucket = () : any => {
     if (this.props.monitoring?.logBucket) {
@@ -303,7 +303,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
     } else {
       return (this.props.monitoring?.logging ? new s3.Bucket(this, 'Monitoring Bucket') : undefined);
     }
-  }
+  };
 
   // https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/creating-job-execution-role.html
   private createJobExecutionRole(): iam.Role {
