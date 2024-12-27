@@ -3,6 +3,7 @@ import type { CredentialProviderSource, ForReading, ForWriting, PluginProviderRe
 import type { AwsCredentialIdentity, AwsCredentialIdentityProvider } from '@smithy/types';
 import { credentialsAboutToExpire, makeCachingProvider } from './provider-caching';
 import { debug, warning } from '../../logging';
+import { AuthenticationError } from '../../toolkit/error';
 import { Mode } from '../plugin/mode';
 import { PluginHost } from '../plugin/plugin';
 
@@ -126,7 +127,7 @@ async function v3ProviderFromPlugin(producer: () => Promise<PluginProviderResult
     // V2 credentials that refresh and cache themselves
     return v3ProviderFromV2Credentials(initial);
   } else {
-    throw new Error(`Plugin returned a value that doesn't resemble AWS credentials: ${inspect(initial)}`);
+    throw new AuthenticationError(`Plugin returned a value that doesn't resemble AWS credentials: ${inspect(initial)}`);
   }
 }
 
@@ -154,7 +155,7 @@ function refreshFromPluginProvider(current: AwsCredentialIdentity, producer: () 
     if (credentialsAboutToExpire(current)) {
       const newCreds = await producer();
       if (!isV3Credentials(newCreds)) {
-        throw new Error(`Plugin initially returned static V3 credentials but now returned something else: ${inspect(newCreds)}`);
+        throw new AuthenticationError(`Plugin initially returned static V3 credentials but now returned something else: ${inspect(newCreds)}`);
       }
       current = newCreds;
     }

@@ -1,5 +1,7 @@
 import { $E, Expression, ExternalModule, FreeFunction, IScope, Module, SelectiveModuleImport, Statement, ThingSymbol, Type, TypeScriptRenderer, code, expr } from '@cdklabs/typewriter';
+import { EsLintRules } from '@cdklabs/typewriter/lib/eslint-rules';
 import * as prettier from 'prettier';
+import { generateDefault } from './util';
 import { CliConfig, CliOption, YargsOption } from './yargs-types';
 
 // to import lodash.clonedeep properly, we would need to set esModuleInterop: true
@@ -45,19 +47,14 @@ export async function renderYargs(config: CliConfig, helpers: CliHelpers): Promi
   parseCommandLineArguments.addBody(makeYargs(config, helpers));
 
   const ts = new TypeScriptRenderer({
-    disabledEsLintRules: [
-      '@stylistic/comma-dangle',
-      '@stylistic/comma-spacing',
-      '@stylistic/max-len',
-      '@stylistic/quotes',
-      '@stylistic/quote-props',
-    ] as any, // Force our string[] into EsLintRules[], it will work out at runtime
+    disabledEsLintRules: [EsLintRules.MAX_LEN], // the default disabled rules result in 'Definition for rule 'prettier/prettier' was not found'
   }).render(scope);
 
   return prettier.format(ts, {
     parser: 'typescript',
     printWidth: 150,
     singleQuote: true,
+    trailingComma: 'all',
   });
 }
 
@@ -116,7 +113,13 @@ function makeYargs(config: CliConfig, helpers: CliHelpers): Statement {
 function makeOptions(prefix: Expression, options: { [optionName: string]: CliOption }, helpers: CliHelpers) {
   let optionsExpr = prefix;
   for (const option of Object.keys(options)) {
-    const theOption: CliOption = options[option];
+    const theOption: CliOption = {
+      // Make the default explicit (overridden if the option includes an actual default)
+      // 'notification-arns' is a special snowflake that should be defaulted to 'undefined', but https://github.com/yargs/yargs/issues/2443
+      // prevents us from doing so. This should be changed if the issue is resolved.
+      ...(option === 'notification-arns' ? {} : { default: generateDefault(options[option].type) }),
+      ...options[option],
+    };
     const optionProps: YargsOption = cloneDeep(theOption);
     const optionArgs: { [key: string]: Expression } = {};
 
