@@ -152,7 +152,7 @@ describe('attribute based compute', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Fleet', {
       BaseCapacity: 1,
-      ComputeType: 'ATTRIBUTE_BASED',
+      ComputeType: 'ATTRIBUTE_BASED_COMPUTE',
       EnvironmentType: 'LINUX_CONTAINER',
       ComputeConfiguration: {
         vCpu: 2,
@@ -180,7 +180,7 @@ describe('attribute based compute', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Fleet', {
       BaseCapacity: 1,
-      ComputeType: 'ATTRIBUTE_BASED',
+      ComputeType: 'ATTRIBUTE_BASED_COMPUTE',
       EnvironmentType: 'LINUX_CONTAINER',
       ComputeConfiguration: {
         vCpu: 0,
@@ -231,7 +231,7 @@ describe('attribute based compute', () => {
           disk: cdk.Size.gibibytes(1.5),
         },
       });
-    }).toThrow('disk size must be a positive integer, got: 1.5 GiB');
+    }).toThrow('disk size must be a positive integer, got: 1.5');
   });
 
   test('throw error for invalid memory size', () => {
@@ -248,7 +248,7 @@ describe('attribute based compute', () => {
           memory: cdk.Size.gibibytes(1.5),
         },
       });
-    }).toThrow('memory size must be a positive integer, got: 1.5 GiB');
+    }).toThrow('memory size must be a positive integer, got: 1.5');
   });
 
   test.each([-1, 1.5, 2.5, NaN])('throw error for invalid vCPU count %s', (vCpu) => {
