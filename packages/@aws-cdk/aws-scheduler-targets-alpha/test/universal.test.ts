@@ -21,6 +21,7 @@ describe('Universal schedule target', () => {
     const target = new Universal({
       service: 'sqs',
       action: 'createQueue',
+      iamResources: ['*'],
       input: scheduler.ScheduleTargetInput.fromObject({
         QueueName: 'my-queue',
       }),
@@ -115,6 +116,7 @@ describe('Universal schedule target', () => {
     const target = new Universal({
       service: 'sqs',
       action: 'createQueue',
+      iamResources: ['*'],
       input: scheduler.ScheduleTargetInput.fromObject({
         QueueName: 'my-queue',
       }),
@@ -174,6 +176,7 @@ describe('Universal schedule target', () => {
     const target = new Universal({
       service: 'sqs',
       action: 'createQueue',
+      iamResources: ['*'],
       input: scheduler.ScheduleTargetInput.fromObject({
         QueueName: 'my-queue',
       }),
@@ -247,6 +250,7 @@ describe('Universal schedule target', () => {
     const target = new Universal({
       service: 'sqs',
       action: 'createQueue',
+      iamResources: ['*'],
       input: scheduler.ScheduleTargetInput.fromObject({
         QueueName: 'my-queue',
       }),
@@ -344,6 +348,7 @@ describe('Universal schedule target', () => {
     const target = new Universal({
       service: 'sqs',
       action: 'createQueue',
+      iamResources: ['*'],
       input: scheduler.ScheduleTargetInput.fromObject({
         QueueName: 'my-queue',
       }),
@@ -398,6 +403,7 @@ describe('Universal schedule target', () => {
     const target = new Universal({
       service: 'sqs',
       action: 'createQueue',
+      iamResources: ['*'],
       input: scheduler.ScheduleTargetInput.fromObject({
         QueueName: 'my-queue',
       }),
@@ -438,6 +444,7 @@ describe('Universal schedule target', () => {
     const target = new Universal({
       service: 'sqs',
       action: 'createQueue',
+      iamResources: ['*'],
       input: scheduler.ScheduleTargetInput.fromObject({
         QueueName: 'my-queue',
       }),
@@ -473,6 +480,7 @@ describe('Universal schedule target', () => {
     const target = new Universal({
       service: 'sqs',
       action: 'createQueue',
+      iamResources: ['*'],
       input: scheduler.ScheduleTargetInput.fromObject({
         QueueName: 'my-queue',
       }),
@@ -518,6 +526,7 @@ describe('Universal schedule target', () => {
     const target = new Universal({
       service: 'sqs',
       action: 'createQueue',
+      iamResources: ['*'],
       input: scheduler.ScheduleTargetInput.fromObject({
         QueueName: 'my-queue',
       }),
@@ -535,6 +544,7 @@ describe('Universal schedule target', () => {
     const target = new Universal({
       service: 'sqs',
       action: 'createQueue',
+      iamResources: ['*'],
       input: scheduler.ScheduleTargetInput.fromObject({
         QueueName: 'my-queue',
       }),
@@ -552,6 +562,7 @@ describe('Universal schedule target', () => {
     const target = new Universal({
       service: 'sqs',
       action: 'createQueue',
+      iamResources: ['*'],
       input: scheduler.ScheduleTargetInput.fromObject({
         QueueName: 'my-queue',
       }),
@@ -570,6 +581,7 @@ describe('Universal schedule target', () => {
       new Universal({
         service: 'SQS',
         action: 'createQueue',
+        iamResources: ['*'],
         input: scheduler.ScheduleTargetInput.fromObject({
           QueueName: 'my-queue',
         }),
@@ -582,6 +594,7 @@ describe('Universal schedule target', () => {
       new Universal({
         service: 'sqs',
         action: 'CreateQueue',
+        iamResources: ['*'],
         input: scheduler.ScheduleTargetInput.fromObject({
           QueueName: 'my-queue',
         }),
@@ -594,6 +607,7 @@ describe('Universal schedule target', () => {
       new Universal({
         service: 'sqs',
         action: 'getQueueUrl',
+        iamResources: ['*'],
         input: scheduler.ScheduleTargetInput.fromObject({
           QueueName: 'my-queue',
         }),
@@ -601,7 +615,7 @@ describe('Universal schedule target', () => {
       })).toThrow(/Read-only API action is not supported by EventBridge Scheduler: sqs:getQueueUrl/);
   });
 
-  test('specify iamResources, iamAction, and iamConditions', () => {
+  test('specify iamAction and iamConditions', () => {
     const target = new Universal({
       service: 'lambda',
       action: 'invoke',

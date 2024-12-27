@@ -11,6 +11,7 @@ new schedule.Schedule(stack, 'Schedule', {
   target: new Universal({
     service: 'sqs',
     action: 'createQueue',
+    iamResources: ['*'],
     input: schedule.ScheduleTargetInput.fromObject({
       QueueName: 'aws-scheduler-targets-create-queue',
     }),

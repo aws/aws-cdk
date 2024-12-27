@@ -60,12 +60,8 @@ export interface UniversalProps extends ScheduleTargetBaseProps {
   /**
    * The resources for the IAM policy statement that will be added to the scheduler role's policy
    * to allow the scheduler to make the API call.
-   *
-   * We recommend specifying the resources to the minimum required for the API call.
-   *
-   * @default ['*']
    */
-  readonly iamResources?: string[];
+  readonly iamResources: string[];
 
   /**
    * The action for the IAM policy statement that will be added to the scheduler role's policy
@@ -123,7 +119,7 @@ export class Universal extends ScheduleTargetBase implements IScheduleTarget {
   protected addTargetActionToRole(role: IRole): void {
     role.addToPrincipalPolicy(new PolicyStatement({
       actions: [this.props.iamAction ?? awsSdkToIamAction(this.props.service, this.props.action)],
-      resources: this.props.iamResources ?? ['*'],
+      resources: this.props.iamResources,
       conditions: this.props.iamConditions,
     }));
 

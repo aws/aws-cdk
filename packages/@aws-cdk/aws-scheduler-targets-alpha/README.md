@@ -330,6 +330,7 @@ new Schedule(this, 'Schedule', {
   target: new targets.Universal({
     service: 'rds',
     action: 'stopDBCluster',
+    iamResources: ['arn:aws:rds:us-east-1:123456789012:cluster:my-cluster'],
     input: ScheduleTargetInput.fromObject({
       DbClusterIdentifier: 'my-db',
     }),
@@ -351,12 +352,11 @@ new Schedule(this, 'Schedule', {
   target: new targets.Universal({
     service: 'sqs',
     action: 'sendMessage',
-    // We recommend using the `iamResources` property to specify the resources that the Scheduler can access.
     iamResources: ['arn:aws:sqs:us-east-1:123456789012:my_queue'],
     additionalPolicyStatements: [
       new iam.PolicyStatement({
         actions: ['kms:Decrypt', 'kms:GenerateDataKey*'],
-        resources: ['arn:aws:kms:us-west-1:123456789012:key/0987dcba-09fe-87dc-65ba-ab0987654321'],
+        resources: ['arn:aws:kms:us-east-1:123456789012:key/0987dcba-09fe-87dc-65ba-ab0987654321'],
       }),
     ],
   }),
