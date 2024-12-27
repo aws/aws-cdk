@@ -6,27 +6,27 @@ import * as chalk from 'chalk';
  */
 interface IoMessage {
   /**
-   * time The time the message was emitted.
+   * The time the message was emitted.
    */
   readonly time: Date;
 
   /**
-   * level The log level of the message.
+   * The log level of the message.
    */
   readonly level: IoMessageLevel;
 
   /**
-   * action The action that triggered the message.
+   * The action that triggered the message.
    */
   readonly action: IoAction;
 
   /**
-   * code A short code uniquely identifying message type.
+   * A short code uniquely identifying message type.
    */
   readonly code: string;
 
   /**
-   * message The message text.
+   * The message text.
    */
   readonly message: string;
 
@@ -48,13 +48,13 @@ export type IoAction = 'synth' | 'list' | 'deploy' | 'destroy';
  */
 interface CliIoHostOptions {
   /**
-   * @param useTTY If true, the host will use TTY features like color.
+   *  If true the host will use TTY features like color.
    */
   useTTY?: boolean;
 
   /**
-   * @param ci Flag representing whether the current process is running in a CI environment,
-   * If true, the host will write all messages to stdout, unless log level is 'error'.
+   * Flag representing whether the current process is running in a CI environment,
+   * If true the host will write all messages to stdout, unless log level is 'error'.
    *
    * @default false
    */
