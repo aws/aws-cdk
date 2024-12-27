@@ -1809,7 +1809,7 @@ describe('cluster', () => {
           containerInsights: true,
           containerInsightsV2: ecs.ContainerInsights.ENHANCED,
         });
-    }).toThrow('You can only specify either containerInsights or containerInsightsLevel. Alternatively, you can leave both blank');
+    }).toThrow('You cannot set both containerInsights and containerInsightsV2');
   });
 
   test('should throw an error if containerInsights and containerInsightsLevel are both set, even if containerInsights is false', () => {

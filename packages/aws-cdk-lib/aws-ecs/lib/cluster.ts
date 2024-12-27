@@ -69,14 +69,13 @@ export interface ClusterProps {
    * If true CloudWatch Container Insights will be enabled for the cluster
    *
    * @default - Container Insights will be disabled for this cluster.
-   * @deprecated See `containerInsightsLevel`
+   * @deprecated See {@link containerInsightsV2}
    */
   readonly containerInsights?: boolean;
 
   /**
    * The CloudWatch Container Insights configuration for the cluster
-   *
-   * @default - Container Insights configuration will not be set for the cluster
+   * @default - Container Insights will be disabled for this cluster, but this may be overridden by ECS account level settings.
    */
   readonly containerInsightsV2?: ContainerInsights;
 
@@ -233,7 +232,7 @@ export class Cluster extends Resource implements ICluster {
     });
 
     if ((props.containerInsights !== undefined) && props.containerInsightsV2) {
-      throw new Error('You can only specify either containerInsights or containerInsightsLevel. Alternatively, you can leave both blank');
+      throw new Error('You cannot set both containerInsights and containerInsightsV2');
     }
 
     /**

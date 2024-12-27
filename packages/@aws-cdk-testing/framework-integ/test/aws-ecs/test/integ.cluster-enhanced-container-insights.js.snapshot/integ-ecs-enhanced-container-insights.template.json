@@ -403,6 +403,19 @@
    }
   }
  },
+ "Outputs": {
+  "ExportsOutputFnGetAttClusterEB0386A7Arn2F2E3C3F": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ClusterEB0386A7",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "integ-ecs-enhanced-container-insights:ExportsOutputFnGetAttClusterEB0386A7Arn2F2E3C3F"
+   }
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
