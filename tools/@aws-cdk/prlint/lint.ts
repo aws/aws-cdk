@@ -337,7 +337,23 @@ export class PullRequestLinter {
    * @param sha the commit sha to evaluate
    */
   private async codeBuildJobSucceeded(sha: string): Promise<boolean> {
-    return this.checkStatusSucceed(sha, CODE_BUILD_CONTEXT);
+    return this.checkStatusSucceeded(sha, CODE_BUILD_CONTEXT);
+  }
+
+  private async codecovPatchSucceeded(sha: string): Promise<boolean> {
+    return this.checkStatusSucceeded(sha, 'codecov/patch');
+  }
+
+  private async codecovPatchPackagesAwsCdkSucceeded(sha: string): Promise<boolean> {
+    return this.checkStatusSucceeded(sha, 'codecov/patch/packages/aws-cdk');
+  }
+
+  private async codecovProjectSucceeded(sha: string): Promise<boolean> {
+    return this.checkStatusSucceeded(sha, 'codecov/project');
+  }
+
+  private async codecovProjectPackagesAwsCdk(sha: string): Promise<boolean> {
+    return this.checkStatusSucceeded(sha, 'codecov/project/packages/aws-cdk');
   }
 
   /**
@@ -345,7 +361,7 @@ export class PullRequestLinter {
    *
    * @param sha the commit sha to evaluate
    */
-  private async checkStatusSucceed(sha: string, context: string): Promise<boolean> {
+  private async checkStatusSucceeded(sha: string, context: string): Promise<boolean> {
     const statuses = await this.client.repos.listCommitStatusesForRef({
       owner: this.prParams.owner,
       repo: this.prParams.repo,
