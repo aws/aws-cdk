@@ -140,7 +140,7 @@ function v3ProviderFromV2Credentials(x: SDKv2CompatibleCredentials): AwsCredenti
       accessKeyId: x.accessKeyId,
       secretAccessKey: x.secretAccessKey,
       sessionToken: x.sessionToken,
-      expiration: x.expireTime,
+      expiration: x.expireTime ?? undefined,
     };
   };
 }
