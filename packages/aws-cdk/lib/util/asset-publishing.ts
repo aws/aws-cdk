@@ -14,7 +14,7 @@ import {
 } from 'cdk-assets';
 import type { SDK } from '../api';
 import type { SdkProvider } from '../api/aws-auth/sdk-provider';
-import { Mode } from '../api/plugin';
+import { Mode } from '../api/plugin/mode';
 import { debug, error, print } from '../logging';
 
 export interface PublishAssetsOptions {

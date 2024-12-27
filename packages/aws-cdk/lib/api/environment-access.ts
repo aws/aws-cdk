@@ -3,7 +3,7 @@ import { SDK } from './aws-auth';
 import { warning } from '../logging';
 import { CredentialsOptions, SdkForEnvironment, SdkProvider } from './aws-auth/sdk-provider';
 import { EnvironmentResources, EnvironmentResourcesRegistry } from './environment-resources';
-import { Mode } from './plugin';
+import { Mode } from './plugin/mode';
 import { replaceEnvPlaceholders, StringWithoutPlaceholders } from './util/placeholders';
 
 /**

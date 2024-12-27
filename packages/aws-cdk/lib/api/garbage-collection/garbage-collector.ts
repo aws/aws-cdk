@@ -9,7 +9,7 @@ import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitInfo } from '../toolkit-info';
 import { ProgressPrinter } from './progress-printer';
 import { ActiveAssetCache, BackgroundStackRefresh, refreshStacks } from './stack-refresh';
 import { ToolkitError } from '../../toolkit/error';
-import { Mode } from '../plugin';
+import { Mode } from '../plugin/mode';
 
 // Must use a require() otherwise esbuild complains
 // eslint-disable-next-line @typescript-eslint/no-require-imports

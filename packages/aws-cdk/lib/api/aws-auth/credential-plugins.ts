@@ -1,9 +1,11 @@
 import { inspect } from 'util';
+import type { CredentialProviderSource, ForReading, ForWriting, PluginProviderResult, SDKv2CompatibleCredentials, SDKv3CompatibleCredentialProvider, SDKv3CompatibleCredentials } from '@aws-cdk/cli-plugin-contract';
 import type { AwsCredentialIdentity, AwsCredentialIdentityProvider } from '@smithy/types';
-import { debug, warning } from '../../logging';
-import { CredentialProviderSource, PluginProviderResult, Mode, PluginHost, SDKv2CompatibleCredentials, SDKv3CompatibleCredentialProvider, SDKv3CompatibleCredentials } from '../plugin';
 import { credentialsAboutToExpire, makeCachingProvider } from './provider-caching';
+import { debug, warning } from '../../logging';
 import { AuthenticationError } from '../../toolkit/error';
+import { Mode } from '../plugin/mode';
+import { PluginHost } from '../plugin/plugin';
 
 /**
  * Cache for credential providers.
@@ -69,7 +71,7 @@ export class CredentialPlugins {
       debug(`Using ${source.name} credentials for account ${awsAccountId}`);
 
       return {
-        credentials: await v3ProviderFromPlugin(() => source.getProvider(awsAccountId, mode, {
+        credentials: await v3ProviderFromPlugin(() => source.getProvider(awsAccountId, mode as ForReading | ForWriting, {
           supportsV3Providers: true,
         })),
         pluginName: source.name,
@@ -141,7 +143,7 @@ function v3ProviderFromV2Credentials(x: SDKv2CompatibleCredentials): AwsCredenti
       accessKeyId: x.accessKeyId,
       secretAccessKey: x.secretAccessKey,
       sessionToken: x.sessionToken,
-      expiration: x.expireTime,
+      expiration: x.expireTime ?? undefined,
     };
   };
 }
