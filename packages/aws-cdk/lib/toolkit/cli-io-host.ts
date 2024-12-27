@@ -97,11 +97,11 @@ export class CliIoHost {
    * Determines which output stream to use based on log level and configuration.
    */
   private getStream(level: IoMessageLevel, forceStdout: boolean) {
-    //For legacy purposes all log streams are written to stderr by default, unless
-    //specified otherwise, by passing `forceStdout`, which is used by the `data()` logging function, or
-    //if the CDK is running in a CI environment. This is because some CI environments will immediately
-    //fail if stderr is written to. In these cases, we detect if we are in a CI environment and
-    //write all messages to stdout instead.
+    // For legacy purposes all log streams are written to stderr by default, unless
+    // specified otherwise, by passing `forceStdout`, which is used by the `data()` logging function, or
+    // if the CDK is running in a CI environment. This is because some CI environments will immediately
+    // fail if stderr is written to. In these cases, we detect if we are in a CI environment and
+    // write all messages to stdout instead.
     if (forceStdout) {
       return process.stdout;
     }
