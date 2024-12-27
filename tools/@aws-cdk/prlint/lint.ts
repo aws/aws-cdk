@@ -10,6 +10,7 @@ export type GitHubPr =
   Endpoints['GET /repos/{owner}/{repo}/pulls/{pull_number}']['response']['data'];
 
 export const CODE_BUILD_CONTEXT = 'AWS CodeBuild us-east-1 (AutoBuildv2Project1C6BFA3F-wQm2hXv2jqQv)';
+export const CODECOV_PREFIX = 'codecov/';
 
 const PR_FROM_MAIN_ERROR = 'Pull requests from `main` branch of a fork cannot be accepted. Please reopen this contribution from another branch on your fork. For more information, see https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#step-4-pull-request.';
 
@@ -336,14 +337,23 @@ export class PullRequestLinter {
    * @param sha the commit sha to evaluate
    */
   private async codeBuildJobSucceeded(sha: string): Promise<boolean> {
+    return this.checkStatusSucceed(sha, CODE_BUILD_CONTEXT);
+  }
+
+  /**
+   * Check a specific status check to see if it is successful for the given commit
+   *
+   * @param sha the commit sha to evaluate
+   */
+  private async checkStatusSucceed(sha: string, context: string): Promise<boolean> {
     const statuses = await this.client.repos.listCommitStatusesForRef({
       owner: this.prParams.owner,
       repo: this.prParams.repo,
       ref: sha,
     });
-    let status = statuses.data.filter(status => status.context === CODE_BUILD_CONTEXT).map(status => status.state);
-    console.log("CodeBuild Commit Statuses: ", status);
-    return statuses.data.some(status => status.context === CODE_BUILD_CONTEXT && status.state === 'success');
+    let status = statuses.data.filter(status => status.context === context).map(status => status.state);
+    console.log(`${context} statuses: ${status}`);
+    return statuses.data.some(status => status.context === context && status.state === 'success');
   }
 
   public async validateStatusEvent(pr: GitHubPr, status: StatusEvent): Promise<void> {
