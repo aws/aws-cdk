@@ -8,6 +8,41 @@ import * as cdk from '../../../core';
 import * as elbv2 from '../../lib';
 
 describe('tests', () => {
+  test('specify minimum capacity unit', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+      vpc,
+      vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+      minimumCapacityUnit: 1500,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      MinimumLoadBalancerCapacity: {
+        CapacityUnits: 1500,
+      },
+    });
+  });
+
+  test.each([-1, 2.5])('throw error for invalid minimum capacity unit', (minimumCapacityUnit) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // THEN
+    expect(() => {
+      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+        vpc,
+        vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+        minimumCapacityUnit,
+      });
+    }).toThrow(`'minimumCapacityUnit' must be a positive integer, got ${minimumCapacityUnit}`);
+  });
+
   test('Trivial construction: internet facing', () => {
     // GIVEN
     const stack = new cdk.Stack();

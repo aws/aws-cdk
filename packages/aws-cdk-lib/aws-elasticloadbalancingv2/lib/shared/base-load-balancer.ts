@@ -251,8 +251,8 @@ export abstract class BaseLoadBalancer extends Resource {
     }
 
     const minimumCapacityUnit = baseProps.minimumCapacityUnit;
-    if (minimumCapacityUnit && !Token.isUnresolved(minimumCapacityUnit) && (minimumCapacityUnit < 0 || Number.isInteger(minimumCapacityUnit))) {
-      throw new Error(`'minimumCapacityUnit' must be a non-negative integer, got ${minimumCapacityUnit}`);
+    if (minimumCapacityUnit && !Token.isUnresolved(minimumCapacityUnit) && (minimumCapacityUnit < 0 || !Number.isInteger(minimumCapacityUnit))) {
+      throw new Error(`'minimumCapacityUnit' must be a positive integer, got ${minimumCapacityUnit}`);
     }
 
     const resource = new CfnLoadBalancer(this, 'Resource', {
