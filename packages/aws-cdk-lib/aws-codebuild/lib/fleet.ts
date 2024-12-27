@@ -74,28 +74,28 @@ export interface ComputeConfiguration {
   /**
    * The amount of disk space of the instance type included in your fleet.
    *
-   * @default 0
+   * @default - No requirement, the actual value will be based on the other selected configuration properties
    */
   readonly disk?: Size;
 
   /**
    * The machine type of the instance type included in your fleet.
    *
-   * @default - do not specify a machine type
+   * @default - No requirement, the actual value will be based on the other selected configuration properties
    */
   readonly machineType?: MachineType;
 
   /**
    * The amount of memory of the instance type included in your fleet.
    *
-   * @default 0
+   * @default - No requirement, the actual value will be based on the other selected configuration properties
    */
   readonly memory?: Size;
 
   /**
    * The number of vCPUs of the instance type included in your fleet.
    *
-   * @default 0
+   * @default - No requirement, the actual value will be based on the other selected configuration properties
    */
   readonly vCpu?: number;
 }
@@ -191,7 +191,7 @@ export class Fleet extends Resource implements IFleet {
   public readonly environmentType: EnvironmentType;
 
   constructor(scope: Construct, id: string, props: FleetProps) {
-    super(scope, id, { physicalName: props.fleetName });
+    super(scope, id, { ...props, physicalName: props.fleetName });
     if (props.fleetName && !Token.isUnresolved(props.fleetName)) {
       if (props.fleetName.length < 2) {
         throw new Error(`Fleet name can not be shorter than 2 characters but has ${props.fleetName.length} characters.`);
@@ -215,6 +215,9 @@ export class Fleet extends Resource implements IFleet {
       throw new Error(`'computeConfiguration' can only be specified if 'computeType' is 'ATTRIBUTE_BASED', got: ${props.computeType}`);
     }
 
+    // Despite what the CloudFormation schema says, the numeric properties are not optional.
+    // An undefined value will cause the CloudFormation deployment to fail, e.g.
+    // > Cannot invoke "java.lang.Integer.intValue()" because the return value of "software.amazon.codebuild.fleet.ComputeConfiguration.getMemory()" is null
     const computeConfig = props.computeConfiguration;
     const diskGiB = computeConfig?.disk?.toGibibytes() ?? 0;
     const memoryGiB = computeConfig?.memory?.toGibibytes() ?? 0;
@@ -222,9 +225,7 @@ export class Fleet extends Resource implements IFleet {
 
     this.validatePositiveInteger(diskGiB, 'disk size');
     this.validatePositiveInteger(memoryGiB, 'memory size');
-    if (!Token.isUnresolved(vCpu)) {
-      this.validatePositiveInteger(vCpu, 'vCPU count');
-    }
+    this.validatePositiveInteger(vCpu, 'vCPU count');
 
     const resource = new CfnFleet(this, 'Resource', {
       name: props.fleetName,
@@ -251,7 +252,7 @@ export class Fleet extends Resource implements IFleet {
   }
 
   private validatePositiveInteger(value: number, fieldName: string) {
-    if (value < 0 || !Number.isInteger(value)) {
+    if (!Token.isUnresolved(value) && (value < 0 || !Number.isInteger(value))) {
       throw new Error(`${fieldName} must be a positive integer, got: ${value}`);
     }
   }
