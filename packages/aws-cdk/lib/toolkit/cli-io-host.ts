@@ -21,9 +21,9 @@ interface IoMessage {
   readonly action: IoAction;
 
   /**
-   * @property code A short code to identify the message.
+   * @property code A short 
    */
-  readonly code: string;
+  readonly code: string;  
 
   /**
    * @property message The message text.
@@ -31,7 +31,8 @@ interface IoMessage {
   readonly message: string;
 
   /**
-   * @property forceStdout If true, the message will be written to stdout regardless of log level.
+   * @property forceStdout If true, the message will be written to stdout 
+   * regardless of any other parameters. 
    *
    * @default false
    */
@@ -53,7 +54,7 @@ interface CliIoHostOptions {
 
   /**
    * @param ci Flag representing whether the current process is running in a CI environment,
-   * If true, the host will write all messages to stdout.
+   * If true, the host will write all messages to stdout, unless log level is 'error'.
    *
    * @default false
    */

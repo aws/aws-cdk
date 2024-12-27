@@ -1,5 +1,5 @@
 import * as chalk from 'chalk';
-import { CliIoHost, IoAction, styleMap } from '../../toolkit/lib/cli-io-host';
+import { CliIoHost, IoAction, styleMap } from '../../lib/toolkit/cli-io-host';
 
 describe('CliIoHost', () => {
   let mockStdout: jest.Mock;
