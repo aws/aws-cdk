@@ -18,7 +18,7 @@ export interface Attribute {
 
 export enum AttributeSite {
   Interface = 'interface',
-  Class = 'class'
+  Class = 'class',
 }
 
 export class ResourceReflection {

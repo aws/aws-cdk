@@ -745,8 +745,8 @@ const nameRegex: RegExp = /^[0-9a-z_\-]+$/;
  * @param name - the given name of the canary
  */
 function validateName(name: string) {
-  if (name.length > 21) {
-    throw new Error(`Canary name is too large, must be between 1 and 21 characters, but is ${name.length} (got "${name}")`);
+  if (name.length > 255) {
+    throw new Error(`Canary name is too large, must be between 1 and 255 characters, but is ${name.length} (got "${name}")`);
   }
   if (!nameRegex.test(name)) {
     throw new Error(`Canary name must be lowercase, numbers, hyphens, or underscores (got "${name}")`);
