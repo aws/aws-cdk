@@ -297,7 +297,7 @@ describe('Subscription', () => {
           minDelayTarget: 5,
           maxDelayTarget: 10,
           numRetries: 6,
-	  backoffFunction: sns.BackoffFunction.EXPONENTIAL,
+          backoffFunction: sns.BackoffFunction.EXPONENTIAL,
         },
         throttlePolicy: {
           maxReceivesPerSecond: 10,
@@ -333,7 +333,7 @@ describe('Subscription', () => {
           minDelayTarget: 20,
           maxDelayTarget: 20,
           numRetries: 3,
-	      backoffFunction: sns.BackoffFunction.EXPONENTIAL,
+          backoffFunction: sns.BackoffFunction.EXPONENTIAL,
         },
       },
     });

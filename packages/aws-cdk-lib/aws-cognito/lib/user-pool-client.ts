@@ -34,6 +34,12 @@ export interface AuthFlow {
    * @default false
    */
   readonly userSrp?: boolean;
+
+  /**
+   * Enable Choice-based authentication
+   * @default false
+   */
+  readonly user?: boolean;
 }
 
 /**
@@ -525,6 +531,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     if (props.authFlows.adminUserPassword) { authFlows.push('ALLOW_ADMIN_USER_PASSWORD_AUTH'); }
     if (props.authFlows.custom) { authFlows.push('ALLOW_CUSTOM_AUTH'); }
     if (props.authFlows.userSrp) { authFlows.push('ALLOW_USER_SRP_AUTH'); }
+    if (props.authFlows.user) { authFlows.push('ALLOW_USER_AUTH'); }
 
     // refreshToken should always be allowed if authFlows are present
     authFlows.push('ALLOW_REFRESH_TOKEN_AUTH');

@@ -298,13 +298,14 @@ const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
 });
 ```
 
-By setting `DUAL_STACK_WITHOUT_PUBLIC_IPV4`, you can provision load balancers without public IPv4s
+By setting `DUAL_STACK_WITHOUT_PUBLIC_IPV4`, you can provision load balancers without public IPv4s:
 
 ```ts
 declare const vpc: ec2.Vpc;
 
 const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
   vpc,
+  internetFacing: true,
   ipAddressType: elbv2.IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4,
 });
 ```
@@ -380,7 +381,6 @@ and [Register targets with your Target
 Group](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/target-group-register-targets.html)
 for more information.
 
-
 ### Dualstack Network Load Balancer
 
 You can create a dualstack Network Load Balancer using the `ipAddressType` property:
@@ -394,7 +394,23 @@ const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
 });
 ```
 
-You cannot add UDP or TCP_UDP listeners to a dualstack Network Load Balancer.
+You can configure whether to use an IPv6 prefix from each subnet for source NAT by setting `enablePrefixForIpv6SourceNat` to `true`.
+This must be enabled if you want to create a dualstack Network Load Balancer with a listener that uses UDP protocol.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
+  vpc,
+  ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+  enablePrefixForIpv6SourceNat: true,
+});
+
+const listener = lb.addListener('Listener', {
+  port: 1229,
+  protocol: elbv2.Protocol.UDP,
+});
+```
 
 ### Network Load Balancer attributes
 
