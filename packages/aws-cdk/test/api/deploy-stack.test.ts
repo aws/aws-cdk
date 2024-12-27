@@ -1126,6 +1126,41 @@ describe('disable rollback', () => {
   });
 });
 
+describe('import-existing-resources', () => {
+  test('by default, import-existing-resources is disabled', async () => {
+    // WHEN
+    await deployStack({
+      ...standardDeployStackArguments(),
+      deploymentMethod: {
+        method: 'change-set',
+      },
+    });
+
+    // THEN
+    expect(mockCloudFormationClient).toHaveReceivedCommandWith(CreateChangeSetCommand, {
+      ...expect.anything,
+      ImportExistingResources: false,
+    } as CreateChangeSetCommandInput);
+  });
+
+  test('import-existing-resources is enabled', async () => {
+    // WHEN
+    await deployStack({
+      ...standardDeployStackArguments(),
+      deploymentMethod: {
+        method: 'change-set',
+        importExistingResources: true,
+      },
+    });
+
+    // THEN
+    expect(mockCloudFormationClient).toHaveReceivedCommandWith(CreateChangeSetCommand, {
+      ...expect.anything,
+      ImportExistingResources: true,
+    } as CreateChangeSetCommandInput);
+  });
+});
+
 test.each([
   // From a failed state, a --no-rollback is possible as long as there is not a replacement
   [StackStatus.UPDATE_FAILED, 'no-rollback', 'no-replacement', 'did-deploy-stack'],
