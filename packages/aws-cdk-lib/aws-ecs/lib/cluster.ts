@@ -75,7 +75,7 @@ export interface ClusterProps {
 
   /**
    * The CloudWatch Container Insights configuration for the cluster
-   * @default - Container Insights will be disabled for this cluster, but this may be overridden by ECS account level settings.
+   *  @default {@link ContainerInsights.DISABLED} This may be overridden by ECS account level settings.
    */
   readonly containerInsightsV2?: ContainerInsights;
 
@@ -240,7 +240,7 @@ export class Cluster extends Resource implements ICluster {
      * containerInsights settings on the account to apply.  See:
      * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-cluster-clustersettings.html#cfn-ecs-cluster-clustersettings-value
      */
-    let clusterSettings = undefined;
+    let clusterSettings: CfnCluster.ClusterSettingsProperty[] | undefined;
     if (props.containerInsights !== undefined) {
       clusterSettings = [{
         name: 'containerInsights',
