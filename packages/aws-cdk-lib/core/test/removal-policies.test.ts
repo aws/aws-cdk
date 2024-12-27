@@ -234,4 +234,19 @@ describe('removal-policys', () => {
     synthesize(stack);
     expect(resource.cfnOptions.deletionPolicy).toBe('Delete');
   });
+
+  test('higher priority removal policy with overwrite set to true', () => {
+    // GIVEN
+    const stack = new Stack();
+    const resource = new TestResource(stack, 'PriorityResource');
+
+    // WHEN
+    RemovalPolicies.of(stack).retainOnUpdateOrDelete({ priority: 10 });
+    RemovalPolicies.of(stack).destroy({ priority: 250, overwrite: true });
+
+    // THEN
+    synthesize(stack);
+    expect(resource.cfnOptions.deletionPolicy).toBe('Delete');
+  });
+
 });
