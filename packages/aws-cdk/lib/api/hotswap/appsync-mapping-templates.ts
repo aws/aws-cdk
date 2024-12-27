@@ -9,6 +9,7 @@ import {
   lowerCaseFirstCharacter,
   transformObjectKeys,
 } from './common';
+import { ToolkitError } from '../../toolkit/error';
 import type { SDK } from '../aws-auth';
 
 import type { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
@@ -143,7 +144,7 @@ export async function isHotswappableAppSyncChange(
             schemaCreationResponse = await sdk.appsync().getSchemaCreationStatus(getSchemaCreationStatusRequest);
           }
           if (schemaCreationResponse.status === 'FAILED') {
-            throw new Error(schemaCreationResponse.details);
+            throw new ToolkitError(schemaCreationResponse.details ?? 'Schema creation has failed.');
           }
         } else {
           //isApiKey
