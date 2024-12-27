@@ -6,32 +6,32 @@ import * as chalk from 'chalk';
  */
 interface IoMessage {
   /**
-   * @param time The time the message was emitted.
+   * @property time The time the message was emitted.
    */
   readonly time: Date;
 
   /**
-   * @param level The log level of the message.
+   * @property level The log level of the message.
    */
   readonly level: IoMessageLevel;
 
   /**
-   * @param action The action that triggered the message.
+   * @property action The action that triggered the message.
    */
   readonly action: IoAction;
 
   /**
-   * @param code A short code to identify the message.
+   * @property code A short code to identify the message.
    */
   readonly code: string;
 
   /**
-   * @param message The message text.
+   * @property message The message text.
    */
   readonly message: string;
 
   /**
-   * @param forceStdout If true, the message will be written to stdout regardless of log level.
+   * @property forceStdout If true, the message will be written to stdout regardless of log level.
    *
    * @default false
    */
