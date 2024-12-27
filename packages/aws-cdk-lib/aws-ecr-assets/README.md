@@ -51,7 +51,7 @@ asset hash.
 Additionally, you can supply `buildSecrets`. Your system must have Buildkit
 enabled, see https://docs.docker.com/build/buildkit/.
 
-Also, similary to `@aws-cdk/aws-s3-assets`, you can set the CDK_DOCKER environment
+Also, similarly to `@aws-cdk/aws-s3-assets`, you can set the CDK_DOCKER environment
 variable in order to provide a custom Docker executable command or path. This may sometimes
 be needed when building in environments where the standard docker cannot be executed
 (see https://github.com/aws/aws-cdk/issues/8460 for details).
