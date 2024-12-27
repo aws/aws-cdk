@@ -1,4 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
+import { ToolkitError } from './toolkit/error';
 
 type Options = {
   buildStackAssets: (stack: cxapi.CloudFormationStackArtifact) => Promise<void>;
@@ -18,6 +19,6 @@ export async function buildAllStackAssets(stacks: cxapi.CloudFormationStackArtif
   }
 
   if (buildingErrors.length) {
-    throw Error(`Building Assets Failed: ${buildingErrors.join(', ')}`);
+    throw new ToolkitError(`Building Assets Failed: ${buildingErrors.join(', ')}`);
   }
 }
