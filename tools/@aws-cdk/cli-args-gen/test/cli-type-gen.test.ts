@@ -43,7 +43,7 @@ describe('render', () => {
       // GENERATED FROM packages/aws-cdk/lib/config.ts.
       // Do not edit by hand; all changes will be overwritten at build time from the config file.
       // -------------------------------------------------------------------------------------------
-      /* eslint-disable max-len */
+      /* eslint-disable @stylistic/max-len */
       import { Command } from './settings';
 
       /**
@@ -145,7 +145,7 @@ describe('render', () => {
       // GENERATED FROM packages/aws-cdk/lib/config.ts.
       // Do not edit by hand; all changes will be overwritten at build time from the config file.
       // -------------------------------------------------------------------------------------------
-      /* eslint-disable max-len */
+      /* eslint-disable @stylistic/max-len */
       import { Command } from './settings';
 
       /**
