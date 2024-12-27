@@ -48,13 +48,13 @@ export type IoAction = 'synth' | 'list' | 'deploy' | 'destroy';
  */
 interface CliIoHostOptions {
   /**
-   *  If true the host will use TTY features like color.
+   * If true, the host will use TTY features like color.
    */
   useTTY?: boolean;
 
   /**
-   * Flag representing whether the current process is running in a CI environment,
-   * If true the host will write all messages to stdout, unless log level is 'error'.
+   * Flag representing whether the current process is running in a CI environment.
+   * If true, the host will write all messages to stdout, unless log level is 'error'.
    *
    * @default false
    */
