@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ff06a4c258e6b54d1b288229140ba9546fd8b36f0802a6743b8ccd43fb8927c3.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f317d1d8eb0f6b3d1c8990bc82107ef6959bc53324190e036a7734ea3b5189a8.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -50,6 +50,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "TestUser6A619381"
+          }
+        ],
+        "/TestStack/DestroyBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DestroyBucket924C7F03"
           }
         ],
         "/TestStack/BootstrapVersion": [

@@ -32,6 +32,11 @@
    "Type": "AWS::IAM::User",
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
+  },
+  "DestroyBucket924C7F03": {
+   "Type": "AWS::S3::Bucket",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Parameters": {

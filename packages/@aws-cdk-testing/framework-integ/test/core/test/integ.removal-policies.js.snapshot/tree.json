@@ -99,6 +99,28 @@
               "version": "0.0.0"
             }
           },
+          "DestroyBucket": {
+            "id": "DestroyBucket",
+            "path": "TestStack/DestroyBucket",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "TestStack/DestroyBucket/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_s3.Bucket",
+              "version": "0.0.0"
+            }
+          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "TestStack/BootstrapVersion",
