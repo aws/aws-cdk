@@ -6,32 +6,32 @@ import * as chalk from 'chalk';
  */
 interface IoMessage {
   /**
-   * @property time The time the message was emitted.
+   * time The time the message was emitted.
    */
   readonly time: Date;
 
   /**
-   * @property level The log level of the message.
+   * level The log level of the message.
    */
   readonly level: IoMessageLevel;
 
   /**
-   * @property action The action that triggered the message.
+   * action The action that triggered the message.
    */
   readonly action: IoAction;
 
   /**
-   * @property code A short 
+   * code A short 
    */
   readonly code: string;  
 
   /**
-   * @property message The message text.
+   * message The message text.
    */
   readonly message: string;
 
   /**
-   * @property forceStdout If true, the message will be written to stdout 
+   * forceStdout If true, the message will be written to stdout 
    * regardless of any other parameters. 
    *
    * @default false
@@ -97,13 +97,11 @@ export class CliIoHost {
    * Determines which output stream to use based on log level and configuration.
    */
   private getStream(level: IoMessageLevel, forceStdout: boolean) {
-    /**
-     * For legacy purposes all log streams are written to stderr by default, unless
-     * specified otherwise, by passing `forceStdout`, which is used by the `data()` logging function, or
-     * if the CDK is running in a CI environment. This is because some CI environments will immediately
-     * fail if stderr is written to. In these cases, we detect if we are in a CI environment and
-     * write all messages to stdout instead.
-     */
+     //For legacy purposes all log streams are written to stderr by default, unless
+     //specified otherwise, by passing `forceStdout`, which is used by the `data()` logging function, or
+     //if the CDK is running in a CI environment. This is because some CI environments will immediately
+     //fail if stderr is written to. In these cases, we detect if we are in a CI environment and
+     //write all messages to stdout instead.
     if (forceStdout) {
       return process.stdout;
     }
