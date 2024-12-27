@@ -31,7 +31,7 @@ interface IoMessage {
   readonly message: string;
 
   /**
-   * forceStdout If true, the message will be written to stdout
+   * If true, the message will be written to stdout
    * regardless of any other parameters.
    *
    * @default false
