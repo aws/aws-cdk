@@ -24,7 +24,7 @@
        {
         "Ref": "TopicBFC7AF6E"
        },
-       "\"},\"logApiResponseData\":true}"
+       "\"}}"
       ]
      ]
     },
@@ -40,7 +40,7 @@
        {
         "Ref": "TopicBFC7AF6E"
        },
-       "\"},\"logApiResponseData\":true}"
+       "\"}}"
       ]
      ]
     },
@@ -136,8 +136,8 @@
       "Arn"
      ]
     },
-    "Create": "{\"service\":\"SNS\",\"action\":\"listTopics\",\"physicalResourceId\":{\"responsePath\":\"Topics.0.TopicArn\"},\"logApiResponseData\":true}",
-    "Update": "{\"service\":\"SNS\",\"action\":\"listTopics\",\"physicalResourceId\":{\"responsePath\":\"Topics.0.TopicArn\"},\"logApiResponseData\":true}",
+    "Create": "{\"service\":\"SNS\",\"action\":\"listTopics\",\"physicalResourceId\":{\"responsePath\":\"Topics.0.TopicArn\"}}",
+    "Update": "{\"service\":\"SNS\",\"action\":\"listTopics\",\"physicalResourceId\":{\"responsePath\":\"Topics.0.TopicArn\"}}",
     "InstallLatestAwsSdk": "false"
    },
    "DependsOn": [
@@ -195,7 +195,7 @@
        {
         "Ref": "Utf8Parameter6C885A19"
        },
-       "\",\"WithDecryption\":true},\"physicalResourceId\":{\"responsePath\":\"Parameter.ARN\"},\"logApiResponseData\":true}"
+       "\",\"WithDecryption\":true},\"physicalResourceId\":{\"responsePath\":\"Parameter.ARN\"}}"
       ]
      ]
     },
@@ -207,7 +207,7 @@
        {
         "Ref": "Utf8Parameter6C885A19"
        },
-       "\",\"WithDecryption\":true},\"physicalResourceId\":{\"responsePath\":\"Parameter.ARN\"},\"logApiResponseData\":true}"
+       "\",\"WithDecryption\":true},\"physicalResourceId\":{\"responsePath\":\"Parameter.ARN\"}}"
       ]
      ]
     },
@@ -295,7 +295,7 @@
        {
         "Ref": "Utf8Parameter6C885A19"
        },
-       "\",\"WithDecryption\":true},\"physicalResourceId\":{\"responsePath\":\"Parameter.ARN\"},\"logApiResponseData\":true}"
+       "\",\"WithDecryption\":true},\"physicalResourceId\":{\"responsePath\":\"Parameter.ARN\"}}"
       ]
      ]
     },
@@ -307,7 +307,7 @@
        {
         "Ref": "Utf8Parameter6C885A19"
        },
-       "\",\"WithDecryption\":true},\"physicalResourceId\":{\"responsePath\":\"Parameter.ARN\"},\"logApiResponseData\":true}"
+       "\",\"WithDecryption\":true},\"physicalResourceId\":{\"responsePath\":\"Parameter.ARN\"}}"
       ]
      ]
     },
@@ -325,8 +325,8 @@
       "Arn"
      ]
     },
-    "Create": "{\"service\":\"EKS\",\"action\":\"describeCluster\",\"parameters\":{\"name\":\"fake-cluster\"},\"physicalResourceId\":{\"id\":\"fake-cluster\"},\"ignoreErrorCodesMatching\":\"ResourceNotFoundException\",\"logApiResponseData\":true}",
-    "Update": "{\"service\":\"EKS\",\"action\":\"describeCluster\",\"parameters\":{\"name\":\"fake-cluster\"},\"physicalResourceId\":{\"id\":\"fake-cluster\"},\"ignoreErrorCodesMatching\":\"ResourceNotFoundException\",\"logApiResponseData\":true}",
+    "Create": "{\"service\":\"EKS\",\"action\":\"describeCluster\",\"parameters\":{\"name\":\"fake-cluster\"},\"physicalResourceId\":{\"id\":\"fake-cluster\"},\"ignoreErrorCodesMatching\":\"ResourceNotFoundException\"}",
+    "Update": "{\"service\":\"EKS\",\"action\":\"describeCluster\",\"parameters\":{\"name\":\"fake-cluster\"},\"physicalResourceId\":{\"id\":\"fake-cluster\"},\"ignoreErrorCodesMatching\":\"ResourceNotFoundException\"}",
     "InstallLatestAwsSdk": "false"
    },
    "DependsOn": [

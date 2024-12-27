@@ -40,7 +40,7 @@
        {
         "Ref": "myTableA48C5C70"
        },
-       "\"},\"physicalResourceId\":{\"id\":\"myCRphysicalResourceID\"},\"logApiResponseData\":true}"
+       "\"},\"physicalResourceId\":{\"id\":\"myCRphysicalResourceID\"}}"
       ]
      ]
     },
@@ -52,7 +52,7 @@
        {
         "Ref": "myTableA48C5C70"
        },
-       "\"},\"physicalResourceId\":{\"id\":\"myCRphysicalResourceID\"},\"logApiResponseData\":true}"
+       "\"},\"physicalResourceId\":{\"id\":\"myCRphysicalResourceID\"}}"
       ]
      ]
     },
