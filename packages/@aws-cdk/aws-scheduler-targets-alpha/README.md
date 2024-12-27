@@ -340,11 +340,10 @@ new Schedule(this, 'Schedule', {
 
 The `service` must be in lowercase and the `action` must be in camelCase.
 
-By default, IAM policies for the Scheduler are extracted from the API call.
+By default, an IAM policy for the Scheduler is extracted from the API call.
 
-You can also provide custom IAM policy statements to the Scheduler.
-
-This is useful when you want to control the permissions of the Scheduler.
+You can provide additional IAM policy statements to the Scheduler when
+other permissions are required for the action.
 
 ```ts
 new Schedule(this, 'Schedule', {
