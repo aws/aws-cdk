@@ -25,8 +25,8 @@ const integTest = new IntegTest(stack, 'ecs-external-service-daemon-test', {
 });
 
 integTest.assertions.awsApiCall('ECS', 'describeServices', {
-    cluster: cluster.clusterName,
-    services: [service.serviceName],
+  cluster: cluster.clusterName,
+  services: [service.serviceName],
 })
   .assertAtPath('services.0.schedulingStrategy', ExpectedResult.stringLikeRegexp('DAEMON'));
 
