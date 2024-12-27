@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.173.4](https://github.com/aws/aws-cdk/compare/v2.173.3...v2.173.4) (2024-12-27)
+
+
+### Bug Fixes
+
+* **cli:** cli still fails for some plugins returning `expiration: null` ([#32668](https://github.com/aws/aws-cdk/issues/32668)) ([4da2f65](https://github.com/aws/aws-cdk/commit/4da2f6553cf488897c0ec10cce063bd3168b726f)), closes [#32111](https://github.com/aws/aws-cdk/issues/32111)
+
 ## [2.173.3](https://github.com/aws/aws-cdk/compare/v2.173.2...v2.173.3) (2024-12-26)
 
 
