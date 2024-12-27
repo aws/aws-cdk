@@ -21,7 +21,7 @@ interface IoMessage {
   readonly action: IoAction;
 
   /**
-   * code A short 
+   * code A short code uniquely identifying message type.
    */
   readonly code: string;  
 
