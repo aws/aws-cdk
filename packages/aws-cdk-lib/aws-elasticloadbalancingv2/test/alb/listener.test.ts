@@ -1953,6 +1953,7 @@ describe('tests', () => {
         protocol: elbv2.ApplicationProtocol.HTTPS,
         certificates: [importedCertificate(stack)],
         mutualAuthentication: {
+          advertiseTrustStoreCaNames: elbv2.AdvertiseTrustStoreCaNames.ON,
           ignoreClientCertificateExpiry: true,
           mutualAuthenticationMode: elbv2.MutualAuthenticationMode.VERIFY,
           trustStore,
@@ -1964,6 +1965,7 @@ describe('tests', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
         MutualAuthentication: {
+          AdvertiseTrustStoreCaNames: 'on',
           IgnoreClientCertificateExpiry: true,
           Mode: 'verify',
           TrustStoreArn: stack.resolve(trustStore.trustStoreArn),

@@ -137,6 +137,13 @@ export interface MutualAuthentication {
    * @default false
    */
   readonly ignoreClientCertificateExpiry?: boolean;
+
+  /**
+   * Indicates whether trust store CA names are advertised
+   *
+   * @default AdvertiseTrustStoreCaNames.OFF
+   */
+  readonly advertiseTrustStoreCaNames?: AdvertiseTrustStoreCaNames;
 }
 
 /**
@@ -157,6 +164,21 @@ export enum MutualAuthenticationMode {
    * Application Load Balancer performs X.509 client certificate authentication for clients when a load balancer negotiates TLS connections
    */
   VERIFY = 'verify',
+}
+
+/**
+ *  Indicates whether trust store CA names are advertised
+ */
+export enum AdvertiseTrustStoreCaNames {
+  /**
+   * Off
+   */
+  OFF = 'off',
+
+  /**
+   * On
+   */
+  ON = 'on',
 }
 
 /**
@@ -263,6 +285,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       port,
       sslPolicy: props.sslPolicy,
       mutualAuthentication: props.mutualAuthentication ? {
+        advertiseTrustStoreCaNames: props.mutualAuthentication?.advertiseTrustStoreCaNames,
         ignoreClientCertificateExpiry: props.mutualAuthentication?.ignoreClientCertificateExpiry,
         mode: props.mutualAuthentication?.mutualAuthenticationMode,
         trustStoreArn: props.mutualAuthentication?.trustStore?.trustStoreArn,
