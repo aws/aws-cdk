@@ -5111,10 +5111,10 @@
   resolved "https://registry.npmjs.org/@cdklabs/typewriter/-/typewriter-0.0.3.tgz#37143d4cf004085bce7d1bbc9139bbf4bf4403a8"
   integrity sha512-dymXkqVKZLLQJGxZGvmCn9ZIDCiPM5hC1P7dABob8C0m5P0bf91W7HsPUu3yHomdFxoHAWFaXAZ9i3Q+uVeJ5g==
 
-"@cdklabs/typewriter@^0.0.4":
-  version "0.0.4"
-  resolved "https://registry.npmjs.org/@cdklabs/typewriter/-/typewriter-0.0.4.tgz#4c2ae97c05eec921131549de08e37e5ecda80e43"
-  integrity sha512-FAcF8k0nNo3VmlGP3UHi4h2K5sohY/7Gcv4p7epMGwT4U3PbAsc3xWL42IAD1a/1g/rvrtIaRHbuGUp1O1VNvw==
+"@cdklabs/typewriter@^0.0.5":
+  version "0.0.5"
+  resolved "https://registry.npmjs.org/@cdklabs/typewriter/-/typewriter-0.0.5.tgz#edbec5c2e6dd45c803154d7e521ca38746a08d89"
+  integrity sha512-gLp7s9bhHOIN9SN6jhdVi3cLp0YisMkvn4Ct3KeqySR7H1Q5nytKvV0NWUC1FrdNsPoKvulUFIGtqbwCFZt9NQ==
 
 "@colors/colors@1.5.0":
   version "1.5.0"

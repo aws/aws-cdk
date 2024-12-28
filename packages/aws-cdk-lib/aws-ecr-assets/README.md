@@ -51,6 +51,11 @@ asset hash.
 Additionally, you can supply `buildSecrets`. Your system must have Buildkit
 enabled, see https://docs.docker.com/build/buildkit/.
 
+Also, similarly to `@aws-cdk/aws-s3-assets`, you can set the CDK_DOCKER environment
+variable in order to provide a custom Docker executable command or path. This may sometimes
+be needed when building in environments where the standard docker cannot be executed
+(see https://github.com/aws/aws-cdk/issues/8460 for details).
+
 SSH agent sockets or keys may be passed to docker build via `buildSsh`.
 
 ```ts
@@ -209,5 +214,5 @@ pull images from this repository.
 If the pulling principal is not in the same account or is an AWS service that
 doesn't assume a role in your account (e.g. AWS CodeBuild), you must either copy the image to a new repository, or
 grant pull permissions on the resource policy of the repository. Since the repository is managed by the CDK bootstrap stack,
-the following permissions must be granted there, or granted manually on the repository: "ecr:GetDownloadUrlForLayer", 
+the following permissions must be granted there, or granted manually on the repository: "ecr:GetDownloadUrlForLayer",
 "ecr:BatchGetImage" and "ecr:BatchCheckLayerAvailability".
