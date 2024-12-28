@@ -27,7 +27,7 @@ import {
 } from './hotswap/s3-bucket-deployments';
 import { isHotswappableStateMachineChange } from './hotswap/stepfunctions-state-machines';
 import { NestedStackTemplates, loadCurrentTemplateWithNestedStacks } from './nested-stack-helpers';
-import { Mode } from './plugin';
+import { Mode } from './plugin/mode';
 import { CloudFormationStack } from './util/cloudformation';
 
 // Must use a require() otherwise esbuild complains about calling a namespace

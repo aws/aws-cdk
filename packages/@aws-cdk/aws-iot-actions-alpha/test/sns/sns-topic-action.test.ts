@@ -99,5 +99,5 @@ test('Action with FIFO topic throws error', () => {
 
   expect(() => {
     topicRule.addAction(new actions.SnsTopicAction(snsFifoTopic));
-  }).toThrowError('IoT Rule actions cannot be used with FIFO SNS Topics, please pass a non-FIFO Topic instead');
+  }).toThrow('IoT Rule actions cannot be used with FIFO SNS Topics, please pass a non-FIFO Topic instead');
 });

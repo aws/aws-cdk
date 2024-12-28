@@ -1,0 +1,61 @@
+{
+  "name": "@aws-cdk/toolkit",
+  "description": "AWS CDK Programmatic Toolkit Library",
+  "private": true,
+  "version": "0.0.0",
+  "main": "./lib/index.js",
+  "exports": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "type": "commonjs",
+  "scripts": {
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "pkglint": "pkglint -f",
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "build+test+package": "yarn build+test && yarn package",
+    "build+test": "yarn build && yarn test",
+    "build+extract": "yarn build",
+    "build+test+extract": "yarn build+test"
+  },
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@types/jest": "^29.5.14",
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "jest": "^29.7.0",
+    "typescript": "~5.6.3"
+  },
+  "dependencies": {
+    "@aws-cdk/cx-api": "0.0.0"
+  },
+  "repository": {
+    "url": "https://github.com/aws/aws-cdk.git",
+    "type": "git",
+    "directory": "packages/@aws-cdk/toolkit"
+  },
+  "keywords": [
+    "aws",
+    "cdk"
+  ],
+  "homepage": "https://github.com/aws/aws-cdk",
+  "engines": {
+    "node": ">= 14.15.0"
+  },
+  "awscdkio": {
+    "announce": false
+  },
+  "stability": "experimental",
+  "maturity": "experimental",
+  "publishConfig": {
+    "access": "restricted",
+    "tag": "latest"
+  }
+}
