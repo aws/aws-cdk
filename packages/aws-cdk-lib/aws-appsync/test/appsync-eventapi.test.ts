@@ -83,6 +83,7 @@ describe('AppSync Event Api auth configuration', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Api', {
       Name: 'apiWithMultipleProviders',
       EventConfig: {
+        AuthProviders: [{ AuthType: appsync.AppSyncAuthorizationType.API_KEY }, { AuthType: appsync.AppSyncAuthorizationType.IAM }],
         ConnectionAuthModes: [{ AuthType: appsync.AppSyncAuthorizationType.API_KEY }, { AuthType: appsync.AppSyncAuthorizationType.IAM }],
         DefaultPublishAuthModes: [{ AuthType: appsync.AppSyncAuthorizationType.API_KEY }, { AuthType: appsync.AppSyncAuthorizationType.IAM }],
         DefaultSubscribeAuthModes: [{ AuthType: appsync.AppSyncAuthorizationType.API_KEY }, { AuthType: appsync.AppSyncAuthorizationType.IAM }],
