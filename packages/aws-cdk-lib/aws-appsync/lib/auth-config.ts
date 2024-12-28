@@ -1,8 +1,8 @@
 import { Construct } from 'constructs';
-import { CfnApiKey } from './appsync.generated';
+import { CfnApi, CfnApiKey } from './appsync.generated';
 import { IUserPool } from '../../aws-cognito';
 import { IFunction } from '../../aws-lambda';
-import { Duration, Expiration } from '../../core';
+import { Duration, Expiration, IResolvable } from '../../core';
 
 /**
  * Auth provider settings for AppSync Event APIs
@@ -162,40 +162,23 @@ export interface AppSyncLambdaAuthorizerConfig {
 }
 
 /**
- * Set up OIDC Authorization configuration for GraphQL APIs and Event APIs
+ * Exposes methods for defining authorization config for AppSync APIs
  */
-export function setupOpenIdConnectConfig(config?: AppSyncOpenIdConnectConfig) {
-  if (!config) return undefined;
-  return {
-    authTtl: config.tokenExpiryFromAuth,
-    clientId: config.clientId,
-    iatTtl: config.tokenExpiryFromIssue,
-    issuer: config.oidcProvider,
-  };
-}
+export interface IAppSyncAuthConfig {
+  /**
+   * Set up OIDC Authorization configuration for AppSync APIs
+   */
+  setupOpenIdConnectConfig(config?: AppSyncOpenIdConnectConfig): IResolvable | CfnApi.OpenIDConnectConfigProperty | undefined;
 
-/**
- * Set up Cognito Authorization configuration for Event APIs
- */
-export function setupCognitoConfig(config?: AppSyncCognitoConfig) {
-  if (!config) return undefined;
-  return {
-    userPoolId: config.userPool.userPoolId,
-    awsRegion: config.userPool.env.region,
-    appIdClientRegex: config.appIdClientRegex,
-  };
-}
+  /**
+   * Set up Cognito Authorization configuration for AppSync APIs
+   */
+  setupCognitoConfig(config?: AppSyncCognitoConfig): IResolvable | CfnApi.CognitoConfigProperty | undefined;
 
-/**
- * Set up Lambda Authorization configuration for GraphQL APIs and Event APIs
- */
-export function setupLambdaAuthorizerConfig(config?: AppSyncLambdaAuthorizerConfig) {
-  if (!config) return undefined;
-  return {
-    authorizerResultTtlInSeconds: config.resultsCacheTtl?.toSeconds(),
-    authorizerUri: config.handler.functionArn,
-    identityValidationExpression: config.validationRegex,
-  };
+  /**
+   * Set up Lambda Authorization configuration AppSync APIs
+   */
+  setupLambdaAuthorizerConfig(config?: AppSyncLambdaAuthorizerConfig): IResolvable | CfnApi.LambdaAuthorizerConfigProperty | undefined;
 }
 
 /**

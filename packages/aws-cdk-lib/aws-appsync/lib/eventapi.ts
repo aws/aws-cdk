@@ -4,14 +4,15 @@ import {
   AppSyncLogConfig,
   AppSyncFieldLogLevel,
   AppSyncDomainOptions,
-  AppSyncEventIamResource,
+  AppSyncEventResource,
 } from './appsync-common';
 import { CfnApi, CfnApiKey, CfnDomainName, CfnDomainNameApiAssociation } from './appsync.generated';
 import {
+  IAppSyncAuthConfig,
   createAPIKey,
-  setupLambdaAuthorizerConfig,
-  setupOpenIdConnectConfig,
-  setupCognitoConfig,
+  AppSyncCognitoConfig,
+  AppSyncLambdaAuthorizerConfig,
+  AppSyncOpenIdConnectConfig,
   AppSyncAuthorizationType,
   AppSyncAuthProvider,
 } from './auth-config';
@@ -50,6 +51,48 @@ export interface EventApiAuthConfig {
 }
 
 /**
+ * Authorization configuration helper methods
+ */
+class AppSyncEventApiAuthConfig implements IAppSyncAuthConfig {
+  /**
+   * Set up OIDC Authorization configuration for GraphQL APIs and Event APIs
+   */
+  setupOpenIdConnectConfig(config?: AppSyncOpenIdConnectConfig) {
+    if (!config) return undefined;
+    return {
+      authTtl: config.tokenExpiryFromAuth,
+      clientId: config.clientId,
+      iatTtl: config.tokenExpiryFromIssue,
+      issuer: config.oidcProvider,
+    };
+  }
+
+  /**
+   * Set up Cognito Authorization configuration for Event APIs
+   */
+  setupCognitoConfig(config?: AppSyncCognitoConfig) {
+    if (!config) return undefined;
+    return {
+      userPoolId: config.userPool.userPoolId,
+      awsRegion: config.userPool.env.region,
+      appIdClientRegex: config.appIdClientRegex,
+    };
+  }
+
+  /**
+   * Set up Lambda Authorization configuration for GraphQL APIs and Event APIs
+   */
+  setupLambdaAuthorizerConfig(config?: AppSyncLambdaAuthorizerConfig) {
+    if (!config) return undefined;
+    return {
+      authorizerResultTtlInSeconds: config.resultsCacheTtl?.toSeconds(),
+      authorizerUri: config.handler.functionArn,
+      identityValidationExpression: config.validationRegex,
+    };
+  }
+}
+
+/**
  * Interface for Event API
  */
 export interface IEventApi extends IApi {
@@ -81,7 +124,7 @@ export interface IEventApi extends IApi {
    * @param resources The set of resources to allow (i.e. ...:[region]:[accountId]:apis/EventApiId/...)
    * @param actions The actions that should be granted to the principal (i.e. appsync:EventPublish )
    */
-  grant(grantee: IGrantable, resources: AppSyncEventIamResource, ...actions: string[]): Grant;
+  grant(grantee: IGrantable, resources: AppSyncEventResource, ...actions: string[]): Grant;
 
   /**
    * Adds an IAM policy statement for EventPublish access to this EventApi to an IAM
@@ -152,7 +195,7 @@ export abstract class EventApiBase extends ApiBase implements IEventApi {
    * @param resources The set of resources to allow (i.e. ...:[region]:[accountId]:apis/EventApiId/...)
    * @param actions The actions that should be granted to the principal (i.e. appsync:EventPublish )
    */
-  public grant(grantee: IGrantable, resources: AppSyncEventIamResource, ...actions: string[]): Grant {
+  public grant(grantee: IGrantable, resources: AppSyncEventResource, ...actions: string[]): Grant {
     if (!this.authProviderTypes.includes(AppSyncAuthorizationType.IAM)) {
       throw new Error('IAM Authorization mode is not configured on this API.');
     }
@@ -171,7 +214,7 @@ export abstract class EventApiBase extends ApiBase implements IEventApi {
    * @param grantee The principal
    */
   public grantPublish(grantee: IGrantable): Grant {
-    return this.grant(grantee, AppSyncEventIamResource.all(), 'appsync:EventPublish');
+    return this.grant(grantee, AppSyncEventResource.all(), 'appsync:EventPublish');
   }
 
   /**
@@ -181,7 +224,7 @@ export abstract class EventApiBase extends ApiBase implements IEventApi {
    * @param grantee The principal
    */
   public grantSubscribe(grantee: IGrantable): Grant {
-    return this.grant(grantee, AppSyncEventIamResource.all(), 'appsync:EventSubscribe');
+    return this.grant(grantee, AppSyncEventResource.all(), 'appsync:EventSubscribe');
   }
 
   /**
@@ -191,7 +234,7 @@ export abstract class EventApiBase extends ApiBase implements IEventApi {
    * @param grantee The principal
    */
   public grantPublishAndSubscribe(grantee: IGrantable): Grant {
-    return this.grant(grantee, AppSyncEventIamResource.all(), 'appsync:EventPublish', 'appsync:EventSubscribe');
+    return this.grant(grantee, AppSyncEventResource.all(), 'appsync:EventPublish', 'appsync:EventSubscribe');
   }
 
   /**
@@ -200,7 +243,7 @@ export abstract class EventApiBase extends ApiBase implements IEventApi {
    * @param grantee The principal
    */
   public grantConnect(grantee: IGrantable): Grant {
-    return this.grant(grantee, AppSyncEventIamResource.forAPI(), 'appsync:EventConnect');
+    return this.grant(grantee, AppSyncEventResource.forAPI(), 'appsync:EventConnect');
   }
 }
 
@@ -510,12 +553,14 @@ export class EventApi extends EventApiBase {
   }
 
   private mapAuthorizationProviders(authProviders: AppSyncAuthProvider[]) {
+    const authConfig: IAppSyncAuthConfig = new AppSyncEventApiAuthConfig();
+
     return authProviders.reduce<CfnApi.AuthProviderProperty[]>((acc, mode) => {
       acc.push({
         authType: mode.authorizationType,
-        cognitoConfig: setupCognitoConfig(mode.cognitoConfig),
-        openIdConnectConfig: setupOpenIdConnectConfig(mode.openIdConnectConfig),
-        lambdaAuthorizerConfig: setupLambdaAuthorizerConfig(mode.lambdaAuthorizerConfig),
+        cognitoConfig: authConfig.setupCognitoConfig(mode.cognitoConfig),
+        openIdConnectConfig: authConfig.setupOpenIdConnectConfig(mode.openIdConnectConfig),
+        lambdaAuthorizerConfig: authConfig.setupLambdaAuthorizerConfig(mode.lambdaAuthorizerConfig),
       });
       return acc;
     }, []);

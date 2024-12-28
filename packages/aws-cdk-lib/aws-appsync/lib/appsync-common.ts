@@ -7,12 +7,12 @@ import { Stack, ArnFormat } from '../../core';
 /**
  * A class used to generate resource arns for AppSync Event APIs
  */
-export class AppSyncEventIamResource {
+export class AppSyncEventResource {
   /**
    * Generate a resource for the calling API
    */
-  public static forAPI(): AppSyncEventIamResource {
-    return new AppSyncEventIamResource(['']);
+  public static forAPI(): AppSyncEventResource {
+    return new AppSyncEventResource(['']);
   }
 
   /**
@@ -22,16 +22,16 @@ export class AppSyncEventIamResource {
    *
    * Example: ofChannelNamespace('default')
    */
-  public static ofChannelNamespace(channelNamespace: string): AppSyncEventIamResource {
+  public static ofChannelNamespace(channelNamespace: string): AppSyncEventResource {
     const arns = [`channelNamespace/${channelNamespace}`];
-    return new AppSyncEventIamResource(arns);
+    return new AppSyncEventResource(arns);
   }
 
   /**
    * Generate the resource names that accepts all types: `*`
    */
-  public static all(): AppSyncEventIamResource {
-    return new AppSyncEventIamResource(['*']);
+  public static all(): AppSyncEventResource {
+    return new AppSyncEventResource(['*']);
   }
 
   private arns: string[];

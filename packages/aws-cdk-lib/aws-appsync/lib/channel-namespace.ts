@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { AppSyncEventIamResource } from './appsync-common';
+import { AppSyncEventResource } from './appsync-common';
 import { CfnChannelNamespace } from './appsync.generated';
 import { AppSyncAuthorizationType } from './auth-config';
 import { Code } from './code';
@@ -165,7 +165,7 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
    * @param grantee The principal
    */
   public grantSubscribe(grantee: IGrantable) {
-    return this.api.grant(grantee, AppSyncEventIamResource.ofChannelNamespace(this.channelNamespace.name), 'appsync:EventSubscribe');
+    return this.api.grant(grantee, AppSyncEventResource.ofChannelNamespace(this.channelNamespace.name), 'appsync:EventSubscribe');
   }
 
   /**
@@ -175,7 +175,7 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
    * @param grantee The principal
    */
   public grantPublish(grantee: IGrantable) {
-    return this.api.grant(grantee, AppSyncEventIamResource.ofChannelNamespace(this.channelNamespace.name), 'appsync:EventPublish');
+    return this.api.grant(grantee, AppSyncEventResource.ofChannelNamespace(this.channelNamespace.name), 'appsync:EventPublish');
   }
 
   /**
@@ -185,7 +185,7 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
    * @param grantee The principal
    */
   public grantPublishAndSubscribe(grantee: IGrantable) {
-    return this.api.grant(grantee, AppSyncEventIamResource.ofChannelNamespace(this.channelNamespace.name), 'appsync:EventPublish', 'appsync:EventSubscribe');
+    return this.api.grant(grantee, AppSyncEventResource.ofChannelNamespace(this.channelNamespace.name), 'appsync:EventPublish', 'appsync:EventSubscribe');
   }
 
   private validateAuthorizationConfig(apiAuthProviders: AppSyncAuthorizationType[], channelAuthModeTypes: AppSyncAuthorizationType[]) {

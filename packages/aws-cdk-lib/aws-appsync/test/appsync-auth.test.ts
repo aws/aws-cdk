@@ -331,6 +331,13 @@ describe('AppSync Event API Key Authorization', () => {
 
     // THEN
     Template.fromStack(stack).resourceCountIs('AWS::AppSync::ApiKey', 0);
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Api', {
+      EventConfig: {
+        ConnectionAuthModes: [{ AuthType: appsync.AppSyncAuthorizationType.IAM }],
+        DefaultPublishAuthModes: [{ AuthType: appsync.AppSyncAuthorizationType.IAM }],
+        DefaultSubscribeAuthModes: [{ AuthType: appsync.AppSyncAuthorizationType.IAM }],
+      },
+    });
   });
 
   test('AppSync Event API - creates configured api key when explicitly provided', () => {
@@ -896,6 +903,25 @@ describe('AppSync Event API User Pool Authorization', () => {
       },
     });
   });
+
+  test('AppSync Event API throws error when authType is defined but missing Cognito Config', () => {
+    // WHEN
+    const cognitoProvider: appsync.AppSyncAuthProvider = {
+      authorizationType: appsync.AppSyncAuthorizationType.USER_POOL,
+    };
+
+    const when = () => {
+      new appsync.EventApi(stack, 'api', {
+        apiName: 'api',
+        authorizationConfig: {
+          authProviders: [cognitoProvider],
+        },
+      });
+    };
+
+    // THEN
+    expect(when).toThrow('AMAZON_COGNITO_USER_POOLS authorization type is specified but Cognito Authorizer Configuration is missing in the AuthProvider');
+  });
 });
 
 describe('AppSync GraphQL API OIDC Authorization', () => {
@@ -1260,6 +1286,25 @@ describe('AppSync Event API OIDC Authorization', () => {
         ],
       },
     });
+  });
+
+  test('AppSync Event API throws error when authType is defined but missing OIDC Config', () => {
+    // WHEN
+    const oidcProvider: appsync.AppSyncAuthProvider = {
+      authorizationType: appsync.AppSyncAuthorizationType.OIDC,
+    };
+
+    const when = () => {
+      new appsync.EventApi(stack, 'api', {
+        apiName: 'api',
+        authorizationConfig: {
+          authProviders: [oidcProvider],
+        },
+      });
+    };
+
+    // THEN
+    expect(when).toThrow('OPENID_CONNECT authorization type is specified but OIDC Authorizer Configuration is missing in the AuthProvider');
   });
 });
 
