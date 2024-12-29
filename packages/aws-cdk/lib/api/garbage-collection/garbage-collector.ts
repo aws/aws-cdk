@@ -621,6 +621,7 @@ export class GarbageCollector {
       while (batch.length < batchSize) {
         const response = await ecr.listImages({
           repositoryName: repo,
+          nextToken: continuationToken,
         });
 
         // No images in the repository
