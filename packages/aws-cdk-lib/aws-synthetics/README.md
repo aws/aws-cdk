@@ -231,7 +231,13 @@ new synthetics.Canary(this, 'Bucket Canary', {
 > ```plaintext
 > canary/
 > ├── <filename>.js,.mjs,.cjs
+> ├─some/dir/path
+>              ├── <filename>.js,.mjs,.cjs
 > ```
+>
+> If `<filename>.js` is placed in the canary directory, the handler should be specified as `filename.handler`.
+> However, if it is placed in the `some/dir/path` directory, the handler should be specified as `some/dir/path/filename.handler`.
+> For more information, see Synthetics [docs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Synthetics_WritingCanary_Nodejs_Playwright.html).
 >
 > For Python scripts supplied via `code.fromAsset()` or `code.fromBucket()`, the canary resource requires the following folder structure:
 >
