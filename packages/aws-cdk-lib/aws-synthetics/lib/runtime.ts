@@ -250,8 +250,17 @@ export class Runtime {
   /**
    * `syn-nodejs-playwright-1.0` includes the following:
    * - Lambda runtime Node.js 20.x
-   * - Playwright version 1.44.1
-   * - Chromium version 126.x
+   * - Playwright version 1.45
+   * - Chromium version 126.0.6478.126
+   *
+   * New Features:
+   * - **PlayWright support** You can write canary scripts by using the Playwright automation framework. You can bring your existing Playwright scripts to run as canaries, and enhance them with AWS monitoring capabilities.
+   * - **CloudWatch Logs integration** You can query and filter for logs through the CloudWatch Synthetics console. Each log message contains unique canaryRunId, making it easy to search for logs for a particular canary run.
+   * - **Metrics and canary artifacts** You can monitor canary run pass rate through CloudWatch metrics, and configure alarms to alert you when canaries detect issues.
+   * - **Screenshots and steps association** You can capture screenshots using native Playwright functionality to visualize the stages of a canary script on each run. Screenshots are automatically associated with canary steps, and are uploaded to Amazon S3 buckets.
+   * - **Multiple tabs** You can create canaries that open multiple browser tabs, and access screenshots from each tab. You can create multi-tab and multi-step user workflows in Synthetics.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_playwright.html#Synthetics_runtimeversion-syn-nodejs-playwright-1.0
    */
   public static readonly SYNTHETICS_NODEJS_PLAYWRIGHT_1_0 = new Runtime('syn-nodejs-playwright-1.0', RuntimeFamily.NODEJS);
 
