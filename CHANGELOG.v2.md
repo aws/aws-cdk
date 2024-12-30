@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.173.4](https://github.com/aws/aws-cdk/compare/v2.173.3...v2.173.4) (2024-12-27)
+
+
+### Bug Fixes
+
+* **cli:** cli still fails for some plugins returning `expiration: null` ([#32668](https://github.com/aws/aws-cdk/issues/32668)) ([4da2f65](https://github.com/aws/aws-cdk/commit/4da2f6553cf488897c0ec10cce063bd3168b726f)), closes [#32111](https://github.com/aws/aws-cdk/issues/32111)
+
+## [2.173.3](https://github.com/aws/aws-cdk/compare/v2.173.2...v2.173.3) (2024-12-26)
+
+
+### Bug Fixes
+
+* **aspects:** "localAspects is not iterable" error ([#32647](https://github.com/aws/aws-cdk/issues/32647)) ([8948ecb](https://github.com/aws/aws-cdk/commit/8948ecb22627ef57498e68fb721b0598aaa530ee)), closes [#32470](https://github.com/aws/aws-cdk/issues/32470)
+
+## [2.173.2](https://github.com/aws/aws-cdk/compare/v2.173.1...v2.173.2) (2024-12-17)
+
+
+### Bug Fixes
+
+* **cli:** allow credential plugins to return `null` for `expiration` ([#32554](https://github.com/aws/aws-cdk/issues/32554)) ([e59b1db](https://github.com/aws/aws-cdk/commit/e59b1db4d8da5fc11d0e3beeb136593440100325))
+* **cli:** doesn't support plugins that return initially empty credentials ([#32552](https://github.com/aws/aws-cdk/issues/32552)) ([7ee9b90](https://github.com/aws/aws-cdk/commit/7ee9b909695aca317a11aad16ca983dcc6d6f85a))
+
+## [2.173.1](https://github.com/aws/aws-cdk/compare/v2.173.0...v2.173.1) (2024-12-14)
+
+
+### Bug Fixes
+
+* **cli:** getting credentials via SSO fails when the region is set in the profile ([#32520](https://github.com/aws/aws-cdk/issues/32520)) ([01fec04](https://github.com/aws/aws-cdk/commit/01fec04ea8c0e33a406e6727801f8bc133a21196))
+
 ## [2.173.0](https://github.com/aws/aws-cdk/compare/v2.172.0...v2.173.0) (2024-12-11)
 
 
@@ -35,12 +64,11 @@ All notable changes to this project will be documented in this file. See [standa
 
 * **apigateway:** We will be removing deprecated `APIGatewayV2` constructs from `aws-apigateway` module.
 
-*By submitting this pull request, I confirm that my contribution is made under the terms of the Apache-2.0 license*
 
 ### Features
 
-* **aspects:** priority-ordered aspect invocation ([#32097](https://github.com/aws/aws-cdk/issues/32097)) ([8ccdff4](https://github.com/aws/aws-cdk/commit/8ccdff4ee083d66f73259223ba75ba0b8a0752a0)), closes [#21341](https://github.com/aws/aws-cdk/issues/21341) [/github.com/aws/aws-cdk/blob/8b495f9ec157c0b00674715f62b1bbcabf2096ac/packages/aws-cdk-lib/core/lib/private/synthesis.ts#L217](https://github.com/aws//github.com/aws/aws-cdk/blob/8b495f9ec157c0b00674715f62b1bbcabf2096ac/packages/aws-cdk-lib/core/lib/private/synthesis.ts/issues/L217)
-* **cognito:** new `cloudFrontEndpoint` method for user pool domain without custom resource ([#31402](https://github.com/aws/aws-cdk/issues/31402)) ([deeb2ad](https://github.com/aws/aws-cdk/commit/deeb2ad0bc38101a9f1fa8162ad5d6008900a98d)), closes [#31342](https://github.com/aws/aws-cdk/issues/31342) [/github.com/go-to-k/aws-cdk/blob/fcbdc769e681f1f915cdc8cd7aa3a565d807884d/packages/aws-cdk-lib/aws-route53-targets/lib/userpool-domain.ts#L14](https://github.com/aws//github.com/go-to-k/aws-cdk/blob/fcbdc769e681f1f915cdc8cd7aa3a565d807884d/packages/aws-cdk-lib/aws-route53-targets/lib/userpool-domain.ts/issues/L14)
+* **aspects:** priority-ordered aspect invocation ([#32097](https://github.com/aws/aws-cdk/issues/32097)) ([8ccdff4](https://github.com/aws/aws-cdk/commit/8ccdff4ee083d66f73259223ba75ba0b8a0752a0)), closes [#21341](https://github.com/aws/aws-cdk/issues/21341)
+* **cognito:** new `cloudFrontEndpoint` method for user pool domain without custom resource ([#31402](https://github.com/aws/aws-cdk/issues/31402)) ([deeb2ad](https://github.com/aws/aws-cdk/commit/deeb2ad0bc38101a9f1fa8162ad5d6008900a98d)), closes [#31342](https://github.com/aws/aws-cdk/issues/31342)
 * **cognito:** support for ALLOW_USER_AUTH explicit auth flow ([#32273](https://github.com/aws/aws-cdk/issues/32273)) ([c5bcfdc](https://github.com/aws/aws-cdk/commit/c5bcfdc57aa763539b31f4e7f6f115f707c401a4))
 * **elasticloadbalancingv2:** ip address type for both network and application target group ([#32189](https://github.com/aws/aws-cdk/issues/32189)) ([7cc5f30](https://github.com/aws/aws-cdk/commit/7cc5f305c839048454240f8d6db1614e2dfa4c53))
 * **events:** add filter rules for prefixEqualsIgnoreCase, suffixEqualsIgnoreCase, wildcard, and anythingBut* matches ([#32063](https://github.com/aws/aws-cdk/issues/32063)) ([0ce71fc](https://github.com/aws/aws-cdk/commit/0ce71fc50cffffc04d9d1bc9c98c9c04e77bfe1f)), closes [#28462](https://github.com/aws/aws-cdk/issues/28462)
@@ -57,14 +85,14 @@ All notable changes to this project will be documented in this file. See [standa
 * **apigateway:** remove deprecated apigatewayv2 from aws-apigateway module ([#32297](https://github.com/aws/aws-cdk/issues/32297)) ([4db9565](https://github.com/aws/aws-cdk/commit/4db956597b41bb9d7dd8e1d65b39643772065353))
 * **appsync:** `appsync.HttpDataSourceProps` erroneously extends `BaseDataSourceProps` ([#32065](https://github.com/aws/aws-cdk/issues/32065)) ([4e7f5c4](https://github.com/aws/aws-cdk/commit/4e7f5c4469509ed4e1d586a9c5263f19b540a7bd)), closes [#29689](https://github.com/aws/aws-cdk/issues/29689)
 * **cli:** assume role calls are skipping the proxy ([#32291](https://github.com/aws/aws-cdk/issues/32291)) ([6c0f74e](https://github.com/aws/aws-cdk/commit/6c0f74e4b37b8ef81c927adca1112680d0bf2ad0))
-* **cli:** lambda hotswap fails if `lambda:GetFunctionConfiguration` action is not allowed  ([#32301](https://github.com/aws/aws-cdk/issues/32301)) ([be000a2](https://github.com/aws/aws-cdk/commit/be000a251b781b0b0870930992793df5a2fc4b01)), closes [/github.com/aws/aws-sdk-js-v3/blob/main/clients/client-lambda/src/waiters/waitForFunctionUpdatedV2.ts#L10](https://github.com/aws//github.com/aws/aws-sdk-js-v3/blob/main/clients/client-lambda/src/waiters/waitForFunctionUpdatedV2.ts/issues/L10) [/github.com/aws/aws-sdk-js-v3/blob/main/clients/client-lambda/src/waiters/waitForFunctionUpdated.ts#L13](https://github.com/aws//github.com/aws/aws-sdk-js-v3/blob/main/clients/client-lambda/src/waiters/waitForFunctionUpdated.ts/issues/L13)
+* **cli:** lambda hotswap fails if `lambda:GetFunctionConfiguration` action is not allowed  ([#32301](https://github.com/aws/aws-cdk/issues/32301)) ([be000a2](https://github.com/aws/aws-cdk/commit/be000a251b781b0b0870930992793df5a2fc4b01)), closes [#32219](https://github.com/aws/aws-cdk/issues/32219)
 * **cli:** mfa code is not requested when `$AWS_PROFILE` is used ([#32313](https://github.com/aws/aws-cdk/issues/32313)) ([6458439](https://github.com/aws/aws-cdk/commit/6458439b08f9ce1f49c1137dd85bb582550a5f52)), closes [#32312](https://github.com/aws/aws-cdk/issues/32312)
 * **cli:** remove source maps ([#32317](https://github.com/aws/aws-cdk/issues/32317)) ([512cf95](https://github.com/aws/aws-cdk/commit/512cf952f3971cd302fb1cca7c24149b43832280)), closes [#19930](https://github.com/aws/aws-cdk/issues/19930) [#19930](https://github.com/aws/aws-cdk/issues/19930)
 * **cli:** short-lived credentials are not refreshed ([#32354](https://github.com/aws/aws-cdk/issues/32354)) ([058a0bf](https://github.com/aws/aws-cdk/commit/058a0bfc22036230252fcbc026576260723f6d28))
 * **cli:** warns about missing `--no-rollback` flag that is present ([#32309](https://github.com/aws/aws-cdk/issues/32309)) ([559d676](https://github.com/aws/aws-cdk/commit/559d676e2989739b38491b1f767face839d39f69)), closes [#32295](https://github.com/aws/aws-cdk/issues/32295)
 * **cloudformation-include:** drops unknown policy attributes ([#32321](https://github.com/aws/aws-cdk/issues/32321)) ([20edc7f](https://github.com/aws/aws-cdk/commit/20edc7fe5e891461a8188d306dcc0f776041cf8f))
 * **cloudfront:** propagate `originAccessControlId` CloudFront Origin property to CloudFormation templates ([#32020](https://github.com/aws/aws-cdk/issues/32020)) ([f9708a6](https://github.com/aws/aws-cdk/commit/f9708a634ceaef7f62e8193443ea30fe9e2fbad6)), closes [#32018](https://github.com/aws/aws-cdk/issues/32018)
-* **iam:** `Role.addManagedPolicy()` does not work for imported roles `IRole` [#8307](https://github.com/aws/aws-cdk/issues/8307) ([#31212](https://github.com/aws/aws-cdk/issues/31212)) ([c78ef1b](https://github.com/aws/aws-cdk/commit/c78ef1b43a18e1ffc93fcbdee9dd2e91fa750a36)), closes [/github.com/aws/aws-cdk/blob/823ff6e03899f790a4cb1c43f92a02cc906ac356/packages/aws-cdk-lib/aws-iam/lib/identity-base.ts#L17-L21](https://github.com/aws//github.com/aws/aws-cdk/blob/823ff6e03899f790a4cb1c43f92a02cc906ac356/packages/aws-cdk-lib/aws-iam/lib/identity-base.ts/issues/L17-L21)
+* **iam:** `Role.addManagedPolicy()` does not work for imported roles `IRole` ([#31212](https://github.com/aws/aws-cdk/issues/31212)) ([c78ef1b](https://github.com/aws/aws-cdk/commit/c78ef1b43a18e1ffc93fcbdee9dd2e91fa750a36)), closes [#8307](https://github.com/aws/aws-cdk/issues/8307)
 
 ## [2.171.1](https://github.com/aws/aws-cdk/compare/v2.171.0...v2.171.1) (2024-11-27)
 

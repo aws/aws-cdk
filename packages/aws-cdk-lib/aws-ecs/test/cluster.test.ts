@@ -1991,61 +1991,6 @@ describe('cluster', () => {
     });
   });
 
-  test('cluster capacity with Amazon Linux 2023 AMI, by setting machineImageType', () => {
-    // GIVEN
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'test');
-    const vpc = new ec2.Vpc(stack, 'Vpc');
-    const cluster = new ecs.Cluster(stack, 'EcsCluster');
-
-    // WHEN
-    const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'asg', {
-      vpc,
-      instanceType: new ec2.InstanceType('bogus'),
-      machineImage: ecs.EcsOptimizedImage.amazonLinux2023(),
-    });
-
-    const capacityProvider = new ecs.AsgCapacityProvider(stack, 'provider', {
-      autoScalingGroup,
-      machineImageType: ecs.MachineImageType.AMAZON_LINUX_2023,
-    });
-
-    cluster.addAsgCapacityProvider(capacityProvider);
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
-      ImageId: {
-        Ref: 'SsmParameterValueawsserviceecsoptimizedamiamazonlinux2023recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
-      },
-      UserData: {
-        'Fn::Base64': {
-          'Fn::Join': [
-            '',
-            [
-              '#!/bin/bash\necho ECS_CLUSTER=',
-              {
-                Ref: 'EcsCluster97242B84',
-              },
-              ' >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo iptables-save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config',
-            ],
-          ],
-        },
-      },
-    });
-
-    Template.fromStack(stack).hasResourceProperties('AWS::ECS::ClusterCapacityProviderAssociations', {
-      CapacityProviders: [
-        {
-          Ref: 'providerD3FF4D3A',
-        },
-      ],
-      Cluster: {
-        Ref: 'EcsCluster97242B84',
-      },
-      DefaultCapacityProviderStrategy: [],
-    });
-  });
-
   testDeprecated('correct bottlerocket AMI for ARM64 architecture', () => {
     // GIVEN
     const app = new cdk.App();
@@ -2571,7 +2516,7 @@ describe('cluster', () => {
         autoScalingGroup,
         enableManagedScaling: false,
       });
-    }).toThrowError('Cannot enable Managed Termination Protection on a Capacity Provider when Managed Scaling is disabled. Either enable Managed Scaling or disable Managed Termination Protection.');
+    }).toThrow('Cannot enable Managed Termination Protection on a Capacity Provider when Managed Scaling is disabled. Either enable Managed Scaling or disable Managed Termination Protection.');
   });
 
   test('throws error, when Managed Scaling is disabled and Managed Termination Protection is enabled.', () => {
@@ -2592,7 +2537,7 @@ describe('cluster', () => {
         enableManagedScaling: false,
         enableManagedTerminationProtection: true,
       });
-    }).toThrowError('Cannot enable Managed Termination Protection on a Capacity Provider when Managed Scaling is disabled. Either enable Managed Scaling or disable Managed Termination Protection.');
+    }).toThrow('Cannot enable Managed Termination Protection on a Capacity Provider when Managed Scaling is disabled. Either enable Managed Scaling or disable Managed Termination Protection.');
   });
 
   test('capacity provider enables ASG new instance scale-in protection by default', () => {
@@ -3039,7 +2984,7 @@ describe('cluster', () => {
     // THEN
     expect(() => {
       ecs.Cluster.fromClusterArn(stack, 'Cluster', 'arn:aws:ecs:service-region:service-account:cluster');
-    }).toThrowError(/Missing required Cluster Name from Cluster ARN: /);
+    }).toThrow(/Missing required Cluster Name from Cluster ARN: /);
   });
 });
 
