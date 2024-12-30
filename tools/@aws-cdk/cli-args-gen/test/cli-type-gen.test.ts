@@ -13,6 +13,16 @@ describe('render', () => {
           desc: 'Enable debug logging',
           default: false,
         },
+        context: {
+          default: [],
+          type: 'array',
+          alias: 'c',
+          desc: 'context values',
+        },
+        plugin: {
+          type: 'array',
+          desc: 'plugins to load',
+        },
       },
       commands: {
         deploy: {
@@ -33,7 +43,7 @@ describe('render', () => {
       // GENERATED FROM packages/aws-cdk/lib/config.ts.
       // Do not edit by hand; all changes will be overwritten at build time from the config file.
       // -------------------------------------------------------------------------------------------
-      /* eslint-disable max-len */
+      /* eslint-disable @stylistic/max-len */
       import { Command } from './settings';
 
       /**
@@ -77,6 +87,20 @@ describe('render', () => {
          * @default - false
          */
         readonly debug?: boolean;
+
+        /**
+         * context values
+         *
+         * @default - []
+         */
+        readonly context?: Array<string>;
+
+        /**
+         * plugins to load
+         *
+         * @default - []
+         */
+        readonly plugin?: Array<string>;
       }
 
       /**
@@ -91,6 +115,87 @@ describe('render', () => {
          * @default - false
          */
         readonly all?: boolean;
+      }
+      "
+    `);
+  });
+
+  test('special notification-arn option gets undefined default', async () => {
+    const config: CliConfig = {
+      commands: {
+        deploy: {
+          description: 'Notification Arns',
+          options: {
+            ['notification-arns']: {
+              type: 'array',
+              desc: 'Deploy all stacks',
+            },
+            ['other-array']: {
+              type: 'array',
+              desc: 'Other array',
+            },
+          },
+        },
+      },
+      globalOptions: {},
+    };
+
+    expect(await renderCliType(config)).toMatchInlineSnapshot(`
+      "// -------------------------------------------------------------------------------------------
+      // GENERATED FROM packages/aws-cdk/lib/config.ts.
+      // Do not edit by hand; all changes will be overwritten at build time from the config file.
+      // -------------------------------------------------------------------------------------------
+      /* eslint-disable @stylistic/max-len */
+      import { Command } from './settings';
+
+      /**
+       * The structure of the CLI configuration, generated from packages/aws-cdk/lib/config.ts
+       *
+       * @struct
+       */
+      export interface CliArguments {
+        /**
+         * The CLI command name followed by any properties of the command
+         */
+        readonly _: [Command, ...string[]];
+
+        /**
+         * Global options available to all CLI commands
+         */
+        readonly globalOptions?: GlobalOptions;
+
+        /**
+         * Notification Arns
+         */
+        readonly deploy?: DeployOptions;
+      }
+
+      /**
+       * Global options available to all CLI commands
+       *
+       * @struct
+       */
+      export interface GlobalOptions {}
+
+      /**
+       * Notification Arns
+       *
+       * @struct
+       */
+      export interface DeployOptions {
+        /**
+         * Deploy all stacks
+         *
+         * @default - undefined
+         */
+        readonly 'notification-arns'?: Array<string>;
+
+        /**
+         * Other array
+         *
+         * @default - []
+         */
+        readonly 'other-array'?: Array<string>;
       }
       "
     `);
