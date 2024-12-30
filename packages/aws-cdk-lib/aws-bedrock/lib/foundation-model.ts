@@ -337,6 +337,9 @@ export class FoundationModelIdentifier {
 
   /** Base model "meta.llama3-2-90b-instruct-v1:0". */
   public static readonly META_LLAMA_3_2_90B_INSTRUCT_V1 = new FoundationModelIdentifier('meta.llama3-2-90b-instruct-v1:0');
+  
+  /** Base model "meta.llama3-3-70b-instruct-v1:0". */
+  public static readonly META_LLAMA_3_3_70B_INSTRUCT_V1 = new FoundationModelIdentifier('meta.llama3-3-70b-instruct-v1:0');
 
   /** Base model "mistral.mistral-7b-instruct-v0:2". */
   public static readonly MISTRAL_MISTRAL_7B_INSTRUCT_V0_2 = new FoundationModelIdentifier('mistral.mistral-7b-instruct-v0:2');
@@ -379,6 +382,9 @@ export class FoundationModelIdentifier {
 
   /** Base model "stability.sd3-large-v1:0". */
   public static readonly STABILITY_SD3_LARGE_V1_0 = new FoundationModelIdentifier('stability.sd3-large-v1:0');
+  
+  /** Base model "stability.sd3-5-large-v1:0". */
+  public static readonly STABILITY_SD3_5_LARGE_V1_0 = new FoundationModelIdentifier('stability.sd3-5-large-v1:0');
 
   /** Base model "stability.stable-image-ultra-v1:0". */
   public static readonly STABILITY_STABLE_IMAGE_ULTRA_V1_0 = new FoundationModelIdentifier('stability.stable-image-ultra-v1:0');
