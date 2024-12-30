@@ -685,7 +685,7 @@ export class Cluster extends ClusterBase {
       );
     }
 
-    let clientAuthentication;
+    let clientAuthentication: CfnCluster.ClientAuthenticationProperty | undefined;
     if (props.clientAuthentication?.saslProps?.iam) {
       clientAuthentication = {
         sasl: { iam: { enabled: props.clientAuthentication.saslProps.iam } },
@@ -747,7 +747,7 @@ export class Cluster extends ClusterBase {
       openMonitoring: openMonitoring,
       storageMode: props.storageMode,
       loggingInfo: loggingInfo,
-      clientAuthentication: clientAuthentication,
+      clientAuthentication,
     });
 
     this.clusterName = this.getResourceNameAttribute(

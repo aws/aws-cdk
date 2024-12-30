@@ -319,13 +319,13 @@ class IpamPool extends Resource implements IIpamPool {
   /**
    * Pool CIDR for IPv6 to be provisioned with Public IP source set to 'Amazon'
    */
-  public readonly ipamCidrs: CfnIPAMPoolCidr[] = []
+  public readonly ipamCidrs: CfnIPAMPoolCidr[] = [];
 
   /**
    * Pool CIDR for IPv4 to be provisioned using IPAM
    * Required to check for subnet IP range is within the VPC range
    */
-  public readonly ipamIpv4Cidrs: string[] = []
+  public readonly ipamIpv4Cidrs: string[] = [];
 
   /**
    * Reference to ipamPool resource created in this class
