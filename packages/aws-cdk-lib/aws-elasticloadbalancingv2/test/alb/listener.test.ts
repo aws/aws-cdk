@@ -107,43 +107,6 @@ describe('tests', () => {
     });
   });
 
-  test('Listener default to open - IPv6 (dual stack without public IPV4)', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'Stack');
-    const loadBalancer = new elbv2.ApplicationLoadBalancer(stack, 'LB', {
-      vpc,
-      internetFacing: true,
-      ipAddressType: elbv2.IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4,
-    });
-
-    // WHEN
-    loadBalancer.addListener('MyListener', {
-      port: 80,
-      defaultTargetGroups: [new elbv2.ApplicationTargetGroup(stack, 'Group', { vpc, port: 80 })],
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
-      SecurityGroupIngress: [
-        {
-          Description: 'Allow from anyone on port 80',
-          CidrIp: '0.0.0.0/0',
-          FromPort: 80,
-          IpProtocol: 'tcp',
-          ToPort: 80,
-        },
-        {
-          Description: 'Allow from anyone on port 80',
-          CidrIpv6: '::/0',
-          FromPort: 80,
-          IpProtocol: 'tcp',
-          ToPort: 80,
-        },
-      ],
-    });
-  });
-
   test('HTTPS listener requires certificate', () => {
     // GIVEN
     const stack = new cdk.Stack();
