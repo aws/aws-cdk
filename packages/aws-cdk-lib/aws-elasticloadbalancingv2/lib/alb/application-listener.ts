@@ -1078,5 +1078,9 @@ function validateMutualAuthentication(mutualAuthentication?: MutualAuthenticatio
     if (mutualAuthentication.ignoreClientCertificateExpiry !== undefined) {
       throw new Error(`You cannot set 'ignoreClientCertificateExpiry' when 'mode' is '${MutualAuthenticationMode.OFF}' or '${MutualAuthenticationMode.PASS_THROUGH}'`);
     }
+
+    if (mutualAuthentication.advertiseTrustStoreCaNames !== undefined) {
+      throw new Error(`You cannot set 'advertiseTrustStoreCaNames' when 'mode' is '${MutualAuthenticationMode.OFF}' or '${MutualAuthenticationMode.PASS_THROUGH}'`);
+    }
   }
 }
