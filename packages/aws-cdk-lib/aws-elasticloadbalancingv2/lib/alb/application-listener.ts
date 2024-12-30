@@ -141,9 +141,9 @@ export interface MutualAuthentication {
   /**
    * Indicates whether trust store CA names are advertised
    *
-   * @default AdvertiseTrustStoreCaNames.OFF
+   * @default false
    */
-  readonly advertiseTrustStoreCaNames?: AdvertiseTrustStoreCaNames;
+  readonly advertiseTrustStoreCaNames?: boolean;
 }
 
 /**
@@ -164,21 +164,6 @@ export enum MutualAuthenticationMode {
    * Application Load Balancer performs X.509 client certificate authentication for clients when a load balancer negotiates TLS connections
    */
   VERIFY = 'verify',
-}
-
-/**
- *  Indicates whether trust store CA names are advertised
- */
-export enum AdvertiseTrustStoreCaNames {
-  /**
-   * Off
-   */
-  OFF = 'off',
-
-  /**
-   * On
-   */
-  ON = 'on',
 }
 
 /**
@@ -278,6 +263,11 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
 
     validateMutualAuthentication(props.mutualAuthentication);
 
+    let advertiseTrustStoreCaNames: string | undefined;
+    if (props.mutualAuthentication?.advertiseTrustStoreCaNames !== undefined) {
+      advertiseTrustStoreCaNames = props.mutualAuthentication.advertiseTrustStoreCaNames ? 'on' : 'off';
+    }
+
     super(scope, id, {
       loadBalancerArn: props.loadBalancer.loadBalancerArn,
       certificates: Lazy.any({ produce: () => this.certificateArns.map(certificateArn => ({ certificateArn })) }, { omitEmptyArray: true }),
@@ -285,7 +275,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       port,
       sslPolicy: props.sslPolicy,
       mutualAuthentication: props.mutualAuthentication ? {
-        advertiseTrustStoreCaNames: props.mutualAuthentication?.advertiseTrustStoreCaNames,
+        advertiseTrustStoreCaNames,
         ignoreClientCertificateExpiry: props.mutualAuthentication?.ignoreClientCertificateExpiry,
         mode: props.mutualAuthentication?.mutualAuthenticationMode,
         trustStoreArn: props.mutualAuthentication?.trustStore?.trustStoreArn,

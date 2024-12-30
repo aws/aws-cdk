@@ -1953,7 +1953,7 @@ describe('tests', () => {
         protocol: elbv2.ApplicationProtocol.HTTPS,
         certificates: [importedCertificate(stack)],
         mutualAuthentication: {
-          advertiseTrustStoreCaNames: elbv2.AdvertiseTrustStoreCaNames.ON,
+          advertiseTrustStoreCaNames: true,
           ignoreClientCertificateExpiry: true,
           mutualAuthenticationMode: elbv2.MutualAuthenticationMode.VERIFY,
           trustStore,
@@ -1969,6 +1969,31 @@ describe('tests', () => {
           IgnoreClientCertificateExpiry: true,
           Mode: 'verify',
           TrustStoreArn: stack.resolve(trustStore.trustStoreArn),
+        },
+      });
+    });
+
+    test('Mutual Authentication settings when advertiseTrustStoreCaNames is false', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+
+      // WHEN
+      lb.addListener('Listener', {
+        protocol: elbv2.ApplicationProtocol.HTTPS,
+        certificates: [importedCertificate(stack)],
+        mutualAuthentication: {
+          advertiseTrustStoreCaNames: false,
+        },
+        defaultAction: elbv2.ListenerAction.fixedResponse(200,
+          { contentType: 'text/plain', messageBody: 'Success mTLS' }),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
+        MutualAuthentication: {
+          AdvertiseTrustStoreCaNames: 'off',
         },
       });
     });
@@ -2017,6 +2042,7 @@ describe('tests', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
         MutualAuthentication: {
+          AdvertiseTrustStoreCaNames: Match.absent(),
           IgnoreClientCertificateExpiry: Match.absent(),
           Mode: Match.absent(),
           TrustStoreArn: Match.absent(),
