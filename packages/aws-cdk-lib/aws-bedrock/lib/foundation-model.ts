@@ -337,7 +337,7 @@ export class FoundationModelIdentifier {
 
   /** Base model "meta.llama3-2-90b-instruct-v1:0". */
   public static readonly META_LLAMA_3_2_90B_INSTRUCT_V1 = new FoundationModelIdentifier('meta.llama3-2-90b-instruct-v1:0');
-  
+
   /** Base model "meta.llama3-3-70b-instruct-v1:0". */
   public static readonly META_LLAMA_3_3_70B_INSTRUCT_V1 = new FoundationModelIdentifier('meta.llama3-3-70b-instruct-v1:0');
 
@@ -382,7 +382,7 @@ export class FoundationModelIdentifier {
 
   /** Base model "stability.sd3-large-v1:0". */
   public static readonly STABILITY_SD3_LARGE_V1_0 = new FoundationModelIdentifier('stability.sd3-large-v1:0');
-  
+
   /** Base model "stability.sd3-5-large-v1:0". */
   public static readonly STABILITY_SD3_5_LARGE_V1_0 = new FoundationModelIdentifier('stability.sd3-5-large-v1:0');
 
