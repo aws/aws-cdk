@@ -185,6 +185,15 @@ export class FoundationModelIdentifier {
   /** Base model "anthropic.claude-3-5-sonnet-20241022-v2:0" */
   public static readonly ANTHROPIC_CLAUDE_3_5_SONNET_20241022_V2_0 = new FoundationModelIdentifier('anthropic.claude-3-5-sonnet-20241022-v2:0');
 
+  /** Base model "anthropic.claude-3-5-sonnet-20241022-v2:0:18k". */
+  public static readonly ANTHROPIC_CLAUDE_3_5_SONNET_20241022_V2_0_18K = new FoundationModelIdentifier('anthropic.claude-3-5-sonnet-20241022-v2:0:18k');
+
+  /** Base model "anthropic.claude-3-5-sonnet-20241022-v2:0:51k". */
+  public static readonly ANTHROPIC_CLAUDE_3_5_SONNET_20241022_V2_0_51K = new FoundationModelIdentifier('anthropic.claude-3-5-sonnet-20241022-v2:0:51k');
+
+  /** Base model "anthropic.claude-3-5-sonnet-20241022-v2:0:200k". */
+  public static readonly ANTHROPIC_CLAUDE_3_5_SONNET_20241022_V2_0_200K = new FoundationModelIdentifier('anthropic.claude-3-5-sonnet-20241022-v2:0:200k');
+
   /** Base model "anthropic.claude-3-haiku-20240307-v1:0". */
   public static readonly ANTHROPIC_CLAUDE_3_HAIKU_20240307_V1_0 = new FoundationModelIdentifier('anthropic.claude-3-haiku-20240307-v1:0');
 
@@ -374,8 +383,14 @@ export class FoundationModelIdentifier {
   /** Base model "stability.stable-image-ultra-v1:0". */
   public static readonly STABILITY_STABLE_IMAGE_ULTRA_V1_0 = new FoundationModelIdentifier('stability.stable-image-ultra-v1:0');
 
+  /** Base model "stability.stable-image-ultra-v1:1". */
+  public static readonly STABILITY_STABLE_IMAGE_ULTRA_V1_1 = new FoundationModelIdentifier('stability.stable-image-ultra-v1:1');
+
   /** Base model "stability.stable-image-core-v1:0". */
   public static readonly STABILITY_STABLE_IMAGE_CORE_V1_0 = new FoundationModelIdentifier('stability.stable-image-core-v1:0');
+
+  /** Base model "stability.stable-image-core-v1:1". */
+  public static readonly STABILITY_STABLE_IMAGE_CORE_V1_1 = new FoundationModelIdentifier('stability.stable-image-core-v1:1');
 
   /**
    * Constructor for foundation model identifier
