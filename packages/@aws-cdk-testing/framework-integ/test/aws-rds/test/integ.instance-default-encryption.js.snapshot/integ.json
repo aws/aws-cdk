@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "rds-instance-default-encryption-integ-test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-rds-instance-default-encryption"
+      ],
+      "assertionStack": "rds-instance-default-encryption-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "rdsinstancedefaultencryptionintegtestDefaultTestDeployAssert51056B8A"
+    }
+  }
+}
