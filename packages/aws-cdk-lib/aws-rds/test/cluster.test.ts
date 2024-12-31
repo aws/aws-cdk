@@ -116,27 +116,6 @@ describe('cluster new api', () => {
       }).toThrow(/Provide either vpcSubnets or instanceProps.vpcSubnets, but not both/);
     });
 
-    test('when storageEncryptionKey is provided but storageEncrypted is false', () => {
-      // GIVEN
-      const stack = testStack();
-      const vpc = new ec2.Vpc(stack, 'VPC');
-      const key = new kms.Key(stack, 'Key');
-
-      expect(() => {
-        // WHEN
-        new DatabaseCluster(stack, 'Database', {
-          engine: DatabaseClusterEngine.AURORA_MYSQL,
-          vpc,
-          writer: ClusterInstance.serverlessV2('writer'),
-
-          // Explicitly set storageEncrypted to false, but provide a KMS key
-          storageEncrypted: false,
-          storageEncryptionKey: key,
-        });
-        // THEN
-      }).toThrow(/storageEncrypted must be true when storageEncryptionKey is provided/);
-    });
-
     test.each([
       [0.5, 300, /serverlessV2MaxCapacity must be >= 1 & <= 256/],
       [0.5, 0, /serverlessV2MaxCapacity must be >= 1 & <= 256/],
@@ -645,6 +624,30 @@ describe('cluster new api', () => {
       template.hasResourceProperties('AWS::RDS::DBCluster', {
         StorageEncrypted: false,
       });
+    });
+
+    test('legacy encryption settings can be set even when the `@aws-cdk/aws-rds:enableEncryptionAtRestByDefault` feature flag is true', () => {
+      // GIVEN
+      const featureFlags = { [RDS_ENABLE_ENCRYPTION_AT_REST_BY_DEFAULT]: true };
+      const app = new cdk.App({
+        context: featureFlags,
+      });
+      const stack = testStack(app);
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+        storageEncrypted: false,
+        isStorageLegacyUnencrypted: true,
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      const cluster = Object.values(template.findResources('AWS::RDS::DBCluster'))[0];
+      expect(cluster.Properties.StorageEncrypted).toBeUndefined();
     });
 
     test('encryption at rest is not set by default when `@aws-cdk/aws-rds:enableEncryptionAtRestByDefault` feature flag is false', () => {

@@ -346,9 +346,21 @@ interface DatabaseClusterBaseProps {
   /**
    * Whether to enable storage encryption.
    *
-   * @default - If the `@aws-cdk/aws-rds:enableEncryptionAtRestByDefault` feature flag is set, true by default or if storageEncryptionKey is provided. If the flag is not set, false by default unless storageEncryptionKey is provided.
+   * @default - If the `@aws-cdk/aws-rds:enableEncryptionAtRestByDefault` feature flag is set, true by default or if storageEncryptionKey is provided. If the flag is not set, undefined by default unless storageEncryptionKey is provided.
    */
   readonly storageEncrypted?: boolean;
+
+  /**
+   * Set to `true` if the DatabaseCluster was created with unencrypted storage but you're setting the
+   * `@aws-cdk/aws-rds:enableEncryptionAtRestByDefault` feature flag to `true`.
+   *
+   * The legacy behavior left the `StorageEncrypted` CloudFormation property unset by default. This resulted in
+   * cluster storage being unencrypted. The new behavior always sets the `StorageEncrypted` property to `true` or
+   * `false` for clarity. However, CloudFormation will replace the Cluster if you change `StorageEncrypted` from
+   * `undefined` to `false`. This flag retains the legacy behavior of leaving the `StorageEncrypted` property unset,
+   * even if you're using the new behavior of the `@aws-cdk/aws-rds:enableEncryptionAtRestByDefault` feature flag.
+   */
+  readonly isStorageLegacyUnencrypted?: boolean;
 
   /**
    * The KMS key for storage encryption.
@@ -1068,6 +1080,14 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
     // If a KMS key is provided, enable encryption at rest
     if (props.storageEncryptionKey) {
       return true;
+    }
+
+    if (props.isStorageLegacyUnencrypted) {
+      if (props.storageEncrypted) {
+        throw new Error('Cannot set `storageEncrypted` to `true` when `isStorageLegacyUnencrypted` is `true`.');
+      }
+
+      return undefined;
     }
 
     // Otherwise, default to the explicitly provided value or `true` if no value was provided

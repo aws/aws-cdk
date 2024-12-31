@@ -1312,7 +1312,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     `,
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
-    compatibilityWithOldBehaviorMd: 'Explicitly set the `storageEncrypted` property to false on DatabaseCluster and/or DatabaseInstance constructs to restore the previous behavior.',
+    compatibilityWithOldBehaviorMd: 'Set the `storageEncrypted` property to `false` and `isStorageLegacyUnencrypted` to `true` on DatabaseCluster and DatabaseInstance constructs to restore the previous behavior.',
   },
 };
 
