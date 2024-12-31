@@ -1462,6 +1462,8 @@ To prevent replacing existing unencrypted database clusters and instances, set `
 show any changes to the unencrypted database clusters and instances.
 
 ```ts
+declare const vpc: ec2.IVpc;
+
 const cluster = new rds.DatabaseCluster(this, 'Cluster', {
   engine: rds.DatabaseClusterEngine.AURORA,
   vpc,
