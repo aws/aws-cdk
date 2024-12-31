@@ -181,7 +181,7 @@ describe('removal-policies', () => {
     expect(resource.cfnOptions.deletionPolicy).toBe('Snapshot');
   });
 
-  test('child scope can override parent scope removal policy', () => {
+  test('child scope can override parent scope removal policy only if `overwrite` is set to true', () => {
     // GIVEN
     const stack = new Stack();
     const parent = new Construct(stack, 'Parent');
