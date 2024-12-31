@@ -1832,7 +1832,7 @@ RemovalPolicies.of(scope).snapshot({
 #### Behavior Summary
 
 - When `overwrite` is `false` (default):  
-  - Existing `removalPolicy` set by the user is preserved. The aspect will skip applying the policy to such resources.
+  - Existing `removalPolicy` set by the user is preserved. Applying the policy to such resources will be skipped.
 
 - When `overwrite` is `true`:  
   - The existing `removalPolicy` is ignored, and the specified policy is applied unconditionally.
