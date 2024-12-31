@@ -21,6 +21,8 @@ const dbInstance = new rds.DatabaseInstance(stack, 'dbInstance', {
     excludeCharacters: '"@/\\',
   }),
   vpc,
+  storageEncrypted: false,
+  isStorageLegacyUnencrypted: true,
   removalPolicy: RemovalPolicy.DESTROY,
 });
 

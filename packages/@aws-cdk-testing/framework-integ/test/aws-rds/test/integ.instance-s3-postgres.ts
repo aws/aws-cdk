@@ -15,6 +15,8 @@ new rds.DatabaseInstance(stack, 'Instance', {
   iamAuthentication: true,
   s3ImportBuckets: [new s3.Bucket(stack, 'ImportBucket', { removalPolicy: cdk.RemovalPolicy.DESTROY })],
   s3ExportBuckets: [new s3.Bucket(stack, 'ExportBucket', { removalPolicy: cdk.RemovalPolicy.DESTROY })],
+  storageEncrypted: false,
+  isStorageLegacyUnencrypted: true,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 

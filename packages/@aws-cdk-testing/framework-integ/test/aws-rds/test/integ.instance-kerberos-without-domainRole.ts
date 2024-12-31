@@ -25,6 +25,8 @@ new rds.DatabaseInstance(stack, 'Database', {
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
   vpc,
   domain: activeDirectory.ref,
+  storageEncrypted: false,
+  isStorageLegacyUnencrypted: true,
 });
 
 new integ.IntegTest(app, 'integ-instance-kerberos-without-domainRole', {

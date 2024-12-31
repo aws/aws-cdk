@@ -23,6 +23,8 @@ new rds.DatabaseInstance(stack, 'DualstackInstance', {
   multiAz: false,
   publiclyAccessible: false,
   networkType: rds.NetworkType.DUAL,
+  storageEncrypted: false,
+  isStorageLegacyUnencrypted: true,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
@@ -35,6 +37,8 @@ new rds.DatabaseInstance(stack, 'Ipv4Instance', {
   multiAz: false,
   publiclyAccessible: false,
   networkType: rds.NetworkType.IPV4,
+  storageEncrypted: false,
+  isStorageLegacyUnencrypted: true,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 

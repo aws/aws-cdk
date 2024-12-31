@@ -21,6 +21,8 @@ const mariaDBInstance = new rds.DatabaseInstance(stack, 'mariaDBInstance', {
     excludeCharacters: '"@/\\',
   }),
   vpc,
+  storageEncrypted: false,
+  isStorageLegacyUnencrypted: true,
   removalPolicy: RemovalPolicy.DESTROY,
 });
 
