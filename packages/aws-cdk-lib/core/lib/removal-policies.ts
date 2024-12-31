@@ -24,7 +24,7 @@ export interface RemovalPolicyProps {
   /**
    * If true, overwrite any user-specified removal policy that has been previously set.
    * This means even if the user has already called `applyRemovalPolicy()` on the resource,
-   * this aspect will override it.
+   * it will be overwritten with the new policy.
    * @default false - do not overwrite user-specified policies
    */
   readonly overwrite?: boolean;
