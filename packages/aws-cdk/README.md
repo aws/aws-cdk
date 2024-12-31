@@ -656,7 +656,7 @@ To import an existing resource to a CDK stack, follow the following steps:
 
 NOTE: You can also import existing resources by passing `--import-existing-resources` to `cdk deploy`.
 This parameter only works for resources that support custom physical names,
-such as S3 bucket, DynamoDB table, etc...
+such as S3 Buckets, DynamoDB Tables, etc...
 For more information, see [Request Parameters](https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_CreateChangeSet.html#API_CreateChangeSet_RequestParameters).
 
 #### Limitations
