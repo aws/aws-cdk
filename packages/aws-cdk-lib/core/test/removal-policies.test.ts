@@ -33,7 +33,7 @@ class TestTableResource extends CfnResource {
   }
 }
 
-describe('removal-policys', () => {
+describe('removal-policies', () => {
   test('applies removal policy to all resources in scope', () => {
     // GIVEN
     const stack = new Stack();
