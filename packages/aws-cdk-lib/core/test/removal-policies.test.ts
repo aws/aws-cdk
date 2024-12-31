@@ -96,7 +96,7 @@ describe('removal-policies', () => {
     expect(resource.cfnOptions.deletionPolicy).toBeUndefined();
   });
 
-  test('excludes specified resource types using strings', () => {
+  test('excludes specified resource types', () => {
     // GIVEN
     const stack = new Stack();
     const parent = new Construct(stack, 'Parent');
