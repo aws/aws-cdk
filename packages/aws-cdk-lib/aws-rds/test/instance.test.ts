@@ -15,7 +15,12 @@ let vpc: ec2.Vpc;
 
 describe('instance', () => {
   beforeEach(() => {
-    stack = new cdk.Stack();
+    const app = new cdk.App({
+      context: {
+        [cxapi.RDS_ENABLE_ENCRYPTION_AT_REST_BY_DEFAULT]: 'true',
+      },
+    });
+    stack = new cdk.Stack(app);
     vpc = new ec2.Vpc(stack, 'VPC');
   });
 
@@ -2209,6 +2214,67 @@ describe('instance', () => {
       iops: 5000,
       storageThroughput: 2500,
     })).toThrow(/maximum ratio of storage throughput to IOPS is 0.25/);
+  });
+
+  test('encryption at rest is enabled by default', () => {
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
+      vpc,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      StorageEncrypted: true,
+    });
+  });
+
+  test('encryption at rest can be disabled', () => {
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
+      vpc,
+      storageEncrypted: false,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      StorageEncrypted: false,
+    });
+  });
+
+  test('legacy encryption settings can be set even when the `@aws-cdk/aws-rds:enableEncryptionAtRestByDefault` feature flag is true', () => {
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
+      vpc,
+      storageEncrypted: false,
+      isStorageLegacyUnencrypted: true,
+    });
+
+    const template = Template.fromStack(stack);
+    const cluster = Object.values(template.findResources('AWS::RDS::DBInstance'))[0];
+    expect(cluster.Properties.StorageEncrypted).toBeUndefined();
+  });
+
+  test('encryption at rest is not set by default when `@aws-cdk/aws-rds:enableEncryptionAtRestByDefault` feature flag is false', () => {
+    // GIVEN
+    const featureFlags = { [cxapi.RDS_ENABLE_ENCRYPTION_AT_REST_BY_DEFAULT]: false };
+    const app = new cdk.App({
+      context: featureFlags,
+    });
+    const testStack = new cdk.Stack(app);
+    const testVpc = new ec2.Vpc(testStack, 'VPC');
+
+    // WHEN
+    new rds.DatabaseInstance(testStack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
+      vpc: testVpc,
+    });
+
+    // THEN
+    const template = Template.fromStack(testStack);
+    const cluster = Object.values(template.findResources('AWS::RDS::DBInstance'))[0];
+    expect(cluster.Properties.StorageEncrypted).toBeUndefined();
   });
 });
 
