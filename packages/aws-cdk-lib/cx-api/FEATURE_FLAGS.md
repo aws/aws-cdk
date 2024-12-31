@@ -83,6 +83,7 @@ Flags come in three types:
 | [@aws-cdk/aws-dynamodb:resourcePolicyPerReplica](#aws-cdkaws-dynamodbresourcepolicyperreplica) | When enabled will allow you to specify a resource policy per replica, and not copy the source table policy to all replicas | 2.164.0 | (fix) |
 | [@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault](#aws-cdkaws-ec2bastionhostuseamazonlinux2023bydefault) | When enabled, the BastionHost construct will use the latest Amazon Linux 2023 AMI, instead of Amazon Linux 2. | 2.172.0 | (default) |
 | [@aws-cdk/core:aspectStabilization](#aws-cdkcoreaspectstabilization) | When enabled, a stabilization loop will be run when invoking Aspects during synthesis. | 2.172.0 | (config) |
+| [@aws-cdk/aws-rds:enableEncryptionAtRestByDefault](#aws-cdkaws-rdsenableencryptionatrestbydefault) | When enabled, enable encryption at rest by default for RDS instances. | V2NEXT | (default) |
 | [@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource](#aws-cdkaws-route53-targetsuserpooldomainnamemethodwithoutcustomresource) | When enabled, use a new method for DNS Name of user pool domain target without creating a custom resource. | V2NEXT | (fix) |
 
 <!-- END table -->
@@ -155,7 +156,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages": true,
     "@aws-cdk/aws-stepfunctions-tasks:fixRunEcsTaskPolicy": true,
     "@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault": true,
-    "@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource": true
+    "@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource": true,
+    "@aws-cdk/aws-rds:enableEncryptionAtRestByDefault": true
   }
 }
 ```
@@ -1570,6 +1572,23 @@ When this feature flag is enabled, a stabilization loop is run to recurse the co
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.172.0 | `true` | `true` |
+
+
+### @aws-cdk/aws-rds:enableEncryptionAtRestByDefault
+
+*When enabled, enable encryption at rest by default for RDS instances.* (default)
+
+When this feature flag is enabled, encryption at rest will be enabled by default for RDS instances.
+
+If the flag is set to false then encryption at rest will not be enabled by default for RDS instances.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Explicitly set the `storageEncrypted` property to false on DatabaseCluster and/or DatabaseInstance constructs to restore the previous behavior.
 
 
 ### @aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource

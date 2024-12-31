@@ -118,6 +118,7 @@ export const STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY = '@aws-cdk/aws-stepfun
 export const BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT = '@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault';
 export const ASPECT_STABILIZATION = '@aws-cdk/core:aspectStabilization';
 export const USER_POOL_DOMAIN_NAME_METHOD_WITHOUT_CUSTOM_RESOURCE = '@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource';
+export const RDS_ENABLE_ENCRYPTION_AT_REST_BY_DEFAULT = '@aws-cdk/aws-rds:enableEncryptionAtRestByDefault';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1298,6 +1299,20 @@ export const FLAGS: Record<string, FlagInfo> = {
     `,
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [RDS_ENABLE_ENCRYPTION_AT_REST_BY_DEFAULT]: {
+    type: FlagType.ApiDefault,
+    summary: 'When enabled, enable encryption at rest by default for RDS instances.',
+    detailsMd: `
+    When this feature flag is enabled, encryption at rest will be enabled by default for RDS instances.
+
+    If the flag is set to false then encryption at rest will not be enabled by default for RDS instances.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Explicitly set the `storageEncrypted` property to false on DatabaseCluster and/or DatabaseInstance constructs to restore the previous behavior.',
   },
 };
 
