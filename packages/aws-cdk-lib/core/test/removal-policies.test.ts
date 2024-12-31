@@ -227,7 +227,7 @@ describe('removal-policies', () => {
     const resource = new TestResource(stack, 'PriorityResource');
 
     // WHEN
-    RemovalPolicies.of(stack).retainOnUpdateOrDelete({ priority: 250 });
+    RemovalPolicies.of(stack).retainOnUpdateOrDelete({ priority: 250 }); // Not applied because `overwrite` is not true
     RemovalPolicies.of(stack).destroy({ priority: 10 });
 
     // THEN
