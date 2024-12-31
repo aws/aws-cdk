@@ -12,6 +12,8 @@ new rds.DatabaseCluster(stack, 'Database', {
   engine: rds.DatabaseClusterEngine.auroraPostgres({ version: rds.AuroraPostgresEngineVersion.VER_16_1 }),
   writer: rds.ClusterInstance.serverlessV2('writerInstance'),
   vpc,
+  storageEncrypted: false,
+  isStorageLegacyUnencrypted: true,
   monitoringInterval: cdk.Duration.seconds(5),
   enableClusterLevelEnhancedMonitoring: true,
 });

@@ -30,6 +30,8 @@ class PostgresS3TestStack extends cdk.Stack {
       vpc,
       s3ImportBuckets: [importExportBucket],
       s3ExportBuckets: [importExportBucket],
+      storageEncrypted: false,
+      isStorageLegacyUnencrypted: true,
     });
   }
 }

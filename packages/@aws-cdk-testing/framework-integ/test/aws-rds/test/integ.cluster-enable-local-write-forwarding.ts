@@ -15,6 +15,8 @@ new rds.DatabaseCluster(stack, 'DatabaseCluster', {
     rds.ClusterInstance.serverlessV2('readerInstance1'),
   ],
   vpc,
+  storageEncrypted: false,
+  isStorageLegacyUnencrypted: true,
   enableLocalWriteForwarding: true,
 });
 
@@ -25,6 +27,8 @@ new rds.DatabaseCluster(stack, 'DatabaseClusterPostgresql', {
     rds.ClusterInstance.serverlessV2('readerInstance1'),
   ],
   vpc,
+  storageEncrypted: false,
+  isStorageLegacyUnencrypted: true,
   enableLocalWriteForwarding: true,
 });
 
