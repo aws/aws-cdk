@@ -221,7 +221,7 @@ describe('removal-policys', () => {
     expect(table.cfnOptions.deletionPolicy).toBe('RetainExceptOnCreate');
   });
 
-  test('higher priority removal policy overrides lower priority removal policy', () => {
+  test('higher priority (lower numeric value) removal policy is applied before lower priority removal policy', () => {
     // GIVEN
     const stack = new Stack();
     const resource = new TestResource(stack, 'PriorityResource');
