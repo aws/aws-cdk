@@ -131,49 +131,49 @@ export interface GlobalOptions {
    *
    * @default - undefined
    */
-  readonly 'app'?: string;
+  readonly app?: string;
 
   /**
    * Command-line for a pre-synth build
    *
    * @default - undefined
    */
-  readonly 'build'?: string;
+  readonly build?: string;
 
   /**
    * Add contextual string parameter (KEY=VALUE)
    *
    * @default - []
    */
-  readonly 'context'?: Array<string>;
+  readonly context?: Array<string>;
 
   /**
    * Name or path of a node package that extend the CDK features. Can be specified multiple times
    *
    * @default - []
    */
-  readonly 'plugin'?: Array<string>;
+  readonly plugin?: Array<string>;
 
   /**
    * Print trace for stack warnings
    *
    * @default - undefined
    */
-  readonly 'trace'?: boolean;
+  readonly trace?: boolean;
 
   /**
    * Do not construct stacks with warnings
    *
    * @default - undefined
    */
-  readonly 'strict'?: boolean;
+  readonly strict?: boolean;
 
   /**
    * Perform context lookups (synthesis fails if this is disabled and context lookups need to be performed)
    *
    * @default - true
    */
-  readonly 'lookups'?: boolean;
+  readonly lookups?: boolean;
 
   /**
    * Ignores synthesis errors, which will likely produce an invalid output
@@ -187,35 +187,35 @@ export interface GlobalOptions {
    *
    * @default - false
    */
-  readonly 'json'?: boolean;
+  readonly json?: boolean;
 
   /**
    * Show debug logs (specify multiple times to increase verbosity)
    *
    * @default - false
    */
-  readonly 'verbose'?: boolean;
+  readonly verbose?: boolean;
 
   /**
    * Debug the CDK app. Log additional information during synthesis, such as creation stack traces of tokens (sets CDK_DEBUG, will slow down synthesis)
    *
    * @default - false
    */
-  readonly 'debug'?: boolean;
+  readonly debug?: boolean;
 
   /**
    * Use the indicated AWS profile as the default environment
    *
    * @default - undefined
    */
-  readonly 'profile'?: string;
+  readonly profile?: string;
 
   /**
    * Use the indicated proxy. Will read from HTTPS_PROXY environment variable if not specified
    *
    * @default - undefined
    */
-  readonly 'proxy'?: string;
+  readonly proxy?: string;
 
   /**
    * Path to CA certificate to use when validating HTTPS requests. Will read from AWS_CA_BUNDLE environment variable if not specified
@@ -229,7 +229,7 @@ export interface GlobalOptions {
    *
    * @default - undefined
    */
-  readonly 'ec2creds'?: boolean;
+  readonly ec2creds?: boolean;
 
   /**
    * Include the "AWS::CDK::Metadata" resource in synthesized templates (enabled by default)
@@ -264,21 +264,21 @@ export interface GlobalOptions {
    *
    * @default - true
    */
-  readonly 'staging'?: boolean;
+  readonly staging?: boolean;
 
   /**
    * Emits the synthesized cloud assembly into a directory (default: cdk.out)
    *
    * @default - undefined
    */
-  readonly 'output'?: string;
+  readonly output?: string;
 
   /**
    * Show relevant notices
    *
    * @default - undefined
    */
-  readonly 'notices'?: boolean;
+  readonly notices?: boolean;
 
   /**
    * Removes colors and other style from console output
@@ -292,14 +292,14 @@ export interface GlobalOptions {
    *
    * @default - undefined
    */
-  readonly 'ci'?: boolean;
+  readonly ci?: boolean;
 
   /**
    * Opt in to unstable features. The flag indicates that the scope and API of a feature might still change. Otherwise the feature is generally production ready and fully supported. Can be specified multiple times.
    *
    * @default - []
    */
-  readonly 'unstable'?: Array<string>;
+  readonly unstable?: Array<string>;
 }
 
 /**
@@ -317,7 +317,7 @@ export interface ListOptions {
    *
    * @default - false
    */
-  readonly 'long'?: boolean;
+  readonly long?: boolean;
 
   /**
    * Display stack dependency information for each stack
@@ -415,7 +415,7 @@ export interface BootstrapOptions {
    *
    * @default - undefined
    */
-  readonly 'qualifier'?: string;
+  readonly qualifier?: string;
 
   /**
    * Block public access configuration on CDK toolkit bucket (enabled by default)
@@ -431,21 +431,21 @@ export interface BootstrapOptions {
    *
    * @default - []
    */
-  readonly 'tags'?: Array<string>;
+  readonly tags?: Array<string>;
 
   /**
    * Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)
    *
    * @default - true
    */
-  readonly 'execute'?: boolean;
+  readonly execute?: boolean;
 
   /**
    * The AWS account IDs that should be trusted to perform deployments into this environment (may be repeated, modern bootstrapping only)
    *
    * @default - []
    */
-  readonly 'trust'?: Array<string>;
+  readonly trust?: Array<string>;
 
   /**
    * The AWS account IDs that should be trusted to look up values in this environment (may be repeated, modern bootstrapping only)
@@ -468,7 +468,7 @@ export interface BootstrapOptions {
    *
    * @default - false
    */
-  readonly 'force'?: boolean;
+  readonly force?: boolean;
 
   /**
    * Toggle CloudFormation termination protection on the bootstrap stacks
@@ -496,7 +496,7 @@ export interface BootstrapOptions {
    *
    * @default - undefined
    */
-  readonly 'template'?: string;
+  readonly template?: string;
 
   /**
    * Use previous values for existing parameters (you must specify all parameters on every deployment if this is disabled)
@@ -517,14 +517,14 @@ export interface GcOptions {
    *
    * @default - "full"
    */
-  readonly 'action'?: string;
+  readonly action?: string;
 
   /**
    * Specify either ecr, s3, or all
    *
    * @default - "all"
    */
-  readonly 'type'?: string;
+  readonly type?: string;
 
   /**
    * Delete assets that have been marked as isolated for this many days
@@ -545,7 +545,7 @@ export interface GcOptions {
    *
    * @default - true
    */
-  readonly 'confirm'?: boolean;
+  readonly confirm?: boolean;
 
   /**
    * The name of the CDK toolkit stack, if different from the default "CDKToolkit"
@@ -566,7 +566,7 @@ export interface DeployOptions {
    *
    * @default - false
    */
-  readonly 'all'?: boolean;
+  readonly all?: boolean;
 
   /**
    * Do not rebuild asset with the given ID. Can be specified multiple times
@@ -584,7 +584,7 @@ export interface DeployOptions {
    *
    * @default - undefined
    */
-  readonly 'exclusively'?: boolean;
+  readonly exclusively?: boolean;
 
   /**
    * What security-sensitive changes need manual approval
@@ -607,7 +607,7 @@ export interface DeployOptions {
    *
    * @default - []
    */
-  readonly 'tags'?: Array<string>;
+  readonly tags?: Array<string>;
 
   /**
    * Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet) (deprecated)
@@ -615,7 +615,7 @@ export interface DeployOptions {
    * @deprecated true
    * @default - undefined
    */
-  readonly 'execute'?: boolean;
+  readonly execute?: boolean;
 
   /**
    * Name of the CloudFormation change set to create (only if method is not direct)
@@ -631,7 +631,7 @@ export interface DeployOptions {
    *
    * @default - undefined
    */
-  readonly 'method'?: string;
+  readonly method?: string;
 
   /**
    * Always deploy stack even if templates are identical
@@ -640,14 +640,14 @@ export interface DeployOptions {
    *
    * @default - false
    */
-  readonly 'force'?: boolean;
+  readonly force?: boolean;
 
   /**
    * Additional parameters passed to CloudFormation at deploy time (STACK:KEY=VALUE)
    *
    * @default - {}
    */
-  readonly 'parameters'?: Array<string>;
+  readonly parameters?: Array<string>;
 
   /**
    * Path to file where stack outputs will be written as JSON
@@ -677,21 +677,21 @@ export interface DeployOptions {
    *
    * @default - undefined
    */
-  readonly 'progress'?: string;
+  readonly progress?: string;
 
   /**
    * Rollback stack to stable state on failure. Defaults to 'true', iterate more rapidly with --no-rollback or -R. Note: do **not** disable this flag for deployments with resource replacements, as that will always fail
    *
    * @default - undefined
    */
-  readonly 'rollback'?: boolean;
+  readonly rollback?: boolean;
 
   /**
    * Attempts to perform a 'hotswap' deployment, but does not fall back to a full deployment if that is not possible. Instead, changes to any non-hotswappable properties are ignored.Do not use this in production environments
    *
    * @default - undefined
    */
-  readonly 'hotswap'?: boolean;
+  readonly hotswap?: boolean;
 
   /**
    * Attempts to perform a 'hotswap' deployment, which skips CloudFormation and updates the resources directly, and falls back to a full deployment if that is not possible. Do not use this in production environments
@@ -705,21 +705,21 @@ export interface DeployOptions {
    *
    * @default - undefined
    */
-  readonly 'watch'?: boolean;
+  readonly watch?: boolean;
 
   /**
    * Show CloudWatch log events from all resources in the selected Stacks in the terminal. 'true' by default, use --no-logs to turn off. Only in effect if specified alongside the '--watch' option
    *
    * @default - true
    */
-  readonly 'logs'?: boolean;
+  readonly logs?: boolean;
 
   /**
    * Maximum number of simultaneous deployments (dependency permitting) to execute.
    *
    * @default - 1
    */
-  readonly 'concurrency'?: number;
+  readonly concurrency?: number;
 
   /**
    * Whether to build/publish assets in parallel
@@ -754,7 +754,7 @@ export interface RollbackOptions {
    *
    * @default - false
    */
-  readonly 'all'?: boolean;
+  readonly all?: boolean;
 
   /**
    * The name of the CDK toolkit stack the environment is bootstrapped with
@@ -770,7 +770,7 @@ export interface RollbackOptions {
    *
    * @default - undefined
    */
-  readonly 'force'?: boolean;
+  readonly force?: boolean;
 
   /**
    * Whether to validate the bootstrap stack version. Defaults to 'true', disable with --no-validate-bootstrap-version.
@@ -784,7 +784,7 @@ export interface RollbackOptions {
    *
    * @default - []
    */
-  readonly 'orphan'?: Array<string>;
+  readonly orphan?: Array<string>;
 }
 
 /**
@@ -798,7 +798,7 @@ export interface ImportOptions {
    *
    * @default - true
    */
-  readonly 'execute'?: boolean;
+  readonly execute?: boolean;
 
   /**
    * Name of the CloudFormation change set to create
@@ -819,7 +819,7 @@ export interface ImportOptions {
    *
    * @default - undefined
    */
-  readonly 'rollback'?: boolean;
+  readonly rollback?: boolean;
 
   /**
    * Do not abort if the template diff includes updates or deletes. This is probably safe but we're not sure, let us know how it goes.
@@ -828,7 +828,7 @@ export interface ImportOptions {
    *
    * @default - undefined
    */
-  readonly 'force'?: boolean;
+  readonly force?: boolean;
 
   /**
    * If specified, CDK will generate a mapping of existing physical resources to CDK resources to be imported as. The mapping will be written in the given file path. No actual import operation will be performed
@@ -871,7 +871,7 @@ export interface WatchOptions {
    *
    * @default - undefined
    */
-  readonly 'exclusively'?: boolean;
+  readonly exclusively?: boolean;
 
   /**
    * Name of the CloudFormation change set to create
@@ -887,7 +887,7 @@ export interface WatchOptions {
    *
    * @default - false
    */
-  readonly 'force'?: boolean;
+  readonly force?: boolean;
 
   /**
    * The name of the existing CDK toolkit stack (only used for app using legacy synthesis)
@@ -901,21 +901,21 @@ export interface WatchOptions {
    *
    * @default - undefined
    */
-  readonly 'progress'?: string;
+  readonly progress?: string;
 
   /**
    * Rollback stack to stable state on failure. Defaults to 'true', iterate more rapidly with --no-rollback or -R. Note: do **not** disable this flag for deployments with resource replacements, as that will always fail
    *
    * @default - undefined
    */
-  readonly 'rollback'?: boolean;
+  readonly rollback?: boolean;
 
   /**
    * Attempts to perform a 'hotswap' deployment, but does not fall back to a full deployment if that is not possible. Instead, changes to any non-hotswappable properties are ignored.'true' by default, use --no-hotswap to turn off
    *
    * @default - undefined
    */
-  readonly 'hotswap'?: boolean;
+  readonly hotswap?: boolean;
 
   /**
    * Attempts to perform a 'hotswap' deployment, which skips CloudFormation and updates the resources directly, and falls back to a full deployment if that is not possible.
@@ -929,14 +929,14 @@ export interface WatchOptions {
    *
    * @default - true
    */
-  readonly 'logs'?: boolean;
+  readonly logs?: boolean;
 
   /**
    * Maximum number of simultaneous deployments (dependency permitting) to execute.
    *
    * @default - 1
    */
-  readonly 'concurrency'?: number;
+  readonly concurrency?: number;
 }
 
 /**
@@ -984,7 +984,7 @@ export interface DiffOptions {
    *
    * @default - undefined
    */
-  readonly 'exclusively'?: boolean;
+  readonly exclusively?: boolean;
 
   /**
    * Number of context lines to include in arbitrary JSON diff rendering
@@ -998,14 +998,14 @@ export interface DiffOptions {
    *
    * @default - undefined
    */
-  readonly 'template'?: string;
+  readonly template?: string;
 
   /**
    * Do not filter out AWS::CDK::Metadata resources, mangled non-ASCII characters, or the CheckBootstrapVersionRule
    *
    * @default - false
    */
-  readonly 'strict'?: boolean;
+  readonly strict?: boolean;
 
   /**
    * Only diff for broadened security changes
@@ -1019,14 +1019,14 @@ export interface DiffOptions {
    *
    * @default - undefined
    */
-  readonly 'fail'?: boolean;
+  readonly fail?: boolean;
 
   /**
    * Whether to compare against the template with Transforms already processed
    *
    * @default - false
    */
-  readonly 'processed'?: boolean;
+  readonly processed?: boolean;
 
   /**
    * Do not print stack name and default message when there is no diff to stdout
@@ -1035,7 +1035,7 @@ export interface DiffOptions {
    *
    * @default - false
    */
-  readonly 'quiet'?: boolean;
+  readonly quiet?: boolean;
 
   /**
    * Whether to create a changeset to analyze resource replacements. In this mode, diff will use the deploy role instead of the lookup role.
@@ -1092,14 +1092,14 @@ export interface InitOptions {
    *
    * @default - undefined
    */
-  readonly 'language'?: string;
+  readonly language?: string;
 
   /**
    * List the available templates
    *
    * @default - undefined
    */
-  readonly 'list'?: boolean;
+  readonly list?: boolean;
 
   /**
    * If true, only generates project files, without executing additional operations such as setting up a git repo, installing dependencies or compiling the project
@@ -1131,21 +1131,21 @@ export interface MigrateOptions {
    *
    * @default - "typescript"
    */
-  readonly 'language'?: string;
+  readonly language?: string;
 
   /**
    * The account to retrieve the CloudFormation stack template from
    *
    * @default - undefined
    */
-  readonly 'account'?: string;
+  readonly account?: string;
 
   /**
    * The region to retrieve the CloudFormation stack template from
    *
    * @default - undefined
    */
-  readonly 'region'?: string;
+  readonly region?: string;
 
   /**
    * The path to the CloudFormation template to migrate. Use this for locally stored templates
@@ -1187,14 +1187,14 @@ export interface MigrateOptions {
    *
    * @default - []
    */
-  readonly 'filter'?: Array<string>;
+  readonly filter?: Array<string>;
 
   /**
    * Use this flag to zip the generated CDK app
    *
    * @default - undefined
    */
-  readonly 'compress'?: boolean;
+  readonly compress?: boolean;
 }
 
 /**
@@ -1253,236 +1253,3 @@ export interface DocsOptions {
  * @struct
  */
 export interface DoctorOptions {}
-
-// @ts-ignore TS6133
-export function createCliArguments(args: any): CliArguments {
-  const globalOptions: GlobalOptions = {
-    'app': args.app,
-    'build': args.build,
-    'context': args.context,
-    'plugin': args.plugin,
-    'trace': args.trace,
-    'strict': args.strict,
-    'lookups': args.lookups,
-    'ignore-errors': args.ignoreErrors,
-    'json': args.json,
-    'verbose': args.verbose,
-    'debug': args.debug,
-    'profile': args.profile,
-    'proxy': args.proxy,
-    'ca-bundle-path': args.caBundlePath,
-    'ec2creds': args.ec2creds,
-    'version-reporting': args.versionReporting,
-    'path-metadata': args.pathMetadata,
-    'asset-metadata': args.assetMetadata,
-    'role-arn': args.roleArn,
-    'staging': args.staging,
-    'output': args.output,
-    'notices': args.notices,
-    'no-color': args.noColor,
-    'ci': args.ci,
-    'unstable': args.unstable,
-  };
-  let commandOptions;
-  switch (args._[0] as Command) {
-    case 'list':
-      commandOptions = {
-        'long': args.long,
-        'show-dependencies': args.showDependencies,
-      };
-      break;
-
-    case 'synthesize':
-      commandOptions = {
-        exclusively: args.exclusively,
-        validation: args.validation,
-        quiet: args.quiet,
-      };
-      break;
-
-    case 'bootstrap':
-      commandOptions = {
-        'bootstrap-bucket-name': args.bootstrapBucketName,
-        'bootstrap-kms-key-id': args.bootstrapKmsKeyId,
-        'example-permissions-boundary': args.examplePermissionsBoundary,
-        'custom-permissions-boundary': args.customPermissionsBoundary,
-        'bootstrap-customer-key': args.bootstrapCustomerKey,
-        'qualifier': args.qualifier,
-        'public-access-block-configuration': args.publicAccessBlockConfiguration,
-        'tags': args.tags,
-        'execute': args.execute,
-        'trust': args.trust,
-        'trust-for-lookup': args.trustForLookup,
-        'cloudformation-execution-policies': args.cloudformationExecutionPolicies,
-        'force': args.force,
-        'termination-protection': args.terminationProtection,
-        'show-template': args.showTemplate,
-        'toolkit-stack-name': args.toolkitStackName,
-        'template': args.template,
-        'previous-parameters': args.previousParameters,
-      };
-      break;
-
-    case 'gc':
-      commandOptions = {
-        'action': args.action,
-        'type': args.type,
-        'rollback-buffer-days': args.rollbackBufferDays,
-        'created-buffer-days': args.createdBufferDays,
-        'confirm': args.confirm,
-        'bootstrap-stack-name': args.bootstrapStackName,
-      };
-      break;
-
-    case 'deploy':
-      commandOptions = {
-        'all': args.all,
-        'build-exclude': args.buildExclude,
-        'exclusively': args.exclusively,
-        'require-approval': args.requireApproval,
-        'notification-arns': args.notificationArns,
-        'tags': args.tags,
-        'execute': args.execute,
-        'change-set-name': args.changeSetName,
-        'method': args.method,
-        'force': args.force,
-        'parameters': args.parameters,
-        'outputs-file': args.outputsFile,
-        'previous-parameters': args.previousParameters,
-        'toolkit-stack-name': args.toolkitStackName,
-        'progress': args.progress,
-        'rollback': args.rollback,
-        'hotswap': args.hotswap,
-        'hotswap-fallback': args.hotswapFallback,
-        'watch': args.watch,
-        'logs': args.logs,
-        'concurrency': args.concurrency,
-        'asset-parallelism': args.assetParallelism,
-        'asset-prebuild': args.assetPrebuild,
-        'ignore-no-stacks': args.ignoreNoStacks,
-      };
-      break;
-
-    case 'rollback':
-      commandOptions = {
-        'all': args.all,
-        'toolkit-stack-name': args.toolkitStackName,
-        'force': args.force,
-        'validate-bootstrap-version': args.validateBootstrapVersion,
-        'orphan': args.orphan,
-      };
-      break;
-
-    case 'import':
-      commandOptions = {
-        'execute': args.execute,
-        'change-set-name': args.changeSetName,
-        'toolkit-stack-name': args.toolkitStackName,
-        'rollback': args.rollback,
-        'force': args.force,
-        'record-resource-mapping': args.recordResourceMapping,
-        'resource-mapping': args.resourceMapping,
-      };
-      break;
-
-    case 'watch':
-      commandOptions = {
-        'build-exclude': args.buildExclude,
-        'exclusively': args.exclusively,
-        'change-set-name': args.changeSetName,
-        'force': args.force,
-        'toolkit-stack-name': args.toolkitStackName,
-        'progress': args.progress,
-        'rollback': args.rollback,
-        'hotswap': args.hotswap,
-        'hotswap-fallback': args.hotswapFallback,
-        'logs': args.logs,
-        'concurrency': args.concurrency,
-      };
-      break;
-
-    case 'destroy':
-      commandOptions = {
-        all: args.all,
-        exclusively: args.exclusively,
-        force: args.force,
-      };
-      break;
-
-    case 'diff':
-      commandOptions = {
-        'exclusively': args.exclusively,
-        'context-lines': args.contextLines,
-        'template': args.template,
-        'strict': args.strict,
-        'security-only': args.securityOnly,
-        'fail': args.fail,
-        'processed': args.processed,
-        'quiet': args.quiet,
-        'change-set': args.changeSet,
-      };
-      break;
-
-    case 'metadata':
-      commandOptions = {};
-      break;
-
-    case 'acknowledge':
-      commandOptions = {};
-      break;
-
-    case 'notices':
-      commandOptions = {
-        unacknowledged: args.unacknowledged,
-      };
-      break;
-
-    case 'init':
-      commandOptions = {
-        'language': args.language,
-        'list': args.list,
-        'generate-only': args.generateOnly,
-      };
-      break;
-
-    case 'migrate':
-      commandOptions = {
-        'stack-name': args.stackName,
-        'language': args.language,
-        'account': args.account,
-        'region': args.region,
-        'from-path': args.fromPath,
-        'from-stack': args.fromStack,
-        'output-path': args.outputPath,
-        'from-scan': args.fromScan,
-        'filter': args.filter,
-        'compress': args.compress,
-      };
-      break;
-
-    case 'context':
-      commandOptions = {
-        reset: args.reset,
-        force: args.force,
-        clear: args.clear,
-      };
-      break;
-
-    case 'docs':
-      commandOptions = {
-        browser: args.browser,
-      };
-      break;
-
-    case 'doctor':
-      commandOptions = {};
-      break;
-  }
-  const cliArguments: CliArguments = {
-    _: args._,
-    globalOptions,
-    [args._[0]]: commandOptions,
-  };
-
-  return cliArguments;
-}
