@@ -638,7 +638,7 @@ export interface DeployOptions {
    *
    * @default - false
    */
-  readonly 'import-existing-resources'?: boolean;
+  readonly importExistingResources?: boolean;
 
   /**
    * Always deploy stack even if templates are identical
