@@ -2276,6 +2276,20 @@ describe('instance', () => {
     const cluster = Object.values(template.findResources('AWS::RDS::DBInstance'))[0];
     expect(cluster.Properties.StorageEncrypted).toBeUndefined();
   });
+
+  test('an error is thrown when `storageEncrypted` is set to `true` and `isStorageLegacyUnencrypted` is set to `true`', () => {
+    expect(() => {
+      new rds.DatabaseInstance(stack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
+        vpc,
+
+        // Incompatible settings
+        storageEncrypted: true,
+        isStorageLegacyUnencrypted: true,
+      });
+    }).toThrow('Cannot set `storageEncrypted` to `true` when `isStorageLegacyUnencrypted` is `true`.');
+  });
 });
 
 test.each([

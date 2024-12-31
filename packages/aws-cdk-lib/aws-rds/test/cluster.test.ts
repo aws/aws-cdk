@@ -671,6 +671,24 @@ describe('cluster new api', () => {
       const cluster = Object.values(template.findResources('AWS::RDS::DBCluster'))[0];
       expect(cluster.Properties.StorageEncrypted).toBeUndefined();
     });
+
+    test('an error is thrown when `storageEncrypted` is set to `true` and `isStorageLegacyUnencrypted` is set to `true`', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA_MYSQL,
+          vpc,
+
+          // Incompatible settings
+          storageEncrypted: true,
+          isStorageLegacyUnencrypted: true,
+        });
+      }).toThrow('Cannot set `storageEncrypted` to `true` when `isStorageLegacyUnencrypted` is `true`.');
+    });
   });
 
   describe('migrate from instanceProps', () => {
