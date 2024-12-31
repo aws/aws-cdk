@@ -95,28 +95,6 @@ describe('removal-policies', () => {
     expect(resource.cfnOptions.deletionPolicy).toBeUndefined();
   });
 
-  test('excludes specified resource types using classes', () => {
-    // GIVEN
-    const stack = new Stack();
-    const parent = new Construct(stack, 'Parent');
-    const bucket = new TestBucketResource(parent, 'Bucket');
-    const table = new TestTableResource(parent, 'Table');
-    const resource = new TestResource(parent, 'Resource');
-
-    // WHEN
-    RemovalPolicies.of(parent).snapshot({
-      excludeResourceTypes: [
-        resource.cfnResourceType,
-      ],
-    });
-
-    // THEN
-    synthesize(stack);
-    expect(bucket.cfnOptions.deletionPolicy).toBe('Snapshot');
-    expect(table.cfnOptions.deletionPolicy).toBe('Snapshot');
-    expect(resource.cfnOptions.deletionPolicy).toBeUndefined();
-  });
-
   test('applies different removal policies', () => {
     // GIVEN
     const stack = new Stack();
