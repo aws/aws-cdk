@@ -2488,7 +2488,7 @@ export class ResourceType {
   /** AWS IoT mitigation action */
   public static readonly IOT_MITIGATION_ACTION = new ResourceType('AWS::IoT::MitigationAction');
   /** AWS IoT TwinMaker workspace */
-  public static readonly IOT_TWINMAKER_WORKSPACE = new ResourceType('AWS::IoTwinMaker::Workspace');
+  public static readonly IOT_TWINMAKER_WORKSPACE = new ResourceType('AWS::IoTTwinMaker::Workspace');
   /** AWS IoT TwinMaker entity */
   public static readonly IOT_TWINMAKER_ENTITY = new ResourceType('AWS::IoTTwinMaker::Entity');
   /** AWS IoT Analytics datastore */
