@@ -1127,7 +1127,7 @@ describe('disable rollback', () => {
 });
 
 describe('import-existing-resources', () => {
-  test('by default, import-existing-resources is disabled', async () => {
+  test('is disabled by default', async () => {
     // WHEN
     await deployStack({
       ...standardDeployStackArguments(),
@@ -1143,7 +1143,7 @@ describe('import-existing-resources', () => {
     } as CreateChangeSetCommandInput);
   });
 
-  test('import-existing-resources is enabled', async () => {
+  test('is added to the CreateChangeSetCommandInput', async () => {
     // WHEN
     await deployStack({
       ...standardDeployStackArguments(),
