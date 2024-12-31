@@ -346,7 +346,7 @@ interface DatabaseClusterBaseProps {
   /**
    * Whether to enable storage encryption.
    *
-   * @default - true if storageEncryptionKey is provided, false otherwise
+   * @default - If the `@aws-cdk/aws-rds:enableEncryptionAtRestByDefault` feature flag is set, true by default or if storageEncryptionKey is provided. If the flag is not set, false by default unless storageEncryptionKey is provided.
    */
   readonly storageEncrypted?: boolean;
 
@@ -887,7 +887,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       enableCloudwatchLogsExports: props.cloudwatchLogsExports,
       // Encryption
       kmsKeyId: props.storageEncryptionKey?.keyArn,
-      storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
+      storageEncrypted: this.getStorageEncryptedProperty(props),
       // Tags
       copyTagsToSnapshot: props.copyTagsToSnapshot ?? true,
       domain: this.domainId,
@@ -1052,6 +1052,26 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
         }
       }
     }
+  }
+
+  /**
+   * Determines the value of the `storageEncrypted` property for the cluster.
+   */
+  private getStorageEncryptedProperty(props: DatabaseClusterProps): boolean | undefined {
+    const featureFlagEnabled = FeatureFlags.of(this).isEnabled(cxapi.RDS_ENABLE_ENCRYPTION_AT_REST_BY_DEFAULT);
+
+    // Retain the legacy behavior if the feature flag is not enabled
+    if (!featureFlagEnabled) {
+      return props.storageEncryptionKey ? true : props.storageEncrypted;
+    }
+
+    // If a KMS key is provided, enable encryption at rest
+    if (props.storageEncryptionKey) {
+      return true;
+    }
+
+    // Otherwise, default to the explicitly provided value or `true` if no value was provided
+    return props.storageEncrypted ?? true;
   }
 
   /**
