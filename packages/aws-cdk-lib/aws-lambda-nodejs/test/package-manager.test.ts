@@ -48,6 +48,21 @@ test('from a pnpm-lock.yaml with LogLevel.ERROR', () => {
   expect(packageManager.installCommand).toEqual(['pnpm', 'install', '--reporter', 'silent', '--config.node-linker=hoisted', '--config.package-import-method=clone-or-copy', '--no-prefer-frozen-lockfile']);
 });
 
+test('from a bun.lockb', () => {
+  const packageManager = PackageManager.fromLockFile('/path/to/bun.lockb');
+  expect(packageManager.lockFile).toEqual(LockFile.BUN);
+  expect(packageManager.argsSeparator).toBeUndefined();
+  expect(packageManager.installCommand).toEqual(['bun', 'install', '--frozen-lockfile', '--backend', 'copyfile']);
+  expect(packageManager.runCommand).toEqual(['bun', 'run']);
+
+  expect(packageManager.runBinCommand('my-bin')).toBe('bun run my-bin');
+});
+
+test('from a bun.lockb with LogLevel.ERROR', () => {
+  const packageManager = PackageManager.fromLockFile('/path/to/bun.lockb', LogLevel.ERROR);
+  expect(packageManager.installCommand).toEqual(['bun', 'install', '--frozen-lockfile', '--backend', 'copyfile', '--silent']);
+});
+
 test('defaults to NPM', () => {
   const packageManager = PackageManager.fromLockFile('/path/to/other.lock');
   expect(packageManager.lockFile).toEqual(LockFile.NPM);

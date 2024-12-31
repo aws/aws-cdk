@@ -3,11 +3,11 @@ import { SDK, SdkForEnvironment } from '../../lib';
 import {
   EndpointServiceAZContextProviderPlugin,
 } from '../../lib/context-providers/endpoint-service-availability-zones';
-import { FAKE_CREDENTIALS, mockEC2Client, MockSdkProvider } from '../util/mock-sdk';
+import { FAKE_CREDENTIAL_CHAIN, mockEC2Client, MockSdkProvider } from '../util/mock-sdk';
 
 const mockSDK = new (class extends MockSdkProvider {
   public forEnvironment(): Promise<SdkForEnvironment> {
-    return Promise.resolve({ sdk: new SDK(FAKE_CREDENTIALS, mockSDK.defaultRegion, {}), didAssumeRole: false });
+    return Promise.resolve({ sdk: new SDK(FAKE_CREDENTIAL_CHAIN, mockSDK.defaultRegion, {}), didAssumeRole: false });
   }
 })();
 
