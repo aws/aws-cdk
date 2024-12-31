@@ -626,8 +626,8 @@
      }
     ]
    },
-   "UpdateReplacePolicy": "Snapshot",
-   "DeletionPolicy": "Snapshot"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "DatabaseInstance1844F58FD": {
    "Type": "AWS::RDS::DBInstance",
