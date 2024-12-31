@@ -235,7 +235,7 @@ describe('removal-policys', () => {
     expect(resource.cfnOptions.deletionPolicy).toBe('Delete');
   });
 
-  test('higher priority removal policy with overwrite set to true', () => {
+  test('higher priority (lower numeric value) removal policy is overridden by lower priority removal policy with overwrite set to true', () => {
     // GIVEN
     const stack = new Stack();
     const resource = new TestResource(stack, 'PriorityResource');
