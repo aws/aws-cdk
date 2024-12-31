@@ -188,14 +188,14 @@ describe('render', () => {
          *
          * @default - undefined
          */
-        readonly 'notification-arns'?: Array<string>;
+        readonly notificationArns?: Array<string>;
 
         /**
          * Other array
          *
          * @default - []
          */
-        readonly 'other-array'?: Array<string>;
+        readonly otherArray?: Array<string>;
       }
       "
     `);

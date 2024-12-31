@@ -7,10 +7,10 @@ test('cli arguments can be used as a type', async () => {
   const argv: CliArguments = {
     _: [Command.DEPLOY],
     globalOptions: {
-      'lookups': true,
-      'ignore-errors': false,
-      'json': false,
-      'verbose': false,
+      lookups: true,
+      ignoreErrors: false,
+      json: false,
+      verbose: false,
     },
   };
 

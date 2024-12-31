@@ -1,7 +1,7 @@
 import { Module, SelectiveModuleImport, StructType, Type, TypeScriptRenderer } from '@cdklabs/typewriter';
 import { EsLintRules } from '@cdklabs/typewriter/lib/eslint-rules';
 import * as prettier from 'prettier';
-import { generateDefault } from './util';
+import { generateDefault, kebabToCamelCase, kebabToPascal } from './util';
 import { CliConfig } from './yargs-types';
 
 export async function renderCliType(config: CliConfig): Promise<string> {
@@ -42,7 +42,7 @@ export async function renderCliType(config: CliConfig): Promise<string> {
   });
   for (const [optionName, option] of Object.entries(config.globalOptions)) {
     globalOptionType.addProperty({
-      name: optionName,
+      name: kebabToCamelCase(optionName),
       type: convertType(option.type),
       docs: {
         default: normalizeDefault(option.default, option.type),
@@ -74,7 +74,7 @@ export async function renderCliType(config: CliConfig): Promise<string> {
 
     for (const [optionName, option] of Object.entries(command.options ?? {})) {
       commandType.addProperty({
-        name: optionName,
+        name: kebabToCamelCase(optionName),
         type: convertType(option.type),
         docs: {
           // Notification Arns is a special property where undefined and [] mean different things
@@ -88,7 +88,7 @@ export async function renderCliType(config: CliConfig): Promise<string> {
     }
 
     cliArgType.addProperty({
-      name: commandName,
+      name: kebabToCamelCase(commandName),
       type: Type.fromName(scope, commandType.name),
       docs: {
         summary: command.description,
@@ -122,13 +122,6 @@ function convertType(type: 'string' | 'array' | 'number' | 'boolean' | 'count'):
     case 'count':
       return Type.NUMBER;
   }
-}
-
-function kebabToPascal(str: string): string {
-  return str
-    .split('-')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-    .join('');
 }
 
 function normalizeDefault(defaultValue: any, type: string): string {
