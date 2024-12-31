@@ -1449,3 +1449,37 @@ new rds.DatabaseCluster(this, 'LimitlessDatabaseCluster', {
   cloudwatchLogsExports: ['postgresql'],
 });
 ```
+
+## Default Encryption Behavior
+
+It's recommended to set the `@aws-cdk/aws-rds:enableEncryptionAtRestByDefault`
+[feature flag](https://docs.aws.amazon.com/cdk/v2/guide/featureflags.html) to `true` to automatically enable encryption
+at rest using AWS-managed KMS keys for all new database clusters and instances. Previously, the default behavior did not
+enable encryption at rest if the `storageEncrypted` property was not set.
+
+To prevent replacing existing unencrypted database clusters and instances, set `storageEncrypted` to `false` and
+`isStorageLegacyUnencrypted` to `true` for existing database clusters and instances. Validate that `cdk diff` does not
+show any changes to the unencrypted database clusters and instances.
+
+```ts
+const cluster = new rds.DatabaseCluster(this, 'Cluster', {
+  engine: rds.DatabaseClusterEngine.AURORA,
+  vpc,
+
+  // Retain existing unencrypted database cluster behavior when `@aws-cdk/aws-rds:enableEncryptionAtRestByDefault`
+  // feature flag is set to `true`
+  storageEncrypted: false,
+  isStorageLegacyUnencrypted: true,
+});
+
+const instance = new rds.DatabaseInstance(this, 'Instance', {
+  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_39 }),
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.R7G, ec2.InstanceSize.LARGE),
+  vpc,
+
+  // Retain existing unencrypted database instance behavior when `@aws-cdk/aws-rds:enableEncryptionAtRestByDefault`
+  // feature flag is set to `true`
+  storageEncrypted: false,
+  isStorageLegacyUnencrypted: true,
+});
+```
