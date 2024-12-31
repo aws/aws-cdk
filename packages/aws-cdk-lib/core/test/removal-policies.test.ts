@@ -203,7 +203,7 @@ describe('removal-policys', () => {
     expect(childResource.cfnOptions.deletionPolicy).toBe('Retain');
   });
 
-  test('exist removalPolicy', () => {
+  test('only applies to resources without removal policy existing', () => {
     // GIVEN
     const stack = new Stack();
     const parent = new Construct(stack, 'Parent');
