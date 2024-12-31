@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Construct } from 'constructs';
-import { Runtime, RuntimeFamily } from './runtime';
+import { RuntimeFamily } from './runtime';
 import * as s3 from '../../aws-s3';
 import * as s3_assets from '../../aws-s3-assets';
 import { Stage } from '../../core';
@@ -58,7 +58,7 @@ export abstract class Code {
    *
    * @returns a bound `CodeConfig`.
    */
-  public abstract bind(scope: Construct, handler: string, family: Runtime | RuntimeFamily): CodeConfig;
+  public abstract bind(scope: Construct, handler: string, family: RuntimeFamily, runtimeName?: string): CodeConfig;
 }
 
 /**
@@ -98,7 +98,7 @@ export class AssetCode extends Code {
   }
 
   // To maintain backward compatibility, it is also designed to accept `RuntimeFamily` for `runtime` prop.
-  public bind(scope: Construct, handler: string, runtime: Runtime | RuntimeFamily): CodeConfig {
+  public bind(scope: Construct, handler: string, family: RuntimeFamily, runtimeName?: string): CodeConfig {
     // If the same AssetCode is used multiple times, retain only the first instantiation.
     if (!this.asset) {
       this.asset = new s3_assets.Asset(scope, 'Code', {
@@ -107,7 +107,7 @@ export class AssetCode extends Code {
       });
     }
 
-    this.validateCanaryAsset(scope, handler, runtime);
+    this.validateCanaryAsset(scope, handler, family, runtimeName);
 
     return {
       s3Location: {
@@ -128,7 +128,7 @@ export class AssetCode extends Code {
    * Requires canary file name matches the handler name.
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary.html
    */
-  private validateCanaryAsset(scope: Construct, handler: string, runtime: Runtime | RuntimeFamily) {
+  private validateCanaryAsset(scope: Construct, handler: string, family: RuntimeFamily, runtimeName?: string) {
     if (!this.asset) {
       throw new Error("'validateCanaryAsset' must be called after 'this.asset' is instantiated");
     }
@@ -142,31 +142,31 @@ export class AssetCode extends Code {
       if (!fs.lstatSync(assetPath).isDirectory()) {
         throw new Error(`Asset must be a .zip file or a directory (${this.assetPath})`);
       }
-      // Validation can be performed using only `Runtime` type arguments,
-      // but for backward compatibility of `Code.bind()`, it is also designed to accept `RuntimeFamily`.
-      if (runtime instanceof Runtime) {
+      // Validation can be performed using both `RuntimeFamily` and `runtimeName` arguments,
+      // but for backward compatibility of `Code.bind()`, it is also designed to accept only `RuntimeFamily`.
+      if (runtimeName) {
         const filename = handler.split('.')[0];
         const nodeFilename = `${filename}.js`;
         const pythonFilename = `${filename}.py`;
         const playwrightValidExtensions = ['.cjs', '.mjs', '.js'];
         const hasValidExtension = playwrightValidExtensions.some(ext => fs.existsSync(path.join(assetPath, `${filename}${ext}`)));
-        if (runtime.family === RuntimeFamily.NODEJS && runtime.name.includes('puppeteer') && !fs.existsSync(path.join(assetPath, 'nodejs', 'node_modules', nodeFilename))) {
+        if (family === RuntimeFamily.NODEJS && runtimeName.includes('puppeteer') && !fs.existsSync(path.join(assetPath, 'nodejs', 'node_modules', nodeFilename))) {
           throw new Error(`The canary resource requires that the handler is present at "nodejs/node_modules/${nodeFilename}" but not found at ${this.assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Nodejs.html)`);
         }
-        if (runtime.family === RuntimeFamily.NODEJS && runtime.name.includes('playwright') && !hasValidExtension) {
+        if (family === RuntimeFamily.NODEJS && runtimeName.includes('playwright') && !hasValidExtension) {
           throw new Error(`The canary resource requires that the handler is present at one of the following extensions: ${playwrightValidExtensions.join(', ')} but not found at ${this.assetPath}`);
         }
-        if (runtime.family === RuntimeFamily.PYTHON && !fs.existsSync(path.join(assetPath, 'python', pythonFilename))) {
+        if (family === RuntimeFamily.PYTHON && !fs.existsSync(path.join(assetPath, 'python', pythonFilename))) {
           throw new Error(`The canary resource requires that the handler is present at "python/${pythonFilename}" but not found at ${this.assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Python.html)`);
         }
       } else {
         const filename = handler.split('.')[0];
         const nodeFilename = `${filename}.js`;
         const pythonFilename = `${filename}.py`;
-        if (runtime === RuntimeFamily.NODEJS && !fs.existsSync(path.join(assetPath, 'nodejs', 'node_modules', nodeFilename))) {
+        if (family === RuntimeFamily.NODEJS && !fs.existsSync(path.join(assetPath, 'nodejs', 'node_modules', nodeFilename))) {
           throw new Error(`The canary resource requires that the handler is present at "nodejs/node_modules/${nodeFilename}" but not found at ${this.assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Nodejs.html)`);
         }
-        if (runtime === RuntimeFamily.PYTHON && !fs.existsSync(path.join(assetPath, 'python', pythonFilename))) {
+        if (family === RuntimeFamily.PYTHON && !fs.existsSync(path.join(assetPath, 'python', pythonFilename))) {
           throw new Error(`The canary resource requires that the handler is present at "python/${pythonFilename}" but not found at ${this.assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Python.html)`);
         }
       }
@@ -186,7 +186,7 @@ export class InlineCode extends Code {
     }
   }
 
-  public bind(_scope: Construct, handler: string, _family: Runtime | RuntimeFamily): CodeConfig {
+  public bind(_scope: Construct, handler: string, _family: RuntimeFamily, _runtimeName?: string): CodeConfig {
 
     if (handler !== 'index.handler') {
       throw new Error(`The handler for inline code must be "index.handler" (got "${handler}")`);
@@ -206,7 +206,7 @@ export class S3Code extends Code {
     super();
   }
 
-  public bind(_scope: Construct, _handler: string, _family: Runtime | RuntimeFamily): CodeConfig {
+  public bind(_scope: Construct, _handler: string, _family: RuntimeFamily, _runtimeName?: string): CodeConfig {
     return {
       s3Location: {
         bucketName: this.bucket.bucketName,
