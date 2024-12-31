@@ -50,7 +50,7 @@ describe('removal-policies', () => {
     expect(resource2.cfnOptions.deletionPolicy).toBe('Delete');
   });
 
-  test('applies removal policy only to specified resource types using strings', () => {
+  test('applies removal policy only to specified resource types', () => {
     // GIVEN
     const stack = new Stack();
     const parent = new Construct(stack, 'Parent');
