@@ -1,8 +1,8 @@
-import { Module, SelectiveModuleImport, StructType, Type, TypeScriptRenderer } from '@cdklabs/typewriter';
+import { code, FreeFunction, Module, SelectiveModuleImport, StructType, Type, TypeScriptRenderer } from '@cdklabs/typewriter';
 import { EsLintRules } from '@cdklabs/typewriter/lib/eslint-rules';
 import * as prettier from 'prettier';
 import { generateDefault } from './util';
-import { CliConfig } from './yargs-types';
+import { CliAction, CliConfig } from './yargs-types';
 
 export async function renderCliType(config: CliConfig): Promise<string> {
   const scope = new Module('aws-cdk');
@@ -52,6 +52,7 @@ export async function renderCliType(config: CliConfig): Promise<string> {
       optional: true,
     });
   }
+
   cliArgType.addProperty({
     name: 'globalOptions',
     type: Type.fromName(scope, globalOptionType.name),
@@ -98,6 +99,35 @@ export async function renderCliType(config: CliConfig): Promise<string> {
     });
   }
 
+  // const globalOptions: GlobalOptions = {
+  //   'asset-metadata': args.assetMetadata,
+  //   'ca-bundle-path': args.caBundlePath,
+  //   'ignore-errors': args.ignoreErrors,
+  //   'no-color': args.noColor,
+  //   'path-metadata': args.pathMetadata,
+  //   'proxy': args.proxy,
+  //   'role-arn': args.roleArn,
+  //   'staging': args.staging,
+  //   'strict': args.strict,
+  //   'verbose': args.verbose,
+  //   'version-reporting': args.versionReporting,
+  //   'ci': args.ci,
+  //   'debug': args.debug,
+  //   'ec2creds': args.ec2creds,
+  //   'json': args.json,
+  //   'lookups': args.lookups,
+  //   'unstable': args.unstable,
+  // };
+  const createCliArguments = new FreeFunction(scope, {
+    name: 'createCliArguments',
+    export: true,
+    returnType: Type.fromName(scope, cliArgType.name),
+    parameters: [
+      { name: 'args', type: Type.ANY },
+    ],
+  });
+  createCliArguments.addBody(code.expr.directCode(buildCliArgsFunction(config)));
+
   const ts = new TypeScriptRenderer({
     disabledEsLintRules: [EsLintRules.MAX_LEN], // the default disabled rules result in 'Definition for rule 'prettier/prettier' was not found'
   }).render(scope);
@@ -106,6 +136,7 @@ export async function renderCliType(config: CliConfig): Promise<string> {
     parser: 'typescript',
     printWidth: 150,
     singleQuote: true,
+    quoteProps: 'consistent',
   });
 }
 
@@ -148,3 +179,70 @@ function normalizeDefault(defaultValue: any, type: string): string {
       return generatedDefault ? JSON.stringify(generatedDefault) : 'undefined';
   }
 }
+
+function buildCliArgsFunction(config: CliConfig): string {
+  const globalOptions = buildGlobalOptions(config);
+  const commandSwitch = buildCommandSwitch(config);
+  const cliArgs = buildCliArgs();
+  return [
+    globalOptions,
+    commandSwitch,
+    cliArgs,
+  ].join('\n');
+}
+
+function buildGlobalOptions(config: CliConfig): string {
+  const globalOptionExprs = ['const globalOptions: GlobalOptions = {'];
+  for (const optionName of Object.keys(config.globalOptions)) {
+    globalOptionExprs.push(`'${optionName}': args.${hyphenToCamelCase(optionName)},`);
+  }
+  globalOptionExprs.push('}');
+  return globalOptionExprs.join('\n');
+}
+
+function buildCommandSwitch(config: CliConfig): string {
+  const commandSwitchExprs = ['let commandOptions;', 'switch (args._[0] as Command) {'];
+  for (const commandName of Object.keys(config.commands)) {
+    commandSwitchExprs.push(
+      `case '${commandName}':`,
+      'commandOptions = {',
+      ...buildCommandOptions(config.commands[commandName]),
+      '};',
+      `break;
+    `);
+  }
+  commandSwitchExprs.push('}');
+  return commandSwitchExprs.join('\n');
+}
+
+function buildCommandOptions(options: CliAction): string[] {
+  const commandOptions = [];
+  for (const optionName of Object.keys(options.options ?? {})) {
+    commandOptions.push(`'${optionName}': args.${hyphenToCamelCase(optionName)},`);
+  }
+  return commandOptions;
+}
+
+function buildCliArgs(): string {
+  return [
+    'const cliArguments: CliArguments = {',
+    '_: args._,',
+    'globalOptions,',
+    '[args._[0]]: commandOptions',
+    '}',
+    '',
+    'return cliArguments',
+  ].join('\n');
+}
+
+function hyphenToCamelCase(str: string): string {
+  return str
+    .split('-')
+    .map((word, index) =>
+      index === 0
+        ? word.toLowerCase()
+        : word.charAt(0).toUpperCase() + word.slice(1).toLowerCase(),
+    )
+    .join('');
+}
+

@@ -1,19 +1,106 @@
-import { CliArguments } from '../lib/cli-arguments';
-import { Command } from '../lib/settings';
+import { createCliArguments } from '../lib/cli-arguments';
 
-// CliArguments is not being used right now, so the testing suite is rather redundant.
-// This file is meant to be populated when CliArguments is used.
-test('cli arguments can be used as a type', async () => {
-  const argv: CliArguments = {
-    _: [Command.DEPLOY],
-    globalOptions: {
-      'lookups': true,
-      'ignore-errors': false,
-      'json': false,
-      'verbose': false,
-    },
+test('yargs object can be converted to cli arguments', async () => {
+  // This input represents what would come out of yargs, i.e.
+  // await parseCommandLineArguments(args);
+  const input = {
+    '_': ['deploy'],
+    'notification-arns': ['[]'],
+    'notificationArns': ['[]'],
+    'v': 1,
+    'verbose': 1,
+    'lookups': true,
+    'ignore-errors': false,
+    'ignoreErrors': false,
+    'json': false,
+    'j': false,
+    'debug': false,
+    'ec2creds': undefined,
+    'i': undefined,
+    'version-reporting': undefined,
+    'versionReporting': undefined,
+    'path-metadata': undefined,
+    'pathMetadata': undefined,
+    'asset-metadata': undefined,
+    'assetMetadata': undefined,
+    'role-arn': undefined,
+    'r': undefined,
+    'roleArn': undefined,
+    'staging': true,
+    'no-color': false,
+    'noColor': false,
+    'ci': false,
+    'unstable': [],
+    'all': false,
+    'build-exclude': [],
+    'E': [],
+    'buildExclude': [],
+    'force': false,
+    'f': false,
+    'parameters': [{}],
+    'previous-parameters': true,
+    'previousParameters': true,
+    'logs': true,
+    'concurrency': 1,
+    'asset-prebuild': true,
+    'assetPrebuild': true,
+    'ignore-no-stacks': false,
+    'ignoreNoStacks': false,
   };
 
-  expect(argv._[0]).toBe('deploy');
-  expect(argv.globalOptions?.lookups).toBeTruthy();
+  const result = createCliArguments(input);
+
+  expect(result).toEqual({
+    _: ['deploy'],
+    globalOptions: {
+      'app': undefined,
+      'asset-metadata': undefined,
+      'build': undefined,
+      'ca-bundle-path': undefined,
+      'context': undefined,
+      'ignore-errors': false,
+      'no-color': false,
+      'path-metadata': undefined,
+      'proxy': undefined,
+      'role-arn': undefined,
+      'staging': true,
+      'strict': undefined,
+      'verbose': 1,
+      'version-reporting': undefined,
+      'ci': false,
+      'debug': false,
+      'ec2creds': undefined,
+      'json': false,
+      'lookups': true,
+      'unstable': [],
+      'notices': undefined,
+      'output': undefined,
+    },
+    deploy: {
+      'all': false,
+      'asset-parallelism': undefined,
+      'asset-prebuild': true,
+      'build-exclude': [],
+      'change-set-name': undefined,
+      'concurrency': 1,
+      'execute': undefined,
+      'exclusively': undefined,
+      'force': false,
+      'hotswap': undefined,
+      'hotswap-fallback': undefined,
+      'ignore-no-stacks': false,
+      'logs': true,
+      'method': undefined,
+      'notification-arns': ['[]'],
+      'outputs-file': undefined,
+      'parameters': [{}],
+      'previous-parameters': true,
+      'progress': undefined,
+      'require-approval': undefined,
+      'rollback': undefined,
+      'tags': undefined,
+      'toolkit-stack-name': undefined,
+      'watch': undefined,
+    },
+  });
 });
