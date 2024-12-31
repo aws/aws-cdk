@@ -162,7 +162,7 @@ describe('removal-policys', () => {
     expect(retainOnUpdate.cfnOptions.deletionPolicy).toBe('RetainExceptOnCreate');
   });
 
-  test('last applied removal policy takes precedence', () => {
+  test('last applied removal policy takes precedence only if `overwrite` is set to true', () => {
     // GIVEN
     const stack = new Stack();
     const resource = new TestResource(stack, 'Resource');
