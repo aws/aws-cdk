@@ -1160,6 +1160,8 @@ export interface DatabaseInstanceProps extends DatabaseInstanceSourceProps {
    * `false` for clarity. However, CloudFormation will replace the Cluster if you change `StorageEncrypted` from
    * `undefined` to `false`. This flag retains the legacy behavior of leaving the `StorageEncrypted` property unset,
    * even if you're using the new behavior of the `@aws-cdk/aws-rds:enableEncryptionAtRestByDefault` feature flag.
+   *
+   * @default - false
    */
   readonly isStorageLegacyUnencrypted?: boolean;
 
