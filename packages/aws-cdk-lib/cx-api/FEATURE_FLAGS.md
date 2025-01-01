@@ -83,7 +83,7 @@ Flags come in three types:
 | [@aws-cdk/aws-dynamodb:resourcePolicyPerReplica](#aws-cdkaws-dynamodbresourcepolicyperreplica) | When enabled will allow you to specify a resource policy per replica, and not copy the source table policy to all replicas | 2.164.0 | (fix) |
 | [@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault](#aws-cdkaws-ec2bastionhostuseamazonlinux2023bydefault) | When enabled, the BastionHost construct will use the latest Amazon Linux 2023 AMI, instead of Amazon Linux 2. | 2.172.0 | (default) |
 | [@aws-cdk/core:aspectStabilization](#aws-cdkcoreaspectstabilization) | When enabled, a stabilization loop will be run when invoking Aspects during synthesis. | 2.172.0 | (config) |
-| [@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource](#aws-cdkaws-route53-targetsuserpooldomainnamemethodwithoutcustomresource) | When enabled, use a new method for DNS Name of user pool domain target without creating a custom resource. | 2.174.0 | (fix) |
+| [@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource](#aws-cdkaws-route53-targetsuserpooldomainnamemethodwithoutcustomresource) | When enabled, use a new method for DNS Name of user pool domain target without creating a custom resource. | V2NEXT | (fix) |
 
 <!-- END table -->
 
@@ -1585,7 +1585,7 @@ If the flag is set to false then a custom resource will be created when using `U
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| 2.174.0 | `false` | `true` |
+| V2NEXT | `false` | `true` |
 
 
 <!-- END details -->
