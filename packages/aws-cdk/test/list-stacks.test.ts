@@ -1,12 +1,10 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';;
 import { instanceMockFrom, MockCloudExecutable, TestStackArtifact } from './util';
 import { Bootstrapper } from '../lib/api/bootstrap';
-import { Deployments } from '../lib/api/deployments';
 import { CdkToolkit } from '../lib/cdk-toolkit';
 import { listStacks } from '../lib/list-stacks';
 
 describe('list', () => {
-  let cloudFormation: jest.Mocked<Deployments>;
   let bootstrapper: jest.Mocked<Bootstrapper>;
 
   beforeEach(() => {
@@ -39,7 +37,6 @@ describe('list', () => {
       cloudExecutable,
       configuration: cloudExecutable.configuration,
       sdkProvider: cloudExecutable.sdkProvider,
-      deployments: cloudFormation,
     });
 
     // WHEN
@@ -93,7 +90,6 @@ describe('list', () => {
       cloudExecutable,
       configuration: cloudExecutable.configuration,
       sdkProvider: cloudExecutable.sdkProvider,
-      deployments: cloudFormation,
     });
 
     // WHEN
@@ -153,7 +149,6 @@ describe('list', () => {
       cloudExecutable,
       configuration: cloudExecutable.configuration,
       sdkProvider: cloudExecutable.sdkProvider,
-      deployments: cloudFormation,
     });
 
     // WHEN
@@ -225,7 +220,6 @@ describe('list', () => {
       cloudExecutable,
       configuration: cloudExecutable.configuration,
       sdkProvider: cloudExecutable.sdkProvider,
-      deployments: cloudFormation,
     });
 
     // WHEN
@@ -311,7 +305,6 @@ describe('list', () => {
       cloudExecutable,
       configuration: cloudExecutable.configuration,
       sdkProvider: cloudExecutable.sdkProvider,
-      deployments: cloudFormation,
     });
 
     // WHEN
@@ -401,7 +394,6 @@ describe('list', () => {
       cloudExecutable,
       configuration: cloudExecutable.configuration,
       sdkProvider: cloudExecutable.sdkProvider,
-      deployments: cloudFormation,
     });
 
     // WHEN
@@ -470,7 +462,6 @@ describe('list', () => {
       cloudExecutable,
       configuration: cloudExecutable.configuration,
       sdkProvider: cloudExecutable.sdkProvider,
-      deployments: cloudFormation,
     });
 
     // WHEN

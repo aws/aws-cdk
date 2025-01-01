@@ -113,13 +113,6 @@ export interface BaseDeployOptions {
   readonly stacks: StackSelector;
 
   /**
-   * Name of the toolkit stack to use/deploy
-   *
-   * @default CDKToolkit
-   */
-  readonly toolkitStackName?: string;
-
-  /**
    * Role to pass to CloudFormation for deployment
    */
   readonly roleArn?: string;

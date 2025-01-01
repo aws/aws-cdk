@@ -193,6 +193,20 @@ export function instanceMockFrom<A>(ctr: new (...args: any[]) => A): jest.Mocked
   return ret;
 }
 
+/**
+ * Helper function to overwrite a private class member.
+ *
+ * This is often easier than setting up jest mocks, however requires knowledge about the implementation detail of the mock target.
+ * It's also more prone to changes if the internal implementation of the target changes.
+ *
+ * Necessary to avoid the TypeScript compiler emitting
+ * "Cannot assign to 'foo' because it is a read-only property."
+ */
+export function mockPrivate<A extends object>(obj: A, key: string, mock: jest.Mocked<any>): A {
+  (obj as any)[key] = mock;
+  return mock as any as A;
+}
+
 export function withMocked<A extends object, K extends keyof A, B>(
   obj: A,
   key: K,

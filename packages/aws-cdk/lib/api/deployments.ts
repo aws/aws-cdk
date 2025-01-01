@@ -76,13 +76,6 @@ export interface DeployStackOptions {
   readonly quiet?: boolean;
 
   /**
-   * Name of the toolkit stack, if not the default name
-   *
-   * @default 'CDKToolkit'
-   */
-  readonly toolkitStackName?: string;
-
-  /**
    * List of asset IDs which should NOT be built or uploaded
    *
    * @default - Build all assets
@@ -234,13 +227,6 @@ export interface RollbackStackOptions {
    * @default false
    */
   readonly ci?: boolean;
-
-  /**
-   * Name of the toolkit stack, if not the default name
-   *
-   * @default 'CDKToolkit'
-   */
-  readonly toolkitStackName?: string;
 
   /**
    * Whether to force a rollback or not
