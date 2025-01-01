@@ -634,6 +634,13 @@ export interface DeployOptions {
   readonly method?: string;
 
   /**
+   * Indicates if the stack set imports resources that already exist.
+   *
+   * @default - false
+   */
+  readonly importExistingResources?: boolean;
+
+  /**
    * Always deploy stack even if templates are identical
    *
    * aliases: f
