@@ -1,4 +1,4 @@
-import { LogLevel, log, setLogLevel, setCI, data, print, error, warning, success, debug, trace, prefix, withCorkedLogging } from '../../../lib/logging';
+import { setIoMessageThreshold, setCI, data, print, error, warning, debug, trace, withCorkedLogging } from '../../../lib/logging';
 
 describe('logging', () => {
   // Mock streams to capture output
@@ -13,7 +13,7 @@ describe('logging', () => {
 
   beforeEach(() => {
     // Reset log level before each test
-    setLogLevel(LogLevel.INFO);
+    setIoMessageThreshold('info');
     setCI(false);
 
     // Create mock functions to capture output
@@ -65,7 +65,7 @@ describe('logging', () => {
 
   describe('log levels', () => {
     test('respects log level settings', () => {
-      setLogLevel(LogLevel.ERROR);
+      setIoMessageThreshold('error');
       error('error message');
       warning('warning message');
       print('print message');
@@ -75,11 +75,11 @@ describe('logging', () => {
     });
 
     test('debug messages only show at debug level', () => {
-      setLogLevel(LogLevel.INFO);
+      setIoMessageThreshold('info');
       debug('debug message');
       expect(mockStderr).not.toHaveBeenCalled();
 
-      setLogLevel(LogLevel.DEBUG);
+      setIoMessageThreshold('debug');
       debug('debug message');
       expect(mockStderr).toHaveBeenCalledWith(
         expect.stringMatching(/^\[\d{2}:\d{2}:\d{2}\] debug message\n$/),
@@ -87,33 +87,15 @@ describe('logging', () => {
     });
 
     test('trace messages only show at trace level', () => {
-      setLogLevel(LogLevel.DEBUG);
+      setIoMessageThreshold('debug');
       trace('trace message');
       expect(mockStderr).not.toHaveBeenCalled();
 
-      setLogLevel(LogLevel.TRACE);
+      setIoMessageThreshold('trace');
       trace('trace message');
       expect(mockStderr).toHaveBeenCalledWith(
         expect.stringMatching(/^\[\d{2}:\d{2}:\d{2}\] trace message\n$/),
       );
-    });
-  });
-
-  describe('message formatting', () => {
-    test('formats messages with multiple arguments', () => {
-      print('Value: %d, String: %s', 42, 'test');
-      expect(mockStderr).toHaveBeenCalledWith('Value: 42, String: test\n');
-    });
-
-    test('handles prefix correctly', () => {
-      const prefixedLog = prefix('PREFIX');
-      prefixedLog('test message');
-      expect(mockStderr).toHaveBeenCalledWith('PREFIX test message\n');
-    });
-
-    test('handles custom styles', () => {
-      success('success message');
-      expect(mockStderr).toHaveBeenCalledWith('success message\n');
     });
   });
 
@@ -143,20 +125,6 @@ describe('logging', () => {
       expect(mockStderr).toHaveBeenCalledWith('outer 1\n');
       expect(mockStderr).toHaveBeenCalledWith('inner\n');
       expect(mockStderr).toHaveBeenCalledWith('outer 2\n');
-    });
-  });
-
-  describe('timestamp and prefix handling', () => {
-    test('combines timestamp and prefix correctly', () => {
-      log({
-        level: LogLevel.INFO,
-        message: 'test message',
-        timestamp: true,
-        prefix: 'PREFIX',
-      });
-      expect(mockStderr).toHaveBeenCalledWith(
-        expect.stringMatching(/^PREFIX \[\d{2}:\d{2}:\d{2}\] test message\n$/),
-      );
     });
   });
 });

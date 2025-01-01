@@ -274,7 +274,7 @@ export class CdkToolkit {
       options.ignoreNoStacks,
     );
     const elapsedSynthTime = new Date().getTime() - startSynthTime;
-    print('\n✨  Synthesis time: %ss\n', formatTime(elapsedSynthTime));
+    print(`\n✨  Synthesis time: ${formatTime(elapsedSynthTime)}s\n`);
 
     if (stackCollection.stackCount === 0) {
       // eslint-disable-next-line no-console
@@ -387,7 +387,7 @@ export class CdkToolkit {
       }
 
       const stackIndex = stacks.indexOf(stack) + 1;
-      print('%s: deploying... [%s/%s]', chalk.bold(stack.displayName), stackIndex, stackCollection.stackCount);
+      print(`${chalk.bold(stack.displayName)}: deploying... [${stackIndex}/${stackCollection.stackCount}]`);
       const startDeployTime = new Date().getTime();
 
       let tags = options.tags;
@@ -491,7 +491,7 @@ export class CdkToolkit {
 
         success('\n' + message, stack.displayName);
         elapsedDeployTime = new Date().getTime() - startDeployTime;
-        print('\n✨  Deployment time: %ss\n', formatTime(elapsedDeployTime));
+        print(`\n✨  Deployment time: ${formatTime(elapsedDeployTime)}s\n`);
 
         if (Object.keys(deployResult.outputs).length > 0) {
           print('Outputs:');
@@ -501,7 +501,7 @@ export class CdkToolkit {
 
         for (const name of Object.keys(deployResult.outputs).sort()) {
           const value = deployResult.outputs[name];
-          print('%s.%s = %s', chalk.cyan(stack.id), chalk.cyan(name), chalk.underline(chalk.cyan(value)));
+          print(`${chalk.cyan(stack.id)}.${chalk.cyan(name)} = ${chalk.underline(chalk.cyan(value))}`);
         }
 
         print('Stack ARN:');
@@ -533,7 +533,7 @@ export class CdkToolkit {
           });
         }
       }
-      print('\n✨  Total time: %ss\n', formatTime(elapsedSynthTime + elapsedDeployTime));
+      print(`\n✨  Total time: ${formatTime(elapsedSynthTime + elapsedDeployTime)}s\n`);
     };
 
     const assetBuildTime = options.assetBuildTime ?? AssetBuildTime.ALL_BEFORE_DEPLOY;
@@ -575,7 +575,7 @@ export class CdkToolkit {
     const startSynthTime = new Date().getTime();
     const stackCollection = await this.selectStacksForDeploy(options.selector, true);
     const elapsedSynthTime = new Date().getTime() - startSynthTime;
-    print('\n✨  Synthesis time: %ss\n', formatTime(elapsedSynthTime));
+    print(`\n✨  Synthesis time: ${formatTime(elapsedSynthTime)}s\n`);
 
     if (stackCollection.stackCount === 0) {
       // eslint-disable-next-line no-console
@@ -601,7 +601,7 @@ export class CdkToolkit {
           anyRollbackable = true;
         }
         const elapsedRollbackTime = new Date().getTime() - startRollbackTime;
-        print('\n✨  Rollback time: %ss\n', formatTime(elapsedRollbackTime));
+        print('\n✨  Rollback time: %ss\n', formatTime(elapsedRollbackTime).toString());
       } catch (e: any) {
         error('\n ❌  %s failed: %s', chalk.bold(stack.displayName), e.message);
         throw new ToolkitError('Rollback failed (use --force to orphan failing resources)');

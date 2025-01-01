@@ -3,7 +3,8 @@ import { ArtifactMetadataEntryType, type MetadataEntry } from '@aws-cdk/cloud-as
 import type { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
 import { ResourceEvent, StackEventPoller } from './stack-event-poller';
-import { error, LogLevel, setLogLevel } from '../../../logging';
+import { error, setIoMessageThreshold } from '../../../logging';
+import { IoMessageLevel } from '../../../toolkit/cli-io-host';
 import type { ICloudFormationClient } from '../../aws-auth';
 import { RewritableBlock } from '../display';
 
@@ -48,7 +49,7 @@ export interface WithDefaultPrinterProps {
    *
    * @default - Use value from logging.logLevel
    */
-  readonly logLevel?: LogLevel;
+  readonly logLevel?: IoMessageLevel;
 
   /**
    * Whether to display all stack events or to display only the events for the
@@ -102,7 +103,7 @@ export class StackActivityMonitor {
     };
 
     const isWindows = process.platform === 'win32';
-    const verbose = options.logLevel ?? LogLevel.INFO;
+    const verbose = options.logLevel ?? 'info';
     // On some CI systems (such as CircleCI) output still reports as a TTY so we also
     // need an individual check for whether we're running on CI.
     // see: https://discuss.circleci.com/t/circleci-terminal-is-a-tty-but-term-is-not-set/9965
@@ -195,7 +196,7 @@ export class StackActivityMonitor {
 
       this.printer.print();
     } catch (e) {
-      error('Error occurred while monitoring stack: %s', e);
+      error('Error occurred while monitoring stack: %s', String(e));
     }
     this.scheduleNextTick();
   }
@@ -626,7 +627,7 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
    */
   public readonly updateSleep: number = 2_000;
 
-  private oldLogLevel: LogLevel = LogLevel.INFO;
+  private oldLogLevel: IoMessageLevel = 'info';
   private block = new RewritableBlock(this.stream);
 
   constructor(props: PrinterProps) {
@@ -674,11 +675,11 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
   public start() {
     // Need to prevent the waiter from printing 'stack not stable' every 5 seconds, it messes
     // with the output calculations.
-    setLogLevel(LogLevel.INFO);
+    setIoMessageThreshold('info');
   }
 
   public stop() {
-    setLogLevel(this.oldLogLevel);
+    setIoMessageThreshold(this.oldLogLevel);
 
     // Print failures at the end
     const lines = new Array<string>();
