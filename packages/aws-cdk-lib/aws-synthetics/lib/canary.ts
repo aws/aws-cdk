@@ -544,7 +544,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
     this.validateHandler(props.test.handler, props.runtime);
     const codeConfig = {
       handler: props.test.handler,
-      ...props.test.code.bind(this, props.test.handler, props.runtime),
+      ...props.test.code.bind(this, props.test.handler, props.runtime.family, props.runtime.name),
     };
     return {
       handler: codeConfig.handler,
