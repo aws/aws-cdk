@@ -48,6 +48,7 @@ import { listStacks } from './list-stacks';
 import { data, debug, error, highlight, print, success, warning, withCorkedLogging } from './logging';
 import { deserializeStructure, serializeStructure } from './serialize';
 import { Configuration, PROJECT_CONFIG } from './settings';
+import { CachedCloudAssemblySource, ICloudAssemblySource } from './toolkit/cloud-assembly-source';
 import { ToolkitError } from './toolkit/error';
 import { numberFromBool, partition } from './util';
 import { validateSnsTopicArn } from './util/validate-notification-arn';
@@ -55,7 +56,6 @@ import { Concurrency, WorkGraph } from './util/work-graph';
 import { WorkGraphBuilder } from './util/work-graph-builder';
 import { AssetBuildNode, AssetPublishNode, StackNode } from './util/work-graph-types';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob } from '../lib/api/cxapp/environments';
-import { CachedCloudAssemblySource, ICloudAssemblySource } from './toolkit/cloud-assembly-source';
 
 // Must use a require() otherwise esbuild complains about calling a namespace
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -68,11 +68,6 @@ export function markTesting() {
 }
 
 export interface CdkToolkitProps {
-  /**
-   * The Cloud Executable
-   */
-  cloudExecutable: CloudExecutable;
-
   /**
    * The provisioning engine used to apply changes to the cloud
    */
@@ -937,7 +932,7 @@ export class CdkToolkit {
     const bootstrapper = new Bootstrapper(options.source);
     // If there is an '--app' argument and an environment looks like a glob, we
     // select the environments from the app. Otherwise, use what the user said.
-
+    const assembly = options.app ? await this.assemblyFromSource(options.app) : undefined;
     const environments = await this.defineEnvironments(userEnvironmentSpecs, assembly);
 
     const limit = pLimit(20);

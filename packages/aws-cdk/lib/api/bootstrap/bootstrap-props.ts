@@ -1,5 +1,6 @@
 import { BootstrapSource } from './bootstrap-environment';
 import { Tag } from '../../cdk-toolkit';
+import { ICloudAssemblySource } from '../../toolkit/cloud-assembly-source';
 import { StringWithoutPlaceholders } from '../util/placeholders';
 
 export const BUCKET_NAME_OUTPUT = 'BucketName';
@@ -58,6 +59,11 @@ export interface BootstrapEnvironmentOptions {
    * @default true
    */
   usePreviousParameters?: boolean;
+
+  /**
+   * A cloud assembly source used to determine the bootstrap environment if not explicitly provided.
+   */
+  readonly app?: ICloudAssemblySource;
 }
 
 /**
