@@ -273,6 +273,35 @@ describe('Metrics', () => {
     expect(metric.statistic).toEqual(customStat);
   });
 
+  test('region and account getters are enumerable', () => {
+    const metric = new Metric({
+      namespace: 'Test',
+      metricName: 'Metric',
+      period: cdk.Duration.minutes(10),
+      region: 'test-region',
+      account: 'test-account',
+    });
+
+    expect(metric.region).toBe('test-region');
+    expect(metric.account).toBe('test-account');
+
+    const metricObject = { ...metric };
+    expect(metricObject).toEqual(expect.objectContaining({
+      region: 'test-region',
+      account: 'test-account',
+    }));
+
+    // Check that private fields are not included.
+    // @ts-expect-error
+    expect(metricObject.accountOverride).toBeUndefined();
+    // @ts-expect-error
+    expect(metricObject.stackAccount).toBeUndefined();
+    // @ts-expect-error
+    expect(metricObject.regionOverride).toBeUndefined();
+    // @ts-expect-error
+    expect(metricObject.stackRegion).toBeUndefined();
+  });
+
   test('statistic is properly parsed', () => {
     const checkParsingSingle = (statistic: string, statPrefix: string, statName: string, value: number) => {
       const parsed = parseStatistic(statistic);
