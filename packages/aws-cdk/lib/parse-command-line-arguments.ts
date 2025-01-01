@@ -401,6 +401,11 @@ export function parseCommandLineArguments(args: Array<string>): any {
           requiresArg: true,
           desc: 'How to perform the deployment. Direct is a bit faster but lacks progress information',
         })
+        .option('import-existing-resources', {
+          default: false,
+          type: 'boolean',
+          desc: 'Indicates if the stack set imports resources that already exist.',
+        })
         .option('force', {
           default: false,
           alias: 'f',
