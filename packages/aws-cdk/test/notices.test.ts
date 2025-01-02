@@ -212,40 +212,40 @@ describe(NoticesFilter, () => {
       // doesn't matter for this test because our data only has CLI notices
       const outDir = path.join(__dirname, 'cloud-assembly-trees', 'built-with-2_12_0');
 
-      expect(NoticesFilter.filter({ data: notices, bootstrappedEnvironments: [], outDir, cliVersion: '1.0.0' }).map(f => f.notice)).toEqual([BASIC_NOTICE]);
-      expect(NoticesFilter.filter({ data: notices, bootstrappedEnvironments: [], outDir, cliVersion: '1.129.0' }).map(f => f.notice)).toEqual([MULTIPLE_AFFECTED_VERSIONS_NOTICE]);
-      expect(NoticesFilter.filter({ data: notices, bootstrappedEnvironments: [], outDir, cliVersion: '1.126.0' }).map(f => f.notice)).toEqual([BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE]);
-      expect(NoticesFilter.filter({ data: notices, bootstrappedEnvironments: [], outDir, cliVersion: '1.130.0' }).map(f => f.notice)).toEqual([]);
+      expect((await NoticesFilter.filter({ data: notices, bootstrappedEnvironments: [], outDir, cliVersion: '1.0.0' })).map(f => f.notice)).toEqual([BASIC_NOTICE]);
+      expect((await NoticesFilter.filter({ data: notices, bootstrappedEnvironments: [], outDir, cliVersion: '1.129.0' })).map(f => f.notice)).toEqual([MULTIPLE_AFFECTED_VERSIONS_NOTICE]);
+      expect((await NoticesFilter.filter({ data: notices, bootstrappedEnvironments: [], outDir, cliVersion: '1.126.0' })).map(f => f.notice)).toEqual([BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE]);
+      expect((await NoticesFilter.filter({ data: notices, bootstrappedEnvironments: [], outDir, cliVersion: '1.130.0' })).map(f => f.notice)).toEqual([]);
     });
 
-    test('framework', () => {
+    test('framework', async () => {
       const notices = [FRAMEWORK_2_1_0_AFFECTED_NOTICE];
 
       // doesn't matter for this test because our data only has framework notices
       const cliVersion = '1.0.0';
 
-      expect(NoticesFilter.filter({ data: notices, cliVersion, bootstrappedEnvironments: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'built-with-2_12_0') }).map(f => f.notice)).toEqual([]);
-      expect(NoticesFilter.filter({ data: notices, cliVersion, bootstrappedEnvironments: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'built-with-1_144_0') }).map(f => f.notice)).toEqual([FRAMEWORK_2_1_0_AFFECTED_NOTICE]);
+      expect((await NoticesFilter.filter({ data: notices, cliVersion, bootstrappedEnvironments: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'built-with-2_12_0') })).map(f => f.notice)).toEqual([]);
+      expect((await NoticesFilter.filter({ data: notices, cliVersion, bootstrappedEnvironments: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'built-with-1_144_0') })).map(f => f.notice)).toEqual([FRAMEWORK_2_1_0_AFFECTED_NOTICE]);
     });
 
-    test('module', () => {
+    test('module', async () => {
       // doesn't matter for this test because our data only has framework notices
       const cliVersion = '1.0.0';
 
       // module-level match
-      expect(NoticesFilter.filter({ data: [NOTICE_FOR_APIGATEWAYV2], cliVersion, bootstrappedEnvironments: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'experimental-module') }).map(f => f.notice)).toEqual([NOTICE_FOR_APIGATEWAYV2]);
+      expect((await NoticesFilter.filter({ data: [NOTICE_FOR_APIGATEWAYV2], cliVersion, bootstrappedEnvironments: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'experimental-module') })).map(f => f.notice)).toEqual([NOTICE_FOR_APIGATEWAYV2]);
 
       // no apigatewayv2 in the tree
-      expect(NoticesFilter.filter({ data: [NOTICE_FOR_APIGATEWAYV2], cliVersion, bootstrappedEnvironments: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'built-with-2_12_0') }).map(f => f.notice)).toEqual([]);
+      expect((await NoticesFilter.filter({ data: [NOTICE_FOR_APIGATEWAYV2], cliVersion, bootstrappedEnvironments: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'built-with-2_12_0') })).map(f => f.notice)).toEqual([]);
 
       // module name mismatch: apigateway != apigatewayv2
-      expect(NoticesFilter.filter({ data: [NOTICE_FOR_APIGATEWAY], cliVersion, bootstrappedEnvironments: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'experimental-module') }).map(f => f.notice)).toEqual([]);
+      expect((await NoticesFilter.filter({ data: [NOTICE_FOR_APIGATEWAY], cliVersion, bootstrappedEnvironments: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'experimental-module') })).map(f => f.notice)).toEqual([]);
 
       // construct-level match
-      expect(NoticesFilter.filter({ data: [NOTICE_FOR_APIGATEWAYV2_CFN_STAGE], cliVersion, bootstrappedEnvironments: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'experimental-module') }).map(f => f.notice)).toEqual([NOTICE_FOR_APIGATEWAYV2_CFN_STAGE]);
+      expect((await NoticesFilter.filter({ data: [NOTICE_FOR_APIGATEWAYV2_CFN_STAGE], cliVersion, bootstrappedEnvironments: [], outDir: path.join(__dirname, 'cloud-assembly-trees', 'experimental-module') })).map(f => f.notice)).toEqual([NOTICE_FOR_APIGATEWAYV2_CFN_STAGE]);
     });
 
-    test('bootstrap', () => {
+    test('bootstrap', async () => {
       // doesn't matter for this test because our data only has bootstrap notices
       const outDir = path.join(__dirname, 'cloud-assembly-trees', 'built-with-2_12_0');
       const cliVersion = '1.0.0';
@@ -280,25 +280,25 @@ describe(NoticesFilter, () => {
         },
       ];
 
-      expect(NoticesFilter.filter({
+      expect((await NoticesFilter.filter({
         data: [BASIC_BOOTSTRAP_NOTICE],
         cliVersion,
         outDir,
         bootstrappedEnvironments: bootstrappedEnvironments,
-      }).map(f => f.notice)).toEqual([BASIC_BOOTSTRAP_NOTICE]);
+      })).map(f => f.notice)).toEqual([BASIC_BOOTSTRAP_NOTICE]);
     });
 
-    test('ignores invalid bootstrap versions', () => {
+    test('ignores invalid bootstrap versions', async () => {
       // doesn't matter for this test because our data only has bootstrap notices
       const outDir = path.join(__dirname, 'cloud-assembly-trees', 'built-with-2_12_0');
       const cliVersion = '1.0.0';
 
-      expect(NoticesFilter.filter({
+      expect((await NoticesFilter.filter({
         data: [BASIC_BOOTSTRAP_NOTICE],
         cliVersion,
         outDir,
         bootstrappedEnvironments: [{ bootstrapStackVersion: NaN, environment: { account: 'account', region: 'region', name: 'env' } }],
-      }).map(f => f.notice)).toEqual([]);
+      })).map(f => f.notice)).toEqual([]);
     });
   });
 });
@@ -510,7 +510,7 @@ describe(Notices, () => {
 
       const print = jest.spyOn(logging, 'print');
 
-      notices.display();
+      await notices.display();
       expect(print).toHaveBeenCalledWith(new FilteredNotice(BOOTSTRAP_NOTICE_V10).format());
       expect(print).toHaveBeenCalledWith(new FilteredNotice(BOOTSTRAP_NOTICE_V11).format());
     });
@@ -523,10 +523,10 @@ describe(Notices, () => {
       // mock cli version number
       jest.spyOn(version, 'versionNumber').mockImplementation(() => '1.0.0');
 
-      notices.display();
+      await notices.display();
 
       const filter = jest.spyOn(NoticesFilter, 'filter');
-      notices.display();
+      await notices.display();
 
       expect(filter).toHaveBeenCalledTimes(1);
       expect(filter).toHaveBeenCalledWith({
@@ -557,7 +557,7 @@ describe(Notices, () => {
 
       const print = jest.spyOn(logging, 'print');
 
-      notices.display();
+      await notices.display();
       expect(print).toHaveBeenCalledWith(new FilteredNotice(BASIC_NOTICE).format());
     });
 
@@ -572,7 +572,7 @@ describe(Notices, () => {
 
       const print = jest.spyOn(logging, 'print');
 
-      notices.display({ showTotal: true });
+      await notices.display({ showTotal: true });
       expect(print).toHaveBeenNthCalledWith(1, '');
       expect(print).toHaveBeenNthCalledWith(2, 'There are 0 unacknowledged notice(s).');
       expect(print).toHaveBeenCalledTimes(2);
@@ -617,7 +617,7 @@ describe(Notices, () => {
 
       const print = jest.spyOn(logging, 'print');
 
-      notices.display();
+      await notices.display();
       expect(print).toHaveBeenNthCalledWith(4, new FilteredNotice(BASIC_NOTICE).format());
       expect(print).toHaveBeenNthCalledWith(6, 'If you don’t want to see a notice anymore, use \"cdk acknowledge <id>\". For example, \"cdk acknowledge 16603\".');
     });
@@ -635,7 +635,7 @@ describe(Notices, () => {
 
       const print = jest.spyOn(logging, 'print');
 
-      notices.display();
+      await notices.display();
       expect(print).toHaveBeenCalledWith(new FilteredNotice(BASIC_NOTICE).format());
       expect(print).toHaveBeenCalledWith(new FilteredNotice(MULTIPLE_AFFECTED_VERSIONS_NOTICE).format());
     });
@@ -653,7 +653,7 @@ describe(Notices, () => {
 
       const print = jest.spyOn(logging, 'print');
 
-      notices.display();
+      await notices.display();
       expect(print).toHaveBeenNthCalledWith(2, 'NOTICES         (What\'s this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)');
       expect(print).toHaveBeenNthCalledWith(6, 'If you don’t want to see a notice anymore, use \"cdk acknowledge <id>\". For example, \"cdk acknowledge 16603\".');
     });
@@ -669,7 +669,7 @@ describe(Notices, () => {
 
       const print = jest.spyOn(logging, 'print');
 
-      notices.display();
+      await notices.display();
       expect(print).toHaveBeenNthCalledWith(4, new FilteredNotice(BASIC_NOTICE).format());
       expect(print).toHaveBeenNthCalledWith(6, 'If you don’t want to see a notice anymore, use \"cdk acknowledge <id>\". For example, \"cdk acknowledge 16603\".');
     });
@@ -680,21 +680,21 @@ describe(Notices, () => {
 
       const print = jest.spyOn(logging, 'print');
 
-      notices.display();
+      await notices.display();
       expect(print).toHaveBeenCalledTimes(0);
     });
 
     test('nothing when there are no notices', async () => {
       const print = jest.spyOn(logging, 'print');
 
-      Notices.create({ context: new Context() }).display();
+      await Notices.create({ context: new Context() }).display();
       expect(print).toHaveBeenCalledTimes(0);
     });
 
     test('total count when show total is true', async () => {
       const print = jest.spyOn(logging, 'print');
 
-      Notices.create({ context: new Context() }).display({ showTotal: true });
+      await Notices.create({ context: new Context() }).display({ showTotal: true });
       expect(print).toHaveBeenNthCalledWith(2, 'There are 0 unacknowledged notice(s).');
     });
 
@@ -709,7 +709,7 @@ describe(Notices, () => {
 
       const warning = jest.spyOn(logging, 'warning');
 
-      notices.display();
+      await notices.display();
       expect(warning).toHaveBeenNthCalledWith(1, new FilteredNotice(BASIC_NOTICE).format());
       expect(warning).toHaveBeenCalledTimes(1);
     });
@@ -725,7 +725,7 @@ describe(Notices, () => {
 
       const error = jest.spyOn(logging, 'error');
 
-      notices.display();
+      await notices.display();
       expect(error).toHaveBeenNthCalledWith(1, new FilteredNotice(BASIC_NOTICE).format());
       expect(error).toHaveBeenCalledTimes(1);
     });
@@ -741,7 +741,7 @@ describe(Notices, () => {
 
       const print = jest.spyOn(logging, 'print');
 
-      notices.display();
+      await notices.display();
       expect(print).toHaveBeenNthCalledWith(4, new FilteredNotice(BASIC_NOTICE).format());
     });
 
@@ -758,7 +758,7 @@ describe(Notices, () => {
 
       const print = jest.spyOn(logging, 'print');
 
-      notices.display();
+      await notices.display();
       expect(print).toHaveBeenNthCalledWith(4, new FilteredNotice(BASIC_NOTICE).format());
     });
 
@@ -774,7 +774,7 @@ describe(Notices, () => {
 
       const print = jest.spyOn(logging, 'print');
 
-      notices.display();
+      await notices.display();
       expect(print).toHaveBeenNthCalledWith(4, new FilteredNotice(BASIC_NOTICE).format());
       expect(print).toHaveBeenNthCalledWith(6, new FilteredNotice(MULTIPLE_AFFECTED_VERSIONS_NOTICE).format());
     });

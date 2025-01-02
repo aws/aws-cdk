@@ -69,11 +69,11 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
   try {
     await checkForPlatformWarnings();
   } catch (e) {
-    debug(`Error while checking for platform warnings: ${e}`);
+    await debug(`Error while checking for platform warnings: ${e}`);
   }
 
-  debug('CDK toolkit version:', version.DISPLAY_VERSION);
-  debug('Command line arguments:', argv);
+  await debug('CDK toolkit version:', version.DISPLAY_VERSION);
+  await debug('Command line arguments:', argv);
 
   const configuration = new Configuration({
     commandLineArguments: {
@@ -124,32 +124,32 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
   });
 
   /** Function to load plug-ins, using configurations additively. */
-  function loadPlugins(...settings: Settings[]) {
+  async function loadPlugins(...settings: Settings[]) {
     const loaded = new Set<string>();
     for (const source of settings) {
       const plugins: string[] = source.get(['plugin']) || [];
       for (const plugin of plugins) {
         const resolved = tryResolve(plugin);
-        if (loaded.has(resolved)) {
+        if (loaded.has(await resolved)) {
           continue;
         }
-        debug(`Loading plug-in: ${chalk.green(plugin)} from ${chalk.blue(resolved)}`);
-        PluginHost.instance.load(plugin);
-        loaded.add(resolved);
+        await debug(`Loading plug-in: ${chalk.green(plugin)} from ${chalk.blue(resolved)}`);
+        await PluginHost.instance.load(plugin);
+        loaded.add(await resolved);
       }
     }
 
-    function tryResolve(plugin: string): string {
+    async function tryResolve(plugin: string): Promise<string> {
       try {
         return require.resolve(plugin);
       } catch (e: any) {
-        error(`Unable to resolve plugin ${chalk.green(plugin)}: ${e.stack}`);
+        await error(`Unable to resolve plugin ${chalk.green(plugin)}: ${e.stack}`);
         throw new ToolkitError(`Unable to resolve plug-in: ${plugin}`);
       }
     }
   }
 
-  loadPlugins(configuration.settings);
+  await loadPlugins(configuration.settings);
 
   if (typeof(cmd) !== 'string') {
     throw new ToolkitError(`First argument should be a string. Got: ${cmd} (${typeof(cmd)})`);
@@ -166,17 +166,17 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
     if (cmd === 'notices') {
       await notices.refresh({ force: true });
-      notices.display({ showTotal: argv.unacknowledged });
+      await notices.display({ showTotal: argv.unacknowledged });
 
     } else if (cmd !== 'version') {
       await notices.refresh();
-      notices.display();
+      await notices.display();
     }
   }
 
   async function main(command: string, args: any): Promise<number | void> {
     const toolkitStackName: string = ToolkitInfo.determineName(configuration.settings.get(['toolkitStackName']));
-    debug(`Toolkit stack: ${chalk.bold(toolkitStackName)}`);
+    await debug(`Toolkit stack: ${chalk.bold(toolkitStackName)}`);
 
     const cloudFormation = new Deployments({ sdkProvider, toolkitStackName });
 
@@ -244,7 +244,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         });
 
       case 'bootstrap':
-        const source: BootstrapSource = determineBootstrapVersion(args);
+        const source: BootstrapSource = await determineBootstrapVersion(args);
 
         if (args.showTemplate) {
           const bootstrapper = new Bootstrapper(source);
@@ -477,13 +477,13 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 /**
  * Determine which version of bootstrapping
  */
-function determineBootstrapVersion(args: { template?: string }): BootstrapSource {
+async function determineBootstrapVersion(args: { template?: string }): Promise<BootstrapSource> {
   let source: BootstrapSource;
   if (args.template) {
-    print(`Using bootstrapping template from ${args.template}`);
+    await print(`Using bootstrapping template from ${args.template}`);
     source = { source: 'custom', templateFile: args.template };
   } else if (process.env.CDK_LEGACY_BOOTSTRAP) {
-    print('CDK_LEGACY_BOOTSTRAP set, using legacy-style bootstrapping');
+    await print('CDK_LEGACY_BOOTSTRAP set, using legacy-style bootstrapping');
     source = { source: 'legacy' };
   } else {
     // in V2, the "new" bootstrapping is the default
@@ -535,20 +535,20 @@ function determineHotswapMode(hotswap?: boolean, hotswapFallback?: boolean, watc
 }
 
 /* istanbul ignore next: we never call this in unit tests */
-export function cli(args: string[] = process.argv.slice(2)) {
+export async function cli(args: string[] = process.argv.slice(2)) {
   exec(args)
     .then(async (value) => {
       if (typeof value === 'number') {
         process.exitCode = value;
       }
     })
-    .catch((err) => {
-      error(err.message);
+    .catch(async (err) => {
+      await error(err.message);
 
       // Log the stack trace if we're on a developer workstation. Otherwise this will be into a minified
       // file and the printed code line and stack trace are huge and useless.
       if (err.stack && version.isDeveloperBuild()) {
-        debug(err.stack);
+        await debug(err.stack);
       }
       process.exitCode = 1;
     });

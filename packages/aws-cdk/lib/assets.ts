@@ -38,11 +38,11 @@ export async function addMetadataAssetsToManifest(stack: cxapi.CloudFormationSta
     const reuseAsset = reuse.indexOf(asset.id) > -1;
 
     if (reuseAsset) {
-      debug(`Reusing asset ${asset.id}: ${JSON.stringify(asset)}`);
+      await debug(`Reusing asset ${asset.id}: ${JSON.stringify(asset)}`);
       continue;
     }
 
-    debug(`Preparing asset ${asset.id}: ${JSON.stringify(asset)}`);
+    await debug(`Preparing asset ${asset.id}: ${JSON.stringify(asset)}`);
     if (!stack.assembly) {
       throw new ToolkitError('Unexpected: stack assembly is required in order to find assets in assembly directory');
     }
@@ -71,11 +71,11 @@ async function prepareAsset(asset: cxschema.AssetMetadataEntry, assetManifest: A
   }
 }
 
-function prepareFileAsset(
+async function prepareFileAsset(
   asset: cxschema.FileAssetMetadataEntry,
   assetManifest: AssetManifestBuilder,
   toolkitInfo: ToolkitInfo,
-  packaging: cxschema.FileAssetPackaging): Record<string, string> {
+  packaging: cxschema.FileAssetPackaging): Promise<Record<string, string>> {
 
   const extension = packaging === cxschema.FileAssetPackaging.ZIP_DIRECTORY ? '.zip' : path.extname(asset.path);
   const baseName = `${asset.sourceHash}${extension}`;
@@ -84,7 +84,7 @@ function prepareFileAsset(
   const key = `${s3Prefix}${baseName}`;
   const s3url = `s3://${toolkitInfo.bucketName}/${key}`;
 
-  debug(`Storing asset ${asset.path} at ${s3url}`);
+  await debug(`Storing asset ${asset.path} at ${s3url}`);
 
   assetManifest.addFileAsset(asset.sourceHash, {
     path: asset.path,

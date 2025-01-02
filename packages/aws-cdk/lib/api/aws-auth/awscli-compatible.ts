@@ -109,8 +109,8 @@ export class AwsCliCompatible {
       : nodeProviderChain;
   }
 
-  public static requestHandlerBuilder(options: SdkHttpOptions = {}): NodeHttpHandlerOptions {
-    const agent = this.proxyAgent(options);
+  public static async requestHandlerBuilder(options: SdkHttpOptions = {}): Promise<NodeHttpHandlerOptions> {
+    const agent = await this.proxyAgent(options);
 
     return {
       connectionTimeout: DEFAULT_CONNECTION_TIMEOUT,
@@ -120,7 +120,7 @@ export class AwsCliCompatible {
     };
   }
 
-  public static proxyAgent(options: SdkHttpOptions) {
+  public static async proxyAgent(options: SdkHttpOptions) {
     // Force it to use the proxy provided through the command line.
     // Otherwise, let the ProxyAgent auto-detect the proxy using environment variables.
     const getProxyForUrl = options.proxyAddress != null
@@ -128,7 +128,7 @@ export class AwsCliCompatible {
       : undefined;
 
     return new ProxyAgent({
-      ca: tryGetCACert(options.caBundlePath),
+      ca: await tryGetCACert(options.caBundlePath),
       getProxyForUrl,
     });
   }
@@ -161,7 +161,7 @@ export class AwsCliCompatible {
 
     if (!region) {
       const usedProfile = !profile ? '' : ` (profile: "${profile}")`;
-      debug(
+      await debug(
         `Unable to determine AWS region from environment or AWS configuration${usedProfile}, defaulting to '${defaultRegion}'`,
       );
       return defaultRegion;
@@ -200,10 +200,10 @@ function getRegionFromIniFile(profile: string, data?: any) {
   return data?.[profile]?.region;
 }
 
-function tryGetCACert(bundlePath?: string) {
+async function tryGetCACert(bundlePath?: string) {
   const path = bundlePath || caBundlePathFromEnvironment();
   if (path) {
-    debug('Using CA bundle path: %s', path);
+    await debug('Using CA bundle path: %s', path);
     return readIfPossible(path);
   }
   return undefined;
@@ -254,7 +254,7 @@ function shouldPrioritizeEnv() {
  * @returns The region for the instance identity
  */
 async function regionFromMetadataService() {
-  debug('Looking up AWS region in the EC2 Instance Metadata Service (IMDS).');
+  await debug('Looking up AWS region in the EC2 Instance Metadata Service (IMDS).');
   try {
     const metadataService = new MetadataService({
       httpOptions: {
@@ -266,7 +266,7 @@ async function regionFromMetadataService() {
     const document = await metadataService.request('/latest/dynamic/instance-identity/document', {});
     return JSON.parse(document).region;
   } catch (e) {
-    debug(`Unable to retrieve AWS region from IMDS: ${e}`);
+    await debug(`Unable to retrieve AWS region from IMDS: ${e}`);
   }
 }
 
@@ -282,16 +282,16 @@ export interface CredentialChainOptions {
  * Result is send to callback function for SDK to authorize the request
  */
 async function tokenCodeFn(serialArn: string): Promise<string> {
-  debug('Require MFA token for serial ARN', serialArn);
+  await debug('Require MFA token for serial ARN', serialArn);
   try {
     const token: string = await promptly.prompt(`MFA token for ${serialArn}: `, {
       trim: true,
       default: '',
     });
-    debug('Successfully got MFA token from user');
+    await debug('Successfully got MFA token from user');
     return token;
   } catch (err: any) {
-    debug('Failed to get MFA token', err);
+    await debug('Failed to get MFA token', err);
     const e = new AuthenticationError(`Error fetching MFA token: ${err.message ?? err}`);
     e.name = 'SharedIniFileCredentialsProviderFailure';
     throw e;

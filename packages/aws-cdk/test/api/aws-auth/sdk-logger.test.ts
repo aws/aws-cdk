@@ -9,13 +9,13 @@ describe(SdkToCliLogger, () => {
     trace.mockReset();
   });
 
-  test.each(['trace', 'debug'] as Array<keyof SdkToCliLogger>)('%s method does not call trace', (meth) => {
-    logger[meth]('test');
+  test.each(['trace', 'debug'] as Array<keyof SdkToCliLogger>)('%s method does not call trace', async (meth) => {
+    await logger[meth]('test');
     expect(trace).not.toHaveBeenCalled();
   });
 
-  test.each(['info', 'warn', 'error'] as Array<keyof SdkToCliLogger>)('%s method logs to trace', (meth) => {
-    logger[meth]('test');
+  test.each(['info', 'warn', 'error'] as Array<keyof SdkToCliLogger>)('%s method logs to trace', async (meth) => {
+    await logger[meth]('test');
     expect(trace).toHaveBeenCalled();
   });
 });

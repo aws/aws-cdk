@@ -37,62 +37,62 @@ describe('logging', () => {
   });
 
   describe('stream selection', () => {
-    test('data() always writes to stdout', () => {
-      data('test message');
+    test('data() always writes to stdout', async () => {
+      await data('test message');
       expect(mockStdout).toHaveBeenCalledWith('test message\n');
       expect(mockStderr).not.toHaveBeenCalled();
     });
 
-    test('error() always writes to stderr', () => {
-      error('test error');
+    test('error() always writes to stderr', async () => {
+      await error('test error');
       expect(mockStderr).toHaveBeenCalledWith('test error\n');
       expect(mockStdout).not.toHaveBeenCalled();
     });
 
-    test('print() writes to stderr by default', () => {
-      print('test print');
+    test('print() writes to stderr by default', async () => {
+      await print('test print');
       expect(mockStderr).toHaveBeenCalledWith('test print\n');
       expect(mockStdout).not.toHaveBeenCalled();
     });
 
-    test('print() writes to stdout in CI mode', () => {
+    test('print() writes to stdout in CI mode', async () => {
       setCI(true);
-      print('test print');
+      await print('test print');
       expect(mockStdout).toHaveBeenCalledWith('test print\n');
       expect(mockStderr).not.toHaveBeenCalled();
     });
   });
 
   describe('log levels', () => {
-    test('respects log level settings', () => {
+    test('respects log level settings', async () => {
       setIoMessageThreshold('error');
-      error('error message');
-      warning('warning message');
-      print('print message');
+      await error('error message');
+      await warning('warning message');
+      await print('print message');
       expect(mockStderr).toHaveBeenCalledWith('error message\n');
       expect(mockStderr).not.toHaveBeenCalledWith('warning message\n');
       expect(mockStderr).not.toHaveBeenCalledWith('print message\n');
     });
 
-    test('debug messages only show at debug level', () => {
+    test('debug messages only show at debug level', async () => {
       setIoMessageThreshold('info');
-      debug('debug message');
+      await debug('debug message');
       expect(mockStderr).not.toHaveBeenCalled();
 
       setIoMessageThreshold('debug');
-      debug('debug message');
+      await debug('debug message');
       expect(mockStderr).toHaveBeenCalledWith(
         expect.stringMatching(/^\[\d{2}:\d{2}:\d{2}\] debug message\n$/),
       );
     });
 
-    test('trace messages only show at trace level', () => {
+    test('trace messages only show at trace level', async () => {
       setIoMessageThreshold('debug');
-      trace('trace message');
+      await trace('trace message');
       expect(mockStderr).not.toHaveBeenCalled();
 
       setIoMessageThreshold('trace');
-      trace('trace message');
+      await trace('trace message');
       expect(mockStderr).toHaveBeenCalledWith(
         expect.stringMatching(/^\[\d{2}:\d{2}:\d{2}\] trace message\n$/),
       );
@@ -102,8 +102,8 @@ describe('logging', () => {
   describe('corked logging', () => {
     test('buffers messages when corked', async () => {
       await withCorkedLogging(async () => {
-        print('message 1');
-        print('message 2');
+        await print('message 1');
+        await print('message 2');
         expect(mockStderr).not.toHaveBeenCalled();
       });
 
@@ -113,11 +113,11 @@ describe('logging', () => {
 
     test('handles nested corking correctly', async () => {
       await withCorkedLogging(async () => {
-        print('outer 1');
+        await print('outer 1');
         await withCorkedLogging(async () => {
-          print('inner');
+          await print('inner');
         });
-        print('outer 2');
+        await print('outer 2');
         expect(mockStderr).not.toHaveBeenCalled();
       });
 

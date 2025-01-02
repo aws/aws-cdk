@@ -106,7 +106,7 @@ export class EnvironmentAccess {
     }
     if (lookupEnv.isFallbackCredentials) {
       const arn = await lookupEnv.replacePlaceholders(stack.lookupRole?.arn);
-      warning(`Lookup role ${arn} was not assumed. Proceeding with default credentials.`);
+      await warning(`Lookup role ${arn} was not assumed. Proceeding with default credentials.`);
     }
     return lookupEnv;
   }
@@ -130,7 +130,7 @@ export class EnvironmentAccess {
     try {
       return await this.accessStackForLookup(stack);
     } catch (e: any) {
-      warning(`${e.message}`);
+      await warning(`${e.message}`);
     }
     return this.accessStackForStackOperations(stack, Mode.ForReading);
   }

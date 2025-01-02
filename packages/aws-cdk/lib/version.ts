@@ -123,6 +123,6 @@ export async function displayVersionMessage(currentVersion = versionNumber(), ve
       bannerMsg.forEach((e) => print(e));
     }
   } catch (err: any) {
-    debug(`Could not run version check - ${err.message}`);
+    await debug(`Could not run version check - ${err.message}`);
   }
 }

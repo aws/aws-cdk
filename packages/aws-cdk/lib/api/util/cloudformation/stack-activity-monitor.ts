@@ -196,7 +196,7 @@ export class StackActivityMonitor {
 
       this.printer.print();
     } catch (e) {
-      error('Error occurred while monitoring stack: %s', String(e));
+      await error('Error occurred while monitoring stack: %s', String(e));
     }
     this.scheduleNextTick();
   }

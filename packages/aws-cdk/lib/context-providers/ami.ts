@@ -15,8 +15,8 @@ export class AmiContextProviderPlugin implements ContextProviderPlugin {
 
     // Normally we'd do this only as 'debug', but searching AMIs typically takes dozens
     // of seconds, so be little more verbose about it so users know what is going on.
-    print(`Searching for AMI in ${account}:${region}`);
-    debug(`AMI search parameters: ${JSON.stringify(args)}`);
+    await print(`Searching for AMI in ${account}:${region}`);
+    await debug(`AMI search parameters: ${JSON.stringify(args)}`);
 
     const ec2 = (await initContextProviderSdk(this.aws, args)).ec2();
     const response = await ec2.describeImages({
@@ -38,7 +38,7 @@ export class AmiContextProviderPlugin implements ContextProviderPlugin {
     // but since we only care about the relative values that is okay.
     images.sort(descending((i) => Date.parse(i.CreationDate || '1970')));
 
-    debug(`Selected image '${images[0].ImageId}' created at '${images[0].CreationDate}'`);
+    await debug(`Selected image '${images[0].ImageId}' created at '${images[0].CreationDate}'`);
     return images[0].ImageId!;
   }
 }

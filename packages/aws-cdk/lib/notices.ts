@@ -84,10 +84,10 @@ export interface NoticesFilterFilterOptions {
 }
 
 export class NoticesFilter {
-  public static filter(options: NoticesFilterFilterOptions): FilteredNotice[] {
+  public static async filter(options: NoticesFilterFilterOptions): Promise<FilteredNotice[]> {
     return [
       ...this.findForCliVersion(options.data, options.cliVersion),
-      ...this.findForFrameworkVersion(options.data, options.outDir),
+      ...await this.findForFrameworkVersion(options.data, options.outDir),
       ...this.findForBootstrapVersion(options.data, options.bootstrappedEnvironments),
     ];
   }
@@ -110,8 +110,8 @@ export class NoticesFilter {
 
   }
 
-  private static findForFrameworkVersion(data: Notice[], outDir: string): FilteredNotice[] {
-    const tree = loadTreeFromDir(outDir);
+  private static async findForFrameworkVersion(data: Notice[], outDir: string): Promise<FilteredNotice[]> {
+    const tree = await loadTreeFromDir(outDir);
     return flatMap(data, notice => {
 
       //  A match happens when:
@@ -156,12 +156,12 @@ export class NoticesFilter {
         return [];
       }
 
-      const affected = bootstrappedEnvironments.filter(i => {
+      const affected = bootstrappedEnvironments.filter(async i => {
 
         const semverBootstrapVersion = semver.coerce(i.bootstrapStackVersion);
         if (!semverBootstrapVersion) {
           // we don't throw because notices should never crash the cli.
-          warning(`While filtering notices, could not coerce bootstrap version '${i.bootstrapStackVersion}' into semver`);
+          await warning(`While filtering notices, could not coerce bootstrap version '${i.bootstrapStackVersion}' into semver`);
           return false;
         }
 
@@ -279,14 +279,14 @@ export class Notices {
       const notices = await dataSource.fetch();
       this.data = new Set(this.includeAcknowlegded ? notices : notices.filter(n => !this.acknowledgedIssueNumbers.has(n.issueNumber)));
     } catch (e: any) {
-      debug(`Could not refresh notices: ${e}`);
+      await debug(`Could not refresh notices: ${e}`);
     }
   }
 
   /**
    * Display the relevant notices (unless context dictates we shouldn't).
    */
-  public display(options: NoticesPrintOptions = {}) {
+  public async display(options: NoticesPrintOptions = {}) {
     if (!this.shouldDisplay) {
       return;
     }
@@ -298,30 +298,31 @@ export class Notices {
       bootstrappedEnvironments: Array.from(this.bootstrappedEnvironments.values()),
     });
 
-    if (filteredNotices.length > 0) {
-      print('');
-      print('NOTICES         (What\'s this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)');
-      print('');
-      for (const filtered of filteredNotices) {
+    if ((await filteredNotices).length > 0) {
+      await print('');
+      await print('NOTICES         (What\'s this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)');
+      await print('');
+      for (const filtered of await filteredNotices) {
         const formatted = filtered.format();
         switch (filtered.notice.severity) {
           case 'warning':
-            warning(formatted);
+            await warning(formatted);
             break;
           case 'error':
-            error(formatted);
+            await error(formatted);
             break;
           default:
-            print(formatted);
+            await print(formatted);
         }
-        print('');
+        await print('');
       }
-      print(`If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge ${filteredNotices[0].notice.issueNumber}".`);
+      const notices = await filteredNotices;
+      await print(`If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge ${notices[0].notice.issueNumber}".`);
     }
 
     if (options.showTotal ?? false) {
-      print('');
-      print(`There are ${filteredNotices.length} unacknowledged notice(s).`);
+      await print('');
+      await print(`There are ${(await filteredNotices).length} unacknowledged notice(s).`);
     }
   }
 }
@@ -393,9 +394,9 @@ export class WebsiteNoticeDataSource implements NoticeDataSource {
     this.options = options;
   }
 
-  fetch(): Promise<Notice[]> {
+  async fetch(): Promise<Notice[]> {
     const timeout = 3000;
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       let req: ClientRequest | undefined;
 
       let timer = setTimeout(() => {
@@ -407,7 +408,7 @@ export class WebsiteNoticeDataSource implements NoticeDataSource {
       timer.unref();
 
       const options: RequestOptions = {
-        agent: AwsCliCompatible.proxyAgent(this.options),
+        agent: await AwsCliCompatible.proxyAgent(this.options),
       };
 
       try {
@@ -420,13 +421,13 @@ export class WebsiteNoticeDataSource implements NoticeDataSource {
               res.on('data', (chunk) => {
                 rawData += chunk;
               });
-              res.on('end', () => {
+              res.on('end', async () => {
                 try {
                   const data = JSON.parse(rawData).notices as Notice[];
                   if (!data) {
                     throw new ToolkitError("'notices' key is missing");
                   }
-                  debug('Notices refreshed');
+                  await debug('Notices refreshed');
                   resolve(data ?? []);
                 } catch (e: any) {
                   reject(new ToolkitError(`Failed to parse notices: ${e.message}`));
@@ -472,7 +473,7 @@ export class CachedDataSource implements NoticeDataSource {
       await this.save(freshData);
       return freshData.notices;
     } else {
-      debug(`Reading cached notices from ${this.fileName}`);
+      await debug(`Reading cached notices from ${this.fileName}`);
       return data;
     }
   }
@@ -484,7 +485,7 @@ export class CachedDataSource implements NoticeDataSource {
         notices: await this.dataSource.fetch(),
       };
     } catch (e) {
-      debug(`Could not refresh notices: ${e}`);
+      await debug(`Could not refresh notices: ${e}`);
       return {
         expiration: Date.now() + TIME_TO_LIVE_ERROR,
         notices: [],
@@ -503,7 +504,7 @@ export class CachedDataSource implements NoticeDataSource {
         ? await fs.readJSON(this.fileName) as CachedNotices
         : defaultValue;
     } catch (e) {
-      debug(`Failed to load notices from cache: ${e}`);
+      await debug(`Failed to load notices from cache: ${e}`);
       return defaultValue;
     }
   }
@@ -512,7 +513,7 @@ export class CachedDataSource implements NoticeDataSource {
     try {
       await fs.writeJSON(this.fileName, cached);
     } catch (e) {
-      debug(`Failed to store notices in the cache: ${e}`);
+      await debug(`Failed to store notices in the cache: ${e}`);
     }
   }
 }

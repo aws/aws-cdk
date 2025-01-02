@@ -13,7 +13,7 @@ export function readIfPossible(filename: string): string | undefined {
     }
     return fs.readFileSync(filename, { encoding: 'utf-8' });
   } catch (e: any) {
-    debug(e);
+    void debug(e);
     return undefined;
   }
 }

@@ -391,7 +391,7 @@ export class Deployments {
   }
 
   public async readCurrentTemplate(stackArtifact: cxapi.CloudFormationStackArtifact): Promise<Template> {
-    debug(`Reading existing template for stack ${stackArtifact.displayName}.`);
+    await debug(`Reading existing template for stack ${stackArtifact.displayName}.`);
     const env = await this.envs.accessStackForLookupBestEffort(stackArtifact);
     return loadCurrentTemplate(stackArtifact, env.sdk);
   }
@@ -399,7 +399,7 @@ export class Deployments {
   public async resourceIdentifierSummaries(
     stackArtifact: cxapi.CloudFormationStackArtifact,
   ): Promise<ResourceIdentifierSummaries> {
-    debug(`Retrieving template summary for stack ${stackArtifact.displayName}.`);
+    await debug(`Retrieving template summary for stack ${stackArtifact.displayName}.`);
     // Currently, needs to use `deploy-role` since it may need to read templates in the staging
     // bucket which have been encrypted with a KMS key (and lookup-role may not read encrypted things)
     const env = await this.envs.accessStackForReadOnlyStackOperations(stackArtifact);
@@ -429,7 +429,7 @@ export class Deployments {
 
     const response = await cfn.getTemplateSummary(cfnParam);
     if (!response.ResourceIdentifierSummaries) {
-      debug('GetTemplateSummary API call did not return "ResourceIdentifierSummaries"');
+      await debug('GetTemplateSummary API call did not return "ResourceIdentifierSummaries"');
     }
     return response.ResourceIdentifierSummaries ?? [];
   }
@@ -517,11 +517,11 @@ export class Deployments {
 
       switch (cloudFormationStack.stackStatus.rollbackChoice) {
         case RollbackChoice.NONE:
-          warning(`Stack ${deployName} does not need a rollback: ${cloudFormationStack.stackStatus}`);
+          await warning(`Stack ${deployName} does not need a rollback: ${cloudFormationStack.stackStatus}`);
           return { notInRollbackableState: true };
 
         case RollbackChoice.START_ROLLBACK:
-          debug(`Initiating rollback of stack ${deployName}`);
+          await debug(`Initiating rollback of stack ${deployName}`);
           await cfn.rollbackStack({
             StackName: deployName,
             RoleARN: executionRoleArn,
@@ -547,7 +547,7 @@ export class Deployments {
           }
 
           const skipDescription = resourcesToSkip.length > 0 ? ` (orphaning: ${resourcesToSkip.join(', ')})` : '';
-          warning(`Continuing rollback of stack ${deployName}${skipDescription}`);
+          await warning(`Continuing rollback of stack ${deployName}${skipDescription}`);
           await cfn.continueUpdateRollback({
             StackName: deployName,
             ClientRequestToken: randomUUID(),
@@ -557,7 +557,7 @@ export class Deployments {
           break;
 
         case RollbackChoice.ROLLBACK_FAILED:
-          warning(
+          await warning(
             `Stack ${deployName} failed creation and rollback. This state cannot be rolled back. You can recreate this stack by running 'cdk deploy'.`,
           );
           return { notInRollbackableState: true };
@@ -786,9 +786,9 @@ class ParallelSafeAssetProgress implements cdk_assets.IPublishProgressListener {
     private readonly quiet: boolean,
   ) {}
 
-  public onPublishEvent(type: cdk_assets.EventType, event: cdk_assets.IPublishProgress): void {
+  public async onPublishEvent(type: cdk_assets.EventType, event: cdk_assets.IPublishProgress): Promise<void> {
     const handler = this.quiet && type !== 'fail' ? debug : EVENT_TO_LOGGER[type];
-    handler(`${this.prefix}${type}: ${event.message}`);
+    await handler(`${this.prefix}${type}: ${event.message}`);
   }
 }
 

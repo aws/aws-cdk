@@ -18,17 +18,17 @@ export interface DocsOptions {
 
 export async function docs(options: DocsOptions): Promise<number> {
   const url = 'https://docs.aws.amazon.com/cdk/api/v2/';
-  print(chalk.green(url));
+  await print(chalk.green(url));
   const browserCommand = (options.browser).replace(/%u/g, url);
-  debug(`Opening documentation ${chalk.green(browserCommand)}`);
+  await debug(`Opening documentation ${chalk.green(browserCommand)}`);
   return new Promise<number>((resolve, _reject) => {
-    childProcess.exec(browserCommand, (err, stdout, stderr) => {
+    childProcess.exec(browserCommand, async (err, stdout, stderr) => {
       if (err) {
-        debug(`An error occurred when trying to open a browser: ${err.stack || err.message}`);
+        await debug(`An error occurred when trying to open a browser: ${err.stack || err.message}`);
         return resolve(0);
       }
-      if (stdout) { debug(stdout); }
-      if (stderr) { warning(stderr); }
+      if (stdout) { await debug(stdout); }
+      if (stderr) { await warning(stderr); }
       resolve(0);
     });
   });

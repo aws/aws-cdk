@@ -37,22 +37,22 @@ export function some(node: ConstructTreeNode, predicate: (n: ConstructTreeNode) 
   }
 }
 
-export function loadTree(assembly: CloudAssembly) {
+export async function loadTree(assembly: CloudAssembly) {
   try {
     const outdir = assembly.directory;
     const fileName = assembly.tree()?.file;
     return fileName ? fs.readJSONSync(path.join(outdir, fileName)).tree : {};
   } catch (e) {
-    trace(`Failed to get tree.json file: ${e}. Proceeding with empty tree.`);
+    await trace(`Failed to get tree.json file: ${e}. Proceeding with empty tree.`);
     return {};
   }
 }
 
-export function loadTreeFromDir(outdir: string) {
+export async function loadTreeFromDir(outdir: string) {
   try {
     return fs.readJSONSync(path.join(outdir, 'tree.json')).tree;
   } catch (e) {
-    trace(`Failed to get tree.json file: ${e}. Proceeding with empty tree.`);
+    await trace(`Failed to get tree.json file: ${e}. Proceeding with empty tree.`);
     return {};
   }
 }

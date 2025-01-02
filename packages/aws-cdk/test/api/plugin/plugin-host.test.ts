@@ -9,7 +9,7 @@ beforeEach(() => {
 
 const THE_PLUGIN = 'the-plugin';
 
-test('load a plugin using the PluginHost', () => {
+test('load a plugin using the PluginHost', async () => {
   const host = new PluginHost();
 
   jest.mock(THE_PLUGIN, () => {
@@ -20,7 +20,7 @@ test('load a plugin using the PluginHost', () => {
     };
   }, { virtual: true });
 
-  host.load(THE_PLUGIN);
+  await host.load(THE_PLUGIN);
 });
 
 test('fail to load a plugin using the PluginHost', () => {
@@ -34,7 +34,7 @@ test('fail to load a plugin using the PluginHost', () => {
   expect(() => host.load(THE_PLUGIN)).toThrow(/Unable to load plug-in/);
 });
 
-test('plugin that registers a Credential Provider', () => {
+test('plugin that registers a Credential Provider', async () => {
   const host = new PluginHost();
 
   jest.mock(THE_PLUGIN, () => {
@@ -52,12 +52,12 @@ test('plugin that registers a Credential Provider', () => {
     };
   }, { virtual: true });
 
-  host.load(THE_PLUGIN);
+  await host.load(THE_PLUGIN);
 
   expect(host.credentialProviderSources).toHaveLength(1);
 });
 
-test('plugin that registers a Context Provider', () => {
+test('plugin that registers a Context Provider', async () => {
   const host = new PluginHost();
 
   jest.mock(THE_PLUGIN, () => {
@@ -73,7 +73,7 @@ test('plugin that registers a Context Provider', () => {
     };
   }, { virtual: true });
 
-  host.load(THE_PLUGIN);
+  await host.load(THE_PLUGIN);
 
   expect(Object.keys(host.contextProviderPlugins)).toHaveLength(1);
 });

@@ -92,7 +92,7 @@ test('tree metadata is ignored', async () => {
   const assembly = rootBuilder.buildAssembly();
 
   const graph = new WorkGraphBuilder(true).build(assembly.artifacts);
-  expect(graph.ready().length).toEqual(0);
+  expect((await graph.ready()).length).toEqual(0);
 });
 
 test('can handle nested assemblies', async () => {
@@ -128,7 +128,8 @@ test('dependencies on unselected artifacts are silently ignored', async () => {
 
   const asm = rootBuilder.buildAssembly();
   const graph = new WorkGraphBuilder(true).build([asm.getStackArtifact('stackB')]);
-  expect(graph.ready()[0]).toEqual(expect.objectContaining({
+  const ready_graph = await graph.ready();
+  expect(ready_graph).toEqual(expect.objectContaining({
     id: 'stackB',
     dependencies: new Set(),
   }));

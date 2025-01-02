@@ -26,7 +26,7 @@ import { ToolkitError } from './toolkit/error';
  *
  * @returns the number of stacks in this stack tree that have differences, including the top-level root stack
  */
-export function printStackDiff(
+export async function printStackDiff(
   oldTemplate: any,
   newTemplate: cxapi.CloudFormationStackArtifact,
   strict: boolean,
@@ -36,7 +36,7 @@ export function printStackDiff(
   changeSet?: DescribeChangeSetOutput,
   isImport?: boolean,
   stream: FormatStream = process.stderr,
-  nestedStackTemplates?: { [nestedStackLogicalId: string]: NestedStackTemplates }): number {
+  nestedStackTemplates?: { [nestedStackLogicalId: string]: NestedStackTemplates }): Promise<number> {
   let diff = fullDiff(oldTemplate, newTemplate.template, changeSet, isImport);
 
   // must output the stack name if there are differences, even if quiet
@@ -73,10 +73,10 @@ export function printStackDiff(
       ...buildLogicalToPathMap(newTemplate),
     }, context);
   } else if (!quiet) {
-    print(chalk.green('There were no differences'));
+    await print(chalk.green('There were no differences'));
   }
   if (filteredChangesCount > 0) {
-    print(chalk.yellow(`Omitted ${filteredChangesCount} changes because they are likely mangled non-ASCII characters. Use --strict to print them.`));
+    await print(chalk.yellow(`Omitted ${filteredChangesCount} changes because they are likely mangled non-ASCII characters. Use --strict to print them.`));
   }
 
   for (const nestedStackLogicalId of Object.keys(nestedStackTemplates ?? {})) {
@@ -86,7 +86,7 @@ export function printStackDiff(
     const nestedStack = nestedStackTemplates[nestedStackLogicalId];
 
     (newTemplate as any)._template = nestedStack.generatedTemplate;
-    stackDiffCount += printStackDiff(
+    stackDiffCount += await printStackDiff(
       nestedStack.deployedTemplate,
       newTemplate,
       strict,
@@ -116,7 +116,7 @@ export enum RequireApproval {
  *
  * Returns true if the changes are prompt-worthy, false otherwise.
  */
-export function printSecurityDiff(
+export async function printSecurityDiff(
   oldTemplate: any,
   newTemplate: cxapi.CloudFormationStackArtifact,
   requireApproval: RequireApproval,
@@ -124,15 +124,15 @@ export function printSecurityDiff(
   stackName?: string,
   changeSet?: DescribeChangeSetOutput,
   stream: FormatStream = process.stderr,
-): boolean {
+): Promise<boolean> {
   const diff = fullDiff(oldTemplate, newTemplate.template, changeSet);
 
   if (diffRequiresApproval(diff, requireApproval)) {
     stream.write(format('Stack %s\n', chalk.bold(stackName)));
 
     // eslint-disable-next-line max-len
-    warning(`This deployment will make potentially sensitive changes according to your current security approval level (--require-approval ${requireApproval}).`);
-    warning('Please confirm you intend to make the following modifications:\n');
+    await warning(`This deployment will make potentially sensitive changes according to your current security approval level (--require-approval ${requireApproval}).`);
+    await warning('Please confirm you intend to make the following modifications:\n');
 
     formatSecurityChanges(process.stdout, diff, buildLogicalToPathMap(newTemplate));
     return true;

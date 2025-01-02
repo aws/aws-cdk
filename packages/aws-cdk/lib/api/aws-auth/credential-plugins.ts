@@ -48,12 +48,12 @@ export class CredentialPlugins {
         available = await source.isAvailable();
       } catch (e: any) {
         // This shouldn't happen, but let's guard against it anyway
-        warning(`Uncaught exception in ${source.name}: ${e.message}`);
+        await warning(`Uncaught exception in ${source.name}: ${e.message}`);
         available = false;
       }
 
       if (!available) {
-        debug('Credentials source %s is not available, ignoring it.', source.name);
+        await debug('Credentials source %s is not available, ignoring it.', source.name);
         continue;
       }
       triedSources.push(source);
@@ -62,13 +62,13 @@ export class CredentialPlugins {
         canProvide = await source.canProvideCredentials(awsAccountId);
       } catch (e: any) {
         // This shouldn't happen, but let's guard against it anyway
-        warning(`Uncaught exception in ${source.name}: ${e.message}`);
+        await warning(`Uncaught exception in ${source.name}: ${e.message}`);
         canProvide = false;
       }
       if (!canProvide) {
         continue;
       }
-      debug(`Using ${source.name} credentials for account ${awsAccountId}`);
+      await debug(`Using ${source.name} credentials for account ${awsAccountId}`);
 
       return {
         credentials: await v3ProviderFromPlugin(() => source.getProvider(awsAccountId, mode as ForReading | ForWriting, {

@@ -187,7 +187,7 @@ export class GarbageCollector {
     this.garbageCollectS3Assets = ['s3', 'all'].includes(props.type);
     this.garbageCollectEcrAssets = ['ecr', 'all'].includes(props.type);
 
-    debug(`${this.garbageCollectS3Assets} ${this.garbageCollectEcrAssets}`);
+    void debug(`${this.garbageCollectS3Assets} ${this.garbageCollectEcrAssets}`);
 
     this.permissionToDelete = ['delete-tagged', 'full'].includes(props.action);
     this.permissionToTag = ['tag', 'full'].includes(props.action);
@@ -241,7 +241,7 @@ export class GarbageCollector {
     const numImages = await this.numImagesInRepo(ecr, repo);
     const printer = new ProgressPrinter(numImages, 1000);
 
-    debug(`Found bootstrap repo ${repo} with ${numImages} images`);
+    await debug(`Found bootstrap repo ${repo} with ${numImages} images`);
 
     try {
       // const batches = 1;
@@ -249,7 +249,7 @@ export class GarbageCollector {
       const currentTime = Date.now();
       const graceDays = this.props.rollbackBufferDays;
 
-      debug(`Parsing through ${numImages} images in batches`);
+      await debug(`Parsing through ${numImages} images in batches`);
 
       for await (const batch of this.readRepoInBatches(ecr, repo, batchSize, currentTime)) {
         await backgroundStackRefresh.noOlderThan(600_000); // 10 mins
@@ -257,16 +257,16 @@ export class GarbageCollector {
 
         const { included: isolated, excluded: notIsolated } = partition(batch, asset => !asset.tags.some(t => activeAssets.contains(t)));
 
-        debug(`${isolated.length} isolated images`);
-        debug(`${notIsolated.length} not isolated images`);
-        debug(`${batch.length} images total`);
+        await debug(`${isolated.length} isolated images`);
+        await debug(`${notIsolated.length} not isolated images`);
+        await debug(`${batch.length} images total`);
 
         let deletables: ImageAsset[] = isolated;
         let taggables: ImageAsset[] = [];
         let untaggables: ImageAsset[] = [];
 
         if (graceDays > 0) {
-          debug('Filtering out images that are not old enough to delete');
+          await debug('Filtering out images that are not old enough to delete');
 
           // We delete images that are not referenced in ActiveAssets and have the Isolated Tag with a date
           // earlier than the current time - grace period.
@@ -279,9 +279,9 @@ export class GarbageCollector {
           untaggables = notIsolated.filter(img => img.hasIsolatedTag());
         }
 
-        debug(`${deletables.length} deletable assets`);
-        debug(`${taggables.length} taggable assets`);
-        debug(`${untaggables.length} assets to untag`);
+        await debug(`${deletables.length} deletable assets`);
+        await debug(`${taggables.length} taggable assets`);
+        await debug(`${untaggables.length} assets to untag`);
 
         if (this.permissionToDelete && deletables.length > 0) {
           await this.confirmationPrompt(printer, deletables, 'image');
@@ -301,7 +301,7 @@ export class GarbageCollector {
     } catch (err: any) {
       throw new ToolkitError(err);
     } finally {
-      printer.stop();
+      await printer.stop();
     }
   }
 
@@ -314,14 +314,14 @@ export class GarbageCollector {
     const numObjects = await this.numObjectsInBucket(s3, bucket);
     const printer = new ProgressPrinter(numObjects, 1000);
 
-    debug(`Found bootstrap bucket ${bucket} with ${numObjects} objects`);
+    await debug(`Found bootstrap bucket ${bucket} with ${numObjects} objects`);
 
     try {
       const batchSize = 1000;
       const currentTime = Date.now();
       const graceDays = this.props.rollbackBufferDays;
 
-      debug(`Parsing through ${numObjects} objects in batches`);
+      await debug(`Parsing through ${numObjects} objects in batches`);
 
       // Process objects in batches of 1000
       // This is the batch limit of s3.DeleteObject and we intend to optimize for the "worst case" scenario
@@ -332,16 +332,16 @@ export class GarbageCollector {
 
         const { included: isolated, excluded: notIsolated } = partition(batch, asset => !activeAssets.contains(asset.fileName()));
 
-        debug(`${isolated.length} isolated assets`);
-        debug(`${notIsolated.length} not isolated assets`);
-        debug(`${batch.length} objects total`);
+        await debug(`${isolated.length} isolated assets`);
+        await debug(`${notIsolated.length} not isolated assets`);
+        await debug(`${batch.length} objects total`);
 
         let deletables: ObjectAsset[] = isolated;
         let taggables: ObjectAsset[] = [];
         let untaggables: ObjectAsset[] = [];
 
         if (graceDays > 0) {
-          debug('Filtering out assets that are not old enough to delete');
+          await debug('Filtering out assets that are not old enough to delete');
           await this.parallelReadAllTags(s3, batch);
 
           // We delete objects that are not referenced in ActiveAssets and have the Isolated Tag with a date
@@ -355,9 +355,9 @@ export class GarbageCollector {
           untaggables = notIsolated.filter(obj => obj.hasIsolatedTag());
         }
 
-        debug(`${deletables.length} deletable assets`);
-        debug(`${taggables.length} taggable assets`);
-        debug(`${untaggables.length} assets to untag`);
+        await debug(`${deletables.length} deletable assets`);
+        await debug(`${taggables.length} taggable assets`);
+        await debug(`${untaggables.length} assets to untag`);
 
         if (this.permissionToDelete && deletables.length > 0) {
           await this.confirmationPrompt(printer, deletables, 'object');
@@ -377,7 +377,7 @@ export class GarbageCollector {
     } catch (err: any) {
       throw new ToolkitError(err);
     } finally {
-      printer.stop();
+      await printer.stop();
     }
   }
 
@@ -408,7 +408,7 @@ export class GarbageCollector {
       );
     }
 
-    debug(`Untagged ${untaggables.length} assets`);
+    await debug(`Untagged ${untaggables.length} assets`);
   }
 
   /**
@@ -439,7 +439,7 @@ export class GarbageCollector {
       );
     }
 
-    debug(`Untagged ${untaggables.length} assets`);
+    await debug(`Untagged ${untaggables.length} assets`);
   }
 
   /**
@@ -462,14 +462,14 @@ export class GarbageCollector {
           // This is a false negative -- an isolated asset is untagged
           // likely due to an imageTag collision. We can safely ignore,
           // and the isolated asset will be tagged next time.
-          debug(`Warning: unable to tag image ${JSON.stringify(img.tags)} with ${img.buildImageTag(i)} due to the following error: ${error}`);
+          await debug(`Warning: unable to tag image ${JSON.stringify(img.tags)} with ${img.buildImageTag(i)} due to the following error: ${error}`);
         }
       };
       await limit(() => tagEcr());
     }
 
     printer.reportTaggedAsset(taggables);
-    debug(`Tagged ${taggables.length} assets`);
+    await debug(`Tagged ${taggables.length} assets`);
   }
 
   /**
@@ -497,7 +497,7 @@ export class GarbageCollector {
     }
 
     printer.reportTaggedAsset(taggables);
-    debug(`Tagged ${taggables.length} assets`);
+    await debug(`Tagged ${taggables.length} assets`);
   }
 
   /**
@@ -522,11 +522,11 @@ export class GarbageCollector {
         });
 
         const deletedCount = batch.length;
-        debug(`Deleted ${deletedCount} assets`);
+        await debug(`Deleted ${deletedCount} assets`);
         printer.reportDeletedAsset(deletables.slice(0, deletedCount));
       }
     } catch (err) {
-      print(chalk.red(`Error deleting images: ${err}`));
+      await print(chalk.red(`Error deleting images: ${err}`));
     }
   }
 
@@ -555,11 +555,11 @@ export class GarbageCollector {
         });
 
         const deletedCount = batch.length;
-        debug(`Deleted ${deletedCount} assets`);
+        await debug(`Deleted ${deletedCount} assets`);
         printer.reportDeletedAsset(deletables.slice(0, deletedCount));
       }
     } catch (err) {
-      print(chalk.red(`Error deleting objects: ${err}`));
+      await print(chalk.red(`Error deleting objects: ${err}`));
     }
   }
 

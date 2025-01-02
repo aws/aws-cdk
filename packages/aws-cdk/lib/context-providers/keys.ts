@@ -19,7 +19,7 @@ export class KeyContextProviderPlugin implements ContextProviderPlugin {
 
   // TODO: use paginator function
   private async findKey(kms: IKMSClient, args: KeyContextQuery): Promise<AliasListEntry> {
-    debug(`Listing keys in ${args.account}:${args.region}`);
+    await debug(`Listing keys in ${args.account}:${args.region}`);
 
     let response: ListAliasesCommandOutput;
     let nextMarker: string | undefined;
@@ -52,7 +52,7 @@ export class KeyContextProviderPlugin implements ContextProviderPlugin {
       throw new Error(`Could not find any key with alias named ${args.aliasName}`);
     }
 
-    debug(`Key found ${alias.TargetKeyId}`);
+    await debug(`Key found ${alias.TargetKeyId}`);
 
     return {
       keyId: alias.TargetKeyId,

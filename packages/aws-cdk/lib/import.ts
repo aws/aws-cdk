@@ -99,19 +99,19 @@ export class ResourceImporter {
       const descr = this.describeResource(resource.logicalId);
       const idProps = contents[resource.logicalId];
       if (idProps) {
-        print('%s: importing using %s', chalk.blue(descr), chalk.blue(fmtdict(idProps)));
+        await print('%s: importing using %s', chalk.blue(descr), chalk.blue(fmtdict(idProps)));
 
         ret.importResources.push(resource);
         ret.resourceMap[resource.logicalId] = idProps;
         delete contents[resource.logicalId];
       } else {
-        print('%s: skipping', chalk.blue(descr));
+        await print('%s: skipping', chalk.blue(descr));
       }
     }
 
     const unknown = Object.keys(contents);
     if (unknown.length > 0) {
-      warning(`Unrecognized resource identifiers in mapping file: ${unknown.join(', ')}`);
+      await warning(`Unrecognized resource identifiers in mapping file: ${unknown.join(', ')}`);
     }
 
     return ret;
@@ -161,9 +161,9 @@ export class ResourceImporter {
         ? ' ✅  %s (no changes)'
         : ' ✅  %s';
 
-      success('\n' + message, this.stack.displayName);
+      await success('\n' + message, this.stack.displayName);
     } catch (e) {
-      error('\n ❌  %s failed: %s', chalk.bold(this.stack.displayName), e);
+      await error('\n ❌  %s failed: %s', chalk.bold(this.stack.displayName), e);
       throw e;
     }
   }
@@ -192,7 +192,7 @@ export class ResourceImporter {
       const offendingResources = nonAdditions.map(([logId, _]) => this.describeResource(logId));
 
       if (allowNonAdditions) {
-        warning(`Ignoring updated/deleted resources (--force): ${offendingResources.join(', ')}`);
+        await warning(`Ignoring updated/deleted resources (--force): ${offendingResources.join(', ')}`);
       } else {
         throw new ToolkitError('No resource updates or deletes are allowed on import operation. Make sure to resolve pending changes ' +
           `to existing resources, before attempting an import. Updated/deleted resources: ${offendingResources.join(', ')} (--force to override)`);
@@ -280,7 +280,7 @@ export class ResourceImporter {
     // Skip resources that do not support importing
     const resourceType = chg.resourceDiff.newResourceType;
     if (resourceType === undefined || !(resourceType in resourceIdentifiers)) {
-      warning(`${resourceName}: unsupported resource type ${resourceType}, skipping import.`);
+      await warning(`${resourceName}: unsupported resource type ${resourceType}, skipping import.`);
       return undefined;
     }
 
@@ -306,7 +306,7 @@ export class ResourceImporter {
 
     // If we got here and the user rejected any available identifiers, then apparently they don't want the resource at all
     if (satisfiedPropSets.length > 0) {
-      print(chalk.grey(`Skipping import of ${resourceName}`));
+      await print(chalk.grey(`Skipping import of ${resourceName}`));
       return undefined;
     }
 
@@ -324,7 +324,7 @@ export class ResourceImporter {
 
     // Do the input loop here
     if (preamble) {
-      print(preamble);
+      await print(preamble);
     }
     for (const idProps of idPropSets) {
       const input: Record<string, string> = {};
@@ -359,7 +359,7 @@ export class ResourceImporter {
       }
     }
 
-    print(chalk.grey(`Skipping import of ${resourceName}`));
+    await print(chalk.grey(`Skipping import of ${resourceName}`));
     return undefined;
   }
 

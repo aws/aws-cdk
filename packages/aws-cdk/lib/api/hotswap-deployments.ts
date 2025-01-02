@@ -113,7 +113,7 @@ export async function tryHotswapDeployment(
     currentTemplate.nestedStacks, hotswapPropertyOverrides,
   );
 
-  logNonHotswappableChanges(nonHotswappableChanges, hotswapMode);
+  await logNonHotswappableChanges(nonHotswappableChanges, hotswapMode);
 
   // preserve classic hotswap behavior
   if (hotswapMode === HotswapMode.FALL_BACK) {
@@ -399,7 +399,7 @@ function isCandidateForHotswapping(
 
 async function applyAllHotswappableChanges(sdk: SDK, hotswappableChanges: HotswappableChange[]): Promise<void[]> {
   if (hotswappableChanges.length > 0) {
-    print(`\n${ICON} hotswapping resources:`);
+    await print(`\n${ICON} hotswapping resources:`);
   }
   const limit = pLimit(10);
   // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
@@ -414,7 +414,7 @@ async function applyHotswappableChange(sdk: SDK, hotswapOperation: HotswappableC
   sdk.appendCustomUserAgent(customUserAgent);
 
   for (const name of hotswapOperation.resourceNames) {
-    print(`   ${ICON} %s`, chalk.bold(name));
+    await print(`   ${ICON} %s`, chalk.bold(name));
   }
 
   // if the SDK call fails, an error will be thrown by the SDK
@@ -435,13 +435,13 @@ async function applyHotswappableChange(sdk: SDK, hotswapOperation: HotswappableC
   }
 
   for (const name of hotswapOperation.resourceNames) {
-    print(`${ICON} %s %s`, chalk.bold(name), chalk.green('hotswapped!'));
+    await print(`${ICON} %s %s`, chalk.bold(name), chalk.green('hotswapped!'));
   }
 
   sdk.removeCustomUserAgent(customUserAgent);
 }
 
-function logNonHotswappableChanges(nonHotswappableChanges: NonHotswappableChange[], hotswapMode: HotswapMode): void {
+async function logNonHotswappableChanges(nonHotswappableChanges: NonHotswappableChange[], hotswapMode: HotswapMode): Promise<void> {
   if (nonHotswappableChanges.length === 0) {
     return;
   }
@@ -460,7 +460,7 @@ function logNonHotswappableChanges(nonHotswappableChanges: NonHotswappableChange
     }
   }
   if (hotswapMode === HotswapMode.HOTSWAP_ONLY) {
-    print(
+    await print(
       '\n%s %s',
       chalk.red('⚠️'),
       chalk.red(
@@ -468,19 +468,19 @@ function logNonHotswappableChanges(nonHotswappableChanges: NonHotswappableChange
       ),
     );
   } else {
-    print('\n%s %s', chalk.red('⚠️'), chalk.red('The following non-hotswappable changes were found:'));
+    await print('\n%s %s', chalk.red('⚠️'), chalk.red('The following non-hotswappable changes were found:'));
   }
 
   for (const change of nonHotswappableChanges) {
     change.rejectedChanges.length > 0
-      ? print(
+      ? await print(
         '    logicalID: %s, type: %s, rejected changes: %s, reason: %s',
         chalk.bold(change.logicalId),
         chalk.bold(change.resourceType),
         chalk.bold(change.rejectedChanges),
         chalk.red(change.reason),
       )
-      : print(
+      : await print(
         '    logicalID: %s, type: %s, reason: %s',
         chalk.bold(change.logicalId),
         chalk.bold(change.resourceType),
@@ -488,5 +488,5 @@ function logNonHotswappableChanges(nonHotswappableChanges: NonHotswappableChange
       );
   }
 
-  print(''); // newline
+  await print(''); // newline
 }

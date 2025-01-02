@@ -20,7 +20,7 @@ const THE_PLUGIN = 'the-plugin';
 
 test('plugin can return V3 compatible credentials', async () => {
   // GIVEN
-  mockCredentialFunction(() => Promise.resolve({
+  await mockCredentialFunction(() => Promise.resolve({
     accessKeyId: 'keyid',
     secretAccessKey: 'secret',
   }));
@@ -41,7 +41,7 @@ test('plugin can return V3 compatible credentials that expire', async () => {
     sessionToken: 'session',
     expiration: new Date(Date.now() + 300_000), // 5 minutes from now
   } satisfies SDKv3CompatibleCredentials));
-  mockCredentialFunction(mockProducer);
+  await mockCredentialFunction(mockProducer);
 
   // WHEN
   await fetchNow();
@@ -63,7 +63,7 @@ test('provider returning expiring credentials must keep returning the same objec
       expiration: new Date(Date.now() + 300_000), // 5 minutes from now
     } satisfies SDKv3CompatibleCredentials))
     .mockImplementationOnce(() => Promise.resolve(() => Promise.resolve({ accessKeyId: 'akid' })));
-  mockCredentialFunction(mockProducer);
+  await mockCredentialFunction(mockProducer);
 
   // WHEN
   await fetchNow();
@@ -73,7 +73,7 @@ test('provider returning expiring credentials must keep returning the same objec
 
 test('plugin can return V3 compatible credential-provider', async () => {
   // GIVEN
-  mockCredentialFunction(() => Promise.resolve(() => Promise.resolve({
+  await mockCredentialFunction(() => Promise.resolve(() => Promise.resolve({
     accessKeyId: 'keyid',
     secretAccessKey: 'secret',
   })));
@@ -90,7 +90,7 @@ test('plugin can return V2 compatible credential-provider', async () => {
   // GIVEN
   let getPromise = jest.fn().mockResolvedValue(undefined);
 
-  mockCredentialFunction(() => Promise.resolve({
+  await mockCredentialFunction(() => Promise.resolve({
     accessKeyId: 'keyid',
     secretAccessKey: 'secret',
     expired: false,
@@ -108,7 +108,7 @@ test('plugin can return V2 compatible credential-provider', async () => {
 
 test('plugin can return V2 compatible credential-provider with initially empty keys', async () => {
   // GIVEN
-  mockCredentialFunction(() => Promise.resolve({
+  await mockCredentialFunction(() => Promise.resolve({
     accessKeyId: '',
     secretAccessKey: '',
     expired: false,
@@ -128,7 +128,7 @@ test('plugin can return V2 compatible credential-provider with initially empty k
 
 test('plugin must not return something that is not a credential', async () => {
   // GIVEN
-  mockCredentialFunction(() => Promise.resolve({
+  await mockCredentialFunction(() => Promise.resolve({
     nothing: 'burger',
   } as any));
 
@@ -145,8 +145,8 @@ test('token expiration is allowed to be null', () => {
   })).toEqual(false);
 });
 
-function mockCredentialFunction(p: CredentialProviderSource['getProvider']) {
-  mockCredentialPlugin({
+async function mockCredentialFunction(p: CredentialProviderSource['getProvider']) {
+  await mockCredentialPlugin({
     name: 'test',
     canProvideCredentials() { return Promise.resolve(true); },
     isAvailable() { return Promise.resolve(true); },
@@ -156,7 +156,7 @@ function mockCredentialFunction(p: CredentialProviderSource['getProvider']) {
   });
 }
 
-function mockCredentialPlugin(p: CredentialProviderSource) {
+async function mockCredentialPlugin(p: CredentialProviderSource) {
   jest.mock(THE_PLUGIN, () => {
     return {
       version: '1',
@@ -166,7 +166,7 @@ function mockCredentialPlugin(p: CredentialProviderSource) {
     };
   }, { virtual: true });
 
-  host.load(THE_PLUGIN);
+  await host.load(THE_PLUGIN);
 }
 
 async function fetchNow() {

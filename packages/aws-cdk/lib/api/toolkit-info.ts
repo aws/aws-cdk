@@ -52,7 +52,7 @@ export abstract class ToolkitInfo {
     try {
       const stack = await stabilizeStack(cfn, stackName);
       if (!stack) {
-        debug(
+        await debug(
           "The environment %s doesn't have the CDK toolkit stack (%s) installed. Use %s to setup your environment for use with the toolkit.",
           environment.name,
           stackName,
@@ -62,7 +62,7 @@ export abstract class ToolkitInfo {
       }
       if (stack.stackStatus.isCreationFailure) {
         // Treat a "failed to create" bootstrap stack as an absent one.
-        debug(
+        await debug(
           'The environment %s has a CDK toolkit stack (%s) that failed to create. Use %s to try provisioning it again.',
           environment.name,
           stackName,

@@ -84,7 +84,7 @@ export class BootstrapStack {
       const currentVariant = this.currentToolkitInfo.variant;
       const newVariant = bootstrapVariantFromTemplate(template);
       if (currentVariant !== newVariant) {
-        logging.warning(
+        await logging.warning(
           `Bootstrap stack already exists, containing '${currentVariant}'. Not overwriting it with a template containing '${newVariant}' (use --force if you intend to overwrite)`,
         );
         return abortResponse;
@@ -94,13 +94,13 @@ export class BootstrapStack {
       const newVersion = bootstrapVersionFromTemplate(template);
       const currentVersion = this.currentToolkitInfo.version;
       if (newVersion < currentVersion) {
-        logging.warning(
+        await logging.warning(
           `Bootstrap stack already at version ${currentVersion}. Not downgrading it to version ${newVersion} (use --force if you intend to downgrade)`,
         );
         if (newVersion === 0) {
           // A downgrade with 0 as target version means we probably have a new-style bootstrap in the account,
           // and an old-style bootstrap as current target, which means the user probably forgot to put this flag in.
-          logging.warning("(Did you set the '@aws-cdk/core:newStyleStackSynthesis' feature flag in cdk.json?)");
+          await logging.warning("(Did you set the '@aws-cdk/core:newStyleStackSynthesis' feature flag in cdk.json?)");
         }
         return abortResponse;
       }

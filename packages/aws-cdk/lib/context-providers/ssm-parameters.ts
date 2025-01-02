@@ -18,7 +18,7 @@ export class SSMContextProviderPlugin implements ContextProviderPlugin {
       throw new Error('parameterName must be provided in props for SSMContextProviderPlugin');
     }
     const parameterName = args.parameterName;
-    debug(`Reading SSM parameter ${account}:${region}:${parameterName}`);
+    await debug(`Reading SSM parameter ${account}:${region}:${parameterName}`);
 
     const response = await this.getSsmParameterValue(args);
     const parameterNotFound: boolean = !response.Parameter || response.Parameter.Value === undefined;

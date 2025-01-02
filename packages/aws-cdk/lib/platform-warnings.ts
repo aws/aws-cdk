@@ -4,7 +4,7 @@ import * as logging from './logging';
 
 export async function checkForPlatformWarnings() {
   if (await hasDockerCopyBug()) {
-    logging.warning('`cdk synth` may hang in Docker on Linux 5.6-5.10. See https://github.com/aws/aws-cdk/issues/21379 for workarounds.');
+    await logging.warning('`cdk synth` may hang in Docker on Linux 5.6-5.10. See https://github.com/aws/aws-cdk/issues/21379 for workarounds.');
   }
 }
 

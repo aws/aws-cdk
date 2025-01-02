@@ -20,7 +20,7 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
     // Build request filter (map { Name -> Value } to list of [{ Name, Values }])
     const filters: Filter[] = Object.entries(args.filter).map(([tag, value]) => ({ Name: tag, Values: [value] }));
 
-    debug(`Listing VPCs in ${args.account}:${args.region}`);
+    await debug(`Listing VPCs in ${args.account}:${args.region}`);
     const response = await ec2.describeVpcs({ Filters: filters });
 
     const vpcs = response.Vpcs || [];
@@ -37,7 +37,7 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
   private async readVpcProps(ec2: IEC2Client, vpc: Vpc, args: VpcContextQuery): Promise<VpcContextResponse> {
     const vpcId = vpc.VpcId!;
 
-    debug(`Describing VPC ${vpcId}`);
+    await debug(`Describing VPC ${vpcId}`);
 
     const filters = { Filters: [{ Name: 'vpc-id', Values: [vpcId] }] };
 

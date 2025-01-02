@@ -23,38 +23,38 @@ const verifications: Array<() => boolean | Promise<boolean>> = [
 
 // ### Verifications ###
 
-function displayVersionInformation() {
-  print(`ℹ️ CDK Version: ${chalk.green(version.DISPLAY_VERSION)}`);
+async function displayVersionInformation() {
+  await print(`ℹ️ CDK Version: ${chalk.green(version.DISPLAY_VERSION)}`);
   return true;
 }
 
-function displayAwsEnvironmentVariables() {
+async function displayAwsEnvironmentVariables() {
   const keys = Object.keys(process.env).filter(s => s.startsWith('AWS_'));
   if (keys.length === 0) {
-    print('ℹ️ No AWS environment variables');
+    await print('ℹ️ No AWS environment variables');
     return true;
   }
-  print('ℹ️ AWS environment variables:');
+  await print('ℹ️ AWS environment variables:');
   for (const key of keys) {
-    print(`  - ${chalk.blue(key)} = ${chalk.green(anonymizeAwsVariable(key, process.env[key]!))}`);
+    await print(`  - ${chalk.blue(key)} = ${chalk.green(anonymizeAwsVariable(key, process.env[key]!))}`);
   }
   return true;
 }
 
-function displayCdkEnvironmentVariables() {
+async function displayCdkEnvironmentVariables() {
   const keys = Object.keys(process.env).filter(s => s.startsWith('CDK_'));
   if (keys.length === 0) {
-    print('ℹ️ No CDK environment variables');
+    await print('ℹ️ No CDK environment variables');
     return true;
   }
-  print('ℹ️ CDK environment variables:');
+  await print('ℹ️ CDK environment variables:');
   let healthy = true;
   for (const key of keys.sort()) {
     if (key === cxapi.CONTEXT_ENV || key === cxapi.CONTEXT_OVERFLOW_LOCATION_ENV || key === cxapi.OUTDIR_ENV) {
-      print(`  - ${chalk.red(key)} = ${chalk.green(process.env[key]!)} (⚠️ reserved for use by the CDK toolkit)`);
+      await print(`  - ${chalk.red(key)} = ${chalk.green(process.env[key]!)} (⚠️ reserved for use by the CDK toolkit)`);
       healthy = false;
     } else {
-      print(`  - ${chalk.blue(key)} = ${chalk.green(process.env[key]!)}`);
+      await print(`  - ${chalk.blue(key)} = ${chalk.green(process.env[key]!)}`);
     }
   }
   return healthy;

@@ -75,7 +75,7 @@ export async function provideContextValues(
       value = { [cxapi.PROVIDER_ERROR_KEY]: e.message, [TRANSIENT_CONTEXT_KEY]: true };
     }
     context.set(key, value);
-    debug(`Setting "${key}" context to ${JSON.stringify(value)}`);
+    await debug(`Setting "${key}" context to ${JSON.stringify(value)}`);
   }
 }
 

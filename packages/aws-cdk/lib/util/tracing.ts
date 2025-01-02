@@ -14,10 +14,10 @@ export function traceCall(receiver: object, _propertyKey: string, descriptor: Pr
   const fn = descriptor.value;
   const className = typeof receiver === 'function' ? receiver.name : parentClassName;
 
-  descriptor.value = function (...args: any[]) {
+  descriptor.value = async function (...args: any[]) {
     if (!ENABLED) { return fn.apply(this, args); }
 
-    debug(`[trace] ${' '.repeat(INDENT)}${className || this.constructor.name || '(anonymous)'}#${fn.name}()`);
+    await debug(`[trace] ${' '.repeat(INDENT)}${className || this.constructor.name || '(anonymous)'}#${fn.name}()`);
     INDENT += 2;
 
     const ret = fn.apply(this, args);

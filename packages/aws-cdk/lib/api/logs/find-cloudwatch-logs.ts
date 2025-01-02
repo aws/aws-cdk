@@ -44,7 +44,7 @@ export async function findCloudWatchLogGroups(
   try {
     sdk = (await new EnvironmentAccess(sdkProvider, DEFAULT_TOOLKIT_STACK_NAME).accessStackForLookup(stackArtifact)).sdk;
   } catch (e: any) {
-    debug(`Failed to access SDK environment: ${e.message}`);
+    await debug(`Failed to access SDK environment: ${e.message}`);
     sdk = (await sdkProvider.forEnvironment(resolvedEnv, Mode.ForReading)).sdk;
   }
 

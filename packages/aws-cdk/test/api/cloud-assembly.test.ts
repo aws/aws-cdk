@@ -12,7 +12,7 @@ test('do not throw when selecting stack without errors', async () => {
   const selected = await cxasm.selectStacks( { patterns: ['withouterrorsNODEPATH'] }, {
     defaultBehavior: DefaultSelection.AllStacks,
   });
-  selected.processMetadataMessages();
+  await selected.processMetadataMessages();
 
   // THEN
   expect(selected.firstStack.template.resource).toBe('noerrorresource');

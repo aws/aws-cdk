@@ -13,7 +13,7 @@ export class AZContextProviderPlugin implements ContextProviderPlugin {
   public async getValue(args: AvailabilityZonesContextQuery) {
     const region = args.region;
     const account = args.account;
-    debug(`Reading AZs for ${account}:${region}`);
+    await debug(`Reading AZs for ${account}:${region}`);
     const ec2 = (await initContextProviderSdk(this.aws, args)).ec2();
     const response = await ec2.describeAvailabilityZones({});
     if (!response.AvailabilityZones) {

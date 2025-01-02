@@ -117,8 +117,8 @@ export class WorkGraph {
   /**
    * Return the set of unblocked nodes
    */
-  public ready(): ReadonlyArray<WorkNode> {
-    this.updateReadyPool();
+  public async ready(): Promise<ReadonlyArray<WorkNode>> {
+    await this.updateReadyPool();
     return this.readyPool;
   }
 
@@ -135,7 +135,7 @@ export class WorkGraph {
       } : n;
     const totalMax = typeof n === 'number' ? n : sum(Object.values(n));
 
-    return new Promise((ok, fail) => {
+    return new Promise(async (ok, fail) => {
       let active: Record<WorkNode['type'], number> = {
         'asset-build': 0,
         'asset-publish': 0,
@@ -145,10 +145,10 @@ export class WorkGraph {
         return sum(Object.values(active));
       }
 
-      start();
+      await start();
 
-      function start() {
-        graph.updateReadyPool();
+      async function start() {
+        await graph.updateReadyPool();
 
         for (let i = 0; i < graph.readyPool.length; ) {
           const node = graph.readyPool[i];
@@ -179,14 +179,14 @@ export class WorkGraph {
           .finally(() => {
             active[x.type]--;
           })
-          .then(() => {
+          .then(async () => {
             graph.deployed(x);
-            start();
-          }).catch((err) => {
+            await start();
+          }).catch(async (err) => {
             // By recording the failure immediately as the queued task exits, we prevent the next
             // queued task from starting.
             graph.failed(x, err);
-            start();
+            await start();
           });
       }
     });
@@ -252,7 +252,7 @@ export class WorkGraph {
    * Do this in parallel, because there may be a lot of assets in an application (seen in practice: >100 assets)
    */
   public async removeUnnecessaryAssets(isUnnecessary: (x: AssetPublishNode) => Promise<boolean>) {
-    debug('Checking for previously published assets');
+    await debug('Checking for previously published assets');
 
     const publishes = this.nodesOfType('asset-publish');
 
@@ -265,7 +265,7 @@ export class WorkGraph {
       this.removeNode(assetNode);
     }
 
-    debug(`${publishes.length} total assets, ${publishes.length - alreadyPublished.length} still need to be published`);
+    await debug(`${publishes.length} total assets, ${publishes.length - alreadyPublished.length} still need to be published`);
 
     // Now also remove any asset build steps that don't have any dependencies on them anymore
     const unusedBuilds = this.nodesOfType('asset-build').filter(build => this.dependees(build).length === 0);
@@ -274,7 +274,7 @@ export class WorkGraph {
     }
   }
 
-  private updateReadyPool() {
+  private async updateReadyPool() {
     const activeCount = Object.values(this.nodes).filter((x) => x.deploymentState === DeploymentState.DEPLOYING).length;
     const pendingCount = Object.values(this.nodes).filter((x) => x.deploymentState === DeploymentState.PENDING).length;
 
@@ -296,7 +296,7 @@ export class WorkGraph {
 
     if (this.readyPool.length === 0 && activeCount === 0 && pendingCount > 0) {
       const cycle = this.findCycle() ?? ['No cycle found!'];
-      trace(`Cycle ${cycle.join(' -> ')} in graph ${this}`);
+      await trace(`Cycle ${cycle.join(' -> ')} in graph ${this}`);
       throw new Error(`Unable to make progress anymore, dependency cycle between remaining artifacts: ${cycle.join(' -> ')} (run with -vv for full graph)`);
     }
   }

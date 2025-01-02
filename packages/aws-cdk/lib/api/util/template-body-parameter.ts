@@ -53,7 +53,7 @@ export async function makeBodyParameter(
 
   const toolkitInfo = await resources.lookupToolkit();
   if (!toolkitInfo.found) {
-    error(
+    await error(
       `The template for stack "${stack.displayName}" is ${Math.round(templateJson.length / 1024)}KiB. ` +
         `Templates larger than ${LARGE_TEMPLATE_SIZE_KB}KiB must be uploaded to S3.\n` +
         'Run the following command in order to setup an S3 bucket in this environment, and then re-deploy:\n\n',
@@ -86,7 +86,7 @@ export async function makeBodyParameter(
   );
 
   const templateURL = `${toolkitInfo.bucketUrl}/${key}`;
-  debug('Storing template in S3 at:', templateURL);
+  await debug('Storing template in S3 at:', templateURL);
   return { TemplateURL: templateURL };
 }
 

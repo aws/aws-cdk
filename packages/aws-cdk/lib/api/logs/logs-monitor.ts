@@ -132,11 +132,11 @@ export class CloudWatchLogEventMonitor {
     }
     try {
       const events = flatten(await this.readNewEvents());
-      events.forEach((event) => {
-        this.print(event);
+      events.forEach(async (event) => {
+        await this.print(event);
       });
     } catch (e) {
-      error('Error occurred while monitoring logs: %s', e);
+      await error('Error occurred while monitoring logs: %s', e);
     }
 
     this.scheduleNextTick(SLEEP);
@@ -161,8 +161,8 @@ export class CloudWatchLogEventMonitor {
   /**
    * Print out a cloudwatch event
    */
-  private print(event: CloudWatchLogEvent): void {
-    print(
+  private async print(event: CloudWatchLogEvent): Promise<void> {
+    await print(
       util.format(
         '[%s] %s %s',
         chalk.blue(event.logGroupName),

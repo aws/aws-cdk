@@ -52,7 +52,7 @@ async function fetchAllStackTemplates(cfn: ICloudFormationClient, qualifier?: st
     return stacks.NextToken;
   });
 
-  debug(`Parsing through ${stackNames.length} stacks`);
+  await debug(`Parsing through ${stackNames.length} stacks`);
 
   const templates: string[] = [];
   for (const stack of stackNames) {
@@ -73,7 +73,7 @@ async function fetchAllStackTemplates(cfn: ICloudFormationClient, qualifier?: st
     }
   }
 
-  debug('Done parsing through stacks');
+  await debug('Done parsing through stacks');
 
   return templates;
 }

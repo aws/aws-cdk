@@ -36,7 +36,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
 
   // bypass "synth" if app points to a cloud assembly
   if (await fs.pathExists(app) && (await fs.stat(app)).isDirectory()) {
-    debug('--app points to a cloud assembly, so we bypass synth');
+    await debug('--app points to a cloud assembly, so we bypass synth');
 
     // Acquire a read lock on this directory
     const lock = await new RWLock(app).acquireRead();
@@ -59,7 +59,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
     throw new ToolkitError(`Could not create output directory ${outdir} (${error.message})`);
   }
 
-  debug('outdir:', outdir);
+  await debug('outdir:', outdir);
   env[cxapi.OUTDIR_ENV] = outdir;
 
   // Acquire a lock on the output directory
@@ -70,7 +70,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
     env[cxapi.CLI_ASM_VERSION_ENV] = cxschema.Manifest.version();
     env[cxapi.CLI_VERSION_ENV] = versionNumber();
 
-    debug('env:', env);
+    await debug('env:', env);
 
     const envVariableSizeLimit = os.platform() === 'win32' ? 32760 : 131072;
     const [smallContext, overflow] = splitBySize(context, spaceAvailableForContext(env, envVariableSizeLimit));
@@ -91,7 +91,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
 
     const assembly = createAssembly(outdir);
 
-    contextOverflowCleanup(contextOverflowLocation, assembly);
+    await contextOverflowCleanup(contextOverflowLocation, assembly);
 
     return { assembly, lock: await writerLock.convertToReaderLock() };
   } catch (e) {
@@ -123,11 +123,11 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
 
       proc.on('error', fail);
 
-      proc.on('exit', code => {
+      proc.on('exit', async code => {
         if (code === 0) {
           return ok();
         } else {
-          debug('failed command:', commandAndArgs);
+          await debug('failed command:', commandAndArgs);
           return fail(new ToolkitError(`Subprocess exited with error ${code}`));
         }
       });
@@ -170,12 +170,12 @@ export async function prepareDefaultEnvironment(aws: SdkProvider): Promise<{ [ke
   const env: { [key: string]: string } = { };
 
   env[cxapi.DEFAULT_REGION_ENV] = aws.defaultRegion;
-  debug(`Setting "${cxapi.DEFAULT_REGION_ENV}" environment variable to`, env[cxapi.DEFAULT_REGION_ENV]);
+  await debug(`Setting "${cxapi.DEFAULT_REGION_ENV}" environment variable to`, env[cxapi.DEFAULT_REGION_ENV]);
 
   const accountId = (await aws.defaultAccount())?.accountId;
   if (accountId) {
     env[cxapi.DEFAULT_ACCOUNT_ENV] = accountId;
-    debug(`Setting "${cxapi.DEFAULT_ACCOUNT_ENV}" environment variable to`, env[cxapi.DEFAULT_ACCOUNT_ENV]);
+    await debug(`Setting "${cxapi.DEFAULT_ACCOUNT_ENV}" environment variable to`, env[cxapi.DEFAULT_ACCOUNT_ENV]);
   }
 
   return env;
@@ -217,7 +217,7 @@ export async function prepareContext(config: Configuration, env: { [key: string]
   const bundlingStacks = config.settings.get(['bundlingStacks']) ?? ['**'];
   context[cxapi.BUNDLING_STACKS] = bundlingStacks;
 
-  debug('context:', context);
+  await debug('context:', context);
 
   return context;
 }
@@ -264,7 +264,7 @@ async function guessExecutable(commandLine: string[]) {
     try {
       fstat = await fs.stat(commandLine[0]);
     } catch {
-      debug(`Not a file: '${commandLine[0]}'. Using '${commandLine}' as command-line`);
+      await debug(`Not a file: '${commandLine[0]}'. Using '${commandLine}' as command-line`);
       return commandLine;
     }
 
@@ -280,11 +280,11 @@ async function guessExecutable(commandLine: string[]) {
   return commandLine;
 }
 
-function contextOverflowCleanup(location: string | undefined, assembly: cxapi.CloudAssembly) {
+async function contextOverflowCleanup(location: string | undefined, assembly: cxapi.CloudAssembly) {
   if (location) {
     fs.removeSync(path.dirname(location));
 
-    const tree = loadTree(assembly);
+    const tree = await loadTree(assembly);
     const frameworkDoesNotSupportContextOverflow = some(tree, node => {
       const fqn = node.constructInfo?.fqn;
       const version = node.constructInfo?.version;
@@ -295,7 +295,7 @@ function contextOverflowCleanup(location: string | undefined, assembly: cxapi.Cl
     // We're dealing with an old version of the framework here. It is unaware of the temporary
     // file, which means that it will ignore the context overflow.
     if (frameworkDoesNotSupportContextOverflow) {
-      warning('Part of the context could not be sent to the application. Please update the AWS CDK library to the latest version.');
+      await warning('Part of the context could not be sent to the application. Please update the AWS CDK library to the latest version.');
     }
   }
 }

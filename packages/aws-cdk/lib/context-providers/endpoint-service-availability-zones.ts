@@ -13,7 +13,7 @@ export class EndpointServiceAZContextProviderPlugin implements ContextProviderPl
     const region = args.region;
     const account = args.account;
     const serviceName = args.serviceName;
-    debug(`Reading AZs for ${account}:${region}:${serviceName}`);
+    await debug(`Reading AZs for ${account}:${region}:${serviceName}`);
     const ec2 = (await initContextProviderSdk(this.aws, args)).ec2();
     const response = await ec2.describeVpcEndpointServices({
       ServiceNames: [serviceName],
@@ -21,11 +21,11 @@ export class EndpointServiceAZContextProviderPlugin implements ContextProviderPl
 
     // expect a service in the response
     if (!response.ServiceDetails || response.ServiceDetails.length === 0) {
-      debug(`Could not retrieve service details for ${account}:${region}:${serviceName}`);
+      await debug(`Could not retrieve service details for ${account}:${region}:${serviceName}`);
       return [];
     }
     const azs = response.ServiceDetails[0].AvailabilityZones;
-    debug(`Endpoint service ${account}:${region}:${serviceName} is available in availability zones ${azs}`);
+    await debug(`Endpoint service ${account}:${region}:${serviceName} is available in availability zones ${azs}`);
     return azs;
   }
 }

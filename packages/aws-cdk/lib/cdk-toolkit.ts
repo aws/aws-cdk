@@ -138,7 +138,7 @@ export class CdkToolkit {
 
   public async metadata(stackName: string, json: boolean) {
     const stacks = await this.selectSingleStackByName(stackName);
-    printSerializedObject(stacks.firstStack.manifest.metadata ?? {}, json);
+    await printSerializedObject(stacks.firstStack.manifest.metadata ?? {}, json);
   }
 
   public async acknowledge(noticeId: string) {
@@ -173,8 +173,8 @@ export class CdkToolkit {
 
       const template = deserializeStructure(await fs.readFile(options.templatePath, { encoding: 'UTF-8' }));
       diffs = options.securityOnly
-        ? numberFromBool(printSecurityDiff(template, stacks.firstStack, RequireApproval.Broadening, quiet))
-        : printStackDiff(template, stacks.firstStack, strict, contextLines, quiet, undefined, undefined, false, stream);
+        ? numberFromBool(await printSecurityDiff(template, stacks.firstStack, RequireApproval.Broadening, quiet))
+        : await printStackDiff(template, stacks.firstStack, strict, contextLines, quiet, undefined, undefined, false, stream);
     } else {
       // Compare N stacks against deployed templates
       for (const stack of stacks.stackArtifacts) {
@@ -201,7 +201,7 @@ export class CdkToolkit {
               tryLookupRole: true,
             });
           } catch (e: any) {
-            debug(e.message);
+            await debug(e.message);
             if (!quiet) {
               stream.write(
                 `Checking if the stack ${stack.stackName} exists before creating the changeset has failed, will base the diff on template differences (run again with -v to see the reason)\n`,
@@ -222,7 +222,7 @@ export class CdkToolkit {
               stream,
             });
           } else {
-            debug(
+            await debug(
               `the stack '${stack.stackName}' has not been deployed to CloudFormation or describeStacks call failed, skipping changeset creation.`,
             );
           }
@@ -230,7 +230,7 @@ export class CdkToolkit {
 
         const stackCount = options.securityOnly
           ? numberFromBool(
-            printSecurityDiff(
+            await printSecurityDiff(
               currentTemplate,
               stack,
               RequireApproval.Broadening,
@@ -239,7 +239,7 @@ export class CdkToolkit {
               changeSet,
             ),
           )
-          : printStackDiff(
+          : await printStackDiff(
             currentTemplate,
             stack,
             strict,
@@ -274,7 +274,7 @@ export class CdkToolkit {
       options.ignoreNoStacks,
     );
     const elapsedSynthTime = new Date().getTime() - startSynthTime;
-    print(`\n✨  Synthesis time: ${formatTime(elapsedSynthTime)}s\n`);
+    await print(`\n✨  Synthesis time: ${formatTime(elapsedSynthTime)}s\n`);
 
     if (stackCollection.stackCount === 0) {
       // eslint-disable-next-line no-console
@@ -289,10 +289,10 @@ export class CdkToolkit {
     const parameterMap = buildParameterMap(options.parameters);
 
     if (options.hotswap !== HotswapMode.FULL_DEPLOYMENT) {
-      warning(
+      await warning(
         '⚠️ The --hotswap and --hotswap-fallback flags deliberately introduce CloudFormation drift to speed up deployments',
       );
-      warning('⚠️ They should only be used for development - never use them for your production Stacks!\n');
+      await warning('⚠️ They should only be used for development - never use them for your production Stacks!\n');
     }
 
     let hotswapPropertiesFromSettings = this.props.configuration.settings.get(['hotswap']) || {};
@@ -332,7 +332,7 @@ export class CdkToolkit {
     const deployStack = async (stackNode: StackNode) => {
       const stack = stackNode.stack;
       if (stackCollection.stackCount !== 1) {
-        highlight(stack.displayName);
+        await highlight(stack.displayName);
       }
 
       if (!stack.environment) {
@@ -345,9 +345,9 @@ export class CdkToolkit {
       if (Object.keys(stack.template.Resources || {}).length === 0) {
         // The generated stack has no resources
         if (!(await this.props.deployments.stackExists({ stack }))) {
-          warning('%s: stack has no resources, skipping deployment.', chalk.bold(stack.displayName));
+          await warning('%s: stack has no resources, skipping deployment.', chalk.bold(stack.displayName));
         } else {
-          warning('%s: stack has no resources, deleting existing stack.', chalk.bold(stack.displayName));
+          await warning('%s: stack has no resources, deleting existing stack.', chalk.bold(stack.displayName));
           await this.destroy({
             selector: { patterns: [stack.hierarchicalId] },
             exclusively: true,
@@ -362,7 +362,7 @@ export class CdkToolkit {
 
       if (requireApproval !== RequireApproval.Never) {
         const currentTemplate = await this.props.deployments.readCurrentTemplate(stack);
-        if (printSecurityDiff(currentTemplate, stack, requireApproval)) {
+        if (await printSecurityDiff(currentTemplate, stack, requireApproval)) {
           await askUserConfirmation(
             concurrency,
             '"--require-approval" is enabled and stack includes security-sensitive updates',
@@ -387,7 +387,7 @@ export class CdkToolkit {
       }
 
       const stackIndex = stacks.indexOf(stack) + 1;
-      print(`${chalk.bold(stack.displayName)}: deploying... [${stackIndex}/${stackCollection.stackCount}]`);
+      await print(`${chalk.bold(stack.displayName)}: deploying... [${stackIndex}/${stackCollection.stackCount}]`);
       const startDeployTime = new Date().getTime();
 
       let tags = options.tags;
@@ -441,7 +441,7 @@ export class CdkToolkit {
                 : `Stack is in a paused fail state (${r.status}) and command line arguments do not include "--no-rollback"`;
 
               if (options.force) {
-                warning(`${motivation}. Rolling back first (--force).`);
+                await warning(`${motivation}. Rolling back first (--force).`);
               } else {
                 await askUserConfirmation(
                   concurrency,
@@ -466,7 +466,7 @@ export class CdkToolkit {
               const motivation = 'Change includes a replacement which cannot be deployed with "--no-rollback"';
 
               if (options.force) {
-                warning(`${motivation}. Proceeding with regular deployment (--force).`);
+                await warning(`${motivation}. Proceeding with regular deployment (--force).`);
               } else {
                 await askUserConfirmation(
                   concurrency,
@@ -489,24 +489,24 @@ export class CdkToolkit {
           ? ' ✅  %s (no changes)'
           : ' ✅  %s';
 
-        success('\n' + message, stack.displayName);
+        await success('\n' + message, stack.displayName);
         elapsedDeployTime = new Date().getTime() - startDeployTime;
-        print(`\n✨  Deployment time: ${formatTime(elapsedDeployTime)}s\n`);
+        await print(`\n✨  Deployment time: ${formatTime(elapsedDeployTime)}s\n`);
 
         if (Object.keys(deployResult.outputs).length > 0) {
-          print('Outputs:');
+          await print('Outputs:');
 
           stackOutputs[stack.stackName] = deployResult.outputs;
         }
 
         for (const name of Object.keys(deployResult.outputs).sort()) {
           const value = deployResult.outputs[name];
-          print(`${chalk.cyan(stack.id)}.${chalk.cyan(name)} = ${chalk.underline(chalk.cyan(value))}`);
+          await print(`${chalk.cyan(stack.id)}.${chalk.cyan(name)} = ${chalk.underline(chalk.cyan(value))}`);
         }
 
-        print('Stack ARN:');
+        await print('Stack ARN:');
 
-        data(deployResult.stackArn);
+        await data(deployResult.stackArn);
       } catch (e: any) {
         // It has to be exactly this string because an integration test tests for
         // "bold(stackname) failed: ResourceNotReady: <error>"
@@ -533,7 +533,7 @@ export class CdkToolkit {
           });
         }
       }
-      print(`\n✨  Total time: ${formatTime(elapsedSynthTime + elapsedDeployTime)}s\n`);
+      await print(`\n✨  Total time: ${formatTime(elapsedSynthTime + elapsedDeployTime)}s\n`);
     };
 
     const assetBuildTime = options.assetBuildTime ?? AssetBuildTime.ALL_BEFORE_DEPLOY;
@@ -541,7 +541,7 @@ export class CdkToolkit {
     const concurrency = options.concurrency || 1;
     const progress = concurrency > 1 ? StackActivityProgress.EVENTS : options.progress;
     if (concurrency > 1 && options.progress && options.progress != StackActivityProgress.EVENTS) {
-      warning('⚠️ The --concurrency flag only supports --progress "events". Switching to "events".');
+      await warning('⚠️ The --concurrency flag only supports --progress "events". Switching to "events".');
     }
 
     const stacksAndTheirAssetManifests = stacks.flatMap((stack) => [
@@ -575,7 +575,7 @@ export class CdkToolkit {
     const startSynthTime = new Date().getTime();
     const stackCollection = await this.selectStacksForDeploy(options.selector, true);
     const elapsedSynthTime = new Date().getTime() - startSynthTime;
-    print(`\n✨  Synthesis time: ${formatTime(elapsedSynthTime)}s\n`);
+    await print(`\n✨  Synthesis time: ${formatTime(elapsedSynthTime)}s\n`);
 
     if (stackCollection.stackCount === 0) {
       // eslint-disable-next-line no-console
@@ -586,7 +586,7 @@ export class CdkToolkit {
     let anyRollbackable = false;
 
     for (const stack of stackCollection.stackArtifacts) {
-      print('Rolling back %s', chalk.bold(stack.displayName));
+      await print('Rolling back %s', chalk.bold(stack.displayName));
       const startRollbackTime = new Date().getTime();
       try {
         const result = await this.props.deployments.rollbackStack({
@@ -601,9 +601,9 @@ export class CdkToolkit {
           anyRollbackable = true;
         }
         const elapsedRollbackTime = new Date().getTime() - startRollbackTime;
-        print('\n✨  Rollback time: %ss\n', formatTime(elapsedRollbackTime).toString());
+        await print('\n✨  Rollback time: %ss\n', formatTime(elapsedRollbackTime).toString());
       } catch (e: any) {
-        error('\n ❌  %s failed: %s', chalk.bold(stack.displayName), e.message);
+        await error('\n ❌  %s failed: %s', chalk.bold(stack.displayName), e.message);
         throw new ToolkitError('Rollback failed (use --force to orphan failing resources)');
       }
     }
@@ -614,7 +614,7 @@ export class CdkToolkit {
 
   public async watch(options: WatchOptions) {
     const rootDir = path.dirname(path.resolve(PROJECT_CONFIG));
-    debug("root directory used for 'watch' is: %s", rootDir);
+    await debug("root directory used for 'watch' is: %s", rootDir);
 
     const watchSettings: { include?: string | string[]; exclude: string | string[] } | undefined =
       this.props.configuration.settings.get(['watch']);
@@ -634,7 +634,7 @@ export class CdkToolkit {
       rootDir,
       returnRootDirIfEmpty: true,
     });
-    debug("'include' patterns for 'watch': %s", watchIncludes);
+    await debug("'include' patterns for 'watch': %s", watchIncludes);
 
     // For the "exclude" subkey under the "watch" key,
     // the behavior is to add some default excludes in addition to the ones specified by the user:
@@ -647,7 +647,7 @@ export class CdkToolkit {
       rootDir,
       returnRootDirIfEmpty: false,
     }).concat(`${outputDir}/**`, '**/.*', '**/.*/**', '**/node_modules/**');
-    debug("'exclude' patterns for 'watch': %s", watchExcludes);
+    await debug("'exclude' patterns for 'watch': %s", watchExcludes);
 
     // Since 'cdk deploy' is a relatively slow operation for a 'watch' process,
     // introduce a concurrency latch that tracks the state.
@@ -675,7 +675,7 @@ export class CdkToolkit {
         // TypeScript doesn't realize latch can change between 'awaits',
         // and thinks the above 'while' condition is always 'false' without the cast
         latch = 'deploying';
-        print("Detected file changes during deployment. Invoking 'cdk deploy' again");
+        await print("Detected file changes during deployment. Invoking 'cdk deploy' again");
         await this.invokeDeployFromWatch(options, cloudWatchLogMonitor);
       }
       latch = 'open';
@@ -690,20 +690,20 @@ export class CdkToolkit {
       })
       .on('ready', async () => {
         latch = 'open';
-        debug("'watch' received the 'ready' event. From now on, all file changes will trigger a deployment");
-        print("Triggering initial 'cdk deploy'");
+        await debug("'watch' received the 'ready' event. From now on, all file changes will trigger a deployment");
+        await print("Triggering initial 'cdk deploy'");
         await deployAndWatch();
       })
       .on('all', async (event: 'add' | 'addDir' | 'change' | 'unlink' | 'unlinkDir', filePath?: string) => {
         if (latch === 'pre-ready') {
-          print(`'watch' is observing ${event === 'addDir' ? 'directory' : 'the file'} '%s' for changes`, filePath);
+          await print(`'watch' is observing ${event === 'addDir' ? 'directory' : 'the file'} '%s' for changes`, filePath);
         } else if (latch === 'open') {
-          print("Detected change to '%s' (type: %s). Triggering 'cdk deploy'", filePath, event);
+          await print("Detected change to '%s' (type: %s). Triggering 'cdk deploy'", filePath, event);
           await deployAndWatch();
         } else {
           // this means latch is either 'deploying' or 'queued'
           latch = 'queued';
-          print(
+          await print(
             "Detected change to '%s' (type: %s) while 'cdk deploy' is still running. " +
               'Will queue for another deployment after this one finishes',
             filePath,
@@ -728,12 +728,12 @@ export class CdkToolkit {
 
     const stack = stacks.stackArtifacts[0];
 
-    highlight(stack.displayName);
+    await highlight(stack.displayName);
 
     const resourceImporter = new ResourceImporter(stack, this.props.deployments);
     const { additions, hasNonAdditions } = await resourceImporter.discoverImportableResources(options.force);
     if (additions.length === 0) {
-      warning(
+      await warning(
         '%s: no new resources compared to the currently deployed stack, skipping import.',
         chalk.bold(stack.displayName),
       );
@@ -746,7 +746,7 @@ export class CdkToolkit {
       : await resourceImporter.loadResourceIdentifiers(additions, options.resourceMappingFile);
 
     if (actualImport.importResources.length === 0) {
-      warning('No resources selected for import.');
+      await warning('No resources selected for import.');
       return;
     }
 
@@ -758,12 +758,12 @@ export class CdkToolkit {
         spaces: 2,
         encoding: 'utf8',
       });
-      print('%s: mapping file written.', outputFile);
+      await print('%s: mapping file written.', outputFile);
       return;
     }
 
     // Import the resources according to the given mapping
-    print('%s: importing resources into stack...', chalk.bold(stack.displayName));
+    await print('%s: importing resources into stack...', chalk.bold(stack.displayName));
     const tags = tagsForStack(stack);
     await resourceImporter.importResourcesFromMap(actualImport, {
       roleArn: options.roleArn,
@@ -776,7 +776,7 @@ export class CdkToolkit {
     });
 
     // Notify user of next steps
-    print(
+    await print(
       `Import operation complete. We recommend you run a ${chalk.blueBright('drift detection')} operation ` +
         'to confirm your CDK app resource definitions are up-to-date. Read more here: ' +
         chalk.underline.blueBright(
@@ -784,13 +784,13 @@ export class CdkToolkit {
         ),
     );
     if (actualImport.importResources.length < additions.length) {
-      print('');
-      warning(
+      await print('');
+      await warning(
         `Some resources were skipped. Run another ${chalk.blueBright('cdk import')} or a ${chalk.blueBright('cdk deploy')} to bring the stack up-to-date with your CDK app definition.`,
       );
     } else if (hasNonAdditions) {
-      print('');
-      warning(
+      await print('');
+      await warning(
         `Your app has pending updates or deletes excluded from this import operation. Run a ${chalk.blueBright('cdk deploy')} to bring the stack up-to-date with your CDK app definition.`,
       );
     }
@@ -814,7 +814,7 @@ export class CdkToolkit {
 
     const action = options.fromDeploy ? 'deploy' : 'destroy';
     for (const [index, stack] of stacks.stackArtifacts.entries()) {
-      success('%s: destroying... [%s/%s]', chalk.blue(stack.displayName), index + 1, stacks.stackCount);
+      await success('%s: destroying... [%s/%s]', chalk.blue(stack.displayName), index + 1, stacks.stackCount);
       try {
         await this.props.deployments.destroyStack({
           stack,
@@ -822,9 +822,9 @@ export class CdkToolkit {
           roleArn: options.roleArn,
           ci: options.ci,
         });
-        success(`\n ✅  %s: ${action}ed`, chalk.blue(stack.displayName));
+        await success(`\n ✅  %s: ${action}ed`, chalk.blue(stack.displayName));
       } catch (e) {
-        error(`\n ❌  %s: ${action} failed`, chalk.blue(stack.displayName), e);
+        await error(`\n ❌  %s: ${action} failed`, chalk.blue(stack.displayName), e);
         throw e;
       }
     }
@@ -839,7 +839,7 @@ export class CdkToolkit {
     });
 
     if (options.long && options.showDeps) {
-      printSerializedObject(stacks, options.json ?? false);
+      await printSerializedObject(stacks, options.json ?? false);
       return 0;
     }
 
@@ -853,7 +853,7 @@ export class CdkToolkit {
         });
       }
 
-      printSerializedObject(stackDeps, options.json ?? false);
+      await printSerializedObject(stackDeps, options.json ?? false);
       return 0;
     }
 
@@ -867,13 +867,13 @@ export class CdkToolkit {
           environment: stack.environment,
         });
       }
-      printSerializedObject(long, options.json ?? false);
+      await printSerializedObject(long, options.json ?? false);
       return 0;
     }
 
     // just print stack IDs
     for (const stack of stacks) {
-      data(stack.id);
+      await data(stack.id);
     }
 
     return 0; // exit-code
@@ -900,14 +900,14 @@ export class CdkToolkit {
     // if we have a single stack, print it to STDOUT
     if (stacks.stackCount === 1) {
       if (!quiet) {
-        printSerializedObject(obscureTemplate(stacks.firstStack.template), json ?? false);
+        await printSerializedObject(obscureTemplate(stacks.firstStack.template), json ?? false);
       }
       return undefined;
     }
 
     // not outputting template to stdout, let's explain things to the user a little bit...
-    success(`Successfully synthesized to ${chalk.blue(path.resolve(stacks.assembly.directory))}`);
-    print(
+    await success(`Successfully synthesized to ${chalk.blue(path.resolve(stacks.assembly.directory))}`);
+    await print(
       `Supply a stack id (${stacks.stackArtifacts.map((s) => chalk.green(s.hierarchicalId)).join(', ')}) to display its template.`,
     );
 
@@ -935,15 +935,15 @@ export class CdkToolkit {
 
     // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
     await Promise.all(environments.map((environment) => limit(async () => {
-      success(' ⏳  Bootstrapping environment %s...', chalk.blue(environment.name));
+      await success(' ⏳  Bootstrapping environment %s...', chalk.blue(environment.name));
       try {
         const result = await bootstrapper.bootstrapEnvironment(environment, this.props.sdkProvider, options);
         const message = result.noOp
           ? ' ✅  Environment %s bootstrapped (no changes).'
           : ' ✅  Environment %s bootstrapped.';
-        success(message, chalk.blue(environment.name));
+        await success(message, chalk.blue(environment.name));
       } catch (e) {
-        error(' ❌  Environment %s failed bootstrapping: %s', chalk.blue(environment.name), e);
+        await error(' ❌  Environment %s failed bootstrapping: %s', chalk.blue(environment.name), e);
         throw e;
       }
     })));
@@ -957,7 +957,7 @@ export class CdkToolkit {
     const environments = await this.defineEnvironments(userEnvironmentSpecs);
 
     for (const environment of environments) {
-      success(' ⏳  Garbage Collecting environment %s...', chalk.blue(environment.name));
+      await success(' ⏳  Garbage Collecting environment %s...', chalk.blue(environment.name));
       const gc = new GarbageCollector({
         sdkProvider: this.props.sdkProvider,
         resolvedEnvironment: environment,
@@ -1009,7 +1009,7 @@ export class CdkToolkit {
    * @param options Options for CDK app creation
    */
   public async migrate(options: MigrateOptions): Promise<void> {
-    warning('This command is an experimental feature.');
+    await warning('This command is an experimental feature.');
     const language = options.language?.toLowerCase() ?? 'typescript';
     const environment = setEnvironment(options.account, options.region);
     let generateTemplateOutput: GenerateTemplateOutput | undefined;
@@ -1067,13 +1067,13 @@ export class CdkToolkit {
         throw new ToolkitError(`Invalid source option provided: ${scanType}`);
       }
       const stack = generateStack(generateTemplateOutput.migrateJson.templateBody, options.stackName, language);
-      success(' ⏳  Generating CDK app for %s...', chalk.blue(options.stackName));
+      await success(' ⏳  Generating CDK app for %s...', chalk.blue(options.stackName));
       await generateCdkApp(options.stackName, stack!, language, options.outputPath, options.compress);
       if (generateTemplateOutput) {
         writeMigrateJsonFile(options.outputPath, options.stackName, generateTemplateOutput.migrateJson);
       }
       if (isThereAWarning(generateTemplateOutput)) {
-        warning(
+        await warning(
           ' ⚠️  Some resources could not be migrated completely. Please review the README.md file for more information.',
         );
         appendWarningsToReadme(
@@ -1082,7 +1082,7 @@ export class CdkToolkit {
         );
       }
     } catch (e) {
-      error(' ❌  Migrate failed for `%s`: %s', options.stackName, (e as Error).message);
+      await error(' ❌  Migrate failed for `%s`: %s', options.stackName, (e as Error).message);
       throw e;
     } finally {
       if (templateToDelete) {
@@ -1119,7 +1119,7 @@ export class CdkToolkit {
     });
 
     this.validateStacksSelected(stacks, selector.patterns);
-    this.validateStacks(stacks);
+    await this.validateStacks(stacks);
 
     return stacks;
   }
@@ -1145,7 +1145,7 @@ export class CdkToolkit {
       : new StackCollection(assembly, []);
 
     this.validateStacksSelected(selectedForDiff.concat(autoValidateStacks), stackNames);
-    this.validateStacks(selectedForDiff.concat(autoValidateStacks));
+    await this.validateStacks(selectedForDiff.concat(autoValidateStacks));
 
     return selectedForDiff;
   }
@@ -1165,8 +1165,8 @@ export class CdkToolkit {
   /**
    * Validate the stacks for errors and warnings according to the CLI's current settings
    */
-  private validateStacks(stacks: StackCollection) {
-    stacks.processMetadataMessages({
+  private async validateStacks(stacks: StackCollection) {
+    await stacks.processMetadataMessages({
       ignoreErrors: this.props.ignoreErrors,
       strict: this.props.strict,
       verbose: this.props.verbose,
@@ -1264,13 +1264,13 @@ export class CdkToolkit {
     const resourcesToImport = await this.tryGetResources(await migrateDeployment.resolveEnvironment());
 
     if (resourcesToImport) {
-      print('%s: creating stack for resource migration...', chalk.bold(stack.displayName));
-      print('%s: importing resources into stack...', chalk.bold(stack.displayName));
+      await print('%s: creating stack for resource migration...', chalk.bold(stack.displayName));
+      await print('%s: importing resources into stack...', chalk.bold(stack.displayName));
 
       await this.performResourceMigration(migrateDeployment, resourcesToImport, options);
 
       fs.rmSync('migrate.json');
-      print('%s: applying CDKMetadata and Outputs to stack (if applicable)...', chalk.bold(stack.displayName));
+      await print('%s: applying CDKMetadata and Outputs to stack (if applicable)...', chalk.bold(stack.displayName));
     }
   }
 
@@ -1296,7 +1296,7 @@ export class CdkToolkit {
     });
 
     elapsedDeployTime = new Date().getTime() - startDeployTime;
-    print('\n✨  Resource migration time: %ss\n', formatTime(elapsedDeployTime));
+    await print('\n✨  Resource migration time: %ss\n', formatTime(elapsedDeployTime));
   }
 
   private async tryGetResources(environment: cxapi.Environment): Promise<ResourcesToImport | undefined> {
@@ -1322,8 +1322,8 @@ export class CdkToolkit {
 /**
  * Print a serialized object (YAML or JSON) to stdout.
  */
-function printSerializedObject(obj: any, json: boolean) {
-  data(serializeStructure(obj, json));
+async function printSerializedObject(obj: any, json: boolean) {
+  await data(serializeStructure(obj, json));
 }
 
 export interface DiffOptions {

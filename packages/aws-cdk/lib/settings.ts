@@ -148,7 +148,7 @@ export class Configuration {
       .merge(this.commandLineArguments)
       .makeReadOnly();
 
-    debug('merged settings:', this.settings.all);
+    await debug('merged settings:', this.settings.all);
 
     this.loaded = true;
 
@@ -171,7 +171,7 @@ async function loadAndLog(fileName: string): Promise<Settings> {
   const ret = new Settings();
   await ret.load(fileName);
   if (!ret.empty) {
-    debug(fileName + ':', JSON.stringify(ret.all, undefined, 2));
+    await debug(fileName + ':', JSON.stringify(ret.all, undefined, 2));
   }
   return ret;
 }
@@ -357,19 +357,19 @@ export class Settings {
     return ret;
   }
 
-  private static parseStringContextListToObject(argv: Arguments): any {
+  private static async parseStringContextListToObject(argv: Arguments): Promise<any> {
     const context: any = {};
 
     for (const assignment of ((argv as any).context || [])) {
       const parts = assignment.split(/=(.*)/, 2);
       if (parts.length === 2) {
-        debug('CLI argument context: %s=%s', parts[0], parts[1]);
+        await debug('CLI argument context: %s=%s', parts[0], parts[1]);
         if (parts[0].match(/^aws:.+/)) {
           throw new ToolkitError(`User-provided context cannot use keys prefixed with 'aws:', but ${parts[0]} was provided.`);
         }
         context[parts[0]] = parts[1];
       } else {
-        warning('Context argument is not an assignment (key=value): %s', assignment);
+        await warning('Context argument is not an assignment (key=value): %s', assignment);
       }
     }
     return context;
@@ -381,7 +381,7 @@ export class Settings {
    * Return undefined if no tags were provided, return an empty array if only empty
    * strings were provided
    */
-  private static parseStringTagsListToObject(argTags: string[] | undefined): Tag[] | undefined {
+  private static async parseStringTagsListToObject(argTags: string[] | undefined): Promise<Tag[] | undefined> {
     if (argTags === undefined) { return undefined; }
     if (argTags.length === 0) { return undefined; }
     const nonEmptyTags = argTags.filter(t => t !== '');
@@ -392,13 +392,13 @@ export class Settings {
     for (const assignment of nonEmptyTags) {
       const parts = assignment.split(/=(.*)/, 2);
       if (parts.length === 2) {
-        debug('CLI argument tags: %s=%s', parts[0], parts[1]);
+        await debug('CLI argument tags: %s=%s', parts[0], parts[1]);
         tags.push({
           Key: parts[0],
           Value: parts[1],
         });
       } else {
-        warning('Tags argument is not an assignment (key=value): %s', assignment);
+        await warning('Tags argument is not an assignment (key=value): %s', assignment);
       }
     }
     return tags.length > 0 ? tags : undefined;
@@ -420,7 +420,7 @@ export class Settings {
     // See https://github.com/aws/aws-cdk/issues/59
     this.prohibitContextKey('default-account', fileName);
     this.prohibitContextKey('default-region', fileName);
-    this.warnAboutContextKey('aws:', fileName);
+    await this.warnAboutContextKey('aws:', fileName);
 
     return this;
   }
@@ -487,12 +487,12 @@ export class Settings {
     }
   }
 
-  private warnAboutContextKey(prefix: string, fileName: string) {
+  private async warnAboutContextKey(prefix: string, fileName: string) {
     if (!this.settings.context) { return; }
     for (const contextKey of Object.keys(this.settings.context)) {
       if (contextKey.startsWith(prefix)) {
         // eslint-disable-next-line max-len
-        warning(`A reserved context key ('context.${prefix}') key was found in ${fs_path.resolve(fileName)}, it might cause surprising behavior and should be removed.`);
+        await warning(`A reserved context key ('context.${prefix}') key was found in ${fs_path.resolve(fileName)}, it might cause surprising behavior and should be removed.`);
       }
     }
   }

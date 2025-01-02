@@ -91,14 +91,14 @@ export class CloudExecutable {
 
         let tryLookup = true;
         if (previouslyMissingKeys && setsEqual(missingKeys, previouslyMissingKeys)) {
-          debug('Not making progress trying to resolve environmental context. Giving up.');
+          await debug('Not making progress trying to resolve environmental context. Giving up.');
           tryLookup = false;
         }
 
         previouslyMissingKeys = missingKeys;
 
         if (tryLookup) {
-          debug('Some context information is missing. Fetching...');
+          await debug('Some context information is missing. Fetching...');
 
           await contextproviders.provideContextValues(
             assembly.manifest.missing,
@@ -169,7 +169,7 @@ export class CloudExecutable {
           stack.template.Conditions[condName] = _makeCdkMetadataAvailableCondition();
           stack.template.Resources.CDKMetadata.Condition = condName;
         } else {
-          warning(`The stack ${stack.id} already includes a ${condName} condition`);
+          await warning(`The stack ${stack.id} already includes a ${condName} condition`);
         }
       }
 

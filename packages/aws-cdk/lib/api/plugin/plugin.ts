@@ -38,20 +38,20 @@ export class PluginHost implements IPluginHost {
    *
    * @param moduleSpec the specification (path or name) of the plug-in module to be loaded.
    */
-  public load(moduleSpec: string) {
+  public async load(moduleSpec: string) {
     try {
       /* eslint-disable @typescript-eslint/no-require-imports */
       const plugin = require(moduleSpec);
       /* eslint-enable */
       if (!isPlugin(plugin)) {
-        error(`Module ${chalk.green(moduleSpec)} is not a valid plug-in, or has an unsupported version.`);
+        await error(`Module ${chalk.green(moduleSpec)} is not a valid plug-in, or has an unsupported version.`);
         throw new ToolkitError(`Module ${moduleSpec} does not define a valid plug-in.`);
       }
       if (plugin.init) {
         plugin.init(this);
       }
     } catch (e: any) {
-      error(`Unable to load ${chalk.green(moduleSpec)}: ${e.stack}`);
+      await error(`Unable to load ${chalk.green(moduleSpec)}: ${e.stack}`);
       throw new ToolkitError(`Unable to load plug-in: ${moduleSpec}: ${e}`);
     }
 

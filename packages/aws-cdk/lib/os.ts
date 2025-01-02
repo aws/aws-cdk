@@ -11,7 +11,7 @@ import { ToolkitError } from './toolkit/error';
  */
 export async function shell(command: string[]): Promise<string> {
   const commandLine = renderCommandLine(command);
-  debug(`Executing ${chalk.blue(commandLine)}`);
+  await debug(`Executing ${chalk.blue(commandLine)}`);
   const child = child_process.spawn(command[0], renderArguments(command.slice(1)), {
     // Need this for Windows where we want .cmd and .bat to be found as well.
     shell: true,

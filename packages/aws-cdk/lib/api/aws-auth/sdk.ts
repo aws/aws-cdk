@@ -948,7 +948,7 @@ export class SDK {
       const creds = await this.credProvider();
       return SDK.accountCache.fetch(creds.accessKeyId, async () => {
         // if we don't have one, resolve from STS and store in cache.
-        debug('Looking up default account ID from STS');
+        await debug('Looking up default account ID from STS');
         const client = new STSClient({
           ...this.config,
           retryStrategy: this.stsRetryStrategy,
@@ -960,7 +960,7 @@ export class SDK {
         if (!accountId) {
           throw new AuthenticationError("STS didn't return an account ID");
         }
-        debug('Default account ID:', accountId);
+        await debug('Default account ID:', accountId);
 
         // Save another STS call later if this one already succeeded
         this._credentialsValidated = true;

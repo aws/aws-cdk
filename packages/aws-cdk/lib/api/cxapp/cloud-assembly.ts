@@ -122,11 +122,11 @@ export class CloudAssembly {
     }
   }
 
-  private selectTopLevelStacks(
+  private async selectTopLevelStacks(
     stacks: cxapi.CloudFormationStackArtifact[],
     topLevelStacks: cxapi.CloudFormationStackArtifact[],
     extend: ExtendedStackSelection = ExtendedStackSelection.None,
-  ): StackCollection {
+  ): Promise<StackCollection> {
     if (topLevelStacks.length > 0) {
       return this.extendStacks(topLevelStacks, stacks, extend);
     } else {
@@ -134,11 +134,11 @@ export class CloudAssembly {
     }
   }
 
-  private selectMatchingStacks(
+  private async selectMatchingStacks(
     stacks: cxapi.CloudFormationStackArtifact[],
     patterns: string[],
     extend: ExtendedStackSelection = ExtendedStackSelection.None,
-  ): StackCollection {
+  ): Promise<StackCollection> {
 
     const matchingPattern = (pattern: string) => (stack: cxapi.CloudFormationStackArtifact) => minimatch(stack.hierarchicalId, pattern);
     const matchedStacks = flatten(patterns.map(pattern => stacks.filter(matchingPattern(pattern))));
@@ -170,7 +170,7 @@ export class CloudAssembly {
     }
   }
 
-  private extendStacks(
+  private async extendStacks(
     matched: cxapi.CloudFormationStackArtifact[],
     all: cxapi.CloudFormationStackArtifact[],
     extend: ExtendedStackSelection = ExtendedStackSelection.None,
@@ -184,10 +184,10 @@ export class CloudAssembly {
 
     switch (extend) {
       case ExtendedStackSelection.Downstream:
-        includeDownstreamStacks(index, allStacks);
+        await includeDownstreamStacks(index, allStacks);
         break;
       case ExtendedStackSelection.Upstream:
-        includeUpstreamStacks(index, allStacks);
+        await includeUpstreamStacks(index, allStacks);
         break;
     }
 
@@ -248,7 +248,7 @@ export class StackCollection {
   /**
    * Extracts 'aws:cdk:warning|info|error' metadata entries from the stack synthesis
    */
-  public processMetadataMessages(options: MetadataMessageOptions = {}) {
+  public async processMetadataMessages(options: MetadataMessageOptions = {}) {
     let warnings = false;
     let errors = false;
 
@@ -257,14 +257,14 @@ export class StackCollection {
         switch (message.level) {
           case cxapi.SynthesisMessageLevel.WARNING:
             warnings = true;
-            printMessage(warning, 'Warning', message.id, message.entry);
+            await printMessage(warning, 'Warning', message.id, message.entry);
             break;
           case cxapi.SynthesisMessageLevel.ERROR:
             errors = true;
-            printMessage(error, 'Error', message.id, message.entry);
+            await printMessage(error, 'Error', message.id, message.entry);
             break;
           case cxapi.SynthesisMessageLevel.INFO:
-            printMessage(print, 'Info', message.id, message.entry);
+            await printMessage(print, 'Info', message.id, message.entry);
             break;
         }
       }
@@ -278,7 +278,7 @@ export class StackCollection {
       throw new ToolkitError('Found warnings (--strict mode)');
     }
 
-    function printMessage(logFn: (s: string) => void, prefix: string, id: string, entry: cxapi.MetadataEntry) {
+    async function printMessage(logFn: (s: string) => void, prefix: string, id: string, entry: cxapi.MetadataEntry) {
       logFn(`[${prefix} at ${id}] ${entry.data}`);
 
       if (options.verbose && entry.trace) {
@@ -326,7 +326,7 @@ function indexByHierarchicalId(stacks: cxapi.CloudFormationStackArtifact[]): Map
  *
  * Modifies `selectedStacks` in-place.
  */
-function includeDownstreamStacks(
+async function includeDownstreamStacks(
   selectedStacks: Map<string, cxapi.CloudFormationStackArtifact>,
   allStacks: Map<string, cxapi.CloudFormationStackArtifact>) {
   const added = new Array<string>();
@@ -346,7 +346,7 @@ function includeDownstreamStacks(
   } while (madeProgress);
 
   if (added.length > 0) {
-    print('Including depending stacks: %s', chalk.bold(added.join(', ')));
+    await print('Including depending stacks: %s', chalk.bold(added.join(', ')));
   }
 }
 
@@ -355,7 +355,7 @@ function includeDownstreamStacks(
  *
  * Modifies `selectedStacks` in-place.
  */
-function includeUpstreamStacks(
+async function includeUpstreamStacks(
   selectedStacks: Map<string, cxapi.CloudFormationStackArtifact>,
   allStacks: Map<string, cxapi.CloudFormationStackArtifact>) {
   const added = new Array<string>();
@@ -376,7 +376,7 @@ function includeUpstreamStacks(
   }
 
   if (added.length > 0) {
-    print('Including dependency stacks: %s', chalk.bold(added.join(', ')));
+    await print('Including dependency stacks: %s', chalk.bold(added.join(', ')));
   }
 }
 

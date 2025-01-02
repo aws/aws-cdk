@@ -128,7 +128,7 @@ export class Bootstrapper {
       // Would leave AdministratorAccess policies with a trust relationship, without the user explicitly
       // approving the trust policy.
       const implicitPolicy = `arn:${partition}:iam::aws:policy/AdministratorAccess`;
-      warning(
+      await warning(
         `Using default execution policy of '${implicitPolicy}'. Pass '--cloudformation-execution-policies' to customize.`,
       );
     } else if (cloudFormationExecutionPolicies.length === 0) {
@@ -176,11 +176,11 @@ export class Bootstrapper {
     }
     if (currentPermissionsBoundary !== policyName) {
       if (!currentPermissionsBoundary) {
-        warning(`Adding new permissions boundary ${policyName}`);
+        await warning(`Adding new permissions boundary ${policyName}`);
       } else if (!policyName) {
-        warning(`Removing existing permissions boundary ${currentPermissionsBoundary}`);
+        await warning(`Removing existing permissions boundary ${currentPermissionsBoundary}`);
       } else {
-        warning(`Changing permissions boundary from ${currentPermissionsBoundary} to ${policyName}`);
+        await warning(`Changing permissions boundary from ${currentPermissionsBoundary} to ${policyName}`);
       }
     }
 

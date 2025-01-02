@@ -45,12 +45,12 @@ export async function cliInit(options: CliInitOptions) {
   }
   if (!options.language && template.languages.length === 1) {
     const language = template.languages[0];
-    warning(
+    await warning(
       `No --language was provided, but '${type}' supports only '${language}', so defaulting to --language=${language}`,
     );
   }
   if (!options.language) {
-    print(`Available languages for ${chalk.green(type)}: ${template.languages.map((l) => chalk.blue(l)).join(', ')}`);
+    await print(`Available languages for ${chalk.green(type)}: ${template.languages.map((l) => chalk.blue(l)).join(', ')}`);
     throw new ToolkitError('No language was selected');
   }
 
@@ -116,7 +116,7 @@ export class InitTemplate {
    */
   public async install(language: string, targetDirectory: string, stackName?: string) {
     if (this.languages.indexOf(language) === -1) {
-      error(
+      await error(
         `The ${chalk.blue(language)} language is not supported for ${chalk.green(this.name)} ` +
           `(it supports: ${this.languages.map((l) => chalk.blue(l)).join(', ')})`,
       );
@@ -295,18 +295,18 @@ async function listDirectory(dirPath: string) {
 }
 
 export async function printAvailableTemplates(language?: string) {
-  print('Available templates:');
+  await print('Available templates:');
   for (const template of await availableInitTemplates()) {
     if (language && template.languages.indexOf(language) === -1) {
       continue;
     }
-    print(`* ${chalk.green(template.name)}: ${template.description}`);
+    await print(`* ${chalk.green(template.name)}: ${template.description}`);
     const languageArg = language
       ? chalk.bold(language)
       : template.languages.length > 1
         ? `[${template.languages.map((t) => chalk.bold(t)).join('|')}]`
         : chalk.bold(template.languages[0]);
-    print(`   └─ ${chalk.blue(`cdk init ${chalk.bold(template.name)} --language=${languageArg}`)}`);
+    await print(`   └─ ${chalk.blue(`cdk init ${chalk.bold(template.name)} --language=${languageArg}`)}`);
   }
 }
 
@@ -320,14 +320,14 @@ async function initializeProject(
   migrate?: boolean,
 ) {
   await assertIsEmptyDirectory(workDir);
-  print(`Applying project template ${chalk.green(template.name)} for ${chalk.blue(language)}`);
+  await print(`Applying project template ${chalk.green(template.name)} for ${chalk.blue(language)}`);
   await template.install(language, workDir, stackName);
   if (migrate) {
     await template.addMigrateContext(workDir);
   }
   if (await fs.pathExists(`${workDir}/README.md`)) {
     const readme = await fs.readFile(`${workDir}/README.md`, { encoding: 'utf-8' });
-    print(chalk.green(readme));
+    await print(chalk.green(readme));
   }
 
   if (!generateOnly) {
@@ -335,7 +335,7 @@ async function initializeProject(
     await postInstall(language, canUseNetwork, workDir);
   }
 
-  print('✅ All done!');
+  await print('✅ All done!');
 }
 
 async function assertIsEmptyDirectory(workDir: string) {
@@ -349,13 +349,13 @@ async function initializeGitRepository(workDir: string) {
   if (await isInGitRepository(workDir)) {
     return;
   }
-  print('Initializing a new git repository...');
+  await print('Initializing a new git repository...');
   try {
     await execute('git', ['init'], { cwd: workDir });
     await execute('git', ['add', '.'], { cwd: workDir });
     await execute('git', ['commit', '--message="Initial commit"', '--no-gpg-sign'], { cwd: workDir });
   } catch {
-    warning('Unable to initialize git repository for your project.');
+    await warning('Unable to initialize git repository for your project.');
   }
 }
 
@@ -380,43 +380,43 @@ async function postInstallTypescript(canUseNetwork: boolean, cwd: string) {
   const command = 'npm';
 
   if (!canUseNetwork) {
-    warning(`Please run '${command} install'!`);
+    await warning(`Please run '${command} install'!`);
     return;
   }
 
-  print(`Executing ${chalk.green(`${command} install`)}...`);
+  await print(`Executing ${chalk.green(`${command} install`)}...`);
   try {
     await execute(command, ['install'], { cwd });
   } catch (e: any) {
-    warning(`${command} install failed: ` + e.message);
+    await warning(`${command} install failed: ` + e.message);
   }
 }
 
 async function postInstallJava(canUseNetwork: boolean, cwd: string) {
   const mvnPackageWarning = "Please run 'mvn package'!";
   if (!canUseNetwork) {
-    warning(mvnPackageWarning);
+    await warning(mvnPackageWarning);
     return;
   }
 
-  print("Executing 'mvn package'");
+  await print("Executing 'mvn package'");
   try {
     await execute('mvn', ['package'], { cwd });
   } catch {
-    warning('Unable to package compiled code as JAR');
-    warning(mvnPackageWarning);
+    await warning('Unable to package compiled code as JAR');
+    await warning(mvnPackageWarning);
   }
 }
 
 async function postInstallPython(cwd: string) {
   const python = pythonExecutable();
-  warning(`Please run '${python} -m venv .venv'!`);
-  print(`Executing ${chalk.green('Creating virtualenv...')}`);
+  await warning(`Please run '${python} -m venv .venv'!`);
+  await print(`Executing ${chalk.green('Creating virtualenv...')}`);
   try {
     await execute(python, ['-m venv', '.venv'], { cwd });
   } catch {
-    warning('Unable to create virtualenv automatically');
-    warning(`Please run '${python} -m venv .venv'!`);
+    await warning('Unable to create virtualenv automatically');
+    await warning(`Please run '${python} -m venv .venv'!`);
   }
 }
 

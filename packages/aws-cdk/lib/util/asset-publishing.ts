@@ -235,8 +235,8 @@ export const EVENT_TO_LOGGER: Record<EventType, (x: string) => void> = {
 class PublishingProgressListener implements IPublishProgressListener {
   constructor(private readonly quiet: boolean) {}
 
-  public onPublishEvent(type: EventType, event: IPublishProgress): void {
+  public async onPublishEvent(type: EventType, event: IPublishProgress): Promise<void> {
     const handler = this.quiet && type !== 'fail' ? debug : EVENT_TO_LOGGER[type];
-    handler(`[${event.percentComplete}%] ${type}: ${event.message}`);
+    await handler(`[${event.percentComplete}%] ${type}: ${event.message}`);
   }
 }

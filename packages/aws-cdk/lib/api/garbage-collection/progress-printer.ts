@@ -41,9 +41,9 @@ export class ProgressPrinter {
   }
 
   public start() {
-    this.setInterval = setInterval(() => {
+    this.setInterval = setInterval(async () => {
       if (!this.isPaused) {
-        this.print();
+        await this.print();
       }
     }, this.interval);
   }
@@ -56,21 +56,21 @@ export class ProgressPrinter {
     this.isPaused = false;
   }
 
-  public stop() {
+  public async stop() {
     clearInterval(this.setInterval);
     // print one last time if not paused
     if (!this.isPaused) {
-      this.print();
+      await this.print();
     }
   }
 
-  private print() {
+  private async print() {
     const percentage = ((this.assetsScanned / this.totalAssets) * 100).toFixed(2);
     // print in MiB until we hit at least 1 GiB of data tagged/deleted
     if (Math.max(this.taggedAssetsSizeMb, this.deletedAssetsSizeMb) >= 1000) {
-      print(chalk.green(`[${percentage}%] ${this.assetsScanned} files scanned: ${this.taggedAsset} assets (${(this.taggedAssetsSizeMb / 1000).toFixed(2)} GiB) tagged, ${this.deletedAssets} assets (${(this.deletedAssetsSizeMb / 1000).toFixed(2)} GiB) deleted.`));
+      await print(chalk.green(`[${percentage}%] ${this.assetsScanned} files scanned: ${this.taggedAsset} assets (${(this.taggedAssetsSizeMb / 1000).toFixed(2)} GiB) tagged, ${this.deletedAssets} assets (${(this.deletedAssetsSizeMb / 1000).toFixed(2)} GiB) deleted.`));
     } else {
-      print(chalk.green(`[${percentage}%] ${this.assetsScanned} files scanned: ${this.taggedAsset} assets (${this.taggedAssetsSizeMb.toFixed(2)} MiB) tagged, ${this.deletedAssets} assets (${this.deletedAssetsSizeMb.toFixed(2)} MiB) deleted.`));
+      await print(chalk.green(`[${percentage}%] ${this.assetsScanned} files scanned: ${this.taggedAsset} assets (${this.taggedAssetsSizeMb.toFixed(2)} MiB) tagged, ${this.deletedAssets} assets (${this.deletedAssetsSizeMb.toFixed(2)} MiB) deleted.`));
     }
   }
 }

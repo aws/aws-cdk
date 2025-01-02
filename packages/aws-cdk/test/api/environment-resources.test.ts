@@ -103,7 +103,7 @@ describe('validateversion without bootstrap stack', () => {
     await expect(envResources().validateVersion(8, '/abc')).resolves.toBeUndefined();
 
     const filter = jest.spyOn(NoticesFilter, 'filter');
-    notices.display();
+    await notices.display();
 
     expect(filter).toHaveBeenCalledTimes(1);
     expect(filter).toHaveBeenCalledWith({

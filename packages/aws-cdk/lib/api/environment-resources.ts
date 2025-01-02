@@ -93,7 +93,7 @@ export class EnvironmentResources {
         // so let it fail as it would if we didn't have this fallback.
         const bootstrapStack = await this.lookupToolkit();
         if (bootstrapStack.found && bootstrapStack.version < BOOTSTRAP_TEMPLATE_VERSION_INTRODUCING_GETPARAMETER) {
-          warning(
+          await warning(
             `Could not read SSM parameter ${ssmParameterName}: ${e.message}, falling back to version from ${bootstrapStack}`,
           );
           doValidate(bootstrapStack.version, this.environment);
@@ -164,7 +164,7 @@ export class EnvironmentResources {
 
     // check if repo already exists
     try {
-      debug(`${repositoryName}: checking if ECR repository already exists`);
+      await debug(`${repositoryName}: checking if ECR repository already exists`);
       const describeResponse = await ecr.describeRepositories({
         repositoryNames: [repositoryName],
       });
@@ -179,7 +179,7 @@ export class EnvironmentResources {
     }
 
     // create the repo (tag it so it will be easier to garbage collect in the future)
-    debug(`${repositoryName}: creating ECR repository`);
+    await debug(`${repositoryName}: creating ECR repository`);
     const assetTag = { Key: 'awscdk:asset', Value: 'true' };
     const response = await ecr.createRepository({
       repositoryName,
@@ -191,7 +191,7 @@ export class EnvironmentResources {
     }
 
     // configure image scanning on push (helps in identifying software vulnerabilities, no additional charge)
-    debug(`${repositoryName}: enable image scanning`);
+    await debug(`${repositoryName}: enable image scanning`);
     await ecr.putImageScanningConfiguration({
       repositoryName,
       imageScanningConfiguration: { scanOnPush: true },

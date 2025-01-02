@@ -103,8 +103,8 @@ describe('some', () => {
 });
 
 describe('loadTreeFromDir', () => {
-  test('can find tree', () => {
-    const tree = loadTreeFromDir(path.join(__dirname, 'cloud-assembly-trees', 'built-with-1_144_0'));
+  test('can find tree', async () => {
+    const tree = await loadTreeFromDir(path.join(__dirname, 'cloud-assembly-trees', 'built-with-1_144_0'));
     expect(tree.id).toEqual('App');
   });
 

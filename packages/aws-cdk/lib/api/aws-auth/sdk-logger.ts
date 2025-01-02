@@ -40,12 +40,12 @@ export class SdkToCliLogger implements Logger {
    * }
    * ```
    */
-  public info(...content: any[]) {
-    trace('[sdk info] %s', formatSdkLoggerContent(content));
+  public async info(...content: any[]) {
+    await trace('[sdk info] %s', formatSdkLoggerContent(content));
   }
 
-  public warn(...content: any[]) {
-    trace('[sdk warn] %s', formatSdkLoggerContent(content));
+  public async warn(...content: any[]) {
+    await trace('[sdk warn] %s', formatSdkLoggerContent(content));
   }
 
   /**
@@ -69,8 +69,8 @@ export class SdkToCliLogger implements Logger {
    * }
    * ```
    */
-  public error(...content: any[]) {
-    trace('[sdk error] %s', formatSdkLoggerContent(content));
+  public async error(...content: any[]) {
+    await trace('[sdk error] %s', formatSdkLoggerContent(content));
   }
 }
 
