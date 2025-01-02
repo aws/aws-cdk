@@ -26,6 +26,15 @@ export interface DeploymentProps {
    * @default false
    */
   readonly retainDeployments?: boolean;
+
+  /**
+   * The name of the stage the API Gateway deployment deploys to.
+   *
+   * @default - No stage name. If the `stageName` property is set but a stage with the
+   * corresponding name does not exist, a new stage resource will be created with the
+   * provided stage name.
+   */
+  readonly stageName?: string;
 }
 
 /**
@@ -62,6 +71,10 @@ export class Deployment extends Resource {
   /** @attribute */
   public readonly deploymentId: string;
   public readonly api: IRestApi;
+  /**
+   * The stage of the API gateway deployment.
+   */
+  public readonly stageName?: string;
 
   private readonly resource: LatestDeploymentResource;
 
@@ -71,6 +84,7 @@ export class Deployment extends Resource {
     this.resource = new LatestDeploymentResource(this, 'Resource', {
       description: props.description,
       restApi: props.api,
+      stageName: props.stageName,
     });
 
     if (props.retainDeployments) {
@@ -126,6 +140,7 @@ export class Deployment extends Resource {
 interface LatestDeploymentResourceProps {
   readonly description?: string;
   readonly restApi: IRestApi;
+  readonly stageName?: string;
 }
 
 class LatestDeploymentResource extends CfnDeployment {
@@ -137,6 +152,7 @@ class LatestDeploymentResource extends CfnDeployment {
     super(scope, id, {
       description: props.description,
       restApiId: props.restApi.restApiId,
+      stageName: props.stageName,
     });
 
     this.api = props.restApi;

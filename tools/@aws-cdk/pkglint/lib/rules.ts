@@ -55,24 +55,10 @@ export class DescriptionIsRequired extends ValidationRule {
 export class PublishConfigTagIsRequired extends ValidationRule {
   public readonly name = 'package-info/publish-config-tag';
 
-  // The list of packages that are publicly published in both v1 and v2.
-  private readonly SHARED_PACKAGES = [
-    '@aws-cdk/cloud-assembly-schema',
-    '@aws-cdk/cloudformation-diff',
-    '@aws-cdk/cx-api',
-    '@aws-cdk/region-info',
-    'aws-cdk',
-    'awslint',
-    'cdk-assets',
-  ];
-
   public validate(pkg: PackageJson): void {
     if (pkg.json.private) { return; }
 
-    // v1 packages that are v1-only (e.g., `@aws-cdk/aws-s3`) are always published as `latest`.
-    // Packages that are published with the same namespace to both v1 and v2 are published as `latest-1` on v1 and `latest` on v2.
-    // All v2-only packages are just `latest`.
-    const defaultPublishTag = (cdkMajorVersion() === 2 || !this.SHARED_PACKAGES.includes(pkg.packageName)) ? 'latest' : 'latest-1';
+    const defaultPublishTag = 'latest';
 
     if (pkg.json.publishConfig?.tag !== defaultPublishTag) {
       pkg.report({
@@ -899,12 +885,12 @@ function cdkModuleName(name: string) {
     '@aws-cdk/assertions': 'assertions',
     '@aws-cdk/assertions-alpha': 'assertions-alpha',
   };
-  /* eslint-disable @typescript-eslint/indent */
+  /* eslint-disable @stylistic/indent */
   const mavenArtifactId =
     name in mavenIdMap ? mavenIdMap[name] :
     (suffix.startsWith('aws-') || suffix.startsWith('alexa-')) ? suffix.replace(/aws-/, '') :
     suffix.startsWith('cdk-') ? suffix : `cdk-${suffix}`;
-  /* eslint-enable @typescript-eslint/indent */
+  /* eslint-enable @stylistic/indent */
 
   return {
     javaPackage: `software.amazon.awscdk${isLegacyCdkPkg ? '' : `.${suffix.replace(/aws-/, 'services-').replace(/-/g, '.')}`}`,
@@ -1384,7 +1370,7 @@ export class AllVersionsTheSame extends ValidationRule {
 
   private validateDep(pkg: PackageJson, depField: string, dep: string) {
     if (dep in this.ourPackages) {
-      expectJSON(this.name, pkg, depField + '.' + dep, this.ourPackages[dep]);
+      expectJSON(this.name, pkg, [depField, dep], this.ourPackages[dep]);
       return;
     }
 
@@ -1394,7 +1380,7 @@ export class AllVersionsTheSame extends ValidationRule {
 
     const versions = this.usedDeps[dep];
     versions.sort((a, b) => b.count - a.count);
-    expectJSON(this.name, pkg, depField + '.' + dep, versions[0].version);
+    expectJSON(this.name, pkg, [depField, dep], versions[0].version);
   }
 }
 
@@ -1425,7 +1411,7 @@ export class PackageInJsiiPackageNoRuntimeDeps extends ValidationRule {
   public readonly name = 'lambda-packages-no-runtime-deps';
 
   public validate(pkg: PackageJson) {
-    if (!isJSII(pkg)) { return; }
+    if (!isJSII(pkg) || pkg.packageName === '@aws-cdk/cli-lib-alpha') { return; }
 
     for (const inner of findInnerPackages(pkg.packageRoot)) {
       const innerPkg = PackageJson.fromDirectory(inner);
@@ -1677,7 +1663,7 @@ export class UbergenPackageVisibility extends ValidationRule {
   // The ONLY (non-alpha) packages that should be published for v2.
   // These include dependencies of the CDK CLI (aws-cdk).
   private readonly v2PublicPackages = [
-    '@aws-cdk/cloud-assembly-schema',
+    '@aws-cdk/cli-plugin-contract',
     '@aws-cdk/cloudformation-diff',
     '@aws-cdk/cx-api',
     '@aws-cdk/region-info',
@@ -1685,7 +1671,6 @@ export class UbergenPackageVisibility extends ValidationRule {
     'aws-cdk',
     'awslint',
     'cdk',
-    'cdk-assets',
     '@aws-cdk/integ-runner',
     '@aws-cdk-testing/cli-integ',
   ];

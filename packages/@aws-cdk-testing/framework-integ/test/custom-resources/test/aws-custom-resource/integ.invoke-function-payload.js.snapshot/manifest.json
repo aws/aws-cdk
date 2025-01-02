@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1c850a6077b5592718a5a9b48feee50d89c1242b034c70c14cbbc72a3fb7cb59.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9daf721fe439b6448129792a51986043ad723e5bbaea31e2c9f5a0644df65b88.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -46,12 +46,6 @@
             "data": "Function76856677"
           }
         ],
-        "/AwsCustomResourceInvokePayloadStack/ListLambdaFunctions": [
-          {
-            "type": "aws:cdk:warning",
-            "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version. [ack: @aws-cdk/custom-resources:installLatestAwsSdkNotSpecified]"
-          }
-        ],
         "/AwsCustomResourceInvokePayloadStack/ListLambdaFunctions/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -62,6 +56,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ListLambdaFunctionsCustomResourcePolicyCFFF021A"
+          }
+        ],
+        "/AwsCustomResourceInvokePayloadStack/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/AwsCustomResourceInvokePayloadStack/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [

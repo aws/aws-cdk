@@ -1107,7 +1107,7 @@
                                   "s3Bucket": {
                                     "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                                   },
-                                  "s3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
+                                  "s3Key": "fe4094cd52f099e46f858f05efdde02f5de79288c9c783676b3fa53a494d04b5.zip"
                                 },
                                 "description": "AWS CDK resource provider framework - onEvent (aws-cdk-redshift-distkey-create/Table/Resource/Provider)",
                                 "environment": {
@@ -1127,7 +1127,15 @@
                                     "Arn"
                                   ]
                                 },
-                                "runtime": "nodejs18.x",
+                                "runtime": {
+                                  "Fn::FindInMap": [
+                                    "LatestNodeRuntimeMap",
+                                    {
+                                      "Ref": "AWS::Region"
+                                    },
+                                    "value"
+                                  ]
+                                },
                                 "timeout": 900
                               }
                             },
@@ -1169,12 +1177,20 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.69"
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
               "fqn": "@aws-cdk/aws-redshift-alpha.Table",
+              "version": "0.0.0"
+            }
+          },
+          "LatestNodeRuntimeMap": {
+            "id": "LatestNodeRuntimeMap",
+            "path": "aws-cdk-redshift-distkey-create/LatestNodeRuntimeMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
               "version": "0.0.0"
             }
           },
@@ -1327,7 +1343,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "95dfca0d51dadef71390a414c093b29c52f39e1ff2acef2a26ded36e756bf386.zip"
+                      "s3Key": "9749c6d8c4139a8926279502c4170f7b977faf32aaf52c916b85a63d7ea3b01b.zip"
                     },
                     "handler": "index.handler",
                     "role": {
@@ -1336,7 +1352,15 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs18.x",
+                    "runtime": {
+                      "Fn::FindInMap": [
+                        "LatestNodeRuntimeMap",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        "value"
+                      ]
+                    },
                     "timeout": 60
                   }
                 },
@@ -2476,7 +2500,7 @@
                                   "s3Bucket": {
                                     "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                                   },
-                                  "s3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
+                                  "s3Key": "fe4094cd52f099e46f858f05efdde02f5de79288c9c783676b3fa53a494d04b5.zip"
                                 },
                                 "description": "AWS CDK resource provider framework - onEvent (aws-cdk-redshift-distkey-update/Table/Resource/Provider)",
                                 "environment": {
@@ -2496,7 +2520,15 @@
                                     "Arn"
                                   ]
                                 },
-                                "runtime": "nodejs18.x",
+                                "runtime": {
+                                  "Fn::FindInMap": [
+                                    "LatestNodeRuntimeMap",
+                                    {
+                                      "Ref": "AWS::Region"
+                                    },
+                                    "value"
+                                  ]
+                                },
                                 "timeout": 900
                               }
                             },
@@ -2538,12 +2570,20 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.69"
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
               "fqn": "@aws-cdk/aws-redshift-alpha.Table",
+              "version": "0.0.0"
+            }
+          },
+          "LatestNodeRuntimeMap": {
+            "id": "LatestNodeRuntimeMap",
+            "path": "aws-cdk-redshift-distkey-update/LatestNodeRuntimeMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
               "version": "0.0.0"
             }
           },
@@ -2696,7 +2736,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "95dfca0d51dadef71390a414c093b29c52f39e1ff2acef2a26ded36e756bf386.zip"
+                      "s3Key": "9749c6d8c4139a8926279502c4170f7b977faf32aaf52c916b85a63d7ea3b01b.zip"
                     },
                     "handler": "index.handler",
                     "role": {
@@ -2705,7 +2745,15 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs18.x",
+                    "runtime": {
+                      "Fn::FindInMap": [
+                        "LatestNodeRuntimeMap",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        "value"
+                      ]
+                    },
                     "timeout": 60
                   }
                 },
@@ -2755,7 +2803,7 @@
                 "path": "aws-cdk-redshift-distkey-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.69"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -2801,7 +2849,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.69"
+          "version": "10.4.2"
         }
       }
     },

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
@@ -36,12 +37,14 @@ const key = new kms.Key(stack, 'Key', {
 });
 
 new firehose.DeliveryStream(stack, 'Delivery Stream', {
-  destinations: [mockS3Destination],
-  encryptionKey: key,
+  destination: mockS3Destination,
+  encryption: firehose.StreamEncryption.customerManagedKey(key),
 });
 
 new firehose.DeliveryStream(stack, 'Delivery Stream No Source Or Encryption Key', {
-  destinations: [mockS3Destination],
+  destination: mockS3Destination,
 });
 
-app.synth();
+new integ.IntegTest(app, 'integ-tests', {
+  testCases: [stack],
+});

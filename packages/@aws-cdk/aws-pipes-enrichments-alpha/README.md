@@ -46,3 +46,65 @@ const pipe = new pipes.Pipe(this, 'Pipe', {
   target: new SomeTarget(targetQueue),
 });
 ```
+
+### Step Functions state machine
+
+Step Functions state machine can be used to enrich events of a pipe.
+
+**Note:** EventBridge Pipes only supports Express workflows invoked synchronously.
+
+> Visit [Amazon EventBridge Pipes event enrichment](https://docs.aws.amazon.com/eventbridge/latest/userguide/pipes-enrichment.html) for more details.
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const targetQueue: sqs.Queue;
+
+declare const enrichmentStateMachine: stepfunctions.StateMachine;
+
+const enrichment = new enrichments.StepFunctionsEnrichment(enrichmentStateMachine);
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+  source: new SomeSource(sourceQueue),
+  enrichment,
+  target: new SomeTarget(targetQueue),
+});
+```
+
+### API destination
+
+API destination can be used to enrich events of a pipe.
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const targetQueue: sqs.Queue;
+
+declare const apiDestination: events.ApiDestination;
+
+const enrichment = new enrichments.ApiDestinationEnrichment(apiDestination);
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+  source: new SomeSource(sourceQueue),
+  enrichment,
+  target: new SomeTarget(targetQueue),
+});
+```
+
+### API Gateway (REST API)
+
+API Gateway can be used to enrich events of a pipe.
+Pipes only supports API Gateway REST APIs. HTTP APIs are not supported.
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const targetQueue: sqs.Queue;
+
+declare const restApi: apigateway.RestApi;
+
+const enrichment = new enrichments.ApiGatewayEnrichment(restApi);
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+  source: new SomeSource(sourceQueue),
+  enrichment,
+  target: new SomeTarget(targetQueue),
+});
+```

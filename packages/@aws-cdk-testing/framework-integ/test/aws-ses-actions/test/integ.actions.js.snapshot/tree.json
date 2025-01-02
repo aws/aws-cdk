@@ -180,31 +180,8 @@
                               "Action": "s3:PutObject",
                               "Condition": {
                                 "StringEquals": {
-                                  "aws:SourceAccount": {
+                                  "aws:Referer": {
                                     "Ref": "AWS::AccountId"
-                                  },
-                                  "aws:SourceArn": {
-                                    "Fn::Join": [
-                                      "",
-                                      [
-                                        "arn:",
-                                        {
-                                          "Ref": "AWS::Partition"
-                                        },
-                                        ":ses:",
-                                        {
-                                          "Ref": "AWS::Region"
-                                        },
-                                        ":",
-                                        {
-                                          "Ref": "AWS::AccountId"
-                                        },
-                                        ":receipt-rule-set/INBOUND_MAIL:receipt-rule/",
-                                        {
-                                          "Ref": "RuleSetFirstRule0A27C8CC"
-                                        }
-                                      ]
-                                    ]
                                   }
                                 }
                               },
@@ -326,6 +303,79 @@
             "id": "RuleSet",
             "path": "aws-cdk-ses-receipt/RuleSet",
             "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-ses-receipt/RuleSet/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SES::ReceiptRuleSet",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ses.CfnReceiptRuleSet",
+                  "version": "0.0.0"
+                }
+              },
+              "DropSpam": {
+                "id": "DropSpam",
+                "path": "aws-cdk-ses-receipt/RuleSet/DropSpam",
+                "children": {
+                  "Function": {
+                    "id": "Function",
+                    "path": "aws-cdk-ses-receipt/RuleSet/DropSpam/Function",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Rule": {
+                    "id": "Rule",
+                    "path": "aws-cdk-ses-receipt/RuleSet/DropSpam/Rule",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-ses-receipt/RuleSet/DropSpam/Rule/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::SES::ReceiptRule",
+                          "aws:cdk:cloudformation:props": {
+                            "rule": {
+                              "actions": [
+                                {
+                                  "lambdaAction": {
+                                    "functionArn": {
+                                      "Fn::GetAtt": [
+                                        "SingletonLambda224e77f9a32e4b4dac32983477abba164533EA15",
+                                        "Arn"
+                                      ]
+                                    },
+                                    "invocationType": "RequestResponse"
+                                  }
+                                }
+                              ],
+                              "enabled": true,
+                              "scanEnabled": true
+                            },
+                            "ruleSetName": {
+                              "Ref": "RuleSetE30C6C48"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_ses.CfnReceiptRule",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ses.ReceiptRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ses.DropSpamReceiptRule",
+                  "version": "0.0.0"
+                }
+              },
               "FirstRule": {
                 "id": "FirstRule",
                 "path": "aws-cdk-ses-receipt/RuleSet/FirstRule",
@@ -336,8 +386,19 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::SES::ReceiptRule",
                       "aws:cdk:cloudformation:props": {
+                        "after": {
+                          "Ref": "RuleSetDropSpamRule5809F51B"
+                        },
                         "rule": {
                           "actions": [
+                            {
+                              "workmailAction": {
+                                "organizationArn": "arn:aws:workmail:us-east-1:339712719728:organization/m-5ea60ed9e37442c388898996f05c17ac",
+                                "topicArn": {
+                                  "Ref": "TopicBFC7AF6E"
+                                }
+                              }
+                            },
                             {
                               "addHeaderAction": {
                                 "headerName": "X-My-Header",
@@ -403,7 +464,9 @@
                           "scanEnabled": true,
                           "tlsPolicy": "Require"
                         },
-                        "ruleSetName": "INBOUND_MAIL"
+                        "ruleSetName": {
+                          "Ref": "RuleSetE30C6C48"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -443,7 +506,9 @@
                           ],
                           "enabled": true
                         },
-                        "ruleSetName": "INBOUND_MAIL"
+                        "ruleSetName": {
+                          "Ref": "RuleSetE30C6C48"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -459,7 +524,167 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "aws-cdk-lib.aws_ses.ReceiptRuleSet",
+              "version": "0.0.0"
+            }
+          },
+          "LatestNodeRuntimeMap": {
+            "id": "LatestNodeRuntimeMap",
+            "path": "aws-cdk-ses-receipt/LatestNodeRuntimeMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "0.0.0"
+            }
+          },
+          "SingletonLambda224e77f9a32e4b4dac32983477abba16": {
+            "id": "SingletonLambda224e77f9a32e4b4dac32983477abba16",
+            "path": "aws-cdk-ses-receipt/SingletonLambda224e77f9a32e4b4dac32983477abba16",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "aws-cdk-ses-receipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "aws-cdk-ses-receipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-ses-receipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "aws-cdk-ses-receipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "aws-cdk-ses-receipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "aws-cdk-ses-receipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-ses-receipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "19044c50ec489a0413f51a8e60d6272e5746e9b5a0356ed15c12de97c3ca93ec.zip"
+                    },
+                    "handler": "index.handler",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "SingletonLambda224e77f9a32e4b4dac32983477abba16ServiceRole3037F5B4",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": {
+                      "Fn::FindInMap": [
+                        "LatestNodeRuntimeMap",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        "value"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              },
+              "AllowSes": {
+                "id": "AllowSes",
+                "path": "aws-cdk-ses-receipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/AllowSes",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "SingletonLambda224e77f9a32e4b4dac32983477abba164533EA15",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "ses.amazonaws.com",
+                    "sourceAccount": {
+                      "Ref": "AWS::AccountId"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
               "version": "0.0.0"
             }
           },

@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "integ-user-pool-client-default-redirect-uri-test/DefaultTest": {
+      "stacks": [
+        "integ-user-pool-client-default-redirect-uri"
+      ],
+      "assertionStack": "integ-user-pool-client-default-redirect-uri-test/DefaultTest/DeployAssert",
+      "assertionStackName": "integuserpoolclientdefaultredirecturitestDefaultTestDeployAssertF79A1D23"
+    }
+  }
+}

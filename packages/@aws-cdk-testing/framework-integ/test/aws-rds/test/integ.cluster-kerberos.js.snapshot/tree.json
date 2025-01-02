@@ -669,6 +669,14 @@
               "version": "0.0.0"
             }
           },
+          "LatestNodeRuntimeMap": {
+            "id": "LatestNodeRuntimeMap",
+            "path": "cluster-kerberos/LatestNodeRuntimeMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "0.0.0"
+            }
+          },
           "Custom::VpcRestrictDefaultSGCustomResourceProvider": {
             "id": "Custom::VpcRestrictDefaultSGCustomResourceProvider",
             "path": "cluster-kerberos/Custom::VpcRestrictDefaultSGCustomResourceProvider",
@@ -957,7 +965,7 @@
                       "Ref": "Role1ABCC5F0"
                     },
                     "engine": "aurora-mysql",
-                    "engineVersion": "8.0.mysql_aurora.3.05.1",
+                    "engineVersion": "8.0.mysql_aurora.3.06.0",
                     "masterUsername": {
                       "Fn::Join": [
                         "",

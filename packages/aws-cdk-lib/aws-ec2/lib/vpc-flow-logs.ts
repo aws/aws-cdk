@@ -647,6 +647,58 @@ export class LogFormat {
   public static readonly TRAFFIC_PATH = LogFormat.field('traffic-path');
 
   /**
+   * AWS Resource Name (ARN) of the ECS cluster if the traffic is from a running ECS task.
+   */
+  public static readonly ECS_CLUSTER_ARN = LogFormat.field('ecs-cluster-arn');
+
+  /**
+   * Name of the ECS cluster if the traffic is from a running ECS task.
+   */
+  public static readonly ECS_CLUSTER_NAME = LogFormat.field('ecs-cluster-name');
+
+  /**
+   * ARN of the ECS container instance if the traffic is from a running ECS task on an EC2 instance.
+   */
+  public static readonly ECS_CONTAINER_INSTANCE_ARN = LogFormat.field('ecs-container-instance-arn');
+
+  /**
+   * ID of the ECS container instance if the traffic is from a running ECS task on an EC2 instance.
+   */
+  public static readonly ECS_CONTAINER_INSTANCE_ID = LogFormat.field('ecs-container-instance-id');
+
+  /**
+   * Docker runtime ID of the container if the traffic is from a running ECS task.
+   * If there is one container or more in the ECS task, this will be the docker runtime ID of the first container.
+   */
+  public static readonly ECS_CONTAINER_ID = LogFormat.field('ecs-container-id');
+
+  /**
+   * Docker runtime ID of the container if the traffic is from a running ECS task.
+   * If there is more than one container in the ECS task, this will be the Docker runtime ID of the second container.
+   */
+  public static readonly ECS_SECOND_CONTAINER_ID = LogFormat.field('ecs-second-container-id');
+
+  /**
+   * Name of the ECS service if the traffic is from a running ECS task and the ECS task is started by an ECS service.
+   */
+  public static readonly ECS_SERVICE_NAME = LogFormat.field('ecs-service-name');
+
+  /**
+   * ARN of the ECS task definition if the traffic is from a running ECS task.
+   */
+  public static readonly ECS_TASK_DEFINITION_ARN = LogFormat.field('ecs-task-definition-arn');
+
+  /**
+   * ARN of the ECS task if the traffic is from a running ECS task.
+   */
+  public static readonly ECS_TASK_ARN = LogFormat.field('ecs-task-arn');
+
+  /**
+   * ID of the ECS task if the traffic is from a running ECS task.
+   */
+  public static readonly ECS_TASK_ID = LogFormat.field('ecs-task-id');
+
+  /**
    * The default format.
    */
   public static readonly ALL_DEFAULT_FIELDS = new LogFormat('${version} ${account-id} ${interface-id} ${srcaddr} ${dstaddr} ${srcport} ${dstport} ${protocol} ${packets} ${bytes} ${start} ${end} ${action} ${log-status}');

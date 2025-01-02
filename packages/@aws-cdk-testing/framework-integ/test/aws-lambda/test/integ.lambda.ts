@@ -45,4 +45,12 @@ new lambda.Function(stack, 'MySnapStartLambda', {
   snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
 });
 
+new lambda.Function(stack, 'MySnapStartLambdaArm', {
+  code: lambda.Code.fromAsset(path.join(__dirname, 'handler-snapstart.zip')),
+  handler: 'example.Handler::handleRequest',
+  runtime: lambda.Runtime.JAVA_21,
+  architecture: lambda.Architecture.ARM_64,
+  snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
+});
+
 app.synth();

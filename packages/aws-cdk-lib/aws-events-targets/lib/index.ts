@@ -14,4 +14,6 @@ export * from './log-group';
 export * from './kinesis-firehose-stream';
 export * from './api-gateway';
 export * from './api-destination';
+export * from './appsync';
 export * from './util';
+export * from './redshift-query';

@@ -3,11 +3,11 @@ import { CfnVdmAttributes } from './ses.generated';
 import { IResource, Resource } from '../../core';
 
 /**
- * Virtual Deliverablity Manager (VDM) attributes
+ * Virtual Deliverability Manager (VDM) attributes
  */
 export interface IVdmAttributes extends IResource {
   /**
-   * The name of the resource behind the Virtual Deliverablity Manager attributes.
+   * The name of the resource behind the Virtual Deliverability Manager attributes.
    *
    * @attribute
    */
@@ -15,7 +15,7 @@ export interface IVdmAttributes extends IResource {
 }
 
 /**
- * Properties for the Virtual Deliverablity Manager (VDM) attributes
+ * Properties for the Virtual Deliverability Manager (VDM) attributes
  */
 export interface VdmAttributesProps {
   /**
@@ -34,11 +34,11 @@ export interface VdmAttributesProps {
 }
 
 /**
- * Virtual Deliverablity Manager (VDM) attributes
+ * Virtual Deliverability Manager (VDM) attributes
  */
 export class VdmAttributes extends Resource implements IVdmAttributes {
   /**
-   * Use an existing Virtual Deliverablity Manager attributes resource
+   * Use an existing Virtual Deliverability Manager attributes resource
    */
   public static fromVdmAttributesName(scope: Construct, id: string, vdmAttributesName: string): IVdmAttributes {
     class Import extends Resource implements IVdmAttributes {
@@ -50,7 +50,7 @@ export class VdmAttributes extends Resource implements IVdmAttributes {
   public readonly vdmAttributesName: string;
 
   /**
-   * Resource ID for the Virtual Deliverablity Manager attributes
+   * Resource ID for the Virtual Deliverability Manager attributes
    *
    * @attribute
    */

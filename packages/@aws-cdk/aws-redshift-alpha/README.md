@@ -33,6 +33,20 @@ const cluster = new Cluster(this, 'Redshift', {
 ```
 
 By default, the master password will be generated and stored in AWS Secrets Manager.
+You can specify characters to not include in generated passwords by setting `excludeCharacters` property.
+
+```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+
+const vpc = new ec2.Vpc(this, 'Vpc');
+const cluster = new Cluster(this, 'Redshift', {
+  masterUser: {
+    masterUsername: 'admin',
+    excludeCharacters: '"@/\\\ \'`',
+  },
+  vpc
+});
+```
 
 A default database named `default_db` will be created in the cluster. To change the name of this database set the `defaultDatabaseName` attribute in the constructor properties.
 
@@ -48,7 +62,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 
 const vpc = new ec2.Vpc(this, 'Vpc');
-const bucket = s3.Bucket.fromBucketName(this, 'bucket', 'logging-bucket');
+const bucket = s3.Bucket.fromBucketName(this, 'bucket', 'amzn-s3-demo-bucket');
 
 const cluster = new Cluster(this, 'Redshift', {
   masterUser: {
@@ -61,6 +75,30 @@ const cluster = new Cluster(this, 'Redshift', {
   }
 });
 ```
+
+## Availability Zone Relocation
+
+By using [relocation in Amazon Redshift](https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-recovery.html), you allow Amazon Redshift to move a cluster to another Availability Zone (AZ) without any loss of data or changes to your applications.
+This feature can be applied to both new and existing clusters.
+
+To enable this feature, set the `availabilityZoneRelocation` property to `true`.
+
+```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+
+declare const vpc: ec2.IVpc;
+
+const cluster = new Cluster(this, 'Redshift', {
+  masterUser: {
+    masterUsername: 'admin',
+  },
+  vpc,
+  nodeType: NodeType.RA3_XLPLUS,
+  availabilityZoneRelocation: true,
+});
+```
+
+**Note**: The `availabilityZoneRelocation` property is only available for RA3 node types.
 
 ## Connecting
 
@@ -152,6 +190,16 @@ plaintext for the password will never be present in the CDK application; instead
 Reference](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html)
 will be used wherever the password value is required.
 
+You can specify characters to not include in generated passwords by setting `excludeCharacters` property.
+
+```ts fixture=cluster
+new User(this, 'User', {
+  cluster: cluster,
+  databaseName: 'databaseName',
+  excludeCharacters: '"@/\\\ \'`',
+});
+```
+
 ### Creating Tables
 
 Create a table within a Redshift cluster database by instantiating a `Table`
@@ -211,7 +259,7 @@ Tables and their respective columns can be configured to contain comments:
 ```ts fixture=cluster
 new Table(this, 'Table', {
   tableColumns: [
-    { name: 'col1', dataType: 'varchar(4)', comment: 'This is a column comment' }, 
+    { name: 'col1', dataType: 'varchar(4)', comment: 'This is a column comment' },
     { name: 'col2', dataType: 'float', comment: 'This is a another column comment' }
   ],
   cluster: cluster,
@@ -242,11 +290,29 @@ Table columns can also contain an `id` attribute, which can allow table columns 
 ```ts fixture=cluster
 new Table(this, 'Table', {
   tableColumns: [
-    { id: 'col1', name: 'col1', dataType: 'varchar(4)' }, 
+    { id: 'col1', name: 'col1', dataType: 'varchar(4)' },
     { id: 'col2', name: 'col2', dataType: 'float' }
   ],
   cluster: cluster,
   databaseName: 'databaseName',
+});
+```
+
+Query execution duration is limited to 1 minute by default. You can change this by setting the `timeout` property.
+
+Valid timeout values are between 1 seconds and 15 minutes.
+
+```ts fixture=cluster
+import { Duration } from 'aws-cdk-lib';
+
+new Table(this, 'Table', {
+  tableColumns: [
+    { id: 'col1', name: 'col1', dataType: 'varchar(4)' },
+    { id: 'col2', name: 'col2', dataType: 'float' }
+  ],
+  cluster: cluster,
+  databaseName: 'databaseName',
+  timeout: Duration.minutes(15),
 });
 ```
 
@@ -406,6 +472,48 @@ cluster.addToParameterGroup('enable_user_activity_logging', 'true');
 cluster.enableRebootForParameterChanges()
 ```
 
+## Resource Action
+
+You can perform various actions on the Redshift resource by specifying the `resourceAction` property,
+including [pausing and resuming the cluster](https://docs.aws.amazon.com/redshift/latest/mgmt/rs-mgmt-pause-resume-cluster.html), as well as initiating [failover for Multi-AZ clusters](https://docs.aws.amazon.com/redshift/latest/mgmt/test-cluster-multi-az.html).
+
+```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { ResourceAction } from '@aws-cdk/aws-redshift-alpha';
+
+declare const vpc: ec2.IVpc;
+
+// Pause the cluster
+new Cluster(this, 'PausedCluster', {
+  masterUser: {
+    masterUsername: 'admin',
+  },
+  vpc,
+  resourceAction: ResourceAction.PAUSE,
+});
+
+// Resume the cluster
+new Cluster(this, 'ResumedCluster', {
+  masterUser: {
+    masterUsername: 'admin',
+  },
+  vpc,
+  resourceAction: ResourceAction.RESUME,
+});
+
+// Failover the cluster
+new Cluster(this, 'FailOverCluster', {
+  masterUser: {
+    masterUsername: 'admin',
+  },
+  // VPC must have 3 AZs for the cluster which executes failover action
+  vpc,
+  // Must be a multi-AZ cluster to failover
+  multiAz: true,
+  resourceAction: ResourceAction.FAILOVER_PRIMARY_COMPUTE,
+});
+```
+
 ## Elastic IP
 
 If you configure your cluster to be publicly accessible, you can optionally select an *elastic IP address* to use for the external IP address. An elastic IP address is a static IP address that is associated with your AWS account. You can use an elastic IP address to connect to your cluster from outside the VPC. An elastic IP address gives you the ability to change your underlying configuration without affecting the IP address that clients use to connect to your cluster. This approach can be helpful for situations such as recovery after a failure.
@@ -556,13 +664,35 @@ const cluster = new Cluster(this, 'Redshift', {
 cluster.addIamRole(role);
 ```
 
+## Multi-AZ
+
+Amazon Redshift supports [multiple Availability Zones (Multi-AZ) deployments]((https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-multi-az.html)) for provisioned RA3 clusters.
+By using Multi-AZ deployments, your Amazon Redshift data warehouse can continue operating in failure scenarios when an unexpected event happens in an Availability Zone.
+
+To create a Multi-AZ cluster, set the `multiAz` property to `true` when creating the cluster.
+
+```ts
+declare const vpc: ec2.IVpc;
+
+new redshift.Cluster(stack, 'Cluster', {
+  masterUser: {
+    masterUsername: 'admin',
+  },
+  vpc, // 3 AZs are required for Multi-AZ
+  nodeType: redshift.NodeType.RA3_XLPLUS, // must be RA3 node type
+  clusterType: redshift.ClusterType.MULTI_NODE, // must be MULTI_NODE
+  numberOfNodes: 2, // must be 2 or more
+  multiAz: true,
+});
+```
+
 ## Resizing
 
-As your data warehousing needs change, it's possible to resize your Redshift cluster. If the cluster was deployed via CDK, 
-it's important to resize it via CDK so the change is registered in the AWS CloudFormation template. 
+As your data warehousing needs change, it's possible to resize your Redshift cluster. If the cluster was deployed via CDK,
+it's important to resize it via CDK so the change is registered in the AWS CloudFormation template.
 There are two types of resize operations:
 
-* Elastic resize - Number of nodes and node type can be changed, but not at the same time. Elastic resize is the default behavior, 
+* Elastic resize - Number of nodes and node type can be changed, but not at the same time. Elastic resize is the default behavior,
 as it's a fast operation and typically completes in minutes. Elastic resize is only supported on clusters of the following types:
   * dc1.large (if your cluster is in a VPC)
   * dc1.8xlarge (if your cluster is in a VPC)
@@ -570,13 +700,14 @@ as it's a fast operation and typically completes in minutes. Elastic resize is o
   * dc2.8xlarge
   * ds2.xlarge
   * ds2.8xlarge
+  * ra3.large
   * ra3.xlplus
   * ra3.4xlarge
   * ra3.16xlarge
 
-* Classic resize - Number of nodes, node type, or both, can be changed. This operation takes longer to complete, 
+* Classic resize - Number of nodes, node type, or both, can be changed. This operation takes longer to complete,
 but is useful when the resize operation doesn't meet the criteria of an elastic resize. If you prefer classic resizing,
 you can set the `classicResizing` flag when creating the cluster.
 
-There are other constraints to be aware of, for example, elastic resizing does not support single-node clusters and there are 
+There are other constraints to be aware of, for example, elastic resizing does not support single-node clusters and there are
 limits on the number of nodes you can add to a cluster. See the [AWS Redshift Documentation](https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-operations.html#rs-resize-tutorial) and [AWS API Documentation](https://docs.aws.amazon.com/redshift/latest/APIReference/API_ResizeCluster.html) for more details.

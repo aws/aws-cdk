@@ -45,9 +45,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             0,
@@ -71,7 +68,10 @@
                             "key": "Name",
                             "value": "aws-ecs-patterns-queue-isolated/VPC/PublicSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -93,15 +93,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "aws-ecs-patterns-queue-isolated/VPC/PublicSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -134,12 +134,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "gatewayId": {
                           "Ref": "VPCIGWB7E252D3"
+                        },
+                        "routeTableId": {
+                          "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
                         }
                       }
                     },
@@ -164,9 +164,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             1,
@@ -190,7 +187,10 @@
                             "key": "Name",
                             "value": "aws-ecs-patterns-queue-isolated/VPC/PublicSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -212,15 +212,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "aws-ecs-patterns-queue-isolated/VPC/PublicSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -253,12 +253,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "gatewayId": {
                           "Ref": "VPCIGWB7E252D3"
+                        },
+                        "routeTableId": {
+                          "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
                         }
                       }
                     },
@@ -283,9 +283,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             0,
@@ -309,7 +306,10 @@
                             "key": "Name",
                             "value": "aws-ecs-patterns-queue-isolated/VPC/IsolatedSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -331,15 +331,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "aws-ecs-patterns-queue-isolated/VPC/IsolatedSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -382,9 +382,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             1,
@@ -408,7 +405,10 @@
                             "key": "Name",
                             "value": "aws-ecs-patterns-queue-isolated/VPC/IsolatedSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -430,15 +430,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "aws-ecs-patterns-queue-isolated/VPC/IsolatedSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -496,11 +496,11 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                   "aws:cdk:cloudformation:props": {
-                    "vpcId": {
-                      "Ref": "VPCB9E5F0B4"
-                    },
                     "internetGatewayId": {
                       "Ref": "VPCIGWB7E252D3"
+                    },
+                    "vpcId": {
+                      "Ref": "VPCB9E5F0B4"
                     }
                   }
                 },
@@ -519,6 +519,20 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::VPCEndpoint",
                       "aws:cdk:cloudformation:props": {
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-ecs-patterns-queue-isolated/VPC"
+                          }
+                        ],
+                        "routeTableIds": [
+                          {
+                            "Ref": "VPCIsolatedSubnet1RouteTableEB156210"
+                          },
+                          {
+                            "Ref": "VPCIsolatedSubnet2RouteTable9B4F78DC"
+                          }
+                        ],
                         "serviceName": {
                           "Fn::Join": [
                             "",
@@ -531,18 +545,10 @@
                             ]
                           ]
                         },
+                        "vpcEndpointType": "Gateway",
                         "vpcId": {
                           "Ref": "VPCB9E5F0B4"
-                        },
-                        "routeTableIds": [
-                          {
-                            "Ref": "VPCIsolatedSubnet1RouteTableEB156210"
-                          },
-                          {
-                            "Ref": "VPCIsolatedSubnet2RouteTable9B4F78DC"
-                          }
-                        ],
-                        "vpcEndpointType": "Gateway"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -634,6 +640,21 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::VPCEndpoint",
                       "aws:cdk:cloudformation:props": {
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-ecs-patterns-queue-isolated/VPC"
+                          }
+                        ],
+                        "privateDnsEnabled": true,
+                        "securityGroupIds": [
+                          {
+                            "Fn::GetAtt": [
+                              "VPCSqsEndpointSecurityGroupAE06A78D",
+                              "GroupId"
+                            ]
+                          }
+                        ],
                         "serviceName": {
                           "Fn::Join": [
                             "",
@@ -646,18 +667,6 @@
                             ]
                           ]
                         },
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
-                        "privateDnsEnabled": true,
-                        "securityGroupIds": [
-                          {
-                            "Fn::GetAtt": [
-                              "VPCSqsEndpointSecurityGroupAE06A78D",
-                              "GroupId"
-                            ]
-                          }
-                        ],
                         "subnetIds": [
                           {
                             "Ref": "VPCIsolatedSubnet1SubnetEBD00FC6"
@@ -666,7 +675,10 @@
                             "Ref": "VPCIsolatedSubnet2Subnet4B1C8CAA"
                           }
                         ],
-                        "vpcEndpointType": "Interface"
+                        "vpcEndpointType": "Interface",
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -758,6 +770,21 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::VPCEndpoint",
                       "aws:cdk:cloudformation:props": {
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-ecs-patterns-queue-isolated/VPC"
+                          }
+                        ],
+                        "privateDnsEnabled": true,
+                        "securityGroupIds": [
+                          {
+                            "Fn::GetAtt": [
+                              "VPCEcrEndpointSecurityGroup50ED8BA4",
+                              "GroupId"
+                            ]
+                          }
+                        ],
                         "serviceName": {
                           "Fn::Join": [
                             "",
@@ -770,18 +797,6 @@
                             ]
                           ]
                         },
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
-                        "privateDnsEnabled": true,
-                        "securityGroupIds": [
-                          {
-                            "Fn::GetAtt": [
-                              "VPCEcrEndpointSecurityGroup50ED8BA4",
-                              "GroupId"
-                            ]
-                          }
-                        ],
                         "subnetIds": [
                           {
                             "Ref": "VPCIsolatedSubnet1SubnetEBD00FC6"
@@ -790,7 +805,10 @@
                             "Ref": "VPCIsolatedSubnet2Subnet4B1C8CAA"
                           }
                         ],
-                        "vpcEndpointType": "Interface"
+                        "vpcEndpointType": "Interface",
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -882,6 +900,21 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::VPCEndpoint",
                       "aws:cdk:cloudformation:props": {
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-ecs-patterns-queue-isolated/VPC"
+                          }
+                        ],
+                        "privateDnsEnabled": true,
+                        "securityGroupIds": [
+                          {
+                            "Fn::GetAtt": [
+                              "VPCEcrImageEndpointSecurityGroup83621638",
+                              "GroupId"
+                            ]
+                          }
+                        ],
                         "serviceName": {
                           "Fn::Join": [
                             "",
@@ -894,18 +927,6 @@
                             ]
                           ]
                         },
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
-                        "privateDnsEnabled": true,
-                        "securityGroupIds": [
-                          {
-                            "Fn::GetAtt": [
-                              "VPCEcrImageEndpointSecurityGroup83621638",
-                              "GroupId"
-                            ]
-                          }
-                        ],
                         "subnetIds": [
                           {
                             "Ref": "VPCIsolatedSubnet1SubnetEBD00FC6"
@@ -914,7 +935,10 @@
                             "Ref": "VPCIsolatedSubnet2Subnet4B1C8CAA"
                           }
                         ],
-                        "vpcEndpointType": "Interface"
+                        "vpcEndpointType": "Interface",
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -1006,6 +1030,21 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::VPCEndpoint",
                       "aws:cdk:cloudformation:props": {
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-ecs-patterns-queue-isolated/VPC"
+                          }
+                        ],
+                        "privateDnsEnabled": true,
+                        "securityGroupIds": [
+                          {
+                            "Fn::GetAtt": [
+                              "VPCCloudWatchLogsEndpointSecurityGroup967DBC94",
+                              "GroupId"
+                            ]
+                          }
+                        ],
                         "serviceName": {
                           "Fn::Join": [
                             "",
@@ -1018,18 +1057,6 @@
                             ]
                           ]
                         },
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
-                        "privateDnsEnabled": true,
-                        "securityGroupIds": [
-                          {
-                            "Fn::GetAtt": [
-                              "VPCCloudWatchLogsEndpointSecurityGroup967DBC94",
-                              "GroupId"
-                            ]
-                          }
-                        ],
                         "subnetIds": [
                           {
                             "Ref": "VPCIsolatedSubnet1SubnetEBD00FC6"
@@ -1038,7 +1065,10 @@
                             "Ref": "VPCIsolatedSubnet2Subnet4B1C8CAA"
                           }
                         ],
-                        "vpcEndpointType": "Interface"
+                        "vpcEndpointType": "Interface",
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -1291,7 +1321,7 @@
                           {
                             "essential": true,
                             "image": {
-                              "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:95cefedd43575452a70cdeeeceb0f1c5728fd58c9ff8e81e760c3dac33c46417"
+                              "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:205c5d917605ee59cc93dc29526bc4f73b315ae613cdfbc52b8179f388041a03"
                             },
                             "name": "QueueProcessingContainer",
                             "logConfiguration": {
@@ -1550,12 +1580,7 @@
                         },
                         "deploymentConfiguration": {
                           "maximumPercent": 200,
-                          "minimumHealthyPercent": 50,
-                          "alarms": {
-                            "alarmNames": [],
-                            "enable": false,
-                            "rollback": false
-                          }
+                          "minimumHealthyPercent": 50
                         },
                         "enableEcsManagedTags": false,
                         "launchType": "FARGATE",
@@ -1632,8 +1657,6 @@
                                     ]
                                   ]
                                 },
-                                "scalableDimension": "ecs:service:DesiredCount",
-                                "serviceNamespace": "ecs",
                                 "roleArn": {
                                   "Fn::Join": [
                                     "",
@@ -1649,7 +1672,9 @@
                                       ":role/aws-service-role/ecs.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_ECSService"
                                     ]
                                   ]
-                                }
+                                },
+                                "scalableDimension": "ecs:service:DesiredCount",
+                                "serviceNamespace": "ecs"
                               }
                             },
                             "constructInfo": {
@@ -1743,14 +1768,13 @@
                                     "attributes": {
                                       "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
                                       "aws:cdk:cloudformation:props": {
-                                        "comparisonOperator": "LessThanOrEqualToThreshold",
-                                        "evaluationPeriods": 1,
                                         "alarmActions": [
                                           {
                                             "Ref": "IsolatedQueueServiceQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingLowerPolicy960D4BA1"
                                           }
                                         ],
                                         "alarmDescription": "Lower threshold scaling alarm",
+                                        "comparisonOperator": "LessThanOrEqualToThreshold",
                                         "dimensions": [
                                           {
                                             "name": "QueueName",
@@ -1762,6 +1786,7 @@
                                             }
                                           }
                                         ],
+                                        "evaluationPeriods": 1,
                                         "metricName": "ApproximateNumberOfMessagesVisible",
                                         "namespace": "AWS/SQS",
                                         "period": 300,
@@ -1833,14 +1858,13 @@
                                     "attributes": {
                                       "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
                                       "aws:cdk:cloudformation:props": {
-                                        "comparisonOperator": "GreaterThanOrEqualToThreshold",
-                                        "evaluationPeriods": 1,
                                         "alarmActions": [
                                           {
                                             "Ref": "IsolatedQueueServiceQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingUpperPolicyFAB35025"
                                           }
                                         ],
                                         "alarmDescription": "Upper threshold scaling alarm",
+                                        "comparisonOperator": "GreaterThanOrEqualToThreshold",
                                         "dimensions": [
                                           {
                                             "name": "QueueName",
@@ -1852,6 +1876,7 @@
                                             }
                                           }
                                         ],
+                                        "evaluationPeriods": 1,
                                         "metricName": "ApproximateNumberOfMessagesVisible",
                                         "namespace": "AWS/SQS",
                                         "period": 300,
@@ -1957,7 +1982,7 @@
                 "path": "isolatedQueueProcessingFargateServiceTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -2003,7 +2028,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.55"
+          "version": "10.4.2"
         }
       }
     },

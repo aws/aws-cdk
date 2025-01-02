@@ -189,6 +189,44 @@ describe('CloudFront Function', () => {
     });
   });
 
+  test('autoPublish false', () => {
+    const stack = new Stack();
+
+    new Function(stack, 'TestFn', {
+      code: FunctionCode.fromInline('code'),
+      runtime: FunctionRuntime.JS_2_0,
+      keyValueStore: undefined,
+      autoPublish: false,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Function', {
+      AutoPublish: false,
+    });
+  });
+
+  test('long name truncates correctly every time', () => {
+    const app = new App();
+    const stack = new Stack(app, 'CdkTestWithALongNameStack');
+
+    new Function(stack, 'MyCloudFrontFunction', {
+      code: FunctionCode.fromInline(''),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Function', {
+      Name: {
+        'Fn::Join': [
+          '',
+          [
+            {
+              Ref: 'AWS::Region',
+            },
+            'CdkTestWithALongoudFrontFunction302260D0',
+          ],
+        ],
+      },
+    });
+  });
+
   describe('key value store association', () => {
     test('minimal example', () => {
       const stack = new Stack();

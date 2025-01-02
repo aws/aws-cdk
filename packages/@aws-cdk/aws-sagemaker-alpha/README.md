@@ -78,6 +78,31 @@ const model = new sagemaker.Model(this, 'InferencePipelineModel', {
 });
 ```
 
+### Model Properties
+
+#### Network Isolation
+
+If you enable [network isolation](https://docs.aws.amazon.com/sagemaker/latest/dg/mkt-algo-model-internet-free.html), the containers can't make any outbound network calls, even to other AWS services such as Amazon S3. Additionally, no AWS credentials are made available to the container runtime environment.
+
+To enable network isolation, set the `networkIsolation` property to `true`:
+
+```typescript
+import * as sagemaker from '@aws-cdk/aws-sagemaker-alpha';
+
+declare const image: sagemaker.ContainerImage;
+declare const modelData: sagemaker.ModelData;
+
+const model = new sagemaker.Model(this, 'ContainerModel', {
+  containers: [
+    {
+      image,
+      modelData,
+    }
+  ],
+  networkIsolation: true,
+});
+```
+
 ### Container Images
 
 Inference code can be stored in the Amazon EC2 Container Registry (Amazon ECR), which is specified

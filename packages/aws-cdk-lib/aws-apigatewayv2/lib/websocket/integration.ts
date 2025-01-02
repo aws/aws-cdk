@@ -170,6 +170,11 @@ export class WebSocketIntegration extends Resource implements IWebSocketIntegrat
 
   constructor(scope: Construct, id: string, props: WebSocketIntegrationProps) {
     super(scope, id);
+
+    if (props.timeout && !props.timeout.isUnresolved() && (props.timeout.toMilliseconds() < 50 || props.timeout.toMilliseconds() > 29000)) {
+      throw new Error('Integration timeout must be between 50 milliseconds and 29 seconds.');
+    }
+
     const integ = new CfnIntegration(this, 'Resource', {
       apiId: props.webSocketApi.apiId,
       integrationType: props.integrationType,

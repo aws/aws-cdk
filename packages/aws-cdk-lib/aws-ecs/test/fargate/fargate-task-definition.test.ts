@@ -60,6 +60,7 @@ describe('fargate task definition', () => {
           cpuArchitecture: ecs.CpuArchitecture.X86_64,
           operatingSystemFamily: ecs.OperatingSystemFamily.LINUX,
         },
+        pidMode: ecs.PidMode.TASK,
       });
 
       taskDefinition.addVolume({
@@ -84,6 +85,7 @@ describe('fargate task definition', () => {
         Family: 'myApp',
         Memory: '1024',
         NetworkMode: 'awsvpc',
+        PidMode: 'task',
         RequiresCompatibilities: [
           ecs.LaunchType.FARGATE,
         ],
@@ -160,6 +162,59 @@ describe('fargate task definition', () => {
       }).toThrow(/Ephemeral storage size must be between 21GiB and 200GiB/);
 
       // THEN
+    });
+
+    test('throws when pidMode is specified without an operating system family', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      // THEN
+      expect(() => {
+        new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
+          pidMode: ecs.PidMode.TASK,
+          runtimePlatform: {
+            cpuArchitecture: ecs.CpuArchitecture.X86_64,
+          },
+          cpu: 1024,
+          memoryLimitMiB: 2048,
+        });
+      }).toThrow(/Specifying 'pidMode' requires that operating system family also be provided./);
+    });
+
+    test('throws when pidMode is specified on Windows', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      // THEN
+      expect(() => {
+        new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
+          pidMode: ecs.PidMode.TASK,
+          runtimePlatform: {
+            operatingSystemFamily: ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_CORE,
+            cpuArchitecture: ecs.CpuArchitecture.X86_64,
+          },
+          cpu: 1024,
+          memoryLimitMiB: 2048,
+        });
+      }).toThrow(/'pidMode' is not supported for Windows containers./);
+    });
+
+    test('throws when pidMode is not task', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      // THEN
+      expect(() => {
+        new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
+          pidMode: ecs.PidMode.HOST,
+          runtimePlatform: {
+            operatingSystemFamily: ecs.OperatingSystemFamily.LINUX,
+          },
+        });
+      }).toThrow(/'pidMode' can only be set to 'task' for Linux Fargate containers, got: 'host'./);
     });
   });
   describe('When configuredAtLaunch in the Volume', ()=> {
@@ -390,7 +445,7 @@ describe('fargate task definition', () => {
             operatingSystemFamily: ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_CORE,
           },
         });
-      }).toThrowError(`If operatingSystemFamily is ${ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_CORE._operatingSystemFamily}, then cpu must be in 1024 (1 vCPU), 2048 (2 vCPU), or 4096 (4 vCPU).`);
+      }).toThrow(`If operatingSystemFamily is ${ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_CORE._operatingSystemFamily}, then cpu must be in 1024 (1 vCPU), 2048 (2 vCPU), or 4096 (4 vCPU).`);
 
       // Memory is not in 1 GB increments.
       expect(() => {
@@ -402,7 +457,7 @@ describe('fargate task definition', () => {
             operatingSystemFamily: ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_CORE,
           },
         });
-      }).toThrowError('If provided cpu is 1024, then memoryMiB must have a min of 1024 and a max of 8192, in 1024 increments. Provided memoryMiB was 1025.');
+      }).toThrow('If provided cpu is 1024, then memoryMiB must have a min of 1024 and a max of 8192, in 1024 increments. Provided memoryMiB was 1025.');
 
       // Check runtimePlatform was been defined ,but not undefined cpu and memoryLimitMiB.
       expect(() => {
@@ -412,7 +467,7 @@ describe('fargate task definition', () => {
             operatingSystemFamily: ecs.OperatingSystemFamily.WINDOWS_SERVER_2004_CORE,
           },
         });
-      }).toThrowError('If operatingSystemFamily is WINDOWS_SERVER_2004_CORE, then cpu must be in 1024 (1 vCPU), 2048 (2 vCPU), or 4096 (4 vCPU). Provided value was: 256');
+      }).toThrow('If operatingSystemFamily is WINDOWS_SERVER_2004_CORE, then cpu must be in 1024 (1 vCPU), 2048 (2 vCPU), or 4096 (4 vCPU). Provided value was: 256');
 
     });
 

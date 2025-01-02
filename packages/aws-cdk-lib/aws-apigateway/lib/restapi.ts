@@ -21,6 +21,7 @@ import { ArnFormat, CfnOutput, IResource as IResourceBase, Resource, Stack, Toke
 import { APIGATEWAY_DISABLE_CLOUDWATCH_ROLE } from '../../cx-api';
 
 const RESTAPI_SYMBOL = Symbol.for('@aws-cdk/aws-apigateway.RestApiBase');
+const APIGATEWAY_RESTAPI_SYMBOL = Symbol.for('@aws-cdk/aws-apigateway.RestApi');
 
 export interface IRestApi extends IResourceBase {
   /**
@@ -759,6 +760,14 @@ export interface RestApiAttributes {
  * public endpoint.
  */
 export class RestApi extends RestApiBase {
+
+  /**
+   * Return whether the given object is a `RestApi`
+   */
+  public static isRestApi(x: any) : x is RestApi {
+    return x !== null && typeof(x) === 'object' && APIGATEWAY_RESTAPI_SYMBOL in x;
+  }
+
   /**
    * Import an existing RestApi.
    */
@@ -842,6 +851,8 @@ export class RestApi extends RestApiBase {
     this.restApiRootResourceId = resource.attrRootResourceId;
 
     this.node.addValidation({ validate: () => this.validateRestApi() });
+
+    Object.defineProperty(this, APIGATEWAY_RESTAPI_SYMBOL, { value: true });
   }
 
   /**

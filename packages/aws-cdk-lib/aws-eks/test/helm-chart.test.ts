@@ -43,7 +43,7 @@ describe('helm chart', () => {
       };
 
       // THEN
-      expect(t).toThrowError();
+      expect(t).toThrow();
     });
 
     test('should throw when chart and repository specified', () => {
@@ -63,7 +63,7 @@ describe('helm chart', () => {
       };
 
       // THEN
-      expect(t).toThrowError();
+      expect(t).toThrow();
     });
 
     test('should throw when chartAsset and version specified', () => {
@@ -83,7 +83,7 @@ describe('helm chart', () => {
       };
 
       // THEN
-      expect(t).toThrowError();
+      expect(t).toThrow();
     });
 
     test('should handle chart from S3 asset', () => {
@@ -212,6 +212,30 @@ describe('helm chart', () => {
       expect(Object.keys(charts).length).toEqual(0);
     });
 
+    test('should enable atomic operations when specified', () => {
+      //GIVEN
+      const { stack, cluster } = testFixtureCluster();
+
+      //WHEN
+      new eks.HelmChart(stack, 'MyAtomicChart', { cluster, chart: 'chart', atomic: true });
+
+      //THEN
+      Template.fromStack(stack).hasResourceProperties(eks.HelmChart.RESOURCE_TYPE, { Atomic: true });
+    });
+
+    test('should disable atomic operations by default', () => {
+      //GIVEN
+      const { stack, cluster } = testFixtureCluster();
+
+      //WHEN
+      new eks.HelmChart(stack, 'MyAtomicChart', { cluster, chart: 'chart' });
+
+      //THEN
+      const charts = Template.fromStack(stack).findResources(eks.HelmChart.RESOURCE_TYPE, { Atomic: true });
+      expect(Object.keys(charts).length).toEqual(0);
+
+    });
+
     test('should timeout only after 10 minutes', () => {
       // GIVEN
       const { stack, cluster } = testFixtureCluster();
@@ -247,6 +271,16 @@ describe('helm chart', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties(eks.HelmChart.RESOURCE_TYPE, { SkipCrds: true });
+    });
+    test('should use private ecr repo when specified', () => {
+      // GIVEN
+      const { stack, cluster } = testFixtureCluster();
+
+      // WHEN
+      new eks.HelmChart(stack, 'MyPrivateChart', { cluster, chart: 'chart', repository: 'oci://012345678.dkr.ecr.us-east-1.amazonaws.com/private-repo' });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties(eks.HelmChart.RESOURCE_TYPE, { Repository: 'oci://012345678.dkr.ecr.us-east-1.amazonaws.com/private-repo' });
     });
   });
 });

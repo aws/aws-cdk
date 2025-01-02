@@ -1,9 +1,9 @@
 import { Match, Template } from '../../../assertions';
 import { Certificate } from '../../../aws-certificatemanager';
-import { Vpc } from '../../../aws-ec2';
+import { IpProtocol, Vpc } from '../../../aws-ec2';
 import * as ecs from '../../../aws-ecs';
 import { ContainerDefinition, ContainerImage } from '../../../aws-ecs';
-import { ApplicationProtocol, SslPolicy } from '../../../aws-elasticloadbalancingv2';
+import { ApplicationProtocol, IpAddressType, SslPolicy } from '../../../aws-elasticloadbalancingv2';
 import { CompositePrincipal, Role, ServicePrincipal } from '../../../aws-iam';
 import { PublicHostedZone } from '../../../aws-route53';
 import { Duration, Stack } from '../../../core';
@@ -112,6 +112,31 @@ describe('Application Load Balancer', () => {
         RequiresCompatibilities: [
           'FARGATE',
         ],
+      });
+    });
+
+    test('dualstack application load balancer', () => {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC', {
+        ipProtocol: IpProtocol.DUAL_STACK,
+      });
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+      // WHEN
+      new ApplicationLoadBalancedFargateService(stack, 'Service', {
+        cluster,
+        taskImageOptions: {
+          image: ecs.ContainerImage.fromRegistry('test'),
+        },
+        ipAddressType: IpAddressType.DUAL_STACK,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        Scheme: 'internet-facing',
+        Type: 'application',
+        IpAddressType: 'dualstack',
       });
     });
   });
@@ -491,7 +516,7 @@ describe('Application Load Balancer', () => {
             },
           ],
         });
-      }).toThrowError();
+      }).toThrow();
     });
 
     test('errors when idleTimeout is under 1 seconds for multiAlbService', () => {
@@ -561,7 +586,7 @@ describe('Application Load Balancer', () => {
             },
           ],
         });
-      }).toThrowError();
+      }).toThrow();
     });
 
     test('passes when idleTimeout is between 1 and 4000 seconds for multiAlbService', () => {
@@ -738,6 +763,30 @@ describe('Network Load Balancer', () => {
         VpcId: {
           Ref: 'VPCB9E5F0B4',
         },
+      });
+    });
+
+    test('specify IPV6 address type for NLB', () => {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC', { maxAzs: 2 });
+
+      // WHEN
+      new NetworkLoadBalancedFargateService(stack, 'NLBService', {
+        cluster: new ecs.Cluster(stack, 'Cluster', { vpc }),
+        memoryLimitMiB: 1024,
+        cpu: 512,
+        taskImageOptions: {
+          image: ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+          containerPort: 80,
+        },
+        listenerPort: 80,
+        ipAddressType: IpAddressType.DUAL_STACK,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        IpAddressType: 'dualstack',
       });
     });
   });

@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { testDeprecated, bockfs } from '@aws-cdk/cdk-build-tools';
 import * as constructs from 'constructs';
 import * as _ from 'lodash';
 import { Annotations, Match, Template } from '../../assertions';
@@ -7,6 +7,7 @@ import { ProfilingGroup } from '../../aws-codeguruprofiler';
 import * as ec2 from '../../aws-ec2';
 import * as efs from '../../aws-efs';
 import * as iam from '../../aws-iam';
+import { AccountPrincipal } from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
@@ -15,6 +16,7 @@ import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
 import * as cdk from '../../core';
 import { Aspects, Lazy, Size } from '../../core';
+import { getWarnings } from '../../core/test/util';
 import * as cxapi from '../../cx-api';
 import * as lambda from '../lib';
 import { AdotLambdaLayerJavaSdkVersion } from '../lib/adot-layers';
@@ -223,6 +225,55 @@ describe('function', () => {
       fn.addPermission('S4', { principal: new iam.OrganizationPrincipal('my:org') });
     });
 
+    test('does not show warning if skipPermissions is set', () => {
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app);
+      const imported = lambda.Function.fromFunctionAttributes(stack, 'Imported', {
+        functionArn: 'arn:aws:lambda:us-west-2:123456789012:function:my-function',
+        skipPermissions: true,
+      });
+      imported.addPermission('Permission', {
+        action: 'lambda:InvokeFunction',
+        principal: new AccountPrincipal('123456789010'),
+      });
+
+      expect(getWarnings(app.synth()).length).toBe(0);
+    });
+
+    test('shows warning if skipPermissions is not set', () => {
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app);
+      const imported = lambda.Function.fromFunctionAttributes(stack, 'Imported', {
+        functionArn: 'arn:aws:lambda:us-west-2:123456789012:function:my-function',
+      });
+      imported.addPermission('Permission', {
+        action: 'lambda:InvokeFunction',
+        principal: new AccountPrincipal('123456789010'),
+      });
+
+      expect(getWarnings(app.synth())).toEqual([
+        {
+          message: {
+            'Fn::Join': [
+              '',
+              [
+                'addPermission() has no effect on a Lambda Function with region=us-west-2, account=123456789012, in a Stack with region=',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ', account=',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                '. Suppress this warning if this is is intentional, or pass sameEnvironment=true to fromFunctionAttributes() if you would like to add the permissions. [ack: UnclearLambdaEnvironment]',
+              ],
+            ],
+          },
+          path: '/Default/Imported',
+        },
+      ]);
+    });
+
     test('applies source account/ARN conditions if the principal has conditions', () => {
       const stack = new cdk.Stack();
       const fn = newTestLambda(stack);
@@ -391,30 +442,6 @@ describe('function', () => {
 
     // WHEN
     const imported = lambda.Function.fromFunctionArn(stack2, 'Imported', 'arn:aws:lambda:us-east-1:123456789012:function:ProcessKinesisRecords');
-
-    // THEN
-    expect(imported.functionArn).toEqual('arn:aws:lambda:us-east-1:123456789012:function:ProcessKinesisRecords');
-    expect(imported.functionName).toEqual('ProcessKinesisRecords');
-  });
-
-  test('fromFunctionArn with verionArn as the input', () => {
-    // GIVEN
-    const stack2 = new cdk.Stack();
-
-    // WHEN
-    const imported = lambda.Function.fromFunctionArn(stack2, 'Imported', 'arn:aws:lambda:us-east-1:123456789012:function:ProcessKinesisRecords:1');
-
-    // THEN
-    expect(imported.functionArn).toEqual('arn:aws:lambda:us-east-1:123456789012:function:ProcessKinesisRecords');
-    expect(imported.functionName).toEqual('ProcessKinesisRecords');
-  });
-
-  test('fromFunctionArn with trailing alias as the input', () => {
-    // GIVEN
-    const stack2 = new cdk.Stack();
-
-    // WHEN
-    const imported = lambda.Function.fromFunctionArn(stack2, 'Imported', 'arn:aws:lambda:us-east-1:123456789012:function:ProcessKinesisRecords:TEST');
 
     // THEN
     expect(imported.functionArn).toEqual('arn:aws:lambda:us-east-1:123456789012:function:ProcessKinesisRecords');
@@ -1276,6 +1303,72 @@ describe('function', () => {
                 { 'Fn::GetAtt': ['Function76856677', 'Arn'] },
                 { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['Function76856677', 'Arn'] }, ':*']] },
               ],
+            },
+          ],
+        },
+      });
+    });
+
+    test('adds grantInvokeLatestVersion ', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.AccountPrincipal('1234'),
+      });
+      const fn = new lambda.Function(stack, 'Function', {
+        code: lambda.Code.fromInline('xxx'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      });
+
+      // WHEN
+      fn.grantInvokeLatestVersion(role);
+
+      // THEN function should have allow on both unqualified arn and arn:$LATEST
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Action: 'lambda:InvokeFunction',
+              Effect: 'Allow',
+              Resource: [
+                { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['Function76856677', 'Arn'] }, ':$LATEST']] },
+                { 'Fn::GetAtt': ['Function76856677', 'Arn'] },
+              ],
+            },
+          ],
+        },
+      });
+    });
+
+    test('adds grantInvokeVersion ', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.AccountPrincipal('1234'),
+      });
+      const fn = new lambda.Function(stack, 'Function', {
+        code: lambda.Code.fromInline('xxx'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      });
+
+      const lv2 = new lambda.Version(stack, 'v2', {
+        lambda: fn,
+      });
+      // WHEN
+      fn.grantInvokeVersion(role, lv2);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Action: 'lambda:InvokeFunction',
+              Effect: 'Allow',
+              Resource: { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['Function76856677', 'Arn'] }, ':', { 'Fn::GetAtt': ['v248F3DDCC', 'Version'] }]] },
             },
           ],
         },
@@ -2830,6 +2923,99 @@ describe('function', () => {
       });
     });
 
+    test('validate localMountPath format when mounting efs', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc', {
+        maxAzs: 3,
+        natGateways: 1,
+      });
+      const securityGroup = new ec2.SecurityGroup(stack, 'LambdaSG', {
+        vpc,
+        allowAllOutbound: false,
+      });
+
+      const fs = new efs.FileSystem(stack, 'Efs', {
+        vpc,
+      });
+      const accessPoint = fs.addAccessPoint('AccessPoint');
+
+      // THEN
+      expect(() => {
+        new lambda.Function(stack, 'MyFunction', {
+          vpc,
+          handler: 'foo',
+          securityGroups: [securityGroup],
+          runtime: lambda.Runtime.NODEJS_LATEST,
+          code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+          filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/not-mnt/foo-bar'),
+        });
+      }).toThrow('Local mount path should match with ^/mnt/[a-zA-Z0-9-_.]+$ but given /not-mnt/foo-bar');
+    });
+
+    test('validate localMountPath length when mounting efs', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc', {
+        maxAzs: 3,
+        natGateways: 1,
+      });
+      const securityGroup = new ec2.SecurityGroup(stack, 'LambdaSG', {
+        vpc,
+        allowAllOutbound: false,
+      });
+
+      const fs = new efs.FileSystem(stack, 'Efs', {
+        vpc,
+      });
+      const accessPoint = fs.addAccessPoint('AccessPoint');
+
+      // THEN
+      expect(() => {
+        new lambda.Function(stack, 'MyFunction', {
+          vpc,
+          handler: 'foo',
+          securityGroups: [securityGroup],
+          runtime: lambda.Runtime.NODEJS_LATEST,
+          code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+          filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, `/mnt/${'a'.repeat(160)}`),
+        });
+      }).toThrow('Local mount path can not be longer than 160 characters but has 165 characters');
+    });
+
+    test('No error when local mount path is Tokenized and Unresolved', () => {
+      // GIVEN
+      const realLocalMountPath = '/not-mnt/foo-bar';
+      const tokenizedLocalMountPath = cdk.Token.asString(new cdk.Intrinsic(realLocalMountPath));
+
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc', {
+        maxAzs: 3,
+        natGateways: 1,
+      });
+      const securityGroup = new ec2.SecurityGroup(stack, 'LambdaSG', {
+        vpc,
+        allowAllOutbound: false,
+      });
+
+      const fs = new efs.FileSystem(stack, 'Efs', {
+        vpc,
+      });
+      const accessPoint = fs.addAccessPoint('AccessPoint');
+
+      // THEN
+      expect(() => {
+        new lambda.Function(stack, 'MyFunction', {
+          vpc,
+          handler: 'foo',
+          securityGroups: [securityGroup],
+          runtime: lambda.Runtime.NODEJS_LATEST,
+          code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+          filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, tokenizedLocalMountPath),
+        });
+      }).not.toThrow();
+    });
+
     test('correct security group is created when deployed in separate stacks', () => {
       const app = new cdk.App();
 
@@ -3333,19 +3519,32 @@ describe('function', () => {
         handler: 'bar',
         runtime: lambda.Runtime.NODEJS_18_X,
         snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
-      })).toThrowError('SnapStart currently not supported by runtime nodejs18.x');
+      })).toThrow('SnapStart currently not supported by runtime nodejs18.x');
     });
 
-    test('arm64 validation for snapStart', () => {
+    test('arm64 function using snapStart', () => {
       const stack = new cdk.Stack();
-
-      expect(() => new lambda.Function(stack, 'MyLambda', {
+      //WHEN
+      new lambda.Function(stack, 'MyLambda', {
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
         handler: 'example.Handler::handleRequest',
         runtime: lambda.Runtime.JAVA_11,
         architecture: lambda.Architecture.ARM_64,
         snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
-      })).toThrowError('SnapStart is currently not supported on Arm_64');
+      });
+
+      //THEN
+      Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+        Properties:
+            {
+              Handler: 'example.Handler::handleRequest',
+              Runtime: 'java11',
+              Architectures: ['arm64'],
+              SnapStart: {
+                ApplyOn: 'PublishedVersions',
+              },
+            },
+      });
     });
 
     test('EFS validation for snapStart', () => {
@@ -3367,10 +3566,10 @@ describe('function', () => {
         runtime: lambda.Runtime.JAVA_11,
         filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
         snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
-      })).toThrowError('SnapStart is currently not supported using EFS');
+      })).toThrow('SnapStart is currently not supported using EFS');
     });
 
-    test('arm64 validation for snapStart', () => {
+    test('ephemeral storage limit validation for snapStart', () => {
       const stack = new cdk.Stack();
 
       expect(() => new lambda.Function(stack, 'MyLambda', {
@@ -3379,7 +3578,68 @@ describe('function', () => {
         runtime: lambda.Runtime.JAVA_11,
         ephemeralStorageSize: Size.mebibytes(1024),
         snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
-      })).toThrowError('SnapStart is currently not supported using more than 512 MiB Ephemeral Storage');
+      })).toThrow('SnapStart is currently not supported using more than 512 MiB Ephemeral Storage');
+    });
+  });
+
+  describe('Recursive Loop', () => {
+    test('with recursive loop protection', () => {
+      const stack = new cdk.Stack();
+      new lambda.Function(stack, 'MyLambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'bar',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+        recursiveLoop: lambda.RecursiveLoop.TERMINATE,
+      });
+
+      Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+        Properties:
+        {
+          Code: { ZipFile: 'foo' },
+          Handler: 'bar',
+          Runtime: lambda.Runtime.NODEJS_LATEST.name,
+          RecursiveLoop: 'Terminate',
+        },
+      });
+    });
+
+    test('without recursive loop protection', () => {
+      const stack = new cdk.Stack();
+      new lambda.Function(stack, 'MyLambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'bar',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+        recursiveLoop: lambda.RecursiveLoop.ALLOW,
+      });
+
+      Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+        Properties:
+        {
+          Code: { ZipFile: 'foo' },
+          Handler: 'bar',
+          Runtime: lambda.Runtime.NODEJS_LATEST.name,
+          RecursiveLoop: 'Allow',
+        },
+      });
+    });
+
+    test('default recursive loop protection', () => {
+      const stack = new cdk.Stack();
+      new lambda.Function(stack, 'MyLambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'bar',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      });
+
+      Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+        Properties:
+        {
+          Code: { ZipFile: 'foo' },
+          Handler: 'bar',
+          Runtime: lambda.Runtime.NODEJS_LATEST.name,
+          // for default, if the property is not set up in stack it doesn't show up in the template.
+        },
+      });
     });
   });
 
@@ -3472,7 +3732,7 @@ describe('function', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-      Layers: ['arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-32-0:1'],
+      Layers: ['arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-32-0:3'],
       Environment: {
         Variables: {
           AWS_LAMBDA_EXEC_WRAPPER: '/opt/otel-handler',
@@ -3494,14 +3754,14 @@ describe('function', () => {
       handler: 'index.handler',
       runtime: lambda.Runtime.PYTHON_3_9,
       adotInstrumentation: {
-        layerVersion: lambda.AdotLayerVersion.fromPythonSdkLayerVersion(lambda.AdotLambdaLayerPythonSdkVersion.V1_21_0),
+        layerVersion: lambda.AdotLayerVersion.fromPythonSdkLayerVersion(lambda.AdotLambdaLayerPythonSdkVersion.V1_25_0),
         execWrapper: lambda.AdotLambdaExecWrapper.INSTRUMENT_HANDLER,
       },
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-      Layers: ['arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-python-amd64-ver-1-21-0:1'],
+      Layers: ['arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-python-amd64-ver-1-25-0:1'],
       Environment: {
         Variables: {
           AWS_LAMBDA_EXEC_WRAPPER: '/opt/otel-instrument',
@@ -3518,7 +3778,7 @@ describe('function', () => {
       handler: 'index.handler',
       runtime: lambda.Runtime.PYTHON_3_10,
       adotInstrumentation: {
-        layerVersion: lambda.AdotLayerVersion.fromPythonSdkLayerVersion(lambda.AdotLambdaLayerPythonSdkVersion.V1_21_0),
+        layerVersion: lambda.AdotLayerVersion.fromPythonSdkLayerVersion(lambda.AdotLambdaLayerPythonSdkVersion.V1_25_0),
         execWrapper: lambda.AdotLambdaExecWrapper.REGULAR_HANDLER,
       },
     })).toThrow(/Python Adot Lambda layer requires AdotLambdaExecWrapper.INSTRUMENT_HANDLER/);
@@ -3542,6 +3802,77 @@ describe('function', () => {
           },
         }),
     ).toThrow(/ADOT Lambda layer can't be configured with container image package type/);
+  });
+
+  describe('allowAllIpv6Outbound', () => {
+    test('allowAllIpv6Outbound set to true', () => {
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+
+      new lambda.Function(stack, 'MyLambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+        allowAllIpv6Outbound: true,
+        vpc,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
+        SecurityGroupEgress: [
+          {
+            CidrIp: '0.0.0.0/0',
+            Description: 'Allow all outbound traffic by default',
+            IpProtocol: '-1',
+          },
+          {
+            CidrIpv6: '::/0',
+            Description: 'Allow all outbound ipv6 traffic by default',
+            IpProtocol: '-1',
+          },
+        ],
+      });
+    });
+
+    test('throws when allowAllIpv6Outbound is defined without vpc', () => {
+      const stack = new cdk.Stack();
+
+      expect(() => new lambda.Function(stack, 'MyLambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+        allowAllIpv6Outbound: true,
+      })).toThrow(/Cannot configure \'allowAllIpv6Outbound\' without configuring a VPC/);
+    });
+
+    test('throws when both allowAllIpv6Outbound and securityGroup are defined', () => {
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc: vpc });
+
+      expect(() => new lambda.Function(stack, 'MyLambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+        allowAllIpv6Outbound: true,
+        vpc,
+        securityGroup: securityGroup,
+      })).toThrow(/Configure \'allowAllIpv6Outbound\' directly on the supplied SecurityGroup./);
+    });
+
+    test('throws when both allowAllIpv6Outbound and securityGroups are defined', () => {
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc: vpc });
+
+      expect(() => new lambda.Function(stack, 'MyLambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+        allowAllIpv6Outbound: true,
+        vpc,
+        securityGroups: [securityGroup],
+      })).toThrow(/Configure \'allowAllIpv6Outbound\' directly on the supplied SecurityGroups./);
+    });
   });
 });
 
@@ -3949,6 +4280,466 @@ describe('VPC configuration', () => {
         },
       },
     });
+  });
+});
+
+describe('latest Lambda node runtime', () => {
+  test('with region agnostic stack', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromInline('foo'),
+      handler: 'index.handler',
+      runtime: lambda.determineLatestNodeRuntime(stack),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasMapping('LatestNodeRuntimeMap', {
+      'af-south-1': {
+        value: 'nodejs20.x',
+      },
+      'ap-east-1': {
+        value: 'nodejs20.x',
+      },
+      'ap-northeast-1': {
+        value: 'nodejs20.x',
+      },
+      'ap-northeast-2': {
+        value: 'nodejs20.x',
+      },
+      'ap-northeast-3': {
+        value: 'nodejs20.x',
+      },
+      'ap-south-1': {
+        value: 'nodejs20.x',
+      },
+      'ap-south-2': {
+        value: 'nodejs20.x',
+      },
+      'ap-southeast-1': {
+        value: 'nodejs20.x',
+      },
+      'ap-southeast-2': {
+        value: 'nodejs20.x',
+      },
+      'ap-southeast-3': {
+        value: 'nodejs20.x',
+      },
+      'ap-southeast-4': {
+        value: 'nodejs20.x',
+      },
+      'ca-central-1': {
+        value: 'nodejs20.x',
+      },
+      'cn-north-1': {
+        value: 'nodejs18.x',
+      },
+      'cn-northwest-1': {
+        value: 'nodejs18.x',
+      },
+      'eu-central-1': {
+        value: 'nodejs20.x',
+      },
+      'eu-central-2': {
+        value: 'nodejs20.x',
+      },
+      'eu-north-1': {
+        value: 'nodejs20.x',
+      },
+      'eu-south-1': {
+        value: 'nodejs20.x',
+      },
+      'eu-south-2': {
+        value: 'nodejs20.x',
+      },
+      'eu-west-1': {
+        value: 'nodejs20.x',
+      },
+      'eu-west-2': {
+        value: 'nodejs20.x',
+      },
+      'eu-west-3': {
+        value: 'nodejs20.x',
+      },
+      'il-central-1': {
+        value: 'nodejs20.x',
+      },
+      'me-central-1': {
+        value: 'nodejs20.x',
+      },
+      'me-south-1': {
+        value: 'nodejs20.x',
+      },
+      'sa-east-1': {
+        value: 'nodejs20.x',
+      },
+      'us-east-1': {
+        value: 'nodejs20.x',
+      },
+      'us-east-2': {
+        value: 'nodejs20.x',
+      },
+      'us-gov-east-1': {
+        value: 'nodejs18.x',
+      },
+      'us-gov-west-1': {
+        value: 'nodejs18.x',
+      },
+      'us-iso-east-1': {
+        value: 'nodejs18.x',
+      },
+      'us-iso-west-1': {
+        value: 'nodejs18.x',
+      },
+      'us-isob-east-1': {
+        value: 'nodejs18.x',
+      },
+      'us-west-1': {
+        value: 'nodejs20.x',
+      },
+      'us-west-2': {
+        value: 'nodejs20.x',
+      },
+    });
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Runtime: {
+          'Fn::FindInMap': [
+            'LatestNodeRuntimeMap',
+            {
+              Ref: 'AWS::Region',
+            },
+            'value',
+          ],
+        },
+      },
+    });
+  });
+
+  test('with stack in commercial region', () => {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'Stack', { env: { region: 'us-east-1' } });
+
+    // WHEN
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromInline('foo'),
+      handler: 'index.handler',
+      runtime: lambda.determineLatestNodeRuntime(stack),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Runtime: 'nodejs20.x',
+      },
+    });
+  });
+
+  test('with stack in china region', () => {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'Stack', { env: { region: 'cn-north-1' } });
+
+    // WHEN
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromInline('foo'),
+      handler: 'index.handler',
+      runtime: lambda.determineLatestNodeRuntime(stack),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Runtime: 'nodejs18.x',
+      },
+    });
+  });
+
+  test('with stack in adc region', () => {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'Stack', { env: { region: 'us-iso-east-1' } });
+
+    // WHEN
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromInline('foo'),
+      handler: 'index.handler',
+      runtime: lambda.determineLatestNodeRuntime(stack),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Runtime: 'nodejs18.x',
+      },
+    });
+  });
+
+  test('with stack in govcloud region', () => {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'Stack', { env: { region: 'us-gov-east-1' } });
+
+    // WHEN
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromInline('foo'),
+      handler: 'index.handler',
+      runtime: lambda.determineLatestNodeRuntime(stack),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Runtime: 'nodejs18.x',
+      },
+    });
+  });
+
+  test('with stack in unsupported region', () => {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'Stack', { env: { region: 'us-fake-1' } });
+
+    // WHEN
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromInline('foo'),
+      handler: 'index.handler',
+      runtime: lambda.determineLatestNodeRuntime(stack),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Runtime: 'nodejs18.x',
+      },
+    });
+  });
+});
+
+// Test sourceKMSKeyArn feature
+describe('CMCMK', () => {
+  test('set sourceKMSKeyArn using fromAsset', () => {
+    const stack = new cdk.Stack();
+    const key = new kms.Key(stack, 'myImportedKey', {
+      enableKeyRotation: true,
+    });
+    const option = {
+      sourceKMSKey: key,
+    };
+    // WHEN
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip'), option),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+    });
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Code: {
+          SourceKMSKeyArn: { 'Fn::GetAtt': ['myImportedKey10DE2890', 'Arn'] },
+        },
+        Runtime: 'python3.9',
+        Handler: 'index.handler',
+      },
+    });
+  });
+
+  test('no sourceKMSKey provided using fromAsset', () => {
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Code: {
+          SourceKMSKeyArn: Match.absent(),
+        },
+      },
+    });
+  });
+
+  test('set sourceKMSKeyArn using fromBucket', () => {
+    const stack = new cdk.Stack();
+    // S3 Bucket
+    const key = 'script';
+    let bucket: s3.IBucket;
+    bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'bucketname');
+
+    // KMS
+    const KMSkey = new kms.Key(stack, 'myImportedKey', {
+      enableKeyRotation: true,
+    });
+    const option = {
+      sourceKMSKey: KMSkey,
+    };
+    // WHEN
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromBucketV2(bucket, key, option),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+    });
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Code: {
+          SourceKMSKeyArn: { 'Fn::GetAtt': ['myImportedKey10DE2890', 'Arn'] },
+        },
+        Runtime: 'python3.9',
+        Handler: 'index.handler',
+      },
+    });
+  });
+
+  test('no sourceKMSKey provided using fromBucket', () => {
+    const stack = new cdk.Stack();
+    // S3 Bucket
+    const key = 'script';
+    let bucket: s3.IBucket;
+    bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'bucketname');
+
+    // WHEN
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromBucketV2(bucket, key),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+    });
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Code: {
+          SourceKMSKeyArn: Match.absent(),
+        },
+        Runtime: 'python3.9',
+        Handler: 'index.handler',
+      },
+    });
+  });
+
+  test('set sourceKMSKeyArn using fromCfnParameters', () => {
+    const stack = new cdk.Stack();
+    // KMS
+    const KMSkey = new kms.Key(stack, 'myImportedKey', {
+      enableKeyRotation: true,
+    });
+    // WHEN
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromCfnParameters({
+        sourceKMSKey: KMSkey,
+      }),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+    });
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Code: {
+          SourceKMSKeyArn: { 'Fn::GetAtt': ['myImportedKey10DE2890', 'Arn'] },
+        },
+        Runtime: 'python3.9',
+        Handler: 'index.handler',
+      },
+    });
+  });
+
+  test('no sourceKMSKey provided using fromCfnParameters', () => {
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromCfnParameters(),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+    });
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Code: {
+          SourceKMSKeyArn: Match.absent(),
+        },
+        Runtime: 'python3.9',
+        Handler: 'index.handler',
+      },
+    });
+  });
+
+  test('set sourceKMSKeyArn using fromCustomCommand', () => {
+    const mockCallsites = jest.fn();
+    jest.mock('../lib/util', () => ({
+      ...jest.requireActual('../lib/util'),
+      callsites: () => mockCallsites(),
+    }));
+    bockfs({
+      '/home/project/function.test.handler7.zip': '// nothing',
+    });
+    const bockPath = bockfs.workingDirectory('/home/project');
+    mockCallsites.mockImplementation(() => [
+      { getFunctionName: () => 'NodejsFunction' },
+      { getFileName: () => bockPath`function.test.ts` },
+    ]);
+
+    const stack = new cdk.Stack();
+    // KMS
+    const KMSkey = new kms.Key(stack, 'myImportedKey', {
+      enableKeyRotation: true,
+    });
+    // const command = ;
+    const commandOptions = { sourceKMSKey: KMSkey };
+    // WHEN
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromCustomCommand('function.test.handler7.zip', ['node'], commandOptions),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_18_X,
+    });
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Code: {
+          SourceKMSKeyArn: { 'Fn::GetAtt': ['myImportedKey10DE2890', 'Arn'] },
+        },
+        Runtime: 'nodejs18.x',
+        Handler: 'index.handler',
+      },
+    });
+    bockfs.restore();
+  });
+
+  test('no sourceKMSKey provided using fromCustomCommand', () => {
+    const mockCallsites = jest.fn();
+    jest.mock('../lib/util', () => ({
+      ...jest.requireActual('../lib/util'),
+      callsites: () => mockCallsites(),
+    }));
+    bockfs({
+      '/home/project/function.test.handler7.zip': '// nothing',
+    });
+    const bockPath = bockfs.workingDirectory('/home/project');
+    mockCallsites.mockImplementation(() => [
+      { getFunctionName: () => 'NodejsFunction' },
+      { getFileName: () => bockPath`function.test.ts` },
+    ]);
+
+    const stack = new cdk.Stack();
+    // WHEN
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromCustomCommand('function.test.handler7.zip', ['node']),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_18_X,
+    });
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Code: {
+          SourceKMSKeyArn: Match.absent(),
+        },
+        Runtime: 'nodejs18.x',
+        Handler: 'index.handler',
+      },
+    });
+    bockfs.restore();
   });
 });
 

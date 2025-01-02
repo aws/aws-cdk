@@ -1,3 +1,4 @@
+import { Annotations, Match } from '../../assertions';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import * as stepfunctions from '../lib';
@@ -521,6 +522,63 @@ describe('Distributed Map State', () => {
     });
   }),
 
+  test('State Machine With Distributed Map State, ItemReader and BucketNamePath', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    //WHEN
+    const map = new stepfunctions.DistributedMap(stack, 'Map State', {
+      itemReader: new stepfunctions.S3ManifestItemReader({
+        bucketNamePath: stepfunctions.JsonPath.stringAt('$.bucketName'),
+        key: stepfunctions.JsonPath.stringAt('$.key'),
+      }),
+    });
+    map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
+
+    //THEN
+    expect(render(map)).toStrictEqual({
+      StartAt: 'Map State',
+      States: {
+        'Map State': {
+          Type: 'Map',
+          End: true,
+          ItemProcessor: {
+            ProcessorConfig: {
+              Mode: stepfunctions.ProcessorMode.DISTRIBUTED,
+              ExecutionType: stepfunctions.StateMachineType.STANDARD,
+            },
+            StartAt: 'Pass State',
+            States: {
+              'Pass State': {
+                Type: 'Pass',
+                End: true,
+              },
+            },
+          },
+          ItemReader: {
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':states:::s3:getObject',
+                ],
+              ],
+            },
+            ReaderConfig: {
+              InputType: 'MANIFEST',
+            },
+            Parameters: {
+              'Bucket.$': '$.bucketName',
+              'Key.$': '$.key',
+            },
+          },
+        },
+      },
+    });
+  }),
+
   test('State Machine With Distributed Map State and ResultWriter', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -725,6 +783,57 @@ describe('Distributed Map State', () => {
     expect(() => app.synth()).toThrow(/Provide either `itemsPath` or `itemReader`, but not both/);
   }),
 
+  test('fails in synthesis if itemReader contains both bucket and bucketNamePath', () => {
+    const app = createAppWithMap((stack) => {
+      const map = new stepfunctions.DistributedMap(stack, 'Map State', {
+        itemReader: new stepfunctions.S3JsonItemReader({
+          bucket: new s3.Bucket(stack, 'TestBucket'),
+          bucketNamePath: stepfunctions.JsonPath.stringAt('$.bucketName'),
+          key: 'test.json',
+        }),
+      });
+
+      return map;
+    });
+
+    expect(() => app.synth()).toThrow(/Provide either `bucket` or `bucketNamePath`, but not both/);
+  }),
+
+  test('fails in synthesis if itemReader contains neither bucket nor bucketNamePath', () => {
+    const app = createAppWithMap((stack) => {
+      const map = new stepfunctions.DistributedMap(stack, 'Map State', {
+        itemReader: new stepfunctions.S3JsonItemReader({
+          key: 'test.json',
+        }),
+      });
+
+      return map;
+    });
+
+    expect(() => app.synth()).toThrow(/Provide either `bucket` or `bucketNamePath`/);
+  }),
+
+  test('does not throw while accessing bucket of itemReader which was initialised with bucket', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'my-stack');
+    const bucket = new s3.Bucket(stack, 'TestBucket');
+    const itemReader = new stepfunctions.S3JsonItemReader({
+      bucket,
+      key: 'test.json',
+    });
+
+    expect(itemReader.bucket).toStrictEqual(bucket);
+  }),
+
+  test('throws while accessing bucket of itemReader which was initialised with bucketNamePath', () => {
+    const itemReader = new stepfunctions.S3JsonItemReader({
+      bucketNamePath: stepfunctions.JsonPath.stringAt('$.bucketName'),
+      key: 'test.json',
+    });
+
+    expect(() => itemReader.bucket).toThrow(/`bucket` is undefined/);
+  }),
+
   test('fails in synthesis if ItemProcessor is in INLINE mode', () => {
     const app = createAppWithMap((stack) => {
       const map = new stepfunctions.DistributedMap(stack, 'Map State', {
@@ -764,6 +873,99 @@ describe('Distributed Map State', () => {
     });
 
     expect(() => app.synth()).toThrow(/label cannot contain any whitespace or special characters/);
+  });
+
+  test('does not fail in synthesis if label has `s`', () => {
+    const app = createAppWithMap((stack) => {
+      const map = new stepfunctions.DistributedMap(stack, 'Map State', {
+        label: 's',
+        itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
+      });
+
+      return map;
+    });
+
+    app.synth();
+  });
+
+  test('State Machine With Distributed Map State should use default mapExecutionType and ignore itemProcessor executionType', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    //WHEN
+    const map = new stepfunctions.DistributedMap(stack, 'Map State', {
+    });
+    map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'), {
+      mode: stepfunctions.ProcessorMode.DISTRIBUTED,
+      executionType: stepfunctions.ProcessorType.EXPRESS,
+    });
+
+    //THEN
+    expect(render(map)).toStrictEqual({
+      StartAt: 'Map State',
+      States: {
+        'Map State': {
+          Type: 'Map',
+          End: true,
+          ItemProcessor: {
+            ProcessorConfig: {
+              Mode: stepfunctions.ProcessorMode.DISTRIBUTED,
+              ExecutionType: stepfunctions.StateMachineType.STANDARD,
+            },
+            StartAt: 'Pass State',
+            States: {
+              'Pass State': {
+                Type: 'Pass',
+                End: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    Annotations.fromStack(stack).hasWarning('/Default/Map State', Match.stringLikeRegexp('Property \'ProcessorConfig.executionType\' is ignored, use the \'mapExecutionType\' in the \'DistributedMap\' class instead.'));
+  });
+
+  test('State Machine With Distributed Map State should use configured mapExecutionType and ignore itemProcessor executionType', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    //WHEN
+    const map = new stepfunctions.DistributedMap(stack, 'Map State', {
+      mapExecutionType: stepfunctions.StateMachineType.EXPRESS,
+    });
+    map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'), {
+      mode: stepfunctions.ProcessorMode.DISTRIBUTED,
+      executionType: stepfunctions.ProcessorType.STANDARD,
+    });
+
+    //THEN
+    expect(render(map)).toStrictEqual({
+      StartAt: 'Map State',
+      States: {
+        'Map State': {
+          Type: 'Map',
+          End: true,
+          ItemProcessor: {
+            ProcessorConfig: {
+              Mode: stepfunctions.ProcessorMode.DISTRIBUTED,
+              ExecutionType: stepfunctions.StateMachineType.EXPRESS,
+            },
+            StartAt: 'Pass State',
+            States: {
+              'Pass State': {
+                Type: 'Pass',
+                End: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    Annotations.fromStack(stack).hasWarning('/Default/Map State', Match.stringLikeRegexp('Property \'ProcessorConfig.executionType\' is ignored, use the \'mapExecutionType\' in the \'DistributedMap\' class instead.'));
+
   });
 });
 

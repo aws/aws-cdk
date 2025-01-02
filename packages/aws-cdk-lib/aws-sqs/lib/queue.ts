@@ -198,7 +198,7 @@ export interface DeadLetterQueue {
   readonly queue: IQueue;
 
   /**
-   * The number of times a message can be unsuccesfully dequeued before being moved to the dead-letter queue.
+   * The number of times a message can be unsuccessfully dequeued before being moved to the dead-letter queue.
    */
   readonly maxReceiveCount: number;
 }
@@ -560,7 +560,11 @@ export class Queue extends QueueBase {
       contentBasedDeduplication: props.contentBasedDeduplication,
       deduplicationScope: props.deduplicationScope,
       fifoThroughputLimit: props.fifoThroughputLimit,
-      fifoQueue,
+
+      // This value will be passed directly into the L1 props, but the underlying `AWS::SQS::Queue`
+      // does not accept `FifoQueue: false`. It must either be `true` or absent. So change a `false` into
+      // an `undefined`.
+      fifoQueue: fifoQueue ? true : undefined,
     };
   }
 

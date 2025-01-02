@@ -5,6 +5,7 @@ import * as kms from '../../aws-kms';
 import { App, RemovalPolicy, Size, Stack, Tags } from '../../core';
 import * as cxapi from '../../cx-api';
 import { FileSystem, LifecyclePolicy, PerformanceMode, ThroughputMode, OutOfInfrequentAccessPolicy, ReplicationOverwriteProtection } from '../lib';
+import { ReplicationConfiguration } from '../lib/efs-file-system';
 
 let stack = new Stack();
 let vpc = new ec2.Vpc(stack, 'VPC');
@@ -203,7 +204,7 @@ test('Exception when throughput mode is set to ELASTIC, performance mode cannot 
       throughputMode: ThroughputMode.ELASTIC,
       performanceMode: PerformanceMode.MAX_IO,
     });
-  }).toThrowError(/ThroughputMode ELASTIC is not supported for file systems with performanceMode MAX_IO/);
+  }).toThrow(/ThroughputMode ELASTIC is not supported for file systems with performanceMode MAX_IO/);
 });
 
 test('Exception when throughput mode is set to PROVISIONED, but provisioned throughput is not set', () => {
@@ -212,7 +213,7 @@ test('Exception when throughput mode is set to PROVISIONED, but provisioned thro
       vpc,
       throughputMode: ThroughputMode.PROVISIONED,
     });
-  }).toThrowError(/Property provisionedThroughputPerSecond is required when throughputMode is PROVISIONED/);
+  }).toThrow(/Property provisionedThroughputPerSecond is required when throughputMode is PROVISIONED/);
 });
 
 test('fails when provisioned throughput is less than the valid range', () => {
@@ -230,7 +231,7 @@ test('fails when provisioned throughput is not a whole number of mebibytes', () 
       throughputMode: ThroughputMode.PROVISIONED,
       provisionedThroughputPerSecond: Size.kibibytes(2050),
     });
-  }).toThrowError(/cannot be converted into a whole number/);
+  }).toThrow(/cannot be converted into a whole number/);
 });
 
 test('file system is created correctly with provisioned throughput mode', () => {
@@ -931,7 +932,7 @@ test('one zone file system with MAX_IO performance mode is not supported', () =>
   }).toThrow(/performanceMode MAX_IO is not supported for One Zone file systems./);
 });
 
-test('one zone file system with vpcSubnets is not supported', () => {
+test('one zone file system with vpcSubnets but availabilityZones undefined is not supported', () => {
   // THEN
   expect(() => {
     new FileSystem(stack, 'EfsFileSystem', {
@@ -939,7 +940,68 @@ test('one zone file system with vpcSubnets is not supported', () => {
       oneZone: true,
       vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
     });
-  }).toThrow(/vpcSubnets cannot be specified when oneZone is enabled./);
+  }).toThrow(/When oneZone is enabled and vpcSubnets defined, vpcSubnets.availabilityZones can not be undefined./);
+});
+
+test('one zone file system with vpcSubnets but availabilityZones not in the vpc', () => {
+  // THEN
+  expect(() => {
+    // vpc with defined AZs
+    const vpc2 = new ec2.Vpc(stack, 'Vpc2', { availabilityZones: ['zonea', 'zoneb', 'zonec'] });
+    new FileSystem(stack, 'EfsFileSystem', {
+      vpc: vpc2,
+      oneZone: true,
+      vpcSubnets: { availabilityZones: ['not-exist-zone'] },
+    });
+  }).toThrow(/vpcSubnets.availabilityZones specified is not in vpc.availabilityZones./);
+});
+
+test('one zone file system with vpcSubnets but vpc.availabilityZones are dummy or unresolved tokens', () => {
+  // THEN
+  // this should not throw because vpc.availabilityZones are unresolved or dummy values
+  expect(() => {
+    new FileSystem(stack, 'EfsFileSystem', {
+      vpc,
+      oneZone: true,
+      vpcSubnets: { availabilityZones: ['not-exist-zone'] },
+    });
+  }).not.toThrow();
+});
+
+test('one zone file system with vpcSubnets.availabilityZones having 1 AZ.', () => {
+  // THEN
+  new FileSystem(stack, 'EfsFileSystem', {
+    vpc,
+    oneZone: true,
+    vpcSubnets: { availabilityZones: ['us-east-1a'] },
+  });
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
+    AvailabilityZoneName: 'us-east-1a',
+  });
+
+});
+
+test('one zone file system with vpcSubnets.availabilityZones having more than 1 AZ.', () => {
+  // THEN
+  expect(() => {
+    new FileSystem(stack, 'EfsFileSystem', {
+      vpc,
+      oneZone: true,
+      vpcSubnets: { availabilityZones: ['mock-az1', 'mock-az2'] },
+    });
+  }).toThrow(/When oneZone is enabled, vpcSubnets.availabilityZones should exactly have one zone./);
+});
+
+test('one zone file system with vpcSubnets.availabilityZones empty.', () => {
+  // THEN
+  expect(() => {
+    new FileSystem(stack, 'EfsFileSystem', {
+      vpc,
+      oneZone: true,
+      vpcSubnets: { availabilityZones: [] },
+    });
+  }).toThrow(/When oneZone is enabled, vpcSubnets.availabilityZones should exactly have one zone./);
 });
 
 test.each([
@@ -956,5 +1018,92 @@ test.each([
     FileSystemProtection: {
       ReplicationOverwriteProtection: replicationOverwriteProtection,
     },
+  });
+});
+
+describe('replication configuration', () => {
+  test('regional file system', () => {
+    // WHEN
+    new FileSystem(stack, 'EfsFileSystem', {
+      vpc,
+      replicationConfiguration: ReplicationConfiguration.regionalFileSystem('ap-northeast-1'),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
+      ReplicationConfiguration: {
+        Destinations: [
+          {
+            Region: 'ap-northeast-1',
+          },
+        ],
+      },
+    });
+  });
+
+  test('specify destination file system', () => {
+    // WHEN
+    const destination = new FileSystem(stack, 'DestinationFileSystem', {
+      vpc,
+      replicationOverwriteProtection: ReplicationOverwriteProtection.DISABLED,
+    });
+    new FileSystem(stack, 'EfsFileSystem', {
+      vpc,
+      replicationConfiguration: ReplicationConfiguration.existingFileSystem(destination),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
+      ReplicationConfiguration: {
+        Destinations: [
+          {
+            FileSystemId: {
+              Ref: 'DestinationFileSystem12545967',
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  test('one zone file system', () => {
+    // WHEN
+    new FileSystem(stack, 'EfsFileSystem', {
+      vpc,
+      replicationConfiguration: ReplicationConfiguration.oneZoneFileSystem(
+        'us-east-1',
+        'us-east-1a',
+        new kms.Key(stack, 'customKey'),
+      ),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
+      ReplicationConfiguration: {
+        Destinations: [
+          {
+            Region: 'us-east-1',
+            AvailabilityZoneName: 'us-east-1a',
+            KmsKeyId: {
+              'Fn::GetAtt': [
+                'customKeyFEB2B57F',
+                'Arn',
+              ],
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  test('throw error for read-only file system', () => {
+    // THEN
+    expect(() => {
+      new FileSystem(stack, 'EfsFileSystem', {
+        vpc,
+        replicationConfiguration: ReplicationConfiguration.regionalFileSystem('ap-northeast-1'),
+        replicationOverwriteProtection: ReplicationOverwriteProtection.DISABLED,
+      });
+    }).toThrow('Cannot configure \'replicationConfiguration\' when \'replicationOverwriteProtection\' is set to \'DISABLED\'');
   });
 });

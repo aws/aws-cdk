@@ -296,6 +296,17 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
   }
 
   /**
+   * Adds an AT_DEPLOYMENT_TICK extension with the provided event destination and
+   * also creates an extension association to an application.
+   *
+   * @param eventDestination The event that occurs during the extension
+   * @param options Options for the extension
+   */
+  public atDeploymentTick(eventDestination: IEventDestination, options?: ExtensionOptions) {
+    this.extensible.atDeploymentTick(eventDestination, options);
+  }
+
+  /**
    * Adds an extension association to the configuration profile.
    *
    * @param extension The extension to create an association for
@@ -512,7 +523,7 @@ export interface SourcedConfigurationProps extends ConfigurationProps {
   /**
    * The IAM role to retrieve the configuration.
    *
-   * @default - A role is generated.
+   * @default - Auto generated if location type is not ConfigurationSourceType.CODE_PIPELINE otherwise no role specified.
    */
   readonly retrievalRole?: iam.IRole;
 }
@@ -564,16 +575,7 @@ export class SourcedConfiguration extends ConfigurationBase {
     this.locationUri = this.location.locationUri;
     this.versionNumber = props.versionNumber;
     this.sourceKey = this.location.key;
-    this.retrievalRole = props.retrievalRole || this.location.type != ConfigurationSourceType.CODE_PIPELINE
-      ? new iam.Role(this, 'Role', {
-        roleName: PhysicalName.GENERATE_IF_NEEDED,
-        assumedBy: new iam.ServicePrincipal('appconfig.amazonaws.com'),
-        inlinePolicies: {
-          ['AllowAppConfigReadFromSourcePolicy']: this.getPolicyForRole(),
-        },
-      })
-      : undefined;
-
+    this.retrievalRole = props.retrievalRole ?? this.getRetrievalRole();
     this._cfnConfigurationProfile = new CfnConfigurationProfile(this, 'Resource', {
       applicationId: this.applicationId,
       locationUri: this.locationUri,
@@ -594,6 +596,22 @@ export class SourcedConfiguration extends ConfigurationBase {
 
     this.addExistingEnvironmentsToApplication();
     this.deployConfigToEnvironments();
+  }
+
+  private getRetrievalRole(): iam.Role | undefined {
+    // Check if the configuration source is not from CodePipeline
+    if (this.location.type != ConfigurationSourceType.CODE_PIPELINE) {
+      return new iam.Role(this, 'Role', {
+        roleName: PhysicalName.GENERATE_IF_NEEDED,
+        assumedBy: new iam.ServicePrincipal('appconfig.amazonaws.com'),
+        inlinePolicies: {
+          ['AllowAppConfigReadFromSourcePolicy']: this.getPolicyForRole(),
+        },
+      });
+    } else {
+      // No role is needed if the configuration source is from CodePipeline
+      return undefined;
+    }
   }
 
   private getPolicyForRole(): iam.PolicyDocument {

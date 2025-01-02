@@ -1,0 +1,19 @@
+{
+  "version": "38.0.1",
+  "files": {
+    "6b59bef48629e8c0c8cba8e314b842aca841caa74db2d26ec74051cea2be50cf": {
+      "source": {
+        "path": "aws-cdk-nlb-attributes-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "6b59bef48629e8c0c8cba8e314b842aca841caa74db2d26ec74051cea2be50cf.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

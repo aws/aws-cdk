@@ -1,0 +1,161 @@
+{
+  "version": "38.0.1",
+  "artifacts": {
+    "lambda-event-source-metrics-config-sqs.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "lambda-event-source-metrics-config-sqs.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "lambda-event-source-metrics-config-sqs": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "lambda-event-source-metrics-config-sqs.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5d4025b6edf3c156b92b7e7cb9903ece5091d3b6ad4ddd4b70d00a4817b044a2.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "lambda-event-source-metrics-config-sqs.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "lambda-event-source-metrics-config-sqs.assets"
+      ],
+      "metadata": {
+        "/lambda-event-source-metrics-config-sqs/F1/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "F1ServiceRoleCCF1273A"
+          }
+        ],
+        "/lambda-event-source-metrics-config-sqs/F1/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "F1ServiceRoleDefaultPolicy1610A985"
+          }
+        ],
+        "/lambda-event-source-metrics-config-sqs/F1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "F1EAD92DBE"
+          }
+        ],
+        "/lambda-event-source-metrics-config-sqs/F1/SqsEventSource:lambdaeventsourcemetricsconfigsqsQ5E4B9C75/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "F1SqsEventSourcelambdaeventsourcemetricsconfigsqsQ5E4B9C7541A3CDAE"
+          }
+        ],
+        "/lambda-event-source-metrics-config-sqs/Q/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Q63C6E3AB"
+          }
+        ],
+        "/lambda-event-source-metrics-config-sqs/F2/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "F2ServiceRole7F7C6006"
+          }
+        ],
+        "/lambda-event-source-metrics-config-sqs/F2/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "F2ServiceRoleDefaultPolicy999D30A8"
+          }
+        ],
+        "/lambda-event-source-metrics-config-sqs/F2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "F23BAC7B9C"
+          }
+        ],
+        "/lambda-event-source-metrics-config-sqs/F2/SqsEventSource:lambdaeventsourcemetricsconfigsqsQ5E4B9C75/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "F2SqsEventSourcelambdaeventsourcemetricsconfigsqsQ5E4B9C754C1C02FC"
+          }
+        ],
+        "/lambda-event-source-metrics-config-sqs/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/lambda-event-source-metrics-config-sqs/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "lambda-event-source-metrics-config-sqs"
+    },
+    "lambdaeventsourcesqswithmetricsDefaultTestDeployAssert9B567B16.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "lambdaeventsourcesqswithmetricsDefaultTestDeployAssert9B567B16.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "lambdaeventsourcesqswithmetricsDefaultTestDeployAssert9B567B16": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "lambdaeventsourcesqswithmetricsDefaultTestDeployAssert9B567B16.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "lambdaeventsourcesqswithmetricsDefaultTestDeployAssert9B567B16.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "lambdaeventsourcesqswithmetricsDefaultTestDeployAssert9B567B16.assets"
+      ],
+      "metadata": {
+        "/lambda-event-source-sqs-with-metrics/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/lambda-event-source-sqs-with-metrics/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "lambda-event-source-sqs-with-metrics/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

@@ -18,7 +18,10 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 - [Amazon Cognito Construct Library](#amazon-cognito-construct-library)
   - [Table of Contents](#table-of-contents)
   - [User Pools](#user-pools)
+    - [User pool feature plans](#user-pool-feature-plans)
     - [Sign Up](#sign-up)
+      - [Code Verification](#code-verification)
+      - [Link Verification](#link-verification)
     - [Sign In](#sign-in)
     - [Attributes](#attributes)
     - [Attribute verification](#attribute-verification)
@@ -73,13 +76,27 @@ const role = new iam.Role(this, 'role', {
 userPool.grant(role, 'cognito-idp:AdminCreateUser');
 ```
 
+### User pool feature plans
+
+Amazon Cognito has feature plans for user pools. Each plan has a set of features and a monthly cost per active user. Each feature plan unlocks access to more features than the one before it.
+Learn more about [feature plans here](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-sign-in-feature-plans.html).
+
+- *Lite* - a low-cost feature plan for user pools with lower numbers of monthly active users.
+- *Essentials* - all of the latest user pool authentication features.
+- *Plus* - includes everything in the Essentials plan and adds advanced security features that protect your users.
+
+The default feature plan is Essentials for newly create user pools.
+For the existing user pools, Lite plan is automatically set.
+
+Previously, some user pool features were included in [an advanced security features](#advanced-security-mode) pricing structure. The features that were included in this structure are now under either the Essentials or Plus plan.
+
 ### Sign Up
 
 Users can either be signed up by the app's administrators or can sign themselves up. Once a user has signed up, their
 account needs to be confirmed. Cognito provides several ways to sign users up and confirm their accounts. Learn more
 about [user sign up here](https://docs.aws.amazon.com/cognito/latest/developerguide/signing-up-users-in-your-app.html).
 
-To verify the email address of a user in your user pool with Amazon Cognito, you can send the user an email message 
+To verify the email address of a user in your user pool with Amazon Cognito, you can send the user an email message
 with a link that they can select, or you can send them a code that they can enter.
 
 #### Code Verification
@@ -119,7 +136,7 @@ new cognito.UserPool(this, 'myuserpool', {
 ```
 
 #### Link Verification
-Alternatively, users can use link as a verification method. The following code snippet configures a user pool with 
+Alternatively, users can use link as a verification method. The following code snippet configures a user pool with
 properties relevant to these verification messages and link verification method.
 
 ```ts
@@ -306,6 +323,9 @@ configure an MFA token and use it for sign in. It also allows for the users to u
 [time-based one time password
 (TOTP)](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-mfa-totp.html).
 
+If you want to enable email-based MFA, set `email` propety to the Amazon SES email-sending configuration and set `featurePlan` to `FeaturePlan.ESSENTIALS` or `FeaturePlan.PLUS`.
+For more information, see [SMS and email message MFA](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-mfa-sms-email-message.html).
+
 ```ts
 new cognito.UserPool(this, 'myuserpool', {
   // ...
@@ -313,6 +333,7 @@ new cognito.UserPool(this, 'myuserpool', {
   mfaSecondFactor: {
     sms: true,
     otp: true,
+    email: false, // email-based MFA
   },
 });
 ```
@@ -358,6 +379,8 @@ The default for account recovery is by phone if available and by email otherwise
 A user will not be allowed to reset their password via phone if they are also using it for MFA.
 
 #### Advanced Security Mode
+
+⚠️ Advanced Security Mode is deprecated in favor of [user pool feature plans](#user-pool-feature-plans).
 
 User pools can be configured to use Advanced security. You can turn the user pool advanced security features on, and customize the actions that are taken in response to different risks. Or you can use audit mode to gather metrics on detected risks without taking action. In audit mode, the advanced security features publish metrics to Amazon CloudWatch. See the [documentation on Advanced security](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-advanced-security.html) to learn more.
 
@@ -693,6 +716,9 @@ Custom authentication protocols can be configured by setting the `custom` proper
 functions for the corresponding user pool [triggers](#lambda-triggers). Learn more at [Custom Authentication
 Flow](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-authentication-flow.html#amazon-cognito-user-pools-custom-authentication-flow).
 
+Choice-based authentication can be configured by setting the `user` property under `authFlow`. This enables the
+`USER_AUTH` authentication flow. Learn more at [Choice-based authentication](https://docs.aws.amazon.com/cognito/latest/developerguide/authentication-flows-selection-sdk.html#authentication-flows-selection-choice).
+
 In addition to these authentication mechanisms, Cognito user pools also support using OAuth 2.0 framework for
 authenticating users. User pool clients can be configured with OAuth 2.0 authorization flows and scopes. Learn more
 about the [OAuth 2.0 authorization framework](https://tools.ietf.org/html/rfc6749) and [Cognito user pool's
@@ -712,6 +738,24 @@ pool.addClient('app-client', {
     },
     scopes: [ cognito.OAuthScope.OPENID ],
     callbackUrls: [ 'https://my-app-domain.com/welcome' ],
+    logoutUrls: [ 'https://my-app-domain.com/signin' ],
+  },
+});
+```
+
+To set a default redirect URI, use the `defaultRedirectUri` property.
+Its value must be present in the `callbackUrls` list.
+
+```ts
+const pool = new cognito.UserPool(this, 'Pool');
+pool.addClient('app-client', {
+  oAuth: {
+    flows: {
+      authorizationCodeGrant: true,
+    },
+    scopes: [ cognito.OAuthScope.OPENID ],
+    defaultRedirectUri: 'https://my-app-domain.com/welcome',
+    callbackUrls: [ 'https://my-app-domain.com/welcome', 'https://my-app-domain.com/hello' ],
     logoutUrls: [ 'https://my-app-domain.com/signin' ],
   },
 });
@@ -847,6 +891,23 @@ const userPoolClient = new cognito.UserPoolClient(this, 'UserPoolClient', {
 const secret = userPoolClient.userPoolClientSecret;
 ```
 
+If you set `enablePropagateAdditionalUserContextData: true`, you can collect and pass
+information about your user's session to Amazon Cognito advanced security
+when you use the API to sign them up, sign them in, and reset their password.
+
+
+```ts
+declare const importedPool: cognito.UserPool;
+
+const userPoolClient = new cognito.UserPoolClient(this, 'UserPoolClient', {
+  userPool: importedPool,
+  generateSecret: true,
+  enablePropagateAdditionalUserContextData: true,
+});
+```
+
+See [Adding user device and session data to API requests](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-adaptive-authentication.html#user-pool-settings-adaptive-authentication-device-fingerprint) for more information.
+
 ### Resource Servers
 
 A resource server is a server for access-protected resources. It handles authenticated requests from an app that has an
@@ -885,7 +946,6 @@ const fullAccessClient = pool.addClient('full-access-client', {
   },
 });
 ```
-
 
 ### Domains
 
@@ -955,6 +1015,21 @@ Existing domains can be imported into CDK apps using `UserPoolDomain.fromDomainN
 const myUserPoolDomain = cognito.UserPoolDomain.fromDomainName(this, 'my-user-pool-domain', 'domain-name');
 ```
 
+To get the domain name of the CloudFront distribution associated with the user pool domain, use `cloudFrontEndpoint` method.
+
+```ts
+const userpool = new cognito.UserPool(this, 'UserPool');
+const domain = userpool.addDomain('Domain', {
+  cognitoDomain: {
+    domainPrefix: 'my-awesome-app',
+  },
+});
+
+new CfnOutput(this, 'CloudFrontEndpoint', {
+  value: domain.cloudFrontEndpoint,
+});
+```
+
 ### Deletion protection
 
 Deletion protection can be enabled on a user pool to prevent accidental deletion:
@@ -967,3 +1042,46 @@ const userpool = new cognito.UserPool(this, 'UserPool', {
 ```
 
 By default deletion protection is disabled.
+
+### `email_verified` Attribute Mapping
+
+If you use a third-party identity provider, you can specify the `email_verified` attribute in attributeMapping.
+
+```typescript
+const userpool = new cognito.UserPool(this, 'Pool');
+
+new cognito.UserPoolIdentityProviderGoogle(this, 'google', {
+  userPool: userpool,
+  clientId: 'google-client-id',
+  attributeMapping: {
+    email: cognito.ProviderAttribute.GOOGLE_EMAIL,
+    emailVerified: cognito.ProviderAttribute.GOOGLE_EMAIL_VERIFIED, // you can mapping the `email_verified` attribute.
+  },
+});
+```
+
+### User Pool Group
+
+Support for groups in Amazon Cognito user pools enables you to create and manage groups and add users to groups.
+Use groups to create collections of users to manage their permissions or to represent different types of users.
+
+You can assign an AWS Identity and Access Management (IAM) role to a group to define the permissions for members of a group.
+
+For more information, see [Adding groups to a user pool](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-user-groups.html).
+
+```ts
+declare const userPool: cognito.UserPool;
+declare const role: iam.Role;
+
+new cognito.UserPoolGroup(this, 'UserPoolGroup', {
+  userPool,
+  groupName: 'my-group-name',
+  precedence: 1,
+  role,  // assign IAM Role
+});
+
+// You can also add a group by using addGroup method.
+userPool.addGroup('AnotherUserPoolGroup', {
+  groupName: 'another-group-name'
+});
+```

@@ -1,4 +1,4 @@
-/* eslint-disable @aws-cdk/no-literal-partition */
+/* eslint-disable @cdklabs/no-literal-partition */
 import { Construct } from 'constructs';
 import { CfnApplication } from './appconfig.generated';
 import { HostedConfiguration, HostedConfigurationOptions, SourcedConfiguration, SourcedConfigurationOptions } from './configuration';
@@ -145,6 +145,15 @@ export interface IApplication extends cdk.IResource {
    * @param options Options for the extension
    */
   onDeploymentRolledBack(eventDestination: IEventDestination, options?: ExtensionOptions): void;
+
+  /**
+   * Adds an AT_DEPLOYMENT_TICK extension with the provided event destination and
+   * also creates an extension association to an application.
+   *
+   * @param eventDestination The event that occurs during the extension
+   * @param options Options for the extension
+   */
+  atDeploymentTick(eventDestination: IEventDestination, options?: ExtensionOptions): void;
 
   /**
    * Adds an extension association to the application.
@@ -295,6 +304,17 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication, IEx
    */
   public onDeploymentRolledBack(eventDestination: IEventDestination, options?: ExtensionOptions) {
     this.extensible.onDeploymentRolledBack(eventDestination, options);
+  }
+
+  /**
+   * Adds an AT_DEPLOYMENT_TICK extension with the provided event destination and
+   * also creates an extension association to an application.
+   *
+   * @param eventDestination The event that occurs during the extension
+   * @param options Options for the extension
+   */
+  public atDeploymentTick(eventDestination: IEventDestination, options?: ExtensionOptions) {
+    this.extensible.atDeploymentTick(eventDestination, options);
   }
 
   /**

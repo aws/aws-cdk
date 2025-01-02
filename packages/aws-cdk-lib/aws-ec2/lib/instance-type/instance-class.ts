@@ -377,6 +377,16 @@ export enum InstanceClass {
   R7A = 'r7a',
 
   /**
+   * Memory optimized instances with Graviton4 processors
+   */
+  MEMORY8_GRAVITON = 'memory8-graviton',
+
+  /**
+   * Memory optimized instances with Graviton4 processors
+   */
+  R8G = 'r8g',
+
+  /**
    * Compute optimized instances, 3rd generation
    */
   COMPUTE3 = 'compute3',
@@ -505,6 +515,20 @@ export enum InstanceClass {
    * Compute optimized instances for high performance computing, 7th generation with Graviton3 processors
    */
   C7G = 'c7g',
+
+  /**
+   * Compute optimized instances for high performance computing, 8th generation with Graviton4 processors
+   *
+   * This instance class is currently only available in US East (Ohio), US East (N. Virginia), US West (Oregon), and Europe (Frankfurt).
+   */
+  COMPUTE8_GRAVITON4 = 'compute8-graviton4',
+
+  /**
+   * Compute optimized instances for high performance computing, 8th generation with Graviton4 processors
+   *
+   * This instance class is currently only available in US East (Ohio), US East (N. Virginia), US West (Oregon), and Europe (Frankfurt).
+   */
+  C8G = 'c8g',
 
   /**
    * Compute optimized instances for high performance computing, 6th generation with Graviton2 processors
@@ -881,6 +905,26 @@ export enum InstanceClass {
   G5G = 'g5g',
 
   /**
+   * Graphics-optimized instances, 6th generation
+   */
+  GRAPHICS6 = 'graphics6',
+
+  /**
+   * Graphics-optimized instances, 6th generation
+   */
+  G6 = 'g6',
+
+  /**
+   * Cost-efficient GPU-based instances for AI inference and spatial computing workloads, 6th generation
+   */
+  GRAPHICS6_EFFICIENT = 'graphics6-efficient',
+
+  /**
+   * Cost-efficient GPU-based instances for AI inference and spatial computing workloads, 6th generation
+   */
+  G6E = 'g6e',
+
+  /**
    * Parallel-processing optimized instances, 2nd generation
    */
   PARALLEL2 = 'parallel2',
@@ -1035,6 +1079,20 @@ export enum InstanceClass {
   M7G = 'm7g',
 
   /**
+   * Standard instances, 8th generation with Graviton4 processors
+   *
+   * This instance class is currently only available in US East (Ohio), US East (N. Virginia), US West (Oregon), and Europe (Frankfurt).
+   */
+  STANDARD8_GRAVITON = 'standard8-graviton',
+
+  /**
+   * Standard instances, 8th generation with Graviton4 processors
+   *
+   * This instance class is currently only available in US East (Ohio), US East (N. Virginia), US West (Oregon), and Europe (Frankfurt).
+   */
+  M8G = 'm8g',
+
+  /**
    * Standard instances, 7th generation with Graviton3 processors and local NVME drive
    *
    * This instance class is currently only available in US East (Ohio), US East (N. Virginia), US West (Oregon), and Europe (Ireland).
@@ -1149,6 +1207,16 @@ export enum InstanceClass {
    * Macintosh instances built on Apple Mac mini 2023 computers, 2nd generation with Apple silicon M2 Pro processors
    */
   MAC2_M2PRO = 'mac2-m2pro',
+
+  /**
+   * Macintosh instances built on 2022 Mac Studio hardware powered by Apple silicon M1 Ultra processors
+   */
+  MACINTOSH2_M1_ULTRA = 'macintosh2-m1-ultra',
+
+  /**
+   * Macintosh instances built on 2022 Mac Studio hardware powered by Apple silicon M1 Ultra processors
+   */
+  MAC2_M1ULTRA = 'mac2-m1ultra',
 
   /**
    * Multi-stream video transcoding instances for resolutions up to 4K UHD, 1st generation
@@ -1300,6 +1368,8 @@ export const _instanceClassMap: Record<InstanceClass, string> = {
   [InstanceClass.R7IZ]: 'r7iz',
   [InstanceClass.MEMORY7_AMD]: 'r7a',
   [InstanceClass.R7A]: 'r7a',
+  [InstanceClass.MEMORY8_GRAVITON]: 'r8g',
+  [InstanceClass.R8G]: 'r8g',
   [InstanceClass.COMPUTE3]: 'c3',
   [InstanceClass.C3]: 'c3',
   [InstanceClass.COMPUTE4]: 'c4',
@@ -1338,6 +1408,8 @@ export const _instanceClassMap: Record<InstanceClass, string> = {
   [InstanceClass.C7I]: 'c7i',
   [InstanceClass.COMPUTE7_AMD]: 'c7a',
   [InstanceClass.C7A]: 'c7a',
+  [InstanceClass.COMPUTE8_GRAVITON4]: 'c8g',
+  [InstanceClass.C8G]: 'c8g',
   [InstanceClass.STORAGE2]: 'd2',
   [InstanceClass.D2]: 'd2',
   [InstanceClass.STORAGE3]: 'd3',
@@ -1390,6 +1462,10 @@ export const _instanceClassMap: Record<InstanceClass, string> = {
   [InstanceClass.G5]: 'g5',
   [InstanceClass.GRAPHICS5_GRAVITON2]: 'g5g',
   [InstanceClass.G5G]: 'g5g',
+  [InstanceClass.GRAPHICS6]: 'g6',
+  [InstanceClass.G6]: 'g6',
+  [InstanceClass.GRAPHICS6_EFFICIENT]: 'g6e',
+  [InstanceClass.G6E]: 'g6e',
   [InstanceClass.PARALLEL2]: 'p2',
   [InstanceClass.P2]: 'p2',
   [InstanceClass.PARALLEL3]: 'p3',
@@ -1420,6 +1496,8 @@ export const _instanceClassMap: Record<InstanceClass, string> = {
   [InstanceClass.M6GD]: 'm6gd',
   [InstanceClass.STANDARD7_GRAVITON]: 'm7g',
   [InstanceClass.M7G]: 'm7g',
+  [InstanceClass.STANDARD8_GRAVITON]: 'm8g',
+  [InstanceClass.M8G]: 'm8g',
   [InstanceClass.STANDARD7_GRAVITON3_NVME_DRIVE]: 'm7gd',
   [InstanceClass.M7GD]: 'm7gd',
   [InstanceClass.STANDARD7_INTEL]: 'm7i',
@@ -1442,6 +1520,8 @@ export const _instanceClassMap: Record<InstanceClass, string> = {
   [InstanceClass.MAC2_M2]: 'mac2-m2',
   [InstanceClass.MACINTOSH2_M2_PRO]: 'mac2-m2pro',
   [InstanceClass.MAC2_M2PRO]: 'mac2-m2pro',
+  [InstanceClass.MACINTOSH2_M1_ULTRA]: 'mac2-m1ultra',
+  [InstanceClass.MAC2_M1ULTRA]: 'mac2-m1ultra',
   [InstanceClass.VIDEO_TRANSCODING1]: 'vt1',
   [InstanceClass.VT1]: 'vt1',
   [InstanceClass.HIGH_PERFORMANCE_COMPUTING6_AMD]: 'hpc6a',

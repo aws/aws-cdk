@@ -1,8 +1,9 @@
+import * as chalk from 'chalk';
 import { fullDiff } from '../../lib';
 import { MaybeParsed } from '../../lib/diff/maybe-parsed';
 import { IamChangesJson } from '../../lib/iam/iam-changes';
 import { deepRemoveUndefined } from '../../lib/util';
-import { poldoc, policy, resource, role, template } from '../util';
+import { largeSsoPermissionSet, poldoc, policy, resource, role, template } from '../util';
 
 test('shows new AssumeRolePolicyDocument', () => {
   // WHEN
@@ -455,6 +456,347 @@ test('supports Fn::If in the elements of an array-typed property of Role', () =>
 
   expect(changedPolicies[resourceColumn]).toContain('{"Fn::If":["SomeCondition",{"PolicyName":"S3","PolicyDocument":{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":"s3:GetObject","Resource":"*"}]}}]}');
   expect(changedPolicies[principalColumn]).toContain('AWS:${MyRole}');
+});
+
+test('removal of managedPolicies is detected', () => {
+  // WHEN
+  const diff = fullDiff(template({
+    SomeRole: resource('AWS::IAM::Role', {
+      ManagedPolicyArns: ['arn:policy'],
+    }),
+  }), {});
+
+  // THEN
+
+  const managedPolicySummary = diff.iamChanges.summarizeManagedPolicies();
+  expect(managedPolicySummary).toEqual(
+    [
+      ['', 'Resource', 'Managed Policy ARN'],
+      [
+        '-',
+        '${SomeRole}',
+        'arn:policy',
+      ].map(s => chalk.red(s)),
+    ],
+  );
+});
+
+test('can summarize ssoPermissionSet changes with PermissionsBoundary.ManagedPolicyArn', () => {
+  // WHEN
+  const diff = fullDiff({}, template({
+    MySsoPermissionSet: resource(
+      'AWS::SSO::PermissionSet',
+      {
+        Name: 'BestName',
+        InstanceArn: 'arn:aws:sso:::instance/ssoins-1111111111111111',
+        ManagedPolicies: ['arn:aws:iam::aws:policy/AlwaysBeManaging'],
+        PermissionsBoundary: { ManagedPolicyArn: 'arn:aws:iam::aws:policy/GreatAtManaging' },
+        CustomerManagedPolicyReferences: [],
+        InlinePolicy: {},
+      },
+    ),
+  }));
+
+  // THEN
+  expect(diff.iamChanges.summarizeSsoPermissionSets()).toEqual(
+    [
+      ['', 'Resource', 'InstanceArn', 'PermissionSet name', 'PermissionsBoundary', 'CustomerManagedPolicyReferences'],
+      [
+        '+',
+        '${MySsoPermissionSet}',
+        'arn:aws:sso:::instance/ssoins-1111111111111111',
+        'BestName',
+        'ManagedPolicyArn: arn:aws:iam::aws:policy/GreatAtManaging',
+        '',
+      ].map(s => chalk.green(s)),
+    ],
+  );
+  expect(diff.iamChanges.summarizeManagedPolicies()).toEqual(
+    [
+      ['', 'Resource', 'Managed Policy ARN'],
+      [
+        '+',
+        '${MySsoPermissionSet}',
+        'arn:aws:iam::aws:policy/AlwaysBeManaging',
+      ].map(s => chalk.green(s)),
+    ],
+  );
+});
+
+test('can summarize negative ssoPermissionSet changes with PermissionsBoundary.CustomerManagedPolicyReference', () => {
+  // WHEN
+  const diff = fullDiff(largeSsoPermissionSet(), {});
+
+  // THEN
+  const ssoPermSetSummary = diff.iamChanges.summarizeSsoPermissionSets();
+  expect(ssoPermSetSummary).toEqual(
+    [
+      ['', 'Resource', 'InstanceArn', 'PermissionSet name', 'PermissionsBoundary', 'CustomerManagedPolicyReferences'],
+      [
+        '-',
+        '${MySsoPermissionSet}',
+        'arn:aws:sso:::instance/ssoins-1111111111111111',
+        'PleaseWork',
+        'CustomerManagedPolicyReference: {\n  Name: why, Path: {"Fn::If":["SomeCondition","/how","/work"]}\n}',
+        'Name: arn:aws:iam::aws:role/Silly, Path: /my\nName: LIFE, Path: ',
+      ].map(s => chalk.red(s)),
+    ],
+  );
+
+  const managedPolicySummary = diff.iamChanges.summarizeManagedPolicies();
+  expect(managedPolicySummary).toEqual(
+    [
+      ['', 'Resource', 'Managed Policy ARN'],
+      [
+        '-',
+        '${MySsoPermissionSet}',
+        '{"Fn::If":["SomeCondition",["then-managed-policy-arn"],["else-managed-policy-arn"]]}',
+      ].map(s => chalk.red(s)),
+    ],
+  );
+
+  const iamStatementSummary = diff.iamChanges.summarizeStatements();
+  expect(iamStatementSummary).toEqual(
+    [
+      ['', 'Resource', 'Effect', 'Action', 'Principal', 'Condition'],
+      [
+        '-',
+        '${MySsoPermissionSet.Arn}',
+        'Allow',
+        'iam:CreateServiceLinkedRole',
+        '',
+        '',
+      ].map(s => chalk.red(s)),
+    ],
+  );
+});
+
+test('can summarize ssoPermissionSet changes with PermissionsBoundary.CustomerManagedPolicyReference', () => {
+  // WHEN
+  const diff = fullDiff({}, largeSsoPermissionSet());
+
+  // THEN
+  expect(diff.iamChanges.summarizeSsoPermissionSets()).toEqual(
+    [
+      ['', 'Resource', 'InstanceArn', 'PermissionSet name', 'PermissionsBoundary', 'CustomerManagedPolicyReferences'],
+      [
+        '+',
+        '${MySsoPermissionSet}',
+        'arn:aws:sso:::instance/ssoins-1111111111111111',
+        'PleaseWork',
+        'CustomerManagedPolicyReference: {\n  Name: why, Path: {"Fn::If":["SomeCondition","/how","/work"]}\n}',
+        'Name: arn:aws:iam::aws:role/Silly, Path: /my\nName: LIFE, Path: ',
+      ].map(s => chalk.green(s)),
+    ],
+  );
+  expect(diff.iamChanges.summarizeManagedPolicies()).toEqual(
+    [
+      ['', 'Resource', 'Managed Policy ARN'],
+      [
+        '+',
+        '${MySsoPermissionSet}',
+        '{"Fn::If":["SomeCondition",["then-managed-policy-arn"],["else-managed-policy-arn"]]}',
+      ].map(s => chalk.green(s)),
+    ],
+  );
+
+  const iamStatementSummary = diff.iamChanges.summarizeStatements();
+  expect(iamStatementSummary).toEqual(
+    [
+      ['', 'Resource', 'Effect', 'Action', 'Principal', 'Condition'],
+      [
+        '+',
+        '${MySsoPermissionSet.Arn}',
+        'Allow',
+        'iam:CreateServiceLinkedRole',
+        '',
+        '',
+      ].map(s => chalk.green(s)),
+    ],
+  );
+});
+
+test('can summarize addition of ssoAssignment', () => {
+  // WHEN
+  const diff = fullDiff(
+    template(resource('', {})),
+    template({
+      MyAssignment: resource('AWS::SSO::Assignment',
+        {
+          InstanceArn: 'arn:aws:sso:::instance/ssoins-1111111111111111',
+          PermissionSetArn: {
+            'Fn::GetAtt': [
+              'MyOtherCfnPermissionSet',
+              'PermissionSetArn',
+            ],
+          },
+          PrincipalId: '33333333-3333-4444-5555-777777777777',
+          PrincipalType: 'USER',
+          TargetId: '222222222222',
+          TargetType: 'AWS_ACCOUNT',
+        }),
+    }),
+  );
+
+  // THEN
+  expect(diff.iamChanges.summarizeManagedPolicies()).toEqual(
+    [['', 'Resource', 'Managed Policy ARN']],
+  );
+  expect(diff.iamChanges.summarizeStatements()).toEqual(
+    [['', 'Resource', 'Effect', 'Action', 'Principal', 'Condition']],
+  );
+
+  const ssoAssignmentSummary = diff.iamChanges.summarizeSsoAssignments();
+  expect(ssoAssignmentSummary).toEqual(
+    [
+      ['', 'Resource', 'InstanceArn', 'PermissionSetArn', 'PrincipalId', 'PrincipalType', 'TargetId', 'TargetType'],
+      [
+        '+',
+        '${MyAssignment}',
+        'arn:aws:sso:::instance/ssoins-1111111111111111',
+        '${MyOtherCfnPermissionSet.PermissionSetArn}',
+        '33333333-3333-4444-5555-777777777777',
+        'USER',
+        '222222222222',
+        'AWS_ACCOUNT',
+      ].map(s => chalk.green(s)),
+    ],
+  );
+
+});
+
+test('can summarize addition of SsoInstanceACAConfigs', () => {
+  // WHEN
+  const diff = fullDiff(
+    template(resource('', {})),
+    template({
+      MyIACAConfiguration: resource('AWS::SSO::InstanceAccessControlAttributeConfiguration',
+        {
+          AccessControlAttributes: [
+            { Key: 'first', Value: { Source: ['a'] } },
+            { Key: 'second', Value: { Source: ['b'] } },
+            { Key: 'third', Value: { Source: ['c'] } },
+            { Key: 'fourth', Value: { Source: ['d'] } },
+            { Key: 'fifth', Value: { Source: ['e'] } },
+            { Key: 'sixth', Value: { Source: ['f'] } },
+          ],
+          InstanceArn: 'arn:aws:sso:::instance/ssoins-72234e1d20e1e68d',
+        }),
+    }),
+  );
+
+  // THEN
+  expect(diff.iamChanges.summarizeManagedPolicies()).toEqual(
+    [['', 'Resource', 'Managed Policy ARN']],
+  );
+  expect(diff.iamChanges.summarizeStatements()).toEqual(
+    [['', 'Resource', 'Effect', 'Action', 'Principal', 'Condition']],
+  );
+
+  const ssoIACAConfig = diff.iamChanges.summarizeSsoInstanceACAConfigs();
+  expect(ssoIACAConfig).toEqual(
+    [
+      ['', 'Resource', 'InstanceArn', 'AccessControlAttributes'],
+      [
+        '+',
+        '${MyIACAConfiguration}',
+        'arn:aws:sso:::instance/ssoins-72234e1d20e1e68d',
+        'Key: first, Values: [a]\nKey: second, Values: [b]\nKey: third, Values: [c]\nKey: fourth, Values: [d]\nKey: fifth, Values: [e]\nKey: sixth, Values: [f]',
+      ].map(s => chalk.green(s)),
+    ],
+  );
+
+});
+
+test('can summarize negation of SsoInstanceACAConfigs', () => {
+  // WHEN
+  const diff = fullDiff(
+    template({
+      MyIACAConfiguration: resource('AWS::SSO::InstanceAccessControlAttributeConfiguration',
+        {
+          AccessControlAttributes: [
+            { Key: 'first', Value: { Source: ['a'] } },
+            { Key: 'second', Value: { Source: ['b'] } },
+            { Key: 'third', Value: { Source: ['c'] } },
+            { Key: 'fourth', Value: { Source: ['d'] } },
+            { Key: 'fifth', Value: { Source: ['e'] } },
+            { Key: 'sixth', Value: { Source: ['f'] } },
+          ],
+          InstanceArn: 'arn:aws:sso:::instance/ssoins-72234e1d20e1e68d',
+        }),
+    }),
+    template(resource('', {})),
+  );
+
+  // THEN
+  expect(diff.iamChanges.summarizeManagedPolicies()).toEqual(
+    [['', 'Resource', 'Managed Policy ARN']],
+  );
+  expect(diff.iamChanges.summarizeStatements()).toEqual(
+    [['', 'Resource', 'Effect', 'Action', 'Principal', 'Condition']],
+  );
+
+  const ssoIACAConfig = diff.iamChanges.summarizeSsoInstanceACAConfigs();
+  expect(ssoIACAConfig).toEqual(
+    [
+      ['', 'Resource', 'InstanceArn', 'AccessControlAttributes'],
+      [
+        '-',
+        '${MyIACAConfiguration}',
+        'arn:aws:sso:::instance/ssoins-72234e1d20e1e68d',
+        'Key: first, Values: [a]\nKey: second, Values: [b]\nKey: third, Values: [c]\nKey: fourth, Values: [d]\nKey: fifth, Values: [e]\nKey: sixth, Values: [f]',
+      ].map(s => chalk.red(s)),
+    ],
+  );
+
+});
+
+test('can summarize negation of ssoAssignment', () => {
+  // WHEN
+  const diff = fullDiff(
+    template({
+      MyAssignment: resource('AWS::SSO::Assignment',
+        {
+          InstanceArn: 'arn:aws:sso:::instance/ssoins-1111111111111111',
+          PermissionSetArn: {
+            'Fn::GetAtt': [
+              'MyOtherCfnPermissionSet',
+              'PermissionSetArn',
+            ],
+          },
+          PrincipalId: '33333333-3333-4444-5555-777777777777',
+          PrincipalType: 'USER',
+          TargetId: '222222222222',
+          TargetType: 'AWS_ACCOUNT',
+        }),
+    }),
+    template(resource('', {})),
+  );
+
+  // THEN
+  expect(diff.iamChanges.summarizeManagedPolicies()).toEqual(
+    [['', 'Resource', 'Managed Policy ARN']],
+  );
+  expect(diff.iamChanges.summarizeStatements()).toEqual(
+    [['', 'Resource', 'Effect', 'Action', 'Principal', 'Condition']],
+  );
+
+  const ssoAssignmentSummary = diff.iamChanges.summarizeSsoAssignments();
+  expect(ssoAssignmentSummary).toEqual(
+    [
+      ['', 'Resource', 'InstanceArn', 'PermissionSetArn', 'PrincipalId', 'PrincipalType', 'TargetId', 'TargetType'],
+      [
+        '-',
+        '${MyAssignment}',
+        'arn:aws:sso:::instance/ssoins-1111111111111111',
+        '${MyOtherCfnPermissionSet.PermissionSetArn}',
+        '33333333-3333-4444-5555-777777777777',
+        'USER',
+        '222222222222',
+        'AWS_ACCOUNT',
+      ].map(s => chalk.red(s)),
+    ],
+  );
 });
 
 /**

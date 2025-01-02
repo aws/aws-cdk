@@ -1,6 +1,7 @@
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as assets from 'aws-cdk-lib/aws-ecr-assets';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as kms from 'aws-cdk-lib/aws-kms';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 import * as cdk from 'aws-cdk-lib/core';
@@ -8,6 +9,8 @@ import { Lazy } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnService } from 'aws-cdk-lib/aws-apprunner';
 import { IVpcConnector } from './vpc-connector';
+import { IAutoScalingConfiguration } from './auto-scaling-configuration';
+import { IObservabilityConfiguration } from './observability-configuration';
 
 /**
  * The image repository types
@@ -42,17 +45,17 @@ export class Cpu {
   /**
    * 1 vCPU
    */
-  public static readonly ONE_VCPU = Cpu.of('1 vCPU')
+  public static readonly ONE_VCPU = Cpu.of('1 vCPU');
 
   /**
    * 2 vCPU
    */
-  public static readonly TWO_VCPU = Cpu.of('2 vCPU')
+  public static readonly TWO_VCPU = Cpu.of('2 vCPU');
 
   /**
    * 4 vCPU
    */
-  public static readonly FOUR_VCPU = Cpu.of('4 vCPU')
+  public static readonly FOUR_VCPU = Cpu.of('4 vCPU');
 
   /**
    * Custom CPU unit
@@ -79,7 +82,7 @@ export class Cpu {
    *
    * @param unit The unit of CPU.
    */
-  private constructor(public readonly unit: string) {}
+  private constructor(public readonly unit: string) { }
 }
 
 /**
@@ -89,47 +92,47 @@ export class Memory {
   /**
    * 0.5 GB(for 0.25 vCPU)
    */
-  public static readonly HALF_GB = Memory.of('0.5 GB')
+  public static readonly HALF_GB = Memory.of('0.5 GB');
 
   /**
    * 1 GB(for 0.25 or 0.5 vCPU)
    */
-  public static readonly ONE_GB = Memory.of('1 GB')
+  public static readonly ONE_GB = Memory.of('1 GB');
 
   /**
    * 2 GB(for 1 vCPU)
    */
-  public static readonly TWO_GB = Memory.of('2 GB')
+  public static readonly TWO_GB = Memory.of('2 GB');
 
   /**
    * 3 GB(for 1 vCPU)
    */
-  public static readonly THREE_GB = Memory.of('3 GB')
+  public static readonly THREE_GB = Memory.of('3 GB');
 
   /**
    * 4 GB(for 1 or 2 vCPU)
    */
-  public static readonly FOUR_GB = Memory.of('4 GB')
+  public static readonly FOUR_GB = Memory.of('4 GB');
 
   /**
    * 6 GB(for 2 vCPU)
    */
-  public static readonly SIX_GB = Memory.of('6 GB')
+  public static readonly SIX_GB = Memory.of('6 GB');
 
   /**
    * 8 GB(for 4 vCPU)
    */
-  public static readonly EIGHT_GB = Memory.of('8 GB')
+  public static readonly EIGHT_GB = Memory.of('8 GB');
 
   /**
    * 10 GB(for 4 vCPU)
    */
-  public static readonly TEN_GB = Memory.of('10 GB')
+  public static readonly TEN_GB = Memory.of('10 GB');
 
   /**
    * 12 GB(for 4 vCPU)
    */
-  public static readonly TWELVE_GB = Memory.of('12 GB')
+  public static readonly TWELVE_GB = Memory.of('12 GB');
 
   /**
    * Custom Memory unit
@@ -167,52 +170,62 @@ export class Runtime {
   /**
    * CORRETTO 8
    */
-  public static readonly CORRETTO_8 = Runtime.of('CORRETTO_8')
+  public static readonly CORRETTO_8 = Runtime.of('CORRETTO_8');
 
   /**
    * CORRETTO 11
    */
-  public static readonly CORRETTO_11 = Runtime.of('CORRETTO_11')
+  public static readonly CORRETTO_11 = Runtime.of('CORRETTO_11');
 
   /**
    * .NET 6
    */
-  public static readonly DOTNET_6 = Runtime.of('DOTNET_6')
+  public static readonly DOTNET_6 = Runtime.of('DOTNET_6');
 
   /**
    * Go 1.18
    */
-  public static readonly GO_1 = Runtime.of('GO_1')
+  public static readonly GO_1 = Runtime.of('GO_1');
 
   /**
    * NodeJS 12
    */
-  public static readonly NODEJS_12 = Runtime.of('NODEJS_12')
+  public static readonly NODEJS_12 = Runtime.of('NODEJS_12');
 
   /**
    * NodeJS 14
    */
-  public static readonly NODEJS_14 = Runtime.of('NODEJS_14')
+  public static readonly NODEJS_14 = Runtime.of('NODEJS_14');
 
   /**
    * NodeJS 16
    */
-  public static readonly NODEJS_16 = Runtime.of('NODEJS_16')
+  public static readonly NODEJS_16 = Runtime.of('NODEJS_16');
+
+  /**
+   * NodeJS 18
+   */
+  public static readonly NODEJS_18 = Runtime.of('NODEJS_18');
 
   /**
    * PHP 8.1
    */
-  public static readonly PHP_81 = Runtime.of('PHP_81')
+  public static readonly PHP_81 = Runtime.of('PHP_81');
 
   /**
    * Python 3
    */
-  public static readonly PYTHON_3 = Runtime.of('PYTHON_3')
+  public static readonly PYTHON_3 = Runtime.of('PYTHON_3');
+
+  /**
+   * Python 3.11
+   */
+  public static readonly PYTHON_311 = Runtime.of('PYTHON_311');
 
   /**
    * Ruby 3.1
    */
-  public static readonly RUBY_31 = Runtime.of('RUBY_31')
+  public static readonly RUBY_31 = Runtime.of('RUBY_31');
 
   /**
    * Other runtimes
@@ -422,8 +435,8 @@ export abstract class Source {
   }
 
   /**
-    * Called when the Job is initialized to allow this object to bind.
-    */
+   * Called when the Job is initialized to allow this object to bind.
+   */
   public abstract bind(scope: Construct): SourceConfig;
 }
 
@@ -431,7 +444,7 @@ export abstract class Source {
  * Represents the service source from a Github repository.
  */
 export class GithubSource extends Source {
-  private readonly props: GithubRepositoryProps
+  private readonly props: GithubRepositoryProps;
   constructor(props: GithubRepositoryProps) {
     super();
     this.props = props;
@@ -458,7 +471,7 @@ export class GithubSource extends Source {
  * Represents the service source from ECR.
  */
 export class EcrSource extends Source {
-  private readonly props: EcrProps
+  private readonly props: EcrProps;
   constructor(props: EcrProps) {
     super();
     this.props = props;
@@ -501,7 +514,7 @@ export class EcrPublicSource extends Source {
  * Represents the source from local assets.
  */
 export class AssetSource extends Source {
-  private readonly props: AssetProps
+  private readonly props: AssetProps;
   constructor(props: AssetProps) {
     super();
     this.props = props;
@@ -574,7 +587,7 @@ export interface ImageRepository {
    * always be `public.ecr.aws`. For `ECR`, the pattern should be
    * `([0-9]{12}.dkr.ecr.[a-z\-]+-[0-9]{1}.amazonaws.com\/.*)`.
    *
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apprunner-service-imagerepository.html for more details.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apprunner-service-imagerepository.html
    */
   readonly imageIdentifier: string;
 
@@ -656,6 +669,18 @@ export interface ServiceProps {
   readonly autoDeploymentsEnabled?: boolean;
 
   /**
+   * Specifies an App Runner Auto Scaling Configuration.
+   *
+   * A default configuration is either the AWS recommended configuration,
+   * or the configuration you set as the default.
+   *
+   * @see https://docs.aws.amazon.com/apprunner/latest/dg/manage-autoscaling.html
+   *
+   * @default - the latest revision of a default auto scaling configuration is used.
+   */
+  readonly autoScalingConfiguration?: IAutoScalingConfiguration;
+
+  /**
    * The number of CPU units reserved for each instance of your App Runner service.
    *
    * @default Cpu.ONE_VCPU
@@ -708,6 +733,15 @@ export interface ServiceProps {
   readonly vpcConnector?: IVpcConnector;
 
   /**
+   * Specifies whether your App Runner service is publicly accessible.
+   *
+   * If you use `VpcIngressConnection`, you must set this property to `false`.
+   *
+   * @default true
+   */
+  readonly isPubliclyAccessible?: boolean;
+
+  /**
    * Settings for the health check that AWS App Runner performs to monitor the health of a service.
    *
    * You can specify it by static methods `HealthCheck.http` or `HealthCheck.tcp`.
@@ -715,6 +749,28 @@ export interface ServiceProps {
    * @default - no health check configuration
    */
   readonly healthCheck?: HealthCheck;
+
+  /**
+   * The customer managed key that AWS App Runner uses to encrypt copies of the source repository and service logs.
+   *
+   * @default - Use an AWS managed key
+   */
+  readonly kmsKey?: kms.IKey;
+
+  /**
+   * The IP address type for your incoming public network configuration.
+   *
+   * @default - IpAddressType.IPV4
+   */
+  readonly ipAddressType?: IpAddressType;
+
+  /**
+   * Settings for an App Runner observability configuration.
+   *
+   * @default - no observability configuration resource is associated with the service.
+   */
+  readonly observabilityConfiguration?: IObservabilityConfiguration;
+
 }
 
 /**
@@ -851,7 +907,7 @@ export class GitHubConnection {
   /**
    * The ARN of the Connection for App Runner service to connect to the repository.
    */
-  public readonly connectionArn: string
+  public readonly connectionArn: string;
   constructor(arn: string) {
     this.connectionArn = arn;
   }
@@ -997,6 +1053,21 @@ export class HealthCheck {
 }
 
 /**
+ * The IP address type for your incoming public network configuration.
+ */
+export enum IpAddressType {
+  /**
+   * IPV4
+   */
+  IPV4 = 'IPV4',
+
+  /**
+   * DUAL_STACK
+   */
+  DUAL_STACK = 'DUAL_STACK',
+}
+
+/**
  * Attributes for the App Runner Service
  */
 export interface ServiceAttributes {
@@ -1118,7 +1189,7 @@ export class Service extends cdk.Resource implements iam.IGrantable {
         resource: 'service',
         service: 'apprunner',
         resourceName: serviceName,
-      })
+      });
     }
     return new Import(scope, id);
   }
@@ -1133,10 +1204,10 @@ export class Service extends cdk.Resource implements iam.IGrantable {
     const serviceStatus = attrs.serviceStatus;
 
     class Import extends cdk.Resource {
-      public readonly serviceArn = serviceArn
-      public readonly serviceName = serviceName
-      public readonly serviceUrl = serviceUrl
-      public readonly serviceStatus = serviceStatus
+      public readonly serviceArn = serviceArn;
+      public readonly serviceName = serviceName;
+      public readonly serviceUrl = serviceUrl;
+      public readonly serviceStatus = serviceStatus;
     }
 
     return new Import(scope, id);
@@ -1157,12 +1228,12 @@ export class Service extends cdk.Resource implements iam.IGrantable {
   /**
    * Environment secrets for this service.
    */
-  private readonly secrets: EnvironmentSecret[] = []
+  private readonly secrets: EnvironmentSecret[] = [];
 
   /**
    * Environment variables for this service.
    */
-  private readonly variables: EnvironmentVariable[] = []
+  private readonly variables: EnvironmentVariable[] = [];
 
   /**
    * The ARN of the Service.
@@ -1222,6 +1293,21 @@ export class Service extends cdk.Resource implements iam.IGrantable {
       throw new Error('configurationValues cannot be provided if the ConfigurationSource is Repository');
     }
 
+    if (props.serviceName !== undefined && !cdk.Token.isUnresolved(props.serviceName)) {
+
+      if (props.serviceName.length < 4 || props.serviceName.length > 40) {
+        throw new Error(
+          `\`serviceName\` must be between 4 and 40 characters, got: ${props.serviceName.length} characters.`,
+        );
+      }
+
+      if (!/^[A-Za-z0-9][A-Za-z0-9\-_]*$/.test(props.serviceName)) {
+        throw new Error(
+          `\`serviceName\` must start with an alphanumeric character and contain only alphanumeric characters, hyphens, or underscores after that, got: ${props.serviceName}.`,
+        );
+      }
+    }
+
     const resource = new CfnService(this, 'Resource', {
       serviceName: this.props.serviceName,
       instanceConfiguration: {
@@ -1239,20 +1325,32 @@ export class Service extends cdk.Resource implements iam.IGrantable {
           this.renderCodeConfiguration(this.source.codeRepository!.codeConfiguration.configurationValues!) :
           undefined,
       },
+      encryptionConfiguration: this.props.kmsKey ? {
+        kmsKey: this.props.kmsKey.keyArn,
+      } : undefined,
+      autoScalingConfigurationArn: this.props.autoScalingConfiguration?.autoScalingConfigurationArn,
       networkConfiguration: {
         egressConfiguration: {
           egressType: this.props.vpcConnector ? 'VPC' : 'DEFAULT',
           vpcConnectorArn: this.props.vpcConnector?.vpcConnectorArn,
         },
+        ingressConfiguration: props.isPubliclyAccessible !== undefined ? { isPubliclyAccessible: props.isPubliclyAccessible } : undefined,
+        ipAddressType: this.props.ipAddressType,
       },
       healthCheckConfiguration: this.props.healthCheck ?
         this.props.healthCheck.bind() :
         undefined,
+      observabilityConfiguration: props.observabilityConfiguration ? {
+        observabilityEnabled: true,
+        observabilityConfigurationArn: props.observabilityConfiguration.observabilityConfigurationArn,
+      } : undefined,
     });
 
-    // grant required privileges for the role
+    // grant required privileges for the role to access an image in Amazon ECR
+    // See https://docs.aws.amazon.com/apprunner/latest/dg/security_iam_service-with-iam.html#security_iam_service-with-iam-roles
     if (this.source.ecrRepository && this.accessRole) {
       this.source.ecrRepository.grantPull(this.accessRole);
+      this.source.ecrRepository.grant(this.accessRole, 'ecr:DescribeImages');
     }
 
     this.serviceArn = resource.attrServiceArn;

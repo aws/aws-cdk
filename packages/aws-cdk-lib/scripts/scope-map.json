@@ -38,6 +38,9 @@
   "aws-applicationinsights": [
     "AWS::ApplicationInsights"
   ],
+  "aws-applicationsignals": [
+    "AWS::ApplicationSignals"
+  ],
   "aws-appmesh": [
     "AWS::AppMesh"
   ],
@@ -49,6 +52,9 @@
   ],
   "aws-appsync": [
     "AWS::AppSync"
+  ],
+  "aws-apptest": [
+    "AWS::AppTest"
   ],
   "aws-aps": [
     "AWS::APS"
@@ -172,6 +178,9 @@
   ],
   "aws-connectcampaigns": [
     "AWS::ConnectCampaigns"
+  ],
+  "aws-connectcampaignsv2": [
+    "AWS::ConnectCampaignsV2"
   ],
   "aws-controltower": [
     "AWS::ControlTower"
@@ -344,6 +353,9 @@
   "aws-internetmonitor": [
     "AWS::InternetMonitor"
   ],
+  "aws-invoicing": [
+    "AWS::Invoicing"
+  ],
   "aws-iot": [
     "AWS::IoT"
   ],
@@ -416,6 +428,9 @@
   ],
   "aws-lambda": [
     "AWS::Lambda"
+  ],
+  "aws-launchwizard": [
+    "AWS::LaunchWizard"
   ],
   "aws-lex": [
     "AWS::Lex"
@@ -522,8 +537,17 @@
   "aws-panorama": [
     "AWS::Panorama"
   ],
+  "aws-paymentcryptography": [
+    "AWS::PaymentCryptography"
+  ],
   "aws-pcaconnectorad": [
     "AWS::PCAConnectorAD"
+  ],
+  "aws-pcaconnectorscep": [
+    "AWS::PCAConnectorSCEP"
+  ],
+  "aws-pcs": [
+    "AWS::PCS"
   ],
   "aws-personalize": [
     "AWS::Personalize"
@@ -540,6 +564,9 @@
   "aws-proton": [
     "AWS::Proton"
   ],
+  "aws-qbusiness": [
+    "AWS::QBusiness"
+  ],
   "aws-qldb": [
     "AWS::QLDB"
   ],
@@ -548,6 +575,9 @@
   ],
   "aws-ram": [
     "AWS::RAM"
+  ],
+  "aws-rbin": [
+    "AWS::Rbin"
   ],
   "aws-rds": [
     "AWS::RDS"
@@ -582,6 +612,9 @@
   "aws-route53": [
     "AWS::Route53"
   ],
+  "aws-route53profiles": [
+    "AWS::Route53Profiles"
+  ],
   "aws-route53recoverycontrol": [
     "AWS::Route53RecoveryControl"
   ],
@@ -605,6 +638,9 @@
   ],
   "aws-s3outposts": [
     "AWS::S3Outposts"
+  ],
+  "aws-s3tables": [
+    "AWS::S3Tables"
   ],
   "aws-sagemaker": [
     "AWS::SageMaker"
@@ -662,6 +698,9 @@
   ],
   "aws-ssmincidents": [
     "AWS::SSMIncidents"
+  ],
+  "aws-ssmquicksetup": [
+    "AWS::SSMQuickSetup"
   ],
   "aws-sso": [
     "AWS::SSO"

@@ -17,7 +17,9 @@
       }
      ]
     }
-   }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "MyStreamEventsRole5B6CC6AF": {
    "Type": "AWS::IAM::Role",
@@ -43,6 +45,7 @@
      "Statement": [
       {
        "Action": [
+        "kinesis:ListShards",
         "kinesis:PutRecord",
         "kinesis:PutRecords"
        ],

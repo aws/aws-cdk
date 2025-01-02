@@ -80,8 +80,8 @@ describe('tests', () => {
     new elbv2.NetworkLoadBalancer(stack, 'LB', {
       vpc,
       crossZoneEnabled: true,
-      denyAllIgwTraffic: true,
       clientRoutingPolicy: elbv2.ClientRoutingPolicy.PARTIAL_AVAILABILITY_ZONE_AFFINITY,
+      zonalShift: true,
     });
 
     // THEN
@@ -92,12 +92,12 @@ describe('tests', () => {
           Value: 'true',
         },
         {
-          Key: 'ipv6.deny_all_igw_traffic',
-          Value: 'true',
-        },
-        {
           Key: 'dns_record.client_routing_policy',
           Value: 'partial_availability_zone_affinity',
+        },
+        {
+          Key: 'zonal_shift.config.enabled',
+          Value: 'true',
         },
       ]),
     });
@@ -486,6 +486,26 @@ describe('tests', () => {
     expect(() => {
       app.synth();
     }).toThrow('Load balancer name: "my load balancer" must contain only alphanumeric characters or hyphens.');
+  });
+
+  test.each([
+    [false, undefined],
+    [true, undefined],
+    [false, elbv2.IpAddressType.IPV4],
+    [true, elbv2.IpAddressType.IPV4],
+  ])('throw error for denyAllIgwTraffic set to %s for Ipv4 (default) addressing.', (denyAllIgwTraffic, ipAddressType) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // THEN
+    expect(() => {
+      new elbv2.NetworkLoadBalancer(stack, 'NLB', {
+        vpc,
+        denyAllIgwTraffic: denyAllIgwTraffic,
+        ipAddressType: ipAddressType,
+      });
+    }).toThrow(`'denyAllIgwTraffic' may only be set on load balancers with ${elbv2.IpAddressType.DUAL_STACK} addressing.`);
   });
 
   test('imported network load balancer with no vpc specified throws error when calling addTargets', () => {
@@ -1074,7 +1094,7 @@ describe('tests', () => {
       });
     });
 
-    test('Can create internal dualstack NetworkLoadBalancer', () => {
+    test('Can create internet-facing dualstack NetworkLoadBalancer with denyAllIgwTraffic set to false', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'Stack');
@@ -1082,6 +1102,29 @@ describe('tests', () => {
       // WHEN
       new elbv2.NetworkLoadBalancer(stack, 'LB', {
         vpc,
+        denyAllIgwTraffic: false,
+        internetFacing: true,
+        ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        Scheme: 'internet-facing',
+        Type: 'network',
+        IpAddressType: 'dualstack',
+      });
+    });
+
+    test.each([undefined, false])('Can create internal dualstack NetworkLoadBalancer with denyAllIgwTraffic set to true', (internetFacing) => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      // WHEN
+      new elbv2.NetworkLoadBalancer(stack, 'LB', {
+        vpc,
+        denyAllIgwTraffic: true,
+        internetFacing: internetFacing,
         ipAddressType: elbv2.IpAddressType.DUAL_STACK,
       });
 
@@ -1092,40 +1135,66 @@ describe('tests', () => {
         IpAddressType: 'dualstack',
       });
     });
+  });
 
-    test('Cannot add UDP or TCP_UDP listeners to a dualstack network load balancer', () => {
+  describe('enable prefix for ipv6 source nat', () => {
+    test.each([
+      { config: true, value: 'on' },
+      { config: false, value: 'off' },
+    ])('specify EnablePrefixForIpv6SourceNat', ({ config, value }) => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'Stack');
 
       // WHEN
-      const loadBalancer = new elbv2.NetworkLoadBalancer(stack, 'LB', {
+      new elbv2.NetworkLoadBalancer(stack, 'Lb', {
         vpc,
-        internetFacing: true,
+        enablePrefixForIpv6SourceNat: config,
         ipAddressType: elbv2.IpAddressType.DUAL_STACK,
       });
 
-      const targetGroup = new elbv2.NetworkTargetGroup(stack, 'tg', {
-        vpc: loadBalancer.vpc,
-        port: 3000,
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        Scheme: 'internal',
+        Type: 'network',
+        IpAddressType: 'dualstack',
+        EnablePrefixForIpv6SourceNat: value,
+      });
+    });
+
+    test.each([false, undefined])('throw error for disabling `enablePrefixForIpv6SourceNat` and add UDP listener', (enablePrefixForIpv6SourceNat) => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+      const lb = new elbv2.NetworkLoadBalancer(stack, 'Lb', {
+        vpc,
+        ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+        enablePrefixForIpv6SourceNat,
       });
 
       // THEN
       expect(() => {
-        loadBalancer.addListener('listener', {
+        lb.addListener('Listener', {
+          port: 80,
           protocol: elbv2.Protocol.UDP,
-          port: 3000,
-          defaultAction: elbv2.NetworkListenerAction.forward([targetGroup]),
+          defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })],
         });
-      }).toThrow(/UDP or TCP_UDP listeners cannot be added to a dualstack network load balancer/);
+      }).toThrow('To add a listener with UDP protocol to a dual stack NLB, \'enablePrefixForIpv6SourceNat\' must be set to true.');
+    });
+  });
+
+  describe('dualstack without public ipv4', () => {
+    test('Throws when creating a dualstack without public ipv4 and a NetworkLoadBalancer', () => {
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
 
       expect(() => {
-        loadBalancer.addListener('listener', {
-          protocol: elbv2.Protocol.TCP_UDP,
-          port: 3000,
-          defaultAction: elbv2.NetworkListenerAction.forward([targetGroup]),
+        new elbv2.NetworkLoadBalancer(stack, 'LB', {
+          vpc,
+          internetFacing: true,
+          ipAddressType: elbv2.IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4,
         });
-      }).toThrow(/UDP or TCP_UDP listeners cannot be added to a dualstack network load balancer/);
+      }).toThrow('\'ipAddressType\' DUAL_STACK_WITHOUT_PUBLIC_IPV4 can only be used with Application Load Balancer, got network');
     });
   });
 });

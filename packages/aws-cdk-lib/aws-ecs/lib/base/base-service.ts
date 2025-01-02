@@ -19,9 +19,10 @@ import {
   ArnFormat,
   FeatureFlags,
   Token,
+  Arn,
+  Fn,
 } from '../../../core';
 import * as cxapi from '../../../cx-api';
-
 import { RegionInfo } from '../../../region-info';
 import {
   LoadBalancerTargetOptions,
@@ -411,7 +412,7 @@ export interface BaseServiceProps extends BaseServiceOptions {
    *
    * LaunchType will be omitted if capacity provider strategies are specified on the service.
    *
-   * @see - https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecs-service.html#cfn-ecs-service-capacityproviderstrategy
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecs-service.html#cfn-ecs-service-capacityproviderstrategy
    *
    * Valid values are: LaunchType.ECS or LaunchType.FARGATE or LaunchType.EXTERNAL
    */
@@ -517,16 +518,20 @@ export abstract class BaseService extends Resource
   public static fromServiceArnWithCluster(scope: Construct, id: string, serviceArn: string): IBaseService {
     const stack = Stack.of(scope);
     const arn = stack.splitArn(serviceArn, ArnFormat.SLASH_RESOURCE_NAME);
-    const resourceName = arn.resourceName;
-    if (!resourceName) {
-      throw new Error('Missing resource Name from service ARN: ${serviceArn}');
+    const resourceName = Arn.extractResourceName(serviceArn, 'service');
+    let clusterName: string;
+    let serviceName: string;
+    if (Token.isUnresolved(resourceName)) {
+      clusterName = Fn.select(0, Fn.split('/', resourceName));
+      serviceName = Fn.select(1, Fn.split('/', resourceName));
+    } else {
+      const resourceNameParts = resourceName.split('/');
+      if (resourceNameParts.length !== 2) {
+        throw new Error(`resource name ${resourceName} from service ARN: ${serviceArn} is not using the ARN cluster format`);
+      }
+      clusterName = resourceNameParts[0];
+      serviceName = resourceNameParts[1];
     }
-    const resourceNameParts = resourceName.split('/');
-    if (resourceNameParts.length !== 2) {
-      throw new Error(`resource name ${resourceName} from service ARN: ${serviceArn} is not using the ARN cluster format`);
-    }
-    const clusterName = resourceNameParts[0];
-    const serviceName = resourceNameParts[1];
 
     const clusterArn = Stack.of(scope).formatArn({
       partition: arn.partition,
@@ -763,11 +768,14 @@ export abstract class BaseService extends Resource
     // CloudWatch alarms is only supported for Amazon ECS services that use the rolling update (ECS) deployment controller.
     } else if ((!props.deploymentController ||
       props.deploymentController?.type === DeploymentControllerType.ECS) && this.deploymentAlarmsAvailableInRegion()) {
-      this.deploymentAlarms = {
-        alarmNames: [],
-        enable: false,
-        rollback: false,
-      };
+      // Only set default deployment alarms settings when feature flag is not enabled.
+      if (!FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM)) {
+        this.deploymentAlarms = {
+          alarmNames: [],
+          enable: false,
+          rollback: false,
+        };
+      }
     }
 
     this.node.defaultChild = this.resource;
@@ -1025,23 +1033,30 @@ export abstract class BaseService extends Resource
   }
 
   private executeCommandLogConfiguration() {
+    const reducePermissions = FeatureFlags.of(this).isEnabled(cxapi.REDUCE_EC2_FARGATE_CLOUDWATCH_PERMISSIONS);
     const logConfiguration = this.cluster.executeCommandConfiguration?.logConfiguration;
-    this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
-      actions: [
-        'logs:DescribeLogGroups',
-      ],
-      resources: ['*'],
-    }));
 
-    const logGroupArn = logConfiguration?.cloudWatchLogGroup ? `arn:${this.stack.partition}:logs:${this.env.region}:${this.env.account}:log-group:${logConfiguration.cloudWatchLogGroup.logGroupName}:*` : '*';
-    this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
-      actions: [
-        'logs:CreateLogStream',
-        'logs:DescribeLogStreams',
-        'logs:PutLogEvents',
-      ],
-      resources: [logGroupArn],
-    }));
+    // When Feature Flag is false, keep the previous behaviour for non-breaking changes.
+    // When Feature Flag is true and when cloudwatch log group is specified in logConfiguration, then
+    // append the necessary permissions to the task definition.
+    if (!reducePermissions || logConfiguration?.cloudWatchLogGroup) {
+      this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+        actions: [
+          'logs:DescribeLogGroups',
+        ],
+        resources: ['*'],
+      }));
+
+      const logGroupArn = logConfiguration?.cloudWatchLogGroup ? `arn:${this.stack.partition}:logs:${this.env.region}:${this.env.account}:log-group:${logConfiguration.cloudWatchLogGroup.logGroupName}:*` : '*';
+      this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+        actions: [
+          'logs:CreateLogStream',
+          'logs:DescribeLogStreams',
+          'logs:PutLogEvents',
+        ],
+        resources: [logGroupArn],
+      }));
+    }
 
     if (logConfiguration?.s3Bucket?.bucketName) {
       this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({

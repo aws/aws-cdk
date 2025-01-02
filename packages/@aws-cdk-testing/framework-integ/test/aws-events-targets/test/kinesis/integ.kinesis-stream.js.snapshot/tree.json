@@ -90,6 +90,7 @@
                               "Statement": [
                                 {
                                   "Action": [
+                                    "kinesis:ListShards",
                                     "kinesis:PutRecord",
                                     "kinesis:PutRecords"
                                   ],
@@ -215,7 +216,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.3.0"
         }
       }
     },

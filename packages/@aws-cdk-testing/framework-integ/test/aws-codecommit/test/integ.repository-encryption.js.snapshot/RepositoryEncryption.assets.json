@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "768c42cfd03f86c9416c69488b08f5ab428f042e921c8019c371f9a3353af94f": {
+      "source": {
+        "path": "RepositoryEncryption.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "768c42cfd03f86c9416c69488b08f5ab428f042e921c8019c371f9a3353af94f.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -2,6 +2,8 @@ import { Construct } from 'constructs';
 import { IEventSourceDlq } from './dlq';
 import { IFunction } from './function-base';
 import { CfnEventSourceMapping } from './lambda.generated';
+import * as iam from '../../aws-iam';
+import { IKey } from '../../aws-kms';
 import * as cdk from '../../core';
 
 /**
@@ -77,6 +79,24 @@ export interface SourceAccessConfiguration {
    * @see SourceAccessConfigurationType
    */
   readonly uri: string;
+}
+
+/**
+ * (Amazon MSK and self-managed Apache Kafka only) The provisioned mode configuration for the event source.
+ */
+export interface ProvisionedPollerConfig {
+  /**
+   * The minimum number of pollers that should be provisioned.
+   *
+   * @default - 1
+   */
+  readonly minimumPollers?: number;
+  /**
+   * The maximum number of pollers that can be provisioned.
+   *
+   * @default - 200
+   */
+  readonly maximumPollers?: number;
 }
 
 export interface EventSourceMappingOptions {
@@ -252,11 +272,56 @@ export interface EventSourceMappingOptions {
   readonly filters?: Array<{[key: string]: any}>;
 
   /**
+   * Add Customer managed KMS key to encrypt Filter Criteria.
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/invocation-eventfiltering.html
+   * By default, Lambda will encrypt Filter Criteria using AWS managed keys
+   * @see https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#aws-managed-cmk
+   *
+   * @default - none
+   */
+  readonly filterEncryption?: IKey;
+
+  /**
    * Check if support S3 onfailure destination(ODF). Currently only MSK and self managed kafka event support S3 ODF
    *
    * @default false
    */
   readonly supportS3OnFailureDestination?: boolean;
+
+  /**
+   * Configuration for provisioned pollers that read from the event source.
+   * When specified, allows control over the minimum and maximum number of pollers
+   * that can be provisioned to process events from the source.
+   * @default - no provisioned pollers
+   */
+  readonly provisionedPollerConfig?: ProvisionedPollerConfig;
+
+  /**
+   * Configuration for enhanced monitoring metrics collection
+   * When specified, enables collection of additional metrics for the stream event source
+   *
+   * @default - Enhanced monitoring is disabled
+   */
+  readonly metricsConfig?: MetricsConfig;
+}
+
+export enum MetricType {
+  /**
+   * Event Count metrics provide insights into the processing behavior of your event source mapping,
+   * including the number of events successfully processed, filtered out, or dropped.
+   * These metrics help you monitor the flow and status of events through your event source mapping.
+   */
+  EVENT_COUNT = 'EventCount',
+}
+
+/**
+ * Configuration for collecting metrics from the event source
+ */
+export interface MetricsConfig {
+  /**
+  * List of metric types to enable for this event source
+  */
+  readonly metrics: MetricType[];
 }
 
 /**
@@ -344,6 +409,25 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       throw new Error('eventSourceArn and kafkaBootstrapServers are mutually exclusive');
     }
 
+    if (props.provisionedPollerConfig) {
+      const { minimumPollers, maximumPollers } = props.provisionedPollerConfig;
+      if (minimumPollers != undefined) {
+        if (minimumPollers < 1 || minimumPollers > 200) {
+          throw new Error('Minimum provisioned pollers must be between 1 and 200 inclusive');
+        }
+      }
+      if (maximumPollers != undefined) {
+        if (maximumPollers < 1 || maximumPollers > 2000) {
+          throw new Error('Maximum provisioned pollers must be between 1 and 2000 inclusive');
+        }
+      }
+      if (minimumPollers != undefined && maximumPollers != undefined) {
+        if (minimumPollers > maximumPollers) {
+          throw new Error('Minimum provisioned pollers must be less than or equal to maximum provisioned pollers');
+        }
+      }
+    }
+
     if (props.kafkaBootstrapServers && (props.kafkaBootstrapServers?.length < 1)) {
       throw new Error('kafkaBootStrapServers must not be empty if set');
     }
@@ -388,6 +472,23 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       this.validateKafkaConsumerGroupIdOrThrow(props.kafkaConsumerGroupId);
     }
 
+    if (props.filterEncryption !== undefined && props.filters == undefined) {
+      throw new Error('filter criteria must be provided to enable setting filter criteria encryption');
+    }
+
+    /**
+     * Grants the Lambda function permission to decrypt data using the specified KMS key.
+     * This step is necessary for setting up encrypted filter criteria.
+     *
+     * If the KMS key was created within this CloudFormation stack (via `new Key`), a Key policy
+     * will be attached to the key to allow the Lambda function to access it. However, if the
+     * Key is imported from an existing ARN (`Key.fromKeyArn`), no action will be taken.
+     */
+    if (props.filterEncryption !== undefined) {
+      const lambdaPrincipal = new iam.ServicePrincipal('lambda.amazonaws.com');
+      props.filterEncryption.grantDecrypt(lambdaPrincipal);
+    }
+
     let destinationConfig;
 
     if (props.onFailure) {
@@ -423,8 +524,11 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       sourceAccessConfigurations: props.sourceAccessConfigurations?.map((o) => {return { type: o.type.type, uri: o.uri };}),
       selfManagedEventSource,
       filterCriteria: props.filters ? { filters: props.filters }: undefined,
+      kmsKeyArn: props.filterEncryption?.keyArn,
       selfManagedKafkaEventSourceConfig: props.kafkaBootstrapServers ? consumerGroupConfig : undefined,
       amazonManagedKafkaEventSourceConfig: props.eventSourceArn ? consumerGroupConfig : undefined,
+      provisionedPollerConfig: props.provisionedPollerConfig,
+      metricsConfig: props.metricsConfig,
     });
     this.eventSourceMappingId = cfnEventSourceMapping.ref;
     this.eventSourceMappingArn = EventSourceMapping.formatArn(this, this.eventSourceMappingId);

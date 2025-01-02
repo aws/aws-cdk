@@ -73,10 +73,10 @@ export interface ScheduledTaskBaseProps {
   readonly securityGroups?: ISecurityGroup[];
 
   /**
-    * Specifies whether to propagate the tags from the task definition to the task. If no value is specified, the tags are not propagated.
-    *
-    * @default - Tags will not be propagated
-    */
+   * Specifies whether to propagate the tags from the task definition to the task. If no value is specified, the tags are not propagated.
+   *
+   * @default - Tags will not be propagated
+   */
   readonly propagateTags?: PropagatedTagSource;
 
   /**
@@ -94,6 +94,13 @@ export interface ScheduledTaskImageProps {
    * @default - none
    */
   readonly image: ContainerImage;
+
+  /**
+   * Optional name for the container added
+   *
+   * @default - ScheduledContainer
+   */
+  readonly containerName?: string;
 
   /**
    * The command that is passed to the container.
@@ -161,10 +168,10 @@ export abstract class ScheduledTaskBase extends Construct {
   private readonly _securityGroups?: ISecurityGroup[];
 
   /**
-    * Specifies whether to propagate the tags from the task definition to the task. If no value is specified, the tags are not propagated.
-    *
-    * @default - Tags will not be propagated
-    */
+   * Specifies whether to propagate the tags from the task definition to the task. If no value is specified, the tags are not propagated.
+   *
+   * @default - Tags will not be propagated
+   */
   public readonly propagateTags?: PropagatedTagSource;
 
   /**
@@ -172,7 +179,7 @@ export abstract class ScheduledTaskBase extends Construct {
    *
    * @default - No tags are applied to the task
    */
-  public readonly tags?: Tag[]
+  public readonly tags?: Tag[];
 
   /**
    * Constructs a new instance of the ScheduledTaskBase class.

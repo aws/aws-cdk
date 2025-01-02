@@ -81,7 +81,7 @@ const UPDATE = chalk.yellow('[~]');
 const REMOVAL = chalk.red('[-]');
 const IMPORT = chalk.blue('[←]');
 
-class Formatter {
+export class Formatter {
   constructor(
     private readonly stream: FormatStream,
     private readonly logicalToPathMap: { [logicalId: string]: string },
@@ -160,7 +160,7 @@ class Formatter {
     const resourceType = diff.isRemoval ? diff.oldResourceType : diff.newResourceType;
 
     // eslint-disable-next-line max-len
-    this.print(`${this.formatResourcePrefix(diff)} ${this.formatValue(resourceType, chalk.cyan)} ${this.formatLogicalId(logicalId)} ${this.formatImpact(diff.changeImpact)}`);
+    this.print(`${this.formatResourcePrefix(diff)} ${this.formatValue(resourceType, chalk.cyan)} ${this.formatLogicalId(logicalId)} ${this.formatImpact(diff.changeImpact)}`.trimEnd());
 
     if (diff.isUpdate) {
       const differenceCount = diff.differenceCount;
@@ -381,6 +381,19 @@ class Formatter {
     if (changes.managedPolicies.hasChanges) {
       this.printSectionHeader('IAM Policy Changes');
       this.print(formatTable(this.deepSubstituteBracedLogicalIds(changes.summarizeManagedPolicies()), this.stream.columns));
+    }
+
+    if (changes.ssoPermissionSets.hasChanges || changes.ssoInstanceACAConfigs.hasChanges || changes.ssoAssignments.hasChanges) {
+      this.printSectionHeader('IAM Identity Center Changes');
+      if (changes.ssoPermissionSets.hasChanges) {
+        this.print(formatTable(this.deepSubstituteBracedLogicalIds(changes.summarizeSsoPermissionSets()), this.stream.columns));
+      }
+      if (changes.ssoInstanceACAConfigs.hasChanges) {
+        this.print(formatTable(this.deepSubstituteBracedLogicalIds(changes.summarizeSsoInstanceACAConfigs()), this.stream.columns));
+      }
+      if (changes.ssoAssignments.hasChanges) {
+        this.print(formatTable(this.deepSubstituteBracedLogicalIds(changes.summarizeSsoAssignments()), this.stream.columns));
+      }
     }
   }
 

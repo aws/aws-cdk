@@ -104,6 +104,23 @@ new route53.ARecord(this, 'ARecord', {
 });
 ```
 
+To create an A record of type alias with target set to another record created outside CDK:
+
+This function registers the given input i.e. DNS Name(string) of an existing record as an AliasTarget to the new ARecord. To register a target that is created as part of CDK use this instead.
+
+Detailed information can be found in the [documentation](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_route53_targets-readme.html).
+
+```ts
+declare const myZone: route53.HostedZone;
+
+const targetRecord = 'existing.record.cdk.local';
+const record = route53.ARecord.fromARecordAttributes(this, 'A', {
+  zone: myZone,
+  recordName: 'test',
+  targetDNS: targetRecord,
+});
+```
+
 To add an AAAA record pointing to a CloudFront distribution:
 
 ```ts
@@ -205,6 +222,42 @@ Constructs are available for A, AAAA, CAA, CNAME, MX, NS, SRV and TXT records.
 
 Use the `CaaAmazonRecord` construct to easily restrict certificate authorities
 allowed to issue certificates for a domain to Amazon only.
+
+### Health Checks
+
+See the [Route 53 Health Checks documentation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-healthcheck-healthcheckconfig.html#cfn-route53-healthcheck-healthcheckconfig-type) for possible types of health checks.
+
+Route 53 has the ability to monitor the health of your application and only return records for healthy endpoints.
+This is done using a `HealthCheck` construct.
+
+In the following example, the `ARecord` will be returned by Route 53 in response to DNS queries only if the HTTP requests to the `example.com/health` endpoint return a 2XX or 3XX status code.
+
+In case, when the endpoint is not healthy, the `ARecord2` will be returned by Route 53 in response to DNS queries.
+
+```ts
+declare const myZone: route53.HostedZone;
+
+const healthCheck = new route53.HealthCheck(this, 'HealthCheck', {
+  type: route53.HealthCheckType.HTTP,
+  fqdn: 'example.com',
+  port: 80,
+  resourcePath: '/health',
+  failureThreshold: 3,
+  requestInterval: Duration.seconds(30),
+});
+
+new route53.ARecord(this, 'ARecord', {
+  zone: myZone,
+  target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
+  healthCheck,
+  weight: 100,
+});
+new route53.ARecord(this, 'ARecord2', {
+  zone: myZone,
+  target: route53.RecordTarget.fromIpAddresses('5.6.7.8'),
+  weight: 0,
+});
+```
 
 ### Replacing existing record sets (dangerous!)
 

@@ -1,7 +1,7 @@
 {
-  "version": "34.0.0",
+  "version": "38.0.1",
   "files": {
-    "138a217a9e2d3bad4739ea506408a27aca8886a97c0fbacffcba80f39d2d26b0": {
+    "cb2d7d48eaf634edd0acc6e6475e904f57e491fce9fa3ac839e93cba823616c1": {
       "source": {
         "path": "lambda-event-source-kafka-self-managed.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "138a217a9e2d3bad4739ea506408a27aca8886a97c0fbacffcba80f39d2d26b0.json",
+          "objectKey": "cb2d7d48eaf634edd0acc6e6475e904f57e491fce9fa3ac839e93cba823616c1.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

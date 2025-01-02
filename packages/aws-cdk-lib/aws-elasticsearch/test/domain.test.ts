@@ -37,7 +37,7 @@ testDeprecated('connections throws if domain is placed inside a vpc', () => {
     new Domain(stack, 'Domain', {
       version: ElasticsearchVersion.V7_1,
     }).connections;
-  }).toThrowError("Connections are only available on VPC enabled domains. Use the 'vpc' property to place a domain inside a VPC");
+  }).toThrow("Connections are only available on VPC enabled domains. Use the 'vpc' property to place a domain inside a VPC");
 });
 
 testDeprecated('subnets and security groups can be provided when vpc is used', () => {
@@ -246,7 +246,7 @@ testDeprecated('can set a self-referencing custom policy', () => {
         {
           Ref: 'Domain66AC69E0',
         },
-        'AccessPolicy"},"logApiResponseData":true}',
+        'AccessPolicy"}}',
       ],
     ],
   };
@@ -568,7 +568,7 @@ describe('log groups', () => {
                 'Arn',
               ],
             },
-            '\\"}],\\"Version\\":\\"2012-10-17\\"}"},"physicalResourceId":{"id":"ESLogGroupPolicyc836fd92f07ec41eb70c2f6f08dc4b43cfb7c25391"},"logApiResponseData":true}',
+            '\\"}],\\"Version\\":\\"2012-10-17\\"}"},"physicalResourceId":{"id":"ESLogGroupPolicyc836fd92f07ec41eb70c2f6f08dc4b43cfb7c25391"}}',
           ],
         ],
       },
@@ -586,7 +586,7 @@ describe('log groups', () => {
                 'Arn',
               ],
             },
-            '\\"}],\\"Version\\":\\"2012-10-17\\"}"},"physicalResourceId":{"id":"ESLogGroupPolicyc8f05f015be3baf6ec1ee06cd1ee5cc8706ebbe5b2"},"logApiResponseData":true}',
+            '\\"}],\\"Version\\":\\"2012-10-17\\"}"},"physicalResourceId":{"id":"ESLogGroupPolicyc8f05f015be3baf6ec1ee06cd1ee5cc8706ebbe5b2"}}',
           ],
         ],
       },

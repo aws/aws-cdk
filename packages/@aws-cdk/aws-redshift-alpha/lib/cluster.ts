@@ -50,6 +50,11 @@ export enum NodeType {
   DC2_8XLARGE = 'dc2.8xlarge',
 
   /**
+   * ra3.large
+   */
+  RA3_LARGE = 'ra3.large',
+
+  /**
    * ra3.xlplus
    */
   RA3_XLPLUS = 'ra3.xlplus',
@@ -81,6 +86,28 @@ export enum ClusterType {
 }
 
 /**
+ * The Amazon Redshift operation
+ */
+export enum ResourceAction {
+  /**
+   * Pause the cluster
+   */
+  PAUSE_CLUSTER = 'pause-cluster',
+
+  /**
+   * Resume the cluster
+   */
+  RESUME_CLUSTER = 'resume-cluster',
+
+  /**
+   * Failing over to the other availability zone
+   *
+   * @see https://docs.aws.amazon.com/redshift/latest/mgmt/test-cluster-multi-az.html
+   */
+  FAILOVER_PRIMARY_COMPUTE = 'failover-primary-compute',
+}
+
+/**
  * Username and password combination
  */
 export interface Login {
@@ -104,6 +131,13 @@ export interface Login {
    * @default - default master key
    */
   readonly encryptionKey?: kms.IKey;
+
+  /**
+   * Characters to not include in the generated password.
+   *
+   * @default '"@/\\\ \''
+   */
+  readonly excludeCharacters?: string;
 }
 
 /**
@@ -385,6 +419,29 @@ export interface ClusterProps {
    * @default - false
    */
   readonly enhancedVpcRouting?: boolean;
+
+  /**
+   * Indicating whether Amazon Redshift should deploy the cluster in two Availability Zones.
+   *
+   * @default - false
+   */
+  readonly multiAz?: boolean;
+
+  /**
+   * The Amazon Redshift operation to be performed.
+   *
+   * @default - no operation
+   */
+  readonly resourceAction?: ResourceAction;
+
+  /**
+   * Whether to enable relocation for an Amazon Redshift cluster between Availability Zones after the cluster is created.
+   *
+   * @see https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-recovery.html
+   *
+   * @default - false
+   */
+  readonly availabilityZoneRelocation?: boolean;
 }
 
 /**
@@ -520,6 +577,7 @@ export class Cluster extends ClusterBase {
       secret = new DatabaseSecret(this, 'Secret', {
         username: props.masterUser.masterUsername,
         encryptionKey: props.masterUser.encryptionKey,
+        excludeCharacters: props.masterUser.excludeCharacters,
       });
     }
 
@@ -558,6 +616,24 @@ export class Cluster extends ClusterBase {
       );
     }
 
+    const nodeType = props.nodeType || NodeType.DC2_LARGE;
+
+    if (props.multiAz) {
+      if (!nodeType.startsWith('ra3')) {
+        throw new Error(`Multi-AZ cluster is only supported for RA3 node types, got: ${props.nodeType}`);
+      }
+      if (clusterType === ClusterType.SINGLE_NODE) {
+        throw new Error('Multi-AZ cluster is not supported for `clusterType` single-node');
+      }
+    }
+
+    if (props.resourceAction === ResourceAction.FAILOVER_PRIMARY_COMPUTE && !props.multiAz) {
+      throw new Error('ResourceAction.FAILOVER_PRIMARY_COMPUTE can only be used with multi-AZ clusters.');
+    };
+    if (props.availabilityZoneRelocation && !nodeType.startsWith('ra3')) {
+      throw new Error(`Availability zone relocation is supported for only RA3 node types, got: ${props.nodeType}`);
+    }
+
     this.cluster = new CfnCluster(this, 'Resource', {
       // Basic
       allowVersionUpgrade: true,
@@ -574,7 +650,7 @@ export class Cluster extends ClusterBase {
         ?? props.masterUser.masterPassword?.unsafeUnwrap()
         ?? 'default',
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
-      nodeType: props.nodeType || NodeType.DC2_LARGE,
+      nodeType,
       numberOfNodes: nodeCount,
       loggingProperties,
       iamRoles: Lazy.list({ produce: () => this.roles.map(role => role.roleArn) }, { omitEmpty: true }),
@@ -586,6 +662,9 @@ export class Cluster extends ClusterBase {
       classic: props.classicResizing,
       elasticIp: props.elasticIp,
       enhancedVpcRouting: props.enhancedVpcRouting,
+      multiAz: props.multiAz,
+      resourceAction: props.resourceAction,
+      availabilityZoneRelocation: props.availabilityZoneRelocation,
     });
 
     this.cluster.applyRemovalPolicy(removalPolicy, {
@@ -712,7 +791,7 @@ export class Cluster extends ClusterBase {
     }
     const rebootFunction = new lambda.SingletonFunction(this, 'RedshiftClusterRebooterFunction', {
       uuid: '511e207f-13df-4b8b-b632-c32b30b65ac2',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.determineLatestNodeRuntime(this),
       code: lambda.Code.fromAsset(path.join(__dirname, '..', 'custom-resource-handlers', 'dist', 'aws-redshift-alpha', 'cluster-parameter-change-reboot-handler')),
       handler: 'index.handler',
       timeout: Duration.seconds(900),

@@ -1,5 +1,5 @@
 import { Construct, Node } from 'constructs';
-import { Cluster, ICluster, IpFamily } from './cluster';
+import { Cluster, ICluster, IpFamily, AuthenticationMode } from './cluster';
 import { CfnNodegroup } from './eks.generated';
 import { InstanceType, ISecurityGroup, SubnetSelection, InstanceArchitecture, InstanceClass, InstanceSize } from '../../aws-ec2';
 import { IRole, ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
@@ -75,6 +75,14 @@ export enum NodegroupAmiType {
    * Amazon Linux 2023 (x86-64)
    */
   AL2023_X86_64_STANDARD = 'AL2023_x86_64_STANDARD',
+  /**
+   * Amazon Linux 2023 with AWS Neuron drivers (x86-64)
+   */
+  AL2023_X86_64_NEURON = 'AL2023_x86_64_NEURON',
+  /**
+   * Amazon Linux 2023 with NVIDIA drivers (x86-64)
+   */
+  AL2023_X86_64_NVIDIA = 'AL2023_x86_64_NVIDIA',
   /**
    * Amazon Linux 2023 (ARM-64)
    */
@@ -245,7 +253,7 @@ export interface NodegroupOptions {
   /**
    * The instance types to use for your node group.
    * @default t3.medium will be used according to the cloudformation document.
-   * @see - https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eks-nodegroup.html#cfn-eks-nodegroup-instancetypes
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eks-nodegroup.html#cfn-eks-nodegroup-instancetypes
    */
   readonly instanceTypes?: InstanceType[];
   /**
@@ -293,7 +301,7 @@ export interface NodegroupOptions {
   readonly tags?: { [name: string]: string };
   /**
    * Launch template specification used for the nodegroup
-   * @see - https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html
+   * @see https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html
    * @default - no launch template
    */
   readonly launchTemplateSpec?: LaunchTemplateSpec;
@@ -455,7 +463,7 @@ export class Nodegroup extends Resource implements INodegroup {
       // https://docs.aws.amazon.com/eks/latest/userguide/cni-iam-role.html
       if (props.cluster.ipFamily == IpFamily.IP_V6) {
         ngRole.addToPrincipalPolicy(new PolicyStatement({
-          // eslint-disable-next-line @aws-cdk/no-literal-partition
+          // eslint-disable-next-line @cdklabs/no-literal-partition
           resources: ['arn:aws:ec2:*:*:network-interface/*'],
           actions: [
             'ec2:AssignIpv6Addresses',
@@ -518,14 +526,17 @@ export class Nodegroup extends Resource implements INodegroup {
     // its state for consistency.
     if (this.cluster instanceof Cluster) {
       // see https://docs.aws.amazon.com/en_us/eks/latest/userguide/add-user-role.html
-      this.cluster.awsAuth.addRoleMapping(this.role, {
-        username: 'system:node:{{EC2PrivateDNSName}}',
-        groups: [
-          'system:bootstrappers',
-          'system:nodes',
-        ],
-      });
-
+      // only when ConfigMap is supported
+      const supportConfigMap = props.cluster.authenticationMode !== AuthenticationMode.API ? true : false;
+      if (supportConfigMap) {
+        this.cluster.awsAuth.addRoleMapping(this.role, {
+          username: 'system:node:{{EC2PrivateDNSName}}',
+          groups: [
+            'system:bootstrappers',
+            'system:nodes',
+          ],
+        });
+      }
       // the controller runs on the worker nodes so they cannot
       // be deleted before the controller.
       if (this.cluster.albController) {
@@ -591,6 +602,8 @@ const windowsAmiTypes: NodegroupAmiType[] = [
 ];
 const gpuAmiTypes: NodegroupAmiType[] = [
   NodegroupAmiType.AL2_X86_64_GPU,
+  NodegroupAmiType.AL2023_X86_64_NEURON,
+  NodegroupAmiType.AL2023_X86_64_NVIDIA,
   NodegroupAmiType.BOTTLEROCKET_X86_64_NVIDIA,
   NodegroupAmiType.BOTTLEROCKET_ARM_64_NVIDIA,
 ];

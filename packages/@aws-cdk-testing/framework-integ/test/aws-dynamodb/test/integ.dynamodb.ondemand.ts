@@ -45,6 +45,8 @@ new Table(stack, TABLE, {
   billingMode: BillingMode.PAY_PER_REQUEST,
   partitionKey: TABLE_PARTITION_KEY,
   removalPolicy: RemovalPolicy.DESTROY,
+  maxReadRequestUnits: 100,
+  maxWriteRequestUnits: 200,
 });
 
 const tableWithGlobalAndLocalSecondaryIndex = new Table(stack, TABLE_WITH_GLOBAL_AND_LOCAL_SECONDARY_INDEX, {
@@ -63,6 +65,8 @@ Tags.of(tableWithGlobalAndLocalSecondaryIndex).add('Environment', 'Production');
 tableWithGlobalAndLocalSecondaryIndex.addGlobalSecondaryIndex({
   indexName: GSI_TEST_CASE_1,
   partitionKey: GSI_PARTITION_KEY,
+  maxReadRequestUnits: 100,
+  maxWriteRequestUnits: 100,
 });
 tableWithGlobalAndLocalSecondaryIndex.addGlobalSecondaryIndex({
   indexName: GSI_TEST_CASE_2,

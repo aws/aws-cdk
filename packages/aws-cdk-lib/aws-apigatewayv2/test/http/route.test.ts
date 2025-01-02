@@ -1,6 +1,6 @@
 import { Template } from '../../../assertions';
 import { AccountPrincipal, Role, ServicePrincipal } from '../../../aws-iam';
-import { Stack, App } from '../../../core';
+import { Stack, App, Duration } from '../../../core';
 import {
   HttpApi, HttpAuthorizer, HttpAuthorizerType, HttpConnectionType, HttpIntegrationType, HttpMethod, HttpRoute,
   HttpRouteAuthorizerBindOptions, HttpRouteAuthorizerConfig, HttpRouteIntegrationConfig, HttpRouteKey, IHttpRouteAuthorizer, HttpRouteIntegration,
@@ -151,7 +151,7 @@ describe('HttpRoute', () => {
       httpApi,
       integration: new DummyIntegration(),
       routeKey: HttpRouteKey.with('books', HttpMethod.GET),
-    })).toThrowError(/A route path must always start with a "\/" and not end with a "\/"/);
+    })).toThrow(/A route path must always start with a "\/" and not end with a "\/"/);
   });
 
   test('throws when path ends with /', () => {
@@ -162,7 +162,7 @@ describe('HttpRoute', () => {
       httpApi,
       integration: new DummyIntegration(),
       routeKey: HttpRouteKey.with('/books/', HttpMethod.GET),
-    })).toThrowError(/A route path must always start with a "\/" and not end with a "\/"/);
+    })).toThrow(/A route path must always start with a "\/" and not end with a "\/"/);
   });
 
   test('configures private integration correctly when all props are passed', () => {
@@ -183,6 +183,7 @@ describe('HttpRoute', () => {
           parameterMapping: new ParameterMapping()
             .appendHeader('header2', MappingValue.requestHeader('header1'))
             .removeHeader('header1'),
+          timeout: Duration.seconds(20),
         };
       }
     }
@@ -205,9 +206,49 @@ describe('HttpRoute', () => {
       TlsConfig: {
         ServerNameToVerify: 'some-server-name',
       },
+      TimeoutInMillis: 20000,
     });
 
     Template.fromStack(stack).resourceCountIs('AWS::ApiGatewayV2::VpcLink', 0);
+  });
+
+  test('throws when invalid timeout value is passed', () => {
+    // GIVEN
+    const stack = new Stack();
+    const httpApi = new HttpApi(stack, 'HttpApi');
+
+    class InvalidMinimumBoundIntegration extends HttpRouteIntegration {
+      public bind(): HttpRouteIntegrationConfig {
+        return {
+          payloadFormatVersion: PayloadFormatVersion.VERSION_1_0,
+          type: HttpIntegrationType.HTTP_PROXY,
+          uri: 'some-target-arn',
+          timeout: Duration.millis(49),
+        };
+      }
+    }
+    class InvalidMaximumBoundIntegration extends HttpRouteIntegration {
+      public bind(): HttpRouteIntegrationConfig {
+        return {
+          payloadFormatVersion: PayloadFormatVersion.VERSION_1_0,
+          type: HttpIntegrationType.HTTP_PROXY,
+          uri: 'some-target-arn',
+          timeout: Duration.seconds(50),
+        };
+      }
+    }
+
+    expect(() => new HttpRoute(stack, 'MinimumHttpRoute', {
+      httpApi,
+      integration: new InvalidMinimumBoundIntegration('InvalidMinimumBoundIntegration'),
+      routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
+    })).toThrow(/Integration timeout must be between 50 milliseconds and 29 seconds./);
+
+    expect(() => new HttpRoute(stack, 'MaximumHttpRoute', {
+      httpApi,
+      integration: new InvalidMaximumBoundIntegration('InvalidMaximumBoundIntegration'),
+      routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
+    })).toThrow(/Integration timeout must be between 50 milliseconds and 29 seconds./);
   });
 
   test('configures private integration correctly when parameter mappings are passed', () => {
@@ -449,7 +490,7 @@ describe('HttpRoute', () => {
       integration: new DummyIntegration(),
       routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
       authorizer,
-    })).toThrowError('authorizationType should either be AWS_IAM, JWT, CUSTOM, or NONE');
+    })).toThrow('authorizationType should either be AWS_IAM, JWT, CUSTOM, or NONE');
   });
 
   test('granting invoke', () => {
@@ -640,7 +681,7 @@ describe('HttpRoute', () => {
       route.grantInvoke(role, {
         httpMethods: [HttpMethod.DELETE],
       }),
-    ).toThrowError(/This route does not support granting invoke for all requested http methods/i);
+    ).toThrow(/This route does not support granting invoke for all requested http methods/i);
   });
 
   test('throws when granting invoke with the wrong authorizer type', () => {
@@ -661,7 +702,7 @@ describe('HttpRoute', () => {
       route.grantInvoke(role, {
         httpMethods: [HttpMethod.DELETE],
       }),
-    ).toThrowError(/To use grantInvoke, you must use IAM authorization/i);
+    ).toThrow(/To use grantInvoke, you must use IAM authorization/i);
   });
 
   test('accessing an ANY route arn', () => {

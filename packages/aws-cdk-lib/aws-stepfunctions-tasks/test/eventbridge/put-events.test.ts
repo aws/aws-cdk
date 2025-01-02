@@ -143,7 +143,7 @@ describe('Put Events', () => {
         }],
       });
       // THEN
-    }).toThrowError('Task Token is required in `entries`. Use JsonPath.taskToken to set the token.');
+    }).toThrow('Task Token is required in `entries`. Use JsonPath.taskToken to set the token.');
   });
 
   test('fails when RUN_JOB integration pattern is used', () => {
@@ -158,7 +158,31 @@ describe('Put Events', () => {
         }],
       });
       // THEN
-    }).toThrowError('Unsupported service integration pattern');
+    }).toThrow('Unsupported service integration pattern');
+  });
+
+  test('event source cannot start with "aws."', () => {
+    expect(() => {
+      new EventBridgePutEvents(stack, 'PutEvents', {
+        entries: [{
+          detail: sfn.TaskInput.fromText('MyDetail'),
+          detailType: 'MyDetailType',
+          source: 'aws.source',
+        }],
+      });
+    }).toThrow(/Event source cannot start with "aws."/);
+  });
+
+  test('event source can start with "aws" without trailing dot', () => {
+    expect(() => {
+      new EventBridgePutEvents(stack, 'PutEvents', {
+        entries: [{
+          detail: sfn.TaskInput.fromText('MyDetail'),
+          detailType: 'MyDetailType',
+          source: 'awssource',
+        }],
+      });
+    }).not.toThrow(/Event source cannot start with "aws."/);
   });
 
   test('provided EventBus', () => {
@@ -215,7 +239,7 @@ describe('Put Events', () => {
       });
     })
       // THEN
-      .toThrowError('Value for property `entries` must be a non-empty array.');
+      .toThrow('Value for property `entries` must be a non-empty array.');
   });
 
   test('Validate task policy', () => {

@@ -1,0 +1,13 @@
+{
+  "version": "36.0.5",
+  "testCases": {
+    "AwsCustomResourceDynamoDBTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-sdk-dynamodb"
+      ],
+      "diffAssets": true,
+      "assertionStack": "AwsCustomResourceDynamoDBTest/DefaultTest/DeployAssert",
+      "assertionStackName": "AwsCustomResourceDynamoDBTestDefaultTestDeployAssertB351282D"
+    }
+  }
+}

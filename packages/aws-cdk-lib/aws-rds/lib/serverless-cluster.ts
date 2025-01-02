@@ -50,7 +50,7 @@ export interface IServerlessCluster extends IResource, ec2.IConnectable, secrets
   grantDataApiAccess(grantee: iam.IGrantable): iam.Grant;
 }
 /**
- *  Common Properties to configure new Aurora Serverless Cluster or Aurora Serverless Cluster from snapshot
+ *  Common Properties to configure new Aurora Serverless v1 Cluster or Aurora Serverless v1 Cluster from snapshot
  */
 interface ServerlessClusterNewProps {
   /**
@@ -98,7 +98,7 @@ interface ServerlessClusterNewProps {
   readonly enableDataApi?: boolean;
 
   /**
-   * The VPC that this Aurora Serverless cluster has been created in.
+   * The VPC that this Aurora Serverless v1 Cluster has been created in.
    *
    * @default - the default VPC in the account and region will be used
    */
@@ -260,7 +260,7 @@ export enum TimeoutAction {
 }
 
 /**
- * Options for configuring scaling on an Aurora Serverless cluster
+ * Options for configuring scaling on an Aurora Serverless v1 Cluster
  *
  */
 export interface ServerlessScalingOptions {
@@ -387,7 +387,7 @@ abstract class ServerlessClusterBase extends Resource implements IServerlessClus
 }
 
 /**
- * Create an Aurora Serverless Cluster
+ * Create an Aurora Serverless v1 Cluster
  *
  * @resource AWS::RDS::DBCluster
  */
@@ -508,7 +508,7 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
 }
 
 /**
- * Properties for a new Aurora Serverless Cluster
+ * Properties for a new Aurora Serverless v1 Cluster
  */
 export interface ServerlessClusterProps extends ServerlessClusterNewProps {
   /**
@@ -527,7 +527,7 @@ export interface ServerlessClusterProps extends ServerlessClusterNewProps {
 }
 
 /**
- * Create an Aurora Serverless Cluster
+ * Create an Aurora Serverless v1 Cluster
  *
  * @resource AWS::RDS::DBCluster
  *
@@ -649,7 +649,7 @@ class ImportedServerlessCluster extends ServerlessClusterBase implements IServer
 
   public readonly secret?: secretsmanager.ISecret;
 
-  protected readonly enableDataApi = true
+  protected readonly enableDataApi = true;
 
   private readonly _clusterEndpoint?: Endpoint;
   private readonly _clusterReadEndpoint?: Endpoint;
@@ -709,7 +709,7 @@ export interface ServerlessClusterFromSnapshotProps extends ServerlessClusterNew
 }
 
 /**
- * A Aurora Serverless Cluster restored from a snapshot.
+ * A Aurora Serverless v1 Cluster restored from a snapshot.
  *
  * @resource AWS::RDS::DBCluster
  */

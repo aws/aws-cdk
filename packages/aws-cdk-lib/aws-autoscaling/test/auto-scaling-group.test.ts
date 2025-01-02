@@ -2360,6 +2360,127 @@ describe('auto scaling group', () => {
     });
   });
 
+  test('can configure keyPair', () => {
+    // GIVE
+    const stack = new cdk.Stack();
+    stack.node.setContext(AUTOSCALING_GENERATE_LAUNCH_TEMPLATE, true);
+    const vpc = mockVpc(stack);
+    const keyPair = new ec2.KeyPair(stack, 'MyKeyPair', { keyPairName: 'MyKeyPair' });
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'MyAutoScalingGroup', {
+      vpc,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      keyPair: keyPair,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: {
+        KeyName: {
+          Ref: 'MyKeyPair659209CA',
+        },
+      },
+    });
+  });
+
+  test('keyPair should throw if @aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig is false', () => {
+    // WHEN
+    const stack = new cdk.Stack();
+    stack.node.setContext(AUTOSCALING_GENERATE_LAUNCH_TEMPLATE, false);
+    const vpc = mockVpc(stack);
+    const keyPair = new ec2.KeyPair(stack, 'MyKeyPair', { keyPairName: 'MyKeyPair' });
+
+    // THEN
+    expect(() => {
+      new autoscaling.AutoScalingGroup(stack, 'MyASG', {
+        vpc,
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+        machineImage: new ec2.AmazonLinuxImage(),
+        keyPair: keyPair,
+      });
+    }).toThrow("Can only use \'keyPair\' when feature flag \'AUTOSCALING_GENERATE_LAUNCH_TEMPLATE\' is set");
+  });
+
+  test('keyPair and keyName cannot be defined together', () => {
+    // WHEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+    const keyPair = new ec2.KeyPair(stack, 'MyKeyPair', { keyPairName: 'MyKeyPair' });
+
+    // THEN
+    expect(() => {
+      new autoscaling.AutoScalingGroup(stack, 'MyASG', {
+        vpc,
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+        machineImage: new ec2.AmazonLinuxImage(),
+        keyName: 'MyKeyPair',
+        keyPair: keyPair,
+      });
+    }).toThrow("Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'");
+  });
+
+  test('keyPair and launchTemplate cannot be defined together', () => {
+    // WHEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+    const keyPair = new ec2.KeyPair(stack, 'MyKeyPair', { keyPairName: 'MyKeyPair' });
+
+    // THEN
+    expect(() => {
+      new autoscaling.AutoScalingGroup(stack, 'MyASG', {
+        vpc,
+        launchTemplate: new LaunchTemplate(stack, 'in-stack-lt', {
+          instanceType: new ec2.InstanceType('t3.micro'),
+          machineImage: new ec2.AmazonLinuxImage({
+            generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
+            cpuType: ec2.AmazonLinuxCpuType.X86_64,
+          }),
+        }),
+        keyPair: keyPair,
+      });
+    }).toThrow("Setting \'keyPair\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set");
+  });
+
+  test('keyName and mixedInstancesPolicy cannot be defined together', () => {
+    // WHEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+    const keyPair = new ec2.KeyPair(stack, 'MyKeyPair', { keyPairName: 'MyKeyPair' });
+    const lt = new LaunchTemplate(stack, 'in-stack-lt', {
+      instanceType: new ec2.InstanceType('t3.micro'),
+      machineImage: new ec2.AmazonLinuxImage({
+        generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
+        cpuType: ec2.AmazonLinuxCpuType.X86_64,
+      }),
+    });
+
+    // THEN
+    expect(() => {
+      new autoscaling.AutoScalingGroup(stack, 'mip-asg', {
+        mixedInstancesPolicy: {
+          launchTemplate: lt,
+          launchTemplateOverrides: [{
+            instanceType: new InstanceType('t4g.micro'),
+            launchTemplate: lt,
+            weightedCapacity: 9,
+          }],
+          instancesDistribution: {
+            onDemandAllocationStrategy: OnDemandAllocationStrategy.PRIORITIZED,
+            onDemandBaseCapacity: 1,
+            onDemandPercentageAboveBaseCapacity: 2,
+            spotAllocationStrategy: SpotAllocationStrategy.CAPACITY_OPTIMIZED_PRIORITIZED,
+            spotInstancePools: 3,
+            spotMaxPrice: '4',
+          },
+        },
+        keyPair: keyPair,
+        vpc,
+      });
+    }).toThrow("Setting \'keyPair\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set");
+  });
+
 });
 
 function mockVpc(stack: cdk.Stack) {
@@ -2676,6 +2797,27 @@ describe('InstanceMaintenancePolicy', () => {
     });
   });
 
+  test('can specify capacityDistributionStrategy', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      azCapacityDistributionStrategy: autoscaling.CapacityDistributionStrategy.BALANCED_ONLY,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
+      AvailabilityZoneDistribution: {
+        CapacityDistributionStrategy: 'balanced-only',
+      },
+    });
+  });
+
   test('throws if maxHealthyPercentage is greater than 200', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -2825,6 +2967,26 @@ describe('InstanceMaintenancePolicy', () => {
         minHealthyPercentage: 0,
       });
     }).toThrow(/The difference between minHealthyPercentage and maxHealthyPercentage cannot be greater than 100, got 200/);
+  });
+
+  test('throws if requireImdsv2 set when launchTemplate is set', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    stack.node.setContext(AUTOSCALING_GENERATE_LAUNCH_TEMPLATE, true);
+    const vpc = mockVpc(stack);
+    const lt = LaunchTemplate.fromLaunchTemplateAttributes(stack, 'imported-lt', {
+      launchTemplateId: 'test-lt-id',
+      versionNumber: '0',
+    });
+
+    // THEN
+    expect(() => {
+      new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+        vpc,
+        launchTemplate: lt,
+        requireImdsv2: true,
+      });
+    }).toThrow(/Setting \'requireImdsv2\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set/);
   });
 });
 

@@ -77,7 +77,7 @@ describe('DatabaseCluster', () => {
         vpc,
         instanceType: InstanceType.R5_LARGE,
       });
-    }).toThrowError('At least one instance is required');
+    }).toThrow('At least one instance is required');
   });
 
   test('errors when only one subnet is specified', () => {
@@ -97,7 +97,7 @@ describe('DatabaseCluster', () => {
         },
         instanceType: InstanceType.R5_LARGE,
       });
-    }).toThrowError('Cluster requires at least 2 subnets, got 1');
+    }).toThrow('Cluster requires at least 2 subnets, got 1');
   });
 
   test('can create a cluster with custom engine version', () => {
@@ -218,6 +218,24 @@ describe('DatabaseCluster', () => {
           },
         },
       ],
+    });
+  });
+
+  test('cluster with port', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      vpc,
+      instanceType: InstanceType.R5_LARGE,
+      port: 1234,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBCluster', {
+      DBPort: 1234,
     });
   });
 
@@ -877,6 +895,40 @@ describe('DatabaseCluster', () => {
         ],
       },
       RetentionInDays: 30,
+    });
+  });
+
+  test('copyTagsToSnapshot is not set by default', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      vpc,
+      instanceType: InstanceType.R5_LARGE,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBCluster', {
+      CopyTagsToSnapshot: Match.absent(),
+    });
+  });
+
+  test.each([false, true])('cluster with copyTagsToSnapshot set', (value) => {
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      vpc,
+      instanceType: InstanceType.R5_LARGE,
+      copyTagsToSnapshot: value,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBCluster', {
+      CopyTagsToSnapshot: value,
     });
   });
 });

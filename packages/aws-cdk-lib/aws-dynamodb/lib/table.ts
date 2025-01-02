@@ -8,7 +8,7 @@ import { ScalableTableAttribute } from './scalable-table-attribute';
 import {
   Operation, OperationsMetricOptions, SystemErrorsForOperationsMetricOptions,
   Attribute, BillingMode, ProjectionType, ITable, SecondaryIndexProps, TableClass,
-  LocalSecondaryIndexProps, TableEncryption, StreamViewType,
+  LocalSecondaryIndexProps, TableEncryption, StreamViewType, WarmThroughput,
 } from './shared';
 import * as appscaling from '../../aws-applicationautoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
@@ -209,6 +209,23 @@ export interface ImportSourceSpecification {
 }
 
 /**
+ * The precision associated with the DynamoDB write timestamps that will be replicated to Kinesis.
+ * The default setting for record timestamp precision is microseconds. You can change this setting at any time.
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-table-kinesisstreamspecification.html#aws-properties-dynamodb-table-kinesisstreamspecification-properties
+ */
+export enum ApproximateCreationDateTimePrecision {
+  /**
+   * Millisecond precision
+   */
+  MILLISECOND = 'MILLISECOND',
+
+  /**
+   * Microsecond precision
+   */
+  MICROSECOND = 'MICROSECOND',
+}
+
+/**
  * Properties of a DynamoDB Table
  *
  * Use `TableProps` for all table properties
@@ -234,11 +251,38 @@ export interface TableOptions extends SchemaOptions {
   readonly writeCapacity?: number;
 
   /**
+   * The maximum read request units for the table. Careful if you add Global Secondary Indexes, as
+     * those will share the table's maximum on-demand throughput.
+   *
+   * Can only be provided if billingMode is PAY_PER_REQUEST.
+   *
+   * @default - on-demand throughput is disabled
+   */
+  readonly maxReadRequestUnits?: number;
+  /**
+   * The write request units for the table. Careful if you add Global Secondary Indexes, as
+   * those will share the table's maximum on-demand throughput.
+   *
+   * Can only be provided if billingMode is PAY_PER_REQUEST.
+   *
+   * @default - on-demand throughput is disabled
+   */
+  readonly maxWriteRequestUnits?: number;
+
+  /**
    * Specify how you are charged for read and write throughput and how you manage capacity.
    *
    * @default PROVISIONED if `replicationRegions` is not specified, PAY_PER_REQUEST otherwise
    */
   readonly billingMode?: BillingMode;
+
+  /**
+   * Specify values to pre-warm you DynamoDB Table
+   * Warm Throughput feature is not available for Global Table replicas using the `Table` construct. To enable Warm Throughput, use the `TableV2` construct instead.
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#cfn-dynamodb-table-warmthroughput
+   * @default - warm throughput is not configured
+   */
+  readonly warmThroughput?: WarmThroughput;
 
   /**
    * Whether point-in-time recovery is enabled.
@@ -328,6 +372,7 @@ export interface TableOptions extends SchemaOptions {
   readonly replicationTimeout?: Duration;
 
   /**
+   * [WARNING: Use this flag with caution, misusing this flag may cause deleting existing replicas, refer to the detailed documentation for more information]
    * Indicates whether CloudFormation stack waits for replication to finish.
    * If set to false, the CloudFormation resource will mark the resource as
    * created and replication will be completed asynchronously. This property is
@@ -370,6 +415,13 @@ export interface TableOptions extends SchemaOptions {
    * @default - no data import from the S3 bucket
    */
   readonly importSource?: ImportSourceSpecification;
+
+  /**
+   * Resource policy to assign to table.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#cfn-dynamodb-table-resourcepolicy
+   * @default - No resource policy statement
+   */
+  readonly resourcePolicy?: iam.PolicyDocument;
 }
 
 /**
@@ -388,6 +440,13 @@ export interface TableProps extends TableOptions {
    * @default - no Kinesis Data Stream
    */
   readonly kinesisStream?: kinesis.IStream;
+
+  /**
+   * Kinesis Data Stream approximate creation timestamp prescision
+   *
+   * @default ApproximateCreationDateTimePrecision.MICROSECOND
+   */
+  readonly kinesisPrecisionTimestamp?: ApproximateCreationDateTimePrecision;
 }
 
 /**
@@ -411,6 +470,38 @@ export interface GlobalSecondaryIndexProps extends SecondaryIndexProps, SchemaOp
    * @default 5
    */
   readonly writeCapacity?: number;
+
+  /**
+   * The maximum read request units for the global secondary index.
+   *
+   * Can only be provided if table billingMode is PAY_PER_REQUEST.
+   *
+   * @default - on-demand throughput is disabled
+   */
+  readonly maxReadRequestUnits?: number;
+
+  /**
+   * The maximum write request units for the global secondary index.
+   *
+   * Can only be provided if table billingMode is PAY_PER_REQUEST.
+   *
+   * @default - on-demand throughput is disabled
+   */
+  readonly maxWriteRequestUnits?: number;
+
+  /**
+   * The warm throughput configuration for the global secondary index.
+   *
+   * @default - no warm throughput is configured
+   */
+  readonly warmThroughput?: WarmThroughput;
+
+  /**
+   * Whether CloudWatch contributor insights is enabled for the specified global secondary index.
+   *
+   * @default false
+   */
+  readonly contributorInsightsEnabled?: boolean;
 }
 
 /**
@@ -479,7 +570,7 @@ export interface TableAttributes {
   readonly grantIndexPermissions?: boolean;
 }
 
-export abstract class TableBase extends Resource implements ITable {
+export abstract class TableBase extends Resource implements ITable, iam.IResourceWithPolicy {
   /**
    * @attribute
    */
@@ -500,6 +591,12 @@ export abstract class TableBase extends Resource implements ITable {
    */
   public abstract readonly encryptionKey?: kms.IKey;
 
+  /**
+   * Resource policy to assign to table.
+   * @attribute
+   */
+  public abstract resourcePolicy?: iam.PolicyDocument;
+
   protected readonly regionalArns = new Array<string>();
 
   /**
@@ -513,7 +610,7 @@ export abstract class TableBase extends Resource implements ITable {
    * @param actions The set of actions to allow (i.e. "dynamodb:PutItem", "dynamodb:GetItem", ...)
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
-    return iam.Grant.addToPrincipal({
+    return iam.Grant.addToPrincipalOrResource({
       grantee,
       actions,
       resourceArns: [
@@ -524,10 +621,9 @@ export abstract class TableBase extends Resource implements ITable {
           produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
         })),
       ],
-      scope: this,
+      resource: this,
     });
   }
-
   /**
    * Adds an IAM policy statement associated with this table's stream to an
    * IAM principal's policy.
@@ -639,6 +735,23 @@ export abstract class TableBase extends Resource implements ITable {
   public grantFullAccess(grantee: iam.IGrantable) {
     const keyActions = perms.KEY_READ_ACTIONS.concat(perms.KEY_WRITE_ACTIONS);
     return this.combinedGrant(grantee, { keyActions, tableActions: ['dynamodb:*'] });
+  }
+
+  /**
+   * Adds a statement to the resource policy associated with this file system.
+   * A resource policy will be automatically created upon the first call to `addToResourcePolicy`.
+   *
+   * Note that this does not work with imported file systems.
+   *
+   * @param statement The policy statement to add
+   */
+  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+    this.resourcePolicy = this.resourcePolicy ?? new iam.PolicyDocument({ statements: [] });
+    this.resourcePolicy.addStatements(statement);
+    return {
+      statementAdded: true,
+      policyDependable: this,
+    };
   }
 
   /**
@@ -891,11 +1004,11 @@ export abstract class TableBase extends Resource implements ITable {
           produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
         })),
       ];
-      const ret = iam.Grant.addToPrincipal({
+      const ret = iam.Grant.addToPrincipalOrResource({
         grantee,
         actions: opts.tableActions,
         resourceArns: resources,
-        scope: this,
+        resource: this,
       });
       return ret;
     }
@@ -904,11 +1017,11 @@ export abstract class TableBase extends Resource implements ITable {
         throw new Error(`DynamoDB Streams must be enabled on the table ${this.node.path}`);
       }
       const resources = [this.tableStreamArn];
-      const ret = iam.Grant.addToPrincipal({
+      const ret = iam.Grant.addToPrincipalOrResource({
         grantee,
         actions: opts.streamActions,
         resourceArns: resources,
-        scope: this,
+        resource: this,
       });
       return ret;
     }
@@ -979,6 +1092,7 @@ export class Table extends TableBase {
       public readonly tableArn: string;
       public readonly tableStreamArn?: string;
       public readonly encryptionKey?: kms.IKey;
+      public resourcePolicy?: iam.PolicyDocument;
       protected readonly hasIndex = (attrs.grantIndexPermissions ?? false) ||
         (attrs.globalIndexes ?? []).length > 0 ||
         (attrs.localIndexes ?? []).length > 0;
@@ -1016,6 +1130,13 @@ export class Table extends TableBase {
   }
 
   public readonly encryptionKey?: kms.IKey;
+
+  /**
+   * Resource policy to assign to DynamoDB Table.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-table-resourcepolicy.html
+   * @default - No resource policy statements are added to the created table.
+   */
+  public resourcePolicy?: iam.PolicyDocument;
 
   /**
    * @attribute
@@ -1075,6 +1196,13 @@ export class Table extends TableBase {
     }
     this.validateProvisioning(props);
 
+    const kinesisStreamSpecification = props.kinesisStream
+      ? {
+        streamArn: props.kinesisStream.streamArn,
+        ...(props.kinesisPrecisionTimestamp && { approximateCreationDateTimePrecision: props.kinesisPrecisionTimestamp }),
+      }
+      : undefined;
+
     this.table = new CfnTable(this, 'Resource', {
       tableName: this.physicalName,
       keySchema: this.keySchema,
@@ -1087,14 +1215,25 @@ export class Table extends TableBase {
         readCapacityUnits: props.readCapacity || 5,
         writeCapacityUnits: props.writeCapacity || 5,
       },
+      ...(props.maxReadRequestUnits || props.maxWriteRequestUnits ?
+        {
+          onDemandThroughput: this.billingMode === BillingMode.PROVISIONED ? undefined : {
+            maxReadRequestUnits: props.maxReadRequestUnits || undefined,
+            maxWriteRequestUnits: props.maxWriteRequestUnits || undefined,
+          },
+        } : undefined),
       sseSpecification,
       streamSpecification,
       tableClass: props.tableClass,
       timeToLiveSpecification: props.timeToLiveAttribute ? { attributeName: props.timeToLiveAttribute, enabled: true } : undefined,
       contributorInsightsSpecification: props.contributorInsightsEnabled !== undefined ? { enabled: props.contributorInsightsEnabled } : undefined,
-      kinesisStreamSpecification: props.kinesisStream ? { streamArn: props.kinesisStream.streamArn } : undefined,
+      kinesisStreamSpecification: kinesisStreamSpecification,
       deletionProtectionEnabled: props.deletionProtection,
       importSourceSpecification: this.renderImportSourceSpecification(props.importSource),
+      resourcePolicy: props.resourcePolicy
+        ? { policyDocument: props.resourcePolicy }
+        : undefined,
+      warmThroughput: props.warmThroughput?? undefined,
     });
     this.table.applyRemovalPolicy(props.removalPolicy);
 
@@ -1142,6 +1281,7 @@ export class Table extends TableBase {
     const gsiProjection = this.buildIndexProjection(props);
 
     this.globalSecondaryIndexes.push({
+      contributorInsightsSpecification: props.contributorInsightsEnabled !== undefined ? { enabled: props.contributorInsightsEnabled } : undefined,
       indexName: props.indexName,
       keySchema: gsiKeySchema,
       projection: gsiProjection,
@@ -1149,6 +1289,14 @@ export class Table extends TableBase {
         readCapacityUnits: props.readCapacity || 5,
         writeCapacityUnits: props.writeCapacity || 5,
       },
+      ...(props.maxReadRequestUnits || props.maxWriteRequestUnits ?
+        {
+          onDemandThroughput: this.billingMode === BillingMode.PROVISIONED ? undefined : {
+            maxReadRequestUnits: props.maxReadRequestUnits || undefined,
+            maxWriteRequestUnits: props.maxWriteRequestUnits || undefined,
+          },
+        } : undefined),
+      warmThroughput: props.warmThroughput ?? undefined,
     });
 
     this.secondaryIndexSchemas.set(props.indexName, {
@@ -1590,7 +1738,7 @@ export class Table extends TableBase {
     }
 
     if (encryptionType !== TableEncryption.CUSTOMER_MANAGED && props.encryptionKey) {
-      throw new Error('`encryptionKey cannot be specified unless encryption is set to TableEncryption.CUSTOMER_MANAGED (it was set to ${encryptionType})`');
+      throw new Error(`encryptionKey cannot be specified unless encryption is set to TableEncryption.CUSTOMER_MANAGED (it was set to ${encryptionType})`);
     }
 
     if (encryptionType === TableEncryption.CUSTOMER_MANAGED && props.replicationRegions) {

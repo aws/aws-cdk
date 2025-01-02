@@ -17,6 +17,7 @@ import * as iam from '../../aws-iam';
 import * as sns from '../../aws-sns';
 import {
   Annotations,
+  AspectPriority,
   Aspects,
   Aws,
   CfnAutoScalingRollingUpdate, CfnCreationPolicy, CfnUpdatePolicy,
@@ -83,9 +84,25 @@ export interface CommonAutoScalingGroupProps {
    *
    * `launchTemplate` and `mixedInstancesPolicy` must not be specified when this property is specified
    *
+   * You can either specify `keyPair` or `keyName`, not both.
+   *
    * @default - No SSH access will be possible.
+   * @deprecated - Use `keyPair` instead - https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_ec2-readme.html#using-an-existing-ec2-key-pair
    */
   readonly keyName?: string;
+
+  /**
+   * The SSH keypair to grant access to the instance.
+   *
+   * Feature flag `AUTOSCALING_GENERATE_LAUNCH_TEMPLATE` must be enabled to use this property.
+   *
+   * `launchTemplate` and `mixedInstancesPolicy` must not be specified when this property is specified.
+   *
+   * You can either specify `keyPair` or `keyName`, not both.
+   *
+   * @default - No SSH access will be possible.
+   */
+  readonly keyPair?: ec2.IKeyPair;
 
   /**
    * Where to place instances within the VPC
@@ -394,6 +411,12 @@ export interface CommonAutoScalingGroupProps {
    * @default false
    */
   readonly ssmSessionPermissions?: boolean;
+
+  /**
+   * The strategy for distributing instances across Availability Zones.
+   * @default None
+   */
+  readonly azCapacityDistributionStrategy?: CapacityDistributionStrategy;
 }
 
 /**
@@ -1081,6 +1104,20 @@ export class GroupMetric {
   }
 }
 
+/**
+ * The strategies for when launches fail in an Availability Zone.
+ */
+export enum CapacityDistributionStrategy {
+  /**
+   * If launches fail in an Availability Zone, Auto Scaling will continue to attempt to launch in the unhealthy zone to preserve a balanced distribution.
+   */
+  BALANCED_ONLY = 'balanced-only',
+  /**
+   * If launches fail in an Availability Zone, Auto Scaling will attempt to launch in another healthy Availability Zone instead.
+   */
+  BALANCED_BEST_EFFORT = 'balanced-best-effort',
+}
+
 abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGroup {
 
   public abstract autoScalingGroupName: string;
@@ -1355,6 +1392,10 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         throw new Error('Setting \'instanceType\' is required when \'launchTemplate\' and \'mixedInstancesPolicy\' is not set');
       }
 
+      if (props.keyName && props.keyPair) {
+        throw new Error('Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'');
+      }
+
       Tags.of(this).add(NAME_TAG, this.node.path);
 
       this.securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'InstanceSecurityGroup', {
@@ -1381,7 +1422,6 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
         launchTemplateFromConfig = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
           machineImage: props.machineImage,
-          keyName: props.keyName,
           instanceType: props.instanceType,
           detailedMonitoring: props.instanceMonitoring !== undefined && props.instanceMonitoring === Monitoring.DETAILED,
           securityGroup: this.securityGroup,
@@ -1390,6 +1430,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
           spotOptions: props.spotPrice !== undefined ? { maxPrice: parseFloat(props.spotPrice) } : undefined,
           blockDevices: props.blockDevices,
           instanceProfile,
+          keyPair: props.keyPair,
+          ...(props.keyName ? { keyName: props.keyName } : {}),
         });
 
         this.osType = launchTemplateFromConfig.osType!;
@@ -1397,6 +1439,10 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       } else {
         this._connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
         this.securityGroups = [this.securityGroup];
+
+        if (props.keyPair) {
+          throw new Error('Can only use \'keyPair\' when feature flag \'AUTOSCALING_GENERATE_LAUNCH_TEMPLATE\' is set');
+        }
 
         // use delayed evaluation
         const imageConfig = props.machineImage.getImage(this);
@@ -1504,6 +1550,9 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
     const asgProps: CfnAutoScalingGroupProps = {
       autoScalingGroupName: this.physicalName,
+      availabilityZoneDistribution: props.azCapacityDistributionStrategy
+        ? { capacityDistributionStrategy: props.azCapacityDistributionStrategy }
+        : undefined,
       cooldown: props.cooldown?.toSeconds().toString(),
       minSize: Tokenization.stringifyNumber(minCapacity),
       maxSize: Tokenization.stringifyNumber(maxCapacity),
@@ -1548,7 +1597,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     this.spotPrice = props.spotPrice;
 
     if (props.requireImdsv2) {
-      Aspects.of(this).add(new AutoScalingGroupRequireImdsv2Aspect());
+      Aspects.of(this).add(new AutoScalingGroupRequireImdsv2Aspect(), { priority: AspectPriority.MUTATING });
     }
 
     this.node.addValidation({ validate: () => this.validateTargetGroup() });
@@ -1718,6 +1767,9 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     if (props.keyName) {
       throw new Error('Setting \'keyName\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
     }
+    if (props.keyPair) {
+      throw new Error('Setting \'keyPair\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
+    }
     if (props.instanceMonitoring) {
       throw new Error('Setting \'instanceMonitoring\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
     }
@@ -1729,6 +1781,9 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     }
     if (props.blockDevices) {
       throw new Error('Setting \'blockDevices\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
+    }
+    if (props.requireImdsv2) {
+      throw new Error('Setting \'requireImdsv2\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
     }
   }
 
