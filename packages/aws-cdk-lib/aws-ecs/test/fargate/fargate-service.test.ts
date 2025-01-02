@@ -1380,7 +1380,7 @@ describe('fargate service', () => {
         };
         expect(() => {
           service.enableServiceConnect(config);
-        }).toThrowError(/Port Mapping '100' does not exist on the task definition./);
+        }).toThrow(/Port Mapping '100' does not exist on the task definition./);
       });
 
       test('throws an exception when adding multiple services without different discovery names', () => {
@@ -1410,7 +1410,7 @@ describe('fargate service', () => {
         };
         expect(() => {
           service.enableServiceConnect(config);
-        }).toThrowError(/Cannot create multiple services with the discoveryName 'abc'./);
+        }).toThrow(/Cannot create multiple services with the discoveryName 'abc'./);
       });
 
       test('throws an exception if ingressPortOverride is not valid.', () => {
@@ -1437,7 +1437,7 @@ describe('fargate service', () => {
         };
         expect(() => {
           service.enableServiceConnect(config);
-        }).toThrowError(/ingressPortOverride 100000 is not valid./);
+        }).toThrow(/ingressPortOverride 100000 is not valid./);
       });
 
       test('throws an exception if Client Alias port is not valid', () => {
@@ -1464,7 +1464,7 @@ describe('fargate service', () => {
         };
         expect(() => {
           service.enableServiceConnect(config);
-        }).toThrowError(/Client Alias port 100000 is not valid./);
+        }).toThrow(/Client Alias port 100000 is not valid./);
       });
     });
 
