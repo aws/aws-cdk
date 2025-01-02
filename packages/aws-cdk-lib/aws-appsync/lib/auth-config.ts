@@ -1,8 +1,8 @@
 import { Construct } from 'constructs';
-import { CfnApi, CfnApiKey } from './appsync.generated';
+import { CfnApiKey } from './appsync.generated';
 import { IUserPool } from '../../aws-cognito';
 import { IFunction } from '../../aws-lambda';
-import { Duration, Expiration, IResolvable } from '../../core';
+import { Duration, Expiration } from '../../core';
 
 /**
  * Auth provider settings for AppSync Event APIs
@@ -168,17 +168,17 @@ export interface IAppSyncAuthConfig {
   /**
    * Set up OIDC Authorization configuration for AppSync APIs
    */
-  setupOpenIdConnectConfig(config?: AppSyncOpenIdConnectConfig): IResolvable | CfnApi.OpenIDConnectConfigProperty | undefined;
+  setupOpenIdConnectConfig(config?: AppSyncOpenIdConnectConfig): any;
 
   /**
    * Set up Cognito Authorization configuration for AppSync APIs
    */
-  setupCognitoConfig(config?: AppSyncCognitoConfig): IResolvable | CfnApi.CognitoConfigProperty | undefined;
+  setupCognitoConfig(config?: AppSyncCognitoConfig): any;
 
   /**
    * Set up Lambda Authorization configuration AppSync APIs
    */
-  setupLambdaAuthorizerConfig(config?: AppSyncLambdaAuthorizerConfig): IResolvable | CfnApi.LambdaAuthorizerConfigProperty | undefined;
+  setupLambdaAuthorizerConfig(config?: AppSyncLambdaAuthorizerConfig): any;
 }
 
 /**

@@ -56,8 +56,10 @@ export interface EventApiAuthConfig {
 class AppSyncEventApiAuthConfig implements IAppSyncAuthConfig {
   /**
    * Set up OIDC Authorization configuration for GraphQL APIs and Event APIs
+   * @param config - the configuration input for OpenID Connect auth mode
+   * @returns CfnApi.OpenIDConnectConfigProperty | undefined
    */
-  setupOpenIdConnectConfig(config?: AppSyncOpenIdConnectConfig) {
+  setupOpenIdConnectConfig(config?: AppSyncOpenIdConnectConfig) : CfnApi.OpenIDConnectConfigProperty | undefined {
     if (!config) return undefined;
     return {
       authTtl: config.tokenExpiryFromAuth,
@@ -69,8 +71,10 @@ class AppSyncEventApiAuthConfig implements IAppSyncAuthConfig {
 
   /**
    * Set up Cognito Authorization configuration for Event APIs
+   * @param config - the configuration input for Cognito auth mode
+   * @returns CfnApi.CognitoConfigProperty | undefined
    */
-  setupCognitoConfig(config?: AppSyncCognitoConfig) {
+  setupCognitoConfig(config?: AppSyncCognitoConfig) : CfnApi.CognitoConfigProperty | undefined {
     if (!config) return undefined;
     return {
       userPoolId: config.userPool.userPoolId,
@@ -81,8 +85,10 @@ class AppSyncEventApiAuthConfig implements IAppSyncAuthConfig {
 
   /**
    * Set up Lambda Authorization configuration for GraphQL APIs and Event APIs
+   * @param config - the configuration input for Lambda auth mode
+   * @returns CfnApi.LambdaAuthorizerConfigProperty | undefined
    */
-  setupLambdaAuthorizerConfig(config?: AppSyncLambdaAuthorizerConfig) {
+  setupLambdaAuthorizerConfig(config?: AppSyncLambdaAuthorizerConfig) : CfnApi.LambdaAuthorizerConfigProperty | undefined {
     if (!config) return undefined;
     return {
       authorizerResultTtlInSeconds: config.resultsCacheTtl?.toSeconds(),

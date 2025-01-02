@@ -972,6 +972,7 @@ Each option provides a different method of security:
 
 When you define your API, you configure the authorization mode to connect to your Event API WebSocket.
 You also configure the default authorization modes to use when publishing and subscribing to messages.
+If you don't specify any authorization providers, an API key will be created for you as the authorization mode for the API.
 
 For mor information, see [Configuring authorization and authentication to secure Event APIs](https://docs.aws.amazon.com/appsync/latest/eventapi/configure-event-api-auth.html).
 
@@ -1014,6 +1015,36 @@ const api = new appsync.EventApi(this, 'api', {
     ],
     defaultSubscribeAuthModeTypes: [
       appsync.AppSyncAuthorizationType.LAMBDA,  // Lambda authorization to subscribe
+    ],
+  }
+});
+```
+
+If you don't specify any overrides for the `connectionAuthModeTypes`, `defaultPublishAuthModeTypes`, and `defaultSubscribeAuthModeTypes` parameters then all `authProviders` defined are included as default authorization mode types for connection, publish, and subscribe.
+
+```ts
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+declare const handler: lambda.Function;
+
+const iamProvider: appsync.AppSyncAuthProvider = {
+  authorizationType: appsync.AppSyncAuthorizationType.IAM,
+};
+
+const apiKeyProvider: appsync.AppSyncAuthProvider = {
+  authorizationType: appsync.AppSyncAuthorizationType.API_KEY,
+};
+
+/* API with IAM and API Key providers.
+ * Connection, default publish and default subscribe
+ * can be done with either IAM and API Key.
+ */
+const api = new appsync.EventApi(this, 'api', {
+  apiName: 'api',
+  authorizationConfig: {
+    // set auth providers
+    authProviders: [
+      iamProvider,
+      apiKeyProvider,
     ],
   }
 });
