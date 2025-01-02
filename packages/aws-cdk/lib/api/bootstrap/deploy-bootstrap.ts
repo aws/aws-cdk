@@ -15,7 +15,7 @@ import type { SDK, SdkProvider } from '../aws-auth';
 import { assertIsSuccessfulDeployStackResult, deployStack, SuccessfulDeployStackResult } from '../deploy-stack';
 import { NoBootstrapStackEnvironmentResources } from '../environment-resources';
 import { Mode } from '../plugin/mode';
-import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitInfo } from '../toolkit-info';
+import { ToolkitInfo } from '../toolkit-info';
 
 /**
  * A class to hold state around stack bootstrapping
@@ -32,9 +32,7 @@ import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitInfo } from '../toolkit-info';
  * current bootstrap stack and doing something intelligent).
  */
 export class BootstrapStack {
-  public static async lookup(sdkProvider: SdkProvider, environment: Environment, toolkitStackName?: string) {
-    toolkitStackName = toolkitStackName ?? DEFAULT_TOOLKIT_STACK_NAME;
-
+  public static async lookup(sdkProvider: SdkProvider, environment: Environment, toolkitStackName: string) {
     const resolvedEnvironment = await sdkProvider.resolveEnvironment(environment);
     const sdk = (await sdkProvider.forEnvironment(resolvedEnvironment, Mode.ForWriting)).sdk;
 

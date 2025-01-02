@@ -5,7 +5,6 @@ import type { SDK, SdkProvider } from '../aws-auth';
 import { EnvironmentAccess } from '../environment-access';
 import { EvaluateCloudFormationTemplate, LazyListStackResources } from '../evaluate-cloudformation-template';
 import { Mode } from '../plugin/mode';
-import { DEFAULT_TOOLKIT_STACK_NAME } from '../toolkit-info';
 
 // resource types that have associated CloudWatch Log Groups that should _not_ be monitored
 const IGNORE_LOGS_RESOURCE_TYPES = ['AWS::EC2::FlowLog', 'AWS::CloudTrail::Trail', 'AWS::CodeBuild::Project'];
@@ -36,13 +35,14 @@ export interface FoundLogGroupsResult {
 
 export async function findCloudWatchLogGroups(
   sdkProvider: SdkProvider,
+  toolkitStackName: string,
   stackArtifact: CloudFormationStackArtifact,
 ): Promise<FoundLogGroupsResult> {
   let sdk: SDK;
   const resolvedEnv = await sdkProvider.resolveEnvironment(stackArtifact.environment);
   // try to assume the lookup role and fallback to the default credentials
   try {
-    sdk = (await new EnvironmentAccess(sdkProvider, DEFAULT_TOOLKIT_STACK_NAME).accessStackForLookup(stackArtifact)).sdk;
+    sdk = (await new EnvironmentAccess(sdkProvider, toolkitStackName).accessStackForLookup(stackArtifact)).sdk;
   } catch (e: any) {
     debug(`Failed to access SDK environment: ${e.message}`);
     sdk = (await sdkProvider.forEnvironment(resolvedEnv, Mode.ForReading)).sdk;

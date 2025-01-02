@@ -15,7 +15,7 @@ import {
   loadCurrentTemplateWithNestedStacks,
   type RootTemplateWithNestedStacks,
 } from './nested-stack-helpers';
-import { DEFAULT_TOOLKIT_STACK_NAME } from './toolkit-info';
+import { ToolkitInfo } from './toolkit-info';
 import { determineAllowCrossAccountAssetPublishing } from './util/checks';
 import {
   CloudFormationStack,
@@ -319,7 +319,7 @@ export interface StackExistsOptions {
 }
 
 export interface DeploymentsProps {
-  sdkProvider: SdkProvider;
+  readonly sdkProvider: SdkProvider;
   readonly toolkitStackName?: string;
   readonly quiet?: boolean;
 }
@@ -358,7 +358,7 @@ export class Deployments {
   constructor(private readonly props: DeploymentsProps) {
     this.assetSdkProvider = props.sdkProvider;
     this.deployStackSdkProvider = props.sdkProvider;
-    this.envs = new EnvironmentAccess(props.sdkProvider, props.toolkitStackName ?? DEFAULT_TOOLKIT_STACK_NAME);
+    this.envs = new EnvironmentAccess(props.sdkProvider, ToolkitInfo.determineName(props.toolkitStackName));
   }
 
   /**

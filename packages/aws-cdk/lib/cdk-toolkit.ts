@@ -6,7 +6,7 @@ import * as chokidar from 'chokidar';
 import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
 import * as uuid from 'uuid';
-import { DeploymentMethod, SuccessfulDeployStackResult } from './api';
+import { DeploymentMethod, SuccessfulDeployStackResult, ToolkitInfo } from './api';
 import { SdkProvider } from './api/aws-auth';
 import { Bootstrapper, BootstrapEnvironmentOptions } from './api/bootstrap';
 import {
@@ -137,11 +137,13 @@ export enum AssetBuildTime {
  */
 export class CdkToolkit {
   private deployments: Deployments;
+  private toolkitStackName: string;
 
   constructor(private readonly props: CdkToolkitProps) {
+    this.toolkitStackName = ToolkitInfo.determineName(props.toolkitStackName);
     this.deployments = new Deployments({
       sdkProvider: props.sdkProvider,
-      toolkitStackName: props.toolkitStackName,
+      toolkitStackName: this.toolkitStackName,
     });
   }
 
@@ -522,7 +524,7 @@ export class CdkToolkit {
         );
       } finally {
         if (options.cloudWatchLogMonitor) {
-          const foundLogGroupsResult = await findCloudWatchLogGroups(this.props.sdkProvider, stack);
+          const foundLogGroupsResult = await findCloudWatchLogGroups(this.props.sdkProvider, this.toolkitStackName, stack);
           options.cloudWatchLogMonitor.addLogGroups(
             foundLogGroupsResult.env,
             foundLogGroupsResult.sdk,
@@ -773,7 +775,7 @@ export class CdkToolkit {
     const tags = tagsForStack(stack);
     await resourceImporter.importResourcesFromMap(actualImport, {
       roleArn: options.roleArn,
-      toolkitStackName: options.toolkitStackName,
+      toolkitStackName: this.toolkitStackName,
       tags,
       deploymentMethod: options.deploymentMethod,
       usePreviousParameters: true,
@@ -929,7 +931,7 @@ export class CdkToolkit {
    */
   public async bootstrap(
     userEnvironmentSpecs: string[],
-    options: BootstrapEnvironmentOptions,
+    options: BootstrapOptions,
   ): Promise<void> {
     const bootstrapper = new Bootstrapper(options.source);
     // If there is an '--app' argument and an environment looks like a glob, we
@@ -943,7 +945,10 @@ export class CdkToolkit {
     await Promise.all(environments.map((environment) => limit(async () => {
       success(' ⏳  Bootstrapping environment %s...', chalk.blue(environment.name));
       try {
-        const result = await bootstrapper.bootstrapEnvironment(environment, this.props.sdkProvider, options);
+        const result = await bootstrapper.bootstrapEnvironment(environment, this.props.sdkProvider, {
+          ...options,
+          toolkitStackName: this.toolkitStackName,
+        });
         const message = result.noOp
           ? ' ✅  Environment %s bootstrapped (no changes).'
           : ' ✅  Environment %s bootstrapped.';
@@ -967,7 +972,7 @@ export class CdkToolkit {
       const gc = new GarbageCollector({
         sdkProvider: this.props.sdkProvider,
         resolvedEnvironment: environment,
-        bootstrapStackName: options.bootstrapStackName,
+        bootstrapStackName: options.bootstrapStackName ?? this.toolkitStackName,
         rollbackBufferDays: options.rollbackBufferDays,
         createdBufferDays: options.createdBufferDays,
         action: options.action ?? 'full',
@@ -1294,7 +1299,7 @@ export class CdkToolkit {
     // Initial Deployment
     await migrateDeployment.importResourcesFromMigrate(resourcesToImport, {
       roleArn: options.roleArn,
-      toolkitStackName: options.toolkitStackName,
+      toolkitStackName: this.toolkitStackName,
       deploymentMethod: options.deploymentMethod,
       usePreviousParameters: true,
       progress: options.progress,
@@ -1330,6 +1335,9 @@ export class CdkToolkit {
  */
 function printSerializedObject(obj: any, json: boolean) {
   data(serializeStructure(obj, json));
+}
+
+export interface BootstrapOptions extends Omit<BootstrapEnvironmentOptions, 'toolkitStackName'> {
 }
 
 export interface DiffOptions {
@@ -1421,13 +1429,6 @@ interface CfnDeployOptions {
    * Criteria for selecting stacks to deploy
    */
   selector: StackSelector;
-
-  /**
-   * Name of the toolkit stack to use/deploy
-   *
-   * @default CDKToolkit
-   */
-  toolkitStackName?: string;
 
   /**
    * Role to pass to CloudFormation for deployment
@@ -1754,7 +1755,7 @@ export interface GarbageCollectionOptions {
   /**
    * The stack name of the bootstrap stack.
    *
-   * @default DEFAULT_TOOLKIT_STACK_NAME
+   * @default "CDKToolkit"
    */
   readonly bootstrapStackName?: string;
 

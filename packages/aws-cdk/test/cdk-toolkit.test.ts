@@ -537,6 +537,30 @@ describe('bootstrap', () => {
         qualifier: 'abcde',
       },
       source: defaultBootstrapSource,
+      toolkitStackName: 'CDKToolkit',
+    });
+  });
+
+  test('uses toolkitStackName from the toolkit', async () => {
+    // GIVEN
+    const toolkit = new CdkToolkit({
+      cloudExecutable,
+      configuration: cloudExecutable.configuration,
+      sdkProvider: cloudExecutable.sdkProvider,
+      toolkitStackName: 'CustomCDKToolkit',
+    });
+    const configuration = new Configuration();
+    configuration.context.set('@aws-cdk/core:bootstrapQualifier', 'abcde');
+
+    // WHEN
+    await toolkit.bootstrap(['aws://56789/south-pole'], {
+      source: defaultBootstrapSource,
+    });
+
+    // THEN
+    expect(bootstrapEnvironmentMock).toHaveBeenCalledWith(expect.anything(), expect.anything(), {
+      source: defaultBootstrapSource,
+      toolkitStackName: 'CustomCDKToolkit',
     });
   });
 });

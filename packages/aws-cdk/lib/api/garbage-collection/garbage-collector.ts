@@ -5,7 +5,7 @@ import * as chalk from 'chalk';
 import * as promptly from 'promptly';
 import { debug, print } from '../../logging';
 import { IECRClient, IS3Client, SDK, SdkProvider } from '../aws-auth';
-import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitInfo } from '../toolkit-info';
+import { ToolkitInfo } from '../toolkit-info';
 import { ProgressPrinter } from './progress-printer';
 import { ActiveAssetCache, BackgroundStackRefresh, refreshStacks } from './stack-refresh';
 import { ToolkitError } from '../../toolkit/error';
@@ -159,10 +159,8 @@ interface GarbageCollectorProps {
 
   /**
    * The name of the bootstrap stack to look for.
-   *
-   * @default DEFAULT_TOOLKIT_STACK_NAME
    */
-  readonly bootstrapStackName?: string;
+  readonly bootstrapStackName: string;
 
   /**
    * Confirm with the user before actual deletion happens
@@ -193,7 +191,7 @@ export class GarbageCollector {
     this.permissionToTag = ['tag', 'full'].includes(props.action);
     this.confirm = props.confirm ?? true;
 
-    this.bootstrapStackName = props.bootstrapStackName ?? DEFAULT_TOOLKIT_STACK_NAME;
+    this.bootstrapStackName = props.bootstrapStackName;
   }
 
   /**
