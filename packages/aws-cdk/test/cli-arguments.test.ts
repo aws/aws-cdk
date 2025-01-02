@@ -81,7 +81,7 @@ test('positional argument is correctly passed through -- variadic', async () => 
 });
 
 test('positional argument is correctly passed through -- single', async () => {
-  const input = await parseCommandLineArguments(['acknowledge', 'id1', '-R', '-v', '--ci']);
+  const input = await parseCommandLineArguments(['acknowledge', 'id1', '-v', '--ci']);
 
   const result = convertToCliArgs(input);
 
