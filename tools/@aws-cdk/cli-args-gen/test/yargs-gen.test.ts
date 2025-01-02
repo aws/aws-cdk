@@ -28,7 +28,6 @@ describe('render', () => {
       // GENERATED FROM packages/aws-cdk/lib/config.ts.
       // Do not edit by hand; all changes will be overwritten at build time from the config file.
       // -------------------------------------------------------------------------------------------
-      // istanbul ignore file
       /* eslint-disable @stylistic/max-len */
       import { Argv } from 'yargs';
       import * as helpers from './util/yargs-helpers';
@@ -70,7 +69,7 @@ describe('render', () => {
       } // eslint-disable-next-line @typescript-eslint/no-require-imports
       const yargs = require('yargs');
       "
-      `);
+    `);
   });
 
   test('can generate negativeAlias', async () => {
@@ -96,7 +95,6 @@ describe('render', () => {
       // GENERATED FROM packages/aws-cdk/lib/config.ts.
       // Do not edit by hand; all changes will be overwritten at build time from the config file.
       // -------------------------------------------------------------------------------------------
-      // istanbul ignore file
       /* eslint-disable @stylistic/max-len */
       import { Argv } from 'yargs';
       import * as helpers from './util/yargs-helpers';
@@ -129,7 +127,7 @@ describe('render', () => {
       } // eslint-disable-next-line @typescript-eslint/no-require-imports
       const yargs = require('yargs');
       "
-      `);
+    `);
   });
 
   test('can pass-through expression unchanged', async () => {
@@ -182,7 +180,6 @@ describe('render', () => {
       // GENERATED FROM packages/aws-cdk/lib/config.ts.
       // Do not edit by hand; all changes will be overwritten at build time from the config file.
       // -------------------------------------------------------------------------------------------
-      // istanbul ignore file
       /* eslint-disable @stylistic/max-len */
       import { Argv } from 'yargs';
       import * as helpers from './util/yargs-helpers';
@@ -220,6 +217,6 @@ describe('render', () => {
       } // eslint-disable-next-line @typescript-eslint/no-require-imports
       const yargs = require('yargs');
       "
-      `);
+    `);
   });
 });

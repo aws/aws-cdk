@@ -11,7 +11,6 @@ export async function renderCliArgsType(config: CliConfig): Promise<string> {
   scope.documentation.push('GENERATED FROM packages/aws-cdk/lib/config.ts.');
   scope.documentation.push('Do not edit by hand; all changes will be overwritten at build time from the config file.');
   scope.documentation.push('-------------------------------------------------------------------------------------------');
-  scope.documentation.push('istanbul ignore file');
 
   const cliArgType = new StructType(scope, {
     export: true,
