@@ -1,14 +1,17 @@
-import type { CliConfig, DynamicResult } from '@aws-cdk/yargs-gen';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { CliHelpers, type CliConfig } from '@aws-cdk/cli-args-gen';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
+import { MIGRATE_SUPPORTED_LANGUAGES } from './commands/migrate';
 import { RequireApproval } from './diff';
+import { availableInitLanguages } from './init';
 
-/* eslint-disable quote-props */
+export const YARGS_HELPERS = new CliHelpers('./util/yargs-helpers');
 
 /**
- * Source of truth for all CDK CLI commands. `yargs-gen` translates this into the `yargs` definition
+ * Source of truth for all CDK CLI commands. `cli-args-gen` translates this into the `yargs` definition
  * in `lib/parse-command-line-arguments.ts`.
  */
-export function makeConfig(): CliConfig {
+export async function makeConfig(): Promise<CliConfig> {
   return {
     globalOptions: {
       'app': { type: 'string', alias: 'a', desc: 'REQUIRED WHEN RUNNING APP: command-line for executing your app or a cloud assembly directory (e.g. "node bin/my-app.js"). Can also be specified in cdk.json or ~/.cdk.json', requiresArg: true },
@@ -34,11 +37,11 @@ export function makeConfig(): CliConfig {
       'output': { type: 'string', alias: 'o', desc: 'Emits the synthesized cloud assembly into a directory (default: cdk.out)', requiresArg: true },
       'notices': { type: 'boolean', desc: 'Show relevant notices' },
       'no-color': { type: 'boolean', desc: 'Removes colors and other style from console output', default: false },
-      'ci': { type: 'boolean', desc: 'Force CI detection. If CI=true then logs will be sent to stdout instead of stderr', default: DynamicValue.fromInline(() => process.env.CI !== undefined) },
+      'ci': { type: 'boolean', desc: 'Force CI detection. If CI=true then logs will be sent to stdout instead of stderr', default: YARGS_HELPERS.isCI() },
       'unstable': { type: 'array', desc: 'Opt in to unstable features. The flag indicates that the scope and API of a feature might still change. Otherwise the feature is generally production ready and fully supported. Can be specified multiple times.', default: [] },
     },
     commands: {
-      'list': {
+      list: {
         arg: {
           name: 'STACKS',
           variadic: true,
@@ -50,7 +53,7 @@ export function makeConfig(): CliConfig {
           'show-dependencies': { type: 'boolean', default: false, alias: 'd', desc: 'Display stack dependency information for each stack' },
         },
       },
-      'synthesize': {
+      synthesize: {
         arg: {
           name: 'STACKS',
           variadic: true,
@@ -58,9 +61,9 @@ export function makeConfig(): CliConfig {
         aliases: ['synth'],
         description: 'Synthesizes and prints the CloudFormation template for this stack',
         options: {
-          'exclusively': { type: 'boolean', alias: 'e', desc: 'Only synthesize requested stacks, don\'t include dependencies' },
-          'validation': { type: 'boolean', desc: 'After synthesis, validate stacks with the "validateOnSynth" attribute set (can also be controlled with CDK_VALIDATION)', default: true },
-          'quiet': { type: 'boolean', alias: 'q', desc: 'Do not output CloudFormation Template to stdout', default: false },
+          exclusively: { type: 'boolean', alias: 'e', desc: 'Only synthesize requested stacks, don\'t include dependencies' },
+          validation: { type: 'boolean', desc: 'After synthesis, validate stacks with the "validateOnSynth" attribute set (can also be controlled with CDK_VALIDATION)', default: true },
+          quiet: { type: 'boolean', alias: 'q', desc: 'Do not output CloudFormation Template to stdout', default: false },
         },
       },
       bootstrap: {
@@ -124,6 +127,7 @@ export function makeConfig(): CliConfig {
             requiresArg: true,
             desc: 'How to perform the deployment. Direct is a bit faster but lacks progress information',
           },
+          'import-existing-resources': { type: 'boolean', desc: 'Indicates if the stack set imports resources that already exist.', default: false },
           'force': { alias: 'f', type: 'boolean', desc: 'Always deploy stack even if templates are identical', default: false },
           'parameters': { type: 'array', desc: 'Additional parameters passed to CloudFormation at deploy time (STACK:KEY=VALUE)', default: {} },
           'outputs-file': { type: 'string', alias: 'O', desc: 'Path to file where stack outputs will be written as JSON', requiresArg: true },
@@ -242,18 +246,6 @@ export function makeConfig(): CliConfig {
           variadic: true,
         },
         options: {
-          // I'm fairly certain none of these options, present for 'deploy', make sense for 'watch':
-          // .option('all', { type: 'boolean', default: false, desc: 'Deploy all available stacks' })
-          // .option('ci', { type: 'boolean', desc: 'Force CI detection', default: process.env.CI !== undefined })
-          // @deprecated(v2) -- tags are part of the Cloud Assembly and tags specified here will be overwritten on the next deployment
-          // .option('tags', { type: 'array', alias: 't', desc: 'Tags to add to the stack (KEY=VALUE), overrides tags from Cloud Assembly (deprecated)', nargs: 1, requiresArg: true })
-          // .option('execute', { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true })
-          // These options, however, are more subtle - I could be convinced some of these should also be available for 'watch':
-          // .option('require-approval', { type: 'string', choices: [RequireApproval.Never, RequireApproval.AnyChange, RequireApproval.Broadening], desc: 'What security-sensitive changes need manual approval' })
-          // .option('parameters', { type: 'array', desc: 'Additional parameters passed to CloudFormation at deploy time (STACK:KEY=VALUE)', nargs: 1, requiresArg: true, default: {} })
-          // .option('previous-parameters', { type: 'boolean', default: true, desc: 'Use previous values for existing parameters (you must specify all parameters on every deployment if this is disabled)' })
-          // .option('outputs-file', { type: 'string', alias: 'O', desc: 'Path to file where stack outputs will be written as JSON', requiresArg: true })
-          // .option('notification-arns', { type: 'array', desc: 'ARNs of SNS topics that CloudFormation will notify with stack related events', nargs: 1, requiresArg: true })
           'build-exclude': { type: 'array', alias: 'E', desc: 'Do not rebuild asset with the given ID. Can be specified multiple times', default: [] },
           'exclusively': { type: 'boolean', alias: 'e', desc: 'Only deploy requested stacks, don\'t include dependencies' },
           'change-set-name': { type: 'string', desc: 'Name of the CloudFormation change set to create' },
@@ -295,9 +287,9 @@ export function makeConfig(): CliConfig {
           variadic: true,
         },
         options: {
-          'all': { type: 'boolean', default: false, desc: 'Destroy all available stacks' },
-          'exclusively': { type: 'boolean', alias: 'e', desc: 'Only destroy requested stacks, don\'t include dependees' },
-          'force': { type: 'boolean', alias: 'f', desc: 'Do not ask for confirmation before destroying the stacks' },
+          all: { type: 'boolean', default: false, desc: 'Destroy all available stacks' },
+          exclusively: { type: 'boolean', alias: 'e', desc: 'Only destroy requested stacks, don\'t include dependees' },
+          force: { type: 'boolean', alias: 'f', desc: 'Do not ask for confirmation before destroying the stacks' },
         },
       },
       diff: {
@@ -336,7 +328,7 @@ export function makeConfig(): CliConfig {
       notices: {
         description: 'Returns a list of relevant notices',
         options: {
-          'unacknowledged': { type: 'boolean', alias: 'u', default: false, desc: 'Returns a list of unacknowledged notices' },
+          unacknowledged: { type: 'boolean', alias: 'u', default: false, desc: 'Returns a list of unacknowledged notices' },
         },
       },
       init: {
@@ -346,16 +338,16 @@ export function makeConfig(): CliConfig {
           variadic: false,
         },
         options: {
-          'language': { type: 'string', alias: 'l', desc: 'The language to be used for the new project (default can be configured in ~/.cdk.json)', choices: DynamicValue.fromParameter('availableInitLanguages') } as any, // TODO: preamble, this initTemplateLanguages variable needs to go as a statement there.
+          'language': { type: 'string', alias: 'l', desc: 'The language to be used for the new project (default can be configured in ~/.cdk.json)', choices: await availableInitLanguages() },
           'list': { type: 'boolean', desc: 'List the available templates' },
           'generate-only': { type: 'boolean', default: false, desc: 'If true, only generates project files, without executing additional operations such as setting up a git repo, installing dependencies or compiling the project' },
         },
       },
-      'migrate': {
-        description: false as any,
+      migrate: {
+        description: 'Migrate existing AWS resources into a CDK app',
         options: {
           'stack-name': { type: 'string', alias: 'n', desc: 'The name assigned to the stack created in the new project. The name of the app will be based off this name as well.', requiresArg: true },
-          'language': { type: 'string', default: 'typescript', alias: 'l', desc: 'The language to be used for the new project', choices: DynamicValue.fromParameter('migrateSupportedLanguages') as any },
+          'language': { type: 'string', default: 'typescript', alias: 'l', desc: 'The language to be used for the new project', choices: MIGRATE_SUPPORTED_LANGUAGES },
           'account': { type: 'string', desc: 'The account to retrieve the CloudFormation stack template from' },
           'region': { type: 'string', desc: 'The region to retrieve the CloudFormation stack template from' },
           'from-path': { type: 'string', desc: 'The path to the CloudFormation template to migrate. Use this for locally stored templates' },
@@ -379,52 +371,29 @@ export function makeConfig(): CliConfig {
           'compress': { type: 'boolean', desc: 'Use this flag to zip the generated CDK app' },
         },
       },
-      'context': {
+      context: {
         description: 'Manage cached context values',
         options: {
-          'reset': { alias: 'e', desc: 'The context key (or its index) to reset', type: 'string', requiresArg: true },
-          'force': { alias: 'f', desc: 'Ignore missing key error', type: 'boolean', default: false },
-          'clear': { desc: 'Clear all context', type: 'boolean' },
+          reset: { alias: 'e', desc: 'The context key (or its index) to reset', type: 'string', requiresArg: true, default: undefined },
+          force: { alias: 'f', desc: 'Ignore missing key error', type: 'boolean', default: false },
+          clear: { desc: 'Clear all context', type: 'boolean', default: false },
         },
       },
-      'docs': {
+      docs: {
         aliases: ['doc'],
         description: 'Opens the reference documentation in a browser',
         options: {
-          'browser': {
+          browser: {
             alias: 'b',
             desc: 'the command to use to open the browser, using %u as a placeholder for the path of the file to open',
             type: 'string',
-            default: DynamicValue.fromParameter('browserDefault'),
+            default: YARGS_HELPERS.browserForPlatform(),
           },
         },
       },
-      'doctor': {
+      doctor: {
         description: 'Check your set-up for potential problems',
       },
     },
   };
-}
-
-/**
- * Informs the code library, `@aws-cdk/yargs-gen`, that
- * this value references an entity not defined in this configuration file.
- */
-export class DynamicValue {
-  /**
-   * Instructs `yargs-gen` to retrieve this value from the parameter with passed name.
-   */
-  public static fromParameter(parameterName: string): DynamicResult {
-    return {
-      dynamicType: 'parameter',
-      dynamicValue: parameterName,
-    };
-  }
-
-  public static fromInline(f: () => any): DynamicResult {
-    return {
-      dynamicType: 'function',
-      dynamicValue: f.toString(),
-    };
-  }
 }
