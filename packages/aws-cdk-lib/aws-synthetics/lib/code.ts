@@ -5,7 +5,6 @@ import { RuntimeFamily } from './runtime';
 import * as s3 from '../../aws-s3';
 import * as s3_assets from '../../aws-s3-assets';
 import { Stage, Token } from '../../core';
-import { is } from '../../core/test/output.test';
 
 /**
  * The code the canary should execute
