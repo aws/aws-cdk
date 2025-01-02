@@ -2,7 +2,7 @@ import { convertToCliArgs } from '../lib/convert-to-cli-args';
 import { parseCommandLineArguments } from '../lib/parse-command-line-arguments';
 
 test('yargs object can be converted to cli arguments', async () => {
-  const input = await parseCommandLineArguments(['deploy', '-R', '-v']);
+  const input = await parseCommandLineArguments(['deploy', '-R', '-v', '--ci']);
 
   const result = convertToCliArgs(input);
 
@@ -25,7 +25,7 @@ test('yargs object can be converted to cli arguments', async () => {
       strict: undefined,
       verbose: 1,
       versionReporting: undefined,
-      ci: false,
+      ci: true,
       debug: false,
       ec2creds: undefined,
       json: false,
@@ -48,6 +48,7 @@ test('yargs object can be converted to cli arguments', async () => {
       hotswap: undefined,
       hotswapFallback: undefined,
       ignoreNoStacks: false,
+      importExistingResources: false,
       logs: true,
       method: undefined,
       notificationArns: undefined,
