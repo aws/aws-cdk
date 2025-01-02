@@ -290,6 +290,75 @@ test('adds alias prefix if its token with valid string prefix', () => {
   });
 });
 
+test('grants correct permissions for grantSign method', () => {
+  const app = new App();
+  const stack = new Stack(app, 'my-stack');
+  const key = new Key(stack, 'Key');
+  const alias = new Alias(stack, 'Alias', { targetKey: key, aliasName: 'alias/foo' });
+  const user = new iam.User(stack, 'User');
+
+  alias.grantSign(user);
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'kms:Sign',
+          Effect: 'Allow',
+          Resource: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});
+
+test('grants correct permissions for grantVerify method', () => {
+  const app = new App();
+  const stack = new Stack(app, 'my-stack');
+  const key = new Key(stack, 'Key');
+  const alias = new Alias(stack, 'Alias', { targetKey: key, aliasName: 'alias/foo' });
+  const user = new iam.User(stack, 'User');
+
+  alias.grantVerify(user);
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'kms:Verify',
+          Effect: 'Allow',
+          Resource: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});
+
+test('grants correct permissions for grantSignVerify method', () => {
+  const app = new App();
+  const stack = new Stack(app, 'my-stack');
+  const key = new Key(stack, 'Key');
+  const alias = new Alias(stack, 'Alias', { targetKey: key, aliasName: 'alias/foo' });
+  const user = new iam.User(stack, 'User');
+
+  alias.grantSignVerify(user);
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: ['kms:Sign', 'kms:Verify'],
+          Effect: 'Allow',
+          Resource: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});
+
 test('does not add alias again if already set', () => {
   const app = new App();
   const stack = new Stack(app, 'my-stack');
