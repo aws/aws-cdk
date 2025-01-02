@@ -9,7 +9,6 @@ coverage:
       default:
         # require the overall patch coverage to be at least 95%
         target: 95
-        
 
 # https://docs.codecov.com/docs/codecovyml-reference#comment
 comment:
@@ -26,7 +25,15 @@ component_management:
       - type: patch
         target: 95
   individual_components:
-    - component_id: packages_aws_cdk  # identifier that should not be changed
+    - component_id: packages_aws_cdk # identifier that should not be changed
       name: packages/aws-cdk # display name that can change freely
       paths:
         - packages/aws-cdk/**
+    - component_id: packages_aws_cdk_lib_core # identifier that should not be changed
+      name: packages/aws-cdk-lib/core # display name that can change freely
+      paths:
+        - packages/aws-cdk-lib/core/**
+
+# https://docs.codecov.com/docs/ignoring-paths
+ignore:
+  - packages/aws-cdk/lib/cli.ts # we integ test this file

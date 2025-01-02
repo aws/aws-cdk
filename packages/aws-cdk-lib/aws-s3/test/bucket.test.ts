@@ -683,14 +683,14 @@ describe('bucket', () => {
     const stack = new cdk.Stack();
     expect(() => {
       new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.UNENCRYPTED, serverAccessLogsPrefix: 'test' });
-    }).not.toThrowError();
+    }).not.toThrow();
   });
 
   test('logs to self, S3_MANAGED encryption does not throw error', () => {
     const stack = new cdk.Stack();
     expect(() => {
       new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.S3_MANAGED, serverAccessLogsPrefix: 'test' });
-    }).not.toThrowError();
+    }).not.toThrow();
   });
 
   test('logs to self, KMS_MANAGED encryption throws error', () => {
@@ -704,7 +704,7 @@ describe('bucket', () => {
     const stack = new cdk.Stack();
     expect(() => {
       new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.KMS, serverAccessLogsPrefix: 'test' });
-    }).not.toThrowError();
+    }).not.toThrow();
   });
 
   test('logs to self, KMS encryption with key does not throw error', () => {
@@ -712,7 +712,7 @@ describe('bucket', () => {
     const key = new kms.Key(stack, 'TestKey');
     expect(() => {
       new s3.Bucket(stack, 'MyBucket', { encryptionKey: key, encryption: s3.BucketEncryption.KMS, serverAccessLogsPrefix: 'test' });
-    }).not.toThrowError();
+    }).not.toThrow();
   });
 
   test('logs to self, KMS key with no specific encryption specified does not throw error', () => {
@@ -720,7 +720,7 @@ describe('bucket', () => {
     const key = new kms.Key(stack, 'TestKey');
     expect(() => {
       new s3.Bucket(stack, 'MyBucket', { encryptionKey: key, serverAccessLogsPrefix: 'test' });
-    }).not.toThrowError();
+    }).not.toThrow();
   });
 
   testDeprecated('logs to separate bucket, UNENCRYPTED does not throw error', () => {
@@ -728,7 +728,7 @@ describe('bucket', () => {
     const logBucket = new s3.Bucket(stack, 'testLogBucket', { encryption: s3.BucketEncryption.UNENCRYPTED });
     expect(() => {
       new s3.Bucket(stack, 'MyBucket', { serverAccessLogsBucket: logBucket });
-    }).not.toThrowError();
+    }).not.toThrow();
   });
 
   test('logs to separate bucket, S3_MANAGED encryption does not throw error', () => {
@@ -736,7 +736,7 @@ describe('bucket', () => {
     const logBucket = new s3.Bucket(stack, 'testLogBucket', { encryption: s3.BucketEncryption.S3_MANAGED });
     expect(() => {
       new s3.Bucket(stack, 'MyBucket', { serverAccessLogsBucket: logBucket });
-    }).not.toThrowError();
+    }).not.toThrow();
   });
 
   // When provided an external bucket (as an IBucket), we cannot detect KMS_MANAGED encryption. Since this
@@ -755,7 +755,7 @@ describe('bucket', () => {
     const logBucket = new s3.Bucket(stack, 'testLogBucket', { encryption: s3.BucketEncryption.KMS });
     expect(() => {
       new s3.Bucket(stack, 'MyBucket', { serverAccessLogsBucket: logBucket });
-    }).not.toThrowError();
+    }).not.toThrow();
   });
 
   test('logs to separate bucket, KMS encryption with key does not throw error', () => {
@@ -764,7 +764,7 @@ describe('bucket', () => {
     const logBucket = new s3.Bucket(stack, 'testLogBucket', { encryptionKey: key, encryption: s3.BucketEncryption.KMS });
     expect(() => {
       new s3.Bucket(stack, 'MyBucket', { serverAccessLogsBucket: logBucket });
-    }).not.toThrowError();
+    }).not.toThrow();
   });
 
   test('logs to separate bucket, KMS key with no specific encryption specified does not throw error', () => {
@@ -773,7 +773,7 @@ describe('bucket', () => {
     const logBucket = new s3.Bucket(stack, 'testLogBucket', { encryptionKey: key });
     expect(() => {
       new s3.Bucket(stack, 'MyBucket', { serverAccessLogsBucket: logBucket });
-    }).not.toThrowError();
+    }).not.toThrow();
   });
 
   test('bucket with versioning turned on', () => {

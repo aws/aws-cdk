@@ -17,15 +17,17 @@ import { Deployments } from '../lib/api/deployments';
 import { PluginHost } from '../lib/api/plugin';
 import { ToolkitInfo } from '../lib/api/toolkit-info';
 import { CdkToolkit, AssetBuildTime } from '../lib/cdk-toolkit';
-import { realHandler as context } from '../lib/commands/context';
-import { realHandler as docs } from '../lib/commands/docs';
-import { realHandler as doctor } from '../lib/commands/doctor';
-import { MIGRATE_SUPPORTED_LANGUAGES, getMigrateScanType } from '../lib/commands/migrate';
-import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
-import { data, debug, error, print, setLogLevel, setCI } from '../lib/logging';
+import { contextHandler as context } from '../lib/commands/context';
+import { docs } from '../lib/commands/docs';
+import { doctor } from '../lib/commands/doctor';
+import { getMigrateScanType } from '../lib/commands/migrate';
+import { cliInit, printAvailableTemplates } from '../lib/init';
+import { data, debug, error, print, setCI, setLogLevel, LogLevel } from '../lib/logging';
 import { Notices } from '../lib/notices';
 import { Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
+import { SdkToCliLogger } from './api/aws-auth/sdk-logger';
+import { ToolkitError } from './toolkit/error';
 
 /* eslint-disable max-len */
 /* eslint-disable @typescript-eslint/no-shadow */ // yargs
@@ -36,20 +38,22 @@ if (!process.stdout.isTTY) {
 }
 
 export async function exec(args: string[], synthesizer?: Synthesizer): Promise<number | void> {
-  function makeBrowserDefault(): string {
-    const defaultBrowserCommand: { [key in NodeJS.Platform]?: string } = {
-      darwin: 'open %u',
-      win32: 'start %u',
-    };
+  const argv = await parseCommandLineArguments(args);
 
-    const cmd = defaultBrowserCommand[process.platform];
-    return cmd ?? 'xdg-open %u';
-  }
-
-  const argv = await parseCommandLineArguments(args, makeBrowserDefault(), await availableInitLanguages(), MIGRATE_SUPPORTED_LANGUAGES as string[], version.DISPLAY_VERSION, yargsNegativeAlias);
-
+  // if one -v, log at a DEBUG level
+  // if 2 -v, log at a TRACE level
   if (argv.verbose) {
-    setLogLevel(argv.verbose);
+    let logLevel: LogLevel;
+    switch (argv.verbose) {
+      case 1:
+        logLevel = LogLevel.DEBUG;
+        break;
+      case 2:
+      default:
+        logLevel = LogLevel.TRACE;
+        break;
+    }
+    setLogLevel(logLevel);
   }
 
   // Debug should always imply tracing
@@ -80,7 +84,16 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
   const cmd = argv._[0];
 
-  const notices = Notices.create({ configuration, includeAcknowledged: cmd === 'notices' ? !argv.unacknowledged : false });
+  const notices = Notices.create({
+    context: configuration.context,
+    output: configuration.settings.get(['outdir']),
+    shouldDisplay: configuration.settings.get(['notices']),
+    includeAcknowledged: cmd === 'notices' ? !argv.unacknowledged : false,
+    httpOptions: {
+      proxyAddress: configuration.settings.get(['proxy']),
+      caBundlePath: configuration.settings.get(['caBundlePath']),
+    },
+  });
   await notices.refresh();
 
   const sdkProvider = await SdkProvider.withAwsCliCompatibleDefaults({
@@ -89,6 +102,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
       proxyAddress: argv.proxy,
       caBundlePath: argv['ca-bundle-path'],
     },
+    logger: new SdkToCliLogger(),
   });
 
   let outDirLock: ILock | undefined;
@@ -129,7 +143,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         return require.resolve(plugin);
       } catch (e: any) {
         error(`Unable to resolve plugin ${chalk.green(plugin)}: ${e.stack}`);
-        throw new Error(`Unable to resolve plug-in: ${plugin}`);
+        throw new ToolkitError(`Unable to resolve plug-in: ${plugin}`);
       }
     }
   }
@@ -137,11 +151,8 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
   loadPlugins(configuration.settings);
 
   if (typeof(cmd) !== 'string') {
-    throw new Error(`First argument should be a string. Got: ${cmd} (${typeof(cmd)})`);
+    throw new ToolkitError(`First argument should be a string. Got: ${cmd} (${typeof(cmd)})`);
   }
-
-  // Bundle up global objects so the commands have access to them
-  const commandOptions = { args: argv, configuration, aws: sdkProvider };
 
   try {
     return await main(cmd, argv);
@@ -160,7 +171,6 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
       await notices.refresh();
       notices.display();
     }
-
   }
 
   async function main(command: string, args: any): Promise<number | void> {
@@ -170,7 +180,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
     const cloudFormation = new Deployments({ sdkProvider, toolkitStackName });
 
     if (args.all && args.STACKS) {
-      throw new Error('You must either specify a list of Stacks or the `--all` argument');
+      throw new ToolkitError('You must either specify a list of Stacks or the `--all` argument');
     }
 
     args.STACKS = args.STACKS ?? (args.STACK ? [args.STACK] : []);
@@ -193,13 +203,19 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
     switch (command) {
       case 'context':
-        return context(commandOptions);
+        return context({
+          context: configuration.context,
+          clear: argv.clear,
+          json: argv.json,
+          force: argv.force,
+          reset: argv.reset,
+        });
 
       case 'docs':
-        return docs(commandOptions);
+        return docs({ browser: configuration.settings.get(['browser']) });
 
       case 'doctor':
-        return doctor(commandOptions);
+        return doctor();
 
       case 'ls':
       case 'list':
@@ -227,15 +243,15 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         });
 
       case 'bootstrap':
-        const source: BootstrapSource = determineBootstrapVersion(args, configuration);
-
-        const bootstrapper = new Bootstrapper(source);
+        const source: BootstrapSource = determineBootstrapVersion(args);
 
         if (args.showTemplate) {
+          const bootstrapper = new Bootstrapper(source);
           return bootstrapper.showTemplate(args.json);
         }
 
-        return cli.bootstrap(args.ENVIRONMENTS, bootstrapper, {
+        return cli.bootstrap(args.ENVIRONMENTS, {
+          source,
           roleArn: args.roleArn,
           force: argv.force,
           toolkitStackName: toolkitStackName,
@@ -267,14 +283,17 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         }
 
         if (args.execute !== undefined && args.method !== undefined) {
-          throw new Error('Can not supply both --[no-]execute and --method at the same time');
+          throw new ToolkitError('Can not supply both --[no-]execute and --method at the same time');
         }
 
         let deploymentMethod: DeploymentMethod | undefined;
         switch (args.method) {
           case 'direct':
             if (args.changeSetName) {
-              throw new Error('--change-set-name cannot be used with method=direct');
+              throw new ToolkitError('--change-set-name cannot be used with method=direct');
+            }
+            if (args.importExistingResources) {
+              throw new Error('--import-existing-resources cannot be enabled with method=direct');
             }
             deploymentMethod = { method: 'direct' };
             break;
@@ -283,6 +302,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
               method: 'change-set',
               execute: true,
               changeSetName: args.changeSetName,
+              importExistingResources: args.importExistingResources,
             };
             break;
           case 'prepare-change-set':
@@ -290,6 +310,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
               method: 'change-set',
               execute: false,
               changeSetName: args.changeSetName,
+              importExistingResources: args.importExistingResources,
             };
             break;
           case undefined:
@@ -297,6 +318,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
               method: 'change-set',
               execute: args.execute ?? true,
               changeSetName: args.changeSetName,
+              importExistingResources: args.importExistingResources,
             };
             break;
         }
@@ -386,7 +408,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
       case 'gc':
         if (!configuration.settings.get(['unstable']).includes('gc')) {
-          throw new Error('Unstable feature use: \'gc\' is unstable. It must be opted in via \'--unstable\', e.g. \'cdk gc --unstable=gc\'');
+          throw new ToolkitError('Unstable feature use: \'gc\' is unstable. It must be opted in via \'--unstable\', e.g. \'cdk gc --unstable=gc\'');
         }
         return cli.garbageCollect(args.ENVIRONMENTS, {
           action: args.action,
@@ -446,39 +468,15 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         return data(version.DISPLAY_VERSION);
 
       default:
-        throw new Error('Unknown command: ' + command);
+        throw new ToolkitError('Unknown command: ' + command);
     }
   }
 }
 
 /**
  * Determine which version of bootstrapping
- * (legacy, or "new") should be used.
  */
-function determineBootstrapVersion(args: { template?: string }, configuration: Configuration): BootstrapSource {
-  const isV1 = version.DISPLAY_VERSION.startsWith('1.');
-  return isV1 ? determineV1BootstrapSource(args, configuration) : determineV2BootstrapSource(args);
-}
-
-function determineV1BootstrapSource(args: { template?: string }, configuration: Configuration): BootstrapSource {
-  let source: BootstrapSource;
-  if (args.template) {
-    print(`Using bootstrapping template from ${args.template}`);
-    source = { source: 'custom', templateFile: args.template };
-  } else if (process.env.CDK_NEW_BOOTSTRAP) {
-    print('CDK_NEW_BOOTSTRAP set, using new-style bootstrapping');
-    source = { source: 'default' };
-  } else if (isFeatureEnabled(configuration, cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT)) {
-    print(`'${cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT}' context set, using new-style bootstrapping`);
-    source = { source: 'default' };
-  } else {
-    // in V1, the "legacy" bootstrapping is the default
-    source = { source: 'legacy' };
-  }
-  return source;
-}
-
-function determineV2BootstrapSource(args: { template?: string }): BootstrapSource {
+function determineBootstrapVersion(args: { template?: string }): BootstrapSource {
   let source: BootstrapSource;
   if (args.template) {
     print(`Using bootstrapping template from ${args.template}`);
@@ -513,21 +511,9 @@ function arrayFromYargs(xs: string[]): string[] | undefined {
   return xs.filter((x) => x !== '');
 }
 
-function yargsNegativeAlias<T extends { [x in S | L]: boolean | undefined }, S extends string, L extends string>(
-  shortName: S,
-  longName: L,
-): (argv: T) => T {
-  return (argv: T) => {
-    if (shortName in argv && argv[shortName]) {
-      (argv as any)[longName] = false;
-    }
-    return argv;
-  };
-}
-
 function determineHotswapMode(hotswap?: boolean, hotswapFallback?: boolean, watch?: boolean): HotswapMode {
   if (hotswap && hotswapFallback) {
-    throw new Error('Can not supply both --hotswap and --hotswap-fallback at the same time');
+    throw new ToolkitError('Can not supply both --hotswap and --hotswap-fallback at the same time');
   } else if (!hotswap && !hotswapFallback) {
     if (hotswap === undefined && hotswapFallback === undefined) {
       return watch ? HotswapMode.HOTSWAP_ONLY : HotswapMode.FULL_DEPLOYMENT;
@@ -547,6 +533,7 @@ function determineHotswapMode(hotswap?: boolean, hotswapFallback?: boolean, watc
   return hotswapMode;
 }
 
+/* istanbul ignore next: we never call this in unit tests */
 export function cli(args: string[] = process.argv.slice(2)) {
   exec(args)
     .then(async (value) => {
@@ -556,7 +543,10 @@ export function cli(args: string[] = process.argv.slice(2)) {
     })
     .catch((err) => {
       error(err.message);
-      if (err.stack) {
+
+      // Log the stack trace if we're on a developer workstation. Otherwise this will be into a minified
+      // file and the printed code line and stack trace are huge and useless.
+      if (err.stack && version.isDeveloperBuild()) {
         debug(err.stack);
       }
       process.exitCode = 1;
