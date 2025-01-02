@@ -4,7 +4,8 @@ import { Construct } from 'constructs';
 import { RuntimeFamily } from './runtime';
 import * as s3 from '../../aws-s3';
 import * as s3_assets from '../../aws-s3-assets';
-import { Stage } from '../../core';
+import { Stage, Token } from '../../core';
+import { is } from '../../core/test/output.test';
 
 /**
  * The code the canary should execute
@@ -144,7 +145,7 @@ export class AssetCode extends Code {
       }
       // Validation can be performed using both `RuntimeFamily` and `runtimeName` arguments,
       // but for backward compatibility of `Code.bind()`, it is also designed to accept only `RuntimeFamily`.
-      if (runtimeName) {
+      if (runtimeName && !Token.isUnresolved(runtimeName)) {
         const filename = handler.split('.')[0];
         const nodeFilename = `${filename}.js`;
         const pythonFilename = `${filename}.py`;
