@@ -617,7 +617,7 @@ describe('node group', () => {
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
       instanceTypes: [
-        new ec2.InstanceType('g6elarge'),
+        new ec2.InstanceType('g6e.large'),
         new ec2.InstanceType('g5.large'),
       ],
     });
