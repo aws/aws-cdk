@@ -2,6 +2,7 @@
 // GENERATED FROM packages/aws-cdk/lib/config.ts.
 // Do not edit by hand; all changes will be overwritten at build time from the config file.
 // -------------------------------------------------------------------------------------------
+// istanbul ignore file
 /* eslint-disable @stylistic/max-len */
 import { Command } from './settings';
 
@@ -632,6 +633,13 @@ export interface DeployOptions {
    * @default - undefined
    */
   readonly method?: string;
+
+  /**
+   * Indicates if the stack set imports resources that already exist.
+   *
+   * @default - false
+   */
+  readonly importExistingResources?: boolean;
 
   /**
    * Always deploy stack even if templates are identical
