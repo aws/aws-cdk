@@ -5,7 +5,7 @@ interface YargsCommand {
   arg?: YargsArg;
 }
 
-interface CliAction extends YargsCommand {
+export interface CliAction extends YargsCommand {
   options?: { [optionName: string]: CliOption };
 }
 

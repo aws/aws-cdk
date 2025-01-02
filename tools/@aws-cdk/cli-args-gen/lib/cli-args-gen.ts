@@ -4,7 +4,7 @@ import * as prettier from 'prettier';
 import { generateDefault, kebabToCamelCase, kebabToPascal } from './util';
 import { CliConfig } from './yargs-types';
 
-export async function renderCliType(config: CliConfig): Promise<string> {
+export async function renderCliArgsType(config: CliConfig): Promise<string> {
   const scope = new Module('aws-cdk');
 
   scope.documentation.push( '-------------------------------------------------------------------------------------------');
@@ -52,6 +52,7 @@ export async function renderCliType(config: CliConfig): Promise<string> {
       optional: true,
     });
   }
+
   cliArgType.addProperty({
     name: 'globalOptions',
     type: Type.fromName(scope, globalOptionType.name),
@@ -106,6 +107,7 @@ export async function renderCliType(config: CliConfig): Promise<string> {
     parser: 'typescript',
     printWidth: 150,
     singleQuote: true,
+    quoteProps: 'consistent',
   });
 }
 

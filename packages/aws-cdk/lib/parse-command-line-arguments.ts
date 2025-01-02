@@ -2,6 +2,7 @@
 // GENERATED FROM packages/aws-cdk/lib/config.ts.
 // Do not edit by hand; all changes will be overwritten at build time from the config file.
 // -------------------------------------------------------------------------------------------
+// istanbul ignore file
 /* eslint-disable @stylistic/max-len */
 import { Argv } from 'yargs';
 import * as helpers from './util/yargs-helpers';
