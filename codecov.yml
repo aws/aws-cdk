@@ -36,7 +36,4 @@ component_management:
 
 # https://docs.codecov.com/docs/ignoring-paths
 ignore:
-  - packages/aws-cdk/lib/parse-command-line-arguments.ts # we generate this file and the generation is tested.
-  - packages/aws-cdk/lib/cli-arguments.ts # we generate this file and the generation is tested.
-  - packages/aws-cdk/lib/convert-to-cli-args.ts # we generate this file and the generation is tested.
   - packages/aws-cdk/lib/cli.ts # we integ test this file
