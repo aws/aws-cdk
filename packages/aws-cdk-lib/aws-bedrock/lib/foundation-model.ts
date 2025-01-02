@@ -185,6 +185,15 @@ export class FoundationModelIdentifier {
   /** Base model "anthropic.claude-3-5-sonnet-20241022-v2:0" */
   public static readonly ANTHROPIC_CLAUDE_3_5_SONNET_20241022_V2_0 = new FoundationModelIdentifier('anthropic.claude-3-5-sonnet-20241022-v2:0');
 
+  /** Base model "anthropic.claude-3-5-sonnet-20241022-v2:0:18k". */
+  public static readonly ANTHROPIC_CLAUDE_3_5_SONNET_20241022_V2_0_18K = new FoundationModelIdentifier('anthropic.claude-3-5-sonnet-20241022-v2:0:18k');
+
+  /** Base model "anthropic.claude-3-5-sonnet-20241022-v2:0:51k". */
+  public static readonly ANTHROPIC_CLAUDE_3_5_SONNET_20241022_V2_0_51K = new FoundationModelIdentifier('anthropic.claude-3-5-sonnet-20241022-v2:0:51k');
+
+  /** Base model "anthropic.claude-3-5-sonnet-20241022-v2:0:200k". */
+  public static readonly ANTHROPIC_CLAUDE_3_5_SONNET_20241022_V2_0_200K = new FoundationModelIdentifier('anthropic.claude-3-5-sonnet-20241022-v2:0:200k');
+
   /** Base model "anthropic.claude-3-haiku-20240307-v1:0". */
   public static readonly ANTHROPIC_CLAUDE_3_HAIKU_20240307_V1_0 = new FoundationModelIdentifier('anthropic.claude-3-haiku-20240307-v1:0');
 
@@ -329,6 +338,9 @@ export class FoundationModelIdentifier {
   /** Base model "meta.llama3-2-90b-instruct-v1:0". */
   public static readonly META_LLAMA_3_2_90B_INSTRUCT_V1 = new FoundationModelIdentifier('meta.llama3-2-90b-instruct-v1:0');
 
+  /** Base model "meta.llama3-3-70b-instruct-v1:0". */
+  public static readonly META_LLAMA_3_3_70B_INSTRUCT_V1 = new FoundationModelIdentifier('meta.llama3-3-70b-instruct-v1:0');
+
   /** Base model "mistral.mistral-7b-instruct-v0:2". */
   public static readonly MISTRAL_MISTRAL_7B_INSTRUCT_V0_2 = new FoundationModelIdentifier('mistral.mistral-7b-instruct-v0:2');
 
@@ -371,11 +383,20 @@ export class FoundationModelIdentifier {
   /** Base model "stability.sd3-large-v1:0". */
   public static readonly STABILITY_SD3_LARGE_V1_0 = new FoundationModelIdentifier('stability.sd3-large-v1:0');
 
+  /** Base model "stability.sd3-5-large-v1:0". */
+  public static readonly STABILITY_SD3_5_LARGE_V1_0 = new FoundationModelIdentifier('stability.sd3-5-large-v1:0');
+
   /** Base model "stability.stable-image-ultra-v1:0". */
   public static readonly STABILITY_STABLE_IMAGE_ULTRA_V1_0 = new FoundationModelIdentifier('stability.stable-image-ultra-v1:0');
 
+  /** Base model "stability.stable-image-ultra-v1:1". */
+  public static readonly STABILITY_STABLE_IMAGE_ULTRA_V1_1 = new FoundationModelIdentifier('stability.stable-image-ultra-v1:1');
+
   /** Base model "stability.stable-image-core-v1:0". */
   public static readonly STABILITY_STABLE_IMAGE_CORE_V1_0 = new FoundationModelIdentifier('stability.stable-image-core-v1:0');
+
+  /** Base model "stability.stable-image-core-v1:1". */
+  public static readonly STABILITY_STABLE_IMAGE_CORE_V1_1 = new FoundationModelIdentifier('stability.stable-image-core-v1:1');
 
   /**
    * Constructor for foundation model identifier
