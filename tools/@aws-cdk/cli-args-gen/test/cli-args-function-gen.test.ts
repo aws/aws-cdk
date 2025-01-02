@@ -64,7 +64,7 @@ describe('render', () => {
             break;
         }
         const cliArguments: CliArguments = {
-          _: args._,
+          _: args._[0],
           globalOptions,
           [args._[0]]: commandOptions,
         };

@@ -28,7 +28,7 @@ export async function renderCliArgsType(config: CliConfig): Promise<string> {
     name: '_',
     type: commandEnum,
     docs: {
-      summary: 'The CLI command name followed by any properties of the command',
+      summary: 'The CLI command name',
     },
   });
 
