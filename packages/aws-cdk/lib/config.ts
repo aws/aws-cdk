@@ -127,6 +127,7 @@ export async function makeConfig(): Promise<CliConfig> {
             requiresArg: true,
             desc: 'How to perform the deployment. Direct is a bit faster but lacks progress information',
           },
+          'import-existing-resources': { type: 'boolean', desc: 'Indicates if the stack set imports resources that already exist.', default: false },
           'force': { alias: 'f', type: 'boolean', desc: 'Always deploy stack even if templates are identical', default: false },
           'parameters': { type: 'array', desc: 'Additional parameters passed to CloudFormation at deploy time (STACK:KEY=VALUE)', default: {} },
           'outputs-file': { type: 'string', alias: 'O', desc: 'Path to file where stack outputs will be written as JSON', requiresArg: true },
@@ -373,9 +374,9 @@ export async function makeConfig(): Promise<CliConfig> {
       context: {
         description: 'Manage cached context values',
         options: {
-          reset: { alias: 'e', desc: 'The context key (or its index) to reset', type: 'string', requiresArg: true },
+          reset: { alias: 'e', desc: 'The context key (or its index) to reset', type: 'string', requiresArg: true, default: undefined },
           force: { alias: 'f', desc: 'Ignore missing key error', type: 'boolean', default: false },
-          clear: { desc: 'Clear all context', type: 'boolean' },
+          clear: { desc: 'Clear all context', type: 'boolean', default: false },
         },
       },
       docs: {

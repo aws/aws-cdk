@@ -242,6 +242,10 @@ input DemoInput {
 type Mutation {
   callStepFunction(input: DemoInput!): job
 }
+
+type Query {
+  _placeholder: String
+}
 ```
 
 GraphQL request mapping template `request.vtl`:
