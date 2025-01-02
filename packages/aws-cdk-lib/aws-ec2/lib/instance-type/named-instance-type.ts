@@ -1,14 +1,15 @@
 import type { InstanceTypeInfo } from '@aws-sdk/client-ec2';
 import { InstanceClass } from './instance-class';
-import { InstanceProperties, HypervisorType, BootMode, RootDeviceType, UsageClass, VirtualizationType, FpgaDeviceInfo, GpuDeviceInfo, InferenceAcceleratorDeviceInfo, InstanceDiskInfo, DiskType, NetworkCardInfo, InstanceArchitecture, ProcessorFeature } from './instance-properties';
+import { InstanceProperties, HypervisorType, BootMode, RootDeviceType, UsageClass, VirtualizationType, FpgaDeviceInfo, GpuDeviceInfo, InferenceAcceleratorDeviceInfo, InstanceDiskInfo, DiskType, NetworkCardInfo, InstanceArchitecture, ProcessorFeature, NeuronDeviceInfo, MediaDeviceInfo } from './instance-properties';
 import { InstanceSize } from './instance-size';
 import { InstanceType } from './instance-type';
 import { Size } from '../../../core';
 import * as instancePropertiesJsonData from '../../data/instance-properties.json';
 import { PlacementGroupStrategy } from '../placement-group';
 
-type InstancePropertiesData = Omit<InstanceTypeInfo, 'InstanceType'>;
-const instancePropertiesData: {[InstanceType: string]: InstancePropertiesData} = instancePropertiesJsonData;
+const instancePropertiesData = instancePropertiesJsonData as {
+  [InstanceType: string]: Omit<InstanceTypeInfo, 'InstanceType'>;
+};
 
 /**
  * Known instance type for EC2 instances, retrieved from the AWS API.
@@ -54,6 +55,7 @@ export class NamedInstanceType {
       memorySize: data.MemoryInfo?.SizeInMiB ? Size.mebibytes(data.MemoryInfo.SizeInMiB) : undefined,
       nitroEnclavesSupported: NamedInstanceType.mapSupportedValue(data.NitroEnclavesSupport),
       nitroTpmSupported: NamedInstanceType.mapSupportedValue(data.NitroTpmSupport),
+      phcSupported: NamedInstanceType.mapSupportedValue(data.PhcSupport),
       supportedBootModes: data.SupportedBootModes as BootMode[] | undefined,
       supportedNitroTpmVersions: data.NitroTpmInfo?.SupportedVersions,
       supportedPlacementGroupStrategies: data.PlacementGroupInfo?.SupportedStrategies as PlacementGroupStrategy[],
@@ -116,9 +118,8 @@ export class NamedInstanceType {
           Size.gibibytes(data.InstanceStorageInfo.TotalSizeInGB) :
           undefined,
       },
-      // TODO waiting for @aws-sdk/client-ec2 dependency upgrade
-      /* mediaAcceleratorInfo: {
-        accelerators: data.MediaAcceleratorInfo?.Accelerators?.map<MediaAcceleratorDeviceInfo>((accelerator) => ({
+      mediaAcceleratorInfo: {
+        accelerators: data.MediaAcceleratorInfo?.Accelerators?.map<MediaDeviceInfo>((accelerator) => ({
           name: accelerator.Name,
           manufacturer: accelerator.Manufacturer,
           count: accelerator.Count,
@@ -126,7 +127,7 @@ export class NamedInstanceType {
         totalMediaMemory: data.MediaAcceleratorInfo?.TotalMediaMemoryInMiB ?
           Size.mebibytes(data.MediaAcceleratorInfo?.TotalMediaMemoryInMiB)
           : undefined,
-      }, */
+      },
       networkInfo: {
         defaultNetworkCardIndex: data.NetworkInfo?.DefaultNetworkCardIndex,
         maximumEfaInterfaces: data.NetworkInfo?.EfaInfo?.MaximumEfaInterfaces,
@@ -152,24 +153,21 @@ export class NamedInstanceType {
           peakBandwidthInGbps: card.PeakBandwidthInGbps,
         })),
       },
-      // TODO waiting for @aws-sdk/client-ec2 dependency upgrade
-      /* neuronInfo: {
-        neurons: data.NeuronInfo?.Neurons?.map<NeuronDeviceInfo>((neuron) => ({
+      neuronInfo: {
+        neurons: data.NeuronInfo?.NeuronDevices?.map<NeuronDeviceInfo>((neuron) => ({
           name: neuron.Name,
           count: neuron.CoreInfo?.Count,
           version: neuron.CoreInfo?.Version,
-          manufacturer: neuron.Manufacturer,
           memorySize: neuron.MemoryInfo?.SizeInMiB ?
             Size.mebibytes(neuron.MemoryInfo?.SizeInMiB)
             : undefined,
         })),
-        totalNeuronMemory: data.NeuronInfo?.TotalNeuronMemoryInMiB ?
-          Size.mebibytes(data.NeuronInfo?.TotalNeuronMemoryInMiB)
+        totalNeuronMemory: data.NeuronInfo?.TotalNeuronDeviceMemoryInMiB ?
+          Size.mebibytes(data.NeuronInfo?.TotalNeuronDeviceMemoryInMiB)
           : undefined,
-      }, */
+      },
       processorInfo: {
-        // TODO waiting for @aws-sdk/client-ec2 dependency upgrade
-        // manufacturer: data.ProcessorInfo?.manufacturer,
+        manufacturer: data.ProcessorInfo?.Manufacturer,
         supportedArchitectures: data.ProcessorInfo?.SupportedArchitectures as InstanceArchitecture[] | undefined,
         supportedFeatures: data.ProcessorInfo?.SupportedFeatures as ProcessorFeature[] | undefined,
         sustainedClockSpeedInGhz: data.ProcessorInfo?.SustainedClockSpeedInGhz,

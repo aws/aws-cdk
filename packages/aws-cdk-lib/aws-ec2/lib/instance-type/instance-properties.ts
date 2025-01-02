@@ -120,6 +120,13 @@ export interface InstanceProperties {
   readonly supportedNitroTpmVersions?: string[];
 
   /**
+   * Indicates whether a local Precision Time Protocol (PTP) hardware clock (PHC) is supported.
+   *
+   * @default - not specified
+   */
+  readonly phcSupported?: boolean;
+
+  /**
    * List of supported placement group strategies for the instance type
    *
    * @default - not specified
@@ -796,14 +803,7 @@ export interface NeuronDeviceInfo {
    *
    * @default - not specified
    */
-  readonly version?: string;
-
-  /**
-   * The manufacturer of the Neuron device
-   *
-   * @default - not specified
-   */
-  readonly manufacturer?: string;
+  readonly version?: number;
 
   /**
    * The memory size of the Neuron device

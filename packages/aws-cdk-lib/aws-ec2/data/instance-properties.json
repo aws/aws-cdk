@@ -34,10 +34,10 @@
 			"EncryptionSupport": "supported",
 			"EbsOptimizedInfo": {
 				"BaselineBandwidthInMbps": 20000,
-				"BaselineThroughputInMBps": 2500,
+				"BaselineThroughputInMBps": 2500.0,
 				"BaselineIops": 80000,
 				"MaximumBandwidthInMbps": 20000,
-				"MaximumThroughputInMBps": 2500,
+				"MaximumThroughputInMBps": 2500.0,
 				"MaximumIops": 80000
 			},
 			"NvmeSupport": "required"
@@ -52,8 +52,8 @@
 					"NetworkCardIndex": 0,
 					"NetworkPerformance": "25 Gigabit",
 					"MaximumNetworkInterfaces": 15,
-					"BaselineBandwidthInGbps": 25,
-					"PeakBandwidthInGbps": 25
+					"BaselineBandwidthInGbps": 25.0,
+					"PeakBandwidthInGbps": 25.0
 				}
 			],
 			"Ipv4AddressesPerInterface": 50,
@@ -74,6 +74,7 @@
 		"SupportedBootModes": ["legacy-bios", "uefi"],
 		"NitroEnclavesSupport": "supported",
 		"NitroTpmSupport": "supported",
-		"NitroTpmInfo": { "SupportedVersions": ["2.0"] }
+		"NitroTpmInfo": { "SupportedVersions": ["2.0"] },
+		"PhcSupport": "unsupported"
 	}
 }
