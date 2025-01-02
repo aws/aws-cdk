@@ -608,7 +608,7 @@ describe(Notices, () => {
       // within the affected version range of both notices
       jest.spyOn(version, 'versionNumber').mockImplementation(() => '1.126.0');
 
-      const context = new Context(new Settings({ 'acknowledged-issue-numbers': [MULTIPLE_AFFECTED_VERSIONS_NOTICE.issueNumber] }));
+      const context = new Context({ bag: new Settings({ 'acknowledged-issue-numbers': [MULTIPLE_AFFECTED_VERSIONS_NOTICE.issueNumber] }) });
 
       const notices = Notices.create({ context });
       await notices.refresh({
@@ -626,7 +626,7 @@ describe(Notices, () => {
       // within the affected version range of both notices
       jest.spyOn(version, 'versionNumber').mockImplementation(() => '1.126.0');
 
-      const context = new Context(new Settings({ 'acknowledged-issue-numbers': [MULTIPLE_AFFECTED_VERSIONS_NOTICE.issueNumber] }));
+      const context = new Context({ bag: new Settings({ 'acknowledged-issue-numbers': [MULTIPLE_AFFECTED_VERSIONS_NOTICE.issueNumber] }) });
 
       const notices = Notices.create({ context, includeAcknowledged: true });
       await notices.refresh({
@@ -749,7 +749,7 @@ describe(Notices, () => {
       // within the affected version range of both notices
       jest.spyOn(version, 'versionNumber').mockImplementation(() => '1.126.0');
 
-      const context = new Context(new Settings({ 'acknowledged-issue-numbers': [MULTIPLE_AFFECTED_VERSIONS_NOTICE.issueNumber] }));
+      const context = new Context({ bag: new Settings({ 'acknowledged-issue-numbers': [MULTIPLE_AFFECTED_VERSIONS_NOTICE.issueNumber] }) });
 
       const notices = Notices.create({ context });
       await notices.refresh({
@@ -766,7 +766,7 @@ describe(Notices, () => {
       // within the affected version range of both notices
       jest.spyOn(version, 'versionNumber').mockImplementation(() => '1.126.0');
 
-      const context = new Context(new Settings({ 'acknowledged-issue-numbers': [MULTIPLE_AFFECTED_VERSIONS_NOTICE.issueNumber] }));
+      const context = new Context({ bag: new Settings({ 'acknowledged-issue-numbers': [MULTIPLE_AFFECTED_VERSIONS_NOTICE.issueNumber] }) });
       const notices = Notices.create({ context, includeAcknowledged: true });
       await notices.refresh({
         dataSource: { fetch: async () => [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE] },

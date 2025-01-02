@@ -136,7 +136,7 @@
     "mime-types": "^2.1.35"
   },
   "devDependencies": {
-    "@aws-cdk/aws-service-spec": "^0.1.38",
+    "@aws-cdk/aws-service-spec": "^0.1.40",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/custom-resource-handlers": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
@@ -414,6 +414,7 @@
     "./aws-paymentcryptography": "./aws-paymentcryptography/index.js",
     "./aws-pcaconnectorad": "./aws-pcaconnectorad/index.js",
     "./aws-pcaconnectorscep": "./aws-pcaconnectorscep/index.js",
+    "./aws-pcs": "./aws-pcs/index.js",
     "./aws-personalize": "./aws-personalize/index.js",
     "./aws-pinpoint": "./aws-pinpoint/index.js",
     "./aws-pinpointemail": "./aws-pinpointemail/index.js",
@@ -508,6 +509,7 @@
     "./pipelines/.warnings.jsii.js": "./pipelines/.warnings.jsii.js",
     "./pipelines/lib/helpers-internal": "./pipelines/lib/helpers-internal/index.js",
     "./pipelines/package.json": "./pipelines/package.json",
+    "./recommended-feature-flags.json": "./recommended-feature-flags.json",
     "./region-info": "./region-info/index.js",
     "./triggers": "./triggers/index.js"
   },

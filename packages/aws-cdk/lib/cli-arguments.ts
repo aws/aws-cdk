@@ -2,7 +2,7 @@
 // GENERATED FROM packages/aws-cdk/lib/config.ts.
 // Do not edit by hand; all changes will be overwritten at build time from the config file.
 // -------------------------------------------------------------------------------------------
-/* eslint-disable max-len */
+/* eslint-disable @stylistic/max-len */
 import { Command } from './settings';
 
 /**
@@ -143,14 +143,14 @@ export interface GlobalOptions {
   /**
    * Add contextual string parameter (KEY=VALUE)
    *
-   * @default - undefined
+   * @default - []
    */
   readonly context?: Array<string>;
 
   /**
    * Name or path of a node package that extend the CDK features. Can be specified multiple times
    *
-   * @default - undefined
+   * @default - []
    */
   readonly plugin?: Array<string>;
 
@@ -297,7 +297,7 @@ export interface GlobalOptions {
   /**
    * Opt in to unstable features. The flag indicates that the scope and API of a feature might still change. Otherwise the feature is generally production ready and fully supported. Can be specified multiple times.
    *
-   * @default - undefined
+   * @default - []
    */
   readonly unstable?: Array<string>;
 }
@@ -429,7 +429,7 @@ export interface BootstrapOptions {
    *
    * aliases: t
    *
-   * @default - undefined
+   * @default - []
    */
   readonly tags?: Array<string>;
 
@@ -443,21 +443,21 @@ export interface BootstrapOptions {
   /**
    * The AWS account IDs that should be trusted to perform deployments into this environment (may be repeated, modern bootstrapping only)
    *
-   * @default - undefined
+   * @default - []
    */
   readonly trust?: Array<string>;
 
   /**
    * The AWS account IDs that should be trusted to look up values in this environment (may be repeated, modern bootstrapping only)
    *
-   * @default - undefined
+   * @default - []
    */
   readonly 'trust-for-lookup'?: Array<string>;
 
   /**
    * The Managed Policy ARNs that should be attached to the role performing deployments into this environment (may be repeated, modern bootstrapping only)
    *
-   * @default - undefined
+   * @default - []
    */
   readonly 'cloudformation-execution-policies'?: Array<string>;
 
@@ -515,28 +515,28 @@ export interface GcOptions {
   /**
    * The action (or sub-action) you want to perform. Valid entires are "print", "tag", "delete-tagged", "full".
    *
-   * @default - full
+   * @default - "full"
    */
   readonly action?: string;
 
   /**
    * Specify either ecr, s3, or all
    *
-   * @default - all
+   * @default - "all"
    */
   readonly type?: string;
 
   /**
    * Delete assets that have been marked as isolated for this many days
    *
-   * @default - undefined
+   * @default - 0
    */
   readonly 'rollback-buffer-days'?: number;
 
   /**
    * Never delete assets younger than this (in days)
    *
-   * @default - undefined
+   * @default - 1
    */
   readonly 'created-buffer-days'?: number;
 
@@ -573,7 +573,7 @@ export interface DeployOptions {
    *
    * aliases: E
    *
-   * @default - undefined
+   * @default - []
    */
   readonly 'build-exclude'?: Array<string>;
 
@@ -605,7 +605,7 @@ export interface DeployOptions {
    *
    * aliases: t
    *
-   * @default - undefined
+   * @default - []
    */
   readonly tags?: Array<string>;
 
@@ -645,7 +645,7 @@ export interface DeployOptions {
   /**
    * Additional parameters passed to CloudFormation at deploy time (STACK:KEY=VALUE)
    *
-   * @default - undefined
+   * @default - {}
    */
   readonly parameters?: Array<string>;
 
@@ -717,7 +717,7 @@ export interface DeployOptions {
   /**
    * Maximum number of simultaneous deployments (dependency permitting) to execute.
    *
-   * @default - undefined
+   * @default - 1
    */
   readonly concurrency?: number;
 
@@ -782,7 +782,7 @@ export interface RollbackOptions {
   /**
    * Orphan the given resources, identified by their logical ID (can be specified multiple times)
    *
-   * @default - undefined
+   * @default - []
    */
   readonly orphan?: Array<string>;
 }
@@ -860,7 +860,7 @@ export interface WatchOptions {
    *
    * aliases: E
    *
-   * @default - undefined
+   * @default - []
    */
   readonly 'build-exclude'?: Array<string>;
 
@@ -934,7 +934,7 @@ export interface WatchOptions {
   /**
    * Maximum number of simultaneous deployments (dependency permitting) to execute.
    *
-   * @default - undefined
+   * @default - 1
    */
   readonly concurrency?: number;
 }
@@ -989,7 +989,7 @@ export interface DiffOptions {
   /**
    * Number of context lines to include in arbitrary JSON diff rendering
    *
-   * @default - undefined
+   * @default - 3
    */
   readonly 'context-lines'?: number;
 
@@ -1129,7 +1129,7 @@ export interface MigrateOptions {
    *
    * aliases: l
    *
-   * @default - typescript
+   * @default - "typescript"
    */
   readonly language?: string;
 
@@ -1185,7 +1185,7 @@ export interface MigrateOptions {
    *  tag-key: a string that matches resources with at least one tag with the provided key. i.e. "myTagKey"
    *  tag-value: a string that matches resources with at least one tag with the provided value. i.e. "myTagValue"
    *
-   * @default - undefined
+   * @default - []
    */
   readonly filter?: Array<string>;
 
@@ -1224,7 +1224,7 @@ export interface ContextOptions {
   /**
    * Clear all context
    *
-   * @default - undefined
+   * @default - false
    */
   readonly clear?: boolean;
 }
