@@ -2,7 +2,6 @@
 // GENERATED FROM packages/aws-cdk/lib/config.ts.
 // Do not edit by hand; all changes will be overwritten at build time from the config file.
 // -------------------------------------------------------------------------------------------
-// istanbul ignore file
 /* eslint-disable @stylistic/max-len */
 import { Command } from './settings';
 
@@ -15,7 +14,7 @@ export interface CliArguments {
   /**
    * The CLI command name followed by any properties of the command
    */
-  readonly _: [Command, ...string[]];
+  readonly _: Command;
 
   /**
    * Global options available to all CLI commands
@@ -328,6 +327,11 @@ export interface ListOptions {
    * @default - false
    */
   readonly showDependencies?: boolean;
+
+  /**
+   * Positional argument for list
+   */
+  readonly STACKS?: Array<string>;
 }
 
 /**
@@ -362,6 +366,11 @@ export interface SynthesizeOptions {
    * @default - false
    */
   readonly quiet?: boolean;
+
+  /**
+   * Positional argument for synthesize
+   */
+  readonly STACKS?: Array<string>;
 }
 
 /**
@@ -505,6 +514,11 @@ export interface BootstrapOptions {
    * @default - true
    */
   readonly previousParameters?: boolean;
+
+  /**
+   * Positional argument for bootstrap
+   */
+  readonly ENVIRONMENTS?: Array<string>;
 }
 
 /**
@@ -554,6 +568,11 @@ export interface GcOptions {
    * @default - undefined
    */
   readonly bootstrapStackName?: string;
+
+  /**
+   * Positional argument for gc
+   */
+  readonly ENVIRONMENTS?: Array<string>;
 }
 
 /**
@@ -749,6 +768,11 @@ export interface DeployOptions {
    * @default - false
    */
   readonly ignoreNoStacks?: boolean;
+
+  /**
+   * Positional argument for deploy
+   */
+  readonly STACKS?: Array<string>;
 }
 
 /**
@@ -793,6 +817,11 @@ export interface RollbackOptions {
    * @default - []
    */
   readonly orphan?: Array<string>;
+
+  /**
+   * Positional argument for rollback
+   */
+  readonly STACKS?: Array<string>;
 }
 
 /**
@@ -855,6 +884,11 @@ export interface ImportOptions {
    * @default - undefined
    */
   readonly resourceMapping?: string;
+
+  /**
+   * Positional argument for import
+   */
+  readonly STACK?: string;
 }
 
 /**
@@ -945,6 +979,11 @@ export interface WatchOptions {
    * @default - 1
    */
   readonly concurrency?: number;
+
+  /**
+   * Positional argument for watch
+   */
+  readonly STACKS?: Array<string>;
 }
 
 /**
@@ -977,6 +1016,11 @@ export interface DestroyOptions {
    * @default - undefined
    */
   readonly force?: boolean;
+
+  /**
+   * Positional argument for destroy
+   */
+  readonly STACKS?: Array<string>;
 }
 
 /**
@@ -1053,6 +1097,11 @@ export interface DiffOptions {
    * @default - true
    */
   readonly changeSet?: boolean;
+
+  /**
+   * Positional argument for diff
+   */
+  readonly STACKS?: Array<string>;
 }
 
 /**
@@ -1060,7 +1109,12 @@ export interface DiffOptions {
  *
  * @struct
  */
-export interface MetadataOptions {}
+export interface MetadataOptions {
+  /**
+   * Positional argument for metadata
+   */
+  readonly STACK?: string;
+}
 
 /**
  * Acknowledge a notice so that it does not show up anymore
@@ -1069,7 +1123,12 @@ export interface MetadataOptions {}
  *
  * @struct
  */
-export interface AcknowledgeOptions {}
+export interface AcknowledgeOptions {
+  /**
+   * Positional argument for acknowledge
+   */
+  readonly ID?: string;
+}
 
 /**
  * Returns a list of relevant notices
@@ -1115,6 +1174,11 @@ export interface InitOptions {
    * @default - false
    */
   readonly generateOnly?: boolean;
+
+  /**
+   * Positional argument for init
+   */
+  readonly TEMPLATE?: string;
 }
 
 /**
