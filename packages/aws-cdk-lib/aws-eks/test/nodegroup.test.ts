@@ -6,7 +6,8 @@ import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
 import * as eks from '../lib';
-import { isGpuInstanceType, NodegroupAmiType, TaintEffect } from '../lib';
+import { NodegroupAmiType, TaintEffect } from '../lib';
+import { isGpuInstanceType } from '../lib/private/nodegroup';
 
 /* eslint-disable max-len */
 
