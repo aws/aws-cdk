@@ -10,7 +10,7 @@ import { ToolkitError } from '../../toolkit/error';
 import { rootDir } from '../../util/directories';
 import type { SDK, SdkProvider } from '../aws-auth';
 import type { SuccessfulDeployStackResult } from '../deploy-stack';
-import { Mode } from '../plugin';
+import { Mode } from '../plugin/mode';
 
 export type BootstrapSource = { source: 'legacy' } | { source: 'default' } | { source: 'custom'; templateFile: string };
 
