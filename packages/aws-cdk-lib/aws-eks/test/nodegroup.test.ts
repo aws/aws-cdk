@@ -1744,6 +1744,8 @@ describe('isGpuInstanceType', () => {
       ec2.InstanceType.of(ec2.InstanceClass.P4D, ec2.InstanceSize.LARGE),
       ec2.InstanceType.of(ec2.InstanceClass.G6, ec2.InstanceSize.MEDIUM),
       ec2.InstanceType.of(ec2.InstanceClass.G6E, ec2.InstanceSize.XLARGE2),
+      ec2.InstanceType.of(ec2.InstanceClass.INF1, ec2.InstanceSize.XLARGE),
+      ec2.InstanceType.of(ec2.InstanceClass.INF2, ec2.InstanceSize.XLARGE),
     ];
     gpuInstanceTypes.forEach(instanceType => {
       expect(isGpuInstanceType(instanceType)).toBe(true);
@@ -1764,6 +1766,12 @@ describe('isGpuInstanceType', () => {
       ec2.InstanceType.of(ec2.InstanceClass.G6, ec2.InstanceSize.XLARGE),
       ec2.InstanceType.of(ec2.InstanceClass.G6, ec2.InstanceSize.XLARGE16),
       ec2.InstanceType.of(ec2.InstanceClass.G6, ec2.InstanceSize.XLARGE48),
+      ec2.InstanceType.of(ec2.InstanceClass.G6, ec2.InstanceSize.LARGE),
+      ec2.InstanceType.of(ec2.InstanceClass.G6, ec2.InstanceSize.MEDIUM),
+      ec2.InstanceType.of(ec2.InstanceClass.G6, ec2.InstanceSize.SMALL),
+      ec2.InstanceType.of(ec2.InstanceClass.G6, ec2.InstanceSize.NANO),
+      ec2.InstanceType.of(ec2.InstanceClass.G6, ec2.InstanceSize.MICRO),
+      ec2.InstanceType.of(ec2.InstanceClass.G6, ec2.InstanceSize.METAL),
     ];
     gpuInstanceTypes.forEach(instanceType => {
       expect(isGpuInstanceType(instanceType)).toBe(true);
