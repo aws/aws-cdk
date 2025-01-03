@@ -387,6 +387,25 @@ only supports filtering by `unit` for Alarms, not in Dashboard graphs.
 Please see the following GitHub issue for a discussion on real unit
 calculations in CDK: https://github.com/aws/aws-cdk/issues/5595
 
+## Anomaly Detection Alarms
+
+To create an alarm based on anomaly detection, you can use the `createAnomalyDetectionAlarm` method on a `Metric` or `MathExpression` object:
+
+```ts
+declare const queue: sqs.Queue;
+
+const alarm = queue.metricNumberOfMessagesSent().createAnomalyDetectionAlarm(this, 'AnomalyAlarm', {
+  bounds: 2,
+  evaluationPeriods: 1,
+  comparisonOperator: cloudwatch.ComparisonOperator.LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD,
+});
+```
+
+This method automatically sets up the necessary ANOMALY_DETECTION_BAND expression and configures the alarm correctly for anomaly detection.
+Note that anomaly detection alarms don't require a threshold value, as the threshold is dynamically determined by the anomaly detection algorithm. The `createAnomalyDetectionAlarm` method handles the necessary configuration, including setting the `thresholdMetricId` to the appropriate value.
+For more information on anomaly detection in CloudWatch, see the [AWS documentation](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Anomaly_Detection.html).
+
+
 ## Dashboards
 
 Dashboards are set of Widgets stored server-side which can be accessed quickly
