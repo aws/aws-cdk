@@ -1,9 +1,10 @@
 import { Module, SelectiveModuleImport, StructType, Type, TypeScriptRenderer } from '@cdklabs/typewriter';
 import { EsLintRules } from '@cdklabs/typewriter/lib/eslint-rules';
 import * as prettier from 'prettier';
+import { generateDefault, kebabToCamelCase, kebabToPascal } from './util';
 import { CliConfig } from './yargs-types';
 
-export async function renderCliType(config: CliConfig): Promise<string> {
+export async function renderCliArgsType(config: CliConfig): Promise<string> {
   const scope = new Module('aws-cdk');
 
   scope.documentation.push( '-------------------------------------------------------------------------------------------');
@@ -41,16 +42,17 @@ export async function renderCliType(config: CliConfig): Promise<string> {
   });
   for (const [optionName, option] of Object.entries(config.globalOptions)) {
     globalOptionType.addProperty({
-      name: optionName,
+      name: kebabToCamelCase(optionName),
       type: convertType(option.type),
       docs: {
-        default: normalizeDefault(option.default),
+        default: normalizeDefault(option.default, option.type),
         summary: option.desc,
         deprecated: option.deprecated ? String(option.deprecated) : undefined,
       },
       optional: true,
     });
   }
+
   cliArgType.addProperty({
     name: 'globalOptions',
     type: Type.fromName(scope, globalOptionType.name),
@@ -73,10 +75,11 @@ export async function renderCliType(config: CliConfig): Promise<string> {
 
     for (const [optionName, option] of Object.entries(command.options ?? {})) {
       commandType.addProperty({
-        name: optionName,
+        name: kebabToCamelCase(optionName),
         type: convertType(option.type),
         docs: {
-          default: normalizeDefault(option.default),
+          // Notification Arns is a special property where undefined and [] mean different things
+          default: optionName === 'notification-arns' ? 'undefined' : normalizeDefault(option.default, option.type),
           summary: option.desc,
           deprecated: option.deprecated ? String(option.deprecated) : undefined,
           remarks: option.alias ? `aliases: ${Array.isArray(option.alias) ? option.alias.join(' ') : option.alias}` : undefined,
@@ -86,7 +89,7 @@ export async function renderCliType(config: CliConfig): Promise<string> {
     }
 
     cliArgType.addProperty({
-      name: commandName,
+      name: kebabToCamelCase(commandName),
       type: Type.fromName(scope, commandType.name),
       docs: {
         summary: command.description,
@@ -104,6 +107,7 @@ export async function renderCliType(config: CliConfig): Promise<string> {
     parser: 'typescript',
     printWidth: 150,
     singleQuote: true,
+    quoteProps: 'consistent',
   });
 }
 
@@ -122,16 +126,20 @@ function convertType(type: 'string' | 'array' | 'number' | 'boolean' | 'count'):
   }
 }
 
-function kebabToPascal(str: string): string {
-  return str
-    .split('-')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-    .join('');
-}
+function normalizeDefault(defaultValue: any, type: string): string {
+  switch (typeof defaultValue) {
+    case 'boolean':
+    case 'string':
+    case 'number':
+    case 'object':
+      return JSON.stringify(defaultValue);
 
-function normalizeDefault(defaultValue: any): string {
-  if (typeof defaultValue === 'boolean' || typeof defaultValue === 'string') {
-    return String(defaultValue);
+    // In these cases we cannot use the given defaultValue, so we then check the type
+    // of the option to determine the default value
+    case 'undefined':
+    case 'function':
+    default:
+      const generatedDefault = generateDefault(type);
+      return generatedDefault ? JSON.stringify(generatedDefault) : 'undefined';
   }
-  return 'undefined';
 }

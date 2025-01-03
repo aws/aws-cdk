@@ -86,7 +86,7 @@ import {
   RollbackStackResult,
 } from '../lib/api/deployments';
 import { HotswapMode } from '../lib/api/hotswap/common';
-import { Mode } from '../lib/api/plugin';
+import { Mode } from '../lib/api/plugin/mode';
 import { Template } from '../lib/api/util/cloudformation';
 import { CdkToolkit, markTesting, Tag } from '../lib/cdk-toolkit';
 import { RequireApproval } from '../lib/diff';

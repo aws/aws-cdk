@@ -27,6 +27,7 @@ import { Notices } from '../lib/notices';
 import { Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
 import { SdkToCliLogger } from './api/aws-auth/sdk-logger';
+import { ToolkitError } from './toolkit/error';
 
 /* eslint-disable max-len */
 /* eslint-disable @typescript-eslint/no-shadow */ // yargs
@@ -142,7 +143,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         return require.resolve(plugin);
       } catch (e: any) {
         error(`Unable to resolve plugin ${chalk.green(plugin)}: ${e.stack}`);
-        throw new Error(`Unable to resolve plug-in: ${plugin}`);
+        throw new ToolkitError(`Unable to resolve plug-in: ${plugin}`);
       }
     }
   }
@@ -150,7 +151,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
   loadPlugins(configuration.settings);
 
   if (typeof(cmd) !== 'string') {
-    throw new Error(`First argument should be a string. Got: ${cmd} (${typeof(cmd)})`);
+    throw new ToolkitError(`First argument should be a string. Got: ${cmd} (${typeof(cmd)})`);
   }
 
   try {
@@ -179,7 +180,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
     const cloudFormation = new Deployments({ sdkProvider, toolkitStackName });
 
     if (args.all && args.STACKS) {
-      throw new Error('You must either specify a list of Stacks or the `--all` argument');
+      throw new ToolkitError('You must either specify a list of Stacks or the `--all` argument');
     }
 
     args.STACKS = args.STACKS ?? (args.STACK ? [args.STACK] : []);
@@ -282,14 +283,17 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         }
 
         if (args.execute !== undefined && args.method !== undefined) {
-          throw new Error('Can not supply both --[no-]execute and --method at the same time');
+          throw new ToolkitError('Can not supply both --[no-]execute and --method at the same time');
         }
 
         let deploymentMethod: DeploymentMethod | undefined;
         switch (args.method) {
           case 'direct':
             if (args.changeSetName) {
-              throw new Error('--change-set-name cannot be used with method=direct');
+              throw new ToolkitError('--change-set-name cannot be used with method=direct');
+            }
+            if (args.importExistingResources) {
+              throw new Error('--import-existing-resources cannot be enabled with method=direct');
             }
             deploymentMethod = { method: 'direct' };
             break;
@@ -298,6 +302,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
               method: 'change-set',
               execute: true,
               changeSetName: args.changeSetName,
+              importExistingResources: args.importExistingResources,
             };
             break;
           case 'prepare-change-set':
@@ -305,6 +310,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
               method: 'change-set',
               execute: false,
               changeSetName: args.changeSetName,
+              importExistingResources: args.importExistingResources,
             };
             break;
           case undefined:
@@ -312,6 +318,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
               method: 'change-set',
               execute: args.execute ?? true,
               changeSetName: args.changeSetName,
+              importExistingResources: args.importExistingResources,
             };
             break;
         }
@@ -401,7 +408,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
       case 'gc':
         if (!configuration.settings.get(['unstable']).includes('gc')) {
-          throw new Error('Unstable feature use: \'gc\' is unstable. It must be opted in via \'--unstable\', e.g. \'cdk gc --unstable=gc\'');
+          throw new ToolkitError('Unstable feature use: \'gc\' is unstable. It must be opted in via \'--unstable\', e.g. \'cdk gc --unstable=gc\'');
         }
         return cli.garbageCollect(args.ENVIRONMENTS, {
           action: args.action,
@@ -461,7 +468,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         return data(version.DISPLAY_VERSION);
 
       default:
-        throw new Error('Unknown command: ' + command);
+        throw new ToolkitError('Unknown command: ' + command);
     }
   }
 }
@@ -506,7 +513,7 @@ function arrayFromYargs(xs: string[]): string[] | undefined {
 
 function determineHotswapMode(hotswap?: boolean, hotswapFallback?: boolean, watch?: boolean): HotswapMode {
   if (hotswap && hotswapFallback) {
-    throw new Error('Can not supply both --hotswap and --hotswap-fallback at the same time');
+    throw new ToolkitError('Can not supply both --hotswap and --hotswap-fallback at the same time');
   } else if (!hotswap && !hotswapFallback) {
     if (hotswap === undefined && hotswapFallback === undefined) {
       return watch ? HotswapMode.HOTSWAP_ONLY : HotswapMode.FULL_DEPLOYMENT;
