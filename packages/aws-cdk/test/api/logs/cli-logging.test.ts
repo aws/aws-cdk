@@ -1,4 +1,4 @@
-import { LogLevel, log, setLogLevel, setCI, data, print, error, warning, success, debug, trace, prefix, withCorkedLogging } from '../../../lib/logging';
+import { setIoMessageThreshold, setCI, data, print, success, highlight, error, warning, debug, trace, withCorkedLogging } from '../../../lib/logging';
 
 describe('logging', () => {
   // Mock streams to capture output
@@ -13,7 +13,7 @@ describe('logging', () => {
 
   beforeEach(() => {
     // Reset log level before each test
-    setLogLevel(LogLevel.INFO);
+    setIoMessageThreshold('info');
     setCI(false);
 
     // Create mock functions to capture output
@@ -65,7 +65,7 @@ describe('logging', () => {
 
   describe('log levels', () => {
     test('respects log level settings', () => {
-      setLogLevel(LogLevel.ERROR);
+      setIoMessageThreshold('error');
       error('error message');
       warning('warning message');
       print('print message');
@@ -75,11 +75,11 @@ describe('logging', () => {
     });
 
     test('debug messages only show at debug level', () => {
-      setLogLevel(LogLevel.INFO);
+      setIoMessageThreshold('info');
       debug('debug message');
       expect(mockStderr).not.toHaveBeenCalled();
 
-      setLogLevel(LogLevel.DEBUG);
+      setIoMessageThreshold('debug');
       debug('debug message');
       expect(mockStderr).toHaveBeenCalledWith(
         expect.stringMatching(/^\[\d{2}:\d{2}:\d{2}\] debug message\n$/),
@@ -87,33 +87,15 @@ describe('logging', () => {
     });
 
     test('trace messages only show at trace level', () => {
-      setLogLevel(LogLevel.DEBUG);
+      setIoMessageThreshold('debug');
       trace('trace message');
       expect(mockStderr).not.toHaveBeenCalled();
 
-      setLogLevel(LogLevel.TRACE);
+      setIoMessageThreshold('trace');
       trace('trace message');
       expect(mockStderr).toHaveBeenCalledWith(
         expect.stringMatching(/^\[\d{2}:\d{2}:\d{2}\] trace message\n$/),
       );
-    });
-  });
-
-  describe('message formatting', () => {
-    test('formats messages with multiple arguments', () => {
-      print('Value: %d, String: %s', 42, 'test');
-      expect(mockStderr).toHaveBeenCalledWith('Value: 42, String: test\n');
-    });
-
-    test('handles prefix correctly', () => {
-      const prefixedLog = prefix('PREFIX');
-      prefixedLog('test message');
-      expect(mockStderr).toHaveBeenCalledWith('PREFIX test message\n');
-    });
-
-    test('handles custom styles', () => {
-      success('success message');
-      expect(mockStderr).toHaveBeenCalledWith('success message\n');
     });
   });
 
@@ -146,17 +128,121 @@ describe('logging', () => {
     });
   });
 
-  describe('timestamp and prefix handling', () => {
-    test('combines timestamp and prefix correctly', () => {
-      log({
-        level: LogLevel.INFO,
-        message: 'test message',
-        timestamp: true,
-        prefix: 'PREFIX',
+  describe('formatted messages', () => {
+    test('handles format strings correctly', () => {
+      print('Hello %s, you have %d messages', 'User', 5);
+      expect(mockStderr).toHaveBeenCalledWith('Hello User, you have 5 messages\n');
+    });
+
+    test('handles objects in format strings', () => {
+      const obj = { name: 'test' };
+      print('Object: %j', obj);
+      expect(mockStderr).toHaveBeenCalledWith('Object: {"name":"test"}\n');
+    });
+
+    test('handles invalid format specifiers', () => {
+      print('Test %z', 123);
+      expect(mockStderr).toHaveBeenCalledWith('Test %z 123\n');
+    });
+  });
+
+  describe('message codes', () => {
+    test('accepts valid message codes', () => {
+      print('CUSTOM_2001', 'test message');
+      expect(mockStderr).toHaveBeenCalledWith('test message\n');
+    });
+
+    test('treats invalid code format as regular message', () => {
+      print('INVALID_CODE', 'test');
+      expect(mockStderr).toHaveBeenCalledWith('INVALID_CODE test\n');
+    });
+  });
+
+  describe('styled output', () => {
+    test('success() adds green color to output', () => {
+      success('operation completed');
+      expect(mockStderr).toHaveBeenCalledWith('operation completed\n');
+      // Note: ANSI codes are stripped, so we can't test the actual color
+    });
+
+    test('highlight() adds bold formatting to output', () => {
+      highlight('important message');
+      expect(mockStderr).toHaveBeenCalledWith('important message\n');
+      // Note: ANSI codes are stripped, so we can't test the actual formatting
+    });
+  });
+
+  describe('advanced corked logging', () => {
+    test('maintains message order in nested corking', async () => {
+      const messages: string[] = [];
+      jest.spyOn(process.stderr, 'write').mockImplementation((chunk: any) => {
+        messages.push(stripAnsi(chunk.toString()).trim());
+        return true;
       });
-      expect(mockStderr).toHaveBeenCalledWith(
-        expect.stringMatching(/^PREFIX \[\d{2}:\d{2}:\d{2}\] test message\n$/),
-      );
+
+      await withCorkedLogging(async () => {
+        print('first');
+        await withCorkedLogging(async () => {
+          print('second');
+          await withCorkedLogging(async () => {
+            print('third');
+          });
+          print('fourth');
+        });
+        print('fifth');
+      });
+
+      expect(messages).toEqual([
+        'first',
+        'second',
+        'third',
+        'fourth',
+        'fifth',
+      ]);
+    });
+
+    test('handles errors in corked blocks', async () => {
+      const messages: string[] = [];
+      jest.spyOn(process.stderr, 'write').mockImplementation((chunk: any) => {
+        messages.push(stripAnsi(chunk.toString()).trim());
+        return true;
+      });
+
+      await expect(withCorkedLogging(async () => {
+        print('before error');
+        throw new Error('test error');
+      })).rejects.toThrow('test error');
+
+      expect(messages).toContain('before error');
+    });
+  });
+
+  describe('complex logging scenarios', () => {
+    test('handles multiple log levels in corked block', async () => {
+      await withCorkedLogging(async () => {
+        error('error message');
+        warning('warning message');
+        print('info message');
+        debug('debug message');
+      });
+
+      expect(mockStderr).toHaveBeenCalledWith('error message\n');
+      expect(mockStderr).toHaveBeenCalledWith('warning message\n');
+      expect(mockStderr).toHaveBeenCalledWith('info message\n');
+    });
+
+    test('respects log level changes during corked logging', async () => {
+      await withCorkedLogging(async () => {
+        debug('first debug');
+        setIoMessageThreshold('debug');
+        debug('second debug');
+        setIoMessageThreshold('info');
+        debug('third debug');
+      });
+
+      expect(mockStderr).not.toHaveBeenCalledWith('first debug\n');
+      expect(mockStderr).toHaveBeenCalledWith('second debug\n');
+      expect(mockStderr).not.toHaveBeenCalledWith('third debug\n');
     });
   });
 });

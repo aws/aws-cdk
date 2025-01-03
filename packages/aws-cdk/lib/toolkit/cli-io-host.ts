@@ -4,7 +4,7 @@ import * as chalk from 'chalk';
  * Basic message structure for toolkit notifications.
  * Messages are emitted by the toolkit and handled by the IoHost.
  */
-interface IoMessage {
+export interface IoMessage {
   /**
    * The time the message was emitted.
    */
@@ -41,62 +41,29 @@ interface IoMessage {
 
 export type IoMessageLevel = 'error' | 'warn' | 'info' | 'debug' | 'trace';
 
-export type IoAction = 'synth' | 'list' | 'deploy' | 'destroy';
-
 /**
- * Options for the CLI IO host.
+ * The current action being performed by the CLI. 'none' represents the absence of an action.
  */
-interface CliIoHostOptions {
-  /**
-   * If true, the host will use TTY features like color.
-   */
-  useTTY?: boolean;
-
-  /**
-   * Flag representing whether the current process is running in a CI environment.
-   * If true, the host will write all messages to stdout, unless log level is 'error'.
-   *
-   * @default false
-   */
-  ci?: boolean;
-}
+export type IoAction = 'synth' | 'list' | 'deploy' | 'destroy' | 'none';
 
 /**
  * A simple IO host for the CLI that writes messages to the console.
  */
 export class CliIoHost {
-  private readonly pretty_messages: boolean;
-  private readonly ci: boolean;
-
-  constructor(options: CliIoHostOptions) {
-    this.pretty_messages = options.useTTY ?? process.stdout.isTTY ?? false;
-    this.ci = options.ci ?? false;
-  }
-
   /**
-   * Notifies the host of a message.
-   * The caller waits until the notification completes.
+   * Returns the singleton instance
    */
-  async notify(msg: IoMessage): Promise<void> {
-    const output = this.formatMessage(msg);
-
-    const stream = this.getStream(msg.level, msg.forceStdout ?? false);
-
-    return new Promise((resolve, reject) => {
-      stream.write(output, (err) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve();
-        }
-      });
-    });
+  static getIoHost(): CliIoHost {
+    if (!CliIoHost.instance) {
+      CliIoHost.instance = new CliIoHost();
+    }
+    return CliIoHost.instance;
   }
 
   /**
    * Determines which output stream to use based on log level and configuration.
    */
-  private getStream(level: IoMessageLevel, forceStdout: boolean) {
+  public static getStream(level: IoMessageLevel, forceStdout: boolean) {
     // For legacy purposes all log streams are written to stderr by default, unless
     // specified otherwise, by passing `forceStdout`, which is used by the `data()` logging function, or
     // if the CDK is running in a CI environment. This is because some CI environments will immediately
@@ -110,11 +77,79 @@ export class CliIoHost {
   }
 
   /**
+   * Singleton instance of the CliIoHost
+   */
+  private static instance: CliIoHost | undefined;
+
+  /**
+   * Whether the host should apply chalk styles to messages. Defaults to false if the host is not running in a TTY.
+   */
+  private isTTY: boolean;
+
+  /**
+   * Whether the CliIoHost is running in CI mode. In CI mode, all non-error output goes to stdout instead of stderr.
+   */
+  private ci: boolean = false;
+
+  /**
+   * the current {@link IoAction} set by the CLI.
+   */
+  private currentAction: IoAction | undefined;
+
+  private constructor() {
+    this.isTTY = process.stdout.isTTY ?? false;
+  }
+
+  public static get currentAction(): IoAction | undefined {
+    return CliIoHost.getIoHost().currentAction;
+  }
+
+  public static set currentAction(action: IoAction) {
+    CliIoHost.getIoHost().currentAction = action;
+  }
+
+  public static get ci(): boolean {
+    return CliIoHost.getIoHost().ci;
+  }
+
+  public static set ci(value: boolean) {
+    CliIoHost.getIoHost().ci = value;
+  }
+
+  public static get isTTY(): boolean {
+    return CliIoHost.getIoHost().isTTY;
+  }
+
+  public static set isTTY(value: boolean) {
+    CliIoHost.getIoHost().isTTY = value;
+  }
+
+  /**
+   * Notifies the host of a message.
+   * The caller waits until the notification completes.
+   */
+  async notify(msg: IoMessage): Promise<void> {
+    const output = this.formatMessage(msg);
+
+    const stream = CliIoHost.getStream(msg.level, msg.forceStdout ?? false);
+
+    return new Promise((resolve, reject) => {
+      stream.write(output, (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    });
+  }
+
+  /**
    * Formats a message for console output with optional color support
    */
   private formatMessage(msg: IoMessage): string {
     // apply provided style or a default style if we're in TTY mode
-    let message_text = this.pretty_messages
+    let message_text = this.isTTY
       ? styleMap[msg.level](msg.message)
       : msg.message;
 
@@ -131,6 +166,30 @@ export class CliIoHost {
     const pad = (n: number): string => n.toString().padStart(2, '0');
     return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
   }
+}
+
+/**
+   * Validates a message code. Message codes are used to identify the type of message
+   * being logged, and are of the format [A-Z]+_[0-2]\d{3}.
+   *
+   * All error codes begin with 0, warning codes begin with 1, and info codes begin with 2.
+   * codes ending in 000 are generic messages, while codes ending in 001-999 are specific to
+   * a particular message.
+   *
+   * The following are examples of valid and invalid message codes:
+   * ```ts
+   * 'ASSETS_2000'            // valid cdk-assets info message with generic message code _2000
+   * 'TOOLKIT_0002'           // valid toolkit error message with specific error code _0002
+   * 'SDK_1023'               // valid sdk warning message with specific warning code _1023
+   * 'sdk_0001'               // invalid: lowercase
+   * 'TOOLKIT-0001'           // invalid: invalid separator
+   * 'SDK_3000'               // invalid: all error codes must be between 0000 and 2999
+   * ```
+  */
+export function validateMessageCode(code: string): boolean {
+  // Matches pattern like SDK_0001, TOOLKIT_1000, etc.
+  const pattern = /^[A-Z]+_[0-2]\d{3}$/;
+  return pattern.test(code);
 }
 
 export const styleMap: Record<IoMessageLevel, (str: string) => string> = {

@@ -7,6 +7,7 @@ import { HotswapMode } from './api/hotswap/common';
 import { ILock } from './api/util/rwlock';
 import { parseCommandLineArguments } from './parse-command-line-arguments';
 import { checkForPlatformWarnings } from './platform-warnings';
+import { IoMessageLevel } from './toolkit/cli-io-host';
 import { enableTracing } from './util/tracing';
 import { SdkProvider } from '../lib/api/aws-auth';
 import { BootstrapSource, Bootstrapper } from '../lib/api/bootstrap';
@@ -22,7 +23,7 @@ import { docs } from '../lib/commands/docs';
 import { doctor } from '../lib/commands/doctor';
 import { getMigrateScanType } from '../lib/commands/migrate';
 import { cliInit, printAvailableTemplates } from '../lib/init';
-import { data, debug, error, print, setCI, setLogLevel, LogLevel } from '../lib/logging';
+import { data, debug, error, print, setCI, setIoMessageThreshold } from '../lib/logging';
 import { Notices } from '../lib/notices';
 import { Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
@@ -43,17 +44,17 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
   // if one -v, log at a DEBUG level
   // if 2 -v, log at a TRACE level
   if (argv.verbose) {
-    let logLevel: LogLevel;
+    let ioMessageLevel: IoMessageLevel;
     switch (argv.verbose) {
       case 1:
-        logLevel = LogLevel.DEBUG;
+        ioMessageLevel = 'debug';
         break;
       case 2:
       default:
-        logLevel = LogLevel.TRACE;
+        ioMessageLevel = 'trace';
         break;
     }
-    setLogLevel(logLevel);
+    setIoMessageThreshold(ioMessageLevel);
   }
 
   // Debug should always imply tracing
