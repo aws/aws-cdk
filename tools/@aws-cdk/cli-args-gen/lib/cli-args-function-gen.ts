@@ -67,6 +67,7 @@ function buildCommandSwitch(config: CliConfig): string {
       `case '${commandName}':`,
       'commandOptions = {',
       ...buildCommandOptions(config.commands[commandName]),
+      ...(config.commands[commandName].arg ? [buildPositionalArguments(config.commands[commandName].arg)] : []),
       '};',
       `break;
     `);
@@ -84,10 +85,17 @@ function buildCommandOptions(options: CliAction): string[] {
   return commandOptions;
 }
 
+function buildPositionalArguments(arg: { name: string; variadic: boolean }): string {
+  if (arg.variadic) {
+    return `${arg.name}: args.${arg.name}`;
+  }
+  return `${arg.name}: args.${arg.name}`;
+}
+
 function buildCliArgs(): string {
   return [
     'const cliArguments: CliArguments = {',
-    '_: args._,',
+    '_: args._[0],',
     'globalOptions,',
     '[args._[0]]: commandOptions',
     '}',
