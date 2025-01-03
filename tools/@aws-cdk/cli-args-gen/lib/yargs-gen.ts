@@ -1,7 +1,7 @@
 import { $E, Expression, ExternalModule, FreeFunction, IScope, Module, SelectiveModuleImport, Statement, ThingSymbol, Type, TypeScriptRenderer, code, expr } from '@cdklabs/typewriter';
 import { EsLintRules } from '@cdklabs/typewriter/lib/eslint-rules';
 import * as prettier from 'prettier';
-import { generateDefault } from './util';
+import { generateDefault, lit } from './util';
 import { CliConfig, CliOption, YargsOption } from './yargs-types';
 
 // to import lodash.clonedeep properly, we would need to set esModuleInterop: true
@@ -173,13 +173,3 @@ function makeEpilogue(prefix: Expression, helpers: CliHelpers) {
   return completeDefinition;
 }
 
-function lit(value: any): Expression {
-  switch (value) {
-    case undefined:
-      return code.expr.UNDEFINED;
-    case null:
-      return code.expr.NULL;
-    default:
-      return code.expr.lit(value);
-  }
-}
