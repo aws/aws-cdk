@@ -12,7 +12,7 @@ import { Command } from './settings';
  */
 export interface CliArguments {
   /**
-   * The CLI command name followed by any properties of the command
+   * The CLI command name
    */
   readonly _: Command;
 
