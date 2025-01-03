@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "38.0.1",
   "files": {
     "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
       "source": {
@@ -27,7 +27,20 @@
         }
       }
     },
-    "f6aad262db732f8a3d154c577c54fbd4f8d3a3ac9cf0ab7bcf5aa7bcc9f79f50": {
+    "5178413cfe8db00b2d5dcfa9be417e934c64601d0da3031d88c145c8293bc27f": {
+      "source": {
+        "path": "asset.5178413cfe8db00b2d5dcfa9be417e934c64601d0da3031d88c145c8293bc27f",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "5178413cfe8db00b2d5dcfa9be417e934c64601d0da3031d88c145c8293bc27f.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "9c5b62c3e3bb732b0ea2f7c9ef993687447b32d8657d70c95ae51f2668a835da": {
       "source": {
         "path": "canary-artifact-s3-encryption.template.json",
         "packaging": "file"
@@ -35,7 +48,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "f6aad262db732f8a3d154c577c54fbd4f8d3a3ac9cf0ab7bcf5aa7bcc9f79f50.json",
+          "objectKey": "9c5b62c3e3bb732b0ea2f7c9ef993687447b32d8657d70c95ae51f2668a835da.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
