@@ -1,4 +1,4 @@
-import { setIoMessageThreshold, setCI, data, print, info, success, highlight, error, warning, debug, trace, withCorkedLogging } from '../../../lib/logging';
+import { setIoMessageThreshold, setCI, data, print, success, highlight, error, warning, debug, trace, withCorkedLogging } from '../../../lib/logging';
 
 describe('logging', () => {
   // Mock streams to capture output
@@ -197,7 +197,7 @@ describe('logging', () => {
         'second',
         'third',
         'fourth',
-        'fifth'
+        'fifth',
       ]);
     });
 

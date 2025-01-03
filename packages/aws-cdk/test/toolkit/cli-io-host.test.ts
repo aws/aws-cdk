@@ -9,7 +9,7 @@ describe('CliIoHost', () => {
   beforeEach(() => {
     mockStdout = jest.fn();
     mockStderr = jest.fn();
-    
+
     // Reset singleton state
     CliIoHost.isTTY = process.stdout.isTTY ?? false;
     CliIoHost.ci = false;
@@ -20,7 +20,7 @@ describe('CliIoHost', () => {
       level: 'info',
       action: 'synth',
       code: 'TEST_0001',
-      message: 'test message'
+      message: 'test message',
     };
 
     jest.spyOn(process.stdout, 'write').mockImplementation((str: any, encoding?: any, cb?: any) => {
@@ -37,7 +37,6 @@ describe('CliIoHost', () => {
       return true;
     });
   });
-
 
   afterEach(() => {
     jest.restoreAllMocks();
@@ -57,7 +56,6 @@ describe('CliIoHost', () => {
       expect(mockStderr).toHaveBeenCalledWith(chalk.white('test message') + '\n');
       expect(mockStdout).not.toHaveBeenCalled();
     });
-    
 
     test('writes to stderr for error level with red color', async () => {
       CliIoHost.isTTY = true;
@@ -98,7 +96,7 @@ describe('CliIoHost', () => {
       await CliIoHost.getIoHost().notify({
         ...defaultMessage,
         level: 'debug',
-        forceStdout: true
+        forceStdout: true,
       });
 
       expect(mockStdout).toHaveBeenCalledWith(`[12:00:00] ${chalk.gray('test message')}\n`);
@@ -108,7 +106,7 @@ describe('CliIoHost', () => {
       await CliIoHost.getIoHost().notify({
         ...defaultMessage,
         level: 'trace',
-        forceStdout: true
+        forceStdout: true,
       });
 
       expect(mockStdout).toHaveBeenCalledWith(`[12:00:00] ${chalk.gray('test message')}\n`);
@@ -118,7 +116,7 @@ describe('CliIoHost', () => {
       CliIoHost.isTTY = false;
       await CliIoHost.getIoHost().notify({
         ...defaultMessage,
-        forceStdout: true
+        forceStdout: true,
       });
 
       expect(mockStdout).toHaveBeenCalledWith('test message\n');
@@ -130,14 +128,14 @@ describe('CliIoHost', () => {
         { level: 'warn' as const, style: chalk.yellow },
         { level: 'info' as const, style: chalk.white },
         { level: 'debug' as const, style: chalk.gray },
-        { level: 'trace' as const, style: chalk.gray }
+        { level: 'trace' as const, style: chalk.gray },
       ];
 
       for (const { level, style } of testCases) {
         await CliIoHost.getIoHost().notify({
           ...defaultMessage,
           level,
-          forceStdout: true
+          forceStdout: true,
         });
 
         const expectedOutput = level === 'debug' || level === 'trace'
@@ -258,14 +256,14 @@ describe('validateMessageCode', () => {
 
   test('rejects invalid message codes', () => {
     const invalidCodes = [
-      'sdk_0001',  // lowercase
-      'SDK-0001',  // invalid separator
-      'SDK_3000',  // number too high
+      'sdk_0001', // lowercase
+      'SDK-0001', // invalid separator
+      'SDK_3000', // number too high
       'SDK_00001', // too many digits
-      'SDK0001',   // missing separator
+      'SDK0001', // missing separator
       '_SDK_0001', // leading underscore
       'SDK_0001_', // trailing underscore
-      'SDK_ABCD',  // non-numeric suffix
+      'SDK_ABCD', // non-numeric suffix
     ];
 
     invalidCodes.forEach(code => {
