@@ -168,7 +168,7 @@ function convenienceLog(
 /**
  * Convenience function for logging an error level message.
  * @param message The message to log
- * @param code An optional code of format [A-Z_]+_[0-2]\d{3}, defaults to `TOOLKIT_0000`
+ * @param code An optional code of format [A-Z]+_[0-2]\d{3}, defaults to `TOOLKIT_0000`
  */
 export const error = (fmt: string, ...args: unknown[]) => {
   return convenienceLog('error', false, fmt, undefined, ...args);
@@ -177,7 +177,7 @@ export const error = (fmt: string, ...args: unknown[]) => {
 /**
  * Convenience function for logging a warning error message.
  * @param message The message to log
- * @param code An optional code of format [A-Z_]+_[0-2]\d{3}, defaults to `TOOLKIT_1000`
+ * @param code An optional code of format [A-Z]+_[0-2]\d{3}, defaults to `TOOLKIT_1000`
  */
 export const warning = (fmt: string, ...args: unknown[]) => {
   convenienceLog('warn', false, fmt, undefined, ...args);
@@ -186,7 +186,7 @@ export const warning = (fmt: string, ...args: unknown[]) => {
 /**
  * Convenience function for logging an info level message.
  * @param message The message to log
- * @param code An optional code of format [A-Z_]+_[0-2]\d{3}, defaults to `TOOLKIT_2000`
+ * @param code An optional code of format [A-Z]+_[0-2]\d{3}, defaults to `TOOLKIT_2000`
  */
 export const info = (fmt: string, ...args: unknown[]) => {
   convenienceLog('info', false, fmt, undefined, ...args);
@@ -200,7 +200,7 @@ export const print = info;
 /**
  * Convenience function for logging an info level message. Always prints to stdout stream.
  * @param message The message to log
- * @param code An optional code of format [A-Z_]+_[0-2]\d{3}, defaults to `TOOLKIT_2000`
+ * @param code An optional code of format [A-Z]+_[0-2]\d{3}, defaults to `TOOLKIT_2000`
  */
 export const data = (fmt: string, ...args: unknown[]) => {
   convenienceLog('info', true, fmt, undefined, ...args);
@@ -209,7 +209,7 @@ export const data = (fmt: string, ...args: unknown[]) => {
 /**
  * Convenience function for logging an debug level message.
  * @param message The message to log
- * @param code An optional code of format [A-Z_]+_[0-2]\d{3}, defaults to `TOOLKIT_2000`
+ * @param code An optional code of format [A-Z]+_[0-2]\d{3}, defaults to `TOOLKIT_2000`
  */
 export const debug = (fmt: string, ...args: unknown[]) => {
   convenienceLog('debug', false, fmt, undefined, ...args);
@@ -218,7 +218,7 @@ export const debug = (fmt: string, ...args: unknown[]) => {
 /**
  * Convenience function for logging a trace level message.
  * @param message The message to log
- * @param code An optional code of format [A-Z_]+_[0-2]\d{3}, defaults to `TOOLKIT_2000`
+ * @param code An optional code of format [A-Z]+_[0-2]\d{3}, defaults to `TOOLKIT_2000`
  */
 export const trace = (fmt: string, ...args: unknown[]) => {
   convenienceLog('trace', false, fmt, undefined, ...args);
@@ -227,7 +227,7 @@ export const trace = (fmt: string, ...args: unknown[]) => {
 /**
  * Convenience function for logging an info level message that colors the text green
  * @param message The message to log
- * @param code An optional code of format [A-Z_]+_[0-2]\d{3}, defaults to `TOOLKIT_2000`
+ * @param code An optional code of format [A-Z]+_[0-2]\d{3}, defaults to `TOOLKIT_2000`
  */
 export const success = (fmt: string, ...args: unknown[]) => {
   convenienceLog('info', false, fmt, chalk.green, ...args);
@@ -236,7 +236,7 @@ export const success = (fmt: string, ...args: unknown[]) => {
 /**
  * Convenience function for logging an info level message that bolds the text
  * @param message The message to log
- * @param code An optional code of format [A-Z_]+_[0-2]\d{3}, defaults to `TOOLKIT_2000`
+ * @param code An optional code of format [A-Z]+_[0-2]\d{3}, defaults to `TOOLKIT_2000`
  */
 export const highlight = (fmt: string, ...args: unknown[]) => {
   convenienceLog('info', false, fmt, chalk.bold, ...args);

@@ -170,13 +170,13 @@ export class CliIoHost {
 
 /**
    * Validates a message code.
-   * Message codes must be in the format [A-Z_]+_[0-2]\d{3}.
+   * Message codes must be in the format [A-Z]+_[0-2]\d{3}.
    *
    * @example 'SDK_0002', 'ASSETS_1014', 'TOOLKIT_2000'
    */
 export function validateMessageCode(code: string): boolean {
   // Matches pattern like SDK_0001, TOOLKIT_1000, etc.
-  const pattern = /^[A-Z_]+_[0-2]\d{3}$/;
+  const pattern = /^[A-Z]+_[0-2]\d{3}$/;
   return pattern.test(code);
 }
 
