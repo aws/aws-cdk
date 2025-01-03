@@ -93,6 +93,8 @@ const secret = new secretsmanager.Secret(this, 'Secret', { encryptionKey: key })
 secret.grantRead(otherAccount);
 ```
 
+## Rotating a Secret
+
 ### Using a Custom Lambda Function
 
 A rotation schedule can be added to a Secret using a custom Lambda function:
