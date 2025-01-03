@@ -68,15 +68,12 @@
                             "key": "Name",
                             "value": "ApiGatewayVpcEndpointTestStack/Vpc/PublicSubnet1"
                           }
-                        ],
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        }
+                        ]
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "version": "0.0.0"
                     }
                   },
                   "Acl": {
@@ -84,7 +81,7 @@
                     "path": "ApiGatewayVpcEndpointTestStack/Vpc/PublicSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
@@ -98,15 +95,12 @@
                             "key": "Name",
                             "value": "ApiGatewayVpcEndpointTestStack/Vpc/PublicSubnet1"
                           }
-                        ],
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        }
+                        ]
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTableAssociation": {
@@ -124,8 +118,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "version": "0.0.0"
                     }
                   },
                   "DefaultRoute": {
@@ -136,22 +130,67 @@
                       "aws:cdk:cloudformation:props": {
                         "destinationCidrBlock": "0.0.0.0/0",
                         "gatewayId": {
-                          "Ref": "VpcIGWD7BA715C"
-                        },
-                        "routeTableId": {
-                          "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
+                          "Ref": "MyVpcIGW5C4A4F63"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "EIP": {
+                    "id": "EIP",
+                    "path": "test-apigateway-vpcendpoint/MyVpc/PublicSubnet1/EIP",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
+                      "aws:cdk:cloudformation:props": {
+                        "domain": "vpc",
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "test-apigateway-vpcendpoint/MyVpc/PublicSubnet1"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnEIP",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "NATGateway": {
+                    "id": "NATGateway",
+                    "path": "test-apigateway-vpcendpoint/MyVpc/PublicSubnet1/NATGateway",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
+                      "aws:cdk:cloudformation:props": {
+                        "subnetId": {
+                          "Ref": "MyVpcPublicSubnet1SubnetF6608456"
+                        },
+                        "allocationId": {
+                          "Fn::GetAtt": [
+                            "MyVpcPublicSubnet1EIP096967CB",
+                            "AllocationId"
+                          ]
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "test-apigateway-vpcendpoint/MyVpc/PublicSubnet1"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnNatGateway",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "@aws-cdk/aws-ec2.PublicSubnet",
+                  "version": "0.0.0"
                 }
               },
               "PublicSubnet2": {
@@ -187,15 +226,12 @@
                             "key": "Name",
                             "value": "ApiGatewayVpcEndpointTestStack/Vpc/PublicSubnet2"
                           }
-                        ],
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        }
+                        ]
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "version": "0.0.0"
                     }
                   },
                   "Acl": {
@@ -203,7 +239,7 @@
                     "path": "ApiGatewayVpcEndpointTestStack/Vpc/PublicSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
@@ -217,15 +253,12 @@
                             "key": "Name",
                             "value": "ApiGatewayVpcEndpointTestStack/Vpc/PublicSubnet2"
                           }
-                        ],
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        }
+                        ]
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTableAssociation": {
@@ -243,8 +276,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "version": "0.0.0"
                     }
                   },
                   "DefaultRoute": {
@@ -255,22 +288,67 @@
                       "aws:cdk:cloudformation:props": {
                         "destinationCidrBlock": "0.0.0.0/0",
                         "gatewayId": {
-                          "Ref": "VpcIGWD7BA715C"
-                        },
-                        "routeTableId": {
-                          "Ref": "VpcPublicSubnet2RouteTable94F7E489"
+                          "Ref": "MyVpcIGW5C4A4F63"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "EIP": {
+                    "id": "EIP",
+                    "path": "test-apigateway-vpcendpoint/MyVpc/PublicSubnet2/EIP",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
+                      "aws:cdk:cloudformation:props": {
+                        "domain": "vpc",
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "test-apigateway-vpcendpoint/MyVpc/PublicSubnet2"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnEIP",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "NATGateway": {
+                    "id": "NATGateway",
+                    "path": "test-apigateway-vpcendpoint/MyVpc/PublicSubnet2/NATGateway",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
+                      "aws:cdk:cloudformation:props": {
+                        "subnetId": {
+                          "Ref": "MyVpcPublicSubnet2Subnet492B6BFB"
+                        },
+                        "allocationId": {
+                          "Fn::GetAtt": [
+                            "MyVpcPublicSubnet2EIP8CCBA239",
+                            "AllocationId"
+                          ]
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "test-apigateway-vpcendpoint/MyVpc/PublicSubnet2"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnNatGateway",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "@aws-cdk/aws-ec2.PublicSubnet",
+                  "version": "0.0.0"
                 }
               },
               "IsolatedSubnet1": {
@@ -306,15 +384,12 @@
                             "key": "Name",
                             "value": "ApiGatewayVpcEndpointTestStack/Vpc/IsolatedSubnet1"
                           }
-                        ],
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        }
+                        ]
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "version": "0.0.0"
                     }
                   },
                   "Acl": {
@@ -322,7 +397,7 @@
                     "path": "ApiGatewayVpcEndpointTestStack/Vpc/IsolatedSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
@@ -336,15 +411,12 @@
                             "key": "Name",
                             "value": "ApiGatewayVpcEndpointTestStack/Vpc/IsolatedSubnet1"
                           }
-                        ],
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        }
+                        ]
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTableAssociation": {
@@ -362,14 +434,34 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultRoute": {
+                    "id": "DefaultRoute",
+                    "path": "test-apigateway-vpcendpoint/MyVpc/PrivateSubnet1/DefaultRoute",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "MyVpcPrivateSubnet1RouteTable8819E6E2"
+                        },
+                        "destinationCidrBlock": "0.0.0.0/0",
+                        "natGatewayId": {
+                          "Ref": "MyVpcPublicSubnet1NATGatewayAD3400C1"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "@aws-cdk/aws-ec2.PrivateSubnet",
+                  "version": "0.0.0"
                 }
               },
               "IsolatedSubnet2": {
@@ -405,15 +497,12 @@
                             "key": "Name",
                             "value": "ApiGatewayVpcEndpointTestStack/Vpc/IsolatedSubnet2"
                           }
-                        ],
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        }
+                        ]
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "version": "0.0.0"
                     }
                   },
                   "Acl": {
@@ -421,7 +510,7 @@
                     "path": "ApiGatewayVpcEndpointTestStack/Vpc/IsolatedSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
@@ -435,15 +524,12 @@
                             "key": "Name",
                             "value": "ApiGatewayVpcEndpointTestStack/Vpc/IsolatedSubnet2"
                           }
-                        ],
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        }
+                        ]
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTableAssociation": {
@@ -461,14 +547,34 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultRoute": {
+                    "id": "DefaultRoute",
+                    "path": "test-apigateway-vpcendpoint/MyVpc/PrivateSubnet2/DefaultRoute",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "MyVpcPrivateSubnet2RouteTableCEDCEECE"
+                        },
+                        "destinationCidrBlock": "0.0.0.0/0",
+                        "natGatewayId": {
+                          "Ref": "MyVpcPublicSubnet2NATGateway91BFBEC9"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "@aws-cdk/aws-ec2.PrivateSubnet",
+                  "version": "0.0.0"
                 }
               },
               "IGW": {
@@ -486,8 +592,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "@aws-cdk/aws-ec2.CfnInternetGateway",
+                  "version": "0.0.0"
                 }
               },
               "VPCGW": {
@@ -497,16 +603,13 @@
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                   "aws:cdk:cloudformation:props": {
                     "internetGatewayId": {
-                      "Ref": "VpcIGWD7BA715C"
-                    },
-                    "vpcId": {
-                      "Ref": "Vpc8378EB38"
+                      "Ref": "MyVpcIGW5C4A4F63"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "@aws-cdk/aws-ec2.CfnVPCGatewayAttachment",
+                  "version": "0.0.0"
                 }
               },
               "VpcEndpoint": {
@@ -571,43 +674,14 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
-                        }
-                      },
-                      "from ApiGatewayVpcEndpointTestStackTestFunctionSecurityGroupF0399EA7:443": {
-                        "id": "from ApiGatewayVpcEndpointTestStackTestFunctionSecurityGroupF0399EA7:443",
-                        "path": "ApiGatewayVpcEndpointTestStack/Vpc/VpcEndpoint/SecurityGroup/from ApiGatewayVpcEndpointTestStackTestFunctionSecurityGroupF0399EA7:443",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
-                          "aws:cdk:cloudformation:props": {
-                            "description": "from ApiGatewayVpcEndpointTestStackTestFunctionSecurityGroupF0399EA7:443",
-                            "fromPort": 443,
-                            "groupId": {
-                              "Fn::GetAtt": [
-                                "VpcVpcEndpointSecurityGroup0E497F39",
-                                "GroupId"
-                              ]
-                            },
-                            "ipProtocol": "tcp",
-                            "sourceSecurityGroupId": {
-                              "Fn::GetAtt": [
-                                "TestFunctionSecurityGroupAC0FED4B",
-                                "GroupId"
-                              ]
-                            },
-                            "toPort": 443
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -616,15 +690,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::VPCEndpoint",
                       "aws:cdk:cloudformation:props": {
-                        "privateDnsEnabled": true,
-                        "securityGroupIds": [
-                          {
-                            "Fn::GetAtt": [
-                              "VpcVpcEndpointSecurityGroup0E497F39",
-                              "GroupId"
-                            ]
-                          }
-                        ],
                         "serviceName": {
                           "Fn::Join": [
                             "",
@@ -645,27 +710,24 @@
                             "Ref": "VpcIsolatedSubnet2Subnet16364B91"
                           }
                         ],
-                        "vpcEndpointType": "Interface",
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        }
+                        "vpcEndpointType": "Interface"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "@aws-cdk/aws-ec2.CfnVPCEndpoint",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "@aws-cdk/aws-ec2.InterfaceVpcEndpoint",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "fqn": "@aws-cdk/aws-ec2.Vpc",
+              "version": "0.0.0"
             }
           },
           "Api": {
@@ -720,22 +782,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "@aws-cdk/aws-apigateway.CfnRestApi",
+                  "version": "0.0.0"
                 }
               },
               "CloudWatchRole": {
                 "id": "CloudWatchRole",
                 "path": "ApiGatewayVpcEndpointTestStack/Api/CloudWatchRole",
                 "children": {
-                  "ImportCloudWatchRole": {
-                    "id": "ImportCloudWatchRole",
-                    "path": "ApiGatewayVpcEndpointTestStack/Api/CloudWatchRole/ImportCloudWatchRole",
-                    "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
-                    }
-                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "ApiGatewayVpcEndpointTestStack/Api/CloudWatchRole/Resource",
@@ -771,14 +825,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
                 }
               },
               "Account": {
@@ -796,8 +850,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "@aws-cdk/aws-apigateway.CfnAccount",
+                  "version": "0.0.0"
                 }
               },
               "Deployment": {
@@ -812,19 +866,20 @@
                       "aws:cdk:cloudformation:props": {
                         "description": "Automatically created by the RestApi construct",
                         "restApiId": {
-                          "Ref": "ApiF70053CD"
-                        }
+                          "Ref": "MyApi49610EDF"
+                        },
+                        "description": "Automatically created by the RestApi construct"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "@aws-cdk/aws-apigateway.CfnDeployment",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "@aws-cdk/aws-apigateway.Deployment",
+                  "version": "0.0.0"
                 }
               },
               "DeploymentStage.prod": {
@@ -843,18 +898,21 @@
                         "restApiId": {
                           "Ref": "ApiF70053CD"
                         },
+                        "restApiId": {
+                          "Ref": "MyApi49610EDF"
+                        },
                         "stageName": "prod"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "@aws-cdk/aws-apigateway.CfnStage",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "@aws-cdk/aws-apigateway.Stage",
+                  "version": "0.0.0"
                 }
               },
               "Endpoint": {
@@ -862,7 +920,7 @@
                 "path": "ApiGatewayVpcEndpointTestStack/Api/Endpoint",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.1.85"
                 }
               },
               "Default": {
@@ -881,25 +939,6 @@
                           "aws:cdk:cloudformation:props": {
                             "authorizationType": "NONE",
                             "httpMethod": "GET",
-                            "integration": {
-                              "type": "MOCK",
-                              "requestTemplates": {
-                                "application/json": "{\"statusCode\":200}"
-                              },
-                              "integrationResponses": [
-                                {
-                                  "statusCode": "200",
-                                  "responseTemplates": {
-                                    "application/json": "{\"message\":\"OK\"}"
-                                  }
-                                }
-                              ]
-                            },
-                            "methodResponses": [
-                              {
-                                "statusCode": "200"
-                              }
-                            ],
                             "resourceId": {
                               "Fn::GetAtt": [
                                 "ApiF70053CD",
@@ -907,329 +946,46 @@
                               ]
                             },
                             "restApiId": {
-                              "Ref": "ApiF70053CD"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
-            }
-          },
-          "TestFunction": {
-            "id": "TestFunction",
-            "path": "ApiGatewayVpcEndpointTestStack/TestFunction",
-            "children": {
-              "ServiceRole": {
-                "id": "ServiceRole",
-                "path": "ApiGatewayVpcEndpointTestStack/TestFunction/ServiceRole",
-                "children": {
-                  "ImportServiceRole": {
-                    "id": "ImportServiceRole",
-                    "path": "ApiGatewayVpcEndpointTestStack/TestFunction/ServiceRole/ImportServiceRole",
-                    "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "ApiGatewayVpcEndpointTestStack/TestFunction/ServiceRole/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                      "aws:cdk:cloudformation:props": {
-                        "assumeRolePolicyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "sts:AssumeRole",
-                              "Effect": "Allow",
-                              "Principal": {
-                                "Service": "lambda.amazonaws.com"
-                              }
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        },
-                        "managedPolicyArns": [
-                          {
-                            "Fn::Join": [
-                              "",
-                              [
-                                "arn:",
-                                {
-                                  "Ref": "AWS::Partition"
-                                },
-                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-                              ]
-                            ]
-                          },
-                          {
-                            "Fn::Join": [
-                              "",
-                              [
-                                "arn:",
-                                {
-                                  "Ref": "AWS::Partition"
-                                },
-                                ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
-                              ]
-                            ]
-                          }
-                        ]
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
-                    }
-                  },
-                  "DefaultPolicy": {
-                    "id": "DefaultPolicy",
-                    "path": "ApiGatewayVpcEndpointTestStack/TestFunction/ServiceRole/DefaultPolicy",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "ApiGatewayVpcEndpointTestStack/TestFunction/ServiceRole/DefaultPolicy/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                          "aws:cdk:cloudformation:props": {
-                            "policyDocument": {
-                              "Statement": [
-                                {
-                                  "Action": "execute-api:Invoke",
-                                  "Effect": "Allow",
-                                  "Resource": {
-                                    "Fn::Join": [
-                                      "",
-                                      [
-                                        "arn:",
-                                        {
-                                          "Ref": "AWS::Partition"
-                                        },
-                                        ":execute-api:",
-                                        {
-                                          "Ref": "AWS::Region"
-                                        },
-                                        ":",
-                                        {
-                                          "Ref": "AWS::AccountId"
-                                        },
-                                        ":",
-                                        {
-                                          "Ref": "ApiF70053CD"
-                                        },
-                                        "/*/*/*"
-                                      ]
-                                    ]
-                                  }
-                                }
-                              ],
-                              "Version": "2012-10-17"
+                              "Ref": "MyApi49610EDF"
                             },
-                            "policyName": "TestFunctionServiceRoleDefaultPolicy810BAB0B",
-                            "roles": [
-                              {
-                                "Ref": "TestFunctionServiceRole6ABD93C7"
-                              }
-                            ]
+                            "authorizationType": "NONE",
+                            "integration": {
+                              "type": "MOCK"
+                            }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "fqn": "@aws-cdk/aws-apigateway.CfnMethod",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "@aws-cdk/aws-apigateway.Method",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
-                }
-              },
-              "SecurityGroup": {
-                "id": "SecurityGroup",
-                "path": "ApiGatewayVpcEndpointTestStack/TestFunction/SecurityGroup",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "ApiGatewayVpcEndpointTestStack/TestFunction/SecurityGroup/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
-                      "aws:cdk:cloudformation:props": {
-                        "groupDescription": "Automatic security group for Lambda Function ApiGatewayVpcEndpointTestStackTestFunction7D61CC28",
-                        "securityGroupEgress": [
-                          {
-                            "cidrIp": "0.0.0.0/0",
-                            "description": "Allow all outbound traffic by default",
-                            "ipProtocol": "-1"
-                          }
-                        ],
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
-                }
-              },
-              "Resource": {
-                "id": "Resource",
-                "path": "ApiGatewayVpcEndpointTestStack/TestFunction/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
-                  "aws:cdk:cloudformation:props": {
-                    "code": {
-                      "zipFile": "\n        const https = require('https');\n\n        const httpsGet = (url) => {\n          return new Promise((resolve, reject) => {\n            https.get(url, (res) => {\n              let data = '';\n\n              res.on('data', (chunk) => {\n                data += chunk;\n              });\n\n              res.on('end', () => {\n                resolve(data);\n              });\n\n              res.on('error', (e) => {\n                reject(e);\n              });\n            });\n          });\n        };\n\n        exports.handler = async function(event) {\n          const apiEndpoint = process.env.API_ENDPOINT;\n\n          try {\n            const data = await httpsGet(apiEndpoint);\n            return {\n              statusCode: 200,\n              body: JSON.stringify({ message: 'Success', data }),\n            };\n          } catch (error) {\n            return {\n              statusCode: 500,\n              body: JSON.stringify({ message: 'Error', error: error.message }),\n            };\n          }\n        };\n      "
-                    },
-                    "environment": {
-                      "variables": {
-                        "API_ENDPOINT": {
-                          "Fn::Join": [
-                            "",
-                            [
-                              "https://",
-                              {
-                                "Ref": "ApiF70053CD"
-                              },
-                              ".execute-api.",
-                              {
-                                "Ref": "AWS::Region"
-                              },
-                              ".",
-                              {
-                                "Ref": "AWS::URLSuffix"
-                              },
-                              "/",
-                              {
-                                "Ref": "ApiDeploymentStageprod3EB9684E"
-                              },
-                              "/"
-                            ]
-                          ]
-                        }
-                      }
-                    },
-                    "handler": "index.handler",
-                    "role": {
-                      "Fn::GetAtt": [
-                        "TestFunctionServiceRole6ABD93C7",
-                        "Arn"
-                      ]
-                    },
-                    "runtime": "nodejs20.x",
-                    "vpcConfig": {
-                      "subnetIds": [
-                        {
-                          "Ref": "VpcIsolatedSubnet1SubnetE48C5737"
-                        },
-                        {
-                          "Ref": "VpcIsolatedSubnet2Subnet16364B91"
-                        }
-                      ],
-                      "securityGroupIds": [
-                        {
-                          "Fn::GetAtt": [
-                            "TestFunctionSecurityGroupAC0FED4B",
-                            "GroupId"
-                          ]
-                        }
-                      ]
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "@aws-cdk/aws-apigateway.ResourceBase",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
-            }
-          },
-          "Exports": {
-            "id": "Exports",
-            "path": "ApiGatewayVpcEndpointTestStack/Exports",
-            "children": {
-              "Output{\"Ref\":\"TestFunction22AD90FC\"}": {
-                "id": "Output{\"Ref\":\"TestFunction22AD90FC\"}",
-                "path": "ApiGatewayVpcEndpointTestStack/Exports/Output{\"Ref\":\"TestFunction22AD90FC\"}",
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
-                }
-              },
-              "Output{\"Fn::GetAtt\":[\"TestFunction22AD90FC\",\"Arn\"]}": {
-                "id": "Output{\"Fn::GetAtt\":[\"TestFunction22AD90FC\",\"Arn\"]}",
-                "path": "ApiGatewayVpcEndpointTestStack/Exports/Output{\"Fn::GetAtt\":[\"TestFunction22AD90FC\",\"Arn\"]}",
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
-            }
-          },
-          "BootstrapVersion": {
-            "id": "BootstrapVersion",
-            "path": "ApiGatewayVpcEndpointTestStack/BootstrapVersion",
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
-            }
-          },
-          "CheckBootstrapVersion": {
-            "id": "CheckBootstrapVersion",
-            "path": "ApiGatewayVpcEndpointTestStack/CheckBootstrapVersion",
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "fqn": "@aws-cdk/aws-apigateway.RestApi",
+              "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.1.85"
         }
       },
-      "ApiGatewayVpcEndpointInteg": {
-        "id": "ApiGatewayVpcEndpointInteg",
-        "path": "ApiGatewayVpcEndpointInteg",
+      "apigateway-vpcendpoint": {
+        "id": "apigateway-vpcendpoint",
+        "path": "apigateway-vpcendpoint",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
@@ -1240,155 +996,33 @@
                 "path": "ApiGatewayVpcEndpointInteg/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.1.85"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "ApiGatewayVpcEndpointInteg/DefaultTest/DeployAssert",
-                "children": {
-                  "AwsApiCallLambdainvoked401fe45bb8e637ca39f14a013e980c6": {
-                    "id": "AwsApiCallLambdainvoked401fe45bb8e637ca39f14a013e980c6",
-                    "path": "ApiGatewayVpcEndpointInteg/DefaultTest/DeployAssert/AwsApiCallLambdainvoked401fe45bb8e637ca39f14a013e980c6",
-                    "children": {
-                      "SdkProvider": {
-                        "id": "SdkProvider",
-                        "path": "ApiGatewayVpcEndpointInteg/DefaultTest/DeployAssert/AwsApiCallLambdainvoked401fe45bb8e637ca39f14a013e980c6/SdkProvider",
-                        "children": {
-                          "AssertionsProvider": {
-                            "id": "AssertionsProvider",
-                            "path": "ApiGatewayVpcEndpointInteg/DefaultTest/DeployAssert/AwsApiCallLambdainvoked401fe45bb8e637ca39f14a013e980c6/SdkProvider/AssertionsProvider",
-                            "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.3.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "Default": {
-                        "id": "Default",
-                        "path": "ApiGatewayVpcEndpointInteg/DefaultTest/DeployAssert/AwsApiCallLambdainvoked401fe45bb8e637ca39f14a013e980c6/Default",
-                        "children": {
-                          "Default": {
-                            "id": "Default",
-                            "path": "ApiGatewayVpcEndpointInteg/DefaultTest/DeployAssert/AwsApiCallLambdainvoked401fe45bb8e637ca39f14a013e980c6/Default/Default",
-                            "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.3.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
-                        }
-                      },
-                      "AssertionResults": {
-                        "id": "AssertionResults",
-                        "path": "ApiGatewayVpcEndpointInteg/DefaultTest/DeployAssert/AwsApiCallLambdainvoked401fe45bb8e637ca39f14a013e980c6/AssertionResults",
-                        "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "SingletonFunction1488541a7b23466481b69b4408076b81": {
-                    "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
-                    "path": "ApiGatewayVpcEndpointInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
-                    "children": {
-                      "Staging": {
-                        "id": "Staging",
-                        "path": "ApiGatewayVpcEndpointInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
-                        "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
-                        }
-                      },
-                      "Role": {
-                        "id": "Role",
-                        "path": "ApiGatewayVpcEndpointInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
-                        "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
-                        }
-                      },
-                      "Handler": {
-                        "id": "Handler",
-                        "path": "ApiGatewayVpcEndpointInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
-                        "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
-                    }
-                  },
-                  "LatestNodeRuntimeMap": {
-                    "id": "LatestNodeRuntimeMap",
-                    "path": "ApiGatewayVpcEndpointInteg/DefaultTest/DeployAssert/LatestNodeRuntimeMap",
-                    "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
-                    }
-                  },
-                  "BootstrapVersion": {
-                    "id": "BootstrapVersion",
-                    "path": "ApiGatewayVpcEndpointInteg/DefaultTest/DeployAssert/BootstrapVersion",
-                    "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
-                    }
-                  },
-                  "CheckBootstrapVersion": {
-                    "id": "CheckBootstrapVersion",
-                    "path": "ApiGatewayVpcEndpointInteg/DefaultTest/DeployAssert/CheckBootstrapVersion",
-                    "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
-                    }
-                  }
-                },
+                "path": "apigateway-vpcendpoint/DefaultTest/DeployAssert",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.1.85"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
-        }
-      },
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.3.0"
         }
       }
     },
     "constructInfo": {
       "fqn": "constructs.Construct",
-      "version": "10.3.0"
+      "version": "10.1.85"
     }
   }
 }

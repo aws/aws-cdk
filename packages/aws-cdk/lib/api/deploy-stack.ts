@@ -37,7 +37,7 @@ import { StringWithoutPlaceholders } from './util/placeholders';
 export type DeployStackResult =
   | SuccessfulDeployStackResult
   | NeedRollbackFirstDeployStackResult
-  | ReplacementRequiresNoRollbackStackResult
+  | ReplacementRequiresRollbackStackResult
   ;
 
 /** Successfully deployed a stack */
@@ -52,11 +52,12 @@ export interface SuccessfulDeployStackResult {
 export interface NeedRollbackFirstDeployStackResult {
   readonly type: 'failpaused-need-rollback-first';
   readonly reason: 'not-norollback' | 'replacement';
+  readonly status: string;
 }
 
-/** The upcoming change has a replacement, which requires deploying without --no-rollback */
-export interface ReplacementRequiresNoRollbackStackResult {
-  readonly type: 'replacement-requires-norollback';
+/** The upcoming change has a replacement, which requires deploying with --rollback */
+export interface ReplacementRequiresRollbackStackResult {
+  readonly type: 'replacement-requires-rollback';
 }
 
 export function assertIsSuccessfulDeployStackResult(x: DeployStackResult): asserts x is SuccessfulDeployStackResult {
@@ -269,6 +270,13 @@ export interface ChangeSetDeploymentMethod {
    * If not provided, a name will be generated automatically.
    */
   readonly changeSetName?: string;
+
+  /**
+   * Indicates if the change set imports resources that already exist.
+   *
+   * @default false
+   */
+  readonly importExistingResources?: boolean;
 }
 
 export async function deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
@@ -461,7 +469,8 @@ class FullCloudFormationDeployment {
   private async changeSetDeployment(deploymentMethod: ChangeSetDeploymentMethod): Promise<DeployStackResult> {
     const changeSetName = deploymentMethod.changeSetName ?? 'cdk-deploy-change-set';
     const execute = deploymentMethod.execute ?? true;
-    const changeSetDescription = await this.createChangeSet(changeSetName, execute);
+    const importExistingResources = deploymentMethod.importExistingResources ?? false;
+    const changeSetDescription = await this.createChangeSet(changeSetName, execute, importExistingResources);
     await this.updateTerminationProtection();
 
     if (changeSetHasNoChanges(changeSetDescription)) {
@@ -512,19 +521,19 @@ class FullCloudFormationDeployment {
     const isPausedFailState = this.cloudFormationStack.stackStatus.isRollbackable;
     const rollback = this.options.rollback ?? true;
     if (isPausedFailState && replacement) {
-      return { type: 'failpaused-need-rollback-first', reason: 'replacement' };
+      return { type: 'failpaused-need-rollback-first', reason: 'replacement', status: this.cloudFormationStack.stackStatus.name };
     }
-    if (isPausedFailState && !rollback) {
-      return { type: 'failpaused-need-rollback-first', reason: 'not-norollback' };
+    if (isPausedFailState && rollback) {
+      return { type: 'failpaused-need-rollback-first', reason: 'not-norollback', status: this.cloudFormationStack.stackStatus.name };
     }
     if (!rollback && replacement) {
-      return { type: 'replacement-requires-norollback' };
+      return { type: 'replacement-requires-rollback' };
     }
 
     return this.executeChangeSet(changeSetDescription);
   }
 
-  private async createChangeSet(changeSetName: string, willExecute: boolean) {
+  private async createChangeSet(changeSetName: string, willExecute: boolean, importExistingResources: boolean) {
     await this.cleanupOldChangeset(changeSetName);
 
     debug(`Attempting to create ChangeSet with name ${changeSetName} to ${this.verb} stack ${this.stackName}`);
@@ -536,6 +545,7 @@ class FullCloudFormationDeployment {
       ResourcesToImport: this.options.resourcesToImport,
       Description: `CDK Changeset for execution ${this.uuid}`,
       ClientToken: `create${this.uuid}`,
+      ImportExistingResources: importExistingResources,
       ...this.commonPrepareOptions(),
     });
 

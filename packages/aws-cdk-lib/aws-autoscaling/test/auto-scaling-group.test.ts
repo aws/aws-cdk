@@ -2797,6 +2797,27 @@ describe('InstanceMaintenancePolicy', () => {
     });
   });
 
+  test('can specify capacityDistributionStrategy', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      azCapacityDistributionStrategy: autoscaling.CapacityDistributionStrategy.BALANCED_ONLY,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
+      AvailabilityZoneDistribution: {
+        CapacityDistributionStrategy: 'balanced-only',
+      },
+    });
+  });
+
   test('throws if maxHealthyPercentage is greater than 200', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -2946,6 +2967,26 @@ describe('InstanceMaintenancePolicy', () => {
         minHealthyPercentage: 0,
       });
     }).toThrow(/The difference between minHealthyPercentage and maxHealthyPercentage cannot be greater than 100, got 200/);
+  });
+
+  test('throws if requireImdsv2 set when launchTemplate is set', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    stack.node.setContext(AUTOSCALING_GENERATE_LAUNCH_TEMPLATE, true);
+    const vpc = mockVpc(stack);
+    const lt = LaunchTemplate.fromLaunchTemplateAttributes(stack, 'imported-lt', {
+      launchTemplateId: 'test-lt-id',
+      versionNumber: '0',
+    });
+
+    // THEN
+    expect(() => {
+      new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+        vpc,
+        launchTemplate: lt,
+        requireImdsv2: true,
+      });
+    }).toThrow(/Setting \'requireImdsv2\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set/);
   });
 });
 
