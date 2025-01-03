@@ -797,12 +797,10 @@ export class CdkToolkit {
   }
 
   public async destroy(options: DestroyOptions) {
-    const assembly = await this.assembly();
-    let stacks = await this.selectStacksForDestroy(options.selector, assembly, options.exclusively);
+    let stacks = await this.selectStacksForDestroy(options.selector, options.exclusively);
 
     await this.suggestStacks({
       selector: options.selector,
-      assembly,
       stacks,
       exclusively: options.exclusively,
     });
@@ -1162,27 +1160,30 @@ export class CdkToolkit {
     return selectedForDiff;
   }
 
-  private async selectStacksForDestroy(selector: StackSelector, assembly: CloudAssembly, exclusively?: boolean) {
+  private async selectStacksForDestroy(selector: StackSelector, exclusively?: boolean) {
+    const assembly = await this.assembly();
     const stacks = await assembly.selectStacks(selector, {
       extend: exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Downstream,
       defaultBehavior: DefaultSelection.OnlySingle,
     });
+
+    // No validation
 
     return stacks;
   }
 
   private async suggestStacks(props: {
     selector: StackSelector;
-    assembly: CloudAssembly;
     stacks: StackCollection;
     exclusively?: boolean;
   }) {
+    const assembly = await this.assembly();
     const selectorWithoutPatterns: StackSelector = {
       ...props.selector,
       allTopLevel: true,
       patterns: [],
     };
-    const stacksWithoutPatterns = await props.assembly.selectStacks(selectorWithoutPatterns, {
+    const stacksWithoutPatterns = await assembly.selectStacks(selectorWithoutPatterns, {
       extend: props.exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Downstream,
       defaultBehavior: DefaultSelection.OnlySingle,
     });
