@@ -1232,7 +1232,7 @@ function baseManagedResourceProperties(baseComputeEnvironment: ManagedComputeEnv
       jobExecutionTimeoutMinutes: baseComputeEnvironment.updateTimeout?.toMinutes(),
     },
     replaceComputeEnvironment: baseComputeEnvironment.replaceComputeEnvironment,
-    type: 'managed',
+    type: 'MANAGED',
   };
 }
 

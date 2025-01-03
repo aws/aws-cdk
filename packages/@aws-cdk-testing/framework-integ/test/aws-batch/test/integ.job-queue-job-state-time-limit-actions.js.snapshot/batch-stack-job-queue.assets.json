@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "38.0.1",
   "files": {
     "bde7b5c89cb43285f884c94f0b9e17cdb0f5eb5345005114dd60342e0b8a85a1": {
       "source": {
@@ -14,7 +14,7 @@
         }
       }
     },
-    "937de9f6ce81b7b9f39da5371a67cbaefe04b6574d9267fb2181cdb31a34d875": {
+    "5075e6e8c5e0b5f71ee0895ef9c74afa6c00975df46d9c86685c32863d0d04dd": {
       "source": {
         "path": "batch-stack-job-queue.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "937de9f6ce81b7b9f39da5371a67cbaefe04b6574d9267fb2181cdb31a34d875.json",
+          "objectKey": "5075e6e8c5e0b5f71ee0895ef9c74afa6c00975df46d9c86685c32863d0d04dd.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

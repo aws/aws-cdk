@@ -717,7 +717,7 @@
                     },
                     "replaceComputeEnvironment": false,
                     "state": "ENABLED",
-                    "type": "managed",
+                    "type": "MANAGED",
                     "updatePolicy": {}
                   }
                 },
@@ -800,7 +800,7 @@
                     },
                     "replaceComputeEnvironment": true,
                     "state": "ENABLED",
-                    "type": "managed",
+                    "type": "MANAGED",
                     "updatePolicy": {
                       "terminateJobsOnUpdate": true,
                       "jobExecutionTimeoutMinutes": 30
@@ -978,7 +978,7 @@
                     },
                     "replaceComputeEnvironment": false,
                     "state": "ENABLED",
-                    "type": "managed",
+                    "type": "MANAGED",
                     "updatePolicy": {}
                   }
                 },
@@ -1258,7 +1258,7 @@
                     },
                     "replaceComputeEnvironment": true,
                     "state": "ENABLED",
-                    "type": "managed",
+                    "type": "MANAGED",
                     "updatePolicy": {
                       "terminateJobsOnUpdate": false,
                       "jobExecutionTimeoutMinutes": 60
@@ -1486,7 +1486,7 @@
                     },
                     "replaceComputeEnvironment": false,
                     "state": "ENABLED",
-                    "type": "managed",
+                    "type": "MANAGED",
                     "updatePolicy": {}
                   }
                 },
@@ -1662,7 +1662,7 @@
                     },
                     "replaceComputeEnvironment": false,
                     "state": "ENABLED",
-                    "type": "managed",
+                    "type": "MANAGED",
                     "updatePolicy": {}
                   }
                 },
@@ -1865,7 +1865,7 @@
                       "foo": "bar",
                       "super": "salamander"
                     },
-                    "type": "managed",
+                    "type": "MANAGED",
                     "updatePolicy": {}
                   }
                 },
@@ -2037,7 +2037,7 @@
                     },
                     "replaceComputeEnvironment": false,
                     "state": "ENABLED",
-                    "type": "managed",
+                    "type": "MANAGED",
                     "updatePolicy": {}
                   }
                 },
