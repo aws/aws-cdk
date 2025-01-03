@@ -230,6 +230,7 @@ export interface InstanceProperties {
   /**
    * Describes the vCPU (virtual CPU) settings for the instance type
    *
+   * @default - not specified
    * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-optimize-cpu.html
    */
   readonly vCpuInfo?: VcpuInfo;
