@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { ISecurityGroup, SubnetSelection } from '../../../aws-ec2';
-import { FargateService, FargateTaskDefinition } from '../../../aws-ecs';
+import { FargateService, FargateTaskDefinition, HealthCheck } from '../../../aws-ecs';
 import { FeatureFlags } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import { FargateServiceBaseProps } from '../base/fargate-service-base';
@@ -31,6 +31,13 @@ export interface NetworkLoadBalancedFargateServiceProps extends NetworkLoadBalan
    * @default - A new security group is created.
    */
   readonly securityGroups?: ISecurityGroup[];
+
+  /**
+   * The health check command and associated configuration parameters for the container.
+   *
+   * @default - Health check configuration from container.
+   */
+  readonly healthCheck?: HealthCheck;
 }
 
 /**
@@ -79,10 +86,13 @@ export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServic
       const containerName = taskImageOptions.containerName ?? 'web';
       const container = this.taskDefinition.addContainer(containerName, {
         image: taskImageOptions.image,
+        healthCheck: props.healthCheck,
         logging: logDriver,
         environment: taskImageOptions.environment,
         secrets: taskImageOptions.secrets,
         dockerLabels: taskImageOptions.dockerLabels,
+        command: taskImageOptions.command,
+        entryPoint: taskImageOptions.entryPoint,
       });
       container.addPortMappings({
         containerPort: taskImageOptions.containerPort || 80,
