@@ -169,11 +169,23 @@ export class CliIoHost {
 }
 
 /**
-   * Validates a message code.
-   * Message codes must be in the format [A-Z]+_[0-2]\d{3}.
+   * Validates a message code. Message codes are used to identify the type of message 
+   * being logged, and are of the format [A-Z]+_[0-2]\d{3}. 
+   * 
+   * All error codes begin with 0, warning codes begin with 1, and info codes begin with 2.
+   * codes ending in 000 are generic messages, while codes ending in 001-999 are specific to 
+   * a particular message.
    *
-   * @example 'SDK_0002', 'ASSETS_1014', 'TOOLKIT_2000'
-   */
+   * The following are examples of valid and invalid message codes: 
+   * ```ts
+   * 'ASSETS_2000'            // valid cdk-assets info message with generic message code _2000
+   * 'TOOLKIT_0002'           // valid toolkit error message with specific error code _0002
+   * 'SDK_1023'               // valid sdk warning message with specific warning code _1023
+   * 'sdk_0001'               // invalid: lowercase
+   * 'TOOLKIT-0001'           // invalid: invalid separator
+   * 'SDK_3000'               // invalid: all error codes must be between 0000 and 2999
+   * ```
+  */
 export function validateMessageCode(code: string): boolean {
   // Matches pattern like SDK_0001, TOOLKIT_1000, etc.
   const pattern = /^[A-Z]+_[0-2]\d{3}$/;
