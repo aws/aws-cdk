@@ -398,6 +398,12 @@
       "Ref": "VpcIsolatedSubnet2Subnet16364B91"
      }
     ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ApiGatewayVpcEndpointTestStack/Vpc"
+     }
+    ],
     "VpcEndpointType": "Interface",
     "VpcId": {
      "Ref": "Vpc8378EB38"

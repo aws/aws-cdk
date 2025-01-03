@@ -133,6 +133,14 @@ assertion.provider.addToRolePolicy({
 assertion.expect(
   ExpectedResult.objectLike({
     StatusCode: 200,
-    Payload: '{\'statusCode\':200,\'body\':\'{\\\'message\\\':\\\'Success\\\',\\\'data\\\':\\\'{\\\\\\\'message\\\\\\\':\\\\\\\'OK\\\\\\\'}\\\'}\'}',
+    Payload: JSON.stringify({
+      statusCode: 200,
+      body: JSON.stringify({
+        message: 'Success',
+        data: JSON.stringify({
+          message: 'OK',
+        }),
+      }),
+    }),
   }),
 );
