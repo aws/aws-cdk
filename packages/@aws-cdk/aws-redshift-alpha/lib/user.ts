@@ -113,6 +113,7 @@ abstract class UserBase extends Construct implements IUser {
         user: this,
       });
 
+      // The privilege should be granted or revoked when the table exists.
       this.privileges.node.addDependency(table);
     }
 
