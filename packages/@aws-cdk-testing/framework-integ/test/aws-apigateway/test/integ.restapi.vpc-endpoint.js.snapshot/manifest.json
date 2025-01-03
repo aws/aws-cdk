@@ -1,28 +1,28 @@
 {
   "version": "38.0.1",
   "artifacts": {
-    "test-apigateway-vpcendpoint.assets": {
+    "ApiGatewayVpcEndpointTestStack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "test-apigateway-vpcendpoint.assets.json",
+        "file": "ApiGatewayVpcEndpointTestStack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "test-apigateway-vpcendpoint": {
+    "ApiGatewayVpcEndpointTestStack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "test-apigateway-vpcendpoint.template.json",
+        "templateFile": "ApiGatewayVpcEndpointTestStack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/44c0185b62dbff82887ee51d1a7ab98a98737401563e9a5f6acc30753c170a29.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ab08888dc9544b15a0ba2ae4045399cadcdac08c49d4af41edd7051c6e18a528.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "test-apigateway-vpcendpoint.assets"
+          "ApiGatewayVpcEndpointTestStack.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,238 +31,250 @@
         }
       },
       "dependencies": [
-        "test-apigateway-vpcendpoint.assets"
+        "ApiGatewayVpcEndpointTestStack.assets"
       ],
       "metadata": {
-        "/test-apigateway-vpcendpoint/MyVpc/Resource": [
+        "/ApiGatewayVpcEndpointTestStack/Vpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcF9F0CA6F"
+            "data": "Vpc8378EB38"
           }
         ],
-        "/test-apigateway-vpcendpoint/MyVpc/PublicSubnet1/Subnet": [
+        "/ApiGatewayVpcEndpointTestStack/Vpc/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet1SubnetF6608456"
+            "data": "VpcPublicSubnet1Subnet5C2D37C4"
           }
         ],
-        "/test-apigateway-vpcendpoint/MyVpc/PublicSubnet1/RouteTable": [
+        "/ApiGatewayVpcEndpointTestStack/Vpc/PublicSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet1RouteTableC46AB2F4"
+            "data": "VpcPublicSubnet1RouteTable6C95E38E"
           }
         ],
-        "/test-apigateway-vpcendpoint/MyVpc/PublicSubnet1/RouteTableAssociation": [
+        "/ApiGatewayVpcEndpointTestStack/Vpc/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet1RouteTableAssociation2ECEE1CB"
+            "data": "VpcPublicSubnet1RouteTableAssociation97140677"
           }
         ],
-        "/test-apigateway-vpcendpoint/MyVpc/PublicSubnet1/DefaultRoute": [
+        "/ApiGatewayVpcEndpointTestStack/Vpc/PublicSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet1DefaultRoute95FDF9EB"
+            "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
           }
         ],
-        "/test-apigateway-vpcendpoint/MyVpc/PublicSubnet1/EIP": [
+        "/ApiGatewayVpcEndpointTestStack/Vpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet1EIP096967CB"
+            "data": "VpcPublicSubnet2Subnet691E08A3"
           }
         ],
-        "/test-apigateway-vpcendpoint/MyVpc/PublicSubnet1/NATGateway": [
+        "/ApiGatewayVpcEndpointTestStack/Vpc/PublicSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet1NATGatewayAD3400C1"
+            "data": "VpcPublicSubnet2RouteTable94F7E489"
           }
         ],
-        "/test-apigateway-vpcendpoint/MyVpc/PublicSubnet2/Subnet": [
+        "/ApiGatewayVpcEndpointTestStack/Vpc/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet2Subnet492B6BFB"
+            "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
           }
         ],
-        "/test-apigateway-vpcendpoint/MyVpc/PublicSubnet2/RouteTable": [
+        "/ApiGatewayVpcEndpointTestStack/Vpc/PublicSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet2RouteTable1DF17386"
+            "data": "VpcPublicSubnet2DefaultRoute97F91067"
           }
         ],
-        "/test-apigateway-vpcendpoint/MyVpc/PublicSubnet2/RouteTableAssociation": [
+        "/ApiGatewayVpcEndpointTestStack/Vpc/IsolatedSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet2RouteTableAssociation227DE78D"
+            "data": "VpcIsolatedSubnet1SubnetE48C5737"
           }
         ],
-        "/test-apigateway-vpcendpoint/MyVpc/PublicSubnet2/DefaultRoute": [
+        "/ApiGatewayVpcEndpointTestStack/Vpc/IsolatedSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet2DefaultRoute052936F6"
+            "data": "VpcIsolatedSubnet1RouteTable4771E3E5"
           }
         ],
-        "/test-apigateway-vpcendpoint/MyVpc/PublicSubnet2/EIP": [
+        "/ApiGatewayVpcEndpointTestStack/Vpc/IsolatedSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet2EIP8CCBA239"
+            "data": "VpcIsolatedSubnet1RouteTableAssociationD300FCBB"
           }
         ],
-        "/test-apigateway-vpcendpoint/MyVpc/PublicSubnet2/NATGateway": [
+        "/ApiGatewayVpcEndpointTestStack/Vpc/IsolatedSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet2NATGateway91BFBEC9"
+            "data": "VpcIsolatedSubnet2Subnet16364B91"
           }
         ],
-        "/test-apigateway-vpcendpoint/MyVpc/PrivateSubnet1/Subnet": [
+        "/ApiGatewayVpcEndpointTestStack/Vpc/IsolatedSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPrivateSubnet1Subnet5057CF7E"
+            "data": "VpcIsolatedSubnet2RouteTable1D30AF7D"
           }
         ],
-        "/test-apigateway-vpcendpoint/MyVpc/PrivateSubnet1/RouteTable": [
+        "/ApiGatewayVpcEndpointTestStack/Vpc/IsolatedSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPrivateSubnet1RouteTable8819E6E2"
+            "data": "VpcIsolatedSubnet2RouteTableAssociationF7B18CCA"
           }
         ],
-        "/test-apigateway-vpcendpoint/MyVpc/PrivateSubnet1/RouteTableAssociation": [
+        "/ApiGatewayVpcEndpointTestStack/Vpc/IGW": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPrivateSubnet1RouteTableAssociation56D38C7E"
+            "data": "VpcIGWD7BA715C"
           }
         ],
-        "/test-apigateway-vpcendpoint/MyVpc/PrivateSubnet1/DefaultRoute": [
+        "/ApiGatewayVpcEndpointTestStack/Vpc/VPCGW": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPrivateSubnet1DefaultRouteA8CDE2FA"
+            "data": "VpcVPCGWBF912B6E"
           }
         ],
-        "/test-apigateway-vpcendpoint/MyVpc/PrivateSubnet2/Subnet": [
+        "/ApiGatewayVpcEndpointTestStack/Vpc/VpcEndpoint/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPrivateSubnet2Subnet0040C983"
+            "data": "VpcVpcEndpointSecurityGroup0E497F39"
           }
         ],
-        "/test-apigateway-vpcendpoint/MyVpc/PrivateSubnet2/RouteTable": [
+        "/ApiGatewayVpcEndpointTestStack/Vpc/VpcEndpoint/SecurityGroup/from ApiGatewayVpcEndpointTestStackTestFunctionSecurityGroupF0399EA7:443": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPrivateSubnet2RouteTableCEDCEECE"
+            "data": "VpcVpcEndpointSecurityGroupfromApiGatewayVpcEndpointTestStackTestFunctionSecurityGroupF0399EA7443F41B758E"
           }
         ],
-        "/test-apigateway-vpcendpoint/MyVpc/PrivateSubnet2/RouteTableAssociation": [
+        "/ApiGatewayVpcEndpointTestStack/Vpc/VpcEndpoint/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPrivateSubnet2RouteTableAssociation86A610DA"
+            "data": "VpcVpcEndpoint697E0D62"
           }
         ],
-        "/test-apigateway-vpcendpoint/MyVpc/PrivateSubnet2/DefaultRoute": [
+        "/ApiGatewayVpcEndpointTestStack/Api/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPrivateSubnet2DefaultRoute9CE96294"
+            "data": "ApiF70053CD"
           }
         ],
-        "/test-apigateway-vpcendpoint/MyVpc/IGW": [
+        "/ApiGatewayVpcEndpointTestStack/Api/CloudWatchRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcIGW5C4A4F63"
+            "data": "ApiCloudWatchRole73EC6FC4"
           }
         ],
-        "/test-apigateway-vpcendpoint/MyVpc/VPCGW": [
+        "/ApiGatewayVpcEndpointTestStack/Api/Account": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcVPCGW488ACE0D"
+            "data": "ApiAccountA18C9B29"
           }
         ],
-        "/test-apigateway-vpcendpoint/MyVpc/MyVpcEndpoint/SecurityGroup/Resource": [
+        "/ApiGatewayVpcEndpointTestStack/Api/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcMyVpcEndpointSecurityGroup52BE62B3"
+            "data": "ApiDeploymentB17BE62D92eec14a5efe64a86b912ba4f73801b8"
           }
         ],
-        "/test-apigateway-vpcendpoint/MyVpc/MyVpcEndpoint/Resource": [
+        "/ApiGatewayVpcEndpointTestStack/Api/DeploymentStage.prod/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcMyVpcEndpointA401F313"
+            "data": "ApiDeploymentStageprod3EB9684E"
           }
         ],
-        "/test-apigateway-vpcendpoint/MyApi/Resource": [
+        "/ApiGatewayVpcEndpointTestStack/Api/Endpoint": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyApi49610EDF"
+            "data": "ApiEndpoint4F160690"
           }
         ],
-        "/test-apigateway-vpcendpoint/MyApi/CloudWatchRole/Resource": [
+        "/ApiGatewayVpcEndpointTestStack/Api/Default/GET/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyApiCloudWatchRole2BEC1A9C"
+            "data": "ApiGET9257B917"
           }
         ],
-        "/test-apigateway-vpcendpoint/MyApi/Account": [
+        "/ApiGatewayVpcEndpointTestStack/TestFunction/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyApiAccount13882D84"
+            "data": "TestFunctionServiceRole6ABD93C7"
           }
         ],
-        "/test-apigateway-vpcendpoint/MyApi/Deployment/Resource": [
+        "/ApiGatewayVpcEndpointTestStack/TestFunction/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyApiDeploymentECB0D05E58dcfc85d01f2b81270e177f5347476d"
+            "data": "TestFunctionServiceRoleDefaultPolicy810BAB0B"
           }
         ],
-        "/test-apigateway-vpcendpoint/MyApi/DeploymentStage.prod/Resource": [
+        "/ApiGatewayVpcEndpointTestStack/TestFunction/SecurityGroup": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup [ack: @aws-cdk/aws-ec2:ipv4IgnoreEgressRule]"
+          }
+        ],
+        "/ApiGatewayVpcEndpointTestStack/TestFunction/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyApiDeploymentStageprodE1054AF0"
+            "data": "TestFunctionSecurityGroupAC0FED4B"
           }
         ],
-        "/test-apigateway-vpcendpoint/MyApi/Endpoint": [
+        "/ApiGatewayVpcEndpointTestStack/TestFunction/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyApiEndpoint869ABE96"
+            "data": "TestFunction22AD90FC"
           }
         ],
-        "/test-apigateway-vpcendpoint/MyApi/Default/GET/Resource": [
+        "/ApiGatewayVpcEndpointTestStack/Exports/Output{\"Ref\":\"TestFunction22AD90FC\"}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyApiGETD0C7AA0C"
+            "data": "ExportsOutputRefTestFunction22AD90FC921DCA96"
           }
         ],
-        "/test-apigateway-vpcendpoint/BootstrapVersion": [
+        "/ApiGatewayVpcEndpointTestStack/Exports/Output{\"Fn::GetAtt\":[\"TestFunction22AD90FC\",\"Arn\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttTestFunction22AD90FCArn01516C4C"
+          }
+        ],
+        "/ApiGatewayVpcEndpointTestStack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/test-apigateway-vpcendpoint/CheckBootstrapVersion": [
+        "/ApiGatewayVpcEndpointTestStack/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "test-apigateway-vpcendpoint"
+      "displayName": "ApiGatewayVpcEndpointTestStack"
     },
-    "apigatewayvpcendpointDefaultTestDeployAssert95ED9392.assets": {
+    "ApiGatewayVpcEndpointIntegDefaultTestDeployAssert55D396EF.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "apigatewayvpcendpointDefaultTestDeployAssert95ED9392.assets.json",
+        "file": "ApiGatewayVpcEndpointIntegDefaultTestDeployAssert55D396EF.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "apigatewayvpcendpointDefaultTestDeployAssert95ED9392": {
+    "ApiGatewayVpcEndpointIntegDefaultTestDeployAssert55D396EF": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "apigatewayvpcendpointDefaultTestDeployAssert95ED9392.template.json",
+        "templateFile": "ApiGatewayVpcEndpointIntegDefaultTestDeployAssert55D396EF.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/469623dd8d6c7976606cae2ec62e54d411f8f310eb0098226732dc08a48e177b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "apigatewayvpcendpointDefaultTestDeployAssert95ED9392.assets"
+          "ApiGatewayVpcEndpointIntegDefaultTestDeployAssert55D396EF.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -271,23 +283,54 @@
         }
       },
       "dependencies": [
-        "apigatewayvpcendpointDefaultTestDeployAssert95ED9392.assets"
+        "ApiGatewayVpcEndpointTestStack",
+        "ApiGatewayVpcEndpointIntegDefaultTestDeployAssert55D396EF.assets"
       ],
       "metadata": {
-        "/apigateway-vpcendpoint/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/ApiGatewayVpcEndpointInteg/DefaultTest/DeployAssert/AwsApiCallLambdainvoked401fe45bb8e637ca39f14a013e980c6/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallLambdainvoked401fe45bb8e637ca39f14a013e980c6"
+          }
+        ],
+        "/ApiGatewayVpcEndpointInteg/DefaultTest/DeployAssert/AwsApiCallLambdainvoked401fe45bb8e637ca39f14a013e980c6/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallLambdainvoked401fe45bb8e637ca39f14a013e980c6"
+          }
+        ],
+        "/ApiGatewayVpcEndpointInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/ApiGatewayVpcEndpointInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/ApiGatewayVpcEndpointInteg/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/ApiGatewayVpcEndpointInteg/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/apigateway-vpcendpoint/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/ApiGatewayVpcEndpointInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "apigateway-vpcendpoint/DefaultTest/DeployAssert"
+      "displayName": "ApiGatewayVpcEndpointInteg/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
