@@ -498,6 +498,10 @@ testDeprecated('test Fargate queue worker service construct - with optional prop
     cluster,
     memoryLimitMiB: 512,
     ephemeralStorageGiB: 100,
+    runtimePlatform: {
+      operatingSystemFamily: ecs.OperatingSystemFamily.LINUX,
+    },
+    pidMode: ecs.PidMode.TASK,
     image: ecs.ContainerImage.fromRegistry('test'),
     command: ['-c', '4', 'amazon.com'],
     enableLogging: false,
@@ -569,6 +573,10 @@ testDeprecated('test Fargate queue worker service construct - with optional prop
     EphemeralStorage: {
       SizeInGiB: 100,
     },
+    RuntimePlatform: {
+      OperatingSystemFamily: 'LINUX',
+    },
+    PidMode: 'task',
   });
 });
 
@@ -655,7 +663,7 @@ testDeprecated('test Fargate queue worker service construct - with custom cpu sc
   });
 
   // THEN - CPU target utilization set
-  Template.fromStack(stack). hasResourceProperties('AWS::ApplicationAutoScaling::ScalingPolicy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalingPolicy', {
     PolicyType: 'TargetTrackingScaling',
     TargetTrackingScalingPolicyConfiguration: {
       PredefinedMetricSpecification: {
@@ -940,6 +948,10 @@ test('test Fargate queue worker service construct - with task definition', () =>
     memoryLimitMiB: 1024,
     cpu: 512,
     ephemeralStorageGiB: 30,
+    runtimePlatform: {
+      operatingSystemFamily: ecs.OperatingSystemFamily.LINUX,
+    },
+    pidMode: ecs.PidMode.TASK,
   });
   taskDefinition.addContainer('QueueProcessingContainer', {
     image: ecs.ContainerImage.fromRegistry('test'),
@@ -963,6 +975,10 @@ test('test Fargate queue worker service construct - with task definition', () =>
     EphemeralStorage: {
       SizeInGiB: 30,
     },
+    RuntimePlatform: {
+      OperatingSystemFamily: 'LINUX',
+    },
+    PidMode: 'task',
     NetworkMode: 'awsvpc',
     RequiresCompatibilities: ['FARGATE'],
     TaskRoleArn: { 'Fn::GetAtt': ['TaskDefTaskRole1EDB4A67', 'Arn'] },

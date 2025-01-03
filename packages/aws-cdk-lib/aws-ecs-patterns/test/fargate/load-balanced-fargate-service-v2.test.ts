@@ -251,6 +251,10 @@ describe('Application Load Balancer', () => {
         assignPublicIp: true,
         memoryLimitMiB: 512,
         ephemeralStorageGiB: 50,
+        runtimePlatform: {
+          operatingSystemFamily: ecs.OperatingSystemFamily.LINUX,
+        },
+        pidMode: ecs.PidMode.TASK,
         desiredCount: 3,
         enableECSManagedTags: true,
         enableExecuteCommand: true,
@@ -378,6 +382,10 @@ describe('Application Load Balancer', () => {
         EphemeralStorage: {
           SizeInGiB: 50,
         },
+        RuntimePlatform: {
+          OperatingSystemFamily: 'LINUX',
+        },
+        PidMode: 'task',
         ExecutionRoleArn: {
           'Fn::GetAtt': [
             'ExecutionRole605A040B',
@@ -901,6 +909,10 @@ describe('Network Load Balancer', () => {
         assignPublicIp: true,
         memoryLimitMiB: 512,
         ephemeralStorageGiB: 80,
+        runtimePlatform: {
+          operatingSystemFamily: ecs.OperatingSystemFamily.LINUX,
+        },
+        pidMode: ecs.PidMode.TASK,
         desiredCount: 3,
         enableECSManagedTags: true,
         enableExecuteCommand: true,
@@ -1012,6 +1024,10 @@ describe('Network Load Balancer', () => {
         EphemeralStorage: {
           SizeInGiB: 80,
         },
+        RuntimePlatform: {
+          OperatingSystemFamily: 'LINUX',
+        },
+        PidMode: 'task',
         ExecutionRoleArn: {
           'Fn::GetAtt': [
             'ExecutionRole605A040B',
