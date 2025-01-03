@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "39.0.0",
   "artifacts": {
     "single-provider-role-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/170104570a23cc0f75f6d2500ee361bbf47e47c29005fddb907ac732a9e08acf.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/732e8a5a9cd324cd07d828909e63f7f84a234de4ef7a78d8c985f15773a68a38.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -238,16 +238,16 @@
             "data": "QueryRedshiftDatabase3de5bea727da479686625efb56431b5f3DF81997"
           }
         ],
-        "/single-provider-role-integ/Query Redshift Database3de5bea727da479686625efb56431b5fProviderRole/Resource": [
+        "/single-provider-role-integ/Query Redshift Database3de5bea727da479686625efb56431b5fInvokerRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRoleB78E4FFA"
+            "data": "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fInvokerRole900F47C9"
           }
         ],
-        "/single-provider-role-integ/Query Redshift Database3de5bea727da479686625efb56431b5fProviderRole/DefaultPolicy/Resource": [
+        "/single-provider-role-integ/Query Redshift Database3de5bea727da479686625efb56431b5fInvokerRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderRoleDefaultPolicy8C45E853"
+            "data": "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fInvokerRoleDefaultPolicy2BD7CC05"
           }
         ],
         "/single-provider-role-integ/Table1/Resource/Provider/framework-onEvent/Resource": [
