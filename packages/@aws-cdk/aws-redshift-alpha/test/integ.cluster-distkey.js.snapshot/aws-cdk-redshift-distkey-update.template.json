@@ -604,83 +604,6 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "TableProviderframeworkonEventServiceRoleC3128F67": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-       ]
-      ]
-     }
-    ]
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "TableProviderframeworkonEventServiceRoleDefaultPolicyAD08715D": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "lambda:InvokeFunction",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "QueryRedshiftDatabase3de5bea727da479686625efb56431b5f3DF81997",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "QueryRedshiftDatabase3de5bea727da479686625efb56431b5f3DF81997",
-             "Arn"
-            ]
-           },
-           ":*"
-          ]
-         ]
-        }
-       ]
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "TableProviderframeworkonEventServiceRoleDefaultPolicyAD08715D",
-    "Roles": [
-     {
-      "Ref": "TableProviderframeworkonEventServiceRoleC3128F67"
-     }
-    ]
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
   "TableProviderframeworkonEvent97F3951A": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
@@ -688,7 +611,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "fe4094cd52f099e46f858f05efdde02f5de79288c9c783676b3fa53a494d04b5.zip"
+     "S3Key": "9ebfbf95d93057cd65617a9d6f72a0e7dd31520f28cf423c3afd3cbaf0662e6b.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-redshift-distkey-update/Table/Resource/Provider)",
     "Environment": {
@@ -704,7 +627,7 @@
     "Handler": "framework.onEvent",
     "Role": {
      "Fn::GetAtt": [
-      "TableProviderframeworkonEventServiceRoleC3128F67",
+      "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fInvokerRole900F47C9",
       "Arn"
      ]
     },
@@ -720,8 +643,8 @@
     "Timeout": 900
    },
    "DependsOn": [
-    "TableProviderframeworkonEventServiceRoleDefaultPolicyAD08715D",
-    "TableProviderframeworkonEventServiceRoleC3128F67"
+    "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fInvokerRoleDefaultPolicy2BD7CC05",
+    "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fInvokerRole900F47C9"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -839,7 +762,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9749c6d8c4139a8926279502c4170f7b977faf32aaf52c916b85a63d7ea3b01b.zip"
+     "S3Key": "60d6644ca7559903aa3a4516f84720a5f2cc1310aa4f456b1aad45a0c1e28046.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -863,6 +786,83 @@
     "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fServiceRoleDefaultPolicyDDD1388D",
     "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fServiceRole0A90D717"
    ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fInvokerRole900F47C9": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fInvokerRoleDefaultPolicy2BD7CC05": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "QueryRedshiftDatabase3de5bea727da479686625efb56431b5f3DF81997",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "QueryRedshiftDatabase3de5bea727da479686625efb56431b5f3DF81997",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fInvokerRoleDefaultPolicy2BD7CC05",
+    "Roles": [
+     {
+      "Ref": "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fInvokerRole900F47C9"
+     }
+    ]
+   },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   }

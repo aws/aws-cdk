@@ -58,12 +58,18 @@ export class SingletonFunction extends FunctionBase {
    */
   public readonly runtime: Runtime;
 
+  /**
+   * The name of the singleton function. It acts as a unique ID within its CDK stack.
+   * */
+  public readonly constructName: string;
+
   protected readonly canCreatePermissions: boolean;
   private lambdaFunction: LambdaFunction;
 
   constructor(scope: Construct, id: string, props: SingletonFunctionProps) {
     super(scope, id);
 
+    this.constructName = (props.lambdaPurpose || 'SingletonLambda') + slugify(props.uuid);
     this.lambdaFunction = this.ensureLambda(props);
     this.permissionsNode = this.lambdaFunction.node;
     this.architecture = this.lambdaFunction.architecture;
@@ -185,14 +191,13 @@ export class SingletonFunction extends FunctionBase {
   }
 
   private ensureLambda(props: SingletonFunctionProps): LambdaFunction {
-    const constructName = (props.lambdaPurpose || 'SingletonLambda') + slugify(props.uuid);
-    const existing = cdk.Stack.of(this).node.tryFindChild(constructName);
+    const existing = cdk.Stack.of(this).node.tryFindChild(this.constructName);
     if (existing) {
       // Just assume this is true
       return existing as LambdaFunction;
     }
 
-    return new LambdaFunction(cdk.Stack.of(this), constructName, props);
+    return new LambdaFunction(cdk.Stack.of(this), this.constructName, props);
   }
 }
 
