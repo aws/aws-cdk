@@ -67,7 +67,7 @@ import { DescribeStacksCommand, GetTemplateCommand, StackStatus } from '@aws-sdk
 import { GetParameterCommand } from '@aws-sdk/client-ssm';
 import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
-import { instanceMockFrom, MockCloudExecutable, TestStackArtifact } from './util';
+import { instanceMockFrom, MockCloudExecutable, mockPrivate, TestStackArtifact } from './util';
 import { SdkProvider } from '../lib';
 import {
   mockCloudFormationClient,
@@ -129,16 +129,19 @@ beforeEach(() => {
 });
 
 function defaultToolkitSetup() {
-  return new CdkToolkit({
+  const toolkit = new CdkToolkit({
     cloudExecutable,
     configuration: cloudExecutable.configuration,
     sdkProvider: cloudExecutable.sdkProvider,
-    deployments: new FakeCloudFormation({
-      'Test-Stack-A': { Foo: 'Bar' },
-      'Test-Stack-B': { Baz: 'Zinga!' },
-      'Test-Stack-C': { Baz: 'Zinga!' },
-    }),
   });
+
+  mockPrivate(toolkit, 'deployments', new FakeCloudFormation({
+    'Test-Stack-A': { Foo: 'Bar' },
+    'Test-Stack-B': { Baz: 'Zinga!' },
+    'Test-Stack-C': { Baz: 'Zinga!' },
+  }));
+
+  return toolkit;
 }
 
 const mockSdk = new MockSdk();
@@ -217,9 +220,6 @@ describe('readCurrentTemplate', () => {
       cloudExecutable: mockCloudExecutable,
       configuration: mockCloudExecutable.configuration,
       sdkProvider: mockCloudExecutable.sdkProvider,
-      deployments: new Deployments({
-        sdkProvider: mockCloudExecutable.sdkProvider,
-      }),
     });
 
     // WHEN
@@ -256,9 +256,6 @@ describe('readCurrentTemplate', () => {
       cloudExecutable: mockCloudExecutable,
       configuration: mockCloudExecutable.configuration,
       sdkProvider: mockCloudExecutable.sdkProvider,
-      deployments: new Deployments({
-        sdkProvider: mockCloudExecutable.sdkProvider,
-      }),
     });
 
     // WHEN
@@ -320,9 +317,6 @@ describe('readCurrentTemplate', () => {
       cloudExecutable: mockCloudExecutable,
       configuration: mockCloudExecutable.configuration,
       sdkProvider: mockCloudExecutable.sdkProvider,
-      deployments: new Deployments({
-        sdkProvider: mockCloudExecutable.sdkProvider,
-      }),
     });
 
     // WHEN
@@ -375,9 +369,6 @@ describe('readCurrentTemplate', () => {
       cloudExecutable: mockCloudExecutable,
       configuration: mockCloudExecutable.configuration,
       sdkProvider: mockCloudExecutable.sdkProvider,
-      deployments: new Deployments({
-        sdkProvider: mockCloudExecutable.sdkProvider,
-      }),
     });
 
     // WHEN
@@ -430,9 +421,6 @@ describe('readCurrentTemplate', () => {
       cloudExecutable: mockCloudExecutable,
       configuration: mockCloudExecutable.configuration,
       sdkProvider: mockCloudExecutable.sdkProvider,
-      deployments: new Deployments({
-        sdkProvider: mockCloudExecutable.sdkProvider,
-      }),
     });
 
     // WHEN
@@ -482,9 +470,6 @@ describe('readCurrentTemplate', () => {
       cloudExecutable: mockCloudExecutable,
       configuration: mockCloudExecutable.configuration,
       sdkProvider: mockCloudExecutable.sdkProvider,
-      deployments: new Deployments({
-        sdkProvider: mockCloudExecutable.sdkProvider,
-      }),
     });
 
     // WHEN
@@ -552,6 +537,30 @@ describe('bootstrap', () => {
         qualifier: 'abcde',
       },
       source: defaultBootstrapSource,
+      toolkitStackName: 'CDKToolkit',
+    });
+  });
+
+  test('uses toolkitStackName from the toolkit', async () => {
+    // GIVEN
+    const toolkit = new CdkToolkit({
+      cloudExecutable,
+      configuration: cloudExecutable.configuration,
+      sdkProvider: cloudExecutable.sdkProvider,
+      toolkitStackName: 'CustomCDKToolkit',
+    });
+    const configuration = new Configuration();
+    configuration.context.set('@aws-cdk/core:bootstrapQualifier', 'abcde');
+
+    // WHEN
+    await toolkit.bootstrap(['aws://56789/south-pole'], {
+      source: defaultBootstrapSource,
+    });
+
+    // THEN
+    expect(bootstrapEnvironmentMock).toHaveBeenCalledWith(expect.anything(), expect.anything(), {
+      source: defaultBootstrapSource,
+      toolkitStackName: 'CustomCDKToolkit',
     });
   });
 });
@@ -583,12 +592,13 @@ describe('deploy', () => {
           stackArtifact: instanceMockFrom(cxapi.CloudFormationStackArtifact),
         }),
       );
+
       const cdkToolkit = new CdkToolkit({
         cloudExecutable,
         configuration: cloudExecutable.configuration,
         sdkProvider: cloudExecutable.sdkProvider,
-        deployments: mockCfnDeployments,
       });
+      mockPrivate(cdkToolkit, 'deployments', mockCfnDeployments);
 
       // WHEN
       await cdkToolkit.deploy({
@@ -673,13 +683,13 @@ describe('deploy', () => {
           cloudExecutable,
           configuration: cloudExecutable.configuration,
           sdkProvider: cloudExecutable.sdkProvider,
-          deployments: new FakeCloudFormation(
-            {
-              'Test-Stack-A': { Foo: 'Bar' },
-            },
-            notificationArns,
-          ),
         });
+        mockPrivate(toolkit, 'deployments', new FakeCloudFormation(
+          {
+            'Test-Stack-A': { Foo: 'Bar' },
+          },
+          notificationArns,
+        ));
 
         // WHEN
         await toolkit.deploy({
@@ -697,13 +707,13 @@ describe('deploy', () => {
           cloudExecutable,
           configuration: cloudExecutable.configuration,
           sdkProvider: cloudExecutable.sdkProvider,
-          deployments: new FakeCloudFormation(
-            {
-              'Test-Stack-A': { Foo: 'Bar' },
-            },
-            notificationArns,
-          ),
         });
+        mockPrivate(toolkit, 'deployments', new FakeCloudFormation(
+          {
+            'Test-Stack-A': { Foo: 'Bar' },
+          },
+          notificationArns,
+        ));
 
         // WHEN
         await expect(() =>
@@ -723,13 +733,13 @@ describe('deploy', () => {
           cloudExecutable,
           configuration: cloudExecutable.configuration,
           sdkProvider: cloudExecutable.sdkProvider,
-          deployments: new FakeCloudFormation(
-            {
-              'Test-Stack-Notification-Arns': { Foo: 'Bar' },
-            },
-            expectedNotificationArns,
-          ),
         });
+        mockPrivate(toolkit, 'deployments', new FakeCloudFormation(
+          {
+            'Test-Stack-Notification-Arns': { Foo: 'Bar' },
+          },
+          expectedNotificationArns,
+        ));
 
         // WHEN
         await toolkit.deploy({
@@ -744,10 +754,10 @@ describe('deploy', () => {
           cloudExecutable,
           configuration: cloudExecutable.configuration,
           sdkProvider: cloudExecutable.sdkProvider,
-          deployments: new FakeCloudFormation({
-            'Test-Stack-Bad-Notification-Arns': { Foo: 'Bar' },
-          }),
         });
+        mockPrivate(toolkit, 'deployments', new FakeCloudFormation({
+          'Test-Stack-Bad-Notification-Arns': { Foo: 'Bar' },
+        }));
 
         // WHEN
         await expect(() =>
@@ -772,13 +782,13 @@ describe('deploy', () => {
           cloudExecutable,
           configuration: cloudExecutable.configuration,
           sdkProvider: cloudExecutable.sdkProvider,
-          deployments: new FakeCloudFormation(
-            {
-              'Test-Stack-Notification-Arns': { Foo: 'Bar' },
-            },
-            expectedNotificationArns,
-          ),
         });
+        mockPrivate(toolkit, 'deployments', new FakeCloudFormation(
+          {
+            'Test-Stack-Notification-Arns': { Foo: 'Bar' },
+          },
+          expectedNotificationArns,
+        ));
 
         // WHEN
         await toolkit.deploy({
@@ -795,13 +805,13 @@ describe('deploy', () => {
           cloudExecutable,
           configuration: cloudExecutable.configuration,
           sdkProvider: cloudExecutable.sdkProvider,
-          deployments: new FakeCloudFormation(
-            {
-              'Test-Stack-Bad-Notification-Arns': { Foo: 'Bar' },
-            },
-            notificationArns,
-          ),
         });
+        mockPrivate(toolkit, 'deployments', new FakeCloudFormation(
+          {
+            'Test-Stack-Bad-Notification-Arns': { Foo: 'Bar' },
+          },
+          notificationArns,
+        ));
 
         // WHEN
         await expect(() =>
@@ -820,13 +830,13 @@ describe('deploy', () => {
           cloudExecutable,
           configuration: cloudExecutable.configuration,
           sdkProvider: cloudExecutable.sdkProvider,
-          deployments: new FakeCloudFormation(
-            {
-              'Test-Stack-Bad-Notification-Arns': { Foo: 'Bar' },
-            },
-            notificationArns,
-          ),
         });
+        mockPrivate(toolkit, 'deployments', new FakeCloudFormation(
+          {
+            'Test-Stack-Bad-Notification-Arns': { Foo: 'Bar' },
+          },
+          notificationArns,
+        ));
 
         // WHEN
         await expect(() =>
@@ -845,13 +855,13 @@ describe('deploy', () => {
           cloudExecutable,
           configuration: cloudExecutable.configuration,
           sdkProvider: cloudExecutable.sdkProvider,
-          deployments: new FakeCloudFormation(
-            {
-              'Test-Stack-Notification-Arns': { Foo: 'Bar' },
-            },
-            notificationArns,
-          ),
         });
+        mockPrivate(toolkit, 'deployments', new FakeCloudFormation(
+          {
+            'Test-Stack-Notification-Arns': { Foo: 'Bar' },
+          },
+          notificationArns,
+        ));
 
         // WHEN
         await expect(() =>
@@ -1262,7 +1272,6 @@ describe('synth', () => {
 
       const cdkToolkit = new CdkToolkit({
         cloudExecutable: mockCloudExecutable,
-        deployments: new Deployments({ sdkProvider: mockSdkProvider }),
         sdkProvider: mockSdkProvider,
         configuration: mockCloudExecutable.configuration,
       });
@@ -1461,7 +1470,6 @@ describe('synth', () => {
       cloudExecutable,
       configuration: cloudExecutable.configuration,
       sdkProvider: cloudExecutable.sdkProvider,
-      deployments: new Deployments({ sdkProvider: new MockSdkProvider() }),
     });
 
     await toolkit.rollback({
@@ -1505,8 +1513,8 @@ describe('synth', () => {
       cloudExecutable,
       configuration: cloudExecutable.configuration,
       sdkProvider: cloudExecutable.sdkProvider,
-      deployments,
     });
+    mockPrivate(toolkit, 'deployments', deployments);
 
     await toolkit.deploy({
       selector: { patterns: [] },

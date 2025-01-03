@@ -12,8 +12,9 @@ import { NestedStackTemplates } from '../lib/api/nested-stack-helpers';
 import * as cfn from '../lib/api/util/cloudformation';
 import { CdkToolkit } from '../lib/cdk-toolkit';
 
-let cloudExecutable: MockCloudExecutable;
+jest.mock('../lib/api/deployments');
 let cloudFormation: jest.Mocked<Deployments>;
+let cloudExecutable: MockCloudExecutable;
 let toolkit: CdkToolkit;
 let oldDir: string;
 let tmpDir: string;
@@ -30,6 +31,11 @@ beforeAll(() => {
 afterAll(() => {
   process.chdir(oldDir);
   fs.rmSync(tmpDir, { recursive: true, force: true });
+});
+
+beforeEach(() => {
+  cloudFormation = instanceMockFrom(Deployments);
+  jest.mocked(Deployments).mockImplementation(() => cloudFormation);
 });
 
 afterEach(() => {
@@ -70,7 +76,6 @@ describe('fixed template', () => {
 
     toolkit = new CdkToolkit({
       cloudExecutable,
-      deployments: cloudFormation,
       configuration: cloudExecutable.configuration,
       sdkProvider: cloudExecutable.sdkProvider,
     });
@@ -163,11 +168,8 @@ describe('imports', () => {
       ],
     });
 
-    cloudFormation = instanceMockFrom(Deployments);
-
     toolkit = new CdkToolkit({
       cloudExecutable,
-      deployments: cloudFormation,
       configuration: cloudExecutable.configuration,
       sdkProvider: cloudExecutable.sdkProvider,
     });
@@ -283,11 +285,8 @@ describe('non-nested stacks', () => {
       ],
     });
 
-    cloudFormation = instanceMockFrom(Deployments);
-
     toolkit = new CdkToolkit({
       cloudExecutable,
-      deployments: cloudFormation,
       configuration: cloudExecutable.configuration,
       sdkProvider: cloudExecutable.sdkProvider,
     });
@@ -354,7 +353,6 @@ describe('non-nested stacks', () => {
 
     toolkit = new CdkToolkit({
       cloudExecutable,
-      deployments: cloudFormation,
       configuration: cloudExecutable.configuration,
       sdkProvider: cloudExecutable.sdkProvider,
     });
@@ -475,8 +473,6 @@ describe('non-nested stacks', () => {
 
 describe('stack exists checks', () => {
   beforeEach(() => {
-    jest.resetAllMocks();
-
     cloudExecutable = new MockCloudExecutable({
       stacks: [
         {
@@ -508,11 +504,8 @@ describe('stack exists checks', () => {
       ],
     });
 
-    cloudFormation = instanceMockFrom(Deployments);
-
     toolkit = new CdkToolkit({
       cloudExecutable,
-      deployments: cloudFormation,
       configuration: cloudExecutable.configuration,
       sdkProvider: cloudExecutable.sdkProvider,
     });
@@ -623,11 +616,8 @@ describe('nested stacks', () => {
       ],
     });
 
-    cloudFormation = instanceMockFrom(Deployments);
-
     toolkit = new CdkToolkit({
       cloudExecutable,
-      deployments: cloudFormation,
       configuration: cloudExecutable.configuration,
       sdkProvider: cloudExecutable.sdkProvider,
     });
@@ -1085,7 +1075,6 @@ describe('--strict', () => {
   beforeEach(() => {
     const oldTemplate = {};
 
-    cloudFormation = instanceMockFrom(Deployments);
     cloudFormation.readCurrentTemplateWithNestedStacks.mockImplementation((_stackArtifact: CloudFormationStackArtifact) => {
       return Promise.resolve({
         deployedRootTemplate: {},
@@ -1121,7 +1110,6 @@ describe('--strict', () => {
 
     toolkit = new CdkToolkit({
       cloudExecutable,
-      deployments: cloudFormation,
       configuration: cloudExecutable.configuration,
       sdkProvider: cloudExecutable.sdkProvider,
     });

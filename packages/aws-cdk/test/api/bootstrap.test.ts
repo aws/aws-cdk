@@ -23,6 +23,7 @@ const env = {
 
 const templateBody = toYAML(deserializeStructure(serializeStructure(legacyBootstrapTemplate({}), true)));
 const changeSetName = 'cdk-deploy-change-set';
+const toolkitStackName = 'CDKToolkit';
 
 jest.mock('../../lib/api/util/checks', () => ({
   determineAllowCrossAccountAssetPublishing: jest.fn().mockResolvedValue(true),
@@ -315,7 +316,7 @@ test('even if the bootstrap stack failed to create, can still retry bootstrappin
 test('stack is not termination protected by default', async () => {
   // WHEN
   // Seems silly, but we process the template multiple times to get the templateBody that goes into the call
-  await bootstrapper.bootstrapEnvironment(env, sdk);
+  await bootstrapper.bootstrapEnvironment(env, sdk, { toolkitStackName });
 
   // THEN
   // There are only two ways that termination can be set: either through calling CreateStackCommand
@@ -344,6 +345,7 @@ test('stack is termination protected when set', async () => {
   // WHEN
   await bootstrapper.bootstrapEnvironment(env, sdk, {
     terminationProtection: true,
+    toolkitStackName: 'CDKToolkit',
   });
 
   // THEN

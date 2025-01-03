@@ -18,7 +18,7 @@ export const DEFAULT_BOOTSTRAP_VARIANT = 'AWS CDK: Default Resources';
  * Options for the bootstrapEnvironment operation(s)
  */
 export interface BootstrapEnvironmentOptions {
-  readonly toolkitStackName?: string;
+  readonly toolkitStackName: string;
   readonly roleArn?: StringWithoutPlaceholders;
   readonly parameters?: BootstrappingParameters;
   readonly force?: boolean;

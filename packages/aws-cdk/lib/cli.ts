@@ -13,7 +13,6 @@ import { BootstrapSource, Bootstrapper } from '../lib/api/bootstrap';
 import { StackSelector } from '../lib/api/cxapp/cloud-assembly';
 import { CloudExecutable, Synthesizer } from '../lib/api/cxapp/cloud-executable';
 import { execProgram } from '../lib/api/cxapp/exec';
-import { Deployments } from '../lib/api/deployments';
 import { PluginHost } from '../lib/api/plugin';
 import { ToolkitInfo } from '../lib/api/toolkit-info';
 import { CdkToolkit, AssetBuildTime } from '../lib/cdk-toolkit';
@@ -177,8 +176,6 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
     const toolkitStackName: string = ToolkitInfo.determineName(configuration.settings.get(['toolkitStackName']));
     debug(`Toolkit stack: ${chalk.bold(toolkitStackName)}`);
 
-    const cloudFormation = new Deployments({ sdkProvider, toolkitStackName });
-
     if (args.all && args.STACKS) {
       throw new ToolkitError('You must either specify a list of Stacks or the `--all` argument');
     }
@@ -193,7 +190,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
     const cli = new CdkToolkit({
       cloudExecutable,
-      deployments: cloudFormation,
+      toolkitStackName,
       verbose: argv.trace || argv.verbose > 0,
       ignoreErrors: argv['ignore-errors'],
       strict: argv.strict,
@@ -239,7 +236,6 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           compareAgainstProcessedTemplate: args.processed,
           quiet: args.quiet,
           changeSet: args['change-set'],
-          toolkitStackName: toolkitStackName,
         });
 
       case 'bootstrap':
@@ -254,7 +250,6 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           source,
           roleArn: args.roleArn,
           force: argv.force,
-          toolkitStackName: toolkitStackName,
           execute: args.execute,
           tags: configuration.settings.get(['tags']),
           terminationProtection: args.terminationProtection,
@@ -326,7 +321,6 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         return cli.deploy({
           selector,
           exclusively: args.exclusively,
-          toolkitStackName,
           roleArn: args.roleArn,
           notificationArns: args.notificationArns,
           requireApproval: configuration.settings.get(['requireApproval']),
@@ -354,7 +348,6 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
       case 'rollback':
         return cli.rollback({
           selector,
-          toolkitStackName,
           roleArn: args.roleArn,
           force: args.force,
           validateBootstrapStackVersion: args['validate-bootstrap-version'],
@@ -364,7 +357,6 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
       case 'import':
         return cli.import({
           selector,
-          toolkitStackName,
           roleArn: args.roleArn,
           deploymentMethod: {
             method: 'change-set',
@@ -382,7 +374,6 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         return cli.watch({
           selector,
           exclusively: args.exclusively,
-          toolkitStackName,
           roleArn: args.roleArn,
           reuseAssets: args['build-exclude'],
           deploymentMethod: {

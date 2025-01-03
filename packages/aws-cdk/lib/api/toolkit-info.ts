@@ -38,7 +38,7 @@ export const DEFAULT_TOOLKIT_STACK_NAME = 'CDKToolkit';
  *
  */
 export abstract class ToolkitInfo {
-  public static determineName(overrideName?: string) {
+  public static determineName(overrideName?: string): string {
     return overrideName ?? DEFAULT_TOOLKIT_STACK_NAME;
   }
 

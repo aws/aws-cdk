@@ -8,6 +8,13 @@ import { IIoHost } from './io-host';
 
 export interface ToolkitOptions {
   ioHost: IIoHost;
+
+  /**
+   * Name of the toolkit stack to be used.
+   *
+   * @default "CDKToolkit"
+   */
+  toolkitStackName?: string;
 }
 
 export class Toolkit {

@@ -6,7 +6,7 @@ import * as chokidar from 'chokidar';
 import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
 import * as uuid from 'uuid';
-import { DeploymentMethod, SuccessfulDeployStackResult } from './api';
+import { DeploymentMethod, SuccessfulDeployStackResult, ToolkitInfo } from './api';
 import { SdkProvider } from './api/aws-auth';
 import { Bootstrapper, BootstrapEnvironmentOptions } from './api/bootstrap';
 import {
@@ -73,9 +73,11 @@ export interface CdkToolkitProps {
   cloudExecutable: CloudExecutable;
 
   /**
-   * The provisioning engine used to apply changes to the cloud
+   * Name of the toolkit stack, if not the default name
+   *
+   * @default 'CDKToolkit'
    */
-  deployments: Deployments;
+  toolkitStackName?: string;
 
   /**
    * Whether to be verbose
@@ -134,7 +136,16 @@ export enum AssetBuildTime {
  * deploys applies them to `cloudFormation`.
  */
 export class CdkToolkit {
-  constructor(private readonly props: CdkToolkitProps) {}
+  private deployments: Deployments;
+  private toolkitStackName: string;
+
+  constructor(private readonly props: CdkToolkitProps) {
+    this.toolkitStackName = ToolkitInfo.determineName(props.toolkitStackName);
+    this.deployments = new Deployments({
+      sdkProvider: props.sdkProvider,
+      toolkitStackName: this.toolkitStackName,
+    });
+  }
 
   public async metadata(stackName: string, json: boolean) {
     const stacks = await this.selectSingleStackByName(stackName);
@@ -178,14 +189,14 @@ export class CdkToolkit {
     } else {
       // Compare N stacks against deployed templates
       for (const stack of stacks.stackArtifacts) {
-        const templateWithNestedStacks = await this.props.deployments.readCurrentTemplateWithNestedStacks(
+        const templateWithNestedStacks = await this.deployments.readCurrentTemplateWithNestedStacks(
           stack,
           options.compareAgainstProcessedTemplate,
         );
         const currentTemplate = templateWithNestedStacks.deployedRootTemplate;
         const nestedStacks = templateWithNestedStacks.nestedStacks;
 
-        const resourcesToImport = await this.tryGetResources(await this.props.deployments.resolveEnvironment(stack));
+        const resourcesToImport = await this.tryGetResources(await this.deployments.resolveEnvironment(stack));
         if (resourcesToImport) {
           removeNonImportResources(stack);
         }
@@ -195,7 +206,7 @@ export class CdkToolkit {
         if (options.changeSet) {
           let stackExists = false;
           try {
-            stackExists = await this.props.deployments.stackExists({
+            stackExists = await this.deployments.stackExists({
               stack,
               deployName: stack.stackName,
               tryLookupRole: true,
@@ -214,7 +225,7 @@ export class CdkToolkit {
             changeSet = await createDiffChangeSet({
               stack,
               uuid: uuid.v4(),
-              deployments: this.props.deployments,
+              deployments: this.deployments,
               willExecute: false,
               sdkProvider: this.props.sdkProvider,
               parameters: Object.assign({}, parameterMap['*'], parameterMap[stack.stackName]),
@@ -309,7 +320,7 @@ export class CdkToolkit {
     const outputsFile = options.outputsFile;
 
     const buildAsset = async (assetNode: AssetBuildNode) => {
-      await this.props.deployments.buildSingleAsset(
+      await this.deployments.buildSingleAsset(
         assetNode.assetManifestArtifact,
         assetNode.assetManifest,
         assetNode.asset,
@@ -322,7 +333,7 @@ export class CdkToolkit {
     };
 
     const publishAsset = async (assetNode: AssetPublishNode) => {
-      await this.props.deployments.publishSingleAsset(assetNode.assetManifest, assetNode.asset, {
+      await this.deployments.publishSingleAsset(assetNode.assetManifest, assetNode.asset, {
         stack: assetNode.parentStack,
         roleArn: options.roleArn,
         stackName: assetNode.parentStack.stackName,
@@ -344,7 +355,7 @@ export class CdkToolkit {
 
       if (Object.keys(stack.template.Resources || {}).length === 0) {
         // The generated stack has no resources
-        if (!(await this.props.deployments.stackExists({ stack }))) {
+        if (!(await this.deployments.stackExists({ stack }))) {
           warning('%s: stack has no resources, skipping deployment.', chalk.bold(stack.displayName));
         } else {
           warning('%s: stack has no resources, deleting existing stack.', chalk.bold(stack.displayName));
@@ -361,7 +372,7 @@ export class CdkToolkit {
       }
 
       if (requireApproval !== RequireApproval.Never) {
-        const currentTemplate = await this.props.deployments.readCurrentTemplate(stack);
+        const currentTemplate = await this.deployments.readCurrentTemplate(stack);
         if (printSecurityDiff(currentTemplate, stack, requireApproval)) {
           await askUserConfirmation(
             concurrency,
@@ -406,11 +417,10 @@ export class CdkToolkit {
             throw new ToolkitError('This loop should have stabilized in 2 iterations, but didn\'t. If you are seeing this error, please report it at https://github.com/aws/aws-cdk/issues/new/choose');
           }
 
-          const r = await this.props.deployments.deployStack({
+          const r = await this.deployments.deployStack({
             stack,
             deployName: stack.stackName,
             roleArn: options.roleArn,
-            toolkitStackName: options.toolkitStackName,
             reuseAssets: options.reuseAssets,
             notificationArns,
             tags,
@@ -453,7 +463,6 @@ export class CdkToolkit {
               // Perform a rollback
               await this.rollback({
                 selector: { patterns: [stack.hierarchicalId] },
-                toolkitStackName: options.toolkitStackName,
                 force: options.force,
               });
 
@@ -515,7 +524,7 @@ export class CdkToolkit {
         );
       } finally {
         if (options.cloudWatchLogMonitor) {
-          const foundLogGroupsResult = await findCloudWatchLogGroups(this.props.sdkProvider, stack);
+          const foundLogGroupsResult = await findCloudWatchLogGroups(this.props.sdkProvider, this.toolkitStackName, stack);
           options.cloudWatchLogMonitor.addLogGroups(
             foundLogGroupsResult.env,
             foundLogGroupsResult.sdk,
@@ -589,10 +598,9 @@ export class CdkToolkit {
       print('Rolling back %s', chalk.bold(stack.displayName));
       const startRollbackTime = new Date().getTime();
       try {
-        const result = await this.props.deployments.rollbackStack({
+        const result = await this.deployments.rollbackStack({
           stack,
           roleArn: options.roleArn,
-          toolkitStackName: options.toolkitStackName,
           force: options.force,
           validateBootstrapStackVersion: options.validateBootstrapStackVersion,
           orphanLogicalIds: options.orphanLogicalIds,
@@ -730,7 +738,7 @@ export class CdkToolkit {
 
     highlight(stack.displayName);
 
-    const resourceImporter = new ResourceImporter(stack, this.props.deployments);
+    const resourceImporter = new ResourceImporter(stack, this.deployments);
     const { additions, hasNonAdditions } = await resourceImporter.discoverImportableResources(options.force);
     if (additions.length === 0) {
       warning(
@@ -767,7 +775,7 @@ export class CdkToolkit {
     const tags = tagsForStack(stack);
     await resourceImporter.importResourcesFromMap(actualImport, {
       roleArn: options.roleArn,
-      toolkitStackName: options.toolkitStackName,
+      toolkitStackName: this.toolkitStackName,
       tags,
       deploymentMethod: options.deploymentMethod,
       usePreviousParameters: true,
@@ -816,7 +824,7 @@ export class CdkToolkit {
     for (const [index, stack] of stacks.stackArtifacts.entries()) {
       success('%s: destroying... [%s/%s]', chalk.blue(stack.displayName), index + 1, stacks.stackCount);
       try {
-        await this.props.deployments.destroyStack({
+        await this.deployments.destroyStack({
           stack,
           deployName: stack.stackName,
           roleArn: options.roleArn,
@@ -923,7 +931,7 @@ export class CdkToolkit {
    */
   public async bootstrap(
     userEnvironmentSpecs: string[],
-    options: BootstrapEnvironmentOptions,
+    options: BootstrapOptions,
   ): Promise<void> {
     const bootstrapper = new Bootstrapper(options.source);
     // If there is an '--app' argument and an environment looks like a glob, we
@@ -937,7 +945,10 @@ export class CdkToolkit {
     await Promise.all(environments.map((environment) => limit(async () => {
       success(' ⏳  Bootstrapping environment %s...', chalk.blue(environment.name));
       try {
-        const result = await bootstrapper.bootstrapEnvironment(environment, this.props.sdkProvider, options);
+        const result = await bootstrapper.bootstrapEnvironment(environment, this.props.sdkProvider, {
+          ...options,
+          toolkitStackName: this.toolkitStackName,
+        });
         const message = result.noOp
           ? ' ✅  Environment %s bootstrapped (no changes).'
           : ' ✅  Environment %s bootstrapped.';
@@ -961,7 +972,7 @@ export class CdkToolkit {
       const gc = new GarbageCollector({
         sdkProvider: this.props.sdkProvider,
         resolvedEnvironment: environment,
-        bootstrapStackName: options.bootstrapStackName,
+        bootstrapStackName: options.bootstrapStackName ?? this.toolkitStackName,
         rollbackBufferDays: options.rollbackBufferDays,
         createdBufferDays: options.createdBufferDays,
         action: options.action ?? 'full',
@@ -1245,7 +1256,7 @@ export class CdkToolkit {
    * Remove the asset publishing and building from the work graph for assets that are already in place
    */
   private async removePublishedAssets(graph: WorkGraph, options: DeployOptions) {
-    await graph.removeUnnecessaryAssets(assetNode => this.props.deployments.isSingleAssetPublished(assetNode.assetManifest, assetNode.asset, {
+    await graph.removeUnnecessaryAssets(assetNode => this.deployments.isSingleAssetPublished(assetNode.assetManifest, assetNode.asset, {
       stack: assetNode.parentStack,
       roleArn: options.roleArn,
       stackName: assetNode.parentStack.stackName,
@@ -1260,7 +1271,7 @@ export class CdkToolkit {
    */
   private async tryMigrateResources(stacks: StackCollection, options: DeployOptions): Promise<void> {
     const stack = stacks.stackArtifacts[0];
-    const migrateDeployment = new ResourceImporter(stack, this.props.deployments);
+    const migrateDeployment = new ResourceImporter(stack, this.deployments);
     const resourcesToImport = await this.tryGetResources(await migrateDeployment.resolveEnvironment());
 
     if (resourcesToImport) {
@@ -1288,7 +1299,7 @@ export class CdkToolkit {
     // Initial Deployment
     await migrateDeployment.importResourcesFromMigrate(resourcesToImport, {
       roleArn: options.roleArn,
-      toolkitStackName: options.toolkitStackName,
+      toolkitStackName: this.toolkitStackName,
       deploymentMethod: options.deploymentMethod,
       usePreviousParameters: true,
       progress: options.progress,
@@ -1326,18 +1337,14 @@ function printSerializedObject(obj: any, json: boolean) {
   data(serializeStructure(obj, json));
 }
 
+export interface BootstrapOptions extends Omit<BootstrapEnvironmentOptions, 'toolkitStackName'> {
+}
+
 export interface DiffOptions {
   /**
    * Stack names to diff
    */
   stackNames: string[];
-
-  /**
-   * Name of the toolkit stack, if not the default name
-   *
-   * @default 'CDKToolkit'
-   */
-  readonly toolkitStackName?: string;
 
   /**
    * Only select the given stack
@@ -1422,13 +1429,6 @@ interface CfnDeployOptions {
    * Criteria for selecting stacks to deploy
    */
   selector: StackSelector;
-
-  /**
-   * Name of the toolkit stack to use/deploy
-   *
-   * @default CDKToolkit
-   */
-  toolkitStackName?: string;
 
   /**
    * Role to pass to CloudFormation for deployment
@@ -1636,13 +1636,6 @@ export interface RollbackOptions {
   readonly selector: StackSelector;
 
   /**
-   * Name of the toolkit stack to use/deploy
-   *
-   * @default CDKToolkit
-   */
-  readonly toolkitStackName?: string;
-
-  /**
    * Role to pass to CloudFormation for deployment
    *
    * @default - Default stack role
@@ -1762,7 +1755,7 @@ export interface GarbageCollectionOptions {
   /**
    * The stack name of the bootstrap stack.
    *
-   * @default DEFAULT_TOOLKIT_STACK_NAME
+   * @default "CDKToolkit"
    */
   readonly bootstrapStackName?: string;
 
