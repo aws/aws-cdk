@@ -169,14 +169,14 @@ export class CliIoHost {
 }
 
 /**
-   * Validates a message code. Message codes are used to identify the type of message 
-   * being logged, and are of the format [A-Z]+_[0-2]\d{3}. 
-   * 
+   * Validates a message code. Message codes are used to identify the type of message
+   * being logged, and are of the format [A-Z]+_[0-2]\d{3}.
+   *
    * All error codes begin with 0, warning codes begin with 1, and info codes begin with 2.
-   * codes ending in 000 are generic messages, while codes ending in 001-999 are specific to 
+   * codes ending in 000 are generic messages, while codes ending in 001-999 are specific to
    * a particular message.
    *
-   * The following are examples of valid and invalid message codes: 
+   * The following are examples of valid and invalid message codes:
    * ```ts
    * 'ASSETS_2000'            // valid cdk-assets info message with generic message code _2000
    * 'TOOLKIT_0002'           // valid toolkit error message with specific error code _0002
