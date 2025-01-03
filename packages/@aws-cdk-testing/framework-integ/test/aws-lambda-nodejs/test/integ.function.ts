@@ -41,6 +41,8 @@ class TestStack extends Stack {
       entry: path.join(__dirname, 'integ-handlers/js-handler.js'),
       bundling: {
         inject: [path.join(__dirname, 'whitespace path/shim.js')],
+        metafile: true,
+        tsconfig: path.join(__dirname, 'tsconfig.json'),
       },
     });
 

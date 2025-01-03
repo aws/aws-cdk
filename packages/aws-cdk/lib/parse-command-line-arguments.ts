@@ -2,7 +2,6 @@
 // GENERATED FROM packages/aws-cdk/lib/config.ts.
 // Do not edit by hand; all changes will be overwritten at build time from the config file.
 // -------------------------------------------------------------------------------------------
-// istanbul ignore file
 /* eslint-disable @stylistic/max-len */
 import { Argv } from 'yargs';
 import * as helpers from './util/yargs-helpers';
@@ -730,7 +729,7 @@ export function parseCommandLineArguments(args: Array<string>): any {
           type: 'string',
           alias: 'l',
           desc: 'The language to be used for the new project (default can be configured in ~/.cdk.json)',
-          choices: ['csharp', 'fsharp', 'go', 'java', 'javascript', 'python', 'typescript'],
+          choices: ['app.iml', 'csharp', 'fsharp', 'go', 'java', 'javascript', 'python', 'typescript'],
         })
         .option('list', {
           default: undefined,
