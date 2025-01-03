@@ -12,7 +12,7 @@
             "id": "queue",
             "path": "aws-cdk-cloudwatch/queue",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnResource",
+              "fqn": "aws-cdk-lib.CfnResource",
               "version": "0.0.0"
             }
           },
@@ -87,13 +87,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-cloudwatch.CfnAlarm",
+                  "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-cloudwatch.Alarm",
+              "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
               "version": "0.0.0"
             }
           },
@@ -111,7 +111,7 @@
                       "Fn::Join": [
                         "",
                         [
-                          "{\"widgets\":[{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":0,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Total messages in queue\",\"region\":\"",
+                          "{\"widgets\":[{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":0,\"properties\":{\"view\":\"timeSeries\",\"accountId\":\"123456789\",\"title\":\"Total messages in queue\",\"region\":\"",
                           {
                             "Ref": "AWS::Region"
                           },
@@ -122,7 +122,7 @@
                               "Arn"
                             ]
                           },
-                          "\"]},\"yAxis\":{}}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":6,\"properties\":{\"view\":\"timeSeries\",\"title\":\"More total messages in queue with alarm annotation\",\"region\":\"",
+                          "\"]},\"yAxis\":{}}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":6,\"properties\":{\"view\":\"timeSeries\",\"title\":\"More total messages in queue with alarm annotation\",\"accountId\":\"123456789\",\"region\":\"",
                           {
                             "Ref": "AWS::Region"
                           },
@@ -154,7 +154,7 @@
                               "QueueName"
                             ]
                           },
-                          "\",{\"label\":\"NotVisible Messages\",\"period\":30,\"yAxis\":\"right\"}]],\"annotations\":{\"horizontal\":[{\"label\":\"Total Messages >= 100 for 3 datapoints within 3 minutes\",\"value\":100,\"yAxis\":\"left\"}]},\"yAxis\":{}}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":12,\"properties\":{\"view\":\"pie\",\"title\":\"Percentage of messages in each queue as pie chart\",\"region\":\"",
+                          "\",{\"label\":\"NotVisible Messages\",\"period\":30,\"yAxis\":\"right\"}]],\"annotations\":{\"horizontal\":[{\"label\":\"Total Messages >= 100 for 3 datapoints within 3 minutes\",\"value\":100,\"yAxis\":\"left\"}]},\"yAxis\":{}}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":12,\"properties\":{\"view\":\"pie\",\"title\":\"Percentage of messages in each queue as pie chart\",\"accountId\":\"123456789\",\"region\":\"",
                           {
                             "Ref": "AWS::Region"
                           },
@@ -172,7 +172,7 @@
                               "QueueName"
                             ]
                           },
-                          "\",{\"label\":\"NotVisible Messages\",\"period\":30}]],\"yAxis\":{},\"setPeriodToTimeRange\":true}},{\"type\":\"metric\",\"width\":6,\"height\":3,\"x\":0,\"y\":18,\"properties\":{\"view\":\"singleValue\",\"title\":\"Current total messages in queue\",\"region\":\"",
+                          "\",{\"label\":\"NotVisible Messages\",\"period\":30}]],\"yAxis\":{},\"setPeriodToTimeRange\":true}},{\"type\":\"metric\",\"width\":6,\"height\":3,\"x\":0,\"y\":18,\"properties\":{\"view\":\"singleValue\",\"title\":\"Current total messages in queue\",\"accountId\":\"123456789\",\"region\":\"",
                           {
                             "Ref": "AWS::Region"
                           },
@@ -198,13 +198,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-cloudwatch.CfnDashboard",
+                  "fqn": "aws-cdk-lib.aws_cloudwatch.CfnDashboard",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-cloudwatch.Dashboard",
+              "fqn": "aws-cdk-lib.aws_cloudwatch.Dashboard",
               "version": "0.0.0"
             }
           },
@@ -212,7 +212,7 @@
             "id": "BootstrapVersion",
             "path": "aws-cdk-cloudwatch/BootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
+              "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
             }
           },
@@ -220,13 +220,13 @@
             "id": "CheckBootstrapVersion",
             "path": "aws-cdk-cloudwatch/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnRule",
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "aws-cdk-lib.Stack",
           "version": "0.0.0"
         }
       },
@@ -243,7 +243,7 @@
                 "path": "cdk-integ-math-alarm-and-dashboard/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.252"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -254,7 +254,7 @@
                     "id": "BootstrapVersion",
                     "path": "cdk-integ-math-alarm-and-dashboard/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
                     }
                   },
@@ -262,25 +262,25 @@
                     "id": "CheckBootstrapVersion",
                     "path": "cdk-integ-math-alarm-and-dashboard/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnRule",
+                      "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Stack",
+                  "fqn": "aws-cdk-lib.Stack",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
           "version": "0.0.0"
         }
       },
@@ -289,12 +289,12 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.252"
+          "version": "10.3.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
+      "fqn": "aws-cdk-lib.App",
       "version": "0.0.0"
     }
   }

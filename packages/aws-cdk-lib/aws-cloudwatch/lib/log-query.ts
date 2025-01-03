@@ -39,6 +39,13 @@ export interface LogQueryWidgetProps {
   readonly title?: string;
 
   /**
+   * Account ID for the logs of this widget
+   *
+   * @default None
+   */
+  readonly accountId?: string;
+
+  /**
    * Names of log groups to query
    */
   readonly logGroupNames: string[];
@@ -119,6 +126,7 @@ export class LogQueryWidget extends ConcreteWidget {
     const properties: any = {
       view: this.props.view? this.props.view : LogQueryVisualizationType.TABLE,
       title: this.props.title,
+      accountId: this.props.accountId,
       region: this.props.region || cdk.Aws.REGION,
       query: `${sources} | ${query}`,
     };
