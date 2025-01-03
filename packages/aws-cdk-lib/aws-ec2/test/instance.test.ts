@@ -128,6 +128,10 @@ describe('instance', () => {
     expect(instanceType.instanceProperties?.freeTierEligible).toBe(false);
   });
 
+  test.each(Object.values(NamedInstanceType))('named instance "%s" should have instanceProperties', (namedInstanceType: InstanceType) => {
+    expect(namedInstanceType.instanceProperties).toBeDefined();
+  });
+
   test('instance type from factory', () => {
     // GIVEN
     const instanceType = InstanceType.of(InstanceClass.R6ID, InstanceSize.XLARGE16);
