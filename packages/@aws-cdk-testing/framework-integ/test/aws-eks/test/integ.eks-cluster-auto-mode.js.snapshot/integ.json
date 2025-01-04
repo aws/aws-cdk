@@ -1,0 +1,20 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "aws-cdk-eks-auto-mode-cluster-integ/DefaultTest": {
+      "stacks": [
+        "aws-cdk-eks-auto-mode-cluster"
+      ],
+      "diffAssets": false,
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "rollback": true
+          }
+        }
+      },
+      "assertionStack": "aws-cdk-eks-auto-mode-cluster-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkeksautomodeclusterintegDefaultTestDeployAssert9A4F8EA2"
+    }
+  }
+}
