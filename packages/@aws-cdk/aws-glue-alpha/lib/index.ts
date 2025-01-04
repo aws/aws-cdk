@@ -14,3 +14,4 @@ export * from './security-configuration';
 export * from './storage-parameter';
 export * from './table-base';
 export * from './table-deprecated';
+export * from './workflow';
