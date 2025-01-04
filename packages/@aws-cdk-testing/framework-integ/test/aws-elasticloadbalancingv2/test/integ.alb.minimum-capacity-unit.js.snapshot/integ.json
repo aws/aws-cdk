@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "MinimumCapacityUnitAlbInteg/DefaultTest": {
+      "stacks": [
+        "MinimumCapacityUnitAlbStack"
+      ],
+      "assertionStack": "MinimumCapacityUnitAlbInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "MinimumCapacityUnitAlbIntegDefaultTestDeployAssertD00E6A61"
+    }
+  }
+}
