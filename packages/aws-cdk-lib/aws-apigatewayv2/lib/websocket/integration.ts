@@ -1,9 +1,10 @@
 import { Construct } from 'constructs';
 import { IWebSocketApi } from './api';
+import { InternalWebSocketIntegrationResponseOptions, InternalWebSocketIntegrationResponseProps, WebSocketIntegrationResponse, WebSocketIntegrationResponseKey } from './integration-response';
 import { IWebSocketRoute } from './route';
 import { CfnIntegration } from '.././index';
 import { IRole } from '../../../aws-iam';
-import { Duration, Resource } from '../../../core';
+import { Duration, Names, Resource } from '../../../core';
 import { IIntegration } from '../common';
 
 /**
@@ -130,6 +131,7 @@ export interface WebSocketIntegrationProps {
    * ```
    *
    * @default - No request templates required.
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-mapping-template-reference.html
    */
   readonly requestTemplates?: { [contentType: string]: string };
 
@@ -208,13 +210,20 @@ export interface WebSocketRouteIntegrationBindOptions {
    * this will be used as their parent scope.
    */
   readonly scope: Construct;
+
+  /**
+   * Should the route send a response to the client
+   * @default false
+   */
+  readonly returnResponse?: boolean;
 }
 
 /**
- * The interface that various route integration classes will inherit.
+ * The abstract class that all route integration classes will implement.
  */
 export abstract class WebSocketRouteIntegration {
-  private integration?: WebSocketIntegration;
+  protected integration?: WebSocketIntegration;
+  protected config?: WebSocketRouteIntegrationConfig;
 
   /**
    * Initialize an integration for a route on websocket api.
@@ -232,20 +241,20 @@ export abstract class WebSocketRouteIntegration {
     }
 
     if (!this.integration) {
-      const config = this.bind(options);
+      this.config = this.bind(options);
 
       this.integration = new WebSocketIntegration(options.scope, this.id, {
         webSocketApi: options.route.webSocketApi,
-        integrationType: config.type,
-        integrationUri: config.uri,
-        integrationMethod: config.method,
-        contentHandling: config.contentHandling,
-        credentialsRole: config.credentialsRole,
-        requestTemplates: config.requestTemplates,
-        requestParameters: config.requestParameters,
-        timeout: config.timeout,
-        passthroughBehavior: config.passthroughBehavior,
-        templateSelectionExpression: config.templateSelectionExpression,
+        integrationType: this.config.type,
+        integrationUri: this.config.uri,
+        integrationMethod: this.config.method,
+        contentHandling: this.config.contentHandling,
+        credentialsRole: this.config.credentialsRole,
+        requestTemplates: this.config.requestTemplates,
+        requestParameters: this.config.requestParameters,
+        timeout: this.config.timeout,
+        passthroughBehavior: this.config.passthroughBehavior,
+        templateSelectionExpression: this.config.templateSelectionExpression,
       });
     }
 
@@ -256,6 +265,101 @@ export abstract class WebSocketRouteIntegration {
    * Bind this integration to the route.
    */
   public abstract bind(options: WebSocketRouteIntegrationBindOptions): WebSocketRouteIntegrationConfig;
+
+  /**
+   * The WebSocket API identifier
+   * @throws an error if this integration has not been bound to a route first
+   */
+  public get webSocketApiId(): string {
+    if (!this.integration) {
+      throw new Error('This integration has not been associated to an API route');
+    }
+    return this.integration.webSocketApi.apiId;
+  }
+
+  /**
+   * The WebSocket Integration identifier
+   * @throws an error if this integration has not been bound to a route first
+   */
+  public get integrationId(): string {
+    if (!this.integration) {
+      throw new Error('This integration has not been associated to an API route');
+    }
+
+    return this.integration.integrationId;
+  }
+}
+
+/**
+ * The abstract class that two-way communication route integration classes
+ * with customized responses will implement.
+ */
+export abstract class CustomResponseWebSocketRoute extends WebSocketRouteIntegration {
+  private responses: InternalWebSocketIntegrationResponseProps[] = [];
+
+  /**
+   * Initialize an integration for a route on websocket api.
+   * @param id id of the underlying `WebSocketIntegration` construct.
+   */
+  constructor(id: string) {
+    super(id);
+  }
+
+  /**
+   * Internal method called when binding this integration to the route.
+   * @internal
+   */
+  public _bindToRoute(options: WebSocketRouteIntegrationBindOptions): { readonly integrationId: string } {
+    const requiresBinding = !this.integration;
+    const result = super._bindToRoute(options);
+
+    if (requiresBinding) {
+      // This should never happen, super._bindToRoute must have set up the integration
+      if (!this.config || !this.integration) {
+        throw new Error('Missing integration setup during WebSocketRouteIntegration._bindToRoute');
+      }
+
+      this.responses.push(...this.config.responses ?? []);
+      if (this.responses.length && !options.returnResponse) {
+        // FIXME change to a warning?
+        throw new Error('Setting up integration responses without setting up returnResponse to true will have no effect, and is likely a mistake.');
+      }
+
+      this.responses.reduce<{ [key: string]: string }>((acc, props) => {
+        if (props.responseKey.key in acc) {
+          throw new Error(`Duplicate integration response key: "${props.responseKey.key}"`);
+        }
+
+        const key = props.responseKey.key;
+        acc[key] = props.responseKey.key;
+        return acc;
+      }, {});
+
+      for (const responseProps of this.responses) {
+        const prefix = slugify(responseProps.responseKey.key);
+
+        new WebSocketIntegrationResponse(
+          options.scope,
+          `${prefix}${Names.uniqueResourceName(this.integration, { maxLength: 256 - prefix.length })}`,
+          { ...responseProps, integration: this },
+        );
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * Add a response to this integration
+   *
+   * @param responseKey The response key to add
+   * @param options Optional properties to add to the response
+   */
+  addResponse(
+    responseKey: WebSocketIntegrationResponseKey,
+    options: InternalWebSocketIntegrationResponseOptions = {}) {
+    this.responses.push({ ...options, responseKey });
+  }
 }
 
 /**
@@ -309,6 +413,14 @@ export interface WebSocketRouteIntegrationConfig {
   readonly requestParameters?: { [dest: string]: string };
 
   /**
+   * Integration responses configuration
+   *
+   * @default - No response configuration provided.
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-integration-responses.html
+   */
+  readonly responses?: InternalWebSocketIntegrationResponseProps[];
+
+  /**
    * Template selection expression
    *
    * @default - No template selection expression.
@@ -329,4 +441,8 @@ export interface WebSocketRouteIntegrationConfig {
    * @default - No pass through bahavior.
    */
   readonly passthroughBehavior?: PassthroughBehavior;
+}
+
+function slugify(x: string): string {
+  return x.replace(/[^a-zA-Z0-9]/g, '');
 }

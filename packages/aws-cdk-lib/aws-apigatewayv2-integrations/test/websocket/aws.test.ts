@@ -1,5 +1,5 @@
 import { Template } from '../../../assertions';
-import { ContentHandling, PassthroughBehavior, WebSocketApi } from '../../../aws-apigatewayv2';
+import { ContentHandling, PassthroughBehavior, WebSocketApi, WebSocketIntegrationResponseKey } from '../../../aws-apigatewayv2';
 import * as iam from '../../../aws-iam';
 import { Duration, Stack } from '../../../core';
 import { WebSocketAwsIntegration } from './../../lib/websocket/aws';
@@ -47,7 +47,9 @@ describe('AwsWebSocketIntegration', () => {
           passthroughBehavior: PassthroughBehavior.WHEN_NO_TEMPLATES,
           contentHandling: ContentHandling.CONVERT_TO_BINARY,
           timeout: Duration.seconds(10),
+          responses: [{ responseKey: WebSocketIntegrationResponseKey.success }],
         }),
+        returnResponse: true,
       },
     });
 
@@ -65,6 +67,11 @@ describe('AwsWebSocketIntegration', () => {
       PassthroughBehavior: 'WHEN_NO_TEMPLATES',
       ContentHandlingStrategy: 'CONVERT_TO_BINARY',
       TimeoutInMillis: 10000,
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::IntegrationResponse', {
+      ApiId: { Ref: 'ApiF70053CD' },
+      IntegrationId: { Ref: 'ApidefaultRouteAwsIntegration9C4CC31F' },
+      IntegrationResponseKey: '/2\\d{2}/',
     });
   });
 });

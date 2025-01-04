@@ -1,10 +1,11 @@
 import {
-  WebSocketRouteIntegration,
   WebSocketIntegrationType,
   WebSocketRouteIntegrationConfig,
   WebSocketRouteIntegrationBindOptions,
   PassthroughBehavior,
   ContentHandling,
+  CustomResponseWebSocketRoute,
+  InternalWebSocketIntegrationResponseProps,
 } from '../../../aws-apigatewayv2';
 import { IRole } from '../../../aws-iam';
 import { Duration } from '../../../core';
@@ -56,8 +57,17 @@ export interface WebSocketAwsIntegrationProps {
    * ```
    *
    * @default - No request template provided to the integration.
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-mapping-template-reference.html
    */
   readonly requestTemplates?: { [contentType: string]: string };
+
+  /**
+   * Integration responses configuration
+   *
+   * @default - No response configuration provided.
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-integration-responses.html
+   */
+  readonly responses?: InternalWebSocketIntegrationResponseProps[];
 
   /**
    * The template selection expression for the integration.
@@ -89,7 +99,7 @@ export interface WebSocketAwsIntegrationProps {
 /**
  * AWS WebSocket AWS Type Integration
  */
-export class WebSocketAwsIntegration extends WebSocketRouteIntegration {
+export class WebSocketAwsIntegration extends CustomResponseWebSocketRoute {
   /**
    * @param id id of the underlying integration construct
    */
@@ -106,6 +116,7 @@ export class WebSocketAwsIntegration extends WebSocketRouteIntegration {
       credentialsRole: this.props.credentialsRole,
       requestParameters: this.props.requestParameters,
       requestTemplates: this.props.requestTemplates,
+      responses: this.props.responses,
       passthroughBehavior: this.props.passthroughBehavior,
       templateSelectionExpression: this.props.templateSelectionExpression,
       timeout: this.props.timeout,
