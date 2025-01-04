@@ -357,7 +357,7 @@ abstract class StreamBase extends Resource implements IStream {
   /**
    * Adds a statement to the IAM resource policy associated with this stream.
    *
-   * If this stream was created in this stack (`new Strem`), a resource policy
+   * If this stream was created in this stack (`new Stream`), a resource policy
    * will be automatically created upon the first call to `addToResourcePolicy`. If
    * the stream is imported (`Stream.import`), then this is a no-op.
    */
@@ -422,11 +422,11 @@ abstract class StreamBase extends Resource implements IStream {
    * Grant the indicated permissions on this stream to the given IAM principal (Role/Group/User).
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]) {
-    return iam.Grant.addToPrincipal({
+    return iam.Grant.addToPrincipalOrResource({
       grantee,
       actions,
       resourceArns: [this.streamArn],
-      scope: this,
+      resource: this,
     });
   }
 
