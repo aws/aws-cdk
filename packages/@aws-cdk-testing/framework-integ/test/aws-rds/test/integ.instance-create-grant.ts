@@ -26,6 +26,8 @@ const instance = new rds.DatabaseInstance(stack, 'Instance', {
   deletionProtection: false,
   publiclyAccessible: false,
   backupRetention: cdk.Duration.days(0),
+  storageEncrypted: false,
+  isStorageLegacyUnencrypted: true,
 });
 
 const role = new iam.Role(stack, 'DBRole', {

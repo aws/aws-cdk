@@ -32,6 +32,8 @@ new rds.DatabaseCluster(stack, 'DualstackCluster', {
   vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
   vpc,
   networkType: rds.NetworkType.DUAL,
+  storageEncrypted: false,
+  isStorageLegacyUnencrypted: true,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
@@ -49,6 +51,8 @@ new rds.DatabaseCluster(stack, 'Ipv4Cluster', {
     }),
   ],
   networkType: rds.NetworkType.IPV4,
+  storageEncrypted: false,
+  isStorageLegacyUnencrypted: true,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 

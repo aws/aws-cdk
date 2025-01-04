@@ -16,6 +16,8 @@ export class TestStack extends Stack {
       writer: ClusterInstance.serverlessV2('writer'),
       removalPolicy: RemovalPolicy.DESTROY,
       vpc: vpc,
+      storageEncrypted: false,
+      isStorageLegacyUnencrypted: true,
     });
   }
 }

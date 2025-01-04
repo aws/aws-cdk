@@ -21,6 +21,8 @@ new rds.DatabaseCluster(stack, 'Database', {
   readers: [rds.ClusterInstance.provisioned('reader')],
   instanceUpdateBehaviour: rds.InstanceUpdateBehaviour.ROLLING,
   vpc,
+  storageEncrypted: false,
+  isStorageLegacyUnencrypted: true,
 });
 
 new integ.IntegTest(app, 'instanceIdentifiersTest', {

@@ -37,6 +37,8 @@ export class TestStack extends Stack {
         vpcSubnets: {
           subnetType: SubnetType.PUBLIC,
         },
+        storageEncrypted: false,
+        isStorageLegacyUnencrypted: true,
       }));
   }
 }

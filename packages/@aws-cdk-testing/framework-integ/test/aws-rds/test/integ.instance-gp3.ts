@@ -16,6 +16,8 @@ class TestStack extends Stack {
       vpc,
       allocatedStorage: 1000,
       storageType: StorageType.GP3,
+      storageEncrypted: false,
+      isStorageLegacyUnencrypted: true,
       removalPolicy: RemovalPolicy.DESTROY,
     });
   }

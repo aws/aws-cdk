@@ -20,6 +20,8 @@ const cluster = new rds.DatabaseCluster(stack, 'Database', {
   writer: rds.ClusterInstance.serverlessV2('writerInstance'),
   vpc,
   enableDataApi: true,
+  storageEncrypted: false,
+  isStorageLegacyUnencrypted: true,
 });
 
 cluster.grantDataApiAccess(fucntion);

@@ -17,6 +17,8 @@ class TestCase extends Construct {
       readers: props.readers,
       removalPolicy: RemovalPolicy.DESTROY,
       vpc: props.vpc,
+      storageEncrypted: false,
+      isStorageLegacyUnencrypted: true,
     });
     cluster.metricServerlessDatabaseCapacity({
       period: Duration.minutes(10),

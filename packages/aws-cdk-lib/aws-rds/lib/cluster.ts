@@ -346,9 +346,23 @@ interface DatabaseClusterBaseProps {
   /**
    * Whether to enable storage encryption.
    *
-   * @default - true if storageEncryptionKey is provided, false otherwise
+   * @default - If the `@aws-cdk/aws-rds:enableEncryptionAtRestByDefault` feature flag is set, true by default or if storageEncryptionKey is provided. If the flag is not set, undefined by default unless storageEncryptionKey is provided.
    */
   readonly storageEncrypted?: boolean;
+
+  /**
+   * Set to `true` if the DatabaseCluster was created with unencrypted storage but you're setting the
+   * `@aws-cdk/aws-rds:enableEncryptionAtRestByDefault` feature flag to `true`.
+   *
+   * The legacy behavior left the `StorageEncrypted` CloudFormation property unset by default. This resulted in
+   * cluster storage being unencrypted. The new behavior always sets the `StorageEncrypted` property to `true` or
+   * `false` for clarity. However, CloudFormation will replace the Cluster if you change `StorageEncrypted` from
+   * `undefined` to `false`. This flag retains the legacy behavior of leaving the `StorageEncrypted` property unset,
+   * even if you're using the new behavior of the `@aws-cdk/aws-rds:enableEncryptionAtRestByDefault` feature flag.
+   *
+   * @default - false
+   */
+  readonly isStorageLegacyUnencrypted?: boolean;
 
   /**
    * The KMS key for storage encryption.
@@ -887,7 +901,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       enableCloudwatchLogsExports: props.cloudwatchLogsExports,
       // Encryption
       kmsKeyId: props.storageEncryptionKey?.keyArn,
-      storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
+      storageEncrypted: this.getStorageEncryptedProperty(props),
       // Tags
       copyTagsToSnapshot: props.copyTagsToSnapshot ?? true,
       domain: this.domainId,
@@ -1052,6 +1066,34 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
         }
       }
     }
+  }
+
+  /**
+   * Determines the value of the `storageEncrypted` property for the cluster.
+   */
+  private getStorageEncryptedProperty(props: DatabaseClusterProps): boolean | undefined {
+    const featureFlagEnabled = FeatureFlags.of(this).isEnabled(cxapi.RDS_ENABLE_ENCRYPTION_AT_REST_BY_DEFAULT);
+
+    // Retain the legacy behavior if the feature flag is not enabled
+    if (!featureFlagEnabled) {
+      return props.storageEncryptionKey ? true : props.storageEncrypted;
+    }
+
+    // If a KMS key is provided, enable encryption at rest
+    if (props.storageEncryptionKey) {
+      return true;
+    }
+
+    if (props.isStorageLegacyUnencrypted) {
+      if (props.storageEncrypted) {
+        throw new Error('Cannot set `storageEncrypted` to `true` when `isStorageLegacyUnencrypted` is `true`.');
+      }
+
+      return undefined;
+    }
+
+    // Otherwise, default to the explicitly provided value or `true` if no value was provided
+    return props.storageEncrypted ?? true;
   }
 
   /**

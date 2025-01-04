@@ -37,6 +37,8 @@ new rds.DatabaseCluster(stack, 'Database', {
   vpc,
   domain: activeDirectory.ref,
   domainRole: iamRole,
+  storageEncrypted: false,
+  isStorageLegacyUnencrypted: true,
 });
 
 new integ.IntegTest(app, 'integ-cluster-kerberos', {
