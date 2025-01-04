@@ -9,6 +9,7 @@ import {
   lowerCaseFirstCharacter,
   transformObjectKeys,
 } from './common';
+import { ToolkitError } from '../../toolkit/error';
 import type { SDK } from '../aws-auth';
 
 import type { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
@@ -118,13 +119,14 @@ export async function isHotswappableAppSyncChange(
           const functions = await sdk.appsync().listFunctions({ apiId: sdkRequestObject.apiId });
           const { functionId } = functions.find((fn) => fn.name === physicalName) ?? {};
           // Updating multiple functions at the same time or along with graphql schema results in `ConcurrentModificationException`
-          await simpleRetry(
+          await exponentialBackOffRetry(
             () =>
               sdk.appsync().updateFunction({
                 ...sdkRequestObject,
                 functionId: functionId,
               }),
-            5,
+            6,
+            1000,
             'ConcurrentModificationException',
           );
         } else if (isGraphQLSchema) {
@@ -142,7 +144,7 @@ export async function isHotswappableAppSyncChange(
             schemaCreationResponse = await sdk.appsync().getSchemaCreationStatus(getSchemaCreationStatusRequest);
           }
           if (schemaCreationResponse.status === 'FAILED') {
-            throw new Error(schemaCreationResponse.details);
+            throw new ToolkitError(schemaCreationResponse.details ?? 'Schema creation has failed.');
           }
         } else {
           //isApiKey
@@ -169,13 +171,13 @@ async function fetchFileFromS3(s3Url: string, sdk: SDK) {
   return (await sdk.s3().getObject({ Bucket: s3Bucket, Key: s3Key })).Body?.transformToString();
 }
 
-async function simpleRetry(fn: () => Promise<any>, numOfRetries: number, errorCodeToRetry: string) {
+async function exponentialBackOffRetry(fn: () => Promise<any>, numOfRetries: number, backOff: number, errorCodeToRetry: string) {
   try {
     await fn();
   } catch (error: any) {
     if (error && error.name === errorCodeToRetry && numOfRetries > 0) {
-      await sleep(1000); // wait a whole second
-      await simpleRetry(fn, numOfRetries - 1, errorCodeToRetry);
+      await sleep(backOff); // time to wait doubles everytime function fails, starts at 1 second
+      await exponentialBackOffRetry(fn, numOfRetries - 1, backOff * 2, errorCodeToRetry);
     } else {
       throw error;
     }
