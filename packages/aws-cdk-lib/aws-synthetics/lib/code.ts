@@ -122,8 +122,9 @@ export class AssetCode extends Code {
    *
    * Requires path to be either zip file or directory.
    * Requires asset directory to have the structure 'nodejs/node_modules' for puppeteer runtime.
-   * Requires asset directory to have the structure 'python' for python runtime.
+   * Requires canary file to be directly inside node_modules folder.
    * Requires asset directory to have the extension '.js', '.mjs', or '.cjs' for playwright runtime.
+   * Requires asset directory to have the structure 'python' for python runtime.
    * Requires canary file name matches the handler name.
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary.html
    */
