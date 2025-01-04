@@ -1214,14 +1214,64 @@ cluster.grantAccess('eksAdminViewRoleAccess', eksAdminViewRole.roleArn, [
     namespaces: ['foo', 'bar'],
   }),
 ]);
+
+// Custom permissions in EKS via group mapping
+cluster.grantAccessToGroups('customAccess', 'arn:aws:iam::123456789012:role/testrole', ['custom-access-group']);
+
+// Now we can define permissions for the mapping
+this.addManifest('customAccessPermissions', [
+  {
+    apiVersion: 'rbac.authorization.k8s.io/v1',
+    kind: 'ClusterRole',
+    metadata: {
+      name: 'custom-accesss-role',
+    },
+    rules: [
+      {
+        apiGroups: [''],
+        resources: ['pods'],
+        verbs: ['get', 'list', 'watch'],
+      },
+      {
+        apiGroups: ['apps'],
+        resources: ['deployments'],
+        verbs: ['create', 'update', 'delete'],
+      },
+      {
+        apiGroups: ['rbac.authorization.k8s.io'],
+        resources: ['roles', 'rolebindings'],
+        verbs: ['create', 'bind', 'delete'],
+      },
+    ],
+  },
+  {
+    apiVersion: 'rbac.authorization.k8s.io/v1',
+    kind: 'ClusterRoleBinding',
+    metadata: {
+      name: 'custom-access-rolebinding',
+    },
+    subjects: [
+      {
+        kind: 'Group',
+        name: 'custom-access-group',
+        apiGroup: 'rbac.authorization.k8s.io',
+      },
+    ],
+    roleRef: {
+      kind: 'ClusterRole',
+      name: 'custom-access-role',
+      apiGroup: 'rbac.authorization.k8s.io',
+    },
+  },
+]);
 ```
 
 ### Migrating from ConfigMap to Access Entry
 
 If the cluster is created with the `authenticationMode` property left undefined,
-it will default to `CONFIG_MAP`. 
+it will default to `CONFIG_MAP`.
 
-The update path is: 
+The update path is:
 
 `undefined`(`CONFIG_MAP`) -> `API_AND_CONFIG_MAP` -> `API`
 

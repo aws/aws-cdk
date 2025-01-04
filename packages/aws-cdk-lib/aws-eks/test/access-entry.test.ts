@@ -37,7 +37,7 @@ describe('AccessEntry', () => {
     };
   });
 
-  test('creates a new AccessEntry', () => {
+  test('creates a new AccessEntry with accessPolicies', () => {
     // WHEN
     new AccessEntry(stack, 'AccessEntry', {
       cluster,
@@ -58,6 +58,38 @@ describe('AccessEntry', () => {
           PolicyArn: 'mock-policy-arn',
         },
       ],
+    });
+  });
+
+  test('creates a new AccessEntry with kubernetesGroups', () => {
+    // WHEN
+    new AccessEntry(stack, 'AccessEntry', {
+      cluster,
+      kubernetesGroups: ['my-kubernetes-group'],
+      principal: 'mock-principal-arn',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::AccessEntry', {
+      ClusterName: { Ref: 'Cluster9EE0221C' },
+      PrincipalArn: 'mock-principal-arn',
+      KubernetesGroups: ['my-kubernetes-group'],
+    });
+  });
+
+  test('creates a new AccessEntry with accessPolicies and kubernetesGroups', () => {
+    // WHEN
+    new AccessEntry(stack, 'AccessEntry', {
+      cluster,
+      kubernetesGroups: ['my-kubernetes-group'],
+      principal: 'mock-principal-arn',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::AccessEntry', {
+      ClusterName: { Ref: 'Cluster9EE0221C' },
+      PrincipalArn: 'mock-principal-arn',
+      KubernetesGroups: ['my-kubernetes-group'],
     });
   });
 
@@ -95,7 +127,7 @@ describe('AccessEntry', () => {
       ClusterName: { Ref: 'Cluster9EE0221C' },
       PrincipalArn: mockProps.principal,
       AccessPolicies: [
-        { PolicyArn: mockProps.accessPolicies[0].policy },
+        { PolicyArn: mockProps.accessPolicies![0].policy },
         {
           AccessScope: {
             Type: 'cluster',
@@ -114,6 +146,20 @@ describe('AccessEntry', () => {
           },
         },
       ],
+    });
+  });
+
+  test('adds new kubernetes groups with addKubernetesGroups()', () => {
+    // GIVEN
+    const accessEntry = new AccessEntry(stack, 'AccessEntry', mockProps);
+    // WHEN
+    accessEntry.addKubernetesGroups(['my-custom-group']);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::AccessEntry', {
+      ClusterName: { Ref: 'Cluster9EE0221C' },
+      PrincipalArn: mockProps.principal,
+      KubernetesGroups: ['my-custom-group'],
     });
   });
 
