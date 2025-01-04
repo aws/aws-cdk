@@ -83,8 +83,8 @@ Flags come in three types:
 | [@aws-cdk/aws-dynamodb:resourcePolicyPerReplica](#aws-cdkaws-dynamodbresourcepolicyperreplica) | When enabled will allow you to specify a resource policy per replica, and not copy the source table policy to all replicas | 2.164.0 | (fix) |
 | [@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault](#aws-cdkaws-ec2bastionhostuseamazonlinux2023bydefault) | When enabled, the BastionHost construct will use the latest Amazon Linux 2023 AMI, instead of Amazon Linux 2. | 2.172.0 | (default) |
 | [@aws-cdk/core:aspectStabilization](#aws-cdkcoreaspectstabilization) | When enabled, a stabilization loop will be run when invoking Aspects during synthesis. | 2.172.0 | (config) |
+| [@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource](#aws-cdkaws-route53-targetsuserpooldomainnamemethodwithoutcustomresource) | When enabled, use a new method for DNS Name of user pool domain target without creating a custom resource. | 2.174.0 | (fix) |
 | [@aws-cdk/aws-rds:enableEncryptionAtRestByDefault](#aws-cdkaws-rdsenableencryptionatrestbydefault) | When enabled, enable encryption at rest by default for RDS instances. | V2NEXT | (default) |
-| [@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource](#aws-cdkaws-route53-targetsuserpooldomainnamemethodwithoutcustomresource) | When enabled, use a new method for DNS Name of user pool domain target without creating a custom resource. | V2NEXT | (fix) |
 
 <!-- END table -->
 
@@ -1014,10 +1014,10 @@ removing these ingress/egress rules in order to restrict access to the default s
 | (not in v1) |  |  |
 | 2.78.0 | `false` | `true` |
 
-**Compatibility with old behavior:**
+**Compatibility with old behavior:** 
       To allow all ingress/egress traffic to the VPC default security group you
       can set the `restrictDefaultSecurityGroup: false`.
-
+    
 
 
 ### @aws-cdk/aws-kms:aliasNameRef
@@ -1075,10 +1075,10 @@ provided.
 | (not in v1) |  |  |
 | 2.88.0 | `false` | `true` |
 
-**Compatibility with old behavior:**
+**Compatibility with old behavior:** 
       If backwards compatibility needs to be maintained due to an existing autoscaling group
       using a launch config, set this flag to false.
-
+    
 
 
 ### @aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby
@@ -1574,6 +1574,22 @@ When this feature flag is enabled, a stabilization loop is run to recurse the co
 | 2.172.0 | `true` | `true` |
 
 
+### @aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource
+
+*When enabled, use a new method for DNS Name of user pool domain target without creating a custom resource.* (fix)
+
+When this feature flag is enabled, a new method will be used to get the DNS Name of the user pool domain target. The old method
+creates a custom resource internally, but the new method doesn't need a custom resource.
+
+If the flag is set to false then a custom resource will be created when using `UserPoolDomainTarget`.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.174.0 | `false` | `true` |
+
+
 ### @aws-cdk/aws-rds:enableEncryptionAtRestByDefault
 
 *When enabled, enable encryption at rest by default for RDS instances.* (default)
@@ -1588,23 +1604,7 @@ If the flag is set to false then encryption at rest will not be enabled by defau
 | (not in v1) |  |  |
 | V2NEXT | `false` | `true` |
 
-**Compatibility with old behavior:** Set the `storageEncrypted` property to `false` and `storageEncryptedLegacyDefaultValue` to `true` on DatabaseCluster and DatabaseInstance constructs to restore the previous behavior.
-
-
-### @aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource
-
-*When enabled, use a new method for DNS Name of user pool domain target without creating a custom resource.* (fix)
-
-When this feature flag is enabled, a new method will be used to get the DNS Name of the user pool domain target. The old method
-creates a custom resource internally, but the new method doesn't need a custom resource.
-
-If the flag is set to false then a custom resource will be created when using `UserPoolDomainTarget`.
-
-
-| Since | Default | Recommended |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
+**Compatibility with old behavior:** Set the `storageEncrypted` property to `false` and `isStorageLegacyUnencrypted` to `true` on DatabaseCluster and DatabaseInstance constructs to restore the previous behavior.
 
 
 <!-- END details -->
