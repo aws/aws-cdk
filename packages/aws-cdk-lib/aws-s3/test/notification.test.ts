@@ -476,7 +476,7 @@ describe('notification', () => {
     });
   });
 
-  test('skip destination validation is set to false by default', () => {
+  test('skip destination validation is undefined by default', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -492,9 +492,11 @@ describe('notification', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('Custom::S3BucketNotifications', {
-      SkipDestinationValidation: false,
-    });
+    expect(() => {
+      Template.fromStack(stack).hasResourceProperties('Custom::S3BucketNotifications', {
+        SkipDestinationValidation: true,
+      });
+    }).toThrow(/undefined/);
   });
 
   test('skip destination validation is set to true', () => {
