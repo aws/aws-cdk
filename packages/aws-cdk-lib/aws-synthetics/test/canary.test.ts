@@ -294,7 +294,7 @@ test('throw error for enabling both cleanup and provisionedResourceCleanup', () 
     cleanup: synthetics.Cleanup.LAMBDA,
     provisionedResourceCleanup: true,
   }))
-    .toThrow('Cannot specify both `cleanup` and `provisionedResourceCleanup`. Use `provisionedResourceCleanup` instead.');
+    .toThrow('Cannot specify `provisionedResourceCleanup` when `cleanup` is set to `Cleanup.LAMBDA`. Use only `provisionedResourceCleanup`.');
 });
 
 test('throws when activeTracing is enabled with an unsupported runtime', () => {

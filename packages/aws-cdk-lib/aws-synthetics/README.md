@@ -330,3 +330,4 @@ const canary = new synthetics.Canary(this, 'MyCanary', {
   artifactS3KmsKey: key,
 });
 ```
+

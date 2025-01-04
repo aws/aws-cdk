@@ -70,6 +70,8 @@ export enum Cleanup {
    * Clean up the underlying Lambda function only. The user is
    * responsible for cleaning up all other resources left behind
    * by the Canary.
+   *
+   * @deprecated use provisionedResourceCleanup
    */
   LAMBDA = 'lambda',
 }
@@ -251,7 +253,6 @@ export interface CanaryProps {
    * Using `Cleanup.LAMBDA` will create a Custom Resource to achieve this.
    *
    * @default Cleanup.NOTHING
-   * @deprecated use provisionedResourceCleanup
    */
   readonly cleanup?: Cleanup;
 
@@ -352,8 +353,8 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
       validateName(props.canaryName);
     }
 
-    if (props.cleanup && props.provisionedResourceCleanup !== undefined) {
-      throw new Error('Cannot specify both `cleanup` and `provisionedResourceCleanup`. Use `provisionedResourceCleanup` instead.');
+    if (props.cleanup === Cleanup.LAMBDA && props.provisionedResourceCleanup) {
+      throw new Error('Cannot specify `provisionedResourceCleanup` when `cleanup` is set to `Cleanup.LAMBDA`. Use only `provisionedResourceCleanup`.');
     }
 
     super(scope, id, {
