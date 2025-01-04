@@ -236,9 +236,30 @@ runs the risk of the key becoming unmanageable if that user or role is deleted.
 It is highly recommended that the key policy grants access to the account root, rather than specific principals.
 See https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html for more information.
 
+### Signing and Verification key policies
+
+Creating signatures and verifying them with KMS requires specific permissions.
+The respective policies can be attached to a principal via the `grantSign` and `grantVerify` methods.
+
+```ts
+const key = new kms.Key(this, 'MyKey');
+const user = new iam.User(this, 'MyUser');
+key.grantSign(user); // Adds 'kms:Sign' to the principal's policy
+key.grantVerify(user); // Adds 'kms:Verify' to the principal's policy
+```
+
+If both sign and verify permissions are required, they can be applied with one method called `grantSignVerify`.
+
+```ts
+const key = new kms.Key(this, 'MyKey');
+const user = new iam.User(this, 'MyUser');
+key.grantSignVerify(user); // Adds 'kms:Sign' and 'kms:Verify' to the principal's policy
+```
+
+
 ### HMAC specific key policies
 
-HMAC keys have a different key policy than other KMS keys. They have a policy for generating and for verifying a MAC. 
+HMAC keys have a different key policy than other KMS keys. They have a policy for generating and for verifying a MAC.
 The respective policies can be attached to a principal via the `grantGenerateMac` and `grantVerifyMac` methods.
 
 ```ts

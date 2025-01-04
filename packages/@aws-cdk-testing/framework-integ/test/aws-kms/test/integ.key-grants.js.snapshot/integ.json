@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "KeyGrantsIntegTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-kms-grants"
+      ],
+      "assertionStack": "KeyGrantsIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "KeyGrantsIntegTestDefaultTestDeployAssert49AF830A"
+    }
+  }
+}
