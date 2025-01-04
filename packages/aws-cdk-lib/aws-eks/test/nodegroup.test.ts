@@ -1108,6 +1108,30 @@ describe('node group', () => {
     });
   });
 
+  test('create nodegroup correctly with nodeRepairConfig provided', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+
+    // WHEN
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    new eks.Nodegroup(stack, 'Nodegroup', {
+      cluster,
+      nodeRepairConfig: {
+        enabled: true,
+      },
+    });
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
+      NodeRepairConfig: {
+        Enabled: true,
+      },
+    });
+  });
+
   test('create nodegroup with forceUpdate disabled', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
