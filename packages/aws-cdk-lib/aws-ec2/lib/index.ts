@@ -10,6 +10,7 @@ export * from './machine-image';
 export * from './nat';
 export * from './network-acl';
 export * from './network-acl-types';
+export * from './network-interface';
 export * from './port';
 export * from './prefix-list';
 export * from './security-group';
