@@ -103,6 +103,7 @@ test.each([
   { transformToString: () => 'foo' },
   Buffer.from('foo'),
   new TextEncoder().encode('foo'),
+  new Uint8Array(new TextEncoder().encode('this is foo string').buffer, 8, 3),
 ])('coerce %p', async (fooValue) => {
   expect(await coerceSdkv3Response({
     foo: fooValue,

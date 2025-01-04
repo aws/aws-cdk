@@ -1,0 +1,13 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "AWSCustomResourceKmsIntegTest/DefaultTest": {
+      "stacks": [
+        "aws-custom-resource-kms"
+      ],
+      "diffAssets": true,
+      "assertionStack": "AWSCustomResourceKmsIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "AWSCustomResourceKmsIntegTestDefaultTestDeployAssert7EF514C2"
+    }
+  }
+}
