@@ -1,8 +1,11 @@
 # cli-args-gen
 
 Generates CDK CLI configurations from the source of truth in `packages/aws-cdk/lib/config.ts`.
-Currently generates `yargs` config into `packages/aws-cdk/lib/parse-command-line-arguments.ts` and
-strongly-typed CLI arguments interface into `packages/aws-cdk-lib/cli-arguments.ts`.
+Currently generates the following files:
+
+- `packages/aws-cdk/lib/parse-command-line-arguments.ts`: `yargs` config.
+- `packages/aws-cdk-lib/cli-arguments.ts`: strongly typed `CliArguments` interface.
+- `packages/aws-cdk-lib/convert-to-cli-args.ts`: converts the `any` returned by `yargs` to `CliArguments`.
 
 ## Usage
 
