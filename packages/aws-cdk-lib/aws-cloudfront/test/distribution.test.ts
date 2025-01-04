@@ -1378,6 +1378,113 @@ describe('Distribution metrics tests', () => {
   });
 });
 
+describe('WAF protection', () => {
+  test('default one-click security rendered correctly', () => {
+    const origin = defaultOrigin();
+    const nameMatcher = Match.stringLikeRegexp('CreatedByCloudFront-');
+    stack = new Stack(app, 'UsEast1Stack', {
+      env: { account: '1234', region: 'us-east-1' },
+    });
+
+    new Distribution(stack, 'MyDist', {
+      defaultBehavior: { origin },
+      enableWafCoreProtections: true,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::WAFv2::WebACL', Match.objectLike({
+      Name: nameMatcher,
+      DefaultAction: {
+        Allow: {},
+      },
+      Scope: 'CLOUDFRONT',
+      VisibilityConfig: {
+        CloudWatchMetricsEnabled: true,
+        MetricName: nameMatcher,
+        SampledRequestsEnabled: true,
+      },
+      Rules: [
+        {
+          Name: 'AWS-AWSManagedRulesAmazonIpReputationList',
+          Priority: 0,
+          Statement: {
+            ManagedRuleGroupStatement: {
+              VendorName: 'AWS',
+              Name: 'AWSManagedRulesAmazonIpReputationList',
+            },
+          },
+          OverrideAction: {
+            None: {},
+          },
+          VisibilityConfig: {
+            SampledRequestsEnabled: true,
+            CloudWatchMetricsEnabled: true,
+            MetricName: 'AWS-AWSManagedRulesAmazonIpReputationList',
+          },
+        },
+        {
+          Name: 'AWS-AWSManagedRulesCommonRuleSet',
+          Priority: 1,
+          Statement: {
+            ManagedRuleGroupStatement: {
+              VendorName: 'AWS',
+              Name: 'AWSManagedRulesCommonRuleSet',
+            },
+          },
+          OverrideAction: {
+            None: {},
+          },
+          VisibilityConfig: {
+            SampledRequestsEnabled: true,
+            CloudWatchMetricsEnabled: true,
+            MetricName: 'AWS-AWSManagedRulesCommonRuleSet',
+          },
+        },
+        {
+          Name: 'AWS-AWSManagedRulesKnownBadInputsRuleSet',
+          Priority: 2,
+          Statement: {
+            ManagedRuleGroupStatement: {
+              VendorName: 'AWS',
+              Name: 'AWSManagedRulesKnownBadInputsRuleSet',
+            },
+          },
+          OverrideAction: {
+            None: {},
+          },
+          VisibilityConfig: {
+            SampledRequestsEnabled: true,
+            CloudWatchMetricsEnabled: true,
+            MetricName: 'AWS-AWSManagedRulesKnownBadInputsRuleSet',
+          },
+        },
+      ],
+    }));
+  });
+
+  test('throws error if used with webAclId', () => {
+    const origin = defaultOrigin();
+
+    expect(() => {
+      new Distribution(stack, 'MyDist', {
+        defaultBehavior: { origin },
+        enableWafCoreProtections: true,
+        webAclId: 'dummy',
+      });
+    }).toThrow(/Cannot specify both webAclId and enableWafCoreProtections/);
+  });
+
+  test('throws error if used outside us-east-1', () => {
+    const origin = defaultOrigin();
+
+    expect(() => {
+      new Distribution(stack, 'MyDist', {
+        defaultBehavior: { origin },
+        enableWafCoreProtections: true,
+      });
+    }).toThrow(/To enable WAF core protection, the stack must be in the us-east-1 region but you are in/);
+  });
+});
+
 describe('attachWebAclId', () => {
   test('can attach WebAcl to the distribution by the method', () => {
     const origin = defaultOrigin();

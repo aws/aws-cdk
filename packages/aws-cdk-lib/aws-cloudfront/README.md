@@ -1219,3 +1219,26 @@ See:
 
 - <https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PrivateContent.html>
 - <https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-trusted-signers.html>
+
+### WAF security protections
+
+Enable [WAF default one-click security protection](https://aws.amazon.com/about-aws/whats-new/2023/05/amazon-cloudfront-one-click-security-protections/)
+
+```ts
+declare const sourceBucket: s3.Bucket;
+
+new cloudfront.Distribution(this, 'MyCfWebDistribution', {
+  defaultBehavior: {
+    origin: new origins.S3Origin(sourceBucket),
+  },
+  enableWafCoreProtections: true,
+});
+```
+
+Note: 
+- Can only be used in US East (N. Virginia) Region (us-east-1) as WebACL for CloudFront must stay in `us-east-1` region.
+- Cannot be used if webAclId already specified.
+
+See:
+
+- <https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/distribution-web-awswaf.html>
