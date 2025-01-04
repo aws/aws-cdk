@@ -4,21 +4,21 @@
     "id": "App",
     "path": "",
     "children": {
-      "aws-stepfunctions-tasks-http-invoke-integ": {
-        "id": "aws-stepfunctions-tasks-http-invoke-integ",
-        "path": "aws-stepfunctions-tasks-http-invoke-integ",
+      "aws-stepfunctions-tasks-http-invoke-json-path-integ": {
+        "id": "aws-stepfunctions-tasks-http-invoke-json-path-integ",
+        "path": "aws-stepfunctions-tasks-http-invoke-json-path-integ",
         "children": {
           "AuthorizerHandler": {
             "id": "AuthorizerHandler",
-            "path": "aws-stepfunctions-tasks-http-invoke-integ/AuthorizerHandler",
+            "path": "aws-stepfunctions-tasks-http-invoke-json-path-integ/AuthorizerHandler",
             "children": {
               "ServiceRole": {
                 "id": "ServiceRole",
-                "path": "aws-stepfunctions-tasks-http-invoke-integ/AuthorizerHandler/ServiceRole",
+                "path": "aws-stepfunctions-tasks-http-invoke-json-path-integ/AuthorizerHandler/ServiceRole",
                 "children": {
                   "ImportServiceRole": {
                     "id": "ImportServiceRole",
-                    "path": "aws-stepfunctions-tasks-http-invoke-integ/AuthorizerHandler/ServiceRole/ImportServiceRole",
+                    "path": "aws-stepfunctions-tasks-http-invoke-json-path-integ/AuthorizerHandler/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -26,7 +26,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-stepfunctions-tasks-http-invoke-integ/AuthorizerHandler/ServiceRole/Resource",
+                    "path": "aws-stepfunctions-tasks-http-invoke-json-path-integ/AuthorizerHandler/ServiceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -71,11 +71,11 @@
               },
               "Code": {
                 "id": "Code",
-                "path": "aws-stepfunctions-tasks-http-invoke-integ/AuthorizerHandler/Code",
+                "path": "aws-stepfunctions-tasks-http-invoke-json-path-integ/AuthorizerHandler/Code",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "aws-stepfunctions-tasks-http-invoke-integ/AuthorizerHandler/Code/Stage",
+                    "path": "aws-stepfunctions-tasks-http-invoke-json-path-integ/AuthorizerHandler/Code/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -83,7 +83,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "aws-stepfunctions-tasks-http-invoke-integ/AuthorizerHandler/Code/AssetBucket",
+                    "path": "aws-stepfunctions-tasks-http-invoke-json-path-integ/AuthorizerHandler/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
@@ -97,7 +97,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-stepfunctions-tasks-http-invoke-integ/AuthorizerHandler/Resource",
+                "path": "aws-stepfunctions-tasks-http-invoke-json-path-integ/AuthorizerHandler/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
@@ -122,9 +122,9 @@
                   "version": "0.0.0"
                 }
               },
-              "awsstepfunctionstaskshttpinvokeintegAuthorizerECFD3F1C:Permissions": {
-                "id": "awsstepfunctionstaskshttpinvokeintegAuthorizerECFD3F1C:Permissions",
-                "path": "aws-stepfunctions-tasks-http-invoke-integ/AuthorizerHandler/awsstepfunctionstaskshttpinvokeintegAuthorizerECFD3F1C:Permissions",
+              "awsstepfunctionstaskshttpinvokejsonpathintegAuthorizer0A0EA200:Permissions": {
+                "id": "awsstepfunctionstaskshttpinvokejsonpathintegAuthorizer0A0EA200:Permissions",
+                "path": "aws-stepfunctions-tasks-http-invoke-json-path-integ/AuthorizerHandler/awsstepfunctionstaskshttpinvokejsonpathintegAuthorizer0A0EA200:Permissions",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
                   "aws:cdk:cloudformation:props": {
@@ -178,11 +178,11 @@
           },
           "Authorizer": {
             "id": "Authorizer",
-            "path": "aws-stepfunctions-tasks-http-invoke-integ/Authorizer",
+            "path": "aws-stepfunctions-tasks-http-invoke-json-path-integ/Authorizer",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-stepfunctions-tasks-http-invoke-integ/Authorizer/Resource",
+                "path": "aws-stepfunctions-tasks-http-invoke-json-path-integ/Authorizer/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ApiGateway::Authorizer",
                   "aws:cdk:cloudformation:props": {
@@ -237,7 +237,7 @@
                       ]
                     },
                     "identitySource": "method.request.header.Authorization",
-                    "name": "awsstepfunctionstaskshttpinvokeintegAuthorizerECFD3F1C",
+                    "name": "awsstepfunctionstaskshttpinvokejsonpathintegAuthorizer0A0EA200",
                     "restApiId": {
                       "Ref": "IntegRestApiF8B59B0D"
                     },
@@ -257,11 +257,11 @@
           },
           "IntegRestApi": {
             "id": "IntegRestApi",
-            "path": "aws-stepfunctions-tasks-http-invoke-integ/IntegRestApi",
+            "path": "aws-stepfunctions-tasks-http-invoke-json-path-integ/IntegRestApi",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-stepfunctions-tasks-http-invoke-integ/IntegRestApi/Resource",
+                "path": "aws-stepfunctions-tasks-http-invoke-json-path-integ/IntegRestApi/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ApiGateway::RestApi",
                   "aws:cdk:cloudformation:props": {
@@ -275,11 +275,11 @@
               },
               "Deployment": {
                 "id": "Deployment",
-                "path": "aws-stepfunctions-tasks-http-invoke-integ/IntegRestApi/Deployment",
+                "path": "aws-stepfunctions-tasks-http-invoke-json-path-integ/IntegRestApi/Deployment",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-stepfunctions-tasks-http-invoke-integ/IntegRestApi/Deployment/Resource",
+                    "path": "aws-stepfunctions-tasks-http-invoke-json-path-integ/IntegRestApi/Deployment/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::ApiGateway::Deployment",
                       "aws:cdk:cloudformation:props": {
@@ -302,16 +302,16 @@
               },
               "DeploymentStage.prod": {
                 "id": "DeploymentStage.prod",
-                "path": "aws-stepfunctions-tasks-http-invoke-integ/IntegRestApi/DeploymentStage.prod",
+                "path": "aws-stepfunctions-tasks-http-invoke-json-path-integ/IntegRestApi/DeploymentStage.prod",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-stepfunctions-tasks-http-invoke-integ/IntegRestApi/DeploymentStage.prod/Resource",
+                    "path": "aws-stepfunctions-tasks-http-invoke-json-path-integ/IntegRestApi/DeploymentStage.prod/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::ApiGateway::Stage",
                       "aws:cdk:cloudformation:props": {
                         "deploymentId": {
-                          "Ref": "IntegRestApiDeploymentD67E59EC852098a1c127ca9d7d16d22086273910"
+                          "Ref": "IntegRestApiDeploymentD67E59ECc0bae562047b64e07eb861eb93111562"
                         },
                         "restApiId": {
                           "Ref": "IntegRestApiF8B59B0D"
@@ -332,7 +332,7 @@
               },
               "Endpoint": {
                 "id": "Endpoint",
-                "path": "aws-stepfunctions-tasks-http-invoke-integ/IntegRestApi/Endpoint",
+                "path": "aws-stepfunctions-tasks-http-invoke-json-path-integ/IntegRestApi/Endpoint",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
@@ -340,15 +340,15 @@
               },
               "Default": {
                 "id": "Default",
-                "path": "aws-stepfunctions-tasks-http-invoke-integ/IntegRestApi/Default",
+                "path": "aws-stepfunctions-tasks-http-invoke-json-path-integ/IntegRestApi/Default",
                 "children": {
-                  "test": {
-                    "id": "test",
-                    "path": "aws-stepfunctions-tasks-http-invoke-integ/IntegRestApi/Default/test",
+                  "test-json-path": {
+                    "id": "test-json-path",
+                    "path": "aws-stepfunctions-tasks-http-invoke-json-path-integ/IntegRestApi/Default/test-json-path",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-stepfunctions-tasks-http-invoke-integ/IntegRestApi/Default/test/Resource",
+                        "path": "aws-stepfunctions-tasks-http-invoke-json-path-integ/IntegRestApi/Default/test-json-path/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::ApiGateway::Resource",
                           "aws:cdk:cloudformation:props": {
@@ -358,7 +358,7 @@
                                 "RootResourceId"
                               ]
                             },
-                            "pathPart": "test",
+                            "pathPart": "test-json-path",
                             "restApiId": {
                               "Ref": "IntegRestApiF8B59B0D"
                             }
@@ -371,11 +371,11 @@
                       },
                       "GET": {
                         "id": "GET",
-                        "path": "aws-stepfunctions-tasks-http-invoke-integ/IntegRestApi/Default/test/GET",
+                        "path": "aws-stepfunctions-tasks-http-invoke-json-path-integ/IntegRestApi/Default/test-json-path/GET",
                         "children": {
                           "Resource": {
                             "id": "Resource",
-                            "path": "aws-stepfunctions-tasks-http-invoke-integ/IntegRestApi/Default/test/GET/Resource",
+                            "path": "aws-stepfunctions-tasks-http-invoke-json-path-integ/IntegRestApi/Default/test-json-path/GET/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
                               "aws:cdk:cloudformation:props": {
@@ -405,7 +405,7 @@
                                   }
                                 ],
                                 "resourceId": {
-                                  "Ref": "IntegRestApitest58FEA9C5"
+                                  "Ref": "IntegRestApitestjsonpath7AE2D560"
                                 },
                                 "restApiId": {
                                   "Ref": "IntegRestApiF8B59B0D"
@@ -443,11 +443,11 @@
           },
           "Connection": {
             "id": "Connection",
-            "path": "aws-stepfunctions-tasks-http-invoke-integ/Connection",
+            "path": "aws-stepfunctions-tasks-http-invoke-json-path-integ/Connection",
             "children": {
               "Connection": {
                 "id": "Connection",
-                "path": "aws-stepfunctions-tasks-http-invoke-integ/Connection/Connection",
+                "path": "aws-stepfunctions-tasks-http-invoke-json-path-integ/Connection/Connection",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Events::Connection",
                   "aws:cdk:cloudformation:props": {
@@ -473,7 +473,7 @@
           },
           "Invoke HTTP Endpoint": {
             "id": "Invoke HTTP Endpoint",
-            "path": "aws-stepfunctions-tasks-http-invoke-integ/Invoke HTTP Endpoint",
+            "path": "aws-stepfunctions-tasks-http-invoke-json-path-integ/Invoke HTTP Endpoint",
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_stepfunctions_tasks.HttpInvoke",
               "version": "0.0.0"
@@ -481,15 +481,15 @@
           },
           "StateMachine": {
             "id": "StateMachine",
-            "path": "aws-stepfunctions-tasks-http-invoke-integ/StateMachine",
+            "path": "aws-stepfunctions-tasks-http-invoke-json-path-integ/StateMachine",
             "children": {
               "Role": {
                 "id": "Role",
-                "path": "aws-stepfunctions-tasks-http-invoke-integ/StateMachine/Role",
+                "path": "aws-stepfunctions-tasks-http-invoke-json-path-integ/StateMachine/Role",
                 "children": {
                   "ImportRole": {
                     "id": "ImportRole",
-                    "path": "aws-stepfunctions-tasks-http-invoke-integ/StateMachine/Role/ImportRole",
+                    "path": "aws-stepfunctions-tasks-http-invoke-json-path-integ/StateMachine/Role/ImportRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -497,7 +497,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-stepfunctions-tasks-http-invoke-integ/StateMachine/Role/Resource",
+                    "path": "aws-stepfunctions-tasks-http-invoke-json-path-integ/StateMachine/Role/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -522,11 +522,11 @@
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "aws-stepfunctions-tasks-http-invoke-integ/StateMachine/Role/DefaultPolicy",
+                    "path": "aws-stepfunctions-tasks-http-invoke-json-path-integ/StateMachine/Role/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-stepfunctions-tasks-http-invoke-integ/StateMachine/Role/DefaultPolicy/Resource",
+                        "path": "aws-stepfunctions-tasks-http-invoke-json-path-integ/StateMachine/Role/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -618,7 +618,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-stepfunctions-tasks-http-invoke-integ/StateMachine/Resource",
+                "path": "aws-stepfunctions-tasks-http-invoke-json-path-integ/StateMachine/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
                   "aws:cdk:cloudformation:props": {
@@ -646,7 +646,7 @@
                           {
                             "Ref": "IntegRestApiDeploymentStageprod29E2686A"
                           },
-                          "/', '/test')\",\"Authentication\":{\"ConnectionArn\":\"",
+                          "/', $.endpointPath)\",\"Authentication\":{\"ConnectionArn\":\"",
                           {
                             "Fn::GetAtt": [
                               "Connection07624BCD",
@@ -678,11 +678,11 @@
           },
           "Exports": {
             "id": "Exports",
-            "path": "aws-stepfunctions-tasks-http-invoke-integ/Exports",
+            "path": "aws-stepfunctions-tasks-http-invoke-json-path-integ/Exports",
             "children": {
               "Output{\"Ref\":\"StateMachine2E01A3A5\"}": {
                 "id": "Output{\"Ref\":\"StateMachine2E01A3A5\"}",
-                "path": "aws-stepfunctions-tasks-http-invoke-integ/Exports/Output{\"Ref\":\"StateMachine2E01A3A5\"}",
+                "path": "aws-stepfunctions-tasks-http-invoke-json-path-integ/Exports/Output{\"Ref\":\"StateMachine2E01A3A5\"}",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
@@ -696,7 +696,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "aws-stepfunctions-tasks-http-invoke-integ/BootstrapVersion",
+            "path": "aws-stepfunctions-tasks-http-invoke-json-path-integ/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -704,7 +704,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "aws-stepfunctions-tasks-http-invoke-integ/CheckBootstrapVersion",
+            "path": "aws-stepfunctions-tasks-http-invoke-json-path-integ/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
@@ -736,17 +736,17 @@
                 "id": "DeployAssert",
                 "path": "HttpInvokeTest/DefaultTest/DeployAssert",
                 "children": {
-                  "AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa": {
-                    "id": "AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa",
-                    "path": "HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa",
+                  "AwsApiCallStepFunctionsstartExecution6889d16cb95f6b788d9ce305167f8e14": {
+                    "id": "AwsApiCallStepFunctionsstartExecution6889d16cb95f6b788d9ce305167f8e14",
+                    "path": "HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecution6889d16cb95f6b788d9ce305167f8e14",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/SdkProvider",
+                        "path": "HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecution6889d16cb95f6b788d9ce305167f8e14/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/SdkProvider/AssertionsProvider",
+                            "path": "HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecution6889d16cb95f6b788d9ce305167f8e14/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.4.2"
@@ -760,11 +760,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/Default",
+                        "path": "HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecution6889d16cb95f6b788d9ce305167f8e14/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/Default/Default",
+                            "path": "HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecution6889d16cb95f6b788d9ce305167f8e14/Default/Default",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -824,17 +824,17 @@
                       "version": "0.0.0"
                     }
                   },
-                  "AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868": {
-                    "id": "AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868",
-                    "path": "HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868",
+                  "AwsApiCallStepFunctionsdescribeExecution884e7f76ad5a29cd349843b05b0c4c1e": {
+                    "id": "AwsApiCallStepFunctionsdescribeExecution884e7f76ad5a29cd349843b05b0c4c1e",
+                    "path": "HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution884e7f76ad5a29cd349843b05b0c4c1e",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868/SdkProvider",
+                        "path": "HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution884e7f76ad5a29cd349843b05b0c4c1e/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868/SdkProvider/AssertionsProvider",
+                            "path": "HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution884e7f76ad5a29cd349843b05b0c4c1e/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.4.2"
@@ -848,11 +848,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868/Default",
+                        "path": "HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution884e7f76ad5a29cd349843b05b0c4c1e/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868/Default/Default",
+                            "path": "HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution884e7f76ad5a29cd349843b05b0c4c1e/Default/Default",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -866,7 +866,7 @@
                       },
                       "AssertionResults": {
                         "id": "AssertionResults",
-                        "path": "HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868/AssertionResults",
+                        "path": "HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution884e7f76ad5a29cd349843b05b0c4c1e/AssertionResults",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnOutput",
                           "version": "0.0.0"
