@@ -260,6 +260,43 @@ test.each([true, false])('activeTracing can be set to %s', (activeTracing: boole
   });
 });
 
+test.each([true, false])('specify provisioned resource cleanup', (provisionedResourceCleanup: boolean) => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    }),
+    provisionedResourceCleanup,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+    ProvisionedResourceCleanup: provisionedResourceCleanup ? 'AUTOMATIC' : 'OFF',
+  });
+});
+
+test('throw error for enabling both cleanup and provisionedResourceCleanup', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // THEN
+  expect(() => new synthetics.Canary(stack, 'Canary', {
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    }),
+    cleanup: synthetics.Cleanup.LAMBDA,
+    provisionedResourceCleanup: true,
+  }))
+    .toThrow('Cannot specify both `cleanup` and `provisionedResourceCleanup`. Use `provisionedResourceCleanup` instead.');
+});
+
 test('throws when activeTracing is enabled with an unsupported runtime', () => {
   // GIVEN
   const stack = new Stack();
