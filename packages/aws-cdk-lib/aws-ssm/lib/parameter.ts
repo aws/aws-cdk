@@ -579,12 +579,16 @@ export class StringParameter extends ParameterBase implements IStringParameter {
    * and the ContextProvider will be told NOT to raise an error on synthesis
    * if the SSM Parameter is not found in the account at synth time.
    */
-  public static valueFromLookup(scope: Construct, parameterName: string, defaultValue?: string): string {
+
+  public static valueFromLookup(scope: Construct, parameterName: string, defaultValue?: string, additionalCacheKey?: string): string {
     const value = ContextProvider.getValue(scope, {
       provider: cxschema.ContextProvider.SSM_PARAMETER_PROVIDER,
-      props: { parameterName },
+      props: {
+        parameterName,
+      },
       dummyValue: defaultValue || `dummy-value-for-${parameterName}`,
       ignoreErrorOnMissingContext: defaultValue !== undefined,
+      additionalCacheKey,
     }).value;
 
     return value;
