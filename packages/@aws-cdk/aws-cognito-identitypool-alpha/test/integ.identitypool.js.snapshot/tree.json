@@ -117,7 +117,7 @@
                       "family_name": "family_name",
                       "email": "email",
                       "gender": "gender",
-                      "names": "names"
+                      "custom:names": "names"
                     },
                     "providerDetails": {
                       "client_id": "google-client-id",
@@ -249,7 +249,7 @@
                     "attributeMapping": {
                       "given_name": "name",
                       "email": "email",
-                      "userId": "user_id"
+                      "custom:userId": "user_id"
                     },
                     "providerDetails": {
                       "client_id": "amzn-client-id",
@@ -876,7 +876,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },

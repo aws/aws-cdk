@@ -181,7 +181,7 @@
                       "email": "email",
                       "email_verified": "email_verified",
                       "gender": "gender",
-                      "names": "names"
+                      "custom:names": "names"
                     },
                     "providerDetails": {
                       "client_id": "google-client-id",
@@ -252,7 +252,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },
