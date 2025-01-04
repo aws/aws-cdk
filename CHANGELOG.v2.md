@@ -2,6 +2,41 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.174.0](https://github.com/aws/aws-cdk/compare/v2.173.4...v2.174.0) (2025-01-04)
+
+
+### Features
+
+* **codebuild:** add new environment types ([#32729](https://github.com/aws/aws-cdk/issues/32729)) ([a10c369](https://github.com/aws/aws-cdk/commit/a10c369bfc65c37217e289c06673889b1ff99476)), closes [#32728](https://github.com/aws/aws-cdk/issues/32728)
+* **custom-resource:** add serviceTimeout property for custom resources ([#30911](https://github.com/aws/aws-cdk/issues/30911)) ([d599900](https://github.com/aws/aws-cdk/commit/d599900d224e6ae798795f6634f46044acbc4725)), closes [#30517](https://github.com/aws/aws-cdk/issues/30517)
+* update L1 CloudFormation resource definitions ([#32685](https://github.com/aws/aws-cdk/issues/32685)) ([fe3af93](https://github.com/aws/aws-cdk/commit/fe3af935dadd88c51a30fb20d0b30afdffea03bc)), closes [/docs.aws.amazon.com/datasync/latest/userguide/create-s3-location.html#create-s3](https://github.com/aws//docs.aws.amazon.com/datasync/latest/userguide/create-s3-location.html/issues/create-s3) [/docs.aws.amazon.com/datasync/latest/userguide/create-s3-location.html#create-s3](https://github.com/aws//docs.aws.amazon.com/datasync/latest/userguide/create-s3-location.html/issues/create-s3)
+* update L1 CloudFormation resource definitions ([#32712](https://github.com/aws/aws-cdk/issues/32712)) ([3170e1c](https://github.com/aws/aws-cdk/commit/3170e1c4aae644c2e2b2f0ce4d7e690ebe925c4f))
+* update L1 CloudFormation resource definitions ([#32726](https://github.com/aws/aws-cdk/issues/32726)) ([de04742](https://github.com/aws/aws-cdk/commit/de04742a8692bcc55d742255555985fc287056d2))
+* **autoscaling:** add `availabilityZoneDistribution` property to an AutoScalingGroup ([#32100](https://github.com/aws/aws-cdk/issues/32100)) ([ecfce7c](https://github.com/aws/aws-cdk/commit/ecfce7c6975a484401b42d1dcf7276d5907d6350))
+* **bedrock:** additional foundation models ([#32684](https://github.com/aws/aws-cdk/issues/32684)) ([fcf4ecd](https://github.com/aws/aws-cdk/commit/fcf4ecda4822cc8556409d4ff323e49cdbd985a7))
+* **cli:** support CloudFormation simplified resource import ([#32676](https://github.com/aws/aws-cdk/issues/32676)) ([ca33f0a](https://github.com/aws/aws-cdk/commit/ca33f0aa59c6e8390fdd46dca16c02cf10c2fcf9)), closes [#28060](https://github.com/aws/aws-cdk/issues/28060)
+* **cli-plugin-contract:** introduce a public contract between CLI and plugins ([#32111](https://github.com/aws/aws-cdk/issues/32111)) ([fbaab1d](https://github.com/aws/aws-cdk/commit/fbaab1de81e89fc1c65bd55c514f6471d36df800))
+* **rds:** support 11.22-rds.20241121 for RDS PostgreSQL ([#32508](https://github.com/aws/aws-cdk/issues/32508)) ([491475a](https://github.com/aws/aws-cdk/commit/491475a7451c151a2f6718185fc5d62e80a1b212))
+* **rds:** supports minors 11.4.4, 10.11.10, 10.6.20, 10.5.27 for RDS for MariaDB ([#32632](https://github.com/aws/aws-cdk/issues/32632)) ([b8e79b6](https://github.com/aws/aws-cdk/commit/b8e79b6fbb8841b32838ebadb9ba7a127dc1f6ba))
+* update L1 CloudFormation resource definitions ([#32582](https://github.com/aws/aws-cdk/issues/32582)) ([ff57cc3](https://github.com/aws/aws-cdk/commit/ff57cc3e0d0ea33285e2deaa5b7c50cab520f624))
+* update L1 CloudFormation resource definitions ([#32645](https://github.com/aws/aws-cdk/issues/32645)) ([a0525f5](https://github.com/aws/aws-cdk/commit/a0525f54771b24859140c8915ccb86b1be644e1b))
+
+
+### Bug Fixes
+
+* **aspects:** "localAspects is not iterable" error ([#32647](https://github.com/aws/aws-cdk/issues/32647)) ([cb985ba](https://github.com/aws/aws-cdk/commit/cb985bad7cb53da86dbdd1788b5fae986f488e16)), closes [#32470](https://github.com/aws/aws-cdk/issues/32470)
+* **cli:** notices don't work behind a proxy ([#32590](https://github.com/aws/aws-cdk/issues/32590)) ([3377c3b](https://github.com/aws/aws-cdk/commit/3377c3bdb61885df54c9a6663439e4b44b435017))
+* **cli:** outdated dependency on `@aws-cdk/cloud-assembly-schema` ([#32704](https://github.com/aws/aws-cdk/issues/32704)) ([3b162fc](https://github.com/aws/aws-cdk/commit/3b162fcb4f31f707fdcd8c4001cf8f42f760d5e3))
+* **cli:** unhandled nextToken returned by listImagesCommand in garbage collector for ECR ([#32679](https://github.com/aws/aws-cdk/issues/32679)) ([d9346bc](https://github.com/aws/aws-cdk/commit/d9346bc9eedd2054bde00be930e80fa28bdd3a6e)), closes [#32498](https://github.com/aws/aws-cdk/issues/32498) [/github.com/aws/aws-cdk/blob/v2.173.4/packages/aws-cdk/lib/api/garbage-collection/garbage-collector.ts#L621](https://github.com/aws//github.com/aws/aws-cdk/blob/v2.173.4/packages/aws-cdk/lib/api/garbage-collection/garbage-collector.ts/issues/L621)
+* **elasticloadbalancingv2:** open, dual-stack-without-public-ipv4 ALB allows IPv6 inbound traffic ([#32203](https://github.com/aws/aws-cdk/issues/32203)) ([0731095](https://github.com/aws/aws-cdk/commit/0731095f5a9e2f58ec113b4ae05894b95df89ea2)), closes [#32197](https://github.com/aws/aws-cdk/issues/32197)
+* **opensearch:** add I4I and R7GD to list of OpenSearch nodes not requiring EBS volumes ([#32592](https://github.com/aws/aws-cdk/issues/32592)) ([e364d2b](https://github.com/aws/aws-cdk/commit/e364d2b6808fd703600bff07634c4ac3486f6367)), closes [#32070](https://github.com/aws/aws-cdk/issues/32070) [#32138](https://github.com/aws/aws-cdk/issues/32138)
+* bump jsii 5.5 to 5.6 ([#32588](https://github.com/aws/aws-cdk/issues/32588)) ([57bba19](https://github.com/aws/aws-cdk/commit/57bba195fc590b4beeab6a524fcffcc3b16b0d81))
+
+
+### Reverts
+
+* "fix(elasticloadbalancingv2): open, dual-stack-without-public-ipv4 ALB allows IPv6 inbound traffic" ([#32690](https://github.com/aws/aws-cdk/issues/32690)) ([6c790fd](https://github.com/aws/aws-cdk/commit/6c790fd3457702264944e2ef94786eb0c5ff1ca0)), closes [aws/aws-cdk#32203](https://github.com/aws/aws-cdk/issues/32203)
+
 ## [2.173.4](https://github.com/aws/aws-cdk/compare/v2.173.3...v2.173.4) (2024-12-27)
 
 
