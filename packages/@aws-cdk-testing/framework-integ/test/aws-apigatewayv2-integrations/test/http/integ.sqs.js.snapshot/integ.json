@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "SqsIntegrationIntegTest/DefaultTest": {
+      "stacks": [
+        "sqs-integration"
+      ],
+      "assertionStack": "SqsIntegrationIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "SqsIntegrationIntegTestDefaultTestDeployAssert9AC3F75A"
+    }
+  }
+}

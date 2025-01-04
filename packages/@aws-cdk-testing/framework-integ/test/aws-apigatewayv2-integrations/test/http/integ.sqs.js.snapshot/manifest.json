@@ -1,0 +1,312 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "sqs-integration.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "sqs-integration.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "sqs-integration": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "sqs-integration.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2a0c9cb36a87b6eaff8d4374a0cddf2f74af34851117514243e8968794dc2299.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "sqs-integration.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "sqs-integration.assets"
+      ],
+      "metadata": {
+        "/sqs-integration/Queue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Queue4A7E3555"
+          }
+        ],
+        "/sqs-integration/Api/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiF70053CD"
+          }
+        ],
+        "/sqs-integration/Api/DefaultStage/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiDefaultStage189A7074"
+          }
+        ],
+        "/sqs-integration/Api/POST--default/InvokeRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiPOSTdefaultInvokeRole9137E4F5"
+          }
+        ],
+        "/sqs-integration/Api/POST--default/InvokeRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiPOSTdefaultInvokeRoleDefaultPolicy603C0AF3"
+          }
+        ],
+        "/sqs-integration/Api/POST--default/defaultIntegration/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiPOSTdefaultdefaultIntegration0355373B"
+          }
+        ],
+        "/sqs-integration/Api/POST--default/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiPOSTdefault1EEA0D1D"
+          }
+        ],
+        "/sqs-integration/Api/POST--send-message/InvokeRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiPOSTsendmessageInvokeRole628F6753"
+          }
+        ],
+        "/sqs-integration/Api/POST--send-message/InvokeRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiPOSTsendmessageInvokeRoleDefaultPolicy4B7D7B02"
+          }
+        ],
+        "/sqs-integration/Api/POST--send-message/sendMessageIntegration/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiPOSTsendmessagesendMessageIntegrationA3699583"
+          }
+        ],
+        "/sqs-integration/Api/POST--send-message/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiPOSTsendmessageE475BC37"
+          }
+        ],
+        "/sqs-integration/Api/POST--receive-message/InvokeRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiPOSTreceivemessageInvokeRoleF920E28E"
+          }
+        ],
+        "/sqs-integration/Api/POST--receive-message/InvokeRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiPOSTreceivemessageInvokeRoleDefaultPolicy22774339"
+          }
+        ],
+        "/sqs-integration/Api/POST--receive-message/receiveMessageIntegration/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiPOSTreceivemessagereceiveMessageIntegrationFC744BEF"
+          }
+        ],
+        "/sqs-integration/Api/POST--receive-message/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiPOSTreceivemessageA4D1D164"
+          }
+        ],
+        "/sqs-integration/Api/POST--delete-message/InvokeRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiPOSTdeletemessageInvokeRoleF36F96C7"
+          }
+        ],
+        "/sqs-integration/Api/POST--delete-message/InvokeRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiPOSTdeletemessageInvokeRoleDefaultPolicyC736EDFF"
+          }
+        ],
+        "/sqs-integration/Api/POST--delete-message/deleteMessageIntegration/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiPOSTdeletemessagedeleteMessageIntegration49DB56A7"
+          }
+        ],
+        "/sqs-integration/Api/POST--delete-message/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiPOSTdeletemessage6FE1C52C"
+          }
+        ],
+        "/sqs-integration/Api/POST--purge-queue/InvokeRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiPOSTpurgequeueInvokeRole1F4EEB80"
+          }
+        ],
+        "/sqs-integration/Api/POST--purge-queue/InvokeRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiPOSTpurgequeueInvokeRoleDefaultPolicy275FF06E"
+          }
+        ],
+        "/sqs-integration/Api/POST--purge-queue/purgeQueueIntegration/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiPOSTpurgequeuepurgeQueueIntegration7B3B35C2"
+          }
+        ],
+        "/sqs-integration/Api/POST--purge-queue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiPOSTpurgequeueD7486C9E"
+          }
+        ],
+        "/sqs-integration/Exports/Output{\"Fn::GetAtt\":[\"ApiF70053CD\",\"ApiEndpoint\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttApiF70053CDApiEndpoint847E7A77"
+          }
+        ],
+        "/sqs-integration/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/sqs-integration/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "sqs-integration"
+    },
+    "SqsIntegrationIntegTestDefaultTestDeployAssert9AC3F75A.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "SqsIntegrationIntegTestDefaultTestDeployAssert9AC3F75A.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "SqsIntegrationIntegTestDefaultTestDeployAssert9AC3F75A": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "SqsIntegrationIntegTestDefaultTestDeployAssert9AC3F75A.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/977f4050bb82f643270ca778977892b2524b6e5336f790c10ed14e46571f57c0.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "SqsIntegrationIntegTestDefaultTestDeployAssert9AC3F75A.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "sqs-integration",
+        "SqsIntegrationIntegTestDefaultTestDeployAssert9AC3F75A.assets"
+      ],
+      "metadata": {
+        "/SqsIntegrationIntegTest/DefaultTest/DeployAssert/HttpApiCall7b032ef801e4d045eb84b7c2b4ed31c8/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpApiCall7b032ef801e4d045eb84b7c2b4ed31c8"
+          }
+        ],
+        "/SqsIntegrationIntegTest/DefaultTest/DeployAssert/HttpApiCall7b032ef801e4d045eb84b7c2b4ed31c8/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsHttpApiCall7b032ef801e4d045eb84b7c2b4ed31c8"
+          }
+        ],
+        "/SqsIntegrationIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/SqsIntegrationIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/SqsIntegrationIntegTest/DefaultTest/DeployAssert/HttpApiCall3699477dc71bfafe6aa1fbda37f83f1e/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpApiCall3699477dc71bfafe6aa1fbda37f83f1e"
+          }
+        ],
+        "/SqsIntegrationIntegTest/DefaultTest/DeployAssert/HttpApiCall3699477dc71bfafe6aa1fbda37f83f1e/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsHttpApiCall3699477dc71bfafe6aa1fbda37f83f1e"
+          }
+        ],
+        "/SqsIntegrationIntegTest/DefaultTest/DeployAssert/HttpApiCall4c25c02fbad6a4cec2d718d20402c7d6/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpApiCall4c25c02fbad6a4cec2d718d20402c7d6"
+          }
+        ],
+        "/SqsIntegrationIntegTest/DefaultTest/DeployAssert/HttpApiCall4c25c02fbad6a4cec2d718d20402c7d6/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsHttpApiCall4c25c02fbad6a4cec2d718d20402c7d6"
+          }
+        ],
+        "/SqsIntegrationIntegTest/DefaultTest/DeployAssert/HttpApiCalle4d7a88530ed4f9ddb9c41c7335a0544/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpApiCalle4d7a88530ed4f9ddb9c41c7335a0544"
+          }
+        ],
+        "/SqsIntegrationIntegTest/DefaultTest/DeployAssert/HttpApiCalle4d7a88530ed4f9ddb9c41c7335a0544/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsHttpApiCalle4d7a88530ed4f9ddb9c41c7335a0544"
+          }
+        ],
+        "/SqsIntegrationIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/SqsIntegrationIntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "SqsIntegrationIntegTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
