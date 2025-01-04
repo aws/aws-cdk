@@ -60,6 +60,20 @@ describe('function', () => {
     });
   });
 
+  test('isFunction returns true for functions', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+    });
+
+    // THEN
+    expect(lambda.Function.isFunction(fn)).toBe(true);
+  });
+
   test('adds policy permissions', () => {
     const stack = new cdk.Stack();
     new lambda.Function(stack, 'MyLambda', {
@@ -492,6 +506,16 @@ describe('function', () => {
       stack = new cdk.Stack(app, 'Base', {
         env: { account: '111111111111', region: 'stack-region' },
       });
+    });
+
+    test('isFunction returns true for imported function', () => {
+      // GIVEN
+      const func = lambda.Function.fromFunctionAttributes(stack, 'iFunc', {
+        functionArn: 'arn:aws:lambda:us-east-1:123456789012:function:my-function',
+      });
+
+      // THEN
+      expect(lambda.Function.isFunction(func)).toBe(true);
     });
 
     describe('for a function in a different account and region', () => {
