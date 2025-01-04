@@ -1,11 +1,15 @@
 import { ClientRequest } from 'http';
-import * as https from 'https';
+import { RequestOptions } from 'https';
+import * as https from 'node:https';
 import * as path from 'path';
 import type { Environment } from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import * as semver from 'semver';
+import { SdkHttpOptions } from './api';
+import { AwsCliCompatible } from './api/aws-auth/awscli-compatible';
 import { debug, print, warning, error } from './logging';
-import { Configuration } from './settings';
+import { Context } from './settings';
+import { ToolkitError } from './toolkit/error';
 import { loadTreeFromDir, some } from './tree';
 import { flatMap } from './util';
 import { cdkCacheDir } from './util/directories';
@@ -15,9 +19,9 @@ const CACHE_FILE_PATH = path.join(cdkCacheDir(), 'notices.json');
 
 export interface NoticesProps {
   /**
-   * A `Configuration` instance holding CDK context and settings.
+   * CDK context
    */
-  readonly configuration: Configuration;
+  readonly context: Context;
 
   /**
    * Include notices that have already been acknowledged.
@@ -26,6 +30,24 @@ export interface NoticesProps {
    */
   readonly includeAcknowledged?: boolean;
 
+  /**
+   * Global CLI option for output directory for synthesized cloud assembly
+   *
+   * @default 'cdk.out'
+   */
+  readonly output?: string;
+
+  /**
+   * Global CLI option for whether we show notices
+   *
+   * @default true
+   */
+  readonly shouldDisplay?: boolean;
+
+  /**
+   * Options for the HTTP request
+   */
+  readonly httpOptions?: SdkHttpOptions;
 }
 
 export interface NoticesPrintOptions {
@@ -36,7 +58,6 @@ export interface NoticesPrintOptions {
    * @default false
    */
   readonly showTotal?: boolean;
-
 }
 
 export interface NoticesRefreshOptions {
@@ -63,7 +84,6 @@ export interface NoticesFilterFilterOptions {
 }
 
 export class NoticesFilter {
-
   public static filter(options: NoticesFilterFilterOptions): FilteredNotice[] {
     return [
       ...this.findForCliVersion(options.data, options.cliVersion),
@@ -124,9 +144,7 @@ export class NoticesFilter {
       function compareVersions(pattern: string, target: string | undefined): boolean {
         return semver.satisfies(target ?? '', pattern);
       }
-
     });
-
   }
 
   private static findForBootstrapVersion(data: Notice[], bootstrappedEnvironments: BootstrappedEnvironment[]): FilteredNotice[] {
@@ -159,7 +177,6 @@ export class NoticesFilter {
       filtered.addDynamicValue('ENVIRONMENTS', affected.map(s => s.environment.name).join(','));
 
       return [filtered];
-
     });
   }
 
@@ -178,11 +195,10 @@ export class NoticesFilter {
       }
     });
   }
-
 }
 
 /**
- * Infomration about a bootstrapped environment.
+ * Information about a bootstrapped environment.
  */
 export interface BootstrappedEnvironment {
   readonly bootstrapStackVersion: number;
@@ -193,7 +209,6 @@ export interface BootstrappedEnvironment {
  * Provides access to notices the CLI can display.
  */
 export class Notices {
-
   /**
    * Create an instance. Note that this replaces the singleton.
    */
@@ -211,9 +226,12 @@ export class Notices {
 
   private static _instance: Notices | undefined;
 
-  private readonly configuration: Configuration;
+  private readonly context: Context;
+  private readonly output: string;
+  private readonly shouldDisplay: boolean;
   private readonly acknowledgedIssueNumbers: Set<Number>;
   private readonly includeAcknowlegded: boolean;
+  private readonly httpOptions: SdkHttpOptions;
 
   private data: Set<Notice> = new Set();
 
@@ -221,9 +239,12 @@ export class Notices {
   private readonly bootstrappedEnvironments: Map<string, BootstrappedEnvironment> = new Map();
 
   private constructor(props: NoticesProps) {
-    this.configuration = props.configuration;
-    this.acknowledgedIssueNumbers = new Set(this.configuration.context.get('acknowledged-issue-numbers') ?? []);
+    this.context = props.context;
+    this.acknowledgedIssueNumbers = new Set(this.context.get('acknowledged-issue-numbers') ?? []);
     this.includeAcknowlegded = props.includeAcknowledged ?? false;
+    this.output = props.output ?? 'cdk.out';
+    this.shouldDisplay = props.shouldDisplay ?? true;
+    this.httpOptions = props.httpOptions ?? {};
   }
 
   /**
@@ -248,13 +269,13 @@ export class Notices {
    * If context is configured to not display notices, this will no-op.
    */
   public async refresh(options: NoticesRefreshOptions = {}) {
-
-    if (!this.shouldDisplay()) {
+    if (!this.shouldDisplay) {
       return;
     }
 
     try {
-      const dataSource = new CachedDataSource(CACHE_FILE_PATH, options.dataSource ?? new WebsiteNoticeDataSource(), options.force ?? false);
+      const underlyingDataSource = options.dataSource ?? new WebsiteNoticeDataSource(this.httpOptions);
+      const dataSource = new CachedDataSource(CACHE_FILE_PATH, underlyingDataSource, options.force ?? false);
       const notices = await dataSource.fetch();
       this.data = new Set(this.includeAcknowlegded ? notices : notices.filter(n => !this.acknowledgedIssueNumbers.has(n.issueNumber)));
     } catch (e: any) {
@@ -266,15 +287,14 @@ export class Notices {
    * Display the relevant notices (unless context dictates we shouldn't).
    */
   public display(options: NoticesPrintOptions = {}) {
-
-    if (!this.shouldDisplay()) {
+    if (!this.shouldDisplay) {
       return;
     }
 
     const filteredNotices = NoticesFilter.filter({
       data: Array.from(this.data),
       cliVersion: versionNumber(),
-      outDir: this.configuration.settings.get(['output']) ?? 'cdk.out',
+      outDir: this.output,
       bootstrappedEnvironments: Array.from(this.bootstrappedEnvironments.values()),
     });
 
@@ -303,17 +323,7 @@ export class Notices {
       print('');
       print(`There are ${filteredNotices.length} unacknowledged notice(s).`);
     }
-
   }
-
-  /**
-   * Determine whether or not notices should be displayed based on the
-   * configuration provided at instantiation time.
-   */
-  private shouldDisplay(): boolean {
-    return this.configuration.settings.get(['notices']) ?? true;
-  }
-
 }
 
 export interface Component {
@@ -335,7 +345,6 @@ export interface Notice {
  * dynamic values as it has access to the dynamic matching data.
  */
 export class FilteredNotice {
-
   private readonly dynamicValues: { [key: string]: string } = {};
 
   public constructor(public readonly notice: Notice) {}
@@ -353,7 +362,6 @@ export class FilteredNotice {
       `\tAffected versions: ${componentsValue}`,
       `\tMore information at: https://github.com/aws/aws-cdk/issues/${this.notice.issueNumber}`,
     ].join('\n\n') + '\n');
-
   }
 
   private formatOverview() {
@@ -372,7 +380,6 @@ export class FilteredNotice {
     const pattern = new RegExp(Object.keys(this.dynamicValues).join('|'), 'g');
     return input.replace(pattern, (matched) => this.dynamicValues[matched] ?? matched);
   }
-
 }
 
 export interface NoticeDataSource {
@@ -380,6 +387,12 @@ export interface NoticeDataSource {
 }
 
 export class WebsiteNoticeDataSource implements NoticeDataSource {
+  private readonly options: SdkHttpOptions;
+
+  constructor(options: SdkHttpOptions = {}) {
+    this.options = options;
+  }
+
   fetch(): Promise<Notice[]> {
     const timeout = 3000;
     return new Promise((resolve, reject) => {
@@ -387,14 +400,19 @@ export class WebsiteNoticeDataSource implements NoticeDataSource {
 
       let timer = setTimeout(() => {
         if (req) {
-          req.destroy(new Error('Request timed out'));
+          req.destroy(new ToolkitError('Request timed out'));
         }
       }, timeout);
 
       timer.unref();
 
+      const options: RequestOptions = {
+        agent: AwsCliCompatible.proxyAgent(this.options),
+      };
+
       try {
         req = https.get('https://cli.cdk.dev-tools.aws.dev/notices.json',
+          options,
           res => {
             if (res.statusCode === 200) {
               res.setEncoding('utf8');
@@ -406,24 +424,24 @@ export class WebsiteNoticeDataSource implements NoticeDataSource {
                 try {
                   const data = JSON.parse(rawData).notices as Notice[];
                   if (!data) {
-                    throw new Error("'notices' key is missing");
+                    throw new ToolkitError("'notices' key is missing");
                   }
                   debug('Notices refreshed');
                   resolve(data ?? []);
                 } catch (e: any) {
-                  reject(new Error(`Failed to parse notices: ${e.message}`));
+                  reject(new ToolkitError(`Failed to parse notices: ${e.message}`));
                 }
               });
               res.on('error', e => {
-                reject(new Error(`Failed to fetch notices: ${e.message}`));
+                reject(new ToolkitError(`Failed to fetch notices: ${e.message}`));
               });
             } else {
-              reject(new Error(`Failed to fetch notices. Status code: ${res.statusCode}`));
+              reject(new ToolkitError(`Failed to fetch notices. Status code: ${res.statusCode}`));
             }
           });
         req.on('error', reject);
       } catch (e: any) {
-        reject(new Error(`HTTPS 'get' call threw an error: ${e.message}`));
+        reject(new ToolkitError(`HTTPS 'get' call threw an error: ${e.message}`));
       }
     });
   }

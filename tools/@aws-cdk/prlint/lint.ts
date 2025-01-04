@@ -265,8 +265,8 @@ export class PullRequestLinter {
       });
     }
 
-    const comments = await this.client.issues.listComments(this.issueParams);
-    if (comments.data.find(comment => comment.body?.toLowerCase().includes("exemption request"))) {
+    const comments = await this.client.paginate(this.client.issues.listComments, this.issueParams);
+    if (comments.find(comment => comment.body?.toLowerCase().includes("exemption request"))) {
       body += '\n\n✅ A exemption request has been requested. Please wait for a maintainer\'s review.';
     }
     await this.client.issues.createComment({
@@ -303,8 +303,8 @@ export class PullRequestLinter {
    * @returns Existing review, if present
    */
   private async findExistingPRLinterReview(): Promise<Review | undefined> {
-    const reviews = await this.client.pulls.listReviews(this.prParams);
-    return reviews.data.find((review) => review.user?.login === 'aws-cdk-automation' && review.state !== 'DISMISSED') as Review;
+    const reviews = await this.client.paginate(this.client.pulls.listReviews, this.prParams);
+    return reviews.find((review) => review.user?.login === 'aws-cdk-automation' && review.state !== 'DISMISSED') as Review;
   }
 
   /**
@@ -312,8 +312,8 @@ export class PullRequestLinter {
    * @returns Existing comment, if present
    */
   private async findExistingPRLinterComment(): Promise<Comment | undefined> {
-    const comments = await this.client.issues.listComments(this.issueParams);
-    return comments.data.find((comment) => comment.user?.login === 'aws-cdk-automation' && comment.body?.startsWith('The pull request linter fails with the following errors:')) as Comment;
+    const comments = await this.client.paginate(this.client.issues.listComments, this.issueParams);
+    return comments.find((comment) => comment.user?.login === 'aws-cdk-automation' && comment.body?.startsWith('The pull request linter fails with the following errors:')) as Comment;
   }
 
   /**

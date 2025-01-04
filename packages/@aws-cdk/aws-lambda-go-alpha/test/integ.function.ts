@@ -11,7 +11,7 @@ import { IFunction } from 'aws-cdk-lib/aws-lambda';
  */
 
 class TestStack extends Stack {
-  public readonly lambdaFunction: IFunction
+  public readonly lambdaFunction: IFunction;
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 

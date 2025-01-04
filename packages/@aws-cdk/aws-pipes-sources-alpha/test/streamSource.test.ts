@@ -392,7 +392,7 @@ class FakeStreamSource extends StreamSource {
   private readonly startingPosition: DynamoDBStartingPosition;
   private readonly deadLetterTargetArn?: string;
 
-  public grantRead = jest.fn()
+  public grantRead = jest.fn();
 
   constructor(table: ITableV2, parameters: DynamoDBSourceParameters) {
     if (table.tableStreamArn === undefined) {

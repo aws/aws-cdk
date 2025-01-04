@@ -655,6 +655,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::VPCEndpoint",
                       "aws:cdk:cloudformation:props": {
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-ec2-vpc-endpoint/MyVpc"
+                          }
+                        ],
                         "routeTableIds": [
                           {
                             "Ref": "MyVpcPrivateSubnet1RouteTable8819E6E2"
@@ -708,6 +714,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::VPCEndpoint",
                       "aws:cdk:cloudformation:props": {
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-ec2-vpc-endpoint/MyVpc"
+                          }
+                        ],
                         "policyDocument": {
                           "Statement": [
                             {
@@ -845,6 +857,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::VPCEndpoint",
                       "aws:cdk:cloudformation:props": {
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-ec2-vpc-endpoint/MyVpc"
+                          }
+                        ],
                         "privateDnsEnabled": true,
                         "securityGroupIds": [
                           {
@@ -969,6 +987,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::VPCEndpoint",
                       "aws:cdk:cloudformation:props": {
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-ec2-vpc-endpoint/MyVpc"
+                          }
+                        ],
                         "privateDnsEnabled": false,
                         "securityGroupIds": [
                           {
@@ -1048,7 +1072,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },

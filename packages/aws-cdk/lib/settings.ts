@@ -3,6 +3,7 @@ import * as fs_path from 'path';
 import * as fs from 'fs-extra';
 import { Tag } from './cdk-toolkit';
 import { debug, warning } from './logging';
+import { ToolkitError } from './toolkit/error';
 import * as util from './util';
 
 export type SettingsMap = {[key: string]: any};
@@ -31,6 +32,15 @@ export enum Command {
   INIT = 'init',
   VERSION = 'version',
   WATCH = 'watch',
+  GC = 'gc',
+  ROLLBACK = 'rollback',
+  IMPORT = 'import',
+  ACKNOWLEDGE = 'acknowledge',
+  NOTICES = 'notices',
+  MIGRATE = 'migrate',
+  CONTEXT = 'context',
+  DOCS = 'docs',
+  DOCTOR = 'doctor',
 }
 
 const BUNDLING_COMMANDS = [
@@ -94,14 +104,14 @@ export class Configuration {
 
   private get projectConfig() {
     if (!this._projectConfig) {
-      throw new Error('#load has not been called yet!');
+      throw new ToolkitError('#load has not been called yet!');
     }
     return this._projectConfig;
   }
 
-  private get projectContext() {
+  public get projectContext() {
     if (!this._projectContext) {
-      throw new Error('#load has not been called yet!');
+      throw new ToolkitError('#load has not been called yet!');
     }
     return this._projectContext;
   }
@@ -117,16 +127,16 @@ export class Configuration {
     const readUserContext = this.props.readUserContext ?? true;
 
     if (userConfig.get(['build'])) {
-      throw new Error('The `build` key cannot be specified in the user config (~/.cdk.json), specify it in the project config (cdk.json) instead');
+      throw new ToolkitError('The `build` key cannot be specified in the user config (~/.cdk.json), specify it in the project config (cdk.json) instead');
     }
 
     const contextSources = [
-      this.commandLineContext,
-      this.projectConfig.subSettings([CONTEXT_KEY]).makeReadOnly(),
-      this.projectContext,
+      { bag: this.commandLineContext },
+      { fileName: PROJECT_CONFIG, bag: this.projectConfig.subSettings([CONTEXT_KEY]).makeReadOnly() },
+      { fileName: PROJECT_CONTEXT, bag: this.projectContext },
     ];
     if (readUserContext) {
-      contextSources.push(userConfig.subSettings([CONTEXT_KEY]).makeReadOnly());
+      contextSources.push({ fileName: USER_DEFAULTS, bag: userConfig.subSettings([CONTEXT_KEY]).makeReadOnly() });
     }
 
     this.context = new Context(...contextSources);
@@ -166,6 +176,19 @@ async function loadAndLog(fileName: string): Promise<Settings> {
   return ret;
 }
 
+interface ContextBag {
+  /**
+   * The file name of the context. Will be used to potentially
+   * save new context back to the original file.
+   */
+  fileName?: string;
+
+  /**
+   * The context values.
+   */
+  bag: Settings;
+}
+
 /**
  * Class that supports overlaying property bags
  *
@@ -176,9 +199,11 @@ async function loadAndLog(fileName: string): Promise<Settings> {
  */
 export class Context {
   private readonly bags: Settings[];
+  private readonly fileNames: (string|undefined)[];
 
-  constructor(...bags: Settings[]) {
-    this.bags = bags.length > 0 ? bags : [new Settings()];
+  constructor(...bags: ContextBag[]) {
+    this.bags = bags.length > 0 ? bags.map(b => b.bag) : [new Settings()];
+    this.fileNames = bags.length > 0 ? bags.map(b => b.fileName) : ['default'];
   }
 
   public get keys(): string[] {
@@ -227,6 +252,26 @@ export class Context {
       this.unset(key);
     }
   }
+
+  /**
+   * Save a specific context file
+   */
+  public async save(fileName: string): Promise<this> {
+    const index = this.fileNames.indexOf(fileName);
+
+    // File not found, don't do anything in this scenario
+    if (index === -1) {
+      return this;
+    }
+
+    const bag = this.bags[index];
+    if (bag.readOnly) {
+      throw new Error(`Context file ${fileName} is read only!`);
+    }
+
+    await bag.save(fileName);
+    return this;
+  }
 }
 
 /**
@@ -266,6 +311,7 @@ export class Settings {
       app: argv.app,
       browser: argv.browser,
       build: argv.build,
+      caBundlePath: argv.caBundlePath,
       context,
       debug: argv.debug,
       tags,
@@ -285,6 +331,7 @@ export class Settings {
       output: argv.output,
       outputsFile: argv.outputsFile,
       progress: argv.progress,
+      proxy: argv.proxy,
       bundlingStacks,
       lookups: argv.lookups,
       rollback: argv.rollback,
@@ -318,7 +365,7 @@ export class Settings {
       if (parts.length === 2) {
         debug('CLI argument context: %s=%s', parts[0], parts[1]);
         if (parts[0].match(/^aws:.+/)) {
-          throw new Error(`User-provided context cannot use keys prefixed with 'aws:', but ${parts[0]} was provided.`);
+          throw new ToolkitError(`User-provided context cannot use keys prefixed with 'aws:', but ${parts[0]} was provided.`);
         }
         context[parts[0]] = parts[1];
       } else {
@@ -361,7 +408,7 @@ export class Settings {
 
   public async load(fileName: string): Promise<this> {
     if (this.readOnly) {
-      throw new Error(`Can't load ${fileName}: settings object is readonly`);
+      throw new ToolkitError(`Can't load ${fileName}: settings object is readonly`);
     }
     this.settings = {};
 
@@ -402,7 +449,7 @@ export class Settings {
 
   public clear() {
     if (this.readOnly) {
-      throw new Error('Cannot clear(): settings are readonly');
+      throw new ToolkitError('Cannot clear(): settings are readonly');
     }
     this.settings = {};
   }
@@ -417,7 +464,7 @@ export class Settings {
 
   public set(path: string[], value: any): Settings {
     if (this.readOnly) {
-      throw new Error(`Can't set ${path}: settings object is readonly`);
+      throw new ToolkitError(`Can't set ${path}: settings object is readonly`);
     }
     if (path.length === 0) {
       // deepSet can't handle this case
@@ -436,7 +483,7 @@ export class Settings {
     if (!this.settings.context) { return; }
     if (key in this.settings.context) {
       // eslint-disable-next-line max-len
-      throw new Error(`The 'context.${key}' key was found in ${fs_path.resolve(fileName)}, but it is no longer supported. Please remove it.`);
+      throw new ToolkitError(`The 'context.${key}' key was found in ${fs_path.resolve(fileName)}, but it is no longer supported. Please remove it.`);
     }
   }
 
@@ -483,11 +530,11 @@ function isTransientValue(value: any) {
 function expectStringList(x: unknown): string[] | undefined {
   if (x === undefined) { return undefined; }
   if (!Array.isArray(x)) {
-    throw new Error(`Expected array, got '${x}'`);
+    throw new ToolkitError(`Expected array, got '${x}'`);
   }
   const nonStrings = x.filter(e => typeof e !== 'string');
   if (nonStrings.length > 0) {
-    throw new Error(`Expected list of strings, found ${nonStrings}`);
+    throw new ToolkitError(`Expected list of strings, found ${nonStrings}`);
   }
   return x;
 }

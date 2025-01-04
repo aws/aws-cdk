@@ -153,7 +153,7 @@ export class Script extends ScriptBase {
       public readonly scriptArn = scriptArn;
       public readonly scriptId = scriptId;
       public readonly grantPrincipal:iam.IPrincipal;
-      public readonly role = role
+      public readonly role = role;
 
       constructor(s: Construct, i: string) {
         super(s, i, {

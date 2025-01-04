@@ -39,7 +39,7 @@ test('Cannot create a Fargate task with a fargate-incompatible task definition',
 
   expect(() =>
     new tasks.EcsRunTask(stack, 'task', { cluster, taskDefinition, launchTarget: new tasks.EcsFargateLaunchTarget() }).toStateJson(),
-  ).toThrowError(/Supplied TaskDefinition is not compatible with Fargate/);
+  ).toThrow(/Supplied TaskDefinition is not compatible with Fargate/);
 });
 
 test('Cannot create a Fargate task without a default container', () => {
@@ -50,7 +50,7 @@ test('Cannot create a Fargate task without a default container', () => {
   });
   expect(() =>
     new tasks.EcsRunTask(stack, 'task', { cluster, taskDefinition, launchTarget: new tasks.EcsFargateLaunchTarget() }).toStateJson(),
-  ).toThrowError(/must have at least one essential container/);
+  ).toThrow(/must have at least one essential container/);
 });
 
 test('Cannot override container definitions when container is not in task definition', () => {
@@ -86,7 +86,7 @@ test('Cannot override container definitions when container is not in task defini
       ],
       launchTarget: new tasks.EcsFargateLaunchTarget(),
     }).toStateJson(),
-  ).toThrowError(/no such container in task definition/);
+  ).toThrow(/no such container in task definition/);
 });
 
 test('Running a task with container override and container has explicitly set a container name', () => {
@@ -656,7 +656,7 @@ test('Cannot create a task with WAIT_FOR_TASK_TOKEN if no TaskToken provided', (
       launchTarget: new tasks.EcsEc2LaunchTarget(),
       taskDefinition,
     }),
-  ).toThrowError(/Task Token is required in at least one `containerOverrides.environment`/);
+  ).toThrow(/Task Token is required in at least one `containerOverrides.environment`/);
 });
 
 test('Running a task with WAIT_FOR_TASK_TOKEN and task token in environment', () => {

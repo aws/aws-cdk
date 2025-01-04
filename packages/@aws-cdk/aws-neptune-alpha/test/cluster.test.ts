@@ -77,7 +77,7 @@ describe('DatabaseCluster', () => {
         vpc,
         instanceType: InstanceType.R5_LARGE,
       });
-    }).toThrowError('At least one instance is required');
+    }).toThrow('At least one instance is required');
   });
 
   test('errors when only one subnet is specified', () => {
@@ -97,7 +97,7 @@ describe('DatabaseCluster', () => {
         },
         instanceType: InstanceType.R5_LARGE,
       });
-    }).toThrowError('Cluster requires at least 2 subnets, got 1');
+    }).toThrow('Cluster requires at least 2 subnets, got 1');
   });
 
   test('can create a cluster with custom engine version', () => {

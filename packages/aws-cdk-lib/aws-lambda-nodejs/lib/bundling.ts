@@ -81,7 +81,7 @@ export class Bundling implements cdk.BundlingOptions {
 
   // Core bundling options
   public readonly image: cdk.DockerImage;
-  public readonly entrypoint?: string[]
+  public readonly entrypoint?: string[];
   public readonly command: string[];
   public readonly volumes?: cdk.DockerVolume[];
   public readonly volumesFrom?: string[];

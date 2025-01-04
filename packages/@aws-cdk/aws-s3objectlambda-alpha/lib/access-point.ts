@@ -187,19 +187,19 @@ export class AccessPoint extends AccessPointBase {
   /**
    * The ARN of the access point.
    */
-  public readonly accessPointName: string
+  public readonly accessPointName: string;
 
   /**
    * The ARN of the access point.
    * @attribute
    */
-  public readonly accessPointArn: string
+  public readonly accessPointArn: string;
 
   /**
    * The creation data of the access point.
    * @attribute
    */
-  public readonly accessPointCreationDate: string
+  public readonly accessPointCreationDate: string;
 
   constructor(scope: Construct, id: string, props: AccessPointProps) {
     super(scope, id, {

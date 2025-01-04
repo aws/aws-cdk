@@ -71,7 +71,7 @@ export class TestTarget implements ITarget {
 }
 
 export class TestEnrichment implements IEnrichment {
-  readonly enrichmentArn= 'enrichment-arn'
+  readonly enrichmentArn= 'enrichment-arn';
   private enrichmentParameters = {};
   public grantInvoke = jest.fn();
 

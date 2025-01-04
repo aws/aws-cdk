@@ -571,6 +571,91 @@ describe('ECR Garbage Collection', () => {
       imageTag: expect.stringContaining(`1-${ECR_ISOLATED_TAG}`),
     });
   });
+
+  test('listImagesCommand returns nextToken', async () => {
+    // This test is to ensure that the garbage collector can handle paginated responses from the ECR API
+    // If not handled correctly, the garbage collector will continue to make requests to the ECR API
+    mockTheToolkitInfo({
+      Outputs: [
+        {
+          OutputKey: 'BootstrapVersion',
+          OutputValue: '999',
+        },
+      ],
+    });
+
+    prepareDefaultEcrMock();
+    ecrClient.on(ListImagesCommand).resolves({ // default response
+      imageIds: [
+        {
+          imageDigest: 'digest1',
+          imageTag: 'abcde',
+        },
+        {
+          imageDigest: 'digest2',
+          imageTag: 'fghij',
+        },
+      ],
+      nextToken: 'nextToken',
+    }).on(ListImagesCommand, { // response when nextToken is provided
+      repositoryName: 'REPO_NAME',
+      nextToken: 'nextToken',
+    }).resolves({
+      imageIds: [
+        {
+          imageDigest: 'digest3',
+          imageTag: 'klmno',
+        },
+      ],
+    });
+    ecrClient.on(BatchGetImageCommand).resolvesOnce({
+      images: [
+        { imageId: { imageDigest: 'digest1' } },
+        { imageId: { imageDigest: 'digest2' } },
+      ],
+    }).resolvesOnce({
+      images: [
+        { imageId: { imageDigest: 'digest3' } },
+      ],
+    });
+    ecrClient.on(DescribeImagesCommand).resolvesOnce({
+      imageDetails: [
+        {
+          imageDigest: 'digest1',
+          imageTags: ['abcde'],
+          imagePushedAt: daysInThePast(100),
+          imageSizeInBytes: 1_000_000_000,
+        },
+        { imageDigest: 'digest2', imageTags: ['fghij'], imagePushedAt: daysInThePast(10), imageSizeInBytes: 300_000_000 },
+      ],
+    }).resolvesOnce({
+      imageDetails: [
+        { imageDigest: 'digest3', imageTags: ['klmno'], imagePushedAt: daysInThePast(2), imageSizeInBytes: 100 },
+      ],
+    });
+    prepareDefaultCfnMock();
+
+    garbageCollector = gc({
+      type: 'ecr',
+      rollbackBufferDays: 0,
+      action: 'full',
+    });
+    await garbageCollector.garbageCollect();
+
+    expect(ecrClient).toHaveReceivedCommandTimes(DescribeImagesCommand, 2);
+    expect(ecrClient).toHaveReceivedCommandTimes(ListImagesCommand, 4);
+
+    // no tagging
+    expect(ecrClient).toHaveReceivedCommandTimes(PutImageCommand, 0);
+
+    expect(ecrClient).toHaveReceivedCommandWith(BatchDeleteImageCommand, {
+      repositoryName: 'REPO_NAME',
+      imageIds: [
+        { imageDigest: 'digest2' },
+        { imageDigest: 'digest3' },
+      ],
+    });
+  });
 });
 
 describe('CloudFormation API calls', () => {

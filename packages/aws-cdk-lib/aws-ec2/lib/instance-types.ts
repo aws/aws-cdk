@@ -289,6 +289,78 @@ export enum InstanceClass {
   U_24TB1 = 'u-24tb1',
 
   /**
+   * High memory instances (6TB) based on 4th Generation Intel Xeon Scalable processors (Sapphire Rapids), 7th generation
+   */
+  HIGH_MEMORY_6TB_7 = 'high-memory-6tb-7',
+
+  /**
+   * High memory instances (6TB) based on 4th Generation Intel Xeon Scalable processors (Sapphire Rapids), 7th generation
+   */
+  U7I_6TB = 'u7i-6tb',
+
+  /**
+   * High memory instances (8TB) based on 4th Generation Intel Xeon Scalable processors (Sapphire Rapids), 7th generation
+   */
+  HIGH_MEMORY_8TB_7 = 'high-memory-8tb-7',
+
+  /**
+   * High memory instances (8TB) based on 4th Generation Intel Xeon Scalable processors (Sapphire Rapids), 7th generation
+   */
+  U7I_8TB = 'u7i-8tb',
+
+  /**
+   * High memory instances (12TB) based on 4th Generation Intel Xeon Scalable processors (Sapphire Rapids), 7th generation
+   */
+  HIGH_MEMORY_12TB_7 = 'high-memory-12tb-7',
+
+  /**
+   * High memory instances (12TB) based on 4th Generation Intel Xeon Scalable processors (Sapphire Rapids), 7th generation
+   */
+  U7I_12TB = 'u7i-12tb',
+
+  /**
+   * High memory, network-intensive instances (16TB) based on 4th Generation Intel Xeon Scalable processors (Sapphire Rapids), 7th generation
+   */
+  HIGH_MEMORY_HIGH_NETWORK_16TB_7 = 'high-memory-high-network-16tb-7',
+
+  /**
+   * High memory, network-intensive instances (16TB) based on 4th Generation Intel Xeon Scalable processors (Sapphire Rapids), 7th generation
+   */
+  U7IN_16TB = 'u7in-16tb',
+
+  /**
+   * High memory, network-intensive instances (24TB) based on 4th Generation Intel Xeon Scalable processors (Sapphire Rapids), 7th generation
+   */
+  HIGH_MEMORY_HIGH_NETWORK_24TB_7 = 'high-memory-high-network-24tb-7',
+
+  /**
+   * High memory, network-intensive instances (24TB) based on 4th Generation Intel Xeon Scalable processors (Sapphire Rapids), 7th generation
+   */
+  U7IN_24TB = 'u7in-24tb',
+
+  /**
+   * High memory, network-intensive instances (32TB) based on 4th Generation Intel Xeon Scalable processors (Sapphire Rapids), 7th generation
+   */
+  HIGH_MEMORY_HIGH_NETWORK_32TB_7 = 'high-memory-high-network-32tb-7',
+
+  /**
+   * High memory, network-intensive instances (32TB) based on 4th Generation Intel Xeon Scalable processors (Sapphire Rapids), 7th generation
+   */
+  U7IN_32TB = 'u7in-32tb',
+
+  /**
+   * High memory, network-intensive instances (32TB) based on 4th Generation Intel Xeon Scalable processors (Sapphire Rapids), 7th generation
+   * U7inh instances use Hewlett Packard Enterprise (HPE) Compute Scale Up Server 3200.
+   */
+  HIGH_MEMORY_HIGH_NETWORK_HPE_32TB_7 = 'high-memory-high-network-hpe-32tb-7',
+
+  /**
+   * High memory, network-intensive instances (32TB) based on 4th Generation Intel Xeon Scalable processors (Sapphire Rapids), 7th generation
+   * U7inh instances use Hewlett Packard Enterprise (HPE) Compute Scale Up Server 3200.
+   */
+  U7INH_32TB = 'u7inh-32tb',
+
+  /**
    * Memory optimized instances that are also EBS-optimized, 5th generation
    */
   MEMORY5_EBS_OPTIMIZED = 'memory5-ebs-optimized',
@@ -517,6 +589,20 @@ export enum InstanceClass {
   C7G = 'c7g',
 
   /**
+   * Compute optimized instances for high performance computing, 8th generation with Graviton4 processors
+   *
+   * This instance class is currently only available in US East (Ohio), US East (N. Virginia), US West (Oregon), and Europe (Frankfurt).
+   */
+  COMPUTE8_GRAVITON4 = 'compute8-graviton4',
+
+  /**
+   * Compute optimized instances for high performance computing, 8th generation with Graviton4 processors
+   *
+   * This instance class is currently only available in US East (Ohio), US East (N. Virginia), US West (Oregon), and Europe (Frankfurt).
+   */
+  C8G = 'c8g',
+
+  /**
    * Compute optimized instances for high performance computing, 6th generation with Graviton2 processors
    * and local NVME drive
    */
@@ -575,6 +661,18 @@ export enum InstanceClass {
    * Compute optimized instances based on Intel Xeon Scalable (Sapphire Rapids) processors, 7th generation
    */
   C7I = 'c7i',
+
+  /**
+   * Compute optimized instances based on Intel Xeon Scalable (Sapphire Rapids) processors, 7th generation
+   * C7i-flex instances efficiently use compute resources to deliver a baseline level of performance with the ability to scale up to the full compute performance a majority of the time.
+   */
+  COMPUTE7_INTEL_FLEX = 'compute7-intel-flex',
+
+  /**
+   * Compute optimized instances based on Intel Xeon Scalable (Sapphire Rapids) processors, 7th generation
+   * C7i-flex instances efficiently use compute resources to deliver a baseline level of performance with the ability to scale up to the full compute performance a majority of the time.
+   */
+  C7I_FLEX = 'c7i-flex',
 
   /**
    * Compute optimized instances based on 4th generation AMD EPYC (codename Genoa), 7th generation
@@ -647,6 +745,28 @@ export enum InstanceClass {
   TRN1N = 'trn1n',
 
   /**
+   * High performance computing powered by AWS Trainium2, 2nd generation
+   */
+  TRAINING_ACCELERATOR2 = 'training-accelerator2',
+
+  /**
+   * High performance computing powered by AWS Trainium2, 2nd generation
+   */
+  TRN2 = 'trn2',
+
+  /**
+   * High performance computing powered by AWS Trainium2 and EC2 Ultra Servers, 2nd generation
+   * UltraServers connect multiple EC2 instances using a dedicated, high-bandwidth, low-latency accelerator interconnect
+   */
+  TRAINING_ACCELERATOR2_ULTRASERVER = 'training-accelerator2-ultraserver',
+
+  /**
+   * High performance computing powered by AWS Trainium2 and EC2 Ultra Servers, 2nd generation
+   * UltraServers connect multiple EC2 instances using a dedicated, high-bandwidth, low-latency accelerator interconnect
+   */
+  TRN2U = 'trn2u',
+
+  /**
    * I/O-optimized instances, 3rd generation
    */
   IO3 = 'io3',
@@ -705,6 +825,26 @@ export enum InstanceClass {
    * Storage optimized instances powered by Graviton2 processor, 4th generation
    */
   IS4GEN = 'is4gen',
+
+  /**
+   * Storage optimized instances powered by 5th generation Intel Xeon Scalable processors, 7th generation
+   */
+  STORAGE7_INTEL_STORAGE_OPTIMIZED = 'storage7-intel-storage-optimized',
+
+  /**
+   * Storage optimized instances powered by 5th generation Intel Xeon Scalable processors, 7th generation
+   */
+  I7IE = 'i7ie',
+
+  /**
+   * Storage optimized instances powered by Graviton4 processor, 8th generation
+   */
+  STORAGE8_GRAVITON = 'storage8-graviton',
+
+  /**
+   * Storage optimized instances powered by Graviton4 processor, 8th generation
+   */
+  I8G = 'i8g',
 
   /**
    * Burstable instances, 2nd generation
@@ -821,6 +961,16 @@ export enum InstanceClass {
   X2IEZN = 'x2iezn',
 
   /**
+   * Memory-intensive instances powered by Graviton4 processors, 8th generation
+   */
+  MEMORY_INTENSIVE_8_GRAVITON = 'memory-intensive-8-graviton',
+
+  /**
+   * Memory-intensive instances powered by Graviton4 processors, 8th generation
+   */
+  X8G = 'x8g',
+
+  /**
    * Instances with customizable hardware acceleration, 1st generation
    */
   FPGA1 = 'fpga1',
@@ -829,6 +979,16 @@ export enum InstanceClass {
    * Instances with customizable hardware acceleration, 1st generation
    */
   F1 = 'f1',
+
+  /**
+   * Instances with customizable hardware acceleration, 2nd generation
+   */
+  FPGA2 = 'fpga2',
+
+  /**
+   * Instances with customizable hardware acceleration, 2nd generation
+   */
+  F2 = 'f2',
 
   /**
    * Graphics-optimized instances, 3rd generation
@@ -911,6 +1071,18 @@ export enum InstanceClass {
   G6E = 'g6e',
 
   /**
+   * Graphics-optimized instances, 6th generation
+   * Gr6 instances offer a 1:8 vCPU to RAM ratio, making them better suited for graphics workloads with higher memory requirements.
+   */
+  GRAPHICS_RAM_6 = 'graphics-ram-6',
+
+  /**
+   * Graphics-optimized instances, 6th generation
+   * Gr6 instances offer a 1:8 vCPU to RAM ratio, making them better suited for graphics workloads with higher memory requirements.
+   */
+  GR6 = 'gr6',
+
+  /**
    * Parallel-processing optimized instances, 2nd generation
    */
   PARALLEL2 = 'parallel2',
@@ -961,14 +1133,35 @@ export enum InstanceClass {
   P4D = 'p4d',
 
   /**
-   * Parallel-processing optimized instances, 5th generation
+   * Parallel-processing optimized instances powered by NVIDIA H100 Tensor Core GPUs, 5th generation
    */
   PARALLEL5 = 'parallel5',
 
   /**
-   * Parallel-processing optimized instances, 5th generation
+   * Parallel-processing optimized instances powered by NVIDIA H100 Tensor Core GPUs, 5th generation
    */
   P5 = 'p5',
+
+  /**
+   * Parallel-processing optimized instances powered by NVIDIA H200 Tensor Core GPUs, 5th generation
+   */
+  PARALLEL5_EXTENDED = 'parallel5-extended',
+
+  /**
+   * Parallel-processing optimized instances, 5th generation
+   */
+  P5E = 'p5e',
+
+  /**
+   * Parallel-processing, network-optimized instances powered by NVIDIA H200 Tensor Core GPUs, 5th generation
+   * P5en instances pair NVIDIA H200 Tensor Core GPUs with Intel Sapphire Rapids CPU, enabling Gen5 PCIe between CPU and GPU
+   */
+  PARALLEL5_EXTENDED_NETWORK = 'parallel5-extended-network',
+
+  /**
+   * Parallel-processing optimized instances, 5th generation
+   */
+  P5EN = 'p5en',
 
   /**
    * Arm processor based instances, 1st generation
@@ -1063,6 +1256,20 @@ export enum InstanceClass {
    * This instance class is currently only available in US East (Ohio), US East (N. Virginia), US West (Oregon), and Europe (Ireland).
    */
   M7G = 'm7g',
+
+  /**
+   * Standard instances, 8th generation with Graviton4 processors
+   *
+   * This instance class is currently only available in US East (Ohio), US East (N. Virginia), US West (Oregon), and Europe (Frankfurt).
+   */
+  STANDARD8_GRAVITON = 'standard8-graviton',
+
+  /**
+   * Standard instances, 8th generation with Graviton4 processors
+   *
+   * This instance class is currently only available in US East (Ohio), US East (N. Virginia), US West (Oregon), and Europe (Frankfurt).
+   */
+  M8G = 'm8g',
 
   /**
    * Standard instances, 7th generation with Graviton3 processors and local NVME drive
@@ -1391,6 +1598,16 @@ export enum InstanceSize {
   XLARGE112 = '112xlarge',
 
   /**
+   * Instance size XLARGE224 (224xlarge)
+   */
+  XLARGE224 = '224xlarge',
+
+  /**
+   * Instance size XLARGE480 (480xlarge)
+   */
+  XLARGE480 = '480xlarge',
+
+  /**
    * Instance size METAL (metal)
    */
   METAL = 'metal',
@@ -1490,6 +1707,20 @@ export class InstanceType {
       [InstanceClass.U_18TB1]: 'u-18tb1',
       [InstanceClass.HIGH_MEMORY_24TB_1]: 'u-24tb1',
       [InstanceClass.U_24TB1]: 'u-24tb1',
+      [InstanceClass.HIGH_MEMORY_6TB_7]: 'u7i-6tb',
+      [InstanceClass.U7I_6TB]: 'u7i-6tb',
+      [InstanceClass.HIGH_MEMORY_8TB_7]: 'u7i-8tb',
+      [InstanceClass.U7I_8TB]: 'u7i-8tb',
+      [InstanceClass.HIGH_MEMORY_12TB_7]: 'u7i-12tb',
+      [InstanceClass.U7I_12TB]: 'u7i-12tb',
+      [InstanceClass.HIGH_MEMORY_HIGH_NETWORK_16TB_7]: 'u7in-16tb',
+      [InstanceClass.U7IN_16TB]: 'u7in-16tb',
+      [InstanceClass.HIGH_MEMORY_HIGH_NETWORK_24TB_7]: 'u7in-24tb',
+      [InstanceClass.U7IN_24TB]: 'u7in-24tb',
+      [InstanceClass.HIGH_MEMORY_HIGH_NETWORK_32TB_7]: 'u7in-32tb',
+      [InstanceClass.U7IN_32TB]: 'u7in-32tb',
+      [InstanceClass.HIGH_MEMORY_HIGH_NETWORK_HPE_32TB_7]: 'u7inh-32tb',
+      [InstanceClass.U7INH_32TB]: 'u7inh-32tb',
       [InstanceClass.MEMORY5_EBS_OPTIMIZED]: 'r5b',
       [InstanceClass.R5B]: 'r5b',
       [InstanceClass.MEMORY6_GRAVITON]: 'r6g',
@@ -1544,8 +1775,12 @@ export class InstanceType {
       [InstanceClass.C7GN]: 'c7gn',
       [InstanceClass.COMPUTE7_INTEL]: 'c7i',
       [InstanceClass.C7I]: 'c7i',
+      [InstanceClass.COMPUTE7_INTEL_FLEX]: 'c7i-flex',
+      [InstanceClass.C7I_FLEX]: 'c7i-flex',
       [InstanceClass.COMPUTE7_AMD]: 'c7a',
       [InstanceClass.C7A]: 'c7a',
+      [InstanceClass.COMPUTE8_GRAVITON4]: 'c8g',
+      [InstanceClass.C8G]: 'c8g',
       [InstanceClass.STORAGE2]: 'd2',
       [InstanceClass.D2]: 'd2',
       [InstanceClass.STORAGE3]: 'd3',
@@ -1556,6 +1791,10 @@ export class InstanceType {
       [InstanceClass.TRN1]: 'trn1',
       [InstanceClass.TRAINING_ACCELERATOR1_ENHANCED_NETWORK]: 'trn1n',
       [InstanceClass.TRN1N]: 'trn1n',
+      [InstanceClass.TRAINING_ACCELERATOR2]: 'trn2',
+      [InstanceClass.TRN2]: 'trn2',
+      [InstanceClass.TRAINING_ACCELERATOR2_ULTRASERVER]: 'trn2u',
+      [InstanceClass.TRN2U]: 'trn2u',
       [InstanceClass.STORAGE_COMPUTE_1]: 'h1',
       [InstanceClass.H1]: 'h1',
       [InstanceClass.IO3]: 'i3',
@@ -1568,6 +1807,10 @@ export class InstanceType {
       [InstanceClass.IM4GN]: 'im4gn',
       [InstanceClass.STORAGE4_GRAVITON_NETWORK_STORAGE_OPTIMIZED]: 'is4gen',
       [InstanceClass.IS4GEN]: 'is4gen',
+      [InstanceClass.STORAGE7_INTEL_STORAGE_OPTIMIZED]: 'i7ie',
+      [InstanceClass.I7IE]: 'i7ie',
+      [InstanceClass.STORAGE8_GRAVITON]: 'i8g',
+      [InstanceClass.I8G]: 'i8g',
       [InstanceClass.BURSTABLE2]: 't2',
       [InstanceClass.T2]: 't2',
       [InstanceClass.BURSTABLE3]: 't3',
@@ -1586,6 +1829,8 @@ export class InstanceType {
       [InstanceClass.X2GD]: 'x2gd',
       [InstanceClass.FPGA1]: 'f1',
       [InstanceClass.F1]: 'f1',
+      [InstanceClass.FPGA2]: 'f2',
+      [InstanceClass.F2]: 'f2',
       [InstanceClass.GRAPHICS3_SMALL]: 'g3s',
       [InstanceClass.G3S]: 'g3s',
       [InstanceClass.GRAPHICS3]: 'g3',
@@ -1602,6 +1847,8 @@ export class InstanceType {
       [InstanceClass.G6]: 'g6',
       [InstanceClass.GRAPHICS6_EFFICIENT]: 'g6e',
       [InstanceClass.G6E]: 'g6e',
+      [InstanceClass.GRAPHICS_RAM_6]: 'gr6',
+      [InstanceClass.GR6]: 'gr6',
       [InstanceClass.PARALLEL2]: 'p2',
       [InstanceClass.P2]: 'p2',
       [InstanceClass.PARALLEL3]: 'p3',
@@ -1614,6 +1861,10 @@ export class InstanceType {
       [InstanceClass.P4D]: 'p4d',
       [InstanceClass.PARALLEL5]: 'p5',
       [InstanceClass.P5]: 'p5',
+      [InstanceClass.PARALLEL5_EXTENDED]: 'parallel5-extended',
+      [InstanceClass.P5E]: 'p5e',
+      [InstanceClass.PARALLEL5_EXTENDED_NETWORK]: 'parallel5-extended-network',
+      [InstanceClass.P5EN]: 'p5en',
       [InstanceClass.ARM1]: 'a1',
       [InstanceClass.A1]: 'a1',
       [InstanceClass.STANDARD6_GRAVITON]: 'm6g',
@@ -1632,6 +1883,8 @@ export class InstanceType {
       [InstanceClass.M6GD]: 'm6gd',
       [InstanceClass.STANDARD7_GRAVITON]: 'm7g',
       [InstanceClass.M7G]: 'm7g',
+      [InstanceClass.STANDARD8_GRAVITON]: 'm8g',
+      [InstanceClass.M8G]: 'm8g',
       [InstanceClass.STANDARD7_GRAVITON3_NVME_DRIVE]: 'm7gd',
       [InstanceClass.M7GD]: 'm7gd',
       [InstanceClass.STANDARD7_INTEL]: 'm7i',
@@ -1673,6 +1926,8 @@ export class InstanceType {
       [InstanceClass.X2IDN]: 'x2idn',
       [InstanceClass.MEMORY_INTENSIVE_2_INTEL]: 'x2idn',
       [InstanceClass.X2IEZN]: 'x2iezn',
+      [InstanceClass.MEMORY_INTENSIVE_8_GRAVITON]: 'x8g',
+      [InstanceClass.X8G]: 'x8g',
       [InstanceClass.MEMORY_INTENSIVE_2_XTZ_INTEL]: 'x2iezn',
       [InstanceClass.DEEP_LEARNING1]: 'dl1',
       [InstanceClass.DL1]: 'dl1',

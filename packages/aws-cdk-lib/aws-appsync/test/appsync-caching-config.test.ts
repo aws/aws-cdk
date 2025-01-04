@@ -85,7 +85,7 @@ describe('Lambda caching config', () => {
           ttl: Duration.seconds(0),
         },
       });
-    }).toThrowError(`Caching config TTL must be between 1 and 3600 seconds. Received: ${ttlInSconds}`);
+    }).toThrow(`Caching config TTL must be between 1 and 3600 seconds. Received: ${ttlInSconds}`);
   });
 
   test('Lambda resolver throws error when caching config with TTL is greater than 3600 seconds', () => {
@@ -103,7 +103,7 @@ describe('Lambda caching config', () => {
           ttl: Duration.seconds(ttlInSconds),
         },
       });
-    }).toThrowError(`Caching config TTL must be between 1 and 3600 seconds. Received: ${ttlInSconds}`);
+    }).toThrow(`Caching config TTL must be between 1 and 3600 seconds. Received: ${ttlInSconds}`);
   });
 
   test('Lambda resolver throws error when caching config has invalid caching keys', () => {
@@ -121,6 +121,6 @@ describe('Lambda caching config', () => {
           ttl: Duration.seconds(300),
         },
       });
-    }).toThrowError(`Caching config keys must begin with $context.arguments, $context.source or $context.identity. Received: ${invalidCachingKeys}`);
+    }).toThrow(`Caching config keys must begin with $context.arguments, $context.source or $context.identity. Received: ${invalidCachingKeys}`);
   });
 });

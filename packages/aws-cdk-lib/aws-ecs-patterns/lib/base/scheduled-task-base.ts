@@ -179,7 +179,7 @@ export abstract class ScheduledTaskBase extends Construct {
    *
    * @default - No tags are applied to the task
    */
-  public readonly tags?: Tag[]
+  public readonly tags?: Tag[];
 
   /**
    * Constructs a new instance of the ScheduledTaskBase class.

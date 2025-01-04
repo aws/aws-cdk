@@ -98,7 +98,7 @@ describe('BasePathMapping', () => {
         domainName: domain,
         basePath: invalidBasePath,
       });
-    }).toThrowError(/base path may only contain/);
+    }).toThrow(/base path may only contain/);
   });
 
   test('throw error for basePath starting with /', () => {
@@ -122,7 +122,7 @@ describe('BasePathMapping', () => {
         domainName: domain,
         basePath: invalidBasePath,
       });
-    }).toThrowError(/A base path cannot start or end with/);
+    }).toThrow(/A base path cannot start or end with/);
   });
 
   test('throw error for basePath ending with /', () => {
@@ -146,7 +146,7 @@ describe('BasePathMapping', () => {
         domainName: domain,
         basePath: invalidBasePath,
       });
-    }).toThrowError(/A base path cannot start or end with/);
+    }).toThrow(/A base path cannot start or end with/);
   });
 
   test('throw error for basePath containing more than one consecutive /', () => {
@@ -170,7 +170,7 @@ describe('BasePathMapping', () => {
         domainName: domain,
         basePath: invalidBasePath,
       });
-    }).toThrowError(/A base path cannot have more than one consecutive \//);
+    }).toThrow(/A base path cannot have more than one consecutive \//);
   });
 
   test('specify stage property', () => {

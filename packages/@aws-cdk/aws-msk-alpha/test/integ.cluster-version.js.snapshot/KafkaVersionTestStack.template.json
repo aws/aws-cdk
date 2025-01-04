@@ -363,282 +363,6 @@
     }
    }
   },
-  "ClusterVersion221SecurityGroup7D79A634": {
-   "Type": "AWS::EC2::SecurityGroup",
-   "Properties": {
-    "GroupDescription": "MSK security group",
-    "SecurityGroupEgress": [
-     {
-      "CidrIp": "0.0.0.0/0",
-      "Description": "Allow all outbound traffic by default",
-      "IpProtocol": "-1"
-     }
-    ],
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    }
-   }
-  },
-  "ClusterVersion2216E958BDB": {
-   "Type": "AWS::MSK::Cluster",
-   "Properties": {
-    "BrokerNodeGroupInfo": {
-     "ClientSubnets": [
-      {
-       "Ref": "VpcPrivateSubnet1Subnet536B997A"
-      },
-      {
-       "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
-      }
-     ],
-     "InstanceType": "kafka.m5.large",
-     "SecurityGroups": [
-      {
-       "Fn::GetAtt": [
-        "ClusterVersion221SecurityGroup7D79A634",
-        "GroupId"
-       ]
-      }
-     ],
-     "StorageInfo": {
-      "EBSStorageInfo": {
-       "VolumeSize": 1000
-      }
-     }
-    },
-    "ClusterName": "cluster-v2-2-1",
-    "EncryptionInfo": {
-     "EncryptionInTransit": {
-      "ClientBroker": "TLS",
-      "InCluster": true
-     }
-    },
-    "KafkaVersion": "2.2.1",
-    "LoggingInfo": {
-     "BrokerLogs": {
-      "CloudWatchLogs": {
-       "Enabled": false
-      },
-      "Firehose": {
-       "Enabled": false
-      },
-      "S3": {
-       "Enabled": false
-      }
-     }
-    },
-    "NumberOfBrokerNodes": 2
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "ClusterVersion231SecurityGroup9CC906F6": {
-   "Type": "AWS::EC2::SecurityGroup",
-   "Properties": {
-    "GroupDescription": "MSK security group",
-    "SecurityGroupEgress": [
-     {
-      "CidrIp": "0.0.0.0/0",
-      "Description": "Allow all outbound traffic by default",
-      "IpProtocol": "-1"
-     }
-    ],
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    }
-   }
-  },
-  "ClusterVersion231ECA150B0": {
-   "Type": "AWS::MSK::Cluster",
-   "Properties": {
-    "BrokerNodeGroupInfo": {
-     "ClientSubnets": [
-      {
-       "Ref": "VpcPrivateSubnet1Subnet536B997A"
-      },
-      {
-       "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
-      }
-     ],
-     "InstanceType": "kafka.m5.large",
-     "SecurityGroups": [
-      {
-       "Fn::GetAtt": [
-        "ClusterVersion231SecurityGroup9CC906F6",
-        "GroupId"
-       ]
-      }
-     ],
-     "StorageInfo": {
-      "EBSStorageInfo": {
-       "VolumeSize": 1000
-      }
-     }
-    },
-    "ClusterName": "cluster-v2-3-1",
-    "EncryptionInfo": {
-     "EncryptionInTransit": {
-      "ClientBroker": "TLS",
-      "InCluster": true
-     }
-    },
-    "KafkaVersion": "2.3.1",
-    "LoggingInfo": {
-     "BrokerLogs": {
-      "CloudWatchLogs": {
-       "Enabled": false
-      },
-      "Firehose": {
-       "Enabled": false
-      },
-      "S3": {
-       "Enabled": false
-      }
-     }
-    },
-    "NumberOfBrokerNodes": 2
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "ClusterVersion2411SecurityGroup1C6605A8": {
-   "Type": "AWS::EC2::SecurityGroup",
-   "Properties": {
-    "GroupDescription": "MSK security group",
-    "SecurityGroupEgress": [
-     {
-      "CidrIp": "0.0.0.0/0",
-      "Description": "Allow all outbound traffic by default",
-      "IpProtocol": "-1"
-     }
-    ],
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    }
-   }
-  },
-  "ClusterVersion2411B601F534": {
-   "Type": "AWS::MSK::Cluster",
-   "Properties": {
-    "BrokerNodeGroupInfo": {
-     "ClientSubnets": [
-      {
-       "Ref": "VpcPrivateSubnet1Subnet536B997A"
-      },
-      {
-       "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
-      }
-     ],
-     "InstanceType": "kafka.m5.large",
-     "SecurityGroups": [
-      {
-       "Fn::GetAtt": [
-        "ClusterVersion2411SecurityGroup1C6605A8",
-        "GroupId"
-       ]
-      }
-     ],
-     "StorageInfo": {
-      "EBSStorageInfo": {
-       "VolumeSize": 1000
-      }
-     }
-    },
-    "ClusterName": "cluster-v2-4-1-1",
-    "EncryptionInfo": {
-     "EncryptionInTransit": {
-      "ClientBroker": "TLS",
-      "InCluster": true
-     }
-    },
-    "KafkaVersion": "2.4.1.1",
-    "LoggingInfo": {
-     "BrokerLogs": {
-      "CloudWatchLogs": {
-       "Enabled": false
-      },
-      "Firehose": {
-       "Enabled": false
-      },
-      "S3": {
-       "Enabled": false
-      }
-     }
-    },
-    "NumberOfBrokerNodes": 2
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "ClusterVersion251SecurityGroup54D25418": {
-   "Type": "AWS::EC2::SecurityGroup",
-   "Properties": {
-    "GroupDescription": "MSK security group",
-    "SecurityGroupEgress": [
-     {
-      "CidrIp": "0.0.0.0/0",
-      "Description": "Allow all outbound traffic by default",
-      "IpProtocol": "-1"
-     }
-    ],
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    }
-   }
-  },
-  "ClusterVersion251B0616FDE": {
-   "Type": "AWS::MSK::Cluster",
-   "Properties": {
-    "BrokerNodeGroupInfo": {
-     "ClientSubnets": [
-      {
-       "Ref": "VpcPrivateSubnet1Subnet536B997A"
-      },
-      {
-       "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
-      }
-     ],
-     "InstanceType": "kafka.m5.large",
-     "SecurityGroups": [
-      {
-       "Fn::GetAtt": [
-        "ClusterVersion251SecurityGroup54D25418",
-        "GroupId"
-       ]
-      }
-     ],
-     "StorageInfo": {
-      "EBSStorageInfo": {
-       "VolumeSize": 1000
-      }
-     }
-    },
-    "ClusterName": "cluster-v2-5-1",
-    "EncryptionInfo": {
-     "EncryptionInTransit": {
-      "ClientBroker": "TLS",
-      "InCluster": true
-     }
-    },
-    "KafkaVersion": "2.5.1",
-    "LoggingInfo": {
-     "BrokerLogs": {
-      "CloudWatchLogs": {
-       "Enabled": false
-      },
-      "Firehose": {
-       "Enabled": false
-      },
-      "S3": {
-       "Enabled": false
-      }
-     }
-    },
-    "NumberOfBrokerNodes": 2
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
   "ClusterVersion260SecurityGroup7EE4C4B9": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
@@ -1725,6 +1449,213 @@
      }
     },
     "KafkaVersion": "3.5.1",
+    "LoggingInfo": {
+     "BrokerLogs": {
+      "CloudWatchLogs": {
+       "Enabled": false
+      },
+      "Firehose": {
+       "Enabled": false
+      },
+      "S3": {
+       "Enabled": false
+      }
+     }
+    },
+    "NumberOfBrokerNodes": 2
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClusterVersion360SecurityGroupDE3FDA4D": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "MSK security group",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "ClusterVersion360A3C740F1": {
+   "Type": "AWS::MSK::Cluster",
+   "Properties": {
+    "BrokerNodeGroupInfo": {
+     "ClientSubnets": [
+      {
+       "Ref": "VpcPrivateSubnet1Subnet536B997A"
+      },
+      {
+       "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+      }
+     ],
+     "InstanceType": "kafka.m5.large",
+     "SecurityGroups": [
+      {
+       "Fn::GetAtt": [
+        "ClusterVersion360SecurityGroupDE3FDA4D",
+        "GroupId"
+       ]
+      }
+     ],
+     "StorageInfo": {
+      "EBSStorageInfo": {
+       "VolumeSize": 1000
+      }
+     }
+    },
+    "ClusterName": "cluster-v3-6-0",
+    "EncryptionInfo": {
+     "EncryptionInTransit": {
+      "ClientBroker": "TLS",
+      "InCluster": true
+     }
+    },
+    "KafkaVersion": "3.6.0",
+    "LoggingInfo": {
+     "BrokerLogs": {
+      "CloudWatchLogs": {
+       "Enabled": false
+      },
+      "Firehose": {
+       "Enabled": false
+      },
+      "S3": {
+       "Enabled": false
+      }
+     }
+    },
+    "NumberOfBrokerNodes": 2
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClusterVersion37xSecurityGroup907921C2": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "MSK security group",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "ClusterVersion37xF25198B0": {
+   "Type": "AWS::MSK::Cluster",
+   "Properties": {
+    "BrokerNodeGroupInfo": {
+     "ClientSubnets": [
+      {
+       "Ref": "VpcPrivateSubnet1Subnet536B997A"
+      },
+      {
+       "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+      }
+     ],
+     "InstanceType": "kafka.m5.large",
+     "SecurityGroups": [
+      {
+       "Fn::GetAtt": [
+        "ClusterVersion37xSecurityGroup907921C2",
+        "GroupId"
+       ]
+      }
+     ],
+     "StorageInfo": {
+      "EBSStorageInfo": {
+       "VolumeSize": 1000
+      }
+     }
+    },
+    "ClusterName": "cluster-v3-7-x",
+    "EncryptionInfo": {
+     "EncryptionInTransit": {
+      "ClientBroker": "TLS",
+      "InCluster": true
+     }
+    },
+    "KafkaVersion": "3.7.x",
+    "LoggingInfo": {
+     "BrokerLogs": {
+      "CloudWatchLogs": {
+       "Enabled": false
+      },
+      "Firehose": {
+       "Enabled": false
+      },
+      "S3": {
+       "Enabled": false
+      }
+     }
+    },
+    "NumberOfBrokerNodes": 2
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClusterVersion37xkraftSecurityGroupD9C2010F": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "MSK security group",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "ClusterVersion37xkraft42DC71DF": {
+   "Type": "AWS::MSK::Cluster",
+   "Properties": {
+    "BrokerNodeGroupInfo": {
+     "ClientSubnets": [
+      {
+       "Ref": "VpcPrivateSubnet1Subnet536B997A"
+      },
+      {
+       "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+      }
+     ],
+     "InstanceType": "kafka.m5.large",
+     "SecurityGroups": [
+      {
+       "Fn::GetAtt": [
+        "ClusterVersion37xkraftSecurityGroupD9C2010F",
+        "GroupId"
+       ]
+      }
+     ],
+     "StorageInfo": {
+      "EBSStorageInfo": {
+       "VolumeSize": 1000
+      }
+     }
+    },
+    "ClusterName": "cluster-v3-7-x-kraft",
+    "EncryptionInfo": {
+     "EncryptionInTransit": {
+      "ClientBroker": "TLS",
+      "InCluster": true
+     }
+    },
+    "KafkaVersion": "3.7.x.kraft",
     "LoggingInfo": {
      "BrokerLogs": {
       "CloudWatchLogs": {

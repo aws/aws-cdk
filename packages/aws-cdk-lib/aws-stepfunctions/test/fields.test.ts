@@ -93,7 +93,7 @@ describe('Fields', () => {
   test('cannot have JsonPath fields in arrays', () => {
     expect(() => FieldUtils.renderObject({
       deep: [JsonPath.stringAt('$.hello')],
-    })).toThrowError(/Cannot use JsonPath fields in an array/);
+    })).toThrow(/Cannot use JsonPath fields in an array/);
   }),
   test('datafield path must be correct', () => {
     expect(JsonPath.stringAt('$')).toBeDefined();
@@ -116,15 +116,15 @@ describe('Fields', () => {
     expect(JsonPath.stringAt('States.StringSplit')).toBeDefined();
     expect(JsonPath.stringAt('States.UUID')).toBeDefined();
 
-    expect(() => JsonPath.stringAt('$hello')).toThrowError(jsonPathValidationErrorMsg);
-    expect(() => JsonPath.stringAt('hello')).toThrowError(jsonPathValidationErrorMsg);
-    expect(() => JsonPath.stringAt('States.FooBar')).toThrowError(jsonPathValidationErrorMsg);
+    expect(() => JsonPath.stringAt('$hello')).toThrow(jsonPathValidationErrorMsg);
+    expect(() => JsonPath.stringAt('hello')).toThrow(jsonPathValidationErrorMsg);
+    expect(() => JsonPath.stringAt('States.FooBar')).toThrow(jsonPathValidationErrorMsg);
   }),
   test('context path must be correct', () => {
     expect(JsonPath.stringAt('$$')).toBeDefined();
 
-    expect(() => JsonPath.stringAt('$$hello')).toThrowError(jsonPathValidationErrorMsg);
-    expect(() => JsonPath.stringAt('hello')).toThrowError(jsonPathValidationErrorMsg);
+    expect(() => JsonPath.stringAt('$$hello')).toThrow(jsonPathValidationErrorMsg);
+    expect(() => JsonPath.stringAt('hello')).toThrow(jsonPathValidationErrorMsg);
   }),
   test('datafield path with array must be correct', () => {
     expect(JsonPath.stringAt('$[0]')).toBeDefined();
@@ -173,7 +173,7 @@ describe('Fields', () => {
   test('fields cannot be used somewhere in a string interpolation', () => {
     expect(() => FieldUtils.renderObject({
       field: `contains ${JsonPath.stringAt('$.hello')}`,
-    })).toThrowError(/Field references must be the entire string/);
+    })).toThrow(/Field references must be the entire string/);
   });
   test('infinitely recursive object graphs do not break referenced path finding', () => {
     const deepObject = {

@@ -2,7 +2,7 @@
 import * as path from 'path';
 import { CdkCliWrapper, ICdk } from '@aws-cdk/cdk-cli-wrapper';
 import { TestCase, DefaultCdkOptions } from '@aws-cdk/cloud-assembly-schema';
-import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY, TARGET_PARTITIONS, NEW_PROJECT_CONTEXT } from '@aws-cdk/cx-api';
+import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY, TARGET_PARTITIONS } from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import { IntegTestSuite, LegacyIntegTestSuite } from './integ-test-suite';
 import { IntegTest } from './integration-tests';
@@ -121,7 +121,7 @@ export abstract class IntegRunner {
     pathMetadata: false,
     assetMetadata: false,
     versionReporting: false,
-  }
+  };
 
   /**
    * The directory where the CDK will be synthed to
@@ -365,7 +365,7 @@ export abstract class IntegRunner {
 
   protected getContext(additionalContext?: Record<string, any>): Record<string, any> {
     return {
-      ...NEW_PROJECT_CONTEXT,
+      ...currentlyRecommendedAwsCdkLibFlags(),
       ...this.legacyContext,
       ...additionalContext,
 
@@ -432,3 +432,13 @@ export const DEFAULT_SYNTH_OPTIONS = {
     CDK_INTEG_SUBNET_ID: 'subnet-0dff1a399d8f6f92c',
   },
 };
+
+/**
+ * Return the currently recommended flags for `aws-cdk-lib`.
+ *
+ * These have been built into the CLI at build time.
+ */
+export function currentlyRecommendedAwsCdkLibFlags() {
+  const recommendedFlagsFile = path.join(__dirname, '..', 'recommended-feature-flags.json');
+  return JSON.parse(fs.readFileSync(recommendedFlagsFile, { encoding: 'utf-8' }));
+}

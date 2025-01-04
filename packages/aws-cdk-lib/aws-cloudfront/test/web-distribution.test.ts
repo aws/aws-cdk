@@ -133,7 +133,7 @@ describe('web distribution', () => {
     const stack = new cdk.Stack();
     const sourceBucket = new s3.Bucket(stack, 'Bucket');
 
-    new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
+    const dist = new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
       originConfigs: [
         {
           s3OriginSource: {
@@ -204,6 +204,7 @@ describe('web distribution', () => {
       },
     });
 
+    expect(dist.distributionArn).toEqual(`arn:${cdk.Aws.PARTITION}:cloudfront::${cdk.Aws.ACCOUNT_ID}:distribution/${dist.distributionId}`);
   });
 
   test('can disable distribution', () => {
@@ -1722,6 +1723,7 @@ added the ellipsis so a user would know there was more to r...`,
 
     expect(dist.distributionDomainName).toEqual('d111111abcdef8.cloudfront.net');
     expect(dist.distributionId).toEqual('012345ABCDEF');
+    expect(dist.distributionArn).toEqual(`arn:${cdk.Aws.PARTITION}:cloudfront::${cdk.Aws.ACCOUNT_ID}:distribution/012345ABCDEF`);
 
   });
 });

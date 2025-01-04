@@ -308,6 +308,30 @@ describe('repository', () => {
     });
   });
 
+  test('calculate registry URI', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const repo = new ecr.Repository(stack, 'Repo');
+
+    new cdk.CfnOutput(stack, 'RegistryUri', {
+      value: repo.registryUri,
+    });
+
+    // THEN
+    const arnSplit = { 'Fn::Split': [':', { 'Fn::GetAtt': ['Repo02AC86CF', 'Arn'] }] };
+    Template.fromStack(stack).hasOutput('*', {
+      'Value': {
+        'Fn::Join': ['', [
+          { 'Fn::Select': [4, arnSplit] },
+          '.dkr.ecr.',
+          { 'Fn::Select': [3, arnSplit] },
+          '.',
+          { Ref: 'AWS::URLSuffix' },
+        ]],
+      },
+    });
+  });
+
   test('import with concrete arn', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -330,7 +354,7 @@ describe('repository', () => {
     // THEN
     expect(() => {
       ecr.Repository.fromRepositoryArn(stack, 'repo', invalidArn);
-    }).toThrowError(`Repository arn should be in the format 'arn:<PARTITION>:ecr:<REGION>:<ACCOUNT>:repository/<NAME>', got ${invalidArn}.`);
+    }).toThrow(`Repository arn should be in the format 'arn:<PARTITION>:ecr:<REGION>:<ACCOUNT>:repository/<NAME>', got ${invalidArn}.`);
   });
 
   test('fails if importing with token arn and no name', () => {
@@ -1193,7 +1217,7 @@ describe('repository', () => {
           autoDeleteImages: true,
           removalPolicy: cdk.RemovalPolicy.RETAIN,
         });
-      }).toThrowError('Cannot use \'autoDeleteImages\' property on a repository without setting removal policy to \'DESTROY\'.');
+      }).toThrow('Cannot use \'autoDeleteImages\' property on a repository without setting removal policy to \'DESTROY\'.');
     });
   });
 

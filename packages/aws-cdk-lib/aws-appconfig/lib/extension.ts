@@ -21,6 +21,7 @@ export enum ActionPoint {
   ON_DEPLOYMENT_BAKING = 'ON_DEPLOYMENT_BAKING',
   ON_DEPLOYMENT_COMPLETE = 'ON_DEPLOYMENT_COMPLETE',
   ON_DEPLOYMENT_ROLLED_BACK = 'ON_DEPLOYMENT_ROLLED_BACK',
+  AT_DEPLOYMENT_TICK = 'AT_DEPLOYMENT_TICK',
 }
 
 /**
@@ -657,6 +658,10 @@ export class ExtensibleBase implements IExtensible {
     this.getExtensionForActionPoint(eventDestination, ActionPoint.ON_DEPLOYMENT_ROLLED_BACK, options);
   }
 
+  public atDeploymentTick(eventDestination: IEventDestination, options?: ExtensionOptions) {
+    this.getExtensionForActionPoint(eventDestination, ActionPoint.AT_DEPLOYMENT_TICK, options);
+  }
+
   public addExtension(extension: IExtension) {
     this.addExtensionAssociation(extension);
   }
@@ -792,6 +797,15 @@ export interface IExtensible {
    * @param options Options for the extension
    */
   onDeploymentRolledBack(eventDestination: IEventDestination, options?: ExtensionOptions): void;
+
+  /**
+   * Adds an AT_DEPLOYMENT_TICK extension with the provided event destination and
+   * also creates an extension association to the derived resource.
+   *
+   * @param eventDestination The event that occurs during the extension
+   * @param options Options for the extension
+   */
+  atDeploymentTick(eventDestination: IEventDestination, options?: ExtensionOptions): void;
 
   /**
    * Adds an extension association to the derived resource.

@@ -1,0 +1,24 @@
+# Ignore artifacts
+dist
+.LAST_PACKAGE
+.LAST_BUILD
+*.snk
+*.ts
+!*.d.ts
+!*.js
+coverage
+.nyc_output
+*.tgz
+
+# Ignore configs and test files
+.eslintrc.js
+tsconfig.json
+*.tsbuildinfo
+junit.xml
+
+# Include .jsii
+!.jsii
+
+# exclude cdk artifacts
+**/cdk.out
+**/*.snapshot

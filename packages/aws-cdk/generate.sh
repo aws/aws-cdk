@@ -14,3 +14,12 @@ cat > build-info.json <<HERE
   "commit": "${commit:0:7}"
 }
 HERE
+
+# Copy the current 'aws-cdk-lib' version out from the monorepo.
+cdk_version=$(node -p 'require("aws-cdk-lib/package.json").version')
+constructs_range=$(node -p 'require("aws-cdk-lib/package.json").peerDependencies.constructs')
+echo '{"aws-cdk-lib": "'"$cdk_version"'", "constructs": "'"$constructs_range"'"}' > lib/init-templates/.init-version.json
+
+# Copy the recommended-feature-flags.json file out from aws-cdk-lib.
+path=$(node -p 'require.resolve("aws-cdk-lib/recommended-feature-flags.json")')
+cp $path lib/init-templates/.recommended-feature-flags.json

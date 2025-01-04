@@ -8,11 +8,16 @@ const POOL_NAME = 'resource-pool.test';
 test('take and dispose', async () => {
   const pool = ResourcePool.withResources(POOL_NAME, ['a']);
   const take1 = pool.take();
-  const take2 = pool.take();
 
   let released = false;
 
   const lease1 = await take1;
+
+  // We must start the take2 only after take1 has definitely
+  // succeeded, otherwise we have a race condition if take2 happens to
+  // win the race (we expect take1 to succeed and take2 to wait).
+  const take2 = pool.take();
+
   // awaiting 'take2' would now block but we add an async
   // handler to it to flip a boolean to see when it gets activated.
   void(take2.then(() => released = true));

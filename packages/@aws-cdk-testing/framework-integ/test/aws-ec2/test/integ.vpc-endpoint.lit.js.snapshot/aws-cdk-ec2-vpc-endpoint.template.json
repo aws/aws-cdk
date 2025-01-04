@@ -420,6 +420,12 @@
       ]
      ]
     },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ec2-vpc-endpoint/MyVpc"
+     }
+    ],
     "VpcEndpointType": "Gateway",
     "VpcId": {
      "Ref": "MyVpcF9F0CA6F"
@@ -471,6 +477,12 @@
       ]
      ]
     },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ec2-vpc-endpoint/MyVpc"
+     }
+    ],
     "VpcEndpointType": "Gateway",
     "VpcId": {
      "Ref": "MyVpcF9F0CA6F"
@@ -559,6 +571,12 @@
       "Ref": "MyVpcPrivateSubnet2Subnet0040C983"
      }
     ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ec2-vpc-endpoint/MyVpc"
+     }
+    ],
     "VpcEndpointType": "Interface",
     "VpcId": {
      "Ref": "MyVpcF9F0CA6F"
@@ -645,6 +663,12 @@
      },
      {
       "Ref": "MyVpcPrivateSubnet2Subnet0040C983"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ec2-vpc-endpoint/MyVpc"
      }
     ],
     "VpcEndpointType": "Interface",

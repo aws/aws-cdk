@@ -6,15 +6,16 @@ import { BootstrapStack, bootstrapVersionFromTemplate } from './deploy-bootstrap
 import { legacyBootstrapTemplate } from './legacy-template';
 import { warning } from '../../logging';
 import { loadStructuredFile, serializeStructure } from '../../serialize';
+import { ToolkitError } from '../../toolkit/error';
 import { rootDir } from '../../util/directories';
 import type { SDK, SdkProvider } from '../aws-auth';
 import type { SuccessfulDeployStackResult } from '../deploy-stack';
-import { Mode } from '../plugin';
+import { Mode } from '../plugin/mode';
 
 export type BootstrapSource = { source: 'legacy' } | { source: 'default' } | { source: 'custom'; templateFile: string };
 
 export class Bootstrapper {
-  constructor(private readonly source: BootstrapSource) {}
+  constructor(private readonly source: BootstrapSource = { source: 'default' }) {}
 
   public bootstrapEnvironment(
     environment: cxapi.Environment,
@@ -48,16 +49,16 @@ export class Bootstrapper {
     const params = options.parameters ?? {};
 
     if (params.trustedAccounts?.length) {
-      throw new Error('--trust can only be passed for the modern bootstrap experience.');
+      throw new ToolkitError('--trust can only be passed for the modern bootstrap experience.');
     }
     if (params.cloudFormationExecutionPolicies?.length) {
-      throw new Error('--cloudformation-execution-policies can only be passed for the modern bootstrap experience.');
+      throw new ToolkitError('--cloudformation-execution-policies can only be passed for the modern bootstrap experience.');
     }
     if (params.createCustomerMasterKey !== undefined) {
-      throw new Error('--bootstrap-customer-key can only be passed for the modern bootstrap experience.');
+      throw new ToolkitError('--bootstrap-customer-key can only be passed for the modern bootstrap experience.');
     }
     if (params.qualifier) {
-      throw new Error('--qualifier can only be passed for the modern bootstrap experience.');
+      throw new ToolkitError('--qualifier can only be passed for the modern bootstrap experience.');
     }
 
     const current = await BootstrapStack.lookup(sdkProvider, environment, options.toolkitStackName);
@@ -88,7 +89,7 @@ export class Bootstrapper {
     const partition = await current.partition();
 
     if (params.createCustomerMasterKey !== undefined && params.kmsKeyId) {
-      throw new Error(
+      throw new ToolkitError(
         "You cannot pass '--bootstrap-kms-key-id' and '--bootstrap-customer-key' together. Specify one or the other",
       );
     }
@@ -131,7 +132,7 @@ export class Bootstrapper {
         `Using default execution policy of '${implicitPolicy}'. Pass '--cloudformation-execution-policies' to customize.`,
       );
     } else if (cloudFormationExecutionPolicies.length === 0) {
-      throw new Error(
+      throw new ToolkitError(
         `Please pass \'--cloudformation-execution-policies\' when using \'--trust\' to specify deployment permissions. Try a managed policy of the form \'arn:${partition}:iam::aws:policy/<PolicyName>\'.`,
       );
     } else {
@@ -226,7 +227,7 @@ export class Bootstrapper {
     );
     const policyName = arn.split('/').pop();
     if (!policyName) {
-      throw new Error('Could not retrieve the example permission boundary!');
+      throw new ToolkitError('Could not retrieve the example permission boundary!');
     }
     return Promise.resolve(policyName);
   }
@@ -308,7 +309,7 @@ export class Bootstrapper {
     if (createPolicyResponse.Policy?.Arn) {
       return createPolicyResponse.Policy.Arn;
     } else {
-      throw new Error(`Could not retrieve the example permission boundary ${arn}!`);
+      throw new ToolkitError(`Could not retrieve the example permission boundary ${arn}!`);
     }
   }
 
@@ -319,7 +320,7 @@ export class Bootstrapper {
     const regexp: RegExp = /[\w+\/=,.@-]+/;
     const matches = regexp.exec(permissionsBoundary);
     if (!(matches && matches.length === 1 && matches[0] === permissionsBoundary)) {
-      throw new Error(`The permissions boundary name ${permissionsBoundary} does not match the IAM conventions.`);
+      throw new ToolkitError(`The permissions boundary name ${permissionsBoundary} does not match the IAM conventions.`);
     }
   }
 

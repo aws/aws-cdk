@@ -376,7 +376,7 @@ describe(AppStagingSynthesizer, () => {
     expect(() => stack.synthesizer.addDockerImageAsset({
       directoryName: '.',
       sourceHash: 'abcdef',
-    })).toThrowError('Assets synthesized with AppScopedStagingSynthesizer must include an \'assetName\' in the asset source definition.');
+    })).toThrow('Assets synthesized with AppScopedStagingSynthesizer must include an \'assetName\' in the asset source definition.');
   });
 
   test('docker image asset depends on staging stack', () => {
@@ -568,7 +568,7 @@ describe(AppStagingSynthesizer, () => {
       // GIVEN - App with Stack with specific environment
 
       // THEN - Expect environment agnostic stack to fail
-      expect(() => new Stack(app, 'NoEnvStack')).toThrowError(/It is not safe to use AppStagingSynthesizer/);
+      expect(() => new Stack(app, 'NoEnvStack')).toThrow(/It is not safe to use AppStagingSynthesizer/);
     });
   });
 
@@ -578,7 +578,7 @@ describe(AppStagingSynthesizer, () => {
         appId: Lazy.string({ produce: () => 'appId' }),
         stagingBucketEncryption: BucketEncryption.S3_MANAGED,
       }),
-    })).toThrowError(/AppStagingSynthesizer property 'appId' may not contain tokens;/);
+    })).toThrow(/AppStagingSynthesizer property 'appId' may not contain tokens;/);
   });
 
   test('throws when staging resource stack is too large', () => {
@@ -593,7 +593,7 @@ describe(AppStagingSynthesizer, () => {
     }
 
     // THEN
-    expect(() => app.synth()).toThrowError(/Staging resource template cannot be greater than 51200 bytes/);
+    expect(() => app.synth()).toThrow(/Staging resource template cannot be greater than 51200 bytes/);
   });
 
   /**

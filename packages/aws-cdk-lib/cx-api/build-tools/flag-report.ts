@@ -15,6 +15,9 @@ async function main() {
     diff: changedFlags(),
     migratejson: migrateJson(),
   });
+
+  // Write to the package root
+  await updateRecommendedFlagsFile(path.join(__dirname, '..', '..', 'recommended-feature-flags.json'));
 }
 
 function flagsTable() {
@@ -117,7 +120,7 @@ function oldBehavior(flag: FlagInfo): string | undefined {
 function recommendedJson() {
   return [
     '```json',
-    JSON.stringify({ context: feats.NEW_PROJECT_CONTEXT }, undefined, 2),
+    JSON.stringify({ context: feats.CURRENTLY_RECOMMENDED_FLAGS }, undefined, 2),
     '```',
   ].join('\n');
 }
@@ -204,6 +207,10 @@ async function updateMarkdownFile(filename: string, sections: Record<string, str
   }
 
   await fs.writeFile(filename, contents, { encoding: 'utf-8' });
+}
+
+async function updateRecommendedFlagsFile(filename: string) {
+  await fs.writeFile(filename, JSON.stringify(feats.CURRENTLY_RECOMMENDED_FLAGS, undefined, 2), { encoding: 'utf-8' });
 }
 
 function firstCmp(...xs: number[]) {

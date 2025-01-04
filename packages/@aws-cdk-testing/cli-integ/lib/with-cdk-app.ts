@@ -117,6 +117,8 @@ export function withCdkMigrateApp<A extends TestContext>(language: string, block
       context.randomString,
     );
 
+    await ensureBootstrapped(fixture);
+
     await fixture.cdkMigrate(language, stackName);
 
     const testFixture = new TestFixture(

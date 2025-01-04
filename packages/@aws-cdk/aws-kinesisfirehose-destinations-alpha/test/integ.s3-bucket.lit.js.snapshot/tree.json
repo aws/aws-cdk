@@ -8,13 +8,13 @@
         "id": "aws-cdk-firehose-delivery-stream-s3-all-properties",
         "path": "aws-cdk-firehose-delivery-stream-s3-all-properties",
         "children": {
-          "Bucket": {
-            "id": "Bucket",
-            "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/Bucket",
+          "FirehoseDeliveryStreamS3AllPropertiesBucket": {
+            "id": "FirehoseDeliveryStreamS3AllPropertiesBucket",
+            "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/FirehoseDeliveryStreamS3AllPropertiesBucket",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/Bucket/Resource",
+                "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/FirehoseDeliveryStreamS3AllPropertiesBucket/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                   "aws:cdk:cloudformation:props": {
@@ -33,16 +33,16 @@
               },
               "Policy": {
                 "id": "Policy",
-                "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/Bucket/Policy",
+                "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/FirehoseDeliveryStreamS3AllPropertiesBucket/Policy",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/Bucket/Policy/Resource",
+                    "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/FirehoseDeliveryStreamS3AllPropertiesBucket/Policy/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
                       "aws:cdk:cloudformation:props": {
                         "bucket": {
-                          "Ref": "Bucket83908E77"
+                          "Ref": "FirehoseDeliveryStreamS3AllPropertiesBucketD6F6CA75"
                         },
                         "policyDocument": {
                           "Statement": [
@@ -65,7 +65,7 @@
                               "Resource": [
                                 {
                                   "Fn::GetAtt": [
-                                    "Bucket83908E77",
+                                    "FirehoseDeliveryStreamS3AllPropertiesBucketD6F6CA75",
                                     "Arn"
                                   ]
                                 },
@@ -75,7 +75,7 @@
                                     [
                                       {
                                         "Fn::GetAtt": [
-                                          "Bucket83908E77",
+                                          "FirehoseDeliveryStreamS3AllPropertiesBucketD6F6CA75",
                                           "Arn"
                                         ]
                                       },
@@ -103,11 +103,11 @@
               },
               "AutoDeleteObjectsCustomResource": {
                 "id": "AutoDeleteObjectsCustomResource",
-                "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/Bucket/AutoDeleteObjectsCustomResource",
+                "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/FirehoseDeliveryStreamS3AllPropertiesBucket/AutoDeleteObjectsCustomResource",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/Bucket/AutoDeleteObjectsCustomResource/Default",
+                    "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/FirehoseDeliveryStreamS3AllPropertiesBucket/AutoDeleteObjectsCustomResource/Default",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnResource",
                       "version": "0.0.0"
@@ -167,13 +167,13 @@
               "version": "0.0.0"
             }
           },
-          "BackupBucket": {
-            "id": "BackupBucket",
-            "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/BackupBucket",
+          "FirehoseDeliveryStreamS3AllPropertiesBackupBucket": {
+            "id": "FirehoseDeliveryStreamS3AllPropertiesBackupBucket",
+            "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/FirehoseDeliveryStreamS3AllPropertiesBackupBucket",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/BackupBucket/Resource",
+                "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/FirehoseDeliveryStreamS3AllPropertiesBackupBucket/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                   "aws:cdk:cloudformation:props": {
@@ -192,16 +192,16 @@
               },
               "Policy": {
                 "id": "Policy",
-                "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/BackupBucket/Policy",
+                "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/FirehoseDeliveryStreamS3AllPropertiesBackupBucket/Policy",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/BackupBucket/Policy/Resource",
+                    "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/FirehoseDeliveryStreamS3AllPropertiesBackupBucket/Policy/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
                       "aws:cdk:cloudformation:props": {
                         "bucket": {
-                          "Ref": "BackupBucket26B8E51C"
+                          "Ref": "FirehoseDeliveryStreamS3AllPropertiesBackupBucket9AE03327"
                         },
                         "policyDocument": {
                           "Statement": [
@@ -224,7 +224,7 @@
                               "Resource": [
                                 {
                                   "Fn::GetAtt": [
-                                    "BackupBucket26B8E51C",
+                                    "FirehoseDeliveryStreamS3AllPropertiesBackupBucket9AE03327",
                                     "Arn"
                                   ]
                                 },
@@ -234,7 +234,7 @@
                                     [
                                       {
                                         "Fn::GetAtt": [
-                                          "BackupBucket26B8E51C",
+                                          "FirehoseDeliveryStreamS3AllPropertiesBackupBucket9AE03327",
                                           "Arn"
                                         ]
                                       },
@@ -262,11 +262,11 @@
               },
               "AutoDeleteObjectsCustomResource": {
                 "id": "AutoDeleteObjectsCustomResource",
-                "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/BackupBucket/AutoDeleteObjectsCustomResource",
+                "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/FirehoseDeliveryStreamS3AllPropertiesBackupBucket/AutoDeleteObjectsCustomResource",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/BackupBucket/AutoDeleteObjectsCustomResource/Default",
+                    "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/FirehoseDeliveryStreamS3AllPropertiesBackupBucket/AutoDeleteObjectsCustomResource/Default",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnResource",
                       "version": "0.0.0"
@@ -557,17 +557,17 @@
               "version": "0.0.0"
             }
           },
-          "Delivery Stream": {
-            "id": "Delivery Stream",
-            "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/Delivery Stream",
+          "DeliveryStream": {
+            "id": "DeliveryStream",
+            "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/DeliveryStream",
             "children": {
               "S3 Destination Role": {
                 "id": "S3 Destination Role",
-                "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/Delivery Stream/S3 Destination Role",
+                "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/DeliveryStream/S3 Destination Role",
                 "children": {
                   "ImportS3 Destination Role": {
                     "id": "ImportS3 Destination Role",
-                    "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/Delivery Stream/S3 Destination Role/ImportS3 Destination Role",
+                    "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/DeliveryStream/S3 Destination Role/ImportS3 Destination Role",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -575,7 +575,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/Delivery Stream/S3 Destination Role/Resource",
+                    "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/DeliveryStream/S3 Destination Role/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -600,11 +600,11 @@
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/Delivery Stream/S3 Destination Role/DefaultPolicy",
+                    "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/DeliveryStream/S3 Destination Role/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/Delivery Stream/S3 Destination Role/DefaultPolicy/Resource",
+                        "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/DeliveryStream/S3 Destination Role/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -627,13 +627,13 @@
                                   "Resource": [
                                     {
                                       "Fn::GetAtt": [
-                                        "BackupBucket26B8E51C",
+                                        "FirehoseDeliveryStreamS3AllPropertiesBackupBucket9AE03327",
                                         "Arn"
                                       ]
                                     },
                                     {
                                       "Fn::GetAtt": [
-                                        "Bucket83908E77",
+                                        "FirehoseDeliveryStreamS3AllPropertiesBucketD6F6CA75",
                                         "Arn"
                                       ]
                                     },
@@ -643,7 +643,7 @@
                                         [
                                           {
                                             "Fn::GetAtt": [
-                                              "BackupBucket26B8E51C",
+                                              "FirehoseDeliveryStreamS3AllPropertiesBackupBucket9AE03327",
                                               "Arn"
                                             ]
                                           },
@@ -657,7 +657,7 @@
                                         [
                                           {
                                             "Fn::GetAtt": [
-                                              "Bucket83908E77",
+                                              "FirehoseDeliveryStreamS3AllPropertiesBucketD6F6CA75",
                                               "Arn"
                                             ]
                                           },
@@ -676,7 +676,7 @@
                                   "Resource": [
                                     {
                                       "Fn::GetAtt": [
-                                        "DeliveryStreamLogGroup9D8FA3BB",
+                                        "DeliveryStreamLogGroupA92E8EA0",
                                         "Arn"
                                       ]
                                     },
@@ -740,10 +740,10 @@
                               ],
                               "Version": "2012-10-17"
                             },
-                            "policyName": "DeliveryStreamS3DestinationRoleDefaultPolicy3015D8C7",
+                            "policyName": "DeliveryStreamS3DestinationRoleDefaultPolicyF652AD65",
                             "roles": [
                               {
-                                "Ref": "DeliveryStreamS3DestinationRole500FC089"
+                                "Ref": "DeliveryStreamS3DestinationRoleD96B8345"
                               }
                             ]
                           }
@@ -767,11 +767,11 @@
               },
               "LogGroup": {
                 "id": "LogGroup",
-                "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/Delivery Stream/LogGroup",
+                "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/DeliveryStream/LogGroup",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/Delivery Stream/LogGroup/Resource",
+                    "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/DeliveryStream/LogGroup/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
                       "aws:cdk:cloudformation:props": {
@@ -785,16 +785,16 @@
                   },
                   "S3Backup": {
                     "id": "S3Backup",
-                    "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/Delivery Stream/LogGroup/S3Backup",
+                    "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/DeliveryStream/LogGroup/S3Backup",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/Delivery Stream/LogGroup/S3Backup/Resource",
+                        "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/DeliveryStream/LogGroup/S3Backup/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::Logs::LogStream",
                           "aws:cdk:cloudformation:props": {
                             "logGroupName": {
-                              "Ref": "DeliveryStreamLogGroup9D8FA3BB"
+                              "Ref": "DeliveryStreamLogGroupA92E8EA0"
                             }
                           }
                         },
@@ -817,7 +817,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/Delivery Stream/Resource",
+                "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/DeliveryStream/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::KinesisFirehose::DeliveryStream",
                   "aws:cdk:cloudformation:props": {
@@ -842,7 +842,7 @@
                                 "parameterName": "RoleArn",
                                 "parameterValue": {
                                   "Fn::GetAtt": [
-                                    "DeliveryStreamS3DestinationRole500FC089",
+                                    "DeliveryStreamS3DestinationRoleD96B8345",
                                     "Arn"
                                   ]
                                 }
@@ -874,20 +874,20 @@
                       },
                       "roleArn": {
                         "Fn::GetAtt": [
-                          "DeliveryStreamS3DestinationRole500FC089",
+                          "DeliveryStreamS3DestinationRoleD96B8345",
                           "Arn"
                         ]
                       },
                       "s3BackupConfiguration": {
                         "bucketArn": {
                           "Fn::GetAtt": [
-                            "BackupBucket26B8E51C",
+                            "FirehoseDeliveryStreamS3AllPropertiesBackupBucket9AE03327",
                             "Arn"
                           ]
                         },
                         "roleArn": {
                           "Fn::GetAtt": [
-                            "DeliveryStreamS3DestinationRole500FC089",
+                            "DeliveryStreamS3DestinationRoleD96B8345",
                             "Arn"
                           ]
                         },
@@ -911,10 +911,10 @@
                         "cloudWatchLoggingOptions": {
                           "enabled": true,
                           "logGroupName": {
-                            "Ref": "DeliveryStreamLogGroup9D8FA3BB"
+                            "Ref": "DeliveryStreamLogGroupA92E8EA0"
                           },
                           "logStreamName": {
-                            "Ref": "DeliveryStreamLogGroupS3BackupD5DF41B2"
+                            "Ref": "DeliveryStreamLogGroupS3BackupD848C05F"
                           }
                         }
                       },
@@ -925,7 +925,7 @@
                       },
                       "bucketArn": {
                         "Fn::GetAtt": [
-                          "Bucket83908E77",
+                          "FirehoseDeliveryStreamS3AllPropertiesBucketD6F6CA75",
                           "Arn"
                         ]
                       },
@@ -1034,7 +1034,7 @@
                                   "Resource": [
                                     {
                                       "Fn::GetAtt": [
-                                        "Bucket83908E77",
+                                        "FirehoseDeliveryStreamS3AllPropertiesBucketD6F6CA75",
                                         "Arn"
                                       ]
                                     },
@@ -1044,7 +1044,7 @@
                                         [
                                           {
                                             "Fn::GetAtt": [
-                                              "Bucket83908E77",
+                                              "FirehoseDeliveryStreamS3AllPropertiesBucketD6F6CA75",
                                               "Arn"
                                             ]
                                           },
@@ -1174,7 +1174,7 @@
                       },
                       "bucketArn": {
                         "Fn::GetAtt": [
-                          "Bucket83908E77",
+                          "FirehoseDeliveryStreamS3AllPropertiesBucketD6F6CA75",
                           "Arn"
                         ]
                       },
@@ -1193,6 +1193,32 @@
             "constructInfo": {
               "fqn": "@aws-cdk/aws-kinesisfirehose-alpha.DeliveryStream",
               "version": "0.0.0"
+            }
+          },
+          "Exports": {
+            "id": "Exports",
+            "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/Exports",
+            "children": {
+              "Output{\"Ref\":\"DeliveryStream58CF96DB\"}": {
+                "id": "Output{\"Ref\":\"DeliveryStream58CF96DB\"}",
+                "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/Exports/Output{\"Ref\":\"DeliveryStream58CF96DB\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Ref\":\"FirehoseDeliveryStreamS3AllPropertiesBucketD6F6CA75\"}": {
+                "id": "Output{\"Ref\":\"FirehoseDeliveryStreamS3AllPropertiesBucketD6F6CA75\"}",
+                "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/Exports/Output{\"Ref\":\"FirehoseDeliveryStreamS3AllPropertiesBucketD6F6CA75\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
             }
           },
           "BootstrapVersion": {
@@ -1217,12 +1243,354 @@
           "version": "0.0.0"
         }
       },
+      "integ-tests": {
+        "id": "integ-tests",
+        "path": "integ-tests",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "integ-tests/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "integ-tests/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "integ-tests/DefaultTest/DeployAssert",
+                "children": {
+                  "AwsApiCallFirehoseputRecord44585e4a4193ab6938b5675835d76f5f": {
+                    "id": "AwsApiCallFirehoseputRecord44585e4a4193ab6938b5675835d76f5f",
+                    "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallFirehoseputRecord44585e4a4193ab6938b5675835d76f5f",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallFirehoseputRecord44585e4a4193ab6938b5675835d76f5f/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallFirehoseputRecord44585e4a4193ab6938b5675835d76f5f/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallFirehoseputRecord44585e4a4193ab6938b5675835d76f5f/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallFirehoseputRecord44585e4a4193ab6938b5675835d76f5f/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "SingletonFunction1488541a7b23466481b69b4408076b81": {
+                    "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "path": "integ-tests/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "integ-tests/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "integ-tests/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "integ-tests/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "LatestNodeRuntimeMap": {
+                    "id": "LatestNodeRuntimeMap",
+                    "path": "integ-tests/DefaultTest/DeployAssert/LatestNodeRuntimeMap",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnMapping",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AwsApiCallS3listObjectsV2ce1c85ff85b0db4aaa6f0d3dd453a7ea": {
+                    "id": "AwsApiCallS3listObjectsV2ce1c85ff85b0db4aaa6f0d3dd453a7ea",
+                    "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2ce1c85ff85b0db4aaa6f0d3dd453a7ea",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2ce1c85ff85b0db4aaa6f0d3dd453a7ea/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2ce1c85ff85b0db4aaa6f0d3dd453a7ea/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2ce1c85ff85b0db4aaa6f0d3dd453a7ea/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2ce1c85ff85b0db4aaa6f0d3dd453a7ea/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "WaitFor": {
+                        "id": "WaitFor",
+                        "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2ce1c85ff85b0db4aaa6f0d3dd453a7ea/WaitFor",
+                        "children": {
+                          "IsCompleteProvider": {
+                            "id": "IsCompleteProvider",
+                            "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2ce1c85ff85b0db4aaa6f0d3dd453a7ea/WaitFor/IsCompleteProvider",
+                            "children": {
+                              "AssertionsProvider": {
+                                "id": "AssertionsProvider",
+                                "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2ce1c85ff85b0db4aaa6f0d3dd453a7ea/WaitFor/IsCompleteProvider/AssertionsProvider",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.4.2"
+                                }
+                              },
+                              "Invoke": {
+                                "id": "Invoke",
+                                "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2ce1c85ff85b0db4aaa6f0d3dd453a7ea/WaitFor/IsCompleteProvider/Invoke",
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.CfnResource",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "TimeoutProvider": {
+                            "id": "TimeoutProvider",
+                            "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2ce1c85ff85b0db4aaa6f0d3dd453a7ea/WaitFor/TimeoutProvider",
+                            "children": {
+                              "AssertionsProvider": {
+                                "id": "AssertionsProvider",
+                                "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2ce1c85ff85b0db4aaa6f0d3dd453a7ea/WaitFor/TimeoutProvider/AssertionsProvider",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.4.2"
+                                }
+                              },
+                              "Invoke": {
+                                "id": "Invoke",
+                                "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2ce1c85ff85b0db4aaa6f0d3dd453a7ea/WaitFor/TimeoutProvider/Invoke",
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.CfnResource",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "Role": {
+                            "id": "Role",
+                            "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2ce1c85ff85b0db4aaa6f0d3dd453a7ea/WaitFor/Role",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2ce1c85ff85b0db4aaa6f0d3dd453a7ea/WaitFor/Resource",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.WaiterStateMachine",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2ce1c85ff85b0db4aaa6f0d3dd453a7ea/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "SingletonFunction76b3e830a873425f8453eddd85c86925": {
+                    "id": "SingletonFunction76b3e830a873425f8453eddd85c86925",
+                    "path": "integ-tests/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "integ-tests/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Staging",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "integ-tests/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "integ-tests/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a": {
+                    "id": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a",
+                    "path": "integ-tests/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "integ-tests/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Staging",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "integ-tests/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "integ-tests/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "integ-tests/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "integ-tests/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
       "Tree": {
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },

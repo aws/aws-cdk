@@ -153,7 +153,7 @@ export class PlacementGroup extends Resource implements IPlacementGroup {
    */
   public static fromPlacementGroupName(scope: Construct, id: string, placementGroupName: string): IPlacementGroup {
     class Import extends Resource implements IPlacementGroup {
-      public readonly placementGroupName = placementGroupName
+      public readonly placementGroupName = placementGroupName;
     }
 
     return new Import(scope, id);
