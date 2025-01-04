@@ -22,7 +22,7 @@ const dbInstance = new rds.DatabaseInstance(stack, 'dbInstance', {
   }),
   vpc,
   storageEncrypted: false,
-  isStorageLegacyUnencrypted: true,
+  storageEncryptedLegacyDefaultValue: true,
   removalPolicy: RemovalPolicy.DESTROY,
 });
 
@@ -41,7 +41,7 @@ const cluster = new rds.DatabaseCluster(stack, 'dbCluster', {
   }),
   instanceProps: { vpc },
   storageEncrypted: false,
-  isStorageLegacyUnencrypted: true,
+  storageEncryptedLegacyDefaultValue: true,
 });
 
 // The `DatabaseProxy` internally adds a dependency so that the `TargetGroup` is created after the `DatabaseCluster` is created.
@@ -65,7 +65,7 @@ const clusterWithWriterAndReaders = new rds.DatabaseCluster(stack, 'dbClusterWit
   writer: rds.ClusterInstance.provisioned('writer'),
   readers: [rds.ClusterInstance.provisioned('reader')],
   storageEncrypted: false,
-  isStorageLegacyUnencrypted: true,
+  storageEncryptedLegacyDefaultValue: true,
 });
 
 new rds.DatabaseProxy(stack, 'Proxy3', {

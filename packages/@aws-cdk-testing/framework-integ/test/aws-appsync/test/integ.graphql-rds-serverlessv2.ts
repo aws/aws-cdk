@@ -36,7 +36,7 @@ class TestStack extends cdk.Stack {
       credentials: rds.Credentials.fromGeneratedSecret('clusteradmin', credentialsBaseOptions),
       defaultDatabaseName: 'integdb',
       storageEncrypted: false,
-      isStorageLegacyUnencrypted: true,
+      storageEncryptedLegacyDefaultValue: true,
     });
 
     const secret = secretmanager.Secret.fromSecretNameV2(this, 'Secret', 'integ-secretName');

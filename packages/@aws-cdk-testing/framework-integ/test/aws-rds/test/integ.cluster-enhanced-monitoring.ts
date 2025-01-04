@@ -13,7 +13,7 @@ new rds.DatabaseCluster(stack, 'Database', {
   writer: rds.ClusterInstance.serverlessV2('writerInstance'),
   vpc,
   storageEncrypted: false,
-  isStorageLegacyUnencrypted: true,
+  storageEncryptedLegacyDefaultValue: true,
   monitoringInterval: cdk.Duration.seconds(5),
   enableClusterLevelEnhancedMonitoring: true,
 });

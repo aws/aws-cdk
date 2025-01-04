@@ -16,7 +16,7 @@ new rds.DatabaseCluster(stack, 'DatabaseCluster', {
   ],
   vpc,
   storageEncrypted: false,
-  isStorageLegacyUnencrypted: true,
+  storageEncryptedLegacyDefaultValue: true,
   enableLocalWriteForwarding: true,
 });
 
@@ -28,7 +28,7 @@ new rds.DatabaseCluster(stack, 'DatabaseClusterPostgresql', {
   ],
   vpc,
   storageEncrypted: false,
-  isStorageLegacyUnencrypted: true,
+  storageEncryptedLegacyDefaultValue: true,
   enableLocalWriteForwarding: true,
 });
 

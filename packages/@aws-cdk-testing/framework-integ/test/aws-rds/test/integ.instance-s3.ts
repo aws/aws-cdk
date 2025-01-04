@@ -18,7 +18,7 @@ new DatabaseInstance(stack, 'Database', {
   s3ImportBuckets: [importBucket],
   s3ExportBuckets: [exportBucket],
   storageEncrypted: false,
-  isStorageLegacyUnencrypted: true,
+  storageEncryptedLegacyDefaultValue: true,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 

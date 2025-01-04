@@ -2247,7 +2247,7 @@ describe('instance', () => {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
       vpc,
       storageEncrypted: false,
-      isStorageLegacyUnencrypted: true,
+      storageEncryptedLegacyDefaultValue: true,
     });
 
     const template = Template.fromStack(stack);
@@ -2277,7 +2277,7 @@ describe('instance', () => {
     expect(cluster.Properties.StorageEncrypted).toBeUndefined();
   });
 
-  test('an error is thrown when `storageEncrypted` is set to `true` and `isStorageLegacyUnencrypted` is set to `true`', () => {
+  test('an error is thrown when `storageEncrypted` is set to `true` and `storageEncryptedLegacyDefaultValue` is set to `true`', () => {
     expect(() => {
       new rds.DatabaseInstance(stack, 'Instance', {
         engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
@@ -2286,9 +2286,9 @@ describe('instance', () => {
 
         // Incompatible settings
         storageEncrypted: true,
-        isStorageLegacyUnencrypted: true,
+        storageEncryptedLegacyDefaultValue: true,
       });
-    }).toThrow('Cannot set `storageEncrypted` to `true` when `isStorageLegacyUnencrypted` is `true`.');
+    }).toThrow('Cannot set `storageEncrypted` to `true` when `storageEncryptedLegacyDefaultValue` is `true`.');
   });
 });
 

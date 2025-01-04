@@ -22,7 +22,7 @@ class TestStack extends cdk.Stack {
       storageType: DBClusterStorageType.AURORA_IOPT1,
       cloudwatchLogsExports: ['postgresql'],
       storageEncrypted: false,
-      isStorageLegacyUnencrypted: true,
+      storageEncryptedLegacyDefaultValue: true,
     });
   }
 }

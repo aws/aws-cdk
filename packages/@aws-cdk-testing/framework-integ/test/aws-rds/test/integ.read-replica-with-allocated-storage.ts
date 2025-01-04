@@ -15,7 +15,7 @@ const mysqlSource = new rds.DatabaseInstance(stack, 'MysqlSource', {
   instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.SMALL),
   vpc,
   storageEncrypted: false,
-  isStorageLegacyUnencrypted: true,
+  storageEncryptedLegacyDefaultValue: true,
 });
 
 new rds.DatabaseInstanceReadReplica(stack, 'MysqlReplica', {

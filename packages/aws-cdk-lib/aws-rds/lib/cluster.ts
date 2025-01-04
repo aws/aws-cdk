@@ -362,7 +362,7 @@ interface DatabaseClusterBaseProps {
    *
    * @default - false
    */
-  readonly isStorageLegacyUnencrypted?: boolean;
+  readonly storageEncryptedLegacyDefaultValue?: boolean;
 
   /**
    * The KMS key for storage encryption.
@@ -1084,9 +1084,9 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       return true;
     }
 
-    if (props.isStorageLegacyUnencrypted) {
+    if (props.storageEncryptedLegacyDefaultValue) {
       if (props.storageEncrypted) {
-        throw new Error('Cannot set `storageEncrypted` to `true` when `isStorageLegacyUnencrypted` is `true`.');
+        throw new Error('Cannot set `storageEncrypted` to `true` when `storageEncryptedLegacyDefaultValue` is `true`.');
       }
 
       return undefined;

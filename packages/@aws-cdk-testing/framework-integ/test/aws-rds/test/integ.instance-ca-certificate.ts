@@ -16,7 +16,7 @@ new DatabaseInstance(stack, 'Instance', {
   instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.MICRO),
   vpc,
   storageEncrypted: false,
-  isStorageLegacyUnencrypted: true,
+  storageEncryptedLegacyDefaultValue: true,
   caCertificate: CaCertificate.RDS_CA_RSA2048_G1,
 });
 

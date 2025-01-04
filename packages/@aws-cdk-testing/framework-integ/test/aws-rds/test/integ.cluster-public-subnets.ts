@@ -38,7 +38,7 @@ export class TestStack extends Stack {
           subnetType: SubnetType.PUBLIC,
         },
         storageEncrypted: false,
-        isStorageLegacyUnencrypted: true,
+        storageEncryptedLegacyDefaultValue: true,
       }));
   }
 }

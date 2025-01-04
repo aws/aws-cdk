@@ -18,7 +18,7 @@ new DatabaseInstance(stack, 'Instance', {
   allocatedStorage: 1000,
   storageType: StorageType.IO2,
   storageEncrypted: false,
-  isStorageLegacyUnencrypted: true,
+  storageEncryptedLegacyDefaultValue: true,
   removalPolicy: RemovalPolicy.DESTROY,
 });
 

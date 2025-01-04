@@ -24,7 +24,7 @@ new rds.DatabaseCluster(stack, 'Database', {
   s3ImportBuckets: [importExportBucket],
   s3ExportBuckets: [importExportBucket],
   storageEncrypted: false,
-  isStorageLegacyUnencrypted: true,
+  storageEncryptedLegacyDefaultValue: true,
 });
 
 new IntegTest(app, 'aws-cdk-rds-s3-mysql-8-integ-test', {

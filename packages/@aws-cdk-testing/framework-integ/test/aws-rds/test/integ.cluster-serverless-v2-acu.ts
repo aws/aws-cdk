@@ -17,7 +17,7 @@ export class TestStack extends Stack {
       removalPolicy: RemovalPolicy.DESTROY,
       vpc: vpc,
       storageEncrypted: false,
-      isStorageLegacyUnencrypted: true,
+      storageEncryptedLegacyDefaultValue: true,
     });
   }
 }

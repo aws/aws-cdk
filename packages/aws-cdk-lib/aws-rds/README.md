@@ -1458,7 +1458,7 @@ at rest using AWS-managed KMS keys for all new database clusters and instances. 
 enable encryption at rest if the `storageEncrypted` property was not set.
 
 To prevent replacing existing unencrypted database clusters and instances, set `storageEncrypted` to `false` and
-`isStorageLegacyUnencrypted` to `true` for existing database clusters and instances. Validate that `cdk diff` does not
+`storageEncryptedLegacyDefaultValue` to `true` for existing database clusters and instances. Validate that `cdk diff` does not
 show any changes to the unencrypted database clusters and instances.
 
 ```ts
@@ -1471,7 +1471,7 @@ const cluster = new rds.DatabaseCluster(this, 'Cluster', {
   // Retain existing unencrypted database cluster behavior when `@aws-cdk/aws-rds:enableEncryptionAtRestByDefault`
   // feature flag is set to `true`
   storageEncrypted: false,
-  isStorageLegacyUnencrypted: true,
+  storageEncryptedLegacyDefaultValue: true,
 });
 
 const instance = new rds.DatabaseInstance(this, 'Instance', {
@@ -1482,6 +1482,6 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
   // Retain existing unencrypted database instance behavior when `@aws-cdk/aws-rds:enableEncryptionAtRestByDefault`
   // feature flag is set to `true`
   storageEncrypted: false,
-  isStorageLegacyUnencrypted: true,
+  storageEncryptedLegacyDefaultValue: true,
 });
 ```

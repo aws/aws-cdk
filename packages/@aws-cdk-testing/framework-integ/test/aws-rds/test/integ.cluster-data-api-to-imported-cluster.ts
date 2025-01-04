@@ -21,7 +21,7 @@ const cluster = new rds.DatabaseCluster(stack, 'Database', {
   vpc,
   enableDataApi: true,
   storageEncrypted: false,
-  isStorageLegacyUnencrypted: true,
+  storageEncryptedLegacyDefaultValue: true,
 });
 
 const importedCluster = rds.DatabaseCluster.fromDatabaseClusterAttributes(stack, 'ImportedCluster', {

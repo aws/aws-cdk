@@ -25,7 +25,7 @@ new rds.DatabaseInstance(stack, 'Instance', {
   iamAuthentication: true,
   parameterGroup,
   storageEncrypted: false,
-  isStorageLegacyUnencrypted: true,
+  storageEncryptedLegacyDefaultValue: true,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 

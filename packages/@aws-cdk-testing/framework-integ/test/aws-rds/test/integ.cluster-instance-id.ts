@@ -22,7 +22,7 @@ new rds.DatabaseCluster(stack, 'Database', {
   instanceUpdateBehaviour: rds.InstanceUpdateBehaviour.ROLLING,
   vpc,
   storageEncrypted: false,
-  isStorageLegacyUnencrypted: true,
+  storageEncryptedLegacyDefaultValue: true,
 });
 
 new integ.IntegTest(app, 'instanceIdentifiersTest', {

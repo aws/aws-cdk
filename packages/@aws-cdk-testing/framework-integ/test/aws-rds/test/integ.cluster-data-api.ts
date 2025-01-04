@@ -21,7 +21,7 @@ const cluster = new rds.DatabaseCluster(stack, 'Database', {
   vpc,
   enableDataApi: true,
   storageEncrypted: false,
-  isStorageLegacyUnencrypted: true,
+  storageEncryptedLegacyDefaultValue: true,
 });
 
 cluster.grantDataApiAccess(fucntion);

@@ -32,7 +32,7 @@ const cluster = new rds.DatabaseCluster(stack, 'Database', {
     }),
   ],
   storageEncrypted: false,
-  isStorageLegacyUnencrypted: true,
+  storageEncryptedLegacyDefaultValue: true,
 });
 
 cluster.addRotationSingleUser();
@@ -51,7 +51,7 @@ const clusterWithCustomRotationOptions = new rds.DatabaseCluster(stack, 'CustomR
     }),
   ],
   storageEncrypted: false,
-  isStorageLegacyUnencrypted: true,
+  storageEncryptedLegacyDefaultValue: true,
 });
 clusterWithCustomRotationOptions.addRotationSingleUser({
   automaticallyAfter: cdk.Duration.days(7),

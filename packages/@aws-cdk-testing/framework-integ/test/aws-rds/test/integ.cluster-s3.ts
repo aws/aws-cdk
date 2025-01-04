@@ -38,7 +38,7 @@ const cluster = new DatabaseCluster(stack, 'Database', {
   s3ImportBuckets: [importBucket],
   s3ExportBuckets: [exportBucket],
   storageEncrypted: false,
-  isStorageLegacyUnencrypted: true,
+  storageEncryptedLegacyDefaultValue: true,
 });
 
 cluster.connections.allowDefaultPortFromAnyIpv4('Open to the world');

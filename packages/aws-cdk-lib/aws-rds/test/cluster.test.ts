@@ -641,7 +641,7 @@ describe('cluster new api', () => {
         vpc,
         writer: ClusterInstance.serverlessV2('writer'),
         storageEncrypted: false,
-        isStorageLegacyUnencrypted: true,
+        storageEncryptedLegacyDefaultValue: true,
       });
 
       // THEN
@@ -672,7 +672,7 @@ describe('cluster new api', () => {
       expect(cluster.Properties.StorageEncrypted).toBeUndefined();
     });
 
-    test('an error is thrown when `storageEncrypted` is set to `true` and `isStorageLegacyUnencrypted` is set to `true`', () => {
+    test('an error is thrown when `storageEncrypted` is set to `true` and `storageEncryptedLegacyDefaultValue` is set to `true`', () => {
       // GIVEN
       const stack = testStack();
       const vpc = new ec2.Vpc(stack, 'VPC');
@@ -685,9 +685,9 @@ describe('cluster new api', () => {
 
           // Incompatible settings
           storageEncrypted: true,
-          isStorageLegacyUnencrypted: true,
+          storageEncryptedLegacyDefaultValue: true,
         });
-      }).toThrow('Cannot set `storageEncrypted` to `true` when `isStorageLegacyUnencrypted` is `true`.');
+      }).toThrow('Cannot set `storageEncrypted` to `true` when `storageEncryptedLegacyDefaultValue` is `true`.');
     });
   });
 

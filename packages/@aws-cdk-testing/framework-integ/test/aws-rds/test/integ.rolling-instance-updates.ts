@@ -28,7 +28,7 @@ class RollingInstanceUpdateTestStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       instanceUpdateBehaviour: props.instanceUpdateBehaviour,
       storageEncrypted: false,
-      isStorageLegacyUnencrypted: true,
+      storageEncryptedLegacyDefaultValue: true,
     });
   }
 }

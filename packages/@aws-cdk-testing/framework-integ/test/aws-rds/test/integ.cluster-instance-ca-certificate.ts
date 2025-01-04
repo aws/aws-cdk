@@ -30,7 +30,7 @@ new DatabaseCluster(stack, 'Database', {
     }),
   ],
   storageEncrypted: false,
-  isStorageLegacyUnencrypted: true,
+  storageEncryptedLegacyDefaultValue: true,
 });
 
 new IntegTest(app, 'cdk-rds-cluster-instance-ca-certificate-test', {

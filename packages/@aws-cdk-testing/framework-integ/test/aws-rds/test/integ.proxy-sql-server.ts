@@ -24,7 +24,7 @@ const dbInstance = new rds.DatabaseInstance(stack, 'SqlServerDbInstance', {
   vpc,
   licenseModel: LicenseModel.LICENSE_INCLUDED,
   storageEncrypted: false,
-  isStorageLegacyUnencrypted: true,
+  storageEncryptedLegacyDefaultValue: true,
   removalPolicy: RemovalPolicy.DESTROY,
 });
 

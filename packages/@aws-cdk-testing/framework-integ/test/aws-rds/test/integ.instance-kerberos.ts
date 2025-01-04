@@ -38,7 +38,7 @@ new rds.DatabaseInstance(stack, 'Database', {
   domain: activeDirectory.ref,
   domainRole: iamRole,
   storageEncrypted: false,
-  isStorageLegacyUnencrypted: true,
+  storageEncryptedLegacyDefaultValue: true,
 });
 
 new integ.IntegTest(app, 'integ-instance-kerberos', {

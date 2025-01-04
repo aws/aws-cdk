@@ -17,7 +17,7 @@ class TestStack extends Stack {
       allocatedStorage: 1000,
       storageType: StorageType.GP3,
       storageEncrypted: false,
-      isStorageLegacyUnencrypted: true,
+      storageEncryptedLegacyDefaultValue: true,
       removalPolicy: RemovalPolicy.DESTROY,
     });
   }

@@ -19,7 +19,7 @@ const cluster = new DatabaseCluster(stack, 'Database', {
   },
   storageType: DBClusterStorageType.AURORA_IOPT1,
   storageEncrypted: false,
-  isStorageLegacyUnencrypted: true,
+  storageEncryptedLegacyDefaultValue: true,
 });
 
 cluster.connections.allowDefaultPortFromAnyIpv4('Open to the world');

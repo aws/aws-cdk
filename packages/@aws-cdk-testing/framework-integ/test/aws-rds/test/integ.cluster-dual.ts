@@ -33,7 +33,7 @@ new rds.DatabaseCluster(stack, 'DualstackCluster', {
   vpc,
   networkType: rds.NetworkType.DUAL,
   storageEncrypted: false,
-  isStorageLegacyUnencrypted: true,
+  storageEncryptedLegacyDefaultValue: true,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
@@ -52,7 +52,7 @@ new rds.DatabaseCluster(stack, 'Ipv4Cluster', {
   ],
   networkType: rds.NetworkType.IPV4,
   storageEncrypted: false,
-  isStorageLegacyUnencrypted: true,
+  storageEncryptedLegacyDefaultValue: true,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 

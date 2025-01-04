@@ -32,7 +32,7 @@ class TestStack extends Stack {
       ],
       vpc,
       storageEncrypted: false,
-      isStorageLegacyUnencrypted: true,
+      storageEncryptedLegacyDefaultValue: true,
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
@@ -56,7 +56,7 @@ class TestStack extends Stack {
       vpc,
       removalPolicy: RemovalPolicy.DESTROY,
       storageEncrypted: false,
-      isStorageLegacyUnencrypted: true,
+      storageEncryptedLegacyDefaultValue: true,
     });
     fromSnapshot.addRotationSingleUser();
   }

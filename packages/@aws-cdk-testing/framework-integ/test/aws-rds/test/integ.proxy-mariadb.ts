@@ -22,7 +22,7 @@ const mariaDBInstance = new rds.DatabaseInstance(stack, 'mariaDBInstance', {
   }),
   vpc,
   storageEncrypted: false,
-  isStorageLegacyUnencrypted: true,
+  storageEncryptedLegacyDefaultValue: true,
   removalPolicy: RemovalPolicy.DESTROY,
 });
 

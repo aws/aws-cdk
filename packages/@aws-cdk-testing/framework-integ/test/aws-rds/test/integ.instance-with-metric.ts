@@ -20,7 +20,7 @@ const instance = new rds.DatabaseInstance(stack, 'Instance', {
   cloudwatchLogsExports: ['postgresql'],
   cloudwatchLogsRetention: logs.RetentionDays.THREE_MONTHS,
   storageEncrypted: false,
-  isStorageLegacyUnencrypted: true,
+  storageEncryptedLegacyDefaultValue: true,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
