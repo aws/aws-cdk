@@ -64,6 +64,7 @@ export class DatabaseQuery<HandlerProps> extends Construct implements iam.IGrant
 
     const provider = new customresources.Provider(this, 'Provider', {
       onEventHandler: handler,
+      role: this.getOrCreateInvokerRole(handler),
     });
 
     const queryHandlerProps: DatabaseQueryHandlerProps & HandlerProps = {
@@ -115,5 +116,20 @@ export class DatabaseQuery<HandlerProps> extends Construct implements iam.IGrant
       }
     }
     return adminUser;
+  }
+
+  /**
+   * Get or create the IAM role for the singleton lambda function.
+   * We only need one function since it's just acting as an invoker.
+   * */
+  private getOrCreateInvokerRole(handler: lambda.SingletonFunction): iam.IRole {
+    const id = handler.constructName + 'InvokerRole';
+    const existing = cdk.Stack.of(this).node.tryFindChild(id);
+    return existing != null
+      ? existing as iam.Role
+      : new iam.Role(cdk.Stack.of(this), id, {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+        managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')],
+      });
   }
 }

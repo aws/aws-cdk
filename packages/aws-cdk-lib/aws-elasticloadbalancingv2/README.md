@@ -298,14 +298,13 @@ const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
 });
 ```
 
-By setting `DUAL_STACK_WITHOUT_PUBLIC_IPV4`, you can provision load balancers without public IPv4s:
+By setting `DUAL_STACK_WITHOUT_PUBLIC_IPV4`, you can provision load balancers without public IPv4s
 
 ```ts
 declare const vpc: ec2.Vpc;
 
 const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
   vpc,
-  internetFacing: true,
   ipAddressType: elbv2.IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4,
 });
 ```
