@@ -314,6 +314,7 @@ export class Distribution extends Resource implements IDistribution {
   public readonly distributionDomainName: string;
   public readonly distributionId: string;
 
+  private readonly httpVersion: HttpVersion;
   private readonly defaultBehavior: CacheBehavior;
   private readonly additionalBehaviors: CacheBehavior[] = [];
   private readonly boundOrigins: BoundOrigin[] = [];
@@ -354,6 +355,9 @@ export class Distribution extends Resource implements IDistribution {
     this.certificate = props.certificate;
     this.errorResponses = props.errorResponses ?? [];
     this.publishAdditionalMetrics = props.publishAdditionalMetrics;
+    this.httpVersion = props.httpVersion ?? HttpVersion.HTTP2;
+
+    this.validateGrpc(this.defaultBehavior);
 
     // Comments have an undocumented limit of 128 characters
     const trimmedComment =
@@ -372,7 +376,7 @@ export class Distribution extends Resource implements IDistribution {
         comment: trimmedComment,
         customErrorResponses: this.renderErrorResponses(),
         defaultRootObject: props.defaultRootObject,
-        httpVersion: props.httpVersion ?? HttpVersion.HTTP2,
+        httpVersion: this.httpVersion,
         ipv6Enabled: props.enableIpv6 ?? true,
         logging: this.renderLogging(props),
         priceClass: props.priceClass ?? undefined,
@@ -724,7 +728,10 @@ export class Distribution extends Resource implements IDistribution {
 
   private renderCacheBehaviors(): CfnDistribution.CacheBehaviorProperty[] | undefined {
     if (this.additionalBehaviors.length === 0) { return undefined; }
-    return this.additionalBehaviors.map(behavior => behavior._renderBehavior());
+    return this.additionalBehaviors.map(behavior => {
+      this.validateGrpc(behavior);
+      return behavior._renderBehavior();
+    });
   }
 
   private renderErrorResponses(): CfnDistribution.CustomErrorResponseProperty[] | undefined {
@@ -786,6 +793,15 @@ export class Distribution extends Resource implements IDistribution {
       minimumProtocolVersion: minimumProtocolVersion,
       sslSupportMethod: sslSupportMethod,
     };
+  }
+
+  private validateGrpc(cacheBehavior: CacheBehavior) {
+    if (!cacheBehavior.grpcEnabled) {
+      return;
+    }
+    if (![HttpVersion.HTTP2, HttpVersion.HTTP2_AND_3].includes(this.httpVersion)) {
+      throw new Error(`'httpVersion' must be HttpVersion.HTTP2 or HttpVersion.HTTP2_AND_3 if 'enableGrpc' in 'defaultBehavior' or 'additionalBehaviors' is true, got ${this.httpVersion}`);
+    }
   }
 }
 
@@ -1082,6 +1098,19 @@ export interface AddBehaviorOptions {
    * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PrivateContent.html
    */
   readonly trustedKeyGroups?: IKeyGroup[];
+
+  /**
+   * Enables your CloudFront distribution to receive gRPC requests and to proxy them directly to your origins.
+   *
+   * If the `enableGrpc` is set to true, the following restrictions apply:
+   * - The `allowedMethods` property must be `AllowedMethods.ALLOW_ALL` to include POST method because gRPC only supports POST method.
+   * - The `httpVersion` property must be `HttpVersion.HTTP2` or `HttpVersion.HTTP2_AND_3` because gRPC only supports versions including HTTP/2.
+   * - The `edgeLambdas` property can't be specified because gRPC is not supported with Lambda@Edge.
+   *
+   * @default false
+   * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/distribution-using-grpc.html
+   */
+  readonly enableGrpc?: boolean;
 }
 
 /**
