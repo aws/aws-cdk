@@ -433,6 +433,12 @@ test('Recognize private subnet by route table with NAT Gateway', async () => {
               Origin: 'CreateRoute',
               State: 'active',
             },
+            {
+              DestinationCidrBlock: '0.0.0.0/0',
+              CoreNetworkArn: 'arn:aws:networkmanager:123456789012:core-network/core-network-987654321',
+              Origin: 'CreateRoute',
+              State: 'active',
+            }
           ],
         },
       ],
