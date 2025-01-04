@@ -203,7 +203,6 @@ export class AccessPoint extends AccessPointBase {
 
   /**
    * The ARN of the S3 access point.
-   * @attribute
    */
   public readonly s3AccessPointArn: string;
 
