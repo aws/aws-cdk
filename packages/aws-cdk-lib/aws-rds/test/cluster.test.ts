@@ -116,14 +116,16 @@ describe('cluster new api', () => {
     });
 
     test.each([
-      [0.5, 300, /serverlessV2MaxCapacity must be >= 1 & <= 256/],
-      [0.5, 0, /serverlessV2MaxCapacity must be >= 1 & <= 256/],
-      [-1, 1, /serverlessV2MinCapacity must be >= 0 & <= 256/],
-      [300, 1, /serverlessV2MinCapacity must be >= 0 & <= 256/],
-      [10.1, 12, /serverlessV2MinCapacity & serverlessV2MaxCapacity must be in 0.5 step increments/],
-      [12, 12.1, /serverlessV2MinCapacity & serverlessV2MaxCapacity must be in 0.5 step increments/],
-      [5, 1, /serverlessV2MaxCapacity must be greater than serverlessV2MinCapacity/],
-    ])('when serverless capacity is incorrect', (minCapacity, maxCapacity, errorMessage) => {
+      [0.5, 300, undefined, /serverlessV2MaxCapacity must be >= 1 & <= 256/],
+      [0.5, 0, undefined, /serverlessV2MaxCapacity must be >= 1 & <= 256/],
+      [-1, 1, undefined, /serverlessV2MinCapacity must be >= 0 & <= 256/],
+      [300, 1, undefined, /serverlessV2MinCapacity must be >= 0 & <= 256/],
+      [10.1, 12, undefined, /serverlessV2MinCapacity & serverlessV2MaxCapacity must be in 0.5 step increments/],
+      [12, 12.1, undefined, /serverlessV2MinCapacity & serverlessV2MaxCapacity must be in 0.5 step increments/],
+      [5, 1, undefined, /serverlessV2MaxCapacity must be greater than serverlessV2MinCapacity/],
+      [0, 1, 299, /serverlessV2SecondsUntilAutoPause must be >= 300 & <= 86400/],
+      [0, 1, 86401, /serverlessV2SecondsUntilAutoPause must be >= 300 & <= 86400/],
+    ])('when serverless capacity is incorrect', (minCapacity, maxCapacity, serverlessV2SecondsUntilAutoPause, errorMessage) => {
       // GIVEN
       const stack = testStack();
       const vpc = new ec2.Vpc(stack, 'VPC');
@@ -136,6 +138,7 @@ describe('cluster new api', () => {
           vpcSubnets: vpc.selectSubnets( { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS } ),
           serverlessV2MaxCapacity: maxCapacity,
           serverlessV2MinCapacity: minCapacity,
+          serverlessV2SecondsUntilAutoPause: serverlessV2SecondsUntilAutoPause,
           iamAuthentication: true,
         });
         // THEN
@@ -439,6 +442,7 @@ describe('cluster new api', () => {
         ServerlessV2ScalingConfiguration: {
           MinCapacity: 0.5,
           MaxCapacity: 2,
+          SecondsUntilAutoPause: 300,
         },
       }));
 
@@ -497,6 +501,7 @@ describe('cluster new api', () => {
         ServerlessV2ScalingConfiguration: {
           MinCapacity: 0.5,
           MaxCapacity: 2,
+          SecondsUntilAutoPause: 300,
         },
       }));
 
@@ -694,6 +699,7 @@ describe('cluster new api', () => {
             node.serverlessV2ScalingConfiguration = {
               minCapacity: 1,
               maxCapacity: 12,
+              secondsUntilAutoPause: 300,
             };
           }
         },
@@ -719,6 +725,7 @@ describe('cluster new api', () => {
         iamAuthentication: true,
         serverlessV2MinCapacity: 1,
         serverlessV2MaxCapacity: 12,
+        serverlessV2SecondsUntilAutoPause: 300,
       });
 
       // THEN
