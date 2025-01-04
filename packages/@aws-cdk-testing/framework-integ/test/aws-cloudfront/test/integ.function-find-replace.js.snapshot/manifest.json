@@ -1,0 +1,180 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "aws-cdk-cloudfront-function-find-replace.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-cloudfront-function-find-replace.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-cloudfront-function-find-replace": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-cloudfront-function-find-replace.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/42ccc30944aed89f87a78ab1c7131781f10d34f71e0cb8c25376546efc052eea.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-cloudfront-function-find-replace.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-cloudfront-function-find-replace.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-cloudfront-function-find-replace/KeyValueStore/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "KeyValueStoreA7449E89"
+          }
+        ],
+        "/aws-cdk-cloudfront-function-find-replace/Function/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Function76856677"
+          }
+        ],
+        "/aws-cdk-cloudfront-function-find-replace/Distribution/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Distribution830FAC52"
+          }
+        ],
+        "/aws-cdk-cloudfront-function-find-replace/IntegrationTest/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegrationTestServiceRole30442675"
+          }
+        ],
+        "/aws-cdk-cloudfront-function-find-replace/IntegrationTest/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegrationTestEE002965"
+          }
+        ],
+        "/aws-cdk-cloudfront-function-find-replace/Exports/Output{\"Ref\":\"IntegrationTestEE002965\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefIntegrationTestEE002965D39D559E"
+          }
+        ],
+        "/aws-cdk-cloudfront-function-find-replace/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-cloudfront-function-find-replace/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-cloudfront-function-find-replace"
+    },
+    "CloudFrontFunctionFindReplaceDefaultTestDeployAssertD25DC6A8.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "CloudFrontFunctionFindReplaceDefaultTestDeployAssertD25DC6A8.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "CloudFrontFunctionFindReplaceDefaultTestDeployAssertD25DC6A8": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "CloudFrontFunctionFindReplaceDefaultTestDeployAssertD25DC6A8.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/44112ecac7145da2e01d412ef7c7b0c0a22174d6bcce91a84132ca9b8e2b575b.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "CloudFrontFunctionFindReplaceDefaultTestDeployAssertD25DC6A8.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-cloudfront-function-find-replace",
+        "CloudFrontFunctionFindReplaceDefaultTestDeployAssertD25DC6A8.assets"
+      ],
+      "metadata": {
+        "/CloudFrontFunctionFindReplace/DefaultTest/DeployAssert/LambdaInvoke96317dde7da6f087b3e0d4e1496bd09e/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke96317dde7da6f087b3e0d4e1496bd09e"
+          }
+        ],
+        "/CloudFrontFunctionFindReplace/DefaultTest/DeployAssert/LambdaInvoke96317dde7da6f087b3e0d4e1496bd09e/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke96317dde7da6f087b3e0d4e1496bd09eInvoke10FA0FEF"
+          }
+        ],
+        "/CloudFrontFunctionFindReplace/DefaultTest/DeployAssert/LambdaInvoke96317dde7da6f087b3e0d4e1496bd09e/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsLambdaInvoke96317dde7da6f087b3e0d4e1496bd09e"
+          }
+        ],
+        "/CloudFrontFunctionFindReplace/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/CloudFrontFunctionFindReplace/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/CloudFrontFunctionFindReplace/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/CloudFrontFunctionFindReplace/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/CloudFrontFunctionFindReplace/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "CloudFrontFunctionFindReplace/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

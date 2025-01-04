@@ -552,7 +552,7 @@ new cloudfront.Distribution(this, 'distro', {
 
 ### CloudFront Function
 
-You can also deploy CloudFront functions and add them to a CloudFront distribution.
+You can deploy CloudFront functions and add them to a CloudFront distribution.
 
 ```ts
 // Add a cloudfront Function to a Distribution
@@ -573,19 +573,97 @@ new cloudfront.Distribution(this, 'distro', {
 });
 ```
 
-It will auto-generate the name of the function and deploy it to the `live` stage.
-
-Additionally, you can load the function's code from a file using the `FunctionCode.fromFile()` method.
-
-If you set `autoPublish` to false, the function will not be automatically published to the LIVE stage when it’s created.
+During deployment, the CDK updates the function in both the `DEVELOPMENT` stage and the `LIVE` stage. 
+You can stop the CDK from updating the `LIVE` stage by setting `autoPublish` to false.
 
 ```ts
 new cloudfront.Function(this, 'Function', {
   code: cloudfront.FunctionCode.fromInline('function handler(event) { return event.request }'),
   runtime: cloudfront.FunctionRuntime.JS_2_0,
-  autoPublish: false
+  autoPublish: false    // Only update the function in the DEVELOPMENT stage during CDK deploy
 });
 ```
+
+The function's code can be in a separate file.
+In which case you use `FunctionCode.fromFile()` instead of `FunctionCode.fromInline()`.
+
+```ts
+new cloudfront.Function(this, 'Function', {
+  code: cloudfront.FunctionCode.fromFile({ filePath: 'function-code.js' }),
+  runtime: cloudfront.FunctionRuntime.JS_2_0
+});
+```
+
+#### Getting values into your function code 
+
+You can put values from your CDK app into your function code. This can be 
+useful when you want to change values between development and production, 
+for example. To do this, you put unique text into your function code where
+the value needs to go. Then you find that unique text and replace it with 
+a value during synthesis. 
+
+Consider this CloudFront function in `function-code.js`. The intention to 
+replace `%DEFAULT_REDIRECT%` with a URL that is different for different
+environments.
+
+```js
+function handler(event) {
+  // …
+  return {
+    statusCode: 302, statusDescription: 'Found', 
+    headers: { location: { value: '%DEFAULT_REDIRECT%' } }, // %DEFAULT_REDIRECT% is replaced during CDK synth
+  }
+}
+```
+
+You can have CDK replace `%DEFAULT_REDIRECT%` by adding a `findReplace` 
+option to `FunctionCode.fromFile`. The `findReplace` option is also
+available with `FunctionCode.fromInline`.
+
+```ts
+declare const defaultRedirect: string // The actual URL depends on the environment, dev vs prod for example
+new cloudfront.Function(this, 'Function', {
+  runtime: cloudfront.FunctionRuntime.JS_2_0,
+  code: cloudfront.FunctionCode.fromFile({
+    filePath: 'function-code.js',
+    findReplace: [
+      { find: '%DEFAULT_REDIRECT%', replace: defaultRedirect, all: true }, // all defaults to false
+    ],
+  }),
+});
+```
+
+If `defaultRedirect` were `https://www.example.com/` during synthesis, the CDK would
+update your CloudFront function with this code.
+
+```js
+function handler(event) {
+  // …
+  return {
+    statusCode: 302, statusDescription: 'Found', 
+    headers: { location: { value: 'https://www.example.com/' } }, // https://www.example.com/ is replaced during CDK synth
+  }
+}
+```
+
+> **Note:** This is a simple find and replace, like that of a non-intelligent text 
+> editor. The CDK does not look for whole identifiers, strings, or words. The
+> CDK replaces anything in your code that matches `find` regardless of its context.
+>
+> If your value is a string, you need to include the quotes in the original code.
+> The CDK will not add or remove them depending on the value's type.
+> 
+> You don't need to use `%` in your unique text. It could be `__DEFAULT_REDIRECT__`,
+> or even `${DEFAULT_REDIRECT}`.
+> 
+> Your unique text could be `DEFAULT_REDIRECT`. But if it were you would need to
+> ensure there isn't anything else in your code that contains `DEFAULT_REDIRECT`.
+> If your code had `DEFAULT_REDIRECT_404 = 'DEFAULT_REDIRECT' + '404.html';`,
+> the CDK would change it to something like 
+> `https://www.example.com/_404 = 'https://www.example.com/' + '404.html';`.
+> This is why it's recommended to include a prefix and suffix like `%`
+> in your unique text.
+
 
 ### Key Value Store
 
@@ -634,6 +712,34 @@ new cloudfront.Function(this, 'Function', {
   // Note that JS_2_0 must be used for Key Value Store support
   runtime: cloudfront.FunctionRuntime.JS_2_0,
   keyValueStore: store,
+});
+```
+
+#### Getting the Key Value Store ID into your function's code
+
+In your CloudFront function, put `%KVS_ID%` where you would normally put the key value store ID.
+
+```js
+import cf from 'cloudfront';
+const kvsId = "%KVS_ID%";
+const kvsHandle = cf.kvs(kvsId);
+
+async function handler(event) {
+  // …
+}
+```
+
+Then in your CDK app, find `%KVS_ID%` and replace it with the key value store ID.
+
+```ts
+const store = new cloudfront.KeyValueStore(this, 'KeyValueStore');
+new cloudfront.Function(this, 'Function', {
+  runtime: cloudfront.FunctionRuntime.JS_2_0,
+  keyValueStore: store,
+  code: cloudfront.FunctionCode.fromFile({
+    filePath: 'function-code.js',
+    findReplace: [{ find: '%KVS_ID%', replace: store.keyValueStoreId }],
+  }),
 });
 ```
 
