@@ -20,22 +20,35 @@ All notable changes to this project will be documented in this file. See [standa
 * **rds:** supports minors 11.4.4, 10.11.10, 10.6.20, 10.5.27 for RDS for MariaDB ([#32632](https://github.com/aws/aws-cdk/issues/32632)) ([b8e79b6](https://github.com/aws/aws-cdk/commit/b8e79b6fbb8841b32838ebadb9ba7a127dc1f6ba))
 * update L1 CloudFormation resource definitions ([#32582](https://github.com/aws/aws-cdk/issues/32582)) ([ff57cc3](https://github.com/aws/aws-cdk/commit/ff57cc3e0d0ea33285e2deaa5b7c50cab520f624))
 * update L1 CloudFormation resource definitions ([#32645](https://github.com/aws/aws-cdk/issues/32645)) ([a0525f5](https://github.com/aws/aws-cdk/commit/a0525f54771b24859140c8915ccb86b1be644e1b))
+* update L1 CloudFormation resource definitions ([#32685](https://github.com/aws/aws-cdk/issues/32685)) ([fe3af93](https://github.com/aws/aws-cdk/commit/fe3af935dadd88c51a30fb20d0b30afdffea03bc)), closes [/docs.aws.amazon.com/datasync/latest/userguide/create-s3-location.html#create-s3](https://github.com/aws//docs.aws.amazon.com/datasync/latest/userguide/create-s3-location.html/issues/create-s3) [/docs.aws.amazon.com/datasync/latest/userguide/create-s3-location.html#create-s3](https://github.com/aws//docs.aws.amazon.com/datasync/latest/userguide/create-s3-location.html/issues/create-s3)
+* **appconfig:** add atDeploymentTick extension action point to L2 Constructs ([#32490](https://github.com/aws/aws-cdk/issues/32490)) ([225d261](https://github.com/aws/aws-cdk/commit/225d261bf2d8f4ada3ac06de9f9f11e4586510b2))
+* **cloudfront:** distribution ARN property ([#32531](https://github.com/aws/aws-cdk/issues/32531)) ([b7e6141](https://github.com/aws/aws-cdk/commit/b7e6141dbb6b55a36bb3590a0cdadef2c478a348)), closes [#32530](https://github.com/aws/aws-cdk/issues/32530)
+* **codebuild:** support auto retry limit for Project ([#32507](https://github.com/aws/aws-cdk/issues/32507)) ([2c109cf](https://github.com/aws/aws-cdk/commit/2c109cf3b5bff9cb53ba70889ee60aaa602430f1)), closes [#32446](https://github.com/aws/aws-cdk/issues/32446)
+* **ecs:** machineImageType support AL2023 ([#32509](https://github.com/aws/aws-cdk/issues/32509)) ([4b696bc](https://github.com/aws/aws-cdk/commit/4b696bc338ec0048e202201273f5220ff40a7e8f)), closes [#32496](https://github.com/aws/aws-cdk/issues/32496) [#32469](https://github.com/aws/aws-cdk/issues/32469)
+* update L1 CloudFormation resource definitions ([#32540](https://github.com/aws/aws-cdk/issues/32540)) ([2e3b2ac](https://github.com/aws/aws-cdk/commit/2e3b2ac51c459e4d8a4bc7e6f488e2bab433cea7))
 
 
 ### Bug Fixes
 
-* **aspects:** "localAspects is not iterable" error ([#32647](https://github.com/aws/aws-cdk/issues/32647)) ([cb985ba](https://github.com/aws/aws-cdk/commit/cb985bad7cb53da86dbdd1788b5fae986f488e16)), closes [#32470](https://github.com/aws/aws-cdk/issues/32470)
 * **cli:** notices don't work behind a proxy ([#32590](https://github.com/aws/aws-cdk/issues/32590)) ([3377c3b](https://github.com/aws/aws-cdk/commit/3377c3bdb61885df54c9a6663439e4b44b435017))
 * **cli:** outdated dependency on `@aws-cdk/cloud-assembly-schema` ([#32704](https://github.com/aws/aws-cdk/issues/32704)) ([3b162fc](https://github.com/aws/aws-cdk/commit/3b162fcb4f31f707fdcd8c4001cf8f42f760d5e3))
 * **cli:** unhandled nextToken returned by listImagesCommand in garbage collector for ECR ([#32679](https://github.com/aws/aws-cdk/issues/32679)) ([d9346bc](https://github.com/aws/aws-cdk/commit/d9346bc9eedd2054bde00be930e80fa28bdd3a6e)), closes [#32498](https://github.com/aws/aws-cdk/issues/32498) [/github.com/aws/aws-cdk/blob/v2.173.4/packages/aws-cdk/lib/api/garbage-collection/garbage-collector.ts#L621](https://github.com/aws//github.com/aws/aws-cdk/blob/v2.173.4/packages/aws-cdk/lib/api/garbage-collection/garbage-collector.ts/issues/L621)
 * **elasticloadbalancingv2:** open, dual-stack-without-public-ipv4 ALB allows IPv6 inbound traffic ([#32203](https://github.com/aws/aws-cdk/issues/32203)) ([0731095](https://github.com/aws/aws-cdk/commit/0731095f5a9e2f58ec113b4ae05894b95df89ea2)), closes [#32197](https://github.com/aws/aws-cdk/issues/32197)
 * **opensearch:** add I4I and R7GD to list of OpenSearch nodes not requiring EBS volumes ([#32592](https://github.com/aws/aws-cdk/issues/32592)) ([e364d2b](https://github.com/aws/aws-cdk/commit/e364d2b6808fd703600bff07634c4ac3486f6367)), closes [#32070](https://github.com/aws/aws-cdk/issues/32070) [#32138](https://github.com/aws/aws-cdk/issues/32138)
 * bump jsii 5.5 to 5.6 ([#32588](https://github.com/aws/aws-cdk/issues/32588)) ([57bba19](https://github.com/aws/aws-cdk/commit/57bba195fc590b4beeab6a524fcffcc3b16b0d81))
+* **cdk:** changed retry mechanism for hotswapping AppSync.function ([#32179](https://github.com/aws/aws-cdk/issues/32179)) ([d14d784](https://github.com/aws/aws-cdk/commit/d14d784c30bb0cb70beb2405b1042157aaa0a4e1))
+* **cli:** allow credential plugins to return `null` for `expiration` ([#32554](https://github.com/aws/aws-cdk/issues/32554)) ([d4f6946](https://github.com/aws/aws-cdk/commit/d4f6946dbc97161749a33d3e89514a8f7ca4aa0a))
+* **cli:** cdk deploy -R does not disable rollback ([#32514](https://github.com/aws/aws-cdk/issues/32514)) ([2e75924](https://github.com/aws/aws-cdk/commit/2e759243cfb7a6c2e72f57abf31703ea8ed9ac12)), closes [#31850](https://github.com/aws/aws-cdk/issues/31850)
+* **cli:** doesn't support plugins that return initially empty credentials ([#32552](https://github.com/aws/aws-cdk/issues/32552)) ([38116b0](https://github.com/aws/aws-cdk/commit/38116b0ce7afda179c0067dfc5f19f24409f7fbe))
+* **cli:** getting credentials via SSO fails when the region is set in the profile ([#32520](https://github.com/aws/aws-cdk/issues/32520)) ([bf026bd](https://github.com/aws/aws-cdk/commit/bf026bdd8557305d427510af49f1bc538d439cb6))
+* **lambda:** add [@deprecated](https://github.com/deprecated) tag to python3.8 ([#32162](https://github.com/aws/aws-cdk/issues/32162)) ([27619cc](https://github.com/aws/aws-cdk/commit/27619cc401829a851f211e0b7e81fcf84c5cbd44))
+* **route53-targets:** deprecated method for dns name is used in userpool domain target (under feature flag) ([#31403](https://github.com/aws/aws-cdk/issues/31403)) ([5e73dd0](https://github.com/aws/aws-cdk/commit/5e73dd089360a999cd86920b6d42bf69b1c0ded1))
 
 
 ### Reverts
 
 * "fix(elasticloadbalancingv2): open, dual-stack-without-public-ipv4 ALB allows IPv6 inbound traffic" ([#32690](https://github.com/aws/aws-cdk/issues/32690)) ([6c790fd](https://github.com/aws/aws-cdk/commit/6c790fd3457702264944e2ef94786eb0c5ff1ca0)), closes [aws/aws-cdk#32203](https://github.com/aws/aws-cdk/issues/32203)
+* **ecs:** machineImageType support AL2023 ([#32550](https://github.com/aws/aws-cdk/issues/32550)) ([e8d8237](https://github.com/aws/aws-cdk/commit/e8d823797c5020193bfe2c6fef39369057717298)), closes [aws/aws-cdk#32509](https://github.com/aws/aws-cdk/issues/32509)
 
 ## [2.173.4](https://github.com/aws/aws-cdk/compare/v2.173.3...v2.173.4) (2024-12-27)
 
