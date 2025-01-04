@@ -1,4 +1,4 @@
-import { CliConfig, renderCliType } from '../lib';
+import { CliConfig, renderCliArgsType } from '../lib';
 
 describe('render', () => {
   test('can generate CliArguments type', async () => {
@@ -38,7 +38,7 @@ describe('render', () => {
       },
     };
 
-    expect(await renderCliType(config)).toMatchInlineSnapshot(`
+    expect(await renderCliArgsType(config)).toMatchInlineSnapshot(`
       "// -------------------------------------------------------------------------------------------
       // GENERATED FROM packages/aws-cdk/lib/config.ts.
       // Do not edit by hand; all changes will be overwritten at build time from the config file.
@@ -140,7 +140,7 @@ describe('render', () => {
       globalOptions: {},
     };
 
-    expect(await renderCliType(config)).toMatchInlineSnapshot(`
+    expect(await renderCliArgsType(config)).toMatchInlineSnapshot(`
       "// -------------------------------------------------------------------------------------------
       // GENERATED FROM packages/aws-cdk/lib/config.ts.
       // Do not edit by hand; all changes will be overwritten at build time from the config file.
@@ -188,14 +188,14 @@ describe('render', () => {
          *
          * @default - undefined
          */
-        readonly 'notification-arns'?: Array<string>;
+        readonly notificationArns?: Array<string>;
 
         /**
          * Other array
          *
          * @default - []
          */
-        readonly 'other-array'?: Array<string>;
+        readonly otherArray?: Array<string>;
       }
       "
     `);
