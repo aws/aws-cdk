@@ -6,6 +6,7 @@ export * from './codebuild/build-action';
 export * from './codecommit/source-action';
 export * from './codedeploy/ecs-deploy-action';
 export * from './codedeploy/server-deploy-action';
+export * from './commands/commands-action';
 export * from './ecr/source-action';
 export * from './ecs/deploy-action';
 export * from './elastic-beanstalk/deploy-action';
