@@ -3,6 +3,22 @@ import { CfnDistribution } from './cloudfront.generated';
 import { Duration, Token } from '../../core';
 
 /**
+ * The selection criteria for the origin group.
+ *
+ * @default - none
+ */
+export enum OriginGroupSelectionCriteria {
+  /**
+   * Default selection behavior.
+   */
+  DEFAULT='default',
+  /**
+   * Selection based on media quality.
+   */
+  MEDIA_QUALITY_BASED='media-quality-based',
+}
+
+/**
  * The failover configuration used for Origin Groups,
  * returned in `OriginBindConfig.failoverConfig`.
  */
@@ -33,6 +49,13 @@ export interface OriginBindConfig {
    * @default - nothing is returned
    */
   readonly failoverConfig?: OriginFailoverConfig;
+
+  /**
+   * The failover selection for the Distribution.
+   *
+   * @default - nothing is returned
+   */
+  readonly selectionCriteria?: OriginGroupSelectionCriteria;
 }
 
 /**

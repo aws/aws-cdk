@@ -21,6 +21,13 @@ export interface OriginGroupProps {
    * @default - 500, 502, 503 and 504
    */
   readonly fallbackStatusCodes?: number[];
+
+  /**
+   * The selection criteria for the origin group.
+   *
+   * @default - nothing is returned
+   */
+  readonly selectionCriteria?: cloudfront.OriginGroupSelectionCriteria;
 }
 
 /**
@@ -44,6 +51,7 @@ export class OriginGroup implements cloudfront.IOrigin {
         failoverOrigin: this.props.fallbackOrigin,
         statusCodes: this.props.fallbackStatusCodes,
       },
+      selectionCriteria: this.props.selectionCriteria,
     };
   }
 }
