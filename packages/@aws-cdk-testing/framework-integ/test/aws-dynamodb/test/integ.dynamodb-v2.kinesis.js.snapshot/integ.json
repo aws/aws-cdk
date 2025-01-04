@@ -1,0 +1,16 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "kinesis-stream-precision-timestamp-test/DefaultTest": {
+      "stacks": [
+        "kinesis-stream-precision-timestamp"
+      ],
+      "regions": [
+        "eu-west-1"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "kinesis-stream-precision-timestamp-test/DefaultTest/DeployAssert",
+      "assertionStackName": "kinesisstreamprecisiontimestamptestDefaultTestDeployAssert34E3FBF9"
+    }
+  }
+}
