@@ -26,6 +26,78 @@ test('can construct a default fleet', () => {
   expect(fleet.environmentType).toEqual(codebuild.EnvironmentType.LINUX_CONTAINER);
 });
 
+test('can construct a LINUX_EC2 fleet', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  const fleet = new codebuild.Fleet(stack, 'Fleet', {
+    computeType: codebuild.FleetComputeType.SMALL,
+    environmentType: codebuild.EnvironmentType.LINUX_EC2,
+    baseCapacity: 1,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Fleet', {
+    Name: Match.absent(),
+    BaseCapacity: 1,
+    ComputeType: 'BUILD_GENERAL1_SMALL',
+    EnvironmentType: 'LINUX_EC2',
+  });
+  expect(cdk.Token.isUnresolved(fleet.fleetName)).toBeTruthy();
+  expect(cdk.Token.isUnresolved(fleet.fleetArn)).toBeTruthy();
+  expect(fleet.computeType).toEqual(codebuild.FleetComputeType.SMALL);
+  expect(fleet.environmentType).toEqual(codebuild.EnvironmentType.LINUX_EC2);
+});
+
+test('can construct an ARM_EC2 fleet', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  const fleet = new codebuild.Fleet(stack, 'Fleet', {
+    computeType: codebuild.FleetComputeType.SMALL,
+    environmentType: codebuild.EnvironmentType.ARM_EC2,
+    baseCapacity: 1,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Fleet', {
+    Name: Match.absent(),
+    BaseCapacity: 1,
+    ComputeType: 'BUILD_GENERAL1_SMALL',
+    EnvironmentType: 'ARM_EC2',
+  });
+  expect(cdk.Token.isUnresolved(fleet.fleetName)).toBeTruthy();
+  expect(cdk.Token.isUnresolved(fleet.fleetArn)).toBeTruthy();
+  expect(fleet.computeType).toEqual(codebuild.FleetComputeType.SMALL);
+  expect(fleet.environmentType).toEqual(codebuild.EnvironmentType.ARM_EC2);
+});
+
+test('can construct a WINDOWS_EC2 fleet', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  const fleet = new codebuild.Fleet(stack, 'Fleet', {
+    computeType: codebuild.FleetComputeType.MEDIUM,
+    environmentType: codebuild.EnvironmentType.WINDOWS_EC2,
+    baseCapacity: 1,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Fleet', {
+    Name: Match.absent(),
+    BaseCapacity: 1,
+    ComputeType: 'BUILD_GENERAL1_MEDIUM',
+    EnvironmentType: 'WINDOWS_EC2',
+  });
+  expect(cdk.Token.isUnresolved(fleet.fleetName)).toBeTruthy();
+  expect(cdk.Token.isUnresolved(fleet.fleetArn)).toBeTruthy();
+  expect(fleet.computeType).toEqual(codebuild.FleetComputeType.MEDIUM);
+  expect(fleet.environmentType).toEqual(codebuild.EnvironmentType.WINDOWS_EC2);
+});
+
 test('can construct a fleet with a specified name', () => {
   // GIVEN
   const stack = new cdk.Stack();
