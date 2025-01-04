@@ -97,7 +97,6 @@ export class AssetCode extends Code {
     }
   }
 
-  // To maintain backward compatibility, it is also designed to accept `RuntimeFamily` for `runtime` prop.
   public bind(scope: Construct, handler: string, family: RuntimeFamily, runtimeName?: string): CodeConfig {
     // If the same AssetCode is used multiple times, retain only the first instantiation.
     if (!this.asset) {
