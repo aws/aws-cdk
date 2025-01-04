@@ -6,7 +6,7 @@ import { Endpoint } from './endpoint';
 import { NetworkType } from './instance';
 import { IParameterGroup, ParameterGroup } from './parameter-group';
 import { DATA_API_ACTIONS } from './perms';
-import { applyDefaultRotationOptions, defaultDeletionProtection, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless, renderSnapshotCredentials } from './private/util';
+import { applyDefaultRotationOptions, defaultDeletionProtection, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless, renderSnapshotCredentials, getStorageEncryptedProperty } from './private/util';
 import { BackupProps, Credentials, InstanceProps, PerformanceInsightRetention, RotationSingleUserOptions, RotationMultiUserOptions, SnapshotCredentials } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBCluster, CfnDBClusterProps, CfnDBInstance } from './rds.generated';
@@ -901,7 +901,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       enableCloudwatchLogsExports: props.cloudwatchLogsExports,
       // Encryption
       kmsKeyId: props.storageEncryptionKey?.keyArn,
-      storageEncrypted: this.getStorageEncryptedProperty(props),
+      storageEncrypted: getStorageEncryptedProperty(this, props),
       // Tags
       copyTagsToSnapshot: props.copyTagsToSnapshot ?? true,
       domain: this.domainId,
@@ -1066,34 +1066,6 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
         }
       }
     }
-  }
-
-  /**
-   * Determines the value of the `storageEncrypted` property for the cluster.
-   */
-  private getStorageEncryptedProperty(props: DatabaseClusterProps): boolean | undefined {
-    const featureFlagEnabled = FeatureFlags.of(this).isEnabled(cxapi.RDS_ENABLE_ENCRYPTION_AT_REST_BY_DEFAULT);
-
-    // Retain the legacy behavior if the feature flag is not enabled
-    if (!featureFlagEnabled) {
-      return props.storageEncryptionKey ? true : props.storageEncrypted;
-    }
-
-    // If a KMS key is provided, enable encryption at rest
-    if (props.storageEncryptionKey) {
-      return true;
-    }
-
-    if (props.storageEncryptedLegacyDefaultValue) {
-      if (props.storageEncrypted) {
-        throw new Error('Cannot set `storageEncrypted` to `true` when `storageEncryptedLegacyDefaultValue` is `true`.');
-      }
-
-      return undefined;
-    }
-
-    // Otherwise, default to the explicitly provided value or `true` if no value was provided
-    return props.storageEncrypted ?? true;
   }
 
   /**

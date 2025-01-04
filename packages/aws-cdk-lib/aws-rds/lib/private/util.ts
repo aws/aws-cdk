@@ -1,10 +1,13 @@
-import { Construct } from 'constructs';
+import { Construct, type IConstruct } from 'constructs';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as s3 from '../../../aws-s3';
-import { RemovalPolicy } from '../../../core';
+import { FeatureFlags, RemovalPolicy } from '../../../core';
+import * as cxapi from '../../../cx-api';
+import type { DatabaseClusterProps } from '../cluster';
 import { DatabaseSecret } from '../database-secret';
 import { IEngine } from '../engine';
+import type { DatabaseInstanceProps } from '../instance';
 import { CommonRotationUserOptions, Credentials, SnapshotCredentials } from '../props';
 
 /**
@@ -168,4 +171,32 @@ export function applyDefaultRotationOptions(options: CommonRotationUserOptions, 
     vpcSubnets: defaultvpcSubnets,
     ...options,
   };
+}
+
+/**
+ * Determines the value of the `storageEncrypted` property for a cluster or instance.
+ */
+export function getStorageEncryptedProperty(scope: IConstruct, props: DatabaseInstanceProps | DatabaseClusterProps): boolean | undefined {
+  const featureFlagEnabled = FeatureFlags.of(scope).isEnabled(cxapi.RDS_ENABLE_ENCRYPTION_AT_REST_BY_DEFAULT);
+
+  // Retain the legacy behavior if the feature flag is not enabled
+  if (!featureFlagEnabled) {
+    return props.storageEncryptionKey ? true : props.storageEncrypted;
+  }
+
+  // If a KMS key is provided, enable encryption at rest
+  if (props.storageEncryptionKey) {
+    return true;
+  }
+
+  if (props.storageEncryptedLegacyDefaultValue) {
+    if (props.storageEncrypted) {
+      throw new Error('Cannot set `storageEncrypted` to `true` when `storageEncryptedLegacyDefaultValue` is `true`.');
+    }
+
+    return undefined;
+  }
+
+  // Otherwise, default to the explicitly provided value or `true` if no value was provided
+  return props.storageEncrypted ?? true;
 }
