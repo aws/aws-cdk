@@ -7,7 +7,7 @@
   },
   "scripts": {
     "build": "cdk-build",
-    "yargs-gen": "ts-node --preferTsExts scripts/yargs-gen.ts",
+    "cli-args-gen": "ts-node --preferTsExts scripts/cli-args-gen.ts",
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "pkglint": "pkglint -f",
@@ -29,7 +29,7 @@
   },
   "cdk-build": {
     "pre": [
-      "yarn yargs-gen"
+      "yarn cli-args-gen"
     ],
     "post": [
       "cp ../../node_modules/cdk-from-cfn/index_bg.wasm ./lib/",
@@ -68,8 +68,9 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/cli-plugin-contract": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@aws-cdk/yargs-gen": "0.0.0",
+    "@aws-cdk/cli-args-gen": "0.0.0",
     "@octokit/rest": "^18.12.0",
     "@types/archiver": "^5.3.4",
     "@types/fs-extra": "^9.0.13",
@@ -102,7 +103,7 @@
     "xml-js": "^1.6.11"
   },
   "dependencies": {
-    "@aws-cdk/cloud-assembly-schema": "^38.0.0",
+    "@aws-cdk/cloud-assembly-schema": "^39.0.0",
     "@aws-cdk/cloudformation-diff": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
@@ -137,7 +138,7 @@
     "@smithy/util-waiter": "3.1.6",
     "archiver": "^5.3.2",
     "camelcase": "^6.3.0",
-    "cdk-assets": "^3.0.0-rc.48",
+    "cdk-assets": "^3.0.0-rc.111",
     "cdk-from-cfn": "^0.162.0",
     "chalk": "^4",
     "chokidar": "^3.6.0",

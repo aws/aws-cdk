@@ -1317,10 +1317,13 @@ export const CURRENT_VERSION_EXPIRED_FLAGS: string[] = Object.entries(FLAGS)
  * Add a flag in here (typically with the value `true`), to enable
  * backwards-breaking behavior changes only for new projects.  New projects
  * generated through `cdk init` will include these flags in their generated
+ * project config.
  *
  * Tests must cover the default (disabled) case and the future (enabled) case.
+ *
+ * Going forward, this should *NOT* be consumed directly anymore.
  */
-export const NEW_PROJECT_CONTEXT = Object.fromEntries(
+export const CURRENTLY_RECOMMENDED_FLAGS = Object.fromEntries(
   Object.entries(FLAGS)
     .filter(([_, flag]) => flag.recommendedValue !== flag.defaults?.[CURRENT_MV] && flag.introducedIn[CURRENT_MV])
     .map(([name, flag]) => [name, flag.recommendedValue]),
@@ -1352,10 +1355,10 @@ export function futureFlagDefault(flag: string): boolean {
 /** @deprecated use CURRENT_VERSION_EXPIRED_FLAGS instead */
 export const FUTURE_FLAGS_EXPIRED = CURRENT_VERSION_EXPIRED_FLAGS;
 
-/** @deprecated use NEW_PROJECT_CONTEXT instead */
-export const FUTURE_FLAGS = Object.fromEntries(Object.entries(NEW_PROJECT_CONTEXT)
+/** @deprecated do not use at all! */
+export const FUTURE_FLAGS = Object.fromEntries(Object.entries(CURRENTLY_RECOMMENDED_FLAGS)
   .filter(([_, v]) => typeof v === 'boolean'));
 
-/** @deprecated use NEW_PROJECT_CONTEXT instead */
-export const NEW_PROJECT_DEFAULT_CONTEXT = Object.fromEntries(Object.entries(NEW_PROJECT_CONTEXT)
+/** @deprecated do not use at all! */
+export const NEW_PROJECT_DEFAULT_CONTEXT = Object.fromEntries(Object.entries(CURRENTLY_RECOMMENDED_FLAGS)
   .filter(([_, v]) => typeof v !== 'boolean'));
