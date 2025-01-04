@@ -137,6 +137,13 @@ export interface MutualAuthentication {
    * @default false
    */
   readonly ignoreClientCertificateExpiry?: boolean;
+
+  /**
+   * Indicates whether trust store CA names are advertised
+   *
+   * @default false
+   */
+  readonly advertiseTrustStoreCaNames?: boolean;
 }
 
 /**
@@ -256,6 +263,11 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
 
     validateMutualAuthentication(props.mutualAuthentication);
 
+    let advertiseTrustStoreCaNames: string | undefined;
+    if (props.mutualAuthentication?.advertiseTrustStoreCaNames !== undefined) {
+      advertiseTrustStoreCaNames = props.mutualAuthentication.advertiseTrustStoreCaNames ? 'on' : 'off';
+    }
+
     super(scope, id, {
       loadBalancerArn: props.loadBalancer.loadBalancerArn,
       certificates: Lazy.any({ produce: () => this.certificateArns.map(certificateArn => ({ certificateArn })) }, { omitEmptyArray: true }),
@@ -263,6 +275,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       port,
       sslPolicy: props.sslPolicy,
       mutualAuthentication: props.mutualAuthentication ? {
+        advertiseTrustStoreCaNames,
         ignoreClientCertificateExpiry: props.mutualAuthentication?.ignoreClientCertificateExpiry,
         mode: props.mutualAuthentication?.mutualAuthenticationMode,
         trustStoreArn: props.mutualAuthentication?.trustStore?.trustStoreArn,
@@ -1064,6 +1077,10 @@ function validateMutualAuthentication(mutualAuthentication?: MutualAuthenticatio
 
     if (mutualAuthentication.ignoreClientCertificateExpiry !== undefined) {
       throw new Error(`You cannot set 'ignoreClientCertificateExpiry' when 'mode' is '${MutualAuthenticationMode.OFF}' or '${MutualAuthenticationMode.PASS_THROUGH}'`);
+    }
+
+    if (mutualAuthentication.advertiseTrustStoreCaNames !== undefined) {
+      throw new Error(`You cannot set 'advertiseTrustStoreCaNames' when 'mode' is '${MutualAuthenticationMode.OFF}' or '${MutualAuthenticationMode.PASS_THROUGH}'`);
     }
   }
 }
