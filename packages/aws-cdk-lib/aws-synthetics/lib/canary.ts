@@ -251,8 +251,16 @@ export interface CanaryProps {
    * Using `Cleanup.LAMBDA` will create a Custom Resource to achieve this.
    *
    * @default Cleanup.NOTHING
+   * @deprecated use provisionedResourceCleanup
    */
   readonly cleanup?: Cleanup;
+
+  /**
+   * Whether to also delete the Lambda functions and layers used by this canary when the canary is deleted.
+   *
+   * @default undefined - the default behavior is to not delete the Lambda functions and layers
+   */
+  readonly provisionedResourceCleanup?: boolean;
 
   /**
    * Lifecycle rules for the generated canary artifact bucket. Has no effect
@@ -344,6 +352,10 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
       validateName(props.canaryName);
     }
 
+    if (props.cleanup && props.provisionedResourceCleanup !== undefined) {
+      throw new Error('Cannot specify both `cleanup` and `provisionedResourceCleanup`. Use `provisionedResourceCleanup` instead.');
+    }
+
     super(scope, id, {
       physicalName: props.canaryName || cdk.Lazy.string({
         produce: () => this.generateUniqueName(),
@@ -376,6 +388,11 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
       runConfig: this.createRunConfig(props),
       vpcConfig: this.createVpcConfig(props),
       artifactConfig: this.createArtifactConfig(props),
+      provisionedResourceCleanup: props.provisionedResourceCleanup !== undefined
+        ? props.provisionedResourceCleanup
+          ? 'AUTOMATIC'
+          : 'OFF'
+        : undefined,
     });
     this._resource = resource;
 
