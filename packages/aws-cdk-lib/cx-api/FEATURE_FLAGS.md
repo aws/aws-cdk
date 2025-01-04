@@ -1014,10 +1014,10 @@ removing these ingress/egress rules in order to restrict access to the default s
 | (not in v1) |  |  |
 | 2.78.0 | `false` | `true` |
 
-**Compatibility with old behavior:**
+**Compatibility with old behavior:** 
       To allow all ingress/egress traffic to the VPC default security group you
       can set the `restrictDefaultSecurityGroup: false`.
-
+    
 
 
 ### @aws-cdk/aws-kms:aliasNameRef
@@ -1075,10 +1075,10 @@ provided.
 | (not in v1) |  |  |
 | 2.88.0 | `false` | `true` |
 
-**Compatibility with old behavior:**
+**Compatibility with old behavior:** 
       If backwards compatibility needs to be maintained due to an existing autoscaling group
       using a launch config, set this flag to false.
-
+    
 
 
 ### @aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby
