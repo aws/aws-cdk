@@ -1877,6 +1877,20 @@ taskDefinition.addContainer('TheContainer', {
 });
 ```
 
+## Disable service container image version consistency
+
+You can disable the
+[container image "version consistency"](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-ecs.html#deployment-container-image-stability)
+feature of ECS service deployments on a per-container basis.
+
+```ts
+const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
+taskDefinition.addContainer('TheContainer', {
+  image: ecs.ContainerImage.fromRegistry('example-image'),
+  versionConsistency: ecs.VersionConsistency.DISABLED,
+});
+```
+
 ## Specify a container ulimit
 
 You can specify a container `ulimits` by specifying them in the `ulimits` option while adding the container
