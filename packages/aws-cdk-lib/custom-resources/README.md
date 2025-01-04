@@ -582,6 +582,9 @@ Since a successful resource provisioning might or might not produce outputs, thi
 
 In both the cases, you will get a synth time error if you attempt to use it in conjunction with `ignoreErrorCodesMatching`.
 
+### Setting ServiceTimeout for Custom Resources
+You can set the maximum time that can elapse before a custom resource operation times out by setting `serviceTimeout` property. The default value is 3600 seconds.
+
 ### Customizing the Lambda function implementing the custom resource
 
 Use the `role`, `timeout`, `memorySize`, `logGroup`, `functionName` and `removalPolicy` properties to customize

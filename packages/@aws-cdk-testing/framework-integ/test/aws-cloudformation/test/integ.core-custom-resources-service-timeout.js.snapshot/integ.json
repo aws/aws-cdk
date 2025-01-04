@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "custom-resource-test-service-timeout-integ-test/DefaultTest": {
+      "stacks": [
+        "custom-resource-test-service-timeout"
+      ],
+      "assertionStack": "custom-resource-test-service-timeout-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "customresourcetestservicetimeoutintegtestDefaultTestDeployAssert8F844874"
+    }
+  }
+}
