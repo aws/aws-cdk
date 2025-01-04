@@ -443,11 +443,7 @@ export class Cluster extends ClusterBase {
   /**
    * Reference an existing cluster, defined outside of the CDK code, by name.
    */
-  public static fromClusterArn(
-    scope: constructs.Construct,
-    id: string,
-    clusterArn: string,
-  ): ICluster {
+  public static fromClusterArn(scope: constructs.Construct, id: string, clusterArn: string): ICluster {
     class Import extends ClusterBase {
       public readonly clusterArn = clusterArn;
       public readonly clusterName = core.Fn.select(1, core.Fn.split('/', clusterArn)); // ['arn:partition:kafka:region:account-id', clusterName, clusterId]
@@ -464,9 +460,7 @@ export class Cluster extends ClusterBase {
   private _clusterBootstrapBrokers?: cr.AwsCustomResource;
 
   constructor(scope: constructs.Construct, id: string, props: ClusterProps) {
-    super(scope, id, {
-      physicalName: props.clusterName,
-    });
+    super(scope, id, { physicalName: props.clusterName });
 
     const subnetSelection = props.vpc.selectSubnets(props.vpcSubnets);
 
@@ -480,37 +474,18 @@ export class Cluster extends ClusterBase {
     });
 
     if (subnetSelection.subnets.length < 2) {
-      throw Error(
-        `Cluster requires at least 2 subnets, got ${subnetSelection.subnets.length}`,
-      );
+      throw Error(`Cluster requires at least 2 subnets, got ${subnetSelection.subnets.length}`);
     }
 
-    if (
-      !core.Token.isUnresolved(props.clusterName) &&
-      !/^[a-zA-Z0-9]+$/.test(props.clusterName) &&
-      props.clusterName.length > 64
-    ) {
+    if (!core.Token.isUnresolved(props.clusterName) && !/^[a-zA-Z0-9]+$/.test(props.clusterName) && props.clusterName.length > 64) {
       throw Error(
         'The cluster name must only contain alphanumeric characters and have a maximum length of 64 characters.' +
           `got: '${props.clusterName}. length: ${props.clusterName.length}'`,
       );
     }
 
-    if (
-      props.clientAuthentication?.saslProps?.iam &&
-      props.clientAuthentication?.saslProps?.scram
-    ) {
-      throw Error('Only one client authentication method can be enabled.');
-    }
-
-    if (
-      props.encryptionInTransit?.clientBroker ===
-        ClientBrokerEncryption.PLAINTEXT &&
-      props.clientAuthentication
-    ) {
-      throw Error(
-        'To enable client authentication, you must enabled TLS-encrypted traffic between clients and brokers.',
-      );
+    if (props.encryptionInTransit?.clientBroker === ClientBrokerEncryption.PLAINTEXT && props.clientAuthentication) {
+      throw Error('To enable client authentication, you must enabled TLS-encrypted traffic between clients and brokers.');
     } else if (
       props.encryptionInTransit?.clientBroker ===
         ClientBrokerEncryption.TLS_PLAINTEXT &&
@@ -522,13 +497,10 @@ export class Cluster extends ClusterBase {
       );
     }
 
-    const volumeSize =
-      props.ebsStorageInfo?.volumeSize ?? 1000;
+    const volumeSize = props.ebsStorageInfo?.volumeSize ?? 1000;
     // Minimum: 1 GiB, maximum: 16384 GiB
     if (volumeSize < 1 || volumeSize > 16384) {
-      throw Error(
-        'EBS volume size should be in the range 1-16384',
-      );
+      throw Error('EBS volume size should be in the range 1-16384');
     }
 
     const instanceType = props.instanceType
@@ -650,13 +622,9 @@ export class Cluster extends ClusterBase {
       },
     };
 
-    if (
-      props.clientAuthentication?.saslProps?.scram &&
-      props.clientAuthentication?.saslProps?.key === undefined
-    ) {
+    if (props.clientAuthentication?.saslProps?.scram && props.clientAuthentication?.saslProps?.key === undefined) {
       this.saslScramAuthenticationKey = new kms.Key(this, 'SASLKey', {
-        description:
-          'Used for encrypting MSK secrets for SASL/SCRAM authentication.',
+        description: 'Used for encrypting MSK secrets for SASL/SCRAM authentication.',
         alias: `msk/${props.clusterName}/sasl/scram`,
       });
 
@@ -686,37 +654,17 @@ export class Cluster extends ClusterBase {
     }
 
     let clientAuthentication: CfnCluster.ClientAuthenticationProperty | undefined;
-    if (props.clientAuthentication?.saslProps?.iam) {
+    if (props.clientAuthentication) {
+      const { saslProps, tlsProps } = props.clientAuthentication;
       clientAuthentication = {
-        sasl: { iam: { enabled: props.clientAuthentication.saslProps.iam } },
-      };
-      if (props.clientAuthentication?.tlsProps) {
-        clientAuthentication = {
-          sasl: { iam: { enabled: props.clientAuthentication.saslProps.iam } },
-          tls: {
-            certificateAuthorityArnList: props.clientAuthentication?.tlsProps?.certificateAuthorities?.map(
-              (ca) => ca.certificateAuthorityArn,
-            ),
-          },
-        };
-      }
-    } else if (props.clientAuthentication?.saslProps?.scram) {
-      clientAuthentication = {
-        sasl: {
-          scram: {
-            enabled: props.clientAuthentication.saslProps.scram,
-          },
-        },
-      };
-    } else if (
-      props.clientAuthentication?.tlsProps?.certificateAuthorities !== undefined
-    ) {
-      clientAuthentication = {
-        tls: {
-          certificateAuthorityArnList: props.clientAuthentication?.tlsProps?.certificateAuthorities.map(
-            (ca) => ca.certificateAuthorityArn,
-          ),
-        },
+        sasl: saslProps ? {
+          iam: saslProps.iam ? { enabled: true }: undefined,
+          scram: saslProps.scram ? { enabled: true }: undefined,
+        } : undefined,
+        tls: tlsProps?.certificateAuthorities ? {
+          certificateAuthorityArnList: tlsProps.certificateAuthorities?.map((ca) => ca.certificateAuthorityArn),
+          enabled: true,
+        } : undefined,
       };
     }
 
