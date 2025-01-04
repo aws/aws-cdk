@@ -1737,3 +1737,25 @@ test('outputObjectKeys default value is true', () => {
     OutputObjectKeys: true,
   });
 });
+
+test('bucket source options', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const source = new s3.Bucket(stack, 'Source');
+  const bucket = new s3.Bucket(stack, 'Dest');
+  const versionId = 'test-version';
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [
+      s3deploy.Source.bucket(source, 'file1.zip'),
+      s3deploy.Source.bucket(source, 'file2.zip', { versionId: versionId }),
+    ],
+    destinationBucket: bucket,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
+    SourceVersionIds: ['', versionId],
+  });
+});
