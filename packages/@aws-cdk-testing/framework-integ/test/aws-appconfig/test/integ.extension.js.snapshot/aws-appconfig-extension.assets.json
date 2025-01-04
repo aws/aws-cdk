@@ -1,7 +1,7 @@
 {
-  "version": "36.0.0",
+  "version": "38.0.1",
   "files": {
-    "a4f22807b445e94aa9052ebdd44c6cfce2d3479cdede016c64f821562394d574": {
+    "3574584bf944d4e30e634c91b869f9f3917189e3043011290a52b1c28415d328": {
       "source": {
         "path": "aws-appconfig-extension.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "a4f22807b445e94aa9052ebdd44c6cfce2d3479cdede016c64f821562394d574.json",
+          "objectKey": "3574584bf944d4e30e634c91b869f9f3917189e3043011290a52b1c28415d328.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
