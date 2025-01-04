@@ -59,7 +59,20 @@ describe('cross environment', () => {
       graphMetricsAre(new Stack(), graph, [
         ['Test', 'ACount', { accountId: '1234', region: 'us-north-5' }],
       ]);
+    });
 
+    test('metric with explicit account and region that match stack will render as-is', () => {
+      // GIVEN
+      const graph = new GraphWidget({
+        left: [
+          a.with({ account: '1234', region: 'us-north-5' }),
+        ],
+      });
+
+      // THEN
+      graphMetricsAre(new Stack(undefined, undefined, { env: { region: 'us-north-5', account: '1234' } }), graph, [
+        ['Test', 'ACount', { accountId: '1234', region: 'us-north-5' }],
+      ]);
     });
 
     test('metric attached to agnostic stack will not render in agnostic stack', () => {

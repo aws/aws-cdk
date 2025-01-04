@@ -323,6 +323,20 @@ export interface MetricStatConfig {
    * @default Deployment account.
    */
   readonly account?: string;
+
+  /**
+   * Region set directly on the metric, not inherited from the attached stack.
+   *
+   * @default No override.
+   */
+  readonly regionOverride?: string;
+
+  /**
+   * Account set directly on the metric, not inherited from the attached stack.
+   *
+   * @default No override.
+   */
+  readonly accountOverride?: string;
 }
 
 /**
