@@ -34,6 +34,7 @@ The following targets are supported:
 9. `targets.KinesisDataFirehosePutRecord`: [Put a record to a Kinesis Data Firehose](#put-a-record-to-a-kinesis-data-firehose)
 10. `targets.CodePipelineStartPipelineExecution`: [Start a CodePipeline execution](#start-a-codepipeline-execution)
 11. `targets.SageMakerStartPipelineExecution`: [Start a SageMaker pipeline execution](#start-a-sagemaker-pipeline-execution)
+12. `targets.Universal`: [Invoke a wider set of AWS API](#invoke-a-wider-set-of-aws-api)
 
 ## Invoke a Lambda function
 
@@ -309,6 +310,69 @@ new Schedule(this, 'Schedule', {
       name: 'parameter-name',
       value: 'parameter-value',
     }],
+  }),
+});
+```
+
+## Invoke a wider set of AWS API
+
+Use the `Universal` target to invoke AWS API.
+
+The code snippet below creates an event rule with AWS API as the target which is
+called at midnight every day by EventBridge Scheduler.
+
+```ts
+new Schedule(this, 'Schedule', {
+  schedule: ScheduleExpression.cron({
+    minute: '0',
+    hour: '0',
+  }),
+  target: new targets.Universal({
+    service: 'rds',
+    action: 'stopDBCluster',
+    iamResources: ['arn:aws:rds:us-east-1:123456789012:cluster:my-cluster'],
+    input: ScheduleTargetInput.fromObject({
+      DbClusterIdentifier: 'my-db',
+    }),
+  }),
+});
+```
+
+The `service` must be in lowercase and the `action` must be in camelCase.
+
+By default, an IAM policy for the Scheduler is extracted from the API call.
+
+You can provide additional IAM policy statements to the Scheduler when
+other permissions are required for the action.
+
+```ts
+new Schedule(this, 'Schedule', {
+  schedule: ScheduleExpression.rate(Duration.minutes(60)),
+  target: new targets.Universal({
+    service: 'sqs',
+    action: 'sendMessage',
+    iamResources: ['arn:aws:sqs:us-east-1:123456789012:my_queue'],
+    additionalPolicyStatements: [
+      new iam.PolicyStatement({
+        actions: ['kms:Decrypt', 'kms:GenerateDataKey*'],
+        resources: ['arn:aws:kms:us-east-1:123456789012:key/0987dcba-09fe-87dc-65ba-ab0987654321'],
+      }),
+    ],
+  }),
+});
+```
+
+In cases where IAM action name differs from the API action name, you can provide the `iamAction` property
+to specify the IAM action name.
+
+```ts
+new Schedule(this, 'Schedule', {
+  schedule: ScheduleExpression.rate(Duration.minutes(60)),
+  target: new targets.Universal({
+    service: 'lambda',
+    action: 'invoke',
+    iamResources: ['arn:aws:lambda:us-east-1:123456789012:function:my-function'],
+    iamAction: 'lambda:InvokeFunction',
   }),
 });
 ```
