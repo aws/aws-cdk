@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "aws-ecs-integ-availability-zone-rebalancing/AvailabilityZoneRebalancing/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ-availability-zone-rebalancing"
+      ],
+      "assertionStack": "aws-ecs-integ-availability-zone-rebalancing/AvailabilityZoneRebalancing/DefaultTest/DeployAssert",
+      "assertionStackName": "awsecsintegavailabilityzonerebalancingAvailabilityZoneRebalancingDefaultTestDeployAssert8F80E41A"
+    }
+  }
+}
