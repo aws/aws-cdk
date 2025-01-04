@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "ShellJobServiceRoleCF97BC4B": {
+  "IAMServiceRole61C662C4": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -31,7 +31,7 @@
     ]
    }
   },
-  "ShellJobServiceRoleDefaultPolicy7F22D315": {
+  "IAMServiceRoleDefaultPolicy379D1A0E": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -80,141 +80,15 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "ShellJobServiceRoleDefaultPolicy7F22D315",
+    "PolicyName": "IAMServiceRoleDefaultPolicy379D1A0E",
     "Roles": [
      {
-      "Ref": "ShellJobServiceRoleCF97BC4B"
+      "Ref": "IAMServiceRole61C662C4"
      }
     ]
    }
   },
-  "ShellJob42E81F95": {
-   "Type": "AWS::Glue::Job",
-   "Properties": {
-    "Command": {
-     "Name": "pythonshell",
-     "PythonVersion": "3",
-     "ScriptLocation": {
-      "Fn::Join": [
-       "",
-       [
-        "s3://",
-        {
-         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-        },
-        "/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py"
-       ]
-      ]
-     }
-    },
-    "DefaultArguments": {
-     "--job-language": "python",
-     "arg1": "value1",
-     "arg2": "value2"
-    },
-    "GlueVersion": "1.0",
-    "MaxCapacity": 0.0625,
-    "Name": "ShellJob",
-    "Role": {
-     "Fn::GetAtt": [
-      "ShellJobServiceRoleCF97BC4B",
-      "Arn"
-     ]
-    },
-    "Tags": {
-     "key": "value"
-    }
-   }
-  },
-  "ShellJob39ServiceRole2F6F3768": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "glue.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AWSGlueServiceRole"
-       ]
-      ]
-     }
-    ]
-   }
-  },
-  "ShellJob39ServiceRoleDefaultPolicy38A33919": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": [
-        "s3:GetBucket*",
-        "s3:GetObject*",
-        "s3:List*"
-       ],
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":s3:::",
-           {
-            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-           },
-           "/*"
-          ]
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":s3:::",
-           {
-            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-           }
-          ]
-         ]
-        }
-       ]
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "ShellJob39ServiceRoleDefaultPolicy38A33919",
-    "Roles": [
-     {
-      "Ref": "ShellJob39ServiceRole2F6F3768"
-     }
-    ]
-   }
-  },
-  "ShellJob390C141361": {
+  "BasicShellJob39F2E7D12A": {
    "Type": "AWS::Glue::Job",
    "Properties": {
     "Command": {
@@ -235,15 +109,97 @@
     },
     "DefaultArguments": {
      "--job-language": "python",
+     "library-set": "analytics",
+     "--enable-continuous-cloudwatch-log": "true",
+     "--enable-metrics": "",
+     "--enable-observability-metrics": "true"
+    },
+    "GlueVersion": "3.0",
+    "JobRunQueuingEnabled": false,
+    "MaxCapacity": 0.0625,
+    "MaxRetries": 0,
+    "Role": {
+     "Fn::GetAtt": [
+      "IAMServiceRole61C662C4",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "BasicShellJobC7D0761E": {
+   "Type": "AWS::Glue::Job",
+   "Properties": {
+    "Command": {
+     "Name": "pythonshell",
+     "PythonVersion": "3",
+     "ScriptLocation": {
+      "Fn::Join": [
+       "",
+       [
+        "s3://",
+        {
+         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+        },
+        "/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py"
+       ]
+      ]
+     }
+    },
+    "DefaultArguments": {
+     "--job-language": "python",
+     "--enable-continuous-cloudwatch-log": "true",
+     "--enable-metrics": "",
+     "--enable-observability-metrics": "true"
+    },
+    "GlueVersion": "1.0",
+    "JobRunQueuingEnabled": false,
+    "MaxCapacity": 0.0625,
+    "MaxRetries": 0,
+    "Role": {
+     "Fn::GetAtt": [
+      "IAMServiceRole61C662C4",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "DetailedShellJob39CB370B41": {
+   "Type": "AWS::Glue::Job",
+   "Properties": {
+    "Command": {
+     "Name": "pythonshell",
+     "PythonVersion": "3.9",
+     "ScriptLocation": {
+      "Fn::Join": [
+       "",
+       [
+        "s3://",
+        {
+         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+        },
+        "/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py"
+       ]
+      ]
+     }
+    },
+    "DefaultArguments": {
+     "--job-language": "python",
+     "library-set": "analytics",
+     "--enable-continuous-cloudwatch-log": "true",
+     "--enable-metrics": "",
+     "--enable-observability-metrics": "true",
      "arg1": "value1",
      "arg2": "value2"
     },
+    "Description": "My detailed Python 3.9 Shell Job",
     "GlueVersion": "3.0",
+    "JobRunQueuingEnabled": true,
     "MaxCapacity": 1,
-    "Name": "ShellJob39",
+    "MaxRetries": 0,
+    "Name": "My Python 3.9 Shell Job",
     "Role": {
      "Fn::GetAtt": [
-      "ShellJob39ServiceRole2F6F3768",
+      "IAMServiceRole61C662C4",
       "Arn"
      ]
     },
