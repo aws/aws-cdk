@@ -1452,14 +1452,17 @@ new rds.DatabaseCluster(this, 'LimitlessDatabaseCluster', {
 
 ## Default Encryption Behavior
 
-It's recommended to set the `@aws-cdk/aws-rds:enableEncryptionAtRestByDefault`
-[feature flag](https://docs.aws.amazon.com/cdk/v2/guide/featureflags.html) to `true` to automatically enable encryption
-at rest using AWS-managed KMS keys for all new database clusters and instances. Previously, the default behavior did not
-enable encryption at rest if the `storageEncrypted` property was not set.
+New database clusters and instances are automatically encrypted at rest when the
+`@aws-cdk/aws-rds:enableEncryptionAtRestByDefault`
+[feature flag](https://docs.aws.amazon.com/cdk/v2/guide/featureflags.html) is set to `true`.
+You can disable encryption at rest by setting the `storageEncrypted` variable to `false`.
 
-To prevent replacing existing unencrypted database clusters and instances, set `storageEncrypted` to `false` and
-`storageEncryptedLegacyDefaultValue` to `true` for existing database clusters and instances. Validate that `cdk diff` does not
-show any changes to the unencrypted database clusters and instances.
+Previously, the default behavior did not enable encryption at rest if the `storageEncrypted` or `storageEncryptionKey`
+property were not set. In this case, the `storageEncrypted` property was `undefined`. The new implementation always
+explicitly sets the `storageEncrypted` property to `true` or `false`.  To prevent replacing existing unencrypted
+database clusters and instances, set `storageEncrypted` to `false` and `storageEncryptedLegacyDefaultValue` to `true`
+for existing database clusters and instances. Validate that `cdk diff` does not show any changes to the unencrypted
+database clusters and instances.
 
 ```ts
 declare const vpc: ec2.IVpc;
