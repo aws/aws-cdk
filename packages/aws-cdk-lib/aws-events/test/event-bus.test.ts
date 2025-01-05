@@ -531,6 +531,132 @@ describe('event bus', () => {
     });
   });
 
+  test('can be configured for schema discovery with default properties', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const event = new EventBus(stack, 'Bus');
+
+    event.schemaDiscovery('MySchemaDiscoverer');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::EventBus', {
+      Name: 'Bus',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::EventSchemas::Discoverer', {
+      SourceArn: {
+        'Fn::GetAtt': [
+          'BusEA82B648',
+          'Arn',
+        ],
+      },
+      Description: {
+        'Fn::Join': [
+          '',
+          [
+            'Schema Discoverer for ',
+            {
+              Ref: 'BusEA82B648',
+            },
+            ' Event Bus',
+          ],
+        ],
+      },
+    });
+  });
+
+  test('can be configured for schema discovery with custom properties', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const event = new EventBus(stack, 'Bus');
+
+    event.schemaDiscovery('MySchemaDiscoverer', {
+      crossAccount: false,
+      description: 'A custom schema discovery description.',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::EventBus', {
+      Name: 'Bus',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::EventSchemas::Discoverer', {
+      SourceArn: {
+        'Fn::GetAtt': [
+          'BusEA82B648',
+          'Arn',
+        ],
+      },
+      Description: 'A custom schema discovery description.',
+      CrossAccount: false,
+    });
+  });
+
+  test('can be configured for schema discovery from an imported EventBus', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const bus = new EventBus(stack, 'Bus');
+
+    const importedBus = EventBus.fromEventBusArn(stack, 'ImportedBus', bus.eventBusArn);
+
+    importedBus.schemaDiscovery('MySchemaDiscoverer');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::EventBus', {
+      Name: 'Bus',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::EventSchemas::Discoverer', {
+      SourceArn: {
+        'Fn::GetAtt': [
+          'BusEA82B648',
+          'Arn',
+        ],
+      },
+      Description: {
+        'Fn::Join': [
+          '',
+          [
+            'Schema Discoverer for ',
+            {
+              'Fn::Select': [
+                1,
+                {
+                  'Fn::Split': [
+                    '/',
+                    {
+                      'Fn::Select': [
+                        5,
+                        {
+                          'Fn::Split': [
+                            ':',
+                            {
+                              'Fn::GetAtt': [
+                                'BusEA82B648',
+                                'Arn',
+                              ],
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+            ' Event Bus',
+          ],
+        ],
+      },
+    });
+  });
+
   test('cross account event bus uses generated physical name', () => {
     // GIVEN
     const app = new App();

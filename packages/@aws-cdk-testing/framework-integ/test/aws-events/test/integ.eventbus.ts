@@ -30,6 +30,8 @@ bus.addToResourcePolicy(new iam.PolicyStatement({
   resources: [bus.eventBusArn],
 }));
 
+bus.schemaDiscovery('SchemaDiscovery');
+
 new IntegTest(app, 'IntegTest-EventBusStack', {
   testCases: [stack],
 });

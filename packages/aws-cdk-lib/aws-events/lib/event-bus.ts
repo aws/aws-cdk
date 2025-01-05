@@ -1,10 +1,32 @@
 import { Construct } from 'constructs';
 import { Archive, BaseArchiveProps } from './archive';
 import { CfnEventBus, CfnEventBusPolicy } from './events.generated';
+import * as eventschemas from '../../aws-eventschemas';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as sqs from '../../aws-sqs';
 import { ArnFormat, IResource, Lazy, Names, Resource, Stack, Token } from '../../core';
+
+/**
+ * Properties to configure schema discovery on an event bus
+ */
+interface SchemaDiscoveryProps {
+  /**
+   * Allows for the discovery of the event schemas that are sent to the event bus from another account
+   *
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eventschemas-discoverer.html#cfn-eventschemas-discoverer-crossaccount
+   * @default - none
+   */
+  readonly crossAccount: boolean;
+
+  /**
+   * A description for the discoverer
+   *
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eventschemas-discoverer.html#cfn-eventschemas-discoverer-description
+   * @default - none
+   */
+  readonly description: string;
+};
 
 /**
  * Interface which all EventBus based classes MUST implement
@@ -49,6 +71,13 @@ export interface IEventBus extends IResource {
    * @param props Properties of the archive
    */
   archive(id: string, props: BaseArchiveProps): Archive;
+
+  /**
+   * Create an EventBridge schema discoverer to automatically generate schemas based on events on this event bus.
+   *
+   * @param props Properties of the schema discoverer
+   */
+  schemaDiscovery(id: string, props?: SchemaDiscoveryProps): eventschemas.CfnDiscoverer;
 
   /**
    * Grants an IAM Principal to send custom events to the eventBus
@@ -172,6 +201,14 @@ abstract class EventBusBase extends Resource implements IEventBus {
       eventPattern: props.eventPattern,
       retention: props.retention,
       archiveName: props.archiveName,
+    });
+  }
+
+  public schemaDiscovery(id: string, props?: SchemaDiscoveryProps): eventschemas.CfnDiscoverer {
+    return new eventschemas.CfnDiscoverer(this, id, {
+      crossAccount: props?.crossAccount ?? true,
+      description: props?.description || `Schema Discoverer for ${this.eventBusName} Event Bus`,
+      sourceArn: this.eventBusArn,
     });
   }
 
