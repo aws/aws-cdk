@@ -33,7 +33,7 @@ export class InstanceType {
     const data = instancePropertiesData[instanceTypeIdentifier];
     if (!data) return;
 
-    return {
+    const properties: { -readonly [P in keyof InstanceProperties]: InstanceProperties[P] } = {
       autoRecoverySupported: data.AutoRecoverySupported,
       bareMetal: data.BareMetal,
       burstablePerformanceSupported: data.BurstablePerformanceSupported,
@@ -68,57 +68,6 @@ export class InstanceType {
         nvmeSupported: mapSupportedValue(data.EbsInfo?.NvmeSupport, { supported: ['supported', 'required'] }),
         nvmeRequired: data.EbsInfo?.NvmeSupport === 'required',
       },
-      fpgaInfo: {
-        fpgas: data.FpgaInfo?.Fpgas?.map<FpgaDeviceInfo>((fpga) => ({
-          name: fpga.Name,
-          count: fpga.Count,
-          manufacturer: fpga.Manufacturer,
-          memorySize: fpga.MemoryInfo?.SizeInMiB ? Size.mebibytes(fpga.MemoryInfo.SizeInMiB) : undefined,
-        })),
-        totalFpgaMemory: data.FpgaInfo?.TotalFpgaMemoryInMiB ? Size.mebibytes(data.FpgaInfo?.TotalFpgaMemoryInMiB) : undefined,
-      },
-      gpuInfo: {
-        gpus: data.GpuInfo?.Gpus?.map<GpuDeviceInfo>((gpu) => ({
-          name: gpu.Name,
-          manufacturer: gpu.Manufacturer,
-          count: gpu.Count,
-          memorySize: gpu.MemoryInfo?.SizeInMiB ? Size.mebibytes(gpu.MemoryInfo.SizeInMiB) : undefined,
-        })),
-        totalGpuMemory: data.GpuInfo?.TotalGpuMemoryInMiB ? Size.mebibytes(data.GpuInfo?.TotalGpuMemoryInMiB) : undefined,
-      },
-      inferenceAcceleratorInfo: {
-        accelerators: data.InferenceAcceleratorInfo?.Accelerators?.map<InferenceAcceleratorDeviceInfo>((accelerator) => ({
-          name: accelerator.Name,
-          manufacturer: accelerator.Manufacturer,
-          count: accelerator.Count,
-          memoryInfo: accelerator.MemoryInfo?.SizeInMiB ?
-            Size.mebibytes(accelerator.MemoryInfo.SizeInMiB)
-            : undefined,
-        })),
-        totalInferenceMemory: data.InferenceAcceleratorInfo?.TotalInferenceMemoryInMiB ?
-          Size.mebibytes(data.InferenceAcceleratorInfo?.TotalInferenceMemoryInMiB)
-          : undefined,
-      },
-      instanceStorageInfo: {
-        disks: data.InstanceStorageInfo?.Disks?.map<InstanceDiskInfo>((disk) => ({
-          count: disk.Count,
-          size: disk.SizeInGB ? Size.gibibytes(disk.SizeInGB) : undefined,
-          type: disk.Type as DiskType,
-        })),
-        totalStorage: data.InstanceStorageInfo?.TotalSizeInGB ?
-          Size.gibibytes(data.InstanceStorageInfo.TotalSizeInGB) :
-          undefined,
-      },
-      mediaAcceleratorInfo: {
-        accelerators: data.MediaAcceleratorInfo?.Accelerators?.map<MediaDeviceInfo>((accelerator) => ({
-          name: accelerator.Name,
-          manufacturer: accelerator.Manufacturer,
-          count: accelerator.Count,
-        })),
-        totalMediaMemory: data.MediaAcceleratorInfo?.TotalMediaMemoryInMiB ?
-          Size.mebibytes(data.MediaAcceleratorInfo?.TotalMediaMemoryInMiB)
-          : undefined,
-      },
       networkInfo: {
         defaultNetworkCardIndex: data.NetworkInfo?.DefaultNetworkCardIndex,
         maximumEfaInterfaces: data.NetworkInfo?.EfaInfo?.MaximumEfaInterfaces,
@@ -144,19 +93,6 @@ export class InstanceType {
           peakBandwidthInGbps: card.PeakBandwidthInGbps,
         })),
       },
-      neuronInfo: {
-        neurons: data.NeuronInfo?.NeuronDevices?.map<NeuronDeviceInfo>((neuron) => ({
-          name: neuron.Name,
-          count: neuron.CoreInfo?.Count,
-          version: neuron.CoreInfo?.Version,
-          memorySize: neuron.MemoryInfo?.SizeInMiB ?
-            Size.mebibytes(neuron.MemoryInfo?.SizeInMiB)
-            : undefined,
-        })),
-        totalNeuronMemory: data.NeuronInfo?.TotalNeuronDeviceMemoryInMiB ?
-          Size.mebibytes(data.NeuronInfo?.TotalNeuronDeviceMemoryInMiB)
-          : undefined,
-      },
       processorInfo: {
         manufacturer: data.ProcessorInfo?.Manufacturer,
         supportedArchitectures: data.ProcessorInfo?.SupportedArchitectures as InstanceArchitecture[] | undefined,
@@ -171,6 +107,96 @@ export class InstanceType {
         validThreadsPerCore: data.VCpuInfo?.ValidThreadsPerCore,
       },
     };
+
+    if (data.FpgaInfo?.Fpgas?.length) {
+      properties.fpgaInfo = {
+        fpgas: data.FpgaInfo.Fpgas.map<FpgaDeviceInfo>((fpga) => ({
+          name: fpga.Name,
+          count: fpga.Count,
+          manufacturer: fpga.Manufacturer,
+          memorySize: fpga.MemoryInfo?.SizeInMiB ? Size.mebibytes(fpga.MemoryInfo.SizeInMiB) : undefined,
+        })),
+        totalFpgaMemory: data.FpgaInfo.TotalFpgaMemoryInMiB ? Size.mebibytes(data.FpgaInfo.TotalFpgaMemoryInMiB) : undefined,
+      };
+    }
+
+    if (data.GpuInfo?.Gpus?.length) {
+      properties.gpuInfo = {
+        gpus: data.GpuInfo.Gpus.map<GpuDeviceInfo>((gpu) => ({
+          name: gpu.Name,
+          manufacturer: gpu.Manufacturer,
+          count: gpu.Count,
+          memorySize: gpu.MemoryInfo?.SizeInMiB ? Size.mebibytes(gpu.MemoryInfo.SizeInMiB) : undefined,
+        })),
+        totalGpuMemory: data.GpuInfo.TotalGpuMemoryInMiB ? Size.mebibytes(data.GpuInfo.TotalGpuMemoryInMiB) : undefined,
+      };
+    }
+
+    if (data.InferenceAcceleratorInfo?.Accelerators?.length) {
+      properties.inferenceAcceleratorInfo = {
+        accelerators: data.InferenceAcceleratorInfo.Accelerators.map<InferenceAcceleratorDeviceInfo>((accelerator) => ({
+          name: accelerator.Name,
+          manufacturer: accelerator.Manufacturer,
+          count: accelerator.Count,
+          memorySize: accelerator.MemoryInfo?.SizeInMiB ?
+            Size.mebibytes(accelerator.MemoryInfo.SizeInMiB)
+            : undefined,
+        })),
+        totalInferenceMemory: data.InferenceAcceleratorInfo.TotalInferenceMemoryInMiB ?
+          Size.mebibytes(data.InferenceAcceleratorInfo.TotalInferenceMemoryInMiB)
+          : undefined,
+      };
+    }
+
+    if (data.InstanceStorageInfo?.Disks?.length) {
+      properties.instanceStorageInfo = {
+        disks: data.InstanceStorageInfo.Disks.map<InstanceDiskInfo>((disk) => ({
+          count: disk.Count,
+          size: disk.SizeInGB ? Size.gibibytes(disk.SizeInGB) : undefined,
+          type: disk.Type as DiskType,
+        })),
+        totalStorage: data.InstanceStorageInfo.TotalSizeInGB ?
+          Size.gibibytes(data.InstanceStorageInfo.TotalSizeInGB) :
+          undefined,
+        encryptionRequired: data.InstanceStorageInfo.EncryptionSupport === 'required',
+        nvmeSupported: mapSupportedValue(data.InstanceStorageInfo.NvmeSupport, { supported: ['supported', 'required'] }),
+        nvmeRequired: data.InstanceStorageInfo.NvmeSupport === 'required',
+      };
+    }
+
+    if (data.MediaAcceleratorInfo?.Accelerators?.length) {
+      properties.mediaAcceleratorInfo = {
+        accelerators: data.MediaAcceleratorInfo.Accelerators.map<MediaDeviceInfo>((accelerator) => ({
+          name: accelerator.Name,
+          manufacturer: accelerator.Manufacturer,
+          count: accelerator.Count,
+          memorySize: accelerator.MemoryInfo?.SizeInMiB ?
+            Size.mebibytes(accelerator.MemoryInfo.SizeInMiB)
+            : undefined,
+        })),
+        totalMediaMemory: data.MediaAcceleratorInfo.TotalMediaMemoryInMiB ?
+          Size.mebibytes(data.MediaAcceleratorInfo.TotalMediaMemoryInMiB)
+          : undefined,
+      };
+    }
+
+    if (data.NeuronInfo?.NeuronDevices?.length) {
+      properties.neuronInfo = {
+        neurons: data.NeuronInfo.NeuronDevices.map<NeuronDeviceInfo>((neuron) => ({
+          name: neuron.Name,
+          count: neuron.CoreInfo?.Count,
+          version: neuron.CoreInfo?.Version,
+          memorySize: neuron.MemoryInfo?.SizeInMiB ?
+            Size.mebibytes(neuron.MemoryInfo?.SizeInMiB)
+            : undefined,
+        })),
+        totalNeuronMemory: data.NeuronInfo.TotalNeuronDeviceMemoryInMiB ?
+          Size.mebibytes(data.NeuronInfo.TotalNeuronDeviceMemoryInMiB)
+          : undefined,
+      };
+    }
+
+    return properties;
   };
 
   constructor(

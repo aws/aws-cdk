@@ -4,7 +4,7 @@ import { InstanceProfile, Role, ServicePrincipal } from '../../aws-iam';
 import { Key } from '../../aws-kms';
 import { Asset } from '../../aws-s3-assets';
 import { StringParameter } from '../../aws-ssm';
-import { App, Stack, Duration } from '../../core';
+import { App, Stack, Duration, Size } from '../../core';
 import * as cxapi from '../../cx-api';
 import {
   AmazonLinuxImage,
@@ -113,8 +113,8 @@ describe('instance', () => {
 
   test('identical instance types with alias', () => {
     // GIVEN
-    const instanceType = NamedInstanceType.R6ID_16XLARGE;
-    const instanceTypeAlias = NamedInstanceType.MEMORY6_INTEL_NVME_DRIVE_16XLARGE;
+    const instanceType = NamedInstanceType.R6ID_XLARGE16;
+    const instanceTypeAlias = NamedInstanceType.MEMORY6_INTEL_NVME_DRIVE_XLARGE16;
 
     // THEN
     expect(instanceTypeAlias.toString()).toBe(instanceType.toString());
@@ -122,10 +122,171 @@ describe('instance', () => {
 
   test('instance type from static initializer', () => {
     // GIVEN
-    const instanceType = NamedInstanceType.R6ID_16XLARGE;
+    const instanceType = NamedInstanceType.R6ID_XLARGE16;
 
     // THEN
-    expect(instanceType.instanceProperties?.freeTierEligible).toBe(false);
+    expect(instanceType.instanceProperties).toStrictEqual({
+      autoRecoverySupported: false,
+      bareMetal: false,
+      burstablePerformanceSupported: false,
+      currentGeneration: true,
+      dedicatedHostsSupported: true,
+      ebsInfo: {
+        ebsOptimizedInfo: {
+          baselineBandwidthInMbps: 20000,
+          baselineIops: 80000,
+          baselineThroughputInMBps: 2500,
+          maximumBandwidthInMbps: 20000,
+          maximumIops: 80000,
+          maximumThroughputInMBps: 2500,
+        },
+        ebsOptimizedSupported: true,
+        ebsOptimizedSupportedByDefault: true,
+        encryptionSupported: true,
+        nvmeRequired: true,
+        nvmeSupported: true,
+      },
+      freeTierEligible: false,
+      hibernationSupported: false,
+      hypervisor: 'nitro',
+      instanceStorageInfo: {
+        disks: [
+          {
+            count: 2,
+            size: Size.gibibytes(1900),
+            type: 'ssd',
+          },
+        ],
+        totalStorage: Size.gibibytes(3800),
+        encryptionRequired: true,
+        nvmeSupported: true,
+        nvmeRequired: true,
+      },
+      instanceStorageSupported: true,
+      memorySize: Size.mebibytes(524288),
+      networkInfo: {
+        defaultNetworkCardIndex: 0,
+        efaSupported: false,
+        enaSrdSupported: true,
+        enaSupported: undefined,
+        enaSupportedByDefault: true,
+        encryptionInTransitSupported: true,
+        ipv4AddressesPerInterface: 50,
+        ipv6AddressesPerInterface: 50,
+        ipv6Supported: true,
+        maximumEfaInterfaces: undefined,
+        maximumNetworkCards: 1,
+        maximumNetworkInterfaces: 15,
+        networkCards: [
+          {
+            baselineBandwidthInGbps: 25,
+            maximumNetworkInterfaces: 15,
+            networkCardIndex: 0,
+            networkPerformance: '25 Gigabit',
+            peakBandwidthInGbps: 25,
+          },
+        ],
+        networkPerformance: '25 Gigabit',
+      },
+      nitroEnclavesSupported: true,
+      nitroTpmSupported: true,
+      phcSupported: false,
+      processorInfo: {
+        manufacturer: 'Intel',
+        supportedArchitectures: ['x86_64'],
+        supportedFeatures: undefined,
+        sustainedClockSpeedInGhz: 3.5,
+      },
+      supportedBootModes: ['legacy-bios', 'uefi'],
+      supportedNitroTpmVersions: ['2.0'],
+      supportedPlacementGroupStrategies: ['cluster', 'partition', 'spread'],
+      supportedRootDeviceTypes: ['ebs'],
+      supportedUsageClasses: ['on-demand', 'spot'],
+      supportedVirtualizationTypes: ['hvm'],
+      vCpuInfo: {
+        defaultCores: 32,
+        defaultThreadsPerCore: 2,
+        defaultVCpus: 64,
+        validCores: [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32],
+        validThreadsPerCore: [1, 2],
+      },
+    });
+  });
+
+  test('instance type optional properties', () => {
+    expect(NamedInstanceType.F1_XLARGE16.instanceProperties?.fpgaInfo).toStrictEqual(({
+      fpgas: [
+        {
+          count: 8,
+          name: 'Virtex UltraScale (VU9P)',
+          manufacturer: 'Xilinx',
+          memorySize: Size.mebibytes(65536),
+        },
+      ],
+      totalFpgaMemory: Size.mebibytes(524288),
+    }));
+
+    expect(NamedInstanceType.P2_XLARGE16.instanceProperties?.gpuInfo).toStrictEqual(({
+      gpus: [
+        {
+          count: 16,
+          name: 'K80',
+          manufacturer: 'NVIDIA',
+          memorySize: Size.mebibytes(12288),
+        },
+      ],
+      totalGpuMemory: Size.mebibytes(196608),
+    }));
+
+    expect(NamedInstanceType.INF1_XLARGE24.instanceProperties?.inferenceAcceleratorInfo).toStrictEqual(({
+      accelerators: [
+        {
+          count: 16,
+          name: 'Inferentia',
+          manufacturer: 'AWS',
+          memorySize: Size.mebibytes(8192),
+        },
+      ],
+      totalInferenceMemory: Size.mebibytes(131072),
+    }));
+
+    expect(NamedInstanceType.IS4GEN_XLARGE2.instanceProperties?.instanceStorageInfo).toStrictEqual(({
+      disks: [
+        {
+          count: 1,
+          type: 'ssd',
+          size: Size.gibibytes(7500),
+        },
+      ],
+      totalStorage: Size.gibibytes(7500),
+      encryptionRequired: true,
+      nvmeSupported: true,
+      nvmeRequired: true,
+    }));
+
+    expect(NamedInstanceType.VT1_XLARGE24.instanceProperties?.mediaAcceleratorInfo).toStrictEqual(({
+      accelerators: [
+        {
+          count: 8,
+          name: 'U30',
+          manufacturer: 'Xilinx',
+          memorySize: Size.mebibytes(24576),
+        },
+      ],
+      totalMediaMemory: Size.mebibytes(196608),
+    }));
+
+    expect(NamedInstanceType.INF1_XLARGE24.instanceProperties?.neuronInfo).toStrictEqual(({
+      neurons: [
+        {
+          count: 4,
+          version: 1,
+          name: 'Inferentia',
+          memorySize: Size.mebibytes(8192),
+        },
+      ],
+      totalNeuronMemory: Size.mebibytes(131072),
+    }));
   });
 
   test.each(Object.values(NamedInstanceType))('named instance "%s" should have instanceProperties', (namedInstanceType: InstanceType) => {

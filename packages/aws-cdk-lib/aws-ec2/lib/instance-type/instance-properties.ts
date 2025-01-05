@@ -519,6 +519,32 @@ export interface InstanceStorageInfo {
    * @default - not specified
    */
   readonly totalStorage?: Size;
+
+  /**
+   * If true, the instance storage will be encrypted at rest
+   *
+   * @default - not specified
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html
+   */
+  readonly encryptionRequired?: boolean;
+
+  /**
+   * If true, the instance storage supports non-volatile memory express (NVMe)
+   *
+   * @default - not specified
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/nvme-ebs-volumes.html
+   */
+  readonly nvmeSupported?: boolean;
+
+  /**
+   * If true, this non-volatile memory express (NVMe) volume
+   * is required to be attached at launch.
+   * These are local NVMe-based SSDs, physically connected to the host server
+   *
+   * @default - not specified
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/nvme-ebs-volumes.html
+   */
+  readonly nvmeRequired?: boolean;
 }
 
 /**
