@@ -1,4 +1,3 @@
-
 /**
  * What size of instance to use
  */
@@ -112,6 +111,16 @@ export enum InstanceSize {
    * Instance size XLARGE112 (112xlarge)
    */
   XLARGE112 = '112xlarge',
+
+  /**
+   * Instance size XLARGE224 (224xlarge)
+   */
+  XLARGE224 = '224xlarge',
+
+  /**
+   * Instance size XLARGE480 (480xlarge)
+   */
+  XLARGE480 = '480xlarge',
 
   /**
    * Instance size METAL (metal)
