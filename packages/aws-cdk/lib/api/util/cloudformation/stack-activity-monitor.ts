@@ -196,7 +196,7 @@ export class StackActivityMonitor {
 
       this.printer.print();
     } catch (e) {
-      error('Error occurred while monitoring stack: %s', String(e));
+      error('Error occurred while monitoring stack: %s', e);
     }
     this.scheduleNextTick();
   }
@@ -627,7 +627,7 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
    */
   public readonly updateSleep: number = 2_000;
 
-  private oldLogLevel: IoMessageLevel = 'info';
+  private oldLogThreshold: IoMessageLevel = 'info';
   private block = new RewritableBlock(this.stream);
 
   constructor(props: PrinterProps) {
@@ -679,7 +679,7 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
   }
 
   public stop() {
-    setIoMessageThreshold(this.oldLogLevel);
+    setIoMessageThreshold(this.oldLogThreshold);
 
     // Print failures at the end
     const lines = new Array<string>();

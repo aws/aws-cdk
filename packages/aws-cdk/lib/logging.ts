@@ -1,11 +1,10 @@
-import { Writable } from 'stream';
 import * as util from 'util';
 import * as chalk from 'chalk';
 import { IoMessageLevel, IoMessage, CliIoHost, validateMessageCode } from './toolkit/cli-io-host';
 
 // Corking mechanism
 let CORK_COUNTER = 0;
-const logBuffer: [Writable, string][] = [];
+const logBuffer: IoMessage[] = [];
 
 const levelPriority: Record<IoMessageLevel, number> = {
   ['error']: 0,
@@ -47,13 +46,16 @@ export async function withCorkedLogging<T>(block: () => Promise<T>): Promise<T> 
   } finally {
     CORK_COUNTER--;
     if (CORK_COUNTER === 0) {
-      logBuffer.forEach(([stream, str]) => stream.write(str + '\n'));
+      // Process each buffered message through notify
+      for (const ioMessage of logBuffer) {
+        void CliIoHost.getIoHost().notify(ioMessage);
+      }
       logBuffer.splice(0);
     }
   }
 }
 
-export interface LogOptions {
+interface LogOptions {
   /**
    * The log level to use
    */
@@ -68,20 +70,18 @@ export interface LogOptions {
    */
   forceStdout?: boolean;
   /**
-   * Message code in format [A-Z]+_[0-9]{4}
-   * If not provided, defaults based on level:
-   * - error: TOOLKIT_0000
-   * - warn: TOOLKIT_1000
-   * - info/debug/trace: TOOLKIT_2000
-   */
+ * Message code of the format [CATEGORY]_[NUMBER_CODE]
+ * @pattern [A-Z]+_[0-2][0-9]{3}
+ * @default TOOLKIT_[0/1/2]000
+ */
   code?: string;
 }
 
 /**
- * Core logging function that writes messages through the CLI IO host.
+ * Internal core logging function that writes messages through the CLI IO host.
  * @param options Configuration options for the log message. See  {@link LogOptions}
  */
-export function log(options: LogOptions) {
+function log(options: LogOptions) {
   if (levelPriority[options.level] > levelPriority[currentIoMessageThreshold]) {
     return;
   }
@@ -94,13 +94,6 @@ export function log(options: LogOptions) {
     options.code = `TOOLKIT_${Math.min(levelPriority[options.level] - 1, 2)}000`;
   }
 
-  const stream = CliIoHost.getStream(options.level, options.forceStdout ?? false);
-
-  if (CORK_COUNTER > 0) {
-    logBuffer.push([stream, options.message]);
-    return;
-  }
-
   const ioMessage: IoMessage = {
     level: options.level,
     message: options.message,
@@ -110,114 +103,116 @@ export function log(options: LogOptions) {
     code: options.code,
   };
 
+  if (CORK_COUNTER > 0) {
+    logBuffer.push(ioMessage);
+    return;
+  }
+
   void CliIoHost.getIoHost().notify(ioMessage);
 }
 
 /**
  * Internal helper for formatting and logging messages with consistent behavior.
- * @param level Message severity level
- * @param forceStdout Whether to force stdout output
- * @param fmt Format string or message code
- * @param style Optional styling function to apply to the message
- * @param args If fmt is a message code: [formatString, ...formatArgs], otherwise: format arguments
+ * Supports both string interpolation and object parameter styles.
  */
 function convenienceLog(
   level: IoMessageLevel,
   forceStdout = false,
-  fmt: string,
+  input: LogInput,
   style?: (str: string) => string,
   ...args: unknown[]
 ): void {
-  let message: string;
-  let code: string | undefined;
+  // Extract message and code from input
+  const { message, code = `TOOLKIT_${getCodeLevel(level)}000` } = typeof input === 'object'
+    ? input
+    : { message: input, code: undefined };
 
-  if (args.length === 0) {
-    message = fmt;
-  } else {
-    // Check if the first argument is a message code, if so use it as the code and format the rest.
-    if (validateMessageCode(fmt)) {
-      code = fmt;
-      message = String(args[0]);
-      if (args.length > 1) {
-        try {
-          message = util.format(String(args[0]), ...args.slice(1));
-        } catch (e) {
-          throw new Error(`Invalid format string formatting for args ${fmt} ${args}\n${e}`);
-        }
-      }
-    // Otherwise, format fmt with args
-    } else {
-      try {
-        message = util.format(fmt, ...args);
-      } catch (e) {
-        throw new Error(`Invalid format string formatting for args ${fmt} ${args}\n${e}`);
-      }
-    }
+  // Format message if args are provided
+  const formattedMessage = args.length > 0
+    ? util.format(message, ...args)
+    : message;
+
+  // Validate code if provided
+  if (code && !validateMessageCode(code)) {
+    throw new Error(`Invalid message code: ${code}`);
   }
-  if (style) {
-    message = style(message);
-  }
+
+  // Apply style if provided
+  const finalMessage = style ? style(formattedMessage) : formattedMessage;
 
   log({
     level,
-    message,
+    message: finalMessage,
     code,
     forceStdout,
   });
 }
 
+function getCodeLevel(level: IoMessageLevel): number {
+  if (level === 'error') {
+    return 0;
+  } else if (level === 'warn') {
+    return 1;
+  } else {
+    return 2;
+  }
+}
+
+// Type for the object parameter style
+interface LogParams {
+  /**
+   * @see {@link IoMessage.code}
+   */
+  code?: string;
+  /**
+   * @see {@link IoMessage.message}
+   */
+  message: string;
+}
+
+// Type for the convenience function arguments
+type LogInput = string | LogParams;
+
+//
 /**
  * Logs an error level message.
  *
- * Can optionally specify a message code by passing it as the first argument.
- * The remaining arguments are used for string formatting. See {@link validateMessageCode} for message code format.
- *
- * Can be used in any of the following ways:
+ * Can be used in multiple ways:
  * ```ts
- * error(`operation failed: ${e}`)                        // error message with default error level code TOOLKIT_0000
- * error('operation failed: %s', e)                       // error message with default error level code TOOLKIT_0000
- * error('TOOLKIT_0002', `validation failed: ${reason}`)  // error message with specified error level code TOOLKIT_0002
- * error('TOOLKIT_0002', 'validation failed: %s', reason) // error message with specified error level code TOOLKIT_0002
+ * error(`operation failed: ${e}`)                        // string interpolation
+ * error('operation failed: %s', e)                       // format string
+ * error({ message: 'operation failed', code: 'ERR_001' }) // object style
+ * error({ message: 'operation failed: %s', code: 'ERR_001' }, e) // object with formatting
  * ```
  */
-export const error = (fmt: string, ...args: unknown[]) => {
-  return convenienceLog('error', false, fmt, undefined, ...args);
+export const error = (input: LogInput, ...args: unknown[]) => {
+  return convenienceLog('error', false, input, undefined, ...args);
 };
 
 /**
  * Logs a warning level message.
  *
- * Can optionally specify a message code by passing it as the first argument.
- * The remaining arguments are used for string formatting. See {@link validateMessageCode} for message code format.
- *
- * Can be used in any of the following ways:
+ * Can be used in multiple ways:
  * ```ts
- * warning(`deprecated feature used: ${name}`)           // warning message with default warning level code TOOLKIT_1000
- * warning('deprecated feature used: %s', name)          // warning message with default warning level code TOOLKIT_1000
- * warning('TOOLKIT_1002', `missing config: ${key}`)     // warning message with specified warning level code TOOLKIT_1002
- * warning('TOOLKIT_1002', 'missing config: %s', key)    // warning message with specified warning level code TOOLKIT_1002
+ * warning(`deprecated feature: ${name}`)                 // string interpolation
+ * warning({ message: 'deprecated feature', code: 'WARN_001' }) // object style
  * ```
  */
-export const warning = (fmt: string, ...args: unknown[]) => {
-  convenienceLog('warn', false, fmt, undefined, ...args);
+export const warning = (input: LogInput, ...args: unknown[]) => {
+  return convenienceLog('warn', false, input, undefined, ...args);
 };
 
 /**
  * Logs an info level message.
  *
- * Can optionally specify a message code by passing it as the first argument.
- * The remaining arguments are used for string formatting. See {@link validateMessageCode} for message code format.
- *
- * Can be used in any of the following ways:
+ * Can be used in multiple ways:
  * ```ts
- * info(`processing item: ${id}`)                       // info message with default info level code TOOLKIT_2000
- * info('processing item: %s', id)                      // info message with default info level code TOOLKIT_2000
- * info('TOOLKIT_2002', `starting task: ${name}`)       // info message with specified info level code TOOLKIT_2002
- * info('TOOLKIT_2002', 'starting task: %s', name)      // info message with specified info level code TOOLKIT_2002
+ * info(`processing: ${id}`)                            // string interpolation
+ * info({ message: 'processing', code: 'INFO_001' })    // object style
  * ```
  */
-export const info = (fmt: string, ...args: unknown[]) => {
-  convenienceLog('info', false, fmt, undefined, ...args);
+export const info = (input: LogInput, ...args: unknown[]) => {
+  return convenienceLog('info', false, input, undefined, ...args);
 };
 
 /** Alias for the {@link info} logging function */
@@ -226,89 +221,64 @@ export const print = info;
 /**
  * Logs an info level message to stdout.
  *
- * Can optionally specify a message code by passing it as the first argument.
- * The remaining arguments are used for string formatting. See {@link validateMessageCode} for message code format.
- *
- * Can be used in any of the following ways:
+ * Can be used in multiple ways:
  * ```ts
- * data(`operation stats: ${stats}`)                     // info message with default info level code TOOLKIT_2000
- * data('operation stats: %j', stats)                    // info message with default info level code TOOLKIT_2000
- * data('TOOLKIT_2002', `runtime metrics: ${metrics}`)   // info message with specified info level code TOOLKIT_2002
- * data('TOOLKIT_2002', 'runtime metrics: %j', metrics)  // info message with specified info level code TOOLKIT_2002
+ * data(`stats: ${stats}`)                            // string interpolation
+ * data({ message: 'stats: %j', code: 'DATA_001' }, stats) // object style with formatting
  * ```
  */
-export const data = (fmt: string, ...args: unknown[]) => {
-  convenienceLog('info', true, fmt, undefined, ...args);
+export const data = (input: LogInput, ...args: unknown[]) => {
+  return convenienceLog('info', true, input, undefined, ...args);
 };
 
 /**
  * Logs a debug level message.
  *
- * Can optionally specify a message code by passing it as the first argument.
- * The remaining arguments are used for string formatting. See {@link validateMessageCode} for message code format.
- *
- * Can be used in any of the following ways:
+ * Can be used in multiple ways:
  * ```ts
- * debug(`internal state: ${state}`)                     // debug message with default info level code TOOLKIT_2000
- * debug('internal state: %j', state)                    // debug message with default info level code TOOLKIT_2000
- * debug('TOOLKIT_2002', `call details: ${details}`)     // debug message with specified info level code TOOLKIT_2002
- * debug('TOOLKIT_2002', 'call details: %j', details)    // debug message with specified info level code TOOLKIT_2002
+ * debug(`state: ${state}`)                            // string interpolation
+ * debug({ message: 'state update', code: 'DBG_001' }) // object style
  * ```
  */
-export const debug = (fmt: string, ...args: unknown[]) => {
-  convenienceLog('debug', false, fmt, undefined, ...args);
+export const debug = (input: LogInput, ...args: unknown[]) => {
+  return convenienceLog('debug', false, input, undefined, ...args);
 };
 
 /**
  * Logs a trace level message.
  *
- * Can optionally specify a message code by passing it as the first argument.
- * The remaining arguments are used for string formatting. See {@link validateMessageCode} for message code format.
- *
- * Can be used in any of the following ways:
+ * Can be used in multiple ways:
  * ```ts
- * trace(`function entered: ${name}`)                    // trace message with default info level code TOOLKIT_2000
- * trace('function entered: %s', name)                   // trace message with default info level code TOOLKIT_2000
- * trace('TOOLKIT_2002', `method called: ${method}`)     // trace message with specified info level code TOOLKIT_2002
- * trace('TOOLKIT_2002', 'method called: %s', method)    // trace message with specified info level code TOOLKIT_2002
+ * trace(`entered: ${name}`)                           // string interpolation
+ * trace({ message: 'entered', code: 'TRACE_001' })    // object style
  * ```
  */
-export const trace = (fmt: string, ...args: unknown[]) => {
-  convenienceLog('trace', false, fmt, undefined, ...args);
+export const trace = (input: LogInput, ...args: unknown[]) => {
+  return convenienceLog('trace', false, input, undefined, ...args);
 };
 
 /**
- * Logs an info level message in green text.
+ * Logs an info level success message in green text.
  *
- * Can optionally specify a message code by passing it as the first argument.
- * The remaining arguments are used for string formatting. See {@link validateMessageCode} for message code format.
- *
- * Can be used in any of the following ways:
+ * Can be used in multiple ways:
  * ```ts
- * success(`operation completed: ${name}`)               // green info message with default info level code TOOLKIT_2000
- * success('operation completed: %s', name)              // green info message with default info level code TOOLKIT_2000
- * success('TOOLKIT_2002', `task finished: ${task}`)     // green info message with specified info level code TOOLKIT_2002
- * success('TOOLKIT_2002', 'task finished: %s', task)    // green info message with specified info level code TOOLKIT_2002
+ * success(`completed: ${name}`)                       // string interpolation
+ * success({ message: 'completed', code: 'SUC_001' })  // object style
  * ```
  */
-export const success = (fmt: string, ...args: unknown[]) => {
-  convenienceLog('info', false, fmt, chalk.green, ...args);
+export const success = (input: LogInput, ...args: unknown[]) => {
+  return convenienceLog('info', false, input, chalk.green, ...args);
 };
 
 /**
  * Logs an info level message in bold text.
  *
- * Can optionally specify a message code by passing it as the first argument.
- * The remaining arguments are used for string formatting. See {@link validateMessageCode} for message code format.
- *
- * Can be used in any of the following ways:
+ * Can be used in multiple ways:
  * ```ts
- * highlight(`important update: ${message}`)              // bold info message with default info level code TOOLKIT_2000
- * highlight('important update: %s', message)             // bold info message with default info level code TOOLKIT_2000
- * highlight('TOOLKIT_2002', `critical info: ${info}`)    // bold info message with specified info level code TOOLKIT_2002
- * highlight('TOOLKIT_2002', 'critical info: %s', info)   // bold info message with specified info level code TOOLKIT_2002
+ * highlight(`important: ${msg}`)                      // string interpolation
+ * highlight({ message: 'important', code: 'HIGH_001' }) // object style
  * ```
  */
-export const highlight = (fmt: string, ...args: unknown[]) => {
-  convenienceLog('info', false, fmt, chalk.bold, ...args);
+export const highlight = (input: LogInput, ...args: unknown[]) => {
+  return convenienceLog('info', false, input, chalk.bold, ...args);
 };

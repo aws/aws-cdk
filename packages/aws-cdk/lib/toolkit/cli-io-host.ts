@@ -21,7 +21,21 @@ export interface IoMessage {
   readonly action: IoAction;
 
   /**
-   * A short code uniquely identifying message type.
+   * A short message code uniquely identifying a message type of the format
+   * All 'error' level message codes begin with 0.
+   * All warning level message codes begin with 1.
+   * All info level message codes begin with 2.
+   *
+   * Codes ending in 000 are generic messages, while codes ending in 001-999 are specific to a particular message.
+   * The following are examples of valid and invalid message codes:
+   * ```ts
+   * 'ASSETS_2000'            // valid cdk-assets info message with generic info code _2000
+   * 'TOOLKIT_0002'           // valid toolkit error message with specific error code _0002
+   * 'SDK_1023'               // valid sdk warning message with specific warning code _1023
+   * 'sdk_0001'               // invalid: lowercase
+   * 'TOOLKIT-0001'           // invalid: invalid separator
+   * 'SDK_3000'               // invalid: all error codes must be between 0000 and 2999
+   * ```
    */
   readonly code: string;
 
@@ -169,22 +183,7 @@ export class CliIoHost {
 }
 
 /**
-   * Validates a message code. Message codes are used to identify the type of message
-   * being logged, and are of the format [A-Z]+_[0-2]\d{3}.
-   *
-   * All error codes begin with 0, warning codes begin with 1, and info codes begin with 2.
-   * codes ending in 000 are generic messages, while codes ending in 001-999 are specific to
-   * a particular message.
-   *
-   * The following are examples of valid and invalid message codes:
-   * ```ts
-   * 'ASSETS_2000'            // valid cdk-assets info message with generic message code _2000
-   * 'TOOLKIT_0002'           // valid toolkit error message with specific error code _0002
-   * 'SDK_1023'               // valid sdk warning message with specific warning code _1023
-   * 'sdk_0001'               // invalid: lowercase
-   * 'TOOLKIT-0001'           // invalid: invalid separator
-   * 'SDK_3000'               // invalid: all error codes must be between 0000 and 2999
-   * ```
+   * Validates a message code. See {@link IoMessage.code} for more information.
   */
 export function validateMessageCode(code: string): boolean {
   // Matches pattern like SDK_0001, TOOLKIT_1000, etc.
