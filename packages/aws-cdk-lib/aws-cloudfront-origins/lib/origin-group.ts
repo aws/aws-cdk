@@ -27,7 +27,7 @@ export interface OriginGroupProps {
    *
    * @default - nothing is returned
    */
-  readonly selectionCriteria?: cloudfront.OriginGroupSelectionCriteria;
+  readonly selectionCriteria?: cloudfront.OriginSelectionCriteria;
 }
 
 /**

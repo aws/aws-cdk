@@ -18,7 +18,7 @@ const originGroup = new origins.OriginGroup({
   primaryOrigin: new origins.HttpOrigin(channelGroup.attrEgressDomain),
   fallbackOrigin: new origins.HttpOrigin(channelGroup2.attrEgressDomain),
   fallbackStatusCodes: [404],
-  selectionCriteria: cloudfront.OriginGroupSelectionCriteria.MEDIA_QUALITY_BASED,
+  selectionCriteria: cloudfront.OriginSelectionCriteria.MEDIA_QUALITY_BASED,
 });
 
 new cloudfront.Distribution(stack, 'Distribution', {

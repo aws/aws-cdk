@@ -7,7 +7,7 @@ import { Duration, Token } from '../../core';
  *
  * @default - none
  */
-export enum OriginGroupSelectionCriteria {
+export enum OriginSelectionCriteria {
   /**
    * Default selection behavior.
    */
@@ -55,7 +55,7 @@ export interface OriginBindConfig {
    *
    * @default - nothing is returned
    */
-  readonly selectionCriteria?: OriginGroupSelectionCriteria;
+  readonly selectionCriteria?: OriginSelectionCriteria;
 }
 
 /**

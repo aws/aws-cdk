@@ -4,7 +4,7 @@ import { CfnDistribution, CfnMonitoringSubscription } from './cloudfront.generat
 import { FunctionAssociation } from './function';
 import { GeoRestriction } from './geo-restriction';
 import { IKeyGroup } from './key-group';
-import { IOrigin, OriginBindConfig, OriginBindOptions, OriginGroupSelectionCriteria } from './origin';
+import { IOrigin, OriginBindConfig, OriginBindOptions, OriginSelectionCriteria } from './origin';
 import { IOriginRequestPolicy } from './origin-request-policy';
 import { CacheBehavior } from './private/cache-behavior';
 import { formatDistributionArn } from './private/utils';
@@ -686,7 +686,7 @@ export class Distribution extends Resource implements IDistribution {
   private addOriginGroup(originGroupId: string,
     statusCodes: number[] | undefined,
     originId: string, failoverOriginId: string,
-    selectionCriteria: OriginGroupSelectionCriteria | undefined): void {
+    selectionCriteria: OriginSelectionCriteria | undefined): void {
     statusCodes = statusCodes ?? [500, 502, 503, 504];
     if (statusCodes.length === 0) {
       throw new Error('fallbackStatusCodes cannot be empty');

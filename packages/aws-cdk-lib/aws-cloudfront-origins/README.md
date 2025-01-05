@@ -610,7 +610,7 @@ new cloudfront.Distribution(this, 'myDist', {
       primaryOrigin: new origins.HttpOrigin("<AWS Elemental MediaPackageV2 origin 1>"),
       fallbackOrigin: new origins.HttpOrigin("<AWS Elemental MediaPackageV2 origin 2>"),
       fallbackStatusCodes: [404],
-      selectionCriteria: cloudfront.OriginGroupSelectionCriteria.MEDIA_QUALITY_BASED,
+      selectionCriteria: cloudfront.OriginSelectionCriteria.MEDIA_QUALITY_BASED,
     }),
   },
 });
