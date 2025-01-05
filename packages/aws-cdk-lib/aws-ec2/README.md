@@ -1264,7 +1264,6 @@ new ec2.Instance(this, 'Instance', {
     cpuType: ec2.AmazonLinuxCpuType.ARM_64,
   }),
 });
-
 ```
 
 ### Latest Amazon Linux Images
