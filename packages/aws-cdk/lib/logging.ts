@@ -166,7 +166,7 @@ interface LogParams {
   message: string;
 }
 
-// Type for the convenience function arguments
+// Type for the exported log function arguments
 type LogInput = string | LogParams;
 
 // Exported logging functions. If any additional logging functionality is required, it should be added as
