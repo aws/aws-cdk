@@ -35,7 +35,7 @@ export function setCI(newCI: boolean) {
 
 /**
  * Executes a block of code with corked logging. All log messages during execution
- * are buffered and only written after the block completes.
+ * are buffered and only written when all nested cork blocks complete (when CORK_COUNTER reaches 0).
  * @param block - Async function to execute with corked logging
  * @returns Promise that resolves with the block's return value
  */
@@ -87,7 +87,7 @@ function log(options: LogOptions) {
   }
 
   if (options.code) {
-    if (!validateMessageCode(options.code)) {
+    if (!validateMessageCode(options.code, options.level)) {
       throw new Error(`Invalid message code: ${options.code}`);
     }
   } else {
@@ -133,7 +133,7 @@ function convenienceLog(
     : message;
 
   // Validate code if provided
-  if (code && !validateMessageCode(code)) {
+  if (code && !validateMessageCode(code, level)) {
     throw new Error(`Invalid message code: ${code}`);
   }
 

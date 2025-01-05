@@ -34,7 +34,7 @@ export interface IoMessage {
    * 'SDK_1023'               // valid sdk warning message with specific warning code _1023
    * 'sdk_0001'               // invalid: lowercase
    * 'TOOLKIT-0001'           // invalid: invalid separator
-   * 'SDK_3000'               // invalid: all error codes must be between 0000 and 2999
+   * 'SDK_3000'               // invalid: all message codes must be between 0000 and 2999
    * ```
    */
   readonly code: string;
@@ -183,12 +183,47 @@ export class CliIoHost {
 }
 
 /**
-   * Validates a message code. See {@link IoMessage.code} for more information.
-  */
-export function validateMessageCode(code: string): boolean {
-  // Matches pattern like SDK_0001, TOOLKIT_1000, etc.
-  const pattern = /^[A-Z]+_[0-2]\d{3}$/;
-  return pattern.test(code);
+ * Validates a message code. The code must:
+ * - Be in the format [A-Z]+_[0-2][0-9]{3}
+ * - Have a numeric prefix that matches the message level:
+ *   - Error level codes must begin with 0
+ *   - Warning level codes must begin with 1
+ *   - Info/debug/trace level codes must begin with 2
+ *
+ * @param code The message code to validate
+ * @param level The IoMessageLevel of the message
+ * @returns boolean indicating if the code is valid for the given level
+ */
+export function validateMessageCode(code: string, level?: IoMessageLevel): boolean {
+  // Basic format validation
+  const pattern = /^[A-Z]+_([0-2])\d{3}$/;
+  const match = code.match(pattern);
+
+  if (!match) {
+    return false;
+  }
+
+  // If no level is provided, only validate the format
+  if (!level) {
+    return true;
+  }
+
+  // Extract the level number from the code
+  const levelNum = parseInt(match[1]);
+
+  // Validate level-specific prefix
+  switch (level) {
+    case 'error':
+      return levelNum === 0;
+    case 'warn':
+      return levelNum === 1;
+    case 'info':
+    case 'debug':
+    case 'trace':
+      return levelNum === 2;
+    default:
+      return false;
+  }
 }
 
 export const styleMap: Record<IoMessageLevel, (str: string) => string> = {
