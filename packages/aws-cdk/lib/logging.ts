@@ -112,10 +112,11 @@ function log(options: LogOptions) {
 }
 
 /**
- * Internal helper for formatting and logging messages with consistent behavior.
- * Supports both string interpolation and object parameter styles.
+ * Internal helper that processes log inputs into a consistent format.
+ * Handles string interpolation, format strings, and object parameter styles.
+ * Applies optional styling and prepares the final message for logging.
  */
-function convenienceLog(
+function formatLogMessage(
   level: IoMessageLevel,
   forceStdout = false,
   input: LogInput,
@@ -131,11 +132,6 @@ function convenienceLog(
   const formattedMessage = args.length > 0
     ? util.format(message, ...args)
     : message;
-
-  // Validate code if provided
-  if (code && !validateMessageCode(code, level)) {
-    throw new Error(`Invalid message code: ${code}`);
-  }
 
   // Apply style if provided
   const finalMessage = style ? style(formattedMessage) : formattedMessage;
@@ -173,7 +169,8 @@ interface LogParams {
 // Type for the convenience function arguments
 type LogInput = string | LogParams;
 
-//
+// Exported logging functions. If any additional logging functionality is required, it should be added as
+// a new logging function here.
 /**
  * Logs an error level message.
  *
@@ -186,7 +183,7 @@ type LogInput = string | LogParams;
  * ```
  */
 export const error = (input: LogInput, ...args: unknown[]) => {
-  return convenienceLog('error', false, input, undefined, ...args);
+  return formatLogMessage('error', false, input, undefined, ...args);
 };
 
 /**
@@ -199,7 +196,7 @@ export const error = (input: LogInput, ...args: unknown[]) => {
  * ```
  */
 export const warning = (input: LogInput, ...args: unknown[]) => {
-  return convenienceLog('warn', false, input, undefined, ...args);
+  return formatLogMessage('warn', false, input, undefined, ...args);
 };
 
 /**
@@ -212,7 +209,7 @@ export const warning = (input: LogInput, ...args: unknown[]) => {
  * ```
  */
 export const info = (input: LogInput, ...args: unknown[]) => {
-  return convenienceLog('info', false, input, undefined, ...args);
+  return formatLogMessage('info', false, input, undefined, ...args);
 };
 
 /** Alias for the {@link info} logging function */
@@ -228,7 +225,7 @@ export const print = info;
  * ```
  */
 export const data = (input: LogInput, ...args: unknown[]) => {
-  return convenienceLog('info', true, input, undefined, ...args);
+  return formatLogMessage('info', true, input, undefined, ...args);
 };
 
 /**
@@ -241,7 +238,7 @@ export const data = (input: LogInput, ...args: unknown[]) => {
  * ```
  */
 export const debug = (input: LogInput, ...args: unknown[]) => {
-  return convenienceLog('debug', false, input, undefined, ...args);
+  return formatLogMessage('debug', false, input, undefined, ...args);
 };
 
 /**
@@ -254,7 +251,7 @@ export const debug = (input: LogInput, ...args: unknown[]) => {
  * ```
  */
 export const trace = (input: LogInput, ...args: unknown[]) => {
-  return convenienceLog('trace', false, input, undefined, ...args);
+  return formatLogMessage('trace', false, input, undefined, ...args);
 };
 
 /**
@@ -267,7 +264,7 @@ export const trace = (input: LogInput, ...args: unknown[]) => {
  * ```
  */
 export const success = (input: LogInput, ...args: unknown[]) => {
-  return convenienceLog('info', false, input, chalk.green, ...args);
+  return formatLogMessage('info', false, input, chalk.green, ...args);
 };
 
 /**
@@ -280,5 +277,5 @@ export const success = (input: LogInput, ...args: unknown[]) => {
  * ```
  */
 export const highlight = (input: LogInput, ...args: unknown[]) => {
-  return convenienceLog('info', false, input, chalk.bold, ...args);
+  return formatLogMessage('info', false, input, chalk.bold, ...args);
 };
