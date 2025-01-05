@@ -26,9 +26,9 @@ export async function renderCliArgsType(config: CliConfig): Promise<string> {
 
   cliArgType.addProperty({
     name: '_',
-    type: Type.ambient(`[${commandEnum}, ...string[]]`),
+    type: commandEnum,
     docs: {
-      summary: 'The CLI command name followed by any properties of the command',
+      summary: 'The CLI command name',
     },
   });
 
@@ -73,6 +73,7 @@ export async function renderCliArgsType(config: CliConfig): Promise<string> {
       },
     });
 
+    // add command level options
     for (const [optionName, option] of Object.entries(command.options ?? {})) {
       commandType.addProperty({
         name: kebabToCamelCase(optionName),
@@ -83,6 +84,18 @@ export async function renderCliArgsType(config: CliConfig): Promise<string> {
           summary: option.desc,
           deprecated: option.deprecated ? String(option.deprecated) : undefined,
           remarks: option.alias ? `aliases: ${Array.isArray(option.alias) ? option.alias.join(' ') : option.alias}` : undefined,
+        },
+        optional: true,
+      });
+    }
+
+    // add positional argument associated with the command
+    if (command.arg) {
+      commandType.addProperty({
+        name: command.arg.name,
+        type: command.arg.variadic ? Type.arrayOf(Type.STRING) : Type.STRING,
+        docs: {
+          summary: `Positional argument for ${commandName}`,
         },
         optional: true,
       });
