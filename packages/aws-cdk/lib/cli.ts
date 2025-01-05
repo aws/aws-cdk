@@ -7,7 +7,7 @@ import { HotswapMode } from './api/hotswap/common';
 import { ILock } from './api/util/rwlock';
 import { parseCommandLineArguments } from './parse-command-line-arguments';
 import { checkForPlatformWarnings } from './platform-warnings';
-import { IoMessageLevel } from './toolkit/cli-io-host';
+import { IoMessageLevel, CliIoHost } from './toolkit/cli-io-host';
 import { enableTracing } from './util/tracing';
 import { SdkProvider } from '../lib/api/aws-auth';
 import { BootstrapSource, Bootstrapper } from '../lib/api/bootstrap';
@@ -220,6 +220,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
       case 'ls':
       case 'list':
+        CliIoHost.currentAction = 'list';
         return cli.list(args.STACKS, {
           long: args.long,
           json: argv.json,
@@ -275,6 +276,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         });
 
       case 'deploy':
+        CliIoHost.currentAction = 'deploy';
         const parameterMap: { [name: string]: string | undefined } = {};
         for (const parameter of args.parameters) {
           if (typeof parameter === 'string') {
@@ -399,6 +401,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         });
 
       case 'destroy':
+        CliIoHost.currentAction = 'destroy';
         return cli.destroy({
           selector,
           exclusively: args.exclusively,
@@ -422,6 +425,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
       case 'synthesize':
       case 'synth':
+        CliIoHost.currentAction = 'synth';
         const quiet = configuration.settings.get(['quiet']) ?? args.quiet;
         if (args.exclusively) {
           return cli.synth(args.STACKS, args.exclusively, quiet, args.validation, argv.json);

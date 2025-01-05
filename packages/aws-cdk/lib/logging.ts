@@ -171,15 +171,16 @@ type LogInput = string | LogParams;
 
 // Exported logging functions. If any additional logging functionality is required, it should be added as
 // a new logging function here.
+
 /**
  * Logs an error level message.
  *
  * Can be used in multiple ways:
  * ```ts
- * error(`operation failed: ${e}`)                        // string interpolation
- * error('operation failed: %s', e)                       // format string
- * error({ message: 'operation failed', code: 'ERR_001' }) // object style
- * error({ message: 'operation failed: %s', code: 'ERR_001' }, e) // object with formatting
+ * error(`operation failed: ${e}`)                                 // infers default error code `TOOLKIT_0000`
+ * error('operation failed: %s', e)                                // infers default error code `TOOLKIT_0000`
+ * error({ message: 'operation failed', code: 'SDK_0001' })        // specifies error code `SDK_0001`
+ * error({ message: 'operation failed: %s', code: 'SDK_0001' }, e) // specifies error code `SDK_0001`
  * ```
  */
 export const error = (input: LogInput, ...args: unknown[]) => {
@@ -191,8 +192,10 @@ export const error = (input: LogInput, ...args: unknown[]) => {
  *
  * Can be used in multiple ways:
  * ```ts
- * warning(`deprecated feature: ${name}`)                 // string interpolation
- * warning({ message: 'deprecated feature', code: 'WARN_001' }) // object style
+ * warning(`deprecated feature: ${name}`)                               // infers default warning code `TOOLKIT_1000`
+ * warning('feature will be removed in v2: %s', name)                  // infers default warning code `TOOLKIT_1000`
+ * warning({ message: 'deprecated feature', code: 'SDK_1001' })        // specifies warning code `SDK_1001`
+ * warning({ message: 'feature removed: %s', code: 'SDK_1001' }, name) // specifies warning code `SDK_1001`
  * ```
  */
 export const warning = (input: LogInput, ...args: unknown[]) => {
@@ -204,8 +207,10 @@ export const warning = (input: LogInput, ...args: unknown[]) => {
  *
  * Can be used in multiple ways:
  * ```ts
- * info(`processing: ${id}`)                            // string interpolation
- * info({ message: 'processing', code: 'INFO_001' })    // object style
+ * info(`processing: ${id}`)                                    // infers default info code `TOOLKIT_2000`
+ * info('completed %d of %d items', current, total)            // infers default info code `TOOLKIT_2000`
+ * info({ message: 'processing', code: 'SDK_2001' })           // specifies info code `SDK_2001`
+ * info({ message: 'progress: %d%%', code: 'SDK_2001' }, pct)  // specifies info code `SDK_2001`
  * ```
  */
 export const info = (input: LogInput, ...args: unknown[]) => {
@@ -220,8 +225,10 @@ export const print = info;
  *
  * Can be used in multiple ways:
  * ```ts
- * data(`stats: ${stats}`)                            // string interpolation
- * data({ message: 'stats: %j', code: 'DATA_001' }, stats) // object style with formatting
+ * data(`${JSON.stringify(stats)}`)                            // infers default info code `TOOLKIT_2000`
+ * data('{"count": %d}', count)                               // infers default info code `TOOLKIT_2000`
+ * data({ message: 'stats: %j', code: 'DATA_2001' })          // specifies info code `DATA_2001`
+ * data({ message: 'stats: %j', code: 'DATA_2001' }, stats)   // specifies info code `DATA_2001`
  * ```
  */
 export const data = (input: LogInput, ...args: unknown[]) => {
@@ -233,8 +240,10 @@ export const data = (input: LogInput, ...args: unknown[]) => {
  *
  * Can be used in multiple ways:
  * ```ts
- * debug(`state: ${state}`)                            // string interpolation
- * debug({ message: 'state update', code: 'DBG_001' }) // object style
+ * debug(`state: ${JSON.stringify(state)}`)                    // infers default info code `TOOLKIT_2000`
+ * debug('cache hit ratio: %d%%', ratio)                      // infers default info code `TOOLKIT_2000`
+ * debug({ message: 'state update', code: 'DBG_2001' })       // specifies info code `DBG_2001`
+ * debug({ message: 'ratio: %d%%', code: 'DBG_2001' }, ratio) // specifies info code `DBG_2001`
  * ```
  */
 export const debug = (input: LogInput, ...args: unknown[]) => {
@@ -246,8 +255,10 @@ export const debug = (input: LogInput, ...args: unknown[]) => {
  *
  * Can be used in multiple ways:
  * ```ts
- * trace(`entered: ${name}`)                           // string interpolation
- * trace({ message: 'entered', code: 'TRACE_001' })    // object style
+ * trace(`entered ${name} with ${args}`)                      // infers default info code `TOOLKIT_2000`
+ * trace('method: %s, args: %j', name, args)                 // infers default info code `TOOLKIT_2000`
+ * trace({ message: 'entered', code: 'TRACE_2001' })         // specifies info code `TRACE_2001`
+ * trace({ message: 'method: %s', code: 'TRACE_2001' }, name) // specifies info code `TRACE_2001`
  * ```
  */
 export const trace = (input: LogInput, ...args: unknown[]) => {
@@ -259,8 +270,10 @@ export const trace = (input: LogInput, ...args: unknown[]) => {
  *
  * Can be used in multiple ways:
  * ```ts
- * success(`completed: ${name}`)                       // string interpolation
- * success({ message: 'completed', code: 'SUC_001' })  // object style
+ * success(`deployment completed: ${name}`)                    // infers default info code `TOOLKIT_2000`
+ * success('processed %d items', count)                       // infers default info code `TOOLKIT_2000`
+ * success({ message: 'completed', code: 'SUC_2001' })       // specifies info code `SUC_2001`
+ * success({ message: 'items: %d', code: 'SUC_2001' }, count) // specifies info code `SUC_2001`
  * ```
  */
 export const success = (input: LogInput, ...args: unknown[]) => {
@@ -272,8 +285,10 @@ export const success = (input: LogInput, ...args: unknown[]) => {
  *
  * Can be used in multiple ways:
  * ```ts
- * highlight(`important: ${msg}`)                      // string interpolation
- * highlight({ message: 'important', code: 'HIGH_001' }) // object style
+ * highlight(`important: ${msg}`)                             // infers default info code `TOOLKIT_2000`
+ * highlight('attention required: %s', reason)                // infers default info code `TOOLKIT_2000`
+ * highlight({ message: 'notice', code: 'HIGH_2001' })       // specifies info code `HIGH_2001`
+ * highlight({ message: 'notice: %s', code: 'HIGH_2001' }, msg) // specifies info code `HIGH_2001`
  * ```
  */
 export const highlight = (input: LogInput, ...args: unknown[]) => {
