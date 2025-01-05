@@ -98,8 +98,9 @@ new s3objectlambda.AccessPoint(stack, 'MyObjectLambda', {
 If you need access to the s3 accesspoint, you can get its ARN like so:
 
 ```ts
-declare const accessPoint: s3objectlambda.AccessPoint;
+import * as s3objectlambda from '@aws-cdk/aws-s3objectlambda-alpha';
 
+declare const accessPoint: s3objectlambda.AccessPoint;
 const s3AccessPointArn = accessPoint.s3AccessPointArn;
 ```
 
