@@ -86,6 +86,12 @@ test('inherited aspects get invoked before locally defined aspects, if both have
 
           if (!(aInherited == true && bInherited == false)) return;
 
+          // But only if the application of aspect A exists at least as long as the application of aspect B
+          const aAppliedT = aspectAppliedT(testApp, a.aspect, a.construct);
+          const bAppliedT = aspectAppliedT(testApp, b.aspect, b.construct);
+
+          if (!(aAppliedT <= bAppliedT)) return;
+
           if (!(a.index < b.index)) {
             throw new Error(
               `Aspect ${a.aspect}@${aPrio} at ${a.index} should have been before ${b.aspect}@${bPrio} at ${b.index}, but was after`,
