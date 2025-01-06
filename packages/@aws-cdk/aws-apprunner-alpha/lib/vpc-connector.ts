@@ -99,9 +99,9 @@ export class VpcConnector extends cdk.Resource implements IVpcConnector {
     const securityGroups = attrs.securityGroups;
 
     class Import extends cdk.Resource {
-      public readonly vpcConnectorArn = vpcConnectorArn
-      public readonly vpcConnectorName = vpcConnectorName
-      public readonly vpcConnectorRevision = vpcConnectorRevision
+      public readonly vpcConnectorArn = vpcConnectorArn;
+      public readonly vpcConnectorName = vpcConnectorName;
+      public readonly vpcConnectorRevision = vpcConnectorRevision;
       public readonly connections = new Connections({ securityGroups });
     }
 
@@ -129,7 +129,7 @@ export class VpcConnector extends cdk.Resource implements IVpcConnector {
   /**
    * Allows specifying security group connections for the VPC connector.
    */
-  public readonly connections: Connections
+  public readonly connections: Connections;
 
   public constructor(scope: Construct, id: string, props: VpcConnectorProps) {
     super(scope, id, {

@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.174.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.173.4-alpha.0...v2.174.0-alpha.0) (2025-01-04)
+
+
+### Features
+
+* **glue:** support AWS Glue 5.0 ([#32467](https://github.com/aws/aws-cdk/issues/32467)) ([ca01a25](https://github.com/aws/aws-cdk/commit/ca01a25d1328685fc9a362a1e2cbe7738389956c))
+* **ec2:** add c8g and m8g instance classes ([#32528](https://github.com/aws/aws-cdk/issues/32528)) ([a81eec6](https://github.com/aws/aws-cdk/commit/a81eec66fecfc6dd27f3a4328888bd3f0c97b159)), closes [#32522](https://github.com/aws/aws-cdk/issues/32522)
+* **msk-alpha:** new KafkaVersions `3_7_X` and `3_7_X_KRAFT` ([#32515](https://github.com/aws/aws-cdk/issues/32515)) ([cbacf4d](https://github.com/aws/aws-cdk/commit/cbacf4d9adde9a06fc78387b37ba1f97b2de2493))
+
+
+### Bug Fixes
+
+* **ec2-alpha:** do not use string comparison in `rangesOverlap` ([#32269](https://github.com/aws/aws-cdk/issues/32269)) ([87e21d6](https://github.com/aws/aws-cdk/commit/87e21d625af86873716734dd5568940d41096c45)), closes [#32145](https://github.com/aws/aws-cdk/issues/32145) [#32145](https://github.com/aws/aws-cdk/issues/32145)
+* **redshift-alpha:** extract tableName from custom resource functions ([#32452](https://github.com/aws/aws-cdk/issues/32452)) ([283edd6](https://github.com/aws/aws-cdk/commit/283edd6601ac54cf868213d68edb7c76b3a45223)), closes [PR#24308](https://github.com/aws/PR/issues/24308)
+* **redshift-alpha:** use same role for database-query singleton function ([#32363](https://github.com/aws/aws-cdk/issues/32363)) ([db950b3](https://github.com/aws/aws-cdk/commit/db950b30271e5776915936f91fa975b121a6e62c)), closes [#32089](https://github.com/aws/aws-cdk/issues/32089)
+
+## [2.173.4-alpha.0](https://github.com/aws/aws-cdk/compare/v2.173.3-alpha.0...v2.173.4-alpha.0) (2024-12-27)
+
+## [2.173.3-alpha.0](https://github.com/aws/aws-cdk/compare/v2.173.2-alpha.0...v2.173.3-alpha.0) (2024-12-26)
+
+## [2.173.2-alpha.0](https://github.com/aws/aws-cdk/compare/v2.173.1-alpha.0...v2.173.2-alpha.0) (2024-12-17)
+
+## [2.173.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.173.0-alpha.0...v2.173.1-alpha.0) (2024-12-14)
+
+## [2.173.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.172.0-alpha.0...v2.173.0-alpha.0) (2024-12-11)
+
+
+### Features
+
+* **redshift-alpha:** add support for RA3.large node type ([#31637](https://github.com/aws/aws-cdk/issues/31637)) ([ce0e09f](https://github.com/aws/aws-cdk/commit/ce0e09fea17c78d40026df114796bc89ad365d18)), closes [#31634](https://github.com/aws/aws-cdk/issues/31634)
+
 ## [2.172.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.171.1-alpha.0...v2.172.0-alpha.0) (2024-12-06)
 
 
