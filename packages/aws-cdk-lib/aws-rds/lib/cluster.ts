@@ -901,7 +901,12 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       enableCloudwatchLogsExports: props.cloudwatchLogsExports,
       // Encryption
       kmsKeyId: props.storageEncryptionKey?.keyArn,
-      storageEncrypted: getStorageEncryptedProperty(this, props),
+      storageEncrypted: getStorageEncryptedProperty(
+        this,
+        props.storageEncrypted,
+        props.storageEncryptedLegacyDefaultValue,
+        props.storageEncryptionKey,
+      ),
       // Tags
       copyTagsToSnapshot: props.copyTagsToSnapshot ?? true,
       domain: this.domainId,

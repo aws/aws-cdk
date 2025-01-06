@@ -1198,7 +1198,12 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
       kmsKeyId: props.storageEncryptionKey && props.storageEncryptionKey.keyArn,
       masterUsername: credentials.username,
       masterUserPassword: credentials.password?.unsafeUnwrap(),
-      storageEncrypted: getStorageEncryptedProperty(this, props),
+      storageEncrypted: getStorageEncryptedProperty(
+        this,
+        props.storageEncrypted,
+        props.storageEncryptedLegacyDefaultValue,
+        props.storageEncryptionKey,
+      ),
     });
 
     this.instanceIdentifier = this.getResourceNameAttribute(instance.ref);
