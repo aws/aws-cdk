@@ -5,6 +5,7 @@ import { Tag } from './cdk-toolkit';
 import { debug, warning } from './logging';
 import { ToolkitError } from './toolkit/error';
 import * as util from './util';
+import { CliArguments } from './cli-arguments';
 
 export type SettingsMap = {[key: string]: any};
 
@@ -51,21 +52,13 @@ const BUNDLING_COMMANDS = [
   Command.WATCH,
 ];
 
-export type Arguments = {
-  readonly _: [Command, ...string[]];
-  readonly exclusively?: boolean;
-  readonly STACKS?: string[];
-  readonly lookups?: boolean;
-  readonly [name: string]: unknown;
-};
-
 export interface ConfigurationProps {
   /**
    * Configuration passed via command line arguments
    *
    * @default - Nothing passed
    */
-  readonly commandLineArguments?: Arguments;
+  readonly commandLineArguments?: CliArguments;
 
   /**
    * Whether or not to use context from `.cdk.json` in user home directory
@@ -291,7 +284,7 @@ export class Settings {
    * @param argv the received CLI arguments.
    * @returns a new Settings object.
    */
-  public static fromCommandLineArguments(argv: Arguments): Settings {
+  public static fromCommandLineArguments(argv: CliArguments): Settings {
     const context = this.parseStringContextListToObject(argv);
     const tags = this.parseStringTagsListToObject(expectStringList(argv.tags));
 

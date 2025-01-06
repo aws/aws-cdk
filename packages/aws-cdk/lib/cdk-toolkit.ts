@@ -1729,6 +1729,9 @@ export interface DestroyOptions {
   readonly ci?: boolean;
 }
 
+export type ActionType = 'print' | 'tag' | 'delete-tagged' | 'full';
+export type TypeType = 's3' | 'ecr' | 'all';
+
 /**
  * Options for the garbage collection
  */
@@ -1738,14 +1741,14 @@ export interface GarbageCollectionOptions {
    *
    * @default 'full'
    */
-  readonly action: 'print' | 'tag' | 'delete-tagged' | 'full';
+  readonly action: ActionType;
 
   /**
    * The type of the assets to be garbage collected.
    *
    * @default 'all'
    */
-  readonly type: 's3' | 'ecr' | 'all';
+  readonly type: TypeType;
 
   /**
    * Elapsed time between an asset being marked as isolated and actually deleted.

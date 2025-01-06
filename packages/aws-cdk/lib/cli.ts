@@ -16,7 +16,7 @@ import { execProgram } from '../lib/api/cxapp/exec';
 import { Deployments } from '../lib/api/deployments';
 import { PluginHost } from '../lib/api/plugin';
 import { ToolkitInfo } from '../lib/api/toolkit-info';
-import { CdkToolkit, AssetBuildTime } from '../lib/cdk-toolkit';
+import { CdkToolkit, AssetBuildTime, ActionType, TypeType } from '../lib/cdk-toolkit';
 import { contextHandler as context } from '../lib/commands/context';
 import { docs } from '../lib/commands/docs';
 import { doctor } from '../lib/commands/doctor';
@@ -28,6 +28,9 @@ import { Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
 import { SdkToCliLogger } from './api/aws-auth/sdk-logger';
 import { ToolkitError } from './toolkit/error';
+import { convertToCliArgs } from './convert-to-cli-args';
+import { CliArguments } from './cli-arguments';
+import { StringWithoutPlaceholders } from './api/util/placeholders';
 
 /* eslint-disable max-len */
 /* eslint-disable @typescript-eslint/no-shadow */ // yargs
@@ -38,13 +41,13 @@ if (!process.stdout.isTTY) {
 }
 
 export async function exec(args: string[], synthesizer?: Synthesizer): Promise<number | void> {
-  const argv = await parseCommandLineArguments(args);
+  const argv: CliArguments = convertToCliArgs(await parseCommandLineArguments(args));
 
   // if one -v, log at a DEBUG level
   // if 2 -v, log at a TRACE level
-  if (argv.verbose) {
+  if (argv.globalOptions?.verbose) {
     let logLevel: LogLevel;
-    switch (argv.verbose) {
+    switch (argv.globalOptions.verbose) {
       case 1:
         logLevel = LogLevel.DEBUG;
         break;
@@ -57,11 +60,11 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
   }
 
   // Debug should always imply tracing
-  if (argv.debug || argv.verbose > 2) {
+  if (argv.globalOptions?.debug || (argv.globalOptions?.verbose ?? 0) > 2) {
     enableTracing(true);
   }
 
-  if (argv.ci) {
+  if (argv.globalOptions?.ci) {
     setCI(true);
   }
 
@@ -75,10 +78,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
   debug('Command line arguments:', argv);
 
   const configuration = new Configuration({
-    commandLineArguments: {
-      ...argv,
-      _: argv._ as [Command, ...string[]], // TypeScript at its best
-    },
+    commandLineArguments: argv,
   });
   await configuration.load();
 
@@ -88,7 +88,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
     context: configuration.context,
     output: configuration.settings.get(['outdir']),
     shouldDisplay: configuration.settings.get(['notices']),
-    includeAcknowledged: cmd === 'notices' ? !argv.unacknowledged : false,
+    includeAcknowledged: cmd === 'notices' ? !argv.notices?.unacknowledged : false,
     httpOptions: {
       proxyAddress: configuration.settings.get(['proxy']),
       caBundlePath: configuration.settings.get(['caBundlePath']),
@@ -99,8 +99,8 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
   const sdkProvider = await SdkProvider.withAwsCliCompatibleDefaults({
     profile: configuration.settings.get(['profile']),
     httpOptions: {
-      proxyAddress: argv.proxy,
-      caBundlePath: argv['ca-bundle-path'],
+      proxyAddress: argv.globalOptions?.proxy,
+      caBundlePath: argv.globalOptions?.caBundlePath,
     },
     logger: new SdkToCliLogger(),
   });
@@ -165,7 +165,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
     if (cmd === 'notices') {
       await notices.refresh({ force: true });
-      notices.display({ showTotal: argv.unacknowledged });
+      notices.display({ showTotal: argv.notices?.unacknowledged });
 
     } else if (cmd !== 'version') {
       await notices.refresh();
@@ -173,42 +173,33 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
     }
   }
 
-  async function main(command: string, args: any): Promise<number | void> {
+  async function main(command: string, argv: CliArguments): Promise<number | void> {
     const toolkitStackName: string = ToolkitInfo.determineName(configuration.settings.get(['toolkitStackName']));
     debug(`Toolkit stack: ${chalk.bold(toolkitStackName)}`);
 
+    const globalOptions = argv.globalOptions ?? {};
+
     const cloudFormation = new Deployments({ sdkProvider, toolkitStackName });
-
-    if (args.all && args.STACKS) {
-      throw new ToolkitError('You must either specify a list of Stacks or the `--all` argument');
-    }
-
-    args.STACKS = args.STACKS ?? (args.STACK ? [args.STACK] : []);
-    args.ENVIRONMENTS = args.ENVIRONMENTS ?? [];
-
-    const selector: StackSelector = {
-      allTopLevel: args.all,
-      patterns: args.STACKS,
-    };
 
     const cli = new CdkToolkit({
       cloudExecutable,
       deployments: cloudFormation,
-      verbose: argv.trace || argv.verbose > 0,
-      ignoreErrors: argv['ignore-errors'],
-      strict: argv.strict,
+      verbose: globalOptions.trace || (globalOptions.verbose ?? 0) > 0,
+      ignoreErrors: globalOptions.ignoreErrors,
+      strict: globalOptions.strict,
       configuration,
       sdkProvider,
     });
 
     switch (command) {
       case 'context':
+        const contextOptions = argv.context ?? {};
         return context({
           context: configuration.context,
-          clear: argv.clear,
-          json: argv.json,
-          force: argv.force,
-          reset: argv.reset,
+          clear: contextOptions.clear,
+          json: globalOptions.json,
+          force: contextOptions.force,
+          reset: contextOptions.reset,
         });
 
       case 'docs':
@@ -219,80 +210,88 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
       case 'ls':
       case 'list':
-        return cli.list(args.STACKS, {
-          long: args.long,
-          json: argv.json,
-          showDeps: args.showDependencies,
+        const listOptions = argv.list ?? {};
+        return cli.list(listOptions.STACKS ?? [], {
+          long: listOptions.long,
+          json: globalOptions.json,
+          showDeps: listOptions.showDependencies,
         });
 
       case 'diff':
         const enableDiffNoFail = isFeatureEnabled(configuration, cxapi.ENABLE_DIFF_NO_FAIL_CONTEXT);
+        const diffOptions = argv.diff ?? {};
         return cli.diff({
-          stackNames: args.STACKS,
-          exclusively: args.exclusively,
-          templatePath: args.template,
-          strict: args.strict,
-          contextLines: args.contextLines,
-          securityOnly: args.securityOnly,
-          fail: args.fail != null ? args.fail : !enableDiffNoFail,
-          stream: args.ci ? process.stdout : undefined,
-          compareAgainstProcessedTemplate: args.processed,
-          quiet: args.quiet,
-          changeSet: args['change-set'],
+          stackNames: diffOptions.STACKS ?? [],
+          exclusively: diffOptions.exclusively,
+          templatePath: diffOptions.template,
+          strict: diffOptions.strict,
+          contextLines: diffOptions.contextLines,
+          securityOnly: diffOptions.securityOnly,
+          fail: diffOptions.fail != null ? diffOptions.fail : !enableDiffNoFail,
+          stream: globalOptions.ci ? process.stdout : undefined,
+          compareAgainstProcessedTemplate: diffOptions.processed,
+          quiet: diffOptions.quiet,
+          changeSet: diffOptions.changeSet,
           toolkitStackName: toolkitStackName,
         });
 
       case 'bootstrap':
-        const source: BootstrapSource = determineBootstrapVersion(args);
+        const bootstrapOptions = argv.bootstrap ?? {};
+        const source: BootstrapSource = determineBootstrapVersion(bootstrapOptions.template);
 
-        if (args.showTemplate) {
+        if (bootstrapOptions.showTemplate) {
           const bootstrapper = new Bootstrapper(source);
-          return bootstrapper.showTemplate(args.json);
+          return bootstrapper.showTemplate(globalOptions.json ?? false);
         }
 
-        return cli.bootstrap(args.ENVIRONMENTS, {
+        return cli.bootstrap(bootstrapOptions.ENVIRONMENTS ?? [], {
           source,
-          roleArn: args.roleArn,
-          force: argv.force,
+          roleArn: globalOptions.roleArn as StringWithoutPlaceholders,
+          force: bootstrapOptions.force,
           toolkitStackName: toolkitStackName,
-          execute: args.execute,
+          execute: bootstrapOptions.execute,
           tags: configuration.settings.get(['tags']),
-          terminationProtection: args.terminationProtection,
-          usePreviousParameters: args['previous-parameters'],
+          terminationProtection: bootstrapOptions.terminationProtection,
+          usePreviousParameters: bootstrapOptions.previousParameters,
           parameters: {
             bucketName: configuration.settings.get(['toolkitBucket', 'bucketName']),
             kmsKeyId: configuration.settings.get(['toolkitBucket', 'kmsKeyId']),
-            createCustomerMasterKey: args.bootstrapCustomerKey,
-            qualifier: args.qualifier ?? configuration.context.get('@aws-cdk/core:bootstrapQualifier'),
-            publicAccessBlockConfiguration: args.publicAccessBlockConfiguration,
-            examplePermissionsBoundary: argv.examplePermissionsBoundary,
-            customPermissionsBoundary: argv.customPermissionsBoundary,
-            trustedAccounts: arrayFromYargs(args.trust),
-            trustedAccountsForLookup: arrayFromYargs(args.trustForLookup),
-            cloudFormationExecutionPolicies: arrayFromYargs(args.cloudformationExecutionPolicies),
+            createCustomerMasterKey: bootstrapOptions.bootstrapCustomerKey,
+            qualifier: bootstrapOptions.qualifier ?? configuration.context.get('@aws-cdk/core:bootstrapQualifier'),
+            publicAccessBlockConfiguration: bootstrapOptions.publicAccessBlockConfiguration,
+            examplePermissionsBoundary: bootstrapOptions.examplePermissionsBoundary,
+            customPermissionsBoundary: bootstrapOptions.customPermissionsBoundary,
+            trustedAccounts: arrayFromYargs(bootstrapOptions.trust ?? []),
+            trustedAccountsForLookup: arrayFromYargs(bootstrapOptions.trustForLookup ?? []),
+            cloudFormationExecutionPolicies: arrayFromYargs(bootstrapOptions.cloudformationExecutionPolicies ?? []),
           },
         });
 
       case 'deploy':
+        const deployOptions = argv.deploy ?? {};
         const parameterMap: { [name: string]: string | undefined } = {};
-        for (const parameter of args.parameters) {
+        for (const parameter of deployOptions.parameters ?? []) {
           if (typeof parameter === 'string') {
             const keyValue = (parameter as string).split('=');
             parameterMap[keyValue[0]] = keyValue.slice(1).join('=');
           }
         }
 
-        if (args.execute !== undefined && args.method !== undefined) {
+        if (deployOptions.all && deployOptions.STACKS) {
+          throw new ToolkitError('You must either specify a list of Stacks or the `--all` argument');
+        }
+
+        if (deployOptions.execute !== undefined && deployOptions.method !== undefined) {
           throw new ToolkitError('Can not supply both --[no-]execute and --method at the same time');
         }
 
         let deploymentMethod: DeploymentMethod | undefined;
-        switch (args.method) {
+        switch (deployOptions.method) {
           case 'direct':
-            if (args.changeSetName) {
+            if (deployOptions.changeSetName) {
               throw new ToolkitError('--change-set-name cannot be used with method=direct');
             }
-            if (args.importExistingResources) {
+            if (deployOptions.importExistingResources) {
               throw new Error('--import-existing-resources cannot be enabled with method=direct');
             }
             deploymentMethod = { method: 'direct' };
@@ -301,131 +300,147 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
             deploymentMethod = {
               method: 'change-set',
               execute: true,
-              changeSetName: args.changeSetName,
-              importExistingResources: args.importExistingResources,
+              changeSetName: deployOptions.changeSetName,
+              importExistingResources: deployOptions.importExistingResources,
             };
             break;
           case 'prepare-change-set':
             deploymentMethod = {
               method: 'change-set',
               execute: false,
-              changeSetName: args.changeSetName,
-              importExistingResources: args.importExistingResources,
+              changeSetName: deployOptions.changeSetName,
+              importExistingResources: deployOptions.importExistingResources,
             };
             break;
           case undefined:
             deploymentMethod = {
               method: 'change-set',
-              execute: args.execute ?? true,
-              changeSetName: args.changeSetName,
-              importExistingResources: args.importExistingResources,
+              execute: deployOptions.execute ?? true,
+              changeSetName: deployOptions.changeSetName,
+              importExistingResources: deployOptions.importExistingResources,
             };
             break;
         }
 
         return cli.deploy({
-          selector,
-          exclusively: args.exclusively,
+          selector: createSelector(deployOptions.STACKS, deployOptions.all),
+          exclusively: deployOptions.exclusively,
           toolkitStackName,
-          roleArn: args.roleArn,
-          notificationArns: args.notificationArns,
+          roleArn: globalOptions.roleArn,
+          notificationArns: deployOptions.notificationArns,
           requireApproval: configuration.settings.get(['requireApproval']),
-          reuseAssets: args['build-exclude'],
+          reuseAssets: deployOptions.buildExclude,
           tags: configuration.settings.get(['tags']),
           deploymentMethod,
-          force: args.force,
+          force: deployOptions.force,
           parameters: parameterMap,
-          usePreviousParameters: args['previous-parameters'],
+          usePreviousParameters: deployOptions.previousParameters,
           outputsFile: configuration.settings.get(['outputsFile']),
           progress: configuration.settings.get(['progress']),
-          ci: args.ci,
+          ci: globalOptions.ci,
           rollback: configuration.settings.get(['rollback']),
-          hotswap: determineHotswapMode(args.hotswap, args.hotswapFallback),
-          watch: args.watch,
-          traceLogs: args.logs,
-          concurrency: args.concurrency,
+          hotswap: determineHotswapMode(deployOptions.hotswap, deployOptions.hotswapFallback),
+          watch: deployOptions.watch,
+          traceLogs: deployOptions.logs,
+          concurrency: deployOptions.concurrency,
           assetParallelism: configuration.settings.get(['assetParallelism']),
           assetBuildTime: configuration.settings.get(['assetPrebuild'])
             ? AssetBuildTime.ALL_BEFORE_DEPLOY
             : AssetBuildTime.JUST_IN_TIME,
-          ignoreNoStacks: args.ignoreNoStacks,
+          ignoreNoStacks: deployOptions.ignoreNoStacks,
         });
 
       case 'rollback':
+        const rollbackOptions = argv.rollback ?? {};
         return cli.rollback({
-          selector,
+          selector: createSelector(rollbackOptions.STACKS, rollbackOptions.all),
           toolkitStackName,
-          roleArn: args.roleArn,
-          force: args.force,
-          validateBootstrapStackVersion: args['validate-bootstrap-version'],
-          orphanLogicalIds: args.orphan,
+          roleArn: globalOptions.roleArn,
+          force: rollbackOptions.force,
+          validateBootstrapStackVersion: rollbackOptions.validateBootstrapVersion,
+          orphanLogicalIds: rollbackOptions.orphan,
         });
 
       case 'import':
+        const importOptions = argv.import ?? {};
         return cli.import({
-          selector,
+          selector: createSelector(importOptions.STACK ? [importOptions.STACK] : []),
           toolkitStackName,
-          roleArn: args.roleArn,
+          roleArn: globalOptions.roleArn,
           deploymentMethod: {
             method: 'change-set',
-            execute: args.execute,
-            changeSetName: args.changeSetName,
+            execute: importOptions.execute,
+            changeSetName: importOptions.changeSetName,
           },
           progress: configuration.settings.get(['progress']),
           rollback: configuration.settings.get(['rollback']),
-          recordResourceMapping: args['record-resource-mapping'],
-          resourceMappingFile: args['resource-mapping'],
-          force: args.force,
+          recordResourceMapping: importOptions.recordResourceMapping,
+          resourceMappingFile: importOptions.resourceMapping,
+          force: importOptions.force,
         });
 
       case 'watch':
+        const watchOptions = argv.watch ?? {};
         return cli.watch({
-          selector,
-          exclusively: args.exclusively,
+          selector: createSelector(watchOptions.STACKS),
+          exclusively: watchOptions.exclusively,
           toolkitStackName,
-          roleArn: args.roleArn,
-          reuseAssets: args['build-exclude'],
+          roleArn: globalOptions.roleArn,
+          reuseAssets: watchOptions.buildExclude,
           deploymentMethod: {
             method: 'change-set',
-            changeSetName: args.changeSetName,
+            changeSetName: watchOptions.changeSetName,
           },
-          force: args.force,
+          force: watchOptions.force,
           progress: configuration.settings.get(['progress']),
           rollback: configuration.settings.get(['rollback']),
-          hotswap: determineHotswapMode(args.hotswap, args.hotswapFallback, true),
-          traceLogs: args.logs,
-          concurrency: args.concurrency,
+          hotswap: determineHotswapMode(watchOptions.hotswap, watchOptions.hotswapFallback, true),
+          traceLogs: watchOptions.logs,
+          concurrency: watchOptions.concurrency,
         });
 
       case 'destroy':
+        const destroyOptions = argv.destroy ?? {};
         return cli.destroy({
-          selector,
-          exclusively: args.exclusively,
-          force: args.force,
-          roleArn: args.roleArn,
-          ci: args.ci,
+          selector: createSelector(destroyOptions.STACKS, destroyOptions.all),
+          exclusively: destroyOptions.exclusively ?? false,
+          force: destroyOptions.force ?? false,
+          roleArn: globalOptions.roleArn,
+          ci: globalOptions.ci,
         });
 
       case 'gc':
         if (!configuration.settings.get(['unstable']).includes('gc')) {
           throw new ToolkitError('Unstable feature use: \'gc\' is unstable. It must be opted in via \'--unstable\', e.g. \'cdk gc --unstable=gc\'');
         }
-        return cli.garbageCollect(args.ENVIRONMENTS, {
-          action: args.action,
-          type: args.type,
-          rollbackBufferDays: args['rollback-buffer-days'],
-          createdBufferDays: args['created-buffer-days'],
-          bootstrapStackName: args.bootstrapStackName,
-          confirm: args.confirm,
+
+        const gcOptions = argv.gc ?? {};
+
+        if (gcOptions.action && ['full', 'tag', 'delete-tagged', 'print'].includes(gcOptions.action)) {
+          throw new ToolkitError(`Invalid action ${gcOptions.action} for cdk gc. Valid actions are 'full', 'tag', 'delete-tagged', 'print'`);
+        }
+
+        if (gcOptions.type && ['ecr', 's3', 'all'].includes(gcOptions.type)) {
+          throw new ToolkitError(`Invalid action ${gcOptions.action} for cdk gc. Valid actions are 'ecr', 's3', 'all'`);
+        }
+
+        return cli.garbageCollect(gcOptions.ENVIRONMENTS ?? [], {
+          action: gcOptions.action as ActionType,
+          type: gcOptions.type as TypeType,
+          rollbackBufferDays: gcOptions.rollbackBufferDays ?? 0,
+          createdBufferDays: gcOptions.createdBufferDays ?? 1,
+          bootstrapStackName: gcOptions.bootstrapStackName,
+          confirm: gcOptions.confirm,
         });
 
       case 'synthesize':
       case 'synth':
-        const quiet = configuration.settings.get(['quiet']) ?? args.quiet;
-        if (args.exclusively) {
-          return cli.synth(args.STACKS, args.exclusively, quiet, args.validation, argv.json);
+        const synthOptions = argv.synthesize ?? {};
+        const quiet = configuration.settings.get(['quiet']) ?? synthOptions.quiet;
+        if (synthOptions.exclusively) {
+          return cli.synth(synthOptions.STACKS ?? [], synthOptions.exclusively, quiet, synthOptions.validation, globalOptions.json);
         } else {
-          return cli.synth(args.STACKS, true, quiet, args.validation, argv.json);
+          return cli.synth(synthOptions.STACKS ?? [], true, quiet, synthOptions.validation, globalOptions.json);
         }
 
       case 'notices':
@@ -433,36 +448,37 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         return;
 
       case 'metadata':
-        return cli.metadata(args.STACK, argv.json);
+        return cli.metadata(argv.metadata?.STACK!, globalOptions.json ?? false);
 
       case 'acknowledge':
       case 'ack':
-        return cli.acknowledge(args.ID);
+        return cli.acknowledge(argv.acknowledge?.ID!);
 
       case 'init':
         const language = configuration.settings.get(['language']);
-        if (args.list) {
+        if (argv.list) {
           return printAvailableTemplates(language);
         } else {
           return cliInit({
-            type: args.TEMPLATE,
+            type: argv.init?.TEMPLATE,
             language,
             canUseNetwork: undefined,
-            generateOnly: args.generateOnly,
+            generateOnly: argv.init?.generateOnly,
           });
         }
       case 'migrate':
+        const migrateOptions = argv.migrate ?? {};
         return cli.migrate({
-          stackName: args['stack-name'],
-          fromPath: args['from-path'],
-          fromStack: args['from-stack'],
-          language: args.language,
-          outputPath: args['output-path'],
-          fromScan: getMigrateScanType(args['from-scan']),
-          filter: args.filter,
-          account: args.account,
-          region: args.region,
-          compress: args.compress,
+          stackName: migrateOptions.stackName!,
+          fromPath: migrateOptions.fromPath,
+          fromStack: migrateOptions.fromStack,
+          language: migrateOptions.language,
+          outputPath: migrateOptions.outputPath,
+          fromScan: migrateOptions.fromScan ? getMigrateScanType(migrateOptions.fromScan) : undefined,
+          filter: migrateOptions.filter,
+          account: migrateOptions.account,
+          region: migrateOptions.region,
+          compress: migrateOptions.compress,
         });
       case 'version':
         return data(version.DISPLAY_VERSION);
@@ -476,11 +492,11 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 /**
  * Determine which version of bootstrapping
  */
-function determineBootstrapVersion(args: { template?: string }): BootstrapSource {
+function determineBootstrapVersion(template?: string): BootstrapSource {
   let source: BootstrapSource;
-  if (args.template) {
-    print(`Using bootstrapping template from ${args.template}`);
-    source = { source: 'custom', templateFile: args.template };
+  if (template) {
+    print(`Using bootstrapping template from ${template}`);
+    source = { source: 'custom', templateFile: template };
   } else if (process.env.CDK_LEGACY_BOOTSTRAP) {
     print('CDK_LEGACY_BOOTSTRAP set, using legacy-style bootstrapping');
     source = { source: 'legacy' };
@@ -551,4 +567,11 @@ export function cli(args: string[] = process.argv.slice(2)) {
       }
       process.exitCode = 1;
     });
+}
+
+function createSelector(stacks?: string[], all?: boolean): StackSelector {
+  return {
+    allTopLevel: all ?? false,
+    patterns: stacks ?? [],
+  };
 }
