@@ -2,7 +2,7 @@
 // GENERATED FROM packages/aws-cdk/lib/config.ts.
 // Do not edit by hand; all changes will be overwritten at build time from the config file.
 // -------------------------------------------------------------------------------------------
-/* eslint-disable max-len */
+/* eslint-disable @stylistic/max-len */
 import { Command } from './settings';
 
 /**
@@ -12,9 +12,9 @@ import { Command } from './settings';
  */
 export interface CliArguments {
   /**
-   * The CLI command name followed by any properties of the command
+   * The CLI command name
    */
-  readonly _: [Command, ...string[]];
+  readonly _: Command;
 
   /**
    * Global options available to all CLI commands
@@ -180,7 +180,7 @@ export interface GlobalOptions {
    *
    * @default - false
    */
-  readonly 'ignore-errors'?: boolean;
+  readonly ignoreErrors?: boolean;
 
   /**
    * Use JSON output instead of YAML when templates are printed to STDOUT
@@ -222,7 +222,7 @@ export interface GlobalOptions {
    *
    * @default - undefined
    */
-  readonly 'ca-bundle-path'?: string;
+  readonly caBundlePath?: string;
 
   /**
    * Force trying to fetch EC2 instance credentials. Default: guess EC2 instance status
@@ -236,28 +236,28 @@ export interface GlobalOptions {
    *
    * @default - undefined
    */
-  readonly 'version-reporting'?: boolean;
+  readonly versionReporting?: boolean;
 
   /**
    * Include "aws:cdk:path" CloudFormation metadata for each resource (enabled by default)
    *
    * @default - undefined
    */
-  readonly 'path-metadata'?: boolean;
+  readonly pathMetadata?: boolean;
 
   /**
    * Include "aws:asset:*" CloudFormation metadata for resources that uses assets (enabled by default)
    *
    * @default - undefined
    */
-  readonly 'asset-metadata'?: boolean;
+  readonly assetMetadata?: boolean;
 
   /**
    * ARN of Role to use when invoking CloudFormation
    *
    * @default - undefined
    */
-  readonly 'role-arn'?: string;
+  readonly roleArn?: string;
 
   /**
    * Copy assets to the output directory (use --no-staging to disable the copy of assets which allows local debugging via the SAM CLI to reference the original source files)
@@ -285,7 +285,7 @@ export interface GlobalOptions {
    *
    * @default - false
    */
-  readonly 'no-color'?: boolean;
+  readonly noColor?: boolean;
 
   /**
    * Force CI detection. If CI=true then logs will be sent to stdout instead of stderr
@@ -326,7 +326,12 @@ export interface ListOptions {
    *
    * @default - false
    */
-  readonly 'show-dependencies'?: boolean;
+  readonly showDependencies?: boolean;
+
+  /**
+   * Positional argument for list
+   */
+  readonly STACKS?: Array<string>;
 }
 
 /**
@@ -361,6 +366,11 @@ export interface SynthesizeOptions {
    * @default - false
    */
   readonly quiet?: boolean;
+
+  /**
+   * Positional argument for synthesize
+   */
+  readonly STACKS?: Array<string>;
 }
 
 /**
@@ -376,14 +386,14 @@ export interface BootstrapOptions {
    *
    * @default - undefined
    */
-  readonly 'bootstrap-bucket-name'?: string;
+  readonly bootstrapBucketName?: string;
 
   /**
    * AWS KMS master key ID used for the SSE-KMS encryption
    *
    * @default - undefined
    */
-  readonly 'bootstrap-kms-key-id'?: string;
+  readonly bootstrapKmsKeyId?: string;
 
   /**
    * Use the example permissions boundary.
@@ -392,7 +402,7 @@ export interface BootstrapOptions {
    *
    * @default - undefined
    */
-  readonly 'example-permissions-boundary'?: boolean;
+  readonly examplePermissionsBoundary?: boolean;
 
   /**
    * Use the permissions boundary specified by name.
@@ -401,14 +411,14 @@ export interface BootstrapOptions {
    *
    * @default - undefined
    */
-  readonly 'custom-permissions-boundary'?: string;
+  readonly customPermissionsBoundary?: string;
 
   /**
    * Create a Customer Master Key (CMK) for the bootstrap bucket (you will be charged but can customize permissions, modern bootstrapping only)
    *
    * @default - undefined
    */
-  readonly 'bootstrap-customer-key'?: boolean;
+  readonly bootstrapCustomerKey?: boolean;
 
   /**
    * String which must be unique for each bootstrap stack. You must configure it on your CDK app if you change this from the default.
@@ -422,7 +432,7 @@ export interface BootstrapOptions {
    *
    * @default - undefined
    */
-  readonly 'public-access-block-configuration'?: boolean;
+  readonly publicAccessBlockConfiguration?: boolean;
 
   /**
    * Tags to add for the stack (KEY=VALUE)
@@ -452,14 +462,14 @@ export interface BootstrapOptions {
    *
    * @default - []
    */
-  readonly 'trust-for-lookup'?: Array<string>;
+  readonly trustForLookup?: Array<string>;
 
   /**
    * The Managed Policy ARNs that should be attached to the role performing deployments into this environment (may be repeated, modern bootstrapping only)
    *
    * @default - []
    */
-  readonly 'cloudformation-execution-policies'?: Array<string>;
+  readonly cloudformationExecutionPolicies?: Array<string>;
 
   /**
    * Always bootstrap even if it would downgrade template version
@@ -475,21 +485,21 @@ export interface BootstrapOptions {
    *
    * @default - undefined
    */
-  readonly 'termination-protection'?: boolean;
+  readonly terminationProtection?: boolean;
 
   /**
    * Instead of actual bootstrapping, print the current CLI's bootstrapping template to stdout for customization
    *
    * @default - false
    */
-  readonly 'show-template'?: boolean;
+  readonly showTemplate?: boolean;
 
   /**
    * The name of the CDK toolkit stack to create
    *
    * @default - undefined
    */
-  readonly 'toolkit-stack-name'?: string;
+  readonly toolkitStackName?: string;
 
   /**
    * Use the template from the given file instead of the built-in one (use --show-template to obtain an example)
@@ -503,7 +513,12 @@ export interface BootstrapOptions {
    *
    * @default - true
    */
-  readonly 'previous-parameters'?: boolean;
+  readonly previousParameters?: boolean;
+
+  /**
+   * Positional argument for bootstrap
+   */
+  readonly ENVIRONMENTS?: Array<string>;
 }
 
 /**
@@ -531,14 +546,14 @@ export interface GcOptions {
    *
    * @default - 0
    */
-  readonly 'rollback-buffer-days'?: number;
+  readonly rollbackBufferDays?: number;
 
   /**
    * Never delete assets younger than this (in days)
    *
    * @default - 1
    */
-  readonly 'created-buffer-days'?: number;
+  readonly createdBufferDays?: number;
 
   /**
    * Confirm via manual prompt before deletion
@@ -552,7 +567,12 @@ export interface GcOptions {
    *
    * @default - undefined
    */
-  readonly 'bootstrap-stack-name'?: string;
+  readonly bootstrapStackName?: string;
+
+  /**
+   * Positional argument for gc
+   */
+  readonly ENVIRONMENTS?: Array<string>;
 }
 
 /**
@@ -575,7 +595,7 @@ export interface DeployOptions {
    *
    * @default - []
    */
-  readonly 'build-exclude'?: Array<string>;
+  readonly buildExclude?: Array<string>;
 
   /**
    * Only deploy requested stacks, don't include dependencies
@@ -591,14 +611,14 @@ export interface DeployOptions {
    *
    * @default - undefined
    */
-  readonly 'require-approval'?: string;
+  readonly requireApproval?: string;
 
   /**
    * ARNs of SNS topics that CloudFormation will notify with stack related events. These will be added to ARNs specified with the 'notificationArns' stack property.
    *
    * @default - undefined
    */
-  readonly 'notification-arns'?: Array<string>;
+  readonly notificationArns?: Array<string>;
 
   /**
    * Tags to add to the stack (KEY=VALUE), overrides tags from Cloud Assembly (deprecated)
@@ -622,7 +642,7 @@ export interface DeployOptions {
    *
    * @default - undefined
    */
-  readonly 'change-set-name'?: string;
+  readonly changeSetName?: string;
 
   /**
    * How to perform the deployment. Direct is a bit faster but lacks progress information
@@ -632,6 +652,13 @@ export interface DeployOptions {
    * @default - undefined
    */
   readonly method?: string;
+
+  /**
+   * Indicates if the stack set imports resources that already exist.
+   *
+   * @default - false
+   */
+  readonly importExistingResources?: boolean;
 
   /**
    * Always deploy stack even if templates are identical
@@ -656,21 +683,21 @@ export interface DeployOptions {
    *
    * @default - undefined
    */
-  readonly 'outputs-file'?: string;
+  readonly outputsFile?: string;
 
   /**
    * Use previous values for existing parameters (you must specify all parameters on every deployment if this is disabled)
    *
    * @default - true
    */
-  readonly 'previous-parameters'?: boolean;
+  readonly previousParameters?: boolean;
 
   /**
    * The name of the existing CDK toolkit stack (only used for app using legacy synthesis)
    *
    * @default - undefined
    */
-  readonly 'toolkit-stack-name'?: string;
+  readonly toolkitStackName?: string;
 
   /**
    * Display mode for stack activity events
@@ -698,7 +725,7 @@ export interface DeployOptions {
    *
    * @default - undefined
    */
-  readonly 'hotswap-fallback'?: boolean;
+  readonly hotswapFallback?: boolean;
 
   /**
    * Continuously observe the project files, and deploy the given stack(s) automatically when changes are detected. Implies --hotswap by default
@@ -726,21 +753,26 @@ export interface DeployOptions {
    *
    * @default - undefined
    */
-  readonly 'asset-parallelism'?: boolean;
+  readonly assetParallelism?: boolean;
 
   /**
    * Whether to build all assets before deploying the first stack (useful for failing Docker builds)
    *
    * @default - true
    */
-  readonly 'asset-prebuild'?: boolean;
+  readonly assetPrebuild?: boolean;
 
   /**
    * Whether to deploy if the app contains no stacks
    *
    * @default - false
    */
-  readonly 'ignore-no-stacks'?: boolean;
+  readonly ignoreNoStacks?: boolean;
+
+  /**
+   * Positional argument for deploy
+   */
+  readonly STACKS?: Array<string>;
 }
 
 /**
@@ -761,7 +793,7 @@ export interface RollbackOptions {
    *
    * @default - undefined
    */
-  readonly 'toolkit-stack-name'?: string;
+  readonly toolkitStackName?: string;
 
   /**
    * Orphan all resources for which the rollback operation fails.
@@ -777,7 +809,7 @@ export interface RollbackOptions {
    *
    * @default - undefined
    */
-  readonly 'validate-bootstrap-version'?: boolean;
+  readonly validateBootstrapVersion?: boolean;
 
   /**
    * Orphan the given resources, identified by their logical ID (can be specified multiple times)
@@ -785,6 +817,11 @@ export interface RollbackOptions {
    * @default - []
    */
   readonly orphan?: Array<string>;
+
+  /**
+   * Positional argument for rollback
+   */
+  readonly STACKS?: Array<string>;
 }
 
 /**
@@ -805,14 +842,14 @@ export interface ImportOptions {
    *
    * @default - undefined
    */
-  readonly 'change-set-name'?: string;
+  readonly changeSetName?: string;
 
   /**
    * The name of the CDK toolkit stack to create
    *
    * @default - undefined
    */
-  readonly 'toolkit-stack-name'?: string;
+  readonly toolkitStackName?: string;
 
   /**
    * Rollback stack to stable state on failure. Defaults to 'true', iterate more rapidly with --no-rollback or -R. Note: do **not** disable this flag for deployments with resource replacements, as that will always fail
@@ -837,7 +874,7 @@ export interface ImportOptions {
    *
    * @default - undefined
    */
-  readonly 'record-resource-mapping'?: string;
+  readonly recordResourceMapping?: string;
 
   /**
    * If specified, CDK will use the given file to map physical resources to CDK resources for import, instead of interactively asking the user. Can be run from scripts
@@ -846,7 +883,12 @@ export interface ImportOptions {
    *
    * @default - undefined
    */
-  readonly 'resource-mapping'?: string;
+  readonly resourceMapping?: string;
+
+  /**
+   * Positional argument for import
+   */
+  readonly STACK?: string;
 }
 
 /**
@@ -862,7 +904,7 @@ export interface WatchOptions {
    *
    * @default - []
    */
-  readonly 'build-exclude'?: Array<string>;
+  readonly buildExclude?: Array<string>;
 
   /**
    * Only deploy requested stacks, don't include dependencies
@@ -878,7 +920,7 @@ export interface WatchOptions {
    *
    * @default - undefined
    */
-  readonly 'change-set-name'?: string;
+  readonly changeSetName?: string;
 
   /**
    * Always deploy stack even if templates are identical
@@ -894,7 +936,7 @@ export interface WatchOptions {
    *
    * @default - undefined
    */
-  readonly 'toolkit-stack-name'?: string;
+  readonly toolkitStackName?: string;
 
   /**
    * Display mode for stack activity events
@@ -922,7 +964,7 @@ export interface WatchOptions {
    *
    * @default - undefined
    */
-  readonly 'hotswap-fallback'?: boolean;
+  readonly hotswapFallback?: boolean;
 
   /**
    * Show CloudWatch log events from all resources in the selected Stacks in the terminal. 'true' by default, use --no-logs to turn off
@@ -937,6 +979,11 @@ export interface WatchOptions {
    * @default - 1
    */
   readonly concurrency?: number;
+
+  /**
+   * Positional argument for watch
+   */
+  readonly STACKS?: Array<string>;
 }
 
 /**
@@ -969,6 +1016,11 @@ export interface DestroyOptions {
    * @default - undefined
    */
   readonly force?: boolean;
+
+  /**
+   * Positional argument for destroy
+   */
+  readonly STACKS?: Array<string>;
 }
 
 /**
@@ -991,7 +1043,7 @@ export interface DiffOptions {
    *
    * @default - 3
    */
-  readonly 'context-lines'?: number;
+  readonly contextLines?: number;
 
   /**
    * The path to the CloudFormation template to compare with
@@ -1012,7 +1064,7 @@ export interface DiffOptions {
    *
    * @default - false
    */
-  readonly 'security-only'?: boolean;
+  readonly securityOnly?: boolean;
 
   /**
    * Fail with exit code 1 in case of diff
@@ -1044,7 +1096,12 @@ export interface DiffOptions {
    *
    * @default - true
    */
-  readonly 'change-set'?: boolean;
+  readonly changeSet?: boolean;
+
+  /**
+   * Positional argument for diff
+   */
+  readonly STACKS?: Array<string>;
 }
 
 /**
@@ -1052,7 +1109,12 @@ export interface DiffOptions {
  *
  * @struct
  */
-export interface MetadataOptions {}
+export interface MetadataOptions {
+  /**
+   * Positional argument for metadata
+   */
+  readonly STACK?: string;
+}
 
 /**
  * Acknowledge a notice so that it does not show up anymore
@@ -1061,7 +1123,12 @@ export interface MetadataOptions {}
  *
  * @struct
  */
-export interface AcknowledgeOptions {}
+export interface AcknowledgeOptions {
+  /**
+   * Positional argument for acknowledge
+   */
+  readonly ID?: string;
+}
 
 /**
  * Returns a list of relevant notices
@@ -1106,7 +1173,12 @@ export interface InitOptions {
    *
    * @default - false
    */
-  readonly 'generate-only'?: boolean;
+  readonly generateOnly?: boolean;
+
+  /**
+   * Positional argument for init
+   */
+  readonly TEMPLATE?: string;
 }
 
 /**
@@ -1122,7 +1194,7 @@ export interface MigrateOptions {
    *
    * @default - undefined
    */
-  readonly 'stack-name'?: string;
+  readonly stackName?: string;
 
   /**
    * The language to be used for the new project
@@ -1152,21 +1224,21 @@ export interface MigrateOptions {
    *
    * @default - undefined
    */
-  readonly 'from-path'?: string;
+  readonly fromPath?: string;
 
   /**
    * Use this flag to retrieve the template for an existing CloudFormation stack
    *
    * @default - undefined
    */
-  readonly 'from-stack'?: boolean;
+  readonly fromStack?: boolean;
 
   /**
    * The output path for the migrated CDK app
    *
    * @default - undefined
    */
-  readonly 'output-path'?: string;
+  readonly outputPath?: string;
 
   /**
    * Determines if a new scan should be created, or the last successful existing scan should be used
@@ -1174,7 +1246,7 @@ export interface MigrateOptions {
    *
    * @default - undefined
    */
-  readonly 'from-scan'?: string;
+  readonly fromScan?: string;
 
   /**
    * Filters the resource scan based on the provided criteria in the following format: "key1=value1,key2=value2"
