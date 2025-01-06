@@ -1353,7 +1353,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       on the overly restrictive permissions are not broken.`,
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
-    compatibilityWithOldBehaviorMd: 'Disable the feature flag to only allow IPv4 ingress in the default security group rules',
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to only allow IPv4 ingress in the default security group rules.',
   },
 };
 
