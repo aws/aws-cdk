@@ -45,7 +45,7 @@ export abstract class Code {
   /**
    * Inline code for Lambda handler
    * @returns `LambdaInlineCode` with inline code.
-   * @param code The actual handler code (limited to 4KiB)
+   * @param code The actual handler code (the resulting zip file cannot exceed 4MB)
    */
   public static fromInline(code: string): InlineCode {
     return new InlineCode(code);

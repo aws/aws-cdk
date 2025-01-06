@@ -1174,7 +1174,7 @@ describe('tests', () => {
       listener,
       priority: 0,
       conditions: [elbv2.ListenerCondition.pathPatterns(['/hello'])],
-    })).toThrowError('Priority must have value greater than or equal to 1');
+    })).toThrow('Priority must have value greater than or equal to 1');
   });
 
   test('Accepts unresolved priority', () => {
@@ -1196,7 +1196,7 @@ describe('tests', () => {
       fixedResponse: {
         statusCode: '500',
       },
-    })).not.toThrowError('Priority must have value greater than or equal to 1');
+    })).not.toThrow('Priority must have value greater than or equal to 1');
   });
 
   testDeprecated('Throws when specifying both target groups and redirect response', () => {
@@ -1381,7 +1381,7 @@ describe('tests', () => {
       priority: 10,
       pathPatterns: ['/test/path/1', '/test/path/2'],
       pathPattern: '/test/path/3',
-    })).toThrowError('Both `pathPatterns` and `pathPattern` are specified, specify only one');
+    })).toThrow('Both `pathPatterns` and `pathPattern` are specified, specify only one');
   });
 
   test('Add additional condition to listener rule', () => {
