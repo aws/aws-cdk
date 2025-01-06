@@ -100,9 +100,9 @@ env.grantReadConfig(user);
 
 You can enable [deletion protection](https://docs.aws.amazon.com/appconfig/latest/userguide/deletion-protection.html) on the environment by setting the `deletionProtection` property.
 
-- ACCOUNT_DEFAULT:  The default setting, which instructs AWS AppConfig to implement the deletion protection value specified in the UpdateAccountSettings API.
+- ACCOUNT_DEFAULT: The default setting, which uses account-level deletion protection. To configure account-level deletion protection, use the UpdateAccountSettings API.
 - APPLY: Instructs the deletion protection check to run, even if deletion protection is disabled at the account level. APPLY also forces the deletion protection check to run against resources created in the past hour, which are normally excluded from deletion protection checks.
-- BYPASS: Instructs AWS AppConfig to bypass the deletion protection check and delete a configuration profile even if deletion protection would have otherwise prevented it.
+- BYPASS: Instructs AWS AppConfig to bypass the deletion protection check and delete an environment even if deletion protection would have otherwise prevented it.
 
 ```ts
 declare const application: appconfig.Application;
