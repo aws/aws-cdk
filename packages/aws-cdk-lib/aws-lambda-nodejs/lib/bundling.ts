@@ -186,14 +186,17 @@ export class Bundling implements cdk.BundlingOptions {
       })
       : cdk.DockerImage.fromRegistry('dummy'); // Do not build if we don't need to
 
-    const bundlingCommand = this.createBundlingCommand({
-      inputDir: cdk.AssetStaging.BUNDLING_INPUT_DIR,
-      outputDir: cdk.AssetStaging.BUNDLING_OUTPUT_DIR,
-      esbuildRunner: 'esbuild', // esbuild is installed globally in the docker image
-      tscRunner: 'tsc', // tsc is installed globally in the docker image
-      osPlatform: 'linux', // linux docker image
-    });
-    this.command = props.command ?? ['bash', '-c', bundlingCommand];
+    // create bundling command only if docker bundling is required
+    const bundlingCommand = shouldBuildImage
+      ? this.createBundlingCommand({
+        inputDir: cdk.AssetStaging.BUNDLING_INPUT_DIR,
+        outputDir: cdk.AssetStaging.BUNDLING_OUTPUT_DIR,
+        esbuildRunner: 'esbuild', // esbuild is installed globally in the docker image
+        tscRunner: 'tsc', // tsc is installed globally in the docker image
+        osPlatform: 'linux', // linux docker image
+      })
+      : undefined;
+    this.command = props.command ?? (bundlingCommand ? ['bash', '-c', bundlingCommand] : []);
     this.environment = props.environment;
     // Bundling sets the working directory to cdk.AssetStaging.BUNDLING_INPUT_DIR
     // and we want to force npx to use the globally installed esbuild.

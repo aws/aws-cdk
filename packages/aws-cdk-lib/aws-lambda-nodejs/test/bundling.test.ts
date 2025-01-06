@@ -296,6 +296,7 @@ test('esbuild bundling source map default', () => {
     architecture: Architecture.X86_64,
     sourceMap: true,
     sourceMapMode: SourceMapMode.DEFAULT,
+    forceDockerBundling: true,
   });
 
   // Correctly bundles with esbuild
@@ -329,6 +330,7 @@ test.each([
     depsLockFilePath,
     runtime: runtime,
     architecture: Architecture.X86_64,
+    forceDockerBundling: true,
   });
 
   // Correctly bundles with esbuild
@@ -357,6 +359,7 @@ test('esbuild bundling with bundleAwsSdk true with feature flag enabled using No
     bundleAwsSDK: true,
     runtime: Runtime.NODEJS_18_X,
     architecture: Architecture.X86_64,
+    forceDockerBundling: true,
   });
 
   // Correctly bundles with esbuild
@@ -384,6 +387,7 @@ test('esbuild bundling with feature flag enabled using Node Latest', () => {
     depsLockFilePath,
     runtime: Runtime.NODEJS_LATEST,
     architecture: Architecture.X86_64,
+    forceDockerBundling: true,
   });
 
   // Correctly bundles with esbuild
@@ -411,6 +415,7 @@ test('esbuild bundling with feature flag enabled using Node 16', () => {
     depsLockFilePath,
     runtime: Runtime.NODEJS_16_X,
     architecture: Architecture.X86_64,
+    forceDockerBundling: true,
   });
 
   // Correctly bundles with esbuild
@@ -432,6 +437,7 @@ test('esbuild bundling without aws-sdk v3 when use greater than or equal Runtime
     depsLockFilePath,
     runtime: Runtime.NODEJS_18_X,
     architecture: Architecture.X86_64,
+    forceDockerBundling: true,
   });
 
   // Correctly bundles with esbuild
@@ -454,6 +460,7 @@ test('esbuild bundling includes aws-sdk', () => {
     runtime: Runtime.NODEJS_18_X,
     architecture: Architecture.X86_64,
     bundleAwsSDK: true,
+    forceDockerBundling: true,
   });
 
   // Correctly bundles with esbuild
@@ -477,6 +484,7 @@ test('esbuild bundling source map inline', () => {
     architecture: Architecture.X86_64,
     sourceMap: true,
     sourceMapMode: SourceMapMode.INLINE,
+    forceDockerBundling: true,
   });
 
   // Correctly bundles with esbuild
@@ -502,6 +510,7 @@ test('esbuild bundling is correctly done with custom runtime matching predefined
     runtime: new Runtime(STANDARD_RUNTIME.name, RuntimeFamily.NODEJS, { supportsInlineCode: true }),
     architecture: Architecture.X86_64,
     sourceMapMode: SourceMapMode.INLINE,
+    forceDockerBundling: true,
   });
 
   expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), {
@@ -526,6 +535,7 @@ test('esbuild bundling source map enabled when only source map mode exists', () 
     runtime: STANDARD_RUNTIME,
     architecture: Architecture.X86_64,
     sourceMapMode: SourceMapMode.INLINE,
+    forceDockerBundling: true,
   });
 
   // Correctly bundles with esbuild
@@ -553,6 +563,7 @@ test('esbuild bundling throws when sourceMapMode used with false sourceMap', () 
       architecture: Architecture.X86_64,
       sourceMap: false,
       sourceMapMode: SourceMapMode.INLINE,
+      forceDockerBundling: true,
     });
   }).toThrow('sourceMapMode cannot be used when sourceMap is false');
 });
@@ -761,6 +772,39 @@ test('with command hooks', () => {
   });
 });
 
+test('command hooks should be called once in local bundling', () => {
+  jest.spyOn(child_process, 'spawnSync').mockReturnValue({
+    status: 0,
+    stderr: Buffer.from('stderr'),
+    stdout: Buffer.from('stdout'),
+    pid: 123,
+    output: ['stdout', 'stderr'],
+    signal: null,
+  });
+
+  const beforeBundling = jest.fn(() => []);
+  const afterBundling = jest.fn(() => []);
+
+  const bundler = new Bundling(stack, {
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    commandHooks: {
+      beforeBundling,
+      afterBundling,
+      beforeInstall() { return []; },
+    },
+  });
+
+  const tryBundle = bundler.local?.tryBundle('/outdir', { image: STANDARD_RUNTIME.bundlingDockerImage });
+  expect(tryBundle).toBe(true);
+
+  expect(beforeBundling.mock.calls).toHaveLength(1);
+  expect(afterBundling.mock.calls).toHaveLength(1);
+});
+
 test('esbuild bundling with projectRoot', () => {
   Bundling.bundle(stack, {
     entry: '/project/lib/index.ts',
@@ -769,6 +813,7 @@ test('esbuild bundling with projectRoot', () => {
     tsconfig,
     runtime: STANDARD_RUNTIME,
     architecture: Architecture.X86_64,
+    forceDockerBundling: true,
   });
 
   // Correctly bundles with esbuild
@@ -1039,6 +1084,7 @@ test('bundling using NODEJS_LATEST doesn\'t externalize anything by default', ()
     depsLockFilePath,
     runtime: Runtime.NODEJS_LATEST,
     architecture: Architecture.X86_64,
+    forceDockerBundling: true,
   });
 
   expect(Code.fromAsset).toHaveBeenCalledWith('/project', {

@@ -152,8 +152,10 @@ export class Bundling implements cdk.BundlingOptions {
       })
       : cdk.DockerImage.fromRegistry('dummy'); // Do not build if we don't need to
 
-    const bundlingCommand = this.createBundlingCommand(cdk.AssetStaging.BUNDLING_INPUT_DIR, cdk.AssetStaging.BUNDLING_OUTPUT_DIR);
-    this.command = props.command ?? ['bash', '-c', bundlingCommand];
+    const bundlingCommand = shouldBuildImage
+      ? this.createBundlingCommand(cdk.AssetStaging.BUNDLING_INPUT_DIR, cdk.AssetStaging.BUNDLING_OUTPUT_DIR)
+      : undefined;
+    this.command = props.command ?? (bundlingCommand ? ['bash', '-c', bundlingCommand] : []);
     this.environment = environment;
     this.entrypoint = props.entrypoint;
     this.volumes = props.volumes;
