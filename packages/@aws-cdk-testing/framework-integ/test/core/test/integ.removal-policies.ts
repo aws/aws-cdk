@@ -1,4 +1,4 @@
-import { App, RemovalPolicy, RemovalPolicies, Stack } from 'aws-cdk-lib';
+import { App, RemovalPolicies, Stack } from 'aws-cdk-lib';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
