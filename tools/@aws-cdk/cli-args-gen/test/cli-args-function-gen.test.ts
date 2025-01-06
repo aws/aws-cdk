@@ -26,6 +26,10 @@ describe('render', () => {
       },
       commands: {
         deploy: {
+          arg: {
+            name: 'STACKS',
+            variadic: true,
+          },
           description: 'Deploy a stack',
           options: {
             all: {
@@ -60,11 +64,12 @@ describe('render', () => {
           case 'deploy':
             commandOptions = {
               all: args.all,
+              STACKS: args.STACKS,
             };
             break;
         }
         const cliArguments: CliArguments = {
-          _: args._,
+          _: args._[0],
           globalOptions,
           [args._[0]]: commandOptions,
         };
