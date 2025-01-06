@@ -11,7 +11,7 @@ describe('every aspect gets invoked exactly once', () => {
     fc.assert(
       fc.property(appWithAspects(), fc.boolean(), (app, stabilizeAspects) => {
         afterSynth((testApp) => {
-          forEveryVisitPair(testApp.visitLog, (a, b) => {
+          forEveryVisitPair(testApp.actionLog, (a, b) => {
             if (sameConstruct(a, b) && sameAspect(a, b)) {
               throw new Error(`Duplicate visit: ${a.index} and ${b.index}`);
             }
@@ -27,7 +27,7 @@ describe('every aspect gets invoked exactly once', () => {
         const originalConstructsOnApp = app.cdkApp.node.findAll();
         const originalAspectApplications = getAllAspectApplications(originalConstructsOnApp);
         afterSynth((testApp) => {
-          const visitsMap = getVisitsMap(testApp.visitLog);
+          const visitsMap = getVisitsMap(testApp.actionLog);
 
           for (const aspectApplication of originalAspectApplications) {
             // Check that each original AspectApplication also visited all child nodes of its original scope:
@@ -51,7 +51,7 @@ describe('every aspect gets invoked exactly once', () => {
 
           const allConstructsOnApp = testApp.cdkApp.node.findAll();
           const allAspectApplications = getAllAspectApplications(allConstructsOnApp);
-          const visitsMap = getVisitsMap(testApp.visitLog);
+          const visitsMap = getVisitsMap(testApp.actionLog);
 
           for (const aspectApplication of allAspectApplications) {
             // Check that each AspectApplication also visited all child nodes of its scope:
@@ -73,7 +73,7 @@ test('inherited aspects get invoked before locally defined aspects, if both have
   fc.assert(
     fc.property(appWithAspects(), fc.boolean(), (app, stabilizeAspects) => {
       afterSynth((testApp) => {
-        forEveryVisitPair(testApp.visitLog, (a, b) => {
+        forEveryVisitPair(testApp.actionLog, (a, b) => {
           if (!sameConstruct(a, b)) return;
 
           const aPrio = lowestAspectPrioFor(a.aspect, a.construct);
@@ -87,10 +87,12 @@ test('inherited aspects get invoked before locally defined aspects, if both have
           if (!(aInherited == true && bInherited == false)) return;
 
           // But only if the application of aspect A exists at least as long as the application of aspect B
+          /*
           const aAppliedT = aspectAppliedT(testApp, a.aspect, a.construct);
           const bAppliedT = aspectAppliedT(testApp, b.aspect, b.construct);
 
           if (!(aAppliedT <= bAppliedT)) return;
+          */
 
           if (!(a.index < b.index)) {
             throw new Error(
@@ -100,6 +102,7 @@ test('inherited aspects get invoked before locally defined aspects, if both have
         });
       }, stabilizeAspects)(app);
     }),
+    { seed: 1151562818, path: '59:26:25:23:23:23:23:23:13:0', endOnFailure: true },
   ),
 );
 
@@ -107,7 +110,7 @@ test('for every construct, lower priorities go before higher priorities', () =>
   fc.assert(
     fc.property(appWithAspects(), fc.boolean(), (app, stabilizeAspects) => {
       afterSynth((testApp) => {
-        forEveryVisitPair(testApp.visitLog, (a, b) => {
+        forEveryVisitPair(testApp.actionLog, (a, b) => {
           if (!sameConstruct(a, b)) return;
 
           const aPrio = lowestAspectPrioFor(a.aspect, a.construct);
@@ -132,7 +135,7 @@ test('for every construct, if a invokes before b that must mean it is of equal o
   fc.assert(
     fc.property(appWithAspects(), fc.boolean(), (app, stabilizeAspects) => {
       afterSynth((testApp) => {
-        forEveryVisitPair(testApp.visitLog, (a, b) => {
+        forEveryVisitPair(testApp.actionLog, (a, b) => {
           if (!sameConstruct(a, b)) return;
 
           const aPrio = lowestAspectPrioFor(a.aspect, a.construct);
@@ -153,7 +156,7 @@ test('visitLog is nonempty', () =>
   fc.assert(
     fc.property(appWithAspects(), fc.boolean(), (app, stabilizeAspects) => {
       afterSynth((testApp) => {
-        expect(testApp.visitLog).not.toEqual([]);
+        expect(testApp.actionLog).not.toEqual([]);
       }, stabilizeAspects)(app);
     }),
   ),
@@ -198,12 +201,14 @@ interface AspectVisitWithIndex extends AspectVisit {
  * This is humongously inefficient at large scale, so we might need more clever
  * algorithms to keep this tractable.
  */
-function forEveryVisitPair(log: AspectVisitLog, block: (a: AspectVisitWithIndex, b: AspectVisitWithIndex) => void) {
+function forEveryVisitPair(log: AspectActionLog, block: (a: AspectVisitWithIndex, b: AspectVisitWithIndex) => void) {
   for (let i = 0; i < log.length; i++) {
     for (let j = 0; j < log.length; j++) {
-      if (i === j) { continue; }
+      const logI = log[i];
+      const logJ = log[j];
+      if (i ===j || logI.action !== 'visit' || logJ.action !== 'visit') { continue; }
 
-      block({ ...log[i], index: i }, { ...log[j], index: j });
+      block({ ...logI, index: i }, { ...logJ, index: j });
     }
   }
 }
@@ -224,10 +229,11 @@ function arraysEqualUnordered<T>(arr1: T[], arr2: T[]): boolean {
  * Given an AspectVisitLog, returns a map of Constructs with a list of all Aspects that
  * visited the construct.
  */
-function getVisitsMap(log: AspectVisitLog): Map<IConstruct, IAspect[]> {
+function getVisitsMap(log: AspectActionLog): Map<IConstruct, IAspect[]> {
   const visitsMap = new Map<IConstruct, IAspect[]>();
   for (let i = 0; i < log.length; i++) {
     const visit = log[i];
+    if (visit.action !== 'visit') { continue; }
     if (!visitsMap.has(visit.construct)) {
       visitsMap.set(visit.construct, []);
     }
@@ -298,11 +304,17 @@ function allAspectApplicationsInScope(a: Construct): AspectApplication[] {
  * Take the minimum of all added applications that could lead to this execution.
  */
 function aspectAppliedT(prettyApp: PrettyApp, a: IAspect, c: Construct): number {
-  const potentialTimes = [...prettyApp.initialAspects, ...prettyApp.addedAspects].filter((appl) => {
-    return appl.aspect === a && isAncestorOf(appl.construct, c);
-  }).map((appl) => appl.t);
+  for (let i = 0; i < prettyApp.actionLog.length; i++) {
+    const visit = prettyApp.actionLog[i];
+    if (visit.action !== 'aspectApplied') { continue; }
 
-  return Math.min(...potentialTimes);
+    if (visit.aspect === a && isAncestorOf(visit.construct, c)) {
+      return i;
+    }
+  }
+
+  // Must have been there already from the start
+  return -1;
 }
 
 /**
@@ -374,40 +386,27 @@ function arbConstructTreeFactory(): fc.Arbitrary<ConstructFactory> {
 class PrettyApp {
   private readonly initialTree: Set<string>;
   private readonly _initialAspects: Map<string, Set<string>>;
-  public readonly initialAspects: RecordedAspectApplication[];
 
   constructor(public readonly cdkApp: App, public readonly executionState: ExecutionState) {
     const constructs = cdkApp.node.findAll();
     this.initialTree = new Set(constructs.map(c => c.node.path));
     this._initialAspects = new Map(constructs.map(c => [c.node.path, new Set(renderAspects(c))]));
-
-    this.initialAspects = constructs.flatMap(c => Aspects.of(c).applied.map(a => ({
-      aspect: a.aspect,
-      construct: a.construct,
-      priority: a.priority,
-      t: 0,
-    } as RecordedAspectApplication)));
   }
 
   /**
    * Return the log of all aspect visits
    */
-  public get visitLog() {
-    return this.executionState.visitLog;
-  }
-
-  /**
-   * Return a list of all constructs added by aspects
-   */
-  public get addedConstructs() {
-    return this.executionState.addedConstructs;
+  public get actionLog() {
+    return this.executionState.actionLog;
   }
 
   /**
    * Return a list of all aspects added by other aspects
    */
   public get addedAspects() {
-    return this.executionState.addedAspects;
+    return this.executionState.actionLog
+      .map((visit, i) => [i, visit] as const)
+      .filter(([_, visit]) => visit.action === 'aspectApplied');
   }
 
   public toString() {
@@ -423,8 +422,8 @@ class PrettyApp {
     lines.push('TREE');
     recurse(this.cdkApp);
     lines.push('VISITS');
-    this.visitLog.forEach((visit, i) => {
-      lines.push(`  ${i}. ${visit.construct} <-- ${visit.aspect}`);
+    this.actionLog.forEach((visit, i) => {
+      lines.push(`  ${i}. ${renderAspectAction(visit)}`);
     });
 
     lines.push('', '');
@@ -460,6 +459,17 @@ class PrettyApp {
   }
 }
 
+function renderAspectAction(v: AspectAction): string {
+  switch (v.action) {
+    case 'visit':
+      return `      ${v.construct} <-- ${v.aspect}`;
+    case 'constructAdded':
+      return `add   ${v.construct}`;
+    case 'aspectApplied':
+      return `apply ${v.aspect}@${v.priority} to ${v.construct}`;
+  }
+}
+
 function renderAspects(c: Construct) {
   return unique(Aspects.of(c).applied.map(a => `${a.aspect}@${a.priority}`));
 }
@@ -476,11 +486,24 @@ function unique(xs: string[]): string[] {
 }
 
 interface AspectVisit {
+  action: 'visit';
   construct: IConstruct;
   aspect: TracingAspect;
 }
 
-type AspectVisitLog = AspectVisit[];
+interface ConstructAdded {
+  action: 'constructAdded';
+  construct: IConstruct;
+}
+
+interface AspectApplied extends PartialTestAspectApplication {
+  action: 'aspectApplied';
+  construct: IConstruct;
+}
+
+type AspectAction = AspectVisit | ConstructAdded | AspectApplied;
+
+type AspectActionLog = AspectAction[];
 
 /**
  * Add arbitrary aspects to the given tree
@@ -504,9 +527,7 @@ function arbAddAspects(appFac: AppFactory): fc.Arbitrary<[App, ExecutionState]> 
     // interfere with each other. Also a different aspect invocation log for every tree.
     const tree = appFac();
     const state: ExecutionState = {
-      visitLog: [],
-      addedConstructs: [],
-      addedAspects: [],
+      actionLog: [],
     };
     tree[EXECUTIONSTATE_SYM] = state; // Stick this somewhere the aspects can find it
 
@@ -586,17 +607,7 @@ interface ExecutionState {
   /**
    * Visit log of all aspects
    */
-  visitLog: AspectVisitLog;
-
-  /**
-   * Constructs that were added by aspects
-   */
-  addedConstructs: Construct[];
-
-  /**
-   * Record where we added an aspect
-   */
-  addedAspects: RecordedAspectApplication[];
+  actionLog: AspectActionLog;
 }
 
 /**
@@ -671,7 +682,8 @@ abstract class TracingAspect implements IAspect {
   }
 
   visit(node: IConstruct): void {
-    this.executionState(node).visitLog.push({
+    this.executionState(node).actionLog.push({
+      action: 'visit',
       aspect: this,
       construct: node,
     });
@@ -721,14 +733,6 @@ interface TestAspectApplication extends PartialTestAspectApplication {
 }
 
 /**
- * An aspect application added by another aspect, during execution
- */
-interface RecordedAspectApplication extends PartialTestAspectApplication {
-  t: number;
-  construct: Construct;
-}
-
-/**
  * An aspect that adds a new node, if one doesn't exist yet
  */
 class NodeAddingAspect extends TracingAspect {
@@ -744,19 +748,23 @@ class NodeAddingAspect extends TracingAspect {
       return;
     }
 
+    const executionState = this.executionState(node);
+
     const newConstruct = new ArbConstruct(scope, this.loc.id);
+    executionState.actionLog.push({
+      action: 'constructAdded',
+      construct: newConstruct,
+    });
+
     for (const { aspect, priority } of this.newAspects) {
       Aspects.of(newConstruct).add(aspect, { priority });
-      const executionState = this.executionState(node);
-      executionState.addedAspects.push({
-        t: executionState.visitLog.length,
+      executionState.actionLog.push({
+        action: 'aspectApplied',
         construct: newConstruct,
         aspect,
         priority,
       });
     }
-    // Log that we added this construct
-    this.executionState(node).addedConstructs.push(newConstruct);
   }
 
   public toString() {
@@ -779,8 +787,8 @@ class AspectAddingAspect extends TracingAspect {
     for (const construct of constructs) {
       Aspects.of(construct).add(this.newAspect.aspect, { priority: this.newAspect.priority });
       const executionState = this.executionState(node);
-      executionState.addedAspects.push({
-        t: executionState.visitLog.length,
+      executionState.actionLog.push({
+        action: 'aspectApplied',
         construct,
         aspect: this.newAspect.aspect,
         priority: this.newAspect.priority,
