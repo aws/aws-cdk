@@ -194,7 +194,7 @@ export interface GlobalOptions {
    *
    * @default - false
    */
-  readonly verbose?: boolean;
+  readonly verbose?: number;
 
   /**
    * Debug the CDK app. Log additional information during synthesis, such as creation stack traces of tokens (sets CDK_DEBUG, will slow down synthesis)
