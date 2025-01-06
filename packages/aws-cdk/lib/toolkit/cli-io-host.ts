@@ -21,7 +21,7 @@ export interface IoMessage {
   readonly action: IoAction;
 
   /**
-   * A short message code uniquely identifying a message type of the format
+   * A short message code uniquely identifying a message type of the format [CATEGORY]_[NUMBER_CODE].
    * All 'error' level message codes begin with 0.
    * All warning level message codes begin with 1.
    * All info level message codes begin with 2.
