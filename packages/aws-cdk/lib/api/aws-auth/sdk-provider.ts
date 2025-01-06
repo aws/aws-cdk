@@ -4,14 +4,16 @@ import { Environment, EnvironmentUtils, UNKNOWN_ACCOUNT, UNKNOWN_REGION } from '
 import { AssumeRoleCommandInput } from '@aws-sdk/client-sts';
 import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
 import type { NodeHttpHandlerOptions } from '@smithy/node-http-handler';
-import { AwsCredentialIdentity, AwsCredentialIdentityProvider, Logger } from '@smithy/types';
+import { AwsCredentialIdentityProvider, Logger } from '@smithy/types';
 import { AwsCliCompatible } from './awscli-compatible';
 import { cached } from './cached';
 import { CredentialPlugins } from './credential-plugins';
+import { makeCachingProvider } from './provider-caching';
 import { SDK } from './sdk';
 import { debug, warning } from '../../logging';
+import { AuthenticationError } from '../../toolkit/error';
 import { traceMethods } from '../../util/tracing';
-import { Mode } from '../plugin';
+import { Mode } from '../plugin/mode';
 
 export type AssumeRoleAdditionalOptions = Partial<Omit<AssumeRoleCommandInput, 'ExternalId' | 'RoleArn'>>;
 
@@ -57,7 +59,6 @@ export interface SdkHttpOptions {
 }
 
 const CACHED_ACCOUNT = Symbol('cached_account');
-const CACHED_DEFAULT_CREDENTIALS = Symbol('cached_default_credentials');
 
 /**
  * SDK configuration for a given environment
@@ -126,7 +127,7 @@ export class SdkProvider {
 
     const region = await AwsCliCompatible.region(options.profile);
     const requestHandler = AwsCliCompatible.requestHandlerBuilder(options.httpOptions);
-    return new SdkProvider(credentialProvider, region, requestHandler);
+    return new SdkProvider(credentialProvider, region, requestHandler, options.logger);
   }
 
   private readonly plugins = new CredentialPlugins();
@@ -138,6 +139,7 @@ export class SdkProvider {
      */
     public readonly defaultRegion: string,
     private readonly requestHandler: NodeHttpHandlerOptions = {},
+    private readonly logger?: Logger,
   ) {}
 
   /**
@@ -157,19 +159,19 @@ export class SdkProvider {
 
     // At this point, we need at least SOME credentials
     if (baseCreds.source === 'none') {
-      throw new Error(fmtObtainCredentialsError(env.account, baseCreds));
+      throw new AuthenticationError(fmtObtainCredentialsError(env.account, baseCreds));
     }
 
     // Simple case is if we don't need to "assumeRole" here. If so, we must now have credentials for the right
     // account.
     if (options?.assumeRoleArn === undefined) {
       if (baseCreds.source === 'incorrectDefault') {
-        throw new Error(fmtObtainCredentialsError(env.account, baseCreds));
+        throw new AuthenticationError(fmtObtainCredentialsError(env.account, baseCreds));
       }
 
       // Our current credentials must be valid and not expired. Confirm that before we get into doing
       // actual CloudFormation calls, which might take a long time to hang.
-      const sdk = new SDK(baseCreds.credentials, env.region, this.requestHandler);
+      const sdk = new SDK(baseCreds.credentials, env.region, this.requestHandler, this.logger);
       await sdk.validateCredentials();
       return { sdk, didAssumeRole: false };
     }
@@ -201,7 +203,7 @@ export class SdkProvider {
           `${fmtObtainedCredentials(baseCreds)} could not be used to assume '${options.assumeRoleArn}', but are for the right account. Proceeding anyway.`,
         );
         return {
-          sdk: new SDK(baseCreds.credentials, env.region, this.requestHandler),
+          sdk: new SDK(baseCreds.credentials, env.region, this.requestHandler, this.logger),
           didAssumeRole: false,
         };
       }
@@ -221,7 +223,7 @@ export class SdkProvider {
     if (baseCreds.source === 'none') {
       return undefined;
     }
-    return (await new SDK(baseCreds.credentials, env.region, this.requestHandler).currentAccount()).partition;
+    return (await new SDK(baseCreds.credentials, env.region, this.requestHandler, this.logger).currentAccount()).partition;
   }
 
   /**
@@ -239,7 +241,7 @@ export class SdkProvider {
     const account = env.account !== UNKNOWN_ACCOUNT ? env.account : (await this.defaultAccount())?.accountId;
 
     if (!account) {
-      throw new Error(
+      throw new AuthenticationError(
         'Unable to resolve AWS account to use. It must be either configured when you define your CDK Stack, or through the environment',
       );
     }
@@ -267,13 +269,7 @@ export class SdkProvider {
   public async defaultAccount(): Promise<Account | undefined> {
     return cached(this, CACHED_ACCOUNT, async () => {
       try {
-        const credentials = await this.defaultCredentials();
-        const accessKeyId = credentials.accessKeyId;
-        if (!accessKeyId) {
-          throw new Error('Unable to resolve AWS credentials (setup with "aws configure")');
-        }
-
-        return await new SDK(credentials, this.defaultRegion, this.requestHandler).currentAccount();
+        return await new SDK(this.defaultCredentialProvider, this.defaultRegion, this.requestHandler, this.logger).currentAccount();
       } catch (e: any) {
         // Treat 'ExpiredToken' specially. This is a common situation that people may find themselves in, and
         // they are complaining about if we fail 'cdk synth' on them. We loudly complain in order to show that
@@ -306,7 +302,7 @@ export class SdkProvider {
     if (defaultAccountId === accountId) {
       return {
         source: 'correctDefault',
-        credentials: await this.defaultCredentials(),
+        credentials: await this.defaultCredentialProvider,
       };
     }
 
@@ -321,7 +317,7 @@ export class SdkProvider {
       return {
         source: 'incorrectDefault',
         accountId: defaultAccountId,
-        credentials: await this.defaultCredentials(),
+        credentials: await this.defaultCredentialProvider,
         unusedPlugins: this.plugins.availablePluginNames,
       };
     }
@@ -331,16 +327,6 @@ export class SdkProvider {
       source: 'none',
       unusedPlugins: this.plugins.availablePluginNames,
     };
-  }
-
-  /**
-   * Resolve the default chain to the first set of credentials that is available
-   */
-  private async defaultCredentials(): Promise<AwsCredentialIdentity> {
-    return cached(this, CACHED_DEFAULT_CREDENTIALS, async () => {
-      debug('Resolving default credentials');
-      return this.defaultCredentialProvider();
-    });
   }
 
   /**
@@ -364,7 +350,7 @@ export class SdkProvider {
     const sourceDescription = fmtObtainedCredentials(mainCredentials);
 
     try {
-      const credentials = await fromTemporaryCredentials({
+      const credentials = await makeCachingProvider(fromTemporaryCredentials({
         masterCredentials: mainCredentials.credentials,
         params: {
           RoleArn: roleArn,
@@ -375,18 +361,24 @@ export class SdkProvider {
         },
         clientConfig: {
           region,
-          ...this.requestHandler,
+          requestHandler: this.requestHandler,
+          customUserAgent: 'aws-cdk',
+          logger: this.logger,
         },
-      })();
+        logger: this.logger,
+      }));
 
-      return new SDK(credentials, region, this.requestHandler);
+      // Call the provider at least once here, to catch an error if it occurs
+      await credentials();
+
+      return new SDK(credentials, region, this.requestHandler, this.logger);
     } catch (err: any) {
       if (err.name === 'ExpiredToken') {
         throw err;
       }
 
       debug(`Assuming role failed: ${err.message}`);
-      throw new Error(
+      throw new AuthenticationError(
         [
           'Could not assume role in target account',
           ...(sourceDescription ? [`using ${sourceDescription}`] : []),
@@ -454,11 +446,11 @@ export interface CredentialsOptions {
  * Result of obtaining base credentials
  */
 type ObtainBaseCredentialsResult =
-  | { source: 'correctDefault'; credentials: AwsCredentialIdentity }
-  | { source: 'plugin'; pluginName: string; credentials: AwsCredentialIdentity }
+  | { source: 'correctDefault'; credentials: AwsCredentialIdentityProvider }
+  | { source: 'plugin'; pluginName: string; credentials: AwsCredentialIdentityProvider }
   | {
     source: 'incorrectDefault';
-    credentials: AwsCredentialIdentity;
+    credentials: AwsCredentialIdentityProvider;
     accountId: string;
     unusedPlugins: string[];
   }

@@ -1,0 +1,47 @@
+name: Lambda Runtime Tests Update
+on:
+  pull_request:
+    paths:
+      - 'packages/aws-cdk-lib/aws-lambda/lib/runtime.ts'
+
+jobs:
+  update-lambda-tests:
+    if: github.repository == 'aws/aws-cdk'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "*"
+        env:
+          NODE_OPTIONS: "--max-old-space-size=8196 --experimental-worker ${NODE_OPTIONS:-}"
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile && cd tools/@aws-cdk/lambda-integration-test-updater && yarn build+test
+
+      - name: Update Lambda Runtime Tests
+        run: |
+          cd tools/@aws-cdk/lambda-integration-test-updater
+          ./bin/update-lambda-runtimestes-integ-testing
+
+      - name: Check for changes
+        id: git-check
+        run: |
+          if [[ -n "$(git status --porcelain)" ]]; then
+            echo "changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "changes=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit & Push changes
+        if: steps.git-check.outputs.changes == 'true'
+        run: |
+          git config --global user.name 'aws-cdk-automation'
+          git config --global user.email 'aws-cdk-automation@users.noreply.github.com'
+          git add .
+          git commit -m "chore: update lambda runtime integration tests"
+          git push origin ${{ github.event.pull_request.head.ref }}

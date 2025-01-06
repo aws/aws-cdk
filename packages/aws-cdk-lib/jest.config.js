@@ -8,6 +8,10 @@ module.exports = {
   testMatch: [
     '<rootDir>/**/test/**/?(*.)+(test).ts',
   ],
+  coveragePathIgnorePatterns: ['\\.generated\\.[jt]s$', '<rootDir>/.*/test/', '.warnings.jsii.js$', '/node_modules/'],
+
+  // Massive parallellism leads to common timeouts
+  testTimeout: 60_000,
 
   coverageThreshold: {
     global: {

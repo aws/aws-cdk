@@ -707,6 +707,20 @@ describe('CDK Include', () => {
     );
   });
 
+  test('preserves unknown policy attributes', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'non-existent-policy-attribute.json');
+    Template.fromStack(stack).templateMatches(
+      loadTestFileToJsObject('non-existent-policy-attribute.json'),
+    );
+  });
+
+  test('correctly handles string arrays in policy attributes', () => {
+    const cfnTemplate = includeTestTemplate(stack, 'string-arrays-in-policy.json');
+    Template.fromStack(stack).templateMatches(
+      loadTestFileToJsObject('string-arrays-in-policy.json'),
+    );
+  });
+
   test("correctly handles referencing the ingested template's resources across Stacks", () => {
     // for cross-stack sharing to work, we need an App
     const app = new core.App();

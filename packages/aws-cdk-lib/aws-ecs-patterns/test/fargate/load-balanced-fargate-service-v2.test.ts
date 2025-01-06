@@ -516,7 +516,7 @@ describe('Application Load Balancer', () => {
             },
           ],
         });
-      }).toThrowError();
+      }).toThrow();
     });
 
     test('errors when idleTimeout is under 1 seconds for multiAlbService', () => {
@@ -586,7 +586,7 @@ describe('Application Load Balancer', () => {
             },
           ],
         });
-      }).toThrowError();
+      }).toThrow();
     });
 
     test('passes when idleTimeout is between 1 and 4000 seconds for multiAlbService', () => {
