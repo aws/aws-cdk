@@ -114,6 +114,7 @@ function oldBehavior(flag: FlagInfo): string | undefined {
     case FlagType.ApiDefault: return flag.compatibilityWithOldBehaviorMd;
     case FlagType.BugFix: return flag.compatibilityWithOldBehaviorMd;
     case FlagType.VisibleContext: return undefined;
+    case FlagType.Temporary: return flag.compatibilityWithOldBehaviorMd;
   }
 }
 
@@ -148,6 +149,7 @@ function renderType(type: FlagType): string {
     case FlagType.ApiDefault: return '(default)';
     case FlagType.BugFix: return '(fix)';
     case FlagType.VisibleContext: return '(config)';
+    case FlagType.Temporary: return '(temporary)';
   }
 }
 

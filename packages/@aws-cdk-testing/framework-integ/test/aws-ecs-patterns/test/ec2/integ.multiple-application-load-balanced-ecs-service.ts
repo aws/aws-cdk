@@ -9,6 +9,8 @@ const app = new App({
   postCliContext: {
     [AUTOSCALING_GENERATE_LAUNCH_TEMPLATE]: false,
     [REDUCE_EC2_FARGATE_CLOUDWATCH_PERMISSIONS]: false,
+    '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': false,
+    '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
   },
 });
 const stack = new Stack(app, 'aws-ecs-integ-multiple-alb');

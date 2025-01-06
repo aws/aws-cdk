@@ -5,7 +5,12 @@ import { App, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { NetworkMultipleTargetGroupsEc2Service } from 'aws-cdk-lib/aws-ecs-patterns';
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': false,
+    '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
+  },
+});
 const stack = new Stack(app, 'aws-ecs-integ-nlb-healthchecks');
 const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 const cluster = new Cluster(stack, 'Cluster', { vpc });

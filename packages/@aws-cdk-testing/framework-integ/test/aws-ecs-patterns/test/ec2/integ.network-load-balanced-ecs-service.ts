@@ -6,7 +6,12 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import { NetworkLoadBalancedEc2Service } from 'aws-cdk-lib/aws-ecs-patterns';
 import { IpAddressType } from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': false,
+    '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
+  },
+});
 const stack = new Stack(app, 'aws-ecs-integ-nlb');
 const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 const cluster = new Cluster(stack, 'Cluster', { vpc });
