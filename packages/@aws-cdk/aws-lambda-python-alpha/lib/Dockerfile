@@ -1,12 +1,12 @@
 # The correct AWS SAM build image based on the runtime of the function will be
 # passed as build arg. The default allows to do `docker build .` when testing.
-ARG IMAGE=public.ecr.aws/sam/build-python3.7
+ARG IMAGE=public.ecr.aws/sam/build-python3.11
 FROM $IMAGE
 
 ARG PIP_INDEX_URL
 ARG PIP_EXTRA_INDEX_URL
 ARG HTTPS_PROXY
-ARG POETRY_VERSION=1.5.1
+ARG POETRY_VERSION=2.0.0
 
 # Add virtualenv path
 ENV PATH="/usr/app/venv/bin:$PATH"
@@ -33,6 +33,8 @@ RUN \
     chmod -R 777 /tmp/poetry-cache && \
 # pipenv 2022.4.8 is the last version with Python 3.6 support
     pip install pipenv==2022.4.8 poetry==$POETRY_VERSION && \
+# Install the poetry-plugin-export plugin, needed for poetry versions >= 2.0.0
+    poetry self add poetry-plugin-export && \
 # Ensure no temporary files remain in the caches
     rm -rf /tmp/pip-cache/* /tmp/poetry-cache/*
 
