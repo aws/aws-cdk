@@ -30,8 +30,13 @@ export interface RemovalPolicyProps {
   readonly overwrite?: boolean;
 
   /**
-   * The priority to use when applying this aspect.
-   * If multiple aspects apply conflicting settings, the one with the higher priority wins.
+   * The priority to use when applying this policy.
+   *
+   * The higher priority (lower numeric value) is applied first, and the lower priority
+   * (higher numeric value) is applied later.
+   * If multiple removal policies are applied with conflicting settings, the one with
+   * the higher priority will be applied. However, if `overwrite` is true, the other policy
+   * will overwrite it.
    *
    * @default - AspectPriority.MUTATING
    */
