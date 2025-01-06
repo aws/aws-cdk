@@ -37,3 +37,4 @@ component_management:
 # https://docs.codecov.com/docs/ignoring-paths
 ignore:
   - packages/aws-cdk/lib/cli.ts # we integ test this file
+  - ^(?!.*packages\/(aws-cdk|aws-cdk-lib\/core)\/).+$ # ignore anything that isn't in the cli or core
