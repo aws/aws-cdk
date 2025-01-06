@@ -1,7 +1,5 @@
 # Amazon Elastic Load Balancing V2 Construct Library
 
-
-
 The `aws-cdk-lib/aws-elasticloadbalancingv2` package provides constructs for
 configuring application and network load balancers.
 
@@ -254,7 +252,7 @@ For more information, see [Load balancer attributes](https://docs.aws.amazon.com
 ### Setting up Access Log Bucket on Application Load Balancer
 
 The only server-side encryption option that's supported is Amazon S3-managed keys (SSE-S3). For more information
-Documentation: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-access-logging.html
+Documentation: <https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-access-logging.html>
 
 ```ts
 
@@ -272,7 +270,7 @@ lb.logAccessLogs(bucket);
 ### Setting up Connection Log Bucket on Application Load Balancer
 
 Like access log bucket, the only server-side encryption option that's supported is Amazon S3-managed keys (SSE-S3). For more information
-Documentation: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-connection-logging.html
+Documentation: <https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-connection-logging.html>
 
 ```ts
 declare const vpc: ec2.Vpc;
@@ -298,13 +296,14 @@ const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
 });
 ```
 
-By setting `DUAL_STACK_WITHOUT_PUBLIC_IPV4`, you can provision load balancers without public IPv4s
+By setting `DUAL_STACK_WITHOUT_PUBLIC_IPV4`, you can provision load balancers without public IPv4s:
 
 ```ts
 declare const vpc: ec2.Vpc;
 
 const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
   vpc,
+  internetFacing: true,
   ipAddressType: elbv2.IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4,
 });
 ```
@@ -441,6 +440,7 @@ const listener = lb.addListener('Listener', {
 ```
 
 ### Network Load Balancer and EC2 IConnectable interface
+
 Network Load Balancer implements EC2 `IConnectable` and exposes `connections` property. EC2 Connections allows manage the allowed network connections for constructs with Security Groups. This class makes it easy to allow network connections to and from security groups, and between security groups individually. One thing to keep in mind is that network load balancers do not have security groups, and no automatic security group configuration is done for you. You will have to configure the security groups of the target yourself to allow traffic by clients and/or load balancer instances, depending on your target types.
 
 ```ts
@@ -530,7 +530,7 @@ const tg = new elbv2.ApplicationTargetGroup(this, 'TG', {
 });
 ```
 
-For more information see: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/sticky-sessions.html#application-based-stickiness
+For more information see: <https://docs.aws.amazon.com/elasticloadbalancing/latest/application/sticky-sessions.html#application-based-stickiness>
 
 ### Setting the target group protocol version
 

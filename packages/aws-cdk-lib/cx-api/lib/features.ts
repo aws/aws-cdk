@@ -120,6 +120,7 @@ export const ASPECT_STABILIZATION = '@aws-cdk/core:aspectStabilization';
 export const USER_POOL_DOMAIN_NAME_METHOD_WITHOUT_CUSTOM_RESOURCE = '@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource';
 export const Enable_IMDS_Blocking_Deprecated_Feature = '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature';
 export const Disable_ECS_IMDS_Blocking = '@aws-cdk/aws-ecs:disableEcsImdsBlocking';
+export const ALB_DUALSTACK_WITHOUT_PUBLIC_IPV4_SECURITY_GROUP_RULES_DEFAULT = '@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1338,6 +1339,21 @@ export const FLAGS: Record<string, FlagInfo> = {
     `,
     introducedIn: { v2: '2.174.0' },
     recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [ALB_DUALSTACK_WITHOUT_PUBLIC_IPV4_SECURITY_GROUP_RULES_DEFAULT]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, the default security group ingress rules will allow IPv6 ingress from anywhere',
+    detailsMd: `
+      For internet facing ALBs with 'dualstack-without-public-ipv4' IP address type, the default security group rules
+      will allow IPv6 ingress from anywhere (::/0). Previously, the default security group rules would only allow IPv4 ingress.
+
+      Using a feature flag to make sure existing customers who might be relying
+      on the overly restrictive permissions are not broken.`,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to only allow IPv4 ingress in the default security group rules',
   },
 };
 
