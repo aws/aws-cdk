@@ -2228,6 +2228,20 @@ describe('cluster', () => {
       }).toThrow(/Vpc must contain private subnets when public endpoint access is disabled/);
     });
 
+    test('private with private subnets', () => {
+      const { stack } = testFixture();
+
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        prune: false,
+        endpointAccess: eks.EndpointAccess.PRIVATE,
+      });
+
+      const functions = Template.fromStack(stack).findResources('AWS::Lambda::Function');
+      expect(functions.awscdkawseksKubectlProviderHandlerAABA4423.Properties.VpcConfig.SubnetIds.length).not.toEqual(0);
+      expect(functions.awscdkawseksKubectlProviderHandlerAABA4423.Properties.VpcConfig.SecurityGroupIds.length).not.toEqual(0);
+    });
+
     test('private and non restricted public without private subnets', () => {
       const { stack } = testFixture();
 
@@ -2245,6 +2259,21 @@ describe('cluster', () => {
       });
     });
 
+    test('private and non restricted public with private subnets', () => {
+      const { stack } = testFixture();
+
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        prune: false,
+        endpointAccess: eks.EndpointAccess.PUBLIC_AND_PRIVATE,
+      });
+
+      // we have private subnets so we should use them.
+      const functions = Template.fromStack(stack).findResources('AWS::Lambda::Function');
+      expect(functions.awscdkawseksKubectlProviderHandlerAABA4423.Properties.VpcConfig.SubnetIds.length).not.toEqual(0);
+      expect(functions.awscdkawseksKubectlProviderHandlerAABA4423.Properties.VpcConfig.SecurityGroupIds.length).not.toEqual(0);
+    });
+
     test('private and restricted public without private subnets', () => {
       const { stack } = testFixture();
 
@@ -2256,6 +2285,21 @@ describe('cluster', () => {
           vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
         });
       }).toThrow(/Vpc must contain private subnets when public endpoint access is restricted/);
+    });
+
+    test('private and restricted public with private subnets', () => {
+      const { stack } = testFixture();
+
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        prune: false,
+        endpointAccess: eks.EndpointAccess.PUBLIC_AND_PRIVATE.onlyFrom('1.2.3.4/32'),
+      });
+
+      // we have private subnets so we should use them.
+      const functions = Template.fromStack(stack).findResources('AWS::Lambda::Function');
+      expect(functions.awscdkawseksKubectlProviderHandlerAABA4423.Properties.VpcConfig.SubnetIds.length).not.toEqual(0);
+      expect(functions.awscdkawseksKubectlProviderHandlerAABA4423.Properties.VpcConfig.SecurityGroupIds.length).not.toEqual(0);
     });
 
     test('private endpoint access selects only private subnets from looked up vpc', () => {
@@ -2491,6 +2535,52 @@ describe('cluster', () => {
           ],
         },
       });
+    });
+
+    test('kubectl provider limits number of subnets to 16', () => {
+      const { stack } = testFixture();
+
+      const subnetConfiguration: ec2.SubnetConfiguration[] = [];
+
+      for (let i = 0; i < 20; i++) {
+        subnetConfiguration.push({
+          subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
+          name: `Private${i}`,
+        },
+        );
+      }
+
+      subnetConfiguration.push({
+        subnetType: ec2.SubnetType.PUBLIC,
+        name: 'Public1',
+      });
+
+      const vpc2 = new ec2.Vpc(stack, 'Vpc', {
+        maxAzs: 2,
+        natGateways: 1,
+        subnetConfiguration,
+      });
+
+      const cluster = new eks.Cluster(stack, 'Cluster1', {
+        version: CLUSTER_VERSION,
+        prune: false,
+        endpointAccess: eks.EndpointAccess.PRIVATE,
+        vpc: vpc2,
+      });
+
+      cluster.addManifest('resource', {
+        kind: 'ConfigMap',
+        apiVersion: 'v1',
+        data: {
+          hello: 'world',
+        },
+        metadata: {
+          name: 'config-map',
+        },
+      });
+
+      const functions = Template.fromStack(stack).findResources('AWS::Lambda::Function');
+      expect(functions.awscdkawseksKubectlProviderHandlerAABA4423.Properties.VpcConfig.SubnetIds.length).toEqual(16);
     });
 
     test('kubectl provider considers vpc subnet selection', () => {
