@@ -4,14 +4,13 @@ import { Duration, Token } from '../../core';
 
 /**
  * The selection criteria for the origin group.
- *
- * @default - none
  */
 export enum OriginSelectionCriteria {
   /**
    * Default selection behavior.
    */
   DEFAULT='default',
+
   /**
    * Selection based on media quality.
    */
@@ -51,9 +50,11 @@ export interface OriginBindConfig {
   readonly failoverConfig?: OriginFailoverConfig;
 
   /**
-   * The failover selection for the Distribution.
+   * The selection criteria for how your origins are selected.
    *
-   * @default - nothing is returned
+   * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/high_availability_origin_failover.html#concept_origin_groups.creating
+   *
+   * @default - OriginSelectionCriteria.DEFAULT
    */
   readonly selectionCriteria?: OriginSelectionCriteria;
 }

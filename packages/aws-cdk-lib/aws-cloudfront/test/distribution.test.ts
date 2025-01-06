@@ -1,10 +1,12 @@
 import { defaultOrigin, defaultOriginGroup, defaultOriginWithOriginAccessControl } from './test-origin';
 import { Annotations, Match, Template } from '../../assertions';
 import * as acm from '../../aws-certificatemanager';
+import { HttpOrigin, OriginGroup } from '../../aws-cloudfront-origins';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as kinesis from '../../aws-kinesis';
 import * as lambda from '../../aws-lambda';
+import { CfnChannelGroup } from '../../aws-mediapackagev2';
 import * as s3 from '../../aws-s3';
 import { App, Aws, Duration, Stack } from '../../core';
 import {
@@ -18,6 +20,7 @@ import {
   HttpVersion,
   IOrigin,
   LambdaEdgeEventType,
+  OriginSelectionCriteria,
   PriceClass,
   RealtimeLogConfig,
   SecurityPolicyProtocol,
@@ -1433,4 +1436,94 @@ describe('attachWebAclId', () => {
     });
   });
 
+});
+
+test('Selection criteria does set Media Quality Based failover for Origin Group', () => {
+  const channelGroup = new CfnChannelGroup(stack, 'cg1', {
+    channelGroupName: 'channelGroup1',
+  });
+  const channelGroup2 = new CfnChannelGroup(stack, 'cg2', {
+    channelGroupName: 'channelGroup2',
+  });
+
+  const originGroup = new OriginGroup({
+    primaryOrigin: new HttpOrigin(channelGroup.attrEgressDomain),
+    fallbackOrigin: new HttpOrigin(channelGroup2.attrEgressDomain),
+    fallbackStatusCodes: [404],
+    selectionCriteria: OriginSelectionCriteria.MEDIA_QUALITY_BASED,
+  });
+
+  new Distribution(stack, 'dist', {
+    defaultBehavior: {
+      origin: originGroup,
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+    DistributionConfig: {
+      DefaultCacheBehavior: {
+        TargetOriginId: 'StackdistOriginGroup12F95D17B',
+      },
+      OriginGroups: {
+        Items: [{
+          FailoverCriteria: {
+            StatusCodes: {
+              Items: [404],
+            },
+          },
+          Id: 'StackdistOriginGroup12F95D17B',
+          Members: {
+            Items: [
+              { OriginId: 'StackdistOrigin1EDB19251' },
+              { OriginId: 'StackdistOrigin2CA93B097' },
+            ],
+          },
+          SelectionCriteria: 'media-quality-based',
+        }],
+      },
+    },
+  });
+});
+
+test('Selection criteria does set default for Origin Group', () => {
+  const url1 = new HttpOrigin('myurl.com');
+  const url2 = new HttpOrigin('myurl1.com');
+
+  const og = new OriginGroup({
+    primaryOrigin: url1,
+    fallbackOrigin: url2,
+    fallbackStatusCodes: [404],
+    selectionCriteria: OriginSelectionCriteria.DEFAULT,
+  });
+
+  new Distribution(stack, 'dist', {
+    defaultBehavior: {
+      origin: og,
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+    DistributionConfig: {
+      DefaultCacheBehavior: {
+        TargetOriginId: 'StackdistOriginGroup12F95D17B',
+      },
+      OriginGroups: {
+        Items: [{
+          FailoverCriteria: {
+            StatusCodes: {
+              Items: [404],
+            },
+          },
+          Id: 'StackdistOriginGroup12F95D17B',
+          Members: {
+            Items: [
+              { OriginId: 'StackdistOrigin1EDB19251' },
+              { OriginId: 'StackdistOrigin2CA93B097' },
+            ],
+          },
+          SelectionCriteria: 'default',
+        }],
+      },
+    },
+  });
 });
