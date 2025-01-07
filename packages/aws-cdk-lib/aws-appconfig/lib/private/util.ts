@@ -18,7 +18,7 @@ export enum DeletionProtectionCheck {
   APPLY = 'APPLY',
 
   /**
-   * Instructs AWS AppConfig to bypass the deletion protection check and delete a configuration profile
+   * Instructs AWS AppConfig to bypass the deletion protection check and delete an environment or a configuration profile
    * even if deletion protection would have otherwise prevented it.
    */
   BYPASS = 'BYPASS',
