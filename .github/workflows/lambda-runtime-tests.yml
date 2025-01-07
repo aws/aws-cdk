@@ -9,7 +9,7 @@ jobs:
     if: github.repository == 'aws/aws-cdk'
     runs-on: ubuntu-latest
     permissions:
-      pull-requests: write
+      contents: write
     steps:
       - uses: actions/checkout@v4
         with:
