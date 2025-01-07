@@ -4,7 +4,7 @@
 export enum DeletionProtectionCheck {
   /**
    * The default setting,
-   * which instructs AWS AppConfig to implement the deletion protection value specified in the UpdateAccountSettings API.
+   * which uses account-level deletion protection. To configure account-level deletion protection, use the UpdateAccountSettings API.
    */
   ACCOUNT_DEFAULT = 'ACCOUNT_DEFAULT',
 
