@@ -447,37 +447,79 @@ describe('cluster new api', () => {
       });
     });
 
-    test('with serverless instances', () => {
-      // GIVEN
-      const stack = testStack();
-      const vpc = new ec2.Vpc(stack, 'VPC');
+    describe('serverless instance', () => {
+      test('with serverless instances', () => {
+        // GIVEN
+        const stack = testStack();
+        const vpc = new ec2.Vpc(stack, 'VPC');
 
-      // WHEN
-      new DatabaseCluster(stack, 'Database', {
-        engine: DatabaseClusterEngine.AURORA_MYSQL,
-        vpc,
-        writer: ClusterInstance.serverlessV2('writer'),
-        iamAuthentication: true,
+        // WHEN
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA_MYSQL,
+          vpc,
+          writer: ClusterInstance.serverlessV2('writer'),
+          iamAuthentication: true,
+        });
+
+        // THEN
+        const template = Template.fromStack(stack);
+        // serverless scaling config is set
+        template.hasResourceProperties('AWS::RDS::DBCluster', Match.objectLike({
+          ServerlessV2ScalingConfiguration: {
+            MinCapacity: 0.5,
+            MaxCapacity: 2,
+          },
+        }));
+
+        // subnets are set correctly
+        template.hasResourceProperties('AWS::RDS::DBSubnetGroup', {
+          DBSubnetGroupDescription: 'Subnets for Database database',
+          SubnetIds: [
+            { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
+            { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
+            { Ref: 'VPCPrivateSubnet3Subnet3EDCD457' },
+          ],
+        });
       });
 
-      // THEN
-      const template = Template.fromStack(stack);
-      // serverless scaling config is set
-      template.hasResourceProperties('AWS::RDS::DBCluster', Match.objectLike({
-        ServerlessV2ScalingConfiguration: {
-          MinCapacity: 0.5,
-          MaxCapacity: 2,
-        },
-      }));
+      test('serverless instances with auto pause', () => {
+        // GIVEN
+        const stack = testStack();
+        const vpc = new ec2.Vpc(stack, 'VPC');
 
-      // subnets are set correctly
-      template.hasResourceProperties('AWS::RDS::DBSubnetGroup', {
-        DBSubnetGroupDescription: 'Subnets for Database database',
-        SubnetIds: [
-          { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
-          { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
-          { Ref: 'VPCPrivateSubnet3Subnet3EDCD457' },
-        ],
+        // WHEN
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA_MYSQL,
+          vpc,
+          writer: ClusterInstance.serverlessV2('writer'),
+          iamAuthentication: true,
+          secondsUntilAutoPause: cdk.Duration.minutes(10),
+        });
+
+        // THEN
+        const template = Template.fromStack(stack);
+        // serverless scaling config is set
+        template.hasResourceProperties('AWS::RDS::DBCluster', Match.objectLike({
+          ServerlessV2ScalingConfiguration: {
+            MinCapacity: 0.5,
+            MaxCapacity: 2,
+            SecondsUntilAutoPause: 600,
+          },
+        }));
+      });
+
+      test('serverless instances with invalid auto pause duration', () => {
+        // GIVEN
+        const stack = testStack();
+        const vpc = new ec2.Vpc(stack, 'VPC');
+
+        expect(() => new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA_MYSQL,
+          vpc,
+          writer: ClusterInstance.serverlessV2('writer'),
+          iamAuthentication: true,
+          secondsUntilAutoPause: cdk.Duration.days(2),
+        })).toThrow('`monitoringInterval` must be set when `enableClusterLevelEnhancedMonitoring` is true.');
       });
     });
 
