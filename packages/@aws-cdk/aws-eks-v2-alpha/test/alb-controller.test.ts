@@ -26,7 +26,7 @@ test.each(versions)('support AlbControllerVersion (%s)', (version) => {
         [
           '{"clusterName":"',
           {
-            Ref: 'Cluster9EE0221C',
+            Ref: 'ClusterEB0386A7',
           },
           '","serviceAccount":{"create":false,"name":"aws-load-balancer-controller"},"region":"us-east-1","vpcId":"',
           {
@@ -78,7 +78,7 @@ test('can configure a custom repository', () => {
         [
           '{"clusterName":"',
           {
-            Ref: 'Cluster9EE0221C',
+            Ref: 'ClusterEB0386A7',
           },
           '","serviceAccount":{"create":false,"name":"aws-load-balancer-controller"},"region":"us-east-1","vpcId":"',
           {
@@ -101,7 +101,7 @@ test('throws when a policy is not defined for a custom version', () => {
   expect(() => AlbController.create(stack, {
     cluster,
     version: AlbControllerVersion.of('custom'),
-  })).toThrowError("'albControllerOptions.policy' is required when using a custom controller version");
+  })).toThrow("'albControllerOptions.policy' is required when using a custom controller version");
 });
 
 test.each(['us-gov-west-1', 'cn-north-1'])('stack does not include hard-coded partition', (region) => {
@@ -140,7 +140,7 @@ test('correct helm chart version is set for selected alb controller version', ()
         [
           '{"clusterName":"',
           {
-            Ref: 'Cluster9EE0221C',
+            Ref: 'ClusterEB0386A7',
           },
           '","serviceAccount":{"create":false,"name":"aws-load-balancer-controller"},"region":"us-east-1","vpcId":"',
           {

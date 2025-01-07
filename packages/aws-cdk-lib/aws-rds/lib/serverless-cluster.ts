@@ -649,7 +649,7 @@ class ImportedServerlessCluster extends ServerlessClusterBase implements IServer
 
   public readonly secret?: secretsmanager.ISecret;
 
-  protected readonly enableDataApi = true
+  protected readonly enableDataApi = true;
 
   private readonly _clusterEndpoint?: Endpoint;
   private readonly _clusterReadEndpoint?: Endpoint;

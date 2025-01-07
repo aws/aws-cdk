@@ -80,7 +80,7 @@ userPool.grant(role, 'cognito-idp:AdminCreateUser');
 ### User pool feature plans
 
 Amazon Cognito has feature plans for user pools. Each plan has a set of features and a monthly cost per active user. Each feature plan unlocks access to more features than the one before it.
-Lean more aboug [feature plans here](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-sign-in-feature-plans.html).
+Learn more about [feature plans here](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-sign-in-feature-plans.html).
 
 - *Lite* - a low-cost feature plan for user pools with lower numbers of monthly active users.
 - *Essentials* - all of the latest user pool authentication features.

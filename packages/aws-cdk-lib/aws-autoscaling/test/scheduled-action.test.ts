@@ -222,7 +222,7 @@ describeDeprecated('scheduled action', () => {
         weekDay: 'MON-SUN',
       }),
       minCapacity: 10,
-    })).toThrowError(/Cannot supply both \'day\' and \'weekDay\', use at most one/);
+    })).toThrow(/Cannot supply both \'day\' and \'weekDay\', use at most one/);
   });
 });
 
