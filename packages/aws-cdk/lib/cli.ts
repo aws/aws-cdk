@@ -5,6 +5,8 @@ import * as chalk from 'chalk';
 import { DeploymentMethod } from './api';
 import { HotswapMode } from './api/hotswap/common';
 import { ILock } from './api/util/rwlock';
+import { CliArguments } from './cli-arguments';
+import { convertToCliArgs } from './convert-to-cli-args';
 import { parseCommandLineArguments } from './parse-command-line-arguments';
 import { checkForPlatformWarnings } from './platform-warnings';
 import { enableTracing } from './util/tracing';
@@ -16,21 +18,19 @@ import { execProgram } from '../lib/api/cxapp/exec';
 import { Deployments } from '../lib/api/deployments';
 import { PluginHost } from '../lib/api/plugin';
 import { ToolkitInfo } from '../lib/api/toolkit-info';
-import { CdkToolkit, AssetBuildTime, ActionType, TypeType } from '../lib/cdk-toolkit';
+import { CdkToolkit, AssetBuildTime, ActionType, TypeType, Tag } from '../lib/cdk-toolkit';
 import { contextHandler as context } from '../lib/commands/context';
 import { docs } from '../lib/commands/docs';
 import { doctor } from '../lib/commands/doctor';
 import { getMigrateScanType } from '../lib/commands/migrate';
 import { cliInit, printAvailableTemplates } from '../lib/init';
-import { data, debug, error, print, setCI, setLogLevel, LogLevel } from '../lib/logging';
+import { data, debug, error, print, setCI, setLogLevel, LogLevel, warning } from '../lib/logging';
 import { Notices } from '../lib/notices';
-import { Command, Configuration, Settings } from '../lib/settings';
+import { Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
 import { SdkToCliLogger } from './api/aws-auth/sdk-logger';
-import { ToolkitError } from './toolkit/error';
-import { convertToCliArgs } from './convert-to-cli-args';
-import { CliArguments } from './cli-arguments';
 import { StringWithoutPlaceholders } from './api/util/placeholders';
+import { ToolkitError } from './toolkit/error';
 
 /* eslint-disable max-len */
 /* eslint-disable @typescript-eslint/no-shadow */ // yargs
@@ -86,12 +86,12 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
   const notices = Notices.create({
     context: configuration.context,
-    output: configuration.settings.get(['outdir']),
+    output: configuration.settings.get(['output']),
     shouldDisplay: configuration.settings.get(['notices']),
     includeAcknowledged: cmd === 'notices' ? !argv.notices?.unacknowledged : false,
     httpOptions: {
       proxyAddress: configuration.settings.get(['proxy']),
-      caBundlePath: configuration.settings.get(['caBundlePath']),
+      caBundlePath: argv.globalOptions?.caBundlePath, // configuration.settings.get(['caBundlePath']),
     },
   });
   await notices.refresh();
@@ -250,7 +250,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           force: bootstrapOptions.force,
           toolkitStackName: toolkitStackName,
           execute: bootstrapOptions.execute,
-          tags: configuration.settings.get(['tags']),
+          tags: parseStringTagsListToObject(bootstrapOptions.tags),
           terminationProtection: bootstrapOptions.terminationProtection,
           usePreviousParameters: bootstrapOptions.previousParameters,
           parameters: {
@@ -330,7 +330,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           notificationArns: deployOptions.notificationArns,
           requireApproval: configuration.settings.get(['requireApproval']),
           reuseAssets: deployOptions.buildExclude,
-          tags: configuration.settings.get(['tags']),
+          tags: parseStringTagsListToObject(deployOptions.tags),
           deploymentMethod,
           force: deployOptions.force,
           parameters: parameterMap,
@@ -574,4 +574,33 @@ function createSelector(stacks?: string[], all?: boolean): StackSelector {
     allTopLevel: all ?? false,
     patterns: stacks ?? [],
   };
+}
+
+/**
+ * Parse tags out of arguments
+ *
+ * Return undefined if no tags were provided, return an empty array if only empty
+ * strings were provided
+ */
+function parseStringTagsListToObject(argTags: string[] | undefined): Tag[] | undefined {
+  if (argTags === undefined) { return undefined; }
+  if (argTags.length === 0) { return undefined; }
+  const nonEmptyTags = argTags.filter(t => t !== '');
+  if (nonEmptyTags.length === 0) { return []; }
+
+  const tags: Tag[] = [];
+
+  for (const assignment of nonEmptyTags) {
+    const parts = assignment.split(/=(.*)/, 2);
+    if (parts.length === 2) {
+      debug('CLI argument tags: %s=%s', parts[0], parts[1]);
+      tags.push({
+        Key: parts[0],
+        Value: parts[1],
+      });
+    } else {
+      warning('Tags argument is not an assignment (key=value): %s', assignment);
+    }
+  }
+  return tags.length > 0 ? tags : undefined;
 }

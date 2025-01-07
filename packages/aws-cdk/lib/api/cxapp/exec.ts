@@ -6,7 +6,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import * as semver from 'semver';
 import { debug, warning } from '../../logging';
-import { Configuration, PROJECT_CONFIG, USER_DEFAULTS } from '../../settings';
+import { Command, Configuration, PROJECT_CONFIG, USER_DEFAULTS } from '../../settings';
 import { ToolkitError } from '../../toolkit/error';
 import { loadTree, some } from '../../tree';
 import { splitBySize } from '../../util/objects';
@@ -214,12 +214,32 @@ export async function prepareContext(config: Configuration, env: { [key: string]
     context[cxapi.DISABLE_ASSET_STAGING_CONTEXT] = true;
   }
 
-  const bundlingStacks = config.settings.get(['bundlingStacks']) ?? ['**'];
+  const bundlingStacks = setBundlingStacks(config);
   context[cxapi.BUNDLING_STACKS] = bundlingStacks;
 
   debug('context:', context);
 
   return context;
+}
+
+function setBundlingStacks(config: Configuration) {
+  let bundlingStacks: string[];
+  if (config.command && [
+    Command.DEPLOY,
+    Command.DIFF,
+    Command.SYNTH,
+    Command.SYNTHESIZE,
+    Command.WATCH,
+  ].includes(config.command)) {
+  // If we deploy, diff, synth or watch a list of stacks exclusively we skip
+  // bundling for all other stacks.
+    bundlingStacks = config.settings.get(['exclusively'])
+      ? config.settings.get(['STACKS']) ?? ['**']
+      : ['**'];
+  } else { // Skip bundling for all stacks
+    bundlingStacks = [];
+  }
+  return bundlingStacks;
 }
 
 /**
