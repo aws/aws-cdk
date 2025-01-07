@@ -231,19 +231,19 @@
               "version": "0.0.0"
             }
           },
-          "ImportedPublicSubnet": {
-            "id": "ImportedPublicSubnet",
-            "path": "vpcv2-import-integ-test/ImportedPublicSubnet",
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-ec2-alpha.ImportedSubnetV2",
-              "version": "0.0.0"
-            }
-          },
           "IsolatedSubnet2": {
             "id": "IsolatedSubnet2",
             "path": "vpcv2-import-integ-test/IsolatedSubnet2",
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-ec2-alpha.ImportedSubnetV2",
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "ImportedPublicSubnet": {
+            "id": "ImportedPublicSubnet",
+            "path": "vpcv2-import-integ-test/ImportedPublicSubnet",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },
@@ -310,6 +310,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "DefaultCDKRouteTable"
+                          }
+                        ],
                         "vpcId": "vpc-08193db3ccc4f909f"
                       }
                     },
@@ -391,6 +397,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "DefaultCDKRouteTable"
+                          }
+                        ],
                         "vpcId": "vpc-08193db3ccc4f909f"
                       }
                     },
@@ -437,7 +449,7 @@
             "id": "IsolatedSubnet1",
             "path": "vpcv2-import-integ-test/IsolatedSubnet1",
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-ec2-alpha.ImportedSubnetV2",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },
@@ -531,6 +543,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "DefaultCDKRouteTable"
+                          }
+                        ],
                         "vpcId": "vpc-02407f4a207815a97"
                       }
                     },
@@ -608,7 +626,7 @@
                 "path": "integtest-model/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -654,7 +672,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },

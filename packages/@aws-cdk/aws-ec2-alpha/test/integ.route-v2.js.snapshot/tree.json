@@ -21,7 +21,13 @@
                     "cidrBlock": "10.0.0.0/16",
                     "enableDnsHostnames": true,
                     "enableDnsSupport": true,
-                    "instanceTenancy": "default"
+                    "instanceTenancy": "default",
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "aws-cdk-routev2-alpha/default"
+                      }
+                    ]
                   }
                 },
                 "constructInfo": {
@@ -206,7 +212,13 @@
                     "cidrBlock": "10.0.0.0/16",
                     "enableDnsHostnames": true,
                     "enableDnsSupport": true,
-                    "instanceTenancy": "default"
+                    "instanceTenancy": "default",
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "aws-cdk-routev2-egressonlyigw-alpha/eigw"
+                      }
+                    ]
                   }
                 },
                 "constructInfo": {
@@ -445,7 +457,13 @@
                     "cidrBlock": "10.0.0.0/16",
                     "enableDnsHostnames": true,
                     "enableDnsSupport": true,
-                    "instanceTenancy": "default"
+                    "instanceTenancy": "default",
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "aws-cdk-routev2-igw-alpha/igw"
+                      }
+                    ]
                   }
                 },
                 "constructInfo": {
@@ -713,7 +731,13 @@
                     "cidrBlock": "10.0.0.0/16",
                     "enableDnsHostnames": true,
                     "enableDnsSupport": true,
-                    "instanceTenancy": "default"
+                    "instanceTenancy": "default",
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "aws-cdk-routev2-virtualprivategw-alpha/vpgw"
+                      }
+                    ]
                   }
                 },
                 "constructInfo": {
@@ -1003,7 +1027,13 @@
                     "cidrBlock": "10.0.0.0/16",
                     "enableDnsHostnames": true,
                     "enableDnsSupport": true,
-                    "instanceTenancy": "default"
+                    "instanceTenancy": "default",
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "aws-cdk-routev2-publicnatgw-alpha/natgw_pub"
+                      }
+                    ]
                   }
                 },
                 "constructInfo": {
@@ -1358,7 +1388,13 @@
                     "cidrBlock": "10.0.0.0/16",
                     "enableDnsHostnames": true,
                     "enableDnsSupport": true,
-                    "instanceTenancy": "default"
+                    "instanceTenancy": "default",
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "aws-cdk-routev2-privatenatgw-alpha/natgw_priv"
+                      }
+                    ]
                   }
                 },
                 "constructInfo": {
@@ -1612,7 +1648,13 @@
                     "cidrBlock": "10.0.0.0/16",
                     "enableDnsHostnames": true,
                     "enableDnsSupport": true,
-                    "instanceTenancy": "default"
+                    "instanceTenancy": "default",
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "aws-cdk-routev2-networkif-alpha/nif"
+                      }
+                    ]
                   }
                 },
                 "constructInfo": {
@@ -1797,7 +1839,13 @@
                     "cidrBlock": "10.0.0.0/16",
                     "enableDnsHostnames": true,
                     "enableDnsSupport": true,
-                    "instanceTenancy": "default"
+                    "instanceTenancy": "default",
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "aws-cdk-routev2-vpcpeerconnection-alpha/vpcpc"
+                      }
+                    ]
                   }
                 },
                 "constructInfo": {
@@ -1982,7 +2030,13 @@
                     "cidrBlock": "10.0.0.0/16",
                     "enableDnsHostnames": true,
                     "enableDnsSupport": true,
-                    "instanceTenancy": "default"
+                    "instanceTenancy": "default",
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "aws-cdk-routev2-dynamodbendpoint-alpha/dynamodb"
+                      }
+                    ]
                   }
                 },
                 "constructInfo": {
@@ -2221,7 +2275,7 @@
                 "path": "integtest-model-0/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -2275,7 +2329,7 @@
                 "path": "integtest-model-1/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -2329,7 +2383,7 @@
                 "path": "integtest-model-2/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -2383,7 +2437,7 @@
                 "path": "integtest-model-3/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -2437,7 +2491,7 @@
                 "path": "integtest-model-4/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -2491,7 +2545,7 @@
                 "path": "integtest-model-5/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -2545,7 +2599,7 @@
                 "path": "integtest-model-6/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -2599,7 +2653,7 @@
                 "path": "integtest-model-7/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -2653,7 +2707,7 @@
                 "path": "integtest-model-8/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -2699,7 +2753,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },

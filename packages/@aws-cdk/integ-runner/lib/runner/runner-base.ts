@@ -6,6 +6,7 @@ import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY, TARGET_PARTITIONS } from '@aws-
 import * as fs from 'fs-extra';
 import { IntegTestSuite, LegacyIntegTestSuite } from './integ-test-suite';
 import { IntegTest } from './integration-tests';
+import * as recommendedFlagsFile from '../recommended-feature-flags.json';
 import { flatten } from '../utils';
 import { AssemblyManifestReader, ManifestTrace } from './private/cloud-assembly';
 import { DestructiveChange } from '../workers/common';
@@ -436,9 +437,10 @@ export const DEFAULT_SYNTH_OPTIONS = {
 /**
  * Return the currently recommended flags for `aws-cdk-lib`.
  *
- * These have been built into the CLI at build time.
+ * These have been built into the CLI at build time. If this ever gets changed
+ * back to a dynamic load, remember that this source file may be bundled into
+ * a JavaScript bundle, and `__dirname` might not point where you think it does.
  */
 export function currentlyRecommendedAwsCdkLibFlags() {
-  const recommendedFlagsFile = path.join(__dirname, '..', 'recommended-feature-flags.json');
-  return JSON.parse(fs.readFileSync(recommendedFlagsFile, { encoding: 'utf-8' }));
+  return recommendedFlagsFile;
 }
