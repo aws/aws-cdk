@@ -132,7 +132,7 @@ export interface StateMachineProps {
   /**
    * The name of the query language used by the state machine.
    * If the state does not contain a `queryLanguage` field,
-   * then it will use the query language specified in the top-level `queryLanguage` field.
+   * then it will use the query language specified in this `queryLanguage` field.
    *
    * @default - JSON_PATH
    */
