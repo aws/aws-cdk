@@ -105,7 +105,7 @@ export interface CommonTaskDefinitionProps {
    *
    * Fault injection only works with tasks using the {@link NetworkMode.AWS_VPC} or {@link NetworkMode.HOST} network modes.
    *
-   * @default false
+   * @default undefined - ECS default setting is false
    */
   readonly enableFaultInjection?: boolean;
 }
@@ -467,6 +467,7 @@ export class TaskDefinition extends TaskDefinitionBase {
       throw new Error('Cannot specify runtimePlatform in non-Fargate compatible tasks');
     }
 
+    // https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fault-injection.html
     if (props.enableFaultInjection && ![NetworkMode.AWS_VPC, NetworkMode.HOST].includes(this.networkMode)) {
       throw new Error(`Only AWS_VPC and HOST Network Modes are supported for enabling Fault Injection, got ${this.networkMode} mode.`);
     }
