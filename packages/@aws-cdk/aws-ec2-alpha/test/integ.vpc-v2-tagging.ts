@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/comma-dangle */
 import * as vpc_v2 from '../lib/vpc-v2';
 import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
@@ -67,7 +66,7 @@ const integ = new IntegTest(app, 'integtest-model', {
 });
 
 const tag_assertion = integ.assertions.awsApiCall('EC2', 'describeVpcs', {
-  VpcIds: [vpc.vpcId]
+  VpcIds: [vpc.vpcId],
 });
 
 tag_assertion.expect(ExpectedResult.objectLike({
@@ -77,15 +76,15 @@ tag_assertion.expect(ExpectedResult.objectLike({
         Match.objectLike({
           Key: 'Name',
           Value: 'CDKintegTestVPC',
-        })
-      ])
-    })
-  ]
+        }),
+      ]),
+    }),
+  ],
 }));
 
 // Assertion for the Internet Gateway (IGW)
 const igw_assertion = integ.assertions.awsApiCall('EC2', 'describeInternetGateways', {
-  InternetGatewayIds: [vpc.internetGatewayId]
+  InternetGatewayIds: [vpc.internetGatewayId],
 });
 
 igw_assertion.expect(ExpectedResult.objectLike({
@@ -95,15 +94,15 @@ igw_assertion.expect(ExpectedResult.objectLike({
         Match.objectLike({
           Key: 'Name',
           Value: 'CDKIntegTestTagIGW',
-        })
-      ])
-    })
-  ]
+        }),
+      ]),
+    }),
+  ],
 }));
 
 // Assertion for the NAT Gateway (NGW)
 const ngw_assertion = integ.assertions.awsApiCall('EC2', 'describeNatGateways', {
-  NatGatewayIds: [natgw.natGatewayId]
+  NatGatewayIds: [natgw.natGatewayId],
 });
 
 ngw_assertion.expect(ExpectedResult.objectLike({
@@ -113,15 +112,15 @@ ngw_assertion.expect(ExpectedResult.objectLike({
         Match.objectLike({
           Key: 'Name',
           Value: 'CDKIntegTestTagNGW',
-        })
-      ])
-    })
-  ]
+        }),
+      ]),
+    }),
+  ],
 }));
 
 // Assertion for the Route Table
 const route_table_assertion = integ.assertions.awsApiCall('EC2', 'describeRouteTables', {
-  RouteTableIds: [routeTable.routeTableId]
+  RouteTableIds: [routeTable.routeTableId],
 });
 
 route_table_assertion.expect(ExpectedResult.objectLike({
@@ -131,15 +130,15 @@ route_table_assertion.expect(ExpectedResult.objectLike({
         Match.objectLike({
           Key: 'Name',
           Value: 'TestRouteTable',
-        })
-      ])
-    })
-  ]
+        }),
+      ]),
+    }),
+  ],
 }));
 
 // Assertion for the IPAM and IPAM Scope
 const ipam_assertion = integ.assertions.awsApiCall('EC2', 'describeIpams', {
-  IpamIds: [ipam.ipamId]
+  IpamIds: [ipam.ipamId],
 });
 ipam_assertion.expect(ExpectedResult.objectLike({
   Ipams: [
@@ -148,15 +147,15 @@ ipam_assertion.expect(ExpectedResult.objectLike({
         Match.objectLike({
           Key: 'Name',
           Value: 'CDKIpamTestTag',
-        })
-      ])
-    })
-  ]
+        }),
+      ]),
+    }),
+  ],
 }));
 
 // Assertion for the IPAM Scope
 const ipam_scope_assertion = integ.assertions.awsApiCall('EC2', 'describeIpamScopes', {
-  IpamScopeIds: [scope.scopeId]
+  IpamScopeIds: [scope.scopeId],
 });
 ipam_scope_assertion.expect(ExpectedResult.objectLike({
   IpamScopes: [
@@ -165,8 +164,8 @@ ipam_scope_assertion.expect(ExpectedResult.objectLike({
         Match.objectLike({
           Key: 'Name',
           Value: 'CustomPrivateScopeTag',
-        })
-      ])
-    })
-  ]
+        }),
+      ]),
+    }),
+  ],
 }));

@@ -135,6 +135,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::VPCEndpoint",
                       "aws:cdk:cloudformation:props": {
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-vpcv2-alpha/VPC-integ-test-1"
+                          }
+                        ],
                         "routeTableIds": [
                           {
                             "Fn::GetAtt": [
@@ -256,6 +262,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::VPCEndpoint",
                       "aws:cdk:cloudformation:props": {
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-vpcv2-alpha/VPC-integ-test-1"
+                          }
+                        ],
                         "privateDnsEnabled": true,
                         "securityGroupIds": [
                           {

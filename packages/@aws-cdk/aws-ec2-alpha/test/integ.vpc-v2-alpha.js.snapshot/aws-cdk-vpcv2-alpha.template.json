@@ -74,6 +74,12 @@
       ]
      ]
     },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpcv2-alpha/VPC-integ-test-1"
+     }
+    ],
     "VpcEndpointType": "Gateway",
     "VpcId": {
      "Fn::GetAtt": [
@@ -166,6 +172,12 @@
      },
      {
       "Ref": "testsubnetSubnetDD417829"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpcv2-alpha/VPC-integ-test-1"
      }
     ],
     "VpcEndpointType": "Interface",
