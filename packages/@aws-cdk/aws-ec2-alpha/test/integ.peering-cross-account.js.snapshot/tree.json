@@ -21,7 +21,13 @@
                     "cidrBlock": "10.0.0.0/16",
                     "enableDnsHostnames": true,
                     "enableDnsSupport": true,
-                    "instanceTenancy": "default"
+                    "instanceTenancy": "default",
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "acceptor-stack/acceptorVpc"
+                      }
+                    ]
                   }
                 },
                 "constructInfo": {
@@ -60,7 +66,13 @@
                           "Version": "2012-10-17"
                         },
                         "description": "Restrictive role for VPC peering",
-                        "roleName": "VpcPeeringRole"
+                        "roleName": "VpcPeeringRole",
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "acceptor-stack/acceptorVpc"
+                          }
+                        ]
                       }
                     },
                     "constructInfo": {
@@ -187,7 +199,13 @@
                     "cidrBlock": "10.1.0.0/16",
                     "enableDnsHostnames": true,
                     "enableDnsSupport": true,
-                    "instanceTenancy": "default"
+                    "instanceTenancy": "default",
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "acceptor-stack/requestorVpcSameAccount"
+                      }
+                    ]
                   }
                 },
                 "constructInfo": {
@@ -213,6 +231,12 @@
                             "VpcId"
                           ]
                         },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "acceptor-stack/requestorVpcSameAccount"
+                          }
+                        ],
                         "vpcId": {
                           "Fn::GetAtt": [
                             "requestorVpcSameAccountF27E91F7",
@@ -285,7 +309,13 @@
                     "cidrBlock": "10.2.0.0/16",
                     "enableDnsHostnames": true,
                     "enableDnsSupport": true,
-                    "instanceTenancy": "default"
+                    "instanceTenancy": "default",
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "requestor-stack/requestorVpcCrossAccount"
+                      }
+                    ]
                   }
                 },
                 "constructInfo": {
@@ -307,6 +337,12 @@
                         "peerRegion": "us-east-1",
                         "peerRoleArn": "arn:aws:iam::916743627080:role/VpcPeeringRole",
                         "peerVpcId": "vpc-09b9235d8a3195ba3",
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "requestor-stack/requestorVpcCrossAccount"
+                          }
+                        ],
                         "vpcId": {
                           "Fn::GetAtt": [
                             "requestorVpcCrossAccount6372A252",

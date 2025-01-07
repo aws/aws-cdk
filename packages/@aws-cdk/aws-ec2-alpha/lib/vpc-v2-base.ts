@@ -24,6 +24,14 @@ export interface EgressOnlyInternetGatewayOptions {
    * @default - '::/0' all Ipv6 traffic
    */
   readonly destination?: string;
+
+  /**
+   * The resource name of the egress-only internet gateway.
+   * Provided name will be used for tagging
+   *
+   * @default - no name tag associated and provisioned without a resource name
+   */
+  readonly egressOnlyInternetGatewayName?: string;
 }
 
 /**
@@ -44,6 +52,14 @@ export interface InternetGatewayOptions{
    * @default - '::/0' all Ipv6 traffic
    */
   readonly ipv6Destination?: string;
+
+  /**
+   * The resource name of the internet gateway.
+   * Provided name will be used for tagging
+   *
+   * @default - provisioned without a resource name
+   */
+  readonly internetGatewayName?: string;
 }
 
 /**
@@ -118,6 +134,12 @@ export interface IVpcV2 extends IVpc {
    * is complete under IPAM pool
    */
   readonly ipv4IpamProvisionedCidrs?: string[];
+
+  /**
+   * VpcName to be used for tagging its components
+   * @attribute
+   */
+  readonly vpcName?: string;
 
   /**
    * Add an Egress only Internet Gateway to current VPC.
@@ -235,6 +257,11 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
   public abstract readonly ipv4CidrBlock: string;
 
   /**
+   * VpcName to be used for tagging its components
+   */
+  public abstract readonly vpcName?: string;
+
+  /**
   * Region for this VPC
   */
   public abstract readonly region: string;
@@ -331,6 +358,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
    * Adds VPNGAtewayV2 to this VPC
    */
   public enableVpnGatewayV2(options: VPNGatewayV2Options): VPNGatewayV2 {
+
     if (this.vpnGatewayId) {
       throw new Error('The VPN Gateway has already been enabled.');
     }
@@ -393,8 +421,10 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
    * @default - in case of no input subnets, no route is created
    */
   public addEgressOnlyInternetGateway(options?: EgressOnlyInternetGatewayOptions): void {
+
     const egw = new EgressOnlyInternetGateway(this, 'EgressOnlyGW', {
       vpc: this,
+      egressOnlyInternetGatewayName: options?.egressOnlyInternetGatewayName,
     });
 
     let useIpv6;
@@ -425,6 +455,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
       routeTable: subnet.routeTable,
       destination: destinationIpv6, // IPv6 default route
       target: { gateway: egw },
+      routeName: 'CDKEIGWRoute',
     });
   }
 
@@ -440,6 +471,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
 
     const igw = new InternetGateway(this, 'InternetGateway', {
       vpc: this,
+      internetGatewayName: options?.internetGatewayName,
     });
 
     this._internetConnectivityEstablished.add(igw);
@@ -467,6 +499,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
         routeTable: subnet.routeTable,
         destination: options?.ipv6Destination ?? '::/0',
         target: { gateway: igw },
+        routeName: 'CDKDefaultIPv6Route',
       });
     }
     //Add default route to IGW for IPv4
@@ -474,6 +507,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
       routeTable: subnet.routeTable,
       destination: options?.ipv4Destination ?? '0.0.0.0/0',
       target: { gateway: igw },
+      routeName: 'CDKDefaultIPv4Route',
     });
   }
 
