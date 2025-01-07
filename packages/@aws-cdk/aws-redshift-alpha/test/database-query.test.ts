@@ -229,4 +229,25 @@ describe('database query', () => {
     expect(stack.resolve(query.getAtt('attribute'))).toStrictEqual({ 'Fn::GetAtt': ['Query435140A1', 'attribute'] });
     expect(stack.resolve(query.getAttString('attribute'))).toStrictEqual({ 'Fn::GetAtt': ['Query435140A1', 'attribute'] });
   });
+
+  it('creates at most one IAM invoker role for handler', () => {
+    new DatabaseQuery(stack, 'Query0', {
+      ...minimalProps,
+    });
+
+    new DatabaseQuery(stack, 'Query1', {
+      ...minimalProps,
+    });
+
+    new DatabaseQuery(stack, 'Query2', {
+      ...minimalProps,
+    });
+
+    const template = Template.fromStack(stack).toJSON();
+    const iamRoles = Object.entries(template.Resources)
+      .map(([k, v]) => [k, Object.getOwnPropertyDescriptor(v, 'Type')?.value])
+      .filter(([k, v]) => v === 'AWS::IAM::Role' && k.toString().includes('InvokerRole'));
+
+    expect(iamRoles.length === 1);
+  });
 });
