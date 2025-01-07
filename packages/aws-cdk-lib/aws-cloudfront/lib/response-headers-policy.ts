@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { CfnResponseHeadersPolicy } from './cloudfront.generated';
-import { Duration, Names, Resource, Token } from '../../core';
+import { Duration, Names, Resource, Token, withResolved } from '../../core';
 
 /**
  * Represents a response headers policy.
@@ -130,6 +130,15 @@ export class ResponseHeadersPolicy extends Resource implements IResponseHeadersP
   }
 
   private _renderCorsConfig(behavior: ResponseHeadersCorsBehavior): CfnResponseHeadersPolicy.CorsConfigProperty {
+    withResolved(behavior.accessControlAllowMethods, (methods) => {
+      const allowedMethods = ['GET', 'DELETE', 'HEAD', 'OPTIONS', 'PATCH', 'POST', 'PUT', 'ALL'];
+      if (methods.includes('ALL') && methods.length !== 1) {
+        throw new Error("accessControlAllowMethods cannot be mixed 'ALL' with other values");
+      } else if (!methods.every((method) => Token.isUnresolved(method) || allowedMethods.includes(method))) {
+        throw new Error(`accessControlAllowMethods contains unexpected method name; allowed values: ${allowedMethods.join(', ')}`);
+      }
+    });
+
     return {
       accessControlAllowCredentials: behavior.accessControlAllowCredentials,
       accessControlAllowHeaders: { items: behavior.accessControlAllowHeaders },
@@ -211,6 +220,9 @@ export interface ResponseHeadersCorsBehavior {
 
   /**
    * A list of HTTP methods that CloudFront includes as values for the Access-Control-Allow-Methods HTTP response header.
+   *
+   * Allowed methods: `'GET'`, `'DELETE'`, `'HEAD'`, `'OPTIONS'`, `'PATCH'`, `'POST'`, and `'PUT'`.
+   * You can specify `['ALL']` to allow all methods.
    */
   readonly accessControlAllowMethods: string[];
 
