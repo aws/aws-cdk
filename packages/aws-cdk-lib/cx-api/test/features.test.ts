@@ -5,7 +5,7 @@ import { MAGIC_V2NEXT, compareVersions } from '../lib/private/flag-modeling';
 
 test('all future flags have defaults configured', () => {
   Object.keys(feats.FLAGS).forEach(flag => {
-    expect(typeof(feats.futureFlagDefault(flag))).toEqual('boolean');
+    expect(typeof (feats.futureFlagDefault(flag))).toEqual('boolean');
   });
 });
 
@@ -41,6 +41,7 @@ test('feature flag defaults may not be changed anymore', () => {
     [feats.USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK]: true,
     // Add new disabling feature flags below this line
     [feats.ASPECT_STABILIZATION]: true,
+    [feats.ALB_DUALSTACK_WITHOUT_PUBLIC_IPV4_SECURITY_GROUP_RULES_DEFAULT]: true,
   });
 });
 
