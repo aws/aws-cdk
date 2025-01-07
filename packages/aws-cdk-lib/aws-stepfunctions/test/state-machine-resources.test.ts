@@ -953,8 +953,8 @@ describe('State Machine Resources', () => {
         b: 'default.b',
       },
       outputs: {
-        a: '{% $states.result.default.a %}',
-        b: 'result.default.b',
+        a: '{% $states.input.default.a %}',
+        b: 'input.default.b',
       },
     }).otherwise(nextState);
     choice.when(stepfunctions.Condition.jsonata('{% true %}'), nextState, {
@@ -963,8 +963,8 @@ describe('State Machine Resources', () => {
         b: 'when.b',
       },
       outputs: {
-        a: '{% $states.result.when.a %}',
-        b: 'result.when.b',
+        a: '{% $states.input.when.a %}',
+        b: 'input.when.b',
       },
     });
 
@@ -979,8 +979,8 @@ describe('State Machine Resources', () => {
         b: 'default.b',
       },
       Output: {
-        a: '{% $states.result.default.a %}',
-        b: 'result.default.b',
+        a: '{% $states.input.default.a %}',
+        b: 'input.default.b',
       },
       Choices: [
         {
@@ -991,8 +991,8 @@ describe('State Machine Resources', () => {
             b: 'when.b',
           },
           Output: {
-            a: '{% $states.result.when.a %}',
-            b: 'result.when.b',
+            a: '{% $states.input.when.a %}',
+            b: 'input.when.b',
           },
           Comment: undefined,
         },
