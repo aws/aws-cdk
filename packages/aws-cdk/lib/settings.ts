@@ -64,18 +64,20 @@ export interface ConfigurationProps {
  * All sources of settings combined
  */
 export class Configuration {
-  public settings = new Settings();
+  public settings = new ArgumentSettings();
   public context = new Context();
   public command?: Command;
 
-  public readonly defaultConfig = new Settings({
-    versionReporting: true,
-    assetMetadata: true,
-    pathMetadata: true,
-    output: 'cdk.out',
+  public readonly defaultConfig = new ArgumentSettings({
+    globalOptions: {
+      versionReporting: true,
+      assetMetadata: true,
+      pathMetadata: true,
+      output: 'cdk.out',
+    },
   });
 
-  private readonly commandLineArguments: Settings;
+  private readonly commandLineArguments: ArgumentSettings;
   private readonly commandLineContext: Settings;
   private _projectConfig?: Settings;
   private _projectContext?: Settings;
@@ -84,8 +86,8 @@ export class Configuration {
   constructor(private readonly props: ConfigurationProps = {}) {
     this.command = props.commandLineArguments?._;
     this.commandLineArguments = props.commandLineArguments
-      ? Settings.fromCommandLineArguments(props.commandLineArguments)
-      : new Settings();
+      ? ArgumentSettings.fromCommandLineArguments(props.commandLineArguments)
+      : new ArgumentSettings();
     this.commandLineContext = this.commandLineArguments.subSettings([CONTEXT_KEY]).makeReadOnly();
   }
 
@@ -281,23 +283,6 @@ export class Context {
  * A single bag of settings
  */
 export class Settings {
-  /**
-   * Parse Settings out of CLI arguments.
-   *
-   * CLI arguments in must be accessed in the CLI code via
-   * `configuration.settings.get(['argName'])` instead of via `args.argName`.
-   *
-   * The advantage is that they can be configured via `cdk.json` and
-   * `$HOME/.cdk.json`. Arguments not listed below and accessed via this object
-   * can only be specified on the command line.
-   *
-   * @param argv the received CLI arguments.
-   * @returns a new Settings object.
-   */
-  public static fromCommandLineArguments(argv: CliArguments): Settings {
-    return new Settings(argv);
-  }
-
   public static mergeAll(...settings: Settings[]): Settings {
     let ret = new Settings();
     for (const setting of settings) {
@@ -400,6 +385,9 @@ export class Settings {
   }
 }
 
+/**
+ * A specific bag of settings related to Arguments specified via CLI or cdk.json
+ */
 export class ArgumentSettings extends Settings {
   /**
    * Parse Settings out of CLI arguments.
@@ -420,6 +408,10 @@ export class ArgumentSettings extends Settings {
 
   public static fromConfigFileArguments(argv: any): ArgumentSettings {
     return new ArgumentSettings(convertToCliArgs(argv));
+  }
+
+  public constructor(args: Partial<CliArguments> = {}) {
+    super(args);
   }
 }
 
