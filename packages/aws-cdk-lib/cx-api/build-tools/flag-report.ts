@@ -65,7 +65,7 @@ function changedFlags() {
 }
 
 function migrateJson() {
-  const changedInV2 = flags(flag => !!flag.defaults?.v2 && !!flag.introducedIn.v2);
+  const changedInV2 = flags(flag => !!flag.defaults?.v2 && !!flag.introducedIn.v2 && !!flag.introducedIn.v1);
 
   const context = Object.fromEntries(changedInV2.map(([name, _]) => [name, false]));
 
