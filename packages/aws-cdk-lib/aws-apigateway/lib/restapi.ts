@@ -376,7 +376,7 @@ export abstract class RestApiBase extends Resource implements IRestApi {
   private _latestDeployment?: Deployment;
   private _domainName?: DomainName;
 
-  protected resourcePolicy?: iam.PolicyDocument
+  protected resourcePolicy?: iam.PolicyDocument;
   protected cloudWatchAccount?: CfnAccount;
 
   constructor(scope: Construct, id: string, props: RestApiBaseProps = { }) {
