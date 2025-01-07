@@ -1103,6 +1103,7 @@ export interface IService extends cdk.IResource {
 
   /**
    * The ARN of the service.
+   * @attribute
    */
   readonly serviceArn: string;
 }
@@ -1178,7 +1179,7 @@ export abstract class Secret {
 /**
  * The App Runner Service.
  */
-export class Service extends cdk.Resource implements iam.IGrantable {
+export class Service extends cdk.Resource implements IService, iam.IGrantable {
   /**
    * Import from service name.
    */
