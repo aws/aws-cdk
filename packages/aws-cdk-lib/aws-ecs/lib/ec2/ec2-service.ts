@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import * as ec2 from '../../../aws-ec2';
-import { Lazy, Resource, Stack } from '../../../core';
+import { Lazy, Resource, Stack, Annotations } from '../../../core';
 import { BaseService, BaseServiceOptions, DeploymentControllerType, IBaseService, IService, LaunchType } from '../base/base-service';
 import { fromServiceAttributes, extractServiceNameFromArn } from '../base/from-service-attributes';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
@@ -220,6 +220,10 @@ export class Ec2Service extends BaseService implements IEc2Service {
     });
 
     this.node.addValidation({ validate: this.validateEc2Service.bind(this) });
+
+    if (props.minHealthyPercent === undefined && props.daemon) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs:minHealthyPercentDaemon', 'minHealthyPercent has not been configured so the default value of 0% for a daemon service is used. See https://github.com/aws/aws-cdk/issues/31705');
+    }
   }
 
   /**
