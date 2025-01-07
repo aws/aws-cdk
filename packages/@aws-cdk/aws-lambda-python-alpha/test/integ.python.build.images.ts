@@ -19,7 +19,7 @@ class TestStack extends Stack {
     super(scope, id, props);
 
     const runtimes: Runtime[]= [
-      Runtime.PYTHON_3_8, Runtime.PYTHON_3_9, Runtime.PYTHON_3_10, Runtime.PYTHON_3_11, Runtime.PYTHON_3_12, Runtime.PYTHON_3_13,
+      Runtime.PYTHON_3_9, Runtime.PYTHON_3_10, Runtime.PYTHON_3_11, Runtime.PYTHON_3_12, Runtime.PYTHON_3_13,
     ];
 
     runtimes.forEach((runtime, index) => {
