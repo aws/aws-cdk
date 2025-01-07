@@ -75,6 +75,8 @@ class EksClusterStack extends Stack {
 
     this.assertNodeGroupCustomAmi();
 
+    this.assertNodeGroupGpu();
+
     this.assertSimpleManifest();
 
     this.assertManifestWithoutValidation();
@@ -272,6 +274,19 @@ class EksClusterStack extends Stack {
     // add a Graviton3 nodegroup
     this.cluster.addNodegroupCapacity('extra-ng-arm3', {
       instanceTypes: [new ec2.InstanceType('c7g.large')],
+      minSize: 1,
+      // reusing the default capacity nodegroup instance role when available
+      nodeRole: this.cluster.defaultCapacity ? this.cluster.defaultCapacity.role : undefined,
+    });
+  }
+  private assertNodeGroupGpu() {
+    // add a GPU nodegroup
+    this.cluster.addNodegroupCapacity('extra-ng-gpu', {
+      instanceTypes: [
+        new ec2.InstanceType('p2.xlarge'),
+        new ec2.InstanceType('g5.xlarge'),
+        new ec2.InstanceType('g6e.xlarge'),
+      ],
       minSize: 1,
       // reusing the default capacity nodegroup instance role when available
       nodeRole: this.cluster.defaultCapacity ? this.cluster.defaultCapacity.role : undefined,

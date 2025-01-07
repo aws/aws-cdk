@@ -13,6 +13,11 @@ describe('render', () => {
           desc: 'Enable debug logging',
           default: false,
         },
+        verbose: {
+          type: 'boolean',
+          count: true,
+          desc: 'Increase logging verbosity',
+        },
         context: {
           default: [],
           type: 'array',
@@ -53,9 +58,9 @@ describe('render', () => {
        */
       export interface CliArguments {
         /**
-         * The CLI command name followed by any properties of the command
+         * The CLI command name
          */
-        readonly _: [Command, ...string[]];
+        readonly _: Command;
 
         /**
          * Global options available to all CLI commands
@@ -87,6 +92,13 @@ describe('render', () => {
          * @default - false
          */
         readonly debug?: boolean;
+
+        /**
+         * Increase logging verbosity
+         *
+         * @default - undefined
+         */
+        readonly verbose?: number;
 
         /**
          * context values
@@ -155,9 +167,9 @@ describe('render', () => {
        */
       export interface CliArguments {
         /**
-         * The CLI command name followed by any properties of the command
+         * The CLI command name
          */
-        readonly _: [Command, ...string[]];
+        readonly _: Command;
 
         /**
          * Global options available to all CLI commands
@@ -196,6 +208,96 @@ describe('render', () => {
          * @default - []
          */
         readonly otherArray?: Array<string>;
+      }
+      "
+    `);
+  });
+
+  test('positional arguments', async () => {
+    const config: CliConfig = {
+      commands: {
+        deploy: {
+          arg: {
+            name: 'STACKS',
+            variadic: true,
+          },
+          description: 'deploy',
+        },
+        acknowledge: {
+          arg: {
+            name: 'ID',
+            variadic: false,
+          },
+          description: 'acknowledge',
+        },
+      },
+      globalOptions: {},
+    };
+
+    expect(await renderCliArgsType(config)).toMatchInlineSnapshot(`
+      "// -------------------------------------------------------------------------------------------
+      // GENERATED FROM packages/aws-cdk/lib/config.ts.
+      // Do not edit by hand; all changes will be overwritten at build time from the config file.
+      // -------------------------------------------------------------------------------------------
+      /* eslint-disable @stylistic/max-len */
+      import { Command } from './settings';
+
+      /**
+       * The structure of the CLI configuration, generated from packages/aws-cdk/lib/config.ts
+       *
+       * @struct
+       */
+      export interface CliArguments {
+        /**
+         * The CLI command name
+         */
+        readonly _: Command;
+
+        /**
+         * Global options available to all CLI commands
+         */
+        readonly globalOptions?: GlobalOptions;
+
+        /**
+         * deploy
+         */
+        readonly deploy?: DeployOptions;
+
+        /**
+         * acknowledge
+         */
+        readonly acknowledge?: AcknowledgeOptions;
+      }
+
+      /**
+       * Global options available to all CLI commands
+       *
+       * @struct
+       */
+      export interface GlobalOptions {}
+
+      /**
+       * deploy
+       *
+       * @struct
+       */
+      export interface DeployOptions {
+        /**
+         * Positional argument for deploy
+         */
+        readonly STACKS?: Array<string>;
+      }
+
+      /**
+       * acknowledge
+       *
+       * @struct
+       */
+      export interface AcknowledgeOptions {
+        /**
+         * Positional argument for acknowledge
+         */
+        readonly ID?: string;
       }
       "
     `);

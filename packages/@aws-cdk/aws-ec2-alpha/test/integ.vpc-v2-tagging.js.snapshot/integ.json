@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "integtest-model/DefaultTest": {
+      "stacks": [
+        "aws-cdk-ec2-alpha-tag"
+      ],
+      "assertionStack": "integtest-model/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestmodelDefaultTestDeployAssertCF40BD53"
+    }
+  }
+}
