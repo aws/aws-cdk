@@ -43,7 +43,7 @@ export async function renderCliArgsType(config: CliConfig): Promise<string> {
   for (const [optionName, option] of Object.entries(config.globalOptions)) {
     globalOptionType.addProperty({
       name: kebabToCamelCase(optionName),
-      type: convertType(option.type),
+      type: convertType(option.type, option.count),
       docs: {
         default: normalizeDefault(option.default, option.type),
         summary: option.desc,
@@ -77,7 +77,7 @@ export async function renderCliArgsType(config: CliConfig): Promise<string> {
     for (const [optionName, option] of Object.entries(command.options ?? {})) {
       commandType.addProperty({
         name: kebabToCamelCase(optionName),
-        type: convertType(option.type),
+        type: convertType(option.type, option.count),
         docs: {
           // Notification Arns is a special property where undefined and [] mean different things
           default: optionName === 'notification-arns' ? 'undefined' : normalizeDefault(option.default, option.type),
@@ -124,10 +124,10 @@ export async function renderCliArgsType(config: CliConfig): Promise<string> {
   });
 }
 
-function convertType(type: 'string' | 'array' | 'number' | 'boolean' | 'count'): Type {
+function convertType(type: 'string' | 'array' | 'number' | 'boolean' | 'count', count?: boolean): Type {
   switch (type) {
     case 'boolean':
-      return Type.BOOLEAN;
+      return count ? Type.NUMBER : Type.BOOLEAN;
     case 'string':
       return Type.STRING;
     case 'number':
