@@ -215,9 +215,9 @@ abstract class AdotLambdaLayerVersion {
  */
 export class AdotLambdaLayerJavaSdkVersion extends AdotLambdaLayerVersion {
   /**
-   * Version 1.32.1
+   * Version 1.32.0
    */
-  public static readonly V1_32_0_1 = new AdotLambdaLayerJavaSdkVersion('1.32.1');
+  public static readonly V1_32_0_1 = new AdotLambdaLayerJavaSdkVersion('1.32.0-1');
 
   /**
    * Version 1.32.0
